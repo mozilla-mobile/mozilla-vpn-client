@@ -16,10 +16,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mozillavpn.cpp
+        mozillavpn.cpp \
+        task.cpp \
+        taskauthenticate.cpp
 
 HEADERS += \
-        mozillavpn.h
+        mozillavpn.h \
+        task.h \
+        taskauthenticate.h
 
 RESOURCES += qml.qrc
 
