@@ -1,12 +1,12 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include "mozillavpn.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     QScopedPointer<MozillaVPN> mozillaVPN(new MozillaVPN());
     mozillaVPN->initialize();
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         &app,
         [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl) {
-                QCoreApplication::exit(-1);
+                QApplication::exit(-1);
             }
         },
         Qt::QueuedConnection);
