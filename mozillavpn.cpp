@@ -1,7 +1,6 @@
 #include "mozillavpn.h"
 #include "taskauthenticate.h"
 
-#include <memory>
 #include <QDebug>
 #include <QPointer>
 
@@ -66,5 +65,6 @@ void MozillaVPN::maybeRunTask()
         self->m_task_running = false;
         self->maybeRunTask();
     });
+
     task->Run();
 }

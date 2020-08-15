@@ -1,10 +1,11 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
-#include "task.h"
-
-#include <QList>
+#include <memory>
+#include <vector>
 #include <QObject>
+
+class Task;
 
 class MozillaVPN final : public QObject
 {

@@ -7,9 +7,9 @@
 class TaskAuthenticate final : public Task
 {
 public:
-    explicit TaskAuthenticate() : Task("TaskAuthenticate") { qDebug() << "CTOR"; }
+    explicit TaskAuthenticate() : Task("TaskAuthenticate") {}
 
-    ~TaskAuthenticate() { qDebug() << "DTOR"; }
+    ~TaskAuthenticate() = default;
 
     void Run() override;
 };
