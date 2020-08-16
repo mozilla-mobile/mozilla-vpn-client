@@ -1,9 +1,9 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
-#include <memory>
-#include <vector>
+#include <QList>
 #include <QObject>
+#include <QPointer>
 
 class Task;
 
@@ -16,26 +16,29 @@ public:
     explicit MozillaVPN(QObject *parent = nullptr);
     ~MozillaVPN();
 
-    void initialize();
+    void initialize(int &argc, char *argv[]);
 
     QString getState() const { return m_state; }
+
+    const QString& getApiUrl() const { return m_apiUrl; }
 
     Q_INVOKABLE void authenticate();
 
     Q_INVOKABLE void openLink(const QString &linkName);
 
 private:
-    void scheduleTask(std::unique_ptr<Task> task);
+    void scheduleTask(Task* task);
     void maybeRunTask();
 
 signals:
     void stateChanged();
 
 private:
-    std::vector<std::unique_ptr<Task>> m_tasks;
+    QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
 
     QString m_state;
+    QString m_apiUrl;
 };
 
 #endif // MOZILLAVPN_H

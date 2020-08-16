@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+class MozillaVPN;
+
 class Task : public QObject
 {
     Q_OBJECT
@@ -13,7 +15,7 @@ public:
 
     const QString &name() const { return m_name; }
 
-    virtual void Run() = 0;
+    virtual void Run(MozillaVPN* aVPN) = 0;
 
 signals:
     void completed();

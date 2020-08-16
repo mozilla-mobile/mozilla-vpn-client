@@ -7,16 +7,26 @@
 constexpr const char *STATE_INITIALIZE = "INITIALIZE";
 constexpr const char *STATE_CONNECTING = "CONNECTING";
 
+constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
+constexpr const char *API_URL_DEBUG = "https://fpn.firefox.com";
+
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent) {}
 
 MozillaVPN::~MozillaVPN() = default;
 
-void MozillaVPN::initialize()
+void MozillaVPN::initialize(int &argc, char *argv[])
 {
     qDebug() << "MozillaVPN Initialization";
 
     // TODO: read the config file
     m_state = STATE_INITIALIZE;
+
+    m_apiUrl = API_URL_PROD;
+    for (int i = 1; i < argc; ++i) {
+        if (!qstrcmp(argv[i], "--debug")) {
+            m_apiUrl = API_URL_DEBUG;
+        }
+    }
 }
 
 void MozillaVPN::authenticate()
@@ -26,8 +36,7 @@ void MozillaVPN::authenticate()
     m_state = STATE_CONNECTING;
     emit stateChanged();
 
-    std::unique_ptr<Task> task(new TaskAuthenticate());
-    scheduleTask(std::move(task));
+    scheduleTask(new TaskAuthenticate());
 }
 
 void MozillaVPN::openLink(const QString &linkName)
@@ -36,11 +45,12 @@ void MozillaVPN::openLink(const QString &linkName)
     // TODO
 }
 
-void MozillaVPN::scheduleTask(std::unique_ptr<Task> task)
+void MozillaVPN::scheduleTask(Task* task)
 {
+    Q_ASSERT(task);
     qDebug() << "Scheduling task: " << task->name();
 
-    m_tasks.push_back(std::move(task));
+    m_tasks.append(task);
     maybeRunTask();
 }
 
@@ -53,18 +63,17 @@ void MozillaVPN::maybeRunTask()
     }
 
     m_task_running = true;
-    std::unique_ptr<Task> &task = m_tasks.front();
+    QPointer<Task> task = m_tasks.takeFirst();
+    Q_ASSERT(task.isNull());
 
-    QPointer<MozillaVPN> self = this;
-    QObject::connect(task.get(), &Task::completed, this, [self]() {
+    QObject::connect(task, &Task::completed, this, [this]() {
         qDebug() << "Task completed";
 
-        self->m_tasks.front()->disconnect();
-        self->m_tasks.erase(self->m_tasks.begin());
-
-        self->m_task_running = false;
-        self->maybeRunTask();
+        m_task_running = false;
+        maybeRunTask();
     });
 
-    task->Run();
+    QObject::connect(task, SIGNAL(completed()), task, SLOT(deleteLater()));
+
+    task->Run(this);
 }

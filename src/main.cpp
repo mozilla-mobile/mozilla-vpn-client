@@ -1,6 +1,7 @@
+#include "mozillavpn.h"
+
 #include <QApplication>
 #include <QQmlApplicationEngine>
-#include "mozillavpn.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +10,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QScopedPointer<MozillaVPN> mozillaVPN(new MozillaVPN());
-    mozillaVPN->initialize();
+    mozillaVPN->initialize(argc, argv);
 
     QQmlApplicationEngine engine;
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN", mozillaVPN.get());
