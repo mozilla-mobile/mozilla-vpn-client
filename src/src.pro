@@ -2,23 +2,32 @@ QT += network
 QT += quick
 QT += widgets
 
-CONFIG += c++11
+CONFIG += c++1z
+
+unix {
+    QMAKE_CXXFLAGS *= -Werror
+}
 
 TEMPLATE  = app
 TARGET    = mozillavpn
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
+INCLUDEPATH += . \
+               tasks/authenticate
+
+DEPENDPATH  += $${INCLUDEPATH}
+
 SOURCES += \
         main.cpp \
         mozillavpn.cpp \
         task.cpp \
-        taskauthenticate.cpp
+        tasks/authenticate/taskauthenticate.cpp
 
 HEADERS += \
         mozillavpn.h \
         task.h \
-        taskauthenticate.h
+        tasks/authenticate/taskauthenticate.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

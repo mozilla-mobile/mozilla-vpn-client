@@ -64,7 +64,7 @@ void MozillaVPN::maybeRunTask()
 
     m_task_running = true;
     QPointer<Task> task = m_tasks.takeFirst();
-    Q_ASSERT(task.isNull());
+    Q_ASSERT(!task.isNull());
 
     QObject::connect(task, &Task::completed, this, [this]() {
         qDebug() << "Task completed";
