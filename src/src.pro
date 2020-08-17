@@ -1,3 +1,6 @@
+VERSION = 0.1
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
 QT += network
 QT += quick
 QT += widgets
@@ -21,13 +24,17 @@ DEPENDPATH  += $${INCLUDEPATH}
 SOURCES += \
         main.cpp \
         mozillavpn.cpp \
+        networkrequest.cpp \
         task.cpp \
-        tasks/authenticate/taskauthenticate.cpp
+        tasks/authenticate/taskauthenticate.cpp \
+        tasks/authenticate/taskauthenticationverifier.cpp
 
 HEADERS += \
         mozillavpn.h \
+        networkrequest.h \
         task.h \
-        tasks/authenticate/taskauthenticate.h
+        tasks/authenticate/taskauthenticate.h \
+        tasks/authenticate/taskauthenticationverifier.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

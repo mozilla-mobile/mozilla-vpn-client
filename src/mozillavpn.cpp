@@ -8,7 +8,7 @@ constexpr const char *STATE_INITIALIZE = "INITIALIZE";
 constexpr const char *STATE_CONNECTING = "CONNECTING";
 
 constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
-constexpr const char *API_URL_DEBUG = "https://fpn.firefox.com";
+constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent) {}
 
@@ -22,6 +22,11 @@ void MozillaVPN::initialize(int &argc, char *argv[])
     m_state = STATE_INITIALIZE;
 
     m_apiUrl = API_URL_PROD;
+
+#ifdef QT_DEBUG
+    m_apiUrl = API_URL_DEBUG;
+#endif
+
     for (int i = 1; i < argc; ++i) {
         if (!qstrcmp(argv[i], "--debug")) {
             m_apiUrl = API_URL_DEBUG;
@@ -73,7 +78,7 @@ void MozillaVPN::maybeRunTask()
         maybeRunTask();
     });
 
-    QObject::connect(task, SIGNAL(completed()), task, SLOT(deleteLater()));
+    QObject::connect(task, &Task::completed, task, &Task::deleteLater);
 
     task->Run(this);
 }

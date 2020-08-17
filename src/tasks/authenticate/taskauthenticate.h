@@ -3,6 +3,8 @@
 
 #include "task.h"
 
+#include <QNetworkReply>
+
 class TaskAuthenticate final : public Task
 {
 public:
@@ -10,7 +12,13 @@ public:
 
     ~TaskAuthenticate() = default;
 
-    void Run(MozillaVPN* aVPN) override;
+    void Run(MozillaVPN *aVPN) override;
+
+private Q_SLOTS:
+    void requestFailed(QNetworkReply::NetworkError);
+    void requestCompleted(QByteArray);
+
+    void authenticationCompleted(QByteArray);
 };
 
 #endif // TASKAUTHENTICATE_H
