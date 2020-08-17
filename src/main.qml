@@ -61,6 +61,14 @@ Window {
                     target: loader
                     source: "StateConnecting.qml"
                 }
+            },
+
+            State {
+                name: "OFF"
+                PropertyChanges {
+                    target: loader
+                    source: "StateOff.qml"
+                }
             }
         ]
     }

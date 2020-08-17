@@ -87,6 +87,17 @@ bool UserData::hasDevice(const QString &deviceName) const
     return false;
 }
 
+bool UserData::hasPrivateKeyDevice(const QString &deviceName) const
+{
+    for (QList<DeviceData>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
+        if (i->isDevice(deviceName) && i->hasPrivateKey()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void UserData::addDevice(const DeviceData &deviceData)
 {
     m_devices.append(deviceData);

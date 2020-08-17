@@ -28,12 +28,14 @@ public:
 
     Q_INVOKABLE void openLink(const QString &linkName);
 
+    Q_INVOKABLE void activate();
+
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
     void authenticationCompleted(UserData *userData, const QString &token);
 
     // The device has been added.
-    void deviceAdded(const QString &deviceName, const QString &publicKey);
+    void deviceAdded(const QString &deviceName, const QString &publicKey, const QString &privateKey);
 
     QString token() const { return m_token; }
 

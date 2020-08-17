@@ -21,6 +21,8 @@ public:
 
     bool hasDevice(const QString &deviceName) const;
 
+    bool hasPrivateKeyDevice(const QString &deviceName) const;
+
     void addDevice(const DeviceData &deviceData);
 
 private:

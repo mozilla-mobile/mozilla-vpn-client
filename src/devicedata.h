@@ -9,9 +9,11 @@ class QJsonValue;
 class DeviceData
 {
 public:
-    DeviceData(const QString &deviceName, const QString &publicKey)
-        : m_deviceName(deviceName), m_publicKey(publicKey)
+    DeviceData(const QString &deviceName, const QString &publicKey, const QString &privateKey)
+        : m_deviceName(deviceName), m_publicKey(publicKey), m_privateKey(privateKey)
     {}
+
+    static QString currentDeviceName();
 
     static DeviceData fromJson(const QJsonValue &json);
 
@@ -21,9 +23,12 @@ public:
 
     bool isDevice(const QString &deviceName) const { return m_deviceName == deviceName; }
 
+    bool hasPrivateKey() const { return !m_privateKey.isEmpty(); }
+
 private:
     QString m_deviceName;
     QString m_publicKey;
+    QString m_privateKey;
 };
 
 #endif // DEVICEDATA_H

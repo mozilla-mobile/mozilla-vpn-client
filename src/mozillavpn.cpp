@@ -38,7 +38,7 @@ void MozillaVPN::initialize(int &argc, char *argv[])
     }
 
 #ifdef QT_DEBUG
-    m_settings.clear();
+    //m_settings.clear();
 #endif
 
     if (m_settings.contains(SETTINGS_TOKEN)) {
@@ -48,7 +48,11 @@ void MozillaVPN::initialize(int &argc, char *argv[])
         m_userData = UserData::fromSettings(m_settings);
         Q_ASSERT(m_userData);
 
-        // TODO: what about if the device doesn't exist yet...?
+        // Something went wrong during the previous authentications.
+        if (!m_userData->hasPrivateKeyDevice(DeviceData::currentDeviceName())) {
+            m_settings.clear();
+        }
+
         // TODO: what's the right state here?
         m_state = STATE_OFF;
     }
@@ -114,25 +118,26 @@ void MozillaVPN::authenticationCompleted(UserData *userData, const QString &toke
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;
 
-    QString deviceName = QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
-                         + QSysInfo::productVersion();
-    if (m_userData->hasDevice(deviceName)) {
-        m_state = STATE_OFF;
-        emit stateChanged();
-        return;
-    }
-
-    scheduleTask(new TaskAddDevice(deviceName));
+    scheduleTask(new TaskAddDevice());
 }
 
-void MozillaVPN::deviceAdded(const QString &deviceName, const QString &publicKey)
+void MozillaVPN::deviceAdded(const QString &deviceName,
+                             const QString &publicKey,
+                             const QString &privateKey)
 {
     qDebug() << "Device added";
 
     Q_ASSERT(m_userData);
-    m_userData->addDevice(DeviceData(deviceName, publicKey));
+    if (!m_userData->hasDevice(deviceName)) {
+        m_userData->addDevice(DeviceData(deviceName, publicKey, privateKey));
+        m_userData->writeSettings(m_settings);
+    }
 
-    // TODO: do we need to add the device to the settings/userData ?
     m_state = STATE_OFF;
     emit stateChanged();
+}
+
+void MozillaVPN::activate()
+{
+    qDebug() << "Activation";
 }
