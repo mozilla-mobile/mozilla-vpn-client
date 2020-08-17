@@ -21,6 +21,10 @@ public:
     static NetworkRequest *createForAuthenticationVerification(QObject *parent,
                                                                const QString &verificationUrl);
 
+    static NetworkRequest *createForDeviceCreation(MozillaVPN *vpn,
+                                                   const QString &deviceName,
+                                                   const QString &pubKey);
+
 private:
     NetworkRequest(QObject *parent);
 

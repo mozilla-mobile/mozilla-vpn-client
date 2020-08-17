@@ -17,7 +17,8 @@ TARGET    = mozillavpn
 DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += . \
-               tasks/authenticate
+               tasks/authenticate \
+               tasks/adddevice
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -26,15 +27,19 @@ SOURCES += \
         mozillavpn.cpp \
         networkrequest.cpp \
         task.cpp \
+        tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
-        tasks/authenticate/taskauthenticationverifier.cpp
+        tasks/authenticate/taskauthenticationverifier.cpp \
+        userdata.cpp
 
 HEADERS += \
         mozillavpn.h \
         networkrequest.h \
         task.h \
+        tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
-        tasks/authenticate/taskauthenticationverifier.h
+        tasks/authenticate/taskauthenticationverifier.h \
+        userdata.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

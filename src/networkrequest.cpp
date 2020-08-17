@@ -2,6 +2,8 @@
 #include "mozillavpn.h"
 
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -52,6 +54,39 @@ NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *par
     qDebug() << "Network starting: " << r;
 
     r->m_manager->get(r->m_request);
+    return r;
+}
+
+// static
+NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
+                                                        const QString &deviceName,
+                                                        const QString &pubKey)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+    r->m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/device");
+    r->m_request.setUrl(url);
+
+    QJsonObject obj;
+    obj.insert("name", deviceName);
+    obj.insert("pubkey", pubKey);
+
+    QJsonDocument json;
+    json.setObject(obj);
+
+    Q_ASSERT(r->m_manager);
+    qDebug() << "Network starting: " << r;
+
+    r->m_manager->post(r->m_request, json.toJson());
+
     return r;
 }
 

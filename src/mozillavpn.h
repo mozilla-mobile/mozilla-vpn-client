@@ -4,8 +4,10 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <QSettings>
 
 class Task;
+class UserData;
 
 class MozillaVPN final : public QObject
 {
@@ -20,11 +22,20 @@ public:
 
     QString getState() const { return m_state; }
 
-    const QString& getApiUrl() const { return m_apiUrl; }
+    const QString &getApiUrl() const { return m_apiUrl; }
 
     Q_INVOKABLE void authenticate();
 
     Q_INVOKABLE void openLink(const QString &linkName);
+
+    // Called at the end of the authentication flow. We can continue adding the device
+    // if it doesn't exist yet, or we can go to OFF state.
+    void authenticationCompleted(UserData userData, const QString &token);
+
+    // The device has been added.
+    void deviceAdded(const QString &deviceName);
+
+    QString token() const { return m_token; }
 
 private:
     void scheduleTask(Task* task);
@@ -34,6 +45,9 @@ signals:
     void stateChanged();
 
 private:
+    QSettings m_settings;
+    QString m_token;
+
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
 

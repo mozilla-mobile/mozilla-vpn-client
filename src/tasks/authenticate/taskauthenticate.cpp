@@ -2,6 +2,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "taskauthenticationverifier.h"
+#include "userdata.h"
 
 #include <QDebug>
 #include <QDesktopServices>
@@ -9,7 +10,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-void TaskAuthenticate::Run(MozillaVPN *vpn)
+void TaskAuthenticate::run(MozillaVPN *vpn)
 {
     Q_ASSERT(vpn);
 
@@ -23,7 +24,7 @@ void TaskAuthenticate::Run(MozillaVPN *vpn)
         // TODO
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](QByteArray data) {
+    connect(request, &NetworkRequest::requestCompleted, [this, vpn](QByteArray data) {
         qDebug() << "Authentication request completed: " << this << data;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
@@ -53,16 +54,15 @@ void TaskAuthenticate::Run(MozillaVPN *vpn)
 
         TaskAuthenticationVerifier *verifier
             = new TaskAuthenticationVerifier(this, verificationUrl.toString(), pollInterval.toInt());
-        connect(verifier,
-                &TaskAuthenticationVerifier::completed,
-                this,
-                &TaskAuthenticate::authenticationCompleted);
+        connect(verifier, &TaskAuthenticationVerifier::completed, [this, vpn](QByteArray data) {
+            authenticationCompleted(vpn, data);
+        });
     });
 }
 
-void TaskAuthenticate::authenticationCompleted(QByteArray data)
+void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, QByteArray data)
 {
-    qDebug() << "Authentication completed: " << data;
+    qDebug() << "Authentication completed";
 
     QJsonDocument json = QJsonDocument::fromJson(data);
     if (json.isNull()) {
@@ -73,5 +73,19 @@ void TaskAuthenticate::authenticationCompleted(QByteArray data)
 
     Q_ASSERT(json.isObject());
     QJsonObject obj = json.object();
-    // TODO
+
+    Q_ASSERT(obj.contains("user"));
+    QJsonValue userObj = obj.take("user");
+    Q_ASSERT(userObj.isObject());
+
+    Q_ASSERT(obj.contains("token"));
+    QJsonValue tokenValue = obj.take("token");
+    Q_ASSERT(tokenValue.isString());
+
+    QJsonObject userDataObj = userObj.toObject();
+
+    qDebug() << userObj;
+    vpn->authenticationCompleted(UserData::fromJson(userDataObj), tokenValue.toString());
+
+    emit completed();
 }

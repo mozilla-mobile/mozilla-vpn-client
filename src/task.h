@@ -15,7 +15,7 @@ public:
 
     const QString &name() const { return m_name; }
 
-    virtual void Run(MozillaVPN* aVPN) = 0;
+    virtual void run(MozillaVPN *aVPN) = 0;
 
 signals:
     void completed();
