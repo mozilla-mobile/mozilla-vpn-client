@@ -13,6 +13,8 @@ constexpr const char *STATE_OFF = "OFF";
 constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
+constexpr const char *SETTINGS_TOKEN = "token";
+
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn") {}
 
 MozillaVPN::~MozillaVPN() = default;
@@ -35,9 +37,20 @@ void MozillaVPN::initialize(int &argc, char *argv[])
         }
     }
 
-    if (m_settings.contains("token")) {
-        m_token = m_settings.value("token").toString();
+#ifdef QT_DEBUG
+    m_settings.clear();
+#endif
+
+    if (m_settings.contains(SETTINGS_TOKEN)) {
+        qDebug() << "We have a valid token";
+
+        m_token = m_settings.value(SETTINGS_TOKEN).toString();
+        m_userData = UserData::fromSettings(m_settings);
+        Q_ASSERT(m_userData);
+
+        // TODO: what about if the device doesn't exist yet...?
         // TODO: what's the right state here?
+        m_state = STATE_OFF;
     }
 }
 
@@ -90,16 +103,20 @@ void MozillaVPN::maybeRunTask()
     task->run(this);
 }
 
-void MozillaVPN::authenticationCompleted(UserData userData, const QString &token)
+void MozillaVPN::authenticationCompleted(UserData *userData, const QString &token)
 {
     qDebug() << "Authentication completed";
 
-    userData.writeSettings(m_settings);
-    m_settings.setValue("token", token);
+    Q_ASSERT(!m_userData);
+    m_userData = userData;
+    m_userData->writeSettings(m_settings);
+
+    m_settings.setValue(SETTINGS_TOKEN, token);
+    m_token = token;
 
     QString deviceName = QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
                          + QSysInfo::productVersion();
-    if (userData.hasDevice(deviceName)) {
+    if (m_userData->hasDevice(deviceName)) {
         m_state = STATE_OFF;
         emit stateChanged();
         return;
@@ -108,9 +125,12 @@ void MozillaVPN::authenticationCompleted(UserData userData, const QString &token
     scheduleTask(new TaskAddDevice(deviceName));
 }
 
-void MozillaVPN::deviceAdded(const QString &)
+void MozillaVPN::deviceAdded(const QString &deviceName, const QString &publicKey)
 {
     qDebug() << "Device added";
+
+    Q_ASSERT(m_userData);
+    m_userData->addDevice(DeviceData(deviceName, publicKey));
 
     // TODO: do we need to add the device to the settings/userData ?
     m_state = STATE_OFF;

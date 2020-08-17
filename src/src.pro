@@ -23,6 +23,7 @@ INCLUDEPATH += . \
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
+        devicedata.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
@@ -30,16 +31,19 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/authenticate/taskauthenticationverifier.cpp \
-        userdata.cpp
+        userdata.cpp \
+        wireguardkeys.cpp
 
 HEADERS += \
+        devicedata.h \
         mozillavpn.h \
         networkrequest.h \
         task.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/authenticate/taskauthenticationverifier.h \
-        userdata.h
+        userdata.h \
+        wireguardkeys.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

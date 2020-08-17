@@ -71,6 +71,8 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
     r->m_request.setRawHeader("Authorization", authorizationHeader);
     r->m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
+    qDebug() << "Authorization: " << authorizationHeader;
+
     QUrl url(vpn->getApiUrl());
     url.setPath("/api/v1/vpn/device");
     r->m_request.setUrl(url);
@@ -83,7 +85,7 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
     json.setObject(obj);
 
     Q_ASSERT(r->m_manager);
-    qDebug() << "Network starting: " << r;
+    qDebug() << "Network starting: " << json;
 
     r->m_manager->post(r->m_request, json.toJson());
 

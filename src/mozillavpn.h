@@ -30,12 +30,14 @@ public:
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
-    void authenticationCompleted(UserData userData, const QString &token);
+    void authenticationCompleted(UserData *userData, const QString &token);
 
     // The device has been added.
-    void deviceAdded(const QString &deviceName);
+    void deviceAdded(const QString &deviceName, const QString &publicKey);
 
     QString token() const { return m_token; }
+
+    QPointer<UserData> userData() const { return m_userData; }
 
 private:
     void scheduleTask(Task* task);
@@ -46,6 +48,7 @@ signals:
 
 private:
     QSettings m_settings;
+    QPointer<UserData> m_userData;
     QString m_token;
 
     QList<QPointer<Task>> m_tasks;
