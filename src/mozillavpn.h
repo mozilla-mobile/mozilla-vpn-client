@@ -50,6 +50,8 @@ private:
     void scheduleTask(Task* task);
     void maybeRunTask();
 
+    void scheduleServersFetch();
+
 signals:
     void stateChanged();
 

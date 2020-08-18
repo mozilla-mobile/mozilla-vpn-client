@@ -3,11 +3,13 @@
 #include "taskadddevice.h"
 #include "taskauthenticate.h"
 #include "taskfetchservers.h"
+#include "taskfunction.h"
 #include "taskremovedevice.h"
 #include "userdata.h"
 
 #include <QDebug>
 #include <QPointer>
+#include <QTimer>
 
 constexpr const char *STATE_INITIALIZE = "INITIALIZE";
 constexpr const char *STATE_CONNECTING = "CONNECTING";
@@ -17,6 +19,9 @@ constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
 constexpr const char *SETTINGS_TOKEN = "token";
+
+// in seconds, how often we should fetch the server list.
+constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 86400;
 
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn") {}
 
@@ -36,7 +41,7 @@ void MozillaVPN::initialize(int &, char *[])
 #endif
 
 #ifdef QT_DEBUG
-    //m_settings.clear();
+    m_settings.clear();
 #endif
 
     if (!m_settings.contains(SETTINGS_TOKEN)) {
@@ -72,6 +77,8 @@ void MozillaVPN::initialize(int &, char *[])
 
     Q_ASSERT(!m_servers);
     m_servers = servers;
+
+    scheduleServersFetch();
 
     // TODO: what's the right state here?
     m_state = STATE_OFF;
@@ -151,7 +158,19 @@ void MozillaVPN::authenticationCompleted(UserData *userData, const QString &toke
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
+    // Here we add the current device.
     scheduleTask(new TaskAddDevice(deviceName));
+
+    // Then we fetch the list of servers.
+    scheduleTask(new TaskFetchServers());
+
+    // Finally we are able to activate the client.
+    scheduleTask(new TaskFunction([this](MozillaVPN *) {
+        if (m_state == STATE_CONNECTING) {
+            m_state = STATE_OFF;
+            emit stateChanged();
+        }
+    }));
 }
 
 void MozillaVPN::deviceAdded(const QString &deviceName,
@@ -165,8 +184,6 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
         m_userData->addDevice(DeviceData(deviceName, publicKey, privateKey));
         m_userData->writeSettings(m_settings);
     }
-
-    scheduleTask(new TaskFetchServers());
 }
 
 void MozillaVPN::deviceRemoved(const QString &deviceName)
@@ -189,11 +206,16 @@ void MozillaVPN::serversFetched(ServerData *servers)
     m_servers = servers;
     m_servers->writeSettings(m_settings);
 
-    m_state = STATE_OFF;
-    emit stateChanged();
+    scheduleServersFetch();
 }
 
 void MozillaVPN::activate()
 {
     qDebug() << "Activation";
+}
+
+void MozillaVPN::scheduleServersFetch()
+{
+    QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
+                       [this]() { scheduleTask(new TaskFetchServers()); });
 }

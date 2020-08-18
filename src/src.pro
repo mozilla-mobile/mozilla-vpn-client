@@ -20,7 +20,8 @@ INCLUDEPATH += . \
                tasks/authenticate \
                tasks/adddevice \
                tasks/fetchservers \
-               tasks/removedevice
+               tasks/removedevice \
+               tasks/function
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -35,6 +36,7 @@ SOURCES += \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/authenticate/taskauthenticationverifier.cpp \
         tasks/fetchservers/taskfetchservers.cpp \
+        tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         userdata.cpp \
         wireguardkeys.cpp
@@ -50,6 +52,7 @@ HEADERS += \
         tasks/authenticate/taskauthenticate.h \
         tasks/authenticate/taskauthenticationverifier.h \
         tasks/fetchservers/taskfetchservers.h \
+        tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         userdata.h \
         wireguardkeys.h
