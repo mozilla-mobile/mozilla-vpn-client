@@ -2,12 +2,12 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>resources/logo.png</file>
-        <file>StateInitialize.qml</file>
-        <file>StateConnecting.qml</file>
         <file>mozillavpn.h</file>
         <file>mozillavpn.cpp</file>
         <file>resources/Metropolis-Regular.otf</file>
-        <file>StateMain.qml</file>
-        <file>ViewMain.qml</file>
+        <file>states/StateMain.qml</file>
+        <file>states/StateInitialize.qml</file>
+        <file>states/StateConnecting.qml</file>
+        <file>views/ViewMain.qml</file>
     </qresource>
 </RCC>

@@ -51,7 +51,7 @@ Window {
                 name: "INITIALIZE"
                 PropertyChanges {
                     target: loader
-                    source: "StateInitialize.qml"
+                    source: "states/StateInitialize.qml"
                 }
             },
 
@@ -59,7 +59,7 @@ Window {
                 name: "CONNECTING"
                 PropertyChanges {
                     target: loader
-                    source: "StateConnecting.qml"
+                    source: "states/StateConnecting.qml"
                 }
             },
 
@@ -67,7 +67,7 @@ Window {
                 name: "MAIN"
                 PropertyChanges {
                     target: loader
-                    source: "StateMain.qml"
+                    source: "states/StateMain.qml"
                 }
             }
         ]

@@ -5,6 +5,6 @@ Item {
     StackView {
         id: stackview
         anchors.fill: parent
-        initialItem: "ViewMain.qml"
+        initialItem: "../views/ViewMain.qml"
     }
 }
