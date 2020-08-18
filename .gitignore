@@ -1,8 +1,10 @@
 .DS_Store
 Makefile
 *.o
-moc_*
+.obj
+.moc
 mozillavpn
+mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
 mozillavpn_qmltyperegistrations.cpp
