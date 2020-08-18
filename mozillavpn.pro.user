@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.12.4, 2020-08-18T12:06:33. -->
+<!-- Written by QtCreator 4.12.4, 2020-08-18T17:22:31. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -321,7 +321,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default"></value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/baku/Sources/m/build-mozillavpn-Desktop_Qt_5_15_0_clang_64bit-Debug/src/mozillavpn.app/Contents/MacOS</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

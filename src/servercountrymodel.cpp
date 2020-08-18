@@ -1,4 +1,5 @@
 #include "servercountrymodel.h"
+#include "servercountry.h"
 
 #include <QDebug>
 #include <QJsonArray>
@@ -30,6 +31,13 @@ void ServerCountryModel::fromJson(const QByteArray &s)
 
 void ServerCountryModel::fromJsonInternal()
 {
+    for (QList<QPointer<ServerCountry>>::Iterator i = m_countries.begin(); i != m_countries.end();
+         ++i) {
+        delete *i;
+    }
+
+    m_countries.clear();
+
     QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
 
     Q_ASSERT(doc.isObject());
@@ -52,7 +60,7 @@ void ServerCountryModel::fromJsonInternal()
         QJsonValue countryCode = countryObj.take("code");
         Q_ASSERT(countryCode.isString());
 
-        //m_countries.append(Country(countryName.toString(), countryCode.toString()));
+        m_countries.append(new ServerCountry(countryName.toString(), countryCode.toString()));
     }
 }
 

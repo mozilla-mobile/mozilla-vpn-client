@@ -36,7 +36,6 @@ SOURCES += \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/authenticate/taskauthenticationverifier.cpp \
         tasks/fetchservers/taskfetchservers.cpp \
-        tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         userdata.cpp \
         wireguardkeys.cpp
@@ -45,6 +44,7 @@ HEADERS += \
         devicedata.h \
         mozillavpn.h \
         networkrequest.h \
+        servercountry.h \
         servercountrymodel.h \
         serversfetcher.h \
         task.h \
