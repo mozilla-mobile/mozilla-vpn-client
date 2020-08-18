@@ -119,7 +119,8 @@ void UserData::removeDevice(const QString &deviceName)
 {
     QMutableListIterator<DeviceData> i(m_devices);
     while (i.hasNext()) {
-        if (i.value().isDevice(deviceName)) {
+        const DeviceData &device = i.next();
+        if (device.isDevice(deviceName)) {
             i.remove();
             break;
         }
