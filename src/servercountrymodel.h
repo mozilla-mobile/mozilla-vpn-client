@@ -3,7 +3,9 @@
 
 #include <QByteArray>
 #include <QObject>
+#include <QPointer>
 
+class ServerCountry;
 class QSettings;
 
 class ServerCountryModel : public QObject
@@ -23,15 +25,7 @@ private:
 private:
     QByteArray m_rawJson;
 
-    struct Country
-    {
-        Country(const QString &name, const QString &code) : m_name(name), m_code(code) {}
-
-        QString m_name;
-        QString m_code;
-    };
-
-    QList<Country> m_countries;
+    QList<QPointer<ServerCountry>> m_countries;
 };
 
 #endif // SERVERCOUNTRYMODEL_H
