@@ -59,4 +59,34 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: VPN.activate()
     }
+
+    RoundButton {
+        x: 130
+        y: 347
+        width: 282
+        height: 40
+        text: qsTr("Devices")
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.weight: Font.ExtraLight
+        enabled: true
+        focusPolicy: Qt.NoFocus
+        radius: 5
+        onClicked: stackview.push("ViewDevices.qml")
+    }
+
+    RoundButton {
+        x: 130
+        y: 400
+        width: 282
+        height: 40
+        text: qsTr("Servers")
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.weight: Font.ExtraLight
+        enabled: true
+        focusPolicy: Qt.NoFocus
+        radius: 5
+        onClicked: stackview.push("ViewServers.qml")
+    }
 }

@@ -9,5 +9,7 @@
         <file>states/StateInitialize.qml</file>
         <file>states/StateConnecting.qml</file>
         <file>views/ViewMain.qml</file>
+        <file>views/ViewDevices.qml</file>
+        <file>views/ViewServers.qml</file>
     </qresource>
 </RCC>
