@@ -1,6 +1,8 @@
 TEMPLATE  = app
 TARGET    = mozillavpn_wg
 
+CONFIG -= app_bundle
+
 SOURCES += \
   config.c \
   curve25519.c \
