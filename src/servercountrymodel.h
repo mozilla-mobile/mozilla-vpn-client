@@ -1,23 +1,23 @@
-#ifndef SERVERDATA_H
-#define SERVERDATA_H
+#ifndef SERVERCOUNTRYMODEL_H
+#define SERVERCOUNTRYMODEL_H
 
 #include <QByteArray>
 #include <QObject>
 
 class QSettings;
 
-class ServerData : public QObject
+class ServerCountryModel : public QObject
 {
 public:
-    static ServerData *fromSettings(QSettings &settings);
+    ServerCountryModel() = default;
 
-    static ServerData *fromJson(QByteArray &data);
+    bool fromSettings(QSettings &settings);
+
+    void fromJson(const QByteArray &data);
 
     void writeSettings(QSettings &settings);
 
 private:
-    ServerData() = default;
-
     void fromJsonInternal();
 
 private:
@@ -34,4 +34,4 @@ private:
     QList<Country> m_countries;
 };
 
-#endif // SERVERDATA_H
+#endif // SERVERCOUNTRYMODEL_H

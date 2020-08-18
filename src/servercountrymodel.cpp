@@ -1,4 +1,4 @@
-#include "serverdata.h"
+#include "servercountrymodel.h"
 
 #include <QDebug>
 #include <QJsonArray>
@@ -6,35 +6,29 @@
 #include <QJsonObject>
 #include <QSettings>
 
-// static
-ServerData *ServerData::fromSettings(QSettings &settings)
+bool ServerCountryModel::fromSettings(QSettings &settings)
 {
     qDebug() << "Reading the server list from settings";
 
     if (!settings.contains("servers")) {
-        return nullptr;
+        return false;
     }
 
-    ServerData *data = new ServerData();
-    data->m_rawJson = settings.value("servers").toByteArray();
-    data->fromJsonInternal();
+    m_rawJson = settings.value("servers").toByteArray();
+    fromJsonInternal();
 
-    return data;
+    return true;
 }
 
-// static
-ServerData *ServerData::fromJson(QByteArray &s)
+void ServerCountryModel::fromJson(const QByteArray &s)
 {
     qDebug() << "Reading from JSON";
 
-    ServerData *data = new ServerData();
-    data->m_rawJson = s;
-    data->fromJsonInternal();
-
-    return data;
+    m_rawJson = s;
+    fromJsonInternal();
 }
 
-void ServerData::fromJsonInternal()
+void ServerCountryModel::fromJsonInternal()
 {
     QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
 
@@ -58,11 +52,11 @@ void ServerData::fromJsonInternal()
         QJsonValue countryCode = countryObj.take("code");
         Q_ASSERT(countryCode.isString());
 
-        m_countries.append(Country(countryName.toString(), countryCode.toString()));
+        //m_countries.append(Country(countryName.toString(), countryCode.toString()));
     }
 }
 
-void ServerData::writeSettings(QSettings &settings)
+void ServerCountryModel::writeSettings(QSettings &settings)
 {
     settings.setValue("servers", m_rawJson);
 }

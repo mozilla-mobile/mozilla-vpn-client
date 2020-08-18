@@ -33,7 +33,7 @@ void TaskAuthenticationVerifier::timerExpired()
         run();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](QByteArray data) {
+    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
         qDebug() << "Network completed: " << this << data;
         emit completed(data);
     });

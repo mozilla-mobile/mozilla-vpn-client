@@ -1,7 +1,7 @@
 #include "serversfetcher.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "serverdata.h"
+#include "servercountrymodel.h"
 
 void ServersFetcher::run(MozillaVPN *vpn)
 {
@@ -12,9 +12,8 @@ void ServersFetcher::run(MozillaVPN *vpn)
         // TODO
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](QByteArray data) {
+    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
         qDebug() << "Servers obtained";
-        ServerData *servers = ServerData::fromJson(data);
-        emit completed(servers);
+        emit completed(data);
     });
 }

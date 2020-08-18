@@ -1,5 +1,5 @@
 #include "mozillavpn.h"
-#include "serverdata.h"
+#include "servercountrymodel.h"
 #include "taskadddevice.h"
 #include "taskauthenticate.h"
 #include "taskfetchservers.h"
@@ -61,8 +61,7 @@ void MozillaVPN::initialize(int &, char *[])
         return;
     }
 
-    ServerData *servers = ServerData::fromSettings(m_settings);
-    if (!servers) {
+    if (!m_serverCountryModel.fromSettings(m_settings)) {
         qDebug() << "No server list found";
 
         m_settings.clear();
@@ -74,9 +73,6 @@ void MozillaVPN::initialize(int &, char *[])
 
     Q_ASSERT(!m_userData);
     m_userData = userData;
-
-    Q_ASSERT(!m_servers);
-    m_servers = servers;
 
     scheduleServersFetch();
 
@@ -193,17 +189,12 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
     m_userData->removeDevice(deviceName);
 }
 
-void MozillaVPN::serversFetched(ServerData *servers)
+void MozillaVPN::serversFetched(const QByteArray &serverData)
 {
     qDebug() << "Server fetched!";
 
-    if (m_servers) {
-        delete m_servers;
-    }
-
-    Q_ASSERT(servers);
-    m_servers = servers;
-    m_servers->writeSettings(m_settings);
+    m_serverCountryModel.fromJson(serverData);
+    m_serverCountryModel.writeSettings(m_settings);
 
     scheduleServersFetch();
 }

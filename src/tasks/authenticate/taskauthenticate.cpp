@@ -24,7 +24,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
         // TODO
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this, vpn](QByteArray data) {
+    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
         qDebug() << "Authentication request completed: " << this << data;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
@@ -54,13 +54,13 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
 
         TaskAuthenticationVerifier *verifier
             = new TaskAuthenticationVerifier(this, verificationUrl.toString(), pollInterval.toInt());
-        connect(verifier, &TaskAuthenticationVerifier::completed, [this, vpn](QByteArray data) {
+        connect(verifier, &TaskAuthenticationVerifier::completed, [this, vpn](const QByteArray &data) {
             authenticationCompleted(vpn, data);
         });
     });
 }
 
-void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, QByteArray data)
+void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray &data)
 {
     qDebug() << "Authentication completed";
 

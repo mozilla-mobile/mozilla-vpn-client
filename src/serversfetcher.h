@@ -4,7 +4,6 @@
 #include <QObject>
 
 class MozillaVPN;
-class ServerData;
 
 class ServersFetcher : public QObject
 {
@@ -16,7 +15,7 @@ public:
     void run(MozillaVPN *vpn);
 
 signals:
-    void completed(ServerData *servers);
+    void completed(const QByteArray& serverData);
 };
 
 #endif // SERVERSFETCHER_H

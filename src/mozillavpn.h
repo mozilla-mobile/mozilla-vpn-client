@@ -1,6 +1,8 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "servercountrymodel.h"
+
 #include <QList>
 #include <QObject>
 #include <QPointer>
@@ -8,7 +10,6 @@
 
 class Task;
 class UserData;
-class ServerData;
 
 class MozillaVPN final : public QObject
 {
@@ -40,7 +41,7 @@ public:
 
     void deviceRemoved(const QString &deviceName);
 
-    void serversFetched(ServerData *servers);
+    void serversFetched(const QByteArray &serverData);
 
     QString token() const { return m_token; }
 
@@ -60,7 +61,8 @@ private:
 
     QString m_token;
     QPointer<UserData> m_userData;
-    QPointer<ServerData> m_servers;
+
+    ServerCountryModel m_serverCountryModel;
 
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;

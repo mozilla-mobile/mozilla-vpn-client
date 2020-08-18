@@ -12,11 +12,11 @@ public:
 
     void run(MozillaVPN *vpn) override;
 
-    void authenticationCompleted(MozillaVPN *vpn, QByteArray data);
+    void authenticationCompleted(MozillaVPN *vpn, const QByteArray &data);
 
 private Q_SLOTS:
     void requestFailed(QNetworkReply::NetworkError);
-    void requestCompleted(QByteArray);
+    void requestCompleted(const QByteArray &);
 };
 
 #endif // TASKAUTHENTICATE_H

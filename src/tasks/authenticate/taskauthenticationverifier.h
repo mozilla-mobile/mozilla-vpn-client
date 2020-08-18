@@ -20,7 +20,7 @@ private Q_SLOTS:
     void timerExpired();
 
 signals:
-    void completed(QByteArray);
+    void completed(const QByteArray &);
 
 private:
     QString m_verificationUrl;
