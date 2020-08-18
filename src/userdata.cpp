@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMutableListIterator>
 #include <QSettings>
 
 constexpr const char *SETTINGS_AVATAR = "user/avatar";
@@ -98,7 +99,29 @@ bool UserData::hasPrivateKeyDevice(const QString &deviceName) const
     return false;
 }
 
+const DeviceData *UserData::device(const QString &deviceName) const
+{
+    for (QList<DeviceData>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
+        if (i->isDevice(deviceName)) {
+            return &(*i);
+        }
+    }
+
+    return nullptr;
+}
+
 void UserData::addDevice(const DeviceData &deviceData)
 {
     m_devices.append(deviceData);
+}
+
+void UserData::removeDevice(const QString &deviceName)
+{
+    QMutableListIterator<DeviceData> i(m_devices);
+    while (i.hasNext()) {
+        if (i.value().isDevice(deviceName)) {
+            i.remove();
+            break;
+        }
+    }
 }

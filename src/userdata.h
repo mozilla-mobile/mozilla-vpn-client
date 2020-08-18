@@ -23,7 +23,11 @@ public:
 
     bool hasPrivateKeyDevice(const QString &deviceName) const;
 
+    const DeviceData *device(const QString &deviceName) const;
+
     void addDevice(const DeviceData &deviceData);
+
+    void removeDevice(const QString &deviceName);
 
 private:
     UserData() = default;

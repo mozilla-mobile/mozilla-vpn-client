@@ -6,9 +6,12 @@
 class TaskAddDevice final : public Task
 {
 public:
-    TaskAddDevice();
+    explicit TaskAddDevice(const QString &deviceName);
 
     void run(MozillaVPN *vpn) override;
+
+private:
+    QString m_deviceName;
 };
 
 #endif // TASKADDDEVICE_H

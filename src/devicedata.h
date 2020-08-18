@@ -25,6 +25,8 @@ public:
 
     bool hasPrivateKey() const { return !m_privateKey.isEmpty(); }
 
+    const QString &publicKey() const { return m_publicKey; }
+
 private:
     QString m_deviceName;
     QString m_publicKey;

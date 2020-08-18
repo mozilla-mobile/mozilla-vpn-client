@@ -25,6 +25,10 @@ public:
                                                    const QString &deviceName,
                                                    const QString &pubKey);
 
+    static NetworkRequest *createForDeviceRemoval(MozillaVPN *vpn, const QString &pubKey);
+
+    static NetworkRequest *createForServers(MozillaVPN *vpn);
+
 private:
     NetworkRequest(QObject *parent);
 

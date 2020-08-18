@@ -1,36 +1,28 @@
 #include "taskadddevice.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "userdata.h"
 #include "wireguardkeys.h"
 
 #include <QDebug>
 
-TaskAddDevice::TaskAddDevice() : Task("TaskAddDevice") {}
+TaskAddDevice::TaskAddDevice(const QString &deviceName)
+    : Task("TaskAddDevice"), m_deviceName(deviceName)
+{}
 
 void TaskAddDevice::run(MozillaVPN *vpn)
 {
-    qDebug() << "Maybe adding the device";
-
-    QString deviceName = DeviceData::currentDeviceName();
-
-    Q_ASSERT(vpn->userData());
-    if (vpn->userData()->hasDevice(deviceName)) {
-        vpn->deviceAdded(deviceName, QString(), QString());
-        emit completed();
-        return;
-    }
+    qDebug() << "Adding the device" << m_deviceName;
 
     WireguardKeys *wg = WireguardKeys::generateKeys(this);
 
     connect(wg,
             &WireguardKeys::keysGenerated,
-            [this, vpn, deviceName](const QString &privateKey, const QString &publicKey) {
+            [this, vpn](const QString &privateKey, const QString &publicKey) {
                 qDebug() << "Private key: " << privateKey;
                 qDebug() << "Public key: " << publicKey;
 
                 NetworkRequest *request = NetworkRequest::createForDeviceCreation(vpn,
-                                                                                  deviceName,
+                                                                                  m_deviceName,
                                                                                   publicKey);
 
                 connect(request,
@@ -42,9 +34,9 @@ void TaskAddDevice::run(MozillaVPN *vpn)
 
                 connect(request,
                         &NetworkRequest::requestCompleted,
-                        [this, vpn, deviceName, publicKey, privateKey](QByteArray) {
+                        [this, vpn, publicKey, privateKey](QByteArray) {
                             qDebug() << "Device added";
-                            vpn->deviceAdded(deviceName, publicKey, privateKey);
+                            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
                             emit completed();
                         });
             });

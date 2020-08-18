@@ -8,6 +8,7 @@
 
 class Task;
 class UserData;
+class ServerData;
 
 class MozillaVPN final : public QObject
 {
@@ -37,6 +38,10 @@ public:
     // The device has been added.
     void deviceAdded(const QString &deviceName, const QString &publicKey, const QString &privateKey);
 
+    void deviceRemoved(const QString &deviceName);
+
+    void serversFetched(ServerData *servers);
+
     QString token() const { return m_token; }
 
     QPointer<UserData> userData() const { return m_userData; }
@@ -50,8 +55,10 @@ signals:
 
 private:
     QSettings m_settings;
-    QPointer<UserData> m_userData;
+
     QString m_token;
+    QPointer<UserData> m_userData;
+    QPointer<ServerData> m_servers;
 
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;

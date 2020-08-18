@@ -90,6 +90,48 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
     return r;
 }
 
+// static
+NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QString &pubKey)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    r->m_request.setUrl("/api/v1/vpn/device/" + pubKey);
+    r->m_request.setUrl(url);
+
+    Q_ASSERT(r->m_manager);
+    qDebug() << "Network starting";
+
+    r->m_manager->sendCustomRequest(r->m_request, "DELETE");
+
+    return r;
+}
+
+NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/servers");
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+
+    return r;
+}
+
 void NetworkRequest::replyFinished(QNetworkReply *reply)
 {
     Q_ASSERT(reply);

@@ -1,6 +1,9 @@
 #include "mozillavpn.h"
+#include "serverdata.h"
 #include "taskadddevice.h"
 #include "taskauthenticate.h"
+#include "taskfetchservers.h"
+#include "taskremovedevice.h"
 #include "userdata.h"
 
 #include <QDebug>
@@ -19,7 +22,7 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
 
 MozillaVPN::~MozillaVPN() = default;
 
-void MozillaVPN::initialize(int &argc, char *argv[])
+void MozillaVPN::initialize(int &, char *[])
 {
     qDebug() << "MozillaVPN Initialization";
 
@@ -31,31 +34,47 @@ void MozillaVPN::initialize(int &argc, char *argv[])
 #ifdef QT_DEBUG
     m_apiUrl = API_URL_DEBUG;
 #endif
-    for (int i = 1; i < argc; ++i) {
-        if (!qstrcmp(argv[i], "--debug")) {
-            m_apiUrl = API_URL_DEBUG;
-        }
-    }
 
 #ifdef QT_DEBUG
     //m_settings.clear();
 #endif
 
-    if (m_settings.contains(SETTINGS_TOKEN)) {
-        qDebug() << "We have a valid token";
-
-        m_token = m_settings.value(SETTINGS_TOKEN).toString();
-        m_userData = UserData::fromSettings(m_settings);
-        Q_ASSERT(m_userData);
-
-        // Something went wrong during the previous authentications.
-        if (!m_userData->hasPrivateKeyDevice(DeviceData::currentDeviceName())) {
-            m_settings.clear();
-        }
-
-        // TODO: what's the right state here?
-        m_state = STATE_OFF;
+    if (!m_settings.contains(SETTINGS_TOKEN)) {
+        return;
     }
+
+    qDebug() << "We have a valid token";
+    UserData *userData = UserData::fromSettings(m_settings);
+    Q_ASSERT(userData);
+
+    // Something went wrong during the previous authentications.
+    if (!userData->hasPrivateKeyDevice(DeviceData::currentDeviceName())) {
+        qDebug() << "No private key found for the current device";
+
+        m_settings.clear();
+        delete userData;
+        return;
+    }
+
+    ServerData *servers = ServerData::fromSettings(m_settings);
+    if (!servers) {
+        qDebug() << "No server list found";
+
+        m_settings.clear();
+        delete userData;
+        return;
+    }
+
+    m_token = m_settings.value(SETTINGS_TOKEN).toString();
+
+    Q_ASSERT(!m_userData);
+    m_userData = userData;
+
+    Q_ASSERT(!m_servers);
+    m_servers = servers;
+
+    // TODO: what's the right state here?
+    m_state = STATE_OFF;
 }
 
 void MozillaVPN::authenticate()
@@ -118,7 +137,21 @@ void MozillaVPN::authenticationCompleted(UserData *userData, const QString &toke
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;
 
-    scheduleTask(new TaskAddDevice());
+    qDebug() << "Maybe adding the device";
+
+    QString deviceName = DeviceData::currentDeviceName();
+
+    if (m_userData->hasPrivateKeyDevice(deviceName)) {
+        deviceAdded(deviceName, QString(), QString());
+        return;
+    }
+
+    // This device doesn't have a private key. Let's remove it.
+    if (m_userData->hasDevice(deviceName)) {
+        scheduleTask(new TaskRemoveDevice(deviceName));
+    }
+
+    scheduleTask(new TaskAddDevice(deviceName));
 }
 
 void MozillaVPN::deviceAdded(const QString &deviceName,
@@ -132,6 +165,29 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
         m_userData->addDevice(DeviceData(deviceName, publicKey, privateKey));
         m_userData->writeSettings(m_settings);
     }
+
+    scheduleTask(new TaskFetchServers());
+}
+
+void MozillaVPN::deviceRemoved(const QString &deviceName)
+{
+    qDebug() << "Device removed";
+
+    Q_ASSERT(m_userData);
+    m_userData->removeDevice(deviceName);
+}
+
+void MozillaVPN::serversFetched(ServerData *servers)
+{
+    qDebug() << "Server fetched!";
+
+    if (m_servers) {
+        delete m_servers;
+    }
+
+    Q_ASSERT(servers);
+    m_servers = servers;
+    m_servers->writeSettings(m_settings);
 
     m_state = STATE_OFF;
     emit stateChanged();

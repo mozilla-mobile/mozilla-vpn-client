@@ -18,7 +18,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += . \
                tasks/authenticate \
-               tasks/adddevice
+               tasks/adddevice \
+               tasks/fetchservers \
+               tasks/removedevice
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -27,10 +29,13 @@ SOURCES += \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
-        task.cpp \
+        serverdata.cpp \
+        serversfetcher.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/authenticate/taskauthenticationverifier.cpp \
+        tasks/fetchservers/taskfetchservers.cpp \
+        tasks/removedevice/taskremovedevice.cpp \
         userdata.cpp \
         wireguardkeys.cpp
 
@@ -38,10 +43,14 @@ HEADERS += \
         devicedata.h \
         mozillavpn.h \
         networkrequest.h \
+        serverdata.h \
+        serversfetcher.h \
         task.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/authenticate/taskauthenticationverifier.h \
+        tasks/fetchservers/taskfetchservers.h \
+        tasks/removedevice/taskremovedevice.h \
         userdata.h \
         wireguardkeys.h
 
