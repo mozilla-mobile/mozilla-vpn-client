@@ -1,10 +1,26 @@
 #include "wireguardkeys.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFile>
 #include <QStringList>
 
-// TODO:
-constexpr const char *WG_BIN = "/Users/baku/Sources/m/wireguard-tools/src/wg";
+// static
+QString WireguardKeys::binary()
+{
+#ifdef __APPLE__
+    QDir pwd = QDir::currentPath();
+    pwd.cdUp();
+    pwd.cd("Resources");
+
+    QFile wg(pwd.filePath(("mozillavpn_wg")));
+    Q_ASSERT(wg.exists());
+
+    return QFileInfo(wg).absoluteFilePath();
+#else
+    return "wg";
+#endif
+}
 
 // static
 WireguardKeys *WireguardKeys::generateKeys(QObject *parent)
@@ -37,7 +53,7 @@ void WireguardKeys::generatePrivateKey()
 
     QStringList arguments;
     arguments << "genkey";
-    m_process->start(WG_BIN, arguments, QIODevice::ReadOnly);
+    m_process->start(binary(), arguments, QIODevice::ReadOnly);
 }
 
 void WireguardKeys::privateKeyGenerated(int exitCode, QProcess::ExitStatus)
@@ -75,7 +91,7 @@ void WireguardKeys::generatePublicKey()
 
     QStringList arguments;
     arguments << "genkey";
-    m_process->start(WG_BIN, arguments, QIODevice::ReadOnly);
+    m_process->start(binary(), arguments, QIODevice::ReadOnly);
 }
 
 void WireguardKeys::publicKeyGenStarted()

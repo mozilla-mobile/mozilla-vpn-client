@@ -5,6 +5,8 @@
 #include <QPointer>
 #include <QProcess>
 
+class QFile;
+
 class WireguardKeys : public QObject
 {
     Q_OBJECT
@@ -13,6 +15,8 @@ public:
     static WireguardKeys *generateKeys(QObject *parent);
 
 private:
+    static QString binary();
+
     explicit WireguardKeys(QObject *parent) : QObject(parent) {}
 
     void generatePrivateKey();

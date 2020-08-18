@@ -73,5 +73,10 @@ ICON = resources/icon.icns
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
+# Let's store the mozillavpn_wg into the Contents/Resources
+mozillavpn_wg.files = $$OUT_PWD/../vendors/wireguard-tools/src/mozillavpn_wg
+mozillavpn_wg.path = Contents/Resources
+QMAKE_BUNDLE_DATA += mozillavpn_wg
+
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
