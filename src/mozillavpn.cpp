@@ -13,7 +13,7 @@
 
 constexpr const char *STATE_INITIALIZE = "INITIALIZE";
 constexpr const char *STATE_CONNECTING = "CONNECTING";
-constexpr const char *STATE_OFF = "OFF";
+constexpr const char *STATE_MAIN = "MAIN";
 
 constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
@@ -41,7 +41,7 @@ void MozillaVPN::initialize(int &, char *[])
 #endif
 
 #ifdef QT_DEBUG
-    m_settings.clear();
+    //m_settings.clear();
 #endif
 
     if (!m_settings.contains(SETTINGS_TOKEN)) {
@@ -80,8 +80,7 @@ void MozillaVPN::initialize(int &, char *[])
 
     scheduleServersFetch();
 
-    // TODO: what's the right state here?
-    m_state = STATE_OFF;
+    m_state = STATE_MAIN;
 }
 
 void MozillaVPN::authenticate()
@@ -167,7 +166,7 @@ void MozillaVPN::authenticationCompleted(UserData *userData, const QString &toke
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         if (m_state == STATE_CONNECTING) {
-            m_state = STATE_OFF;
+            m_state = STATE_MAIN;
             emit stateChanged();
         }
     }));
@@ -216,6 +215,8 @@ void MozillaVPN::activate()
 
 void MozillaVPN::scheduleServersFetch()
 {
+    qDebug() << "Scheduling the server fetch";
+
     QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
                        [this]() { scheduleTask(new TaskFetchServers()); });
 }

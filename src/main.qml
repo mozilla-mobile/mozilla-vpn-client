@@ -64,10 +64,10 @@ Window {
             },
 
             State {
-                name: "OFF"
+                name: "MAIN"
                 PropertyChanges {
                     target: loader
-                    source: "StateOff.qml"
+                    source: "StateMain.qml"
                 }
             }
         ]

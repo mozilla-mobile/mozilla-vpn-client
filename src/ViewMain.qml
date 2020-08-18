@@ -3,7 +3,6 @@ import QtQuick.Controls 2.15
 import Mozilla.VPN 1.0
 
 Item {
-    id: element1
     Text {
         id: getHelp
         color: "#0a68e3"

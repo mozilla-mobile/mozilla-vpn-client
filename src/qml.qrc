@@ -7,6 +7,7 @@
         <file>mozillavpn.h</file>
         <file>mozillavpn.cpp</file>
         <file>resources/Metropolis-Regular.otf</file>
-        <file>StateOff.qml</file>
+        <file>StateMain.qml</file>
+        <file>ViewMain.qml</file>
     </qresource>
 </RCC>
