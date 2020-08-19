@@ -15,6 +15,8 @@ class MozillaVPN final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString state READ getState NOTIFY stateChanged)
+    Q_PROPERTY(QAbstractListModel *serverCountryModel READ serverCountryModel NOTIFY
+                   serverCountryModelChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -47,6 +49,8 @@ public:
 
     QPointer<UserData> userData() const { return m_userData; }
 
+    QAbstractListModel *serverCountryModel() { return &m_serverCountryModel; }
+
 private:
     void scheduleTask(Task* task);
     void maybeRunTask();
@@ -55,6 +59,7 @@ private:
 
 signals:
     void stateChanged();
+    void serverCountryModelChanged();
 
 private:
     QSettings m_settings;

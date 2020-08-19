@@ -196,6 +196,8 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
     m_serverCountryModel.fromJson(serverData);
     m_serverCountryModel.writeSettings(m_settings);
 
+    emit serverCountryModelChanged();
+
     scheduleServersFetch();
 }
 

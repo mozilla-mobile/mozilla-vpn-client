@@ -68,3 +68,29 @@ void ServerCountryModel::writeSettings(QSettings &settings)
 {
     settings.setValue("servers", m_rawJson);
 }
+
+QHash<int, QByteArray> ServerCountryModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[CodeRole] = "code";
+    return roles;
+}
+
+QVariant ServerCountryModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid() || index.row() >= m_countries.length()) {
+        return QVariant();
+    }
+
+    switch (role) {
+    case NameRole:
+        return QVariant(m_countries.at(index.row())->name());
+
+    case CodeRole:
+        return QVariant(m_countries.at(index.row())->code());
+
+    default:
+        return QVariant();
+    }
+}
