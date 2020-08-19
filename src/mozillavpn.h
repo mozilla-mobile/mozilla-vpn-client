@@ -1,6 +1,7 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "devicemodel.h"
 #include "servercountrymodel.h"
 
 #include <QList>
@@ -17,6 +18,7 @@ class MozillaVPN final : public QObject
     Q_PROPERTY(QString state READ getState NOTIFY stateChanged)
     Q_PROPERTY(QAbstractListModel *serverCountryModel READ serverCountryModel NOTIFY
                    serverCountryModelChanged)
+    Q_PROPERTY(QAbstractListModel *deviceModel READ deviceModel NOTIFY deviceModelChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -51,6 +53,8 @@ public:
 
     QAbstractListModel *serverCountryModel() { return &m_serverCountryModel; }
 
+    QAbstractListModel *deviceModel() { return &m_deviceModel; }
+
 private:
     void scheduleTask(Task* task);
     void maybeRunTask();
@@ -59,6 +63,7 @@ private:
 
 signals:
     void stateChanged();
+    void deviceModelChanged();
     void serverCountryModelChanged();
 
 private:
@@ -67,6 +72,7 @@ private:
     QString m_token;
     QPointer<UserData> m_userData;
 
+    DeviceModel m_deviceModel;
     ServerCountryModel m_serverCountryModel;
 
     QList<QPointer<Task>> m_tasks;

@@ -74,6 +74,8 @@ void MozillaVPN::initialize(int &, char *[])
     Q_ASSERT(!m_userData);
     m_userData = userData;
 
+    m_deviceModel.setUserData(m_userData);
+
     scheduleServersFetch();
 
     m_state = STATE_MAIN;
@@ -135,6 +137,9 @@ void MozillaVPN::authenticationCompleted(UserData *userData, const QString &toke
     Q_ASSERT(!m_userData);
     m_userData = userData;
     m_userData->writeSettings(m_settings);
+
+    m_deviceModel.setUserData(m_userData);
+    emit deviceModelChanged();
 
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;

@@ -27,6 +27,7 @@ DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
         devicedata.cpp \
+        devicemodel.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
 
 HEADERS += \
         devicedata.h \
+        devicemodel.h \
         mozillavpn.h \
         networkrequest.h \
         server.h \

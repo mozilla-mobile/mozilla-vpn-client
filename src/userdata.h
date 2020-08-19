@@ -29,6 +29,8 @@ public:
 
     void removeDevice(const QString &deviceName);
 
+    const QList<DeviceData> &devices() const { return m_devices; }
+
 private:
     UserData() = default;
 

@@ -21,6 +21,8 @@ public:
 
     void writeSettings(QSettings &settings);
 
+    const QString &deviceName() const { return m_deviceName; }
+
     bool isDevice(const QString &deviceName) const { return m_deviceName == deviceName; }
 
     bool hasPrivateKey() const { return !m_privateKey.isEmpty(); }
