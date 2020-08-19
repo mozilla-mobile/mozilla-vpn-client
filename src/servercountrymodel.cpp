@@ -31,11 +31,6 @@ void ServerCountryModel::fromJson(const QByteArray &s)
 
 void ServerCountryModel::fromJsonInternal()
 {
-    for (QList<QPointer<ServerCountry>>::Iterator i = m_countries.begin(); i != m_countries.end();
-         ++i) {
-        delete *i;
-    }
-
     m_countries.clear();
 
     QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
@@ -51,16 +46,7 @@ void ServerCountryModel::fromJsonInternal()
     for (QJsonArray::Iterator i = countriesArray.begin(); i != countriesArray.end(); ++i) {
         Q_ASSERT(i->isObject());
         QJsonObject countryObj = i->toObject();
-
-        Q_ASSERT(countryObj.contains("name"));
-        QJsonValue countryName = countryObj.take("name");
-        Q_ASSERT(countryName.isString());
-
-        Q_ASSERT(countryObj.contains("code"));
-        QJsonValue countryCode = countryObj.take("code");
-        Q_ASSERT(countryCode.isString());
-
-        m_countries.append(new ServerCountry(countryName.toString(), countryCode.toString()));
+        m_countries.append(ServerCountry::fromJson(countryObj));
     }
 }
 
@@ -74,6 +60,7 @@ QHash<int, QByteArray> ServerCountryModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[CodeRole] = "code";
+    roles[CitiesRole] = "cities";
     return roles;
 }
 
@@ -85,10 +72,13 @@ QVariant ServerCountryModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case NameRole:
-        return QVariant(m_countries.at(index.row())->name());
+        return QVariant(m_countries.at(index.row()).name());
 
     case CodeRole:
-        return QVariant(m_countries.at(index.row())->code());
+        return QVariant(m_countries.at(index.row()).code());
+
+    case CitiesRole:
+        return QVariant(m_countries.at(index.row()).cities());
 
     default:
         return QVariant();

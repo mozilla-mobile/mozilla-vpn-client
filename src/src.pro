@@ -30,6 +30,9 @@ SOURCES += \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
+        server.cpp \
+        servercity.cpp \
+        servercountry.cpp \
         servercountrymodel.cpp \
         serversfetcher.cpp \
         tasks/adddevice/taskadddevice.cpp \
@@ -44,6 +47,8 @@ HEADERS += \
         devicedata.h \
         mozillavpn.h \
         networkrequest.h \
+        server.h \
+        servercity.h \
         servercountry.h \
         servercountrymodel.h \
         serversfetcher.h \

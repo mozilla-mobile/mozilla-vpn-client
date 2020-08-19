@@ -27,15 +27,23 @@ Item {
         model: VPN.serverCountryModel
 
         delegate: ItemDelegate {
+            onClicked: cityList.visible = true
             Image {
-                id: countryIcon
                 source: "../resources/flags/" + code.toUpperCase() + ".png"
                 width: 30
                 height: 30
             }
 
             Text {
+                id: countryName
                 text: name + "("+ code + ")"
+            }
+
+            Text {
+                anchors.top: countryName.bottom
+                id: cityList
+                visible: false
+                text: cities.join(", ")
             }
         }
     }

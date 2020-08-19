@@ -1,28 +1,32 @@
 #ifndef SERVERCOUNTRY_H
 #define SERVERCOUNTRY_H
 
-#include <QObject>
+#include "servercity.h"
 
-class ServerCountry : public QObject
+#include <QList>
+#include <QString>
+
+class QJsonObject;
+class QStringList;
+
+class ServerCountry
 {
-    Q_OBJECT
-
-    Q_PROPERTY(QString name READ name)
-    Q_PROPERTY(QString code READ code)
-
 public:
-    ServerCountry(const QString &name, const QString &code) : m_name(name), m_code(code) {}
+    static ServerCountry fromJson(QJsonObject &obj);
 
     const QString &name() const { return m_name; }
 
     const QString &code() const { return m_code; }
 
+    const QStringList cities() const;
+
 private:
+    ServerCountry(const QString &name, const QString &code) : m_name(name), m_code(code) {}
+
     QString m_name;
     QString m_code;
 
-signals:
-
+    QList<ServerCity> m_cities;
 };
 
 #endif // SERVERCOUNTRY_H

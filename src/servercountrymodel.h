@@ -1,12 +1,13 @@
 #ifndef SERVERCOUNTRYMODEL_H
 #define SERVERCOUNTRYMODEL_H
 
+#include "servercountry.h"
+
 #include <QAbstractListModel>
 #include <QByteArray>
 #include <QObject>
 #include <QPointer>
 
-class ServerCountry;
 class QSettings;
 
 class ServerCountryModel final : public QAbstractListModel
@@ -15,6 +16,7 @@ public:
     enum ServerCountryRoles {
         NameRole = Qt::UserRole + 1,
         CodeRole,
+        CitiesRole,
     };
 
     ServerCountryModel() = default;
@@ -39,7 +41,7 @@ private:
 private:
     QByteArray m_rawJson;
 
-    QList<QPointer<ServerCountry>> m_countries;
+    QList<ServerCountry> m_countries;
 };
 
 #endif // SERVERCOUNTRYMODEL_H
