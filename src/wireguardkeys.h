@@ -7,7 +7,7 @@
 
 class QFile;
 
-class WireguardKeys : public QObject
+class WireguardKeys final : public QObject
 {
     Q_OBJECT
 

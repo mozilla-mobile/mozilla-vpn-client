@@ -8,7 +8,7 @@
 class MozillaVPN;
 class QNetworkAccessManager;
 
-class NetworkRequest : public QObject
+class NetworkRequest final : public QObject
 {
     Q_OBJECT
 

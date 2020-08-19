@@ -9,7 +9,7 @@
 class QJsonObject;
 class QStringList;
 
-class ServerCountry
+class ServerCountry final
 {
 public:
     static ServerCountry fromJson(QJsonObject &obj);

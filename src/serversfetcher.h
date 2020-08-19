@@ -5,7 +5,7 @@
 
 class MozillaVPN;
 
-class ServersFetcher : public QObject
+class ServersFetcher final : public QObject
 {
     Q_OBJECT
 

@@ -6,7 +6,7 @@
 class QSettings;
 class QJsonValue;
 
-class DeviceData
+class DeviceData final
 {
 public:
     DeviceData(const QString &deviceName, const QString &publicKey, const QString &privateKey)

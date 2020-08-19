@@ -8,7 +8,7 @@
 
 class QJsonObject;
 
-class ServerCity
+class ServerCity final
 {
 public:
     static ServerCity fromJson(QJsonObject &obj);
