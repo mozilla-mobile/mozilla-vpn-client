@@ -273,5 +273,8 @@
         <file>resources/devices.svg</file>
         <file>resources/back.svg</file>
         <file>resources/settings.svg</file>
+        <file>views/ViewSettings.qml</file>
+        <file>views/ViewInitialize.qml</file>
+        <file>views/ViewGetHelp.qml</file>
     </qresource>
 </RCC>
