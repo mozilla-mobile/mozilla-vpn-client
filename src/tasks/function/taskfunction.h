@@ -12,7 +12,11 @@ public:
         : Task("TaskFunction"), m_callback(std::move(callback))
     {}
 
-    void run(MozillaVPN *vpn) override { m_callback(vpn); }
+    void run(MozillaVPN *vpn) override
+    {
+        m_callback(vpn);
+        emit completed();
+    }
 
 private:
     std::function<void(MozillaVPN *)> m_callback;
