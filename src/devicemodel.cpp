@@ -12,6 +12,8 @@ void DeviceModel::fromJson(QJsonObject &obj)
         privateKey = device(currentDeviceName)->privateKey();
     }
 
+    m_devices.clear();
+
     Q_ASSERT(obj.contains("devices"));
     QJsonValue devices = obj.take("devices");
     Q_ASSERT(devices.isArray());
