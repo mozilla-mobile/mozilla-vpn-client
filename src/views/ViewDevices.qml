@@ -3,61 +3,19 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import Mozilla.VPN 1.0
 
+import "../components"
+
 Item {
-    ColumnLayout {
-        id: menuBar
-        width: parent.width
-        Layout.fillWidth: true
-
-        RowLayout {
-            width: parent.width
-            Layout.fillWidth: true
-
-            Image {
-                id: backImage
-                height: 12
-                width: 12
-                Layout.leftMargin: 10
-                Layout.topMargin: 10
-                Layout.bottomMargin: 5
-                Layout.alignment: Qt.AlignTop
-                source: "../resources/back.svg"
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: stackview.pop()
-                }
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.topMargin: 4
-                text: qsTr("My devices")
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                text: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.maxDevices)
-                Layout.rightMargin: 10
-                Layout.topMargin: 4
-            }
-        }
-
-        Rectangle {
-            color: "#000000"
-            width: parent.width
-            height: 1
-        }
+    VPNMenu {
+        id: menu
+        title: qsTr("My devices")
+        rightTitle: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.maxDevices)
     }
 
     ListView {
-        height: parent.height - menuBar.height
+        height: parent.height - menu.height
         width: parent.width
-        anchors.top: menuBar.bottom
+        anchors.top: menu.bottom
 
         model: VPN.deviceModel
 

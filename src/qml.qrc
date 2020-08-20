@@ -276,5 +276,6 @@
         <file>views/ViewSettings.qml</file>
         <file>views/ViewInitialize.qml</file>
         <file>views/ViewGetHelp.qml</file>
+        <file>components/VPNMenu.qml</file>
     </qresource>
 </RCC>
