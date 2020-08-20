@@ -7,8 +7,7 @@ import "../components"
 Item {
     VPNMenu {
         id: menu
-        title: qsTr("My devices")
-        rightTitle: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.maxDevices)
+        title: qsTr("Select location")
     }
 
     ListView {
