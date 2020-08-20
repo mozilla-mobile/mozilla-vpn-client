@@ -34,6 +34,8 @@ public:
 
     Q_INVOKABLE void authenticate();
 
+    Q_INVOKABLE void cancelAuthentication();
+
     Q_INVOKABLE void openLink(const QString &linkName);
 
     Q_INVOKABLE void activate();

@@ -4,15 +4,14 @@ import Mozilla.VPN 1.0
 
 Item {
     Text {
-        id: getHelp
         color: "#0a68e3"
-        text: qsTr("Connecting")
+        text: qsTr("Cancel and try again")
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: 16
         anchors.rightMargin: 16
         MouseArea {
-            onClicked: console.log("B")
+            onClicked: VPN.cancelAuthentication()
             cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             hoverEnabled: true

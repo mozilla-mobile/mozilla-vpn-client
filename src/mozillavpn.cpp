@@ -255,3 +255,17 @@ void MozillaVPN::accountChecked(QJsonObject &userObj)
     QTimer::singleShot(1000 * SCHEDULE_ACCOUNT_CHECK_TIMER_SEC,
                        [this]() { scheduleTask(new TaskAccount()); });
 }
+
+void MozillaVPN::cancelAuthentication()
+{
+    qDebug() << "Canceling authentication";
+
+    for (QList<QPointer<Task>>::Iterator i = m_tasks.begin(); i != m_tasks.end(); ++i) {
+        delete *i;
+    }
+
+    m_task_running = false;
+    m_tasks.clear();
+
+    setState(STATE_INITIALIZE);
+}
