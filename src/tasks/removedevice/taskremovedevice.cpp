@@ -1,7 +1,7 @@
 #include "taskremovedevice.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "userdata.h"
+#include "user.h"
 
 #include <QDebug>
 
@@ -13,7 +13,7 @@ void TaskRemoveDevice::run(MozillaVPN *vpn)
 {
     qDebug() << "Removing the device" << m_deviceName;
 
-    const DeviceData *device = vpn->userData()->device(m_deviceName);
+    const Device *device = vpn->deviceModel()->device(m_deviceName);
     Q_ASSERT(device);
 
     QString publicKey = device->publicKey();

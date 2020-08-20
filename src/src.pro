@@ -21,7 +21,7 @@ DEPENDPATH  += $${INCLUDEPATH}
 SOURCES += \
         curve25519/curve25519.cpp \
         curve25519/curve25519_wg.c \
-        devicedata.cpp \
+        device.cpp \
         devicemodel.cpp \
         main.cpp \
         mozillavpn.cpp \
@@ -31,17 +31,18 @@ SOURCES += \
         servercountry.cpp \
         servercountrymodel.cpp \
         serversfetcher.cpp \
+        tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/authenticate/taskauthenticationverifier.cpp \
         tasks/fetchservers/taskfetchservers.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        userdata.cpp
+        user.cpp
 
 HEADERS += \
         curve25519/curve25519.h \
         curve25519/curve25519_wg.h \
-        devicedata.h \
+        device.h \
         devicemodel.h \
         mozillavpn.h \
         networkrequest.h \
@@ -51,13 +52,14 @@ HEADERS += \
         servercountrymodel.h \
         serversfetcher.h \
         task.h \
+        tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/authenticate/taskauthenticationverifier.h \
         tasks/fetchservers/taskfetchservers.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
-        userdata.h
+        user.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

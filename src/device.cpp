@@ -1,17 +1,17 @@
-#include "devicedata.h"
+#include "device.h"
 
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QSettings>
 
-QString DeviceData::currentDeviceName()
+QString Device::currentDeviceName()
 {
     QString deviceName = QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
                          + QSysInfo::productVersion();
     return deviceName;
 }
 
-DeviceData DeviceData::fromJson(const QJsonValue &json)
+Device Device::fromJson(const QJsonValue &json)
 {
     Q_ASSERT(json.isObject());
     QJsonObject obj = json.toObject();
@@ -26,12 +26,12 @@ DeviceData DeviceData::fromJson(const QJsonValue &json)
 
     // No private key from JSON.
 
-    return DeviceData(name.toString(), pubKey.toString(), QString());
+    return Device(name.toString(), pubKey.toString(), QString());
 }
 
-QList<DeviceData> DeviceData::fromSettings(QSettings &settings)
+QList<Device> Device::fromSettings(QSettings &settings)
 {
-    QList<DeviceData> list;
+    QList<Device> list;
 
     QStringList keys = settings.allKeys();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
@@ -41,14 +41,14 @@ QList<DeviceData> DeviceData::fromSettings(QSettings &settings)
 
             QStringList keys = settings.value(*i).toStringList();
             Q_ASSERT(keys.length() >= 1);
-            list.append(DeviceData(deviceName, keys[0], keys.count() > 1 ? keys[1] : QString()));
+            list.append(Device(deviceName, keys[0], keys.count() > 1 ? keys[1] : QString()));
         }
     }
 
     return list;
 }
 
-void DeviceData::writeSettings(QSettings &settings)
+void Device::writeSettings(QSettings &settings)
 {
     QStringList keys;
     keys.append(m_publicKey);

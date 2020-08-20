@@ -134,6 +134,25 @@ NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
     return r;
 }
 
+NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/account");
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+
+    return r;
+}
+
 void NetworkRequest::replyFinished(QNetworkReply *reply)
 {
     Q_ASSERT(reply);

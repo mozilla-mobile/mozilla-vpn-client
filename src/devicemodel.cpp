@@ -1,5 +1,44 @@
 #include "devicemodel.h"
-#include "userdata.h"
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
+
+void DeviceModel::fromJson(QJsonObject &obj)
+{
+    QString privateKey;
+    QString currentDeviceName = Device::currentDeviceName();
+    if (hasPrivateKeyDevice(currentDeviceName)) {
+        privateKey = device(currentDeviceName)->privateKey();
+    }
+
+    Q_ASSERT(obj.contains("devices"));
+    QJsonValue devices = obj.take("devices");
+    Q_ASSERT(devices.isArray());
+    QJsonArray devicesArray = devices.toArray();
+    for (QJsonArray::iterator i = devicesArray.begin(); i != devicesArray.end(); ++i) {
+        Device device = Device::fromJson(*i);
+
+        if (device.name() == currentDeviceName) {
+            device.setPrivateKey(privateKey);
+        }
+
+        m_devices.append(device);
+    }
+}
+
+bool DeviceModel::fromSettings(QSettings &settings)
+{
+    m_devices = Device::fromSettings(settings);
+    return !m_devices.isEmpty();
+}
+
+void DeviceModel::writeSettings(QSettings &settings)
+{
+    for (QList<Device>::Iterator i = m_devices.begin(); i != m_devices.end(); ++i) {
+        i->writeSettings(settings);
+    }
+}
 
 QHash<int, QByteArray> DeviceModel::roleNames() const
 {
@@ -11,11 +50,7 @@ QHash<int, QByteArray> DeviceModel::roleNames() const
 
 int DeviceModel::rowCount(const QModelIndex &) const
 {
-    if (!m_userData) {
-        return 0;
-    }
-
-    return m_userData->devices().count();
+    return m_devices.count();
 }
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
@@ -26,12 +61,62 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case NameRole:
-        return QVariant(m_userData->devices().at(index.row()).deviceName());
+        return QVariant(m_devices.at(index.row()).name());
 
     case CurrentOneRole:
-        return QVariant(m_userData->devices().at(index.row()).hasPrivateKey());
+        return QVariant(m_devices.at(index.row()).hasPrivateKey());
 
     default:
         return QVariant();
+    }
+}
+
+bool DeviceModel::hasDevice(const QString &deviceName) const
+{
+    for (QList<Device>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
+        if (i->isDevice(deviceName)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool DeviceModel::hasPrivateKeyDevice(const QString &deviceName) const
+{
+    for (QList<Device>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
+        if (i->isDevice(deviceName) && i->hasPrivateKey()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const Device *DeviceModel::device(const QString &deviceName) const
+{
+    for (QList<Device>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
+        if (i->isDevice(deviceName)) {
+            return &(*i);
+        }
+    }
+
+    return nullptr;
+}
+
+void DeviceModel::addDevice(const Device &device)
+{
+    m_devices.append(device);
+}
+
+void DeviceModel::removeDevice(const QString &deviceName)
+{
+    QMutableListIterator<Device> i(m_devices);
+    while (i.hasNext()) {
+        const Device &device = i.next();
+        if (device.isDevice(deviceName)) {
+            i.remove();
+            break;
+        }
     }
 }

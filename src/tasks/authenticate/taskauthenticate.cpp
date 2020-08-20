@@ -2,7 +2,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "taskauthenticationverifier.h"
-#include "userdata.h"
+#include "user.h"
 
 #include <QDebug>
 #include <QDesktopServices>
@@ -83,9 +83,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray
     Q_ASSERT(tokenValue.isString());
 
     QJsonObject userDataObj = userObj.toObject();
-
-    qDebug() << userObj;
-    vpn->authenticationCompleted(UserData::fromJson(userDataObj), tokenValue.toString());
+    vpn->authenticationCompleted(userDataObj, tokenValue.toString());
 
     emit completed();
 }

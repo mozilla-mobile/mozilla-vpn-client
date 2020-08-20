@@ -1,11 +1,13 @@
 #include "mozillavpn.h"
+#include "device.h"
 #include "servercountrymodel.h"
+#include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/fetchservers/taskfetchservers.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "userdata.h"
+#include "user.h"
 
 #include <QDebug>
 #include <QPointer>
@@ -21,7 +23,10 @@ constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.m
 constexpr const char *SETTINGS_TOKEN = "token";
 
 // in seconds, how often we should fetch the server list.
-constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 86400;
+constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 3600;
+
+// in seconds, how often we should check the account
+constexpr const uint32_t SCHEDULE_ACCOUNT_CHECK_TIMER_SEC = 3600;
 
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn") {}
 
@@ -49,36 +54,41 @@ void MozillaVPN::initialize(int &, char *[])
     }
 
     qDebug() << "We have a valid token";
-    UserData *userData = UserData::fromSettings(m_settings);
-    Q_ASSERT(userData);
-
-    // Something went wrong during the previous authentications.
-    if (!userData->hasPrivateKeyDevice(DeviceData::currentDeviceName())) {
-        qDebug() << "No private key found for the current device";
-
-        m_settings.clear();
-        delete userData;
+    if (!m_user.fromSettings(m_settings)) {
         return;
     }
 
     if (!m_serverCountryModel.fromSettings(m_settings)) {
         qDebug() << "No server list found";
-
         m_settings.clear();
-        delete userData;
+        return;
+    }
+
+    if (!m_deviceModel.fromSettings(m_settings)) {
+        qDebug() << "No devices found";
+        m_settings.clear();
+        return;
+    }
+
+    // Something went wrong during the previous authentications.
+    if (!m_deviceModel.hasPrivateKeyDevice(Device::currentDeviceName())) {
+        qDebug() << "No private key found for the current device";
+        m_settings.clear();
         return;
     }
 
     m_token = m_settings.value(SETTINGS_TOKEN).toString();
 
-    Q_ASSERT(!m_userData);
-    m_userData = userData;
+    scheduleTask(new TaskAccount());
+    scheduleTask(new TaskFetchServers());
 
-    m_deviceModel.setUserData(m_userData);
+    setState(STATE_MAIN);
+}
 
-    scheduleServersFetch();
-
-    m_state = STATE_MAIN;
+void MozillaVPN::setState(const QString &state)
+{
+    m_state = state;
+    emit stateChanged();
 }
 
 void MozillaVPN::authenticate()
@@ -130,15 +140,16 @@ void MozillaVPN::maybeRunTask()
     task->run(this);
 }
 
-void MozillaVPN::authenticationCompleted(UserData *userData, const QString &token)
+void MozillaVPN::authenticationCompleted(QJsonObject &userObj, const QString &token)
 {
     qDebug() << "Authentication completed";
 
-    Q_ASSERT(!m_userData);
-    m_userData = userData;
-    m_userData->writeSettings(m_settings);
+    m_user.fromJson(userObj);
+    m_user.writeSettings(m_settings);
 
-    m_deviceModel.setUserData(m_userData);
+    m_deviceModel.fromJson(userObj);
+    m_deviceModel.writeSettings(m_settings);
+
     emit deviceModelChanged();
 
     m_settings.setValue(SETTINGS_TOKEN, token);
@@ -146,15 +157,15 @@ void MozillaVPN::authenticationCompleted(UserData *userData, const QString &toke
 
     qDebug() << "Maybe adding the device";
 
-    QString deviceName = DeviceData::currentDeviceName();
+    QString deviceName = Device::currentDeviceName();
 
-    if (m_userData->hasPrivateKeyDevice(deviceName)) {
+    if (m_deviceModel.hasPrivateKeyDevice(deviceName)) {
         deviceAdded(deviceName, QString(), QString());
         return;
     }
 
     // This device doesn't have a private key. Let's remove it.
-    if (m_userData->hasDevice(deviceName)) {
+    if (m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
@@ -179,10 +190,9 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
 {
     qDebug() << "Device added";
 
-    Q_ASSERT(m_userData);
-    if (!m_userData->hasDevice(deviceName)) {
-        m_userData->addDevice(DeviceData(deviceName, publicKey, privateKey));
-        m_userData->writeSettings(m_settings);
+    if (!m_deviceModel.hasDevice(deviceName)) {
+        m_deviceModel.addDevice(Device(deviceName, publicKey, privateKey));
+        m_deviceModel.writeSettings(m_settings);
     }
 }
 
@@ -190,8 +200,7 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
 {
     qDebug() << "Device removed";
 
-    Q_ASSERT(m_userData);
-    m_userData->removeDevice(deviceName);
+    m_deviceModel.removeDevice(deviceName);
     emit deviceModelChanged();
 }
 
@@ -204,7 +213,10 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
 
     emit serverCountryModelChanged();
 
-    scheduleServersFetch();
+    qDebug() << "Scheduling the server fetch";
+
+    QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
+                       [this]() { scheduleTask(new TaskFetchServers()); });
 }
 
 void MozillaVPN::activate()
@@ -212,39 +224,34 @@ void MozillaVPN::activate()
     qDebug() << "Activation";
 }
 
-void MozillaVPN::scheduleServersFetch()
-{
-    qDebug() << "Scheduling the server fetch";
-
-    QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
-                       [this]() { scheduleTask(new TaskFetchServers()); });
-}
-
 int MozillaVPN::activeDevices() const
 {
-    if (!m_userData) {
-        return 0;
-    }
-
     // We need to expose "int"to make QML happy.
-    return (int) m_userData->devices().count();
+    return (int) m_deviceModel.count();
 }
 
 int MozillaVPN::maxDevices() const
 {
-    if (!m_userData) {
-        return 0;
-    }
-
     // We need to expose "int"to make QML happy.
-    return (int) m_userData->maxDevices();
+    return (int) m_user.maxDevices();
 }
 
 void MozillaVPN::removeDevice(const QString &deviceName)
 {
     qDebug() << "Remove device" << deviceName;
 
-    if (m_userData->hasDevice(deviceName)) {
+    if (m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
+}
+
+void MozillaVPN::accountChecked(QJsonObject &userObj)
+{
+    qDebug() << "Account checked";
+    m_user.fromJson(userObj);
+    m_deviceModel.fromJson(userObj);
+
+    qDebug() << "Scheduling the account check";
+    QTimer::singleShot(1000 * SCHEDULE_ACCOUNT_CHECK_TIMER_SEC,
+                       [this]() { scheduleTask(new TaskAccount()); });
 }
