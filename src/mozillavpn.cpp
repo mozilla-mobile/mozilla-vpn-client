@@ -1,10 +1,10 @@
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
-#include "taskadddevice.h"
-#include "taskauthenticate.h"
-#include "taskfetchservers.h"
-#include "taskfunction.h"
-#include "taskremovedevice.h"
+#include "tasks/adddevice/taskadddevice.h"
+#include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/fetchservers/taskfetchservers.h"
+#include "tasks/function/taskfunction.h"
+#include "tasks/removedevice/taskremovedevice.h"
 #include "userdata.h"
 
 #include <QDebug>

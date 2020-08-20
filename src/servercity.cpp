@@ -7,13 +7,15 @@
 
 ServerCity::ServerCity(const QString &name, const QString &code, double latitude, double longitude)
     : m_name(name), m_code(code), m_latitude(latitude), m_longitude(longitude)
-{}
+{
+    // TODO: to be removed.
+    Q_UNUSED(m_latitude);
+    Q_UNUSED(m_longitude);
+}
 
 // static
 ServerCity ServerCity::fromJson(QJsonObject &obj)
 {
-    qDebug() << obj.keys();
-
     Q_ASSERT(obj.contains("code"));
     QJsonValue code = obj.take("code");
     Q_ASSERT(code.isString());
@@ -42,9 +44,6 @@ ServerCity ServerCity::fromJson(QJsonObject &obj)
         QJsonObject server = i->toObject();
         sc.m_servers.append(Server::fromJson(server));
     }
-
-    qDebug() << "ServerCity" << sc.m_name << sc.m_code << sc.m_latitude << sc.m_longitude
-             << "Servers:" << sc.m_servers.length();
 
     return sc;
 }

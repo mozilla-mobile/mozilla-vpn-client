@@ -3,7 +3,7 @@
  * Copyright (C) 2018-2020 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
 
-#include "curve25519.h"
+#include "curve25519_wg.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -85,14 +85,17 @@ static noinline void memzero_explicit(void *s, size_t count)
 #include "curve25519-fiat32.h"
 #endif
 
-void curve25519_generate_public(uint8_t pub[static CURVE25519_KEY_SIZE], const uint8_t secret[static CURVE25519_KEY_SIZE])
+void curve25519_generate_public(uint8_t pub[CURVE25519_KEY_SIZE],
+                                const uint8_t secret[CURVE25519_KEY_SIZE])
 {
 	static const uint8_t basepoint[CURVE25519_KEY_SIZE] __aligned(sizeof(uintptr_t)) = { 9 };
 
 	curve25519(pub, secret, basepoint);
 }
 
-void curve25519(uint8_t mypublic[static CURVE25519_KEY_SIZE], const uint8_t secret[static CURVE25519_KEY_SIZE], const uint8_t basepoint[static CURVE25519_KEY_SIZE])
+void curve25519(uint8_t mypublic[CURVE25519_KEY_SIZE],
+                const uint8_t secret[CURVE25519_KEY_SIZE],
+                const uint8_t basepoint[CURVE25519_KEY_SIZE])
 {
 	curve25519_generic(mypublic, secret, basepoint);
 }

@@ -24,7 +24,11 @@ private:
         : m_hostname(hostname), m_includeInCountry(includeInCountry), m_ipv4AddrIn(ipv4AddrIn),
           m_ipv4Gateway(ipv4Gateway), m_ipv6AddrIn(ipv6AddrIn), m_ipv6Gateway(ipv6Gateway),
           m_publicKey(publicKey), m_weight(weight)
-    {}
+    {
+        // TODO: to be removed.
+        Q_UNUSED(m_includeInCountry);
+        Q_UNUSED(m_weight);
+    }
 
     QString m_hostname;
     bool m_includeInCountry;

@@ -66,8 +66,5 @@ Server Server::fromJson(QJsonObject &obj)
         s.m_portRanges.append(QPair<uint32_t, uint32_t>(a.toInt(), b.toInt()));
     }
 
-    qDebug() << "Server: " << s.m_hostname << s.m_includeInCountry << s.m_ipv4AddrIn
-             << s.m_ipv4Gateway << s.m_ipv6AddrIn << s.m_ipv6Gateway << s.m_publicKey << s.m_weight
-             << s.m_portRanges;
     return s;
 }

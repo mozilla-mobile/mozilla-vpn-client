@@ -16,16 +16,11 @@ TARGET    = mozillavpn
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-INCLUDEPATH += . \
-               tasks/authenticate \
-               tasks/adddevice \
-               tasks/fetchservers \
-               tasks/removedevice \
-               tasks/function
-
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
+        curve25519/curve25519.cpp \
+        curve25519/curve25519_wg.c \
         devicedata.cpp \
         devicemodel.cpp \
         main.cpp \
@@ -41,10 +36,11 @@ SOURCES += \
         tasks/authenticate/taskauthenticationverifier.cpp \
         tasks/fetchservers/taskfetchservers.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        userdata.cpp \
-        wireguardkeys.cpp
+        userdata.cpp
 
 HEADERS += \
+        curve25519/curve25519.h \
+        curve25519/curve25519_wg.h \
         devicedata.h \
         devicemodel.h \
         mozillavpn.h \
@@ -61,8 +57,7 @@ HEADERS += \
         tasks/fetchservers/taskfetchservers.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
-        userdata.h \
-        wireguardkeys.h
+        userdata.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -79,11 +74,6 @@ ICON = resources/icon.icns
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
-
-# Let's store the mozillavpn_wg into the Contents/Resources
-mozillavpn_wg.files = $$OUT_PWD/../vendors/wireguard-tools/src/mozillavpn_wg
-mozillavpn_wg.path = Contents/Resources
-QMAKE_BUNDLE_DATA += mozillavpn_wg
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
