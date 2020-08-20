@@ -15,6 +15,7 @@ Item {
         height: parent.height - menu.height
         width: parent.width
         anchors.top: menu.bottom
+        clip: true
 
         model: VPN.serverCountryModel
 

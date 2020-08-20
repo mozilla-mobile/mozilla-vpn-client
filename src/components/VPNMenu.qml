@@ -28,6 +28,10 @@ ColumnLayout {
             }
         }
 
+        Item {
+            Layout.fillWidth: true
+        }
+
         Label {
             id: title
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
