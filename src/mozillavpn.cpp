@@ -230,12 +230,6 @@ int MozillaVPN::activeDevices() const
     return (int) m_deviceModel.count();
 }
 
-int MozillaVPN::maxDevices() const
-{
-    // We need to expose "int"to make QML happy.
-    return (int) m_user.maxDevices();
-}
-
 void MozillaVPN::removeDevice(const QString &deviceName)
 {
     qDebug() << "Remove device" << deviceName;
@@ -273,4 +267,20 @@ void MozillaVPN::cancelAuthentication()
     m_tasks.clear();
 
     setState(STATE_INITIALIZE);
+}
+
+void MozillaVPN::logout()
+{
+    qDebug() << "Logout";
+
+    QString deviceName = Device::currentDeviceName();
+
+    if (m_deviceModel.hasPrivateKeyDevice(deviceName)) {
+        scheduleTask(new TaskRemoveDevice(deviceName));
+    }
+
+    scheduleTask(new TaskFunction([this](MozillaVPN *) {
+        m_settings.clear();
+        setState(STATE_INITIALIZE);
+    }));
 }

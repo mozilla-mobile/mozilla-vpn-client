@@ -277,5 +277,6 @@
         <file>views/ViewInitialize.qml</file>
         <file>views/ViewGetHelp.qml</file>
         <file>components/VPNMenu.qml</file>
+        <file>components/VPNSettingsItem.qml</file>
     </qresource>
 </RCC>

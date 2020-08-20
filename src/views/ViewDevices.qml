@@ -9,7 +9,7 @@ Item {
     VPNMenu {
         id: menu
         title: qsTr("My devices")
-        rightTitle: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.maxDevices)
+        rightTitle: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.user.maxDevices)
     }
 
     ListView {

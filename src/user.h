@@ -8,8 +8,15 @@
 class QJsonObject;
 class QSettings;
 
-class User final
+class User final : public QObject
 {
+    Q_OBJECT
+
+    Q_PROPERTY(QString avatar READ avatar)
+    Q_PROPERTY(QString displayName READ displayName)
+    Q_PROPERTY(QString email READ email)
+    Q_PROPERTY(int maxDevices READ maxDevices)
+
 public:
     void fromJson(QJsonObject &obj);
 
@@ -17,7 +24,14 @@ public:
 
     void writeSettings(QSettings &settings);
 
-    uint32_t maxDevices() const { return m_maxDevices; }
+    const QString &avatar() const { return m_avatar; }
+
+    const QString &displayName() const { return m_displayName; }
+
+    const QString &email() const { return m_email; }
+
+    // "Int"to make QML happy
+    int maxDevices() const { return (int) m_maxDevices; }
 
 private:
     QString m_avatar;

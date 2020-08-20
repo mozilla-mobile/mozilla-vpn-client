@@ -20,7 +20,7 @@ class MozillaVPN final : public QObject
                    serverCountryModelChanged)
     Q_PROPERTY(QAbstractListModel *deviceModel READ deviceModel NOTIFY deviceModelChanged)
     Q_PROPERTY(int activeDevices READ activeDevices NOTIFY deviceModelChanged)
-    Q_PROPERTY(int maxDevices READ maxDevices NOTIFY deviceModelChanged)
+    Q_PROPERTY(QObject *user READ user)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -41,6 +41,8 @@ public:
     Q_INVOKABLE void activate();
 
     Q_INVOKABLE void removeDevice(const QString &deviceName);
+
+    Q_INVOKABLE void logout();
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
@@ -63,7 +65,7 @@ public:
 
     int activeDevices() const;
 
-    int maxDevices() const;
+    User *user() { return &m_user; }
 
 private:
     void setState(const QString &state);
