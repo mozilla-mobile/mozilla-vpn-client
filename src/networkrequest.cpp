@@ -101,14 +101,14 @@ NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QS
     authorizationHeader.append(vpn->token());
     r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-    QUrl url(vpn->getApiUrl());
-    QByteArray path = "/api/v1/vpn/device/";
-    path.append(QUrl::toPercentEncoding(pubKey));
-    url.setPath(path, QUrl::TolerantMode);
-    r->m_request.setUrl(url);
+    QString url(vpn->getApiUrl());
+    url.append("/api/v1/vpn/device/");
+    url.append(QUrl::toPercentEncoding(pubKey));
 
+    QUrl u(url);
     Q_ASSERT(r->m_manager);
-    qDebug() << "Network starting" << url.path();
+    r->m_request.setUrl(QUrl(url));
+    qDebug() << "Network starting" << r->m_request.url();
 
     r->m_manager->sendCustomRequest(r->m_request, "DELETE");
 

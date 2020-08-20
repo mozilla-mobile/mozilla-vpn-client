@@ -65,7 +65,7 @@ Item {
         y: 347
         width: 282
         height: 40
-        text: qsTr("Devices")
+        text: qsTr("Devices") + " "+ VPN.activeDevices + "/"+ VPN.maxDevices
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         font.weight: Font.ExtraLight

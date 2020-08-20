@@ -192,6 +192,7 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
 
     Q_ASSERT(m_userData);
     m_userData->removeDevice(deviceName);
+    emit deviceModelChanged();
 }
 
 void MozillaVPN::serversFetched(const QByteArray &serverData)
@@ -217,4 +218,33 @@ void MozillaVPN::scheduleServersFetch()
 
     QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
                        [this]() { scheduleTask(new TaskFetchServers()); });
+}
+
+int MozillaVPN::activeDevices() const
+{
+    if (!m_userData) {
+        return 0;
+    }
+
+    // We need to expose "int"to make QML happy.
+    return (int) m_userData->devices().count();
+}
+
+int MozillaVPN::maxDevices() const
+{
+    if (!m_userData) {
+        return 0;
+    }
+
+    // We need to expose "int"to make QML happy.
+    return (int) m_userData->maxDevices();
+}
+
+void MozillaVPN::removeDevice(const QString &deviceName)
+{
+    qDebug() << "Remove device" << deviceName;
+
+    if (m_userData->hasDevice(deviceName)) {
+        scheduleTask(new TaskRemoveDevice(deviceName));
+    }
 }

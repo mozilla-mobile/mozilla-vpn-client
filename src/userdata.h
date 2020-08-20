@@ -31,6 +31,8 @@ public:
 
     const QList<DeviceData> &devices() const { return m_devices; }
 
+    uint32_t maxDevices() const { return m_maxDevices; }
+
 private:
     UserData() = default;
 

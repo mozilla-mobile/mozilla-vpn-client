@@ -269,5 +269,8 @@
         <file>resources/flags/ZA.png</file>
         <file>resources/flags/ZM.png</file>
         <file>resources/flags/ZW.png</file>
+        <file>resources/delete.svg</file>
+        <file>resources/devices.svg</file>
+        <file>resources/back.svg</file>
     </qresource>
 </RCC>
