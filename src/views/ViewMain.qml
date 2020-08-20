@@ -3,19 +3,19 @@ import QtQuick.Controls 2.15
 import Mozilla.VPN 1.0
 
 Item {
-    Text {
-        id: getHelp
-        color: "#0a68e3"
-        text: qsTr("Settings")
+    Image {
+        id: settingsImage
+        height: 12
+        width: 12
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: 16
         anchors.rightMargin: 16
+        source: "../resources/settings.svg"
+
         MouseArea {
-            onClicked: VPN.openLink("settings")
-            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
-            hoverEnabled: true
+            onClicked: VPN.openLink("settings")
         }
     }
 
