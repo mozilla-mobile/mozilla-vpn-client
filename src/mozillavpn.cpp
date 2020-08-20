@@ -260,6 +260,11 @@ void MozillaVPN::cancelAuthentication()
 {
     qDebug() << "Canceling authentication";
 
+    if (m_state != STATE_CONNECTING) {
+        // We cannot cancel tasks if we are not in connecting state.
+        return;
+    }
+
     for (QList<QPointer<Task>>::Iterator i = m_tasks.begin(); i != m_tasks.end(); ++i) {
         delete *i;
     }
