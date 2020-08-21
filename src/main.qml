@@ -10,6 +10,7 @@ Window {
     width: 360
     height: 454
     title: qsTr("Mozilla VPN")
+    color: "#F9F9FA"
 
     FontLoader { id: vpnFont; source: "qrc:/resources/Metropolis-Regular.otf" }
 

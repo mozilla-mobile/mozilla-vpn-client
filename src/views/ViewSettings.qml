@@ -35,11 +35,10 @@ Item {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        RoundButton {
+        VPNButton {
             id: manageAccountButton
             text: qsTr("Manage account")
             Layout.alignment: Qt.AlignHCenter
-            radius: 5
         }
 
         // TODO: this should be scrollable

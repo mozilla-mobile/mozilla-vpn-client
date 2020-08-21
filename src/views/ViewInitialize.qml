@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import Mozilla.VPN 1.0
 
+import "../components"
+
 Item {
     Text {
         id: getHelp
@@ -63,18 +65,14 @@ Item {
         font.family: vpnFont.name
     }
 
-    RoundButton {
+    VPNButton {
         id: getStarted
         x: 130
         y: 347
         width: 282
-        height: 40
         text: qsTr("Get started")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        font.weight: Font.ExtraLight
-        enabled: true
-        focusPolicy: Qt.NoFocus
         radius: 5
         onClicked: VPN.authenticate()
     }
