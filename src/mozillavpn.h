@@ -21,9 +21,10 @@ class MozillaVPN final : public QObject
 public:
     enum AlertType {
         NoAlert,
+        AuthenticationFailedAlert,
+        ConnectionFailedAlert,
         LogoutAlert,
         NoConnectionAlert,
-        AuthenticationAlert,
     };
 
     Q_ENUM(AlertType)

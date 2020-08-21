@@ -315,5 +315,85 @@ void MozillaVPN::hideAlert() {
 
 void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     qDebug() << "Handling error" << error;
-    // TODO
+
+    Q_ASSERT(error != QNetworkReply::NoError);
+
+    switch (error) {
+    case QNetworkReply::ConnectionRefusedError:
+        [[fallthrough]];
+    case QNetworkReply::RemoteHostClosedError:
+        [[fallthrough]];
+    case QNetworkReply::SslHandshakeFailedError:
+        [[fallthrough]];
+    case QNetworkReply::TemporaryNetworkFailureError:
+        [[fallthrough]];
+    case QNetworkReply::NetworkSessionFailedError:
+        [[fallthrough]];
+    case QNetworkReply::TooManyRedirectsError:
+        [[fallthrough]];
+    case QNetworkReply::InsecureRedirectError:
+        [[fallthrough]];
+    case QNetworkReply::ProxyConnectionRefusedError:
+        [[fallthrough]];
+    case QNetworkReply::ProxyConnectionClosedError:
+        [[fallthrough]];
+    case QNetworkReply::ProxyNotFoundError:
+        [[fallthrough]];
+    case QNetworkReply::ProxyTimeoutError:
+        [[fallthrough]];
+    case QNetworkReply::ProxyAuthenticationRequiredError:
+        [[fallthrough]];
+    case QNetworkReply::ServiceUnavailableError:
+        m_alert = ConnectionFailedAlert;
+        break;
+
+    case QNetworkReply::HostNotFoundError:
+        [[fallthrough]];
+    case QNetworkReply::TimeoutError:
+        m_alert = NoConnectionAlert;
+        break;
+
+    case QNetworkReply::OperationCanceledError:
+        [[fallthrough]];
+    case QNetworkReply::BackgroundRequestNotAllowedError:
+        [[fallthrough]];
+    case QNetworkReply::ContentAccessDenied:
+        [[fallthrough]];
+    case QNetworkReply::ContentNotFoundError:
+        [[fallthrough]];
+    case QNetworkReply::ContentReSendError:
+        [[fallthrough]];
+    case QNetworkReply::ContentConflictError:
+        [[fallthrough]];
+    case QNetworkReply::ContentGoneError:
+        [[fallthrough]];
+    case QNetworkReply::InternalServerError:
+        [[fallthrough]];
+    case QNetworkReply::OperationNotImplementedError:
+        [[fallthrough]];
+    case QNetworkReply::ProtocolUnknownError:
+        [[fallthrough]];
+    case QNetworkReply::ProtocolInvalidOperationError:
+        [[fallthrough]];
+    case QNetworkReply::UnknownNetworkError:
+        [[fallthrough]];
+    case QNetworkReply::UnknownProxyError:
+        [[fallthrough]];
+    case QNetworkReply::UnknownContentError:
+        [[fallthrough]];
+    case QNetworkReply::ProtocolFailure:
+        [[fallthrough]];
+    case QNetworkReply::UnknownServerError:
+        // let's ignore these errors.
+        break;
+
+    case QNetworkReply::ContentOperationNotPermittedError:
+        [[fallthrough]];
+    case QNetworkReply::AuthenticationRequiredError:
+       m_alert = AuthenticationFailedAlert;
+       break;
+
+    default:
+        break;
+    }
 }
