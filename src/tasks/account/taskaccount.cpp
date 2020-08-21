@@ -10,9 +10,10 @@ void TaskAccount::run(MozillaVPN *vpn)
 {
     NetworkRequest *request = NetworkRequest::createForAccount(vpn);
 
-    connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-        qDebug() << "Failed to check the account status" << this << error;
-        // TODO
+    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
+        qDebug() << "Account request failed" << error;
+        vpn->errorHandle(error);
+        emit completed();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {

@@ -10,12 +10,25 @@
 #include <QObject>
 #include <QPointer>
 #include <QSettings>
+#include <QNetworkReply>
 
 class Task;
 
 class MozillaVPN final : public QObject
 {
     Q_OBJECT
+
+public:
+    enum AlertType {
+        NoAlert,
+        LogoutAlert,
+        NoConnectionAlert,
+        AuthenticationAlert,
+    };
+
+    Q_ENUM(AlertType)
+
+private:
     Q_PROPERTY(QString state READ getState NOTIFY stateChanged)
     Q_PROPERTY(QAbstractListModel *serverCountryModel READ serverCountryModel NOTIFY
                    serverCountryModelChanged)
@@ -23,6 +36,7 @@ class MozillaVPN final : public QObject
     Q_PROPERTY(int activeDevices READ activeDevices NOTIFY deviceModelChanged)
     Q_PROPERTY(QObject *user READ user)
     Q_PROPERTY(QObject *currentServer READ currentServer)
+    Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -47,6 +61,8 @@ public:
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 
     Q_INVOKABLE void logout();
+
+    Q_INVOKABLE void hideAlert();
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
@@ -73,6 +89,10 @@ public:
 
     User *user() { return &m_user; }
 
+    AlertType alert() const { return m_alert; }
+
+    void errorHandle(QNetworkReply::NetworkError error);
+
 private:
     void setState(const QString &state);
 
@@ -83,6 +103,7 @@ signals:
     void stateChanged();
     void deviceModelChanged();
     void serverCountryModelChanged();
+    void alertChanged();
 
 private:
     QSettings m_settings;
@@ -100,6 +121,8 @@ private:
 
     QString m_state;
     QString m_apiUrl;
+
+    AlertType m_alert = NoAlert;
 };
 
 #endif // MOZILLAVPN_H

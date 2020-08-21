@@ -302,5 +302,18 @@ void MozillaVPN::logout()
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         m_settings.clear();
         setState(STATE_INITIALIZE);
+
+        m_alert = LogoutAlert;
+        emit alertChanged();
     }));
+}
+
+void MozillaVPN::hideAlert() {
+    m_alert = NoAlert;
+    emit alertChanged();
+}
+
+void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
+    qDebug() << "Handling error" << error;
+    // TODO
 }

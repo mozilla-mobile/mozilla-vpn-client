@@ -2,6 +2,7 @@
 #define SERVERSFETCHER_H
 
 #include <QObject>
+#include <QNetworkReply>
 
 class MozillaVPN;
 
@@ -16,6 +17,7 @@ public:
 
 signals:
     void completed(const QByteArray& serverData);
+    void failed(QNetworkReply::NetworkError error);
 };
 
 #endif // SERVERSFETCHER_H

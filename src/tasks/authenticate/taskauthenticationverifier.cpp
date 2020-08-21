@@ -28,8 +28,8 @@ void TaskAuthenticationVerifier::timerExpired()
 
     NetworkRequest *request = NetworkRequest::createForAuthenticationVerification(this,
                                                                                   m_verificationUrl);
-    connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-        qDebug() << "Network request failed: " << error;
+    connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError) {
+        qDebug() << "Verification not completed yet";
         run();
     });
 

@@ -19,9 +19,9 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     NetworkRequest *request = NetworkRequest::createForAuthenticate(vpn);
     qDebug() << request;
 
-    connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
+    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Authentication failed: " << this << error;
-        // TODO
+        vpn->errorHandle(error);
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {

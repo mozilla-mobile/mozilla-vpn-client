@@ -8,8 +8,8 @@ void ServersFetcher::run(MozillaVPN *vpn)
     NetworkRequest *request = NetworkRequest::createForServers(vpn);
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-        qDebug() << "Failed to retrieve servers" << this << error;
-        // TODO
+        qDebug() << "Failed to retrieve servers";
+        emit failed(error);
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
