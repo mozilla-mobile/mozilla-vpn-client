@@ -112,13 +112,13 @@ Item {
         }
 
         Image {
-            source: "../resources/flags/CA.png" // TODO
+            source: "../resources/flags/" + VPN.currentServer.countryCode.toUpperCase() + ".png"
             sourceSize.height: 16
             sourceSize.width: 16
         }
 
         Label {
-            text: "Toronto"// TODO
+            text: VPN.currentServer.city
             color: "#3D3D3D"
             font.family: vpnFont.name
             font.pixelSize: 15

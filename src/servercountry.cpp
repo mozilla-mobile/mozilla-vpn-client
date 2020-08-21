@@ -32,14 +32,3 @@ ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
 
     return sc;
 }
-
-const QStringList ServerCountry::cities() const
-{
-    QStringList list;
-
-    for (QList<ServerCity>::ConstIterator i = m_cities.begin(); i != m_cities.end(); ++i) {
-        list.append(i->name());
-    }
-
-    return list;
-}

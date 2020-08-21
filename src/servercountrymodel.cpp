@@ -1,10 +1,12 @@
 #include "servercountrymodel.h"
 #include "servercountry.h"
+#include "serverdata.h"
 
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QRandomGenerator>
 #include <QSettings>
 
 bool ServerCountryModel::fromSettings(QSettings &settings)
@@ -77,10 +79,34 @@ QVariant ServerCountryModel::data(const QModelIndex &index, int role) const
     case CodeRole:
         return QVariant(m_countries.at(index.row()).code());
 
-    case CitiesRole:
-        return QVariant(m_countries.at(index.row()).cities());
+    case CitiesRole: {
+        QStringList list;
+        const QList<ServerCity> &cities = m_countries.at(index.row()).cities();
+
+        for (QList<ServerCity>::ConstIterator i = cities.begin(); i != cities.end(); ++i) {
+            list.append(i->name());
+        }
+
+        return QVariant(list);
+    }
 
     default:
         return QVariant();
     }
+}
+
+void ServerCountryModel::pickRandom(ServerData &data)
+{
+    qDebug() << "Choosing a random server";
+
+    quint32 countryId = QRandomGenerator::global()->generate() % m_countries.length();
+    const ServerCountry &country = m_countries[countryId];
+
+    quint32 cityId = QRandomGenerator::global()->generate() % country.cities().length();
+    const ServerCity &city = country.cities().at(cityId);
+
+    quint32 serverId = QRandomGenerator::global()->generate() % city.servers().length();
+    const Server &server = city.servers().at(serverId);
+
+    data.initialize(country, city, server);
 }

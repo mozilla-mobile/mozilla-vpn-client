@@ -3,6 +3,7 @@
 
 #include "devicemodel.h"
 #include "servercountrymodel.h"
+#include "serverdata.h"
 #include "user.h"
 
 #include <QList>
@@ -21,6 +22,7 @@ class MozillaVPN final : public QObject
     Q_PROPERTY(QAbstractListModel *deviceModel READ deviceModel NOTIFY deviceModelChanged)
     Q_PROPERTY(int activeDevices READ activeDevices NOTIFY deviceModelChanged)
     Q_PROPERTY(QObject *user READ user)
+    Q_PROPERTY(QObject *currentServer READ currentServer)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -65,6 +67,8 @@ public:
 
     DeviceModel *deviceModel() { return &m_deviceModel; }
 
+    ServerData *currentServer() { return &m_serverData; }
+
     int activeDevices() const;
 
     User *user() { return &m_user; }
@@ -85,6 +89,8 @@ private:
 
     QString m_token;
     User m_user;
+
+    ServerData m_serverData;
 
     DeviceModel m_deviceModel;
     ServerCountryModel m_serverCountryModel;

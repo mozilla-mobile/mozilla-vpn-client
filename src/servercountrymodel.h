@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QPointer>
 
+class ServerData;
 class QSettings;
 
 class ServerCountryModel final : public QAbstractListModel
@@ -26,6 +27,8 @@ public:
     void fromJson(const QByteArray &data);
 
     void writeSettings(QSettings &settings);
+
+    void pickRandom(ServerData &data);
 
     // QAbstractListModel methods
 

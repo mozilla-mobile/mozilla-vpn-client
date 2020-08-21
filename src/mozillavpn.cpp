@@ -77,6 +77,13 @@ void MozillaVPN::initialize(int &, char *[])
         return;
     }
 
+    Q_ASSERT(!m_serverData.initialized());
+    if (!m_serverData.fromSettings(m_settings)) {
+        m_serverCountryModel.pickRandom(m_serverData);
+        Q_ASSERT(m_serverData.initialized());
+        m_serverData.writeSettings(m_settings);
+    }
+
     m_token = m_settings.value(SETTINGS_TOKEN).toString();
 
     scheduleTask(new TaskAccount());
@@ -210,6 +217,14 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
 
     m_serverCountryModel.fromJson(serverData);
     m_serverCountryModel.writeSettings(m_settings);
+
+    // TODO: ... what about if the current server is gone?
+
+    if (!m_serverData.initialized()) {
+        m_serverCountryModel.pickRandom(m_serverData);
+        Q_ASSERT(m_serverData.initialized());
+        m_serverData.writeSettings(m_settings);
+    }
 
     emit serverCountryModelChanged();
 

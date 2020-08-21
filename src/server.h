@@ -12,7 +12,11 @@ class Server final
 public:
     static Server fromJson(QJsonObject &obj);
 
+    const QString &hostname() const { return m_hostname; }
+
 private:
+    Server() = default;
+
     Server(const QString &hostname,
            bool includeInCountry,
            const QString &ipv4AddrIn,

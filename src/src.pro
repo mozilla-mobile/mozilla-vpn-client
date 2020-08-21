@@ -30,6 +30,7 @@ SOURCES += \
         servercity.cpp \
         servercountry.cpp \
         servercountrymodel.cpp \
+        serverdata.cpp \
         serversfetcher.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
         servercity.h \
         servercountry.h \
         servercountrymodel.h \
+        serverdata.h \
         serversfetcher.h \
         task.h \
         tasks/account/taskaccount.h \

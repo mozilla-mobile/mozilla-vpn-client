@@ -18,7 +18,7 @@ public:
 
     const QString &code() const { return m_code; }
 
-    const QStringList cities() const;
+    const QList<ServerCity> &cities() const { return m_cities; }
 
 private:
     ServerCountry(const QString &name, const QString &code) : m_name(name), m_code(code) {}
