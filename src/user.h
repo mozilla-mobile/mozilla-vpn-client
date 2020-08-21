@@ -12,10 +12,10 @@ class User final : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString avatar READ avatar)
-    Q_PROPERTY(QString displayName READ displayName)
-    Q_PROPERTY(QString email READ email)
-    Q_PROPERTY(int maxDevices READ maxDevices)
+    Q_PROPERTY(QString avatar READ avatar NOTIFY changed)
+    Q_PROPERTY(QString displayName READ displayName NOTIFY changed)
+    Q_PROPERTY(QString email READ email NOTIFY changed)
+    Q_PROPERTY(int maxDevices READ maxDevices NOTIFY changed)
 
 public:
     void fromJson(QJsonObject &obj);
@@ -32,6 +32,9 @@ public:
 
     // "Int"to make QML happy
     int maxDevices() const { return (int) m_maxDevices; }
+
+signals:
+    void changed();
 
 private:
     QString m_avatar;

@@ -33,6 +33,8 @@ void User::fromJson(QJsonObject &obj)
     QJsonValue maxDevices = obj.take("max_devices");
     Q_ASSERT(maxDevices.isDouble());
     m_maxDevices = maxDevices.toInt();
+
+    emit changed();
 }
 
 bool User::fromSettings(QSettings &settings)

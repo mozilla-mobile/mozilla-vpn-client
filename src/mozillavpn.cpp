@@ -262,8 +262,14 @@ void MozillaVPN::removeDevice(const QString &deviceName)
 void MozillaVPN::accountChecked(QJsonObject &userObj)
 {
     qDebug() << "Account checked";
+
     m_user.fromJson(userObj);
+    m_user.writeSettings(m_settings);
+
     m_deviceModel.fromJson(userObj);
+    m_deviceModel.writeSettings(m_settings);
+
+    emit m_user.changed();
 
     qDebug() << "Scheduling the account check";
     QTimer::singleShot(1000 * SCHEDULE_ACCOUNT_CHECK_TIMER_SEC,

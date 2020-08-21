@@ -40,4 +40,6 @@ void ServerData::initialize(const ServerCountry &country,
     m_serverName = server.hostname();
     m_countryCode = country.code();
     m_city = city.name();
+
+    emit changed();
 }

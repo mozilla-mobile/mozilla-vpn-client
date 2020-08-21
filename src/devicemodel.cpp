@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QSettings>
 
 void DeviceModel::fromJson(QJsonObject &obj)
 {
@@ -37,6 +38,15 @@ bool DeviceModel::fromSettings(QSettings &settings)
 
 void DeviceModel::writeSettings(QSettings &settings)
 {
+
+    QStringList keys = settings.allKeys();
+    for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
+        if (i->startsWith("device/")) {
+            settings.remove(*
+                            i);
+        }
+    }
+
     for (QList<Device>::Iterator i = m_devices.begin(); i != m_devices.end(); ++i) {
         i->writeSettings(settings);
     }

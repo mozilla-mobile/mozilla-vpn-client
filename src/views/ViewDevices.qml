@@ -20,10 +20,9 @@ Item {
 
         model: VPN.deviceModel
 
-        delegate: ItemDelegate {
+        delegate: Container {
             id: device
             width: parent.width
-            checkable: false
 
             contentItem: ColumnLayout {
                 spacing: 0
@@ -32,9 +31,10 @@ Item {
 
                     Image {
                         id: deviceImage
-                        height: 16
-                        width: 16
+                        height: 18
+                        width: 18
                         Layout.alignment: Qt.AlignTop
+                        Layout.margins: 19
                         source: "../resources/devices.svg"
                     }
 
@@ -42,11 +42,15 @@ Item {
                         Label {
                             id: deviceName
                             text: name
+                            color: "#3D3D3D"
+                            font.pixelSize: 15
                         }
 
                         Label {
                             id: deviceDesc
                             text: qsTr("Current device TODO")
+                            font.pixelSize: 13
+                            color: "#0060DF"
                         }
                     }
 
@@ -57,8 +61,9 @@ Item {
                     Image {
                         visible: !currentOne
                         id: deleteImage
-                        height: 16
-                        width: 16
+                        height: 18
+                        width: 18
+                        Layout.margins: 19
                         Layout.alignment: Qt.AlignTop
                         source: "../resources/delete.svg"
 

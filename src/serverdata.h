@@ -13,8 +13,8 @@ class ServerData final : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString countryCode READ countryCode)
-    Q_PROPERTY(QString city READ city)
+    Q_PROPERTY(QString countryCode READ countryCode NOTIFY changed)
+    Q_PROPERTY(QString city READ city NOTIFY changed)
 
 public:
     bool fromSettings(QSettings &settings);
@@ -28,6 +28,9 @@ public:
     const QString &countryCode() const { return m_countryCode; }
 
     const QString &city() const { return m_city; }
+
+signals:
+    void changed();
 
 private:
     bool m_initialized = false;
