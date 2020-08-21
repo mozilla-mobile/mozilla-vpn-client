@@ -89,7 +89,7 @@ Item {
                 text: qsTr("Remove device?")
             }
             Label {
-                text: qsTr("Please confirm you would like to remove %1.").arg(removePopup.deviceName)
+                text: qsTr("Please confirm you would like to remove\n%1.").arg(removePopup.deviceName)
             }
 
             RowLayout {

@@ -122,6 +122,11 @@ Item {
             color: "#3D3D3D"
             font.family: vpnFont.name
             font.pixelSize: 15
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: stackview.push("ViewServers.qml")
+            }
         }
 
         Image {
@@ -169,6 +174,11 @@ Item {
             color: "#3D3D3D"
             font.family: vpnFont.name
             font.pixelSize: 15
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: stackview.push("ViewDevices.qml")
+            }
         }
 
         Image {
