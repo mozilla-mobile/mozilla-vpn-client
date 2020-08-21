@@ -282,5 +282,6 @@
         <file>resources/state-off.svg</file>
         <file>resources/logo.svg</file>
         <file>components/VPNToggle.qml</file>
+        <file>resources/chevron.svg</file>
     </qresource>
 </RCC>
