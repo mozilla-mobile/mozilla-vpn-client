@@ -2,15 +2,16 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 
-ColumnLayout {
+Item {
     property alias title: title.text
     property alias rightTitle: rightTitle.text
 
     id: menuBar
     width: parent.width
-    Layout.fillWidth: true
+    height: 40
 
     RowLayout {
+        id: row
         width: parent.width
         Layout.fillWidth: true
 
@@ -33,17 +34,6 @@ ColumnLayout {
         }
 
         Label {
-            id: title
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            Layout.topMargin: 4
-        }
-
-
-        Item {
-            Layout.fillWidth: true
-        }
-
-        Label {
             id: rightTitle
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Layout.rightMargin: 10
@@ -51,8 +41,15 @@ ColumnLayout {
         }
     }
 
+    Label {
+        id: title
+        anchors.top: row.top
+        anchors.centerIn: row
+    }
+
     Rectangle {
         color: "#000000"
+        anchors.top: row.bottom
         width: parent.width
         height: 1
     }
