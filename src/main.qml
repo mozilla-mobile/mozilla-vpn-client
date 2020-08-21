@@ -98,16 +98,16 @@ Window {
                         return "";
 
                     case VPN.AuthenticationFailedAlert:
-                        return qsTr("Authentication error. Try again");
+                        return qsTr("Authentication error. <u><b>Try again</b></u>");
 
                     case VPN.ConnectionFailedAlert:
-                        return qsTr("Unable to connect. Try gain");
+                        return qsTr("Unable to connect. <u><b>Try again</b></u>");
 
                     case VPN.LogoutAlert:
                         return qsTr("Signed out and device removed");
 
                     case VPN.NoConnectionAlert:
-                        return qsTr("No internet connection. Try again");
+                        return qsTr("No internet connection. <u><b>Try again</b></u>");
 
                     }
                 }
