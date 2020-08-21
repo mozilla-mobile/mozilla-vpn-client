@@ -40,6 +40,8 @@ public:
 
     Q_INVOKABLE void activate();
 
+    Q_INVOKABLE void deactivate();
+
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 
     Q_INVOKABLE void logout();

@@ -27,12 +27,13 @@ Item {
         y: 70
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        source: "../resources/logo.png"
+        source: "../resources/logo.svg"
+        sourceSize.width: 76
+        sourceSize.height: 76
     }
 
     Text {
         id: logoTitle
-        x: 168
         text: qsTr("Mozilla VPN")
         font.family: vpnFont.name
         horizontalAlignment: Text.AlignHCenter

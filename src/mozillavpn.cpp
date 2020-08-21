@@ -224,6 +224,11 @@ void MozillaVPN::activate()
     qDebug() << "Activation";
 }
 
+void MozillaVPN::deactivate()
+{
+    qDebug() << "Deactivation";
+}
+
 int MozillaVPN::activeDevices() const
 {
     // We need to expose "int"to make QML happy.

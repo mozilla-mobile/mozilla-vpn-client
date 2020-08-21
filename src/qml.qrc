@@ -279,5 +279,8 @@
         <file>components/VPNButton.qml</file>
         <file>components/VPNMenu.qml</file>
         <file>components/VPNSettingsItem.qml</file>
+        <file>resources/state-off.svg</file>
+        <file>resources/logo.svg</file>
+        <file>components/VPNToggle.qml</file>
     </qresource>
 </RCC>
