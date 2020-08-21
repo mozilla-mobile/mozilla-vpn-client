@@ -103,7 +103,10 @@ Item {
 
                 Button {
                     text: qsTr("Remove")
-                    onClicked: VPN.removeDevice(removePopup.deviceName)
+                    onClicked: {
+                        VPN.removeDevice(removePopup.deviceName)
+                        removePopup.close()
+                    }
                 }
             }
         }
