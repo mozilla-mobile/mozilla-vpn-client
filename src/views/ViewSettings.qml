@@ -23,6 +23,7 @@ Item {
             sourceSize.height: 80
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 32
+            height: 80
         }
 
         Label {
