@@ -8,48 +8,44 @@ Item {
 
     id: menuBar
     width: parent.width
-    height: 40
+    height: 56
 
-    RowLayout {
-        id: row
-        width: parent.width
-        Layout.fillWidth: true
+    Image {
+        id: backImage
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.topMargin: 20
+        anchors.leftMargin: 20
+        source: "../resources/back.svg"
+        sourceSize.width: 16
+        sourceSize.height: 16
 
-        Image {
-            id: backImage
-            Layout.leftMargin: 10
-            Layout.topMargin: 10
-            Layout.bottomMargin: 5
-            Layout.alignment: Qt.AlignTop
-            source: "../resources/back.svg"
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: stackview.pop()
-            }
-        }
-
-        Item {
-            Layout.fillWidth: true
-        }
-
-        Label {
-            id: rightTitle
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.rightMargin: 10
-            Layout.topMargin: 4
+        MouseArea {
+            anchors.fill: parent
+            onClicked: stackview.pop()
         }
     }
 
     Label {
         id: title
-        anchors.top: row.top
-        anchors.centerIn: row
+        anchors.top: menuBar.top
+        anchors.centerIn: menuBar
+        font.pixelSize: 15
+        font.family: vpnFont.name
+    }
+
+    Label {
+        id: rightTitle
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: 17
+        anchors.rightMargin: 17
+        font.pixelSize: 15
     }
 
     Rectangle {
-        color: "#000000"
-        anchors.top: row.bottom
+        color: "#0C0C0D0A"
+        y: 55
         width: parent.width
         height: 1
     }
