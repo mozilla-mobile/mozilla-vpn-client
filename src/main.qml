@@ -20,6 +20,7 @@ Window {
     color: "#F9F9FA"
 
     FontLoader { id: vpnFont; source: "qrc:/resources/Metropolis-Regular.otf" }
+    FontLoader { id: vpnFontSemiBold; source: "qrc:/resources/Metropolis-SemiBold.otf" }
 
     SystemTrayIcon {
         visible: true

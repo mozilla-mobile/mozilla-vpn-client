@@ -285,5 +285,10 @@
         <file>resources/chevron.svg</file>
         <file>resources/close-white.svg</file>
         <file>themes/themes.js</file>
+        <file>components/ServerListToggle.qml</file>
+        <file>components/RadioButtonLabel.qml</file>
+        <file>components/RadioButton.qml</file>
+        <file>resources/toggle-down.svg</file>
+        <file>resources/Metropolis-SemiBold.otf</file>
     </qresource>
 </RCC>

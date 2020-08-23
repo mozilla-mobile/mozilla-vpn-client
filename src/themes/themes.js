@@ -18,5 +18,7 @@ const fontSizeSmall = 13;
 const fontWeightBold = 600;
 
 const iconSize = 16;
+const labelLineHeight = 22
+
 const hSpacing = 20;
 const vSpacing = 24;
