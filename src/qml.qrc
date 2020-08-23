@@ -284,5 +284,6 @@
         <file>components/VPNToggle.qml</file>
         <file>resources/chevron.svg</file>
         <file>resources/close-white.svg</file>
+        <file>themes/themes.js</file>
     </qresource>
 </RCC>
