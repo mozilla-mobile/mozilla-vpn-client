@@ -30,7 +30,7 @@ Item {
         anchors.rightMargin: Theme.hSpacing
 
         clip: true
-        model: VPN.serverCountryModel
+        model: VPNServerCountryModel
 
         delegate: ColumnLayout {
             property var cityListVisible: false
