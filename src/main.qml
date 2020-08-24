@@ -77,6 +77,14 @@ Window {
                     target: loader
                     source: "states/StateMain.qml"
                 }
+            },
+
+            State {
+                name: VPN.StateLogout
+                PropertyChanges {
+                    target: loader
+                    source: "states/StateLogout.qml"
+                }
             }
         ]
 

@@ -287,5 +287,6 @@
         <file>components/VPNControllerView.qml</file>
         <file>resources/settings-white.svg</file>
         <file>resources/state-on.svg</file>
+        <file>states/StateLogout.qml</file>
     </qresource>
 </RCC>

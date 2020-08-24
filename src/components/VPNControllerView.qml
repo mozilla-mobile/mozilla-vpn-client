@@ -63,7 +63,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoSubtitle
-                color: "#FFFFFF"
+                color: "#FFFFFFCC"
             }
             PropertyChanges {
                 target: settingsImage
@@ -94,7 +94,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoSubtitle
-                color: "#FFFFFF"
+                color: "#FFFFFFCC"
             }
             PropertyChanges {
                 target: settingsImage

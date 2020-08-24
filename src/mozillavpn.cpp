@@ -101,6 +101,8 @@ void MozillaVPN::authenticate()
     m_state = StateAuthenticating;
     emit stateChanged();
 
+    hideAlert();
+
     scheduleTask(new TaskAuthenticate());
 }
 
@@ -284,6 +286,9 @@ void MozillaVPN::cancelAuthentication()
 void MozillaVPN::logout()
 {
     qDebug() << "Logout";
+
+    setState(StateLogout);
+    hideAlert();
 
     QString deviceName = Device::currentDeviceName();
 
