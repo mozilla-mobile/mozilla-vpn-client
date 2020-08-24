@@ -1,5 +1,6 @@
 #include "device.h"
 
+#include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QSettings>
@@ -24,24 +25,40 @@ Device Device::fromJson(const QJsonValue &json)
     QJsonValue pubKey = obj.take("pubkey");
     Q_ASSERT(pubKey.isString());
 
+    Q_ASSERT(obj.contains("created_at"));
+    QJsonValue createdAt = obj.take("created_at");
+    Q_ASSERT(createdAt.isString());
+
+    QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
+    Q_ASSERT(date.isValid());
+
     // No private key from JSON.
 
-    return Device(name.toString(), pubKey.toString(), QString());
+    return Device(name.toString(), date, pubKey.toString(), QString());
 }
 
 QList<Device> Device::fromSettings(QSettings &settings)
 {
     QList<Device> list;
 
-    QStringList keys = settings.allKeys();
-    for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
-        if (i->startsWith("device/")) {
-            QString deviceName = *i;
-            deviceName.remove(0, 7);
+    if (settings.contains("devices")) {
+        QStringList devices = settings.value("devices").toStringList();
 
-            QStringList keys = settings.value(*i).toStringList();
-            Q_ASSERT(keys.length() >= 1);
-            list.append(Device(deviceName, keys[0], keys.count() > 1 ? keys[1] : QString()));
+        for (QStringList::Iterator i = devices.begin(); i != devices.end(); ++i) {
+            QString key = "device/";
+            key.append(*i);
+
+            QString createdAt = key;
+            createdAt.append("/createdAt");
+            QString privkey = key;
+            privkey.append("/privatekey");
+            QString publickey = key;
+            publickey.append("/publickey");
+
+            list.append(Device(*i,
+                               settings.value(createdAt).toDateTime(),
+                               settings.value(publickey).toString(),
+                               settings.value(privkey).toString()));
         }
     }
 
@@ -50,8 +67,7 @@ QList<Device> Device::fromSettings(QSettings &settings)
 
 void Device::writeSettings(QSettings &settings)
 {
-    QStringList keys;
-    keys.append(m_publicKey);
-    keys.append(m_privateKey);
-    settings.setValue("device/" + m_deviceName, keys);
+    settings.setValue("device/" + m_deviceName + "/createdAt", m_createdAt);
+    settings.setValue("device/" + m_deviceName + "/privatekey", m_privateKey);
+    settings.setValue("device/" + m_deviceName + "/publickey", m_publicKey);
 }

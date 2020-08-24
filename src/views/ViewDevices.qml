@@ -9,7 +9,7 @@ Item {
     VPNMenu {
         id: menu
         title: qsTr("My devices")
-        rightTitle: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.user.maxDevices)
+        rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
     }
 
     ListView {
@@ -18,7 +18,7 @@ Item {
         anchors.top: menu.bottom
         clip: true
 
-        model: VPN.deviceModel
+        model: VPNDeviceModel
 
         delegate: Container {
             id: device
@@ -47,10 +47,28 @@ Item {
                         }
 
                         Label {
+                            function deviceSubtitle() {
+                                if (currentOne) {
+                                    return qsTr("Current device");
+                                }
+
+                                const diff = (Date.now() - createdAt.valueOf()) / 1000;
+
+                                if (diff < 3600) {
+                                    return qsTr("Added less than a hour ago");
+                                }
+
+                                if (diff < 86400) {
+                                    return qsTr("Added %1 hours ago").arg(Math.floor(diff / 3600));
+                                }
+
+                                return qsTr("Added %1 days ago").arg(Math.floor(diff / 86400));
+                            }
+
                             id: deviceDesc
-                            text: qsTr("Current device TODO")
+                            text: deviceSubtitle()
                             font.pixelSize: 13
-                            color: "#0060DF"
+                            color: currentOne ? "#0060DF" : "#6D6D6E"
                         }
                     }
 

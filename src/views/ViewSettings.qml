@@ -18,7 +18,7 @@ Item {
         anchors.top: menu.bottom
 
         Image {
-            source: VPN.user.avatar
+            source: VPNUser.avatar
             sourceSize.width: 80
             sourceSize.height: 80
             Layout.alignment: Qt.AlignHCenter
@@ -27,12 +27,12 @@ Item {
         }
 
         Label {
-            text: VPN.user.displayName
+            text: VPNUser.displayName
             Layout.alignment: Qt.AlignHCenter
         }
 
         Label {
-            text: VPN.user.email
+            text: VPNUser.email
             Layout.alignment: Qt.AlignHCenter
         }
 

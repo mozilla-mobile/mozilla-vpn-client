@@ -3,7 +3,7 @@
 
 #include "task.h"
 
-class TaskAccount : public Task
+class TaskAccount final : public Task
 {
 public:
     TaskAccount() : Task("TaskAccount") {}

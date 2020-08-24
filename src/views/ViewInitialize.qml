@@ -19,6 +19,7 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
         }
+        font.pixelSize: 15
     }
 
     Image {

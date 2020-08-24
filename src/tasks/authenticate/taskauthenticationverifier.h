@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 
-class TaskAuthenticationVerifier : public QObject
+class TaskAuthenticationVerifier final : public QObject
 {
     Q_OBJECT
 

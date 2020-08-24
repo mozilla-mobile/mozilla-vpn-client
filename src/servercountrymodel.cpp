@@ -33,6 +33,8 @@ void ServerCountryModel::fromJson(const QByteArray &s)
 
 void ServerCountryModel::fromJsonInternal()
 {
+    beginResetModel();
+
     m_countries.clear();
 
     QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
@@ -50,6 +52,8 @@ void ServerCountryModel::fromJsonInternal()
         QJsonObject countryObj = i->toObject();
         m_countries.append(ServerCountry::fromJson(countryObj));
     }
+
+    endResetModel();
 }
 
 void ServerCountryModel::writeSettings(QSettings &settings)
@@ -105,8 +109,5 @@ void ServerCountryModel::pickRandom(ServerData &data)
     quint32 cityId = QRandomGenerator::global()->generate() % country.cities().length();
     const ServerCity &city = country.cities().at(cityId);
 
-    quint32 serverId = QRandomGenerator::global()->generate() % city.servers().length();
-    const Server &server = city.servers().at(serverId);
-
-    data.initialize(country, city, server);
+    data.initialize(country, city);
 }

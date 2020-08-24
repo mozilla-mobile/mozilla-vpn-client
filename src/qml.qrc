@@ -7,7 +7,7 @@
         <file>resources/Metropolis-Regular.otf</file>
         <file>states/StateMain.qml</file>
         <file>states/StateInitialize.qml</file>
-        <file>states/StateConnecting.qml</file>
+        <file>states/StateAuthenticating.qml</file>
         <file>views/ViewMain.qml</file>
         <file>views/ViewDevices.qml</file>
         <file>views/ViewServers.qml</file>
@@ -291,5 +291,9 @@
         <file>resources/toggle-down.svg</file>
         <file>resources/Metropolis-SemiBold.otf</file>
         <file>components/BoldLabel.qml</file>
+        <file>components/VPNControllerView.qml</file>
+        <file>resources/settings-white.svg</file>
+        <file>resources/state-on.svg</file>
+        <file>states/StateLogout.qml</file>
     </qresource>
 </RCC>

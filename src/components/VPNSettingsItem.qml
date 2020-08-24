@@ -13,8 +13,17 @@ RowLayout {
     Layout.leftMargin: 16
     Layout.rightMargin: 16
 
+    Image {
+        height: 16
+        width: 16
+        Layout.alignment: Qt.AlignTop
+        source: "../resources/chevron.svg"
+    }
+
     Label {
         id: item
+        font.pixelSize: 15
+        font.family: vpnFont.name
     }
 
     Item {
@@ -25,7 +34,9 @@ RowLayout {
         height: 16
         width: 16
         Layout.alignment: Qt.AlignTop
-        source: "../resources/delete.svg" // TODO
+        source: "../resources/chevron.svg"
+        sourceSize.width: 16
+        sourceSize.height: 16
 
         MouseArea {
             id: iconMouseArea

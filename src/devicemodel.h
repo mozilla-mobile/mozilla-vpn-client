@@ -10,10 +10,14 @@ class QSettings;
 
 class DeviceModel final : public QAbstractListModel
 {
+    Q_OBJECT
+    Q_PROPERTY(int activeDevices READ activeDevices NOTIFY changed)
+
 public:
     enum ServerCountryRoles {
         NameRole = Qt::UserRole + 1,
         CurrentOneRole,
+        CreatedAtRole,
     };
 
     DeviceModel() = default;
@@ -34,7 +38,7 @@ public:
 
     const Device *device(const QString &deviceName) const;
 
-    uint32_t count() const { return m_devices.count(); }
+    int activeDevices() const { return m_devices.count(); }
 
     // QAbstractListModel methods
 
@@ -43,6 +47,9 @@ public:
     int rowCount(const QModelIndex &) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
+
+signals:
+    void changed();
 
 private:
     QList<Device> m_devices;

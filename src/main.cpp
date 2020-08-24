@@ -14,6 +14,19 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN", mozillaVPN.get());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController", mozillaVPN->controller());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser", mozillaVPN->user());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel", mozillaVPN->deviceModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN",
+                                 1,
+                                 0,
+                                 "VPNServerCountryModel",
+                                 mozillaVPN->serverCountryModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN",
+                                 1,
+                                 0,
+                                 "VPNCurrentServer",
+                                 mozillaVPN->currentServer());
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(

@@ -7,11 +7,15 @@
 
 void DeviceModel::fromJson(QJsonObject &obj)
 {
+    qDebug() << "DeviceModel from json";
+
     QString privateKey;
     QString currentDeviceName = Device::currentDeviceName();
     if (hasPrivateKeyDevice(currentDeviceName)) {
         privateKey = device(currentDeviceName)->privateKey();
     }
+
+    beginResetModel();
 
     m_devices.clear();
 
@@ -28,6 +32,9 @@ void DeviceModel::fromJson(QJsonObject &obj)
 
         m_devices.append(device);
     }
+
+    endResetModel();
+    emit changed();
 }
 
 bool DeviceModel::fromSettings(QSettings &settings)
@@ -38,18 +45,21 @@ bool DeviceModel::fromSettings(QSettings &settings)
 
 void DeviceModel::writeSettings(QSettings &settings)
 {
-
+    // Let's remove all the device settings
     QStringList keys = settings.allKeys();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         if (i->startsWith("device/")) {
-            settings.remove(*
-                            i);
+            settings.remove(*i);
         }
     }
 
+    QStringList devices;
     for (QList<Device>::Iterator i = m_devices.begin(); i != m_devices.end(); ++i) {
         i->writeSettings(settings);
+        devices.append(i->name());
     }
+
+    settings.setValue("devices", devices);
 }
 
 QHash<int, QByteArray> DeviceModel::roleNames() const
@@ -57,6 +67,7 @@ QHash<int, QByteArray> DeviceModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[CurrentOneRole] = "currentOne";
+    roles[CreatedAtRole] = "createdAt";
     return roles;
 }
 
@@ -77,6 +88,9 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
     case CurrentOneRole:
         return QVariant(m_devices.at(index.row()).hasPrivateKey());
+
+    case CreatedAtRole:
+        return QVariant(m_devices.at(index.row()).createdAt());
 
     default:
         return QVariant();
@@ -123,6 +137,9 @@ void DeviceModel::addDevice(const Device &device)
 
 void DeviceModel::removeDevice(const QString &deviceName)
 {
+    // TODO: we can be smarter here and remove the single item.
+    beginResetModel();
+
     QMutableListIterator<Device> i(m_devices);
     while (i.hasNext()) {
         const Device &device = i.next();
@@ -131,4 +148,7 @@ void DeviceModel::removeDevice(const QString &deviceName)
             break;
         }
     }
+
+    endResetModel();
+    emit changed();
 }

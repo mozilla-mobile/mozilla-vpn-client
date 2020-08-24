@@ -1,44 +1,83 @@
 import QtQuick 2.0
+import Mozilla.VPN 1.0
 
 Rectangle {
-    signal activate
-    signal deactivate
-
-    state: "inactive"
+    state: VPNController.state
 
     states: [
         State {
-            name: "active"
+            name: VPNController.StateOff
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#9E9E9E"
+            }
         },
         State {
-            name: "inactive"
+            name: VPNController.StateConnecting
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 32
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#3FE1B0"
+            }
+        },
+        State {
+            name: VPNController.StateOn
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 32
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#3FE1B0"
+            }
+        },
+        State {
+            name: VPNController.StateDisconnecting
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#9E9E9E"
+            }
         }
     ]
 
     transitions: [
         Transition {
-            from: "inactive"
-            to: "active"
+            to: VPNController.StateConnecting
             NumberAnimation {
                 target: cursor
                 property: "anchors.leftMargin"
                 duration: 200
-                from: 4
-                to: 32
-                alwaysRunToEnd: true
+            }
+            ColorAnimation {
+                target: toggle
+                property: "color"
+                duration: 200
             }
         },
 
         Transition {
-            from: "active"
-            to: "inactive"
+            to: VPNController.StateDisconnecting
             NumberAnimation {
                 target: cursor
                 property: "anchors.leftMargin"
                 duration: 200
-                from: 32
-                to: 4
-                alwaysRunToEnd: true
+            }
+
+            ColorAnimation {
+                target: toggle
+                property: "color"
+                duration: 200
             }
         }
     ]
@@ -48,8 +87,6 @@ Rectangle {
     width: 60
     radius: 16
 
-    color: "#9E9E9E"
-
     Rectangle {
         id: cursor
         height: 24
@@ -58,18 +95,15 @@ Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.topMargin: 4
-        anchors.leftMargin: toggle.active ? 32 : 4
     }
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            if (toggle.state == "active") {
-                toggle.state = "inactive"
-                toggle.deactivate()
+            if (VPNController.state !== VPNController.StateOff) {
+                VPNController.deactivate()
             } else {
-                toggle.state = "active"
-                toggle.activate()
+                VPNController.activate()
             }
         }
     }

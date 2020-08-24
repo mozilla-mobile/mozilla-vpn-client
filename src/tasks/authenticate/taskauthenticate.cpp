@@ -22,17 +22,14 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Authentication failed: " << this << error;
         vpn->errorHandle(error);
+        emit completed();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
         qDebug() << "Authentication request completed: " << this << data;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
-        if (json.isNull()) {
-            qDebug() << "Invalid JSON object";
-            // TODO
-            return;
-        }
+        Q_ASSERT(!json.isNull());
 
         Q_ASSERT(json.isObject());
         QJsonObject obj = json.object();
@@ -65,11 +62,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray
     qDebug() << "Authentication completed";
 
     QJsonDocument json = QJsonDocument::fromJson(data);
-    if (json.isNull()) {
-        qDebug() << "Invalid JSON object";
-        // TODO
-        return;
-    }
+    Q_ASSERT(!json.isNull());
 
     Q_ASSERT(json.isObject());
     QJsonObject obj = json.object();

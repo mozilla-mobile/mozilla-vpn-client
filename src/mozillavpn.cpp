@@ -13,10 +13,6 @@
 #include <QPointer>
 #include <QTimer>
 
-constexpr const char *STATE_INITIALIZE = "INITIALIZE";
-constexpr const char *STATE_CONNECTING = "CONNECTING";
-constexpr const char *STATE_MAIN = "MAIN";
-
 constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
@@ -37,7 +33,7 @@ void MozillaVPN::initialize(int &, char *[])
     qDebug() << "MozillaVPN Initialization";
 
     // This is our first state.
-    m_state = STATE_INITIALIZE;
+    m_state = StateInitialize;
 
     // API URL depends on the type of build.
     m_apiUrl = API_URL_PROD;
@@ -89,10 +85,10 @@ void MozillaVPN::initialize(int &, char *[])
     scheduleTask(new TaskAccount());
     scheduleTask(new TaskFetchServers());
 
-    setState(STATE_MAIN);
+    setState(StateMain);
 }
 
-void MozillaVPN::setState(const QString &state)
+void MozillaVPN::setState(State state)
 {
     m_state = state;
     emit stateChanged();
@@ -102,8 +98,10 @@ void MozillaVPN::authenticate()
 {
     qDebug() << "Authenticate";
 
-    m_state = STATE_CONNECTING;
+    m_state = StateAuthenticating;
     emit stateChanged();
+
+    hideAlert();
 
     scheduleTask(new TaskAuthenticate());
 }
@@ -157,8 +155,6 @@ void MozillaVPN::authenticationCompleted(QJsonObject &userObj, const QString &to
     m_deviceModel.fromJson(userObj);
     m_deviceModel.writeSettings(m_settings);
 
-    emit deviceModelChanged();
-
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;
 
@@ -184,8 +180,8 @@ void MozillaVPN::authenticationCompleted(QJsonObject &userObj, const QString &to
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        if (m_state == STATE_CONNECTING) {
-            m_state = STATE_MAIN;
+        if (m_state == StateAuthenticating) {
+            m_state = StateMain;
             emit stateChanged();
         }
     }));
@@ -198,7 +194,8 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
     qDebug() << "Device added";
 
     if (!m_deviceModel.hasDevice(deviceName)) {
-        m_deviceModel.addDevice(Device(deviceName, publicKey, privateKey));
+        m_deviceModel.addDevice(
+            Device(deviceName, QDateTime::currentDateTime(), publicKey, privateKey));
         m_deviceModel.writeSettings(m_settings);
     }
 }
@@ -208,7 +205,6 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
     qDebug() << "Device removed";
 
     m_deviceModel.removeDevice(deviceName);
-    emit deviceModelChanged();
 }
 
 void MozillaVPN::serversFetched(const QByteArray &serverData)
@@ -226,28 +222,10 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
         m_serverData.writeSettings(m_settings);
     }
 
-    emit serverCountryModelChanged();
-
     qDebug() << "Scheduling the server fetch";
 
     QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
                        [this]() { scheduleTask(new TaskFetchServers()); });
-}
-
-void MozillaVPN::activate()
-{
-    qDebug() << "Activation";
-}
-
-void MozillaVPN::deactivate()
-{
-    qDebug() << "Deactivation";
-}
-
-int MozillaVPN::activeDevices() const
-{
-    // We need to expose "int"to make QML happy.
-    return (int) m_deviceModel.count();
 }
 
 void MozillaVPN::removeDevice(const QString &deviceName)
@@ -280,8 +258,8 @@ void MozillaVPN::cancelAuthentication()
 {
     qDebug() << "Canceling authentication";
 
-    if (m_state != STATE_CONNECTING) {
-        // We cannot cancel tasks if we are not in connecting state.
+    if (m_state != StateAuthenticating) {
+        // We cannot cancel tasks if we are not in authenticating state.
         return;
     }
 
@@ -292,12 +270,15 @@ void MozillaVPN::cancelAuthentication()
     m_task_running = false;
     m_tasks.clear();
 
-    setState(STATE_INITIALIZE);
+    setState(StateInitialize);
 }
 
 void MozillaVPN::logout()
 {
     qDebug() << "Logout";
+
+    setState(StateLogout);
+    hideAlert();
 
     QString deviceName = Device::currentDeviceName();
 
@@ -307,7 +288,7 @@ void MozillaVPN::logout()
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         m_settings.clear();
-        setState(STATE_INITIALIZE);
+        setState(StateInitialize);
 
         m_alert = LogoutAlert;
         emit alertChanged();
@@ -396,10 +377,25 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     case QNetworkReply::ContentOperationNotPermittedError:
         [[fallthrough]];
     case QNetworkReply::AuthenticationRequiredError:
-       m_alert = AuthenticationFailedAlert;
-       break;
+        m_alert = AuthenticationFailedAlert;
+        break;
 
     default:
         break;
     }
+
+    emit alertChanged();
+
+    qDebug() << "Alert:" << m_alert << "State:" << m_state;
+
+    if (m_alert == NoAlert) {
+        return;
+    }
+
+    // Any error in authenticating state sends to the Initial state.
+    if (m_state == StateAuthenticating) {
+        setState(StateInitialize);
+    }
+
+    // TODO: here we need something more.
 }
