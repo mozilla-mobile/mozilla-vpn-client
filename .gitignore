@@ -3,7 +3,8 @@ Makefile
 *.o
 .obj
 .moc
-.pro.user
+*.pro.user
+*.pro.user*
 mozillavpn
 mozillavpn_wg
 mozillavpn.qmltypes
