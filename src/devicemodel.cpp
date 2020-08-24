@@ -38,7 +38,6 @@ bool DeviceModel::fromSettings(QSettings &settings)
 
 void DeviceModel::writeSettings(QSettings &settings)
 {
-
     QStringList keys = settings.allKeys();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         if (i->startsWith("device/")) {

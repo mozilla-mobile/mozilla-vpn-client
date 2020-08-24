@@ -216,7 +216,7 @@ Rectangle {
         id: logo
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 66
+        y: parent.y + 50
         sourceSize.width: 76
         sourceSize.height: 76
     }

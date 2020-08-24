@@ -387,8 +387,8 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     case QNetworkReply::ContentOperationNotPermittedError:
         [[fallthrough]];
     case QNetworkReply::AuthenticationRequiredError:
-       m_alert = AuthenticationFailedAlert;
-       break;
+        m_alert = AuthenticationFailedAlert;
+        break;
 
     default:
         break;

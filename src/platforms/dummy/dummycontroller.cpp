@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <QTimer>
 
-DummyController::DummyController() {
+DummyController::DummyController()
+{
     m_timer = new QTimer(this);
     m_timer->setSingleShot(true);
 }
