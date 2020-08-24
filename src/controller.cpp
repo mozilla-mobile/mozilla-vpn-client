@@ -18,8 +18,12 @@ void Controller::activate()
 {
     qDebug() << "Activation";
 
-    Q_ASSERT(m_state == StateOff || m_state == StateConnecting);
+    if (m_state != StateOff) {
+        qDebug() << "Already disconnected";
+        return;
+    }
 
+    Q_ASSERT(m_state == StateOff);
     m_state = StateConnecting;
     emit stateChanged();
 
@@ -32,8 +36,12 @@ void Controller::deactivate()
 {
     qDebug() << "Deactivation";
 
-    Q_ASSERT(m_state == StateOn || m_state == StateConnecting);
+    if (m_state != StateOn) {
+        qDebug() << "Already disconnected";
+        return;
+    }
 
+    Q_ASSERT(m_state == StateOn);
     m_state = StateDisconnecting;
     emit stateChanged();
 

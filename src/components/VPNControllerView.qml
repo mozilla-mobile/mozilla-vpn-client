@@ -66,7 +66,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("Connecting...")
+                text: qsTr("Connecting…")
             }
             PropertyChanges {
                 target: logoTitle
@@ -128,7 +128,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("Disconnecting...")
+                text: qsTr("Disconnecting…")
             }
             PropertyChanges {
                 target: logoTitle
