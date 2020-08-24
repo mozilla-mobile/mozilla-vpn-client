@@ -40,6 +40,7 @@ Item {
             id: manageAccountButton
             text: qsTr("Manage account")
             Layout.alignment: Qt.AlignHCenter
+            onClicked: VPN.openLink("/r/vpn/account")
         }
 
         // TODO: this should be scrollable
@@ -50,10 +51,17 @@ Item {
 
         VPNSettingsItem {
             text: qsTr("Get help")
+            imageRight: "../resources/chevron.svg"
+            imageLeft: "../resources/getHelp.svg"
             onClicked: stackview.push("ViewGetHelp.qml")
         }
 
-        // TODO: feedback
+        VPNSettingsItem {
+            text: qsTr("Give feedback")
+            imageRight: "../resources/externalLink.svg"
+            imageLeft: "../resources/feedback.svg"
+            onClicked: VPN.openLink("/r/vpn/client/feedback")
+        }
 
         Label {
             text: qsTr("Sign out")

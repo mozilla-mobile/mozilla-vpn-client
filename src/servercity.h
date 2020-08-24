@@ -18,12 +18,10 @@ public:
     const QList<Server> getServers() const { return m_servers; }
 
 private:
-    ServerCity(const QString &name, const QString &code, double latitude, double longitude);
+    ServerCity(const QString &name, const QString &code);
 
     QString m_name;
     QString m_code;
-    double m_latitude;
-    double m_longitude;
 
     QList<Server> m_servers;
 };

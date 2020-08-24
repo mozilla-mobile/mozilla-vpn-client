@@ -10,6 +10,7 @@
 #include "user.h"
 
 #include <QDebug>
+#include <QDesktopServices>
 #include <QPointer>
 #include <QTimer>
 
@@ -112,7 +113,11 @@ void MozillaVPN::authenticate()
 void MozillaVPN::openLink(const QString &linkName)
 {
     qDebug() << "Opening link: " << linkName;
-    // TODO
+
+    QString url(getApiUrl());
+    url.append(linkName);
+
+    QDesktopServices::openUrl(url);
 }
 
 void MozillaVPN::scheduleTask(Task* task)

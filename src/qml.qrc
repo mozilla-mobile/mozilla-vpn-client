@@ -288,5 +288,8 @@
         <file>resources/settings-white.svg</file>
         <file>resources/state-on.svg</file>
         <file>states/StateLogout.qml</file>
+        <file>resources/externalLink.svg</file>
+        <file>resources/feedback.svg</file>
+        <file>resources/getHelp.svg</file>
     </qresource>
 </RCC>

@@ -5,13 +5,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-ServerCity::ServerCity(const QString &name, const QString &code, double latitude, double longitude)
-    : m_name(name), m_code(code), m_latitude(latitude), m_longitude(longitude)
-{
-    // TODO: to be removed.
-    Q_UNUSED(m_latitude);
-    Q_UNUSED(m_longitude);
-}
+ServerCity::ServerCity(const QString &name, const QString &code) : m_name(name), m_code(code) {}
 
 // static
 ServerCity ServerCity::fromJson(QJsonObject &obj)
@@ -20,19 +14,11 @@ ServerCity ServerCity::fromJson(QJsonObject &obj)
     QJsonValue code = obj.take("code");
     Q_ASSERT(code.isString());
 
-    Q_ASSERT(obj.contains("latitude"));
-    QJsonValue latitude = obj.take("latitude");
-    Q_ASSERT(latitude.isDouble());
-
-    Q_ASSERT(obj.contains("longitude"));
-    QJsonValue longitude = obj.take("longitude");
-    Q_ASSERT(longitude.isDouble());
-
     Q_ASSERT(obj.contains("name"));
     QJsonValue name = obj.take("name");
     Q_ASSERT(name.isString());
 
-    ServerCity sc(name.toString(), code.toString(), latitude.toDouble(), longitude.toDouble());
+    ServerCity sc(name.toString(), code.toString());
 
     Q_ASSERT(obj.contains("servers"));
     QJsonValue servers = obj.take("servers");

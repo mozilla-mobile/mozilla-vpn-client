@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.11
 
 RowLayout {
     property alias text: item.text
+    property alias imageRight: imageRight.source
+    property alias imageLeft: imageLeft.source
     signal clicked
 
     id: root
@@ -14,10 +16,12 @@ RowLayout {
     Layout.rightMargin: 16
 
     Image {
-        height: 16
-        width: 16
+        id: imageLeft
+        height: 18
+        width: 18
         Layout.alignment: Qt.AlignTop
-        source: "../resources/chevron.svg"
+        sourceSize.width: 18
+        sourceSize.height: 18
     }
 
     Label {
@@ -31,12 +35,12 @@ RowLayout {
     }
 
     Image {
-        height: 16
-        width: 16
+        id: imageRight
+        height: 18
+        width: 18
         Layout.alignment: Qt.AlignTop
-        source: "../resources/chevron.svg"
-        sourceSize.width: 16
-        sourceSize.height: 16
+        sourceSize.width: 18
+        sourceSize.height: 18
 
         MouseArea {
             id: iconMouseArea

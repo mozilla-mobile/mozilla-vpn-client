@@ -20,12 +20,12 @@ Item {
         model: ListModel {
             ListElement {
                 title: qsTr("Contact us")
-                url: "contact_us"
+                url: "/r/vpn/contact"
             }
 
             ListElement {
                 title: qsTr("Help & Support")
-                url: "help_support"
+                url: "TODO"
             }
         }
 
@@ -49,7 +49,9 @@ Item {
                     height: 16
                     width: 16
                     Layout.alignment: Qt.AlignTop
-                    source: "../resources/delete.svg" // TODO
+                    source: "../resources/externalLink.svg"
+                    sourceSize.width: 16
+                    sourceSize.height: 16
 
                     MouseArea {
                         anchors.fill: parent
