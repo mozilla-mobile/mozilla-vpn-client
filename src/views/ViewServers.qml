@@ -89,6 +89,7 @@ Item {
                     anchors.fill: parent
                     Layout.fillWidth: true
 
+                    interactive: false
                     model: cities
                     delegate: RadioDelegate {
                         id: control
