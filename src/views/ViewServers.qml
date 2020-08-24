@@ -7,8 +7,6 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
-    width: parent.width
-
     VPNMenu {
         id: menu
         title: qsTr("Select location")
@@ -36,73 +34,40 @@ Item {
         model: VPN.serverCountryModel
 
         delegate: ColumnLayout {
-            property bool cityListVisible: false
+            property var cityListVisible: false
 
             id: serverCountry
             spacing: 0
             state: cityListVisible ? "list-visible" : "list-hidden"
             width: serverList.width
 
-            RowLayout {
+            ItemDelegate {
+                id: mouseArea
                 Layout.preferredWidth: parent.width
-                Layout.bottomMargin: Theme.vSpacing
                 spacing: 0
+                onClicked: cityListVisible = !cityListVisible
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    width: parent.width
-                    onClicked: cityListVisible = !cityListVisible
-                    hoverEnabled: true
-                }
-
-                ServerListToggle {
-                    id: serverListToggle
-                    states: State {
-                        name: "rotated"
-                        when: serverCountry.cityListVisible
-                        PropertyChanges {
-                            target: serverListToggle
-                            rotation: 90
-                        }
-                    }
-                }
-
-                Image {
-                    id: flag
-                    source: "../resources/flags/" + code.toUpperCase() + ".png"
-                    fillMode: Image.PreserveAspectFit
-                    Layout.preferredWidth: Theme.iconSize
-                    Layout.preferredHeight: Theme.iconSize
-                    Layout.leftMargin: Theme.hSpacing
-                }
-
-                Label {
-                    id: countryName
-                    text: name
-                    Layout.leftMargin: Theme.hSpacing
-                    Layout.fillWidth: true
-
-                    color: Theme.fontColorDark
-                    font.family: vpnFont.name
-                    font.pixelSize: Theme.fontSize
-                    font.weight: Font.Bold
-                    height: Theme.labelLineHeight
-
-                    states: State {
-                        when: mouseArea.containsMouse
-                        PropertyChanges {
-                            target: countryName
-                            opacity: .7
-                        }
+                RowLayout {
+                    spacing: 0
+                    ServerListToggle {
+                        id: serverListToggle
                     }
 
-                    transitions: Transition {
-                        NumberAnimation {
-                            target: countryName
-                            properties: "opacity"
-                            duration: 100
-                        }
+                    Image {
+                        id: flag
+                        source: "../resources/flags/" + code.toUpperCase(
+                                    ) + ".png"
+                        fillMode: Image.PreserveAspectFit
+                        Layout.preferredWidth: Theme.iconSize
+                        Layout.preferredHeight: Theme.iconSize
+                        Layout.leftMargin: Theme.hSpacing
+                    }
+
+                    BoldLabel {
+                        id: countryName
+                        text: name
+                        Layout.leftMargin: Theme.hSpacing
+                        Layout.fillWidth: true
                     }
                 }
             }
@@ -174,14 +139,6 @@ Item {
                     easing.type: Easing.InSine
                     duration: 200
                 }
-            }
-        }
-        populate: Transition {
-            NumberAnimation {
-                from: 0
-                to: 1
-                property: "opacity"
-                duration: 300
             }
         }
     }

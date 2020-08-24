@@ -12,6 +12,15 @@ Image {
     source: "../resources/toggle-down.svg"
     transformOrigin: Image.Center
 
+    states: State {
+        name: "rotated"
+        when: serverCountry.cityListVisible
+        PropertyChanges {
+            target: serverListToggle
+            rotation: 90
+        }
+    }
+
     transitions: [
         Transition {
             from: ""
