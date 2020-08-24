@@ -86,6 +86,8 @@ public:
 
     ServerData *currentServer() { return &m_serverData; }
 
+    const QList<Server> getServers() const;
+
     User *user() { return &m_user; }
 
     AlertType alert() const { return m_alert; }

@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QRandomGenerator>
 
 // static
 Server Server::fromJson(QJsonObject &obj)
@@ -62,4 +63,28 @@ Server Server::fromJson(QJsonObject &obj)
     }
 
     return s;
+}
+
+// static
+const Server &Server::weightChooser(const QList<Server> &servers)
+{
+    uint32_t weightSum = 0;
+
+    for (QList<Server>::ConstIterator i = servers.begin(); i != servers.end(); ++i) {
+        weightSum += i->weight();
+    }
+
+    quint32 r = QRandomGenerator::global()->generate() % (weightSum + 1);
+
+    for (QList<Server>::ConstIterator i = servers.begin(); i != servers.end(); ++i) {
+        if (i->weight() <= r) {
+            return *i;
+        }
+
+        r -= i->weight();
+    }
+
+    // This should not happen.
+    Q_ASSERT(false);
+    return servers[0];
 }

@@ -12,7 +12,11 @@ class Server final
 public:
     static Server fromJson(QJsonObject &obj);
 
+    static const Server &weightChooser(const QList<Server> &servers);
+
     const QString &hostname() const { return m_hostname; }
+
+    uint32_t weight() const { return m_weight; }
 
 private:
     Server() = default;
@@ -23,14 +27,11 @@ private:
            const QString &ipv6AddrIn,
            const QString &ipv6Gateway,
            const QString &publicKey,
-           int weight)
+           uint32_t weight)
         : m_hostname(hostname), m_ipv4AddrIn(ipv4AddrIn), m_ipv4Gateway(ipv4Gateway),
           m_ipv6AddrIn(ipv6AddrIn), m_ipv6Gateway(ipv6Gateway), m_publicKey(publicKey),
           m_weight(weight)
-    {
-        // TODO: to be removed.
-        Q_UNUSED(m_weight);
-    }
+    {}
 
     QString m_hostname;
     QString m_ipv4AddrIn;

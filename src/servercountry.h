@@ -6,6 +6,7 @@
 #include <QList>
 #include <QString>
 
+class ServerData;
 class QJsonObject;
 class QStringList;
 
@@ -19,6 +20,8 @@ public:
     const QString &code() const { return m_code; }
 
     const QList<ServerCity> &cities() const { return m_cities; }
+
+    const QList<Server> getServers(const ServerData &data) const;
 
 private:
     ServerCountry(const QString &name, const QString &code) : m_name(name), m_code(code) {}

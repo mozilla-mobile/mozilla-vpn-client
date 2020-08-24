@@ -1,4 +1,5 @@
 #include "dummycontroller.h"
+#include "server.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -9,8 +10,9 @@ DummyController::DummyController()
     m_timer->setSingleShot(true);
 }
 
-void DummyController::activate() {
-    qDebug() << "DummyController activated";
+void DummyController::activate(const Server &data)
+{
+    qDebug() << "DummyController activated" << data.hostname();
 
     m_timer->stop();
     m_timer->start(2000);

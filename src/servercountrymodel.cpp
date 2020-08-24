@@ -111,3 +111,14 @@ void ServerCountryModel::pickRandom(ServerData &data)
 
     data.initialize(country, city);
 }
+
+const QList<Server> ServerCountryModel::getServers(const ServerData &data) const
+{
+    for (QList<ServerCountry>::ConstIterator i = m_countries.begin(); i != m_countries.end(); ++i) {
+        if (i->code() == data.countryCode()) {
+            return i->getServers(data);
+        }
+    }
+
+    return QList<Server>();
+}

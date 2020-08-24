@@ -24,7 +24,10 @@ constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 3600;
 // in seconds, how often we should check the account
 constexpr const uint32_t SCHEDULE_ACCOUNT_CHECK_TIMER_SEC = 3600;
 
-MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn") {}
+MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
+{
+    m_controller.setVPN(this);
+}
 
 MozillaVPN::~MozillaVPN() = default;
 
@@ -398,4 +401,9 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     }
 
     // TODO: here we need something more.
+}
+
+const QList<Server> MozillaVPN::getServers() const
+{
+    return m_serverCountryModel.getServers(m_serverData);
 }

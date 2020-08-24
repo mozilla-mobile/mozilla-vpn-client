@@ -6,6 +6,7 @@
 #include <QObject>
 
 class QTimer;
+class MozillaVPN;
 
 class Controller final : public QObject
 {
@@ -28,6 +29,8 @@ private:
 public:
     Controller();
 
+    void setVPN(MozillaVPN *vpn);
+
     State state() const { return m_state; }
 
     Q_INVOKABLE void activate();
@@ -46,10 +49,12 @@ signals:
     void timeChanged();
 
 private:
-    State m_state;
+    State m_state = StateOff;
 
-    QTimer* m_timer;
-    int m_time;
+    MozillaVPN *m_vpn = nullptr;
+
+    QTimer *m_timer = nullptr;
+    int m_time = 0;
 
     QScopedPointer<ControllerImpl> m_impl;
 };

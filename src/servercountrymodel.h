@@ -30,6 +30,8 @@ public:
 
     void pickRandom(ServerData &data);
 
+    const QList<Server> getServers(const ServerData &data) const;
+
     // QAbstractListModel methods
 
     QHash<int, QByteArray> roleNames() const override;

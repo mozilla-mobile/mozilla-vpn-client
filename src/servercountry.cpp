@@ -1,4 +1,5 @@
 #include "servercountry.h"
+#include "serverdata.h"
 
 #include <QDebug>
 #include <QJsonArray>
@@ -31,4 +32,15 @@ ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
     }
 
     return sc;
+}
+
+const QList<Server> ServerCountry::getServers(const ServerData &data) const
+{
+    for (QList<ServerCity>::ConstIterator i = m_cities.begin(); i != m_cities.end(); ++i) {
+        if (i->name() == data.city()) {
+            return i->getServers();
+        }
+    }
+
+    return QList<Server>();
 }

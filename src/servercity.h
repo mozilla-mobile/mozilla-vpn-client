@@ -15,7 +15,7 @@ public:
 
     const QString &name() const { return m_name; }
 
-    const QList<Server> &servers() const { return m_servers; }
+    const QList<Server> getServers() const { return m_servers; }
 
 private:
     ServerCity(const QString &name, const QString &code, double latitude, double longitude);
