@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 
+import "../themes/themes.js" as Theme
+
 Item {
     property alias title: title.text
     property alias rightTitle: rightTitle.text
@@ -12,35 +14,32 @@ Item {
 
     Image {
         id: backImage
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: 20
-        anchors.leftMargin: 20
         source: "../resources/back.svg"
-        sourceSize.width: 16
-        sourceSize.height: 16
+        sourceSize.width: Theme.iconSize
+
+        fillMode: Image.PreserveAspectFit
+        anchors.top: menuBar.top
+        anchors.verticalCenter: menuBar.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.windowMargin
 
         MouseArea {
-            anchors.fill: parent
+            anchors.fill: backImage
             onClicked: stackview.pop()
         }
     }
 
-    Label {
+    VPNBoldLabel {
         id: title
         anchors.top: menuBar.top
         anchors.centerIn: menuBar
-        font.pixelSize: 15
-        font.family: vpnFont.name
     }
 
-    Label {
+    VPNLightLabel {
         id: rightTitle
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.topMargin: 17
-        anchors.rightMargin: 17
-        font.pixelSize: 15
+        anchors.verticalCenter: menuBar.verticalCenter
+        anchors.right: menuBar.right
+        anchors.rightMargin: Theme.windowMargin
     }
 
     Rectangle {

@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.11
 import Mozilla.VPN 1.0
 
 import "../components"
+import "../themes/themes.js" as Theme
 
 Item {
     VPNControllerView {
@@ -21,56 +22,41 @@ Item {
     }
 
     RowLayout {
+        id: devicesRow1
+        spacing: 0
         width: parent.width
-        y: box.y + box.height + 28
+        height: Theme.vSpacing
+        y: box.y + box.height + Theme.iconSize
 
-        Image {
-            width: 16
-            height: 16
-            source: "../resources/settings.svg"
-            sourceSize.width: 16
-            sourceSize.height: 16
-            Layout.leftMargin: 20
+        VPNIcon {
+            source: "../resources/connection.svg"
+            Layout.rightMargin: Theme.iconSize
+            Layout.leftMargin: Theme.hSpacing
         }
 
-        Label {
+        VPNBoldLabel {
             text: qsTr("Select location")
-            color: "#3D3D3D"
-            font.family: vpnFont.name
-            font.pixelSize: 15
-            font.weight: Font.Bold
         }
 
         Item {
             Layout.fillWidth: true
         }
 
-        Image {
-            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
-            sourceSize.height: 16
-            sourceSize.width: 16
+        VPNIcon {
+            Layout.rightMargin: 8
+            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase(
+                        ) + ".png"
         }
 
-        Label {
+        VPNLightLabel {
             text: VPNCurrentServer.city
-            color: "#3D3D3D"
-            font.family: vpnFont.name
-            font.pixelSize: 15
-
             MouseArea {
                 anchors.fill: parent
                 onClicked: stackview.push("ViewServers.qml")
             }
         }
 
-        Image {
-            width: 16
-            height: 16
-            source: "../resources/chevron.svg"
-            sourceSize.width: 16
-            sourceSize.height: 16
-            Layout.rightMargin: 20
-
+        VPNChevron {
             MouseArea {
                 anchors.fill: parent
                 onClicked: stackview.push("ViewServers.qml")
@@ -79,50 +65,34 @@ Item {
     }
 
     RowLayout {
+        spacing: 0
         width: parent.width
-        y: box.y + box.height + 74
+        y: box.y + box.height + Theme.iconSize + (Theme.vSpacing * 2)
 
-        Image {
-            width: 16
-            height: 16
+        VPNIcon {
             source: "../resources/devices.svg"
-            sourceSize.width: 16
-            sourceSize.height: 16
-            Layout.leftMargin: 20
+            Layout.rightMargin: Theme.iconSize
+            Layout.leftMargin: Theme.hSpacing
         }
 
-        Label {
+        VPNBoldLabel {
             text: qsTr("My devices")
-            color: "#3D3D3D"
-            font.family: vpnFont.name
-            font.pixelSize: 15
-            font.weight: Font.Bold
         }
 
         Item {
             Layout.fillWidth: true
         }
 
-        Label {
-            text: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
-            color: "#3D3D3D"
-            font.family: vpnFont.name
-            font.pixelSize: 15
-
+        VPNLightLabel {
+            text: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
+                      VPNUser.maxDevices)
             MouseArea {
                 anchors.fill: parent
                 onClicked: stackview.push("ViewDevices.qml")
             }
         }
 
-        Image {
-            width: 16
-            height: 16
-            source: "../resources/chevron.svg"
-            sourceSize.width: 16
-            sourceSize.height: 16
-            Layout.rightMargin: 20
-
+        VPNChevron {
             MouseArea {
                 anchors.fill: parent
                 onClicked: stackview.push("ViewDevices.qml")

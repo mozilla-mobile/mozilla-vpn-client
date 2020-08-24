@@ -22,3 +22,4 @@ const labelLineHeight = 22
 
 const hSpacing = 20;
 const vSpacing = 24;
+const windowMargin = 16

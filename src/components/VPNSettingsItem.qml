@@ -10,14 +10,8 @@ RowLayout {
     width: parent.width
     Layout.fillWidth: true
 
-    Layout.leftMargin: 16
-    Layout.rightMargin: 16
-
-    Image {
-        height: 16
-        width: 16
+    VPNChevron {
         Layout.alignment: Qt.AlignTop
-        source: "../resources/chevron.svg"
     }
 
     Label {
@@ -30,14 +24,7 @@ RowLayout {
         Layout.fillWidth: true
     }
 
-    Image {
-        height: 16
-        width: 16
-        Layout.alignment: Qt.AlignTop
-        source: "../resources/chevron.svg"
-        sourceSize.width: 16
-        sourceSize.height: 16
-
+    VPNChevron {
         MouseArea {
             id: iconMouseArea
             anchors.fill: parent

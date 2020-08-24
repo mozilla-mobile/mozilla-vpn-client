@@ -4,12 +4,14 @@ import QtQuick.Layouts 1.11
 import Mozilla.VPN 1.0
 
 import "../components"
+import "../themes/themes.js" as Theme
 
 Item {
     VPNMenu {
         id: menu
         title: qsTr("My devices")
-        rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
+        rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
+                        VPNUser.maxDevices)
     }
 
     ListView {
@@ -25,17 +27,19 @@ Item {
             width: parent.width
 
             contentItem: ColumnLayout {
-                spacing: 0
 
                 RowLayout {
+                    id: deviceRow
+                    Layout.topMargin: (Theme.vSpacing / 2)
+                    Layout.bottomMargin: deviceRow.Layout.topMargin
 
-                    Image {
+                    VPNIcon {
                         id: deviceImage
-                        height: 18
-                        width: 18
-                        Layout.alignment: Qt.AlignTop
-                        Layout.margins: 19
                         source: "../resources/devices.svg"
+                        Layout.leftMargin: Theme.hSpacing
+                        Layout.rightMargin: Theme.hSpacing
+                        Layout.topMargin: 0
+                        Layout.alignment: Qt.AlignTop
                     }
 
                     ColumnLayout {
@@ -76,13 +80,10 @@ Item {
                         Layout.fillWidth: true
                     }
 
-                    Image {
+                    VPNIcon {
                         visible: !currentOne
                         id: deleteImage
-                        height: 18
-                        width: 18
-                        Layout.margins: 19
-                        Layout.alignment: Qt.AlignTop
+                        Layout.rightMargin: Theme.hSpacing
                         source: "../resources/delete.svg"
 
                         MouseArea {

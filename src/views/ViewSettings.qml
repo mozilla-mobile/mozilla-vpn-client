@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import Mozilla.VPN 1.0
 
 import "../components"
+import "../themes/themes.js" as Theme
 
 Item {
     id: settings
@@ -23,6 +24,7 @@ Item {
             sourceSize.height: 80
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 32
+            Layout.bottomMargin: Theme.vSpacing
             height: 80
         }
 
