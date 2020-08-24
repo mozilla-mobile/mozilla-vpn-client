@@ -12,7 +12,14 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
     qDebug() << "Network request created";
 
-    m_request.setRawHeader("User-Agent", "MozillaVPN " APP_VERSION);
+    QByteArray userAgent;
+    userAgent.append("MozillaVPN/" APP_VERSION " (");
+    userAgent.append(QSysInfo::productType());
+    userAgent.append(" ");
+    userAgent.append(QSysInfo::productVersion());
+    userAgent.append(")");
+
+    m_request.setRawHeader("User-Agent", userAgent);
 
     m_manager = new QNetworkAccessManager(this);
 
