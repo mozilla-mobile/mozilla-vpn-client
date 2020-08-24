@@ -11,16 +11,28 @@ Rectangle {
         State {
             name: VPNController.StateOff
             PropertyChanges {
-                target: logoTitle
-                text: qsTr("VPN is off")
+                target: box
+                color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logo
                 source: "../resources/state-off.svg"
             }
             PropertyChanges {
+                target: logoTitle
+                text: qsTr("VPN is off")
+            }
+            PropertyChanges {
+                target: logoTitle
+                color: "#3D3D3D"
+            }
+            PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Turn on to protect your privacy")
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                color: "#3D3D3D"
             }
             PropertyChanges {
                 target: settingsImage
@@ -30,16 +42,28 @@ Rectangle {
         State {
             name: VPNController.StateConnecting
             PropertyChanges {
-                target: logoTitle
-                text: qsTr("Connecting...")
+                target: box
+                color: "#321C64"
             }
             PropertyChanges {
                 target: logo
                 source: "../resources/state-on.svg"
             }
             PropertyChanges {
+                target: logoTitle
+                text: qsTr("Connecting...")
+            }
+            PropertyChanges {
+                target: logoTitle
+                color: "#FFFFFF"
+            }
+            PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Masking connection and location")
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                color: "#FFFFFF"
             }
             PropertyChanges {
                 target: settingsImage
@@ -49,16 +73,28 @@ Rectangle {
         State {
             name: VPNController.StateOn
             PropertyChanges {
-                target: logoTitle
-                text: qsTr("VPN is on")
+                target: box
+                color: "#321C64"
             }
             PropertyChanges {
                 target: logo
                 source: "../resources/state-on.svg"
             }
             PropertyChanges {
+                target: logoTitle
+                text: qsTr("VPN is on")
+            }
+            PropertyChanges {
+                target: logotitle
+                color: "#FFFFFF"
+            }
+            PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Secure and private  •  00:04:85")
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                color: "#FFFFFF"
             }
             PropertyChanges {
                 target: settingsImage
@@ -74,19 +110,16 @@ Rectangle {
             ColorAnimation {
                 target: box
                 property: "color"
-                to: "#321C64"
                 duration: 200
             }
             ColorAnimation {
                 target: logoTitle
                 property: "color"
-                to: "#FFFFFF"
                 duration: 200
             }
             ColorAnimation {
                 target: logoSubtitle
                 property: "color"
-                to: "#FFFFFF"
                 duration: 200
             }
         },
@@ -97,19 +130,16 @@ Rectangle {
             ColorAnimation {
                 target: box
                 property: "color"
-                to: "#FFFFFF"
                 duration: 200
             }
             ColorAnimation {
                 target: logoTitle
                 property: "color"
-                to: "#3D3D3D"
                 duration: 200
             }
             ColorAnimation {
                 target: logoSubtitle
                 property: "color"
-                to: "#3D3D3D"
                 duration: 200
             }
         }
@@ -119,7 +149,6 @@ Rectangle {
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.margins: 16
-    color: "#FFFFFF"
     radius: 8
     height: 328
     width: parent.width - 32
@@ -158,7 +187,6 @@ Rectangle {
         y: logo.y + logo.height + 26
         font.pixelSize: 22
         height: 32
-        color: "#3D3D3D"
     }
 
     Text {
@@ -169,7 +197,6 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 15
         height: 22
-        color: "#3D3D3D"
     }
 
     VPNToggle {
