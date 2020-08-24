@@ -7,6 +7,8 @@
 
 void DeviceModel::fromJson(QJsonObject &obj)
 {
+    qDebug() << "DeviceModel from json";
+
     QString privateKey;
     QString currentDeviceName = Device::currentDeviceName();
     if (hasPrivateKeyDevice(currentDeviceName)) {
@@ -46,8 +48,7 @@ void DeviceModel::writeSettings(QSettings &settings)
     QStringList keys = settings.allKeys();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         if (i->startsWith("device/")) {
-            settings.remove(*
-                            i);
+            settings.remove(*i);
         }
     }
 

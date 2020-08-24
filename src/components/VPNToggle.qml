@@ -107,8 +107,4 @@ Rectangle {
             }
         }
     }
-
-    Component.onCompleted: {
-        console.log(VPNController)
-    }
 }

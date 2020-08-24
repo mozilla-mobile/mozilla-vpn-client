@@ -194,7 +194,8 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
     qDebug() << "Device added";
 
     if (!m_deviceModel.hasDevice(deviceName)) {
-        m_deviceModel.addDevice(Device(deviceName, publicKey, privateKey));
+        m_deviceModel.addDevice(
+            Device(deviceName, QDateTime::currentDateTime(), publicKey, privateKey));
         m_deviceModel.writeSettings(m_settings);
     }
 }
