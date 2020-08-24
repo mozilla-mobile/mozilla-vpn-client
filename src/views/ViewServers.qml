@@ -21,7 +21,7 @@ Item {
     ListView {
         id: serverList
 
-        height: parent.height
+        height: parent.height - menu.height
         width: parent.width
 
         anchors.top: menu.bottom
