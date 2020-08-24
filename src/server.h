@@ -18,24 +18,21 @@ private:
     Server() = default;
 
     Server(const QString &hostname,
-           bool includeInCountry,
            const QString &ipv4AddrIn,
            const QString &ipv4Gateway,
            const QString &ipv6AddrIn,
            const QString &ipv6Gateway,
            const QString &publicKey,
            int weight)
-        : m_hostname(hostname), m_includeInCountry(includeInCountry), m_ipv4AddrIn(ipv4AddrIn),
-          m_ipv4Gateway(ipv4Gateway), m_ipv6AddrIn(ipv6AddrIn), m_ipv6Gateway(ipv6Gateway),
-          m_publicKey(publicKey), m_weight(weight)
+        : m_hostname(hostname), m_ipv4AddrIn(ipv4AddrIn), m_ipv4Gateway(ipv4Gateway),
+          m_ipv6AddrIn(ipv6AddrIn), m_ipv6Gateway(ipv6Gateway), m_publicKey(publicKey),
+          m_weight(weight)
     {
         // TODO: to be removed.
-        Q_UNUSED(m_includeInCountry);
         Q_UNUSED(m_weight);
     }
 
     QString m_hostname;
-    bool m_includeInCountry;
     QString m_ipv4AddrIn;
     QString m_ipv4Gateway;
     QString m_ipv6AddrIn;

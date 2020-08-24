@@ -11,10 +11,6 @@ Server Server::fromJson(QJsonObject &obj)
     QJsonValue hostname = obj.take("hostname");
     Q_ASSERT(hostname.isString());
 
-    Q_ASSERT(obj.contains("include_in_country"));
-    QJsonValue includeInCountry = obj.take("include_in_country");
-    Q_ASSERT(includeInCountry.isBool());
-
     Q_ASSERT(obj.contains("ipv4_addr_in"));
     QJsonValue ipv4AddrIn = obj.take("ipv4_addr_in");
     Q_ASSERT(ipv4AddrIn.isString());
@@ -40,7 +36,6 @@ Server Server::fromJson(QJsonObject &obj)
     Q_ASSERT(weight.isDouble());
 
     Server s(hostname.toString(),
-             includeInCountry.toBool(),
              ipv4AddrIn.toString(),
              ipv4Gateway.toString(),
              ipv6AddrIn.toString(),
