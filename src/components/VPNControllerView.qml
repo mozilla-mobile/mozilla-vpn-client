@@ -194,7 +194,7 @@ Rectangle {
     anchors.left: parent.left
     anchors.margins: 16
     radius: 8
-    height: 328
+    height: 318
     width: parent.width - 32
 
     Image {

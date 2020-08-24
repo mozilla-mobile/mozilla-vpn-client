@@ -2,14 +2,14 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 
-// ServerListToggle
+// VPNServerListToggle
 Image {
-    Layout.preferredHeight: 8
-    Layout.preferredWidth: 8
+    Layout.preferredHeight: 16
+    Layout.preferredWidth: 16
 
     fillMode: Image.PreserveAspectFit
     smooth: true
-    source: "../resources/toggle-down.svg"
+    source: "../resources/arrow-toggle.svg"
     transformOrigin: Image.Center
 
     states: State {

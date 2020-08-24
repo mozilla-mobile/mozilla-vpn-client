@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.11
 
 import "../themes/themes.js" as Theme
 
-// RadioButtonLabel
+// VPNRadioButtonLabel
 Label {
     anchors.left: radioButton.right
     anchors.leftMargin: Theme.hSpacing
