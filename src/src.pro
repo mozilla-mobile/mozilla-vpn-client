@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
+        controller.cpp \
         curve25519/curve25519.cpp \
         curve25519/curve25519_wg.c \
         device.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
         user.cpp
 
 HEADERS += \
+        controller.h \
         curve25519/curve25519.h \
         curve25519/curve25519_wg.h \
         device.h \

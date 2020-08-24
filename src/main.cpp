@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN", mozillaVPN.get());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController", mozillaVPN->controller());
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(

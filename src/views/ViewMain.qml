@@ -7,74 +7,8 @@ import Mozilla.VPN 1.0
 import "../components"
 
 Item {
-    Rectangle {
+    VPNControllerView {
         id: box
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.margins: 16
-        color: "#FFFFFF"
-        radius: 8
-        height: 328
-        width: parent.width - 32
-
-        Image {
-            id: settingsImage
-            height: 16
-            width: 16
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.topMargin: 16
-            anchors.rightMargin: 16
-            source: "../resources/settings.svg"
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: stackview.push("ViewSettings.qml")
-            }
-        }
-
-        Image {
-            id: logo
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 66
-            source: "../resources/state-off.svg"
-            sourceSize.width: 76
-            sourceSize.height: 76
-        }
-
-        Text {
-            id: logoTitle
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            text: qsTr("VPN is off")
-            font.family: vpnFont.name
-            horizontalAlignment: Text.AlignHCenter
-            y: logo.y + logo.height + 26
-            font.pixelSize: 22
-            height: 32
-        }
-
-        Text {
-            id: logoSubtitle
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: logoTitle.y + logoTitle.height + 8
-            text: qsTr("Turn on to protect your privacy")
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 15
-            height: 22
-        }
-
-        VPNToggle {
-            id: toggle
-            y: logoSubtitle.y + logoSubtitle.height + 24
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            onActivate: VPN.activate()
-            onDeactivate: VPN.deactivate()
-        }
     }
 
     DropShadow {

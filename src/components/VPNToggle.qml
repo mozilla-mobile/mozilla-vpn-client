@@ -1,24 +1,25 @@
 import QtQuick 2.0
+import Mozilla.VPN 1.0
 
 Rectangle {
-    signal activate
-    signal deactivate
-
-    state: "inactive"
+    state: VPNController.state
 
     states: [
         State {
-            name: "active"
+            name: VPNController.StateOff
         },
         State {
-            name: "inactive"
+            name: VPNController.StateConnecting
+        },
+        State {
+            name: VPNController.StateOn
         }
     ]
 
     transitions: [
         Transition {
-            from: "inactive"
-            to: "active"
+            from: VPNController.StateOff
+            to: VPNController.StateConnecting
             NumberAnimation {
                 target: cursor
                 property: "anchors.leftMargin"
@@ -27,11 +28,18 @@ Rectangle {
                 to: 32
                 alwaysRunToEnd: true
             }
+            ColorAnimation {
+                target: toggle
+                property: "color"
+                from: "#9E9E9E"
+                to: "#3FE1B0"
+                duration: 200
+            }
         },
 
         Transition {
-            from: "active"
-            to: "inactive"
+            from: VPNController.StateConnecting
+            to: VPNController.StateOff
             NumberAnimation {
                 target: cursor
                 property: "anchors.leftMargin"
@@ -39,6 +47,14 @@ Rectangle {
                 from: 32
                 to: 4
                 alwaysRunToEnd: true
+            }
+
+            ColorAnimation {
+                target: toggle
+                property: "color"
+                from: "#3FE1B0"
+                to: "#9E9E9E"
+                duration: 200
             }
         }
     ]
@@ -64,13 +80,15 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            if (toggle.state == "active") {
-                toggle.state = "inactive"
-                toggle.deactivate()
+            if (VPNController.state !== VPNController.StateOff) {
+                VPNController.deactivate()
             } else {
-                toggle.state = "active"
-                toggle.activate()
+                VPNController.activate()
             }
         }
+    }
+
+    Component.onCompleted: {
+        console.log(VPNController)
     }
 }

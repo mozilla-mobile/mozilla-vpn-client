@@ -56,7 +56,7 @@ Window {
 
         states: [
             State {
-                name: "INITIALIZE"
+                name: VPN.StateInitialize
                 PropertyChanges {
                     target: loader
                     source: "states/StateInitialize.qml"
@@ -64,15 +64,15 @@ Window {
             },
 
             State {
-                name: "CONNECTING"
+                name: VPN.StateAuthenticating
                 PropertyChanges {
                     target: loader
-                    source: "states/StateConnecting.qml"
+                    source: "states/StateAuthenticating.qml"
                 }
             },
 
             State {
-                name: "MAIN"
+                name: VPN.StateMain
                 PropertyChanges {
                     target: loader
                     source: "states/StateMain.qml"

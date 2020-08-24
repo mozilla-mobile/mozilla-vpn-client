@@ -5,6 +5,7 @@
 #include "servercountrymodel.h"
 #include "serverdata.h"
 #include "user.h"
+#include "controller.h"
 
 #include <QList>
 #include <QObject>
@@ -19,6 +20,14 @@ class MozillaVPN final : public QObject
     Q_OBJECT
 
 public:
+    enum State {
+        StateInitialize,
+        StateAuthenticating,
+        StateMain,
+    };
+
+    Q_ENUM(State);
+
     enum AlertType {
         NoAlert,
         AuthenticationFailedAlert,
@@ -30,14 +39,15 @@ public:
     Q_ENUM(AlertType)
 
 private:
-    Q_PROPERTY(QString state READ getState NOTIFY stateChanged)
+    Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(QAbstractListModel *serverCountryModel READ serverCountryModel NOTIFY
-                   serverCountryModelChanged)
+               serverCountryModelChanged)
     Q_PROPERTY(QAbstractListModel *deviceModel READ deviceModel NOTIFY deviceModelChanged)
     Q_PROPERTY(int activeDevices READ activeDevices NOTIFY deviceModelChanged)
-    Q_PROPERTY(QObject *user READ user)
-    Q_PROPERTY(QObject *currentServer READ currentServer)
+    Q_PROPERTY(QObject *user READ user NOTIFY dummyChanged)
+    Q_PROPERTY(QObject *currentServer READ currentServer NOTIFY dummyChanged)
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
+    Q_PROPERTY(QObject* controller READ controller NOTIFY dummyChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -45,7 +55,7 @@ public:
 
     void initialize(int &argc, char *argv[]);
 
-    QString getState() const { return m_state; }
+    State state() const { return m_state; }
 
     const QString &getApiUrl() const { return m_apiUrl; }
 
@@ -54,10 +64,6 @@ public:
     Q_INVOKABLE void cancelAuthentication();
 
     Q_INVOKABLE void openLink(const QString &linkName);
-
-    Q_INVOKABLE void activate();
-
-    Q_INVOKABLE void deactivate();
 
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 
@@ -92,10 +98,12 @@ public:
 
     AlertType alert() const { return m_alert; }
 
+    Controller* controller() { return &m_controller; }
+
     void errorHandle(QNetworkReply::NetworkError error);
 
 private:
-    void setState(const QString &state);
+    void setState(State state);
 
     void scheduleTask(Task *task);
     void maybeRunTask();
@@ -106,6 +114,9 @@ signals:
     void serverCountryModelChanged();
     void alertChanged();
 
+    // Never used.
+    void dummyChanged();
+
 private:
     QSettings m_settings;
 
@@ -114,13 +125,15 @@ private:
 
     ServerData m_serverData;
 
+    Controller m_controller;
+
     DeviceModel m_deviceModel;
     ServerCountryModel m_serverCountryModel;
 
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
 
-    QString m_state;
+    State m_state;
     QString m_apiUrl;
 
     AlertType m_alert = NoAlert;

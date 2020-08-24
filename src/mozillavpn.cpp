@@ -13,10 +13,6 @@
 #include <QPointer>
 #include <QTimer>
 
-constexpr const char *STATE_INITIALIZE = "INITIALIZE";
-constexpr const char *STATE_CONNECTING = "CONNECTING";
-constexpr const char *STATE_MAIN = "MAIN";
-
 constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
@@ -37,7 +33,7 @@ void MozillaVPN::initialize(int &, char *[])
     qDebug() << "MozillaVPN Initialization";
 
     // This is our first state.
-    m_state = STATE_INITIALIZE;
+    m_state = StateInitialize;
 
     // API URL depends on the type of build.
     m_apiUrl = API_URL_PROD;
@@ -89,10 +85,10 @@ void MozillaVPN::initialize(int &, char *[])
     scheduleTask(new TaskAccount());
     scheduleTask(new TaskFetchServers());
 
-    setState(STATE_MAIN);
+    setState(StateMain);
 }
 
-void MozillaVPN::setState(const QString &state)
+void MozillaVPN::setState(State state)
 {
     m_state = state;
     emit stateChanged();
@@ -102,7 +98,7 @@ void MozillaVPN::authenticate()
 {
     qDebug() << "Authenticate";
 
-    m_state = STATE_CONNECTING;
+    m_state = StateAuthenticating;
     emit stateChanged();
 
     scheduleTask(new TaskAuthenticate());
@@ -184,8 +180,8 @@ void MozillaVPN::authenticationCompleted(QJsonObject &userObj, const QString &to
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        if (m_state == STATE_CONNECTING) {
-            m_state = STATE_MAIN;
+        if (m_state == StateAuthenticating) {
+            m_state = StateMain;
             emit stateChanged();
         }
     }));
@@ -234,16 +230,6 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
                        [this]() { scheduleTask(new TaskFetchServers()); });
 }
 
-void MozillaVPN::activate()
-{
-    qDebug() << "Activation";
-}
-
-void MozillaVPN::deactivate()
-{
-    qDebug() << "Deactivation";
-}
-
 int MozillaVPN::activeDevices() const
 {
     // We need to expose "int"to make QML happy.
@@ -280,8 +266,8 @@ void MozillaVPN::cancelAuthentication()
 {
     qDebug() << "Canceling authentication";
 
-    if (m_state != STATE_CONNECTING) {
-        // We cannot cancel tasks if we are not in connecting state.
+    if (m_state != StateAuthenticating) {
+        // We cannot cancel tasks if we are not in authenticating state.
         return;
     }
 
@@ -292,7 +278,7 @@ void MozillaVPN::cancelAuthentication()
     m_task_running = false;
     m_tasks.clear();
 
-    setState(STATE_INITIALIZE);
+    setState(StateInitialize);
 }
 
 void MozillaVPN::logout()
@@ -307,7 +293,7 @@ void MozillaVPN::logout()
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         m_settings.clear();
-        setState(STATE_INITIALIZE);
+        setState(StateInitialize);
 
         m_alert = LogoutAlert;
         emit alertChanged();
@@ -402,4 +388,19 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     default:
         break;
     }
+
+    emit alertChanged();
+
+    qDebug() << "Alert:" << m_alert << "State:" << m_state;
+
+    if (m_alert == NoAlert) {
+        return;
+    }
+
+    // Any error in authenticating state sends to the Initial state.
+    if (m_state == StateAuthenticating) {
+        setState(StateInitialize);
+    }
+
+    // TODO: here we need something more.
 }
