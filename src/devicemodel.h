@@ -17,6 +17,7 @@ public:
     enum ServerCountryRoles {
         NameRole = Qt::UserRole + 1,
         CurrentOneRole,
+        CreatedAtRole,
     };
 
     DeviceModel() = default;

@@ -45,6 +45,7 @@ bool DeviceModel::fromSettings(QSettings &settings)
 
 void DeviceModel::writeSettings(QSettings &settings)
 {
+    // Let's remove all the device settings
     QStringList keys = settings.allKeys();
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         if (i->startsWith("device/")) {
@@ -52,9 +53,13 @@ void DeviceModel::writeSettings(QSettings &settings)
         }
     }
 
+    QStringList devices;
     for (QList<Device>::Iterator i = m_devices.begin(); i != m_devices.end(); ++i) {
         i->writeSettings(settings);
+        devices.append(i->name());
     }
+
+    settings.setValue("devices", devices);
 }
 
 QHash<int, QByteArray> DeviceModel::roleNames() const
@@ -62,6 +67,7 @@ QHash<int, QByteArray> DeviceModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[CurrentOneRole] = "currentOne";
+    roles[CreatedAtRole] = "createdAt";
     return roles;
 }
 
@@ -82,6 +88,9 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
     case CurrentOneRole:
         return QVariant(m_devices.at(index.row()).hasPrivateKey());
+
+    case CreatedAtRole:
+        return QVariant(m_devices.at(index.row()).createdAt());
 
     default:
         return QVariant();

@@ -11,10 +11,10 @@ class Device final
 {
 public:
     Device(const QString &deviceName,
-           const QDateTime &dateTime,
+           const QDateTime &createdAt,
            const QString &publicKey,
            const QString &privateKey)
-        : m_deviceName(deviceName), m_dateTime(dateTime), m_publicKey(publicKey),
+        : m_deviceName(deviceName), m_createdAt(createdAt), m_publicKey(publicKey),
           m_privateKey(privateKey)
     {}
 
@@ -28,7 +28,7 @@ public:
 
     const QString &name() const { return m_deviceName; }
 
-    const QDateTime &dateTime() const { return m_dateTime; }
+    const QDateTime &createdAt() const { return m_createdAt; }
 
     bool isDevice(const QString &deviceName) const { return m_deviceName == deviceName; }
 
@@ -42,7 +42,7 @@ public:
 
 private:
     QString m_deviceName;
-    QDateTime m_dateTime;
+    QDateTime m_createdAt;
     QString m_publicKey;
     QString m_privateKey;
 };

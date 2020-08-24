@@ -41,34 +41,25 @@ QList<Device> Device::fromSettings(QSettings &settings)
 {
     QList<Device> list;
 
-    QStringList devices;
-    QStringList keys = settings.allKeys();
-    for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
-        if (i->startsWith("device/")) {
-            QStringList parts = i->split("/");
-            Q_ASSERT(parts[0] == "device");
+    if (settings.contains("devices")) {
+        QStringList devices = settings.value("devices").toStringList();
 
-            if (!devices.contains(parts[1])) {
-                devices.append(parts[1]);
-            }
+        for (QStringList::Iterator i = devices.begin(); i != devices.end(); ++i) {
+            QString key = "device/";
+            key.append(*i);
+
+            QString createdAt = key;
+            createdAt.append("/createdAt");
+            QString privkey = key;
+            privkey.append("/privatekey");
+            QString publickey = key;
+            publickey.append("/publickey");
+
+            list.append(Device(*i,
+                               settings.value(createdAt).toDateTime(),
+                               settings.value(publickey).toString(),
+                               settings.value(privkey).toString()));
         }
-    }
-
-    for (QStringList::Iterator i = devices.begin(); i != devices.end(); ++i) {
-        QString key = "device/";
-        key.append(*i);
-
-        QString date = key;
-        date.append("/date");
-        QString privkey = key;
-        privkey.append("/privatekey");
-        QString publickey = key;
-        publickey.append("/publickey");
-
-        list.append(Device(*i,
-                           settings.value(date).toDateTime(),
-                           settings.value(publickey).toString(),
-                           settings.value(privkey).toString()));
     }
 
     return list;
@@ -76,7 +67,7 @@ QList<Device> Device::fromSettings(QSettings &settings)
 
 void Device::writeSettings(QSettings &settings)
 {
-    settings.setValue("device/" + m_deviceName + "/date", m_dateTime);
+    settings.setValue("device/" + m_deviceName + "/createdAt", m_createdAt);
     settings.setValue("device/" + m_deviceName + "/privatekey", m_privateKey);
     settings.setValue("device/" + m_deviceName + "/publickey", m_publicKey);
 }
