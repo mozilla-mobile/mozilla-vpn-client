@@ -109,8 +109,5 @@ void ServerCountryModel::pickRandom(ServerData &data)
     quint32 cityId = QRandomGenerator::global()->generate() % country.cities().length();
     const ServerCity &city = country.cities().at(cityId);
 
-    quint32 serverId = QRandomGenerator::global()->generate() % city.servers().length();
-    const Server &server = city.servers().at(serverId);
-
-    data.initialize(country, city, server);
+    data.initialize(country, city);
 }

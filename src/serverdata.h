@@ -21,7 +21,7 @@ public:
 
     void writeSettings(QSettings &settings);
 
-    void initialize(const ServerCountry &country, const ServerCity &city, const Server &server);
+    void initialize(const ServerCountry &country, const ServerCity &city);
 
     bool initialized() const { return m_initialized; }
 
@@ -35,7 +35,6 @@ signals:
 private:
     bool m_initialized = false;
 
-    QString m_serverName;
     QString m_countryCode;
     QString m_city;
 };
