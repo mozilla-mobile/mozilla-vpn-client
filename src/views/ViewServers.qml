@@ -26,7 +26,6 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        anchors.topMargin: Theme.vSpacing
         anchors.leftMargin: Theme.hSpacing
         anchors.rightMargin: Theme.hSpacing
 
@@ -42,10 +41,17 @@ Item {
             width: serverList.width
 
             ItemDelegate {
-                id: mouseArea
+                id: serverCountryRow
                 Layout.preferredWidth: parent.width
+                Layout.preferredHeight: 22
+                Layout.topMargin: Theme.vSpacing / 2
+                Layout.bottomMargin: serverCountryRow.Layout.topMargin
                 spacing: 0
-                onClicked: cityListVisible = !cityListVisible
+
+                MouseArea {
+                    anchors.fill: serverCountryRow
+                    onClicked: cityListVisible = !cityListVisible
+                }
 
                 RowLayout {
                     spacing: 0
