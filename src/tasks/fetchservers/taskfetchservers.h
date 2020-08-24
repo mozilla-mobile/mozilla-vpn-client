@@ -7,7 +7,7 @@
 
 class ServersFetcher;
 
-class TaskFetchServers : public Task
+class TaskFetchServers final : public Task
 {
 public:
     TaskFetchServers() : Task("TaskFetchServers") {}

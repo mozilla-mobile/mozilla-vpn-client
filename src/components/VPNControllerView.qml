@@ -7,6 +7,21 @@ import Mozilla.VPN 1.0
 Rectangle {
     state: VPNController.state
 
+    function formatSingle(value) {
+        if (value === 0) return "00";
+        return (value < 10 ? "0" : "") + value;
+    }
+
+    function formatTime(time) {
+        var secs = time % 60;
+        time = Math.floor(time / 60);
+
+        var mins = time % 60;
+        time = Math.floor(time / 60);
+
+        return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
+    }
+
     states: [
         State {
             name: VPNController.StateOff
@@ -85,12 +100,12 @@ Rectangle {
                 text: qsTr("VPN is on")
             }
             PropertyChanges {
-                target: logotitle
+                target: logoTitle
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Secure and private  •  00:04:85")
+                text: qsTr("Secure and private  •  ") + formatTime(VPNController.time)
             }
             PropertyChanges {
                 target: logoSubtitle
@@ -98,14 +113,44 @@ Rectangle {
             }
             PropertyChanges {
                 target: settingsImage
-                source: "../resources/setting-white.svg"
+                source: "../resources/settings-white.svg"
+            }
+        },
+        State {
+            name: VPNController.StateDisconnecting
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+            PropertyChanges {
+                target: logo
+                source: "../resources/state-off.svg"
+            }
+            PropertyChanges {
+                target: logoTitle
+                text: qsTr("Disconnecting...")
+            }
+            PropertyChanges {
+                target: logoTitle
+                color: "#3D3D3D"
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                text: qsTr("Unmasking connection and location")
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                color: "#3D3D3D"
+            }
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
             }
         }
     ]
 
     transitions: [
         Transition {
-            from: VPNController.StateOff
             to: VPNController.StateConnecting
             ColorAnimation {
                 target: box
@@ -125,8 +170,7 @@ Rectangle {
         },
 
         Transition {
-            from: VPNController.StateConnecting
-            to: VPNController.StateOff
+            to: VPNController.StateDisconnecting
             ColorAnimation {
                 target: box
                 property: "color"

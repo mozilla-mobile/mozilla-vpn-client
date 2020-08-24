@@ -37,12 +37,22 @@ Rectangle {
                 target: toggle
                 color: "#3FE1B0"
             }
+        },
+        State {
+            name: VPNController.StateDisconnecting
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#9E9E9E"
+            }
         }
     ]
 
     transitions: [
         Transition {
-            from: VPNController.StateOff
             to: VPNController.StateConnecting
             NumberAnimation {
                 target: cursor
@@ -57,8 +67,7 @@ Rectangle {
         },
 
         Transition {
-            from: VPNController.StateConnecting
-            to: VPNController.StateOff
+            to: VPNController.StateDisconnecting
             NumberAnimation {
                 target: cursor
                 property: "anchors.leftMargin"

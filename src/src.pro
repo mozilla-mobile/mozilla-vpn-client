@@ -27,6 +27,7 @@ SOURCES += \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
+        platforms/dummy/dummycontroller.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -43,12 +44,14 @@ SOURCES += \
 
 HEADERS += \
         controller.h \
+        controllerimpl.h \
         curve25519/curve25519.h \
         curve25519/curve25519_wg.h \
         device.h \
         devicemodel.h \
         mozillavpn.h \
         networkrequest.h \
+        platforms/dummy/dummycontroller.h \
         server.h \
         servercity.h \
         servercountry.h \

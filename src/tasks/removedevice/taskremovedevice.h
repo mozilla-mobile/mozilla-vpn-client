@@ -3,7 +3,7 @@
 
 #include "task.h"
 
-class TaskRemoveDevice : public Task
+class TaskRemoveDevice final : public Task
 {
 public:
     explicit TaskRemoveDevice(const QString &deviceName);

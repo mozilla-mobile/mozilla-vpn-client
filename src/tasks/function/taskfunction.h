@@ -5,7 +5,7 @@
 
 #include "task.h"
 
-class TaskFunction : public Task
+class TaskFunction final : public Task
 {
 public:
     TaskFunction(std::function<void(MozillaVPN *)> &&callback)
