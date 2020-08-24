@@ -16,7 +16,7 @@ Item {
         anchors.top: menu.bottom
         clip: true
 
-        model: VPN.serverCountryModel
+        model: VPNServerCountryModel
 
         delegate: ItemDelegate {
             onClicked: cityList.visible = true

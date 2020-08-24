@@ -46,13 +46,13 @@ Item {
         }
 
         Image {
-            source: "../resources/flags/" + VPN.currentServer.countryCode.toUpperCase() + ".png"
+            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
             sourceSize.height: 16
             sourceSize.width: 16
         }
 
         Label {
-            text: VPN.currentServer.city
+            text: VPNCurrentServer.city
             color: "#3D3D3D"
             font.family: vpnFont.name
             font.pixelSize: 15
@@ -104,7 +104,7 @@ Item {
         }
 
         Label {
-            text: qsTr("%1 of %2").arg(VPN.activeDevices).arg(VPN.user.maxDevices)
+            text: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
             color: "#3D3D3D"
             font.family: vpnFont.name
             font.pixelSize: 15

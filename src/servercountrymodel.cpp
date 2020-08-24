@@ -33,6 +33,8 @@ void ServerCountryModel::fromJson(const QByteArray &s)
 
 void ServerCountryModel::fromJsonInternal()
 {
+    beginResetModel();
+
     m_countries.clear();
 
     QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
@@ -50,6 +52,8 @@ void ServerCountryModel::fromJsonInternal()
         QJsonObject countryObj = i->toObject();
         m_countries.append(ServerCountry::fromJson(countryObj));
     }
+
+    endResetModel();
 }
 
 void ServerCountryModel::writeSettings(QSettings &settings)

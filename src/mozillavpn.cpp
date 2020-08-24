@@ -155,8 +155,6 @@ void MozillaVPN::authenticationCompleted(QJsonObject &userObj, const QString &to
     m_deviceModel.fromJson(userObj);
     m_deviceModel.writeSettings(m_settings);
 
-    emit deviceModelChanged();
-
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;
 
@@ -206,7 +204,6 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
     qDebug() << "Device removed";
 
     m_deviceModel.removeDevice(deviceName);
-    emit deviceModelChanged();
 }
 
 void MozillaVPN::serversFetched(const QByteArray &serverData)
@@ -224,18 +221,10 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
         m_serverData.writeSettings(m_settings);
     }
 
-    emit serverCountryModelChanged();
-
     qDebug() << "Scheduling the server fetch";
 
     QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
                        [this]() { scheduleTask(new TaskFetchServers()); });
-}
-
-int MozillaVPN::activeDevices() const
-{
-    // We need to expose "int"to make QML happy.
-    return (int) m_deviceModel.count();
 }
 
 void MozillaVPN::removeDevice(const QString &deviceName)

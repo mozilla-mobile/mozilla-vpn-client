@@ -41,14 +41,7 @@ public:
 
 private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
-    Q_PROPERTY(QAbstractListModel *serverCountryModel READ serverCountryModel NOTIFY
-               serverCountryModelChanged)
-    Q_PROPERTY(QAbstractListModel *deviceModel READ deviceModel NOTIFY deviceModelChanged)
-    Q_PROPERTY(int activeDevices READ activeDevices NOTIFY deviceModelChanged)
-    Q_PROPERTY(QObject *user READ user NOTIFY dummyChanged)
-    Q_PROPERTY(QObject *currentServer READ currentServer NOTIFY dummyChanged)
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
-    Q_PROPERTY(QObject* controller READ controller NOTIFY dummyChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -93,8 +86,6 @@ public:
 
     ServerData *currentServer() { return &m_serverData; }
 
-    int activeDevices() const;
-
     User *user() { return &m_user; }
 
     AlertType alert() const { return m_alert; }
@@ -111,12 +102,7 @@ private:
 
 signals:
     void stateChanged();
-    void deviceModelChanged();
-    void serverCountryModelChanged();
     void alertChanged();
-
-    // Never used.
-    void dummyChanged();
 
 private:
     QSettings m_settings;

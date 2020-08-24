@@ -13,6 +13,8 @@ void DeviceModel::fromJson(QJsonObject &obj)
         privateKey = device(currentDeviceName)->privateKey();
     }
 
+    beginResetModel();
+
     m_devices.clear();
 
     Q_ASSERT(obj.contains("devices"));
@@ -28,6 +30,9 @@ void DeviceModel::fromJson(QJsonObject &obj)
 
         m_devices.append(device);
     }
+
+    endResetModel();
+    emit changed();
 }
 
 bool DeviceModel::fromSettings(QSettings &settings)
@@ -122,6 +127,9 @@ void DeviceModel::addDevice(const Device &device)
 
 void DeviceModel::removeDevice(const QString &deviceName)
 {
+    // TODO: we can be smarter here and remove the single item.
+    beginResetModel();
+
     QMutableListIterator<Device> i(m_devices);
     while (i.hasNext()) {
         const Device &device = i.next();
@@ -130,4 +138,7 @@ void DeviceModel::removeDevice(const QString &deviceName)
             break;
         }
     }
+
+    endResetModel();
+    emit changed();
 }
