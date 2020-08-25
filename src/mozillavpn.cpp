@@ -15,7 +15,10 @@
 #include <QTimer>
 
 constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
+
+#ifdef QT_DEBUG
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
+#endif
 
 constexpr const char *SETTINGS_TOKEN = "token";
 
@@ -43,10 +46,6 @@ void MozillaVPN::initialize(int &, char *[])
     m_apiUrl = API_URL_PROD;
 #ifdef QT_DEBUG
     m_apiUrl = API_URL_DEBUG;
-#endif
-
-#ifdef QT_DEBUG
-    //m_settings.clear();
 #endif
 
     if (!m_settings.contains(SETTINGS_TOKEN)) {
