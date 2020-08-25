@@ -1,4 +1,5 @@
 #include "mozillavpn.h"
+#include "signalhandler.h"
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -11,6 +12,11 @@ int main(int argc, char *argv[])
 
     QScopedPointer<MozillaVPN> mozillaVPN(new MozillaVPN());
     mozillaVPN->initialize(argc, argv);
+
+    SignalHandler sh;
+    QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
+        mozillaVPN->controller()->quit();
+    });
 
     QQmlApplicationEngine engine;
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN", mozillaVPN.get());

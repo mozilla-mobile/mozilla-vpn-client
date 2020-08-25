@@ -35,6 +35,7 @@ SOURCES += \
         servercountrymodel.cpp \
         serverdata.cpp \
         serversfetcher.cpp \
+        signalhandler.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
         servercountrymodel.h \
         serverdata.h \
         serversfetcher.h \
+        signalhandler.h \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
