@@ -285,8 +285,10 @@ void MozillaVPN::logout()
 {
     qDebug() << "Logout";
 
-    setState(StateLogout);
-    hideAlert();
+    m_alert = LogoutAlert;
+    emit alertChanged();
+
+    setState(StateInitialize);
 
     QString deviceName = Device::currentDeviceName();
 
@@ -296,10 +298,6 @@ void MozillaVPN::logout()
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         m_settings.clear();
-        setState(StateInitialize);
-
-        m_alert = LogoutAlert;
-        emit alertChanged();
     }));
 }
 

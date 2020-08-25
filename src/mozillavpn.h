@@ -24,7 +24,6 @@ public:
         StateInitialize,
         StateAuthenticating,
         StateMain,
-        StateLogout,
     };
 
     Q_ENUM(State);
