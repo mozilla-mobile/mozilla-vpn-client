@@ -34,7 +34,7 @@ void Controller::setVPN(MozillaVPN *vpn)
 
 void Controller::activate()
 {
-    qDebug() << "Activation";
+    qDebug() << "Activation" << m_state;
 
     if (m_state != StateOff && m_state != StateSwitching) {
         qDebug() << "Already disconnected";
@@ -51,16 +51,16 @@ void Controller::activate()
     if (m_state == StateOff) {
         m_state = StateConnecting;
         emit stateChanged();
-
-        m_timer->stop();
     }
+
+    m_timer->stop();
 
     m_impl->activate(selectedServer, device, m_vpn->keys());
 }
 
 void Controller::deactivate()
 {
-    qDebug() << "Deactivation";
+    qDebug() << "Deactivation" << m_state;
 
     if (m_state != StateOn && m_state != StateSwitching) {
         qDebug() << "Already disconnected";
@@ -155,10 +155,12 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
     qDebug() << "Switching to a different server";
 
     m_state = StateSwitching;
-    emit stateChanged();
 
+    m_currentCity = m_vpn->currentServer()->city();
     m_switchingCountryCode = countryCode;
     m_switchingCity = city;
+
+    emit stateChanged();
 
     deactivate();
 }

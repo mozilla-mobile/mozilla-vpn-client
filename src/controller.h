@@ -26,6 +26,7 @@ public:
 private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(int time READ time NOTIFY timeChanged)
+    Q_PROPERTY(QString currentCity READ currentCity NOTIFY stateChanged)
     Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
 
 public:
@@ -44,6 +45,8 @@ public:
     Q_INVOKABLE void quit();
 
     int time() const { return m_time; }
+
+    const QString &currentCity() const { return m_currentCity; }
 
     const QString &switchingCity() const { return m_switchingCity; }
 
@@ -66,6 +69,8 @@ private:
     int m_time = 0;
 
     QScopedPointer<ControllerImpl> m_impl;
+
+    QString m_currentCity;
 
     QString m_switchingCountryCode;
     QString m_switchingCity;

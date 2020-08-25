@@ -167,7 +167,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("From %1 to %2").arg(VPNCurrentServer.city).arg(VPNController.switchingCity)
+                text: qsTr("From %1 to %2").arg(VPNController.currentCity).arg(VPNController.switchingCity)
             }
             PropertyChanges {
                 target: logoSubtitle
