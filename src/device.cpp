@@ -14,6 +14,8 @@ QString Device::currentDeviceName()
 
 Device Device::fromJson(const QJsonValue &json)
 {
+    qDebug() << json;
+
     Q_ASSERT(json.isObject());
     QJsonObject obj = json.toObject();
 
@@ -29,45 +31,16 @@ Device Device::fromJson(const QJsonValue &json)
     QJsonValue createdAt = obj.take("created_at");
     Q_ASSERT(createdAt.isString());
 
+    Q_ASSERT(obj.contains("ipv4_address"));
+    QJsonValue ipv4Address = obj.take("ipv4_address");
+    Q_ASSERT(ipv4Address.isString());
+
+    Q_ASSERT(obj.contains("ipv6_address"));
+    QJsonValue ipv6Address = obj.take("ipv6_address");
+    Q_ASSERT(ipv6Address.isString());
+
     QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
     Q_ASSERT(date.isValid());
 
-    // No private key from JSON.
-
-    return Device(name.toString(), date, pubKey.toString(), QString());
-}
-
-QList<Device> Device::fromSettings(QSettings &settings)
-{
-    QList<Device> list;
-
-    if (settings.contains("devices")) {
-        QStringList devices = settings.value("devices").toStringList();
-
-        for (QStringList::Iterator i = devices.begin(); i != devices.end(); ++i) {
-            QString key = "device/";
-            key.append(*i);
-
-            QString createdAt = key;
-            createdAt.append("/createdAt");
-            QString privkey = key;
-            privkey.append("/privatekey");
-            QString publickey = key;
-            publickey.append("/publickey");
-
-            list.append(Device(*i,
-                               settings.value(createdAt).toDateTime(),
-                               settings.value(publickey).toString(),
-                               settings.value(privkey).toString()));
-        }
-    }
-
-    return list;
-}
-
-void Device::writeSettings(QSettings &settings)
-{
-    settings.setValue("device/" + m_deviceName + "/createdAt", m_createdAt);
-    settings.setValue("device/" + m_deviceName + "/privatekey", m_privateKey);
-    settings.setValue("device/" + m_deviceName + "/publickey", m_publicKey);
+    return Device(name.toString(), date, pubKey.toString(),  ipv4Address.toString(), ipv6Address.toString());
 }

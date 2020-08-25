@@ -4,14 +4,13 @@
 #include "controllerimpl.h"
 
 class QTimer;
-class Server;
 
 class DummyController final : public ControllerImpl
 {
 public:
     DummyController();
 
-    void activate(const Server &data) override;
+    void activate(const Server &data, const Device* device, const Keys* keys) override;
 
     void deactivate() override;
 

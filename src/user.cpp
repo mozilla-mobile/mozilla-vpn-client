@@ -1,5 +1,6 @@
 #include "user.h"
 
+#include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -12,8 +13,13 @@ constexpr const char *SETTINGS_DISPLAYNAME = "user/displayName";
 constexpr const char *SETTINGS_EMAIL = "user/email";
 constexpr const char *SETTINGS_MAXDEVICES = "user/maxDevices";
 
-void User::fromJson(QJsonObject &obj)
+void User::fromJson(const QByteArray &json)
 {
+    QJsonDocument doc = QJsonDocument::fromJson(json);
+
+    Q_ASSERT(doc.isObject());
+    QJsonObject obj = doc.object();
+
     Q_ASSERT(obj.contains("avatar"));
     QJsonValue avatarValue = obj.take("avatar");
     Q_ASSERT(avatarValue.isString());

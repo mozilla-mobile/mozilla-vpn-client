@@ -24,10 +24,10 @@ SOURCES += \
         curve25519/curve25519_wg.c \
         device.cpp \
         devicemodel.cpp \
+        keys.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
-        platforms/dummy/dummycontroller.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -49,9 +49,9 @@ HEADERS += \
         curve25519/curve25519_wg.h \
         device.h \
         devicemodel.h \
+        keys.h \
         mozillavpn.h \
         networkrequest.h \
-        platforms/dummy/dummycontroller.h \
         server.h \
         servercity.h \
         servercountry.h \
@@ -67,6 +67,22 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         user.h
+
+linux-g++ {
+     message(Linux build)
+     SOURCES += \
+             platforms/linux/linuxcontroller.cpp
+
+     HEADERS += \
+             platforms/linux/linuxcontroller.h
+} else {
+     message(Unknown build - Using the dummy controller)
+     SOURCES += \
+             platforms/dummy/dummycontroller.cpp
+
+     HEADERS += \
+             platforms/dummy/dummycontroller.h
+}
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

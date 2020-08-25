@@ -22,15 +22,13 @@ public:
 
     DeviceModel() = default;
 
-    void fromJson(QJsonObject &userObj);
+    void fromJson(const QByteArray& s);
 
     bool fromSettings(QSettings &settings);
 
     void writeSettings(QSettings &settings);
 
     bool hasDevice(const QString &deviceName) const;
-
-    bool hasPrivateKeyDevice(const QString &currentDeviceName) const;
 
     void addDevice(const Device &device);
 
@@ -39,6 +37,8 @@ public:
     const Device *device(const QString &deviceName) const;
 
     int activeDevices() const { return m_devices.count(); }
+
+    const Device* currentDevice() const;
 
     // QAbstractListModel methods
 
@@ -52,6 +52,11 @@ signals:
     void changed();
 
 private:
+    bool fromJsonInternal();
+
+private:
+    QByteArray m_rawJson;
+
     QList<Device> m_devices;
 };
 

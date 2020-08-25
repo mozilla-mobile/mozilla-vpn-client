@@ -3,8 +3,6 @@
 #include "networkrequest.h"
 
 #include <QDebug>
-#include <QJsonDocument>
-#include <QJsonObject>
 
 void TaskAccount::run(MozillaVPN *vpn)
 {
@@ -18,12 +16,7 @@ void TaskAccount::run(MozillaVPN *vpn)
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
         qDebug() << "Account request completed" << data;
-
-        QJsonDocument json = QJsonDocument::fromJson(data);
-        Q_ASSERT(json.isObject());
-        QJsonObject obj = json.object();
-
-        vpn->accountChecked(obj);
+        vpn->accountChecked(data);
         emit completed();
     });
 }

@@ -6,6 +6,7 @@
 #include "serverdata.h"
 #include "user.h"
 #include "controller.h"
+#include "keys.h"
 
 #include <QList>
 #include <QObject>
@@ -66,7 +67,7 @@ public:
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
-    void authenticationCompleted(QJsonObject &userObj, const QString &token);
+    void authenticationCompleted(const QByteArray& json, const QString &token);
 
     // The device has been added.
     void deviceAdded(const QString &deviceName, const QString &publicKey, const QString &privateKey);
@@ -75,7 +76,7 @@ public:
 
     void serversFetched(const QByteArray &serverData);
 
-    void accountChecked(QJsonObject &userObj);
+    void accountChecked(const QByteArray &json);
 
     QString token() const { return m_token; }
 
@@ -92,6 +93,8 @@ public:
     AlertType alert() const { return m_alert; }
 
     Controller* controller() { return &m_controller; }
+
+    const Keys* keys() const { return &m_keys; }
 
     void errorHandle(QNetworkReply::NetworkError error);
 
@@ -117,6 +120,8 @@ private:
 
     DeviceModel m_deviceModel;
     ServerCountryModel m_serverCountryModel;
+
+    Keys m_keys;
 
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;

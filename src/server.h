@@ -16,7 +16,19 @@ public:
 
     const QString &hostname() const { return m_hostname; }
 
+    const QString& ipv4AddrIn() const { return m_ipv4AddrIn; }
+
+    const QString& ipv4Gateway() const { return m_ipv4Gateway; }
+
+    const QString& ipv6AddrIn() const { return m_ipv6AddrIn; }
+
+    const QString& ipv6Gateway() const { return m_ipv6Gateway; }
+
+    const QString& publicKey() const { return m_publicKey; }
+
     uint32_t weight() const { return m_weight; }
+
+    uint32_t choosePort() const;
 
 private:
     Server() = default;

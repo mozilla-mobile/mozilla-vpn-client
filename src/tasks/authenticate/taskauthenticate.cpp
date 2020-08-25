@@ -75,8 +75,10 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray
     QJsonValue tokenValue = obj.take("token");
     Q_ASSERT(tokenValue.isString());
 
-    QJsonObject userDataObj = userObj.toObject();
-    vpn->authenticationCompleted(userDataObj, tokenValue.toString());
+    QJsonDocument userDoc;
+    userDoc.setObject(userObj.toObject());
+
+    vpn->authenticationCompleted(userDoc.toJson(), tokenValue.toString());
 
     emit completed();
 }

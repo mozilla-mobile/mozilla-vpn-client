@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+class Keys;
+class Device;
 class Server;
 
 class ControllerImpl : public QObject
@@ -14,7 +16,7 @@ public:
 
     virtual ~ControllerImpl() = default;
 
-    virtual void activate(const Server &data) = 0;
+    virtual void activate(const Server &server, const Device* device, const Keys* keys) = 0;
     virtual void deactivate() = 0;
 
 signals:

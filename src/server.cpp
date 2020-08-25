@@ -88,3 +88,11 @@ const Server &Server::weightChooser(const QList<Server> &servers)
     Q_ASSERT(false);
     return servers[0];
 }
+
+uint32_t Server::choosePort() const
+{
+    quint32 r = QRandomGenerator::global()->generate() % m_portRanges.length();
+    const QPair<uint32_t, uint32_t>& ports = m_portRanges.at(r);
+
+    return ports.first + (QRandomGenerator::global()->generate() % (ports.second - ports.first));
+}
