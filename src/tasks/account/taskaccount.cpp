@@ -15,7 +15,7 @@ void TaskAccount::run(MozillaVPN *vpn)
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
-        qDebug() << "Account request completed" << data;
+        qDebug() << "Account request completed";
         vpn->accountChecked(data);
         emit completed();
     });
