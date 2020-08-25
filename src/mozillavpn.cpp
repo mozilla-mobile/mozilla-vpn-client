@@ -142,7 +142,7 @@ void MozillaVPN::maybeRunTask()
 
     QObject::connect(task, &Task::completed, this, [this]() {
         qDebug() << "Task completed";
-        
+
         m_task_running = false;
         maybeRunTask();
     });
@@ -195,7 +195,7 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
     Q_UNUSED(publicKey);
     qDebug() << "Device added" << deviceName;
 
-    m_keys.storeKeys(m_settings, privateKey);
+    m_keys.storeKey(m_settings, privateKey);
 }
 
 void MozillaVPN::deviceRemoved(const QString &deviceName)
@@ -284,7 +284,10 @@ void MozillaVPN::logout()
     scheduleTask(new TaskRemoveDevice(deviceName));
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
+        qDebug() << "Cleaning up all";
         m_settings.clear();
+        m_keys.forgetKey();
+        m_serverData.forget();
     }));
 }
 

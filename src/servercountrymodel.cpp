@@ -27,6 +27,11 @@ void ServerCountryModel::fromJson(const QByteArray &s)
 {
     qDebug() << "Reading from JSON";
 
+    if (m_rawJson == s) {
+        qDebug() << "Nothing has changed";
+        return;
+    }
+
     m_rawJson = s;
     fromJsonInternal();
 }

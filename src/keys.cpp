@@ -13,7 +13,13 @@ bool Keys::fromSettings(QSettings &settings) {
     return true;
 }
 
-void Keys::storeKeys(QSettings &settings, const QString &privateKey) {
+void Keys::storeKey(QSettings &settings, const QString &privateKey)
+{
     settings.setValue(PRIVATE_KEY, privateKey);
     m_privateKey = privateKey;
+}
+
+void Keys::forgetKey()
+{
+    m_privateKey.clear();
 }

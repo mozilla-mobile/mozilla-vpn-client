@@ -28,6 +28,7 @@ SOURCES += \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
+        platforms/linux/wgquickprocess.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
         keys.h \
         mozillavpn.h \
         networkrequest.h \
+        platforms/linux/wgquickprocess.h \
         server.h \
         servercity.h \
         servercountry.h \

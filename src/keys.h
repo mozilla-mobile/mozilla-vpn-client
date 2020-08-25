@@ -10,7 +10,9 @@ class Keys
 public:
     bool fromSettings(QSettings &settings);
 
-    void storeKeys(QSettings &settings, const QString &privateKey);
+    void storeKey(QSettings &settings, const QString &privateKey);
+
+    void forgetKey();
 
     const QString &privateKey() const { return m_privateKey; }
 

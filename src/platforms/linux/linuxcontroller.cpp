@@ -1,36 +1,29 @@
 #include "linuxcontroller.h"
-#include "device.h"
-#include "server.h"
-#include "keys.h"
+#include "wgquickprocess.h"
 
 #include <QDebug>
+#include <QProcess>
 
 void LinuxController::activate(const Server &server, const Device* device, const Keys* keys)
 {
-    Q_ASSERT(device);
-    Q_ASSERT(keys);
+    qDebug() << "LinuxController activated";
 
-    qDebug() << "LinuxController activated" << server.hostname();
+    WgQuickProcess *wgQuick = new WgQuickProcess(WgQuickProcess::Up);
 
-    QString content;
-    content.append("[Interface}\nPrivateKey = ");
-    content.append(keys->privateKey());
-    content.append("\nAddress = ");
-    content.append(device->ipv4Address());
-    content.append(", ");
-    content.append(device->ipv6Address());
-    content.append("\nDNS = ");
-    content.append(server.ipv4Gateway());
-    content.append("\n\n[Peer]\nPublicKey = ");
-    content.append(server.publicKey());
-    content.append("\nEndpoint = ");
-    content.append(server.ipv4AddrIn());
-    content.append(QString(":%1").arg(server.choosePort()));
-    content.append("\nAllowedIPs = 0.0.0.0/0,::0/0\n");
+    connect(wgQuick, &WgQuickProcess::failed, this, &LinuxController::disconnected);
+    connect(wgQuick, &WgQuickProcess::succeeded, this, &LinuxController::connected);
 
-    qDebug() << content;
+    wgQuick->Run(server, device, keys);
 }
 
-void LinuxController::deactivate() {
+void LinuxController::deactivate(const Server &server, const Device *device, const Keys *keys)
+{
     qDebug() << "LinuxController deactivated";
+
+    WgQuickProcess *wgQuick = new WgQuickProcess(WgQuickProcess::Down);
+
+    connect(wgQuick, &WgQuickProcess::failed, this, &LinuxController::disconnected);
+    connect(wgQuick, &WgQuickProcess::succeeded, this, &LinuxController::disconnected);
+
+    wgQuick->Run(server, device, keys);
 }

@@ -10,12 +10,12 @@ DummyController::DummyController()
     m_timer->setSingleShot(true);
 }
 
-void DummyController::activate(const Server &data, const Device* device, const Keys* keys)
+void DummyController::activate(const Server &server, const Device *device, const Keys *keys)
 {
     Q_UNUSED(device);
     Q_UNUSED(keys);
 
-    qDebug() << "DummyController activated" << data.hostname();
+    qDebug() << "DummyController activated" << server.hostname();
 
     m_timer->stop();
     m_timer->start(2000);
@@ -23,8 +23,12 @@ void DummyController::activate(const Server &data, const Device* device, const K
     connect(m_timer, &QTimer::timeout, this, &ControllerImpl::connected);
 }
 
-void DummyController::deactivate() {
-    qDebug() << "DummyController deactivated";
+void DummyController::deactivate(const Server &server, const Device *device, const Keys *keys)
+{
+    Q_UNUSED(device);
+    Q_UNUSED(keys);
+
+    qDebug() << "DummyController deactivated" << server.hostname();
 
     m_timer->stop();
     m_timer->start(2000);

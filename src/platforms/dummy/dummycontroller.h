@@ -10,9 +10,9 @@ class DummyController final : public ControllerImpl
 public:
     DummyController();
 
-    void activate(const Server &data, const Device* device, const Keys* keys) override;
+    void activate(const Server &data, const Device *device, const Keys *keys) override;
 
-    void deactivate() override;
+    void deactivate(const Server &server, const Device *device, const Keys *keys) override;
 
 private:
     QTimer* m_timer;

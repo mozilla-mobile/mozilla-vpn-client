@@ -46,7 +46,7 @@ void Controller::activate()
 
     Server selectedServer = Server::weightChooser(servers);
 
-    const Device* device = m_vpn->deviceModel()->currentDevice();
+    const Device *device = m_vpn->deviceModel()->currentDevice();
 
     Q_ASSERT(m_state == StateOff);
     m_state = StateConnecting;
@@ -72,7 +72,14 @@ void Controller::deactivate()
 
     m_timer->stop();
 
-    m_impl->deactivate();
+    QList<Server> servers = m_vpn->getServers();
+    Q_ASSERT(!servers.isEmpty());
+
+    Server selectedServer = Server::weightChooser(servers);
+
+    const Device *device = m_vpn->deviceModel()->currentDevice();
+
+    m_impl->deactivate(selectedServer, device, m_vpn->keys());
 }
 
 void Controller::connected() {
@@ -92,7 +99,8 @@ void Controller::connected() {
 void Controller::disconnected() {
     qDebug() << "Disconnected";
 
-    Q_ASSERT(m_state == StateDisconnecting);
+    Q_ASSERT(m_state == StateDisconnecting || m_state == StateConnecting);
+
     m_state = StateOff;
     emit stateChanged();
 }

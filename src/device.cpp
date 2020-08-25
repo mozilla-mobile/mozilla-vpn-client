@@ -14,8 +14,6 @@ QString Device::currentDeviceName()
 
 Device Device::fromJson(const QJsonValue &json)
 {
-    qDebug() << json;
-
     Q_ASSERT(json.isObject());
     QJsonObject obj = json.toObject();
 
@@ -42,5 +40,9 @@ Device Device::fromJson(const QJsonValue &json)
     QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
     Q_ASSERT(date.isValid());
 
-    return Device(name.toString(), date, pubKey.toString(),  ipv4Address.toString(), ipv6Address.toString());
+    return Device(name.toString(),
+                  date,
+                  pubKey.toString(),
+                  ipv4Address.toString(),
+                  ipv6Address.toString());
 }

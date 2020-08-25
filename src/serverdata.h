@@ -29,6 +29,8 @@ public:
 
     const QString &city() const { return m_city; }
 
+    void forget() { m_initialized = false; }
+
 signals:
     void changed();
 

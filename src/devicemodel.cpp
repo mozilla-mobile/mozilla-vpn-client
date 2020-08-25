@@ -10,6 +10,11 @@ void DeviceModel::fromJson(const QByteArray& s)
 {
     qDebug() << "DeviceModel from json";
 
+    if (m_rawJson == s) {
+        qDebug() << "Nothing has changed";
+        return;
+    }
+
     m_rawJson = s;
     fromJsonInternal();
 }
