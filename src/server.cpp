@@ -77,7 +77,7 @@ const Server &Server::weightChooser(const QList<Server> &servers)
     quint32 r = QRandomGenerator::global()->generate() % (weightSum + 1);
 
     for (QList<Server>::ConstIterator i = servers.begin(); i != servers.end(); ++i) {
-        if (i->weight() <= r) {
+        if (i->weight() >= r) {
             return *i;
         }
 

@@ -36,7 +36,7 @@ void Controller::activate()
 {
     qDebug() << "Activation";
 
-    if (m_state != StateOff) {
+    if (m_state != StateOff && m_state != StateSwitching) {
         qDebug() << "Already disconnected";
         return;
     }
@@ -48,11 +48,12 @@ void Controller::activate()
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
 
-    Q_ASSERT(m_state == StateOff);
-    m_state = StateConnecting;
-    emit stateChanged();
+    if (m_state == StateOff) {
+        m_state = StateConnecting;
+        emit stateChanged();
 
-    m_timer->stop();
+        m_timer->stop();
+    }
 
     m_impl->activate(selectedServer, device, m_vpn->keys());
 }
@@ -61,14 +62,17 @@ void Controller::deactivate()
 {
     qDebug() << "Deactivation";
 
-    if (m_state != StateOn) {
+    if (m_state != StateOn && m_state != StateSwitching) {
         qDebug() << "Already disconnected";
         return;
     }
 
-    Q_ASSERT(m_state == StateOn);
-    m_state = StateDisconnecting;
-    emit stateChanged();
+    Q_ASSERT(m_state == StateOn || m_state == StateSwitching);
+
+    if (m_state == StateOn) {
+        m_state = StateDisconnecting;
+        emit stateChanged();
+    }
 
     m_timer->stop();
 
@@ -85,7 +89,7 @@ void Controller::deactivate()
 void Controller::connected() {
     qDebug() << "Connected";
 
-    Q_ASSERT(m_state == StateConnecting);
+    Q_ASSERT(m_state == StateConnecting || m_state == StateSwitching);
     m_state = StateOn;
     emit stateChanged();
 
@@ -99,7 +103,14 @@ void Controller::connected() {
 void Controller::disconnected() {
     qDebug() << "Disconnected";
 
-    Q_ASSERT(m_state == StateDisconnecting || m_state == StateConnecting);
+    Q_ASSERT(m_state == StateDisconnecting || m_state == StateConnecting
+             || m_state == StateSwitching);
+
+    if (m_state == StateSwitching) {
+        m_vpn->changeServer(m_switchingCountryCode, m_switchingCity);
+        activate();
+        return;
+    }
 
     m_state = StateOff;
     emit stateChanged();
@@ -110,4 +121,33 @@ void Controller::timeUpdated() {
 
     ++m_time;
     emit timeChanged();
+}
+
+void Controller::changeServer(const QString &countryCode, const QString &city)
+{
+    Q_ASSERT(m_state == StateOn || m_state == StateOff);
+
+    if (m_vpn->currentServer()->countryCode() == countryCode
+        && m_vpn->currentServer()->city() == city) {
+        qDebug() << "No server change needed";
+        return;
+    }
+
+    if (m_state == StateOff) {
+        qDebug() << "Change server";
+        m_vpn->changeServer(countryCode, city);
+        return;
+    }
+
+    m_timer->stop();
+
+    qDebug() << "Switching to a different server";
+
+    m_state = StateSwitching;
+    emit stateChanged();
+
+    m_switchingCountryCode = countryCode;
+    m_switchingCity = city;
+
+    deactivate();
 }

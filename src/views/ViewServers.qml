@@ -111,7 +111,10 @@ Item {
                         MouseArea {
                             id: radioButtonMouseArea
                             anchors.fill: parent
-                            onClicked: VPNCurrentServer.update(code, cityName.text)
+                            onClicked: {
+                                VPNController.changeServer(code, cityName.text);
+                                stackview.pop();
+                            }
                         }
                     }
                 }

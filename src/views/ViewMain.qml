@@ -73,7 +73,13 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: stackview.push("ViewServers.qml")
+                onClicked: {
+                    // TODO: connecting/disconnectin we should gray it out.
+                    if (VPNController.state === VPNController.StateOn ||
+                            VPNController.state === VPNController.StateOff) {
+                        stackview.push("ViewServers.qml")
+                    }
+                }
             }
         }
     }

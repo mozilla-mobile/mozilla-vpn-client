@@ -146,6 +146,37 @@ Rectangle {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
+        },
+        State {
+            name: VPNController.StateSwitching
+            PropertyChanges {
+                target: box
+                color: "#321C64"
+            }
+            PropertyChanges {
+                target: logo
+                source: "../resources/state-on.svg"
+            }
+            PropertyChanges {
+                target: logoTitle
+                text: qsTr("Switching…")
+            }
+            PropertyChanges {
+                target: logoTitle
+                color: "#FFFFFF"
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                text: qsTr("From %1 to %2").arg(VPNCurrentServer.city).arg(VPNController.switchingCity)
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                color: "#FFFFFFCC"
+            }
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings-white.svg"
+            }
         }
     ]
 

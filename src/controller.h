@@ -18,6 +18,7 @@ public:
         StateConnecting,
         StateOn,
         StateDisconnecting,
+        StateSwitching,
     };
 
     Q_ENUM(State)
@@ -25,6 +26,7 @@ public:
 private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(int time READ time NOTIFY timeChanged)
+    Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
 
 public:
     Controller();
@@ -37,7 +39,11 @@ public:
 
     Q_INVOKABLE void deactivate();
 
+    Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
+
     int time() const { return m_time; }
+
+    const QString &switchingCity() const { return m_switchingCity; }
 
 private Q_SLOTS:
     void connected();
@@ -57,6 +63,9 @@ private:
     int m_time = 0;
 
     QScopedPointer<ControllerImpl> m_impl;
+
+    QString m_switchingCountryCode;
+    QString m_switchingCity;
 };
 
 #endif // CONTROLLER_H

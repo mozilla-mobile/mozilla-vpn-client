@@ -98,6 +98,8 @@ public:
 
     void errorHandle(QNetworkReply::NetworkError error);
 
+    void changeServer(const QString &countryCode, const QString &city);
+
 private:
     void setState(State state);
 

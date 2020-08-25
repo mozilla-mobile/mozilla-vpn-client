@@ -48,6 +48,17 @@ Rectangle {
                 target: toggle
                 color: "#9E9E9E"
             }
+        },
+        State {
+            name: VPNController.StateSwitching
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 32
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#3FE1B0"
+            }
         }
     ]
 
