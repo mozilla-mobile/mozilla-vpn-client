@@ -28,6 +28,12 @@ int main(int argc, char *argv[])
                                  "VPNCurrentServer",
                                  mozillaVPN->currentServer());
 
+    QObject::connect(mozillaVPN->controller(),
+                     &Controller::readyToQuit,
+                     &app,
+                     QCoreApplication::quit,
+                     Qt::QueuedConnection);
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         &engine,

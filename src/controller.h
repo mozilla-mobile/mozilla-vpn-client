@@ -41,6 +41,8 @@ public:
 
     Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
 
+    Q_INVOKABLE void quit();
+
     int time() const { return m_time; }
 
     const QString &switchingCity() const { return m_switchingCity; }
@@ -53,6 +55,7 @@ private Q_SLOTS:
 signals:
     void stateChanged();
     void timeChanged();
+    void readyToQuit();
 
 private:
     State m_state = StateOff;
@@ -66,6 +69,8 @@ private:
 
     QString m_switchingCountryCode;
     QString m_switchingCity;
+
+    bool m_quitting = false;
 };
 
 #endif // CONTROLLER_H

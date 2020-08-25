@@ -35,7 +35,7 @@ Window {
         menu: Menu {
             MenuItem {
                 text: qsTr("Quit")
-                onTriggered: Qt.quit()
+                onTriggered: VPNController.quit()
             }
         }
     }

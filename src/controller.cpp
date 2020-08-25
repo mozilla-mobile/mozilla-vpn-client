@@ -96,6 +96,11 @@ void Controller::connected() {
     m_time = 0;
     emit timeChanged();
 
+    if (m_quitting) {
+        disconnect();
+        return;
+    }
+
     Q_ASSERT(!m_timer->isActive());
     m_timer->start(1000);
 }
@@ -105,6 +110,12 @@ void Controller::disconnected() {
 
     Q_ASSERT(m_state == StateDisconnecting || m_state == StateConnecting
              || m_state == StateSwitching);
+
+    // No need to continue if we are about to quit.
+    if (m_quitting) {
+        emit readyToQuit();
+        return;
+    }
 
     if (m_state == StateSwitching) {
         m_vpn->changeServer(m_switchingCountryCode, m_switchingCity);
@@ -150,4 +161,21 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
     m_switchingCity = city;
 
     deactivate();
+}
+
+void Controller::quit()
+{
+    qDebug() << "Quitting";
+
+    m_quitting = true;
+
+    if (m_state == StateOff) {
+        emit readyToQuit();
+        return;
+    }
+
+    if (m_state == StateOn) {
+        deactivate();
+        return;
+    }
 }
