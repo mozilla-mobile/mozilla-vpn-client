@@ -1,6 +1,10 @@
 #include "mozillavpn.h"
 #include "signalhandler.h"
 
+#ifdef __linux__
+#include "platforms/linux/wgquickprocess.h"
+#endif
+
 #include <QApplication>
 #include <QQmlApplicationEngine>
 
@@ -9,6 +13,12 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
+
+#ifdef __linux__
+    if (!WgQuickProcess::checkDependencies()) {
+        return 1;
+    }
+#endif
 
     QScopedPointer<MozillaVPN> mozillaVPN(new MozillaVPN());
     mozillaVPN->initialize(argc, argv);

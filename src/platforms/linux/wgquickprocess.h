@@ -21,6 +21,8 @@ public:
 
     void Run(const Server &server, const Device *device, const Keys *keys);
 
+    static bool checkDependencies();
+
 signals:
     void failed();
     void succeeded();

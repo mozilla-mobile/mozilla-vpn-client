@@ -3,7 +3,9 @@
 #include "keys.h"
 #include "server.h"
 
+#include <QCoreApplication>
 #include <QDebug>
+#include <QMessageBox>
 #include <QProcess>
 
 constexpr const char *WG_QUICK = "wg-quick";
@@ -87,4 +89,37 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
             });
 
     wgQuickProcess->start(WG_QUICK, arguments);
+}
+
+namespace {
+void showAlert(const QString &message)
+{
+    QMessageBox alert;
+    alert.setText(message);
+    alert.exec();
+}
+
+} // namespace
+
+// static
+bool WgQuickProcess::checkDependencies()
+{
+    char *path = getenv("PATH");
+    if (!path) {
+        showAlert("No PATH env found.");
+        return false;
+    }
+
+    QStringList parts = QString(path).split(":");
+    for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
+        QDir pathDir(*i);
+        QFileInfo file(pathDir.filePath("wg-quick"));
+        if (file.exists()) {
+            qDebug() << "wg-quick found" << file.filePath();
+            return true;
+        }
+    }
+
+    showAlert("Unable to locate wg-quick");
+    return false;
 }
