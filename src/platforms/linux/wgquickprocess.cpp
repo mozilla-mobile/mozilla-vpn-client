@@ -54,6 +54,8 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
 
     file.close();
 
+    // TODO: do we need to use sudo/gksu/pkexec?
+
     QStringList arguments;
     arguments.append(m_op == Up ? "up" : "down");
     arguments.append(file.fileName());
