@@ -31,6 +31,8 @@ public:
 
     void forget() { m_initialized = false; }
 
+    Q_INVOKABLE void update(const QString &countryCode, const QString &city);
+
 signals:
     void changed();
 

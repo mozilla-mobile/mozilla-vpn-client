@@ -93,6 +93,7 @@ Item {
                     delegate: RadioDelegate {
                         id: control
                         ButtonGroup.group: radioButtonGroup
+                        checked: code == VPNCurrentServer.countryCode && cityName.text == VPNCurrentServer.city
 
                         width: parent.width
 
@@ -110,7 +111,7 @@ Item {
                         MouseArea {
                             id: radioButtonMouseArea
                             anchors.fill: parent
-                            onClicked: control.checked = !control.checked
+                            onClicked: VPNCurrentServer.update(code, cityName.text)
                         }
                     }
                 }

@@ -23,7 +23,6 @@ Image {
 
     transitions: [
         Transition {
-            from: ""
             to: "rotated"
             RotationAnimation {
                 properties: "rotation"
@@ -34,7 +33,6 @@ Image {
         },
 
         Transition {
-            from: "rotated"
             to: ""
             RotationAnimation {
                 properties: "rotation"

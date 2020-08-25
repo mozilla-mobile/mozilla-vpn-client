@@ -37,3 +37,11 @@ void ServerData::initialize(const ServerCountry &country, const ServerCity &city
 
     emit changed();
 }
+
+void ServerData::update(const QString &countryCode, const QString &city)
+{
+    m_countryCode = countryCode;
+    m_city = city;
+
+    emit changed();
+}
