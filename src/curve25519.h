@@ -3,11 +3,11 @@
 
 #include <QByteArray>
 
+#define CURVE25519_KEY_SIZE 32
+
 class Curve25519 final
 {
 public:
-    static QByteArray generatePrivateKey();
-
     static QByteArray generatePublicKey(const QByteArray &privateKey);
 };
 

@@ -1,9 +1,29 @@
 #include "taskadddevice.h"
-#include "curve25519/curve25519.h"
+#include "curve25519.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QDebug>
+#include <QRandomGenerator>
+
+namespace {
+
+QByteArray generatePrivateKey()
+{
+    QByteArray key;
+
+    QRandomGenerator *generator = QRandomGenerator::global();
+    Q_ASSERT(generator);
+
+    for (uint8_t i = 0; i < CURVE25519_KEY_SIZE; ++i) {
+        quint32 v = generator->generate();
+        key.append(v & 0xFF);
+    }
+
+    return key.toBase64();
+}
+
+} // anonymous namespace
 
 TaskAddDevice::TaskAddDevice(const QString &deviceName)
     : Task("TaskAddDevice"), m_deviceName(deviceName)
@@ -13,7 +33,7 @@ void TaskAddDevice::run(MozillaVPN *vpn)
 {
     qDebug() << "Adding the device" << m_deviceName;
 
-    QByteArray privateKey = Curve25519::generatePrivateKey();
+    QByteArray privateKey = generatePrivateKey();
     QByteArray publicKey = Curve25519::generatePublicKey(privateKey);
 
     qDebug() << "Private key: " << privateKey;

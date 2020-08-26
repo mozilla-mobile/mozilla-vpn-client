@@ -16,19 +16,23 @@ TARGET    = mozillavpn
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
+INCLUDEPATH += \
+            hacl-star \
+            hacl-star/kremlin \
+            hacl-star/kremlin/minimal
+
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
         controller.cpp \
-        curve25519/curve25519.cpp \
-        curve25519/curve25519_wg.c \
+        curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
+        hacl-star/Hacl_Curve25519_64.c \
         keys.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
-        platforms/linux/wgquickprocess.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -47,14 +51,12 @@ SOURCES += \
 HEADERS += \
         controller.h \
         controllerimpl.h \
-        curve25519/curve25519.h \
-        curve25519/curve25519_wg.h \
+        curve25519.h \
         device.h \
         devicemodel.h \
         keys.h \
         mozillavpn.h \
         networkrequest.h \
-        platforms/linux/wgquickprocess.h \
         server.h \
         servercity.h \
         servercountry.h \
@@ -75,10 +77,12 @@ HEADERS += \
 linux-g++ {
      message(Linux build)
      SOURCES += \
-             platforms/linux/linuxcontroller.cpp
+             platforms/linux/linuxcontroller.cpp \
+             platforms/linux/wgquickprocess.cpp
 
      HEADERS += \
-             platforms/linux/linuxcontroller.h
+             platforms/linux/linuxcontroller.h \
+             platforms/linux/wgquickprocess.h
 } else {
      message(Unknown build - Using the dummy controller)
      SOURCES += \
@@ -86,6 +90,24 @@ linux-g++ {
 
      HEADERS += \
              platforms/dummy/dummycontroller.h
+}
+
+linux-g++ {
+     message(Linux build - hacl-star)
+     SOURCES += \
+             hacl-star/curve25519-x86_64-linux.S
+}
+
+macx {
+     message(MaCOSX build - hacl-star)
+     SOURCES += \
+             hacl-star/curve25519-x86_64-darwin.S
+}
+
+win64 {
+     message(Win64 build - hacl-star)
+     SOURCES += \
+             hacl-star/curve25519-x86_64-msvc.asm
 }
 
 # Default rules for deployment.
