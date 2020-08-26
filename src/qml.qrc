@@ -285,17 +285,22 @@
         <file>resources/chevron.svg</file>
         <file>resources/close-white.svg</file>
         <file>themes/themes.js</file>
-        <file>components/ServerListToggle.qml</file>
-        <file>components/RadioButtonLabel.qml</file>
-        <file>components/RadioButton.qml</file>
-        <file>resources/toggle-down.svg</file>
+        <file>components/VPNServerListToggle.qml</file>
+        <file>components/VPNRadioButtonLabel.qml</file>
+        <file>components/VPNRadioButton.qml</file>
         <file>resources/Metropolis-SemiBold.otf</file>
-        <file>components/BoldLabel.qml</file>
+        <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNControllerView.qml</file>
         <file>resources/settings-white.svg</file>
         <file>resources/state-on.svg</file>
         <file>resources/externalLink.svg</file>
         <file>resources/feedback.svg</file>
         <file>resources/getHelp.svg</file>
+        <file>components/VPNLightLabel.qml</file>
+        <file>resources/arrow-toggle.svg</file>
+        <file>resources/connection.svg</file>
+        <file>components/VPNIcon.qml</file>
+        <file>components/VPNChevron.qml</file>
+        <file>components/VPNPopupButton.qml</file>
     </qresource>
 </RCC>

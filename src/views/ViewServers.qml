@@ -55,7 +55,7 @@ Item {
 
                 RowLayout {
                     spacing: 0
-                    ServerListToggle {
+                    VPNServerListToggle {
                         id: serverListToggle
                     }
 
@@ -69,7 +69,7 @@ Item {
                         Layout.leftMargin: Theme.hSpacing
                     }
 
-                    BoldLabel {
+                    VPNBoldLabel {
                         id: countryName
                         text: name
                         Layout.leftMargin: Theme.hSpacing
@@ -89,6 +89,7 @@ Item {
                     anchors.fill: parent
                     Layout.fillWidth: true
 
+                    interactive: false
                     model: cities
                     delegate: RadioDelegate {
                         id: control
@@ -100,11 +101,11 @@ Item {
                         Layout.fillWidth: true
                         Layout.bottomMargin: Theme.vSpacing
 
-                        indicator: RadioButton {
+                        indicator: VPNRadioButton {
                             id: radioButton
                         }
 
-                        RadioButtonLabel {
+                        VPNRadioButtonLabel {
                             id: cityName
                         }
 
