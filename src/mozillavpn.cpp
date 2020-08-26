@@ -332,6 +332,9 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     case QNetworkReply::HostNotFoundError:
         [[fallthrough]];
     case QNetworkReply::TimeoutError:
+        [[fallthrough]];
+    case QNetworkReply::UnknownNetworkError:
+        // On mac, this means: no internet
         m_alert = NoConnectionAlert;
         break;
 
@@ -356,8 +359,6 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     case QNetworkReply::ProtocolUnknownError:
         [[fallthrough]];
     case QNetworkReply::ProtocolInvalidOperationError:
-        [[fallthrough]];
-    case QNetworkReply::UnknownNetworkError:
         [[fallthrough]];
     case QNetworkReply::UnknownProxyError:
         [[fallthrough]];
