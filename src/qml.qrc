@@ -299,5 +299,6 @@
         <file>resources/connection.svg</file>
         <file>components/VPNIcon.qml</file>
         <file>components/VPNChevron.qml</file>
+        <file>components/VPNPopupButton.qml</file>
     </qresource>
 </RCC>

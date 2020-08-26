@@ -21,7 +21,7 @@ Item {
         anchors.top: menuBar.top
         anchors.verticalCenter: menuBar.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: Theme.windowMargin
+        anchors.leftMargin: Theme.hSpacing
 
         MouseArea {
             anchors.fill: backImage
@@ -39,7 +39,7 @@ Item {
         id: rightTitle
         anchors.verticalCenter: menuBar.verticalCenter
         anchors.right: menuBar.right
-        anchors.rightMargin: Theme.windowMargin
+        anchors.rightMargin: Theme.hSpacing
     }
 
     Rectangle {
