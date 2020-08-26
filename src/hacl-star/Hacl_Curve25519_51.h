@@ -22,8 +22,8 @@
  */
 
 
-#ifndef __Vale_Inline_H
-#define __Vale_Inline_H
+#ifndef __Hacl_Curve25519_51_H
+#define __Hacl_Curve25519_51_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -35,29 +35,17 @@ extern "C" {
 #include <stdbool.h>
 
 
+#include "Hacl_Kremlib.h"
 
+void Hacl_Curve25519_51_scalarmult(uint8_t *out, uint8_t *priv, uint8_t *pub);
 
-static inline void cswap2(uint64_t bit, uint64_t *p0, uint64_t *p1);
+void Hacl_Curve25519_51_secret_to_public(uint8_t *pub, uint8_t *priv);
 
-static inline void fsqr(uint64_t *out, uint64_t *f1, uint64_t *tmp);
-
-static inline void fsqr2(uint64_t *out, uint64_t *f1, uint64_t *tmp);
-
-static inline void fmul(uint64_t *out, uint64_t *f1, uint64_t *f2, uint64_t *tmp);
-
-static inline void fmul2(uint64_t *out, uint64_t *f1, uint64_t *f2, uint64_t *tmp);
-
-static inline void fmul_scalar(uint64_t *out, uint64_t *f1, uint64_t f2);
-
-static inline uint64_t add_scalar(uint64_t *out, uint64_t *f1, uint64_t f2);
-
-static inline void fadd(uint64_t *out, uint64_t *f1, uint64_t *f2);
-
-static inline void fsub(uint64_t *out, uint64_t *f1, uint64_t *f2);
+bool Hacl_Curve25519_51_ecdh(uint8_t *out, uint8_t *priv, uint8_t *pub);
 
 #if defined(__cplusplus)
 }
 #endif
 
-#define __Vale_Inline_H_DEFINED
+#define __Hacl_Curve25519_51_H_DEFINED
 #endif

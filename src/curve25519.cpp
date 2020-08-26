@@ -1,5 +1,5 @@
 #include "curve25519.h"
-#include "hacl-star/Hacl_Curve25519_64.h"
+#include "hacl-star/Hacl_Curve25519_51.h"
 
 // static
 QByteArray Curve25519::generatePublicKey(const QByteArray &privateKey)
@@ -13,7 +13,7 @@ QByteArray Curve25519::generatePublicKey(const QByteArray &privateKey)
     }
 
     uint8_t pubKey[CURVE25519_KEY_SIZE];
-    Hacl_Curve25519_64_secret_to_public(pubKey, privKey);
+    Hacl_Curve25519_51_secret_to_public(pubKey, privKey);
 
     QByteArray pk = QByteArray::fromRawData((const char *) pubKey, CURVE25519_KEY_SIZE);
     return pk.toBase64();
