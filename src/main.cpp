@@ -6,6 +6,7 @@
 #endif
 
 #include <QApplication>
+#include <QIcon>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
@@ -13,6 +14,7 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
+    app.setWindowIcon(QIcon("qrc:/resources/logo.png"));
 
 #ifdef __linux__
     if (!WgQuickProcess::checkDependencies()) {
