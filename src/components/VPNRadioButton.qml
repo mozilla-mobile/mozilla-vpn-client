@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.11
 
 import "../themes/themes.js" as Theme
 
-// RadioButton
+// VPNRadioButton
 Rectangle {
     id: radioButton
     anchors.left: parent.left
