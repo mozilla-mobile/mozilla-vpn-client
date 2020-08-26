@@ -28,5 +28,6 @@ RoundButton {
       elide: Text.ElideRight
       font.family: vpnFont.name
       font.pixelSize: 15
+      font.weight: Font.Bold
     }
 }
