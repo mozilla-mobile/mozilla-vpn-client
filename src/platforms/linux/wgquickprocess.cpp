@@ -75,8 +75,8 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
             [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
                 qDebug() << "Execution finished" << exitCode;
 
-                qDebug() << "Output:" << wgQuickProcess->readAllStandardOutput();
-                qDebug() << "Error:" << wgQuickProcess->readAllStandardError();
+                qWarning("wg-quick stdout:\n%ls\n", qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
+                qWarning("wg-quick stderr:\n%ls\n", qUtf16Printable(wgQuickProcess->readAllStandardError()));
 
                 deleteLater();
 

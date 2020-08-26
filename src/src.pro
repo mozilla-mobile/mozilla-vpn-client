@@ -28,7 +28,7 @@ SOURCES += \
         curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
-        hacl-star/Hacl_Curve25519_64.c \
+        hacl-star/Hacl_Curve25519_51.c \
         keys.cpp \
         main.cpp \
         mozillavpn.cpp \
@@ -90,24 +90,6 @@ linux-g++ {
 
      HEADERS += \
              platforms/dummy/dummycontroller.h
-}
-
-linux-g++ {
-     message(Linux build - hacl-star)
-     SOURCES += \
-             hacl-star/curve25519-x86_64-linux.S
-}
-
-macx {
-     message(MaCOSX build - hacl-star)
-     SOURCES += \
-             hacl-star/curve25519-x86_64-darwin.S
-}
-
-win64 {
-     message(Win64 build - hacl-star)
-     SOURCES += \
-             hacl-star/curve25519-x86_64-msvc.asm
 }
 
 # Default rules for deployment.
