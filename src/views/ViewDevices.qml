@@ -59,6 +59,7 @@ Item {
                             color: Theme.fontColorDark
                             font.pixelSize: Theme.fontSize
                             Layout.preferredWidth: 220
+                            Layout.preferredHeight: 22
                             elide: Text.ElideRight
                         }
 
@@ -85,6 +86,7 @@ Item {
                             }
                             id: deviceDesc
                             text: deviceSubtitle()
+                            Layout.preferredHeight: 21
                             font.pixelSize: Theme.fontSizeSmall
                             color: currentOne ? Theme.buttonColor : Theme.fontColor
                         }
