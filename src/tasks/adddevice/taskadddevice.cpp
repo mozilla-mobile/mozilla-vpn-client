@@ -12,7 +12,7 @@ QByteArray generatePrivateKey()
 {
     QByteArray key;
 
-    QRandomGenerator *generator = QRandomGenerator::global();
+    QRandomGenerator *generator = QRandomGenerator::system();
     Q_ASSERT(generator);
 
     for (uint8_t i = 0; i < CURVE25519_KEY_SIZE; ++i) {
