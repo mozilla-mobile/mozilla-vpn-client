@@ -60,7 +60,7 @@ Item {
         id: logoSubtitle2
         x: 169
         y: 276
-        text: qsTr("BUilt by the makers of Firefox.")
+        text: qsTr("Built by the makers of Firefox.")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         font.pixelSize: 12
