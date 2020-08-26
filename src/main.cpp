@@ -5,15 +5,15 @@
 #include "platforms/linux/wgquickprocess.h"
 #endif
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon("qrc:/resources/logo.png"));
 
 #ifdef __linux__
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         &app,
         [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl) {
-                QApplication::exit(-1);
+                QGuiApplication::exit(-1);
             }
         },
         Qt::QueuedConnection);
