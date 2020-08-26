@@ -171,7 +171,7 @@ Item {
             anchors.bottomMargin: 30
             spacing: 0
 
-            Rectangle {
+            Rectangle { // placeholder until we have image
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 64
                 Layout.preferredWidth: 64

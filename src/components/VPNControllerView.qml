@@ -4,6 +4,8 @@ import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.11
 import Mozilla.VPN 1.0
 
+import "../themes/themes.js" as Theme
+
 Rectangle {
     state: VPNController.state
 
@@ -39,7 +41,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                color: "#3D3D3D"
+                color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
@@ -47,7 +49,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoSubtitle
-                color: "#3D3D3D"
+                color: Theme.fontColor
             }
             PropertyChanges {
                 target: settingsImage
@@ -132,7 +134,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                color: "#3D3D3D"
+                color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
@@ -140,7 +142,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoSubtitle
-                color: "#3D3D3D"
+                color: Theme.fontColor
             }
             PropertyChanges {
                 target: settingsImage
@@ -205,6 +207,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.topMargin: 16
         anchors.rightMargin: 16
+        fillMode: Image.PreserveAspectFit
 
         MouseArea {
             anchors.fill: parent
