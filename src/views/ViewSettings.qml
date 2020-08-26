@@ -50,6 +50,13 @@ Item {
         // TODO: about us
 
         VPNSettingsItem {
+            text: qsTr("About us")
+            imageRight: "../resources/chevron.svg"
+            imageLeft: "../resources/getHelp.svg"
+            onClicked: stackview.push("ViewAboutUs.qml")
+        }
+
+        VPNSettingsItem {
             text: qsTr("Get help")
             imageRight: "../resources/chevron.svg"
             imageLeft: "../resources/getHelp.svg"

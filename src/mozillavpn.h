@@ -42,6 +42,7 @@ public:
 private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
+    Q_PROPERTY(QString versionString READ versionString)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -99,6 +100,8 @@ public:
     void errorHandle(QNetworkReply::NetworkError error);
 
     void changeServer(const QString &countryCode, const QString &city);
+
+    const QString versionString() const { return QString(APP_VERSION); }
 
 private:
     void setState(State state);

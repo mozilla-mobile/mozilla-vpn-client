@@ -69,6 +69,12 @@ void MozillaVPN::initialize(int &, char *[])
         return;
     }
 
+    if (!m_deviceModel.hasDevice(Device::currentDeviceName())) {
+        qDebug() << "The current device has not been found";
+        m_settings.clear();
+        return;
+    }
+
     if (!m_keys.fromSettings(m_settings)) {
         qDebug() << "No keys found";
         m_settings.clear();

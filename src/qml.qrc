@@ -302,5 +302,6 @@
         <file>components/VPNIcon.qml</file>
         <file>components/VPNChevron.qml</file>
         <file>components/VPNPopupButton.qml</file>
+        <file>views/ViewAboutUs.qml</file>
     </qresource>
 </RCC>
