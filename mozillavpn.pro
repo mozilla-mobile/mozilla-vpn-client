@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 
-darwin {
-    SUBDIRS += vendors
-}
+# TODO
+#darwin {
+#    SUBDIRS += vendors
+#}
 
 SUBDIRS += src

@@ -115,8 +115,9 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
-darwin {
-    wireguard_go.files = ../vendors/wireguard-go/wireguard-go
-    wireguard_go.path = Contents/Resources
-    QMAKE_BUNDLE_DATA += wireguard_go
-}
+# TODO
+#darwin {
+#    wireguard_go.files = ../vendors/wireguard-go/wireguard-go
+#    wireguard_go.path = Contents/Resources
+#    QMAKE_BUNDLE_DATA += wireguard_go
+#}
