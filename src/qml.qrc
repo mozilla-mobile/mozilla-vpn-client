@@ -4,7 +4,6 @@
         <file>resources/logo.png</file>
         <file>mozillavpn.h</file>
         <file>mozillavpn.cpp</file>
-        <file>resources/Metropolis-Regular.otf</file>
         <file>states/StateMain.qml</file>
         <file>states/StateInitialize.qml</file>
         <file>states/StateAuthenticating.qml</file>
@@ -288,7 +287,6 @@
         <file>components/VPNServerListToggle.qml</file>
         <file>components/VPNRadioButtonLabel.qml</file>
         <file>components/VPNRadioButton.qml</file>
-        <file>resources/Metropolis-SemiBold.otf</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNControllerView.qml</file>
         <file>resources/settings-white.svg</file>
@@ -303,5 +301,17 @@
         <file>components/VPNChevron.qml</file>
         <file>components/VPNPopupButton.qml</file>
         <file>views/ViewAboutUs.qml</file>
+        <file>views/ViewOnboarding.qml</file>
+        <file>resources/onboarding/onboarding1.svg</file>
+        <file>resources/onboarding/onboarding4.svg</file>
+        <file>resources/onboarding/onboarding3.svg</file>
+        <file>resources/onboarding/onboarding2.svg</file>
+        <file>resources/fonts/Inter-UI-Regular.otf</file>
+        <file>resources/fonts/Metropolis-SemiBold.otf</file>
+        <file>resources/fonts/Metropolis-Regular.otf</file>
+        <file>components/VPNPanel.qml</file>
+        <file>components/VPNFooterLink.qml</file>
+        <file>components/VPNHeaderLink.qml</file>
+        <file>resources/onboarding/onboardingCopy.js</file>
     </qresource>
 </RCC>

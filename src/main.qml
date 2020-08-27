@@ -19,8 +19,9 @@ Window {
     title: qsTr("Mozilla VPN")
     color: "#F9F9FA"
 
-    FontLoader { id: vpnFont; source: "qrc:/resources/Metropolis-Regular.otf" }
-    FontLoader { id: vpnFontSemiBold; source: "qrc:/resources/Metropolis-SemiBold.otf" }
+    FontLoader { id: vpnFont; source: "qrc:/resources/fonts/Metropolis-Regular.otf" }
+    FontLoader { id: vpnFontSemiBold; source: "qrc:/resources/fonts/Metropolis-SemiBold.otf" }
+    FontLoader { id: vpnFontInter; source: "qrc:/resources/fonts/Inter-UI-Regular.otf" }
 
     SystemTrayIcon {
         visible: true
