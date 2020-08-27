@@ -96,7 +96,7 @@ void Controller::connected() {
     m_time = 0;
     emit timeChanged();
 
-    if (m_quitting) {
+    if (m_nextStep != None) {
         disconnect();
         return;
     }
@@ -111,13 +111,15 @@ void Controller::disconnected() {
     Q_ASSERT(m_state == StateDisconnecting || m_state == StateConnecting
              || m_state == StateSwitching);
 
-    // No need to continue if we are about to quit.
-    if (m_quitting) {
+    NextStep nextStep = m_nextStep;
+    m_nextStep = None;
+
+    if (nextStep == Quit) {
         emit readyToQuit();
         return;
     }
 
-    if (m_state == StateSwitching) {
+    if (nextStep == None && m_state == StateSwitching) {
         m_vpn->changeServer(m_switchingCountryCode, m_switchingCity);
         activate();
         return;
@@ -169,12 +171,30 @@ void Controller::quit()
 {
     qDebug() << "Quitting";
 
-    m_quitting = true;
-
     if (m_state == StateOff) {
         emit readyToQuit();
         return;
     }
+
+    m_nextStep = Quit;
+
+    if (m_state == StateOn) {
+        deactivate();
+        return;
+    }
+}
+
+void Controller::logout()
+{
+    qDebug() << "Logout";
+
+    m_vpn->logout();
+
+    if (m_state == StateOff) {
+        return;
+    }
+
+    m_nextStep = Disconnect;
 
     if (m_state == StateOn) {
         deactivate();

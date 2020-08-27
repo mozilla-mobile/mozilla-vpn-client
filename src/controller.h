@@ -20,7 +20,6 @@ public:
         StateDisconnecting,
         StateSwitching,
     };
-
     Q_ENUM(State)
 
 private:
@@ -43,6 +42,8 @@ public:
     Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
 
     Q_INVOKABLE void quit();
+
+    Q_INVOKABLE void logout();
 
     int time() const { return m_time; }
 
@@ -75,7 +76,13 @@ private:
     QString m_switchingCountryCode;
     QString m_switchingCity;
 
-    bool m_quitting = false;
+    enum NextStep {
+        None,
+        Quit,
+        Disconnect,
+    };
+
+    NextStep m_nextStep = None;
 };
 
 #endif // CONTROLLER_H

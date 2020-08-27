@@ -62,8 +62,6 @@ public:
 
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 
-    Q_INVOKABLE void logout();
-
     Q_INVOKABLE void hideAlert();
 
     // Called at the end of the authentication flow. We can continue adding the device
@@ -102,6 +100,8 @@ public:
     void changeServer(const QString &countryCode, const QString &city);
 
     const QString versionString() const { return QString(APP_VERSION); }
+
+    void logout();
 
 private:
     void setState(State state);

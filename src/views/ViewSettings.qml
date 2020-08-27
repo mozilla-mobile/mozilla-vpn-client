@@ -77,7 +77,7 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: VPN.logout()
+                onClicked: VPNController.logout()
             }
         }
     }
