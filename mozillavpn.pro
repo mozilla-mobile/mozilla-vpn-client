@@ -1,2 +1,7 @@
 TEMPLATE = subdirs
-SUBDIRS  = src
+
+darwin {
+    SUBDIRS += vendors
+}
+
+SUBDIRS += src
