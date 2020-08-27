@@ -36,7 +36,7 @@ Item {
 
     VPNFooterLink {
         id: learnMore
-        linkText: qsTr("Learn more")
+        text: qsTr("Learn more")
         onClicked: stackview.push("ViewOnboarding.qml")
     }
 
