@@ -14,7 +14,8 @@
 #include <QPointer>
 #include <QTimer>
 
-constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
+// TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
+constexpr const char *API_URL_PROD = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
 #ifdef QT_DEBUG
 constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
