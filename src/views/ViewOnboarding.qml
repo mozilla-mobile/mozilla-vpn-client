@@ -75,7 +75,6 @@ Item {
     }
 
     function goToNextPanel() {
-        contentWrapper.opacity = 0;
         onboardingPanel.panelNum++;
         fade.start();
     }
