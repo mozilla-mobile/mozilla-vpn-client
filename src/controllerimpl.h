@@ -16,8 +16,16 @@ public:
 
     virtual ~ControllerImpl() = default;
 
-    virtual void activate(const Server &server, const Device *device, const Keys *keys) = 0;
-    virtual void deactivate(const Server &server, const Device *device, const Keys *keys) = 0;
+    virtual void activate(const Server &server,
+                          const Device *device,
+                          const Keys *keys,
+                          bool forSwitching)
+        = 0;
+    virtual void deactivate(const Server &server,
+                            const Device *device,
+                            const Keys *keys,
+                            bool forSwitching)
+        = 0;
 
 signals:
     void connected();

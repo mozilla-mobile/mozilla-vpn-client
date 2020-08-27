@@ -1,6 +1,7 @@
 #include "controller.h"
 #include "mozillavpn.h"
 #include "server.h"
+#include "timercontroller.h"
 
 #ifdef __linux__
 #include "platforms/linux/linuxcontroller.h"
@@ -13,11 +14,13 @@
 
 Controller::Controller()
 {
+    m_impl.reset(new TimerController(
 #ifdef __linux__
-    m_impl.reset(new LinuxController());
+        new LinuxController()
 #else
-    m_impl.reset(new DummyController());
+        new DummyController()
 #endif
+            ));
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
@@ -55,7 +58,7 @@ void Controller::activate()
 
     m_timer->stop();
 
-    m_impl->activate(selectedServer, device, m_vpn->keys());
+    m_impl->activate(selectedServer, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
 void Controller::deactivate()
@@ -83,7 +86,7 @@ void Controller::deactivate()
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
 
-    m_impl->deactivate(selectedServer, device, m_vpn->keys());
+    m_impl->deactivate(selectedServer, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
 void Controller::connected() {

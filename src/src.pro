@@ -46,6 +46,7 @@ SOURCES += \
         tasks/authenticate/taskauthenticationverifier.cpp \
         tasks/fetchservers/taskfetchservers.cpp \
         tasks/removedevice/taskremovedevice.cpp \
+        timercontroller.cpp \
         user.cpp
 
 HEADERS += \
@@ -72,6 +73,7 @@ HEADERS += \
         tasks/fetchservers/taskfetchservers.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
+        timercontroller.h \
         user.h
 
 linux-g++ {

@@ -4,8 +4,13 @@
 #include <QDebug>
 #include <QProcess>
 
-void LinuxController::activate(const Server &server, const Device* device, const Keys* keys)
+void LinuxController::activate(const Server &server,
+                               const Device *device,
+                               const Keys *keys,
+                               bool forSwitching)
 {
+    Q_UNUSED(forSwitching);
+
     qDebug() << "LinuxController activated";
 
     WgQuickProcess *wgQuick = new WgQuickProcess(WgQuickProcess::Up);
@@ -16,8 +21,13 @@ void LinuxController::activate(const Server &server, const Device* device, const
     wgQuick->Run(server, device, keys);
 }
 
-void LinuxController::deactivate(const Server &server, const Device *device, const Keys *keys)
+void LinuxController::deactivate(const Server &server,
+                                 const Device *device,
+                                 const Keys *keys,
+                                 bool forSwitching)
 {
+    Q_UNUSED(forSwitching);
+
     qDebug() << "LinuxController deactivated";
 
     WgQuickProcess *wgQuick = new WgQuickProcess(WgQuickProcess::Down);
