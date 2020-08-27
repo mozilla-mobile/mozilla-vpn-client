@@ -15,19 +15,19 @@ RoundButton {
     Layout.rightMargin: 16
 
     background: Rectangle {
-      color: "#0060DF"
-      radius: 4
+        color: "#0060DF"
+        radius: 4
     }
 
     contentItem: Label {
-      id: label
-      color: "#FFFFFF"
-      text: button.text
-      horizontalAlignment: Text.AlignHCenter
-      verticalAlignment: Text.AlignVCenter
-      elide: Text.ElideRight
-      font.family: vpnFont.name
-      font.pixelSize: 15
-      font.weight: Font.Bold
+        id: label
+        color: "#FFFFFF"
+        text: button.text
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+        font.family: vpnFont.name
+        font.pixelSize: 15
+        font.weight: Font.Bold
     }
 }

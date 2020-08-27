@@ -8,8 +8,6 @@ import "../components"
 import "../themes/themes.js" as Theme
 import "../resources/onboarding/onboardingCopy.js" as PanelCopy
 
-
-
 Item {
     property var panelNum: 1
     id: onboardingPanel
@@ -29,13 +27,12 @@ Item {
 
         Component.onCompleted: fade.start()
         PropertyAnimation on opacity {
-               id: fade
-               from: 0
-               to: 1
-               duration: 800
+            id: fade
+            from: 0
+            to: 1
+            duration: 800
         }
     }
-
 
     VPNButton {
         property var onboardingOver: (panelNum === 4)

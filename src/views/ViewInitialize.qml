@@ -29,7 +29,7 @@ Item {
         onClicked: VPN.authenticate()
     }
 
-   VPNFooterLink {
+    VPNFooterLink {
         id: learnMore
         text: qsTr("Learn more")
         onClicked: stackview.push("ViewOnboarding.qml")
