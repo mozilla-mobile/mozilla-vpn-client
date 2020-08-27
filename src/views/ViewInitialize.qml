@@ -6,7 +6,9 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
+    id: viewInitialize
     VPNHeaderLink {
+        id: headerLink
         text: qsTr("Get Help")
         onClicked: stackview.push("ViewGetHelp.qml")
     }
@@ -26,12 +28,23 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPN.authenticate()
+        onClicked: {
+            fadeOut.start()
+            VPN.authenticate()
+        }
     }
 
     VPNFooterLink {
         id: learnMore
-        text: qsTr("Learn more")
+        linkText: qsTr("Learn more")
         onClicked: stackview.push("ViewOnboarding.qml")
+    }
+
+    PropertyAnimation on opacity {
+        id: fadeOut
+        target: viewInitialize
+        from: 1
+        to: 0
+        duration: 200
     }
 }
