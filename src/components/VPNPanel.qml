@@ -33,17 +33,10 @@ Item {
         }
     }
 
-    Text {
+    VPNHeadline {
         id: logoTitle
-        font.family: vpnFont.name
-        horizontalAlignment: Text.AlignHCenter
-        anchors.horizontalCenterOffset: 1
-        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: logoWrapper.bottom
         anchors.topMargin: 24
-        font.pixelSize: 22
-        lineHeightMode: Text.FixedHeight
-        lineHeight: 32
     }
 
     Text {
@@ -57,7 +50,7 @@ Item {
         font.pixelSize: 15
         font.family: vpnFontInter.name
         wrapMode: Text.Wrap
-        width: 296
+        width: Theme.maxTextWidth
         color: Theme.fontColor
         lineHeightMode: Text.FixedHeight
         lineHeight: 22

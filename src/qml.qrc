@@ -313,5 +313,7 @@
         <file>components/VPNFooterLink.qml</file>
         <file>components/VPNHeaderLink.qml</file>
         <file>resources/onboarding/onboardingCopy.js</file>
+        <file>components/VPNHeadline.qml</file>
+        <file>resources/spinner.svg</file>
     </qresource>
 </RCC>

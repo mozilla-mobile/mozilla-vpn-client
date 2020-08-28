@@ -7,7 +7,8 @@ const bgWhite = "#FFFFFF";
 const blue = "#0060DF";
 const blueHovered = "#0250BB";
 const bluePressed = "#054096"
-const blueFocus = "#660060DF"
+const blueDisabled = "#a3c0f3"
+const blueFocusStroke = "#660060DF"
 
 const green = "#3FE1B0";
 
@@ -35,6 +36,7 @@ const labelLineHeight = 22;
 
 const hSpacing = 20;
 const vSpacing = 24;
+const maxTextWidth = 296;
 const radius = 10;
 const windowMargin = 16;
 
@@ -42,7 +44,8 @@ const blueButton = {
     "defaultColor" : buttonColor,
     "buttonHovered": blueHovered,
     "buttonPressed": bluePressed,
-    "focusedStroke": blueFocus
+    "buttonDisabled": blueDisabled,
+    "focusStroke": blueFocusStroke
 }
 
 const redButton = {
