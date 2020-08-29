@@ -1,8 +1,9 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-import Qt.labs.platform 1.1
 
 import Mozilla.VPN 1.0
+
+import "./components"
 
 Window {
     id: window
@@ -23,23 +24,7 @@ Window {
     FontLoader { id: vpnFontSemiBold; source: "qrc:/resources/fonts/Metropolis-SemiBold.otf" }
     FontLoader { id: vpnFontInter; source: "qrc:/resources/fonts/Inter-UI-Regular.otf" }
 
-    SystemTrayIcon {
-        visible: true
-        icon.source: "qrc:/resources/logo.png"
-
-        onActivated: {
-            window.show()
-            window.raise()
-            window.requestActivate()
-        }
-
-        menu: Menu {
-            MenuItem {
-                text: qsTr("Quit")
-                onTriggered: VPNController.quit()
-            }
-        }
-    }
+    VPNSystemTray { id: vpnSystemTray }
 
     onClosing: {
         window.hide()

@@ -315,5 +315,6 @@
         <file>resources/onboarding/onboardingCopy.js</file>
         <file>components/VPNHeadline.qml</file>
         <file>resources/spinner.svg</file>
+        <file>components/VPNSystemTray.qml</file>
     </qresource>
 </RCC>

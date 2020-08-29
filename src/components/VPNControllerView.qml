@@ -219,6 +219,39 @@ Rectangle {
                 property: "color"
                 duration: 200
             }
+        },
+
+        Transition {
+            from: VPNController.StateConnecting
+            to: VPNController.StateOn
+            ScriptAction {
+                script: if (vpnSystemTray.supportsMessages) {
+                            // TODO: message, icon and time have to be defined.
+                            vpnSystemTray.showMessage(qsTr("Mozilla VPN connected"), vpnSystemTray.NoIcon, 2000);
+                        }
+            }
+        },
+
+        Transition {
+            from: VPNController.StateDisconnecting
+            to: VPNController.StateOff
+            ScriptAction {
+                script: if (vpnSystemTray.supportsMessages) {
+                            // TODO: message, icon and time have to be defined.
+                            vpnSystemTray.showMessage(qsTr("Mozilla VPN disconnected"), vpnSystemTray.NoIcon, 2000);
+                        }
+            }
+        },
+
+        Transition {
+            from: VPNController.StateSwitching
+            to: VPNController.StateOn
+            ScriptAction {
+                script: if (vpnSystemTray.supportsMessages) {
+                            // TODO: message, icon and time have to be defined.
+                            vpnSystemTray.showMessage(qsTr("Mozilla VPN switched"), vpnSystemTray.NoIcon, 2000);
+                        }
+            }
         }
     ]
 
