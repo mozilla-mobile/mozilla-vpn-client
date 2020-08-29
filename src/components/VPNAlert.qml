@@ -5,11 +5,15 @@ import Mozilla.VPN 1.0
 Rectangle {
     id: alertBox
     state: VPN.alert
-    visible: VPN.alert !== VPN.NoAlert
 
     states: [
         State {
             name: VPN.NoAlert
+            PropertyChanges {
+                target: alertBox
+                opacity: 0
+                visible: false
+            }
         },
 
         State {
@@ -17,6 +21,11 @@ Rectangle {
             PropertyChanges {
                 target: alertText
                 text: qsTr("Authentication error. <u><b>Try again</b></u>")
+            }
+            PropertyChanges {
+                target: alertBox
+                opacity: 1
+                visible: true
             }
         },
 
@@ -26,6 +35,11 @@ Rectangle {
                 target: alertText
                 text: qsTr("Unable to connect. <u><b>Try again</b></u>");
             }
+            PropertyChanges {
+                target: alertBox
+                opacity: 1
+                visible: true
+            }
         },
 
         State {
@@ -34,6 +48,11 @@ Rectangle {
                 target: alertText
                 text: qsTr("Signed out and device removed");
             }
+            PropertyChanges {
+                target: alertBox
+                opacity: 1
+                visible: true
+            }
         },
 
         State {
@@ -41,6 +60,20 @@ Rectangle {
             PropertyChanges {
                 target: alertText
                 text: qsTr("No internet connection. <u><b>Try again</b></u>");
+            }
+            PropertyChanges {
+                target: alertBox
+                opacity: 1
+                visible: true
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            NumberAnimation {
+                duration: 300
+                properties: "opacity"
             }
         }
     ]

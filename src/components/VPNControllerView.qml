@@ -39,17 +39,11 @@ Rectangle {
             PropertyChanges {
                 target: logoTitle
                 text: qsTr("VPN is off")
-            }
-            PropertyChanges {
-                target: logoTitle
                 color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Turn on to protect your privacy")
-            }
-            PropertyChanges {
-                target: logoSubtitle
                 color: Theme.fontColor
             }
             PropertyChanges {
@@ -70,17 +64,11 @@ Rectangle {
             PropertyChanges {
                 target: logoTitle
                 text: qsTr("Connecting…")
-            }
-            PropertyChanges {
-                target: logoTitle
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Masking connection and location")
-            }
-            PropertyChanges {
-                target: logoSubtitle
                 color: "#FFFFFFCC"
             }
             PropertyChanges {
@@ -101,17 +89,11 @@ Rectangle {
             PropertyChanges {
                 target: logoTitle
                 text: qsTr("VPN is on")
-            }
-            PropertyChanges {
-                target: logoTitle
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Secure and private  •  ") + formatTime(VPNController.time)
-            }
-            PropertyChanges {
-                target: logoSubtitle
                 color: "#FFFFFFCC"
             }
             PropertyChanges {
@@ -132,17 +114,11 @@ Rectangle {
             PropertyChanges {
                 target: logoTitle
                 text: qsTr("Disconnecting…")
-            }
-            PropertyChanges {
-                target: logoTitle
                 color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Unmasking connection and location")
-            }
-            PropertyChanges {
-                target: logoSubtitle
                 color: Theme.fontColor
             }
             PropertyChanges {
@@ -163,17 +139,11 @@ Rectangle {
             PropertyChanges {
                 target: logoTitle
                 text: qsTr("Switching…")
-            }
-            PropertyChanges {
-                target: logoTitle
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("From %1 to %2").arg(VPNController.currentCity).arg(VPNController.switchingCity)
-            }
-            PropertyChanges {
-                target: logoSubtitle
                 color: "#FFFFFFCC"
             }
             PropertyChanges {
