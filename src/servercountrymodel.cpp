@@ -36,6 +36,15 @@ void ServerCountryModel::fromJson(const QByteArray &s)
     fromJsonInternal();
 }
 
+namespace {
+
+bool sortCountryCallback(const ServerCountry &a, const ServerCountry &b)
+{
+    return a.name() < b.name();
+}
+
+} // anonymous namespace
+
 void ServerCountryModel::fromJsonInternal()
 {
     beginResetModel();
@@ -57,6 +66,8 @@ void ServerCountryModel::fromJsonInternal()
         QJsonObject countryObj = i->toObject();
         m_countries.append(ServerCountry::fromJson(countryObj));
     }
+
+    std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
 
     endResetModel();
 }

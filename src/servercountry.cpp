@@ -7,6 +7,15 @@
 #include <QJsonValue>
 #include <QStringList>
 
+namespace {
+
+bool sortCityCallback(const ServerCity &a, const ServerCity &b)
+{
+    return a.name() < b.name();
+}
+
+} // anonymous namespace
+
 // static
 ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
 {
@@ -30,6 +39,8 @@ ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
         QJsonObject city = i->toObject();
         sc.m_cities.append(ServerCity::fromJson(city));
     }
+
+    std::sort(sc.m_cities.begin(), sc.m_cities.end(), sortCityCallback);
 
     return sc;
 }
