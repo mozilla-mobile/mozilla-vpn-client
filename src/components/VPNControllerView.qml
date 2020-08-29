@@ -227,7 +227,7 @@ Rectangle {
             ScriptAction {
                 script: if (vpnSystemTray.supportsMessages) {
                             // TODO: message, icon and time have to be defined.
-                            vpnSystemTray.showMessage(qsTr("Mozilla VPN connected"), vpnSystemTray.NoIcon, 2000);
+                            vpnSystemTray.showMessage(qsTr("Mozilla VPN connected"), qsTr("TODO"), vpnSystemTray.NoIcon, 2000);
                         }
             }
         },
@@ -238,7 +238,7 @@ Rectangle {
             ScriptAction {
                 script: if (vpnSystemTray.supportsMessages) {
                             // TODO: message, icon and time have to be defined.
-                            vpnSystemTray.showMessage(qsTr("Mozilla VPN disconnected"), vpnSystemTray.NoIcon, 2000);
+                            vpnSystemTray.showMessage(qsTr("Mozilla VPN disconnected"), qsTr("TODO"), vpnSystemTray.NoIcon, 2000);
                         }
             }
         },
@@ -249,7 +249,7 @@ Rectangle {
             ScriptAction {
                 script: if (vpnSystemTray.supportsMessages) {
                             // TODO: message, icon and time have to be defined.
-                            vpnSystemTray.showMessage(qsTr("Mozilla VPN switched"), vpnSystemTray.NoIcon, 2000);
+                            vpnSystemTray.showMessage(qsTr("Mozilla VPN switched"), qsTr("TODO"), vpnSystemTray.NoIcon, 2000);
                         }
             }
         }
