@@ -35,6 +35,19 @@ bool DeviceModel::fromSettings(QSettings &settings)
     return !m_devices.isEmpty();
 }
 
+namespace {
+
+bool sortCallback(const Device &a, const Device &b)
+{
+    if (a.name() == Device::currentDeviceName()) {
+        return true;
+    }
+
+    return a.createdAt() < b.createdAt();
+}
+
+} // anonymous namespace
+
 bool DeviceModel::fromJsonInternal() {
     beginResetModel();
 
@@ -56,6 +69,8 @@ bool DeviceModel::fromJsonInternal() {
         Device device = Device::fromJson(*i);
         m_devices.append(device);
     }
+
+    std::sort(m_devices.begin(), m_devices.end(), sortCallback);
 
     endResetModel();
     emit changed();
