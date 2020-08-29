@@ -67,59 +67,8 @@ Window {
             }
         ]
 
-        Rectangle {
+        VPNAlert {
             id: alertBox
-            visible: VPN.alert !== VPN.NoAlert
-            color: "#FF4F5E"
-            height: 40
-            width: mainView.width - 16
-            y: mainView.height - 48
-            x: 8
-            radius: 4
-            anchors.margins: 8
-
-            Text {
-                function alertToText() {
-                    switch (VPN.alert) {
-                    case VPN.NoAlert:
-                        return "";
-
-                    case VPN.AuthenticationFailedAlert:
-                        return qsTr("Authentication error. <u><b>Try again</b></u>");
-
-                    case VPN.ConnectionFailedAlert:
-                        return qsTr("Unable to connect. <u><b>Try again</b></u>");
-
-                    case VPN.LogoutAlert:
-                        return qsTr("Signed out and device removed");
-
-                    case VPN.NoConnectionAlert:
-                        return qsTr("No internet connection. <u><b>Try again</b></u>");
-
-                    }
-                }
-
-                font.pixelSize: 13
-                color: "#FFFFFF"
-                anchors.centerIn: alertBox
-                text: alertToText()
-            }
-
-            Image {
-                id: alertBoxClose
-                source: "resources/close-white.svg"
-                sourceSize.width: 12
-                sourceSize.height: 12
-                anchors.right: alertBox.right
-                anchors.top: alertBox.top
-                anchors.topMargin: 14
-                anchors.rightMargin: 14
-            }
-
-            MouseArea {
-                anchors.fill: alertBoxClose
-                onClicked: VPN.hideAlert()
-            }
         }
     }
 }

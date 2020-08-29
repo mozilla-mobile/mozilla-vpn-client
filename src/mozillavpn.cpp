@@ -29,6 +29,9 @@ constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 3600;
 // in seconds, how often we should check the account
 constexpr const uint32_t SCHEDULE_ACCOUNT_CHECK_TIMER_SEC = 3600;
 
+// in seconds, hide alerts
+constexpr const uint32_t HIDE_ALERT_SEC = 4;
+
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
 {
     m_controller.setVPN(this);
@@ -281,9 +284,7 @@ void MozillaVPN::logout()
 {
     qDebug() << "Logout";
 
-    m_alert = LogoutAlert;
-    emit alertChanged();
-
+    setAlert(LogoutAlert);
     setState(StateInitialize);
 
     QString deviceName = Device::currentDeviceName();
@@ -297,15 +298,22 @@ void MozillaVPN::logout()
     }));
 }
 
-void MozillaVPN::hideAlert() {
-    m_alert = NoAlert;
+void MozillaVPN::setAlert(AlertType alert)
+{
+    m_alert = alert;
     emit alertChanged();
+
+    if (m_alert != NoAlert) {
+        QTimer::singleShot(1000 * HIDE_ALERT_SEC, [this]() { setAlert(NoAlert); });
+    }
 }
 
 void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     qDebug() << "Handling error" << error;
 
     Q_ASSERT(error != QNetworkReply::NoError);
+
+    AlertType alert = NoAlert;
 
     switch (error) {
     case QNetworkReply::ConnectionRefusedError:
@@ -333,7 +341,7 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     case QNetworkReply::ProxyAuthenticationRequiredError:
         [[fallthrough]];
     case QNetworkReply::ServiceUnavailableError:
-        m_alert = ConnectionFailedAlert;
+        alert = ConnectionFailedAlert;
         break;
 
     case QNetworkReply::HostNotFoundError:
@@ -342,7 +350,7 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
         [[fallthrough]];
     case QNetworkReply::UnknownNetworkError:
         // On mac, this means: no internet
-        m_alert = NoConnectionAlert;
+        alert = NoConnectionAlert;
         break;
 
     case QNetworkReply::OperationCanceledError:
@@ -380,18 +388,18 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     case QNetworkReply::ContentOperationNotPermittedError:
         [[fallthrough]];
     case QNetworkReply::AuthenticationRequiredError:
-        m_alert = AuthenticationFailedAlert;
+        alert = AuthenticationFailedAlert;
         break;
 
     default:
         break;
     }
 
-    emit alertChanged();
+    setAlert(alert);
 
-    qDebug() << "Alert:" << m_alert << "State:" << m_state;
+    qDebug() << "Alert:" << alert << "State:" << m_state;
 
-    if (m_alert == NoAlert) {
+    if (alert == NoAlert) {
         return;
     }
 
