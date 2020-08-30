@@ -84,11 +84,13 @@ linux-g++ {
      SOURCES += \
              platforms/linux/linuxcontroller.cpp \
              platforms/linux/linuxpingsender.cpp \
+             platforms/linux/linuxpingsendworker.cpp \
              platforms/linux/wgquickprocess.cpp
 
      HEADERS += \
              platforms/linux/linuxcontroller.h \
              platforms/linux/linuxpingsender.h \
+             platforms/linux/linuxpingsendworker.h \
              platforms/linux/wgquickprocess.h
 } else {
      message(Unknown build - Using the dummy controller)

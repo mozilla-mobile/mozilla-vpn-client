@@ -12,9 +12,9 @@ DummyPingSender::DummyPingSender(QObject *parent)
     connect(&m_timer, &QTimer::timeout, this, &DummyPingSender::completed);
 }
 
-void DummyPingSender::send(const QString &gateway)
+void DummyPingSender::send(const QString &destination)
 {
-    Q_UNUSED(gateway)
+    Q_UNUSED(destination)
 
     switch (m_state) {
     case Good:

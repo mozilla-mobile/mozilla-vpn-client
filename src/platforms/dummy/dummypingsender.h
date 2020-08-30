@@ -9,7 +9,7 @@ class DummyPingSender : public PingSender
 public:
     DummyPingSender(QObject *parent);
 
-    void send(const QString &gateway) override;
+    void send(const QString &destination) override;
 
     void stop() override;
 

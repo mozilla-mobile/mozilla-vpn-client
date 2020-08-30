@@ -10,7 +10,7 @@ class PingSender : public QObject
 public:
     explicit PingSender(QObject *parent) : QObject(parent) {}
 
-    virtual void send(const QString &gateway) = 0;
+    virtual void send(const QString &destination) = 0;
 
     virtual void stop() = 0;
 
