@@ -1,6 +1,11 @@
 #include "connectionhealth.h"
-#include "platforms/dummy/dummypingsender.h"
 #include "server.h"
+
+#ifdef __linux__
+#include "platforms/linux/linuxpingsender.h"
+#else
+#include "platforms/dummy/dummypingsender.h"
+#endif
 
 #include <QDebug>
 
@@ -15,7 +20,11 @@ constexpr uint32_t WAITING_TIMEOUT_SEC = 2;
 
 ConnectionHealth::ConnectionHealth()
 {
+#ifdef __linux__
+    m_pingSender = new LinuxPingSender(this);
+#else
     m_pingSender = new DummyPingSender(this);
+#endif
     connect(m_pingSender, &PingSender::completed, this, &ConnectionHealth::pingCompleted);
 
     m_unstableTimer.setSingleShot(true);
@@ -23,6 +32,7 @@ ConnectionHealth::ConnectionHealth()
         Q_ASSERT(m_state == Pending);
         qDebug() << "ConnectionHealth: timeout";
         m_state = Timeout;
+        emit connectionUnstable();
     });
 
     m_noSignalTimer.setSingleShot(true);
@@ -91,9 +101,7 @@ void ConnectionHealth::pingCompleted()
     State state = m_state;
     wait();
 
-    if (state == Timeout) {
-        emit connectionUnstable();
-    } else {
+    if (state == Pending) {
         emit connectionStable();
     }
 }
