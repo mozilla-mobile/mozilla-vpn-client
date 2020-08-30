@@ -1,11 +1,13 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "connectionhealth.h"
 #include "controllerimpl.h"
+#include "server.h"
 
 #include <QObject>
+#include <QTimer>
 
-class QTimer;
 class MozillaVPN;
 
 class Controller final : public QObject
@@ -66,15 +68,18 @@ private:
 
     MozillaVPN *m_vpn = nullptr;
 
-    QTimer *m_timer = nullptr;
+    QTimer m_timer;
     int m_time = 0;
 
     QScopedPointer<ControllerImpl> m_impl;
 
     QString m_currentCity;
+    Server m_currentServer;
 
     QString m_switchingCountryCode;
     QString m_switchingCity;
+
+    ConnectionHealth m_connectionHealth;
 
     enum NextStep {
         None,

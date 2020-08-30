@@ -10,9 +10,13 @@ class QJsonObject;
 class Server final
 {
 public:
+    Server() = default;
+
     static Server fromJson(QJsonObject &obj);
 
     static const Server &weightChooser(const QList<Server> &servers);
+
+    bool initialized() const { return !m_hostname.isEmpty(); }
 
     const QString &hostname() const { return m_hostname; }
 
@@ -31,8 +35,6 @@ public:
     uint32_t choosePort() const;
 
 private:
-    Server() = default;
-
     Server(const QString &hostname,
            const QString &ipv4AddrIn,
            const QString &ipv4Gateway,

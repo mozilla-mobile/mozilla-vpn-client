@@ -25,8 +25,7 @@ Controller::Controller()
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
 
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
+    connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
 }
 
 void Controller::setVPN(MozillaVPN *vpn)
@@ -47,7 +46,8 @@ void Controller::activate()
     QList<Server> servers = m_vpn->getServers();
     Q_ASSERT(!servers.isEmpty());
 
-    Server selectedServer = Server::weightChooser(servers);
+    m_currentServer = Server::weightChooser(servers);
+    Q_ASSERT(m_currentServer.initialized());
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
 
@@ -56,9 +56,9 @@ void Controller::activate()
         emit stateChanged();
     }
 
-    m_timer->stop();
+    m_timer.stop();
 
-    m_impl->activate(selectedServer, device, m_vpn->keys(), m_state == StateSwitching);
+    m_impl->activate(m_currentServer, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
 void Controller::deactivate()
@@ -77,16 +77,14 @@ void Controller::deactivate()
         emit stateChanged();
     }
 
-    m_timer->stop();
+    m_timer.stop();
 
-    QList<Server> servers = m_vpn->getServers();
-    Q_ASSERT(!servers.isEmpty());
-
-    Server selectedServer = Server::weightChooser(servers);
+    m_connectionHealth.stop();
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
 
-    m_impl->deactivate(selectedServer, device, m_vpn->keys(), m_state == StateSwitching);
+    Q_ASSERT(m_currentServer.initialized());
+    m_impl->deactivate(m_currentServer, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
 void Controller::connected() {
@@ -104,8 +102,10 @@ void Controller::connected() {
         return;
     }
 
-    Q_ASSERT(!m_timer->isActive());
-    m_timer->start(1000);
+    Q_ASSERT(!m_timer.isActive());
+    m_timer.start(1000);
+
+    m_connectionHealth.start(m_currentServer);
 }
 
 void Controller::disconnected() {
@@ -155,7 +155,7 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
         return;
     }
 
-    m_timer->stop();
+    m_timer.stop();
 
     qDebug() << "Switching to a different server";
 

@@ -35,6 +35,8 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
 {
     m_controller.setVPN(this);
+
+    connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 }
 
 MozillaVPN::~MozillaVPN() = default;
@@ -300,12 +302,14 @@ void MozillaVPN::logout()
 
 void MozillaVPN::setAlert(AlertType alert)
 {
+    m_alertTimer.stop();
+
+    if (alert != NoAlert) {
+        m_alertTimer.start(1000 * HIDE_ALERT_SEC);
+    }
+
     m_alert = alert;
     emit alertChanged();
-
-    if (m_alert != NoAlert) {
-        QTimer::singleShot(1000 * HIDE_ALERT_SEC, [this]() { setAlert(NoAlert); });
-    }
 }
 
 void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {

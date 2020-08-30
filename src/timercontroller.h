@@ -3,7 +3,7 @@
 
 #include "controllerimpl.h"
 
-class QTimer;
+#include <QTimer>
 
 class TimerController : public ControllerImpl
 {
@@ -28,7 +28,7 @@ private Q_SLOTS:
 
 private:
     ControllerImpl *m_impl;
-    QTimer *m_timer;
+    QTimer m_timer;
 
     enum State {
         None,

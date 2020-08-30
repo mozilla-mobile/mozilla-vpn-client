@@ -1,7 +1,6 @@
 #include "timercontroller.h"
 
 #include <QDebug>
-#include <QTimer>
 
 constexpr uint32_t TIME_ACTIVATION = 1000;
 constexpr uint32_t TIME_DEACTIVATION = 1500;
@@ -23,9 +22,8 @@ TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
             &TimerController::maybeDone,
             Qt::QueuedConnection);
 
-    m_timer = new QTimer(this);
-    m_timer->setSingleShot(true);
-    connect(m_timer, &QTimer::timeout, this, &TimerController::timeout);
+    m_timer.setSingleShot(true);
+    connect(&m_timer, &QTimer::timeout, this, &TimerController::timeout);
 }
 
 void TimerController::activate(const Server &server,
@@ -39,8 +37,8 @@ void TimerController::activate(const Server &server,
     m_impl->activate(server, device, keys, forSwitching);
 
     if (!forSwitching) {
-        m_timer->stop();
-        m_timer->start(TIME_ACTIVATION);
+        m_timer.stop();
+        m_timer.start(TIME_ACTIVATION);
     }
 }
 
@@ -54,8 +52,8 @@ void TimerController::deactivate(const Server &server,
 
     m_impl->deactivate(server, device, keys, forSwitching);
 
-    m_timer->stop();
-    m_timer->start(forSwitching ? TIME_SWITCHING : TIME_DEACTIVATION);
+    m_timer.stop();
+    m_timer.start(forSwitching ? TIME_SWITCHING : TIME_DEACTIVATION);
 }
 
 void TimerController::timeout()
@@ -86,7 +84,7 @@ void TimerController::maybeDone()
     Q_ASSERT(m_state == Connecting || m_state == Disconnecting);
 
     if (m_state == Connecting) {
-        if (m_timer->isActive()) {
+        if (m_timer.isActive()) {
             // The connection was faster.
             m_state = Connected;
             return;
@@ -100,7 +98,7 @@ void TimerController::maybeDone()
 
     Q_ASSERT(m_state == Disconnecting);
 
-    if (m_timer->isActive()) {
+    if (m_timer.isActive()) {
         // The disconnection was faster.
         m_state = Disconnected;
         return;

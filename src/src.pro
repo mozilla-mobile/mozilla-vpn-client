@@ -24,6 +24,7 @@ INCLUDEPATH += \
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
+        connectionhealth.cpp \
         controller.cpp \
         curve25519.cpp \
         device.cpp \
@@ -50,6 +51,7 @@ SOURCES += \
         user.cpp
 
 HEADERS += \
+        connectionhealth.h \
         controller.h \
         controllerimpl.h \
         curve25519.h \
@@ -58,6 +60,7 @@ HEADERS += \
         keys.h \
         mozillavpn.h \
         networkrequest.h \
+        pingsender.h \
         server.h \
         servercity.h \
         servercountry.h \
@@ -80,18 +83,22 @@ linux-g++ {
      message(Linux build)
      SOURCES += \
              platforms/linux/linuxcontroller.cpp \
+             platforms/dummy/linuxpingsender.cpp \
              platforms/linux/wgquickprocess.cpp
 
      HEADERS += \
              platforms/linux/linuxcontroller.h \
+             platforms/dummy/linuxpingsender.h \
              platforms/linux/wgquickprocess.h
 } else {
      message(Unknown build - Using the dummy controller)
      SOURCES += \
-             platforms/dummy/dummycontroller.cpp
+             platforms/dummy/dummycontroller.cpp \
+             platforms/dummy/dummypingsender.cpp
 
      HEADERS += \
-             platforms/dummy/dummycontroller.h
+             platforms/dummy/dummycontroller.h \
+             platforms/dummy/dummypingsender.h
 }
 
 # Default rules for deployment.

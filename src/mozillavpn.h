@@ -13,6 +13,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QSettings>
+#include <QTimer>
 
 class Task;
 
@@ -135,6 +136,7 @@ private:
     State m_state;
     QString m_apiUrl;
 
+    QTimer m_alertTimer;
     AlertType m_alert = NoAlert;
 };
 
