@@ -5,15 +5,15 @@
 #include "platforms/linux/wgquickprocess.h"
 #endif
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     app.setWindowIcon(QIcon("qrc:/resources/logo.png"));
 
 #ifdef __linux__
