@@ -1,21 +1,17 @@
 #ifndef LINUXPINGSENDWORKER_H
 #define LINUXPINGSENDWORKER_H
 
-#include <QObject>
+#include "pingsendworker.h"
 
 class QSocketNotifier;
 
-class LinuxPingSendWorker : public QObject
+class LinuxPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
 
 public Q_SLOTS:
-    void sendPing(const QString &destination);
-    void stopPing();
-
-signals:
-    void pingSucceeded();
-    void pingFailed();
+    void sendPing(const QString &destination) override;
+    void stopPing() override;
 
 private:
     QSocketNotifier *m_socketNotifier;

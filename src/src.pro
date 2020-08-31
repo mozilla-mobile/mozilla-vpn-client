@@ -34,6 +34,7 @@ SOURCES += \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
+        pingsender.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
         mozillavpn.h \
         networkrequest.h \
         pingsender.h \
+        pingsendworker.h \
         server.h \
         servercity.h \
         servercountry.h \
@@ -83,24 +85,22 @@ linux-g++ {
      message(Linux build)
      SOURCES += \
              platforms/linux/linuxcontroller.cpp \
-             platforms/linux/linuxpingsender.cpp \
              platforms/linux/linuxpingsendworker.cpp \
              platforms/linux/wgquickprocess.cpp
 
      HEADERS += \
              platforms/linux/linuxcontroller.h \
-             platforms/linux/linuxpingsender.h \
              platforms/linux/linuxpingsendworker.h \
              platforms/linux/wgquickprocess.h
 } else {
      message(Unknown build - Using the dummy controller)
      SOURCES += \
              platforms/dummy/dummycontroller.cpp \
-             platforms/dummy/dummypingsender.cpp
+             platforms/dummy/dummypingsendworker.cpp
 
      HEADERS += \
              platforms/dummy/dummycontroller.h \
-             platforms/dummy/dummypingsender.h
+             platforms/dummy/dummypingsendworker.h
 }
 
 # Default rules for deployment.
