@@ -101,7 +101,7 @@ linux-g++ {
 }
 
 # Platform-specific ping sender
-linux-g++:ping {
+linux-g++ {
      message(Linux build - ping)
      SOURCES += \
              platforms/linux/linuxpingsendworker.cpp

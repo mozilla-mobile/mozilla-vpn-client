@@ -14,7 +14,11 @@ public Q_SLOTS:
     void stopPing() override;
 
 private:
-    QSocketNotifier *m_socketNotifier;
+    void releaseObjects();
+
+private:
+    QSocketNotifier *m_socketNotifier = nullptr;
+    int m_socket = 0;
 };
 
 #endif // LINUXPINGSENDWORKER_H
