@@ -113,6 +113,7 @@ void MacxPingSendWorker::sendPing(const QString &destination)
             [this](QSocketDescriptor socket, QSocketNotifier::Type type) {
                 Q_UNUSED(type);
                 m_socketNotifier->deleteLater();
+                m_socketNotifier = nullptr;
 
                 struct msghdr msg;
                 bzero(&msg, sizeof(msg));
@@ -137,9 +138,9 @@ void MacxPingSendWorker::sendPing(const QString &destination)
                     return;
                 }
 
-                struct ip *ip = (struct ip *) &packet;
+                struct ip *ip = (struct ip *) packet;
                 int hlen = ip->ip_hl << 2;
-                struct icmp *icmp = (struct icmp *) (&packet + hlen);
+                struct icmp *icmp = (struct icmp *) (((char *) packet) + hlen);
 
                 if (icmp->icmp_type == ICMP_ECHOREPLY && icmp->icmp_id == identifier()) {
                     qDebug() << "Ping reply received";
