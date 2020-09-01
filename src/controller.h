@@ -53,6 +53,8 @@ public:
 
     const QString &switchingCity() const { return m_switchingCity; }
 
+    ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
+
 private Q_SLOTS:
     void connected();
     void disconnected();

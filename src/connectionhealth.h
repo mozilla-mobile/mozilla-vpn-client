@@ -9,7 +9,18 @@ class PingSender;
 
 class ConnectionHealth : public QObject
 {
+public:
+    enum ConnectionStability {
+        Stable,
+        Unstable,
+        NoSignal,
+    };
+    Q_ENUM(ConnectionStability)
+
+private:
     Q_OBJECT
+
+    Q_PROPERTY(ConnectionStability stability READ stability() NOTIFY stabilityChanged)
 
 public:
     ConnectionHealth();
@@ -18,19 +29,22 @@ public:
 
     void stop();
 
+    ConnectionStability stability() const { return m_stability; }
+
 private Q_SLOTS:
     void pingCompleted();
 
 signals:
-    void connectionStable();
-    void connectionUnstable();
-    void connectionNoSignal();
+    void stabilityChanged();
 
 private:
     void sendPing();
     void wait();
+    void setStability(ConnectionStability stability);
 
 private:
+    ConnectionStability m_stability = Stable;
+
     enum State {
         // Ping sent, but not received yet.
         Pending,

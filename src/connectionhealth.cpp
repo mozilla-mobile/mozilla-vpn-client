@@ -23,7 +23,7 @@ ConnectionHealth::ConnectionHealth()
         Q_ASSERT(m_state == Pending);
         qDebug() << "ConnectionHealth: timeout";
         m_state = Timeout;
-        emit connectionUnstable();
+        setStability(Unstable);
     });
 
     m_noSignalTimer.setSingleShot(true);
@@ -33,7 +33,7 @@ ConnectionHealth::ConnectionHealth()
 
         m_pingSender->stop();
         wait();
-        emit connectionNoSignal();
+        setStability(NoSignal);
     });
 
     m_waitingTimer.setSingleShot(true);
@@ -93,7 +93,7 @@ void ConnectionHealth::pingCompleted()
     wait();
 
     if (state == Pending) {
-        emit connectionStable();
+        setStability(Stable);
     }
 }
 
@@ -106,4 +106,10 @@ void ConnectionHealth::wait()
     m_state = Waiting;
     Q_ASSERT(!m_waitingTimer.isActive());
     m_waitingTimer.start(WAITING_TIMEOUT_SEC * 1000);
+}
+
+void ConnectionHealth::setStability(ConnectionStability stability)
+{
+    m_stability = stability;
+    emit stabilityChanged();
 }

@@ -104,6 +104,8 @@ public:
 
     void logout();
 
+    ConnectionHealth *connectionHealth() { return m_controller.connectionHealth(); }
+
 private:
     void setAlert(AlertType alert);
     void setState(State state);

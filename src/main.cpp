@@ -45,6 +45,11 @@ int main(int argc, char *argv[])
                                  0,
                                  "VPNCurrentServer",
                                  mozillaVPN->currentServer());
+    qmlRegisterSingletonInstance("Mozilla.VPN",
+                                 1,
+                                 0,
+                                 "VPNConnectionHealth",
+                                 mozillaVPN->connectionHealth());
 
     QObject::connect(mozillaVPN->controller(),
                      &Controller::readyToQuit,
