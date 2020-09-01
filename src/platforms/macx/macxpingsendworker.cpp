@@ -112,8 +112,6 @@ void MacxPingSendWorker::sendPing(const QString &destination)
             &QSocketNotifier::activated,
             [this](QSocketDescriptor socket, QSocketNotifier::Type type) {
                 Q_UNUSED(type);
-                m_socketNotifier->deleteLater();
-                m_socketNotifier = nullptr;
 
                 struct msghdr msg;
                 bzero(&msg, sizeof(msg));
