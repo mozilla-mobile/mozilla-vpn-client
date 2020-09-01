@@ -81,25 +81,46 @@ HEADERS += \
         timercontroller.h \
         user.h
 
+# Platform-specific controller
 linux-g++ {
-     message(Linux build)
+     message(Linux build - controller)
      SOURCES += \
              platforms/linux/linuxcontroller.cpp \
-             platforms/linux/linuxpingsendworker.cpp \
              platforms/linux/wgquickprocess.cpp
 
      HEADERS += \
              platforms/linux/linuxcontroller.h \
-             platforms/linux/linuxpingsendworker.h \
              platforms/linux/wgquickprocess.h
 } else {
      message(Unknown build - Using the dummy controller)
      SOURCES += \
-             platforms/dummy/dummycontroller.cpp \
+             platforms/dummy/dummycontroller.cpp
+
+     HEADERS += \
+             platforms/dummy/dummycontroller.h
+}
+
+# Platform-specific ping sender
+linux-g++:ping {
+     message(Linux build - ping)
+     SOURCES += \
+             platforms/linux/linuxpingsendworker.cpp
+
+     HEADERS += \
+             platforms/linux/linuxpingsendworker.h
+} else:macx {
+     message(MacOSX build - ping)
+     SOURCES += \
+             platforms/macx/macxpingsendworker.cpp
+
+     HEADERS += \
+             platforms/macx/macxpingsendworker.h
+} else {
+     message(Unknown build - dummy ping)
+     SOURCES += \
              platforms/dummy/dummypingsendworker.cpp
 
      HEADERS += \
-             platforms/dummy/dummycontroller.h \
              platforms/dummy/dummypingsendworker.h
 }
 

@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <netinet/ip_icmp.h>
-#include <sys/select.h>
 #include <sys/socket.h>
 
 void LinuxPingSendWorker::sendPing(const QString &destination)
@@ -51,10 +50,6 @@ void LinuxPingSendWorker::sendPing(const QString &destination)
     }
 
     qDebug() << "Ping sent";
-
-    fd_set read_set;
-    memset(&read_set, 0, sizeof read_set);
-    FD_SET(sock, &read_set);
 
     m_socketNotifier = new QSocketNotifier(sock, QSocketNotifier::Read, this);
     connect(m_socketNotifier,
