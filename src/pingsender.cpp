@@ -9,6 +9,10 @@
 #include "platforms/dummy/dummypingsendworker.h"
 #endif
 
+#ifdef QT_DEBUG
+#include "platforms/dummy/dummypingsendworker.h"
+#endif
+
 #include <QDebug>
 
 PingSender::PingSender(QObject *parent) : QObject(parent)
@@ -19,8 +23,14 @@ PingSender::PingSender(QObject *parent) : QObject(parent)
 #elif __APPLE__
         new MacxPingSendWorker();
 #else
-        new DummyPingSendWorker();
+        new DummyPingSendWorker(DummyPingSendWorker::Stable);
 #endif
+
+#ifdef QT_DEBUG
+    // For testing, enable DummyPingSendWorker in this way:
+    worker = new DummyPingSendWorker(DummyPingSendWorker::NoSignal);
+#endif
+
     worker->moveToThread(&m_workerThread);
 
     connect(&m_workerThread, &QThread::finished, worker, &QObject::deleteLater);

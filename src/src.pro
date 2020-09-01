@@ -35,6 +35,7 @@ SOURCES += \
         mozillavpn.cpp \
         networkrequest.cpp \
         pingsender.cpp \
+        platforms/dummy/dummypingsendworker.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -63,6 +64,7 @@ HEADERS += \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
+        platforms/dummy/dummypingsendworker.h \
         server.h \
         servercity.h \
         servercountry.h \
@@ -117,11 +119,6 @@ linux-g++ {
              platforms/macx/macxpingsendworker.h
 } else {
      message(Unknown build - dummy ping)
-     SOURCES += \
-             platforms/dummy/dummypingsendworker.cpp
-
-     HEADERS += \
-             platforms/dummy/dummypingsendworker.h
 }
 
 # Default rules for deployment.

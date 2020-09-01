@@ -10,7 +10,13 @@ class DummyPingSendWorker final : public PingSendWorker
     Q_OBJECT
 
 public:
-    DummyPingSendWorker();
+    enum State {
+        Stable,
+        Unstable,
+        NoSignal,
+    };
+
+    explicit DummyPingSendWorker(State state);
 
 public Q_SLOTS:
     void sendPing(const QString &destination) override;
@@ -18,12 +24,6 @@ public Q_SLOTS:
 
 private:
     QTimer *m_timer = nullptr;
-
-    enum State {
-        Good,
-        Unstable,
-        NoSignal,
-    };
 
     State m_state;
 };

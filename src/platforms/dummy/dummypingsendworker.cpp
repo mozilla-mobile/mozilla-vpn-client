@@ -6,10 +6,7 @@
 constexpr uint32_t SHORT_PING_TIMER_MSEC = 200;
 constexpr uint32_t LONG_PING_TIMER_MSEC = 6000;
 
-DummyPingSendWorker::DummyPingSendWorker()
-    : // Change this to "Unstable"or "NoSignal" to have different effects.
-      m_state(Good)
-{}
+DummyPingSendWorker::DummyPingSendWorker(State state) : m_state(state) {}
 
 void DummyPingSendWorker::sendPing(const QString &destination)
 {
@@ -22,7 +19,7 @@ void DummyPingSendWorker::sendPing(const QString &destination)
     }
 
     switch (m_state) {
-    case Good:
+    case Stable:
         qDebug() << m_timer;
         m_timer->start(SHORT_PING_TIMER_MSEC);
         break;

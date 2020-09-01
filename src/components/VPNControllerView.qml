@@ -50,6 +50,10 @@ Rectangle {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
         },
         State {
             name: VPNController.StateConnecting
@@ -75,6 +79,10 @@ Rectangle {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
         },
         State {
             name: VPNController.StateOn
@@ -95,10 +103,15 @@ Rectangle {
                 target: logoSubtitle
                 text: qsTr("Secure and private  •  ") + formatTime(VPNController.time)
                 color: "#FFFFFFCC"
+                visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
             }
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
+            }
+            PropertyChanges {
+                target: connectionStability
+                visible: VPNConnectionHealth.stability !== VPNConnectionHealth.Stable
             }
         },
         State {
@@ -125,6 +138,10 @@ Rectangle {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
         },
         State {
             name: VPNController.StateSwitching
@@ -149,6 +166,10 @@ Rectangle {
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
+            }
+            PropertyChanges {
+                target: connectionStability
+                visible: false
             }
         }
     ]
@@ -279,6 +300,14 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 15
         height: 22
+    }
+
+    VPNConnectionStability {
+        id: connectionStability
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: logoTitle.y + logoTitle.height + 8
+        horizontalAlignment: Text.AlignHCenter
     }
 
     VPNToggle {

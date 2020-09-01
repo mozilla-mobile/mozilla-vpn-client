@@ -317,5 +317,6 @@
         <file>resources/spinner.svg</file>
         <file>components/VPNSystemTray.qml</file>
         <file>components/VPNAlert.qml</file>
+        <file>components/VPNConnectionStability.qml</file>
     </qresource>
 </RCC>
