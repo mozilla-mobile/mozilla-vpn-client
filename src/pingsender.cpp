@@ -26,10 +26,14 @@ PingSender::PingSender(QObject *parent) : QObject(parent)
         new DummyPingSendWorker(DummyPingSendWorker::Stable);
 #endif
 
-#ifdef QT_DEBUG
-    // For testing, enable DummyPingSendWorker in this way:
-    worker = new DummyPingSendWorker(DummyPingSendWorker::NoSignal);
-#endif
+    // Uncomment the following lines to enable the DummyPingSendWorker. There are 3 modes:
+    // - Stable: the network is stable
+    // - Unstable: after 5 seconds, we go to unstable
+    // - NoSignal: after 30 seconds (after the Unstable state) we go to no-signal
+    //
+    //#ifdef QT_DEBUG
+    //    worker = new DummyPingSendWorker(DummyPingSendWorker::NoSignal);
+    //#endif
 
     worker->moveToThread(&m_workerThread);
 
