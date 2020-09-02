@@ -443,9 +443,14 @@ void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
     // Any error in authenticating state sends to the Initial state.
     if (m_state == StateAuthenticating) {
         setState(StateInitialize);
+        return;
     }
 
-    // TODO: here we need something more.
+    if (alert == AuthenticationFailedAlert) {
+        m_settings.clear();
+        setState(StateInitialize);
+        return;
+    }
 }
 
 const QList<Server> MozillaVPN::getServers() const
