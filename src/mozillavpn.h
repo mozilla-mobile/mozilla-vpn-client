@@ -25,6 +25,7 @@ public:
     enum State {
         StateInitialize,
         StateAuthenticating,
+        StatePostAuthentication,
         StateMain,
     };
 
@@ -64,6 +65,8 @@ public:
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 
     Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
+
+    Q_INVOKABLE void postAuthenticationCompleted();
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.

@@ -321,5 +321,6 @@
         <file>components/VPNControllerServer.qml</file>
         <file>components/VPNControllerDevice.qml</file>
         <file>components/VPNDeviceLimitAlert.qml</file>
+        <file>states/StatePostAuthentication.qml</file>
     </qresource>
 </RCC>

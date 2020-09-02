@@ -6,14 +6,11 @@
 #endif
 
 #include <QApplication>
-#include <QHostInfo>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
-    qDebug() << QHostInfo::localDomainName() << QHostInfo::localHostName();
-
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);

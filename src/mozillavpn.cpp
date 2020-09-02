@@ -192,7 +192,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
         scheduleTask(new TaskFunction([this](MozillaVPN *) {
             if (m_state == StateAuthenticating) {
                 m_controller.setDeviceLimit(true);
-                m_state = StateMain;
+                m_state = StatePostAuthentication;
                 emit stateChanged();
             }
         }));
@@ -210,7 +210,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         if (m_state == StateAuthenticating) {
-            m_state = StateMain;
+            m_state = StatePostAuthentication;
             emit stateChanged();
         }
     }));
@@ -462,4 +462,10 @@ void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
 {
     m_serverData.update(countryCode, city);
     m_serverData.writeSettings(m_settings);
+}
+
+void MozillaVPN::postAuthenticationCompleted()
+{
+    qDebug() << "Post authentication completed";
+    setState(StateMain);
 }

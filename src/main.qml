@@ -59,6 +59,14 @@ Window {
             },
 
             State {
+                name: VPN.StatePostAuthentication
+                PropertyChanges {
+                    target: loader
+                    source: "states/StatePostAuthentication.qml"
+                }
+            },
+
+            State {
                 name: VPN.StateMain
                 PropertyChanges {
                     target: loader
