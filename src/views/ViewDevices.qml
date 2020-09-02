@@ -2,17 +2,51 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.11
+
 import Mozilla.VPN 1.0
 
 import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
+    state: VPNController.state !== VPNController.StateDeviceLimit ? "active": "deviceLimit"
+
+    states: [
+        State {
+            name: "active" // normal mode
+            PropertyChanges {
+                target: menu
+                rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
+                                VPNUser.maxDevices)
+            }
+            PropertyChanges {
+                target: deviceLimitAlert
+                visible: false
+            }
+        },
+        State {
+            name: "deviceLimit" // device limit mode
+            PropertyChanges {
+                target: menu
+                rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices + 1).arg(
+                                VPNUser.maxDevices)
+            }
+            PropertyChanges {
+                target: deviceLimitAlert
+                visible: true
+
+            }
+        }
+    ]
+
     VPNMenu {
         id: menu
         title: qsTr("My devices")
-        rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
-                        VPNUser.maxDevices)
+    }
+
+    VPNDeviceLimitAlert {
+        id: deviceLimitAlert
+        // TODO
     }
 
     ListView {
@@ -254,6 +288,5 @@ Item {
             removePopup.deviceName = name
             removePopup.state = "visible"
         }
-
     }
 }

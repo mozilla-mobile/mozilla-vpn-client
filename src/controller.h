@@ -21,6 +21,7 @@ public:
         StateOn,
         StateDisconnecting,
         StateSwitching,
+        StateDeviceLimit,
     };
     Q_ENUM(State)
 
@@ -54,6 +55,10 @@ public:
     const QString &switchingCity() const { return m_switchingCity; }
 
     ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
+
+    void setDeviceLimit(bool deviceLimit);
+
+    bool isDeviceLimit() const { return m_state == StateDeviceLimit; }
 
 private Q_SLOTS:
     void connected();

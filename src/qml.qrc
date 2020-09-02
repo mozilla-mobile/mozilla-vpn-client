@@ -318,5 +318,8 @@
         <file>components/VPNSystemTray.qml</file>
         <file>components/VPNAlert.qml</file>
         <file>components/VPNConnectionStability.qml</file>
+        <file>components/VPNControllerServer.qml</file>
+        <file>components/VPNControllerDevice.qml</file>
+        <file>components/VPNDeviceLimitAlert.qml</file>
     </qresource>
 </RCC>

@@ -59,6 +59,17 @@ Rectangle {
                 target: toggle
                 color: "#3FE1B0"
             }
+        },
+        State {
+            name: VPNController.StateDeviceLimit
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#9E9E9E"
+            }
         }
     ]
 
@@ -111,6 +122,10 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onClicked: {
+            if (VPNController.state === VPNController.StateDeviceLimit) {
+                return;
+            }
+
             if (VPNController.state !== VPNController.StateOff) {
                 VPNController.deactivate()
             } else {

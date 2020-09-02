@@ -204,3 +204,18 @@ void Controller::logout()
         return;
     }
 }
+
+void Controller::setDeviceLimit(bool deviceLimit)
+{
+    qDebug() << "Device limit mode:" << deviceLimit;
+
+    if (!deviceLimit) {
+        Q_ASSERT(m_state == StateDeviceLimit);
+        m_state = StateOff;
+    } else {
+        Q_ASSERT(m_state == StateOff);
+        m_state = StateDeviceLimit;
+    }
+
+    emit stateChanged();
+}

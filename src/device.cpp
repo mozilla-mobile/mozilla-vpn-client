@@ -5,20 +5,38 @@
 #include <QJsonValue>
 #include <QSettings>
 
+#ifdef QT_DEBUG
+#include <QRandomGenerator>
+#endif
+
 #ifdef __APPLE__
 #include "platforms/macx/macutils.h"
 #endif
 
 QString Device::currentDeviceName()
 {
+    QString deviceName =
+
 #ifdef __APPLE__
-    // Mac has a funny way to rename the hostname based on the network status.
-    return MacUtils::computerName();
+        // Mac has a funny way to rename the hostname based on the network status.
+        MacUtils::computerName();
 #else
-    QString deviceName = QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
-                         + QSysInfo::productVersion();
-    return deviceName;
+        QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
+        + QSysInfo::productVersion();
 #endif
+
+    /*  If we want to generate a new device name at each execution, comment out this block:
+#ifdef QT_DEBUG
+    static quint32 uniqueId = 0;
+    if (uniqueId == 0) {
+        uniqueId = QRandomGenerator::global()->generate();
+    }
+
+    deviceName = QString("%1 %2").arg(deviceName).arg(uniqueId);
+#endif
+    */
+
+    return deviceName;
 }
 
 Device Device::fromJson(const QJsonValue &json)

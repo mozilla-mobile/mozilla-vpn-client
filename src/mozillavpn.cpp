@@ -176,9 +176,29 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;
 
+    // Then we fetch the list of servers.
+    scheduleTask(new TaskFetchServers());
+
+    int deviceCount = m_deviceModel.activeDevices();
+
     QString deviceName = Device::currentDeviceName();
     if (m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
+        --deviceCount;
+    }
+
+    if (deviceCount >= m_user.maxDevices()) {
+        // We need to go to "device limit"mode
+        scheduleTask(new TaskFunction([this](MozillaVPN *) {
+            if (m_state == StateAuthenticating) {
+                m_controller.setDeviceLimit(true);
+                m_state = StateMain;
+                emit stateChanged();
+            }
+        }));
+
+        // Nothing else to do.
+        return;
     }
 
     // Here we add the current device.
@@ -186,9 +206,6 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     // Let's fetch the devices again.
     scheduleTask(new TaskAccount());
-
-    // Then we fetch the list of servers.
-    scheduleTask(new TaskFetchServers());
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
@@ -244,6 +261,22 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     if (m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
+
+    if (!m_controller.isDeviceLimit()) {
+        return;
+    }
+
+    // Let's recover from the device-limit mode.
+    Q_ASSERT(!m_deviceModel.hasDevice(Device::currentDeviceName()));
+
+    // Here we add the current device.
+    scheduleTask(new TaskAddDevice(deviceName));
+
+    // Let's fetch the devices again.
+    scheduleTask(new TaskAccount());
+
+    // Finally we are able to activate the client.
+    scheduleTask(new TaskFunction([this](MozillaVPN *) { m_controller.setDeviceLimit(false); }));
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json)

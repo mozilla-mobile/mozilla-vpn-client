@@ -21,88 +21,11 @@ Item {
         source: box
     }
 
-    RowLayout {
-        id: devicesRow1
-        spacing: 0
-        width: parent.width
-        height: Theme.vSpacing
+    VPNControllerServer {
         y: box.y + box.height + Theme.iconSize
-
-        VPNIcon {
-            source: "../resources/connection.svg"
-            Layout.rightMargin: Theme.iconSize
-            Layout.leftMargin: Theme.hSpacing
-        }
-
-        VPNBoldLabel {
-            text: qsTr("Select location")
-        }
-
-        Item {
-            Layout.fillWidth: true
-        }
-
-        VPNIcon {
-            Layout.rightMargin: 8
-            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase(
-                        ) + ".png"
-        }
-
-        VPNLightLabel {
-            text: VPNCurrentServer.city
-            MouseArea {
-                anchors.fill: parent
-                onClicked: stackview.push("ViewServers.qml")
-            }
-        }
-
-        VPNChevron {
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    // TODO: connecting/disconnectin we should gray it out.
-                    if (VPNController.state === VPNController.StateOn ||
-                            VPNController.state === VPNController.StateOff) {
-                        stackview.push("ViewServers.qml")
-                    }
-                }
-            }
-        }
     }
 
-    RowLayout {
-        spacing: 0
-        width: parent.width
+    VPNControllerDevice {
         y: box.y + box.height + Theme.iconSize + (Theme.vSpacing * 2)
-
-        VPNIcon {
-            source: "../resources/devices.svg"
-            Layout.rightMargin: Theme.iconSize
-            Layout.leftMargin: Theme.hSpacing
-        }
-
-        VPNBoldLabel {
-            text: qsTr("My devices")
-        }
-
-        Item {
-            Layout.fillWidth: true
-        }
-
-        VPNLightLabel {
-            text: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
-                      VPNUser.maxDevices)
-            MouseArea {
-                anchors.fill: parent
-                onClicked: stackview.push("ViewDevices.qml")
-            }
-        }
-
-        VPNChevron {
-            MouseArea {
-                anchors.fill: parent
-                onClicked: stackview.push("ViewDevices.qml")
-            }
-        }
     }
 }
