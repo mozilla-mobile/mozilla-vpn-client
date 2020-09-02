@@ -5,11 +5,20 @@
 #include <QJsonValue>
 #include <QSettings>
 
+#ifdef __APPLE__
+#include "platforms/macx/macutils.h"
+#endif
+
 QString Device::currentDeviceName()
 {
+#ifdef __APPLE__
+    // Mac has a funny way to rename the hostname based on the network status.
+    return MacUtils::computerName();
+#else
     QString deviceName = QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
                          + QSysInfo::productVersion();
     return deviceName;
+#endif
 }
 
 Device Device::fromJson(const QJsonValue &json)

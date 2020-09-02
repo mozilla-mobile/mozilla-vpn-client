@@ -121,6 +121,15 @@ linux-g++ {
      message(Unknown build - dummy ping)
 }
 
+# Other platform-specific utils
+macx {
+    SOURCES += \
+            platforms/macx/macutils.mm
+
+    HEADERS += \
+            platforms/macx/macutils.h
+}
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

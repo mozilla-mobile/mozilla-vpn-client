@@ -43,6 +43,10 @@ bool sortCallback(const Device &a, const Device &b)
         return true;
     }
 
+    if (b.name() == Device::currentDeviceName()) {
+        return false;
+    }
+
     return a.createdAt() < b.createdAt();
 }
 
