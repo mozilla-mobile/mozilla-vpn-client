@@ -45,6 +45,7 @@ Rectangle {
                 target: logoSubtitle
                 text: qsTr("Turn on to protect your privacy")
                 color: Theme.fontColor
+                opacity: 1
             }
             PropertyChanges {
                 target: settingsImage
@@ -73,7 +74,8 @@ Rectangle {
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Masking connection and location")
-                color: "#FFFFFFCC"
+                color: "#FFFFFF"
+                opacity: .8
             }
             PropertyChanges {
                 target: settingsImage
@@ -102,16 +104,13 @@ Rectangle {
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Secure and private  •  ") + formatTime(VPNController.time)
-                color: "#FFFFFFCC"
                 visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
+                color: "#FFFFFF"
+                opacity: .8
             }
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: VPNConnectionHealth.stability !== VPNConnectionHealth.Stable
             }
         },
         State {
@@ -133,6 +132,7 @@ Rectangle {
                 target: logoSubtitle
                 text: qsTr("Unmasking connection and location")
                 color: Theme.fontColor
+                opacity: 1
             }
             PropertyChanges {
                 target: settingsImage
@@ -161,7 +161,8 @@ Rectangle {
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("From %1 to %2").arg(VPNController.currentCity).arg(VPNController.switchingCity)
-                color: "#FFFFFFCC"
+                color: "#FFFFFF"
+                opacity: .8
             }
             PropertyChanges {
                 target: settingsImage
@@ -321,14 +322,11 @@ Rectangle {
         height: 32
     }
 
-    Text {
+    VPNInterLabel {
         id: logoSubtitle
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: logoTitle.y + logoTitle.height + 8
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 15
-        height: 22
     }
 
     VPNConnectionStability {
@@ -336,7 +334,7 @@ Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: logoTitle.y + logoTitle.height + 8
-        horizontalAlignment: Text.AlignHCenter
+        visible: false
     }
 
     VPNToggle {

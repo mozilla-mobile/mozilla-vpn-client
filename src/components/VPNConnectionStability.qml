@@ -1,35 +1,126 @@
 import QtQuick 2.0
+import QtQuick.Layouts 1.11
 
 import Mozilla.VPN 1.0
 
-Text {
-    id: stability
-    state: VPNConnectionHealth.stability
+import "../themes/themes.js" as Theme
 
+RowLayout {
+    id: stability
+    spacing: 0
+    opacity: 0
+
+    RowLayout {
+        id: iconLabelWrapper
+        spacing: 0
+        Layout.minimumWidth: 60
+
+        Rectangle {
+            height: 22
+            width: 15
+            color: "transparent"
+            Layout.rightMargin: 8
+
+            Image {
+                id: warningIcon
+                sourceSize.height: 15
+                sourceSize.width: 15
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+
+        VPNInterLabel {
+            id: stabilityLabel
+        }
+    }
+
+    Rectangle {
+        Layout.preferredHeight: 5
+        Layout.preferredWidth: 5
+        color: "#FFFFFF"
+        opacity: .8
+        radius: 3
+        Layout.leftMargin: 12
+        Layout.rightMargin: 12
+        Layout.bottomMargin: 4
+    }
+
+    VPNInterLabel {
+        text: qsTr("Check connection")
+        color: "#FFFFFF"
+        opacity: .8
+    }
+
+    state: VPNConnectionHealth.stability
     states: [
         State {
             name: VPNConnectionHealth.Stable
             PropertyChanges {
                 target: stability
-                text: qsTr("")
+                visible: false
+                opacity: 0
             }
         },
+
         State {
             name: VPNConnectionHealth.Unstable
             PropertyChanges {
                 target: stability
-                text: qsTr("Unstable")
+                opacity: 1
+                visible: true
             }
         },
+
         State {
             name: VPNConnectionHealth.NoSignal
             PropertyChanges {
                 target: stability
-                text: qsTr("NoSignal")
+                opacity: 1
+                visible: true
             }
         }
     ]
 
-    font.pixelSize: 15
-    height: 22
+    transitions: [
+        Transition {
+            from: VPNConnectionHealth.Stable
+            to: VPNConnectionHealth.Unstable || VPNConnectionHealth.NoSignal
+            SequentialAnimation {
+                PropertyAction {
+                    target: stability
+                    property: "visible"
+                    value: true
+                }
+
+                VPNStabilityLabelActions { }
+
+                NumberAnimation {
+                    target: stability
+                    property: "opacity"
+                    to: 1
+                    duration: 200
+                }
+            }
+        },
+        Transition {
+            SequentialAnimation {
+                NumberAnimation {
+                    target: iconLabelWrapper
+                    property: "opacity"
+                    to: 0
+                    duration: 100
+                }
+
+                VPNStabilityLabelActions { }
+
+                NumberAnimation {
+                    target: iconLabelWrapper
+                    property: "opacity"
+                    to: 1
+                    duration: 200
+                }
+
+            }
+        }
+    ]
 }
