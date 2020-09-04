@@ -1,5 +1,6 @@
 #include "devicemodel.h"
 
+#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
