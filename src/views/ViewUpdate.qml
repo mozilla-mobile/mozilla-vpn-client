@@ -82,7 +82,7 @@ Item {
     VPNFooterLink {
         id: manageAccount
         text: qsTr("Manage account")
-        onClicked: VPN.openLink("/r/vpn/account")
+        onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
     Text {

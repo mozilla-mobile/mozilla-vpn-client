@@ -30,7 +30,6 @@ public:
         StateMain,
         StateUpdateRequired,
     };
-
     Q_ENUM(State);
 
     enum AlertType {
@@ -40,8 +39,15 @@ public:
         LogoutAlert,
         NoConnectionAlert,
     };
-
     Q_ENUM(AlertType)
+
+    enum LinkType {
+        LinkAccount,
+        LinkContact,
+        LinkFeedback,
+        LinkHelpSupport,
+    };
+    Q_ENUM(LinkType)
 
 private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
@@ -64,7 +70,7 @@ public:
 
     Q_INVOKABLE void cancelAuthentication();
 
-    Q_INVOKABLE void openLink(const QString &linkName);
+    Q_INVOKABLE void openLink(LinkType linkType);
 
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 

@@ -124,12 +124,37 @@ void MozillaVPN::authenticate()
     scheduleTask(new TaskAuthenticate());
 }
 
-void MozillaVPN::openLink(const QString &linkName)
+void MozillaVPN::openLink(LinkType linkType)
 {
-    qDebug() << "Opening link: " << linkName;
+    qDebug() << "Opening link: " << linkType;
 
-    QString url(getApiUrl());
-    url.append(linkName);
+    QString url;
+
+    switch (linkType) {
+    case LinkAccount:
+        url = getApiUrl();
+        url.append("/r/vpn/account");
+        break;
+
+    case LinkContact:
+        url = getApiUrl();
+        url.append("/r/vpn/contact");
+        break;
+
+    case LinkFeedback:
+        url = getApiUrl();
+        url.append("/r/vpn/client/feedback");
+        break;
+
+    case LinkHelpSupport:
+        url = getApiUrl();
+        // TODO
+        break;
+
+    default:
+        qFatal("Unsupported link type!");
+        return;
+    }
 
     QDesktopServices::openUrl(url);
 }

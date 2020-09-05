@@ -20,12 +20,12 @@ Item {
         model: ListModel {
             ListElement {
                 title: qsTr("Contact us")
-                url: "/r/vpn/contact"
+                url: VPN.LinkContact
             }
 
             ListElement {
                 title: qsTr("Help & Support")
-                url: "TODO"
+                url: VPN.LinkHelpSupport
             }
         }
 
