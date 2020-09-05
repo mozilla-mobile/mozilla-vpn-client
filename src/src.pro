@@ -36,6 +36,7 @@ SOURCES += \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
+        releasemonitor.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
+        releasemonitor.h \
         server.h \
         servercity.h \
         servercountry.h \

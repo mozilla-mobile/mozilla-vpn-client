@@ -54,6 +54,9 @@ void MozillaVPN::initialize(int &, char *[])
     m_apiUrl = API_URL_DEBUG;
 #endif
 
+    m_releaseMonitor.init(this, &m_settings);
+    m_releaseMonitor.run();
+
     if (!m_settings.contains(SETTINGS_TOKEN)) {
         return;
     }
@@ -468,4 +471,10 @@ void MozillaVPN::postAuthenticationCompleted()
 {
     qDebug() << "Post authentication completed";
     setState(StateMain);
+}
+
+void MozillaVPN::setUpdateRecommended(bool value)
+{
+    m_updateRecommended = value;
+    emit updateRecommendedChanged();
 }

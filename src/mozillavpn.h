@@ -4,6 +4,7 @@
 #include "controller.h"
 #include "devicemodel.h"
 #include "keys.h"
+#include "releasemonitor.h"
 #include "servercountrymodel.h"
 #include "serverdata.h"
 #include "user.h"
@@ -27,6 +28,7 @@ public:
         StateAuthenticating,
         StatePostAuthentication,
         StateMain,
+        StateUpdateRequired,
     };
 
     Q_ENUM(State);
@@ -45,6 +47,7 @@ private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
     Q_PROPERTY(QString versionString READ versionString)
+    Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -65,6 +68,8 @@ public:
     Q_INVOKABLE void removeDevice(const QString &deviceName);
 
     Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
+
+    Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
 
     Q_INVOKABLE void postAuthenticationCompleted();
 
@@ -109,6 +114,11 @@ public:
 
     ConnectionHealth *connectionHealth() { return m_controller.connectionHealth(); }
 
+    bool updateRecommended() const { return m_updateRecommended; }
+    void setUpdateRecommended(bool value);
+
+    void forceUpdateState() { setState(StateUpdateRequired); }
+
 private:
     void setAlert(AlertType alert);
     void setState(State state);
@@ -119,6 +129,7 @@ private:
 signals:
     void stateChanged();
     void alertChanged();
+    void updateRecommendedChanged();
 
 private:
     QSettings m_settings;
@@ -143,6 +154,9 @@ private:
 
     QTimer m_alertTimer;
     AlertType m_alert = NoAlert;
+
+    ReleaseMonitor m_releaseMonitor;
+    bool m_updateRecommended = false;
 };
 
 #endif // MOZILLAVPN_H

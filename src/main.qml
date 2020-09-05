@@ -72,8 +72,18 @@ Window {
                     target: loader
                     source: "states/StateMain.qml"
                 }
+            },
+
+            State {
+                name: VPN.StateUpdateRequired
+                PropertyChanges {
+                    target: loader
+                    source: "states/StateUpdateRequired.qml"
+                }
             }
         ]
+
+        VPNUpdateAlert {}
 
         VPNAlert {
             id: alertBox
