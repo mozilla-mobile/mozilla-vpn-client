@@ -80,8 +80,8 @@ Rectangle {
 
     color: "#FF4F5E"
     height: 40
-    width: mainView.width - 16
-    y: mainView.height - 48
+    width: parent.width - 16
+    y: parent.height - 48
     x: 8
     radius: 4
     anchors.margins: 8

@@ -48,6 +48,7 @@ private:
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
     Q_PROPERTY(QString versionString READ versionString)
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
+    Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
 
 public:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -119,6 +120,8 @@ public:
 
     void forceUpdateState() { setState(StateUpdateRequired); }
 
+    bool userAuthenticated() const { return m_userAuthenticated; }
+
 private:
     void setAlert(AlertType alert);
     void setState(State state);
@@ -126,10 +129,13 @@ private:
     void scheduleTask(Task *task);
     void maybeRunTask();
 
+    void setUserAuthenticated(bool state);
+
 signals:
     void stateChanged();
     void alertChanged();
     void updateRecommendedChanged();
+    void userAuthenticationChanged();
 
 private:
     QSettings m_settings;
@@ -157,6 +163,8 @@ private:
 
     ReleaseMonitor m_releaseMonitor;
     bool m_updateRecommended = false;
+
+    bool m_userAuthenticated = false;
 };
 
 #endif // MOZILLAVPN_H

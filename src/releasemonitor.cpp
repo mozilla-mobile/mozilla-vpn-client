@@ -12,26 +12,18 @@
 // Any 6 hours, a new check
 constexpr uint32_t RELEASE_MONITOR_SEC = 21600;
 
-constexpr const char *LATEST_VERSION_KEY = "latestVersion";
-constexpr const char *MINIMUM_VERSION_KEY = "minimumVersion";
-
-void ReleaseMonitor::init(MozillaVPN *vpn, QSettings *settings)
+void ReleaseMonitor::setVPN(MozillaVPN *vpn)
 {
     m_vpn = vpn;
-    m_settings = settings;
-
-    if (m_settings->contains(LATEST_VERSION_KEY)) {
-        m_latestVersion = m_settings->value(LATEST_VERSION_KEY).toDouble();
-    }
-
-    if (m_settings->contains(MINIMUM_VERSION_KEY)) {
-        m_latestVersion = m_settings->value(MINIMUM_VERSION_KEY).toDouble();
-    }
-
-    maybeForceUpdate();
 }
 
-void ReleaseMonitor::run()
+void ReleaseMonitor::runSoon()
+{
+    qDebug() << "ReleaseManager - Scheduling a quick timer";
+    QTimer::singleShot(0, [this] { runInternal(); });
+}
+
+void ReleaseMonitor::runInternal()
 {
     qDebug() << "ReleaseMonitor started";
 
@@ -52,7 +44,7 @@ void ReleaseMonitor::run()
 void ReleaseMonitor::schedule()
 {
     qDebug() << "ReleaseMonitor scheduling";
-    QTimer::singleShot(RELEASE_MONITOR_SEC * 1000, [this] { run(); });
+    QTimer::singleShot(RELEASE_MONITOR_SEC * 1000, [this] { runInternal(); });
 }
 
 void ReleaseMonitor::processData(const QByteArray &data)
@@ -98,27 +90,21 @@ void ReleaseMonitor::processData(const QByteArray &data)
     QJsonValue minimumVersionValue = minimumData.take("version");
     Q_ASSERT(minimumVersionValue.isString());
 
-    m_latestVersion = latestVersionValue.toString().toDouble();
-    m_minimumVersion = minimumVersionValue.toString().toDouble();
-
-    m_settings->setValue(LATEST_VERSION_KEY, m_latestVersion);
-    m_settings->setValue(MINIMUM_VERSION_KEY, m_minimumVersion);
-
-    maybeForceUpdate();
-}
-
-void ReleaseMonitor::maybeForceUpdate()
-{
+    double latestVersion = latestVersionValue.toString().toDouble();
+    double minimumVersion = minimumVersionValue.toString().toDouble();
     double currentVersion = QString(APP_VERSION).toDouble();
 
-    qDebug() << "Latest version:" << m_latestVersion;
-    qDebug() << "Minimum version:" << m_minimumVersion;
+    qDebug() << "Latest version:" << latestVersion;
+    qDebug() << "Minimum version:" << minimumVersion;
     qDebug() << "Current version:" << currentVersion;
 
-    if (currentVersion < m_minimumVersion) {
+    if (currentVersion < minimumVersion) {
+        qDebug() << "ReleaseMonitor - update required";
+        m_vpn->setUpdateRecommended(false);
         m_vpn->forceUpdateState();
         return;
     }
 
-    m_vpn->setUpdateRecommended(currentVersion < m_latestVersion);
+    qDebug() << "Update recommended: " << (currentVersion < latestVersion);
+    m_vpn->setUpdateRecommended(currentVersion < latestVersion);
 }

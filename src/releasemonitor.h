@@ -10,23 +10,19 @@ class ReleaseMonitor final : public QObject
 {
     Q_OBJECT
 public:
-    void init(MozillaVPN *vpn, QSettings *settings);
+    void setVPN(MozillaVPN *vpn);
 
-    void run();
+    void runSoon();
 
 private:
+    void runInternal();
+
     void schedule();
 
     void processData(const QByteArray &data);
 
-    void maybeForceUpdate();
-
 private:
     MozillaVPN *m_vpn = nullptr;
-    QSettings *m_settings = nullptr;
-
-    double m_latestVersion = 0;
-    double m_minimumVersion = 0;
 };
 
 #endif // RELEASEMONITOR_H

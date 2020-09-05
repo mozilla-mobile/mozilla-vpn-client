@@ -8,7 +8,7 @@ Rectangle {
 
     color: "#0060DF"
     height: 40
-    width: mainView.width - 16
+    width: parent.width - 16
     y: 10
     x: 8
     radius: 4
@@ -24,7 +24,7 @@ Rectangle {
 
     MouseArea {
         anchors.fill: alertUpdateRecommendedText
-        onClicked: console.log("TODO")
+        onClicked: mainStackView.push("../views/ViewUpdate.qml")
     }
 
     Image {

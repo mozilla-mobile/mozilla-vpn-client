@@ -324,5 +324,6 @@
         <file>states/StatePostAuthentication.qml</file>
         <file>components/VPNUpdateAlert.qml</file>
         <file>states/StateUpdateRequired.qml</file>
+        <file>views/ViewUpdate.qml</file>
     </qresource>
 </RCC>

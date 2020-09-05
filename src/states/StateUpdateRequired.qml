@@ -1,5 +1,7 @@
 import QtQuick 2.0
 
-Text {
-    text: qsTr("TODO")
+Loader {
+    id: loader
+    anchors.fill:parent
+    source: "../views/ViewUpdate.qml"
 }
