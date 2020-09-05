@@ -151,6 +151,11 @@ void MozillaVPN::openLink(LinkType linkType)
         // TODO
         break;
 
+    case LinkUpdate:
+        url = getApiUrl();
+        // TODO
+        break;
+
     default:
         qFatal("Unsupported link type!");
         return;

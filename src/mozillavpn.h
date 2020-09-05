@@ -46,6 +46,7 @@ public:
         LinkContact,
         LinkFeedback,
         LinkHelpSupport,
+        LinkUpdate,
     };
     Q_ENUM(LinkType)
 

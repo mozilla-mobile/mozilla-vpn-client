@@ -70,7 +70,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         y: 300
         radius: 4
-        onClicked: console.log("TODO")
+        onClicked: VPN.openLink(VPN.LinkUpdate)
     }
 
     VPNFooterLink {
