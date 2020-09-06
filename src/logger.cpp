@@ -104,38 +104,35 @@ void Logger::viewLogs()
 // static
 void Logger::prettyOutput(QTextStream &out, const Logger::Log &log)
 {
-    QString filename;
-    if (!log.m_file.isEmpty()) {
-        int pos = log.m_file.lastIndexOf("/");
-        filename = log.m_file.right(log.m_file.length() - pos - 1);
-    }
-
-    QString type = "?!?";
     switch (log.m_type) {
     case QtDebugMsg:
-        type = "Debug:";
+        out << "Debug: ";
         break;
     case QtInfoMsg:
-        type = "Info:";
+        out << "Info: ";
         break;
     case QtWarningMsg:
-        type = "Warning:";
+        out << "Warning: ";
         break;
     case QtCriticalMsg:
-        type = "Critical:";
+        out << "Critical: ";
         break;
     case QtFatalMsg:
-        type = "Fatal:";
+        out << "Fatal: ";
+        break;
+    default:
+        out << "?!?: ";
         break;
     }
 
-    out << type << " " << log.m_message;
+    out << log.m_message;
 
-    if (!filename.isEmpty() || !log.m_function.isEmpty()) {
+    if (!log.m_file.isEmpty() || !log.m_function.isEmpty()) {
         out << " (";
 
-        if (!filename.isEmpty()) {
-            out << filename << ":" << log.m_line;
+        if (!log.m_file.isEmpty()) {
+            int pos = log.m_file.lastIndexOf("/");
+            out << log.m_file.right(log.m_file.length() - pos - 1) << ":" << log.m_line;
             if (!log.m_function.isEmpty()) {
                 out << ", ";
             }
