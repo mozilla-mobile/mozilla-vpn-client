@@ -75,8 +75,10 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
             [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
                 qDebug() << "Execution finished" << exitCode;
 
-                qWarning("wg-quick stdout:\n%ls\n", qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
-                qWarning("wg-quick stderr:\n%ls\n", qUtf16Printable(wgQuickProcess->readAllStandardError()));
+                qWarning("wg-quick stdout:\n%ls\n",
+                         qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
+                qWarning("wg-quick stderr:\n%ls\n",
+                         qUtf16Printable(wgQuickProcess->readAllStandardError()));
 
                 deleteLater();
 
@@ -92,11 +94,30 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
 }
 
 namespace {
+
 void showAlert(const QString &message)
 {
     QMessageBox alert;
     alert.setText(message);
     alert.exec();
+}
+
+bool findInPath(const char *what)
+{
+    char *path = getenv("PATH");
+    Q_ASSERT(path);
+
+    QStringList parts = QString(path).split(":");
+    for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
+        QDir pathDir(*i);
+        QFileInfo file(pathDir.filePath(what));
+        if (file.exists()) {
+            qDebug() << what << "found" << file.filePath();
+            return true;
+        }
+    }
+
+    return false;
 }
 
 } // namespace
@@ -110,16 +131,15 @@ bool WgQuickProcess::checkDependencies()
         return false;
     }
 
-    QStringList parts = QString(path).split(":");
-    for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
-        QDir pathDir(*i);
-        QFileInfo file(pathDir.filePath("wg-quick"));
-        if (file.exists()) {
-            qDebug() << "wg-quick found" << file.filePath();
-            return true;
-        }
+    if (!findInPath(WG_QUICK)) {
+        showAlert("Unable to locate wg-quick");
+        return false;
     }
 
-    showAlert("Unable to locate wg-quick");
-    return false;
+    if (!findInPath(PKEXEC)) {
+        showAlert("Unable to locate pkexec");
+        return false;
+    }
+
+    return true;
 }
