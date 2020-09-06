@@ -1,3 +1,4 @@
+#include "logger.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
 
@@ -11,6 +12,8 @@
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(Logger::messageHandler);
+
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
@@ -50,6 +53,7 @@ int main(int argc, char *argv[])
                                  0,
                                  "VPNConnectionHealth",
                                  mozillaVPN->connectionHealth());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNLogger", Logger::instance());
 
     QObject::connect(mozillaVPN->controller(),
                      &Controller::readyToQuit,

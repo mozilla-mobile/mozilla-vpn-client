@@ -31,6 +31,7 @@ SOURCES += \
         devicemodel.cpp \
         hacl-star/Hacl_Curve25519_51.c \
         keys.cpp \
+        logger.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
         device.h \
         devicemodel.h \
         keys.h \
+        logger.h \
         mozillavpn.h \
         networkrequest.h \
         pingsender.h \
