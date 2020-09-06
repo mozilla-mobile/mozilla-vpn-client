@@ -129,6 +129,24 @@ void Logger::prettyOutput(QTextStream &out, const Logger::Log &log)
         break;
     }
 
-    out << type << " " << log.m_message << " (" << filename << ":" << log.m_line << ","
-        << log.m_function << ")" << Qt::endl;
+    out << type << " " << log.m_message;
+
+    if (!filename.isEmpty() || !log.m_function.isEmpty()) {
+        out << " (";
+
+        if (!filename.isEmpty()) {
+            out << filename << ":" << log.m_line;
+            if (!log.m_function.isEmpty()) {
+                out << ", ";
+            }
+        }
+
+        if (!log.m_function.isEmpty()) {
+            out << log.m_function;
+        }
+
+        out << ")";
+    }
+
+    out << Qt::endl;
 }
