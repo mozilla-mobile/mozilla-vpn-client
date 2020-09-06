@@ -47,7 +47,7 @@ void MozillaVPN::initialize(int &, char *[])
     qDebug() << "MozillaVPN Initialization";
 
     // This is our first state.
-    m_state = StateInitialize;
+    Q_ASSERT(m_state == StateInitialize);
 
     // API URL depends on the type of build.
     m_apiUrl = API_URL_PROD;
@@ -507,7 +507,11 @@ void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
 void MozillaVPN::postAuthenticationCompleted()
 {
     qDebug() << "Post authentication completed";
-    setState(StateMain);
+
+    // Super racy, but it could happen that we are already in update-required state.
+    if (m_state != StateUpdateRequired) {
+        setState(StateMain);
+    }
 }
 
 void MozillaVPN::setUpdateRecommended(bool value)

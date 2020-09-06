@@ -162,7 +162,7 @@ private:
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
 
-    State m_state;
+    State m_state = StateInitialize;
     QString m_apiUrl;
 
     QTimer m_alertTimer;
