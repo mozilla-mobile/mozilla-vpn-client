@@ -13,14 +13,10 @@ TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
 
     connect(m_impl,
             &ControllerImpl::connected,
-            this,
-            &TimerController::maybeDone,
-            Qt::QueuedConnection);
+            [this] { TimerController::maybeDone(true); });
     connect(m_impl,
             &ControllerImpl::disconnected,
-            this,
-            &TimerController::maybeDone,
-            Qt::QueuedConnection);
+            [this] { TimerController::maybeDone(false); });
 
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &TimerController::timeout);
@@ -77,22 +73,27 @@ void TimerController::timeout()
     // Any other state can be ignored.
 }
 
-void TimerController::maybeDone()
+void TimerController::maybeDone(bool isConnected)
 {
-    qDebug() << "TimerController - Operation completed:" << m_state;
+    qDebug() << "TimerController - Operation completed:" << m_state << isConnected;
 
     Q_ASSERT(m_state == Connecting || m_state == Disconnecting);
 
     if (m_state == Connecting) {
         if (m_timer.isActive()) {
             // The connection was faster.
-            m_state = Connected;
+            m_state = isConnected ? Connected : Disconnected;
             return;
         }
 
         // The timer was faster.
         m_state = None;
-        emit connected();
+
+        if (isConnected) {
+            emit connected();
+        } else {
+            emit disconnected();
+        }
         return;
     }
 

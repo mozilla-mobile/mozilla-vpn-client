@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QProcess>
 
+constexpr const char *PKEXEC = "pkexec";
 constexpr const char *WG_QUICK = "wg-quick";
 
 WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {}
@@ -56,9 +57,8 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
 
     file.close();
 
-    // TODO: do we need to use sudo/gksu/pkexec?
-
     QStringList arguments;
+    arguments.append(WG_QUICK);
     arguments.append(m_op == Up ? "up" : "down");
     arguments.append(file.fileName());
 
@@ -88,7 +88,7 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
                 emit succeeded();
             });
 
-    wgQuickProcess->start(WG_QUICK, arguments);
+    wgQuickProcess->start(PKEXEC, arguments);
 }
 
 namespace {

@@ -24,7 +24,9 @@ public:
 
 private Q_SLOTS:
     void timeout();
-    void maybeDone();
+
+private:
+    void maybeDone(bool isConnected);
 
 private:
     ControllerImpl *m_impl;
