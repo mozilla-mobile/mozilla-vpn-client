@@ -10,7 +10,7 @@
 #endif
 
 #ifdef __APPLE__
-#include "platforms/macx/macutils.h"
+#include "platforms/macos/macosutils.h"
 #endif
 
 QString Device::currentDeviceName()
@@ -18,8 +18,8 @@ QString Device::currentDeviceName()
     QString deviceName =
 
 #ifdef __APPLE__
-        // Mac has a funny way to rename the hostname based on the network status.
-        MacUtils::computerName();
+        // MacOS has a funny way to rename the hostname based on the network status.
+        MacosUtils::computerName();
 #else
         QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
         + QSysInfo::productVersion();

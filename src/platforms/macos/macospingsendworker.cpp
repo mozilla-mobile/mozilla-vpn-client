@@ -1,4 +1,4 @@
-#include "macxpingsendworker.h"
+#include "macospingsendworker.h"
 
 #include <QDebug>
 #include <QSocketNotifier>
@@ -60,9 +60,9 @@ u_short in_cksum(u_short *addr, int len)
 
 }; // namespace
 
-void MacxPingSendWorker::sendPing(const QString &destination)
+void MacosPingSendWorker::sendPing(const QString &destination)
 {
-    qDebug() << "MacxPingSendWorker - sending ping to:" << destination;
+    qDebug() << "MacosPingSendWorker - sending ping to:" << destination;
 
     Q_ASSERT(m_socket == 0);
 
@@ -148,13 +148,13 @@ void MacxPingSendWorker::sendPing(const QString &destination)
             });
 }
 
-void MacxPingSendWorker::stopPing()
+void MacosPingSendWorker::stopPing()
 {
     qDebug() << "LinuxPingSendWorker - stopped";
     releaseObjects();
 }
 
-void MacxPingSendWorker::releaseObjects()
+void MacosPingSendWorker::releaseObjects()
 {
     if (m_socket > 0) {
         close(m_socket);

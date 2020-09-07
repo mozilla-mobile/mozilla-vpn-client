@@ -40,7 +40,7 @@ Item {
             id: manageAccountButton
             text: qsTr("Manage account")
             Layout.alignment: Qt.AlignHCenter
-            onClicked: VPN.openLink("/r/vpn/account")
+            onClicked: VPN.openLink(VPN.LinkAccount)
         }
 
         // TODO: this should be scrollable
@@ -67,7 +67,7 @@ Item {
             text: qsTr("Give feedback")
             imageRight: "../resources/externalLink.svg"
             imageLeft: "../resources/feedback.svg"
-            onClicked: VPN.openLink("/r/vpn/client/feedback")
+            onClicked: VPN.openLink(VPN.LinkFeedback)
         }
 
         Label {

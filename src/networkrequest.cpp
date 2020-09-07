@@ -141,6 +141,21 @@ NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
     return r;
 }
 
+NetworkRequest *NetworkRequest::createForVersions(MozillaVPN *vpn)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/versions");
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+
+    return r;
+}
+
 NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
 {
     Q_ASSERT(vpn);

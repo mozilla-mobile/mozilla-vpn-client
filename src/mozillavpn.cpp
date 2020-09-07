@@ -35,6 +35,7 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
 {
     m_controller.setVPN(this);
+    m_releaseMonitor.setVPN(this);
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 }
@@ -46,13 +47,15 @@ void MozillaVPN::initialize(int &, char *[])
     qDebug() << "MozillaVPN Initialization";
 
     // This is our first state.
-    m_state = StateInitialize;
+    Q_ASSERT(m_state == StateInitialize);
 
     // API URL depends on the type of build.
     m_apiUrl = API_URL_PROD;
 #ifdef QT_DEBUG
     m_apiUrl = API_URL_DEBUG;
 #endif
+
+    m_releaseMonitor.runSoon();
 
     if (!m_settings.contains(SETTINGS_TOKEN)) {
         return;
@@ -100,10 +103,12 @@ void MozillaVPN::initialize(int &, char *[])
     scheduleTask(new TaskFetchServers());
 
     setState(StateMain);
+    setUserAuthenticated(true);
 }
 
 void MozillaVPN::setState(State state)
 {
+    qDebug() << "Set state:" << state;
     m_state = state;
     emit stateChanged();
 }
@@ -112,20 +117,49 @@ void MozillaVPN::authenticate()
 {
     qDebug() << "Authenticate";
 
-    m_state = StateAuthenticating;
-    emit stateChanged();
+    setState(StateAuthenticating);
 
     hideAlert();
 
     scheduleTask(new TaskAuthenticate());
 }
 
-void MozillaVPN::openLink(const QString &linkName)
+void MozillaVPN::openLink(LinkType linkType)
 {
-    qDebug() << "Opening link: " << linkName;
+    qDebug() << "Opening link: " << linkType;
 
-    QString url(getApiUrl());
-    url.append(linkName);
+    QString url;
+
+    switch (linkType) {
+    case LinkAccount:
+        url = getApiUrl();
+        url.append("/r/vpn/account");
+        break;
+
+    case LinkContact:
+        url = getApiUrl();
+        url.append("/r/vpn/contact");
+        break;
+
+    case LinkFeedback:
+        url = getApiUrl();
+        url.append("/r/vpn/client/feedback");
+        break;
+
+    case LinkHelpSupport:
+        url = getApiUrl();
+        // TODO
+        break;
+
+    case LinkUpdate:
+        url = getApiUrl();
+        // TODO
+        break;
+
+    default:
+        qFatal("Unsupported link type!");
+        return;
+    }
 
     QDesktopServices::openUrl(url);
 }
@@ -176,6 +210,8 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     m_settings.setValue(SETTINGS_TOKEN, token);
     m_token = token;
 
+    setUserAuthenticated(true);
+
     // Then we fetch the list of servers.
     scheduleTask(new TaskFetchServers());
 
@@ -192,8 +228,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
         scheduleTask(new TaskFunction([this](MozillaVPN *) {
             if (m_state == StateAuthenticating) {
                 m_controller.setDeviceLimit(true);
-                m_state = StatePostAuthentication;
-                emit stateChanged();
+                setState(StatePostAuthentication);
             }
         }));
 
@@ -210,8 +245,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         if (m_state == StateAuthenticating) {
-            m_state = StatePostAuthentication;
-            emit stateChanged();
+            setState(StatePostAuthentication);
         }
     }));
 }
@@ -320,7 +354,13 @@ void MozillaVPN::logout()
     qDebug() << "Logout";
 
     setAlert(LogoutAlert);
-    setState(StateInitialize);
+
+    // update-required state is the only one we want to keep when logging out.
+    if (m_state != StateUpdateRequired) {
+        setState(StateInitialize);
+    }
+
+    setUserAuthenticated(false);
 
     QString deviceName = Device::currentDeviceName();
     scheduleTask(new TaskRemoveDevice(deviceName));
@@ -467,5 +507,22 @@ void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
 void MozillaVPN::postAuthenticationCompleted()
 {
     qDebug() << "Post authentication completed";
-    setState(StateMain);
+
+    // Super racy, but it could happen that we are already in update-required state.
+    if (m_state != StateUpdateRequired) {
+        setState(StateMain);
+    }
+}
+
+void MozillaVPN::setUpdateRecommended(bool value)
+{
+    m_updateRecommended = value;
+    emit updateRecommendedChanged();
+}
+
+void MozillaVPN::setUserAuthenticated(bool state)
+{
+    qDebug() << "User authentication state:" << state;
+    m_userAuthenticated = state;
+    emit userAuthenticationChanged();
 }

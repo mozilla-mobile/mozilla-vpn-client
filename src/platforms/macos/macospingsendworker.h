@@ -1,11 +1,11 @@
-#ifndef MACXPINGSENDWORKER_H
-#define MACXPINGSENDWORKER_H
+#ifndef MACOSPINGSENDWORKER_H
+#define MACOSPINGSENDWORKER_H
 
 #include "pingsendworker.h"
 
 class QSocketNotifier;
 
-class MacxPingSendWorker final : public PingSendWorker
+class MacosPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
 
@@ -21,4 +21,4 @@ private:
     int m_socket = 0;
 };
 
-#endif // MACXPINGSENDWORKER_H
+#endif // MACOSPINGSENDWORKER_H
