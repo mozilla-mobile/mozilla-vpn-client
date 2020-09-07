@@ -1,9 +1,12 @@
 #include "linuxcontroller.h"
-#include "dbus.h"
 #include "device.h"
 #include "keys.h"
 #include "server.h"
 #include "wgquickprocess.h"
+
+#ifdef USE_POLKIT
+#include "dbus.h"
+#endif
 
 #include <QDebug>
 #include <QProcess>
