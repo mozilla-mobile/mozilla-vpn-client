@@ -1,36 +1,35 @@
 #include "wgquickprocess.h"
-#include "device.h"
-#include "keys.h"
-#include "server.h"
 
 #include <QCoreApplication>
 #include <QDebug>
-#include <QMessageBox>
 #include <QProcess>
 
 constexpr const char *WG_QUICK = "wg-quick";
 
 WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {}
 
-void WgQuickProcess::Run(const Server &server, const Device *device, const Keys *keys)
+void WgQuickProcess::run(const QString &privateKey,
+                         const QString &deviceIpv4Address,
+                         const QString &deviceIpv6Address,
+                         const QString &serverIpv4Gateway,
+                         const QString &serverPublicKey,
+                         const QString &serverIpv4AddrIn,
+                         int serverPort)
 {
-    Q_ASSERT(device);
-    Q_ASSERT(keys);
-
     QByteArray content;
     content.append("[Interface]\nPrivateKey = ");
-    content.append(keys->privateKey());
+    content.append(privateKey);
     content.append("\nAddress = ");
-    content.append(device->ipv4Address());
+    content.append(deviceIpv4Address);
     content.append(", ");
-    content.append(device->ipv6Address());
+    content.append(deviceIpv6Address);
     content.append("\nDNS = ");
-    content.append(server.ipv4Gateway());
+    content.append(serverIpv4Gateway);
     content.append("\n\n[Peer]\nPublicKey = ");
-    content.append(server.publicKey());
+    content.append(serverPublicKey);
     content.append("\nEndpoint = ");
-    content.append(server.ipv4AddrIn());
-    content.append(QString(":%1").arg(server.choosePort()));
+    content.append(serverIpv4AddrIn);
+    content.append(QString(":%1").arg(serverPort));
     content.append("\nAllowedIPs = 0.0.0.0/0,::0/0\n");
 
     if (!tmpDir.isValid()) {
@@ -56,8 +55,6 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
 
     file.close();
 
-    // TODO: do we need to use sudo/gksu/pkexec?
-
     QStringList arguments;
     arguments.append(m_op == Up ? "up" : "down");
     arguments.append(file.fileName());
@@ -75,8 +72,10 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
             [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
                 qDebug() << "Execution finished" << exitCode;
 
-                qWarning("wg-quick stdout:\n%ls\n", qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
-                qWarning("wg-quick stderr:\n%ls\n", qUtf16Printable(wgQuickProcess->readAllStandardError()));
+                qWarning("wg-quick stdout:\n%ls\n",
+                         qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
+                qWarning("wg-quick stderr:\n%ls\n",
+                         qUtf16Printable(wgQuickProcess->readAllStandardError()));
 
                 deleteLater();
 
@@ -89,37 +88,4 @@ void WgQuickProcess::Run(const Server &server, const Device *device, const Keys 
             });
 
     wgQuickProcess->start(WG_QUICK, arguments);
-}
-
-namespace {
-void showAlert(const QString &message)
-{
-    QMessageBox alert;
-    alert.setText(message);
-    alert.exec();
-}
-
-} // namespace
-
-// static
-bool WgQuickProcess::checkDependencies()
-{
-    char *path = getenv("PATH");
-    if (!path) {
-        showAlert("No PATH env found.");
-        return false;
-    }
-
-    QStringList parts = QString(path).split(":");
-    for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
-        QDir pathDir(*i);
-        QFileInfo file(pathDir.filePath("wg-quick"));
-        if (file.exists()) {
-            qDebug() << "wg-quick found" << file.filePath();
-            return true;
-        }
-    }
-
-    showAlert("Unable to locate wg-quick");
-    return false;
 }

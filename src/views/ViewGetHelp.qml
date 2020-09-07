@@ -20,12 +20,17 @@ Item {
         model: ListModel {
             ListElement {
                 title: qsTr("Contact us")
-                url: "/r/vpn/contact"
+                clickId: "contact_us"
             }
 
             ListElement {
                 title: qsTr("Help & Support")
-                url: "TODO"
+                clickId: "help_support"
+            }
+
+            ListElement {
+                title: qsTr("View log")
+                clickId: "view_logs"
             }
         }
 
@@ -54,8 +59,22 @@ Item {
                     sourceSize.height: 16
 
                     MouseArea {
+                        function clickHandler(id) {
+                            switch(id) {
+                            case "contact_us":
+                                VPN.openLink(VPN.LinkContact);
+                                break;
+                            case "help_support":
+                                VPN.openLink(VPN.LinkHelpSupport);
+                                break;
+                            case "view_logs":
+                                VPNLogger.viewLogs();
+                                break;
+                            }
+                        }
+
                         anchors.fill: parent
-                        onClicked: VPN.openLink(url)
+                        onClicked: clickHandler(clickId);
                     }
                 }
             }

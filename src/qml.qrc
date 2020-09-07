@@ -326,5 +326,9 @@
         <file>components/VPNStabilityLabelActions.qml</file>
         <file>resources/warning.svg</file>
         <file>resources/warning-orange.svg</file>
+        <file>resources/fonts/Metropolis-Bold.otf</file>
+        <file>components/VPNUpdateAlert.qml</file>
+        <file>states/StateUpdateRequired.qml</file>
+        <file>views/ViewUpdate.qml</file>
     </qresource>
 </RCC>

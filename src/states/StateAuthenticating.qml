@@ -25,7 +25,7 @@ Item {
             id: startSpinning
             running: true
             PropertyAnimation {target: spinner; property: "opacity"; from: 0; to: 1; duration: 300 }
-            PropertyAnimation { target: spinner; property: "scale"; from: .7; to: 1; duration: 300; easing: Easing.OutBack }
+            PropertyAnimation { target: spinner; property: "scale"; from: .7; to: 1; duration: 300 }
             PropertyAnimation { target: spinner; property: "rotation"; from: 0; to: 360; duration: 8000; loops: Animation.Infinite}
         }
     }

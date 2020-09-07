@@ -31,6 +31,8 @@ public:
 
     static NetworkRequest *createForAccount(MozillaVPN *vpn);
 
+    static NetworkRequest *createForVersions(MozillaVPN *vpn);
+
 private:
     NetworkRequest(QObject *parent);
 

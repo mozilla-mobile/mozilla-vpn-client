@@ -31,11 +31,14 @@ SOURCES += \
         devicemodel.cpp \
         hacl-star/Hacl_Curve25519_51.c \
         keys.cpp \
+        logger.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
+        platforms/linux/wgquickdependencies.cpp \
+        releasemonitor.cpp \
         server.cpp \
         servercity.cpp \
         servercountry.cpp \
@@ -60,11 +63,14 @@ HEADERS += \
         device.h \
         devicemodel.h \
         keys.h \
+        logger.h \
         mozillavpn.h \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
+        platforms/linux/wgquickdependencies.h \
+        releasemonitor.h \
         server.h \
         servercity.h \
         servercountry.h \
@@ -110,30 +116,48 @@ linux-g++ {
 
      HEADERS += \
              platforms/linux/linuxpingsendworker.h
-} else:macx {
+} else:macos {
      message(MacOSX build - ping)
      SOURCES += \
-             platforms/macx/macxpingsendworker.cpp
+             platforms/macos/macospingsendworker.cpp
 
      HEADERS += \
-             platforms/macx/macxpingsendworker.h
+             platforms/macos/macospingsendworker.h
 } else {
      message(Unknown build - dummy ping)
 }
 
 # Other platform-specific utils
-macx {
+macos {
     SOURCES += \
-            platforms/macx/macutils.mm
+            platforms/macos/macosutils.mm
 
     HEADERS += \
-            platforms/macx/macutils.h
+            platforms/macos/macosutils.h
 }
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+linux-g++ {
+    isEmpty(PREFIX) {
+        PREFIX=/opt/$${TARGET}
+    }
+
+    isEmpty(NO_POLKIT) {
+        message(Use polkit)
+        DEFINES += USE_POLKIT
+
+        QT += dbus
+        DBUS_INTERFACES = ../linux/org.mozilla.vpn.dbus.xml
+
+        SOURCES += \
+        platforms/linux/dbus.cpp
+
+        HEADERS += \
+        platforms/linux/dbus.h
+    }
+
+    target.path = $${PREFIX}/bin
+    INSTALLS += target
+}
 
 RESOURCES += qml.qrc
 

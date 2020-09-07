@@ -1,8 +1,9 @@
+#include "logger.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
 
 #ifdef __linux__
-#include "platforms/linux/wgquickprocess.h"
+#include "platforms/linux/wgquickdependencies.h"
 #endif
 
 #include <QApplication>
@@ -11,13 +12,15 @@
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(Logger::messageHandler);
+
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon("qrc:/resources/logo.png"));
 
 #ifdef __linux__
-    if (!WgQuickProcess::checkDependencies()) {
+    if (!WgQuickDependencies::checkDependencies()) {
         return 1;
     }
 #endif
@@ -50,6 +53,7 @@ int main(int argc, char *argv[])
                                  0,
                                  "VPNConnectionHealth",
                                  mozillaVPN->connectionHealth());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNLogger", Logger::instance());
 
     QObject::connect(mozillaVPN->controller(),
                      &Controller::readyToQuit,

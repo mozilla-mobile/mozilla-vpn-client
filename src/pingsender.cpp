@@ -4,7 +4,7 @@
 #ifdef __linux__
 #include "platforms/linux/linuxpingsendworker.h"
 #elif __APPLE__
-#include "platforms/macx/macxpingsendworker.h"
+#include "platforms/macos/macospingsendworker.h"
 #else
 #include "platforms/dummy/dummypingsendworker.h"
 #endif
@@ -21,7 +21,7 @@ PingSender::PingSender(QObject *parent) : QObject(parent)
 #ifdef __linux__
         new LinuxPingSendWorker();
 #elif __APPLE__
-        new MacxPingSendWorker();
+        new MacosPingSendWorker();
 #else
         new DummyPingSendWorker(DummyPingSendWorker::Stable);
 #endif
