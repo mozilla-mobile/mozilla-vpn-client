@@ -33,8 +33,11 @@ dbus_service.files = org.mozilla.vpn.dbus.service
 dbus_service.path = /usr/share/dbus-1/system-services
 INSTALLS += dbus_service
 
-unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+target.path = /opt/$${TARGET}/bin
+INSTALLS += target
+
+CONFIG += link_pkgconfig
+PKGCONFIG += polkit-gobject-1
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
