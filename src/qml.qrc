@@ -322,6 +322,7 @@
         <file>components/VPNControllerDevice.qml</file>
         <file>components/VPNDeviceLimitAlert.qml</file>
         <file>states/StatePostAuthentication.qml</file>
+        <file>resources/fonts/Metropolis-Bold.otf</file>
         <file>components/VPNUpdateAlert.qml</file>
         <file>states/StateUpdateRequired.qml</file>
         <file>views/ViewUpdate.qml</file>
