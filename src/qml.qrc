@@ -292,8 +292,6 @@
         <file>resources/settings-white.svg</file>
         <file>resources/state-on.svg</file>
         <file>resources/externalLink.svg</file>
-        <file>resources/feedback.svg</file>
-        <file>resources/getHelp.svg</file>
         <file>components/VPNLightLabel.qml</file>
         <file>resources/arrow-toggle.svg</file>
         <file>resources/connection.svg</file>
@@ -330,5 +328,11 @@
         <file>components/VPNUpdateAlert.qml</file>
         <file>states/StateUpdateRequired.qml</file>
         <file>views/ViewUpdate.qml</file>
+        <file>resources/settings/getHelp.svg</file>
+        <file>resources/settings/feedback.svg</file>
+        <file>resources/settings/language.svg</file>
+        <file>resources/settings/aboutUs.svg</file>
+        <file>resources/settings/notifications.svg</file>
+        <file>resources/settings/networkSettings.svg</file>
     </qresource>
 </RCC>
