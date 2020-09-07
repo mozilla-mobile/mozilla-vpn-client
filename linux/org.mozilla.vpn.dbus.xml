@@ -1,0 +1,26 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.mozilla.vpn.dbus">
+    <method name="activate">
+      <arg type="b" direction="out"/>
+      <arg name="privateKey" type="s" direction="in"/>
+      <arg name="deviceIpv4Address" type="s" direction="in"/>
+      <arg name="deviceIpv6Address" type="s" direction="in"/>
+      <arg name="serverIpv4Gateway" type="s" direction="in"/>
+      <arg name="serverPublicKey" type="s" direction="in"/>
+      <arg name="serverIpv4AddrIn" type="s" direction="in"/>
+      <arg name="serverPort" type="i" direction="in"/>
+    </method>
+    <method name="deactivate">
+      <arg type="b" direction="out"/>
+      <arg name="privateKey" type="s" direction="in"/>
+      <arg name="deviceIpv4Address" type="s" direction="in"/>
+      <arg name="deviceIpv6Address" type="s" direction="in"/>
+      <arg name="serverIpv4Gateway" type="s" direction="in"/>
+      <arg name="serverPublicKey" type="s" direction="in"/>
+      <arg name="serverIpv4AddrIn" type="s" direction="in"/>
+      <arg name="serverPort" type="i" direction="in"/>
+    </method>
+  </interface>
+</node>
+

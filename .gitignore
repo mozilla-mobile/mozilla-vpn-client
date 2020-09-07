@@ -13,3 +13,6 @@ mozillavpn_qmltyperegistrations.cpp
 qrc_qml.cpp
 .qmake.stash
 *.swp
+dbus_adaptor.*
+dbus_interface.*
+mozillavpn-daemon

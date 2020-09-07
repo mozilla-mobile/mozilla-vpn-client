@@ -1,4 +1,8 @@
 #include "linuxcontroller.h"
+#include "dbus.h"
+#include "device.h"
+#include "keys.h"
+#include "server.h"
 #include "wgquickprocess.h"
 
 #include <QDebug>
@@ -9,16 +13,33 @@ void LinuxController::activate(const Server &server,
                                const Keys *keys,
                                bool forSwitching)
 {
+    Q_ASSERT(device);
+    Q_ASSERT(keys);
     Q_UNUSED(forSwitching);
 
     qDebug() << "LinuxController activated";
 
+#ifdef USE_POLKIT
+    DBus *dbus = new DBus(this);
+
+    connect(dbus, &DBus::failed, this, &LinuxController::disconnected);
+    connect(dbus, &DBus::succeeded, this, &LinuxController::connected);
+
+    dbus->activate(server, device, keys);
+#else
     WgQuickProcess *wgQuick = new WgQuickProcess(WgQuickProcess::Up);
 
     connect(wgQuick, &WgQuickProcess::failed, this, &LinuxController::disconnected);
     connect(wgQuick, &WgQuickProcess::succeeded, this, &LinuxController::connected);
 
-    wgQuick->Run(server, device, keys);
+    wgQuick->run(keys->privateKey(),
+                 device->ipv4Address(),
+                 device->ipv6Address(),
+                 server.ipv4Gateway(),
+                 server.publicKey(),
+                 server.ipv4AddrIn(),
+                 server.choosePort());
+#endif
 }
 
 void LinuxController::deactivate(const Server &server,
@@ -26,14 +47,31 @@ void LinuxController::deactivate(const Server &server,
                                  const Keys *keys,
                                  bool forSwitching)
 {
+    Q_ASSERT(device);
+    Q_ASSERT(keys);
     Q_UNUSED(forSwitching);
 
     qDebug() << "LinuxController deactivated";
 
+#ifdef USE_POLKIT
+    DBus *dbus = new DBus(this);
+
+    connect(dbus, &DBus::failed, this, &LinuxController::disconnected);
+    connect(dbus, &DBus::succeeded, this, &LinuxController::disconnected);
+
+    dbus->deactivate(server, device, keys);
+#else
     WgQuickProcess *wgQuick = new WgQuickProcess(WgQuickProcess::Down);
 
     connect(wgQuick, &WgQuickProcess::failed, this, &LinuxController::disconnected);
     connect(wgQuick, &WgQuickProcess::succeeded, this, &LinuxController::disconnected);
 
-    wgQuick->Run(server, device, keys);
+    wgQuick->run(keys->privateKey(),
+                 device->ipv4Address(),
+                 device->ipv6Address(),
+                 server.ipv4Gateway(),
+                 server.publicKey(),
+                 server.ipv4AddrIn(),
+                 server.choosePort());
+#endif
 }

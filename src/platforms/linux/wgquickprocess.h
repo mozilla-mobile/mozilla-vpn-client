@@ -4,10 +4,6 @@
 #include <QObject>
 #include <QTemporaryDir>
 
-class Server;
-class Device;
-class Keys;
-
 class WgQuickProcess : public QObject
 {
     Q_OBJECT
@@ -19,9 +15,13 @@ public:
 
     explicit WgQuickProcess(Op op);
 
-    void Run(const Server &server, const Device *device, const Keys *keys);
-
-    static bool checkDependencies();
+    void run(const QString &privateKey,
+             const QString &deviceIpv4Address,
+             const QString &deviceIpv6Address,
+             const QString &serverIpv4Gateway,
+             const QString &serverPublicKey,
+             const QString &serverIpv4AddrIn,
+             int serverPort);
 
 signals:
     void failed();

@@ -37,6 +37,7 @@ SOURCES += \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
+        platforms/linux/wgquickdependencies.cpp \
         releasemonitor.cpp \
         server.cpp \
         servercity.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
+        platforms/linux/wgquickdependencies.h \
         releasemonitor.h \
         server.h \
         servercity.h \
@@ -134,10 +136,28 @@ macx {
             platforms/macx/macutils.h
 }
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+linux-g++ {
+    isEmpty(PREFIX) {
+        PREFIX=/opt/$${TARGET}
+    }
+
+    isEmpty(NO_POLKIT) {
+        message(Use polkit)
+        DEFINES += USE_POLKIT
+
+        QT += dbus
+        DBUS_INTERFACES = ../linux/org.mozilla.vpn.dbus.xml
+
+        SOURCES += \
+        platforms/linux/dbus.cpp
+
+        HEADERS += \
+        platforms/linux/dbus.h
+    }
+
+    target.path = $${PREFIX}/bin
+    INSTALLS += target
+}
 
 RESOURCES += qml.qrc
 

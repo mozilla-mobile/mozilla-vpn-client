@@ -3,7 +3,7 @@
 #include "signalhandler.h"
 
 #ifdef __linux__
-#include "platforms/linux/wgquickprocess.h"
+#include "platforms/linux/wgquickdependencies.h"
 #endif
 
 #include <QApplication>
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon("qrc:/resources/logo.png"));
 
 #ifdef __linux__
-    if (!WgQuickProcess::checkDependencies()) {
+    if (!WgQuickDependencies::checkDependencies()) {
         return 1;
     }
 #endif
