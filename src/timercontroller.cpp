@@ -30,12 +30,12 @@ void TimerController::activate(const Server &server,
     Q_ASSERT(m_state == None);
     m_state = Connecting;
 
-    m_impl->activate(server, device, keys, forSwitching);
-
     if (!forSwitching) {
         m_timer.stop();
         m_timer.start(TIME_ACTIVATION);
     }
+
+    m_impl->activate(server, device, keys, forSwitching);
 }
 
 void TimerController::deactivate(const Server &server,
@@ -46,10 +46,10 @@ void TimerController::deactivate(const Server &server,
     Q_ASSERT(m_state == None);
     m_state = Disconnecting;
 
-    m_impl->deactivate(server, device, keys, forSwitching);
-
     m_timer.stop();
     m_timer.start(forSwitching ? TIME_SWITCHING : TIME_DEACTIVATION);
+
+    m_impl->deactivate(server, device, keys, forSwitching);
 }
 
 void TimerController::timeout()
