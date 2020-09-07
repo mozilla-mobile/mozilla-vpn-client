@@ -116,24 +116,24 @@ linux-g++ {
 
      HEADERS += \
              platforms/linux/linuxpingsendworker.h
-} else:macx {
+} else:macos {
      message(MacOSX build - ping)
      SOURCES += \
-             platforms/macx/macxpingsendworker.cpp
+             platforms/macos/macospingsendworker.cpp
 
      HEADERS += \
-             platforms/macx/macxpingsendworker.h
+             platforms/macos/macospingsendworker.h
 } else {
      message(Unknown build - dummy ping)
 }
 
 # Other platform-specific utils
-macx {
+macos {
     SOURCES += \
-            platforms/macx/macutils.mm
+            platforms/macos/macosutils.mm
 
     HEADERS += \
-            platforms/macx/macutils.h
+            platforms/macos/macosutils.h
 }
 
 linux-g++ {

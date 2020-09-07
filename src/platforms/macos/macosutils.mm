@@ -1,7 +1,7 @@
-#include "macutils.h"
+#include "macosutils.h"
 #import <Cocoa/Cocoa.h>
 
-QString MacUtils::computerName()
+QString MacosUtils::computerName()
 {
     NSString *name = [[NSHost currentHost] localizedName];
     return QString::fromNSString(name);
