@@ -322,6 +322,10 @@
         <file>components/VPNControllerDevice.qml</file>
         <file>components/VPNDeviceLimitAlert.qml</file>
         <file>states/StatePostAuthentication.qml</file>
+        <file>components/VPNInterLabel.qml</file>
+        <file>components/VPNStabilityLabelActions.qml</file>
+        <file>resources/warning.svg</file>
+        <file>resources/warning-orange.svg</file>
         <file>resources/fonts/Metropolis-Bold.otf</file>
         <file>components/VPNUpdateAlert.qml</file>
         <file>states/StateUpdateRequired.qml</file>

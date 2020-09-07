@@ -6,9 +6,9 @@ const bgWhite = "#FFFFFF";
 
 const blue = "#0060DF";
 const blueHovered = "#0250BB";
-const bluePressed = "#054096"
-const blueDisabled = "#a3c0f3"
-const blueFocusStroke = "#660060DF"
+const bluePressed = "#054096";
+const blueDisabled = "#a3c0f3";
+const blueFocusStroke = "#660060DF";
 
 const green = "#3FE1B0";
 
@@ -16,9 +16,11 @@ const grey = "#CACACA";
 const greyHovered = "#C2C2C2";
 const greyPressed = "#C2C2C2";
 
+const orange = "#FFA436";
+
 const red = "#FF4F5E";
-const redHovered = "#E22850"
-const redPressed = "#C50042"
+const redHovered = "#E22850";
+const redPressed = "#C50042";
 
 const stateBgColor = "#321C64";
 
@@ -46,7 +48,8 @@ const blueButton = {
     "buttonPressed": bluePressed,
     "buttonDisabled": blueDisabled,
     "focusStroke": blueFocusStroke
-}
+};
+
 
 const redButton = {
     "defaultColor" : red,
