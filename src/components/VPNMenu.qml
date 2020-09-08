@@ -5,6 +5,7 @@ import "../themes/themes.js" as Theme
 Item {
     property alias title: title.text
     property alias rightTitle: rightTitle.text
+    property bool isSettingsView: false
 
     id: menuBar
     width: parent.width
@@ -23,7 +24,7 @@ Item {
 
         MouseArea {
             anchors.fill: backImage
-            onClicked: stackview.pop()
+            onClicked: isSettingsView ? settingsStackView.pop() : stackview.pop()
         }
     }
 
