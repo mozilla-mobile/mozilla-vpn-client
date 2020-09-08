@@ -21,10 +21,14 @@ Item {
     }
 
     VPNControllerServer {
+        id: serverInfo
+        onClicked: stackview.push("ViewServers.qml")
         y: box.y + box.height + Theme.iconSize
     }
 
     VPNControllerDevice {
-        y: box.y + box.height + Theme.iconSize + (Theme.vSpacing * 2)
+        anchors.top: serverInfo.bottom
+        anchors.topMargin: 8
+        onClicked: stackview.push("ViewDevices.qml")
     }
 }

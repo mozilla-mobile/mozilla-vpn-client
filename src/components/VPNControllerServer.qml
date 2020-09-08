@@ -5,47 +5,41 @@ import Mozilla.VPN 1.0
 
 import "../themes/themes.js" as Theme
 
-RowLayout {
-    spacing: 0
-    width: parent.width
-    height: Theme.vSpacing
-
+VPNClickableRow {
     // TODO:
     // 1. the server should be always changable except in DeviceLimit mode.
     // 2. in DeviceLimit mode we should gray out the label
+    rowShouldBeDisabled: VPNController.state === VPNController.StateDeviceLimit
 
-    VPNIcon {
-        source: "../resources/connection.svg"
-        Layout.rightMargin: Theme.iconSize
-        Layout.leftMargin: Theme.hSpacing
-    }
+    RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
+        spacing: 0
 
-    VPNBoldLabel {
-        text: qsTr("Select location")
-    }
-
-    Item {
-        Layout.fillWidth: true
-    }
-
-    VPNIcon {
-        Layout.rightMargin: 8
-        source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase(
-                    ) + ".png"
-    }
-
-    VPNLightLabel {
-        text: VPNCurrentServer.city
-        MouseArea {
-            anchors.fill: parent
-            onClicked: stackview.push("../views/ViewServers.qml")
+        VPNIconAndLabel {
+            icon: "../resources/connection.svg"
+            title: qsTr("Select location")
         }
-    }
 
-    VPNChevron {
-        MouseArea {
-            anchors.fill: parent
-            onClicked: stackview.push("../views/ViewServers.qml")
+        Item {
+            Layout.fillWidth: true
         }
+
+        Image {
+            Layout.preferredWidth: 16
+            Layout.preferredHeight: 16
+            Layout.rightMargin: 8
+            fillMode: Image.PreserveAspectFit
+            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase(
+                        ) + ".png"
+        }
+
+        VPNLightLabel {
+            text: VPNCurrentServer.city
+            Layout.rightMargin: 8
+        }
+
+        VPNChevron { }
     }
 }
