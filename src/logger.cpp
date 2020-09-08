@@ -145,5 +145,9 @@ void Logger::prettyOutput(QTextStream &out, const Logger::Log &log)
         out << ")";
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     out << Qt::endl;
+#else
+    out << endl;
+#endif
 }

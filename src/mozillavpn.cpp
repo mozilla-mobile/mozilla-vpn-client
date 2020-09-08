@@ -32,6 +32,36 @@ constexpr const uint32_t SCHEDULE_ACCOUNT_CHECK_TIMER_SEC = 3600;
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
+// The singleton.
+static MozillaVPN *s_instance = nullptr;
+
+// static
+void MozillaVPN::createInstance()
+{
+    qDebug() << "Creating MozillaVPN singleton";
+
+    Q_ASSERT(!s_instance);
+    s_instance = new MozillaVPN();
+    s_instance->initialize();
+}
+
+// static
+void MozillaVPN::deleteInstance()
+{
+    qDebug() << "Deleting MozillaVPN singleton";
+
+    Q_ASSERT(s_instance);
+    delete s_instance;
+    s_instance = nullptr;
+}
+
+// static
+MozillaVPN *MozillaVPN::instance()
+{
+    Q_ASSERT(s_instance);
+    return s_instance;
+}
+
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
 {
     m_controller.setVPN(this);
@@ -42,7 +72,7 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
 
 MozillaVPN::~MozillaVPN() = default;
 
-void MozillaVPN::initialize(int &, char *[])
+void MozillaVPN::initialize()
 {
     qDebug() << "MozillaVPN Initialization";
 
