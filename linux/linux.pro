@@ -29,15 +29,15 @@ target.path = $${PREFIX}/bin
 INSTALLS += target
 
 polkit_actions.files = org.mozilla.vpn.policy
-polkit_actions.path = /usr/share/polkit-1/actions
+polkit_actions.path = $${PREFIX}/share/polkit-1/actions
 INSTALLS += polkit_actions
 
 dbus_conf.files = org.mozilla.vpn.conf
-dbus_conf.path = /usr/share/dbus-1/system.d/
+dbus_conf.path = $${PREFIX}/share/dbus-1/system.d/
 INSTALLS += dbus_conf
 
 dbus_service.files = org.mozilla.vpn.dbus.service
-dbus_service.path = /usr/share/dbus-1/system-services
+dbus_service.path = $${PREFIX}/share/dbus-1/system-services
 INSTALLS += dbus_service
 
 CONFIG += link_pkgconfig
