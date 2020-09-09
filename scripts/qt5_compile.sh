@@ -17,7 +17,7 @@ fi
 cd "$1" || die "Unable to enter into the QT source folder"
 
 printn Y "Cleaning the folder... "
-make distclean &>/dev/null;
+#make distclean -j8 &>/dev/null;
 print G "done."
 
 LINUX="
@@ -31,17 +31,17 @@ MACOS="
   -no-dbus
 "
 
-if [ "$OSTYPE" == "linux-gnu" ]; then
-  print G "Configure for linux"
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  print N "Configure for linux"
   PLATFORM=$LINUX
-elif [ "$OSTYPE" == "darwin" ]; then
-  print G "Configure for darwin"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  print N "Configure for darwin"
   PLATFORM=$MACOS
 else
   die "Unsupported platform (yet?)"
 fi
 
-print G "Wait..."
+print Y "Wait..."
 ./configure \
   --prefix=$2 \
   --recheck-all \
@@ -75,7 +75,6 @@ print G "Wait..."
   -no-feature-assistant \
   -no-feature-sqlmodel \
   -no-feature-socks5 \
-  -no-feature-wizard \
   -no-feature-whatsthis \
   -no-feature-valgrind \
   -no-feature-testlib_selfcover \
@@ -87,12 +86,18 @@ print G "Wait..."
   -no-feature-geoservices_mapbox \
   -no-feature-geoservices_mapboxgl \
   -no-feature-geoservices_osm \
+  -no-feature-quick-designer \
+  -no-feature-distancefieldgenerator \
+  -no-feature-kmap2qmap \
+  -no-feature-linguist \
+  -no-feature-qdbus \
+  -no-feature-qtdiag \
   $PLATFORM || die "Configuration error."
 
-print G "Compiling..."
+print Y "Compiling..."
 make -j8 || die "Make failed"
 
-print G "Installing..."
+print Y "Installing..."
 make -j8 install || die "Make install failed"
 
 print G "All done!"
