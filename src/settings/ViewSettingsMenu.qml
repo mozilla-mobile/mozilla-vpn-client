@@ -126,7 +126,7 @@ Flickable {
         delegate: VPNClickableRow {
             onClicked: {
                 if (pushView) {
-                    return settingsStackView.push()
+                    return settingsStackView.push(pushView)
                 }
                 return VPN.openLink(openUrl)
             }
