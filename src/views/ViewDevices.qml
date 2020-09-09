@@ -9,14 +9,15 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
-    state: VPNController.state !== VPNController.StateDeviceLimit ? "active": "deviceLimit"
+    state: VPNController.state !== VPNController.StateDeviceLimit ? "active" : "deviceLimit"
 
     states: [
         State {
             name: "active" // normal mode
             PropertyChanges {
                 target: menu
-                rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
+                rightTitle: qsTr("%1 of %2").arg(
+                                VPNDeviceModel.activeDevices).arg(
                                 VPNUser.maxDevices)
             }
             PropertyChanges {
@@ -28,13 +29,13 @@ Item {
             name: "deviceLimit" // device limit mode
             PropertyChanges {
                 target: menu
-                rightTitle: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices + 1).arg(
+                rightTitle: qsTr("%1 of %2").arg(
+                                VPNDeviceModel.activeDevices + 1).arg(
                                 VPNUser.maxDevices)
             }
             PropertyChanges {
                 target: deviceLimitAlert
                 visible: true
-
             }
         }
     ]
@@ -68,18 +69,15 @@ Item {
 
                 RowLayout {
                     id: deviceRow
-                    Layout.topMargin: (Theme.vSpacing / 2)
-                    Layout.bottomMargin: deviceRow.Layout.topMargin
+                    Layout.topMargin: Theme.vSpacing
+                    Layout.leftMargin: Theme.windowMargin
+                    Layout.rightMargin: Theme.windowMargin / 2
                     spacing: 0
 
-                    Image {
+                    VPNIcon {
                         source: "../resources/devices.svg"
                         fillMode: Image.PreserveAspectFit
-                        Layout.preferredWidth: 18
-                        Layout.preferredHeight: 18
-                        Layout.leftMargin: Theme.hSpacing
-                        Layout.rightMargin: Theme.hSpacing
-                        Layout.topMargin: 2
+                        Layout.rightMargin: Theme.windowMargin
                         Layout.alignment: Qt.AlignTop
                     }
 
@@ -92,8 +90,9 @@ Item {
                             text: name
                             color: Theme.fontColorDark
                             font.pixelSize: Theme.fontSize
+                            font.family: vpnFontInter.name
                             Layout.preferredWidth: 220
-                            Layout.preferredHeight: 22
+                            Layout.preferredHeight: Theme.labelLineHeight
                             elide: Text.ElideRight
                         }
 
@@ -122,6 +121,7 @@ Item {
                             text: deviceSubtitle()
                             Layout.preferredHeight: 21
                             font.pixelSize: Theme.fontSizeSmall
+                            font.family: vpnFontInter.name
                             color: currentOne ? Theme.buttonColor : Theme.fontColor
                         }
                     }
@@ -133,8 +133,7 @@ Item {
                     VPNIcon {
                         visible: !currentOne
                         source: "../resources/delete.svg"
-                        Layout.topMargin: 2
-                        Layout.rightMargin: Theme.hSpacing
+                        Layout.rightMargin: Theme.windowMargin / 2
                         Layout.alignment: Qt.AlignTop
 
                         MouseArea {
@@ -201,13 +200,14 @@ Item {
             id: removePopupContent
             anchors.fill: removePopup
             anchors.centerIn: removePopup
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
+            anchors.leftMargin: Theme.windowMargin
+            anchors.rightMargin: Theme.windowMargin
             anchors.topMargin: 30
             anchors.bottomMargin: 30
             spacing: 0
 
-            Rectangle { // placeholder until we have image
+            Rectangle {
+                // placeholder until we have image
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 64
                 Layout.preferredWidth: 64
@@ -218,19 +218,23 @@ Item {
                 text: qsTr("Remove device?")
                 Layout.alignment: Qt.AlignCenter
                 Layout.bottomMargin: 10
+                font.family: vpnFontInter.name
                 font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeSmall
                 color: "#303030"
             }
 
             Text {
-                text: qsTr("Please confirm you would like to remove\n%1.").arg(removePopup.deviceName)
+                text: qsTr("Please confirm you would like to remove\n%1.").arg(
+                          removePopup.deviceName)
                 Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Text.AlignHCenter
                 Layout.maximumWidth: 220
                 Layout.bottomMargin: 16
+                font.family: vpnFontInter.name
                 font.pixelSize: Theme.fontSizeSmallest
-                lineHeight: 1.1
+                lineHeightMode: Text.FixedHeight
+                lineHeight: 14
                 wrapMode: Text.Wrap
                 color: "#262626"
             }
@@ -255,7 +259,6 @@ Item {
                         removePopup.state = "invisible"
                     }
                 }
-
             }
         }
 
