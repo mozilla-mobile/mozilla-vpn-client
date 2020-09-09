@@ -16,3 +16,4 @@ qrc_qml.cpp
 dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
+*_plugin_import.cpp
