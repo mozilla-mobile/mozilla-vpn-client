@@ -3,9 +3,12 @@ Makefile
 *.o
 .obj
 .moc
+.rcc
 *.pro.user
 *.pro.user*
-mozillavpn
+src/mozillavpn
+src/mozillavpn.app
+src/mozillavpn.framework
 mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
