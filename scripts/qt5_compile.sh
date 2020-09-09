@@ -58,7 +58,6 @@ print Y "Wait..."
   -no-sql-sqlite \
   -skip qt3d \
   -skip webengine \
-  -skip qtwayland \
   -skip qtmultimedia \
   -skip qtserialport \
   -skip qtsensors \
@@ -92,6 +91,9 @@ print Y "Wait..."
   -no-feature-linguist \
   -no-feature-qdbus \
   -no-feature-qtdiag \
+  -no-feature-qml-preview \
+  -no-feature-printpreviewwidget \
+  -no-feature-printpreviewdialog \
   $PLATFORM || die "Configuration error."
 
 print Y "Compiling..."
