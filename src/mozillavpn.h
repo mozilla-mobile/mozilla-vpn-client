@@ -54,6 +54,8 @@ public:
         LinkContact,
         LinkFeedback,
         LinkHelpSupport,
+        LinkTermsOfService,
+        LinkPrivacyPolicy,
         LinkUpdate,
     };
     Q_ENUM(LinkType)

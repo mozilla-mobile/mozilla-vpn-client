@@ -45,5 +45,6 @@ Item {
         anchors.margins: 16
     }
 
-    // TODO
+    // TODO: term of service link -> VPN.LinkTermsOfService
+    // TODO: privacy policy link -> VPN.LinkPrivacyPolicy
 }

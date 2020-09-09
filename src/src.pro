@@ -90,7 +90,7 @@ HEADERS += \
         user.h
 
 # Platform-specific controller
-linux-g++ {
+linux {
      message(Linux build - controller)
      SOURCES += \
              platforms/linux/linuxcontroller.cpp \
@@ -109,7 +109,7 @@ linux-g++ {
 }
 
 # Platform-specific ping sender
-linux-g++ {
+linux {
      message(Linux build - ping)
      SOURCES += \
              platforms/linux/linuxpingsendworker.cpp
@@ -136,7 +136,7 @@ macos {
             platforms/macos/macosutils.h
 }
 
-linux-g++ {
+linux {
     isEmpty(PREFIX) {
         PREFIX=/opt/$${TARGET}
     }

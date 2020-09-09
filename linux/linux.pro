@@ -21,6 +21,13 @@ HEADERS += \
         polkithelper.h \
         ../src/platforms/linux/wgquickprocess.h
 
+isEmpty(PREFIX) {
+    PREFIX=/opt/$${TARGET}
+}
+
+target.path = $${PREFIX}/bin
+INSTALLS += target
+
 polkit_actions.files = org.mozilla.vpn.policy
 polkit_actions.path = /usr/share/polkit-1/actions
 INSTALLS += polkit_actions
@@ -32,9 +39,6 @@ INSTALLS += dbus_conf
 dbus_service.files = org.mozilla.vpn.dbus.service
 dbus_service.path = /usr/share/dbus-1/system-services
 INSTALLS += dbus_service
-
-target.path = /opt/$${TARGET}/bin
-INSTALLS += target
 
 CONFIG += link_pkgconfig
 PKGCONFIG += polkit-gobject-1

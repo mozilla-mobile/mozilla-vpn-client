@@ -178,7 +178,17 @@ void MozillaVPN::openLink(LinkType linkType)
 
     case LinkHelpSupport:
         url = getApiUrl();
-        // TODO
+        url.append("/r/vpn/support");
+        break;
+
+    case LinkTermsOfService:
+        url = getApiUrl();
+        url.append("/r/vpn/terms");
+        break;
+
+    case LinkPrivacyPolicy:
+        url = getApiUrl();
+        url.append("/r/vpn/privacy");
         break;
 
     case LinkUpdate:

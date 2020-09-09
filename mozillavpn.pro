@@ -6,6 +6,6 @@
 TEMPLATE = subdirs
 SUBDIRS += src
 
-linux-g++ {
+linux {
     SUBDIRS += linux
 }
