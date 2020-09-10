@@ -9,7 +9,8 @@ How to compile it for MacOS
 1. Install XCodeProj:
   $ [sudo] gem install xcodeproj
 2. Update the submodules:
-  $ git submodule update
+  $ git submodule init
+  $ git submodule update --remote
 3. Run the script:
   $ ./scripts/mac_compile.sh
 
