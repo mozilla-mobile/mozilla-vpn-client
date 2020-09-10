@@ -128,14 +128,26 @@ linux {
 else:macos {
     message(MacOSX build)
     SOURCES += \
-            platforms/dummy/dummycontroller.cpp \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosutils.mm
 
     HEADERS += \
-            platforms/dummy/dummycontroller.h \
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosutils.h
+
+    isEmpty(MACOS_INTEGRATION) {
+        message(No integration required for this build - let\'s use the dummy controller)
+
+        SOURCES += platforms/dummy/dummycontroller.cpp
+        HEADERS += platforms/dummy/dummycontroller.h
+    } else {
+        message(Wireguard integration)
+
+        DEFINES += MACOS_INTEGRATION
+
+        SOURCES += platforms/macos/macoscontroller.cpp
+        HEADERS += platforms/macos/macoscontroller.h
+    }
 
     INCLUDEPATH += \
                 ../wireguard-apple/WireGuard/WireGuard/Crypto \

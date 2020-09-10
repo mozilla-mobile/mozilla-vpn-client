@@ -35,6 +35,7 @@ print Y "Creating the xcode project via qmake..."
 $QMAKE \
   QTPLUGIN+=qsvg \
   CONFIG-=static \
+  MACOS_INTEGRATION=1 \
   -spec macx-xcode \
   src/src.pro  || die "Compilation failed"
 

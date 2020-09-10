@@ -5,6 +5,8 @@
 
 #ifdef __linux__
 #include "platforms/linux/linuxcontroller.h"
+#elif MACOS_INTEGRATION
+#include "platforms/macos/macoscontroller.h"
 #else
 #include "platforms/dummy/dummycontroller.h"
 #endif
@@ -17,6 +19,8 @@ Controller::Controller()
     m_impl.reset(new TimerController(
 #ifdef __linux__
         new LinuxController()
+#elif MACOS_INTEGRATION
+        new MacOSController()
 #else
         new DummyController()
 #endif
