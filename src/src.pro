@@ -37,7 +37,6 @@ SOURCES += \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
-        platforms/linux/wgquickdependencies.cpp \
         releasemonitor.cpp \
         server.cpp \
         servercity.cpp \
@@ -69,7 +68,6 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
-        platforms/linux/wgquickdependencies.h \
         releasemonitor.h \
         server.h \
         servercity.h \
@@ -89,60 +87,21 @@ HEADERS += \
         timercontroller.h \
         user.h
 
-# Platform-specific controller
+# Platform-specific: Linux
 linux {
-     message(Linux build - controller)
-     SOURCES += \
-             platforms/linux/linuxcontroller.cpp \
-             platforms/linux/wgquickprocess.cpp
-
-     HEADERS += \
-             platforms/linux/linuxcontroller.h \
-             platforms/linux/wgquickprocess.h
-} else {
-     message(Unknown build - Using the dummy controller)
-     SOURCES += \
-             platforms/dummy/dummycontroller.cpp
-
-     HEADERS += \
-             platforms/dummy/dummycontroller.h
-}
-
-# Platform-specific ping sender
-linux {
-     message(Linux build - ping)
-     SOURCES += \
-             platforms/linux/linuxpingsendworker.cpp
-
-     HEADERS += \
-             platforms/linux/linuxpingsendworker.h
-} else:macos {
-     message(MacOSX build - ping)
-     SOURCES += \
-             platforms/macos/macospingsendworker.cpp
-
-     HEADERS += \
-             platforms/macos/macospingsendworker.h
-} else {
-     message(Unknown build - dummy ping)
-}
-
-# Other platform-specific utils
-macos {
+    message(Linux build)
     SOURCES += \
-            platforms/macos/macosutils.mm
+            platforms/linux/linuxcontroller.cpp \
+            platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/wgquickdependencies.cpp \
+            platforms/linux/wgquickprocess.cpp
 
     HEADERS += \
-            platforms/macos/macosutils.h
+            platforms/linux/linuxcontroller.h \
+            platforms/linux/linuxpingsendworker.h \
+            platforms/linux/wgquickdependencies.h \
+            platforms/linux/wgquickprocess.h
 
-    INCLUDEPATH += \
-                ../wireguard-apple/WireGuard/WireGuard/Crypto \
-                ../wireguard-apple/WireGuard/Shared/Model \
-
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
-}
-
-linux {
     isEmpty(PREFIX) {
         PREFIX=/opt/$${TARGET}
     }
@@ -163,6 +122,31 @@ linux {
 
     target.path = $${PREFIX}/bin
     INSTALLS += target
+}
+
+# Platform-specific: MacOS
+else:macos {
+    message(MacOSX build)
+    SOURCES += \
+            platforms/dummy/dummycontroller.cpp \
+            platforms/macos/macospingsendworker.cpp \
+            platforms/macos/macosutils.mm
+
+    HEADERS += \
+            platforms/dummy/dummycontroller.h \
+            platforms/macos/macospingsendworker.h \
+            platforms/macos/macosutils.h
+
+    INCLUDEPATH += \
+                ../wireguard-apple/WireGuard/WireGuard/Crypto \
+                ../wireguard-apple/WireGuard/Shared/Model \
+
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+}
+
+# Anything else
+else {
+    error(Unsupported platform)
 }
 
 RESOURCES += qml.qrc
