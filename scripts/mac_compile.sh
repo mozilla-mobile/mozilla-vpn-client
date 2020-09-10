@@ -27,20 +27,20 @@ fi
 
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 
-printn Y "Cleaning the folder... "
-make distclean &>/dev/null;
+printn Y "Cleaning the existing project... "
+rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
-print Y "Configuring the build (qmake)..."
+print Y "Creating the xcode project via qmake..."
 $QMAKE \
-  CONFIG+=static \
   QTPLUGIN+=qsvg \
-  PREFIX=$1 || die "Compilation failed"
+  CONFIG-=static \
+  -spec macx-xcode \
+  src/src.pro  || die "Compilation failed"
+
+print Y "Patching the xcode project..."
+ruby scripts/xcode_patcher.rb
+print G "done."
 
 print Y "Compiling..."
-make -j8
-print G "Compilation completed!"
-
-print Y "Installation..."
-make install
-print G "Installation completed!"
+xcodebuild -project mozillavpn.xcodeproj

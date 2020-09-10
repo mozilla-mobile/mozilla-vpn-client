@@ -134,6 +134,12 @@ macos {
 
     HEADERS += \
             platforms/macos/macosutils.h
+
+    INCLUDEPATH += \
+                ../wireguard-apple/WireGuard/WireGuard/Crypto \
+                ../wireguard-apple/WireGuard/Shared/Model \
+
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
 }
 
 linux {
