@@ -9,6 +9,7 @@ Text {
     horizontalAlignment: Text.AlignHCenter
     anchors.horizontalCenterOffset: 1
     anchors.horizontalCenter: parent.horizontalCenter
+    verticalAlignment: Text.AlignVCenter
     wrapMode: Text.Wrap
     width: Theme.maxTextWidth
 
@@ -17,5 +18,4 @@ Text {
     font.pixelSize: 22
     lineHeightMode: Text.FixedHeight
     lineHeight: 32
-
 }

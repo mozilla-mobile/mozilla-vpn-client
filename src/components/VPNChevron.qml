@@ -6,8 +6,7 @@ import "../themes/themes.js" as Theme
 // VPNChevron
 Image {
     source: "../resources/chevron.svg"
-    Layout.leftMargin: Theme.iconSize
-    Layout.rightMargin: Theme.hSpacing
-    Layout.preferredWidth: 8
+    sourceSize.height: 24
+    sourceSize.width: 24
     fillMode: Image.PreserveAspectFit
 }
