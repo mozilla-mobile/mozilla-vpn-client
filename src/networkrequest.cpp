@@ -14,9 +14,9 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 
     QByteArray userAgent;
     userAgent.append("MozillaVPN/" APP_VERSION " (");
-    userAgent.append(QSysInfo::productType());
+    userAgent.append(QSysInfo::productType().toLocal8Bit());
     userAgent.append(" ");
-    userAgent.append(QSysInfo::productVersion());
+    userAgent.append(QSysInfo::productVersion().toLocal8Bit());
     userAgent.append(")");
 
     m_request.setRawHeader("User-Agent", userAgent);
@@ -74,7 +74,7 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
     NetworkRequest *r = new NetworkRequest(vpn);
 
     QByteArray authorizationHeader = "Bearer ";
-    authorizationHeader.append(vpn->token());
+    authorizationHeader.append(vpn->token().toLocal8Bit());
     r->m_request.setRawHeader("Authorization", authorizationHeader);
     r->m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -105,7 +105,7 @@ NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QS
     NetworkRequest *r = new NetworkRequest(vpn);
 
     QByteArray authorizationHeader = "Bearer ";
-    authorizationHeader.append(vpn->token());
+    authorizationHeader.append(vpn->token().toLocal8Bit());
     r->m_request.setRawHeader("Authorization", authorizationHeader);
 
     QString url(vpn->getApiUrl());
@@ -129,7 +129,7 @@ NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
     NetworkRequest *r = new NetworkRequest(vpn);
 
     QByteArray authorizationHeader = "Bearer ";
-    authorizationHeader.append(vpn->token());
+    authorizationHeader.append(vpn->token().toLocal8Bit());
     r->m_request.setRawHeader("Authorization", authorizationHeader);
 
     QUrl url(vpn->getApiUrl());
@@ -163,7 +163,7 @@ NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
     NetworkRequest *r = new NetworkRequest(vpn);
 
     QByteArray authorizationHeader = "Bearer ";
-    authorizationHeader.append(vpn->token());
+    authorizationHeader.append(vpn->token().toLocal8Bit());
     r->m_request.setRawHeader("Authorization", authorizationHeader);
 
     QUrl url(vpn->getApiUrl());
