@@ -274,7 +274,6 @@
         <file>resources/settings.svg</file>
         <file>views/ViewSettings.qml</file>
         <file>views/ViewInitialize.qml</file>
-        <file>views/ViewGetHelp.qml</file>
         <file>components/VPNButton.qml</file>
         <file>components/VPNMenu.qml</file>
         <file>components/VPNSettingsItem.qml</file>
@@ -292,15 +291,12 @@
         <file>resources/settings-white.svg</file>
         <file>resources/state-on.svg</file>
         <file>resources/externalLink.svg</file>
-        <file>resources/feedback.svg</file>
-        <file>resources/getHelp.svg</file>
         <file>components/VPNLightLabel.qml</file>
         <file>resources/arrow-toggle.svg</file>
         <file>resources/connection.svg</file>
         <file>components/VPNIcon.qml</file>
         <file>components/VPNChevron.qml</file>
         <file>components/VPNPopupButton.qml</file>
-        <file>views/ViewAboutUs.qml</file>
         <file>views/ViewOnboarding.qml</file>
         <file>resources/onboarding/onboarding1.svg</file>
         <file>resources/onboarding/onboarding4.svg</file>
@@ -330,5 +326,22 @@
         <file>components/VPNUpdateAlert.qml</file>
         <file>states/StateUpdateRequired.qml</file>
         <file>views/ViewUpdate.qml</file>
+        <file>resources/settings/getHelp.svg</file>
+        <file>resources/settings/feedback.svg</file>
+        <file>resources/settings/language.svg</file>
+        <file>resources/settings/aboutUs.svg</file>
+        <file>resources/settings/notifications.svg</file>
+        <file>resources/settings/networkSettings.svg</file>
+        <file>settings/ViewAboutUs.qml</file>
+        <file>settings/ViewGetHelp.qml</file>
+        <file>settings/ViewLanguage.qml</file>
+        <file>settings/ViewNetworkSettings.qml</file>
+        <file>settings/ViewNotifications.qml</file>
+        <file>settings/ViewSettingsMenu.qml</file>
+        <file>components/VPNIconAndLabel.qml</file>
+        <file>components/VPNClickableRow.qml</file>
+        <file>components/VPNTextBlock.qml</file>
+        <file>components/VPNExternalLinkListItem.qml</file>
+        <file>components/VPNSubtitle.qml</file>
     </qresource>
 </RCC>

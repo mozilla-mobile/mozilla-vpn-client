@@ -2,50 +2,28 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.0
 
+import "../themes/themes.js" as Theme
+
 RowLayout {
-    property alias text: item.text
-    property alias imageRight: imageRight.source
-    property alias imageLeft: imageLeft.source
-    signal clicked
+    property var setting
+    property var imageLeftSrc
+    property var imageRightSrc
 
-    id: root
-    width: parent.width
-    Layout.fillWidth: true
+    anchors.fill: parent
+    anchors.leftMargin: 8
+    anchors.rightMargin: 8
 
-    Layout.leftMargin: 16
-    Layout.rightMargin: 16
-
-    Image {
-        id: imageLeft
-        height: 18
-        width: 18
-        Layout.alignment: Qt.AlignTop
-        sourceSize.width: 18
-        sourceSize.height: 18
-    }
-
-    Label {
-        id: item
-        font.pixelSize: 15
-        font.family: vpnFont.name
+    VPNIconAndLabel {
+        icon: imageLeftSrc
+        title: setting
     }
 
     Item {
         Layout.fillWidth: true
     }
 
-    Image {
+    VPNIcon {
         id: imageRight
-        height: 18
-        width: 18
-        Layout.alignment: Qt.AlignTop
-        sourceSize.width: 18
-        sourceSize.height: 18
-
-        MouseArea {
-            id: iconMouseArea
-            anchors.fill: parent
-            onClicked: root.clicked()
-        }
+        source: imageRightSrc
     }
 }

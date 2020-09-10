@@ -5,7 +5,7 @@ import "../themes/themes.js" as Theme
 
 // VPNIcon
 Image {
-    Layout.preferredHeight: Theme.iconSize
-    Layout.preferredWidth: Theme.iconSize
+    sourceSize.height: 24
+    sourceSize.width: 24
     fillMode: Image.PreserveAspectFit
 }

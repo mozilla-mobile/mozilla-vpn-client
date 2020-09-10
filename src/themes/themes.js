@@ -13,7 +13,7 @@ const blueFocusStroke = "#660060DF";
 const green = "#3FE1B0";
 
 const grey = "#CACACA";
-const greyHovered = "#C2C2C2";
+const greyHovered = "#E6E6E6";
 const greyPressed = "#C2C2C2";
 
 const orange = "#FFA436";
@@ -38,6 +38,7 @@ const labelLineHeight = 22;
 
 const hSpacing = 20;
 const vSpacing = 24;
+const listSpacing = 8;
 const maxTextWidth = 296;
 const radius = 10;
 const windowMargin = 16;
@@ -50,6 +51,11 @@ const blueButton = {
     "focusStroke": blueFocusStroke
 };
 
+
+const externalLinkRow = {
+    buttonPressed: "#AECBF2",
+    buttonHovered: "#D4E2F6"
+}
 
 const redButton = {
     "defaultColor" : red,
