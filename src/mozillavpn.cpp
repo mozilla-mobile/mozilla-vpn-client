@@ -36,12 +36,12 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 static MozillaVPN *s_instance = nullptr;
 
 // static
-void MozillaVPN::createInstance()
+void MozillaVPN::createInstance(QObject* parent)
 {
     qDebug() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN();
+    s_instance = new MozillaVPN(parent);
     s_instance->initialize();
 }
 
