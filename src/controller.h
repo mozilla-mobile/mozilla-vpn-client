@@ -60,6 +60,8 @@ public:
 
     bool isDeviceLimit() const { return m_state == StateDeviceLimit; }
 
+    void updateRequired();
+
 private Q_SLOTS:
     void connected();
     void disconnected();
@@ -69,6 +71,7 @@ signals:
     void stateChanged();
     void timeChanged();
     void readyToQuit();
+    void readyToUpdate();
 
 private:
     State m_state = StateOff;
@@ -91,6 +94,7 @@ private:
     enum NextStep {
         None,
         Quit,
+        Update,
         Disconnect,
     };
 

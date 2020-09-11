@@ -132,8 +132,6 @@ public:
     bool updateRecommended() const { return m_updateRecommended; }
     void setUpdateRecommended(bool value);
 
-    void forceUpdateState() { setState(StateUpdateRequired); }
-
     bool userAuthenticated() const { return m_userAuthenticated; }
 
 private:

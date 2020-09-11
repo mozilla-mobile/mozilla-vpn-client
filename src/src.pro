@@ -12,7 +12,6 @@ unix {
 }
 
 TEMPLATE  = app
-TARGET    = mozillavpn
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
@@ -90,6 +89,9 @@ HEADERS += \
 # Platform-specific: Linux
 linux {
     message(Linux build)
+
+    TARGET = mozillavpn
+
     SOURCES += \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxpingsendworker.cpp \
@@ -127,6 +129,10 @@ linux {
 # Platform-specific: MacOS
 else:macos {
     message(MacOSX build)
+
+    TARGET = MozillaVPN
+    QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
+
     SOURCES += \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosutils.mm
