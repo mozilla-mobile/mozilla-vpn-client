@@ -23,14 +23,6 @@ class MozillaVPN final : public QObject
     Q_OBJECT
 
 public:
-    class Holder
-    {
-    public:
-        Holder() { MozillaVPN::createInstance(); }
-
-        ~Holder() { MozillaVPN::deleteInstance(); }
-    };
-
     enum State {
         StateInitialize,
         StateAuthenticating,
@@ -68,6 +60,7 @@ private:
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
 
 public:
+    static void createInstance(QObject* parent);
     static MozillaVPN *instance();
 
     State state() const { return m_state; }
@@ -138,7 +131,6 @@ private:
     explicit MozillaVPN(QObject *parent = nullptr);
     ~MozillaVPN();
 
-    static void createInstance();
     static void deleteInstance();
 
     void initialize();

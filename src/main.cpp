@@ -37,11 +37,7 @@ int main(int argc, char *argv[])
     // Create the QML engine and expose a few internal objects.
     QQmlApplicationEngine engine;
 
-    // This object creates the MozillaVPN and it deletes it at shutdown.
-    // In theory, this is not needed and we can have MozillaVPN as a normal
-    // singleton, but I like that, at shutdown, all the memory is correctly
-    // released.
-    MozillaVPN::Holder holder;
+    MozillaVPN::createInstance(&app);
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {
