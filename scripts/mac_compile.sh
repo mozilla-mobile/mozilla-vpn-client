@@ -2,7 +2,7 @@
 
 . $(dirname $0)/commons.sh
 
-print N "This script compiles MozillaVPN for linux using a static Qt5 build"
+print N "This script compiles MozillaVPN for MacOS"
 print N ""
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
@@ -15,7 +15,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
   exit 0
 fi
 
-if ! [ -d "src" ] || ! [ -d "linux" ]; then
+if ! [ -d "src" ] || ! [ -d "macos" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
@@ -26,6 +26,14 @@ else
 fi
 
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
+
+printn Y "Apply my monotonic patch... "
+cp macos/goruntime-boottime-over-monotonic.diff wireguard-apple/wireguard-go-bridge || die "Failed"
+print G "done."
+
+print Y "Compile wireguard-go-bridge..."
+(cd wireguard-apple/wireguard-go-bridge && ARCHS=arm64 GOARCH_armv7= make) || die "Compilation failed"
+print G "done."
 
 printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"

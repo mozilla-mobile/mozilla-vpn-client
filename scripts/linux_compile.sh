@@ -2,7 +2,7 @@
 
 . $(dirname $0)/commons.sh
 
-print N "This script compiles MozillaVPN for linux using a static Qt5 build"
+print N "This script compiles MozillaVPN for Linux"
 print N ""
 
 if [ "$1" = "" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
