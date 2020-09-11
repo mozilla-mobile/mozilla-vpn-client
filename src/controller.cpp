@@ -126,6 +126,11 @@ void Controller::disconnected() {
         return;
     }
 
+    if (nextStep == Update) {
+        emit readyToUpdate();
+        return;
+    }
+
     if (nextStep == None && m_state == StateSwitching) {
         m_vpn->changeServer(m_switchingCountryCode, m_switchingCity);
         activate();
@@ -184,6 +189,23 @@ void Controller::quit()
     }
 
     m_nextStep = Quit;
+
+    if (m_state == StateOn) {
+        deactivate();
+        return;
+    }
+}
+
+void Controller::updateRequired()
+{
+    qDebug() << "Update required";
+
+    if (m_state == StateOff) {
+        emit readyToUpdate();
+        return;
+    }
+
+    m_nextStep = Update;
 
     if (m_state == StateOn) {
         deactivate();

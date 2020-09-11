@@ -101,7 +101,7 @@ void ReleaseMonitor::processData(const QByteArray &data)
     if (currentVersion < minimumVersion) {
         qDebug() << "ReleaseMonitor - update required";
         m_vpn->setUpdateRecommended(false);
-        m_vpn->forceUpdateState();
+        m_vpn->controller()->updateRequired();
         return;
     }
 

@@ -68,6 +68,8 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
     m_releaseMonitor.setVPN(this);
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
+
+    connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
 }
 
 MozillaVPN::~MozillaVPN() = default;
