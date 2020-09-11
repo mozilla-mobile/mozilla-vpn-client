@@ -20,7 +20,7 @@ target.build_configurations.each do |config|
 
 end
 
-# Tunnel group
+# WireGuard group
 group = project.main_group.new_group("WireGuard")
 
 [
@@ -55,6 +55,16 @@ group = project.main_group.new_group("WireGuard")
   "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelErrors.swift",
   "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelStatus.swift",
   "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelConfiguration+UapiConfig.swift",
+].each { |filename|
+  file = group.new_file(filename)
+  target.add_file_references([file])
+}
+
+# MozillaVPN group
+group = project.main_group.new_group("SwiftIntegration")
+
+[
+  "macos/macoscontroller.swift",
 ].each { |filename|
   file = group.new_file(filename)
   target.add_file_references([file])
