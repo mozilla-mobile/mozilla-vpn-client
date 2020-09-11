@@ -40,7 +40,7 @@ $QMAKE \
   src/src.pro  || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb
+ruby scripts/xcode_patcher.rb || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Compiling..."

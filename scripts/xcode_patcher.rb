@@ -1,11 +1,11 @@
 require 'xcodeproj'
-project_path = 'mozillavpn.xcodeproj'
+project_path = 'MozillaVPN.xcodeproj'
 project = Xcodeproj::Project.open(project_path)
 
 target = project.targets.first
-if target.name != 'mozillavpn'
-  puts "The first target should be mozillavpn. Found: " + target.name
-  exit
+if target.name != 'MozillaVPN'
+  puts "The first target should be MozillaVPN. Found: " + target.name
+  exit 1
 end
 
 target.build_configurations.each do |config|
