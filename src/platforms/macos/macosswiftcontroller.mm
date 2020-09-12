@@ -46,6 +46,10 @@ void MacOSSwiftController::maybeInitializeController(const Device* device, const
             initWithPrivateKey:key.toNSData() ipv4Address:device->ipv4Address().toNSString() ipv6Address:device->ipv6Address().toNSString() closure:^(BOOL status) {
         qDebug() << "Creation completed with status" << status;
         creating = false;
+        if (status == false) {
+            [impl dealloc ];
+            impl = nullptr;
+        }
         callback(status);
     }];
 }

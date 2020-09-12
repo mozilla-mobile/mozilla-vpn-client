@@ -27,23 +27,20 @@ public class MacOSControllerImpl : NSObject {
         }
 
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
-            if error != nil {
-                closure(false)
-                return
-            }
-
             if let self = self, error == nil {
                 self.tunnel = managers?.first
                 if self.tunnel == nil {
-                    print("Creating the dummy tunnel")
+                    Logger.global?.log(message: "Creating the dummy tunnel")
                     self.createDummyTunnel(closure: closure)
                     return
                 }
+
+                Logger.global?.log(message: "Dummy channel already exists")
                 closure(true)
                 return
             }
 
-            print("Loading from preference failed.")
+            Logger.global?.log(message: "Loading from preference failed.")
             closure(false)
         }
     }
@@ -58,13 +55,11 @@ public class MacOSControllerImpl : NSObject {
 
         tunnelProviderManager.saveToPreferences { [unowned self] saveError in
             if let error = saveError {
-                self.tunnel = nil
                 Logger.global?.log(message: "Connect Tunnel Save Error: \(error)")
                 closure(false)
                 return
             }
 
-            self.tunnel = tunnelProviderManager
             self.tunnel?.loadFromPreferences { error in
                 if let error = error {
                     Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
@@ -72,13 +67,14 @@ public class MacOSControllerImpl : NSObject {
                     return
                 }
 
+                self.tunnel = tunnelProviderManager
                 closure(true)
             }
         }
     }
 
     @objc func connect(closure: @escaping (Bool) -> Void) {
-        print("Connecting!")
+        Logger.global?.log(message: "Connecting! Tunnel: \(tunnel)")
         assert(tunnel != nil)
 
         do {
