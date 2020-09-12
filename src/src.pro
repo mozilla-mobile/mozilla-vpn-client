@@ -134,7 +134,7 @@ else:macos {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
 
     SOURCES += \
-            platforms/macos/macoskey.cpp \
+            platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosutils.mm
 

@@ -1,5 +1,4 @@
 #include "wireguard-go-version.h"
-#include "ringlogger.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -13,6 +12,8 @@ bool key_from_base64(uint8_t key[WG_KEY_LEN], const char *base64);
 
 void key_to_hex(char hex[WG_KEY_LEN_HEX], const uint8_t key[WG_KEY_LEN]);
 bool key_from_hex(uint8_t key[WG_KEY_LEN], const char *hex);
+
+void write_msg_to_log(const char *tag, const char *msg);
 
 #import "TargetConditionals.h"
 #if TARGET_OS_OSX

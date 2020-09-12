@@ -25,9 +25,6 @@ group = project.main_group.new_group("WireGuard")
 
 [
   "macos/wireguard-go-version.h",
-  "wireguard-apple/WireGuard/Shared/Logging/Logger.swift",
-  "wireguard-apple/WireGuard/Shared/Logging/ringlogger.c",
-  "wireguard-apple/WireGuard/Shared/Logging/ringlogger.h",
   "wireguard-apple/WireGuard/Shared/FileManager+Extension.swift",
   "wireguard-apple/WireGuard/Shared/Keychain.swift",
   "wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift",
@@ -51,6 +48,7 @@ group = project.main_group.new_group("SwiftIntegration")
 
 [
   "src/platforms/macos/macoscontroller.swift",
+  "src/platforms/macos/macoslogger.swift",
 ].each { |filename|
   file = group.new_file(filename)
   target.add_file_references([file])

@@ -16,6 +16,8 @@ public class MacOSControllerImpl : NSObject {
     @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (Bool) -> Void) {
         super.init()
 
+        Logger.configureGlobal(tagged: "APP", withFilePath: FileManager.logFileURL?.path)
+
         assert(privateKey.count == TunnelConfiguration.keyLength)
 
         interface = InterfaceConfiguration(privateKey: privateKey)
@@ -33,6 +35,7 @@ public class MacOSControllerImpl : NSObject {
             if let self = self, error == nil {
                 self.tunnel = managers?.first
                 if self.tunnel == nil {
+                    print("Creating the dummy tunnel")
                     self.createDummyTunnel(closure: closure)
                     return
                 }

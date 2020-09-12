@@ -1,4 +1,10 @@
+// This file contains all the C functions needed by the Wireguard swift code.
+
 #include <QByteArray>
+#include <QDebug>
+
+// Key base64/hex functions
+// ------------------------
 
 #define WG_KEY_LEN (32)
 #define WG_KEY_LEN_BASE64 (45)
@@ -12,6 +18,8 @@ EXPORT bool key_from_base64(uint8_t key[WG_KEY_LEN], const char *base64);
 
 EXPORT void key_to_hex(char hex[WG_KEY_LEN_HEX], const uint8_t key[WG_KEY_LEN]);
 EXPORT bool key_from_hex(uint8_t key[WG_KEY_LEN], const char *hex);
+
+EXPORT void write_msg_to_log(const char *tag, const char *msg);
 }
 
 EXPORT void key_to_base64(char base64[WG_KEY_LEN_BASE64], const uint8_t key[WG_KEY_LEN])
@@ -69,4 +77,12 @@ EXPORT bool key_from_hex(uint8_t key[WG_KEY_LEN], const char *hex)
     }
 
     return true;
+}
+
+// Logging functions
+// -----------------
+
+EXPORT void write_msg_to_log( const char *tag, const char *msg)
+{
+    qDebug() << "Swift log - tag:" << tag << "msg: " << msg;
 }
