@@ -32,7 +32,7 @@ cp macos/goruntime-boottime-over-monotonic.diff wireguard-apple/wireguard-go-bri
 print G "done."
 
 print Y "Compile wireguard-go-bridge..."
-(cd wireguard-apple/wireguard-go-bridge && ARCHS=arm64 GOARCH_armv7= make) || die "Compilation failed"
+(cd wireguard-apple/wireguard-go-bridge && ARCHS=x86_64 GOARCH_armv7= make) || die "Compilation failed"
 print G "done."
 
 printn Y "Cleaning the existing project... "
