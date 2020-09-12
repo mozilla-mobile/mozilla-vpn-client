@@ -41,14 +41,6 @@ group = project.main_group.new_group("WireGuard")
   "wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift",
   "wireguard-apple/WireGuard/Shared/Model/DNSServer.swift",
   "wireguard-apple/WireGuard/WireGuard/LocalizationHelper.swift",
-
-  # TODO: we can remove all of this!
-  "wireguard-apple/WireGuard/WireGuard/WireGuardAppError.swift",
-  "wireguard-apple/WireGuard/WireGuard/Tunnel/ActivateOnDemandOption.swift",
-  "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelsManager.swift",
-  "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelErrors.swift",
-  "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelStatus.swift",
-  "wireguard-apple/WireGuard/WireGuard/Tunnel/TunnelConfiguration+UapiConfig.swift",
 ].each { |filename|
   file = group.new_file(filename)
   target.add_file_references([file])
