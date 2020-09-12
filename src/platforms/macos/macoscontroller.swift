@@ -16,7 +16,7 @@ public class MacOSControllerImpl : NSObject {
     @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (Bool) -> Void) {
         super.init()
 
-        Logger.configureGlobal(tagged: "APP", withFilePath: FileManager.logFileURL?.path)
+        Logger.configureGlobal(tagged: "APP", withFilePath: "")
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
 

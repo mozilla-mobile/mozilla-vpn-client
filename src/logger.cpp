@@ -35,6 +35,10 @@ void Logger::messageHandler(QtMsgType type,
 #ifdef QT_DEBUG
     QTextStream out(stderr);
     prettyOutput(out, logger.m_logs.last());
+#elif MACOS_INTEGRATION
+    // TODO: we should not print on stderr in release.
+    QTextStream out(stderr);
+    prettyOutput(out, logger.m_logs.last());
 #endif
 }
 
