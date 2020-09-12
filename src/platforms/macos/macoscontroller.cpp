@@ -1,5 +1,5 @@
 #include "macoscontroller.h"
-#include "macosutils.h"
+#include "macosswiftcontroller.h"
 #include "server.h"
 #include "keys.h"
 #include "device.h"
@@ -15,7 +15,7 @@ void MacOSController::activate(const Server &server,
 
     qDebug() << "MacOSController activating" << server.hostname();
 
-    MacosUtils::maybeInitializeController(device, keys, [this](bool status) {
+    MacOSSwiftController::maybeInitializeController(device, keys, [this](bool status) {
         qDebug() << "Controller initialized" << status;
 
         if (!status) {
@@ -23,7 +23,7 @@ void MacOSController::activate(const Server &server,
             return;
         }
 
-        MacosUtils::controllerActivate([this](bool status) {
+        MacOSSwiftController::controllerActivate([this](bool status) {
             qDebug() << "Activation result:" << status;
 
             if (!status) {

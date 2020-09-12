@@ -134,6 +134,7 @@ else:macos {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
 
     SOURCES += \
+            platforms/macos/macoskey.cpp \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosutils.mm
 
@@ -151,8 +152,13 @@ else:macos {
 
         DEFINES += MACOS_INTEGRATION
 
-        SOURCES += platforms/macos/macoscontroller.cpp
-        HEADERS += platforms/macos/macoscontroller.h
+        SOURCES += \
+                platforms/macos/macoscontroller.cpp \
+                platforms/macos/macosswiftcontroller.mm
+
+        HEADERS += \
+                platforms/macos/macoscontroller.h \
+                platforms/macos/macosswiftcontroller.h
     }
 
     INCLUDEPATH += \

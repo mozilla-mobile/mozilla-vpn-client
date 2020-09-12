@@ -30,8 +30,6 @@ group = project.main_group.new_group("WireGuard")
   "wireguard-apple/WireGuard/Shared/Logging/ringlogger.h",
   "wireguard-apple/WireGuard/Shared/FileManager+Extension.swift",
   "wireguard-apple/WireGuard/Shared/Keychain.swift",
-  "wireguard-apple/WireGuard/Shared/Model/key.c",
-  "wireguard-apple/WireGuard/Shared/Model/key.h",
   "wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift",
   "wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift",
   "wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift",
@@ -60,7 +58,7 @@ group = project.main_group.new_group("WireGuard")
 group = project.main_group.new_group("SwiftIntegration")
 
 [
-  "macos/macoscontroller.swift",
+  "src/platforms/macos/macoscontroller.swift",
 ].each { |filename|
   file = group.new_file(filename)
   target.add_file_references([file])
@@ -100,8 +98,6 @@ group = project.main_group.new_group("WireGuardExtgension")
   "wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift",
   "wireguard-apple/WireGuard/Shared/Model/Endpoint.swift",
   "wireguard-apple/WireGuard/Shared/Model/DNSServer.swift",
-  "wireguard-apple/WireGuard/Shared/Model/key.c",
-  "wireguard-apple/WireGuard/Shared/Model/key.h",
   "wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift",
   "wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift",
   "wireguard-apple/WireGuard/Shared/FileManager+Extension.swift",
