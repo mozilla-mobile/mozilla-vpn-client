@@ -80,7 +80,7 @@ target.build_configurations.each do |config|
 
 end
 
-group = project.main_group.new_group("WireGuardExtgension")
+group = project.main_group.new_group("WireGuardExtension")
 [
   "wireguard-apple/WireGuard/WireGuardNetworkExtension/PacketTunnelProvider.swift",
   "wireguard-apple/WireGuard/WireGuardNetworkExtension/PacketTunnelSettingsGenerator.swift",
