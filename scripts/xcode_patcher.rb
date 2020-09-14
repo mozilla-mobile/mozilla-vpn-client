@@ -85,6 +85,9 @@ class XCodeprojPatcher
       config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPNNetworkExtension.entitlements'
       config.build_settings['LIBRARY_SEARCH_PATHS'] ||= ['$(inherited)', 'wireguard-apple/wireguard-go-bridge/out']
 
+      # This is needed to compile the macosglue without Qt.
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= 'MACOS_EXTENSION=1'
+
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
       end
