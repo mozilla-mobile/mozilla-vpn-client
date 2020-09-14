@@ -96,7 +96,7 @@ class XCodeprojPatcher
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version
       config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.network-extension'
-      config.build_settings['PRODUCT_NAME'] = 'WireGuardTunnel'
+      config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
       config.build_settings['INFOPLIST_FILE'] ||= 'wireguard-apple/WireGuard/WireGuardNetworkExtension/Info.plist'
