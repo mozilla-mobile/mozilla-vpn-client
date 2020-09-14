@@ -12,7 +12,7 @@
 static MacOSControllerImpl *impl = nullptr;
 
 // static
-void MacOSSwiftController::controllerActivate(std::function<void(bool)> && a_callback)
+void MacOSSwiftController::activate(std::function<void(bool)> && a_callback)
 {
     Q_ASSERT(impl);
 
@@ -24,7 +24,19 @@ void MacOSSwiftController::controllerActivate(std::function<void(bool)> && a_cal
 }
 
 // static
-void MacOSSwiftController::maybeInitializeController(const Device* device, const Keys* keys, std::function<void(bool)>&& a_callback)
+void MacOSSwiftController::deactivate(std::function<void(bool)> && a_callback)
+{
+    Q_ASSERT(impl);
+
+    std::function<void(bool)> callback = std::move(a_callback);
+
+    [impl disconnectWithClosure:^(BOOL status) {
+        callback(status);
+    }];
+}
+
+// static
+void MacOSSwiftController::maybeInitialize(const Device* device, const Keys* keys, std::function<void(bool)>&& a_callback)
 {
     std::function<void(bool)> callback = std::move(a_callback);
 

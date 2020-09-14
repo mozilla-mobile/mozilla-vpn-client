@@ -10,11 +10,13 @@ class Device;
 class MacOSSwiftController
 {
 public:
-    static void maybeInitializeController(const Device *device,
-                                          const Keys *keys,
-                                          std::function<void(bool)>&& callback);
+    static void maybeInitialize(const Device *device,
+                                const Keys *keys,
+                                std::function<void(bool)>&& callback);
 
-    static void controllerActivate(std::function<void(bool)>&& callback);
+    static void activate(std::function<void(bool)>&& callback);
+
+    static void deactivate(std::function<void(bool)>&& callback);
 };
 
 #endif // MACOSSWIFTCONTROLLER_H

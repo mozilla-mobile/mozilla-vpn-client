@@ -15,7 +15,7 @@ void MacOSController::activate(const Server &server,
 
     qDebug() << "MacOSController activating" << server.hostname();
 
-    MacOSSwiftController::maybeInitializeController(device, keys, [this](bool status) {
+    MacOSSwiftController::maybeInitialize(device, keys, [this](bool status) {
         qDebug() << "Controller initialized" << status;
 
         if (!status) {
@@ -23,7 +23,7 @@ void MacOSController::activate(const Server &server,
             return;
         }
 
-        MacOSSwiftController::controllerActivate([this](bool status) {
+        MacOSSwiftController::activate([this](bool status) {
             qDebug() << "Activation result:" << status;
 
             if (!status) {
@@ -47,5 +47,8 @@ void MacOSController::deactivate(const Server &server,
 
     qDebug() << "MacOSController deactivated" << server.hostname();
 
-    emit disconnected();
+    MacOSSwiftController::deactivate([this](bool status) {
+        qDebug() << "Deactivation result:" << status;
+        emit disconnected();
+    });
 }

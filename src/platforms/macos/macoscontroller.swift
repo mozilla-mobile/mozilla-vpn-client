@@ -74,14 +74,21 @@ public class MacOSControllerImpl : NSObject {
     }
 
     @objc func connect(closure: @escaping (Bool) -> Void) {
-        Logger.global?.log(message: "Connecting! Tunnel: \(tunnel)")
+        Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
         do {
             try (tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
             closure(true)
         } catch {
+            Logger.global?.log(message: "Something went wrong");
             closure(false)
         }
+    }
+
+    @objc func disconnect(closure: @escaping (Bool) -> Void) {
+        Logger.global?.log(message: "Disconnecting")
+        assert(tunnel != nil)
+        (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
     }
 }
