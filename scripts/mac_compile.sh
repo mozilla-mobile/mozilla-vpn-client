@@ -56,4 +56,5 @@ ruby scripts/xcode_patcher.rb "$VERSION" || die "Failed to merge xcode with wire
 print G "done."
 
 print Y "Compiling..."
-xcodebuild -project mozillavpn.xcodeproj
+xcodebuild -project mozillavpn.xcodeproj -allowProvisioningUpdates || die "Failed."
+print G "done."

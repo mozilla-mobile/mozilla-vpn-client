@@ -30,12 +30,12 @@ public class MacOSControllerImpl : NSObject {
             if let self = self, error == nil {
                 self.tunnel = managers?.first
                 if self.tunnel == nil {
-                    Logger.global?.log(message: "Creating the dummy tunnel")
-                    self.createDummyTunnel(closure: closure)
+                    Logger.global?.log(message: "Creating the tunnel")
+                    self.createTunnel(closure: closure)
                     return
                 }
 
-                Logger.global?.log(message: "Dummy channel already exists")
+                Logger.global?.log(message: "Tunnel already exists")
                 closure(true)
                 return
             }
@@ -45,7 +45,7 @@ public class MacOSControllerImpl : NSObject {
         }
     }
 
-    func createDummyTunnel(closure: @escaping (Bool) -> Void) {
+    func createTunnel(closure: @escaping (Bool) -> Void) {
         let peerConfigurations: [PeerConfiguration] = []
 
         let config = TunnelConfiguration(name: "MozillaVPN", interface: interface!, peers: peerConfigurations)

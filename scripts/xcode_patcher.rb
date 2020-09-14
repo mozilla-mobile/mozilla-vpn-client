@@ -40,6 +40,7 @@ class XCodeprojPatcher
       config.build_settings['PRODUCT_NAME'] = 'Firefox Private Network VPN'
 
       # other config
+      config.build_settings['INFOPLIST_FILE'] ||= 'macos/Info.plist'
       config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPN.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
 
