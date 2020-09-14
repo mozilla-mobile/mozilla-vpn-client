@@ -4,7 +4,13 @@
 #ifdef __linux__
 #include "platforms/linux/linuxpingsendworker.h"
 #elif __APPLE__
+#include "TargetConditionals.h"
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#else
 #include "platforms/macos/macospingsendworker.h"
+#endif
+
 #else
 #include "platforms/dummy/dummypingsendworker.h"
 #endif
@@ -21,7 +27,13 @@ PingSender::PingSender(QObject *parent) : QObject(parent)
 #ifdef __linux__
         new LinuxPingSendWorker();
 #elif __APPLE__
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+        new DummyPingSendWorker(DummyPingSendWorker::Stable);
+#else
         new MacosPingSendWorker();
+#endif
+
 #else
         new DummyPingSendWorker(DummyPingSendWorker::Stable);
 #endif

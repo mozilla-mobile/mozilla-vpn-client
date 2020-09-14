@@ -4,12 +4,9 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 QT += network
 QT += quick
 QT += widgets
+QT += svg
 
 CONFIG += c++1z
-
-unix {
-    QMAKE_CXXFLAGS *= -Werror
-}
 
 TEMPLATE  = app
 
@@ -90,6 +87,8 @@ HEADERS += \
 linux {
     message(Linux build)
 
+    QMAKE_CXXFLAGS *= -Werror
+
     TARGET = mozillavpn
 
     SOURCES += \
@@ -130,6 +129,8 @@ linux {
 else:macos {
     message(MacOSX build)
 
+    QMAKE_CXXFLAGS *= -Werror
+
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
 
@@ -164,6 +165,21 @@ else:macos {
     INCLUDEPATH += \
                 ../wireguard-apple/WireGuard/WireGuard/Crypto \
                 ../wireguard-apple/WireGuard/Shared/Model \
+
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+}
+
+# Platform-specific: IOS
+else:ios {
+    message(IOS build)
+
+    TARGET = MozillaVPN
+    QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
+
+    message(No integration required for this build - let\'s use the dummy controller)
+
+    SOURCES += platforms/dummy/dummycontroller.cpp
+    HEADERS += platforms/dummy/dummycontroller.h
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
 }

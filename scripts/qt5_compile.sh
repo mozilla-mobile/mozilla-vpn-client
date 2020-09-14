@@ -7,7 +7,7 @@ print N ""
 
 if [ "$1" = "" ] || [ "$2" = "" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
   print G "Usage:"
-  print N "\t$0 <QT_source_folder> <destination_folder>"
+  print N "\t$0 <QT_source_folder> <destination_folder> [anything else will be use as argument for the QT configure script]"
   print N ""
   exit 0
 fi
@@ -15,6 +15,11 @@ fi
 [ -d "$1" ] || die "Unable to find the QT source folder."
 
 cd "$1" || die "Unable to enter into the QT source folder"
+
+shift
+
+PREFIX=$1
+shift
 
 printn Y "Cleaning the folder... "
 #make distclean -j8 &>/dev/null;
@@ -43,7 +48,8 @@ fi
 
 print Y "Wait..."
 ./configure \
-  --prefix=$2 \
+  $* \
+  --prefix=$PREFIX \
   --recheck-all \
   -opensource \
   -confirm-license \
