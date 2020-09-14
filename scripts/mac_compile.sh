@@ -51,8 +51,12 @@ $QMAKE \
   -spec macx-xcode \
   src/src.pro  || die "Compilation failed"
 
+printn Y "Extract the project version..."
+VERSION=$(cat src/src.pro  | grep ^VERSION | cut -d= -f2 | tr -d ' ')
+print G "$VERSION"
+
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "$VERSION" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Compiling..."

@@ -1,7 +1,7 @@
 #include "macosswiftcontroller.h"
 #include "keys.h"
 #include "device.h"
-#include "MozillaVPN-Swift.h"
+#include "Firefox_Private_Network_VPN-Swift.h"
 
 #import <Cocoa/Cocoa.h>
 

@@ -4,12 +4,12 @@ class XCodeprojPatcher
   attr :project
   attr :target_main
 
-  def run(file)
+  def run(file, version)
     open_project file
     open_target_main
 
-    setup_target_main
-    setup_target_extension
+    setup_target_main version
+    setup_target_extension version
 
     # TODO: let's see if we can compile the bridge here!
 
@@ -26,13 +26,22 @@ class XCodeprojPatcher
     die 'Unable to open MozillaVPN target' if @target_main.nil?
   end
 
-  def setup_target_main
+  def setup_target_main(version)
     @target_main.build_configurations.each do |config|
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/WireGuard-Bridging-Header.h'
+
+      # Versions and names
+      config.build_settings['MARKETING_VERSION'] ||= version
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.macos.FirefoxVPN'
+      config.build_settings['PRODUCT_NAME'] = 'Firefox Private Network VPN'
+
+      # other config
       config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPN.entitlements'
+      config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
 
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
@@ -73,7 +82,7 @@ class XCodeprojPatcher
     }
   end
 
-  def setup_target_extension
+  def setup_target_extension(version)
     # WireGuardNetworkExtension
     target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :osx)
 
@@ -82,8 +91,18 @@ class XCodeprojPatcher
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/WireGuardNetworkExtension-Bridging-Header.h'
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPNNetworkExtension.entitlements'
       config.build_settings['LIBRARY_SEARCH_PATHS'] ||= ['$(inherited)', 'wireguard-apple/wireguard-go-bridge/out']
+
+      # Versions and names
+      config.build_settings['MARKETING_VERSION'] ||= version
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.network-extension'
+      config.build_settings['PRODUCT_NAME'] = 'WireGuardTunnel'
+
+      # other configs
+      config.build_settings['INFOPLIST_FILE'] ||= 'wireguard-apple/WireGuard/WireGuardNetworkExtension/Info.plist'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPNNetworkExtension.entitlements'
+      config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
 
       # This is needed to compile the macosglue without Qt.
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= 'MACOS_EXTENSION=1'
@@ -133,10 +152,8 @@ class XCodeprojPatcher
     framework_ref = frameworks_group.new_file('libwg-go.a')
     frameworks_build_phase.add_file_reference(framework_ref)
 
-    framework_ref = frameworks_group.new_file('Qt5Core')
-    frameworks_build_phase.add_file_reference(framework_ref)
-
     # TODO: let's see if we can compile the bridge here!
+
     # This fails: @target_main.add_dependency target_extension
     container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
     container_proxy.container_portal = @project.root_object.uuid
@@ -150,6 +167,12 @@ class XCodeprojPatcher
     dependency.target_proxy = container_proxy
 
     @target_main.dependencies << dependency
+
+    copy_appex = @target_main.new_copy_files_build_phase
+    copy_appex.symbol_dst_subfolder_spec = :plug_ins
+
+    appex_file = copy_appex.add_file_reference target_extension.product_reference
+    appex_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
   def die(msg)
@@ -158,6 +181,11 @@ class XCodeprojPatcher
   end
 end
 
+if ARGV.length < 1
+  puts "Usage: <script> version"
+  exit 1
+end
+
 r = XCodeprojPatcher.new
-r.run 'MozillaVPN.xcodeproj'
+r.run 'MozillaVPN.xcodeproj', ARGV[0]
 exit 0
