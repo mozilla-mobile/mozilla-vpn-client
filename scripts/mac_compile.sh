@@ -35,10 +35,6 @@ printn Y "Apply my monotonic patch... "
 cp macos/goruntime-boottime-over-monotonic.diff wireguard-apple/wireguard-go-bridge || die "Failed"
 print G "done."
 
-print Y "Compile wireguard-go-bridge..."
-(cd wireguard-apple/wireguard-go-bridge && SDK_NAME=macosx ARCHS=x86_64 GOARCH_armv7= make) || die "Compilation failed"
-print G "done."
-
 printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."

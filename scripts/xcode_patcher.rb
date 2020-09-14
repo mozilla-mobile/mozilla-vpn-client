@@ -3,6 +3,7 @@ require 'xcodeproj'
 class XCodeprojPatcher
   attr :project
   attr :target_main
+  attr :target_extension
 
   def run(file, version)
     open_project file
@@ -10,8 +11,7 @@ class XCodeprojPatcher
 
     setup_target_main version
     setup_target_extension version
-
-    # TODO: let's see if we can compile the bridge here!
+    setup_target_go
 
     @project.save
   end
@@ -83,10 +83,9 @@ class XCodeprojPatcher
   end
 
   def setup_target_extension(version)
-    # WireGuardNetworkExtension
-    target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :osx)
+    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :osx)
 
-    target_extension.build_configurations.each do |config|
+    @target_extension.build_configurations.each do |config|
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
@@ -133,10 +132,10 @@ class XCodeprojPatcher
       'wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
     ].each { |filename|
       file = group.new_file(filename)
-      target_extension.add_file_references([file])
+      @target_extension.add_file_references([file])
     }
 
-    # target_extension + swift integration
+    # @target_extension + swift integration
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
@@ -144,25 +143,23 @@ class XCodeprojPatcher
       'src/platforms/macos/macoslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)
-      target_extension.add_file_references([file])
+      @target_extension.add_file_references([file])
     }
 
     frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
-    frameworks_build_phase = target_extension.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+    frameworks_build_phase = @target_extension.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
     framework_ref = frameworks_group.new_file('libwg-go.a')
     frameworks_build_phase.add_file_reference(framework_ref)
 
-    # TODO: let's see if we can compile the bridge here!
-
-    # This fails: @target_main.add_dependency target_extension
+    # This fails: @target_main.add_dependency @target_extension
     container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
     container_proxy.container_portal = @project.root_object.uuid
     container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
-    container_proxy.remote_global_id_string = target_extension.uuid
-    container_proxy.remote_info = target_extension.name
+    container_proxy.remote_global_id_string = @target_extension.uuid
+    container_proxy.remote_info = @target_extension.name
 
     dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
-    dependency.name = target_extension.name
+    dependency.name = @target_extension.name
     dependency.target = @target_main
     dependency.target_proxy = container_proxy
 
@@ -171,8 +168,23 @@ class XCodeprojPatcher
     copy_appex = @target_main.new_copy_files_build_phase
     copy_appex.symbol_dst_subfolder_spec = :plug_ins
 
-    appex_file = copy_appex.add_file_reference target_extension.product_reference
+    appex_file = copy_appex.add_file_reference @target_extension.product_reference
     appex_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
+  end
+
+  def setup_target_go
+    target_go = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
+
+    target_go.build_working_directory = 'wireguard-apple/wireguard-go-bridge'
+    target_go.build_tool_path = 'make'
+    target_go.pass_build_settings_in_environment = '1'
+    target_go.build_arguments_string = '$(ACTION)'
+    target_go.name = 'WireGuardGoBridge'
+    target_go.product_name = 'WireGuardGoBridge'
+
+    @project.targets << target_go
+
+    @target_extension.add_dependency target_go
   end
 
   def die(msg)
