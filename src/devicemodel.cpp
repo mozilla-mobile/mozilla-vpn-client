@@ -48,7 +48,7 @@ bool sortCallback(const Device &a, const Device &b)
         return false;
     }
 
-    return a.createdAt() < b.createdAt();
+    return a.createdAt() > b.createdAt();
 }
 
 } // anonymous namespace

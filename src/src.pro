@@ -188,6 +188,8 @@ else:ios {
             platforms/ios/iosutils.mm \
             platforms/dummy/dummycontroller.h \
             platforms/macos/macospingsendworker.h
+
+    QMAKE_INFO_PLIST=../ios/Info.plist
 }
 
 # Anything else
