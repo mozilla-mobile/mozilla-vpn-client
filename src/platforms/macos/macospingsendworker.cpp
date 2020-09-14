@@ -9,7 +9,6 @@
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
-#include <netinet/ip_var.h>
 #include <unistd.h>
 
 namespace {

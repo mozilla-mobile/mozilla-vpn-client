@@ -181,11 +181,13 @@ else:ios {
 
     SOURCES += \
             platforms/ios/iosutils.mm \
-            platforms/dummy/dummycontroller.cpp
+            platforms/dummy/dummycontroller.cpp \
+            platforms/macos/macospingsendworker.cpp
 
     HEADERS += \
             platforms/ios/iosutils.mm \
-            platforms/dummy/dummycontroller.h
+            platforms/dummy/dummycontroller.h \
+            platforms/macos/macospingsendworker.h
 }
 
 # Anything else
