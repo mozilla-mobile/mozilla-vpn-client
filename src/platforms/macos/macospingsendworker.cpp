@@ -59,9 +59,9 @@ u_short in_cksum(u_short *addr, int len)
 
 }; // namespace
 
-void MacosPingSendWorker::sendPing(const QString &destination)
+void MacOSPingSendWorker::sendPing(const QString &destination)
 {
-    qDebug() << "MacosPingSendWorker - sending ping to:" << destination;
+    qDebug() << "MacOSPingSendWorker - sending ping to:" << destination;
 
     Q_ASSERT(m_socket == 0);
 
@@ -147,13 +147,13 @@ void MacosPingSendWorker::sendPing(const QString &destination)
             });
 }
 
-void MacosPingSendWorker::stopPing()
+void MacOSPingSendWorker::stopPing()
 {
-    qDebug() << "LinuxPingSendWorker - stopped";
+    qDebug() << "MacOSPingSendWorker - stopped";
     releaseObjects();
 }
 
-void MacosPingSendWorker::releaseObjects()
+void MacOSPingSendWorker::releaseObjects()
 {
     if (m_socket > 0) {
         close(m_socket);

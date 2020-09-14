@@ -21,7 +21,7 @@ PingSender::PingSender(QObject *parent) : QObject(parent)
 #ifdef __linux__
         new LinuxPingSendWorker();
 #elif __APPLE__
-        new MacosPingSendWorker();
+        new MacOSPingSendWorker();
 #else
         new DummyPingSendWorker(DummyPingSendWorker::Stable);
 #endif

@@ -5,7 +5,7 @@
 
 class QSocketNotifier;
 
-class MacosPingSendWorker final : public PingSendWorker
+class MacOSPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
 
