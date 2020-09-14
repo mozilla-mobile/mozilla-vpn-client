@@ -13,6 +13,7 @@
 #include "TargetConditionals.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+#include "platforms/ios/iosutils.h"
 #else
 #include "platforms/macos/macosutils.h"
 #endif
@@ -25,8 +26,7 @@ QString Device::currentDeviceName()
 
 #ifdef __APPLE__
     #if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
-        QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
-        + QSysInfo::productVersion();
+        IOSUtils::computerName();
     #else
         // MacOS has a funny way to rename the hostname based on the network status.
         MacOSUtils::computerName();

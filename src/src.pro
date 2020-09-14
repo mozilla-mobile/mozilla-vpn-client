@@ -174,13 +174,18 @@ else:macos {
 else:ios {
     message(IOS build)
 
-    TARGET = MozillaVPN
+    TARGET = MozillaVPN_ios
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
 
     message(No integration required for this build - let\'s use the dummy controller)
 
-    SOURCES += platforms/dummy/dummycontroller.cpp
-    HEADERS += platforms/dummy/dummycontroller.h
+    SOURCES += \
+            platforms/ios/iosutils.mm \
+            platforms/dummy/dummycontroller.cpp
+
+    HEADERS += \
+            platforms/ios/iosutils.mm \
+            platforms/dummy/dummycontroller.h
 }
 
 # Anything else
