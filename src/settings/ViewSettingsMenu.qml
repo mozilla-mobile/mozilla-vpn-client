@@ -110,7 +110,7 @@ Flickable {
         text: qsTr("Manage account")
         anchors.top: logoSubtitle.bottom
         anchors.topMargin: Theme.vSpacing
-        onClicked: VPN.openLink("/r/vpn/account")
+        onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
     ListView {

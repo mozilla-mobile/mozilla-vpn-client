@@ -13,11 +13,11 @@ Item {
         id: aboutUsListModel
         ListElement {
             linkTitle: qsTr("Terms of Service")
-            openUrl: "TODO"
+            openUrl: VPN.LinkTermsOfService
         }
         ListElement {
             linkTitle: qsTr("Privacy Policy")
-            openUrl: "TODO"
+            openUrl: VPN.LinkPrivacyPolicy
         }
     }
 

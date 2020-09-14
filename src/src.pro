@@ -167,6 +167,7 @@ else:macos {
                 ../wireguard-apple/WireGuard/Shared/Model \
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+    QMAKE_INFO_PLIST=../macos/Info.plist
 }
 
 # Platform-specific: IOS
@@ -180,8 +181,6 @@ else:ios {
 
     SOURCES += platforms/dummy/dummycontroller.cpp
     HEADERS += platforms/dummy/dummycontroller.h
-
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
 }
 
 # Anything else
