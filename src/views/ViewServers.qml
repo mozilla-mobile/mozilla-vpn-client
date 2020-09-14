@@ -22,40 +22,35 @@ Item {
 
         height: parent.height - menu.height
         width: parent.width
-
         anchors.top: menu.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        anchors.leftMargin: Theme.hSpacing
-        anchors.rightMargin: Theme.hSpacing
+        spacing: Theme.listSpacing
 
         clip: true
         model: VPNServerCountryModel
+        header: Rectangle {
+            height: 16
+            width: serverList.width
+            color: "transparent"
+        }
 
-        delegate: ColumnLayout {
+        delegate: Item {
             property var cityListVisible: false
-
             id: serverCountry
-            spacing: 0
             state: cityListVisible ? "list-visible" : "list-hidden"
             width: serverList.width
+            height: 40
 
-            ItemDelegate {
+            VPNClickableRow {
                 id: serverCountryRow
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: 22
-                Layout.topMargin: Theme.vSpacing / 2
-                Layout.bottomMargin: serverCountryRow.Layout.topMargin
-                spacing: 0
-
-                MouseArea {
-                    anchors.fill: serverCountryRow
-                    onClicked: cityListVisible = !cityListVisible
-                }
+                onClicked: cityListVisible = !cityListVisible
 
                 RowLayout {
                     spacing: 0
+                    height: 40
+                    anchors.fill: serverCountryRow
+                    anchors.leftMargin: 8
+                    anchors.rightMargin: 8
+
                     VPNServerListToggle {
                         id: serverListToggle
                     }
@@ -81,57 +76,29 @@ Item {
 
             Item {
                 id: cityListWrapper
-
-                Layout.preferredHeight: cityList.contentHeight
-                Layout.fillWidth: true
+                anchors.top: serverCountryRow.bottom
+                width: parent.width
 
                 ListView {
-                    id: cityList
-                    anchors.fill: parent
-                    Layout.fillWidth: true
+                    property var listLength: cities.length
 
+                    id: cityList
                     interactive: false
                     model: cities
-                    delegate: RadioDelegate {
-                        id: control
-                        ButtonGroup.group: radioButtonGroup
-                        checked: code == VPNCurrentServer.countryCode && cityName.text == VPNCurrentServer.city
-
-                        width: parent.width
-
-                        Layout.fillWidth: true
-                        Layout.bottomMargin: Theme.vSpacing
-
-                        indicator: VPNRadioButton {
-                            id: radioButton
-                        }
-
-                        VPNRadioButtonLabel {
-                            id: cityName
-                        }
-
-                        MouseArea {
-                            id: radioButtonMouseArea
-                            anchors.fill: parent
-                            onClicked: {
-                                VPNController.changeServer(code, cityName.text);
-                                stackview.pop();
-                            }
-                        }
-                    }
+                    spacing: Theme.listSpacing
+                    width: parent.width
+                    anchors.fill: parent
+                    delegate: VPNRadioDelegate {}
                 }
             }
 
-            // Transitioning opacity and Layout.maximumHeight properties
-            // since the `visible` property cannot be transitioned
-            // smoothly. Might be cleaner ways to do this.
             states: [
                 State {
                     name: "list-hidden"
                     PropertyChanges {
                         target: cityListWrapper
                         opacity: 0
-                        Layout.maximumHeight: 0
+                        height: 0
                     }
                 },
 
@@ -140,14 +107,19 @@ Item {
                     PropertyChanges {
                         target: cityListWrapper
                         opacity: 1
-                        Layout.maximumHeight: cityList.contentHeight
+                        anchors.topMargin: 18
+                        height: (cityList.listLength * 48)
+                    }
+                    PropertyChanges {
+                        target: serverCountry
+                        height: cityListWrapper.height + 38
                     }
                 }
             ]
 
             transitions: Transition {
                 NumberAnimation {
-                    properties: "opacity, Layout.maximumHeight"
+                    properties: "opacity, height, anchors.topMargin"
                     easing.type: Easing.InSine
                     duration: 200
                 }
