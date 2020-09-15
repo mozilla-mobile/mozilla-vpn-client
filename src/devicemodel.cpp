@@ -147,7 +147,6 @@ const Device *DeviceModel::device(const QString &deviceName) const
 
 void DeviceModel::removeDevice(const QString &deviceName)
 {
-    // TODO: we can be smarter here and remove the single item.
     beginResetModel();
 
     QMutableListIterator<Device> i(m_devices);

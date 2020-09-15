@@ -6,15 +6,15 @@ import "../themes/themes.js" as Theme
 // VPNRadioButtonLabel
 Label {
     anchors.left: radioButton.right
-    anchors.leftMargin: Theme.hSpacing
+    anchors.leftMargin: Theme.hSpacing - 2
 
     text: modelData
-    font.family: vpnFont.name
+    font.family: vpnFontInter.name
     font.pointSize: Theme.fontSize
     color: Theme.fontColor
 
     states: State {
-        when: control.checked
+        when: radioControl.checked
         PropertyChanges {
             target: cityName
             color: Theme.buttonColor

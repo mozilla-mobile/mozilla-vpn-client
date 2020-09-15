@@ -4,7 +4,6 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 QT += network
 QT += quick
 QT += widgets
-QT += svg
 
 CONFIG += c++1z
 
@@ -176,6 +175,7 @@ else:ios {
 
     TARGET = MozillaVPN_ios
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
+    QT += svg
 
     message(No integration required for this build - let\'s use the dummy controller)
 
