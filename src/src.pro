@@ -2,6 +2,7 @@ VERSION = 1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT += network
+QT += networkauth
 QT += quick
 QT += widgets
 
@@ -42,8 +43,8 @@ SOURCES += \
         signalhandler.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
+        tasks/authenticate/authenticationlistener.cpp \
         tasks/authenticate/taskauthenticate.cpp \
-        tasks/authenticate/taskauthenticationverifier.cpp \
         tasks/fetchservers/taskfetchservers.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
@@ -74,8 +75,8 @@ HEADERS += \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \
+        tasks/authenticate/authenticationlistener.h \
         tasks/authenticate/taskauthenticate.h \
-        tasks/authenticate/taskauthenticationverifier.h \
         tasks/fetchservers/taskfetchservers.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \

@@ -15,10 +15,10 @@
 #include <QTimer>
 
 // TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
-constexpr const char *API_URL_PROD = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
+constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
 #ifdef QT_DEBUG
-constexpr const char *API_URL_DEBUG = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
+constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 #endif
 
 constexpr const char *SETTINGS_TOKEN = "token";

@@ -3,20 +3,23 @@
 
 #include "task.h"
 
-#include <QNetworkReply>
+class QByteArray;
+class AuthenticationListener;
 
 class TaskAuthenticate final : public Task
 {
+    Q_OBJECT
+
 public:
-    explicit TaskAuthenticate() : Task("TaskAuthenticate") {}
+    TaskAuthenticate() : Task("TaskAuthenticate") {}
 
     void run(MozillaVPN *vpn) override;
 
+private:
     void authenticationCompleted(MozillaVPN *vpn, const QByteArray &data);
 
-private Q_SLOTS:
-    void requestFailed(QNetworkReply::NetworkError);
-    void requestCompleted(const QByteArray &);
+private:
+    AuthenticationListener *m_authenticationListener = nullptr;
 };
 
 #endif // TASKAUTHENTICATE_H

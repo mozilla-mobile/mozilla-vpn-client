@@ -7,6 +7,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QUrl>
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
@@ -28,39 +29,31 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 }
 
 // static
-NetworkRequest *NetworkRequest::createForAuthenticate(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *vpn,
+                                                                    const QString &pkceCodeSuccess,
+                                                                    const QString &pkceCodeVerifier)
 {
     Q_ASSERT(vpn);
 
     NetworkRequest *r = new NetworkRequest(vpn);
+    r->m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QUrl url(vpn->getApiUrl());
-    url.setPath("/api/v1/vpn/login");
+    url.setPath("/api/v2/vpn/login/verify");
     r->m_request.setUrl(url);
 
-    Q_ASSERT(r->m_manager);
-    qDebug() << "Network starting: " << r;
+    QJsonObject obj;
+    obj.insert("code", pkceCodeSuccess);
+    obj.insert("code_verifier", pkceCodeVerifier);
 
-    r->m_manager->post(r->m_request, QByteArray());
-
-    return r;
-}
-
-// static
-NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *parent,
-                                                                    const QString &verificationUrl)
-{
-    Q_ASSERT(parent);
-
-    NetworkRequest *r = new NetworkRequest(parent);
-
-    QUrl url(verificationUrl);
-    r->m_request.setUrl(url);
+    QJsonDocument json;
+    json.setObject(obj);
 
     Q_ASSERT(r->m_manager);
-    qDebug() << "Network starting: " << r;
+    qDebug() << "Network starting: " << json;
 
-    r->m_manager->get(r->m_request);
+    r->m_manager->post(r->m_request, json.toJson());
+
     return r;
 }
 
@@ -183,7 +176,7 @@ void NetworkRequest::replyFinished(QNetworkReply *reply)
     qDebug() << "Network reply received: " << reply;
 
     if (reply->error() != QNetworkReply::NoError) {
-        qDebug() << "Network error: " << reply->error();
+        qDebug() << "Network error: " << reply->error() << "body: " << reply->readAll();
         emit requestFailed(reply->error());
         return;
     }

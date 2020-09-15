@@ -16,10 +16,10 @@ public:
     ~NetworkRequest() = default;
 
     // This object deletes itself at the end of the operation.
-    static NetworkRequest *createForAuthenticate(MozillaVPN *vpn);
 
-    static NetworkRequest *createForAuthenticationVerification(QObject *parent,
-                                                               const QString &verificationUrl);
+    static NetworkRequest *createForAuthenticationVerification(MozillaVPN *vpn,
+                                                               const QString &pkceCodeSuccess,
+                                                               const QString &pkceCodeVerifier);
 
     static NetworkRequest *createForDeviceCreation(MozillaVPN *vpn,
                                                    const QString &deviceName,
