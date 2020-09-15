@@ -31,7 +31,8 @@ public class MacOSControllerImpl : NSObject {
                 self.tunnel = managers?.first
                 if self.tunnel == nil {
                     Logger.global?.log(message: "Creating the tunnel")
-                    self.createTunnel(closure: closure)
+                    self.tunnel = NETunnelProviderManager()
+                    closure(true)
                     return
                 }
 
@@ -45,44 +46,52 @@ public class MacOSControllerImpl : NSObject {
         }
     }
 
-    func createTunnel(closure: @escaping (Bool) -> Void) {
-        let peerConfigurations: [PeerConfiguration] = []
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, closure: @escaping (Bool) -> Void) {
+        Logger.global?.log(message: "Connecting")
+        assert(tunnel != nil)
+
+        let keyData = Data(base64Key: serverPublicKey)!
+        let ipv4GatewayIP = IPv4Address(serverIpv4Gateway)
+        let ipv6GatewayIP = IPv6Address(serverIpv6Gateway)
+
+        var peerConfiguration = PeerConfiguration(publicKey: keyData)
+        peerConfiguration.endpoint = Endpoint(from: serverIpv4AddrIn + ":\(serverPort )")
+        peerConfiguration.allowedIPs = [
+            IPAddressRange(address: IPv4Address("0.0.0.0")!, networkPrefixLength: 0),
+            IPAddressRange(address: IPv6Address("::")!, networkPrefixLength: 0)
+        ]
+
+        var peerConfigurations: [PeerConfiguration] = []
+        peerConfigurations.append(peerConfiguration)
+
+        interface!.dns = [ DNSServer(address: ipv4GatewayIP!), DNSServer(address: ipv6GatewayIP!) ]
 
         let config = TunnelConfiguration(name: "MozillaVPN", interface: interface!, peers: peerConfigurations)
 
-        let tunnelProviderManager = NETunnelProviderManager()
-        tunnelProviderManager.protocolConfiguration = NETunnelProviderProtocol(tunnelConfiguration: config)
+        tunnel!.protocolConfiguration = NETunnelProviderProtocol(tunnelConfiguration: config)
 
-        tunnelProviderManager.saveToPreferences { [unowned self] saveError in
+        tunnel!.saveToPreferences { [unowned self] saveError in
             if let error = saveError {
                 Logger.global?.log(message: "Connect Tunnel Save Error: \(error)")
                 closure(false)
                 return
             }
 
-            self.tunnel?.loadFromPreferences { error in
+            self.tunnel!.loadFromPreferences { error in
                 if let error = error {
                     Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
                     closure(false)
                     return
                 }
 
-                self.tunnel = tunnelProviderManager
-                closure(true)
+                do {
+                    try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
+                    closure(true)
+                } catch {
+                    Logger.global?.log(message: "Something went wrong");
+                    closure(false)
+                }
             }
-        }
-    }
-
-    @objc func connect(closure: @escaping (Bool) -> Void) {
-        Logger.global?.log(message: "Connecting")
-        assert(tunnel != nil)
-
-        do {
-            try (tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
-            closure(true)
-        } catch {
-            Logger.global?.log(message: "Something went wrong");
-            closure(false)
         }
     }
 
@@ -90,5 +99,6 @@ public class MacOSControllerImpl : NSObject {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+        closure(true)
     }
 }

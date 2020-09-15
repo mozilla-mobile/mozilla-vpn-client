@@ -6,6 +6,7 @@
 
 class Keys;
 class Device;
+class Server;
 
 class MacOSSwiftController
 {
@@ -14,7 +15,7 @@ public:
                                 const Keys *keys,
                                 std::function<void(bool)>&& callback);
 
-    static void activate(std::function<void(bool)>&& callback);
+    static void activate(const Server* server, std::function<void(bool)>&& callback);
 
     static void deactivate(std::function<void(bool)>&& callback);
 };
