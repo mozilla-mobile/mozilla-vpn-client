@@ -285,7 +285,7 @@
         <file>themes/themes.js</file>
         <file>components/VPNServerListToggle.qml</file>
         <file>components/VPNRadioButtonLabel.qml</file>
-        <file>components/VPNRadioButton.qml</file>
+        <file>components/VPNRadioDelegate.qml</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNControllerView.qml</file>
         <file>resources/settings-white.svg</file>

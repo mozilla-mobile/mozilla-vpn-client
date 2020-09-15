@@ -2,21 +2,18 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.11
 
 // VPNServerListToggle
-Image {
-    Layout.preferredHeight: 16
-    Layout.preferredWidth: 16
-
-    fillMode: Image.PreserveAspectFit
-    smooth: true
+VPNIcon {
     source: "../resources/arrow-toggle.svg"
     transformOrigin: Image.Center
+    smooth: true
+    rotation: -90
 
     states: State {
         name: "rotated"
         when: serverCountry.cityListVisible
         PropertyChanges {
             target: serverListToggle
-            rotation: 90
+            rotation: 0
         }
     }
 
