@@ -37,7 +37,7 @@ class XCodeprojPatcher
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version
       config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.macos.FirefoxVPN'
-      config.build_settings['PRODUCT_NAME'] = 'Firefox Private Network VPN'
+      config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
 
       # other config
       config.build_settings['INFOPLIST_FILE'] ||= 'macos/Info.plist'

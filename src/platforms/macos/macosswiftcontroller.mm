@@ -2,7 +2,7 @@
 #include "keys.h"
 #include "device.h"
 #include "server.h"
-#include "Firefox_Private_Network_VPN-Swift.h"
+#include "Mozilla_VPN-Swift.h"
 
 #import <Cocoa/Cocoa.h>
 
