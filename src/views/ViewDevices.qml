@@ -50,57 +50,37 @@ Item {
         interactive: true
         model: VPNDeviceModel
 
-        header: VPNDevicesListHeader {
-            id: listHeader
+        delegate: Container {
+            property var deviceName: name
+            id: device
+            width: deviceList.width
+
+            state: ""
             states: [
                 State {
-                    name: "deviceLimitReached"
-                    when: deviceWrapper.state === "deviceLimit"
+                    name: "removing"
                     PropertyChanges {
-                        target: listHeader
-                        height: 252
-                        opacity: 1
-                    }
-                },
-                State {
-                    when: deviceWrapper.state === "active"
-                    PropertyChanges {
-                        target: listHeader
+                        target: device
                         height: 0
                         opacity: 0
                     }
                 }
-
             ]
             transitions: [
                 Transition {
-                    from: "deviceLimitReached"
+                    to: "removing"
                     SequentialAnimation {
                         PropertyAnimation {
                             property: "opacity"
-                            duration: 200
+                            duration: 400
                         }
                         PropertyAnimation {
                             property: "height"
-                            duration: 300
-                            easing.type: Easing.Linear
+                            duration: 200
                         }
                     }
                 }
-
             ]
-        }
-        footer: Rectangle {
-            color: "transparent"
-            height: 40
-            width: parent.width
-        }
-
-        delegate: Container {
-            property var elemIndex: index
-
-            id: device
-            width: deviceList.width
 
             contentItem: ColumnLayout {
                 anchors.fill: parent
@@ -183,6 +163,16 @@ Item {
                 }
             }
         }
+
+        header: VPNDevicesListHeader {
+            id: listHeader
+        }
+        footer: Rectangle {
+            id: listfooter
+            color: "transparent"
+            height: 40
+            width: parent.width
+        }
     }
 
     Rectangle {
@@ -230,6 +220,7 @@ Item {
     }
 
     Rectangle {
+        property var deviceIndex
         property var deviceName
         id: removePopup
         state: "invisible"
@@ -297,8 +288,20 @@ Item {
                     buttonTextColor: "#FFFFFF"
                     buttonColor: Theme.redButton
                     onClicked: {
+
                         VPN.removeDevice(removePopup.deviceName)
                         removePopup.state = "invisible"
+
+                        if (deviceWrapper.state !== "deviceLimit") {
+                            const deviceRowToRemove = deviceList.contentItem.children[removePopup.deviceIndex + 2]
+                            if (deviceRowToRemove.deviceName === removePopup.deviceName) {
+                                return deviceRowToRemove.state = "removing"
+                            }
+                        }
+
+                        // TODO: If the device limit alert is showing, we should instrument
+                        // a nice transition that simultaneously removes the device and
+                        // alert message.
                     }
                 }
             }
@@ -329,7 +332,8 @@ Item {
             }
         }
 
-        function initializeAndOpen(name) {
+        function initializeAndOpen(name, index) {
+            removePopup.deviceIndex = index
             removePopup.deviceName = name
             removePopup.state = "visible"
         }

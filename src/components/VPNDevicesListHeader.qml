@@ -32,4 +32,42 @@ Rectangle {
             text: qsTr("You've reached your limit. To install the VPN on this device, you'll need to remove one.")
         }
     }
+
+    states: [
+        State {
+            name: "deviceLimitReached"
+            when: deviceWrapper.state === "deviceLimit"
+            PropertyChanges {
+                target: listHeader
+                height: 252
+                opacity: 1
+            }
+        },
+        State {
+            when: deviceWrapper.state === "active"
+            PropertyChanges {
+                target: listHeader
+                height: 0
+                opacity: 0
+            }
+        }
+
+    ]
+    transitions: [
+        Transition {
+            from: "deviceLimitReached"
+            SequentialAnimation {
+                PropertyAnimation {
+                    property: "opacity"
+                    duration: 200
+                }
+                PropertyAnimation {
+                    property: "height"
+                    duration: 300
+                    easing.type: Easing.Linear
+                }
+            }
+        }
+
+    ]
 }
