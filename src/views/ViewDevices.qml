@@ -9,6 +9,7 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
+    id: deviceWrapper
     state: VPNController.state !== VPNController.StateDeviceLimit ? "active" : "deviceLimit"
 
     states: [
@@ -19,10 +20,7 @@ Item {
                 rightTitle: qsTr("%1 of %2").arg(
                                 VPNDeviceModel.activeDevices).arg(
                                 VPNUser.maxDevices)
-            }
-            PropertyChanges {
-                target: deviceLimitAlert
-                visible: false
+
             }
         },
         State {
@@ -33,10 +31,6 @@ Item {
                                 VPNDeviceModel.activeDevices + 1).arg(
                                 VPNUser.maxDevices)
             }
-            PropertyChanges {
-                target: deviceLimitAlert
-                visible: true
-            }
         }
     ]
 
@@ -45,10 +39,7 @@ Item {
         title: qsTr("My devices")
     }
 
-    VPNDeviceLimitAlert {
-        id: deviceLimitAlert
-        // TODO
-    }
+
 
     ListView {
         id: deviceList
@@ -56,12 +47,60 @@ Item {
         width: parent.width
         anchors.top: menu.bottom
         clip: true
-        interactive: false
+        interactive: true
         model: VPNDeviceModel
 
-        delegate: Container {
-            id: device
+        header: VPNDevicesListHeader {
+            id: listHeader
+            states: [
+                State {
+                    name: "deviceLimitReached"
+                    when: deviceWrapper.state === "deviceLimit"
+                    PropertyChanges {
+                        target: listHeader
+                        height: 252
+                        opacity: 1
+                    }
+                },
+                State {
+                    when: deviceWrapper.state === "active"
+                    PropertyChanges {
+                        target: listHeader
+                        height: 0
+                        opacity: 0
+                    }
+                }
+
+            ]
+            transitions: [
+                Transition {
+                    from: "deviceLimitReached"
+                    SequentialAnimation {
+                        PropertyAnimation {
+                            property: "opacity"
+                            duration: 200
+                        }
+                        PropertyAnimation {
+                            property: "height"
+                            duration: 300
+                            easing.type: Easing.Linear
+                        }
+                    }
+                }
+
+            ]
+        }
+        footer: Rectangle {
+            color: "transparent"
+            height: 40
             width: parent.width
+        }
+
+        delegate: Container {
+            property var elemIndex: index
+
+            id: device
+            width: deviceList.width
 
             contentItem: ColumnLayout {
                 anchors.fill: parent
@@ -138,7 +177,7 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: removePopup.initializeAndOpen(name)
+                            onClicked: removePopup.initializeAndOpen(name, index)
                         }
                     }
                 }
@@ -164,9 +203,11 @@ Item {
 
     Rectangle {
         id: rectangularGlowClippingPath
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 96
         width: 260
-        height: 240
+        height: 232
         radius: 10
         opacity: removePopup.state === "visible" ? "1" : 0
 
@@ -195,6 +236,7 @@ Item {
         anchors.fill: rectangularGlowClippingPath
         color: "#E1E1E1"
         radius: 10
+        height: 232
 
         ColumnLayout {
             id: removePopupContent
@@ -202,26 +244,25 @@ Item {
             anchors.centerIn: removePopup
             anchors.leftMargin: Theme.windowMargin
             anchors.rightMargin: Theme.windowMargin
-            anchors.topMargin: 30
+            anchors.topMargin: 8
             anchors.bottomMargin: 30
             spacing: 0
 
-            Rectangle {
-                // placeholder until we have image
+            Image {
                 Layout.alignment: Qt.AlignHCenter
+                fillMode: Image.PreserveAspectFit
+                source: "../resources/removeDevice.png"
                 Layout.preferredHeight: 64
                 Layout.preferredWidth: 64
-                Layout.bottomMargin: 20
+                Layout.bottomMargin: 12
             }
 
-            Label {
+            Text {
                 text: qsTr("Remove device?")
                 Layout.alignment: Qt.AlignCenter
-                Layout.bottomMargin: 10
-                font.family: vpnFontInter.name
-                font.weight: Font.Bold
                 font.pixelSize: Theme.fontSizeSmall
-                color: "#303030"
+                font.weight: Font.Bold
+                color: Theme.fontColorDark
             }
 
             Text {
@@ -230,7 +271,7 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Text.AlignHCenter
                 Layout.maximumWidth: 220
-                Layout.bottomMargin: 16
+                Layout.bottomMargin: 8
                 font.family: vpnFontInter.name
                 font.pixelSize: Theme.fontSizeSmallest
                 lineHeightMode: Text.FixedHeight
@@ -251,6 +292,7 @@ Item {
                 }
 
                 VPNPopupButton {
+                    id: removeBtn
                     buttonText: qsTr("Remove")
                     buttonTextColor: "#FFFFFF"
                     buttonColor: Theme.redButton
