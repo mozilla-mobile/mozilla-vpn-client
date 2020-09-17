@@ -346,7 +346,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     Q_ASSERT(!m_deviceModel.hasDevice(Device::currentDeviceName()));
 
     // Here we add the current device.
-    scheduleTask(new TaskAddDevice(deviceName));
+    scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
 
     // Let's fetch the devices again.
     scheduleTask(new TaskAccount());
