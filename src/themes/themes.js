@@ -68,3 +68,8 @@ const greyButton = {
     "buttonHovered": greyHovered,
     "buttonPressed": greyPressed
 };
+
+const whiteSettingsBtn = {
+    "buttonHovered": "#5b4a83",
+    "buttonPressed": "#725da0"
+}

@@ -11,20 +11,22 @@ Item {
     width: parent.width
     height: 56
 
-    Image {
-        id: backImage
-        source: "../resources/back.svg"
-        sourceSize.width: Theme.iconSize
+    VPNIconButton {
+        id: iconButton
+        onClicked: isSettingsView ? settingsStackView.pop() : stackview.pop()
 
-        fillMode: Image.PreserveAspectFit
-        anchors.top: menuBar.top
-        anchors.verticalCenter: menuBar.verticalCenter
+        anchors.top: parent.top
         anchors.left: parent.left
-        anchors.leftMargin: Theme.hSpacing
+        anchors.topMargin: Theme.windowMargin / 2
+        anchors.leftMargin: Theme.windowMargin / 2
 
-        MouseArea {
-            anchors.fill: backImage
-            onClicked: isSettingsView ? settingsStackView.pop() : stackview.pop()
+        Image {
+            id: backImage
+            source: "../resources/back.svg"
+            sourceSize.width: Theme.iconSize
+
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: iconButton
         }
     }
 

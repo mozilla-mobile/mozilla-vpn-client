@@ -111,6 +111,11 @@ Rectangle {
                 source: "../resources/settings-white.svg"
             }
             PropertyChanges {
+                target: iconButton
+                backgroundColor: Theme.whiteSettingsBtn
+            }
+
+            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -137,6 +142,11 @@ Rectangle {
                 color: "#FFFFFF"
                 opacity: .8
             }
+            PropertyChanges {
+                target: iconButton
+                backgroundColor: Theme.whiteSettingsBtn
+            }
+
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
@@ -314,19 +324,21 @@ Rectangle {
     height: 318
     width: parent.width - 32
 
-    Image {
-        id: settingsImage
-        height: 16
-        width: 16
+    VPNIconButton {
+        id: iconButton
+        onClicked: stackview.push("../views/ViewSettings.qml")
+        defaultColor: box.color
+
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: 16
-        anchors.rightMargin: 16
-        fillMode: Image.PreserveAspectFit
+        anchors.topMargin: Theme.windowMargin / 2
+        anchors.rightMargin: Theme.windowMargin / 2
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: stackview.push("../views/ViewSettings.qml")
+        Image {
+             id: settingsImage
+             anchors.centerIn :iconButton
+             sourceSize.height: 22
+             sourceSize.width: 22
         }
     }
 
@@ -334,16 +346,15 @@ Rectangle {
         id: logo
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: parent.y + 50
-        sourceSize.width: 76
-        sourceSize.height: 76
+        y: 50
+        sourceSize.width: 80
+        sourceSize.height: 80
     }
 
     Text {
         id: logoTitle
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-
         font.family: vpnFont.name
         horizontalAlignment: Text.AlignHCenter
         y: logo.y + logo.height + 26
