@@ -10,6 +10,16 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
     MacOSSwiftController::initialize(device, keys, [this](Controller::State state) {
         qDebug() << "Controller initialized. Connected state:" << state;
         emit initialized(state);
+    }, [this](Controller::State state) {
+        qDebug() << "Something has changed from the outside:" << state;
+
+        if (state == Controller::StateOff) {
+            emit disconnected();
+            return;
+        }
+
+        Q_ASSERT(state == Controller::StateOn);
+        emit connected();
     });
 }
 

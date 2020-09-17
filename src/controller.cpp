@@ -37,6 +37,11 @@ Controller::Controller()
         }
 
         setState(state);
+
+        // If we are connected already at startup time, we can trigger the connection sequence of tasks.
+        if (state == StateOn) {
+            connected();
+        }
     });
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
@@ -103,7 +108,6 @@ void Controller::deactivate()
     }
 
     m_timer.stop();
-
     m_connectionHealth.stop();
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
@@ -115,7 +119,6 @@ void Controller::deactivate()
 void Controller::connected() {
     qDebug() << "Connected";
 
-    Q_ASSERT(m_state == StateConnecting || m_state == StateSwitching);
     setState(StateOn);
 
     m_time = 0;
@@ -126,7 +129,9 @@ void Controller::connected() {
         return;
     }
 
-    Q_ASSERT(!m_timer.isActive());
+    if (m_timer.isActive()) {
+        m_timer.stop();
+    }
     m_timer.start(1000);
 
     m_connectionHealth.start(m_currentServer);
@@ -135,8 +140,8 @@ void Controller::connected() {
 void Controller::disconnected() {
     qDebug() << "Disconnected";
 
-    Q_ASSERT(m_state == StateDisconnecting || m_state == StateConnecting
-             || m_state == StateSwitching);
+    m_timer.stop();
+    m_connectionHealth.stop();
 
     NextStep nextStep = m_nextStep;
     m_nextStep = None;

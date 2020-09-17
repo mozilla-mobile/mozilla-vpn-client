@@ -47,11 +47,12 @@ void MacOSSwiftController::deactivate(std::function<void(bool)> && a_callback)
 }
 
 // static
-void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(Controller::State)>&& a_callback)
+void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(Controller::State)>&& a_callback, std::function<void(Controller::State)>&& a_externalCallback)
 {
     Q_ASSERT(!impl);
 
     std::function<void(Controller::State)> callback = std::move(a_callback);
+    std::function<void(Controller::State)> externalCallback = std::move(a_externalCallback);
 
     qDebug() << "Initializing Swift Controller";
 
@@ -85,6 +86,7 @@ void MacOSSwiftController::initialize(const Device* device, const Keys* keys, st
     }
                                           externalCallback:^(BOOL connected) {
         qDebug() << "External state changed: " << connected;
+        externalCallback(connected ? Controller::StateOn : Controller::StateOff);
     }
             ];
 }
