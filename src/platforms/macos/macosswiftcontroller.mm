@@ -47,11 +47,11 @@ void MacOSSwiftController::deactivate(std::function<void(bool)> && a_callback)
 }
 
 // static
-void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(Controller::State)>&& a_callback, std::function<void(Controller::State)>&& a_externalCallback)
+void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(bool, Controller::State)>&& a_callback, std::function<void(Controller::State)>&& a_externalCallback)
 {
     Q_ASSERT(!impl);
 
-    std::function<void(Controller::State)> callback = std::move(a_callback);
+    std::function<void(bool, Controller::State)> callback = std::move(a_callback);
     std::function<void(Controller::State)> externalCallback = std::move(a_externalCallback);
 
     qDebug() << "Initializing Swift Controller";
@@ -73,14 +73,14 @@ void MacOSSwiftController::initialize(const Device* device, const Keys* keys, st
             case ConnectionStateError: {
                 [impl dealloc];
                 impl = nullptr;
-                callback(Controller::StateOff);
+                callback(false, Controller::StateOff);
                 return;
             }
             case ConnectionStateConnected:
-                callback(Controller::StateOn);
+                callback(true, Controller::StateOn);
                 return;
             case ConnectionStateDisconnected:
-                callback(Controller::StateOff);
+                callback(true, Controller::StateOff);
                 return;
         }
     }

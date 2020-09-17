@@ -97,6 +97,7 @@ public class MacOSControllerImpl : NSObject {
 
         // We care about "unknown" state changes.
         if observer != nil || (session.status != .connected && session.status != .disconnected) {
+            Logger.global?.log(message: "A");
             return;
         }
 
@@ -159,6 +160,7 @@ public class MacOSControllerImpl : NSObject {
                         session.status == .disconnecting ||
                         session.status == .invalid) {
                         NotificationCenter.default.removeObserver(observer!)
+                        observer = nil;
                         closure(false)
                     }
                 }
@@ -186,6 +188,7 @@ public class MacOSControllerImpl : NSObject {
 
             if (session.status == .disconnected) {
                 NotificationCenter.default.removeObserver(observer!)
+                observer = nil;
                 closure(true);
             }
         }

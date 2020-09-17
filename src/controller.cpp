@@ -29,8 +29,11 @@ Controller::Controller()
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
-    connect(m_impl.get(), &ControllerImpl::initialized, [this](State state) {
+    connect(m_impl.get(), &ControllerImpl::initialized, [this](bool status, State state) {
         Q_ASSERT(m_state == StateInitializing);
+
+        //TODO: use status to inform when something is down.
+        Q_UNUSED(status);
 
         if (processNextStep()) {
             return;

@@ -15,7 +15,7 @@ class MacOSSwiftController
 public:
     static void initialize(const Device *device,
                            const Keys *keys,
-                           std::function<void(Controller::State)>&& callback,
+                           std::function<void(bool, Controller::State)>&& callback,
                            std::function<void(Controller::State)>&& externalCallback);
 
     static void activate(const Server* server, std::function<void(bool)>&& callback);

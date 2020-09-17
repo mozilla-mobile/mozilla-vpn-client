@@ -83,8 +83,6 @@ void TimerController::maybeDone(bool isConnected)
 {
     qDebug() << "TimerController - Operation completed:" << m_state << isConnected;
 
-    Q_ASSERT(m_state == Connecting || m_state == Disconnecting);
-
     if (m_state == Connecting) {
         if (m_timer.isActive()) {
             // The connection was faster.
@@ -103,15 +101,28 @@ void TimerController::maybeDone(bool isConnected)
         return;
     }
 
-    Q_ASSERT(m_state == Disconnecting);
+    if (m_state == Disconnecting) {
+        if (m_timer.isActive()) {
+            // The disconnection was faster.
+            m_state = Disconnected;
+            return;
+        }
 
-    if (m_timer.isActive()) {
-        // The disconnection was faster.
-        m_state = Disconnected;
+        // The timer was faster.
+        m_state = None;
+        emit disconnected();
         return;
     }
 
-    // The timer was faster.
-    m_state = None;
+    // External events could trigger the following codes.
+
+    Q_ASSERT(m_state == None);
+    Q_ASSERT(!m_timer.isActive());
+
+    if (isConnected) {
+        emit connected();
+        return;
+    }
+
     emit disconnected();
 }

@@ -23,7 +23,7 @@ public:
         Q_UNUSED(device);
         Q_UNUSED(keys);
 
-        emit initialized(Controller::StateOff);
+        emit initialized(true, Controller::StateOff);
     }
 
     virtual void activate(const Server &server,
@@ -38,7 +38,7 @@ public:
         = 0;
 
 signals:
-    void initialized(Controller::State state);
+    void initialized(bool status, Controller::State state);
     void connected();
     void disconnected();
 };
