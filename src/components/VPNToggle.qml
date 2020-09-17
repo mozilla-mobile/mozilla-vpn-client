@@ -79,7 +79,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: toggle
-                color: "#9E9E9E"
+                color: "#E7E7E7"
             }
         }
     ]

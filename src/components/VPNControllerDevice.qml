@@ -49,7 +49,11 @@ VPNClickableRow {
                 PropertyChanges {
                     target: icon
                     // TODO: this should be an alert icon
-                    source: "../resources/chevron.svg"
+                    source: "../resources/warning.svg"
+                    sourceSize.height: 14
+                    sourceSize.width: 14
+                    Layout.rightMargin: 6
+                    Layout.leftMargin: 6
                 }
             }
         ]
