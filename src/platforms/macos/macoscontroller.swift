@@ -11,6 +11,7 @@ import NetworkExtension
 public class MacOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
+    private var observer: NSObjectProtocol? = nil
     var interface:InterfaceConfiguration? = nil
 
     @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (Bool) -> Void) {
@@ -27,22 +28,58 @@ public class MacOSControllerImpl : NSObject {
         }
 
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
-            if let self = self, error == nil {
-                self.tunnel = managers?.first
-                if self.tunnel == nil {
-                    Logger.global?.log(message: "Creating the tunnel")
-                    self.tunnel = NETunnelProviderManager()
-                    closure(true)
-                    return
-                }
+            if let error = error {
+                Logger.global?.log(message: "Loading from preference failed: \(error)")
+                closure(false)
+                return
+            }
 
-                Logger.global?.log(message: "Tunnel already exists")
+            if self == nil {
+                Logger.global?.log(message: "We are shutting down.")
+                return;
+            }
+
+            let tunnel = managers?.first
+            if tunnel == nil {
+                Logger.global?.log(message: "Creating the tunnel")
+                self!.tunnel = NETunnelProviderManager()
                 closure(true)
                 return
             }
 
-            Logger.global?.log(message: "Loading from preference failed.")
-            closure(false)
+            Logger.global?.log(message: "Tunnel already exists")
+
+            let proto = tunnel!.protocolConfiguration as? NETunnelProviderProtocol
+            if proto == nil {
+                tunnel!.removeFromPreferences { _ in }
+
+                Logger.global?.log(message: "Creating the tunnel because its proto is invalid")
+                self!.tunnel = NETunnelProviderManager()
+                closure(true)
+                return
+            }
+
+            self!.tunnel = tunnel
+            closure(true)
+        }
+    }
+
+    private func logConnectionStatus(status: NEVPNStatus) {
+        switch status {
+        case .connected:
+            Logger.global?.log(message:"STATE CHANGED: connected")
+        case .connecting:
+            Logger.global?.log(message:"STATE CHANGED: connecting")
+        case .disconnected:
+            Logger.global?.log(message:"STATE CHANGED: disconnected")
+        case .disconnecting:
+            Logger.global?.log(message:"STATE CHANGED: disconnecting")
+        case .invalid:
+            Logger.global?.log(message:"STATE CHANGED: invalid")
+        case .reasserting:
+            Logger.global?.log(message:"STATE CHANGED: reasserting")
+        default:
+            Logger.global?.log(message:"STATE CHANGED: unknown status")
         }
     }
 
@@ -77,6 +114,8 @@ public class MacOSControllerImpl : NSObject {
                 return
             }
 
+            Logger.global?.log(message: "Saving the tunnel succeeded");
+
             self.tunnel!.loadFromPreferences { error in
                 if let error = error {
                     Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
@@ -84,12 +123,35 @@ public class MacOSControllerImpl : NSObject {
                     return
                 }
 
+                Logger.global?.log(message: "Loading the tunnel succeeded");
+
+                assert(observer == nil)
+                observer = NotificationCenter.default.addObserver(forName: Notification.Name.NEVPNStatusDidChange, object: nil, queue: OperationQueue.main) { [self, closure]
+                     (notification) in
+                    guard let session = (notification.object as? NETunnelProviderSession), self.tunnel?.connection == session else { return }
+
+                    self.logConnectionStatus(status: session.status)
+
+                    if (session.status == .connected) {
+                        NotificationCenter.default.removeObserver(observer!)
+                        closure(true);
+                    }
+
+                    if (session.status == .disconnected ||
+                        session.status == .disconnecting ||
+                        session.status == .invalid) {
+                        NotificationCenter.default.removeObserver(observer!)
+                        closure(false)
+                    }
+                }
+
                 do {
                     try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
-                    closure(true)
-                } catch {
-                    Logger.global?.log(message: "Something went wrong");
+                } catch let error {
+                    Logger.global?.log(message: "Something went wrong: \(error)");
+                    observer = nil
                     closure(false)
+                    return;
                 }
             }
         }
@@ -98,7 +160,20 @@ public class MacOSControllerImpl : NSObject {
     @objc func disconnect(closure: @escaping (Bool) -> Void) {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
+
+        assert(observer == nil)
+        observer = NotificationCenter.default.addObserver(forName: Notification.Name.NEVPNStatusDidChange, object: nil, queue: OperationQueue.main) { [self, closure]
+             (notification) in
+            guard let session = (notification.object as? NETunnelProviderSession), tunnel?.connection == session else { return }
+
+            self.logConnectionStatus(status: session.status)
+
+            if (session.status == .disconnected) {
+                NotificationCenter.default.removeObserver(observer!)
+                closure(true);
+            }
+        }
+
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
-        closure(true)
     }
 }

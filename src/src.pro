@@ -1,4 +1,4 @@
-VERSION = 0.1
+VERSION = 1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT += network

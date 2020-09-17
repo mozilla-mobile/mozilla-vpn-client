@@ -35,7 +35,7 @@ class XCodeprojPatcher
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
-      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
       config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.macos.FirefoxVPN'
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
 
@@ -95,7 +95,7 @@ class XCodeprojPatcher
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
-      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
       config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.network-extension'
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
