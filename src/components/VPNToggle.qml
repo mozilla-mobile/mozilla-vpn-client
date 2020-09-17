@@ -6,6 +6,17 @@ Rectangle {
 
     states: [
         State {
+            name: VPNController.StateInitializing
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#9E9E9E"
+            }
+        },
+        State {
             name: VPNController.StateOff
             PropertyChanges {
                 target: cursor
@@ -122,7 +133,8 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            if (VPNController.state === VPNController.StateDeviceLimit) {
+            if (VPNController.state === VPNController.StateDeviceLimit ||
+                VPNController.state === VPNController.StateInitializing) {
                 return;
             }
 

@@ -36,7 +36,7 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 static MozillaVPN *s_instance = nullptr;
 
 // static
-void MozillaVPN::createInstance(QObject* parent)
+void MozillaVPN::createInstance(QObject *parent)
 {
     qDebug() << "Creating MozillaVPN singleton";
 
@@ -70,6 +70,7 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
+    connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 }
 
 MozillaVPN::~MozillaVPN() = default;
@@ -143,6 +144,11 @@ void MozillaVPN::setState(State state)
     qDebug() << "Set state:" << state;
     m_state = state;
     emit stateChanged();
+
+    // If we are activating the app, let's initialize the controller.
+    if (m_state == StateMain) {
+        m_controller.initialize();
+    }
 }
 
 void MozillaVPN::authenticate()
@@ -206,7 +212,7 @@ void MozillaVPN::openLink(LinkType linkType)
     QDesktopServices::openUrl(url);
 }
 
-void MozillaVPN::scheduleTask(Task* task)
+void MozillaVPN::scheduleTask(Task *task)
 {
     Q_ASSERT(task);
     qDebug() << "Scheduling task: " << task->name();
@@ -355,7 +361,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     scheduleTask(new TaskFunction([this](MozillaVPN *) { m_controller.setDeviceLimit(false); }));
 }
 
-void MozillaVPN::accountChecked(const QByteArray& json)
+void MozillaVPN::accountChecked(const QByteArray &json)
 {
     qDebug() << "Account checked";
 
@@ -427,7 +433,8 @@ void MozillaVPN::setAlert(AlertType alert)
     emit alertChanged();
 }
 
-void MozillaVPN::errorHandle(QNetworkReply::NetworkError error) {
+void MozillaVPN::errorHandle(QNetworkReply::NetworkError error)
+{
     qDebug() << "Handling error" << error;
 
     Q_ASSERT(error != QNetworkReply::NoError);

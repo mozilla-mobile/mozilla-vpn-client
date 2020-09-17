@@ -16,6 +16,7 @@ class Controller final : public QObject
 
 public:
     enum State {
+        StateInitializing,
         StateOff,
         StateConnecting,
         StateOn,
@@ -35,6 +36,8 @@ public:
     Controller();
 
     void setVPN(MozillaVPN *vpn);
+
+    void initialize();
 
     State state() const { return m_state; }
 
@@ -68,13 +71,14 @@ private Q_SLOTS:
     void timeUpdated();
 
 signals:
+    void initialized();
     void stateChanged();
     void timeChanged();
     void readyToQuit();
     void readyToUpdate();
 
 private:
-    State m_state = StateOff;
+    State m_state = StateInitializing;
 
     MozillaVPN *m_vpn = nullptr;
 

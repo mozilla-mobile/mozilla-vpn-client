@@ -16,6 +16,14 @@ public:
 
     virtual ~ControllerImpl() = default;
 
+    virtual void initialize(const Device *device, const Keys *keys)
+    {
+        Q_UNUSED(device);
+        Q_UNUSED(keys);
+
+        emit initialized();
+    }
+
     virtual void activate(const Server &server,
                           const Device *device,
                           const Keys *keys,
@@ -28,6 +36,7 @@ public:
         = 0;
 
 signals:
+    void initialized();
     void connected();
     void disconnected();
 };

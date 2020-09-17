@@ -27,6 +27,35 @@ Rectangle {
 
     states: [
         State {
+            name: VPNController.StateInitializing
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+            PropertyChanges {
+                target: logo
+                source: "../resources/state-off.svg"
+            }
+            PropertyChanges {
+                target: logoTitle
+                text: qsTr("VPN is off")
+                color: Theme.fontColorDark
+            }
+            PropertyChanges {
+                target: logoSubtitle
+                text: qsTr("Turn on to protect your privacy")
+                color: Theme.fontColor
+            }
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
+            }
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+        },
+        State {
             name: VPNController.StateOff
             PropertyChanges {
                 target: box

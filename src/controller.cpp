@@ -28,6 +28,11 @@ Controller::Controller()
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
+    connect(m_impl.get(), &ControllerImpl::initialized, [this]() {
+        Q_ASSERT(m_state == StateInitializing);
+        m_state = StateOff;
+        emit stateChanged();
+    });
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
 }
@@ -36,6 +41,17 @@ void Controller::setVPN(MozillaVPN *vpn)
 {
     Q_ASSERT(!m_vpn);
     m_vpn = vpn;
+}
+
+void Controller::initialize()
+{
+    qDebug() << "Initializing the controller";
+
+    Q_ASSERT(m_vpn);
+    Q_ASSERT(m_state == StateInitializing);
+
+    const Device *device = m_vpn->deviceModel()->currentDevice();
+    m_impl->initialize(device, m_vpn->keys());
 }
 
 void Controller::activate()
