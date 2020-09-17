@@ -78,6 +78,9 @@ signals:
     void readyToUpdate();
 
 private:
+   bool processNextStep();
+
+private:
     State m_state = StateInitializing;
 
     MozillaVPN *m_vpn = nullptr;
@@ -100,6 +103,7 @@ private:
         Quit,
         Update,
         Disconnect,
+        DeviceLimit,
     };
 
     NextStep m_nextStep = None;

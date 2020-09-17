@@ -30,6 +30,11 @@ Controller::Controller()
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
     connect(m_impl.get(), &ControllerImpl::initialized, [this]() {
         Q_ASSERT(m_state == StateInitializing);
+
+        if (processNextStep()) {
+            return;
+        }
+
         m_state = StateOff;
         emit stateChanged();
     });
@@ -137,13 +142,7 @@ void Controller::disconnected() {
     NextStep nextStep = m_nextStep;
     m_nextStep = None;
 
-    if (nextStep == Quit) {
-        emit readyToQuit();
-        return;
-    }
-
-    if (nextStep == Update) {
-        emit readyToUpdate();
+    if (processNextStep()) {
         return;
     }
 
@@ -254,10 +253,44 @@ void Controller::setDeviceLimit(bool deviceLimit)
     if (!deviceLimit) {
         Q_ASSERT(m_state == StateDeviceLimit);
         m_state = StateOff;
-    } else {
-        Q_ASSERT(m_state == StateOff);
-        m_state = StateDeviceLimit;
+        emit stateChanged();
+        return;
     }
 
-    emit stateChanged();
+    if (m_state == StateOff) {
+        m_state = StateDeviceLimit;
+        emit stateChanged();
+        return;
+    }
+
+    m_nextStep = DeviceLimit;
+
+    if (m_state == StateOn) {
+        deactivate();
+        return;
+    }
+}
+
+bool Controller::processNextStep()
+{
+    NextStep nextStep = m_nextStep;
+    m_nextStep = None;
+
+    if (nextStep == Quit) {
+        emit readyToQuit();
+        return true;
+    }
+
+    if (nextStep == Update) {
+        emit readyToUpdate();
+        return true;
+    }
+
+    if (nextStep == DeviceLimit) {
+        m_state = StateDeviceLimit;
+        emit stateChanged();
+        return true;
+    }
+
+    return false;
 }
