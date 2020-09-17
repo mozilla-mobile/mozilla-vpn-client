@@ -35,8 +35,7 @@ Controller::Controller()
             return;
         }
 
-        m_state = StateOff;
-        emit stateChanged();
+        setState(StateOff);
     });
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
@@ -77,8 +76,7 @@ void Controller::activate()
     const Device *device = m_vpn->deviceModel()->currentDevice();
 
     if (m_state == StateOff) {
-        m_state = StateConnecting;
-        emit stateChanged();
+        setState(StateConnecting);
     }
 
     m_timer.stop();
@@ -98,8 +96,7 @@ void Controller::deactivate()
     Q_ASSERT(m_state == StateOn || m_state == StateSwitching);
 
     if (m_state == StateOn) {
-        m_state = StateDisconnecting;
-        emit stateChanged();
+        setState(StateDisconnecting);
     }
 
     m_timer.stop();
@@ -116,8 +113,7 @@ void Controller::connected() {
     qDebug() << "Connected";
 
     Q_ASSERT(m_state == StateConnecting || m_state == StateSwitching);
-    m_state = StateOn;
-    emit stateChanged();
+    setState(StateOn);
 
     m_time = 0;
     emit timeChanged();
@@ -152,8 +148,7 @@ void Controller::disconnected() {
         return;
     }
 
-    m_state = StateOff;
-    emit stateChanged();
+    setState(StateOff);
 }
 
 void Controller::timeUpdated() {
@@ -183,13 +178,11 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
 
     qDebug() << "Switching to a different server";
 
-    m_state = StateSwitching;
-
     m_currentCity = m_vpn->currentServer()->city();
     m_switchingCountryCode = countryCode;
     m_switchingCity = city;
 
-    emit stateChanged();
+    setState(StateSwitching);
 
     deactivate();
 }
@@ -252,14 +245,12 @@ void Controller::setDeviceLimit(bool deviceLimit)
 
     if (!deviceLimit) {
         Q_ASSERT(m_state == StateDeviceLimit);
-        m_state = StateOff;
-        emit stateChanged();
+        setState(StateOff);
         return;
     }
 
     if (m_state == StateOff) {
-        m_state = StateDeviceLimit;
-        emit stateChanged();
+        setState(StateDeviceLimit);
         return;
     }
 
@@ -287,10 +278,14 @@ bool Controller::processNextStep()
     }
 
     if (nextStep == DeviceLimit) {
-        m_state = StateDeviceLimit;
-        emit stateChanged();
+        setState(StateDeviceLimit);
         return true;
     }
 
     return false;
+}
+
+void Controller::setState(State state) {
+    m_state = state;
+    emit stateChanged();
 }

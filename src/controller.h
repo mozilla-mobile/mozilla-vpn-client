@@ -78,7 +78,9 @@ signals:
     void readyToUpdate();
 
 private:
-   bool processNextStep();
+    void setState(State state);
+
+    bool processNextStep();
 
 private:
     State m_state = StateInitializing;

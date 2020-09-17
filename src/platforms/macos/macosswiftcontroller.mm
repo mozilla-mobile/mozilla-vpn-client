@@ -27,9 +27,9 @@ void MacOSSwiftController::activate(const Server* server, std::function<void(boo
                       serverIpv4AddrIn:server->ipv4AddrIn().toNSString()
                             serverPort:server->choosePort()
                                closure:^(BOOL status) {
-                                   qDebug() << "MacOSSWiftController - connect status:" << status;
-                                   callback(status);
-                               }];
+        qDebug() << "MacOSSWiftController - connect status:" << status;
+        callback(status);
+    }];
 }
 
 // static
@@ -69,13 +69,16 @@ void MacOSSwiftController::maybeInitialize(const Device* device, const Keys* key
                                                ipv4Address:device->ipv4Address().toNSString()
                                                ipv6Address:device->ipv6Address().toNSString()
                                                    closure:^(BOOL status) {
-                                                       qDebug() << "Creation completed with status"
-                                                                << status;
-                                                       creating = false;
-                                                       if (status == false) {
-                                                           [impl dealloc];
-                                                           impl = nullptr;
-                                                       }
-                                                       callback(status);
-                                                   }];
+        qDebug() << "Creation completed with status" << status;
+        creating = false;
+        if (status == false) {
+            [impl dealloc];
+            impl = nullptr;
+        }
+        callback(status);
+    }
+                                          externalCallback:^(BOOL connected) {
+        qDebug() << "External state changed: " << connected;
+    }
+            ];
 }

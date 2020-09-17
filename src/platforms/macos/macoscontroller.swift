@@ -12,14 +12,19 @@ public class MacOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
     private var observer: NSObjectProtocol? = nil
+    private var externalStateChangeCallback: ((Bool) -> Void?)? = nil;
     var interface:InterfaceConfiguration? = nil
 
-    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (Bool) -> Void) {
+    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (Bool) -> Void, externalCallback: @escaping (Bool) -> Void) {
         super.init()
+
+        assert(privateKey.count == TunnelConfiguration.keyLength)
 
         Logger.configureGlobal(tagged: "APP", withFilePath: "")
 
-        assert(privateKey.count == TunnelConfiguration.keyLength)
+        externalStateChangeCallback = externalCallback;
+
+        NotificationCenter.default.addObserver(self, selector: #selector(self.vpnStatusDidChange(notification:)), name: Notification.Name.NEVPNStatusDidChange, object: nil)
 
         interface = InterfaceConfiguration(privateKey: privateKey)
         if let ipv4Address = IPAddressRange(from: ipv4Address),
@@ -64,8 +69,10 @@ public class MacOSControllerImpl : NSObject {
         }
     }
 
-    private func logConnectionStatus(status: NEVPNStatus) {
-        switch status {
+    @objc private func vpnStatusDidChange(notification: Notification) {
+        guard let session = (notification.object as? NETunnelProviderSession), tunnel?.connection == session else { return }
+
+        switch session.status {
         case .connected:
             Logger.global?.log(message:"STATE CHANGED: connected")
         case .connecting:
@@ -81,6 +88,13 @@ public class MacOSControllerImpl : NSObject {
         default:
             Logger.global?.log(message:"STATE CHANGED: unknown status")
         }
+
+        // We care about "unknown" state changes.
+        if observer != nil || (session.status != .connected && session.status != .disconnected) {
+            return;
+        }
+
+        externalStateChangeCallback?(session.status == .connected)
     }
 
     @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, closure: @escaping (Bool) -> Void) {
@@ -130,8 +144,6 @@ public class MacOSControllerImpl : NSObject {
                      (notification) in
                     guard let session = (notification.object as? NETunnelProviderSession), self.tunnel?.connection == session else { return }
 
-                    self.logConnectionStatus(status: session.status)
-
                     if (session.status == .connected) {
                         NotificationCenter.default.removeObserver(observer!)
                         closure(true);
@@ -165,8 +177,6 @@ public class MacOSControllerImpl : NSObject {
         observer = NotificationCenter.default.addObserver(forName: Notification.Name.NEVPNStatusDidChange, object: nil, queue: OperationQueue.main) { [self, closure]
              (notification) in
             guard let session = (notification.object as? NETunnelProviderSession), tunnel?.connection == session else { return }
-
-            self.logConnectionStatus(status: session.status)
 
             if (session.status == .disconnected) {
                 NotificationCenter.default.removeObserver(observer!)
