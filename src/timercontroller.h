@@ -5,6 +5,10 @@
 
 #include <QTimer>
 
+constexpr uint32_t TIME_ACTIVATION = 1000;
+constexpr uint32_t TIME_DEACTIVATION = 1500;
+constexpr uint32_t TIME_SWITCHING = 2000;
+
 class TimerController : public ControllerImpl
 {
     Q_OBJECT

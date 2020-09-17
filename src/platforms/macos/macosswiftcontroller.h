@@ -18,9 +18,9 @@ public:
                            std::function<void(bool, Controller::State)>&& callback,
                            std::function<void(Controller::State)>&& externalCallback);
 
-    static void activate(const Server* server, std::function<void(bool)>&& callback);
+    static void activate(const Server* server, std::function<void()>&& failureCallback);
 
-    static void deactivate(std::function<void(bool)>&& callback);
+    static void deactivate();
 };
 
 #endif // MACOSSWIFTCONTROLLER_H

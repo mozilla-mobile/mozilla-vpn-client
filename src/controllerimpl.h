@@ -39,6 +39,7 @@ public:
 
 signals:
     void initialized(bool status, Controller::State state);
+
     void connected();
     void disconnected();
 };

@@ -2,10 +2,6 @@
 
 #include <QDebug>
 
-constexpr uint32_t TIME_ACTIVATION = 1000;
-constexpr uint32_t TIME_DEACTIVATION = 1500;
-constexpr uint32_t TIME_SWITCHING = 2000;
-
 TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
 {
     Q_ASSERT(m_impl);

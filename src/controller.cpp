@@ -120,7 +120,17 @@ void Controller::deactivate()
 }
 
 void Controller::connected() {
-    qDebug() << "Connected";
+    qDebug() << "Connected from state:" << m_state;
+
+    if (m_state != StateConnecting && m_state != StateSwitching) {
+        setState(StateConnecting);
+        QTimer::singleShot(TIME_ACTIVATION, [this]() {
+            if (m_state == StateConnecting) {
+                connected();
+            }
+        });
+        return;
+    }
 
     setState(StateOn);
 
@@ -141,10 +151,20 @@ void Controller::connected() {
 }
 
 void Controller::disconnected() {
-    qDebug() << "Disconnected";
+    qDebug() << "Disconnected from state:" << m_state;
 
     m_timer.stop();
     m_connectionHealth.stop();
+
+    if (m_state != StateDisconnecting && m_state != StateSwitching) {
+        setState(StateDisconnecting);
+        QTimer::singleShot(TIME_DEACTIVATION, [this]() {
+            if (m_state == StateDisconnecting) {
+                disconnected();
+            }
+        });
+        return;
+    }
 
     NextStep nextStep = m_nextStep;
     m_nextStep = None;

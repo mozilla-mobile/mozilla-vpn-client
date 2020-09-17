@@ -34,15 +34,9 @@ void MacOSController::activate(const Server &server,
 
     qDebug() << "MacOSController activating" << server.hostname();
 
-    MacOSSwiftController::activate(&server, [this](bool status) {
-        qDebug() << "Activation result:" << status;
-
-        if (!status) {
-            emit disconnected();
-            return;
-        }
-
-        emit connected();
+    MacOSSwiftController::activate(&server, [this]() {
+        qDebug() << "Failure callback!";
+        emit disconnected();
     });
 }
 
@@ -57,8 +51,5 @@ void MacOSController::deactivate(const Server &server,
 
     qDebug() << "MacOSController deactivated" << server.hostname();
 
-    MacOSSwiftController::deactivate([this](bool status) {
-        qDebug() << "Deactivation result:" << status;
-        emit disconnected();
-    });
+    MacOSSwiftController::deactivate();
 }

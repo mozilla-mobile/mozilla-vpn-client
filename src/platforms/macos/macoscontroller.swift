@@ -11,20 +11,19 @@ import NetworkExtension
 public class MacOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
-    private var observer: NSObjectProtocol? = nil
-    private var externalStateChangeCallback: ((Bool) -> Void?)? = nil;
+    private var stateChangeCallback: ((Bool) -> Void?)? = nil
     var interface:InterfaceConfiguration? = nil
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
-    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (ConnectionState) -> Void, externalCallback: @escaping (Bool) -> Void) {
+    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (ConnectionState) -> Void, callback: @escaping (Bool) -> Void) {
         super.init()
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
 
         Logger.configureGlobal(tagged: "APP", withFilePath: "")
 
-        externalStateChangeCallback = externalCallback;
+        stateChangeCallback = callback
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.vpnStatusDidChange(notification:)), name: Notification.Name.NEVPNStatusDidChange, object: nil)
 
@@ -43,7 +42,7 @@ public class MacOSControllerImpl : NSObject {
 
             if self == nil {
                 Logger.global?.log(message: "We are shutting down.")
-                return;
+                return
             }
 
             let tunnel = managers?.first
@@ -80,31 +79,30 @@ public class MacOSControllerImpl : NSObject {
 
         switch session.status {
         case .connected:
-            Logger.global?.log(message:"STATE CHANGED: connected")
+            Logger.global?.log(message: "STATE CHANGED: connected")
         case .connecting:
-            Logger.global?.log(message:"STATE CHANGED: connecting")
+            Logger.global?.log(message: "STATE CHANGED: connecting")
         case .disconnected:
-            Logger.global?.log(message:"STATE CHANGED: disconnected")
+            Logger.global?.log(message: "STATE CHANGED: disconnected")
         case .disconnecting:
-            Logger.global?.log(message:"STATE CHANGED: disconnecting")
+            Logger.global?.log(message: "STATE CHANGED: disconnecting")
         case .invalid:
-            Logger.global?.log(message:"STATE CHANGED: invalid")
+            Logger.global?.log(message: "STATE CHANGED: invalid")
         case .reasserting:
-            Logger.global?.log(message:"STATE CHANGED: reasserting")
+            Logger.global?.log(message: "STATE CHANGED: reasserting")
         default:
-            Logger.global?.log(message:"STATE CHANGED: unknown status")
+            Logger.global?.log(message: "STATE CHANGED: unknown status")
         }
 
         // We care about "unknown" state changes.
-        if observer != nil || (session.status != .connected && session.status != .disconnected) {
-            Logger.global?.log(message: "A");
-            return;
+        if (session.status != .connected && session.status != .disconnected) {
+            return
         }
 
-        externalStateChangeCallback?(session.status == .connected)
+        stateChangeCallback?(session.status == .connected)
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, closure: @escaping (Bool) -> Void) {
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -131,68 +129,35 @@ public class MacOSControllerImpl : NSObject {
         tunnel!.saveToPreferences { [unowned self] saveError in
             if let error = saveError {
                 Logger.global?.log(message: "Connect Tunnel Save Error: \(error)")
-                closure(false)
+                failureCallback()
                 return
             }
 
-            Logger.global?.log(message: "Saving the tunnel succeeded");
+            Logger.global?.log(message: "Saving the tunnel succeeded")
 
             self.tunnel!.loadFromPreferences { error in
                 if let error = error {
                     Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
-                    closure(false)
+                    failureCallback()
                     return
                 }
 
-                Logger.global?.log(message: "Loading the tunnel succeeded");
-
-                assert(observer == nil)
-                observer = NotificationCenter.default.addObserver(forName: Notification.Name.NEVPNStatusDidChange, object: nil, queue: OperationQueue.main) { [self, closure]
-                     (notification) in
-                    guard let session = (notification.object as? NETunnelProviderSession), self.tunnel?.connection == session else { return }
-
-                    if (session.status == .connected) {
-                        NotificationCenter.default.removeObserver(observer!)
-                        closure(true);
-                    }
-
-                    if (session.status == .disconnected ||
-                        session.status == .disconnecting ||
-                        session.status == .invalid) {
-                        NotificationCenter.default.removeObserver(observer!)
-                        observer = nil;
-                        closure(false)
-                    }
-                }
+                Logger.global?.log(message: "Loading the tunnel succeeded")
 
                 do {
                     try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
                 } catch let error {
-                    Logger.global?.log(message: "Something went wrong: \(error)");
-                    observer = nil
-                    closure(false)
-                    return;
+                    Logger.global?.log(message: "Something went wrong: \(error)")
+                    failureCallback()
+                    return
                 }
             }
         }
     }
 
-    @objc func disconnect(closure: @escaping (Bool) -> Void) {
+    @objc func disconnect() {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
-
-        assert(observer == nil)
-        observer = NotificationCenter.default.addObserver(forName: Notification.Name.NEVPNStatusDidChange, object: nil, queue: OperationQueue.main) { [self, closure]
-             (notification) in
-            guard let session = (notification.object as? NETunnelProviderSession), tunnel?.connection == session else { return }
-
-            if (session.status == .disconnected) {
-                NotificationCenter.default.removeObserver(observer!)
-                observer = nil;
-                closure(true);
-            }
-        }
-
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
     }
 }

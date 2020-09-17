@@ -13,46 +13,41 @@
 static MacOSControllerImpl *impl = nullptr;
 
 // static
-void MacOSSwiftController::activate(const Server* server, std::function<void(bool)> && a_callback)
+void MacOSSwiftController::activate(const Server* server, std::function<void()> && a_failureCallback)
 {
     qDebug() << "MacOSSWiftController - activate";
 
     Q_ASSERT(impl);
 
-    std::function<void(bool)> callback = std::move(a_callback);
+    std::function<void()> failureCallback = std::move(a_failureCallback);
 
     [impl connectWithServerIpv4Gateway:server->ipv4Gateway().toNSString()
                      serverIpv6Gateway:server->ipv6Gateway().toNSString()
                        serverPublicKey:server->publicKey().toNSString()
                       serverIpv4AddrIn:server->ipv4AddrIn().toNSString()
                             serverPort:server->choosePort()
-                               closure:^(BOOL status) {
-        qDebug() << "MacOSSWiftController - connect status:" << status;
-        callback(status);
+                               failureCallback:^() {
+        qDebug() << "MacOSSWiftController - connection failed";
+        failureCallback();
     }];
 }
 
 // static
-void MacOSSwiftController::deactivate(std::function<void(bool)> && a_callback)
+void MacOSSwiftController::deactivate()
 {
     Q_ASSERT(impl);
     qDebug() << "MacOSSWiftController - deactivate";
 
-    std::function<void(bool)> callback = std::move(a_callback);
-
-    [impl disconnectWithClosure:^(BOOL status) {
-        qDebug() << "MacOSSWiftController - disconnect status:" << status;
-        callback(status);
-    }];
+    [impl disconnect];
 }
 
 // static
-void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(bool, Controller::State)>&& a_callback, std::function<void(Controller::State)>&& a_externalCallback)
+void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(bool, Controller::State)>&& a_callback, std::function<void(Controller::State)>&& a_stateChangeCallback)
 {
     Q_ASSERT(!impl);
 
     std::function<void(bool, Controller::State)> callback = std::move(a_callback);
-    std::function<void(Controller::State)> externalCallback = std::move(a_externalCallback);
+    std::function<void(Controller::State)> stateChangeCallback = std::move(a_stateChangeCallback);
 
     qDebug() << "Initializing Swift Controller";
 
@@ -84,9 +79,9 @@ void MacOSSwiftController::initialize(const Device* device, const Keys* keys, st
                 return;
         }
     }
-                                          externalCallback:^(BOOL connected) {
-        qDebug() << "External state changed: " << connected;
-        externalCallback(connected ? Controller::StateOn : Controller::StateOff);
+                                          callback:^(BOOL connected) {
+        qDebug() << "State changed: " << connected;
+        stateChangeCallback(connected ? Controller::StateOn : Controller::StateOff);
     }
             ];
 }
