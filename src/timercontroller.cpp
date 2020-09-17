@@ -11,6 +11,7 @@ TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
     Q_ASSERT(m_impl);
     m_impl->setParent(this);
 
+    connect(m_impl, &ControllerImpl::initialized, this, &ControllerImpl::initialized);
     connect(m_impl,
             &ControllerImpl::connected,
             [this] { TimerController::maybeDone(true); });
@@ -20,6 +21,11 @@ TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
 
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &TimerController::timeout);
+}
+
+void TimerController::initialize(const Device *device, const Keys *keys)
+{
+    m_impl->initialize(device, keys);
 }
 
 void TimerController::activate(const Server &server,

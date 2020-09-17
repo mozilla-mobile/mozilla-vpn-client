@@ -6,6 +6,8 @@
 class MacOSController final : public ControllerImpl
 {
 public:
+    void initialize(const Device *device, const Keys *keys) override;
+
     void activate(const Server &data,
                   const Device *device,
                   const Keys *keys,

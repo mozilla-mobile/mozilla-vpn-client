@@ -6,33 +6,33 @@
 
 #include <QDebug>
 
+void MacOSController::initialize(const Device *device, const Keys *keys) {
+    MacOSSwiftController::maybeInitialize(device, keys, [this](bool status) {
+        qDebug() << "Controller initialized" << status;
+        emit initialized();
+    });
+}
+
 void MacOSController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
                                bool forSwitching)
 {
+    Q_UNUSED(device);
+    Q_UNUSED(keys);
     Q_UNUSED(forSwitching);
 
     qDebug() << "MacOSController activating" << server.hostname();
 
-    MacOSSwiftController::maybeInitialize(device, keys, [this, server = &server](bool status) {
-        qDebug() << "Controller initialized" << status;
+    MacOSSwiftController::activate(&server, [this](bool status) {
+        qDebug() << "Activation result:" << status;
 
         if (!status) {
             emit disconnected();
             return;
         }
 
-        MacOSSwiftController::activate(server, [this](bool status) {
-            qDebug() << "Activation result:" << status;
-
-            if (!status) {
-                emit disconnected();
-                return;
-            }
-
-            emit connected();
-        });
+        emit connected();
     });
 }
 

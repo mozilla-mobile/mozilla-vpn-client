@@ -12,6 +12,8 @@ class TimerController : public ControllerImpl
 public:
     TimerController(ControllerImpl *impl);
 
+    void initialize(const Device *device, const Keys *keys) override;
+
     void activate(const Server &server,
                   const Device *device,
                   const Keys *keys,
