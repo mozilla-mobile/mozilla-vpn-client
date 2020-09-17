@@ -7,9 +7,9 @@
 #include <QDebug>
 
 void MacOSController::initialize(const Device *device, const Keys *keys) {
-    MacOSSwiftController::maybeInitialize(device, keys, [this](bool status) {
-        qDebug() << "Controller initialized" << status;
-        emit initialized();
+    MacOSSwiftController::initialize(device, keys, [this](Controller::State state) {
+        qDebug() << "Controller initialized. Connected state:" << state;
+        emit initialized(state);
     });
 }
 

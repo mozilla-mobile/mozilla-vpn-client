@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "controllerimpl.h"
 #include "mozillavpn.h"
 #include "server.h"
 #include "timercontroller.h"
@@ -28,18 +29,20 @@ Controller::Controller()
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
-    connect(m_impl.get(), &ControllerImpl::initialized, [this]() {
+    connect(m_impl.get(), &ControllerImpl::initialized, [this](State state) {
         Q_ASSERT(m_state == StateInitializing);
 
         if (processNextStep()) {
             return;
         }
 
-        setState(StateOff);
+        setState(state);
     });
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
 }
+
+Controller::~Controller() = default;
 
 void Controller::setVPN(MozillaVPN *vpn)
 {

@@ -1,6 +1,8 @@
 #ifndef CONTROLLERIMPL_H
 #define CONTROLLERIMPL_H
 
+#include "controller.h"
+
 #include <QObject>
 
 class Keys;
@@ -21,7 +23,7 @@ public:
         Q_UNUSED(device);
         Q_UNUSED(keys);
 
-        emit initialized();
+        emit initialized(Controller::StateOff);
     }
 
     virtual void activate(const Server &server,
@@ -36,7 +38,7 @@ public:
         = 0;
 
 signals:
-    void initialized();
+    void initialized(Controller::State state);
     void connected();
     void disconnected();
 };

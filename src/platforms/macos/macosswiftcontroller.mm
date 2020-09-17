@@ -47,14 +47,11 @@ void MacOSSwiftController::deactivate(std::function<void(bool)> && a_callback)
 }
 
 // static
-void MacOSSwiftController::maybeInitialize(const Device* device, const Keys* keys, std::function<void(bool)>&& a_callback)
+void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(Controller::State)>&& a_callback)
 {
-    std::function<void(bool)> callback = std::move(a_callback);
+    Q_ASSERT(!impl);
 
-    if (impl) {
-        callback(true);
-        return;
-    }
+    std::function<void(Controller::State)> callback = std::move(a_callback);
 
     qDebug() << "Initializing Swift Controller";
 
@@ -68,14 +65,23 @@ void MacOSSwiftController::maybeInitialize(const Device* device, const Keys* key
     impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
                                                ipv4Address:device->ipv4Address().toNSString()
                                                ipv6Address:device->ipv6Address().toNSString()
-                                                   closure:^(BOOL status) {
-        qDebug() << "Creation completed with status" << status;
+                                                   closure:^(ConnectionState state) {
+        qDebug() << "Creation completed with connection state:" << state;
         creating = false;
-        if (status == false) {
-            [impl dealloc];
-            impl = nullptr;
+        switch (state) {
+            case ConnectionStateError: {
+                [impl dealloc];
+                impl = nullptr;
+                callback(Controller::StateOff);
+                return;
+            }
+            case ConnectionStateConnected:
+                callback(Controller::StateOn);
+                return;
+            case ConnectionStateDisconnected:
+                callback(Controller::StateOff);
+                return;
         }
-        callback(status);
     }
                                           externalCallback:^(BOOL connected) {
         qDebug() << "External state changed: " << connected;

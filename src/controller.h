@@ -2,12 +2,12 @@
 #define CONTROLLER_H
 
 #include "connectionhealth.h"
-#include "controllerimpl.h"
 #include "server.h"
 
 #include <QObject>
 #include <QTimer>
 
+class ControllerImpl;
 class MozillaVPN;
 
 class Controller final : public QObject
@@ -34,6 +34,8 @@ private:
 
 public:
     Controller();
+
+    ~Controller();
 
     void setVPN(MozillaVPN *vpn);
 

@@ -15,7 +15,9 @@ public class MacOSControllerImpl : NSObject {
     private var externalStateChangeCallback: ((Bool) -> Void?)? = nil;
     var interface:InterfaceConfiguration? = nil
 
-    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (Bool) -> Void, externalCallback: @escaping (Bool) -> Void) {
+    @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
+
+    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (ConnectionState) -> Void, externalCallback: @escaping (Bool) -> Void) {
         super.init()
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
@@ -35,7 +37,7 @@ public class MacOSControllerImpl : NSObject {
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             if let error = error {
                 Logger.global?.log(message: "Loading from preference failed: \(error)")
-                closure(false)
+                closure(ConnectionState.Error)
                 return
             }
 
@@ -48,7 +50,7 @@ public class MacOSControllerImpl : NSObject {
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = NETunnelProviderManager()
-                closure(true)
+                closure(ConnectionState.Disconnected)
                 return
             }
 
@@ -60,12 +62,16 @@ public class MacOSControllerImpl : NSObject {
 
                 Logger.global?.log(message: "Creating the tunnel because its proto is invalid")
                 self!.tunnel = NETunnelProviderManager()
-                closure(true)
+                closure(ConnectionState.Disconnected)
                 return
             }
 
             self!.tunnel = tunnel
-            closure(true)
+            if tunnel?.connection.status == .connected {
+                closure(ConnectionState.Connected)
+            } else {
+                closure(ConnectionState.Disconnected)
+            }
         }
     }
 

@@ -1,6 +1,8 @@
 #ifndef MACOSSWIFTCONTROLLER_H
 #define MACOSSWIFTCONTROLLER_H
 
+#include "controller.h"
+
 #include <QString>
 #include <functional>
 
@@ -11,9 +13,9 @@ class Server;
 class MacOSSwiftController
 {
 public:
-    static void maybeInitialize(const Device *device,
-                                const Keys *keys,
-                                std::function<void(bool)>&& callback);
+    static void initialize(const Device *device,
+                           const Keys *keys,
+                           std::function<void(Controller::State)>&& callback);
 
     static void activate(const Server* server, std::function<void(bool)>&& callback);
 
