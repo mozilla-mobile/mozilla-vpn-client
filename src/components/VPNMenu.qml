@@ -38,7 +38,7 @@ Item {
         id: rightTitle
         anchors.verticalCenter: menuBar.verticalCenter
         anchors.right: menuBar.right
-        anchors.rightMargin: Theme.hSpacing
+        anchors.rightMargin: Theme.windowMargin
     }
 
     Rectangle {

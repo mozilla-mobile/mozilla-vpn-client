@@ -13,6 +13,7 @@ Button {
     enabled: (removePopup.state === "visible")
     Layout.preferredHeight: 28
     Layout.fillWidth: true
+    Layout.preferredWidth: rectangularGlowClippingPath.width - (16 * 2)
     contentItem: Text {
         id: buttonText
         horizontalAlignment: Text.AlignHCenter
@@ -30,7 +31,7 @@ Button {
     }
     background: Rectangle {
         id: buttonBackgroundColor
-        radius: Theme.radius
+        radius: 5
         color: buttonColor.defaultColor
 
         MouseArea {
