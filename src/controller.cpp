@@ -29,26 +29,29 @@ Controller::Controller()
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
-    connect(m_impl.get(), &ControllerImpl::initialized, [this](bool status, State state, const QDateTime& connectionDate) {
-        qDebug() << "Controller activated with status:" << status << "state:" << state << "connectionDate:" << connectionDate;
+    connect(m_impl.get(),
+            &ControllerImpl::initialized,
+            [this](bool status, State state, const QDateTime &connectionDate) {
+                qDebug() << "Controller activated with status:" << status << "state:" << state
+                         << "connectionDate:" << connectionDate;
 
-        Q_ASSERT(m_state == StateInitializing);
+                Q_ASSERT(m_state == StateInitializing);
 
-        //TODO: use status to inform when something is down.
-        Q_UNUSED(status);
+                //TODO: use status to inform when something is down.
+                Q_UNUSED(status);
 
-        if (processNextStep()) {
-            return;
-        }
+                if (processNextStep()) {
+                    return;
+                }
 
-        setState(state);
+                setState(state);
 
-        // If we are connected already at startup time, we can trigger the connection sequence of tasks.
-        if (state == StateOn) {
-            m_connectionDate = connectionDate;
-            connected();
-        }
-    });
+                // If we are connected already at startup time, we can trigger the connection sequence of tasks.
+                if (state == StateOn) {
+                    m_connectionDate = connectionDate;
+                    connected();
+                }
+            });
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
 }
@@ -66,10 +69,11 @@ void Controller::initialize()
     qDebug() << "Initializing the controller";
 
     Q_ASSERT(m_vpn);
-    Q_ASSERT(m_state == StateInitializing);
 
-    const Device *device = m_vpn->deviceModel()->currentDevice();
-    m_impl->initialize(device, m_vpn->keys());
+    if (m_state == StateInitializing) {
+        const Device *device = m_vpn->deviceModel()->currentDevice();
+        m_impl->initialize(device, m_vpn->keys());
+    }
 }
 
 void Controller::activate()
