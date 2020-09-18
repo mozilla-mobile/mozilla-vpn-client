@@ -22,11 +22,8 @@ QByteArray generatePkceCodeVerifier()
     Q_ASSERT(generator);
 
     QByteArray pkceCodeVerifier;
-    uint16_t length = 43 + generator->generate() % 85;
-    qDebug() << "PkceCodeVerifier length:" << length;
-
     static QByteArray range("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~");
-    for (uint16_t i = 0; i < length; ++i) {
+    for (uint16_t i = 0; i < 128; ++i) {
         pkceCodeVerifier.append(range.at(generator->generate() % range.length()));
     }
 
