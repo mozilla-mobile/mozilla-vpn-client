@@ -150,6 +150,7 @@ signals:
     void alertChanged();
     void updateRecommendedChanged();
     void userAuthenticationChanged();
+    void deviceRemoving(const QString& deviceName);
 
 private:
     QSettings m_settings;

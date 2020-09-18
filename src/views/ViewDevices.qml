@@ -55,6 +55,16 @@ Item {
             id: device
             width: deviceList.width
 
+            Connections {
+                target: VPN
+                onDeviceRemoving: {
+                    if (name == deviceName) {
+                        console.log("WOW" + deviceName);
+                        deviceDesc.color = "blue";
+                    }
+                }
+            }
+
             state: ""
             states: [
                 State {
