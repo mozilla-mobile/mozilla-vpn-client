@@ -35,9 +35,13 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
             &QAbstractOAuthReplyHandler::callbackReceived,
             [this](const QVariantMap &values) {
                 qDebug() << "AuthenticationListener data received:" << values;
-                Q_ASSERT(values.contains("code"));
-                QString code = values["code"].toString();
 
+                // Unknown connection.
+                if (!values.contains("code")) {
+                    return;
+                }
+
+                QString code = values["code"].toString();
                 m_server->close();
 
                 emit completed(code);
@@ -70,6 +74,6 @@ bool AuthenticationListener::initialize()
 void AuthenticationListener::setQueryItems(QUrlQuery &query)
 {
     Q_ASSERT(m_initialized);
-    qDebug() << "PORT:" << m_server->port();
+    qDebug() << "Port:" << m_server->port();
     query.addQueryItem("port", QString::number(m_server->port()));
 }
