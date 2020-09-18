@@ -29,7 +29,9 @@ Controller::Controller()
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
-    connect(m_impl.get(), &ControllerImpl::initialized, [this](bool status, State state) {
+    connect(m_impl.get(), &ControllerImpl::initialized, [this](bool status, State state, const QDateTime& connectionDate) {
+        qDebug() << "Controller activated with status:" << status << "state:" << state << "connectionDate:" << connectionDate;
+
         Q_ASSERT(m_state == StateInitializing);
 
         //TODO: use status to inform when something is down.
@@ -43,6 +45,7 @@ Controller::Controller()
 
         // If we are connected already at startup time, we can trigger the connection sequence of tasks.
         if (state == StateOn) {
+            m_connectionDate = connectionDate;
             connected();
         }
     });
@@ -92,6 +95,8 @@ void Controller::activate()
 
     m_timer.stop();
 
+    m_connectionDate = QDateTime::currentDateTime();
+
     m_impl->activate(m_currentServer, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
@@ -119,9 +124,11 @@ void Controller::deactivate()
     m_impl->deactivate(m_currentServer, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
-void Controller::connected() {
+void Controller::connected()
+{
     qDebug() << "Connected from state:" << m_state;
 
+    // This is an unexpected connection. Let's use the Connecting state to animate the UI.
     if (m_state != StateConnecting && m_state != StateSwitching) {
         setState(StateConnecting);
         QTimer::singleShot(TIME_ACTIVATION, [this]() {
@@ -133,8 +140,6 @@ void Controller::connected() {
     }
 
     setState(StateOn);
-
-    m_time = 0;
     emit timeChanged();
 
     if (m_nextStep != None) {
@@ -156,6 +161,7 @@ void Controller::disconnected() {
     m_timer.stop();
     m_connectionHealth.stop();
 
+    // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.
     if (m_state != StateDisconnecting && m_state != StateSwitching) {
         setState(StateDisconnecting);
         QTimer::singleShot(TIME_DEACTIVATION, [this]() {
@@ -184,8 +190,6 @@ void Controller::disconnected() {
 
 void Controller::timeUpdated() {
     Q_ASSERT(m_state == StateOn);
-
-    ++m_time;
     emit timeChanged();
 }
 
@@ -316,7 +320,13 @@ bool Controller::processNextStep()
     return false;
 }
 
-void Controller::setState(State state) {
+void Controller::setState(State state)
+{
     m_state = state;
     emit stateChanged();
+}
+
+int Controller::time() const
+{
+    return m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000;
 }

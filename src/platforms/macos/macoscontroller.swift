@@ -16,7 +16,7 @@ public class MacOSControllerImpl : NSObject {
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
-    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (ConnectionState) -> Void, callback: @escaping (Bool) -> Void) {
+    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
         super.init()
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
@@ -36,7 +36,7 @@ public class MacOSControllerImpl : NSObject {
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             if let error = error {
                 Logger.global?.log(message: "Loading from preference failed: \(error)")
-                closure(ConnectionState.Error)
+                closure(ConnectionState.Error, nil)
                 return
             }
 
@@ -49,7 +49,7 @@ public class MacOSControllerImpl : NSObject {
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = NETunnelProviderManager()
-                closure(ConnectionState.Disconnected)
+                closure(ConnectionState.Disconnected, nil)
                 return
             }
 
@@ -61,15 +61,15 @@ public class MacOSControllerImpl : NSObject {
 
                 Logger.global?.log(message: "Creating the tunnel because its proto is invalid")
                 self!.tunnel = NETunnelProviderManager()
-                closure(ConnectionState.Disconnected)
+                closure(ConnectionState.Disconnected, nil)
                 return
             }
 
             self!.tunnel = tunnel
             if tunnel?.connection.status == .connected {
-                closure(ConnectionState.Connected)
+                closure(ConnectionState.Connected, tunnel?.connection.connectedDate)
             } else {
-                closure(ConnectionState.Disconnected)
+                closure(ConnectionState.Disconnected, nil)
             }
         }
     }

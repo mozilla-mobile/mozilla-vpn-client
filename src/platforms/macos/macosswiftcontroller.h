@@ -9,13 +9,14 @@
 class Keys;
 class Device;
 class Server;
+class QDateTime;
 
 class MacOSSwiftController
 {
 public:
     static void initialize(const Device *device,
                            const Keys *keys,
-                           std::function<void(bool, Controller::State)>&& callback,
+                           std::function<void(bool, Controller::State, const QDateTime&)>&& callback,
                            std::function<void(Controller::State)>&& externalCallback);
 
     static void activate(const Server* server, std::function<void()>&& failureCallback);

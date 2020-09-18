@@ -8,6 +8,7 @@
 class Keys;
 class Device;
 class Server;
+class QDateTime;
 
 class ControllerImpl : public QObject
 {
@@ -23,7 +24,7 @@ public:
         Q_UNUSED(device);
         Q_UNUSED(keys);
 
-        emit initialized(true, Controller::StateOff);
+        emit initialized(true, Controller::StateOff, QDateTime());
     }
 
     virtual void activate(const Server &server,
@@ -38,10 +39,12 @@ public:
         = 0;
 
 signals:
-    void initialized(bool status, Controller::State state);
+    void initialized(bool status, Controller::State state, const QDateTime& connectionDate);
 
     void connected();
     void disconnected();
+
+    void connectionDateUpdated(const QDateTime& date);
 };
 
 #endif // CONTROLLERIMPL_H

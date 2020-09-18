@@ -42,11 +42,11 @@ void MacOSSwiftController::deactivate()
 }
 
 // static
-void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(bool, Controller::State)>&& a_callback, std::function<void(Controller::State)>&& a_stateChangeCallback)
+void MacOSSwiftController::initialize(const Device* device, const Keys* keys, std::function<void(bool, Controller::State, const QDateTime&)>&& a_callback, std::function<void(Controller::State)>&& a_stateChangeCallback)
 {
     Q_ASSERT(!impl);
 
-    std::function<void(bool, Controller::State)> callback = std::move(a_callback);
+    std::function<void(bool, Controller::State, const QDateTime&)> callback = std::move(a_callback);
     std::function<void(Controller::State)> stateChangeCallback = std::move(a_stateChangeCallback);
 
     qDebug() << "Initializing Swift Controller";
@@ -61,21 +61,25 @@ void MacOSSwiftController::initialize(const Device* device, const Keys* keys, st
     impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
                                                ipv4Address:device->ipv4Address().toNSString()
                                                ipv6Address:device->ipv6Address().toNSString()
-                                                   closure:^(ConnectionState state) {
+                                                   closure:^(ConnectionState state, NSDate* date) {
         qDebug() << "Creation completed with connection state:" << state;
         creating = false;
+
         switch (state) {
             case ConnectionStateError: {
                 [impl dealloc];
                 impl = nullptr;
-                callback(false, Controller::StateOff);
+                callback(false, Controller::StateOff, QDateTime());
                 return;
             }
-            case ConnectionStateConnected:
-                callback(true, Controller::StateOn);
+            case ConnectionStateConnected: {
+                Q_ASSERT(date);
+                QDateTime qtDate(QDateTime::fromNSDate(date));
+                callback(true, Controller::StateOn, qtDate);
                 return;
+            }
             case ConnectionStateDisconnected:
-                callback(true, Controller::StateOff);
+                callback(true, Controller::StateOff, QDateTime());
                 return;
         }
     }

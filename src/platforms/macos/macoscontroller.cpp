@@ -7,20 +7,27 @@
 #include <QDebug>
 
 void MacOSController::initialize(const Device *device, const Keys *keys) {
-    MacOSSwiftController::initialize(device, keys, [this](bool status, Controller::State state) {
-        qDebug() << "Controller initialized. Connected status:" << status << " and state:" << state;
-        emit initialized(status, state);
-    }, [this](Controller::State state) {
-        qDebug() << "Something has changed from the outside:" << state;
+    MacOSSwiftController::initialize(
+        device,
+        keys,
+        // initialize callback. This informs about the initialization steps.
+                                     [this](bool status, Controller::State state, const QDateTime& date) {
+            qDebug() << "Controller initialized. Connected status:" << status
+                     << " and state:" << state << " and connection date:" << date;
+            emit initialized(status, state, date);
+        },
+        // This monitors the connection VPN states.
+        [this](Controller::State state) {
+            qDebug() << "Something has changed from the outside:" << state;
 
-        if (state == Controller::StateOff) {
-            emit disconnected();
-            return;
-        }
+            if (state == Controller::StateOff) {
+                emit disconnected();
+                return;
+            }
 
-        Q_ASSERT(state == Controller::StateOn);
-        emit connected();
-    });
+            Q_ASSERT(state == Controller::StateOn);
+            emit connected();
+        });
 }
 
 void MacOSController::activate(const Server &server,

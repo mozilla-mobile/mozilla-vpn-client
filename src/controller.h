@@ -4,6 +4,7 @@
 #include "connectionhealth.h"
 #include "server.h"
 
+#include <QDateTime>
 #include <QObject>
 #include <QTimer>
 
@@ -53,7 +54,7 @@ public:
 
     Q_INVOKABLE void logout();
 
-    int time() const { return m_time; }
+    int time() const;
 
     const QString &currentCity() const { return m_currentCity; }
 
@@ -90,7 +91,7 @@ private:
     MozillaVPN *m_vpn = nullptr;
 
     QTimer m_timer;
-    int m_time = 0;
+    QDateTime m_connectionDate;
 
     QScopedPointer<ControllerImpl> m_impl;
 
