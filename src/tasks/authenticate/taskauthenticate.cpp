@@ -30,8 +30,6 @@ QByteArray generatePkceCodeVerifier()
         pkceCodeVerifier.append(range.at(generator->generate() % range.length()));
     }
 
-    // TODO: to be removed!!!
-    pkceCodeVerifier = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return pkceCodeVerifier;
 }
 
@@ -98,7 +96,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     url.setPath(path);
 
     QUrlQuery query;
-    query.addQueryItem("code_challenge", pkceCodeChallenge);
+    query.addQueryItem("code_challenge", QUrl::toPercentEncoding(pkceCodeChallenge));
     query.addQueryItem("code_challenge_method", "S256");
     m_authenticationListener->setQueryItems(query);
     url.setQuery(query);
