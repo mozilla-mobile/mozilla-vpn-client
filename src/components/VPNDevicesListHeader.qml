@@ -1,6 +1,7 @@
 import QtQuick 2.0
-
+import Mozilla.VPN 1.0
 Rectangle {
+    property var pendingDeviceRemoval: false
     id: listHeader
     width: deviceList.width
     color: "transparent"
@@ -33,6 +34,8 @@ Rectangle {
         }
     }
 
+    state: "deviceLimitNotReached"
+
     states: [
         State {
             name: "deviceLimitReached"
@@ -44,18 +47,20 @@ Rectangle {
             }
         },
         State {
+            name: "deviceLimitNotReached"
             when: deviceWrapper.state === "active"
             PropertyChanges {
                 target: listHeader
                 height: 0
                 opacity: 0
+                pendingDeviceRemoval: false
             }
         }
 
     ]
     transitions: [
         Transition {
-            from: "deviceLimitReached"
+            to: "deviceLimitNotReached"
             SequentialAnimation {
                 PropertyAnimation {
                     property: "opacity"
