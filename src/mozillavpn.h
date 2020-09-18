@@ -55,7 +55,7 @@ public:
 private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
-    Q_PROPERTY(QString versionString READ versionString)
+    Q_PROPERTY(QString versionString READ versionString CONSTANT)
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
 
