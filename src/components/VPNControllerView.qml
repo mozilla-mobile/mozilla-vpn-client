@@ -221,16 +221,19 @@ Rectangle {
             PropertyChanges {
                 target: logo
                 source: "../resources/state-off.svg"
+                opacity: .55
             }
             PropertyChanges {
                 target: logoTitle
                 text: qsTr("VPN is off")
                 color: Theme.fontColorDark
+                opacity: .55
             }
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTr("Turn on to protect your privacy")
                 color: Theme.fontColor
+                opacity: .55
             }
             PropertyChanges {
                 target: settingsImage
