@@ -41,6 +41,7 @@ SOURCES += \
         serverdata.cpp \
         serversfetcher.cpp \
         signalhandler.cpp \
+        systemtrayhandler.cpp \
         tasks/account/taskaccount.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/authenticationlistener.cpp \
@@ -72,6 +73,7 @@ HEADERS += \
         serverdata.h \
         serversfetcher.h \
         signalhandler.h \
+        systemtrayhandler.h \
         task.h \
         tasks/account/taskaccount.h \
         tasks/adddevice/taskadddevice.h \

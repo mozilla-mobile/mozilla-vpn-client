@@ -25,8 +25,6 @@ Window {
     FontLoader { id: vpnFontSemiBold; source: "qrc:/resources/fonts/Metropolis-SemiBold.otf" }
     FontLoader { id: vpnFontInter; source: "qrc:/resources/fonts/Inter-UI-Regular.otf" }
 
-    VPNSystemTray { id: vpnSystemTray }
-
     onClosing: {
         window.hide()
         close.accepted = false

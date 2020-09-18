@@ -1,6 +1,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
+#include "systemtrayhandler.h"
 
 #ifdef __linux__
 #include "platforms/linux/wgquickdependencies.h"
@@ -9,6 +10,8 @@
 #include <QApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
+#include <QSystemTrayIcon>
+#include <QWindow>
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +22,8 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
-    app.setWindowIcon(QIcon("qrc:/resources/logo.png"));
+    QIcon icon("://resources/logo.png");
+    app.setWindowIcon(icon);
 
     // Dependencies - so far, only for linux.
 #ifdef __linux__
@@ -114,6 +118,25 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
     engine.load(url);
+
+    SystemTrayHandler systemTrayHandler(icon, &app);
+    systemTrayHandler.show();
+
+    QObject::connect(&systemTrayHandler, &QSystemTrayIcon::activated, [engine = &engine]() {
+        QObject *rootObject = engine->rootObjects().first();
+        QWindow *window = qobject_cast<QWindow *>(rootObject);
+        Q_ASSERT(window);
+
+        window->show();
+        window->raise();
+        window->requestActivate();
+    });
+
+    QObject::connect(MozillaVPN::instance()->controller(),
+                     &Controller::stateChanged,
+                     [systemTrayHandler = &systemTrayHandler]() {
+                         systemTrayHandler->notificationRequired(MozillaVPN::instance());
+                     });
 
     return app.exec();
 }

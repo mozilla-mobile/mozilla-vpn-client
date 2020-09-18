@@ -6,6 +6,7 @@
 class SignalHandler : public QObject
 {
     Q_OBJECT
+
 public:
     SignalHandler();
 
