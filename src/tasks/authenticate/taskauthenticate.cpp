@@ -89,7 +89,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
 #ifdef __linux__
     path.append("linux");
 #elif __APPLE__
-    path.append("macos")
+    path.append("macos");
 #endif
 
     QUrl url(vpn->getApiUrl());

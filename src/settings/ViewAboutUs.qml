@@ -61,7 +61,7 @@ Item {
         VPNTextBlock {
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
-            text: VPN.versionString // TODO - Needs a "Notify" in case this changes
+            text: VPN.versionString
         }
     }
 

@@ -286,7 +286,6 @@
         <file>components/VPNRadioDelegate.qml</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNControllerView.qml</file>
-        <file>resources/settings-white.svg</file>
         <file>resources/state-on.svg</file>
         <file>resources/externalLink.svg</file>
         <file>components/VPNLightLabel.qml</file>
@@ -342,5 +341,7 @@
         <file>resources/devicesLimit.svg</file>
         <file>components/VPNDevicesListHeader.qml</file>
         <file>resources/removeDevice.png</file>
+        <file>components/VPNIconButton.qml</file>
+        <file>resources/settings-white.svg</file>
     </qresource>
 </RCC>
