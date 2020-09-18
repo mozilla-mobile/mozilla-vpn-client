@@ -100,6 +100,11 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     QUrlQuery query;
     query.addQueryItem("code_challenge", QUrl::toPercentEncoding(pkceCodeChallenge));
     query.addQueryItem("code_challenge_method", "S256");
+
+#ifdef IOS_INTEGRATION
+    query.addQueryItem("platform", "ios");
+#endif
+
     m_authenticationListener->setQueryItems(query);
     url.setQuery(query);
 

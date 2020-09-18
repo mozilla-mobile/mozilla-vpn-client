@@ -10,7 +10,7 @@
 #endif
 
 #ifdef IOS_INTEGRATION
-#include "platforms/macos/iosutils.h"
+#include "platforms/ios/iosutils.h"
 #elif __APPLE__
 #include "platforms/macos/macosutils.h"
 #endif // __APPLE__
