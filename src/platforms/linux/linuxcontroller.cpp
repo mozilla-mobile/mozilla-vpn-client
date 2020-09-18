@@ -1,6 +1,7 @@
 #include "linuxcontroller.h"
 #include "device.h"
 #include "keys.h"
+#include "mozillavpn.h"
 #include "server.h"
 #include "wgquickprocess.h"
 
@@ -25,7 +26,11 @@ void LinuxController::activate(const Server &server,
 #ifdef USE_POLKIT
     DBus *dbus = new DBus(this);
 
-    connect(dbus, &DBus::failed, this, &LinuxController::disconnected);
+    connect(dbus, &DBus::failed, [this]() {
+        MozillaVPN::instance()->setAlert(MozillaVPN::BackendServiceErrorAlert);
+        emit disconnected();
+    });
+
     connect(dbus, &DBus::succeeded, this, &LinuxController::connected);
 
     dbus->activate(server, device, keys);

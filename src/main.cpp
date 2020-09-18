@@ -132,6 +132,10 @@ int main(int argc, char *argv[])
         window->requestActivate();
     });
 
+    QObject::connect(&systemTrayHandler, &SystemTrayHandler::quit, []() {
+        MozillaVPN::instance()->controller()->quit();
+    });
+
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::stateChanged,
                      [systemTrayHandler = &systemTrayHandler]() {

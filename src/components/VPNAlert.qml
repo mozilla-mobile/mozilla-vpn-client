@@ -66,6 +66,19 @@ Rectangle {
                 opacity: 1
                 visible: true
             }
+        },
+
+        State {
+            name: VPN.BackendServiceErrorAlert
+            PropertyChanges {
+                target: alertText
+                text: qsTr("Background service error.");
+            }
+            PropertyChanges {
+                target: alertBox
+                opacity: 1
+                visible: true
+            }
         }
     ]
 

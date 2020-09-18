@@ -38,6 +38,7 @@ public:
         ConnectionFailedAlert,
         LogoutAlert,
         NoConnectionAlert,
+        BackendServiceErrorAlert,
     };
     Q_ENUM(AlertType)
 
@@ -80,6 +81,8 @@ public:
     Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
 
     Q_INVOKABLE void postAuthenticationCompleted();
+
+    void setAlert(AlertType alert);
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
@@ -135,7 +138,6 @@ private:
 
     void initialize();
 
-    void setAlert(AlertType alert);
     void setState(State state);
 
     void scheduleTask(Task *task);
