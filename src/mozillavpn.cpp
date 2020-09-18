@@ -340,6 +340,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
 {
     qDebug() << "Remove device" << deviceName;
 
+    // Let's inform the UI about what is going to happen.
     emit deviceRemoving(deviceName);
 
     if (m_deviceModel.hasDevice(deviceName)) {
