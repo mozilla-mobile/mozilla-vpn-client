@@ -178,6 +178,7 @@ else:ios {
 
     TARGET = MozillaVPN_ios
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
+    DEFINES += IOS_INTEGRATION
     QT += svg
 
     message(No integration required for this build - let\'s use the dummy controller)

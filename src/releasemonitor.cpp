@@ -54,7 +54,9 @@ void ReleaseMonitor::processData(const QByteArray &data)
     QJsonObject obj = json.object();
 
     QString platformKey =
-#ifdef __APPLE__
+#ifdef IOS_INTEGRATION
+        "ios"
+#elif __APPLE__
         "macos"
 #elif __linux__
         "linux"

@@ -9,7 +9,9 @@
 #include <QRandomGenerator>
 #endif
 
-#ifdef __APPLE__
+#ifdef IOS_INTEGRATION
+#include "platforms/macos/iosutils.h"
+#elif __APPLE__
 #include "platforms/macos/macosutils.h"
 #endif // __APPLE__
 
@@ -17,7 +19,9 @@ QString Device::currentDeviceName()
 {
     QString deviceName =
 
-#ifdef __APPLE__
+#ifdef IOS_INTEGRATION
+	IOSUtils::computerName();
+#elif __APPLE__
         // MacOS has a funny way to rename the hostname based on the network status.
         MacOSUtils::computerName();
 #else

@@ -86,7 +86,9 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
 
     QString path("/api/v2/vpn/login/");
 
-#ifdef __linux__
+#ifdef IOS_INTEGRATION
+    path.append("ios");
+#elif __linux__
     path.append("linux");
 #elif __APPLE__
     path.append("macos");
