@@ -55,7 +55,7 @@ const blueButton = {
 const externalLinkRow = {
     buttonPressed: "#AECBF2",
     buttonHovered: "#D4E2F6"
-}
+};
 
 const redButton = {
     "defaultColor" : red,
@@ -72,4 +72,9 @@ const greyButton = {
 const whiteSettingsBtn = {
     "buttonHovered": "#5b4a83",
     "buttonPressed": "#725da0"
-}
+};
+
+const removeDeviceBtn = {
+    "buttonHovered": "#FFDFE7",
+    "buttonPressed": "#FFBDC5"
+};

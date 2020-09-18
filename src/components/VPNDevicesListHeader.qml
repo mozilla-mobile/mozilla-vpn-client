@@ -47,7 +47,7 @@ Rectangle {
             when: deviceWrapper.state === "active"
             PropertyChanges {
                 target: listHeader
-                height: 0
+                height: 8
                 opacity: 0
             }
         }

@@ -49,6 +49,7 @@ Item {
         clip: true
         interactive: true
         model: VPNDeviceModel
+        spacing: 4
 
         delegate: Container {
             property var deviceName: name
@@ -88,7 +89,7 @@ Item {
 
                 RowLayout {
                     id: deviceRow
-                    Layout.topMargin: Theme.vSpacing
+                    Layout.topMargin: 10
                     Layout.leftMargin: Theme.windowMargin
                     Layout.rightMargin: Theme.windowMargin / 2
                     spacing: 0
@@ -98,10 +99,12 @@ Item {
                         fillMode: Image.PreserveAspectFit
                         Layout.rightMargin: Theme.windowMargin
                         Layout.alignment: Qt.AlignTop
+                        Layout.topMargin: Theme.windowMargin / 2
                     }
 
                     ColumnLayout {
                         Layout.alignment: Qt.AlignTop
+                        Layout.topMargin: Theme.windowMargin / 2
                         spacing: 0
 
                         Text {
@@ -149,18 +152,25 @@ Item {
                         Layout.fillWidth: true
                     }
 
-                    VPNIcon {
+                    VPNIconButton {
+                        id: iconButton
+                        backgroundColor: Theme.removeDeviceBtn
                         visible: !currentOne
-                        source: "../resources/delete.svg"
-                        Layout.rightMargin: Theme.windowMargin / 2
+                        Layout.rightMargin: 0
+                        Layout.topMargin: 0
                         Layout.alignment: Qt.AlignTop
+                        Layout.preferredHeight: 40
+                        Layout.preferredWidth: 40
+                        onClicked: removePopup.initializeAndOpen(name, index)
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: removePopup.initializeAndOpen(name, index)
+                        VPNIcon {
+                            source: "../resources/delete.svg"
+                            anchors.centerIn: iconButton
                         }
                     }
-                }
+
+
+               }
             }
         }
 
