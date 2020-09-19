@@ -146,6 +146,10 @@ private:
 
     void setUserAuthenticated(bool state);
 
+    void startSchedulingAccountAndServers();
+
+    void stopSchedulingAccountAndServers();
+
 signals:
     void stateChanged();
     void alertChanged();
@@ -176,6 +180,8 @@ private:
 
     QTimer m_alertTimer;
     AlertType m_alert = NoAlert;
+
+    QTimer m_accountAndServersTimer;
 
     ReleaseMonitor m_releaseMonitor;
     bool m_updateRecommended = false;

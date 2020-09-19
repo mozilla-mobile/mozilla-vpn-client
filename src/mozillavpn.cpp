@@ -1,10 +1,9 @@
 #include "mozillavpn.h"
 #include "device.h"
 #include "servercountrymodel.h"
-#include "tasks/account/taskaccount.h"
+#include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
-#include "tasks/fetchservers/taskfetchservers.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "user.h"
@@ -23,11 +22,8 @@ constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudo
 
 constexpr const char *SETTINGS_TOKEN = "token";
 
-// in seconds, how often we should fetch the server list.
-constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 3600;
-
-// in seconds, how often we should check the account
-constexpr const uint32_t SCHEDULE_ACCOUNT_CHECK_TIMER_SEC = 3600;
+// in seconds, how often we should fetch the server list and the account.
+constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC = 3600;
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -68,6 +64,10 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
     m_releaseMonitor.setVPN(this);
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
+
+    connect(&m_accountAndServersTimer, &QTimer::timeout, [this]() {
+        scheduleTask(new TaskAccountAndServers());
+    });
 
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
@@ -132,8 +132,7 @@ void MozillaVPN::initialize()
 
     m_token = m_settings.value(SETTINGS_TOKEN).toString();
 
-    scheduleTask(new TaskAccount());
-    scheduleTask(new TaskFetchServers());
+    scheduleTask(new TaskAccountAndServers());
 
     setState(StateMain);
     setUserAuthenticated(true);
@@ -148,6 +147,9 @@ void MozillaVPN::setState(State state)
     // If we are activating the app, let's initialize the controller.
     if (m_state == StateMain) {
         m_controller.initialize();
+        startSchedulingAccountAndServers();
+    } else {
+        stopSchedulingAccountAndServers();
     }
 }
 
@@ -260,9 +262,6 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     setUserAuthenticated(true);
 
-    // Then we fetch the list of servers.
-    scheduleTask(new TaskFetchServers());
-
     int deviceCount = m_deviceModel.activeDevices();
 
     QString deviceName = Device::currentDeviceName();
@@ -287,8 +286,8 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     // Here we add the current device.
     scheduleTask(new TaskAddDevice(deviceName));
 
-    // Let's fetch the devices again.
-    scheduleTask(new TaskAccount());
+    // Let's fetch the account and the servers.
+    scheduleTask(new TaskAccountAndServers());
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
@@ -329,11 +328,6 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
         Q_ASSERT(m_serverData.initialized());
         m_serverData.writeSettings(m_settings);
     }
-
-    qDebug() << "Scheduling the server fetch";
-
-    QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
-                       [this]() { scheduleTask(new TaskFetchServers()); });
 }
 
 void MozillaVPN::removeDevice(const QString &deviceName)
@@ -358,7 +352,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
 
     // Let's fetch the devices again.
-    scheduleTask(new TaskAccount());
+    scheduleTask(new TaskAccountAndServers());
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) { m_controller.setDeviceLimit(false); }));
@@ -375,10 +369,6 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     m_deviceModel.writeSettings(m_settings);
 
     emit m_user.changed();
-
-    qDebug() << "Scheduling the account check";
-    QTimer::singleShot(1000 * SCHEDULE_ACCOUNT_CHECK_TIMER_SEC,
-                       [this]() { scheduleTask(new TaskAccount()); });
 }
 
 void MozillaVPN::cancelAuthentication()
@@ -514,4 +504,16 @@ void MozillaVPN::setUserAuthenticated(bool state)
     qDebug() << "User authentication state:" << state;
     m_userAuthenticated = state;
     emit userAuthenticationChanged();
+}
+
+void MozillaVPN::startSchedulingAccountAndServers()
+{
+    qDebug() << "Start scheduling account and servers";
+    m_accountAndServersTimer.start(SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC * 1000);
+}
+
+void MozillaVPN::stopSchedulingAccountAndServers()
+{
+    qDebug() << "Stop scheduling account and servers";
+    m_accountAndServersTimer.stop();
 }

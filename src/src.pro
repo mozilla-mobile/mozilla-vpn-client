@@ -43,11 +43,10 @@ SOURCES += \
         serversfetcher.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
-        tasks/account/taskaccount.cpp \
+        tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/authenticationlistener.cpp \
         tasks/authenticate/taskauthenticate.cpp \
-        tasks/fetchservers/taskfetchservers.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         user.cpp
@@ -77,11 +76,10 @@ HEADERS += \
         signalhandler.h \
         systemtrayhandler.h \
         task.h \
-        tasks/account/taskaccount.h \
+        tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/authenticationlistener.h \
         tasks/authenticate/taskauthenticate.h \
-        tasks/fetchservers/taskfetchservers.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
