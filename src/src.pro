@@ -216,3 +216,6 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
+
+TRANSLATIONS += \
+    ../translations/mozillavpn_en.ts
