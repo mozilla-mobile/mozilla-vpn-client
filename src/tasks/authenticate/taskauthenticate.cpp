@@ -1,4 +1,5 @@
 #include "taskauthenticate.h"
+#include "errorhandler.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "tasks/authenticate/authenticationlistener.h"
@@ -50,7 +51,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     m_authenticationListener = new AuthenticationListener(this);
 
     if (!m_authenticationListener->initialize()) {
-        vpn->errorHandle(QNetworkReply::AuthenticationRequiredError);
+        vpn->errorHandle(ErrorHandler::AuthenticationError);
         emit completed();
         return;
     }
@@ -69,7 +70,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
                         &NetworkRequest::requestFailed,
                         [this, vpn](QNetworkReply::NetworkError error) {
                             qDebug() << "Failed to complete the authentication" << this << error;
-                            vpn->errorHandle(error);
+                            vpn->errorHandle(ErrorHandler::toErrorType(error));
                             emit completed();
                         });
 

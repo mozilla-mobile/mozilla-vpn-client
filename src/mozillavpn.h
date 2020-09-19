@@ -3,6 +3,7 @@
 
 #include "controller.h"
 #include "devicemodel.h"
+#include "errorhandler.h"
 #include "keys.h"
 #include "releasemonitor.h"
 #include "servercountrymodel.h"
@@ -115,7 +116,7 @@ public:
 
     const Keys *keys() const { return &m_keys; }
 
-    void errorHandle(QNetworkReply::NetworkError error);
+    void errorHandle(ErrorHandler::ErrorType error);
 
     void changeServer(const QString &countryCode, const QString &city);
 

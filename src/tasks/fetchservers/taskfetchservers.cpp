@@ -1,4 +1,5 @@
 #include "taskfetchservers.h"
+#include "errorhandler.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serversfetcher.h"
@@ -13,7 +14,7 @@ void TaskFetchServers::run(MozillaVPN *vpn)
 
     connect(m_fetcher, &ServersFetcher::failed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Failed to fetch servers" << error;
-        vpn->errorHandle(error);
+        vpn->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
     });
 

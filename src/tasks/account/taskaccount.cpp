@@ -1,4 +1,5 @@
 #include "taskaccount.h"
+#include "errorhandler.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -10,7 +11,7 @@ void TaskAccount::run(MozillaVPN *vpn)
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Account request failed" << error;
-        vpn->errorHandle(error);
+        vpn->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
     });
 

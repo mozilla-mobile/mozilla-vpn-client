@@ -1,5 +1,6 @@
 #include "taskadddevice.h"
 #include "curve25519.h"
+#include "errorhandler.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -43,7 +44,7 @@ void TaskAddDevice::run(MozillaVPN *vpn)
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Failed to add the device" << this << error;
-        vpn->errorHandle(error);
+        vpn->errorHandle(ErrorHandler::toErrorType(error));
     });
 
     connect(request,

@@ -25,6 +25,7 @@ SOURCES += \
         curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
+        errorhandler.cpp \
         hacl-star/Hacl_Curve25519_51.c \
         keys.cpp \
         logger.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
         curve25519.h \
         device.h \
         devicemodel.h \
+        errorhandler.h \
         keys.h \
         logger.h \
         mozillavpn.h \
