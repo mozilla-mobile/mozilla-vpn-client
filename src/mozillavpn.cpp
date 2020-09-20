@@ -60,6 +60,8 @@ MozillaVPN *MozillaVPN::instance()
 
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
 {
+    m_localizer.initialize();
+
     m_controller.setVPN(this);
     m_releaseMonitor.setVPN(this);
 

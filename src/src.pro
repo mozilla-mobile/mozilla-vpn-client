@@ -28,6 +28,7 @@ SOURCES += \
         errorhandler.cpp \
         hacl-star/Hacl_Curve25519_51.c \
         keys.cpp \
+        localizer.cpp \
         logger.cpp \
         main.cpp \
         mozillavpn.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
         devicemodel.h \
         errorhandler.h \
         keys.h \
+        localizer.h \
         logger.h \
         mozillavpn.h \
         networkrequest.h \
@@ -109,6 +111,8 @@ linux {
         PREFIX=/opt/$${TARGET}
     }
 
+    DEFINES += TRANSLATIONS_PATH=\\\"$${PREFIX}/share/$${TARGET}/i18n\\\"
+
     isEmpty(NO_POLKIT) {
         message(Use polkit)
         DEFINES += USE_POLKIT
@@ -135,6 +139,9 @@ else:macos {
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
+
+    # TODO: to be fixed on mac
+    DEFINES += TRANSLATIONS_PATH=\\\"../i18n\\\"
 
     SOURCES += \
             platforms/macos/macosglue.cpp \
@@ -178,8 +185,11 @@ else:ios {
 
     TARGET = MozillaVPN_ios
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
-    DEFINES += IOS_INTEGRATION
     QT += svg
+
+    # TODO: to be fixed on ios
+    DEFINES += TRANSLATIONS_PATH=\\\"../i18n\\\"
+    DEFINES += IOS_INTEGRATION
 
     message(No integration required for this build - let\'s use the dummy controller)
 

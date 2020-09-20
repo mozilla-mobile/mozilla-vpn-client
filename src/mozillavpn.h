@@ -5,6 +5,7 @@
 #include "devicemodel.h"
 #include "errorhandler.h"
 #include "keys.h"
+#include "localizer.h"
 #include "releasemonitor.h"
 #include "servercountrymodel.h"
 #include "serverdata.h"
@@ -159,6 +160,8 @@ signals:
 
 private:
     QSettings m_settings;
+
+    Localizer m_localizer;
 
     QString m_token;
     User m_user;

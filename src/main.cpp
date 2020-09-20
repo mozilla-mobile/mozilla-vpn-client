@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
 
     // The application.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QApplication app(argc, argv);
     QIcon icon("://resources/logo.png");
     app.setWindowIcon(icon);
@@ -119,6 +118,7 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
+    // System tray icon and messages.
     SystemTrayHandler systemTrayHandler(icon, &app);
     systemTrayHandler.show();
 
@@ -142,5 +142,6 @@ int main(int argc, char *argv[])
                          systemTrayHandler->notificationRequired(MozillaVPN::instance());
                      });
 
+    // Let's go.
     return app.exec();
 }
