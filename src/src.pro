@@ -25,8 +25,10 @@ SOURCES += \
         curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
+        errorhandler.cpp \
         hacl-star/Hacl_Curve25519_51.c \
         keys.cpp \
+        localizer.cpp \
         logger.cpp \
         main.cpp \
         mozillavpn.cpp \
@@ -42,11 +44,10 @@ SOURCES += \
         serversfetcher.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
-        tasks/account/taskaccount.cpp \
+        tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/authenticationlistener.cpp \
         tasks/authenticate/taskauthenticate.cpp \
-        tasks/fetchservers/taskfetchservers.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         user.cpp
@@ -58,7 +59,9 @@ HEADERS += \
         curve25519.h \
         device.h \
         devicemodel.h \
+        errorhandler.h \
         keys.h \
+        localizer.h \
         logger.h \
         mozillavpn.h \
         networkrequest.h \
@@ -75,11 +78,10 @@ HEADERS += \
         signalhandler.h \
         systemtrayhandler.h \
         task.h \
-        tasks/account/taskaccount.h \
+        tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/authenticationlistener.h \
         tasks/authenticate/taskauthenticate.h \
-        tasks/fetchservers/taskfetchservers.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
@@ -109,6 +111,8 @@ linux {
         PREFIX=/opt/$${TARGET}
     }
 
+    DEFINES += TRANSLATIONS_PATH=\\\"$${PREFIX}/share/$${TARGET}/i18n\\\"
+
     isEmpty(NO_POLKIT) {
         message(Use polkit)
         DEFINES += USE_POLKIT
@@ -135,6 +139,9 @@ else:macos {
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
+
+    # TODO: to be fixed on mac
+    DEFINES += TRANSLATIONS_PATH=\\\"../i18n\\\"
 
     SOURCES += \
             platforms/macos/macosglue.cpp \
@@ -178,8 +185,11 @@ else:ios {
 
     TARGET = MozillaVPN_ios
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
-    DEFINES += IOS_INTEGRATION
     QT += svg
+
+    # TODO: to be fixed on ios
+    DEFINES += TRANSLATIONS_PATH=\\\"../i18n\\\"
+    DEFINES += IOS_INTEGRATION
 
     message(No integration required for this build - let\'s use the dummy controller)
 
@@ -216,3 +226,10 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
+
+TRANSLATIONS += \
+    ../translations/mozillavpn_en.ts \
+    ../translations/mozillavpn_it.ts
+
+CONFIG += lrelease
+CONFIG += embed_translations

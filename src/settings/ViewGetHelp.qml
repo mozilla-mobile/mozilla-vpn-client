@@ -32,7 +32,7 @@ Item {
                 linkTitle: qsTr("Help & Support")
                 clickId: "help_support"
             }
-            
+
             ListElement {
                 linkTitle: qsTr("Debug")
                 clickId: "debug"

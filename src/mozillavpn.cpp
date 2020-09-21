@@ -1,10 +1,9 @@
 #include "mozillavpn.h"
 #include "device.h"
 #include "servercountrymodel.h"
-#include "tasks/account/taskaccount.h"
+#include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
-#include "tasks/fetchservers/taskfetchservers.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "user.h"
@@ -23,11 +22,10 @@ constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudo
 
 constexpr const char *SETTINGS_TOKEN = "token";
 
-// in seconds, how often we should fetch the server list.
-constexpr const uint32_t SCHEDULE_SERVER_FETCH_TIMER_SEC = 3600;
+constexpr const char *SETTINGS_LANGUAGE = "lang";
 
-// in seconds, how often we should check the account
-constexpr const uint32_t SCHEDULE_ACCOUNT_CHECK_TIMER_SEC = 3600;
+// in seconds, how often we should fetch the server list and the account.
+constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC = 3600;
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -69,8 +67,17 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
+    connect(&m_accountAndServersTimer, &QTimer::timeout, [this]() {
+        scheduleTask(new TaskAccountAndServers());
+    });
+
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
+
+    connect(&m_localizer, &Localizer::languageChanged, [this](const QString& language) {
+        qDebug() << "Storing the language:" << language;
+        m_settings.setValue(SETTINGS_LANGUAGE, language);
+    });
 }
 
 MozillaVPN::~MozillaVPN() = default;
@@ -89,6 +96,12 @@ void MozillaVPN::initialize()
 #endif
 
     m_releaseMonitor.runSoon();
+
+    QString language;
+    if (m_settings.contains(SETTINGS_LANGUAGE)) {
+      language = m_settings.value(SETTINGS_LANGUAGE).toString();
+    }
+    m_localizer.initialize(language);
 
     if (!m_settings.contains(SETTINGS_TOKEN)) {
         return;
@@ -132,8 +145,7 @@ void MozillaVPN::initialize()
 
     m_token = m_settings.value(SETTINGS_TOKEN).toString();
 
-    scheduleTask(new TaskAccount());
-    scheduleTask(new TaskFetchServers());
+    scheduleTask(new TaskAccountAndServers());
 
     setState(StateMain);
     setUserAuthenticated(true);
@@ -148,6 +160,9 @@ void MozillaVPN::setState(State state)
     // If we are activating the app, let's initialize the controller.
     if (m_state == StateMain) {
         m_controller.initialize();
+        startSchedulingAccountAndServers();
+    } else {
+        stopSchedulingAccountAndServers();
     }
 }
 
@@ -260,9 +275,6 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     setUserAuthenticated(true);
 
-    // Then we fetch the list of servers.
-    scheduleTask(new TaskFetchServers());
-
     int deviceCount = m_deviceModel.activeDevices();
 
     QString deviceName = Device::currentDeviceName();
@@ -287,8 +299,8 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     // Here we add the current device.
     scheduleTask(new TaskAddDevice(deviceName));
 
-    // Let's fetch the devices again.
-    scheduleTask(new TaskAccount());
+    // Let's fetch the account and the servers.
+    scheduleTask(new TaskAccountAndServers());
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
@@ -329,16 +341,14 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
         Q_ASSERT(m_serverData.initialized());
         m_serverData.writeSettings(m_settings);
     }
-
-    qDebug() << "Scheduling the server fetch";
-
-    QTimer::singleShot(1000 * SCHEDULE_SERVER_FETCH_TIMER_SEC,
-                       [this]() { scheduleTask(new TaskFetchServers()); });
 }
 
 void MozillaVPN::removeDevice(const QString &deviceName)
 {
     qDebug() << "Remove device" << deviceName;
+
+    // Let's inform the UI about what is going to happen.
+    emit deviceRemoving(deviceName);
 
     if (m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
@@ -355,7 +365,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
 
     // Let's fetch the devices again.
-    scheduleTask(new TaskAccount());
+    scheduleTask(new TaskAccountAndServers());
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) { m_controller.setDeviceLimit(false); }));
@@ -372,10 +382,6 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     m_deviceModel.writeSettings(m_settings);
 
     emit m_user.changed();
-
-    qDebug() << "Scheduling the account check";
-    QTimer::singleShot(1000 * SCHEDULE_ACCOUNT_CHECK_TIMER_SEC,
-                       [this]() { scheduleTask(new TaskAccount()); });
 }
 
 void MozillaVPN::cancelAuthentication()
@@ -433,87 +439,24 @@ void MozillaVPN::setAlert(AlertType alert)
     emit alertChanged();
 }
 
-void MozillaVPN::errorHandle(QNetworkReply::NetworkError error)
+void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
 {
     qDebug() << "Handling error" << error;
 
-    Q_ASSERT(error != QNetworkReply::NoError);
+    Q_ASSERT(error != ErrorHandler::NoError);
 
     AlertType alert = NoAlert;
 
     switch (error) {
-    case QNetworkReply::ConnectionRefusedError:
-        [[fallthrough]];
-    case QNetworkReply::RemoteHostClosedError:
-        [[fallthrough]];
-    case QNetworkReply::SslHandshakeFailedError:
-        [[fallthrough]];
-    case QNetworkReply::TemporaryNetworkFailureError:
-        [[fallthrough]];
-    case QNetworkReply::NetworkSessionFailedError:
-        [[fallthrough]];
-    case QNetworkReply::TooManyRedirectsError:
-        [[fallthrough]];
-    case QNetworkReply::InsecureRedirectError:
-        [[fallthrough]];
-    case QNetworkReply::ProxyConnectionRefusedError:
-        [[fallthrough]];
-    case QNetworkReply::ProxyConnectionClosedError:
-        [[fallthrough]];
-    case QNetworkReply::ProxyNotFoundError:
-        [[fallthrough]];
-    case QNetworkReply::ProxyTimeoutError:
-        [[fallthrough]];
-    case QNetworkReply::ProxyAuthenticationRequiredError:
-        [[fallthrough]];
-    case QNetworkReply::ServiceUnavailableError:
+    case ErrorHandler::ConnectionFailureError:
         alert = ConnectionFailedAlert;
         break;
 
-    case QNetworkReply::HostNotFoundError:
-        [[fallthrough]];
-    case QNetworkReply::TimeoutError:
-        [[fallthrough]];
-    case QNetworkReply::UnknownNetworkError:
-        // On mac, this means: no internet
+    case ErrorHandler::NoConnectionError:
         alert = NoConnectionAlert;
         break;
 
-    case QNetworkReply::OperationCanceledError:
-        [[fallthrough]];
-    case QNetworkReply::BackgroundRequestNotAllowedError:
-        [[fallthrough]];
-    case QNetworkReply::ContentAccessDenied:
-        [[fallthrough]];
-    case QNetworkReply::ContentNotFoundError:
-        [[fallthrough]];
-    case QNetworkReply::ContentReSendError:
-        [[fallthrough]];
-    case QNetworkReply::ContentConflictError:
-        [[fallthrough]];
-    case QNetworkReply::ContentGoneError:
-        [[fallthrough]];
-    case QNetworkReply::InternalServerError:
-        [[fallthrough]];
-    case QNetworkReply::OperationNotImplementedError:
-        [[fallthrough]];
-    case QNetworkReply::ProtocolUnknownError:
-        [[fallthrough]];
-    case QNetworkReply::ProtocolInvalidOperationError:
-        [[fallthrough]];
-    case QNetworkReply::UnknownProxyError:
-        [[fallthrough]];
-    case QNetworkReply::UnknownContentError:
-        [[fallthrough]];
-    case QNetworkReply::ProtocolFailure:
-        [[fallthrough]];
-    case QNetworkReply::UnknownServerError:
-        // let's ignore these errors.
-        break;
-
-    case QNetworkReply::ContentOperationNotPermittedError:
-        [[fallthrough]];
-    case QNetworkReply::AuthenticationRequiredError:
+    case ErrorHandler::AuthenticationError:
         alert = AuthenticationFailedAlert;
         break;
 
@@ -574,4 +517,16 @@ void MozillaVPN::setUserAuthenticated(bool state)
     qDebug() << "User authentication state:" << state;
     m_userAuthenticated = state;
     emit userAuthenticationChanged();
+}
+
+void MozillaVPN::startSchedulingAccountAndServers()
+{
+    qDebug() << "Start scheduling account and servers";
+    m_accountAndServersTimer.start(SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC * 1000);
+}
+
+void MozillaVPN::stopSchedulingAccountAndServers()
+{
+    qDebug() << "Stop scheduling account and servers";
+    m_accountAndServersTimer.stop();
 }

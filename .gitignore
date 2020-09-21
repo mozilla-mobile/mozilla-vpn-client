@@ -20,3 +20,5 @@ dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
+translations/*.qm
+.qm

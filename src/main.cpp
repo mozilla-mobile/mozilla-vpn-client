@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
 
     // The application.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QApplication app(argc, argv);
     QIcon icon("://resources/logo.png");
     app.setWindowIcon(icon);
@@ -99,6 +98,18 @@ int main(int argc, char *argv[])
             return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNLocalizer", [](QQmlEngine *, QJSEngine *) -> QObject * {
+            QObject *obj = MozillaVPN::instance()->localizer();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+        });
+
+    QObject::connect(MozillaVPN::instance()->localizer(),
+                     &Localizer::languageChanged,
+                     &engine,
+                     &QQmlEngine::retranslate);
+
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::readyToQuit,
                      &app,
@@ -119,6 +130,7 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
+    // System tray icon and messages.
     SystemTrayHandler systemTrayHandler(icon, &app);
     systemTrayHandler.show();
 
@@ -142,5 +154,6 @@ int main(int argc, char *argv[])
                          systemTrayHandler->notificationRequired(MozillaVPN::instance());
                      });
 
+    // Let's go.
     return app.exec();
 }

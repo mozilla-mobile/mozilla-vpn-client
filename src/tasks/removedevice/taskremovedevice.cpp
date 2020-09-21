@@ -1,4 +1,5 @@
 #include "taskremovedevice.h"
+#include "errorhandler.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "user.h"
@@ -22,7 +23,7 @@ void TaskRemoveDevice::run(MozillaVPN *vpn)
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Failed to remove the device" << error;
-        vpn->errorHandle(error);
+        vpn->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
     });
 

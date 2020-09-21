@@ -3,7 +3,9 @@
 
 #include "controller.h"
 #include "devicemodel.h"
+#include "errorhandler.h"
 #include "keys.h"
+#include "localizer.h"
 #include "releasemonitor.h"
 #include "servercountrymodel.h"
 #include "serverdata.h"
@@ -115,7 +117,7 @@ public:
 
     const Keys *keys() const { return &m_keys; }
 
-    void errorHandle(QNetworkReply::NetworkError error);
+    void errorHandle(ErrorHandler::ErrorType error);
 
     void changeServer(const QString &countryCode, const QString &city);
 
@@ -129,6 +131,8 @@ public:
     void setUpdateRecommended(bool value);
 
     bool userAuthenticated() const { return m_userAuthenticated; }
+
+    Localizer* localizer() { return &m_localizer; }
 
 private:
     explicit MozillaVPN(QObject *parent = nullptr);
@@ -145,14 +149,21 @@ private:
 
     void setUserAuthenticated(bool state);
 
+    void startSchedulingAccountAndServers();
+
+    void stopSchedulingAccountAndServers();
+
 signals:
     void stateChanged();
     void alertChanged();
     void updateRecommendedChanged();
     void userAuthenticationChanged();
+    void deviceRemoving(const QString& deviceName);
 
 private:
     QSettings m_settings;
+
+    Localizer m_localizer;
 
     QString m_token;
     User m_user;
@@ -174,6 +185,8 @@ private:
 
     QTimer m_alertTimer;
     AlertType m_alert = NoAlert;
+
+    QTimer m_accountAndServersTimer;
 
     ReleaseMonitor m_releaseMonitor;
     bool m_updateRecommended = false;
