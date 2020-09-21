@@ -2,7 +2,6 @@ VERSION = 1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT += network
-QT += networkauth
 QT += quick
 QT += widgets
 
@@ -46,7 +45,6 @@ SOURCES += \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
-        tasks/authenticate/authenticationlistener.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
@@ -80,7 +78,6 @@ HEADERS += \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
-        tasks/authenticate/authenticationlistener.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
@@ -94,24 +91,25 @@ linux {
     QMAKE_CXXFLAGS *= -Werror
 
     TARGET = mozillavpn
+    QT += networkauth
 
     SOURCES += \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             platforms/linux/wgquickdependencies.cpp \
-            platforms/linux/wgquickprocess.cpp
+            platforms/linux/wgquickprocess.cpp \
+            tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxpingsendworker.h \
             platforms/linux/wgquickdependencies.h \
-            platforms/linux/wgquickprocess.h
+            platforms/linux/wgquickprocess.h \
+            tasks/authenticate/authenticationlistener.h
 
     isEmpty(PREFIX) {
         PREFIX=/opt/$${TARGET}
     }
-
-    DEFINES += TRANSLATIONS_PATH=\\\"$${PREFIX}/share/$${TARGET}/i18n\\\"
 
     isEmpty(NO_POLKIT) {
         message(Use polkit)
@@ -139,18 +137,18 @@ else:macos {
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
-
-    # TODO: to be fixed on mac
-    DEFINES += TRANSLATIONS_PATH=\\\"../i18n\\\"
+    QT += networkauth
 
     SOURCES += \
             platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp \
-            platforms/macos/macosutils.mm
+            platforms/macos/macosutils.mm \
+            tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
             platforms/macos/macospingsendworker.h \
-            platforms/macos/macosutils.h
+            platforms/macos/macosutils.h \
+            tasks/authenticate/authenticationlistener.h
 
     isEmpty(MACOS_INTEGRATION) {
         message(No integration required for this build - let\'s use the dummy controller)
@@ -187,8 +185,6 @@ else:ios {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
 
-    # TODO: to be fixed on ios
-    DEFINES += TRANSLATIONS_PATH=\\\"../i18n\\\"
     DEFINES += IOS_INTEGRATION
 
     message(No integration required for this build - let\'s use the dummy controller)
@@ -196,11 +192,13 @@ else:ios {
     SOURCES += \
             platforms/ios/iosutils.mm \
             platforms/dummy/dummycontroller.cpp \
+            platforms/ios/authenticationlistener.cpp \
             platforms/macos/macospingsendworker.cpp
 
     HEADERS += \
             platforms/ios/iosutils.mm \
             platforms/dummy/dummycontroller.h \
+            platforms/ios/authenticationlistener.h \
             platforms/macos/macospingsendworker.h
 
     QMAKE_INFO_PLIST=../ios/Info.plist

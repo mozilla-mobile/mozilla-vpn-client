@@ -2,12 +2,16 @@
 #include "errorhandler.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "tasks/authenticate/authenticationlistener.h"
 #include "user.h"
+
+#ifdef IOS_INTEGRATION
+#include "platforms/ios/authenticationlistener.h"
+#else
+#include "tasks/authenticate/authenticationlistener.h"
+#endif
 
 #include <QCryptographicHash>
 #include <QDebug>
-#include <QDesktopServices>
 #include <QJSValue>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -49,12 +53,6 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     qDebug() << "pkceCodeChallenge:" << pkceCodeChallenge;
 
     m_authenticationListener = new AuthenticationListener(this);
-
-    if (!m_authenticationListener->initialize()) {
-        vpn->errorHandle(ErrorHandler::AuthenticationError);
-        emit completed();
-        return;
-    }
 
     connect(m_authenticationListener,
             &AuthenticationListener::completed,
@@ -103,10 +101,10 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     query.addQueryItem("platform", "ios");
 #endif
 
-    m_authenticationListener->setQueryItems(query);
-    url.setQuery(query);
-
-    QDesktopServices::openUrl(url.toString());
+    if (!m_authenticationListener->start(url, query)) {
+        vpn->errorHandle(ErrorHandler::AuthenticationError);
+        emit completed();
+    }
 }
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray &data)
