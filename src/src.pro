@@ -228,4 +228,8 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 TRANSLATIONS += \
-    ../translations/mozillavpn_en.ts
+    ../translations/mozillavpn_en.ts \
+    ../translations/mozillavpn_it.ts
+
+CONFIG += lrelease
+CONFIG += embed_translations

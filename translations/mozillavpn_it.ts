@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1" language="it_IT">
 <context>
     <name>StateAuthenticating</name>
     <message>
         <location filename="../src/states/StateAuthenticating.qml" line="10"/>
         <source>Waiting for sign in and subscription confirmation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lingua</translation>
     </message>
     <message>
         <location filename="../src/states/StateAuthenticating.qml" line="37"/>
@@ -337,7 +337,7 @@
     <message>
         <location filename="../src/views/ViewInitialize.qml" line="12"/>
         <source>Get Help</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aiuto</translation>
     </message>
     <message>
         <location filename="../src/views/ViewInitialize.qml" line="18"/>
@@ -352,7 +352,7 @@
     <message>
         <location filename="../src/views/ViewInitialize.qml" line="27"/>
         <source>Get started</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Inizia</translation>
     </message>
     <message>
         <location filename="../src/views/ViewInitialize.qml" line="39"/>
@@ -365,7 +365,7 @@
     <message>
         <location filename="../src/settings/ViewLanguage.qml" line="10"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lingua</translation>
     </message>
 </context>
 <context>

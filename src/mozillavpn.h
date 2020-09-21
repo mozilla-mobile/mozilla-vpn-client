@@ -132,6 +132,8 @@ public:
 
     bool userAuthenticated() const { return m_userAuthenticated; }
 
+    Localizer* localizer() { return &m_localizer; }
+
 private:
     explicit MozillaVPN(QObject *parent = nullptr);
     ~MozillaVPN();

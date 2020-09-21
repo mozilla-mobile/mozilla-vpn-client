@@ -22,6 +22,8 @@ constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudo
 
 constexpr const char *SETTINGS_TOKEN = "token";
 
+constexpr const char *SETTINGS_LANGUAGE = "lang";
+
 // in seconds, how often we should fetch the server list and the account.
 constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC = 3600;
 
@@ -60,8 +62,6 @@ MozillaVPN *MozillaVPN::instance()
 
 MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
 {
-    m_localizer.initialize();
-
     m_controller.setVPN(this);
     m_releaseMonitor.setVPN(this);
 
@@ -73,6 +73,11 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
 
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
+
+    connect(&m_localizer, &Localizer::languageChanged, [this](const QString& language) {
+        qDebug() << "Storing the language:" << language;
+        m_settings.setValue(SETTINGS_LANGUAGE, language);
+    });
 }
 
 MozillaVPN::~MozillaVPN() = default;
@@ -91,6 +96,12 @@ void MozillaVPN::initialize()
 #endif
 
     m_releaseMonitor.runSoon();
+
+    QString language;
+    if (m_settings.contains(SETTINGS_LANGUAGE)) {
+      language = m_settings.value(SETTINGS_LANGUAGE).toString();
+    }
+    m_localizer.initialize(language);
 
     if (!m_settings.contains(SETTINGS_TOKEN)) {
         return;
