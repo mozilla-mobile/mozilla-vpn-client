@@ -52,45 +52,18 @@ Item {
 
         delegate: Container {
             property var deviceName: name
+
             id: device
             width: deviceList.width
 
             Connections {
                 target: VPN
-                onDeviceRemoving: {
-                    if (name == deviceName) {
-                        console.log("WOW" + deviceName);
-                        deviceDesc.color = "blue";
+                function onDeviceRemoving(devName) {
+                    if (name === devName) {
+                        deviceRemovalTransition.start();
                     }
                 }
             }
-
-            state: ""
-            states: [
-                State {
-                    name: "removing"
-                    PropertyChanges {
-                        target: device
-                        height: 0
-                        opacity: 0
-                    }
-                }
-            ]
-            transitions: [
-                Transition {
-                    to: "removing"
-                    SequentialAnimation {
-                        PropertyAnimation {
-                            property: "opacity"
-                            duration: 400
-                        }
-                        PropertyAnimation {
-                            property: "height"
-                            duration: 200
-                        }
-                    }
-                }
-            ]
 
             contentItem: ColumnLayout {
                 anchors.fill: parent
@@ -104,6 +77,7 @@ Item {
                     spacing: 0
 
                     VPNIcon {
+                        id: deviceIcon
                         source: "../resources/devices.svg"
                         fillMode: Image.PreserveAspectFit
                         Layout.rightMargin: Theme.windowMargin
@@ -160,6 +134,7 @@ Item {
                     }
 
                     VPNIcon {
+                        id: trashbin
                         visible: !currentOne
                         source: "../resources/delete.svg"
                         Layout.rightMargin: Theme.windowMargin / 2
@@ -167,8 +142,57 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: removePopup.initializeAndOpen(name, index)
+                            onClicked: removePopup.initializeAndOpen(name)
                         }
+                    }
+
+                    SequentialAnimation {
+                        id: deviceRemovalTransition
+                        ParallelAnimation {
+                            PropertyAnimation {
+                                target: trashbin
+                                property: "opacity"
+                                from: 1
+                                to: 0
+                                duration: 100
+                            }
+                            PropertyAnimation {
+                                targets: [deviceName, deviceDesc, deviceIcon]
+                                property: "opacity"
+                                from: 1
+                                to: .6
+                                duration: 100
+                            }
+                        }
+                        PropertyAction {
+                            target: trashbin
+                            property:  "source"
+                            value: "../resources/spinner.svg"
+                        }
+                        PropertyAction {
+                            target: trashbin
+                            properties: "sourceSize.height, sourceSize.width"
+                            value: 20
+                        }
+
+                        ParallelAnimation {
+                            PropertyAnimation {
+                                target: trashbin
+                                property: "opacity"
+                                from: 0
+                                to: 1
+                                duration: 100
+                            }
+                            PropertyAnimation {
+                                target: trashbin
+                                property: "rotation"
+                                from: 0
+                                to: 360
+                                duration: 3000
+                                loops: Animation.Infinite
+                            }
+                        }
+
                     }
                 }
             }
@@ -230,7 +254,6 @@ Item {
     }
 
     Rectangle {
-        property var deviceIndex
         property var deviceName
         id: removePopup
         state: "invisible"
@@ -298,20 +321,8 @@ Item {
                     buttonTextColor: "#FFFFFF"
                     buttonColor: Theme.redButton
                     onClicked: {
-
                         VPN.removeDevice(removePopup.deviceName)
                         removePopup.state = "invisible"
-
-                        if (deviceWrapper.state !== "deviceLimit") {
-                            const deviceRowToRemove = deviceList.contentItem.children[removePopup.deviceIndex + 2]
-                            if (deviceRowToRemove.deviceName === removePopup.deviceName) {
-                                return deviceRowToRemove.state = "removing"
-                            }
-                        }
-
-                        // TODO: If the device limit alert is showing, we should instrument
-                        // a nice transition that simultaneously removes the device and
-                        // alert message.
                     }
                 }
             }
@@ -342,8 +353,7 @@ Item {
             }
         }
 
-        function initializeAndOpen(name, index) {
-            removePopup.deviceIndex = index
+        function initializeAndOpen(name) {
             removePopup.deviceName = name
             removePopup.state = "visible"
         }
