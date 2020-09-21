@@ -94,7 +94,6 @@ print Y "Wait..."
   -no-feature-quick-designer \
   -no-feature-distancefieldgenerator \
   -no-feature-kmap2qmap \
-  -no-feature-linguist \
   -no-feature-qdbus \
   -no-feature-qtdiag \
   -no-feature-qml-preview \
