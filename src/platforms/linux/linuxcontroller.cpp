@@ -28,7 +28,7 @@ void LinuxController::activate(const Server &server,
     DBus *dbus = new DBus(this);
 
     connect(dbus, &DBus::failed, [this]() {
-        MozillaVPN::instance()-errorHandle(ErrorHandler::BackendServiceError);
+        MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
         emit disconnected();
     });
 
