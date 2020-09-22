@@ -40,7 +40,7 @@ Flickable {
             settingTitle: qsTr("Get help")
             imageLeftSource: "../resources/settings/getHelp.svg"
             imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewGetHelp.qml"
+            pushGetHelp: true
         }
         ListElement {
             settingTitle: qsTr("Give feedback")
@@ -113,6 +113,13 @@ Flickable {
         onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
+    Component {
+        id: getHelpComponent
+        VPNGetHelp {
+            isSettingsView: true
+        }
+    }
+
     ListView {
         id: settingsList
         interactive: false // disable scrolling on list since the entire window is scrollable
@@ -125,6 +132,10 @@ Flickable {
         model: settingsMenuListModel
         delegate: VPNClickableRow {
             onClicked: {
+                if (pushGetHelp) {
+                    return settingsStackView.push(getHelpComponent)
+                }
+
                 if (pushView) {
                     return settingsStackView.push(pushView)
                 }

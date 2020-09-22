@@ -10,7 +10,14 @@ Item {
     VPNHeaderLink {
         id: headerLink
         text: qsTr("Get Help")
-        onClicked: stackview.push("settings/ViewGetHelp.qml")
+        onClicked: stackview.push(getHelpComponent)
+    }
+
+    Component {
+        id: getHelpComponent
+        VPNGetHelp {
+            isSettingsView: false
+        }
     }
 
     VPNPanel {

@@ -328,7 +328,6 @@
         <file>resources/settings/notifications.svg</file>
         <file>resources/settings/networkSettings.svg</file>
         <file>settings/ViewAboutUs.qml</file>
-        <file>settings/ViewGetHelp.qml</file>
         <file>settings/ViewLanguage.qml</file>
         <file>settings/ViewNetworkSettings.qml</file>
         <file>settings/ViewNotifications.qml</file>
@@ -343,5 +342,6 @@
         <file>resources/removeDevice.png</file>
         <file>components/VPNIconButton.qml</file>
         <file>resources/settings-white.svg</file>
+        <file>components/VPNGetHelp.qml</file>
     </qresource>
 </RCC>

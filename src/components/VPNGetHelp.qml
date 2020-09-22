@@ -7,6 +7,8 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
+    property alias isSettingsView: menu.isSettingsView
+
     VPNMenu {
         id: menu
         title: qsTr("Get help")
