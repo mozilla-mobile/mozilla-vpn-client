@@ -11,6 +11,7 @@ public:
         ConnectionFailureError,
         NoConnectionError,
         AuthenticationError,
+        BackendServiceError,
         IgnoredError,
     };
 

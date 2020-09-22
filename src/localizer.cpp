@@ -10,6 +10,7 @@ void Localizer::initialize(const QString& code)
 {
     qDebug() << "Localizer initializing:" << code;
 
+    m_code = code;
     loadLanguage(code);
 
     QCoreApplication::installTranslator(&m_translator);
@@ -41,10 +42,31 @@ void Localizer::loadLanguage(const QString& code)
     }
 }
 
+QString Localizer::languageName(const QString &code) const
+{
+    QLocale locale(code);
+    if (locale.language() == QLocale::C) {
+        return "English (US)";
+    }
+
+    return QLocale::languageToString(locale.language());
+}
+
+QString Localizer::localizedLanguageName(const QString &code) const
+{
+    QLocale locale(code);
+    if (locale.language() == QLocale::C) {
+        return "English (US)";
+    }
+
+    return locale.nativeLanguageName();
+}
+
 QHash<int, QByteArray> Localizer::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[LanguageRole] = "language";
+    roles[LocalizedLanguageRole] = "localizedLanguage";
     roles[CodeRole] = "code";
     return roles;
 }
@@ -62,7 +84,10 @@ QVariant Localizer::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case LanguageRole:
-        return QVariant(QLocale::languageToString(QLocale(m_languages.at(index.row())).language()));
+        return QVariant(localizedLanguageName(m_languages.at(index.row())));
+
+    case LocalizedLanguageRole:
+        return QVariant(languageName(m_languages.at(index.row())));
 
     case CodeRole:
         return QVariant(m_languages.at(index.row()));

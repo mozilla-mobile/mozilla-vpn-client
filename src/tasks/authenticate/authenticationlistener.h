@@ -1,6 +1,8 @@
 #ifndef AUTHENTICATIONLISTENER_H
 #define AUTHENTICATIONLISTENER_H
 
+#include "errorhandler.h"
+
 #include <QObject>
 
 class QOAuthHttpServerReplyHandler;
@@ -13,10 +15,12 @@ class AuthenticationListener : public QObject
 public:
     explicit AuthenticationListener(QObject *parent);
 
-    bool start(QUrl &url, QUrlQuery &query);
+    void start(QUrl &url, QUrlQuery &query);
 
 signals:
     void completed(const QString &code);
+
+    void failed(ErrorHandler::ErrorType error);
 
 private:
     QOAuthHttpServerReplyHandler *m_server = nullptr;

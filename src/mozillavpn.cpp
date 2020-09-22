@@ -10,6 +10,7 @@
 
 #include <QDebug>
 #include <QDesktopServices>
+#include <QLocale>
 #include <QPointer>
 #include <QTimer>
 
@@ -458,6 +459,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
 
     case ErrorHandler::AuthenticationError:
         alert = AuthenticationFailedAlert;
+        break;
+
+    case ErrorHandler::BackendServiceError:
+        alert = BackendServiceErrorAlert;
         break;
 
     default:

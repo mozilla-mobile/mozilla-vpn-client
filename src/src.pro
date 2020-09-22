@@ -185,6 +185,8 @@ else:ios {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
 
+    LIBS += -framework AuthenticationServices
+
     DEFINES += IOS_INTEGRATION
 
     message(No integration required for this build - let\'s use the dummy controller)
@@ -192,7 +194,7 @@ else:ios {
     SOURCES += \
             platforms/ios/iosutils.mm \
             platforms/dummy/dummycontroller.cpp \
-            platforms/ios/authenticationlistener.cpp \
+            platforms/ios/authenticationlistener.mm \
             platforms/macos/macospingsendworker.cpp
 
     HEADERS += \

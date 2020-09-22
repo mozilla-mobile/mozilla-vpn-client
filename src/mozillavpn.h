@@ -84,8 +84,6 @@ public:
 
     Q_INVOKABLE void postAuthenticationCompleted();
 
-    void setAlert(AlertType alert);
-
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
     void authenticationCompleted(const QByteArray &json, const QString &token);
@@ -152,6 +150,8 @@ private:
     void startSchedulingAccountAndServers();
 
     void stopSchedulingAccountAndServers();
+
+    void setAlert(AlertType alert);
 
 signals:
     void stateChanged();

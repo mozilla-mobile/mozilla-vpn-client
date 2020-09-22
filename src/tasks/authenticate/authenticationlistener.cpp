@@ -49,7 +49,7 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
             });
 }
 
-bool AuthenticationListener::start(QUrl &url, QUrlQuery &query)
+void AuthenticationListener::start(QUrl &url, QUrlQuery &query)
 {
     qDebug() << "AuthenticationListener initialize";
 
@@ -65,7 +65,8 @@ bool AuthenticationListener::start(QUrl &url, QUrlQuery &query)
 
     if (!m_server->isListening()) {
         qDebug() << "Unable to listen for the authentication server.";
-        return false;
+        emit failed(ErrorHandler::BackendServiceError);
+        return;
     }
 
     qDebug() << "Port:" << m_server->port();
@@ -73,5 +74,4 @@ bool AuthenticationListener::start(QUrl &url, QUrlQuery &query)
 
     url.setQuery(query);
     QDesktopServices::openUrl(url.toString());
-    return true;
 }

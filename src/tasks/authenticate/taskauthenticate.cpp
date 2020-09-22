@@ -80,6 +80,13 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
                         });
             });
 
+    connect(m_authenticationListener,
+            &AuthenticationListener::failed,
+            [this, vpn](const ErrorHandler::ErrorType error) {
+        vpn->errorHandle(error);
+        emit completed();
+    });
+
     QString path("/api/v2/vpn/login/");
 
 #ifdef IOS_INTEGRATION
@@ -97,14 +104,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     query.addQueryItem("code_challenge", QUrl::toPercentEncoding(pkceCodeChallenge));
     query.addQueryItem("code_challenge_method", "S256");
 
-#ifdef IOS_INTEGRATION
-    query.addQueryItem("platform", "ios");
-#endif
-
-    if (!m_authenticationListener->start(url, query)) {
-        vpn->errorHandle(ErrorHandler::AuthenticationError);
-        emit completed();
-    }
+    m_authenticationListener->start(url, query);
 }
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray &data)

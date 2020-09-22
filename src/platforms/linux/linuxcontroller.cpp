@@ -1,5 +1,6 @@
 #include "linuxcontroller.h"
 #include "device.h"
+#include "errorhandler.h"
 #include "keys.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -27,7 +28,7 @@ void LinuxController::activate(const Server &server,
     DBus *dbus = new DBus(this);
 
     connect(dbus, &DBus::failed, [this]() {
-        MozillaVPN::instance()->setAlert(MozillaVPN::BackendServiceErrorAlert);
+        MozillaVPN::instance()-errorHandle(ErrorHandler::BackendServiceError);
         emit disconnected();
     });
 
