@@ -229,7 +229,8 @@ UI_DIR = .ui
 
 TRANSLATIONS += \
     ../translations/mozillavpn_en.ts \
-    ../translations/mozillavpn_it.ts
+    ../translations/mozillavpn_it.ts \
+    ../translations/mozillavpn_zh.ts
 
 CONFIG += lrelease
 CONFIG += embed_translations

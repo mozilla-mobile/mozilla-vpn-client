@@ -185,12 +185,12 @@
 <context>
     <name>VPNDevicesListHeader</name>
     <message>
-        <location filename="../src/components/VPNDevicesListHeader.qml" line="26"/>
+        <location filename="../src/components/VPNDevicesListHeader.qml" line="27"/>
         <source>Remove a device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/components/VPNDevicesListHeader.qml" line="32"/>
+        <location filename="../src/components/VPNDevicesListHeader.qml" line="33"/>
         <source>You&apos;ve reached your limit. To install the VPN on this device, you&apos;ll need to remove one.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -263,43 +263,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="131"/>
+        <location filename="../src/views/ViewDevices.qml" line="108"/>
         <source>Current device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="138"/>
+        <location filename="../src/views/ViewDevices.qml" line="115"/>
         <source>Added less than a hour ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="142"/>
+        <location filename="../src/views/ViewDevices.qml" line="119"/>
         <source>Added %1 hours ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="146"/>
+        <location filename="../src/views/ViewDevices.qml" line="123"/>
         <source>Added %1 days ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="262"/>
+        <location filename="../src/views/ViewDevices.qml" line="293"/>
         <source>Remove device?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="270"/>
+        <location filename="../src/views/ViewDevices.qml" line="301"/>
         <source>Please confirm you would like to remove
 %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="289"/>
+        <location filename="../src/views/ViewDevices.qml" line="320"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/views/ViewDevices.qml" line="297"/>
+        <location filename="../src/views/ViewDevices.qml" line="328"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
@@ -394,7 +394,7 @@
     <message>
         <location filename="../src/views/ViewOnboarding.qml" line="40"/>
         <source>Get started</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Inizia</translation>
     </message>
     <message>
         <location filename="../src/views/ViewOnboarding.qml" line="40"/>
@@ -425,7 +425,7 @@
     <message>
         <location filename="../src/settings/ViewSettingsMenu.qml" line="28"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lingua</translation>
     </message>
     <message>
         <location filename="../src/settings/ViewSettingsMenu.qml" line="34"/>
