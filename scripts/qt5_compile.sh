@@ -27,12 +27,15 @@ print G "done."
 
 LINUX="
   -platform linux-clang \
+  -egl \
+  -opengl es2 \
   -no-linuxfb \
   -xcb \
 "
 
 MACOS="
   -appstore-compliant \
+  -no-feature-qdbus \
   -no-dbus
 "
 
@@ -60,6 +63,7 @@ print Y "Wait..."
   -no-compile-examples \
   -nomake tests \
   -nomake tools \
+  -make libs \
   -no-sql-psql \
   -no-sql-sqlite \
   -skip qt3d \
@@ -68,37 +72,15 @@ print Y "Wait..."
   -skip qtserialport \
   -skip qtsensors \
   -skip qtwebsockets \
-  -skip qtxmlpatterns \
   -skip qtcharts \
   -skip qtgamepad \
   -skip qtwebchannel \
   -skip qtandroidextras \
   -feature-imageformat_png \
   -qt-libpng \
-  -no-feature-cups \
-  -no-feature-d3d12 \
-  -no-feature-assistant \
-  -no-feature-sqlmodel \
-  -no-feature-socks5 \
-  -no-feature-whatsthis \
-  -no-feature-valgrind \
-  -no-feature-testlib_selfcover \
-  -no-feature-imageformat_jpeg \
-  -no-feature-location-labs-plugin \
-  -no-feature-geoservices_esri \
-  -no-feature-geoservices_here \
-  -no-feature-geoservices_itemsoverlay \
-  -no-feature-geoservices_mapbox \
-  -no-feature-geoservices_mapboxgl \
-  -no-feature-geoservices_osm \
-  -no-feature-quick-designer \
-  -no-feature-distancefieldgenerator \
-  -no-feature-kmap2qmap \
-  -no-feature-qdbus \
-  -no-feature-qtdiag \
-  -no-feature-qml-preview \
-  -no-feature-printpreviewwidget \
-  -no-feature-printpreviewdialog \
+  -qt-zlib \
+  -qt-pcre \
+  -qt-freetype \
   $PLATFORM || die "Configuration error."
 
 print Y "Compiling..."
