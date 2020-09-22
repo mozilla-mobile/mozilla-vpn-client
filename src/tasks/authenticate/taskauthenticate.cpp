@@ -104,7 +104,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     query.addQueryItem("code_challenge", QUrl::toPercentEncoding(pkceCodeChallenge));
     query.addQueryItem("code_challenge_method", "S256");
 
-    m_authenticationListener->start(url, query);
+    m_authenticationListener->start(vpn, url, query);
 }
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray &data)

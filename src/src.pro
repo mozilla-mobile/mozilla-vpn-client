@@ -142,13 +142,17 @@ else:macos {
     SOURCES += \
             platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp \
-            platforms/macos/macosutils.mm \
             tasks/authenticate/authenticationlistener.cpp
+
+    OBJECTIVE_SOURCES += \
+            platforms/macos/macosutils.mm
 
     HEADERS += \
             platforms/macos/macospingsendworker.h \
-            platforms/macos/macosutils.h \
             tasks/authenticate/authenticationlistener.h
+
+    OBJECTIVE_HEADERS += \
+            platforms/macos/macosutils.h
 
     isEmpty(MACOS_INTEGRATION) {
         message(No integration required for this build - let\'s use the dummy controller)
@@ -161,11 +165,15 @@ else:macos {
         DEFINES += MACOS_INTEGRATION
 
         SOURCES += \
-                platforms/macos/macoscontroller.cpp \
+                platforms/macos/macoscontroller.cpp
+
+        OBJECTIVE_SOURCES += \
                 platforms/macos/macosswiftcontroller.mm
 
         HEADERS += \
-                platforms/macos/macoscontroller.h \
+                platforms/macos/macoscontroller.h
+
+        OBJECTIVE_HEADERS += \
                 platforms/macos/macosswiftcontroller.h
     }
 
@@ -184,6 +192,7 @@ else:ios {
     TARGET = MozillaVPN_ios
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
+    QT += gui-private
 
     LIBS += -framework AuthenticationServices
 
@@ -192,16 +201,20 @@ else:ios {
     message(No integration required for this build - let\'s use the dummy controller)
 
     SOURCES += \
-            platforms/ios/iosutils.mm \
             platforms/dummy/dummycontroller.cpp \
-            platforms/ios/authenticationlistener.mm \
             platforms/macos/macospingsendworker.cpp
 
-    HEADERS += \
+    OBJECTIVE_SOURCES += \
             platforms/ios/iosutils.mm \
+            platforms/ios/authenticationlistener.mm
+
+    HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/ios/authenticationlistener.h \
             platforms/macos/macospingsendworker.h
+
+    OBJECTIVE_HEADERS += \
+            platforms/ios/iosutils.h \
+            platforms/ios/authenticationlistener.h
 
     QMAKE_INFO_PLIST=../ios/Info.plist
 }

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     // Create the QML engine and expose a few internal objects.
     QQmlApplicationEngine engine;
 
-    MozillaVPN::createInstance(&app);
+    MozillaVPN::createInstance(&app, &engine);
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {

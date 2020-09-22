@@ -35,12 +35,12 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 static MozillaVPN *s_instance = nullptr;
 
 // static
-void MozillaVPN::createInstance(QObject *parent)
+void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine* engine)
 {
     qDebug() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN(parent);
+    s_instance = new MozillaVPN(parent, engine);
     s_instance->initialize();
 }
 
@@ -61,7 +61,7 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla", "guardianvpn")
+MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine) : QObject(parent), m_engine(engine), m_settings("mozilla", "guardianvpn")
 {
     m_controller.setVPN(this);
     m_releaseMonitor.setVPN(this);
@@ -75,7 +75,7 @@ MozillaVPN::MozillaVPN(QObject *parent) : QObject(parent), m_settings("mozilla",
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 
-    connect(&m_localizer, &Localizer::languageChanged, [this](const QString& language) {
+    connect(&m_localizer, &Localizer::languageChanged, [this](const QString &language) {
         qDebug() << "Storing the language:" << language;
         m_settings.setValue(SETTINGS_LANGUAGE, language);
     });
@@ -100,7 +100,7 @@ void MozillaVPN::initialize()
 
     QString language;
     if (m_settings.contains(SETTINGS_LANGUAGE)) {
-      language = m_settings.value(SETTINGS_LANGUAGE).toString();
+        language = m_settings.value(SETTINGS_LANGUAGE).toString();
     }
     m_localizer.initialize(language);
 

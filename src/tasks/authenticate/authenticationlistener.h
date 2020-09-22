@@ -5,6 +5,7 @@
 
 #include <QObject>
 
+class MozillaVPN;
 class QOAuthHttpServerReplyHandler;
 class QUrl;
 class QUrlQuery;
@@ -15,7 +16,7 @@ class AuthenticationListener : public QObject
 public:
     explicit AuthenticationListener(QObject *parent);
 
-    void start(QUrl &url, QUrlQuery &query);
+    void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query);
 
 signals:
     void completed(const QString &code);

@@ -18,6 +18,7 @@
 #include <QSettings>
 #include <QTimer>
 
+class QQmlApplicationEngine;
 class Task;
 
 class MozillaVPN final : public QObject
@@ -63,7 +64,7 @@ private:
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
 
 public:
-    static void createInstance(QObject* parent);
+    static void createInstance(QObject *parent, QQmlApplicationEngine *engine);
     static MozillaVPN *instance();
 
     State state() const { return m_state; }
@@ -132,8 +133,10 @@ public:
 
     Localizer* localizer() { return &m_localizer; }
 
+    QQmlApplicationEngine *engine() { return m_engine; }
+
 private:
-    explicit MozillaVPN(QObject *parent = nullptr);
+    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine);
     ~MozillaVPN();
 
     static void deleteInstance();
@@ -161,6 +164,8 @@ signals:
     void deviceRemoving(const QString& deviceName);
 
 private:
+    QQmlApplicationEngine *m_engine;
+
     QSettings m_settings;
 
     Localizer m_localizer;

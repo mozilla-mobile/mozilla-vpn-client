@@ -49,9 +49,10 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
             });
 }
 
-void AuthenticationListener::start(QUrl &url, QUrlQuery &query)
+void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
 {
     qDebug() << "AuthenticationListener initialize";
+    Q_UNUSED(vpn);
 
     if (!m_server->isListening()) {
         QVector<quint16> triedPorts;
