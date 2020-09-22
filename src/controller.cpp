@@ -135,6 +135,9 @@ void Controller::connected()
     // This is an unexpected connection. Let's use the Connecting state to animate the UI.
     if (m_state != StateConnecting && m_state != StateSwitching) {
         setState(StateConnecting);
+
+        m_connectionDate = QDateTime::currentDateTime();
+
         QTimer::singleShot(TIME_ACTIVATION, [this]() {
             if (m_state == StateConnecting) {
                 connected();

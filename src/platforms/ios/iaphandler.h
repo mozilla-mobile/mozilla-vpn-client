@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+class QInAppStore;
+
 class IAPHandler : public QObject
 {
     Q_OBJECT
@@ -14,6 +16,9 @@ public:
 
 signals:
     void completed();
+
+private:
+    QInAppStore* m_appStore = nullptr;
 };
 
 #endif // IAPHANDLER_H

@@ -1,6 +1,5 @@
 #include "mozillavpn.h"
 #include "device.h"
-#include "iaphandler.h"
 #include "servercountrymodel.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
@@ -8,6 +7,10 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "user.h"
+
+#ifdef IOS_INTEGRATION
+#include "iaphandler.h"
+#endif
 
 #include <QDebug>
 #include <QDesktopServices>
@@ -557,6 +560,7 @@ void MozillaVPN::subscribe()
 {
     qDebug() << "Subscription required";
 
+#ifdef IOS_INTEGRATION
     IAPHandler *iap = new IAPHandler(this);
 
     connect(iap, &IAPHandler::completed, [this]() {
@@ -565,4 +569,5 @@ void MozillaVPN::subscribe()
     });
 
     iap->start();
+#endif
 }

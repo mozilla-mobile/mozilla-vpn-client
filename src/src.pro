@@ -26,7 +26,6 @@ SOURCES += \
         devicemodel.cpp \
         errorhandler.cpp \
         hacl-star/Hacl_Curve25519_51.c \
-        iaphandler.cpp \
         keys.cpp \
         localizer.cpp \
         logger.cpp \
@@ -59,7 +58,6 @@ HEADERS += \
         device.h \
         devicemodel.h \
         errorhandler.h \
-        iaphandler.h \
         keys.h \
         localizer.h \
         logger.h \
@@ -195,6 +193,7 @@ else:ios {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
     QT += gui-private
+    QT += purchasing
 
     LIBS += -framework AuthenticationServices
 
@@ -204,6 +203,7 @@ else:ios {
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
+            platforms/ios/iaphandler.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
@@ -212,6 +212,7 @@ else:ios {
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
+            platforms/ios/iaphandler.h \
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \

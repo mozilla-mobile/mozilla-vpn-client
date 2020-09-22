@@ -56,7 +56,7 @@ void User::fromJson(const QByteArray &json)
         QJsonValue active = subVpnObj.take("active");
         Q_ASSERT(active.isBool());
 
-        m_subscriptionNeeded = active.toBool();
+        m_subscriptionNeeded = !active.toBool();
     }
 
     emit changed();
