@@ -164,4 +164,6 @@ Flickable {
             onClicked: VPNController.logout()
         }
     }
+
+    ScrollBar.vertical: ScrollBar {}
 }
