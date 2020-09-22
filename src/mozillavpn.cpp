@@ -1,5 +1,6 @@
 #include "mozillavpn.h"
 #include "device.h"
+#include "iaphandler.h"
 #include "servercountrymodel.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
@@ -285,7 +286,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     }
 
     if (deviceCount >= m_user.maxDevices()) {
-        // We need to go to "device limit"mode
+        // We need to go to "device limit" mode
         scheduleTask(new TaskFunction([this](MozillaVPN *) {
             if (m_state == StateAuthenticating) {
                 m_controller.setDeviceLimit(true);
@@ -383,6 +384,13 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     m_deviceModel.writeSettings(m_settings);
 
     emit m_user.changed();
+
+#ifdef IOS_INTEGRATION
+    if (m_user.subscriptionNeeded()) {
+        setState(StateSubscriptionNeeded);
+        return;
+    }
+#endif
 }
 
 void MozillaVPN::cancelAuthentication()
@@ -506,9 +514,18 @@ void MozillaVPN::postAuthenticationCompleted()
     qDebug() << "Post authentication completed";
 
     // Super racy, but it could happen that we are already in update-required state.
-    if (m_state != StateUpdateRequired) {
-        setState(StateMain);
+    if (m_state == StateUpdateRequired) {
+        return;
     }
+
+#ifdef IOS_INTEGRATION
+    if (m_user.subscriptionNeeded()) {
+        setState(StateSubscriptionNeeded);
+        return;
+    }
+#endif
+
+    setState(StateMain);
 }
 
 void MozillaVPN::setUpdateRecommended(bool value)
@@ -534,4 +551,18 @@ void MozillaVPN::stopSchedulingAccountAndServers()
 {
     qDebug() << "Stop scheduling account and servers";
     m_accountAndServersTimer.stop();
+}
+
+void MozillaVPN::subscribe()
+{
+    qDebug() << "Subscription required";
+
+    IAPHandler *iap = new IAPHandler(this);
+
+    connect(iap, &IAPHandler::completed, [this]() {
+        qDebug() << "Subscription completed";
+        setState(StateMain);
+    });
+
+    iap->start();
 }

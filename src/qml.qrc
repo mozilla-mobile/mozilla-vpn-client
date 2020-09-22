@@ -343,5 +343,6 @@
         <file>components/VPNIconButton.qml</file>
         <file>resources/settings-white.svg</file>
         <file>components/VPNGetHelp.qml</file>
+        <file>states/StateSubscriptionNeeded.qml</file>
     </qresource>
 </RCC>

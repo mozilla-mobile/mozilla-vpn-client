@@ -26,6 +26,7 @@ SOURCES += \
         devicemodel.cpp \
         errorhandler.cpp \
         hacl-star/Hacl_Curve25519_51.c \
+        iaphandler.cpp \
         keys.cpp \
         localizer.cpp \
         logger.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
         device.h \
         devicemodel.h \
         errorhandler.h \
+        iaphandler.h \
         keys.h \
         localizer.h \
         logger.h \

@@ -32,6 +32,7 @@ public:
         StatePostAuthentication,
         StateMain,
         StateUpdateRequired,
+        StateSubscriptionNeeded,
     };
     Q_ENUM(State);
 
@@ -84,6 +85,8 @@ public:
     Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
 
     Q_INVOKABLE void postAuthenticationCompleted();
+
+    Q_INVOKABLE void subscribe();
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.

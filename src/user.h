@@ -33,6 +33,8 @@ public:
     // "Int"to make QML happy
     int maxDevices() const { return (int) m_maxDevices; }
 
+    bool subscriptionNeeded() const { return m_subscriptionNeeded; }
+
 signals:
     void changed();
 
@@ -40,7 +42,8 @@ private:
     QString m_avatar;
     QString m_displayName;
     QString m_email;
-    uint32_t m_maxDevices;
+    uint32_t m_maxDevices = 5;
+    bool m_subscriptionNeeded = false;
 };
 
 #endif // USER_H

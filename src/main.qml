@@ -86,6 +86,14 @@ Window {
                         target: loader
                         source: "states/StateUpdateRequired.qml"
                     }
+                },
+
+                State {
+                    name: VPN.StateSubscriptionNeeded
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionNeeded.qml"
+                    }
                 }
             ]
 

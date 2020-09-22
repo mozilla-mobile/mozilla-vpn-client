@@ -12,6 +12,7 @@ constexpr const char *SETTINGS_AVATAR = "user/avatar";
 constexpr const char *SETTINGS_DISPLAYNAME = "user/displayName";
 constexpr const char *SETTINGS_EMAIL = "user/email";
 constexpr const char *SETTINGS_MAXDEVICES = "user/maxDevices";
+constexpr const char *SETTINGS_SUBSCRIPTIONNEEDED = "user/subscriptionNeeded";
 
 void User::fromJson(const QByteArray &json)
 {
@@ -40,6 +41,24 @@ void User::fromJson(const QByteArray &json)
     Q_ASSERT(maxDevices.isDouble());
     m_maxDevices = maxDevices.toInt();
 
+    Q_ASSERT(obj.contains("subscriptions"));
+    QJsonValue subscriptions = obj.take("subscriptions");
+    Q_ASSERT(subscriptions.isObject());
+
+    m_subscriptionNeeded = true;
+    QJsonObject subscriptionsObj = subscriptions.toObject();
+    if (subscriptionsObj.contains("vpn")) {
+        QJsonValue subVpn = subscriptionsObj.take("vpn");
+        Q_ASSERT(subVpn.isObject());
+
+        QJsonObject subVpnObj = subVpn.toObject();
+        Q_ASSERT(subVpnObj.contains("active"));
+        QJsonValue active = subVpnObj.take("active");
+        Q_ASSERT(active.isBool());
+
+        m_subscriptionNeeded = active.toBool();
+    }
+
     emit changed();
 }
 
@@ -54,6 +73,7 @@ bool User::fromSettings(QSettings &settings)
     m_displayName = settings.value(SETTINGS_DISPLAYNAME).toString();
     m_email = settings.value(SETTINGS_EMAIL).toString();
     m_maxDevices = settings.value(SETTINGS_MAXDEVICES).toUInt();
+    m_subscriptionNeeded = settings.value(SETTINGS_SUBSCRIPTIONNEEDED).toBool();
 
     return true;
 }
@@ -64,4 +84,5 @@ void User::writeSettings(QSettings &settings)
     settings.setValue(SETTINGS_DISPLAYNAME, m_displayName);
     settings.setValue(SETTINGS_EMAIL, m_email);
     settings.setValue(SETTINGS_MAXDEVICES, m_maxDevices);
+    settings.setValue(SETTINGS_SUBSCRIPTIONNEEDED, m_subscriptionNeeded);
 }
