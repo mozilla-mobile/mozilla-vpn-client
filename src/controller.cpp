@@ -48,8 +48,8 @@ Controller::Controller()
 
                 // If we are connected already at startup time, we can trigger the connection sequence of tasks.
                 if (state == StateOn) {
-                    m_connectionDate = connectionDate;
                     connected();
+                    m_connectionDate = connectionDate;
                 }
             });
 
