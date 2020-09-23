@@ -344,5 +344,6 @@
         <file>resources/settings-white.svg</file>
         <file>components/VPNGetHelp.qml</file>
         <file>states/StateSubscriptionNeeded.qml</file>
+        <file>components/VPNAnimatedCircle.qml</file>
     </qresource>
 </RCC>

@@ -54,6 +54,10 @@ Rectangle {
                 target: connectionStability
                 visible: false
             }
+            PropertyChanges {
+                target: animation
+                visible: false
+            }
         },
         State {
             name: VPNController.StateOff
@@ -82,6 +86,10 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animation
                 visible: false
             }
         },
@@ -114,9 +122,12 @@ Rectangle {
                 target: iconButton
                 backgroundColor: Theme.whiteSettingsBtn
             }
-
             PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animation
                 visible: false
             }
         },
@@ -151,6 +162,10 @@ Rectangle {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
+            PropertyChanges {
+                target: animation
+                visible: true
+            }
         },
         State {
             name: VPNController.StateDisconnecting
@@ -179,6 +194,10 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animation
                 visible: false
             }
         },
@@ -211,6 +230,10 @@ Rectangle {
                 target: connectionStability
                 visible: false
             }
+            PropertyChanges {
+                target: animation
+                visible: false
+            }
         },
         State {
             name: VPNController.StateDeviceLimit
@@ -241,6 +264,10 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animation
                 visible: false
             }
         }
@@ -305,10 +332,10 @@ Rectangle {
         anchors.rightMargin: Theme.windowMargin / 2
 
         Image {
-             id: settingsImage
-             anchors.centerIn :iconButton
-             sourceSize.height: 22
-             sourceSize.width: 22
+            id: settingsImage
+            anchors.centerIn :iconButton
+            sourceSize.height: 22
+            sourceSize.width: 22
         }
     }
 
@@ -319,6 +346,22 @@ Rectangle {
         y: 50
         sourceSize.width: 80
         sourceSize.height: 80
+    }
+
+    Item {
+        id: animation
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        VPNAnimatedCircle {
+            delay: 0
+            duration: 1800
+        }
+
+        VPNAnimatedCircle {
+            delay: 900
+            duration: 1800
+        }
     }
 
     Text {
