@@ -180,7 +180,6 @@ void Controller::disconnected() {
     }
 
     NextStep nextStep = m_nextStep;
-    m_nextStep = None;
 
     if (processNextStep()) {
         return;
