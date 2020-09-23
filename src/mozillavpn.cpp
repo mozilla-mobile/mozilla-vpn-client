@@ -9,7 +9,7 @@
 #include "user.h"
 
 #ifdef IOS_INTEGRATION
-#include "iaphandler.h"
+#include "platforms/ios/iaphandler.h"
 #endif
 
 #include <QDebug>

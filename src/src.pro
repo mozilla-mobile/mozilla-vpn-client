@@ -139,6 +139,9 @@ else:macos {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
 
+    # For the loginitem
+    LIBS += -framework ServiceManagement
+
     SOURCES += \
             platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp \
@@ -195,6 +198,7 @@ else:ios {
     QT += gui-private
     QT += purchasing
 
+    # For the authentication
     LIBS += -framework AuthenticationServices
 
     DEFINES += IOS_INTEGRATION
