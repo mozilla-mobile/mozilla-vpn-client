@@ -47,6 +47,8 @@ void ConnectionHealth::start(const Server &server)
 {
     qDebug() << "ConnectionHealth activated for server:" << server.hostname();
 
+    setStability(Stable);
+
     m_gateway = server.ipv4Gateway();
     sendPing();
 }
