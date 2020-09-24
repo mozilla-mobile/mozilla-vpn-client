@@ -11,6 +11,7 @@ bool DBus::activate(const QString &privateKey,
                     const QString &serverIpv4Gateway,
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
+                    const QString &serverIpv6AddrIn,
                     int serverPort,
                     bool ipv6Enabled)
 {
@@ -25,6 +26,7 @@ bool DBus::activate(const QString &privateKey,
                       serverIpv4Gateway,
                       serverPublicKey,
                       serverIpv4AddrIn,
+                      serverIpv6AddrIn,
                       serverPort,
                       ipv6Enabled);
 }
@@ -35,6 +37,7 @@ bool DBus::deactivate(const QString &privateKey,
                       const QString &serverIpv4Gateway,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
+                      const QString &serverIpv6AddrIn,
                       int serverPort,
                       bool ipv6Enabled)
 {
@@ -49,6 +52,7 @@ bool DBus::deactivate(const QString &privateKey,
                       serverIpv4Gateway,
                       serverPublicKey,
                       serverIpv4AddrIn,
+                      serverIpv6AddrIn,
                       serverPort,
                       ipv6Enabled);
 }
@@ -60,6 +64,7 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &serverIpv4Gateway,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
+                      const QString &serverIpv6AddrIn,
                       int serverPort,
                       bool ipv6Enabled)
 {
@@ -71,6 +76,7 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  serverIpv4Gateway,
                  serverPublicKey,
                  serverIpv4AddrIn,
+                 serverIpv6AddrIn,
                  serverPort,
                  ipv6Enabled);
 

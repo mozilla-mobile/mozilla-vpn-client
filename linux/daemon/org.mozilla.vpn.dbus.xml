@@ -9,6 +9,7 @@
       <arg name="serverIpv4Gateway" type="s" direction="in"/>
       <arg name="serverPublicKey" type="s" direction="in"/>
       <arg name="serverIpv4AddrIn" type="s" direction="in"/>
+      <arg name="serverIpv6AddrIn" type="s" direction="in"/>
       <arg name="serverPort" type="i" direction="in"/>
       <arg name="ipv6Enabed" type="b" direction="in"/>
     </method>
@@ -20,6 +21,7 @@
       <arg name="serverIpv4Gateway" type="s" direction="in"/>
       <arg name="serverPublicKey" type="s" direction="in"/>
       <arg name="serverIpv4AddrIn" type="s" direction="in"/>
+      <arg name="serverIpv6AddrIn" type="s" direction="in"/>
       <arg name="serverPort" type="i" direction="in"/>
       <arg name="ipv6Enabed" type="b" direction="in"/>
     </method>

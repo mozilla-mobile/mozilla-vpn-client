@@ -30,6 +30,7 @@ void DBus::activate(const Server &server, const Device *device, const Keys *keys
                            server.ipv4Gateway(),
                            server.publicKey(),
                            server.ipv4AddrIn(),
+                           server.ipv6AddrIn(),
                            server.choosePort(),
                            MozillaVPN::instance()->settingsHolder()->ipv6());
     monitorReply(reply);
@@ -45,6 +46,7 @@ void DBus::deactivate(const Server &server, const Device *device, const Keys *ke
                              server.ipv4Gateway(),
                              server.publicKey(),
                              server.ipv4AddrIn(),
+                             server.ipv6AddrIn(),
                              server.choosePort(),
                              MozillaVPN::instance()->settingsHolder()->ipv6());
     monitorReply(reply);

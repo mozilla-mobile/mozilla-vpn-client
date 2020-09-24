@@ -21,6 +21,7 @@ public:
              const QString &serverIpv4Gateway,
              const QString &serverPublicKey,
              const QString &serverIpv4AddrIn,
+             const QString &serverIpv6AddrIn,
              int serverPort,
              bool ipv6Enabled);
 

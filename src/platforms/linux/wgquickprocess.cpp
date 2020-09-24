@@ -14,9 +14,12 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &serverIpv4Gateway,
                          const QString &serverPublicKey,
                          const QString &serverIpv4AddrIn,
+                         const QString &serverIpv6AddrIn,
                          int serverPort,
                          bool ipv6Enabled)
 {
+    Q_UNUSED(serverIpv6AddrIn);
+
     QByteArray content;
     content.append("[Interface]\nPrivateKey = ");
     content.append(privateKey);
@@ -41,6 +44,16 @@ void WgQuickProcess::run(const QString &privateKey,
     content.append("\nEndpoint = ");
     content.append(serverIpv4AddrIn);
     content.append(QString(":%1").arg(serverPort));
+
+    /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
+     * to be happy if there are 2 endpoints.
+    if (ipv6Enabled) {
+        content.append("\nEndpoint = [");
+        content.append(serverIpv6AddrIn);
+        content.append(QString("]:%1").arg(serverPort));
+    }
+    */
+
     content.append("\nAllowedIPs = 0.0.0.0/0");
 
     if (ipv6Enabled) {

@@ -47,6 +47,7 @@ void LinuxController::activate(const Server &server,
                  server.ipv4Gateway(),
                  server.publicKey(),
                  server.ipv4AddrIn(),
+                 server.ipv6AddrIn(),
                  server.choosePort(),
                  MozillaVPN::instance()->settingsHolder()->ipv6());
 #endif
@@ -82,6 +83,7 @@ void LinuxController::deactivate(const Server &server,
                  server.ipv4Gateway(),
                  server.publicKey(),
                  server.ipv4AddrIn(),
+                 server.ipv6AddrIn(),
                  server.choosePort(),
                  MozillaVPN::instance()->settingsHolder()->ipv6());
 #endif
