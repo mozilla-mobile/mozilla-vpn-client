@@ -69,6 +69,7 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine) : QObject
 {
     m_controller.setVPN(this);
     m_releaseMonitor.setVPN(this);
+    m_settingsHolder.setVPN(this, &m_settings);
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 

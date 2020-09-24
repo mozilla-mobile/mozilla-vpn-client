@@ -9,6 +9,7 @@
 #include "releasemonitor.h"
 #include "servercountrymodel.h"
 #include "serverdata.h"
+#include "settingsholder.h"
 #include "user.h"
 
 #include <QList>
@@ -138,6 +139,8 @@ public:
 
     QQmlApplicationEngine *engine() { return m_engine; }
 
+    SettingsHolder *settingsHolder() { return &m_settingsHolder; }
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine);
     ~MozillaVPN();
@@ -170,6 +173,8 @@ private:
     QQmlApplicationEngine *m_engine;
 
     QSettings m_settings;
+
+    SettingsHolder m_settingsHolder;
 
     Localizer m_localizer;
 

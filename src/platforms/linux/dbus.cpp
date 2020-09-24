@@ -1,6 +1,7 @@
 #include "dbus.h"
 #include "device.h"
 #include "keys.h"
+#include "mozillavpn.h"
 #include "server.h"
 
 #include <QDBusPendingCall>
@@ -22,26 +23,30 @@ DBus::DBus(QObject *parent) : QObject(parent)
 void DBus::activate(const Server &server, const Device *device, const Keys *keys)
 {
     qDebug() << "Activate via DBus";
-    QDBusPendingReply<bool> reply = m_dbus->activate(keys->privateKey(),
-                                                     device->ipv4Address(),
-                                                     device->ipv6Address(),
-                                                     server.ipv4Gateway(),
-                                                     server.publicKey(),
-                                                     server.ipv4AddrIn(),
-                                                     server.choosePort());
+    QDBusPendingReply<bool> reply
+        = m_dbus->activate(keys->privateKey(),
+                           device->ipv4Address(),
+                           device->ipv6Address(),
+                           server.ipv4Gateway(),
+                           server.publicKey(),
+                           server.ipv4AddrIn(),
+                           server.choosePort(),
+                           MozillaVPN::instance()->settingsHolder()->ipv6());
     monitorReply(reply);
 }
 
 void DBus::deactivate(const Server &server, const Device *device, const Keys *keys)
 {
     qDebug() << "Deactivate via DBus";
-    QDBusPendingReply<bool> reply = m_dbus->deactivate(keys->privateKey(),
-                                                       device->ipv4Address(),
-                                                       device->ipv6Address(),
-                                                       server.ipv4Gateway(),
-                                                       server.publicKey(),
-                                                       server.ipv4AddrIn(),
-                                                       server.choosePort());
+    QDBusPendingReply<bool> reply
+        = m_dbus->deactivate(keys->privateKey(),
+                             device->ipv4Address(),
+                             device->ipv6Address(),
+                             server.ipv4Gateway(),
+                             server.publicKey(),
+                             server.ipv4AddrIn(),
+                             server.choosePort(),
+                             MozillaVPN::instance()->settingsHolder()->ipv6());
     monitorReply(reply);
 }
 

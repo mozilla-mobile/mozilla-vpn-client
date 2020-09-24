@@ -16,7 +16,7 @@ public class MacOSControllerImpl : NSObject {
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
-    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
+    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, ipv6Enabled: Bool, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
         super.init()
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
@@ -30,7 +30,10 @@ public class MacOSControllerImpl : NSObject {
         interface = InterfaceConfiguration(privateKey: privateKey)
         if let ipv4Address = IPAddressRange(from: ipv4Address),
            let ipv6Address = IPAddressRange(from: ipv6Address) {
-            interface!.addresses = [ipv4Address, ipv6Address]
+            interface!.addresses = [ipv4Address]
+            if (ipv6Enabled) {
+                interface!.addresses.append(ipv6Address)
+            }
         }
 
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
@@ -102,7 +105,7 @@ public class MacOSControllerImpl : NSObject {
         stateChangeCallback?(session.status == .connected)
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, failureCallback: @escaping () -> Void) {
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, ipv6Enabled: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -114,13 +117,20 @@ public class MacOSControllerImpl : NSObject {
         peerConfiguration.endpoint = Endpoint(from: serverIpv4AddrIn + ":\(serverPort )")
         peerConfiguration.allowedIPs = [
             IPAddressRange(address: IPv4Address("0.0.0.0")!, networkPrefixLength: 0),
-            IPAddressRange(address: IPv6Address("::")!, networkPrefixLength: 0)
         ]
+
+        if (ipv6Enabled) {
+            peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address("::")!, networkPrefixLength: 0))
+        }
 
         var peerConfigurations: [PeerConfiguration] = []
         peerConfigurations.append(peerConfiguration)
 
-        interface!.dns = [ DNSServer(address: ipv4GatewayIP!), DNSServer(address: ipv6GatewayIP!) ]
+        interface!.dns = [ DNSServer(address: ipv4GatewayIP!)]
+
+        if (ipv6Enabled) {
+            interface!.dns.append(DNSServer(address: ipv6GatewayIP!))
+        }
 
         let config = TunnelConfiguration(name: "MozillaVPN", interface: interface!, peers: peerConfigurations)
 

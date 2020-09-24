@@ -1,4 +1,5 @@
 #include "macosswiftcontroller.h"
+#include "mozillavpn.h"
 #include "keys.h"
 #include "device.h"
 #include "server.h"
@@ -26,10 +27,11 @@ void MacOSSwiftController::activate(const Server* server, std::function<void()> 
                        serverPublicKey:server->publicKey().toNSString()
                       serverIpv4AddrIn:server->ipv4AddrIn().toNSString()
                             serverPort:server->choosePort()
-                               failureCallback:^() {
-        qDebug() << "MacOSSWiftController - connection failed";
-        failureCallback();
-    }];
+                           ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
+                       failureCallback:^() {
+                           qDebug() << "MacOSSWiftController - connection failed";
+                           failureCallback();
+                       }];
 }
 
 // static
@@ -61,6 +63,7 @@ void MacOSSwiftController::initialize(const Device* device, const Keys* keys, st
     impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
                                                ipv4Address:device->ipv4Address().toNSString()
                                                ipv6Address:device->ipv6Address().toNSString()
+                                               ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
                                                    closure:^(ConnectionState state, NSDate* date) {
         qDebug() << "Creation completed with connection state:" << state;
         creating = false;

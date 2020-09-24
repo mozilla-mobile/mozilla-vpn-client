@@ -41,6 +41,7 @@ SOURCES += \
         servercountrymodel.cpp \
         serverdata.cpp \
         serversfetcher.cpp \
+        settingsholder.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
@@ -73,6 +74,7 @@ HEADERS += \
         servercountrymodel.h \
         serverdata.h \
         serversfetcher.h \
+        settingsholder.h \
         signalhandler.h \
         systemtrayhandler.h \
         task.h \

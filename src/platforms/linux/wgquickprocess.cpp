@@ -14,23 +14,40 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &serverIpv4Gateway,
                          const QString &serverPublicKey,
                          const QString &serverIpv4AddrIn,
-                         int serverPort)
+                         int serverPort,
+                         bool ipv6Enabled)
 {
     QByteArray content;
     content.append("[Interface]\nPrivateKey = ");
     content.append(privateKey);
     content.append("\nAddress = ");
     content.append(deviceIpv4Address);
-    content.append(", ");
-    content.append(deviceIpv6Address);
+
+    if (ipv6Enabled) {
+        content.append(", ");
+        content.append(deviceIpv6Address);
+    }
+
     content.append("\nDNS = ");
     content.append(serverIpv4Gateway);
+
+    if (ipv6Enabled) {
+        content.append(", ");
+        content.append(serverIpv4Gateway);
+    }
+
     content.append("\n\n[Peer]\nPublicKey = ");
     content.append(serverPublicKey);
     content.append("\nEndpoint = ");
     content.append(serverIpv4AddrIn);
     content.append(QString(":%1").arg(serverPort));
-    content.append("\nAllowedIPs = 0.0.0.0/0,::0/0\n");
+    content.append("\nAllowedIPs = 0.0.0.0/0");
+
+    if (ipv6Enabled) {
+        content.append(",::0");
+    }
+
+    content.append("\n");
 
     if (!tmpDir.isValid()) {
         qWarning("Cannot create a temporary directory");

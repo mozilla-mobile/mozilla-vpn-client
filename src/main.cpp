@@ -113,6 +113,13 @@ int main(int argc, char *argv[])
             return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSettings", [](QQmlEngine *, QJSEngine *) -> QObject * {
+            QObject *obj = MozillaVPN::instance()->settingsHolder();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+        });
+
     QObject::connect(MozillaVPN::instance()->localizer(),
                      &Localizer::languageChanged,
                      &engine,
