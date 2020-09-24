@@ -20,14 +20,17 @@ public Q_SLOTS:
                   const QString &serverIpv4Gateway,
                   const QString &serverPublicKey,
                   const QString &serverIpv4AddrIn,
-                  int serverPort);
+                  int serverPort,
+                  bool ipv6Enabled);
+
     bool deactivate(const QString &privateKey,
                     const QString &deviceIpv4Address,
                     const QString &deviceIpv6Address,
                     const QString &serverIpv4Gateway,
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
-                    int serverPort);
+                    int serverPort,
+                    bool ipv6Enabled);
 
 private:
     bool runWgQuick(WgQuickProcess::Op op,
@@ -37,7 +40,8 @@ private:
                     const QString &serverIpv4Gateway,
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
-                    int serverPort);
+                    int serverPort,
+                    bool ipv6Enabled);
 };
 
 #endif // DBUS_H

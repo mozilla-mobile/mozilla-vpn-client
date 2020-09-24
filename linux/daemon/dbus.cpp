@@ -11,7 +11,8 @@ bool DBus::activate(const QString &privateKey,
                     const QString &serverIpv4Gateway,
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
-                    int serverPort)
+                    int serverPort,
+                    bool ipv6Enabled)
 {
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.activate")) {
         return false;
@@ -24,7 +25,8 @@ bool DBus::activate(const QString &privateKey,
                       serverIpv4Gateway,
                       serverPublicKey,
                       serverIpv4AddrIn,
-                      serverPort);
+                      serverPort,
+                      ipv6Enabled);
 }
 
 bool DBus::deactivate(const QString &privateKey,
@@ -33,7 +35,8 @@ bool DBus::deactivate(const QString &privateKey,
                       const QString &serverIpv4Gateway,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
-                      int serverPort)
+                      int serverPort,
+                      bool ipv6Enabled)
 {
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.deactivate")) {
         return false;
@@ -46,7 +49,8 @@ bool DBus::deactivate(const QString &privateKey,
                       serverIpv4Gateway,
                       serverPublicKey,
                       serverIpv4AddrIn,
-                      serverPort);
+                      serverPort,
+                      ipv6Enabled);
 }
 
 bool DBus::runWgQuick(WgQuickProcess::Op op,
@@ -56,7 +60,8 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &serverIpv4Gateway,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
-                      int serverPort)
+                      int serverPort,
+                      bool ipv6Enabled)
 {
     WgQuickProcess *wgQuick = new WgQuickProcess(op);
 
@@ -66,7 +71,8 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  serverIpv4Gateway,
                  serverPublicKey,
                  serverIpv4AddrIn,
-                 serverPort);
+                 serverPort,
+                 ipv6Enabled);
 
     enum Result {
         Pending,
