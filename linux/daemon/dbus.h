@@ -1,7 +1,7 @@
 #ifndef DBUS_H
 #define DBUS_H
 
-#include "../src/platforms/linux/wgquickprocess.h"
+#include "../../src/platforms/linux/wgquickprocess.h"
 
 #include <QObject>
 

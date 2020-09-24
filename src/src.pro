@@ -116,7 +116,7 @@ linux {
         DEFINES += USE_POLKIT
 
         QT += dbus
-        DBUS_INTERFACES = ../linux/org.mozilla.vpn.dbus.xml
+        DBUS_INTERFACES = ../linux/daemon/org.mozilla.vpn.dbus.xml
 
         SOURCES += \
         platforms/linux/dbus.cpp

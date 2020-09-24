@@ -22,7 +22,7 @@ PREFIX=$1
 shift
 
 printn Y "Cleaning the folder... "
-#make distclean -j8 &>/dev/null;
+make distclean -j8 &>/dev/null;
 print G "done."
 
 LINUX="
@@ -62,7 +62,6 @@ print Y "Wait..."
   -silent \
   -no-compile-examples \
   -nomake tests \
-  -nomake tools \
   -make libs \
   -no-sql-psql \
   -no-sql-sqlite \
@@ -77,6 +76,7 @@ print Y "Wait..."
   -skip qtwebchannel \
   -skip qtandroidextras \
   -feature-imageformat_png \
+  -qt-doubleconversion \
   -qt-libpng \
   -qt-zlib \
   -qt-pcre \
