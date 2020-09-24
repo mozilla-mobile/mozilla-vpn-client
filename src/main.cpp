@@ -7,6 +7,10 @@
 #include "platforms/linux/wgquickdependencies.h"
 #endif
 
+#ifdef MACOS_INTEGRATION
+#include "platforms/macos/macosutils.h"
+#endif
+
 #include <QApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
@@ -29,6 +33,10 @@ int main(int argc, char *argv[])
     if (!WgQuickDependencies::checkDependencies()) {
         return 1;
     }
+#endif
+
+#ifdef MACOS_INTEGRATION
+    MacOSUtils::enableLoginItem();
 #endif
 
     // Signal handling for a proper shutdown.

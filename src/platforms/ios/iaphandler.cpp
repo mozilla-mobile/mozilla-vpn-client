@@ -1,4 +1,4 @@
-#include "iaphandler.h"
+#include "platforms/ios/iaphandler.h"
 
 #include <QDebug>
 #include <QInAppStore>

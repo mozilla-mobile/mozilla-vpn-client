@@ -7,6 +7,8 @@ class MacOSUtils
 {
 public:
     static QString computerName();
+
+    static void enableLoginItem();
 };
 
 #endif // MACOSUTILS_H

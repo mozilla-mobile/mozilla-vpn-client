@@ -11,6 +11,7 @@ class XCodeprojPatcher
 
     setup_target_main version
     setup_target_extension version
+    setup_target_loginitem version
     setup_target_go
 
     @project.save
@@ -31,7 +32,7 @@ class XCodeprojPatcher
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
-      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/WireGuard-Bridging-Header.h'
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/app/WireGuard-Bridging-Header.h'
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
@@ -40,8 +41,8 @@ class XCodeprojPatcher
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
 
       # other config
-      config.build_settings['INFOPLIST_FILE'] ||= 'macos/Info.plist'
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPN.entitlements'
+      config.build_settings['INFOPLIST_FILE'] ||= 'macos/app/Info.plist'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/MozillaVPN.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
 
       if config.name == 'Release'
@@ -53,7 +54,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('WireGuard')
 
     [
-      'macos/wireguard-go-version.h',
+      'macos/gobridge/wireguard-go-version.h',
       'wireguard-apple/WireGuard/Shared/Keychain.swift',
       'wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
       'wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
@@ -90,7 +91,7 @@ class XCodeprojPatcher
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
-      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/WireGuardNetworkExtension-Bridging-Header.h'
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/networkextension/WireGuardNetworkExtension-Bridging-Header.h'
       config.build_settings['LIBRARY_SEARCH_PATHS'] ||= ['$(inherited)', 'wireguard-apple/wireguard-go-bridge/out']
 
       # Versions and names
@@ -101,7 +102,7 @@ class XCodeprojPatcher
 
       # other configs
       config.build_settings['INFOPLIST_FILE'] ||= 'wireguard-apple/WireGuard/WireGuardNetworkExtension/Info.plist'
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/MozillaVPNNetworkExtension.entitlements'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/networkextension/MozillaVPNNetworkExtension.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
 
       # This is needed to compile the macosglue without Qt.
@@ -167,6 +168,7 @@ class XCodeprojPatcher
     @target_main.dependencies << dependency
 
     copy_appex = @target_main.new_copy_files_build_phase
+    copy_appex.name = 'Copy Network-Extension plugin'
     copy_appex.symbol_dst_subfolder_spec = :plug_ins
 
     appex_file = copy_appex.add_file_reference @target_extension.product_reference
@@ -186,6 +188,60 @@ class XCodeprojPatcher
     @project.targets << target_go
 
     @target_extension.add_dependency target_go
+  end
+
+  def setup_target_loginitem(version)
+    @target_loginitem = @project.new_target(:application, 'MozillaVPNLoginItem', :osx)
+
+    @target_loginitem.build_configurations.each do |config|
+      config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
+
+      # Versions and names
+      config.build_settings['MARKETING_VERSION'] ||= version
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.login-item'
+      config.build_settings['PRODUCT_NAME'] = 'MozillaVPNLoginItem'
+
+      # other configs
+      config.build_settings['INFOPLIST_FILE'] ||= 'macos/loginitem/Info.plist'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/loginitem/MozillaVPNLoginItem.entitlements'
+      config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
+      config.build_settings['SKIP_INSTALL'] = 'YES'
+
+      if config.name == 'Release'
+        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
+      end
+    end
+
+    group = @project.main_group.new_group('LoginItem')
+    [
+      'macos/loginitem/main.m',
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_loginitem.add_file_references([file])
+    }
+
+    # This fails: @target_main.add_dependency @target_loginitem
+    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
+    container_proxy.container_portal = @project.root_object.uuid
+    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
+    container_proxy.remote_global_id_string = @target_loginitem.uuid
+    container_proxy.remote_info = @target_loginitem.name
+
+    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
+    dependency.name = @target_loginitem.name
+    dependency.target = @target_main
+    dependency.target_proxy = container_proxy
+
+    @target_main.dependencies << dependency
+
+    copy_app = @target_main.new_copy_files_build_phase
+    copy_app.name = 'Copy LoginItem'
+    copy_app.symbol_dst_subfolder_spec = :wrapper
+    copy_app.dst_path = 'Contents/Library/LoginItems'
+
+    app_file = copy_app.add_file_reference @target_loginitem.product_reference
+    app_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
   def die(msg)
