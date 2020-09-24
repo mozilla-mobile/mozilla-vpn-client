@@ -149,10 +149,15 @@ Rectangle {
                 target: iconButton
                 backgroundColor: Theme.whiteSettingsBtn
             }
-
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
+            }
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: true
+                opacity: 1
+                startAnimation: true
             }
         },
         State {
@@ -297,7 +302,9 @@ Rectangle {
     height: 318
     width: parent.width - 32
 
-    VPNAnimatedRings { }
+    VPNAnimatedRings {
+        id: animatedRingsWrapper
+    }
 
     VPNIconButton {
         id: iconButton

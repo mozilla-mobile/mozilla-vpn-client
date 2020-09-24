@@ -7,18 +7,18 @@ import Mozilla.VPN 1.0
 
 Rectangle {
     property var yCenter: logo.y + (logo.sourceSize.height / 2) - 1
-    id: animationWrapper
+    property bool startAnimation: false
+    onStartAnimationChanged: animatedRings.requestPaint();
+
+    id: animatedRingsWrapper
 
     anchors.fill: box
     radius: box.radius
     color: "transparent"
     visible: false
-    opacity: 0
+
 
     Canvas {
-        property bool startAnimation: false
-        onStartAnimationChanged: animatedRings.requestPaint();
-
         property real maxRadius: 160
         property real startingRadius: 40
         property real startingBorderWidth: 0
@@ -36,13 +36,13 @@ Rectangle {
         property var drawingRing3: false
 
         property var ringXCenter: parent.width / 2
-        property var ringYCenter: animationWrapper.yCenter
+        property var ringYCenter: animatedRingsWrapper.yCenter
 
         id: animatedRings
         opacity: .1
-        height: animationWrapper.height
-        width: animationWrapper.width
-        anchors.fill: animationWrapper
+        height: animatedRingsWrapper.height
+        width: animatedRingsWrapper.width
+        anchors.fill: animatedRingsWrapper
         onRing1RadiusChanged: animatedRings.requestPaint()
         renderStrategy: Canvas.Threaded
         contextType: "2d"
@@ -126,7 +126,7 @@ Rectangle {
             let ctx = getContext("2d")
             ctx.reset();
 
-            if (!startAnimation) {
+            if (!animatedRingsWrapper.startAnimation) {
                 resetRingValues();
                 return;
             }
@@ -157,7 +157,7 @@ Rectangle {
 
     Rectangle {
         anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: animationWrapper.horizontalCenter
+        anchors.horizontalCenter: animatedRingsWrapper.horizontalCenter
         y: 39
         height: 100
         width: 100
@@ -167,7 +167,7 @@ Rectangle {
 
     RadialGradient {
         id: bgGradient
-          anchors.fill: animationWrapper
+          anchors.fill: animatedRingsWrapper
           verticalOffset: -68
           gradient: Gradient {
               GradientStop { position: 0.26; color: "transparent"}
@@ -176,56 +176,13 @@ Rectangle {
           layer.enabled: true
           layer.effect: OpacityMask {
               maskSource: Item {
-                          width: animationWrapper.width
-                          height: animationWrapper.height
+                          width: animatedRingsWrapper.width
+                          height: animatedRingsWrapper.height
                           Rectangle {
                               anchors.fill: parent
-                              radius: animationWrapper.radius
+                              radius: animatedRingsWrapper.radius
                           }
                       }
           }
       }
-
-    state: VPNController.state === VPNController.StateOn ? "active" : "inactive"
-    states: [
-        State {
-            name: "active"
-            PropertyChanges {
-                target: animationWrapper
-                visible: true
-                opacity: 1;
-            }
-            PropertyChanges {
-                target: animatedRings
-                startAnimation: true
-            }
-        },
-        State {
-            name: "inactive"
-            PropertyChanges {
-                target: animatedRings
-                startAnimation: false
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            to: VPNController.StateOn
-            SequentialAnimation {
-                PropertyAction {
-                    target: animationWrapper
-                    property: "visible"
-                    value: true
-                }
-                PropertyAnimation {
-                    target: animationWrapper
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 300
-                }
-            }
-       }
-    ]
 }
