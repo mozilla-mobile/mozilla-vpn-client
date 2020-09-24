@@ -1,4 +1,4 @@
-VERSION = 1
+!defined(VERSION, var):VERSION = 1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT += network

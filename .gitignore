@@ -22,3 +22,4 @@ mozillavpn-daemon
 *_plugin_import.cpp
 translations/*.qm
 .qm
+.tmp
