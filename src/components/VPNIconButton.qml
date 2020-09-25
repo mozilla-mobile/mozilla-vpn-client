@@ -16,6 +16,7 @@ RoundButton {
         id: backgroundRect
         radius: 4
         color: defaultColor
+        opacity: 0
     }
     height: 40
     width: 40
@@ -25,6 +26,7 @@ RoundButton {
             PropertyChanges {
                 target: backgroundRect
                 color: backgroundColor.buttonPressed
+                opacity: 1
             }
         },
 
@@ -33,6 +35,7 @@ RoundButton {
             PropertyChanges {
                target: backgroundRect
                color: backgroundColor.buttonHovered
+               opacity: 1
             }
         }
     ]
@@ -49,6 +52,11 @@ RoundButton {
         Transition {
             ColorAnimation {
                 target: backgroundRect
+                duration: 300
+            }
+            PropertyAnimation {
+                target: backgroundRect
+                property: "opacity"
                 duration: 300
             }
         }

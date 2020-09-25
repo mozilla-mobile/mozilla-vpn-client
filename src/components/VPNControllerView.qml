@@ -88,10 +88,6 @@ Rectangle {
                 target: connectionStability
                 visible: false
             }
-            PropertyChanges {
-                target: animation
-                visible: false
-            }
         },
         State {
             name: VPNController.StateConnecting
@@ -126,10 +122,6 @@ Rectangle {
                 target: connectionStability
                 visible: false
             }
-            PropertyChanges {
-                target: animation
-                visible: false
-            }
         },
         State {
             name: VPNController.StateOn
@@ -157,14 +149,15 @@ Rectangle {
                 target: iconButton
                 backgroundColor: Theme.whiteSettingsBtn
             }
-
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
             PropertyChanges {
-                target: animation
+                target: animatedRingsWrapper
                 visible: true
+                opacity: 1
+                startAnimation: true
             }
         },
         State {
@@ -194,10 +187,6 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animation
                 visible: false
             }
         },
@@ -230,10 +219,6 @@ Rectangle {
                 target: connectionStability
                 visible: false
             }
-            PropertyChanges {
-                target: animation
-                visible: false
-            }
         },
         State {
             name: VPNController.StateDeviceLimit
@@ -264,10 +249,6 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animation
                 visible: false
             }
         }
@@ -321,6 +302,10 @@ Rectangle {
     height: 318
     width: parent.width - 32
 
+    VPNAnimatedRings {
+        id: animatedRingsWrapper
+    }
+
     VPNIconButton {
         id: iconButton
         onClicked: stackview.push("../views/ViewSettings.qml")
@@ -346,22 +331,6 @@ Rectangle {
         y: 50
         sourceSize.width: 80
         sourceSize.height: 80
-    }
-
-    Item {
-        id: animation
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        VPNAnimatedCircle {
-            delay: 0
-            duration: 1800
-        }
-
-        VPNAnimatedCircle {
-            delay: 900
-            duration: 1800
-        }
     }
 
     Text {
