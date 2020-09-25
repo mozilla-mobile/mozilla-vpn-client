@@ -47,10 +47,6 @@ Rectangle {
                 color: Theme.fontColor
             }
             PropertyChanges {
-                target: connectionInfoImage
-                source: "../resources/settings.svg"
-            }
-            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -85,12 +81,12 @@ Rectangle {
                 opacity: 1
             }
             PropertyChanges {
-                target: connectionInfoImage
+                target: settingsImage
                 source: "../resources/settings.svg"
             }
             PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
+                target: connectionInfoButton
+                visible: false
             }
             PropertyChanges {
                 target: connectionStability
@@ -119,16 +115,16 @@ Rectangle {
                 opacity: .8
             }
             PropertyChanges {
-                target: connectionInfoImage
-                source: "../resources/settings-white.svg"
-            }
-            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
             PropertyChanges {
                 target: settingsButton
                 backgroundColor: Theme.whiteSettingsBtn
+            }
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
             }
             PropertyChanges {
                 target: connectionStability
@@ -162,12 +158,12 @@ Rectangle {
                 backgroundColor: Theme.whiteSettingsBtn
             }
             PropertyChanges {
-                target: connectionInfoImage
+                target: settingsImage
                 source: "../resources/settings-white.svg"
             }
             PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings-white.svg"
+                target: connectionInfoButton
+                visible: true
             }
             PropertyChanges {
                 target: animatedRingsWrapper
@@ -198,12 +194,12 @@ Rectangle {
                 opacity: 1
             }
             PropertyChanges {
-                target: connectionInfoImage
+                target: settingsImage
                 source: "../resources/settings.svg"
             }
             PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
+                target: connectionInfoButton
+                visible: false
             }
             PropertyChanges {
                 target: connectionStability
@@ -232,13 +228,18 @@ Rectangle {
                 opacity: .8
             }
             PropertyChanges {
-                target: connectionInfoImage
-                source: "../resources/settings-white.svg"
-            }
-            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: true
+            }
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: true
+            }
+
             PropertyChanges {
                 target: connectionStability
                 visible: false
@@ -266,10 +267,6 @@ Rectangle {
                 text: qsTr("Turn on to protect your privacy")
                 color: Theme.fontColor
                 opacity: .55
-            }
-            PropertyChanges {
-                target: connectionInfoImage
-                source: "../resources/settings.svg"
             }
             PropertyChanges {
                 target: settingsImage
@@ -329,6 +326,7 @@ Rectangle {
     radius: 8
     height: 318
     width: parent.width - 32
+    antialiasing: true
 
     VPNAnimatedRings {
         id: animatedRingsWrapper
@@ -337,9 +335,15 @@ Rectangle {
     VPNIconButton {
         id: connectionInfoButton
         onClicked: connectionInfo.visible = true
-
         defaultColor: box.color
+        backgroundColor: Theme.whiteSettingsBtn
+        opacity: connectionInfoButton.visible? 1 : 0
 
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+        }
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
@@ -347,6 +351,7 @@ Rectangle {
 
         Image {
             id: connectionInfoImage
+            source: "../resources/connection-graph.svg";
             anchors.centerIn :connectionInfoButton
             sourceSize.height: 22
             sourceSize.width: 22
@@ -357,7 +362,6 @@ Rectangle {
         id: settingsButton
         onClicked: stackview.push("../views/ViewSettings.qml")
         defaultColor: box.color
-
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2
@@ -416,6 +420,19 @@ Rectangle {
     VPNConnectionInfo {
         id: connectionInfo
         anchors.fill: parent
+        height: box.height
+        width: box.width
         visible: false
+        opacity: connectionInfo.visible? 1 : 0
+
+
+        Behavior on opacity {
+            NumberAnimation {
+                target: connectionInfo
+                property: "opacity"
+                duration: 200
+            }
+        }
+
     }
 }
