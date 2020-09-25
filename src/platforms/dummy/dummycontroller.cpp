@@ -2,6 +2,7 @@
 #include "server.h"
 
 #include <QDebug>
+#include <QRandomGenerator>
 
 void DummyController::activate(const Server &server,
                                const Device *device,
@@ -29,4 +30,10 @@ void DummyController::deactivate(const Server &server,
     qDebug() << "DummyController deactivated" << server.hostname();
 
     emit disconnected();
+}
+
+void DummyController::checkStatus()
+{
+    emit statusUpdated(QRandomGenerator::global()->generate() % 100000,
+                       QRandomGenerator::global()->generate() % 100000);
 }

@@ -71,7 +71,8 @@ public:
 private Q_SLOTS:
     void connected();
     void disconnected();
-    void timeUpdated();
+    void clockTimerTimeout();
+    void dataTimerTimeout();
     void implInitialized(bool status, State state, const QDateTime &connectionDate);
     void statusUpdated(uint32_t txBytes, uint32_t rxBytes);
 
@@ -92,7 +93,9 @@ private:
 
     MozillaVPN *m_vpn = nullptr;
 
-    QTimer m_timer;
+    QTimer m_clockTimer;
+    QTimer m_dataTimer;
+
     QDateTime m_connectionDate;
 
     QScopedPointer<ControllerImpl> m_impl;

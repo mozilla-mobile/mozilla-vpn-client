@@ -15,6 +15,9 @@
 #include <QDebug>
 #include <QTimer>
 
+constexpr const uint32_t CLOCK_TIMER_MSEC = 1000;
+constexpr const uint32_t DATA_TIMER_MSEC = 1000;
+
 Controller::Controller()
 {
     m_impl.reset(new TimerController(
@@ -32,7 +35,8 @@ Controller::Controller()
     connect(m_impl.get(), &ControllerImpl::statusUpdated, this, &Controller::statusUpdated);
     connect(m_impl.get(), &ControllerImpl::initialized, this, &Controller::implInitialized);
 
-    connect(&m_timer, &QTimer::timeout, this, &Controller::timeUpdated);
+    connect(&m_clockTimer, &QTimer::timeout, this, &Controller::clockTimerTimeout);
+    connect(&m_dataTimer, &QTimer::timeout, this, &Controller::dataTimerTimeout);
 }
 
 Controller::~Controller() = default;
@@ -99,7 +103,8 @@ void Controller::activate()
         setState(StateConnecting);
     }
 
-    m_timer.stop();
+    m_clockTimer.stop();
+    m_dataTimer.stop();
 
     m_connectionDate = QDateTime::currentDateTime();
 
@@ -121,7 +126,9 @@ void Controller::deactivate()
         setState(StateDisconnecting);
     }
 
-    m_timer.stop();
+    m_clockTimer.stop();
+    m_dataTimer.stop();
+
     m_connectionHealth.stop();
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
@@ -156,7 +163,8 @@ void Controller::connected()
         return;
     }
 
-    m_timer.start(1000);
+    m_clockTimer.start(CLOCK_TIMER_MSEC);
+    m_dataTimer.start(DATA_TIMER_MSEC);
 
     m_connectionHealth.start(m_currentServer);
 }
@@ -164,7 +172,9 @@ void Controller::connected()
 void Controller::disconnected() {
     qDebug() << "Disconnected from state:" << m_state;
 
-    m_timer.stop();
+    m_clockTimer.stop();
+    m_dataTimer.stop();
+
     m_connectionHealth.stop();
 
     // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.
@@ -193,10 +203,15 @@ void Controller::disconnected() {
     setState(StateOff);
 }
 
-void Controller::timeUpdated() {
+void Controller::clockTimerTimeout()
+{
     Q_ASSERT(m_state == StateOn);
     emit timeChanged();
+}
 
+void Controller::dataTimerTimeout()
+{
+    Q_ASSERT(m_state == StateOn);
     m_impl->checkStatus();
 }
 
@@ -216,7 +231,8 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
         return;
     }
 
-    m_timer.stop();
+    m_clockTimer.stop();
+    m_dataTimer.stop();
 
     qDebug() << "Switching to a different server";
 

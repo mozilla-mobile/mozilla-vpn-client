@@ -38,7 +38,7 @@ public:
                             bool forSwitching)
         = 0;
 
-    virtual void checkStatus() {}
+    virtual void checkStatus() = 0;
 
 signals:
     void initialized(bool status, Controller::State state, const QDateTime& connectionDate);
