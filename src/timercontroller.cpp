@@ -14,6 +14,8 @@ TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
     connect(m_impl,
             &ControllerImpl::disconnected,
             [this] { TimerController::maybeDone(false); });
+    connect(m_impl,
+            &ControllerImpl::statusUpdated, this, &ControllerImpl::statusUpdated);
 
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &TimerController::timeout);
@@ -121,4 +123,9 @@ void TimerController::maybeDone(bool isConnected)
     }
 
     emit disconnected();
+}
+
+void TimerController::checkStatus()
+{
+    m_impl->checkStatus();
 }

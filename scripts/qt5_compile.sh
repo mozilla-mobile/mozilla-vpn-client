@@ -71,7 +71,6 @@ print Y "Wait..."
   -skip qtserialport \
   -skip qtsensors \
   -skip qtwebsockets \
-  -skip qtcharts \
   -skip qtgamepad \
   -skip qtwebchannel \
   -skip qtandroidextras \

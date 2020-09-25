@@ -28,6 +28,8 @@ public:
                     const Keys *keys,
                     bool forSwitching) override;
 
+    void checkStatus() override;
+
 private Q_SLOTS:
     void timeout();
 

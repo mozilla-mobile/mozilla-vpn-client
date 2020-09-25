@@ -1,6 +1,7 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "connectiondataholder.h"
 #include "controller.h"
 #include "devicemodel.h"
 #include "errorhandler.h"
@@ -141,6 +142,8 @@ public:
 
     SettingsHolder *settingsHolder() { return &m_settingsHolder; }
 
+    ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine);
     ~MozillaVPN();
@@ -184,6 +187,8 @@ private:
     ServerData m_serverData;
 
     Controller m_controller;
+
+    ConnectionDataHolder m_connectionDataHolder;
 
     DeviceModel m_deviceModel;
     ServerCountryModel m_serverCountryModel;

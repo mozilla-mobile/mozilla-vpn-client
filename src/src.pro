@@ -4,6 +4,7 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 QT += network
 QT += quick
 QT += widgets
+QT += charts
 
 CONFIG += c++1z
 
@@ -19,6 +20,7 @@ INCLUDEPATH += \
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
+        connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
         curve25519.cpp \
@@ -52,6 +54,7 @@ SOURCES += \
         user.cpp
 
 HEADERS += \
+        connectiondataholder.h \
         connectionhealth.h \
         controller.h \
         controllerimpl.h \
@@ -169,17 +172,11 @@ else:macos {
 
         DEFINES += MACOS_INTEGRATION
 
-        SOURCES += \
-                platforms/macos/macoscontroller.cpp
-
         OBJECTIVE_SOURCES += \
-                platforms/macos/macosswiftcontroller.mm
-
-        HEADERS += \
-                platforms/macos/macoscontroller.h
+                platforms/macos/macoscontroller.mm
 
         OBJECTIVE_HEADERS += \
-                platforms/macos/macosswiftcontroller.h
+                platforms/macos/macoscontroller.h
     }
 
     INCLUDEPATH += \

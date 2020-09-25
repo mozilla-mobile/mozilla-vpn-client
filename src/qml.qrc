@@ -345,5 +345,6 @@
         <file>components/VPNGetHelp.qml</file>
         <file>states/StateSubscriptionNeeded.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
+        <file>components/VPNConnectionInfo.qml</file>
     </qresource>
 </RCC>

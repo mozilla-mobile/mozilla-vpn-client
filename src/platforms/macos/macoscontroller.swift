@@ -102,24 +102,6 @@ public class MacOSControllerImpl : NSObject {
             return
         }
 
-        if (session.status == .connected) {
-            do {
-                try session.sendProviderMessage(Data([UInt8(0)])) { [weak self] data in
-                    guard let data = data,
-                          let configString = String(data: data, encoding: .utf8)
-                    else {
-                        Logger.global?.log(message: "FAILED FALED 1")
-                        return
-                    }
-
-                    Logger.global?.log(message: "WOW WOW WOW \(configString)")
-                }
-            } catch {
-                Logger.global?.log(message: "FAILED FAILED 2")
-                return
-            }
-        }
-
         stateChangeCallback?(session.status == .connected)
     }
 
@@ -187,5 +169,33 @@ public class MacOSControllerImpl : NSObject {
         Logger.global?.log(message: "Disconnecting")
         assert(tunnel != nil)
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+    }
+
+    @objc func checkStatus(callback: @escaping (String) -> Void) {
+        Logger.global?.log(message: "Check status")
+        assert(tunnel != nil)
+
+        guard let session = tunnel?.connection as? NETunnelProviderSession
+        else {
+            callback("");
+            return;
+        }
+
+        do {
+            try session.sendProviderMessage(Data([UInt8(0)])) { [callback] data in
+                guard let data = data,
+                        let configString = String(data: data, encoding: .utf8)
+                else {
+                    Logger.global?.log(message: "Failed to convert data to string")
+                    callback("")
+                    return
+                }
+
+                callback(configString)
+            }
+        } catch {
+            Logger.global?.log(message: "Failed to retrieve data from session")
+            callback("")
+        }
     }
 }

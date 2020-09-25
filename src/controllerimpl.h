@@ -46,7 +46,7 @@ signals:
     void connected();
     void disconnected();
 
-    void statusUpdated(/* TODO */);
+    void statusUpdated(uint32_t txBytes, uint32_t rxBytes);
 };
 
 #endif // CONTROLLERIMPL_H

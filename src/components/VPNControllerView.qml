@@ -47,6 +47,10 @@ Rectangle {
                 color: Theme.fontColor
             }
             PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings.svg"
+            }
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -81,6 +85,10 @@ Rectangle {
                 opacity: 1
             }
             PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings.svg"
+            }
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -111,11 +119,15 @@ Rectangle {
                 opacity: .8
             }
             PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings-white.svg"
+            }
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
             PropertyChanges {
-                target: iconButton
+                target: settingsButton
                 backgroundColor: Theme.whiteSettingsBtn
             }
             PropertyChanges {
@@ -146,8 +158,12 @@ Rectangle {
                 opacity: .8
             }
             PropertyChanges {
-                target: iconButton
+                target: settingsButton
                 backgroundColor: Theme.whiteSettingsBtn
+            }
+            PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings-white.svg"
             }
             PropertyChanges {
                 target: settingsImage
@@ -182,6 +198,10 @@ Rectangle {
                 opacity: 1
             }
             PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings.svg"
+            }
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -210,6 +230,10 @@ Rectangle {
                 text: qsTr("From %1 to %2").arg(VPNController.currentCity).arg(VPNController.switchingCity)
                 color: "#FFFFFF"
                 opacity: .8
+            }
+            PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings-white.svg"
             }
             PropertyChanges {
                 target: settingsImage
@@ -242,6 +266,10 @@ Rectangle {
                 text: qsTr("Turn on to protect your privacy")
                 color: Theme.fontColor
                 opacity: .55
+            }
+            PropertyChanges {
+                target: connectionInfoImage
+                source: "../resources/settings.svg"
             }
             PropertyChanges {
                 target: settingsImage
@@ -307,7 +335,26 @@ Rectangle {
     }
 
     VPNIconButton {
-        id: iconButton
+        id: connectionInfoButton
+        onClicked: connectionInfo.visible = true
+
+        defaultColor: box.color
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.topMargin: Theme.windowMargin / 2
+        anchors.leftMargin: Theme.windowMargin / 2
+
+        Image {
+            id: connectionInfoImage
+            anchors.centerIn :connectionInfoButton
+            sourceSize.height: 22
+            sourceSize.width: 22
+        }
+    }
+
+    VPNIconButton {
+        id: settingsButton
         onClicked: stackview.push("../views/ViewSettings.qml")
         defaultColor: box.color
 
@@ -318,7 +365,7 @@ Rectangle {
 
         Image {
             id: settingsImage
-            anchors.centerIn :iconButton
+            anchors.centerIn :settingsButton
             sourceSize.height: 22
             sourceSize.width: 22
         }
@@ -364,5 +411,11 @@ Rectangle {
         y: logoSubtitle.y + logoSubtitle.height + 24
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
+    }
+
+    VPNConnectionInfo {
+        id: connectionInfo
+        anchors.fill: parent
+        visible: false
     }
 }
