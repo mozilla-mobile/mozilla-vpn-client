@@ -129,6 +129,7 @@ void Controller::deactivate()
     m_clockTimer.stop();
     m_dataTimer.stop();
 
+    m_vpn->connectionDataHolder()->stop();
     m_connectionHealth.stop();
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
@@ -166,6 +167,7 @@ void Controller::connected()
     m_clockTimer.start(CLOCK_TIMER_MSEC);
     m_dataTimer.start(DATA_TIMER_MSEC);
 
+    m_vpn->connectionDataHolder()->start();
     m_connectionHealth.start(m_currentServer);
 }
 
@@ -175,6 +177,7 @@ void Controller::disconnected() {
     m_clockTimer.stop();
     m_dataTimer.stop();
 
+    m_vpn->connectionDataHolder()->stop();
     m_connectionHealth.stop();
 
     // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.

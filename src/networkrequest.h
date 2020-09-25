@@ -33,6 +33,8 @@ public:
 
     static NetworkRequest *createForVersions(MozillaVPN *vpn);
 
+    static NetworkRequest *createForIpInfo(MozillaVPN *vpn);
+
 private:
     NetworkRequest(QObject *parent);
 

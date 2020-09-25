@@ -168,6 +168,24 @@ NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
     return r;
 }
 
+NetworkRequest *NetworkRequest::createForIpInfo(MozillaVPN *vpn)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token().toLocal8Bit());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/ipinfo");
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+
+    return r;
+}
 void NetworkRequest::replyFinished(QNetworkReply *reply)
 {
     Q_ASSERT(reply);

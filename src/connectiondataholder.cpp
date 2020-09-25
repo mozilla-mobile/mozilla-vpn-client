@@ -1,10 +1,26 @@
 #include "connectiondataholder.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
 
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QSplineSeries>
 #include <QValueAxis>
 
 constexpr int MAX_POINTS = 30;
+
+// Let's refresh the IP address any 10 seconds.
+constexpr int IPADDRESS_TIMER_MSEC = 10000;
+
+ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(tr("Unknown"))
+{
+    emit ipAddressChanged();
+
+    m_ipAddressTimer.start(IPADDRESS_TIMER_MSEC);
+    connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
+}
 
 void ConnectionDataHolder::add(uint32_t txBytes, uint32_t rxBytes)
 {
@@ -110,10 +126,49 @@ void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
 
 void ConnectionDataHolder::computeAxes()
 {
-    qDebug() << "Computing axes";
     if (!m_axisX || !m_axisY) {
         return;
     }
 
     m_axisY->setRange(0, m_maxBytes);
+}
+
+void ConnectionDataHolder::start()
+{
+    m_txBytes = -1;
+    m_rxBytes = -1;
+    m_maxBytes = 0;
+    m_data.clear();
+
+    updateIpAddress();
+}
+
+void ConnectionDataHolder::stop()
+{
+    updateIpAddress();
+}
+
+void ConnectionDataHolder::updateIpAddress()
+{
+    qDebug() << "Updating IP address";
+
+    NetworkRequest *request = NetworkRequest::createForIpInfo(MozillaVPN::instance());
+    connect(request, &NetworkRequest::requestFailed, [](QNetworkReply::NetworkError error) {
+        qDebug() << "IP address request failed" << error;
+    });
+
+    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
+        qDebug() << "IP address request completed";
+
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        Q_ASSERT(json.isObject());
+        QJsonObject obj = json.object();
+
+        Q_ASSERT(obj.contains("ip"));
+        QJsonValue value = obj.take("ip");
+        Q_ASSERT(value.isString());
+
+        m_ipAddress = value.toString();
+        emit ipAddressChanged();
+    });
 }
