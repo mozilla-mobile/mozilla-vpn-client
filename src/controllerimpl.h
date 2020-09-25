@@ -38,13 +38,15 @@ public:
                             bool forSwitching)
         = 0;
 
+    virtual void checkStatus() {}
+
 signals:
     void initialized(bool status, Controller::State state, const QDateTime& connectionDate);
 
     void connected();
     void disconnected();
 
-    void connectionDateUpdated(const QDateTime& date);
+    void statusUpdated(/* TODO */);
 };
 
 #endif // CONTROLLERIMPL_H

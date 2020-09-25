@@ -154,9 +154,6 @@ void Controller::connected()
         return;
     }
 
-    if (m_timer.isActive()) {
-        m_timer.stop();
-    }
     m_timer.start(1000);
 
     m_connectionHealth.start(m_currentServer);
@@ -197,6 +194,8 @@ void Controller::disconnected() {
 void Controller::timeUpdated() {
     Q_ASSERT(m_state == StateOn);
     emit timeChanged();
+
+    m_impl->checkStatus();
 }
 
 void Controller::changeServer(const QString &countryCode, const QString &city)

@@ -92,3 +92,8 @@ void MacOSSwiftController::initialize(const Device* device, const Keys* keys, st
     }
             ];
 }
+
+void MacOSSwiftController::checkStatus(std::function<void ()> &&a_statusCallback) {
+    std::function<void()> statusCallback = a_statusCallback;
+// TODO
+}

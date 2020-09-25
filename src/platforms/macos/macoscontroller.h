@@ -17,6 +17,11 @@ public:
                     const Device *device,
                     const Keys *keys,
                     bool forSwitching) override;
+
+    void checkStatus() override;
+
+private:
+    bool m_checkingStatus = false;
 };
 
 #endif // MACOSCONTROLLER_H

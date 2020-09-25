@@ -22,6 +22,8 @@ public:
     static void activate(const Server* server, std::function<void()>&& failureCallback);
 
     static void deactivate();
+
+    static void checkStatus(std::function<void()> &&statusCallback);
 };
 
 #endif // MACOSSWIFTCONTROLLER_H

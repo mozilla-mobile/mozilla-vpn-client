@@ -60,3 +60,21 @@ void MacOSController::deactivate(const Server &server,
 
     MacOSSwiftController::deactivate();
 }
+
+void MacOSController::checkStatus()
+{
+    qDebug() << "Checking status";
+
+    if (m_checkingStatus) {
+        qDebug() << "We are still waiting for the previous status.";
+        return;
+    }
+
+    m_checkingStatus = true;
+
+    MacOSSwiftController::checkStatus([this]() {
+        qDebug() << "Status received!";
+        m_checkingStatus = false;
+        emit statusUpdated();
+    });
+}
