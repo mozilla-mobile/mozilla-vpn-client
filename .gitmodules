@@ -1,3 +1,6 @@
 [submodule "wireguard-apple"]
 	path = wireguard-apple
 	url = https://git.zx2c4.com/wireguard-apple
+[submodule "wireguard-tools"]
+	path = wireguard-tools
+	url = https://git.zx2c4.com/wireguard-tools/

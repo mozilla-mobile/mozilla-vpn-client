@@ -17,6 +17,8 @@ public:
                     const Device *device,
                     const Keys *keys,
                     bool forSwitching) override;
+
+    void checkStatus() override;
 };
 
 #endif // LINUXCONTROLLER_H

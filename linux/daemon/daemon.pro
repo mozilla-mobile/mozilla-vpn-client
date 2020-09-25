@@ -14,12 +14,12 @@ SOURCES  += \
             dbus.cpp \
             main.cpp \
             polkithelper.cpp \
-            ../../src/platforms/linux/wgquickprocess.cpp
+            wgquickprocess.cpp
 
 HEADERS += \
         dbus.h \
         polkithelper.h \
-        ../../src/platforms/linux/wgquickprocess.h
+        wgquickprocess.h
 
 isEmpty(PREFIX) {
     PREFIX=/opt/$${TARGET}
