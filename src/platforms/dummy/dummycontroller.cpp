@@ -34,6 +34,8 @@ void DummyController::deactivate(const Server &server,
 
 void DummyController::checkStatus()
 {
-    emit statusUpdated(QRandomGenerator::global()->generate() % 100000,
-                       QRandomGenerator::global()->generate() % 100000);
+    m_txBytes += QRandomGenerator::global()->generate() % 100000;
+    m_rxBytes += QRandomGenerator::global()->generate() % 100000;
+
+    emit statusUpdated(m_txBytes, m_rxBytes);
 }
