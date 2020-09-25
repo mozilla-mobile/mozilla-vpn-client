@@ -14,6 +14,24 @@ void ConnectionDataHolder::add(uint32_t txBytes, uint32_t rxBytes)
         return;
     }
 
+    // This is the first time we receive data. We need at least 2 calls in order to count the delta.
+    if (m_txBytes == -1) {
+        Q_ASSERT(m_rxBytes == -1);
+        m_txBytes = txBytes;
+        m_rxBytes = rxBytes;
+        return;
+    }
+
+    // Normalize the value and store the previous max.
+    uint32_t tmpTxBytes = txBytes;
+    uint32_t tmpRxBytes = rxBytes;
+    txBytes -= m_txBytes;
+    rxBytes -= m_rxBytes;
+    m_txBytes = tmpTxBytes;
+    m_rxBytes = tmpRxBytes;
+
+    m_maxBytes = std::max(m_maxBytes, std::max(txBytes, rxBytes));
+
     if (m_data.length() > MAX_POINTS) {
         m_data.removeAt(0);
     }
@@ -97,5 +115,5 @@ void ConnectionDataHolder::computeAxes()
         return;
     }
 
-    //m_axisX->setRange(m_rxSeries->count() - MAX_POINTS, m_rxSeries->count());
+    m_axisY->setRange(0, m_maxBytes);
 }

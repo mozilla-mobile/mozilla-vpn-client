@@ -32,6 +32,10 @@ private:
     QtCharts::QValueAxis *m_axisY = nullptr;
 
     QVector<QPair<uint32_t, uint32_t>> m_data;
+
+    int64_t m_txBytes = -1;
+    int64_t m_rxBytes = -1;
+    uint32_t m_maxBytes = 0;
 };
 
 #endif // CONNECTIONDATAHOLDER_H
