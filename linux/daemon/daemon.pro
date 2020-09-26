@@ -11,15 +11,17 @@ QMAKE_CXXFLAGS *= -Werror
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES  += \
-            dbus.cpp \
-            main.cpp \
-            polkithelper.cpp \
-            wgquickprocess.cpp
+         dbus.cpp \
+         main.cpp \
+         polkithelper.cpp \
+         wgquickprocess.cpp \
+         ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.c
 
 HEADERS += \
         dbus.h \
         polkithelper.h \
-        wgquickprocess.h
+        wgquickprocess.h \
+        ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.h
 
 isEmpty(PREFIX) {
     PREFIX=/opt/$${TARGET}

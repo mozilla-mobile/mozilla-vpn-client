@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTemporaryDir>
 
+constexpr const char *WG_INTERFACE = "moz0";
+
 class WgQuickProcess : public QObject
 {
     Q_OBJECT

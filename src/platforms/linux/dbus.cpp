@@ -52,6 +52,26 @@ void DBus::deactivate(const Server &server, const Device *device, const Keys *ke
     monitorReply(reply);
 }
 
+void DBus::status()
+{
+    qDebug() << "Status via DBus";
+    QDBusPendingReply<QString> reply = m_dbus->status();
+
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     [this](QDBusPendingCallWatcher *call) {
+                         QDBusPendingReply<QString> reply = *call;
+                         if (reply.isError()) {
+                             qDebug() << "Error received from the DBus service";
+                         } else {
+                             emit statusReceived(reply.argumentAt<0>());
+                         }
+
+                         call->deleteLater();
+                     });
+}
+
 void DBus::monitorReply(QDBusPendingReply<bool> &reply)
 {
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);

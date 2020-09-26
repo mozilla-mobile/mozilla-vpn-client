@@ -69,7 +69,7 @@ void WgQuickProcess::run(const QString &privateKey,
     }
 
     QDir dir(tmpDir.path());
-    QFile file(dir.filePath("wg0.conf"));
+    QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
     if (!file.open(QIODevice::ReadWrite)) {
         qWarning("Unable to create a file in the temporary folder");
         emit failed();

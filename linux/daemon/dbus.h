@@ -1,7 +1,7 @@
 #ifndef DBUS_H
 #define DBUS_H
 
-#include "../../src/platforms/linux/wgquickprocess.h"
+#include "wgquickprocess.h"
 
 #include <QObject>
 
@@ -33,6 +33,8 @@ public Q_SLOTS:
                     const QString &serverIpv6AddrIn,
                     int serverPort,
                     bool ipv6Enabled);
+
+    QString status();
 
 private:
     bool runWgQuick(WgQuickProcess::Op op,

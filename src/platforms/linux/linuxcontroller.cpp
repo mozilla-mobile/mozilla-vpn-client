@@ -7,7 +7,11 @@
 #include "server.h"
 
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QProcess>
+#include <QString>
 
 void LinuxController::activate(const Server &server,
                                const Device *device,
@@ -54,4 +58,34 @@ void LinuxController::deactivate(const Server &server,
 void LinuxController::checkStatus()
 {
     qDebug() << "Check status";
+
+    DBus *dbus = new DBus(this);
+    connect(dbus, &DBus::statusReceived, [this](const QString &status) {
+        qDebug() << "Status:" << status;
+
+        QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
+        Q_ASSERT(json.isObject());
+
+        QJsonObject obj = json.object();
+        Q_ASSERT(obj.contains("status"));
+        QJsonValue statusValue = obj.take("status");
+        Q_ASSERT(statusValue.isBool());
+
+        if (!statusValue.toBool()) {
+            qDebug() << "Unable to retrieve the status from the interface.";
+            return;
+        }
+
+        Q_ASSERT(obj.contains("txBytes"));
+        QJsonValue txBytes = obj.take("txBytes");
+        Q_ASSERT(txBytes.isDouble());
+
+        Q_ASSERT(obj.contains("rxBytes"));
+        QJsonValue rxBytes = obj.take("rxBytes");
+        Q_ASSERT(rxBytes.isDouble());
+
+        emit statusUpdated(txBytes.toDouble(), rxBytes.toDouble());
+    });
+
+    dbus->status();
 }

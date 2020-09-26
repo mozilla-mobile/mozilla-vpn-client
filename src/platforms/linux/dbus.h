@@ -19,10 +19,12 @@ public:
 
     void activate(const Server &server, const Device *device, const Keys *keys);
     void deactivate(const Server &server, const Device *device, const Keys *keys);
+    void status();
 
 signals:
     void failed();
     void succeeded();
+    void statusReceived(const QString& status);
 
 private:
     void monitorReply(QDBusPendingReply<bool> &reply);
