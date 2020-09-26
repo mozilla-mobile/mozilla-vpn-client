@@ -5,8 +5,6 @@
 #include "device.h"
 #include "Mozilla_VPN-Swift.h"
 
-#import <Cocoa/Cocoa.h>
-
 #include <QDebug>
 #include <QByteArray>
 

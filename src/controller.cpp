@@ -8,6 +8,8 @@
 #include "platforms/linux/linuxcontroller.h"
 #elif MACOS_INTEGRATION
 #include "platforms/macos/macoscontroller.h"
+#elif IOS_INTEGRATION
+#include "platforms/macos/macoscontroller.h"
 #else
 #include "platforms/dummy/dummycontroller.h"
 #endif
@@ -24,6 +26,8 @@ Controller::Controller()
 #ifdef __linux__
         new LinuxController()
 #elif MACOS_INTEGRATION
+        new MacOSController()
+#elif IOS_INTEGRATION
         new MacOSController()
 #else
         new DummyController()

@@ -196,11 +196,13 @@ else:ios {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/ios/iaphandler.cpp \
+            platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosutils.mm \
-            platforms/ios/authenticationlistener.mm
+            platforms/ios/authenticationlistener.mm \
+            platforms/macos/macoscontroller.mm
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
@@ -209,7 +211,8 @@ else:ios {
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosutils.h \
-            platforms/ios/authenticationlistener.h
+            platforms/ios/authenticationlistener.h \
+            platforms/macos/macoscontroller.h
 
     QMAKE_INFO_PLIST=../ios/Info.plist
 }

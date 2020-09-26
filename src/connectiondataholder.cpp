@@ -85,10 +85,6 @@ void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
         a_txSeries.value<QObject *>());
 
     if (m_txSeries != txSeries) {
-        if (m_txSeries && m_txSeries->parent() == this) {
-            delete m_txSeries;
-        }
-
         m_txSeries = txSeries;
     }
 
@@ -96,10 +92,6 @@ void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
         a_rxSeries.value<QObject *>());
 
     if (m_rxSeries != rxSeries) {
-        if (m_rxSeries && m_rxSeries->parent() == this) {
-            delete m_rxSeries;
-        }
-
         m_rxSeries = rxSeries;
     }
 

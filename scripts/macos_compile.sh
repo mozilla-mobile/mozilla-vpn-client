@@ -52,7 +52,7 @@ VERSION=$(cat src/src.pro  | grep ^VERSION | cut -d= -f2 | tr -d ' ')
 print G "$VERSION"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "$VERSION" || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$VERSION" macos || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Compiling..."
