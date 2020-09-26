@@ -129,7 +129,7 @@ void Controller::deactivate()
     m_clockTimer.stop();
     m_dataTimer.stop();
 
-    m_vpn->connectionDataHolder()->stop();
+    m_vpn->connectionDataHolder()->reset();
     m_connectionHealth.stop();
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
@@ -167,7 +167,7 @@ void Controller::connected()
     m_clockTimer.start(CLOCK_TIMER_MSEC);
     m_dataTimer.start(DATA_TIMER_MSEC);
 
-    m_vpn->connectionDataHolder()->start();
+    m_vpn->connectionDataHolder()->reset();
     m_connectionHealth.start(m_currentServer);
 }
 
@@ -177,7 +177,7 @@ void Controller::disconnected() {
     m_clockTimer.stop();
     m_dataTimer.stop();
 
-    m_vpn->connectionDataHolder()->stop();
+    m_vpn->connectionDataHolder()->reset();
     m_connectionHealth.stop();
 
     // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.
@@ -215,7 +215,10 @@ void Controller::clockTimerTimeout()
 void Controller::dataTimerTimeout()
 {
     Q_ASSERT(m_state == StateOn);
-    m_impl->checkStatus();
+
+    if (m_dataViewActive) {
+        m_impl->checkStatus();
+    }
 }
 
 void Controller::changeServer(const QString &countryCode, const QString &city)
@@ -360,4 +363,14 @@ int Controller::time() const
 void Controller::statusUpdated(uint32_t txBytes, uint32_t rxBytes)
 {
     m_vpn->connectionDataHolder()->add(txBytes, rxBytes);
+}
+
+void Controller::setDataViewActive(bool dataViewActive)
+{
+    qDebug() << "DataViewActive changed:" << dataViewActive;
+
+    m_vpn->connectionDataHolder()->reset();
+
+    m_dataViewActive = dataViewActive;
+    emit dataViewActiveChanged();
 }

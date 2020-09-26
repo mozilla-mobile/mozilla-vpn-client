@@ -336,7 +336,10 @@ Rectangle {
 
     VPNIconButton {
         id: connectionInfoButton
-        onClicked: connectionInfo.visible = true
+        onClicked: {
+            VPNController.dataViewActive = true
+            connectionInfo.visible = true
+        }
 
         defaultColor: box.color
 

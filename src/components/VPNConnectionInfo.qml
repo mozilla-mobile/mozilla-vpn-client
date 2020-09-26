@@ -54,7 +54,10 @@ Item {
 
     VPNIconButton {
         id: backButton
-        onClicked: parent.visible = false
+        onClicked: {
+            VPNController.dataViewActive = false
+            parent.visible = false
+        }
         defaultColor: box.color
 
         anchors.top: parent.top

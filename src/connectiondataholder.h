@@ -29,8 +29,7 @@ public:
 
     const QString &ipAddress() const { return m_ipAddress; }
 
-    void start();
-    void stop();
+    void reset();
 
 private:
     void computeAxes();
