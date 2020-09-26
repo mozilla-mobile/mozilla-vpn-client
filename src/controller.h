@@ -32,6 +32,8 @@ private:
     Q_PROPERTY(int time READ time NOTIFY timeChanged)
     Q_PROPERTY(QString currentCity READ currentCity NOTIFY stateChanged)
     Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
+    Q_PROPERTY(bool dataViewActive READ dataViewActive WRITE setDataViewActive NOTIFY
+                   dataViewActiveChanged)
 
 public:
     Controller();
@@ -68,6 +70,10 @@ public:
 
     void updateRequired();
 
+    bool dataViewActive() const { return m_dataViewActive; }
+
+    void setDataViewActive(bool dataViewActive);
+
 private Q_SLOTS:
     void connected();
     void disconnected();
@@ -82,6 +88,7 @@ signals:
     void timeChanged();
     void readyToQuit();
     void readyToUpdate();
+    void dataViewActiveChanged();
 
 private:
     void setState(State state);
@@ -117,6 +124,8 @@ private:
     };
 
     NextStep m_nextStep = None;
+
+    bool m_dataViewActive = false;
 };
 
 #endif // CONTROLLER_H

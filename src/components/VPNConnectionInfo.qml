@@ -125,7 +125,10 @@ Item {
 
         VPNIconButton {
             id: backButton
-            onClicked: chartWrapper.visible = false
+            onClicked: {
+                VPNController.dataViewActive = false
+                chartWrapper.visible = false
+            }
             defaultColor: box.color
             backgroundColor: Theme.whiteSettingsBtn
             anchors.top: parent.top

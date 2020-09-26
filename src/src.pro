@@ -99,36 +99,25 @@ linux {
     QT += networkauth
 
     SOURCES += \
+            platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             platforms/linux/wgquickdependencies.cpp \
-            platforms/linux/wgquickprocess.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
+            platforms/linux/dbus.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxpingsendworker.h \
             platforms/linux/wgquickdependencies.h \
-            platforms/linux/wgquickprocess.h \
             tasks/authenticate/authenticationlistener.h
 
     isEmpty(PREFIX) {
         PREFIX=/opt/$${TARGET}
     }
 
-    isEmpty(NO_POLKIT) {
-        message(Use polkit)
-        DEFINES += USE_POLKIT
-
-        QT += dbus
-        DBUS_INTERFACES = ../linux/daemon/org.mozilla.vpn.dbus.xml
-
-        SOURCES += \
-        platforms/linux/dbus.cpp
-
-        HEADERS += \
-        platforms/linux/dbus.h
-    }
+    QT += dbus
+    DBUS_INTERFACES = ../linux/daemon/org.mozilla.vpn.dbus.xml
 
     target.path = $${PREFIX}/bin
     INSTALLS += target

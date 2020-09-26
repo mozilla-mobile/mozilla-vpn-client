@@ -133,18 +133,20 @@ void ConnectionDataHolder::computeAxes()
     m_axisY->setRange(0, m_maxBytes);
 }
 
-void ConnectionDataHolder::start()
+void ConnectionDataHolder::reset()
 {
+    qDebug() << "Resetting the data";
+
     m_txBytes = -1;
     m_rxBytes = -1;
     m_maxBytes = 0;
     m_data.clear();
 
-    updateIpAddress();
-}
+    if (m_txSeries) {
+        m_txSeries->clear();
+        m_rxSeries->clear();
+    }
 
-void ConnectionDataHolder::stop()
-{
     updateIpAddress();
 }
 
