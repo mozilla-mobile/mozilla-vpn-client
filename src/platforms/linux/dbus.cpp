@@ -64,6 +64,7 @@ void DBus::status()
                          QDBusPendingReply<QString> reply = *call;
                          if (reply.isError()) {
                              qDebug() << "Error received from the DBus service";
+                             emit failed();
                          } else {
                              emit statusReceived(reply.argumentAt<0>());
                          }

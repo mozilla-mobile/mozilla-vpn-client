@@ -13,6 +13,35 @@
 #include <QProcess>
 #include <QString>
 
+void LinuxController::initialize(const Device *device, const Keys *keys)
+{
+    Q_UNUSED(device);
+    Q_UNUSED(keys);
+
+    DBus *dbus = new DBus(this);
+    connect(dbus, &DBus::statusReceived, [this](const QString &status) {
+        qDebug() << "Status:" << status;
+
+        QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
+        Q_ASSERT(json.isObject());
+
+        QJsonObject obj = json.object();
+        Q_ASSERT(obj.contains("status"));
+        QJsonValue statusValue = obj.take("status");
+        Q_ASSERT(statusValue.isBool());
+
+        emit initialized(true,
+                         statusValue.toBool() ? Controller::StateOn : Controller::StateOff,
+                         QDateTime::currentDateTime());
+    });
+
+    connect(dbus, &DBus::failed, [this]() {
+        emit initialized(false, Controller::StateOff, QDateTime());
+    });
+
+    dbus->status();
+}
+
 void LinuxController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
