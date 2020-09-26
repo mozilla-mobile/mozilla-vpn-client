@@ -1,5 +1,6 @@
 #include "dbus.h"
 #include "dbus_adaptor.h"
+#include "../../src/signalhandler.h"
 
 #include <QCoreApplication>
 
@@ -19,6 +20,12 @@ int main(int argc, char *argv[])
         app.exit(1);
         return 1;
     }
+
+    SignalHandler sh;
+    QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
+        dbus->deactivateToQuit();
+        app.quit();
+    });
 
     qDebug() << "Ready!";
     return app.exec();

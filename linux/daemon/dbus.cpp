@@ -32,6 +32,21 @@ bool DBus::activate(const QString &privateKey,
         return false;
     }
 
+    if (m_connected) {
+        return false;
+    }
+
+    m_connected = true;
+    m_lastPrivateKey = privateKey;
+    m_lastDeviceIpv4Address = deviceIpv4Address;
+    m_lastDeviceIpv6Address = deviceIpv6Address;
+    m_lastServerIpv4Gateway = serverIpv4Gateway;
+    m_lastServerPublicKey = serverPublicKey;
+    m_lastServerIpv4AddrIn = serverIpv4AddrIn;
+    m_lastServerIpv6AddrIn = serverIpv6AddrIn;
+    m_lastServerPort = serverPort;
+    m_lastIpv6Enabled = ipv6Enabled;
+
     return runWgQuick(WgQuickProcess::Up,
                       privateKey,
                       deviceIpv4Address,
@@ -58,6 +73,8 @@ bool DBus::deactivate(const QString &privateKey,
         return false;
     }
 
+    m_connected = false;
+
     return runWgQuick(WgQuickProcess::Down,
                       privateKey,
                       deviceIpv4Address,
@@ -68,6 +85,26 @@ bool DBus::deactivate(const QString &privateKey,
                       serverIpv6AddrIn,
                       serverPort,
                       ipv6Enabled);
+}
+
+void DBus::deactivateToQuit()
+{
+    if (!m_connected) {
+        return;
+    }
+
+    m_connected = false;
+
+    runWgQuick(WgQuickProcess::Down,
+               m_lastPrivateKey,
+               m_lastDeviceIpv4Address,
+               m_lastDeviceIpv6Address,
+               m_lastServerIpv4Gateway,
+               m_lastServerPublicKey,
+               m_lastServerIpv4AddrIn,
+               m_lastServerIpv6AddrIn,
+               m_lastServerPort,
+               m_lastIpv6Enabled);
 }
 
 QString DBus::status()

@@ -13,6 +13,8 @@ class DBus : public QObject
 public:
     DBus(QObject *parent);
 
+    void deactivateToQuit();
+
 public Q_SLOTS:
     bool activate(const QString &privateKey,
                   const QString &deviceIpv4Address,
@@ -47,6 +49,17 @@ private:
                     const QString &serverIpv6AddrIn,
                     int serverPort,
                     bool ipv6Enabled);
+
+    bool m_connected = false;
+    QString m_lastPrivateKey;
+    QString m_lastDeviceIpv4Address;
+    QString m_lastDeviceIpv6Address;
+    QString m_lastServerIpv4Gateway;
+    QString m_lastServerPublicKey;
+    QString m_lastServerIpv4AddrIn;
+    QString m_lastServerIpv6AddrIn;
+    int m_lastServerPort = 0;
+    bool m_lastIpv6Enabled = false;
 };
 
 #endif // DBUS_H
