@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import QtCharts 2.0
-import QtGraphicalEffects 1.0
 
 import Mozilla.VPN 1.0
 
@@ -17,35 +16,26 @@ Item {
         radius: 8
         antialiasing: true
 
-        Glow {
-            anchors.fill: chart
-            radius: 12
-            samples: 24
-            color: "#EE3389"
-            opacity: .1
-            source: chart
-        }
-
         ChartView {
             id: chart
             antialiasing: true
             backgroundColor: "#321C64"
             width: parent.width
-            height: parent.height
+            height: (parent.height / 2) - 32
             legend.visible: false
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 60
-            plotArea.width: chart.width
-            plotArea.height: (chart.height / 2) - 32
-            plotArea.y: 0
-            plotArea.x: 0
+            margins.top: 0
+            margins.bottom: 0
+            margins.left: 0
+            margins.right: 0
             animationOptions: ChartView.SeriesAnimations
 
             ValueAxis {
                 id: axisX
                 min: 0
-                max: 30
+                max: 29
                 tickCount: 5
                 lineVisible: false
                 labelsVisible: false

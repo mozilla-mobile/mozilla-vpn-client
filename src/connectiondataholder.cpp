@@ -52,12 +52,11 @@ void ConnectionDataHolder::add(uint32_t txBytes, uint32_t rxBytes)
     m_rxBytes = tmpRxBytes;
 
     m_maxBytes = std::max(m_maxBytes, std::max(txBytes, rxBytes));
+    m_data.append(QPair(txBytes, rxBytes));
 
-    if (m_data.length() > MAX_POINTS) {
+    while (m_data.length() > MAX_POINTS) {
         m_data.removeAt(0);
     }
-
-    m_data.append(QPair(txBytes, rxBytes));
 
     int i = 0;
     for (; i < MAX_POINTS - m_data.length(); ++i) {
@@ -108,7 +107,7 @@ void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
     }
 
     // Let's be sure we have all the x/y points.
-    while (m_txSeries->count() <= MAX_POINTS) {
+    while (m_txSeries->count() < MAX_POINTS) {
         m_txSeries->append(m_txSeries->count(), 0);
         m_rxSeries->append(m_rxSeries->count(), 0);
     }
@@ -120,7 +119,7 @@ void ConnectionDataHolder::computeAxes()
         return;
     }
 
-    m_axisY->setRange(0, m_maxBytes);
+    m_axisY->setRange(-1000, m_maxBytes * 1.5);
 }
 
 void ConnectionDataHolder::reset()
