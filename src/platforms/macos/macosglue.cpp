@@ -6,7 +6,7 @@
 #ifndef MACOS_EXTENSION
 #include <QDebug>
 #else
-#include <stdio.h>
+#import <os/log.h>
 #endif
 
 // Key base64/hex functions
@@ -176,6 +176,6 @@ EXPORT void write_msg_to_log(const char *tag, const char *msg)
 #ifndef MACOS_EXTENSION
     qDebug() << "Swift log - tag:" << tag << "msg: " << msg;
 #else
-    fprintf(stderr, "tag: %s - msg: %s\n", tag, msg);
+    os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);
 #endif
 }
