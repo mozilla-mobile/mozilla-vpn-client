@@ -346,5 +346,7 @@
         <file>states/StateSubscriptionNeeded.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
         <file>components/VPNConnectionInfo.qml</file>
+        <file>resources/connection-graph.svg</file>
+        <file>components/VPNGraphLegendMarker.qml</file>
     </qresource>
 </RCC>
