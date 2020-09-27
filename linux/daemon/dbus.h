@@ -5,6 +5,8 @@
 
 #include <QObject>
 
+class DbusAdaptor;
+
 class DBus : public QObject
 {
     Q_OBJECT
@@ -12,6 +14,8 @@ class DBus : public QObject
 
 public:
     DBus(QObject *parent);
+
+    void setAdaptor(DbusAdaptor* adaptor);
 
 public Q_SLOTS:
     bool activate(const QString &privateKey,
@@ -39,6 +43,9 @@ private:
                     const QString &serverIpv6AddrIn,
                     int serverPort,
                     bool ipv6Enabled);
+
+private:
+    DbusAdaptor *m_adaptor = nullptr;
 
     bool m_connected = false;
     QString m_lastPrivateKey;

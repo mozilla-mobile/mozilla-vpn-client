@@ -9,7 +9,8 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 
     DBus *dbus = new DBus(&app);
-    new DbusAdaptor(dbus);
+    DbusAdaptor *adaptor = new DbusAdaptor(dbus);
+    dbus->setAdaptor(adaptor);
 
     QDBusConnection connection = QDBusConnection::systemBus();
     qDebug() << "Connecting to DBus...";

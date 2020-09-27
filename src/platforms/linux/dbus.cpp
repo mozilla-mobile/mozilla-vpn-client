@@ -18,6 +18,9 @@ DBus::DBus(QObject *parent) : QObject(parent)
                                             DBUS_PATH,
                                             QDBusConnection::systemBus(),
                                             this);
+
+    connect(m_dbus, &OrgMozillaVpnDbusInterface::connected, this, &DBus::connected);
+    connect(m_dbus, &OrgMozillaVpnDbusInterface::disconnected, this, &DBus::disconnected);
 }
 
 void DBus::activate(const Server &server, const Device *device, const Keys *keys)
@@ -78,7 +81,6 @@ void DBus::monitorReply(QDBusPendingReply<bool> &reply)
                              bool status = reply.argumentAt<0>();
                              if (status) {
                                  qDebug() << "DBus service says: all good.";
-                                 emit succeeded();
                              } else {
                                  qDebug() << "DBus service says: error.";
                                  emit failed();

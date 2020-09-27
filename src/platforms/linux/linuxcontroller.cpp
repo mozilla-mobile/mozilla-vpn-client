@@ -13,6 +13,13 @@
 #include <QProcess>
 #include <QString>
 
+LinuxController::LinuxController()
+{
+    m_dbus = new DBus(this);
+    connect(m_dbus, &DBus::connected, this, &LinuxController::connected);
+    connect(m_dbus, &DBus::disconnected, this, &LinuxController::disconnected);
+}
+
 void LinuxController::initialize(const Device *device, const Keys *keys)
 {
     Q_UNUSED(device);
@@ -60,8 +67,6 @@ void LinuxController::activate(const Server &server,
         emit disconnected();
     });
 
-    connect(dbus, &DBus::succeeded, this, &LinuxController::connected);
-
     dbus->activate(server, device, keys);
 }
 
@@ -74,7 +79,6 @@ void LinuxController::deactivate(bool forSwitching)
     DBus *dbus = new DBus(this);
 
     connect(dbus, &DBus::failed, this, &LinuxController::disconnected);
-    connect(dbus, &DBus::succeeded, this, &LinuxController::disconnected);
 
     dbus->deactivate();
 }

@@ -3,10 +3,12 @@
 
 #include "controllerimpl.h"
 
+class DBus;
+
 class LinuxController final : public ControllerImpl
 {
 public:
-    LinuxController() = default;
+    LinuxController();
 
     void initialize(const Device *device, const Keys *keys) override;
 
@@ -18,6 +20,9 @@ public:
     void deactivate(bool forSwitching) override;
 
     void checkStatus() override;
+
+private:
+    DBus *m_dbus = nullptr;
 };
 
 #endif // LINUXCONTROLLER_H

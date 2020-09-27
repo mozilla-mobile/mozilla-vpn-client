@@ -22,8 +22,10 @@ public:
     void status();
 
 signals:
+    void connected();
+    void disconnected();
+
     void failed();
-    void succeeded();
     void statusReceived(const QString& status);
 
 private:

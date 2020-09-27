@@ -19,6 +19,10 @@
     <method name="status">
       <arg name="jsonStatus" type="s" direction="out"/>
     </method>
+    <signal name="connected">
+    </signal>
+    <signal name="disconnected">
+    </signal>
   </interface>
 </node>
 

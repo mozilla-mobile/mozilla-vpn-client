@@ -1,4 +1,5 @@
 #include "dbus.h"
+#include "dbus_adaptor.h"
 #include "polkithelper.h"
 
 #include <QCoreApplication>
@@ -47,16 +48,22 @@ bool DBus::activate(const QString &privateKey,
     m_lastServerPort = serverPort;
     m_lastIpv6Enabled = ipv6Enabled;
 
-    return runWgQuick(WgQuickProcess::Up,
-                      privateKey,
-                      deviceIpv4Address,
-                      deviceIpv6Address,
-                      serverIpv4Gateway,
-                      serverPublicKey,
-                      serverIpv4AddrIn,
-                      serverIpv6AddrIn,
-                      serverPort,
-                      ipv6Enabled);
+    bool status = runWgQuick(WgQuickProcess::Up,
+                             privateKey,
+                             deviceIpv4Address,
+                             deviceIpv6Address,
+                             serverIpv4Gateway,
+                             serverPublicKey,
+                             serverIpv4AddrIn,
+                             serverIpv6AddrIn,
+                             serverPort,
+                             ipv6Enabled);
+
+    if (status) {
+        emit m_adaptor->connected();
+    }
+
+    return status;
 }
 
 bool DBus::deactivate()
@@ -71,16 +78,22 @@ bool DBus::deactivate()
 
     m_connected = false;
 
-    return runWgQuick(WgQuickProcess::Down,
-                      m_lastPrivateKey,
-                      m_lastDeviceIpv4Address,
-                      m_lastDeviceIpv6Address,
-                      m_lastServerIpv4Gateway,
-                      m_lastServerPublicKey,
-                      m_lastServerIpv4AddrIn,
-                      m_lastServerIpv6AddrIn,
-                      m_lastServerPort,
-                      m_lastIpv6Enabled);
+    bool status = runWgQuick(WgQuickProcess::Down,
+                             m_lastPrivateKey,
+                             m_lastDeviceIpv4Address,
+                             m_lastDeviceIpv6Address,
+                             m_lastServerIpv4Gateway,
+                             m_lastServerPublicKey,
+                             m_lastServerIpv4AddrIn,
+                             m_lastServerIpv6AddrIn,
+                             m_lastServerPort,
+                             m_lastIpv6Enabled);
+
+    if (status) {
+        emit m_adaptor->disconnected();
+    }
+
+    return status;
 }
 
 QString DBus::status()
@@ -154,4 +167,10 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
     }
 
     return result == Success;
+}
+
+void DBus::setAdaptor(DbusAdaptor* adaptor)
+{
+    Q_ASSERT(!m_adaptor);
+    m_adaptor = adaptor;
 }
