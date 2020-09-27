@@ -22,7 +22,7 @@ ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(tr("Unknown"))
     connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
 }
 
-void ConnectionDataHolder::add(uint32_t txBytes, uint32_t rxBytes)
+void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
 {
     qDebug() << "New connection data:" << txBytes << rxBytes;
 
@@ -36,16 +36,16 @@ void ConnectionDataHolder::add(uint32_t txBytes, uint32_t rxBytes)
     Q_ASSERT(m_rxSeries->count() == MAX_POINTS);
 
     // This is the first time we receive data. We need at least 2 calls in order to count the delta.
-    if (m_txBytes == -1) {
-        Q_ASSERT(m_rxBytes == -1);
+    if (m_initialized == false) {
+        m_initialized = true;
         m_txBytes = txBytes;
         m_rxBytes = rxBytes;
         return;
     }
 
     // Normalize the value and store the previous max.
-    uint32_t tmpTxBytes = txBytes;
-    uint32_t tmpRxBytes = rxBytes;
+    uint64_t tmpTxBytes = txBytes;
+    uint64_t tmpRxBytes = rxBytes;
     txBytes -= m_txBytes;
     rxBytes -= m_rxBytes;
     m_txBytes = tmpTxBytes;
@@ -126,8 +126,9 @@ void ConnectionDataHolder::reset()
 {
     qDebug() << "Resetting the data";
 
-    m_txBytes = -1;
-    m_rxBytes = -1;
+    m_initialized = false;
+    m_txBytes = 0;
+    m_rxBytes = 0;
     m_maxBytes = 0;
     m_data.clear();
 

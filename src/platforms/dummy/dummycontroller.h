@@ -24,8 +24,8 @@ public:
     void checkStatus() override;
 
 private:
-    int32_t m_txBytes = 0;
-    int32_t m_rxBytes = 0;
+    int64_t m_txBytes = 0;
+    int64_t m_rxBytes = 0;
 };
 
 #endif // DUMMYCONTROLLER_H

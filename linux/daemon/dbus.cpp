@@ -96,8 +96,8 @@ QString DBus::status()
         return QJsonDocument(json).toJson();
     }
 
-    uint32_t txBytes = 0;
-    uint32_t rxBytes = 0;
+    uint64_t txBytes = 0;
+    uint64_t rxBytes = 0;
 
     wg_peer *peer;
     wg_for_each_peer(device, peer)
@@ -110,8 +110,8 @@ QString DBus::status()
 
     json.insert("status", QJsonValue(true));
     json.insert("serverIpv4Gateway", QJsonValue(m_lastServerIpv4Gateway));
-    json.insert("txBytes", QJsonValue(qint64(txBytes)));
-    json.insert("rxBytes", QJsonValue(qint64(rxBytes)));
+    json.insert("txBytes", QJsonValue(quint64(txBytes)));
+    json.insert("rxBytes", QJsonValue(quint64(rxBytes)));
 
     return QJsonDocument(json).toJson();
 }

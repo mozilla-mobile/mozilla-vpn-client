@@ -37,7 +37,7 @@ signals:
     void connected();
     void disconnected();
 
-    void statusUpdated(const QString &serverIpv4Gateway, uint32_t txBytes, uint32_t rxBytes);
+    void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
 };
 
 #endif // CONTROLLERIMPL_H

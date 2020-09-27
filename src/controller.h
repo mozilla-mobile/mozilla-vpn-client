@@ -79,7 +79,7 @@ private Q_SLOTS:
     void disconnected();
     void timerTimeout();
     void implInitialized(bool status, State state, const QDateTime &connectionDate);
-    void statusUpdated(const QString &serverIpv4Gateway, uint32_t txBytes, uint32_t rxBytes);
+    void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
 
 signals:
     void initialized();

@@ -115,15 +115,15 @@ void MacOSController::checkStatus()
             return;
         }
 
-        uint32_t txBytes = 0;
-        uint32_t rxBytes = 0;
+        uint64_t txBytes = 0;
+        uint64_t rxBytes = 0;
 
         QStringList lines = config.split("\n");
         for (QStringList::ConstIterator i = lines.begin(); i != lines.end(); ++i) {
             if (i->startsWith("tx_bytes=")) {
-                txBytes = i->split("=")[1].toUInt();
+                txBytes = i->split("=")[1].toULongLong();
             } else if (i->startsWith("rx_bytes=")) {
-                rxBytes = i->split("=")[1].toUInt();
+                rxBytes = i->split("=")[1].toULongLong();
             }
 
             if (txBytes && rxBytes) {

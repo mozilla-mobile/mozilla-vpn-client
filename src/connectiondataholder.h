@@ -20,7 +20,7 @@ class ConnectionDataHolder : public QObject
 public:
     ConnectionDataHolder();
 
-    void add(uint32_t txBytes, uint32_t rxBytes);
+    void add(uint64_t txBytes, uint64_t rxBytes);
 
     Q_INVOKABLE void setComponents(const QVariant &txSeries,
                                    const QVariant &rxSeries,
@@ -44,11 +44,12 @@ private:
     QtCharts::QValueAxis *m_axisX = nullptr;
     QtCharts::QValueAxis *m_axisY = nullptr;
 
-    QVector<QPair<uint32_t, uint32_t>> m_data;
+    QVector<QPair<uint64_t, uint64_t>> m_data;
 
-    int64_t m_txBytes = -1;
-    int64_t m_rxBytes = -1;
-    uint32_t m_maxBytes = 0;
+    bool m_initialized = false;
+    uint64_t m_txBytes = 0;
+    uint64_t m_rxBytes = 0;
+    uint64_t m_maxBytes = 0;
 
     QString m_ipAddress;
     QTimer m_ipAddressTimer;

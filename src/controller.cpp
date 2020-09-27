@@ -349,7 +349,7 @@ int Controller::time() const
     return m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000;
 }
 
-void Controller::statusUpdated(const QString &serverIpv4Gateway, uint32_t txBytes, uint32_t rxBytes)
+void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)
 {
     if (m_state != StateOn) {
         return;
