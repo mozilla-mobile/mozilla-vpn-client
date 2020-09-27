@@ -8,6 +8,25 @@ import "../themes/themes.js" as Theme
 Item {
     id: chartWrapper
     anchors.fill: box
+
+    states: [
+        State {
+            name: "visible"
+            when: chartWrapper.visible
+            StateChangeScript {
+                script: VPNController.dataViewActive = true
+            }
+        },
+
+        State {
+            name: "invisible"
+            when: !chartWrapper.visible
+            StateChangeScript {
+                script: VPNController.dataViewActive = false
+            }
+        }
+    ]
+
     Rectangle {
         anchors.fill: parent
         height: parent.height
@@ -115,10 +134,7 @@ Item {
 
         VPNIconButton {
             id: backButton
-            onClicked: {
-                VPNController.dataViewActive = false
-                chartWrapper.visible = false
-            }
+            onClicked: chartWrapper.visible = false
             defaultColor: box.color
             backgroundColor: Theme.whiteSettingsBtn
             anchors.top: parent.top
