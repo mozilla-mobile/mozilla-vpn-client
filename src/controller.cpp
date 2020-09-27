@@ -68,7 +68,10 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
 
     Q_ASSERT(m_state == StateInitializing);
 
-    //TODO: use status to inform when something is down.
+    if (!status) {
+        m_vpn->errorHandle(ErrorHandler::BackendServiceError);
+    }
+
     Q_UNUSED(status);
 
     if (processNextStep()) {
