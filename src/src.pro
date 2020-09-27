@@ -180,7 +180,7 @@ else:macos {
 else:ios {
     message(IOS build)
 
-    TARGET = MozillaVPN_ios
+    TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
     QT += gui-private

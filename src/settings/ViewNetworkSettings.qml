@@ -16,6 +16,7 @@ Flickable {
         checked: VPNSettings.ipv6
         text: qsTr("IPv6 enabled")
         onClicked: VPNSettings.ipv6 = checked
+        y: menu.y + menu.height
     }
 
     ScrollBar.vertical: ScrollBar {}

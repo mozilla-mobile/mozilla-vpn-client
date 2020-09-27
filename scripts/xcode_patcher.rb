@@ -28,9 +28,6 @@ class XCodeprojPatcher
     @target_main = @project.targets.find { |target| target.to_s == 'MozillaVPN' }
     return @target_main if not @target_main.nil?
 
-    @target_main = @project.targets.find { |target| target.to_s == 'MozillaVPN_ios' }
-    return @target_main if not @target_main.nil?
-
     die 'Unable to open MozillaVPN target'
   end
 
@@ -44,7 +41,8 @@ class XCodeprojPatcher
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.' + platform + '.FirefoxVPN'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.macos.FirefoxVPN' if platform == 'macos'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.ios.FirefoxVPN-staging' if platform == 'ios'
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
 
       # other config
@@ -107,7 +105,8 @@ class XCodeprojPatcher
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.' + platform + '.FirefoxVPN.network-extension'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.network-extension' if platform == 'macos'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.ios.FirefoxVPN-staging.network-extension' if platform == 'ios'
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
