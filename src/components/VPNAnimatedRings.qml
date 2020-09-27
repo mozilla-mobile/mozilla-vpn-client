@@ -19,8 +19,8 @@ Rectangle {
 
 
     Canvas {
-        property real maxRadius: 170
-        property real startNextRing: 90
+        property real maxRadius: 175
+        property real startNextRing: 95
         property real startingRadius: 50
         property real startingBorderWidth: 1
 
