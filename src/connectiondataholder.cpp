@@ -26,7 +26,7 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
 {
     qDebug() << "New connection data:" << txBytes << rxBytes;
 
-    Q_ASSERT(!!m_txSeries == !!m_rxBytes);
+    Q_ASSERT(!!m_txSeries == !!m_rxSeries);
 
     if (!m_txSeries) {
         return;
@@ -71,6 +71,7 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
     }
 
     computeAxes();
+    emit bytesChanged();
 }
 
 void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
@@ -132,6 +133,8 @@ void ConnectionDataHolder::reset()
     m_maxBytes = 0;
     m_data.clear();
 
+    emit bytesChanged();
+
     if (m_txSeries) {
         Q_ASSERT(m_rxSeries);
         Q_ASSERT(m_txSeries->count() == MAX_POINTS);
@@ -169,4 +172,25 @@ void ConnectionDataHolder::updateIpAddress()
         m_ipAddress = value.toString();
         emit ipAddressChanged();
     });
+}
+
+quint64 ConnectionDataHolder::txBytes() const
+{
+    return bytes(0);
+}
+
+quint64 ConnectionDataHolder::rxBytes() const
+{
+    return bytes(1);
+}
+
+quint64 ConnectionDataHolder::bytes(bool index) const
+{
+    uint64_t value = 0;
+    for (QVector<QPair<uint64_t, uint64_t>>::ConstIterator i = m_data.begin(); i != m_data.end();
+         ++i) {
+        value = std::max(value, (index ? i->first : i->second));
+    }
+
+    return value;
 }

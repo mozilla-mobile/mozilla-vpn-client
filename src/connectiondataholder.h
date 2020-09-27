@@ -16,6 +16,8 @@ class ConnectionDataHolder : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
+    Q_PROPERTY(quint64 txBytes READ txBytes NOTIFY bytesChanged)
+    Q_PROPERTY(quint64 rxBytes READ rxBytes NOTIFY bytesChanged)
 
 public:
     ConnectionDataHolder();
@@ -31,12 +33,19 @@ public:
 
     void reset();
 
+    quint64 txBytes() const;
+    quint64 rxBytes() const;
+
 private:
     void computeAxes();
     void updateIpAddress();
 
+    // Boolean because we have just first and second index in the vector.
+    quint64 bytes(bool index) const;
+
 signals:
     void ipAddressChanged();
+    void bytesChanged();
 
 private:
     QtCharts::QSplineSeries *m_txSeries = nullptr;

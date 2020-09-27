@@ -5,6 +5,36 @@ Row {
     property var rectColor
     property var markerData
 
+    // TODO: check if these 3 functions do the correct math to compute the values.
+
+    function computeRange() {
+        if (markerData < 128000) {
+            return qsTr("Kbps");
+        }
+
+        if (markerData < 128000000) {
+            return "Mbps"
+        }
+
+        return "Gbps";
+    }
+
+    function roundValue(value) {
+        return Math.round(value * 100) / 100
+    }
+
+    function computeValue() {
+        if (markerData < 128000) {
+            return roundValue(markerData / 8192);
+        }
+
+        if (markerData < 128000000) {
+            return roundValue(markerData / 8192000);
+        }
+
+        return roundValue(markeData / 8192000000);
+    }
+
     spacing: 12
     Rectangle {
         height: 12
@@ -19,7 +49,7 @@ Row {
         Text {
             font.pixelSize: 10
             height: 16
-            text: "Mbps"
+            text: computeRange()
             font.family: vpnFontInter.name
             color: "#FFFFFF"
         }
@@ -32,7 +62,7 @@ Row {
         }
         Text {
             font.pixelSize: 16
-            text: markerData
+            text: computeValue()
             font.family: vpnFontInter.name
             color: "#FFFFFF"
         }

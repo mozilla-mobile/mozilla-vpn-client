@@ -123,12 +123,12 @@ Item {
             VPNGraphLegendMarker {
                 markerLabel: qsTr("Download")
                 rectColor: "#EE3389"
-                markerData: "00"
+                markerData: VPNConnectionData.rxBytes
             }
             VPNGraphLegendMarker {
                 markerLabel: qsTr("Upload")
                 rectColor: "#F68953"
-                markerData: "00"
+                markerData: VPNConnectionData.txBytes
             }
         }
 
