@@ -110,8 +110,8 @@ QString DBus::status()
 
     json.insert("status", QJsonValue(true));
     json.insert("serverIpv4Gateway", QJsonValue(m_lastServerIpv4Gateway));
-    json.insert("txBytes", QJsonValue(quint64(txBytes)));
-    json.insert("rxBytes", QJsonValue(quint64(rxBytes)));
+    json.insert("txBytes", QJsonValue(double(txBytes)));
+    json.insert("rxBytes", QJsonValue(double(rxBytes)));
 
     return QJsonDocument(json).toJson();
 }
