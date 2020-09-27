@@ -13,10 +13,10 @@ Row {
         }
 
         if (markerData < 128000000) {
-            return "Mbps"
+            return qsTr("Mbps")
         }
 
-        return "Gbps";
+        return qsTr("Gbps");
     }
 
     function roundValue(value) {

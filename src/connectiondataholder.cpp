@@ -189,7 +189,7 @@ quint64 ConnectionDataHolder::bytes(bool index) const
     uint64_t value = 0;
     for (QVector<QPair<uint64_t, uint64_t>>::ConstIterator i = m_data.begin(); i != m_data.end();
          ++i) {
-        value = std::max(value, (index ? i->first : i->second));
+        value = std::max(value, (!index ? i->first : i->second));
     }
 
     return value;

@@ -78,7 +78,7 @@ Item {
                 axisY: axisY
                 useOpenGL: false
                 capStyle: Qt.RoundCap
-                color: "#EE3389"
+                color: "#F68953"
                 width: 2
             }
 
@@ -88,7 +88,7 @@ Item {
                 axisY: axisY
                 useOpenGL: true
                 capStyle: Qt.RoundCap
-                color: "#F68953"
+                color: "#EE3389"
                 width: 2
             }
 
