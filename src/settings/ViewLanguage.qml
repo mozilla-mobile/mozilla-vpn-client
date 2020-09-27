@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.5
 
 import Mozilla.VPN 1.0
 

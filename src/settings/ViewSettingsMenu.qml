@@ -53,19 +53,22 @@ Flickable {
     contentHeight: 660
     boundsBehavior: Flickable.StopAtBounds
 
-    Image {
-        id: backImage
-        source: "../resources/back.svg"
-        sourceSize.width: Theme.iconSize
-        fillMode: Image.PreserveAspectFit
+    VPNIconButton {
+        id: iconButton
+        onClicked: stackview.pop()
+
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: 20
-        anchors.leftMargin: Theme.windowMargin
+        anchors.topMargin: Theme.windowMargin / 2
+        anchors.leftMargin: Theme.windowMargin / 2
 
-        MouseArea {
-            anchors.fill: backImage
-            onClicked: stackview.pop()
+        Image {
+            id: backImage
+            source: "../resources/back.svg"
+            sourceSize.width: Theme.iconSize
+
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: iconButton
         }
     }
 
