@@ -6,9 +6,6 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 VPNClickableRow {
-    // TODO:
-    // 1. the server should be always changable except in DeviceLimit mode.
-    // 2. in DeviceLimit mode we should gray out the label
     rowShouldBeDisabled: VPNController.state === VPNController.StateDeviceLimit
 
     RowLayout {

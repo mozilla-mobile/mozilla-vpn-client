@@ -39,8 +39,6 @@ Item {
         title: qsTr("My devices")
     }
 
-
-
     ListView {
         id: deviceList
         height: parent.height - menu.height
@@ -209,12 +207,15 @@ Item {
         header: VPNDevicesListHeader {
             id: listHeader
         }
+
         footer: Rectangle {
             id: listfooter
             color: "transparent"
             height: 40
             width: parent.width
         }
+
+        ScrollBar.vertical: ScrollBar {}
     }
 
     Rectangle {

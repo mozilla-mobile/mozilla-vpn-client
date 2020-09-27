@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Mozilla.VPN 1.0
+
 Rectangle {
     property var pendingDeviceRemoval: false
     id: listHeader

@@ -119,12 +119,12 @@ Item {
             anchors.bottomMargin: 48
             anchors.horizontalCenter: parent.horizontalCenter
 
-            // TODO use real data for "markerData"
             VPNGraphLegendMarker {
                 markerLabel: qsTr("Download")
                 rectColor: "#EE3389"
                 markerData: VPNConnectionData.rxBytes
             }
+
             VPNGraphLegendMarker {
                 markerLabel: qsTr("Upload")
                 rectColor: "#F68953"
