@@ -19,13 +19,7 @@ public:
 
     virtual ~ControllerImpl() = default;
 
-    virtual void initialize(const Device *device, const Keys *keys)
-    {
-        Q_UNUSED(device);
-        Q_UNUSED(keys);
-
-        emit initialized(true, Controller::StateOff, QDateTime());
-    }
+    virtual void initialize(const Device *device, const Keys *keys) = 0;
 
     virtual void activate(const Server &server,
                           const Device *device,
@@ -33,8 +27,7 @@ public:
                           bool forSwitching)
         = 0;
 
-    virtual void deactivate(bool forSwitching)
-        = 0;
+    virtual void deactivate(bool forSwitching) = 0;
 
     virtual void checkStatus() = 0;
 
