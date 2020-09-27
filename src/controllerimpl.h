@@ -32,12 +32,12 @@ public:
     virtual void checkStatus() = 0;
 
 signals:
-    void initialized(bool status, Controller::State state, const QDateTime& connectionDate);
+    void initialized(bool status, Controller::State state, const QDateTime &connectionDate);
 
     void connected();
     void disconnected();
 
-    void statusUpdated(uint32_t txBytes, uint32_t rxBytes);
+    void statusUpdated(const QString &serverIpv4Gateway, uint32_t txBytes, uint32_t rxBytes);
 };
 
 #endif // CONTROLLERIMPL_H

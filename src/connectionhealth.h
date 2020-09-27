@@ -25,9 +25,11 @@ private:
 public:
     ConnectionHealth();
 
-    void start(const Server &server);
+    void start(const QString &serverIpv4Gateway);
 
     void stop();
+
+    bool isRunning() const { return m_state != Inactive; }
 
     ConnectionStability stability() const { return m_stability; }
 

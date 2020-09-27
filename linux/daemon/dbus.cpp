@@ -109,6 +109,7 @@ QString DBus::status()
     wg_free_device(device);
 
     json.insert("status", QJsonValue(true));
+    json.insert("serverIpv4Gateway", QJsonValue(m_lastServerIpv4Gateway));
     json.insert("txBytes", QJsonValue(qint64(txBytes)));
     json.insert("rxBytes", QJsonValue(qint64(rxBytes)));
 

@@ -100,6 +100,10 @@ void LinuxController::checkStatus()
             return;
         }
 
+        Q_ASSERT(obj.contains("serverIpv4Gateway"));
+        QJsonValue serverIpv4Gateway = obj.take("serverIpv4Gateway");
+        Q_ASSERT(serverIpv4Gateway.isString());
+
         Q_ASSERT(obj.contains("txBytes"));
         QJsonValue txBytes = obj.take("txBytes");
         Q_ASSERT(txBytes.isDouble());
@@ -108,7 +112,7 @@ void LinuxController::checkStatus()
         QJsonValue rxBytes = obj.take("rxBytes");
         Q_ASSERT(rxBytes.isDouble());
 
-        emit statusUpdated(txBytes.toDouble(), rxBytes.toDouble());
+        emit statusUpdated(serverIpv4Gateway.toString(), txBytes.toDouble(), rxBytes.toDouble());
     });
 
     dbus->status();

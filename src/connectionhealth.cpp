@@ -43,13 +43,13 @@ ConnectionHealth::ConnectionHealth()
     });
 }
 
-void ConnectionHealth::start(const Server &server)
+void ConnectionHealth::start(const QString &serverIpv4Gateway)
 {
-    qDebug() << "ConnectionHealth activated for server:" << server.hostname();
+    qDebug() << "ConnectionHealth activated for server:" << serverIpv4Gateway;
 
     setStability(Stable);
 
-    m_gateway = server.ipv4Gateway();
+    m_gateway = serverIpv4Gateway;
     sendPing();
 }
 

@@ -132,6 +132,6 @@ void MacOSController::checkStatus()
         }
 
         qDebug() << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
-        emit statusUpdated(txBytes, rxBytes);
+        emit statusUpdated("127.0.0.1", txBytes, rxBytes);
     }];
 }

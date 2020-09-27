@@ -18,16 +18,11 @@ void DummyController::activate(const Server &server,
     emit connected();
 }
 
-void DummyController::deactivate(const Server &server,
-                                 const Device *device,
-                                 const Keys *keys,
-                                 bool forSwitching)
+void DummyController::deactivate(bool forSwitching)
 {
-    Q_UNUSED(device);
-    Q_UNUSED(keys);
     Q_UNUSED(forSwitching);
 
-    qDebug() << "DummyController deactivated" << server.hostname();
+    qDebug() << "DummyController deactivated";
 
     emit disconnected();
 }
@@ -37,5 +32,5 @@ void DummyController::checkStatus()
     m_txBytes += QRandomGenerator::global()->generate() % 100000;
     m_rxBytes += QRandomGenerator::global()->generate() % 100000;
 
-    emit statusUpdated(m_txBytes, m_rxBytes);
+    emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
 }

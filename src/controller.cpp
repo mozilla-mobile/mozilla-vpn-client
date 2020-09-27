@@ -17,8 +17,7 @@
 #include <QDebug>
 #include <QTimer>
 
-constexpr const uint32_t CLOCK_TIMER_MSEC = 1000;
-constexpr const uint32_t DATA_TIMER_MSEC = 1000;
+constexpr const uint32_t TIMER_MSEC = 1000;
 
 Controller::Controller()
 {
@@ -39,8 +38,7 @@ Controller::Controller()
     connect(m_impl.get(), &ControllerImpl::statusUpdated, this, &Controller::statusUpdated);
     connect(m_impl.get(), &ControllerImpl::initialized, this, &Controller::implInitialized);
 
-    connect(&m_clockTimer, &QTimer::timeout, this, &Controller::clockTimerTimeout);
-    connect(&m_dataTimer, &QTimer::timeout, this, &Controller::dataTimerTimeout);
+    connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 }
 
 Controller::~Controller() = default;
@@ -98,8 +96,8 @@ void Controller::activate()
     QList<Server> servers = m_vpn->getServers();
     Q_ASSERT(!servers.isEmpty());
 
-    m_currentServer = Server::weightChooser(servers);
-    Q_ASSERT(m_currentServer.initialized());
+    Server server = Server::weightChooser(servers);
+    Q_ASSERT(server.initialized());
 
     const Device *device = m_vpn->deviceModel()->currentDevice();
 
@@ -107,12 +105,11 @@ void Controller::activate()
         setState(StateConnecting);
     }
 
-    m_clockTimer.stop();
-    m_dataTimer.stop();
+    m_timer.stop();
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    m_impl->activate(m_currentServer, device, m_vpn->keys(), m_state == StateSwitching);
+    m_impl->activate(server, device, m_vpn->keys(), m_state == StateSwitching);
 }
 
 void Controller::deactivate()
@@ -130,8 +127,7 @@ void Controller::deactivate()
         setState(StateDisconnecting);
     }
 
-    m_clockTimer.stop();
-    m_dataTimer.stop();
+    m_timer.stop();
 
     m_vpn->connectionDataHolder()->reset();
     m_connectionHealth.stop();
@@ -165,18 +161,15 @@ void Controller::connected()
         return;
     }
 
-    m_clockTimer.start(CLOCK_TIMER_MSEC);
-    m_dataTimer.start(DATA_TIMER_MSEC);
+    m_timer.start(TIMER_MSEC);
 
     m_vpn->connectionDataHolder()->reset();
-    m_connectionHealth.start(m_currentServer);
 }
 
 void Controller::disconnected() {
     qDebug() << "Disconnected from state:" << m_state;
 
-    m_clockTimer.stop();
-    m_dataTimer.stop();
+    m_timer.stop();
 
     m_vpn->connectionDataHolder()->reset();
     m_connectionHealth.stop();
@@ -207,19 +200,15 @@ void Controller::disconnected() {
     setState(StateOff);
 }
 
-void Controller::clockTimerTimeout()
-{
-    Q_ASSERT(m_state == StateOn);
-    emit timeChanged();
-}
-
-void Controller::dataTimerTimeout()
+void Controller::timerTimeout()
 {
     Q_ASSERT(m_state == StateOn);
 
-    if (m_dataViewActive) {
+    if (m_dataViewActive || !m_connectionHealth.isRunning()) {
         m_impl->checkStatus();
     }
+
+    emit timeChanged();
 }
 
 void Controller::changeServer(const QString &countryCode, const QString &city)
@@ -238,8 +227,7 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
         return;
     }
 
-    m_clockTimer.stop();
-    m_dataTimer.stop();
+    m_timer.stop();
 
     qDebug() << "Switching to a different server";
 
@@ -361,8 +349,16 @@ int Controller::time() const
     return m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000;
 }
 
-void Controller::statusUpdated(uint32_t txBytes, uint32_t rxBytes)
+void Controller::statusUpdated(const QString &serverIpv4Gateway, uint32_t txBytes, uint32_t rxBytes)
 {
+    if (m_state != StateOn) {
+        return;
+    }
+
+    if (!m_connectionHealth.isRunning()) {
+        m_connectionHealth.start(serverIpv4Gateway);
+    }
+
     m_vpn->connectionDataHolder()->add(txBytes, rxBytes);
 }
 
