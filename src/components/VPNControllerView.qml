@@ -89,6 +89,10 @@ Rectangle {
                 visible: false
             }
             PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -236,11 +240,6 @@ Rectangle {
                 visible: true
             }
             PropertyChanges {
-                target: connectionInfoButton
-                visible: true
-            }
-
-            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -271,6 +270,14 @@ Rectangle {
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
+            }
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
             }
             PropertyChanges {
                 target: connectionStability
