@@ -33,10 +33,6 @@ Rectangle {
                 color: "#FFFFFF"
             }
             PropertyChanges {
-                target: logo
-                source: "../resources/state-off.svg"
-            }
-            PropertyChanges {
                 target: logoTitle
                 text: qsTr("VPN is off")
                 color: Theme.fontColorDark
@@ -72,10 +68,6 @@ Rectangle {
             PropertyChanges {
                 target: box
                 color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logo
-                source: "../resources/state-off.svg"
             }
             PropertyChanges {
                 target: logoTitle
@@ -114,10 +106,6 @@ Rectangle {
             PropertyChanges {
                 target: box
                 color: "#321C64"
-            }
-            PropertyChanges {
-                target: logo
-                source: "../resources/state-on.svg"
             }
             PropertyChanges {
                 target: logoTitle
@@ -162,10 +150,6 @@ Rectangle {
                 color: "#321C64"
             }
             PropertyChanges {
-                target: logo
-                source: "../resources/state-on.svg"
-            }
-            PropertyChanges {
                 target: logoTitle
                 text: qsTr("VPN is on")
                 color: "#FFFFFF"
@@ -201,10 +185,6 @@ Rectangle {
             PropertyChanges {
                 target: box
                 color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logo
-                source: "../resources/state-off.svg"
             }
             PropertyChanges {
                 target: logoTitle
@@ -245,10 +225,6 @@ Rectangle {
                 color: "#321C64"
             }
             PropertyChanges {
-                target: logo
-                source: "../resources/state-on.svg"
-            }
-            PropertyChanges {
                 target: logoTitle
                 text: qsTr("Switching…")
                 color: "#FFFFFF"
@@ -275,17 +251,18 @@ Rectangle {
                 target: animatedRingsWrapper
                 visible: false
             }
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: true
+                opacity: 1
+                startAnimation: true
+            }
         },
         State {
             name: VPNController.StateDeviceLimit
             PropertyChanges {
                 target: box
                 color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logo
-                source: "../resources/state-off.svg"
-                opacity: .55
             }
             PropertyChanges {
                 target: logoTitle
@@ -375,6 +352,15 @@ Rectangle {
         id: animatedRingsWrapper
     }
 
+    VPNMainImage {
+        id: logo
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 50
+        height: 80
+        width: 80
+    }
+
     VPNIconButton {
         id: connectionInfoButton
         onClicked: connectionInfo.visible = true
@@ -418,15 +404,6 @@ Rectangle {
             sourceSize.height: 22
             sourceSize.width: 22
         }
-    }
-
-    Image {
-        id: logo
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: 50
-        sourceSize.width: 80
-        sourceSize.height: 80
     }
 
     Text {
