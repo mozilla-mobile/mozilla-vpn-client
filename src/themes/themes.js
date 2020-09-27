@@ -70,8 +70,8 @@ const greyButton = {
 };
 
 const whiteSettingsBtn = {
-    "buttonHovered": "#5b4a83",
-    "buttonPressed": "#725da0"
+    "buttonHovered": "#5b4983",
+    "buttonPressed": "#8477a2"
 };
 
 const removeDeviceBtn = {
