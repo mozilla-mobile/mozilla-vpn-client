@@ -171,14 +171,32 @@ public class MacOSControllerImpl : NSObject {
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
     }
 
-    @objc func checkStatus(callback: @escaping (String) -> Void) {
+    @objc func checkStatus(callback: @escaping (String, String) -> Void) {
         Logger.global?.log(message: "Check status")
         assert(tunnel != nil)
 
+        let proto = tunnel!.protocolConfiguration as? NETunnelProviderProtocol
+        if proto == nil {
+            callback("", "")
+            return
+        }
+
+        let tunnelConfiguration = proto?.asTunnelConfiguration()
+        if tunnelConfiguration == nil {
+            callback("", "")
+            return
+        }
+
+        let serverIpv4Gateway = tunnelConfiguration?.interface.dns[0].address
+        if serverIpv4Gateway == nil {
+            callback("", "")
+            return
+        }
+
         guard let session = tunnel?.connection as? NETunnelProviderSession
         else {
-            callback("");
-            return;
+            callback("", "")
+            return
         }
 
         do {
@@ -187,15 +205,15 @@ public class MacOSControllerImpl : NSObject {
                         let configString = String(data: data, encoding: .utf8)
                 else {
                     Logger.global?.log(message: "Failed to convert data to string")
-                    callback("")
+                    callback("", "")
                     return
                 }
 
-                callback(configString)
+                callback("\(serverIpv4Gateway!)", configString)
             }
         } catch {
             Logger.global?.log(message: "Failed to retrieve data from session")
-            callback("")
+            callback("", "")
         }
     }
 }

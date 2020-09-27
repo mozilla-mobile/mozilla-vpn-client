@@ -106,7 +106,7 @@ void MacOSController::checkStatus()
 
     m_checkingStatus = true;
 
-    [impl checkStatusWithCallback:^(NSString *configString) {
+    [impl checkStatusWithCallback:^(NSString *serverIpv4Gateway, NSString *configString) {
         QString config = QString::fromNSString(configString);
 
         m_checkingStatus = false;
@@ -131,7 +131,7 @@ void MacOSController::checkStatus()
             }
         }
 
-        qDebug() << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
-        emit statusUpdated("127.0.0.1", txBytes, rxBytes);
+        qDebug() << "ServerIpv4Gateway:" << serverIpv4Gateway << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
+        emit statusUpdated(QString::fromNSString(serverIpv4Gateway), txBytes, rxBytes);
     }];
 }
