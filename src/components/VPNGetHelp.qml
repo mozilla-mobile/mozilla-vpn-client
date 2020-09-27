@@ -63,5 +63,7 @@ Item {
                }
             onClicked: clickHandler(clickId)
         }
+
+        ScrollBar.vertical: ScrollBar {}
     }
 }

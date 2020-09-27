@@ -125,5 +125,7 @@ Item {
                 }
             }
         }
+
+        ScrollBar.vertical: ScrollBar {}
     }
 }

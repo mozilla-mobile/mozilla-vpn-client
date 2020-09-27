@@ -93,5 +93,7 @@ Item {
             title: linkTitle
             onClicked: VPN.openLink(openUrl)
         }
+
+        ScrollBar.vertical: ScrollBar {}
     }
 }
