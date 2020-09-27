@@ -59,16 +59,12 @@ bool DBus::activate(const QString &privateKey,
                       ipv6Enabled);
 }
 
-bool DBus::deactivate(const QString &privateKey,
-                      const QString &deviceIpv4Address,
-                      const QString &deviceIpv6Address,
-                      const QString &serverIpv4Gateway,
-                      const QString &serverPublicKey,
-                      const QString &serverIpv4AddrIn,
-                      const QString &serverIpv6AddrIn,
-                      int serverPort,
-                      bool ipv6Enabled)
+bool DBus::deactivate()
 {
+    if (!m_connected) {
+        return true;
+    }
+
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.deactivate")) {
         return false;
     }
@@ -76,35 +72,15 @@ bool DBus::deactivate(const QString &privateKey,
     m_connected = false;
 
     return runWgQuick(WgQuickProcess::Down,
-                      privateKey,
-                      deviceIpv4Address,
-                      deviceIpv6Address,
-                      serverIpv4Gateway,
-                      serverPublicKey,
-                      serverIpv4AddrIn,
-                      serverIpv6AddrIn,
-                      serverPort,
-                      ipv6Enabled);
-}
-
-void DBus::deactivateToQuit()
-{
-    if (!m_connected) {
-        return;
-    }
-
-    m_connected = false;
-
-    runWgQuick(WgQuickProcess::Down,
-               m_lastPrivateKey,
-               m_lastDeviceIpv4Address,
-               m_lastDeviceIpv6Address,
-               m_lastServerIpv4Gateway,
-               m_lastServerPublicKey,
-               m_lastServerIpv4AddrIn,
-               m_lastServerIpv6AddrIn,
-               m_lastServerPort,
-               m_lastIpv6Enabled);
+                      m_lastPrivateKey,
+                      m_lastDeviceIpv4Address,
+                      m_lastDeviceIpv6Address,
+                      m_lastServerIpv4Gateway,
+                      m_lastServerPublicKey,
+                      m_lastServerIpv4AddrIn,
+                      m_lastServerIpv6AddrIn,
+                      m_lastServerPort,
+                      m_lastIpv6Enabled);
 }
 
 QString DBus::status()

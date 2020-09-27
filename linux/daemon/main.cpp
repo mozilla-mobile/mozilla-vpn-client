@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
-        dbus->deactivateToQuit();
+        dbus->deactivate();
         app.quit();
     });
 

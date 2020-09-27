@@ -65,13 +65,8 @@ void LinuxController::activate(const Server &server,
     dbus->activate(server, device, keys);
 }
 
-void LinuxController::deactivate(const Server &server,
-                                 const Device *device,
-                                 const Keys *keys,
-                                 bool forSwitching)
+void LinuxController::deactivate(bool forSwitching)
 {
-    Q_ASSERT(device);
-    Q_ASSERT(keys);
     Q_UNUSED(forSwitching);
 
     qDebug() << "LinuxController deactivated";
@@ -81,7 +76,7 @@ void LinuxController::deactivate(const Server &server,
     connect(dbus, &DBus::failed, this, &LinuxController::disconnected);
     connect(dbus, &DBus::succeeded, this, &LinuxController::disconnected);
 
-    dbus->deactivate(server, device, keys);
+    dbus->deactivate();
 }
 
 void LinuxController::checkStatus()

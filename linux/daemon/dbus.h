@@ -13,8 +13,6 @@ class DBus : public QObject
 public:
     DBus(QObject *parent);
 
-    void deactivateToQuit();
-
 public Q_SLOTS:
     bool activate(const QString &privateKey,
                   const QString &deviceIpv4Address,
@@ -26,15 +24,7 @@ public Q_SLOTS:
                   int serverPort,
                   bool ipv6Enabled);
 
-    bool deactivate(const QString &privateKey,
-                    const QString &deviceIpv4Address,
-                    const QString &deviceIpv6Address,
-                    const QString &serverIpv4Gateway,
-                    const QString &serverPublicKey,
-                    const QString &serverIpv4AddrIn,
-                    const QString &serverIpv6AddrIn,
-                    int serverPort,
-                    bool ipv6Enabled);
+    bool deactivate();
 
     QString status();
 

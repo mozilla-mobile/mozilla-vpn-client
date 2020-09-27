@@ -136,10 +136,7 @@ void Controller::deactivate()
     m_vpn->connectionDataHolder()->reset();
     m_connectionHealth.stop();
 
-    const Device *device = m_vpn->deviceModel()->currentDevice();
-
-    Q_ASSERT(m_currentServer.initialized());
-    m_impl->deactivate(m_currentServer, device, m_vpn->keys(), m_state == StateSwitching);
+    m_impl->deactivate(m_state == StateSwitching);
 }
 
 void Controller::connected()

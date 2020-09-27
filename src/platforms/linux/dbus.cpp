@@ -36,19 +36,10 @@ void DBus::activate(const Server &server, const Device *device, const Keys *keys
     monitorReply(reply);
 }
 
-void DBus::deactivate(const Server &server, const Device *device, const Keys *keys)
+void DBus::deactivate()
 {
     qDebug() << "Deactivate via DBus";
-    QDBusPendingReply<bool> reply
-        = m_dbus->deactivate(keys->privateKey(),
-                             device->ipv4Address(),
-                             device->ipv6Address(),
-                             server.ipv4Gateway(),
-                             server.publicKey(),
-                             server.ipv4AddrIn(),
-                             server.ipv6AddrIn(),
-                             server.choosePort(),
-                             MozillaVPN::instance()->settingsHolder()->ipv6());
+    QDBusPendingReply<bool> reply = m_dbus->deactivate();
     monitorReply(reply);
 }
 

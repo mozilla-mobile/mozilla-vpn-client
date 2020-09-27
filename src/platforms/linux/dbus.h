@@ -18,7 +18,7 @@ public:
     DBus(QObject *parent);
 
     void activate(const Server &server, const Device *device, const Keys *keys);
-    void deactivate(const Server &server, const Device *device, const Keys *keys);
+    void deactivate();
     void status();
 
 signals:

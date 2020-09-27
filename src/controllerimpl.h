@@ -32,10 +32,8 @@ public:
                           const Keys *keys,
                           bool forSwitching)
         = 0;
-    virtual void deactivate(const Server &server,
-                            const Device *device,
-                            const Keys *keys,
-                            bool forSwitching)
+
+    virtual void deactivate(bool forSwitching)
         = 0;
 
     virtual void checkStatus() = 0;

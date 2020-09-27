@@ -23,10 +23,7 @@ public:
                   const Keys *keys,
                   bool forSwitching) override;
 
-    void deactivate(const Server &server,
-                    const Device *device,
-                    const Keys *keys,
-                    bool forSwitching) override;
+    void deactivate(bool forSwitching) override;
 
     void checkStatus() override;
 

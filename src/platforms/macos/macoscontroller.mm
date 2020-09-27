@@ -85,16 +85,11 @@ void MacOSController::activate(const Server &server,
                        }];
 }
 
-void MacOSController::deactivate(const Server &server,
-                                 const Device *device,
-                                 const Keys *keys,
-                                 bool forSwitching)
+void MacOSController::deactivate(bool forSwitching)
 {
-    Q_UNUSED(device);
-    Q_UNUSED(keys);
     Q_UNUSED(forSwitching);
 
-    qDebug() << "MacOSController deactivated" << server.hostname();
+    qDebug() << "MacOSController deactivated";
 
     Q_ASSERT(impl);
     [impl disconnect];
