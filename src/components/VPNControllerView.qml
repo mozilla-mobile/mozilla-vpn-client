@@ -51,11 +51,19 @@ Rectangle {
                 source: "../resources/settings.svg"
             }
             PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
             PropertyChanges {
-                target: animation
+                target: animatedRingsWrapper
                 visible: false
             }
         },
@@ -96,6 +104,10 @@ Rectangle {
                 target: connectionStability
                 visible: false
             }
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
         },
         State {
             name: VPNController.StateConnecting
@@ -131,7 +143,15 @@ Rectangle {
                 visible: false
             }
             PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+            PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animatedRingsWrapper
                 visible: false
             }
         },
@@ -206,7 +226,15 @@ Rectangle {
                 visible: false
             }
             PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+            PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animatedRingsWrapper
                 visible: false
             }
         },
@@ -241,6 +269,10 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animatedRingsWrapper
                 visible: false
             }
         },
@@ -281,6 +313,10 @@ Rectangle {
             }
             PropertyChanges {
                 target: connectionStability
+                visible: false
+            }
+            PropertyChanges {
+                target: animatedRingsWrapper
                 visible: false
             }
         }
