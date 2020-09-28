@@ -113,7 +113,7 @@ linux {
             tasks/authenticate/authenticationlistener.h
 
     isEmpty(PREFIX) {
-        PREFIX=/opt/$${TARGET}
+        PREFIX=/usr
     }
 
     QT += dbus
