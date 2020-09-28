@@ -23,7 +23,7 @@ DBus::DBus(QObject *parent) : QObject(parent)
     connect(m_dbus, &OrgMozillaVpnDbusInterface::disconnected, this, &DBus::disconnected);
 }
 
-void DBus::activate(const Server &server, const Device *device, const Keys *keys)
+QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *device, const Keys *keys)
 {
     qDebug() << "Activate via DBus";
     QDBusPendingReply<bool> reply
@@ -36,57 +36,34 @@ void DBus::activate(const Server &server, const Device *device, const Keys *keys
                            server.ipv6AddrIn(),
                            server.choosePort(),
                            MozillaVPN::instance()->settingsHolder()->ipv6());
-    monitorReply(reply);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
 }
 
-void DBus::deactivate()
+QDBusPendingCallWatcher *DBus::deactivate()
 {
     qDebug() << "Deactivate via DBus";
     QDBusPendingReply<bool> reply = m_dbus->deactivate();
-    monitorReply(reply);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
 }
 
-void DBus::status()
+QDBusPendingCallWatcher *DBus::status()
 {
     qDebug() << "Status via DBus";
     QDBusPendingReply<QString> reply = m_dbus->status();
-
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,
-                     [this](QDBusPendingCallWatcher *call) {
-                         QDBusPendingReply<QString> reply = *call;
-                         if (reply.isError()) {
-                             qDebug() << "Error received from the DBus service";
-                             emit failed();
-                         } else {
-                             emit statusReceived(reply.argumentAt<0>());
-                         }
-
-                         call->deleteLater();
-                     });
-}
-
-void DBus::monitorReply(QDBusPendingReply<bool> &reply)
-{
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
-    QObject::connect(watcher,
-                     &QDBusPendingCallWatcher::finished,
-                     [this](QDBusPendingCallWatcher *call) {
-                         QDBusPendingReply<bool> reply = *call;
-                         if (reply.isError()) {
-                             qDebug() << "Error received from the DBus service";
-                             emit failed();
-                         } else {
-                             bool status = reply.argumentAt<0>();
-                             if (status) {
-                                 qDebug() << "DBus service says: all good.";
-                             } else {
-                                 qDebug() << "DBus service says: error.";
-                                 emit failed();
-                             }
-                         }
-
-                         call->deleteLater();
-                     });
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
 }

@@ -17,19 +17,13 @@ class DBus : public QObject
 public:
     DBus(QObject *parent);
 
-    void activate(const Server &server, const Device *device, const Keys *keys);
-    void deactivate();
-    void status();
+    QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys);
+    QDBusPendingCallWatcher *deactivate();
+    QDBusPendingCallWatcher *status();
 
 signals:
     void connected();
     void disconnected();
-
-    void failed();
-    void statusReceived(const QString& status);
-
-private:
-    void monitorReply(QDBusPendingReply<bool> &reply);
 
 private:
     OrgMozillaVpnDbusInterface *m_dbus;

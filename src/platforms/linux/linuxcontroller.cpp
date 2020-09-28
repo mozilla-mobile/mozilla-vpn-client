@@ -6,6 +6,7 @@
 #include "mozillavpn.h"
 #include "server.h"
 
+#include <QDBusPendingCallWatcher>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -25,28 +26,33 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
     Q_UNUSED(device);
     Q_UNUSED(keys);
 
-    DBus *dbus = new DBus(this);
-    connect(dbus, &DBus::statusReceived, [this](const QString &status) {
-        qDebug() << "Status:" << status;
+    QDBusPendingCallWatcher *watcher = m_dbus->status();
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     [this](QDBusPendingCallWatcher *call) {
+                         QDBusPendingReply<QString> reply = *call;
+                         if (reply.isError()) {
+                             qDebug() << "Error received from the DBus service";
+                             emit initialized(false, Controller::StateOff, QDateTime());
+                             return;
+                         }
 
-        QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
-        Q_ASSERT(json.isObject());
+                         QString status = reply.argumentAt<0>();
+                         qDebug() << "Status:" << status;
 
-        QJsonObject obj = json.object();
-        Q_ASSERT(obj.contains("status"));
-        QJsonValue statusValue = obj.take("status");
-        Q_ASSERT(statusValue.isBool());
+                         QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
+                         Q_ASSERT(json.isObject());
 
-        emit initialized(true,
-                         statusValue.toBool() ? Controller::StateOn : Controller::StateOff,
-                         QDateTime::currentDateTime());
-    });
+                         QJsonObject obj = json.object();
+                         Q_ASSERT(obj.contains("status"));
+                         QJsonValue statusValue = obj.take("status");
+                         Q_ASSERT(statusValue.isBool());
 
-    connect(dbus, &DBus::failed, [this]() {
-        emit initialized(false, Controller::StateOff, QDateTime());
-    });
-
-    dbus->status();
+                         emit initialized(true,
+                                          statusValue.toBool() ? Controller::StateOn
+                                                               : Controller::StateOff,
+                                          QDateTime::currentDateTime());
+                     });
 }
 
 void LinuxController::activate(const Server &server,
@@ -54,70 +60,88 @@ void LinuxController::activate(const Server &server,
                                const Keys *keys,
                                bool forSwitching)
 {
-    Q_ASSERT(device);
-    Q_ASSERT(keys);
     Q_UNUSED(forSwitching);
-
     qDebug() << "LinuxController activated";
-
-    DBus *dbus = new DBus(this);
-
-    connect(dbus, &DBus::failed, [this]() {
-        MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
-        emit disconnected();
-    });
-
-    dbus->activate(server, device, keys);
+    monitorWatcher(m_dbus->activate(server, device, keys));
 }
 
 void LinuxController::deactivate(bool forSwitching)
 {
     Q_UNUSED(forSwitching);
-
     qDebug() << "LinuxController deactivated";
+    monitorWatcher(m_dbus->deactivate());
+}
 
-    DBus *dbus = new DBus(this);
+void LinuxController::monitorWatcher(QDBusPendingCallWatcher *watcher)
+{
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     [this](QDBusPendingCallWatcher *call) {
+                         QDBusPendingReply<bool> reply = *call;
+                         if (reply.isError()) {
+                             qDebug() << "Error received from the DBus service";
+                             MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+                             emit disconnected();
+                             return;
+                         }
 
-    connect(dbus, &DBus::failed, this, &LinuxController::disconnected);
+                         bool status = reply.argumentAt<0>();
+                         if (status) {
+                             qDebug() << "DBus service says: all good.";
+                             // we will receive the connected/disconnected() signal;
+                             return;
+                         }
 
-    dbus->deactivate();
+                         qDebug() << "DBus service says: error.";
+                         MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+                         emit disconnected();
+                     });
 }
 
 void LinuxController::checkStatus()
 {
     qDebug() << "Check status";
 
-    DBus *dbus = new DBus(this);
-    connect(dbus, &DBus::statusReceived, [this](const QString &status) {
-        qDebug() << "Status:" << status;
+    QDBusPendingCallWatcher *watcher = m_dbus->status();
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     [this](QDBusPendingCallWatcher *call) {
+                         QDBusPendingReply<QString> reply = *call;
+                         if (reply.isError()) {
+                             qDebug() << "Error received from the DBus service";
+                             return;
+                         }
 
-        QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
-        Q_ASSERT(json.isObject());
+                         QString status = reply.argumentAt<0>();
+                         qDebug() << "Status:" << status;
 
-        QJsonObject obj = json.object();
-        Q_ASSERT(obj.contains("status"));
-        QJsonValue statusValue = obj.take("status");
-        Q_ASSERT(statusValue.isBool());
+                         QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
+                         Q_ASSERT(json.isObject());
 
-        if (!statusValue.toBool()) {
-            qDebug() << "Unable to retrieve the status from the interface.";
-            return;
-        }
+                         QJsonObject obj = json.object();
+                         Q_ASSERT(obj.contains("status"));
+                         QJsonValue statusValue = obj.take("status");
+                         Q_ASSERT(statusValue.isBool());
 
-        Q_ASSERT(obj.contains("serverIpv4Gateway"));
-        QJsonValue serverIpv4Gateway = obj.take("serverIpv4Gateway");
-        Q_ASSERT(serverIpv4Gateway.isString());
+                         if (!statusValue.toBool()) {
+                             qDebug() << "Unable to retrieve the status from the interface.";
+                             return;
+                         }
 
-        Q_ASSERT(obj.contains("txBytes"));
-        QJsonValue txBytes = obj.take("txBytes");
-        Q_ASSERT(txBytes.isDouble());
+                         Q_ASSERT(obj.contains("serverIpv4Gateway"));
+                         QJsonValue serverIpv4Gateway = obj.take("serverIpv4Gateway");
+                         Q_ASSERT(serverIpv4Gateway.isString());
 
-        Q_ASSERT(obj.contains("rxBytes"));
-        QJsonValue rxBytes = obj.take("rxBytes");
-        Q_ASSERT(rxBytes.isDouble());
+                         Q_ASSERT(obj.contains("txBytes"));
+                         QJsonValue txBytes = obj.take("txBytes");
+                         Q_ASSERT(txBytes.isDouble());
 
-        emit statusUpdated(serverIpv4Gateway.toString(), txBytes.toDouble(), rxBytes.toDouble());
-    });
+                         Q_ASSERT(obj.contains("rxBytes"));
+                         QJsonValue rxBytes = obj.take("rxBytes");
+                         Q_ASSERT(rxBytes.isDouble());
 
-    dbus->status();
+                         emit statusUpdated(serverIpv4Gateway.toString(),
+                                            txBytes.toDouble(),
+                                            rxBytes.toDouble());
+                     });
 }

@@ -4,6 +4,7 @@
 #include "controllerimpl.h"
 
 class DBus;
+class QDBusPendingCallWatcher;
 
 class LinuxController final : public ControllerImpl
 {
@@ -20,6 +21,9 @@ public:
     void deactivate(bool forSwitching) override;
 
     void checkStatus() override;
+
+private:
+    void monitorWatcher(QDBusPendingCallWatcher *watcher);
 
 private:
     DBus *m_dbus = nullptr;
