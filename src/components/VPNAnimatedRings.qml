@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.11
 import Mozilla.VPN 1.0
 
 Rectangle {
-    property var yCenter: logo.y + (logo.sourceSize.height / 2) - 1
+    property var yCenter: logo.y + 40 - 1
     property bool startAnimation: false
     onStartAnimationChanged: animatedRings.requestPaint();
 
@@ -19,18 +19,19 @@ Rectangle {
 
 
     Canvas {
-        property real maxRadius: 160
-        property real startingRadius: 40
-        property real startingBorderWidth: 0
+        property real maxRadius: 175
+        property real startNextRing: 95
+        property real startingRadius: 50
+        property real startingBorderWidth: 1
 
         property real ring1Radius;
-        property real ring1BorderWidth;
+        property real ring1BorderWidth: startingBorderWidth
 
         property real ring2Radius;
-        property real ring2BorderWidth;
+        property real ring2BorderWidth: startingBorderWidth
 
         property real ring3Radius;
-        property real ring3BorderWidth;
+        property real ring3BorderWidth: startingBorderWidth
 
         property bool drawingRing2: false
         property var drawingRing3: false
@@ -53,7 +54,7 @@ Rectangle {
                 rBorderWidth = startingBorderWidth;
             }
 
-            // Increase border width quickly on new ring creation
+             //Increase border width quickly on new ring creation
             if (rRadius < 115 && rBorderWidth <= 4.5) {
                 rBorderWidth += 0.15;
             }
@@ -130,17 +131,16 @@ Rectangle {
                 resetRingValues();
                 return;
             }
-
             // Draw first ring
             drawRing(ctx, ring1Radius, ring1BorderWidth);
 
-            // Draw second ring when the first ring's radius is 80
-            if (!drawingRing2 && ring1Radius === 80) {
+            // Draw second ring when the first ring's radius is 95
+            if (!drawingRing2 && ring1Radius === startNextRing) {
                 drawingRing2 = true;
             }
 
-            // Draw third ring when the second ring's radius is 80
-            if (!drawingRing3 && ring2Radius === 80) {
+            // Draw third ring when the second ring's radius is 95
+            if (!drawingRing3 && ring2Radius === startNextRing) {
                 drawingRing3 = true;
             }
 
@@ -158,20 +158,22 @@ Rectangle {
     Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: animatedRingsWrapper.horizontalCenter
-        y: 39
-        height: 100
-        width: 100
+        y: 45
+        height: 90
+        width: 90
         radius: 50
         color: "#321C64"
+        antialiasing: true
     }
 
     RadialGradient {
         id: bgGradient
+        antialiasing: true
           anchors.fill: animatedRingsWrapper
           verticalOffset: -68
           gradient: Gradient {
               GradientStop { position: 0.26; color: "transparent"}
-              GradientStop { position: 0.48; color: "#321C64" }
+              GradientStop { position: 0.5; color: "#321C64" }
           }
           layer.enabled: true
           layer.effect: OpacityMask {

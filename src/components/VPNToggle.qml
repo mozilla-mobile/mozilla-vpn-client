@@ -32,10 +32,11 @@ Rectangle {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
+                color: "#998DB2"
             }
             PropertyChanges {
                 target: toggle
-                color: "#3FE1B0"
+                color: "#387E8A"
             }
         },
         State {
@@ -57,7 +58,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: toggle
-                color: "#9E9E9E"
+                color: "#CECECE"
             }
         },
         State {
@@ -65,10 +66,11 @@ Rectangle {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
+                color: "#998DB2"
             }
             PropertyChanges {
                 target: toggle
-                color: "#3FE1B0"
+                color: "#387E8A"
             }
         },
         State {
@@ -83,34 +85,18 @@ Rectangle {
             }
         }
     ]
-
     transitions: [
         Transition {
-            to: VPNController.StateConnecting
-            NumberAnimation {
-                target: cursor
-                property: "anchors.leftMargin"
-                duration: 200
-            }
-            ColorAnimation {
-                target: toggle
-                property: "color"
-                duration: 200
-            }
-        },
-
-        Transition {
-            to: VPNController.StateDisconnecting
-            NumberAnimation {
-                target: cursor
-                property: "anchors.leftMargin"
-                duration: 200
-            }
-
-            ColorAnimation {
-                target: toggle
-                property: "color"
-                duration: 200
+            ParallelAnimation {
+                NumberAnimation {
+                    target: cursor
+                    property: "anchors.leftMargin"
+                    duration: 200
+                }
+                ColorAnimation {
+                    targets: [toggle, cursor]
+                    duration: 300
+                }
             }
         }
     ]
@@ -119,6 +105,36 @@ Rectangle {
     height: 32
     width: 60
     radius: 16
+
+
+    Rectangle {
+        id: toggleHoverOutline
+        color: "transparent"
+        border.width: 5
+        border.color: "#C2C2C2"
+        opacity: {
+            if (mouseArea.pressed &&
+                (VPNController.state === VPNController.StateOn ||
+                VPNController.state === VPNController.StateOff)) {
+                    return 0.3
+            }
+            if (mouseArea.containsMouse) {
+                return 0.2
+            }
+            return 0
+        }
+        anchors.fill: toggle
+        anchors.margins: -5
+        radius: toggleHoverOutline.height / 2
+        antialiasing: true
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration:200
+            }
+        }
+
+    }
 
     Rectangle {
         id: cursor
@@ -131,13 +147,15 @@ Rectangle {
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
+        hoverEnabled: true
+
         onClicked: {
             if (VPNController.state === VPNController.StateDeviceLimit ||
                 VPNController.state === VPNController.StateInitializing) {
                 return;
             }
-
             if (VPNController.state !== VPNController.StateOff) {
                 VPNController.deactivate()
             } else {

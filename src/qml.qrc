@@ -275,7 +275,6 @@
         <file>components/VPNButton.qml</file>
         <file>components/VPNMenu.qml</file>
         <file>components/VPNSettingsItem.qml</file>
-        <file>resources/state-off.svg</file>
         <file>resources/logo.svg</file>
         <file>components/VPNToggle.qml</file>
         <file>resources/chevron.svg</file>
@@ -286,7 +285,6 @@
         <file>components/VPNRadioDelegate.qml</file>
         <file>components/VPNBoldLabel.qml</file>
         <file>components/VPNControllerView.qml</file>
-        <file>resources/state-on.svg</file>
         <file>resources/externalLink.svg</file>
         <file>components/VPNLightLabel.qml</file>
         <file>resources/arrow-toggle.svg</file>
@@ -348,5 +346,9 @@
         <file>components/VPNConnectionInfo.qml</file>
         <file>resources/connection-graph.svg</file>
         <file>components/VPNGraphLegendMarker.qml</file>
+        <file>resources/shield-off.svg</file>
+        <file>resources/shield-on.svg</file>
+        <file>resources/switching.svg</file>
+        <file>components/VPNMainImage.qml</file>
     </qresource>
 </RCC>
