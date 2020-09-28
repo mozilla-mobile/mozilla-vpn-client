@@ -74,18 +74,19 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
     emit bytesChanged();
 }
 
-void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
-                                         const QVariant &a_rxSeries,
-                                         const QVariant &a_axisX,
-                                         const QVariant &a_axisY)
+void ConnectionDataHolder::activate(const QVariant &a_txSeries,
+                                    const QVariant &a_rxSeries,
+                                    const QVariant &a_axisX,
+                                    const QVariant &a_axisY)
 {
-    qDebug() << "Set components";
+    qDebug() << "Activated";
 
     QtCharts::QSplineSeries *txSeries = qobject_cast<QtCharts::QSplineSeries *>(
         a_txSeries.value<QObject *>());
 
     if (m_txSeries != txSeries) {
         m_txSeries = txSeries;
+        connect(txSeries, &QObject::destroyed, [this]() { deactivate(); });
     }
 
     QtCharts::QSplineSeries *rxSeries = qobject_cast<QtCharts::QSplineSeries *>(
@@ -93,18 +94,21 @@ void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
 
     if (m_rxSeries != rxSeries) {
         m_rxSeries = rxSeries;
+        connect(rxSeries, &QObject::destroyed, [this]() { deactivate(); });
     }
 
     QtCharts::QValueAxis *axisX = qobject_cast<QtCharts::QValueAxis *>(a_axisX.value<QObject *>());
 
     if (m_axisX != axisX) {
         m_axisX = axisX;
+        connect(axisX, &QObject::destroyed, [this]() { deactivate(); });
     }
 
     QtCharts::QValueAxis *axisY = qobject_cast<QtCharts::QValueAxis *>(a_axisY.value<QObject *>());
 
     if (m_axisY != axisY) {
         m_axisY = axisY;
+        connect(axisY, &QObject::destroyed, [this]() { deactivate(); });
     }
 
     // Let's be sure we have all the x/y points.
@@ -112,6 +116,17 @@ void ConnectionDataHolder::setComponents(const QVariant &a_txSeries,
         m_txSeries->append(m_txSeries->count(), 0);
         m_rxSeries->append(m_rxSeries->count(), 0);
     }
+}
+
+void ConnectionDataHolder::deactivate()
+{
+    qDebug() << "Deactivated";
+
+    reset();
+    m_axisX = nullptr;
+    m_axisY = nullptr;
+    m_txSeries = nullptr;
+    m_rxSeries = nullptr;
 }
 
 void ConnectionDataHolder::computeAxes()
@@ -136,7 +151,6 @@ void ConnectionDataHolder::reset()
     emit bytesChanged();
 
     if (m_txSeries) {
-        Q_ASSERT(m_rxSeries);
         Q_ASSERT(m_txSeries->count() == MAX_POINTS);
         Q_ASSERT(m_rxSeries->count() == MAX_POINTS);
 

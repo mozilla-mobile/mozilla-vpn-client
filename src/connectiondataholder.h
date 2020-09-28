@@ -24,10 +24,12 @@ public:
 
     void add(uint64_t txBytes, uint64_t rxBytes);
 
-    Q_INVOKABLE void setComponents(const QVariant &txSeries,
-                                   const QVariant &rxSeries,
-                                   const QVariant &axisX,
-                                   const QVariant &axisY);
+    Q_INVOKABLE void activate(const QVariant &txSeries,
+                              const QVariant &rxSeries,
+                              const QVariant &axisX,
+                              const QVariant &axisY);
+
+    Q_INVOKABLE void deactivate();
 
     const QString &ipAddress() const { return m_ipAddress; }
 
@@ -35,6 +37,8 @@ public:
 
     quint64 txBytes() const;
     quint64 rxBytes() const;
+
+    bool isRunning() const { return !!m_txSeries; }
 
 private:
     void computeAxes();

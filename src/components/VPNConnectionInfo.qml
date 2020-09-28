@@ -14,7 +14,7 @@ Item {
             name: "visible"
             when: chartWrapper.visible
             StateChangeScript {
-                script: VPNController.dataViewActive = true
+                script: VPNConnectionData.activate(txSeries, rxSeries, axisX, axisY)
             }
         },
 
@@ -22,7 +22,7 @@ Item {
             name: "invisible"
             when: !chartWrapper.visible
             StateChangeScript {
-                script: VPNController.dataViewActive = false
+                script: VPNConnectionData.deactivate();
             }
         }
     ]
@@ -90,11 +90,6 @@ Item {
                 capStyle: Qt.RoundCap
                 color: "#EE3389"
                 width: 2
-            }
-
-            Component.onCompleted: {
-                VPNConnectionData.setComponents(txSeries, rxSeries,
-                                                axisX, axisY)
             }
         }
 

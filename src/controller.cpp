@@ -207,7 +207,7 @@ void Controller::timerTimeout()
 {
     Q_ASSERT(m_state == StateOn);
 
-    if (m_dataViewActive || !m_connectionHealth.isRunning()) {
+    if (m_vpn->connectionDataHolder()->isRunning()) {
         m_impl->checkStatus();
     }
 
@@ -387,12 +387,3 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
     m_vpn->connectionDataHolder()->add(txBytes, rxBytes);
 }
 
-void Controller::setDataViewActive(bool dataViewActive)
-{
-    qDebug() << "DataViewActive changed:" << dataViewActive;
-
-    m_vpn->connectionDataHolder()->reset();
-
-    m_dataViewActive = dataViewActive;
-    emit dataViewActiveChanged();
-}
