@@ -16,6 +16,7 @@ public:
 
 signals:
     void completed();
+    void failed();
 
 private:
     QInAppStore* m_appStore = nullptr;

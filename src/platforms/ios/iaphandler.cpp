@@ -22,21 +22,23 @@ void IAPHandler::start()
         product->purchase();
     });
 
-    connect(m_appStore, &QInAppStore::productUnknown, [](QInAppProduct::ProductType productType, const QString &identifier) {
+    connect(m_appStore, &QInAppStore::productUnknown, [this](QInAppProduct::ProductType productType, const QString &identifier) {
         qDebug() << "Product registration failed:" << productType << identifier;
-        // TODO
+        emit failed();
     });
 
-    connect(m_appStore, &QInAppStore::transactionReady, [](QInAppTransaction *transaction) {
+    connect(m_appStore, &QInAppStore::transactionReady, [this](QInAppTransaction *transaction) {
         qDebug() << "Transaction ready" << transaction << "status:" << transaction->status();
 
         switch (transaction->status()) {
             case QInAppTransaction::PurchaseFailed:
                 qDebug() << "Purchase Failed" << transaction->errorString() << "Reason:" << transaction->failureReason();
+                emit failed();
                 break;
 
             case QInAppTransaction::PurchaseApproved:
                 qDebug() << "Purchase approved";
+                emit completed();
                 break;
 
             case QInAppTransaction::PurchaseRestored:
@@ -46,7 +48,7 @@ void IAPHandler::start()
             case QInAppTransaction::Unknown:
             default:
                 qDebug() << "unexpected transaction state";
-                // TODO
+                emit failed();
                 break;
         }
 

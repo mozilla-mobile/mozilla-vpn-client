@@ -566,7 +566,11 @@ void MozillaVPN::subscribe()
 
     connect(iap, &IAPHandler::completed, [this]() {
         qDebug() << "Subscription completed";
-        setState(StateMain);
+        scheduleTask(new TaskAccountAndServers());
+    });
+
+    connect(iap, &IAPHandler::failed, [] {
+        qDebug() << "Subscription failed";
     });
 
     iap->start();
