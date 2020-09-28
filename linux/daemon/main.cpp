@@ -22,6 +22,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if (!dbus->checkInterface()) {
+        app.exit(1);
+        return 1;
+    }
+
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
         dbus->deactivate();

@@ -27,6 +27,8 @@ void DBus::setAdaptor(DbusAdaptor* adaptor)
 
 bool DBus::checkInterface()
 {
+    qDebug() << "Checking interface";
+
     wg_device *device = nullptr;
     if (wg_get_device(&device, WG_INTERFACE) == 0) {
         qDebug() << "Device already exists. Let's remove it.";
@@ -51,15 +53,20 @@ bool DBus::activate(const QString &privateKey,
                     int serverPort,
                     bool ipv6Enabled)
 {
+    qDebug() << "Activate";
+
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.activate")) {
+        qDebug() << "Polkit rejected";
         return false;
     }
 
     if (m_connected) {
+        qDebug() << "Already connected";
         return false;
     }
 
     m_connected = true;
+
     m_lastPrivateKey = privateKey;
     m_lastDeviceIpv4Address = deviceIpv4Address;
     m_lastDeviceIpv6Address = deviceIpv6Address;
@@ -81,6 +88,8 @@ bool DBus::activate(const QString &privateKey,
                              serverPort,
                              ipv6Enabled);
 
+    qDebug() << "Status:" << status;
+
     if (status) {
         emit m_adaptor->connected();
     }
@@ -90,11 +99,15 @@ bool DBus::activate(const QString &privateKey,
 
 bool DBus::deactivate()
 {
+    qDebug() << "Deactivate";
+
     if (!m_connected) {
+        qDebug() << "Already disconnected";
         return true;
     }
 
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.deactivate")) {
+        qDebug() << "Polkit rejected";
         return false;
     }
 
@@ -110,6 +123,8 @@ bool DBus::deactivate()
                              m_lastServerIpv6AddrIn,
                              m_lastServerPort,
                              m_lastIpv6Enabled);
+
+    qDebug() << "Status:" << status;
 
     if (status) {
         emit m_adaptor->disconnected();
