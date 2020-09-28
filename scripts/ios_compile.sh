@@ -46,7 +46,7 @@ $QMAKE \
   src/src.pro  || die "Compilation failed"
 
 printn Y "Extract the project version..."
-VERSION=$(cat src/src.pro  | grep ^VERSION | cut -d= -f2 | tr -d ' ')
+VERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 print G "$VERSION"
 
 print Y "Patching the xcode project..."
