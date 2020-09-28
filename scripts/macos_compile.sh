@@ -39,17 +39,18 @@ printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
+printn Y "Extract the project version..."
+VERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+print G "$VERSION"
+
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   QTPLUGIN+=qsvg \
   CONFIG-=static \
   MACOS_INTEGRATION=1 \
+  VERSION=$VERSION \
   -spec macx-xcode \
   src/src.pro  || die "Compilation failed"
-
-printn Y "Extract the project version..."
-VERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-print G "$VERSION"
 
 print Y "Patching the xcode project..."
 ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$VERSION" macos || die "Failed to merge xcode with wireguard"
