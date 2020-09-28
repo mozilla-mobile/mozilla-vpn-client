@@ -384,6 +384,8 @@ Rectangle {
             id: connectionInfoImage
             source: "../resources/connection-info.svg";
             anchors.centerIn :connectionInfoButton
+            sourceSize.height: 20
+            sourceSize.width: 20
         }
     }
 
