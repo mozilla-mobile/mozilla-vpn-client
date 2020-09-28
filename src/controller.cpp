@@ -277,6 +277,23 @@ void Controller::updateRequired()
     }
 }
 
+void Controller::subscriptionNeeded()
+{
+    qDebug() << "Subscription needed";
+
+    if (m_state == StateOff) {
+        emit readyToSubscribe();
+        return;
+    }
+
+    m_nextStep = Subscribe;
+
+    if (m_state == StateOn) {
+        deactivate();
+        return;
+    }
+}
+
 void Controller::logout()
 {
     qDebug() << "Logout";
@@ -330,6 +347,11 @@ bool Controller::processNextStep()
 
     if (nextStep == Update) {
         emit readyToUpdate();
+        return true;
+    }
+
+    if (nextStep == Subscribe) {
+        emit readyToSubscribe();
         return true;
     }
 

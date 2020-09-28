@@ -78,6 +78,9 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine) : QObject
     });
 
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
+    connect(&m_controller, &Controller::readyToSubscribe, [this]() {
+        setState(StateSubscriptionNeeded);
+    });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 
     connect(&m_localizer, &Localizer::languageChanged, [this](const QString &language) {
@@ -390,9 +393,8 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     emit m_user.changed();
 
 #ifdef IOS_INTEGRATION
-    if (m_user.subscriptionNeeded()) {
-        setState(StateSubscriptionNeeded);
-        return;
+    if (m_user.subscriptionNeeded() && m_state == StateMain) {
+        m_controller.subscriptionNeeded();
     }
 #endif
 }
@@ -569,9 +571,7 @@ void MozillaVPN::subscribe()
         scheduleTask(new TaskAccountAndServers());
     });
 
-    connect(iap, &IAPHandler::failed, [] {
-        qDebug() << "Subscription failed";
-    });
+    connect(iap, &IAPHandler::failed, [] { qDebug() << "Subscription failed"; });
 
     iap->start();
 #endif

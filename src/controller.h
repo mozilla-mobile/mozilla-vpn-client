@@ -70,6 +70,8 @@ public:
 
     void updateRequired();
 
+    void subscriptionNeeded();
+
     bool dataViewActive() const { return m_dataViewActive; }
 
     void setDataViewActive(bool dataViewActive);
@@ -87,6 +89,7 @@ signals:
     void timeChanged();
     void readyToQuit();
     void readyToUpdate();
+    void readyToSubscribe();
     void dataViewActiveChanged();
 
 private:
