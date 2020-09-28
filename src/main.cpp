@@ -4,7 +4,7 @@
 #include "systemtrayhandler.h"
 
 #ifdef __linux__
-#include "platforms/linux/wgquickdependencies.h"
+#include "platforms/linux/linuxdependencies.h"
 #endif
 
 #ifdef MACOS_INTEGRATION
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     // Dependencies - so far, only for linux.
 #ifdef __linux__
-    if (!WgQuickDependencies::checkDependencies()) {
+    if (!LinuxDependencies::checkDependencies()) {
         return 1;
     }
 #endif

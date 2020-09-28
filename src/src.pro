@@ -101,15 +101,15 @@ linux {
     SOURCES += \
             platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
+            platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxpingsendworker.cpp \
-            platforms/linux/wgquickdependencies.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
             platforms/linux/dbus.h \
             platforms/linux/linuxcontroller.h \
+            platforms/linux/linuxdependencies.h \
             platforms/linux/linuxpingsendworker.h \
-            platforms/linux/wgquickdependencies.h \
             tasks/authenticate/authenticationlistener.h
 
     isEmpty(PREFIX) {

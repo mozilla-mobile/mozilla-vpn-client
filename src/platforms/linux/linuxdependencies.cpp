@@ -1,4 +1,4 @@
-#include "wgquickdependencies.h"
+#include "linuxdependencies.h"
 
 #include <QDebug>
 #include <QDir>
@@ -38,7 +38,7 @@ bool findInPath(const char *what)
 } // namespace
 
 // static
-bool WgQuickDependencies::checkDependencies()
+bool LinuxDependencies::checkDependencies()
 {
     char *path = getenv("PATH");
     if (!path) {
