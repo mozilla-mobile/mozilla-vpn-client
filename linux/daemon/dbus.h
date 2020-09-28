@@ -17,6 +17,8 @@ public:
 
     void setAdaptor(DbusAdaptor* adaptor);
 
+    bool checkInterface();
+
 public Q_SLOTS:
     bool activate(const QString &privateKey,
                   const QString &deviceIpv4Address,

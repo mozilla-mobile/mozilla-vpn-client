@@ -19,6 +19,28 @@ extern "C" {
 
 DBus::DBus(QObject *parent) : QObject(parent) {}
 
+void DBus::setAdaptor(DbusAdaptor* adaptor)
+{
+    Q_ASSERT(!m_adaptor);
+    m_adaptor = adaptor;
+}
+
+bool DBus::checkInterface()
+{
+    wg_device *device = nullptr;
+    if (wg_get_device(&device, WG_INTERFACE) == 0) {
+        qDebug() << "Device already exists. Let's remove it.";
+        wg_free_device(device);
+
+        if (wg_del_device(WG_INTERFACE) != 0) {
+           qDebug() << "Failed to remove the device.";
+           return false;
+        }
+    }
+
+    return true;
+}
+
 bool DBus::activate(const QString &privateKey,
                     const QString &deviceIpv4Address,
                     const QString &deviceIpv6Address,
@@ -169,8 +191,3 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
     return result == Success;
 }
 
-void DBus::setAdaptor(DbusAdaptor* adaptor)
-{
-    Q_ASSERT(!m_adaptor);
-    m_adaptor = adaptor;
-}
