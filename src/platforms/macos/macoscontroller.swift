@@ -8,6 +8,8 @@
 import Foundation
 import NetworkExtension
 
+let vpnName = "Mozilla VPN"
+
 public class MacOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
@@ -132,9 +134,10 @@ public class MacOSControllerImpl : NSObject {
             interface!.dns.append(DNSServer(address: ipv6GatewayIP!))
         }
 
-        let config = TunnelConfiguration(name: "MozillaVPN", interface: interface!, peers: peerConfigurations)
+        let config = TunnelConfiguration(name: vpnName, interface: interface!, peers: peerConfigurations)
 
         tunnel!.protocolConfiguration = NETunnelProviderProtocol(tunnelConfiguration: config)
+        tunnel!.localizedDescription = vpnName
 
         tunnel!.saveToPreferences { [unowned self] saveError in
             if let error = saveError {
