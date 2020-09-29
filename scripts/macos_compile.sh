@@ -43,6 +43,9 @@ printn Y "Extract the project version..."
 VERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 print G "$VERSION"
 
+printn Y "Importing translation files"
+python3 scripts/importLanguages.py || die "Failed to import"
+
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   QTPLUGIN+=qsvg \

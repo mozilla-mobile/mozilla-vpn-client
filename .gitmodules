@@ -4,3 +4,6 @@
 [submodule "wireguard-tools"]
 	path = wireguard-tools
 	url = https://git.zx2c4.com/wireguard-tools/
+[submodule "i18n"]
+	path = i18n
+	url = https://github.com/strseb/vpnTranslations.git
