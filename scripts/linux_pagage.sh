@@ -41,7 +41,6 @@ print G $VERSION
 printn Y "Importing translation files"
 python3 scripts/importLanguages.py || die "Failed to import"
 
-
 print Y "Configuring the build (qmake)..."
 $QMAKE \
   VERSION=$VERSION \
