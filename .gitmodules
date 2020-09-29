@@ -7,3 +7,6 @@
 [submodule "i18n"]
 	path = i18n
 	url = https://github.com/strseb/vpnTranslations.git
+[submodule "src/platforms/android/openSSL"]
+	path = src/platforms/android/openSSL
+	url = https://github.com/KDAB/android_openssl

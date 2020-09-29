@@ -19,6 +19,11 @@ INCLUDEPATH += \
 
 DEPENDPATH  += $${INCLUDEPATH}
 
+OBJECTS_DIR = .obj
+MOC_DIR = .moc
+RCC_DIR = .rcc
+UI_DIR = .ui
+
 SOURCES += \
         connectiondataholder.cpp \
         connectionhealth.cpp \
@@ -140,6 +145,16 @@ SOURCES += platforms/linux/linuxpingsendworker.cpp \
 HEADERS +=platforms/linux/linuxpingsendworker.h \
         tasks/authenticate/authenticationlistener.h
 
+include(platforms/android/openSSL/openssl.pri)
+
+
+# For the android build we need to unset those
+# Otherwise the packaging will fail 🙅‍
+OBJECTS_DIR =
+MOC_DIR =
+RCC_DIR =
+UI_DIR =
+ANDROID_ABIS = x86
 }
 
 # Platform-specific: MacOS
@@ -252,10 +267,6 @@ ICON = resources/icon.icns
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-#OBJECTS_DIR = .obj
-#MOC_DIR = .moc
-#RCC_DIR = .rcc
-#UI_DIR = .ui
 
 TRANSLATIONS += \
     ../translations/mozillavpn_en.ts \
@@ -264,5 +275,3 @@ TRANSLATIONS += \
 
 CONFIG += lrelease
 CONFIG += embed_translations
-
-ANDROID_ABIS = x86
