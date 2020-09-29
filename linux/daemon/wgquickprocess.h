@@ -25,7 +25,8 @@ public:
              const QString &serverIpv4AddrIn,
              const QString &serverIpv6AddrIn,
              int serverPort,
-             bool ipv6Enabled);
+             bool ipv6Enabled,
+             bool localNetworkEnabled);
 
 signals:
     void failed();

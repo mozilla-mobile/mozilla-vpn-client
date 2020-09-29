@@ -8,8 +8,13 @@ MozillaVPN requires Qt5 (5.12 or higher)
 
 You can use QtCreator. Or if you like to compile in CLI, just do:
 
-$ qmake
-$ make -j4
+1. Update the submodules:
+  $ git submodule init
+  $ git submodule update --remote
+2. Compile:
+  $ qmake PREFIX=/usr
+  $ make -j4
+  $ sudo make install
 
 On linux:
 $ ./src/mozillavpn
