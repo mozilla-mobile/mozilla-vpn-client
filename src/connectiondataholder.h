@@ -22,6 +22,9 @@ class ConnectionDataHolder : public QObject
 public:
     ConnectionDataHolder();
 
+    void enable();
+    void disable();
+
     void add(uint64_t txBytes, uint64_t rxBytes);
 
     Q_INVOKABLE void activate(const QVariant &txSeries,

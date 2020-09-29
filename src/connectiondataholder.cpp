@@ -18,8 +18,17 @@ ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(tr("Unknown"))
 {
     emit ipAddressChanged();
 
-    m_ipAddressTimer.start(IPADDRESS_TIMER_MSEC);
     connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
+}
+
+void ConnectionDataHolder::enable()
+{
+    m_ipAddressTimer.start(IPADDRESS_TIMER_MSEC);
+}
+
+void ConnectionDataHolder::disable()
+{
+    m_ipAddressTimer.stop();
 }
 
 void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)

@@ -168,9 +168,11 @@ void MozillaVPN::setState(State state)
 
     // If we are activating the app, let's initialize the controller.
     if (m_state == StateMain) {
+        m_connectionDataHolder.enable();
         m_controller.initialize();
         startSchedulingAccountAndServers();
     } else {
+        m_connectionDataHolder.disable();
         stopSchedulingAccountAndServers();
     }
 }
@@ -283,6 +285,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     m_token = token;
 
     setUserAuthenticated(true);
+
+#ifdef IOS_INTEGRATION
+    if (m_user.subscriptionNeeded()) {
+        setState(StatePostAuthentication);
+        return;
+    }
+#endif
 
     int deviceCount = m_deviceModel.activeDevices();
 

@@ -56,6 +56,6 @@ print Y "Patching the xcode project..."
 ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$VERSION" macos || die "Failed to merge xcode with wireguard"
 print G "done."
 
-print Y "Compiling..."
-xcodebuild -project mozillavpn.xcodeproj -allowProvisioningUpdates || die "Failed."
-print G "done."
+print Y "Opening in XCode..."
+open MozillaVPN.xcodeproj
+print G "All done!"
