@@ -344,11 +344,11 @@
         <file>states/StateSubscriptionNeeded.qml</file>
         <file>components/VPNAnimatedRings.qml</file>
         <file>components/VPNConnectionInfo.qml</file>
-        <file>resources/connection-graph.svg</file>
         <file>components/VPNGraphLegendMarker.qml</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
         <file>resources/switching.svg</file>
         <file>components/VPNMainImage.qml</file>
+        <file>resources/connection-info.svg</file>
     </qresource>
 </RCC>
