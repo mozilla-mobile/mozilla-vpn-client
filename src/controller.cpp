@@ -4,7 +4,7 @@
 #include "server.h"
 #include "timercontroller.h"
 
-#ifdef __linux__
+#if defined (__linux__) && !defined(__ANDROID__)
 #include "platforms/linux/linuxcontroller.h"
 #elif MACOS_INTEGRATION
 #include "platforms/macos/macoscontroller.h"
@@ -22,7 +22,7 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 Controller::Controller()
 {
     m_impl.reset(new TimerController(
-#ifdef __linux__
+#if defined (__linux__) && !defined(__ANDROID__)
         new LinuxController()
 #elif MACOS_INTEGRATION
         new MacOSController()

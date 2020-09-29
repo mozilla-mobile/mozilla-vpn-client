@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(icon);
 
     // Dependencies - so far, only for linux.
-#ifdef __linux__
+#if defined (__linux__) && !defined (__ANDROID__)
     if (!LinuxDependencies::checkDependencies()) {
         return 1;
     }

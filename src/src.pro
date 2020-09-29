@@ -90,7 +90,7 @@ HEADERS += \
         user.h
 
 # Platform-specific: Linux
-linux {
+linux:!android {
     message(Linux build)
 
     QMAKE_CXXFLAGS *= -Werror
@@ -121,6 +121,25 @@ linux {
 
     target.path = $${PREFIX}/bin
     INSTALLS += target
+}
+
+else:android{
+message(Android build)
+
+QMAKE_CXXFLAGS *= -Werror
+
+TARGET = mozillavpn
+QT += networkauth
+
+SOURCES += platforms/dummy/dummycontroller.cpp
+HEADERS += platforms/dummy/dummycontroller.h
+
+SOURCES += platforms/linux/linuxpingsendworker.cpp \
+        tasks/authenticate/authenticationlistener.cpp
+
+HEADERS +=platforms/linux/linuxpingsendworker.h \
+        tasks/authenticate/authenticationlistener.h
+
 }
 
 # Platform-specific: MacOS
@@ -233,10 +252,10 @@ ICON = resources/icon.icns
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-OBJECTS_DIR = .obj
-MOC_DIR = .moc
-RCC_DIR = .rcc
-UI_DIR = .ui
+#OBJECTS_DIR = .obj
+#MOC_DIR = .moc
+#RCC_DIR = .rcc
+#UI_DIR = .ui
 
 TRANSLATIONS += \
     ../translations/mozillavpn_en.ts \
@@ -245,3 +264,5 @@ TRANSLATIONS += \
 
 CONFIG += lrelease
 CONFIG += embed_translations
+
+ANDROID_ABIS = x86

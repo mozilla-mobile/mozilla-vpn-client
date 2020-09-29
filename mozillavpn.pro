@@ -6,6 +6,6 @@
 TEMPLATE = subdirs
 SUBDIRS += src
 
-linux {
+linux:!android {
     SUBDIRS += linux
 }
