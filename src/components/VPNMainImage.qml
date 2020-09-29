@@ -204,7 +204,7 @@ Rectangle {
            },
            State {
                name: "vpn-device-limit"
-               when: VPNController.state === VPNController.DeviceLimit
+               when: VPNController.state === VPNController.StateDeviceLimit
                PropertyChanges {
                    target: logo
                    showVPNOnIcon: false
