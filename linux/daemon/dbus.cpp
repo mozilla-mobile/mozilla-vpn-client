@@ -51,7 +51,8 @@ bool DBus::activate(const QString &privateKey,
                     const QString &serverIpv4AddrIn,
                     const QString &serverIpv6AddrIn,
                     int serverPort,
-                    bool ipv6Enabled)
+                    bool ipv6Enabled,
+                    bool localNetworkEnabled)
 {
     qDebug() << "Activate";
 
@@ -76,6 +77,7 @@ bool DBus::activate(const QString &privateKey,
     m_lastServerIpv6AddrIn = serverIpv6AddrIn;
     m_lastServerPort = serverPort;
     m_lastIpv6Enabled = ipv6Enabled;
+    m_lastLocalNetworkEnabled = localNetworkEnabled;
 
     bool status = runWgQuick(WgQuickProcess::Up,
                              privateKey,
@@ -86,7 +88,8 @@ bool DBus::activate(const QString &privateKey,
                              serverIpv4AddrIn,
                              serverIpv6AddrIn,
                              serverPort,
-                             ipv6Enabled);
+                             ipv6Enabled,
+                             localNetworkEnabled);
 
     qDebug() << "Status:" << status;
 
@@ -122,7 +125,8 @@ bool DBus::deactivate()
                              m_lastServerIpv4AddrIn,
                              m_lastServerIpv6AddrIn,
                              m_lastServerPort,
-                             m_lastIpv6Enabled);
+                             m_lastIpv6Enabled,
+                             m_lastLocalNetworkEnabled);
 
     qDebug() << "Status:" << status;
 
@@ -175,7 +179,8 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &serverIpv4AddrIn,
                       const QString &serverIpv6AddrIn,
                       int serverPort,
-                      bool ipv6Enabled)
+                      bool ipv6Enabled,
+                      bool localNetworkEnabled)
 {
     WgQuickProcess *wgQuick = new WgQuickProcess(op);
 
@@ -187,7 +192,8 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  serverIpv4AddrIn,
                  serverIpv6AddrIn,
                  serverPort,
-                 ipv6Enabled);
+                 ipv6Enabled,
+                 localNetworkEnabled);
 
     enum Result {
         Pending,
