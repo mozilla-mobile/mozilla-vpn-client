@@ -36,7 +36,7 @@ Flickable {
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             id: localNetwork
-            labelText: qsTr("Local network enabled")
+            labelText: qsTr("Local network access")
             subLabelText: qsTr("Access printers, streaming sticks and all other devices on your local network")
             isChecked: (VPNSettings.localNetwork)
             isEnabled: isVPNOff
