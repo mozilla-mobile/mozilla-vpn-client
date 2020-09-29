@@ -5,7 +5,7 @@
 import xml.etree.ElementTree as ET
 import os
 
-THRESHOLD = 0.01 # Target Completeness for import
+THRESHOLD = 0.70 # 70% Target Completeness for import
 
 # Make sure the Target ts files are up to date
 os.system(f'lupdate src/src.pro -ts')
