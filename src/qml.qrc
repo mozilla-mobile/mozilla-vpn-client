@@ -350,5 +350,8 @@
         <file>resources/switching.svg</file>
         <file>components/VPNMainImage.qml</file>
         <file>resources/connection-info.svg</file>
+        <file>resources/checkmark.svg</file>
+        <file>components/VPNCheckBoxRow.qml</file>
+        <file>components/VPNCheckBox.qml</file>
     </qresource>
 </RCC>
