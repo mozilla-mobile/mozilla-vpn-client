@@ -79,6 +79,7 @@ void MacOSController::activate(const Server &server,
                       serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                             serverPort:server.choosePort()
                            ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
+                   localNetworkEnabled:MozillaVPN::instance()->settingsHolder()->localNetwork()
                        failureCallback:^() {
                            qDebug() << "MacOSSWiftController - connection failed";
                            emit disconnected();

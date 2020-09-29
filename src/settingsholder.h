@@ -11,6 +11,7 @@ class SettingsHolder : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool ipv6 READ ipv6 WRITE setIpv6 NOTIFY ipv6Changed)
+    Q_PROPERTY(bool localNetwork READ localNetwork WRITE setLocalNetwork NOTIFY localNetworkChanged)
 
 public:
     void setVPN(MozillaVPN *vpn, QSettings *settings)
@@ -22,8 +23,12 @@ public:
     bool ipv6() const;
     void setIpv6(bool ipv6);
 
+    bool localNetwork() const;
+    void setLocalNetwork(bool localNetwork);
+
 signals:
     void ipv6Changed();
+    void localNetworkChanged();
 
 private:
     MozillaVPN *m_vpn = nullptr;

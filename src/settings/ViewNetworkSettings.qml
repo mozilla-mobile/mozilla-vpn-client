@@ -13,10 +13,18 @@ Flickable {
     }
 
     CheckBox {
+        id: settingsIpv6
         checked: VPNSettings.ipv6
         text: qsTr("IPv6 enabled")
         onClicked: VPNSettings.ipv6 = checked
         y: menu.y + menu.height
+    }
+
+    CheckBox {
+        checked: VPNSettings.localNetwork
+        text: qsTr("Local network enabled")
+        onClicked: VPNSettings.localNetwork = checked
+        y: settingsIpv6.y + settingsIpv6.height
     }
 
     ScrollBar.vertical: ScrollBar {}
