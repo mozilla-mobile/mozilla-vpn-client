@@ -45,6 +45,9 @@ printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
+print Y "Importing translation files..."
+python3 scripts/importLanguages.py || die "Failed to import"
+
 printn Y "Extract the project version..."
 SHORTVERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
