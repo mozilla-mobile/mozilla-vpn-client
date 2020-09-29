@@ -135,6 +135,10 @@ Item {
                     }
 
                     VPNIconButton {
+                        property var iconSource: "../resources/delete.svg"
+                        property real iconHeightWidth: 22
+                        property bool startRotation: false
+
                         id: iconButton
                         backgroundColor: Theme.removeDeviceBtn
                         visible: !currentOne
@@ -146,17 +150,27 @@ Item {
                         onClicked: removePopup.initializeAndOpen(name, index)
 
                         VPNIcon {
-                            source: "../resources/delete.svg"
+                            source: iconButton.iconSource
                             anchors.centerIn: iconButton
+                            sourceSize.height: iconButton.iconHeightWidth
+                            sourceSize.width: iconButton.iconHeightWidth
+                            rotation: iconButton.startRotation ? 360 : 0
+
+                            Behavior on rotation {
+                                PropertyAnimation {
+                                    duration: 5000
+                                    loops: Animation.Infinite
+                                }
+                            }
                         }
                     }
-                    
+
 
                     SequentialAnimation {
                         id: deviceRemovalTransition
                         ParallelAnimation {
                             PropertyAnimation {
-                                target: trashbin
+                                target: iconButton
                                 property: "opacity"
                                 from: 1
                                 to: 0
@@ -170,32 +184,30 @@ Item {
                                 duration: 100
                             }
                         }
+
                         PropertyAction {
-                            target: trashbin
-                            property:  "source"
-                            value: "../resources/spinner.svg"
+                            target: iconButton
+                            property: "iconHeightWidth"
+                            value: 20
                         }
                         PropertyAction {
-                            target: trashbin
-                            properties: "sourceSize.height, sourceSize.width"
-                            value: 20
+                            target: iconButton
+                            property:  "iconSource"
+                            value: "../resources/spinner.svg"
                         }
 
                         ParallelAnimation {
                             PropertyAnimation {
-                                target: trashbin
+                                target: iconButton
                                 property: "opacity"
                                 from: 0
                                 to: 1
-                                duration: 100
+                                duration: 300
                             }
-                            PropertyAnimation {
-                                target: trashbin
-                                property: "rotation"
-                                from: 0
-                                to: 360
-                                duration: 3000
-                                loops: Animation.Infinite
+                            PropertyAction {
+                                target: iconButton
+                                property: "startRotation"
+                                value: true
                             }
                         }
 
