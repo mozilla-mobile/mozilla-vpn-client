@@ -30,8 +30,11 @@ Window {
     FontLoader { id: vpnFontInter; source: "qrc:/resources/fonts/Inter-UI-Regular.otf" }
 
     onClosing: {
-        window.hide()
-        close.accepted = false
+        if(Qt.platform.os != "android"){
+            // Caling window.hide() on android would leave the app in a limbo state
+             window.hide()
+        }
+        close.accepted = false;
     }
 
     StackView {
