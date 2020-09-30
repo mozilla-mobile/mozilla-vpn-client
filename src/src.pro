@@ -139,6 +139,7 @@ QMAKE_CXXFLAGS *= -Werror
 
 TARGET = mozillavpn
 QT += networkauth
+QT += svg
 
 SOURCES += platforms/dummy/dummycontroller.cpp
 HEADERS += platforms/dummy/dummycontroller.h
