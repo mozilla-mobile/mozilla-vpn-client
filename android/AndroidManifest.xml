@@ -20,7 +20,7 @@
                 <action android:name="android.intent.action.VIEW"></action>
                 <category android:name="android.intent.category.DEFAULT"></category>
                 <category android:name="android.intent.category.BROWSABLE"></category>
-                <!-- Checks URL of this format "ex-app://ex-app-host" -->
+                <!-- Checks URL of this format "mozilla-vpn://*" -->
                 <data android:scheme="mozilla-vpn"></data>
             </intent-filter>
 
