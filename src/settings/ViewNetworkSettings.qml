@@ -17,13 +17,11 @@ Flickable {
     }
 
     ColumnLayout {
-        id: checkBoxColumn
         anchors.top: menu.bottom
         Layout.preferredWidth: parent.width
         spacing: 0
 
         VPNCheckBoxRow {
-            id: checkbox1
             labelText: qsTr("IPv6")
             subLabelText: qsTr("Push the internet forward with the latest version of the Internet Protocol")
             isChecked: (VPNSettings.ipv6)

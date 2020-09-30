@@ -7,7 +7,7 @@ import "../themes/themes.js" as Theme
 
 RowLayout {
     id: turnVPNOffAlert
-    visible: !localNetwork.isVPNOff
+    visible: (VPNController.state !== VPNController.StateOff)
     Layout.topMargin: 12
     Layout.leftMargin: 56
     Layout.rightMargin: Theme.windowMargin
