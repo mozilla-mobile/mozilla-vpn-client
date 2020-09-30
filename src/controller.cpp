@@ -14,6 +14,8 @@
 #include "platforms/macos/macoscontroller.h"
 #elif IOS_INTEGRATION
 #include "platforms/macos/macoscontroller.h"
+#elif defined(__ANDROID__)
+#include "platforms/android/androidcontroller.h"
 #else
 #include "platforms/dummy/dummycontroller.h"
 #endif
@@ -32,6 +34,8 @@ Controller::Controller()
         new MacOSController()
 #elif IOS_INTEGRATION
         new MacOSController()
+#elif defined(__ANDROID__)
+        new AndroidController()
 #else
         new DummyController()
 #endif

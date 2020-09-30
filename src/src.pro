@@ -141,8 +141,8 @@ TARGET = mozillavpn
 QT += networkauth
 QT += svg
 
-SOURCES += platforms/dummy/dummycontroller.cpp
-HEADERS += platforms/dummy/dummycontroller.h
+SOURCES += platforms/android/androidcontroller.cpp
+HEADERS += platforms/android/androidcontroller.h
 
 SOURCES += platforms/linux/linuxpingsendworker.cpp \
         tasks/authenticate/authenticationlistener.cpp
