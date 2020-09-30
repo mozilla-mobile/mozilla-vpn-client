@@ -4,7 +4,6 @@
 #include <QObject>
 
 class MozillaVPN;
-class QSettings;
 
 class ReleaseMonitor final : public QObject
 {

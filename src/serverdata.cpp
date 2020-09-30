@@ -1,17 +1,17 @@
 #include "serverdata.h"
 #include "servercountrymodel.h"
+#include "settingsholder.h"
 
 #include <QDebug>
-#include <QSettings>
 
-bool ServerData::fromSettings(QSettings &settings)
+bool ServerData::fromSettings(SettingsHolder &settingsHolder)
 {
-    if (!settings.contains("currentServer/country") || !settings.contains("currentServer/city")) {
+    if (!settingsHolder.hasCurrentServerCountry() || !settingsHolder.hasCurrentServerCity()) {
         return false;
     }
 
-    m_countryCode = settings.value("currentServer/country").toString();
-    m_city = settings.value("currentServer/city").toString();
+    m_countryCode = settingsHolder.currentServerCountry();
+    m_city = settingsHolder.currentServerCity();
 
     qDebug() << m_countryCode << m_city;
 
@@ -20,10 +20,10 @@ bool ServerData::fromSettings(QSettings &settings)
     return true;
 }
 
-void ServerData::writeSettings(QSettings &settings)
+void ServerData::writeSettings(SettingsHolder &settingsHolder)
 {
-    settings.setValue("currentServer/country", m_countryCode);
-    settings.setValue("currentServer/city", m_city);
+    settingsHolder.setCurrentServerCountry(m_countryCode);
+    settingsHolder.setCurrentServerCity(m_city);
 }
 
 void ServerData::initialize(const ServerCountry &country, const ServerCity &city)

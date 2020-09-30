@@ -3,11 +3,11 @@
 
 #include <QObject>
 
-class QSettings;
 class ServerCountryModel;
 class ServerCountry;
 class ServerCity;
 class Server;
+class SettingsHolder;
 
 class ServerData final : public QObject
 {
@@ -17,9 +17,9 @@ class ServerData final : public QObject
     Q_PROPERTY(QString city READ city NOTIFY changed)
 
 public:
-    bool fromSettings(QSettings &settings);
+    bool fromSettings(SettingsHolder &settingsHolder);
 
-    void writeSettings(QSettings &settings);
+    void writeSettings(SettingsHolder &settingsHolder);
 
     void initialize(const ServerCountry &country, const ServerCity &city);
 

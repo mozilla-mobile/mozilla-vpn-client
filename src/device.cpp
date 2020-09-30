@@ -3,7 +3,6 @@
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QSettings>
 
 #ifdef QT_DEBUG
 #include <QRandomGenerator>

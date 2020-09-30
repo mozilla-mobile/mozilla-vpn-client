@@ -2,9 +2,7 @@
 #define SETTINGSHOLDER_H
 
 #include <QObject>
-
-class MozillaVPN;
-class QSettings;
+#include <QSettings>
 
 class SettingsHolder : public QObject
 {
@@ -14,11 +12,9 @@ class SettingsHolder : public QObject
     Q_PROPERTY(bool localNetwork READ localNetwork WRITE setLocalNetwork NOTIFY localNetworkChanged)
 
 public:
-    void setVPN(MozillaVPN *vpn, QSettings *settings)
-    {
-        m_vpn = vpn;
-        m_settings = settings;
-    }
+    SettingsHolder();
+
+    void clear();
 
     bool ipv6() const;
     void setIpv6(bool ipv6);
@@ -26,13 +22,33 @@ public:
     bool localNetwork() const;
     void setLocalNetwork(bool localNetwork);
 
+    QString language() const;
+    void setLanguage(const QString &language);
+
+#define GETSET(type, has, get, set) \
+    bool has() const; \
+    type get() const; \
+    void set(const type &value);
+
+    GETSET(QString, hasToken, token, setToken)
+    GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
+    GETSET(QByteArray, hasServers, servers, setServers)
+    GETSET(QString, hasUserAvatar, userAvatar, setUserAvatar)
+    GETSET(QString, hasUserDisplayName, userDisplayName, setUserDisplayName)
+    GETSET(QString, hasUserEmail, userEmail, setUserEmail)
+    GETSET(int, hasUserMaxDevices, userMaxDevices, setUserMaxDevices)
+    GETSET(bool, hasUserSubscriptionNeeded, userSubscriptionNeeded, setUserSubscriptionNeeded)
+    GETSET(QString, hasCurrentServerCountry, currentServerCountry, setCurrentServerCountry)
+    GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
+    GETSET(QByteArray, hasDevices, devices, setDevices)
+#undef GETSET
+
 signals:
     void ipv6Changed();
     void localNetworkChanged();
 
 private:
-    MozillaVPN *m_vpn = nullptr;
-    QSettings *m_settings = nullptr;
+    QSettings m_settings;
 };
 
 #endif // SETTINGSHOLDER_H

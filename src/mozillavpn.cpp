@@ -25,10 +25,6 @@ constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudop
 constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 #endif
 
-constexpr const char *SETTINGS_TOKEN = "token";
-
-constexpr const char *SETTINGS_LANGUAGE = "lang";
-
 // in seconds, how often we should fetch the server list and the account.
 constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC = 3600;
 
@@ -65,11 +61,11 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine) : QObject(parent), m_engine(engine), m_settings("mozilla", "guardianvpn")
+MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine)
+    : QObject(parent), m_engine(engine)
 {
     m_controller.setVPN(this);
     m_releaseMonitor.setVPN(this);
-    m_settingsHolder.setVPN(this, &m_settings);
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
@@ -85,7 +81,7 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine) : QObject
 
     connect(&m_localizer, &Localizer::languageChanged, [this](const QString &language) {
         qDebug() << "Storing the language:" << language;
-        m_settings.setValue(SETTINGS_LANGUAGE, language);
+        m_settingsHolder.setLanguage(language);
     });
 }
 
@@ -106,53 +102,49 @@ void MozillaVPN::initialize()
 
     m_releaseMonitor.runSoon();
 
-    QString language;
-    if (m_settings.contains(SETTINGS_LANGUAGE)) {
-        language = m_settings.value(SETTINGS_LANGUAGE).toString();
-    }
-    m_localizer.initialize(language);
+    m_localizer.initialize(m_settingsHolder.language());
 
-    if (!m_settings.contains(SETTINGS_TOKEN)) {
+    if (!m_settingsHolder.hasToken()) {
         return;
     }
 
     qDebug() << "We have a valid token";
-    if (!m_user.fromSettings(m_settings)) {
+    if (!m_user.fromSettings(m_settingsHolder)) {
         return;
     }
 
-    if (!m_serverCountryModel.fromSettings(m_settings)) {
+    if (!m_serverCountryModel.fromSettings(m_settingsHolder)) {
         qDebug() << "No server list found";
-        m_settings.clear();
+        m_settingsHolder.clear();
         return;
     }
 
-    if (!m_deviceModel.fromSettings(m_settings)) {
+    if (!m_deviceModel.fromSettings(m_settingsHolder)) {
         qDebug() << "No devices found";
-        m_settings.clear();
+        m_settingsHolder.clear();
         return;
     }
 
     if (!m_deviceModel.hasDevice(Device::currentDeviceName())) {
         qDebug() << "The current device has not been found";
-        m_settings.clear();
+        m_settingsHolder.clear();
         return;
     }
 
-    if (!m_keys.fromSettings(m_settings)) {
+    if (!m_keys.fromSettings(m_settingsHolder)) {
         qDebug() << "No keys found";
-        m_settings.clear();
+        m_settingsHolder.clear();
         return;
     }
 
     Q_ASSERT(!m_serverData.initialized());
-    if (!m_serverData.fromSettings(m_settings)) {
+    if (!m_serverData.fromSettings(m_settingsHolder)) {
         m_serverCountryModel.pickRandom(m_serverData);
         Q_ASSERT(m_serverData.initialized());
-        m_serverData.writeSettings(m_settings);
+        m_serverData.writeSettings(m_settingsHolder);
     }
 
-    m_token = m_settings.value(SETTINGS_TOKEN).toString();
+    m_token = m_settingsHolder.token();
 
     scheduleTask(new TaskAccountAndServers());
 
@@ -276,12 +268,12 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     qDebug() << "Authentication completed";
 
     m_user.fromJson(json);
-    m_user.writeSettings(m_settings);
+    m_user.writeSettings(m_settingsHolder);
 
     m_deviceModel.fromJson(json);
-    m_deviceModel.writeSettings(m_settings);
+    m_deviceModel.writeSettings(m_settingsHolder);
 
-    m_settings.setValue(SETTINGS_TOKEN, token);
+    m_settingsHolder.setToken(token);
     m_token = token;
 
     setUserAuthenticated(true);
@@ -335,7 +327,8 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
     Q_UNUSED(publicKey);
     qDebug() << "Device added" << deviceName;
 
-    m_keys.storeKey(m_settings, privateKey);
+    m_settingsHolder.setPrivateKey(privateKey);
+    m_keys.storeKey(privateKey);
 }
 
 void MozillaVPN::deviceRemoved(const QString &deviceName)
@@ -350,14 +343,14 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
     qDebug() << "Server fetched!";
 
     m_serverCountryModel.fromJson(serverData);
-    m_serverCountryModel.writeSettings(m_settings);
+    m_settingsHolder.setServers(serverData);
 
     // TODO: ... what about if the current server is gone?
 
     if (!m_serverData.initialized()) {
         m_serverCountryModel.pickRandom(m_serverData);
         Q_ASSERT(m_serverData.initialized());
-        m_serverData.writeSettings(m_settings);
+        m_serverData.writeSettings(m_settingsHolder);
     }
 }
 
@@ -394,10 +387,10 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     qDebug() << "Account checked";
 
     m_user.fromJson(json);
-    m_user.writeSettings(m_settings);
+    m_user.writeSettings(m_settingsHolder);
 
     m_deviceModel.fromJson(json);
-    m_deviceModel.writeSettings(m_settings);
+    m_deviceModel.writeSettings(m_settingsHolder);
 
     emit m_user.changed();
 
@@ -422,7 +415,7 @@ void MozillaVPN::cancelAuthentication()
     }
 
     m_task_running = false;
-    m_tasks.clear();
+    m_settingsHolder.clear();
 
     setState(StateInitialize);
 }
@@ -445,7 +438,7 @@ void MozillaVPN::logout()
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         qDebug() << "Cleaning up all";
-        m_settings.clear();
+        m_settingsHolder.clear();
         m_keys.forgetKey();
         m_serverData.forget();
     }));
@@ -507,7 +500,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
     }
 
     if (alert == AuthenticationFailedAlert) {
-        m_settings.clear();
+        m_settingsHolder.clear();
         setState(StateInitialize);
         return;
     }
@@ -521,7 +514,7 @@ const QList<Server> MozillaVPN::getServers() const
 void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
 {
     m_serverData.update(countryCode, city);
-    m_serverData.writeSettings(m_settings);
+    m_serverData.writeSettings(m_settingsHolder);
 }
 
 void MozillaVPN::postAuthenticationCompleted()

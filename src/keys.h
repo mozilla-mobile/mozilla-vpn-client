@@ -3,14 +3,14 @@
 
 #include <QString>
 
-class QSettings;
+class SettingsHolder;
 
 class Keys
 {
 public:
-    bool fromSettings(QSettings &settings);
+    bool fromSettings(SettingsHolder &settings);
 
-    void storeKey(QSettings &settings, const QString &privateKey);
+    void storeKey(const QString &privateKey);
 
     void forgetKey();
 

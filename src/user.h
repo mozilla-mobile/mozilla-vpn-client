@@ -6,7 +6,7 @@
 #include <QStringList>
 
 class QJsonObject;
-class QSettings;
+class SettingsHolder;
 
 class User final : public QObject
 {
@@ -20,9 +20,9 @@ class User final : public QObject
 public:
     void fromJson(const QByteArray &json);
 
-    bool fromSettings(QSettings &settings);
+    bool fromSettings(SettingsHolder &settingsHolder);
 
-    void writeSettings(QSettings &settings);
+    void writeSettings(SettingsHolder &settingsHolder);
 
     const QString &avatar() const { return m_avatar; }
 
@@ -30,7 +30,6 @@ public:
 
     const QString &email() const { return m_email; }
 
-    // "Int"to make QML happy
     int maxDevices() const { return (int) m_maxDevices; }
 
     bool subscriptionNeeded() const { return m_subscriptionNeeded; }
@@ -42,7 +41,7 @@ private:
     QString m_avatar;
     QString m_displayName;
     QString m_email;
-    uint32_t m_maxDevices = 5;
+    int m_maxDevices = 5;
     bool m_subscriptionNeeded = false;
 };
 

@@ -4,7 +4,6 @@
 #include <QDateTime>
 #include <QList>
 
-class QSettings;
 class QJsonValue;
 
 class Device final

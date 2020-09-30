@@ -6,7 +6,7 @@
 
 #include "device.h"
 
-class QSettings;
+class SettingsHolder;
 
 class DeviceModel final : public QAbstractListModel
 {
@@ -24,9 +24,9 @@ public:
 
     void fromJson(const QByteArray& s);
 
-    bool fromSettings(QSettings &settings);
+    bool fromSettings(SettingsHolder &settingsHolder);
 
-    void writeSettings(QSettings &settings);
+    void writeSettings(SettingsHolder &settingsHolder);
 
     bool hasDevice(const QString &deviceName) const;
 

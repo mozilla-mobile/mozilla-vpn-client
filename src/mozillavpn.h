@@ -17,7 +17,6 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QPointer>
-#include <QSettings>
 #include <QTimer>
 
 class QQmlApplicationEngine;
@@ -174,8 +173,6 @@ signals:
 
 private:
     QQmlApplicationEngine *m_engine;
-
-    QSettings m_settings;
 
     SettingsHolder m_settingsHolder;
 

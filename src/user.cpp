@@ -1,4 +1,5 @@
 #include "user.h"
+#include "settingsholder.h"
 
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -6,13 +7,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMutableListIterator>
-#include <QSettings>
-
-constexpr const char *SETTINGS_AVATAR = "user/avatar";
-constexpr const char *SETTINGS_DISPLAYNAME = "user/displayName";
-constexpr const char *SETTINGS_EMAIL = "user/email";
-constexpr const char *SETTINGS_MAXDEVICES = "user/maxDevices";
-constexpr const char *SETTINGS_SUBSCRIPTIONNEEDED = "user/subscriptionNeeded";
 
 void User::fromJson(const QByteArray &json)
 {
@@ -62,27 +56,28 @@ void User::fromJson(const QByteArray &json)
     emit changed();
 }
 
-bool User::fromSettings(QSettings &settings)
+bool User::fromSettings(SettingsHolder &settingsHolder)
 {
-    if (!settings.contains(SETTINGS_AVATAR) || !settings.contains(SETTINGS_DISPLAYNAME)
-        || !settings.contains(SETTINGS_EMAIL) || !settings.contains(SETTINGS_MAXDEVICES)) {
+    if (!settingsHolder.hasUserAvatar() || !settingsHolder.hasUserDisplayName()
+        || !settingsHolder.hasUserEmail() || !settingsHolder.hasUserMaxDevices()
+        || !settingsHolder.hasUserSubscriptionNeeded()) {
         return false;
     }
 
-    m_avatar = settings.value(SETTINGS_AVATAR).toString();
-    m_displayName = settings.value(SETTINGS_DISPLAYNAME).toString();
-    m_email = settings.value(SETTINGS_EMAIL).toString();
-    m_maxDevices = settings.value(SETTINGS_MAXDEVICES).toUInt();
-    m_subscriptionNeeded = settings.value(SETTINGS_SUBSCRIPTIONNEEDED).toBool();
+    m_avatar = settingsHolder.userAvatar();
+    m_displayName = settingsHolder.userDisplayName();
+    m_email = settingsHolder.userEmail();
+    m_maxDevices = settingsHolder.userMaxDevices();
+    m_subscriptionNeeded = settingsHolder.userSubscriptionNeeded();
 
     return true;
 }
 
-void User::writeSettings(QSettings &settings)
+void User::writeSettings(SettingsHolder &settingsHolder)
 {
-    settings.setValue(SETTINGS_AVATAR, m_avatar);
-    settings.setValue(SETTINGS_DISPLAYNAME, m_displayName);
-    settings.setValue(SETTINGS_EMAIL, m_email);
-    settings.setValue(SETTINGS_MAXDEVICES, m_maxDevices);
-    settings.setValue(SETTINGS_SUBSCRIPTIONNEEDED, m_subscriptionNeeded);
+    settingsHolder.setUserAvatar(m_avatar);
+    settingsHolder.setUserDisplayName(m_displayName);
+    settingsHolder.setUserEmail(m_email);
+    settingsHolder.setUserMaxDevices(m_maxDevices);
+    settingsHolder.setUserSubscriptionNeeded(m_subscriptionNeeded);
 }

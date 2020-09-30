@@ -5,7 +5,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QSettings>
 #include <QTimer>
 #include <QtDebug>
 

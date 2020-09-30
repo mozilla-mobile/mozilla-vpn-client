@@ -1,21 +1,18 @@
 #include "keys.h"
+#include "settingsholder.h"
 
-#include <QSettings>
-
-constexpr const char* PRIVATE_KEY = "privateKey";
-
-bool Keys::fromSettings(QSettings &settings) {
-    if (!settings.contains(PRIVATE_KEY)) {
+bool Keys::fromSettings(SettingsHolder &settingsHolder)
+{
+    if (!settingsHolder.hasPrivateKey()) {
         return false;
     }
-    m_privateKey = settings.value(PRIVATE_KEY).toString();
 
+    m_privateKey = settingsHolder.privateKey();
     return true;
 }
 
-void Keys::storeKey(QSettings &settings, const QString &privateKey)
+void Keys::storeKey(const QString &privateKey)
 {
-    settings.setValue(PRIVATE_KEY, privateKey);
     m_privateKey = privateKey;
 }
 

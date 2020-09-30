@@ -1,13 +1,13 @@
 #include "devicemodel.h"
+#include "settingsholder.h"
 
 #include <QDebug>
-#include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QSettings>
 
-void DeviceModel::fromJson(const QByteArray& s)
+void DeviceModel::fromJson(const QByteArray &s)
 {
     qDebug() << "DeviceModel from json";
 
@@ -20,15 +20,15 @@ void DeviceModel::fromJson(const QByteArray& s)
     fromJsonInternal();
 }
 
-bool DeviceModel::fromSettings(QSettings &settings)
+bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
 {
     qDebug() << "Reading the device list from settings";
 
-    if (!settings.contains("devices")) {
+    if (!settingsHolder.hasDevices()) {
         return false;
     }
 
-    m_rawJson = settings.value("devices").toByteArray();
+    m_rawJson = settingsHolder.devices();
     if (!fromJsonInternal()) {
         return false;
     }
@@ -83,9 +83,9 @@ bool DeviceModel::fromJsonInternal() {
     return true;
 }
 
-void DeviceModel::writeSettings(QSettings &settings)
+void DeviceModel::writeSettings(SettingsHolder &settingsHolder)
 {
-    settings.setValue("devices", m_rawJson);
+    settingsHolder.setDevices(m_rawJson);
 }
 
 QHash<int, QByteArray> DeviceModel::roleNames() const
