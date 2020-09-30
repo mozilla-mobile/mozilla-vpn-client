@@ -380,12 +380,12 @@ Rectangle {
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
 
-        Image {
+        VPNIcon {
             id: connectionInfoImage
-            source: "../resources/connection-graph.svg";
+            source: "../resources/connection-info.svg";
             anchors.centerIn :connectionInfoButton
-            sourceSize.height: 22
-            sourceSize.width: 22
+            sourceSize.height: 20
+            sourceSize.width: 20
         }
     }
 
@@ -398,11 +398,9 @@ Rectangle {
         anchors.topMargin: Theme.windowMargin / 2
         anchors.rightMargin: Theme.windowMargin / 2
 
-        Image {
+        VPNIcon {
             id: settingsImage
             anchors.centerIn :settingsButton
-            sourceSize.height: 22
-            sourceSize.width: 22
         }
     }
 
