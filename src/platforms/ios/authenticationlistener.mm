@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #include "authenticationlistener.h"
 #include "mozillavpn.h"
 
@@ -44,7 +48,10 @@ void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
     qDebug() << "AuthenticationListener initialize" << session;
 
     query.addQueryItem("platform", "ios");
-    query.addQueryItem("iap", "true");
+
+    // If we want to force the IAP settings:
+    //query.addQueryItem("iap", "true");
+
     url.setQuery(query);
 
     qDebug() << url;

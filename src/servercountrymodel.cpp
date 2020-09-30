@@ -1,23 +1,27 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #include "servercountrymodel.h"
 #include "servercountry.h"
 #include "serverdata.h"
+#include "settingsholder.h"
 
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
-#include <QSettings>
 
-bool ServerCountryModel::fromSettings(QSettings &settings)
+bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)
 {
     qDebug() << "Reading the server list from settings";
 
-    if (!settings.contains("servers")) {
+    if (!settingsHolder.hasServers()) {
         return false;
     }
 
-    m_rawJson = settings.value("servers").toByteArray();
+    m_rawJson = settingsHolder.servers();
     fromJsonInternal();
 
     return true;
@@ -70,11 +74,6 @@ void ServerCountryModel::fromJsonInternal()
     std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
 
     endResetModel();
-}
-
-void ServerCountryModel::writeSettings(QSettings &settings)
-{
-    settings.setValue("servers", m_rawJson);
 }
 
 QHash<int, QByteArray> ServerCountryModel::roleNames() const

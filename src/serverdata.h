@@ -1,13 +1,17 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #ifndef SERVERDATA_H
 #define SERVERDATA_H
 
 #include <QObject>
 
-class QSettings;
 class ServerCountryModel;
 class ServerCountry;
 class ServerCity;
 class Server;
+class SettingsHolder;
 
 class ServerData final : public QObject
 {
@@ -17,9 +21,9 @@ class ServerData final : public QObject
     Q_PROPERTY(QString city READ city NOTIFY changed)
 
 public:
-    bool fromSettings(QSettings &settings);
+    bool fromSettings(SettingsHolder &settingsHolder);
 
-    void writeSettings(QSettings &settings);
+    void writeSettings(SettingsHolder &settingsHolder);
 
     void initialize(const ServerCountry &country, const ServerCity &city);
 

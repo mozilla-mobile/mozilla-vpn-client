@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
@@ -17,7 +21,6 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QPointer>
-#include <QSettings>
 #include <QTimer>
 
 class QQmlApplicationEngine;
@@ -174,8 +177,6 @@ signals:
 
 private:
     QQmlApplicationEngine *m_engine;
-
-    QSettings m_settings;
 
     SettingsHolder m_settingsHolder;
 

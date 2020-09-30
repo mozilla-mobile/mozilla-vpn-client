@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #ifndef DEVICEMODEL_H
 #define DEVICEMODEL_H
 
@@ -6,7 +10,7 @@
 
 #include "device.h"
 
-class QSettings;
+class SettingsHolder;
 
 class DeviceModel final : public QAbstractListModel
 {
@@ -24,9 +28,9 @@ public:
 
     void fromJson(const QByteArray& s);
 
-    bool fromSettings(QSettings &settings);
+    bool fromSettings(SettingsHolder &settingsHolder);
 
-    void writeSettings(QSettings &settings);
+    void writeSettings(SettingsHolder &settingsHolder);
 
     bool hasDevice(const QString &deviceName) const;
 
