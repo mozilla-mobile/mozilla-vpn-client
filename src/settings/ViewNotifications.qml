@@ -23,9 +23,12 @@ Flickable {
         spacing: 0
 
         VPNCheckBoxRow {
+            property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             labelText: qsTr("Unsecured network alert")
             subLabelText: qsTr("Get notified if you connect to an unsecured Wi-Fi network")
             isChecked: true // TODO: add condition
+            isEnabled: isVPNOff
+            showDivider: isVPNOff
             onClicked: {
                 console.log("TODO: Handle click")
                 isChecked = !isChecked

@@ -25,9 +25,13 @@ Flickable {
         spacing: 0
 
         VPNCheckBoxRow {
+            property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             labelText: qsTr("IPv6")
             subLabelText: qsTr("Push the internet forward with the latest version of the Internet Protocol")
             isChecked: (VPNSettings.ipv6)
+            isEnabled: isVPNOff
+            showDivider: isVPNOff
+
             onClicked: {
                 VPNSettings.ipv6 = !VPNSettings.ipv6
                 isChecked = VPNSettings.ipv6
