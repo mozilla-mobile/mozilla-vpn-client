@@ -44,7 +44,10 @@ void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
     qDebug() << "AuthenticationListener initialize" << session;
 
     query.addQueryItem("platform", "ios");
-    query.addQueryItem("iap", "true");
+
+    // If we want to force the IAP settings:
+    //query.addQueryItem("iap", "true");
+
     url.setQuery(query);
 
     qDebug() << url;
