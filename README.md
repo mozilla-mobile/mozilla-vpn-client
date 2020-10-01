@@ -14,7 +14,6 @@ You can use QtCreator. Or if you like to compile in CLI, just do:
 2. Compile:
   $ qmake PREFIX=/usr
   $ make -j4
-  $ sudo make install
 
 On linux:
 $ ./src/mozillavpn
@@ -35,4 +34,4 @@ Use ./scripts/linux_compile.sh
   $ git submodule update --remote
 3. Run the script:
   $ ./scripts/mac_compile.sh
-
+4. Open Xcode and run/test/archive/ship the app
