@@ -140,6 +140,7 @@ QMAKE_CXXFLAGS *= -Werror
 TARGET = mozillavpn
 QT += networkauth
 QT += svg
+QT += androidextras
 
 SOURCES += platforms/android/androidcontroller.cpp
 HEADERS += platforms/android/androidcontroller.h

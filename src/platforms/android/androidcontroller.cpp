@@ -7,6 +7,10 @@
 
 #include <QDebug>
 #include <QRandomGenerator>
+#include <QAndroidJniObject>
+#include <QAndroidIntent>
+#include <QtAndroid>
+
 
 void AndroidController::activate(const Server &server,
                                const Device *device,
@@ -19,7 +23,14 @@ void AndroidController::activate(const Server &server,
 
     qDebug() << "AndroidController activated" << server.hostname();
 
-    //emit connected();
+
+    QAndroidJniObject::callStaticMethod<void>(
+        "com/mozilla/vpn/VPNService",
+        "startQtAndroidService",
+        "(Landroid/content/Context;)V",
+        QtAndroid::androidActivity().object());
+
+    emit connected();
 }
 
 void AndroidController::deactivate(bool forSwitching)

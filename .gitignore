@@ -23,3 +23,8 @@ mozillavpn-daemon
 translations/*.qm
 .qm
 .tmp
+
+# Ignore files that might be added by Android Studio
+# if someone opens the android/ subproject
+android/.gradle/
+android/.idea/
