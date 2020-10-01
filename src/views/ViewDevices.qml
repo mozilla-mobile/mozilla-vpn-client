@@ -153,6 +153,8 @@ Item {
                         Layout.preferredWidth: 40
                         onClicked: removePopup.initializeAndOpen(name, index)
 
+                        accessibleName: qsTr("Remove")
+
                         VPNIcon {
                             source: iconButton.iconSource
                             anchors.centerIn: iconButton

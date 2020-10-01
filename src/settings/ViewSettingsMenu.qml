@@ -66,6 +66,8 @@ Flickable {
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
 
+        accessibleName: qsTr("Back")
+
         Image {
             id: backImage
             source: "../resources/back.svg"
