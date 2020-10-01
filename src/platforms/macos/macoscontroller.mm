@@ -30,7 +30,7 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
     impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
         ipv4Address:device->ipv4Address().toNSString()
         ipv6Address:device->ipv6Address().toNSString()
-        ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
+        ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
         closure:^(ConnectionState state, NSDate *date) {
             qDebug() << "Creation completed with connection state:" << state;
             creating = false;
@@ -82,8 +82,8 @@ void MacOSController::activate(const Server &server,
                        serverPublicKey:server.publicKey().toNSString()
                       serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                             serverPort:server.choosePort()
-                           ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
-                   localNetworkEnabled:MozillaVPN::instance()->settingsHolder()->localNetwork()
+                           ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
+                   localNetworkEnabled:MozillaVPN::instance()->settingsHolder()->localNetworkAccess()
                        failureCallback:^() {
                            qDebug() << "MacOSSWiftController - connection failed";
                            emit disconnected();
