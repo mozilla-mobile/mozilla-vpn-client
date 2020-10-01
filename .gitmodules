@@ -10,7 +10,7 @@
 [submodule "src/platforms/android/openSSL"]
 	path = src/platforms/android/openSSL
 	url = https://github.com/KDAB/android_openssl
-[submodule "modules/wireguard"]
+[submodule "android/modules/wireguard"]
 	path = android/modules/wireguard
-	url = git@github.com:mozilla-mobile/guardian-vpn-android.git
+	url = https://github.com/mozilla-mobile/guardian-vpn-android.git
 	branch = roger/wg_moz_module
