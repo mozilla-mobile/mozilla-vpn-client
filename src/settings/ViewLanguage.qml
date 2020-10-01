@@ -17,28 +17,78 @@ Flickable {
         isSettingsView: true
     }
 
-    VPNExternalLinkListItem {
-        id: systemLanguage
+    ButtonGroup {
+        id: radioButtonGroup
+    }
+
+    VPNBoldLabel {
+        id: systemLabel
         anchors.top: menu.bottom
+        anchors.topMargin: 20
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.windowMargin
         width: parent.width
-        title: "SYSTEM:" + VPNLocalizer.systemLanguage + " (" + VPNLocalizer.systemLocalizedLanguage + ")";
-        onClicked: VPNLocalizer.setLanguage("");
+        text: qsTr("System")
+    }
+
+    VPNRadioDelegate {
+        radioButtonLabelText: VPNLocalizer.systemLanguage
+
+        id: systemLanguage
+        anchors.top: systemLabel.bottom
+        anchors.topMargin: 16
+        anchors.left: parent.left
+        anchors.leftMargin: 18
+
+        checked: false // TODO : needs condition
+        onClicked: {
+            VPNLocalizer.setLanguage("")
+            checked = !checked
+        }
+
+        VPNRadioSublabel {
+            text: VPNLocalizer.systemLocalizedLanguage
+        }
+    }
+
+    VPNBoldLabel {
+        id: additionalLabel
+        anchors.top: systemLanguage.bottom
+        anchors.topMargin: 28
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.windowMargin
+        width: parent.width
+        text: qsTr("Additional")
     }
 
     ListView {
-        height: parent.height - menu.height - systemLanguage.height
+        height: parent.height - menu.height - systemLanguage.height - systemLabel.height
         width: parent.width
-        anchors.top: systemLanguage.bottom
+        anchors.top: additionalLabel.bottom
+        anchors.topMargin: 16
+        anchors.left: parent.left
+        anchors.leftMargin: 18
+        anchors.rightMargin: 18
         clip: true
-        spacing: Theme.listSpacing
+        spacing: 26
         interactive: false
-        anchors.topMargin: Theme.windowMargin
-
         model: VPNLocalizer
 
-        delegate: VPNExternalLinkListItem {
-            title: language + " (" + localizedLanguage + ")"
-            onClicked: VPNLocalizer.setLanguage(code)
+        delegate: VPNRadioDelegate {
+            radioButtonLabelText: qsTr(language)
+
+            anchors.leftMargin: 30
+            anchors.topMargin: 30
+
+            checked: false // TODO : needs condition
+            onClicked: {
+                VPNLocalizer.setLanguage(code)
+                checked = !checked
+            }
+
+            VPNRadioSublabel {
+                text: localizedLanguage
+            }
         }
     }
 
