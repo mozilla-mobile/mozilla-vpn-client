@@ -118,7 +118,7 @@ GETSETDEFAULT(QString(),
     } \
     void SettingsHolder::set(const type &value) \
     { \
-        qDebug() << "Setting" << key << "to" << value; \
+        qDebug() << "Setting" << key; \
         m_settings.setValue(key, value); \
     }
 

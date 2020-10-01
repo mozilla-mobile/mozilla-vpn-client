@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+#include "mozillavpn.h"
 #include "pingsender.h"
 #include "server.h"
 
@@ -118,4 +119,10 @@ void ConnectionHealth::setStability(ConnectionStability stability)
 {
     m_stability = stability;
     emit stabilityChanged();
+
+    if (stability != Stable) {
+        MozillaVPN::instance()->captivePortalDetection()->start();
+    } else {
+        MozillaVPN::instance()->captivePortalDetection()->stop();
+    }
 }

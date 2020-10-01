@@ -5,6 +5,7 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "captiveportaldetection.h"
 #include "connectiondataholder.h"
 #include "controller.h"
 #include "devicemodel.h"
@@ -147,6 +148,8 @@ public:
 
     ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
 
+    CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine);
     ~MozillaVPN();
@@ -211,6 +214,8 @@ private:
     bool m_updateRecommended = false;
 
     bool m_userAuthenticated = false;
+
+    CaptivePortalDetection m_captivePortalDetection;
 };
 
 #endif // MOZILLAVPN_H
