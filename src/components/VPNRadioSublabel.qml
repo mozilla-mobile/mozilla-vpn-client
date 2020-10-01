@@ -14,5 +14,5 @@ Text {
     anchors.left: parent.left
     anchors.leftMargin: 38
     anchors.top: parent.top
-    anchors.topMargin: 20
+    anchors.topMargin: 24
 }
