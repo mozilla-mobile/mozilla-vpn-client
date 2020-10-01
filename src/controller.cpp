@@ -211,7 +211,8 @@ void Controller::timerTimeout()
 {
     Q_ASSERT(m_state == StateOn);
 
-    if (m_vpn->connectionDataHolder()->isRunning()) {
+    // If we don't have the connection-health system active or if the connection info view is shown, let's check the status.
+    if (!m_connectionHealth.isRunning() || m_vpn->connectionDataHolder()->isRunning()) {
         m_impl->checkStatus();
     }
 

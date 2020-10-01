@@ -17,6 +17,8 @@ class SystemTrayHandler : public QSystemTrayIcon
 public:
     SystemTrayHandler(const QIcon &icon, QObject *parent);
 
+    void captivePortalNotificationRequested();
+
     void notificationRequired(MozillaVPN *vpn);
 
 signals:
