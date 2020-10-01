@@ -439,7 +439,9 @@ void MozillaVPN::logout()
     setUserAuthenticated(false);
 
     QString deviceName = Device::currentDeviceName();
-    scheduleTask(new TaskRemoveDevice(deviceName));
+    if (m_deviceModel.hasDevice(deviceName)) {
+        scheduleTask(new TaskRemoveDevice(deviceName));
+    }
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         qDebug() << "Cleaning up all";
