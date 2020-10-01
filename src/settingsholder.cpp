@@ -46,49 +46,32 @@ void SettingsHolder::clear()
     // We do not remove language, ipv6 and localnetwork settings.
 }
 
-bool SettingsHolder::ipv6() const
-{
-    if (!m_settings.contains(SETTINGS_IPV6)) {
-        return SETTINGS_IPV6_DEFAULT;
+#define GETSETDEFAULT(def, type, toType, key, has, get, set) \
+    bool SettingsHolder::has() const { return m_settings.contains(key); } \
+    type SettingsHolder::get() const \
+    { \
+        if (!has()) { \
+            return def; \
+        } \
+        return m_settings.value(key).toType(); \
+    } \
+    void SettingsHolder::set(const type &value) \
+    { \
+        qDebug() << "Setting" << key << "to" << value; \
+        m_settings.setValue(key, value); \
     }
 
-    return m_settings.value(SETTINGS_IPV6).toBool();
-}
+GETSETDEFAULT(SETTINGS_IPV6_DEFAULT, bool, toBool, SETTINGS_IPV6, hasIpv6, ipv6, setIpv6)
+GETSETDEFAULT(SETTINGS_LOCALNETWORK_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_LOCALNETWORK,
+              hasLocalNetwork,
+              localNetwork,
+              setLocalNetwork)
+GETSETDEFAULT(QString(), QString, toString, SETTINGS_LANGUAGE, hasLanguage, language, setLanguage)
 
-void SettingsHolder::setIpv6(bool ipv6)
-{
-    qDebug() << "Setting Ipv6:" << ipv6;
-    m_settings.setValue(SETTINGS_IPV6, ipv6);
-}
-
-bool SettingsHolder::localNetwork() const
-{
-    if (!m_settings.contains(SETTINGS_LOCALNETWORK)) {
-        return SETTINGS_LOCALNETWORK_DEFAULT;
-    }
-
-    return m_settings.value(SETTINGS_LOCALNETWORK).toBool();
-}
-
-void SettingsHolder::setLocalNetwork(bool localNetwork)
-{
-    qDebug() << "Setting LocalNetwork:" << localNetwork;
-    m_settings.setValue(SETTINGS_LOCALNETWORK, localNetwork);
-}
-
-QString SettingsHolder::language() const
-{
-    if (m_settings.contains(SETTINGS_LANGUAGE)) {
-        return m_settings.value(SETTINGS_LANGUAGE).toString();
-    }
-    return QString();
-}
-
-void SettingsHolder::setLanguage(const QString &language)
-{
-    qDebug() << "Setting language:" << language;
-    m_settings.setValue(SETTINGS_LANGUAGE, language);
-}
+#undef GETSETDEFAULT
 
 #define GETSET(type, toType, key, has, get, set) \
     bool SettingsHolder::has() const { return m_settings.contains(key); } \
@@ -97,7 +80,11 @@ void SettingsHolder::setLanguage(const QString &language)
         Q_ASSERT(has()); \
         return m_settings.value(key).toType(); \
     } \
-    void SettingsHolder::set(const type &value) { m_settings.setValue(key, value); }
+    void SettingsHolder::set(const type &value) \
+    { \
+        qDebug() << "Setting" << key << "to" << value; \
+        m_settings.setValue(key, value); \
+    }
 
 GETSET(QString, toString, SETTINGS_TOKEN, hasToken, token, setToken)
 GETSET(QString, toString, SETTINGS_PRIVATEKEY, hasPrivateKey, privateKey, setPrivateKey)

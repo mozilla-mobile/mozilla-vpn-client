@@ -20,20 +20,14 @@ public:
 
     void clear();
 
-    bool ipv6() const;
-    void setIpv6(bool ipv6);
-
-    bool localNetwork() const;
-    void setLocalNetwork(bool localNetwork);
-
-    QString language() const;
-    void setLanguage(const QString &language);
-
 #define GETSET(type, has, get, set) \
     bool has() const; \
     type get() const; \
     void set(const type &value);
 
+    GETSET(bool, hasIpv6, ipv6, setIpv6)
+    GETSET(bool, hasLocalNetwork, localNetwork, setLocalNetwork)
+    GETSET(QString, hasLanguage, language, setLanguage)
     GETSET(QString, hasToken, token, setToken)
     GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
     GETSET(QByteArray, hasServers, servers, setServers)
