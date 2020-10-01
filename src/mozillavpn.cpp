@@ -418,6 +418,7 @@ void MozillaVPN::cancelAuthentication()
         delete *i;
     }
 
+    m_tasks.clear();
     m_task_running = false;
     m_settingsHolder.clear();
 
