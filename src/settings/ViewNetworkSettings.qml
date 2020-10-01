@@ -28,13 +28,13 @@ Flickable {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             labelText: qsTr("IPv6")
             subLabelText: qsTr("Push the internet forward with the latest version of the Internet Protocol")
-            isChecked: (VPNSettings.ipv6)
+            isChecked: (VPNSettings.ipv6Enabled)
             isEnabled: isVPNOff
             showDivider: isVPNOff
 
             onClicked: {
-                VPNSettings.ipv6 = !VPNSettings.ipv6
-                isChecked = VPNSettings.ipv6
+                VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
+                isChecked = VPNSettings.ipv6Enabled
             }
         }
 
@@ -43,13 +43,13 @@ Flickable {
             id: localNetwork
             labelText: qsTr("Local network access")
             subLabelText: qsTr("Access printers, streaming sticks and all other devices on your local network")
-            isChecked: (VPNSettings.localNetwork)
+            isChecked: (VPNSettings.localNetworkAccess)
             isEnabled: isVPNOff
             showDivider: isVPNOff
 
             onClicked: {
-                VPNSettings.localNetwork = !VPNSettings.localNetwork
-                isChecked = VPNSettings.localNetwork
+                VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
+                isChecked = VPNSettings.localNetworkAccess
             }
         }
 

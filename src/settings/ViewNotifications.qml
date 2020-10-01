@@ -26,12 +26,12 @@ Flickable {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             labelText: qsTr("Unsecured network alert")
             subLabelText: qsTr("Get notified if you connect to an unsecured Wi-Fi network")
-            isChecked: true // TODO: add condition
+            isChecked: VPNSettings.unsecuredNetworkAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff
             onClicked: {
-                console.log("TODO: Handle click")
-                isChecked = !isChecked
+                VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
+                isChecked = VPNSettings.unsecuredNetworkAlert
             }
         }
 
@@ -39,12 +39,12 @@ Flickable {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             labelText: qsTr("Guest Wi-Fi portal alert")
             subLabelText: qsTr("Get notified if a guest Wi-Fi portal is blocked due to VPN connection")
-            isChecked: true // TODO: add condition
+            isChecked: VPNSettings.captivePortalAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff
             onClicked: {
-                console.log("TODO: Handle click")
-                isChecked = !isChecked
+                VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
+                isChecked = VPNSettings.captivePortalAlert
             }
         }
 

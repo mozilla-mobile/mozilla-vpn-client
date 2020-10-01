@@ -7,11 +7,15 @@
 #include <QDebug>
 #include <QSettings>
 
-constexpr bool SETTINGS_IPV6_DEFAULT = true;
-constexpr bool SETTINGS_LOCALNETWORK_DEFAULT = false;
+constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
+constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
+constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = false;
+constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = false;
 
-constexpr const char *SETTINGS_IPV6 = "ipv6";
-constexpr const char *SETTINGS_LOCALNETWORK = "localNetwork";
+constexpr const char *SETTINGS_IPV6ENABLED = "ipv6Enabled";
+constexpr const char *SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
+constexpr const char *SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
+constexpr const char *SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char *SETTINGS_LANGUAGE = "language";
 constexpr const char *SETTINGS_TOKEN = "token";
 constexpr const char *SETTINGS_SERVERS = "servers";
@@ -61,14 +65,34 @@ void SettingsHolder::clear()
         m_settings.setValue(key, value); \
     }
 
-GETSETDEFAULT(SETTINGS_IPV6_DEFAULT, bool, toBool, SETTINGS_IPV6, hasIpv6, ipv6, setIpv6)
-GETSETDEFAULT(SETTINGS_LOCALNETWORK_DEFAULT,
+GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT,
               bool,
               toBool,
-              SETTINGS_LOCALNETWORK,
-              hasLocalNetwork,
-              localNetwork,
-              setLocalNetwork)
+              SETTINGS_IPV6ENABLED,
+              hasIpv6Enabled,
+              ipv6Enabled,
+              setIpv6Enabled)
+GETSETDEFAULT(SETTINGS_LOCALNETWORKACCESS_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_LOCALNETWORKACCESS,
+              hasLocalNetworkAccess,
+              localNetworkAccess,
+              setLocalNetworkAccess)
+GETSETDEFAULT(SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_UNSECUREDNETWORKALERT,
+              hasUnsecuredNetworkAlert,
+              unsecuredNetworkAlert,
+              setUnsecuredNetworkAlert)
+GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_CAPTIVEPORTALALERT,
+              hasCaptivePortalAlert,
+              captivePortalAlert,
+              setCaptivePortalAlert)
 GETSETDEFAULT(QString(), QString, toString, SETTINGS_LANGUAGE, hasLanguage, language, setLanguage)
 
 #undef GETSETDEFAULT
@@ -116,6 +140,6 @@ GETSET(QString,
        hasCurrentServerCity,
        currentServerCity,
        setCurrentServerCity)
-GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
+    GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
 
 #undef GETSET
