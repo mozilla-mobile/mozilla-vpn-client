@@ -22,6 +22,7 @@ Flickable {
         Layout.preferredWidth: parent.width
         spacing: 0
 
+        /* TODO
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             labelText: qsTr("Unsecured network alert")
@@ -31,6 +32,7 @@ Flickable {
             showDivider: isVPNOff
             onClicked: VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
         }
+        */
 
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
