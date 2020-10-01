@@ -179,7 +179,7 @@ else:macos {
                 ../wireguard-apple/WireGuard/Shared/Model \
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
-    QMAKE_INFO_PLIST=../macos/Info.plist
+    QMAKE_INFO_PLIST=../macos/app/Info.plist
 }
 
 # Platform-specific: IOS
