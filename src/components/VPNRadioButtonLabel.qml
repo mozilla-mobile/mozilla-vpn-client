@@ -12,22 +12,21 @@ Label {
     anchors.left: radioButton.right
     anchors.leftMargin: Theme.hSpacing - 2
 
-    text: modelData
     font.family: vpnFontInter.name
     font.pointSize: Theme.fontSize
-    color: Theme.fontColor
+    color: Theme.fontColorDark
 
     states: State {
         when: radioControl.checked
         PropertyChanges {
-            target: cityName
+            target: radioButtonLabel
             color: Theme.buttonColor
         }
     }
 
     transitions: Transition {
         ColorAnimation {
-            target: cityName
+            target: radioButtonLabel
             properties: "color"
             duration: 100
         }
