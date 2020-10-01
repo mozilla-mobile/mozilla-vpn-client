@@ -104,7 +104,7 @@ public class MacOSControllerImpl : NSObject {
         stateChangeCallback?(session.status == .connected)
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, ipv6Enabled: Bool, localNetworkEnabled: Bool, failureCallback: @escaping () -> Void) {
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, ipv6Enabled: Bool, localNetworkAccess: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -122,7 +122,7 @@ public class MacOSControllerImpl : NSObject {
             peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address("::")!, networkPrefixLength: 0))
         }
 
-        if (localNetworkEnabled) {
+        if (localNetworkAccess) {
             peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address("128.0.0.1")!, networkPrefixLength: 0))
 
             if (ipv6Enabled) {

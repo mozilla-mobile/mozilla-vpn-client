@@ -21,7 +21,7 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &serverIpv6AddrIn,
                          int serverPort,
                          bool ipv6Enabled,
-                         bool localNetworkEnabled)
+                         bool localNetworkAccess)
 {
     Q_UNUSED(serverIpv6AddrIn);
 
@@ -65,7 +65,7 @@ void WgQuickProcess::run(const QString &privateKey,
         content.append(",::0");
     }
 
-    if (localNetworkEnabled) {
+    if (localNetworkAccess) {
         content.append(",128.0.0.1/1");
 
         if (ipv6Enabled) {

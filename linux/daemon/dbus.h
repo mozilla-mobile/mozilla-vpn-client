@@ -33,7 +33,7 @@ public Q_SLOTS:
                   const QString &serverIpv6AddrIn,
                   int serverPort,
                   bool ipv6Enabled,
-                  bool localNetworkEnabled);
+                  bool localNetworkAccess);
 
     bool deactivate();
 
@@ -50,7 +50,7 @@ private:
                     const QString &serverIpv6AddrIn,
                     int serverPort,
                     bool ipv6Enabled,
-                    bool localNetworkEnabled);
+                    bool localNetworkAccess);
 
 private:
     DbusAdaptor *m_adaptor = nullptr;
@@ -65,7 +65,7 @@ private:
     QString m_lastServerIpv6AddrIn;
     int m_lastServerPort = 0;
     bool m_lastIpv6Enabled = false;
-    bool m_lastLocalNetworkEnabled = false;
+    bool m_lastLocalNetworkAccess = false;
 };
 
 #endif // DBUS_H

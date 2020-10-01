@@ -39,8 +39,8 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *devi
                            server.ipv4AddrIn(),
                            server.ipv6AddrIn(),
                            server.choosePort(),
-                           MozillaVPN::instance()->settingsHolder()->ipv6(),
-                           MozillaVPN::instance()->settingsHolder()->localNetwork());
+                           MozillaVPN::instance()->settingsHolder()->ipv6Enabled(),
+                           MozillaVPN::instance()->settingsHolder()->localNetworkAccess());
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,
