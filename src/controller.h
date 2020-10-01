@@ -39,10 +39,7 @@ private:
 
 public:
     Controller();
-
     ~Controller();
-
-    void setVPN(MozillaVPN *vpn);
 
     void initialize();
 
@@ -99,8 +96,6 @@ private:
 
 private:
     State m_state = StateInitializing;
-
-    MozillaVPN *m_vpn = nullptr;
 
     QTimer m_timer;
 
