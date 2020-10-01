@@ -32,10 +32,7 @@ Flickable {
             isEnabled: isVPNOff
             showDivider: isVPNOff
 
-            onClicked: {
-                VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
-                isChecked = VPNSettings.ipv6Enabled
-            }
+            onClicked: VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
         }
 
         VPNCheckBoxRow {
@@ -47,10 +44,7 @@ Flickable {
             isEnabled: isVPNOff
             showDivider: isVPNOff
 
-            onClicked: {
-                VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
-                isChecked = VPNSettings.localNetworkAccess
-            }
+            onClicked: VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
         }
 
         VPNCheckBoxAlert { }

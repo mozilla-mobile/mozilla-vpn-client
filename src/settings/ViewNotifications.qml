@@ -29,10 +29,7 @@ Flickable {
             isChecked: VPNSettings.unsecuredNetworkAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff
-            onClicked: {
-                VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
-                isChecked = VPNSettings.unsecuredNetworkAlert
-            }
+            onClicked: VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
         }
 
         VPNCheckBoxRow {
@@ -42,10 +39,7 @@ Flickable {
             isChecked: VPNSettings.captivePortalAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff
-            onClicked: {
-                VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
-                isChecked = VPNSettings.captivePortalAlert
-            }
+            onClicked: VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
         }
 
         VPNCheckBoxAlert { }

@@ -49,10 +49,11 @@ public:
 #undef GETSET
 
 signals:
-    void ipv6EnabledChanged();
-    void localNetworkAccessChanged();
-    void unsecuredNetworkAlertChanged();
-    void captivePortalAlertChanged();
+    void ipv6EnabledChanged(bool value);
+    void localNetworkAccessChanged(bool value);
+    void unsecuredNetworkAlertChanged(bool value);
+    void captivePortalAlertChanged(bool value);
+    void languageChanged(const QString &language);
 
 private:
     QSettings m_settings;

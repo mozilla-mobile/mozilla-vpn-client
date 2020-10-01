@@ -50,7 +50,7 @@ void SettingsHolder::clear()
     // We do not remove language, ipv6 and localnetwork settings.
 }
 
-#define GETSETDEFAULT(def, type, toType, key, has, get, set) \
+#define GETSETDEFAULT(def, type, toType, key, has, get, set, signal) \
     bool SettingsHolder::has() const { return m_settings.contains(key); } \
     type SettingsHolder::get() const \
     { \
@@ -63,6 +63,7 @@ void SettingsHolder::clear()
     { \
         qDebug() << "Setting" << key << "to" << value; \
         m_settings.setValue(key, value); \
+        emit signal(value); \
     }
 
 GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT,
@@ -71,29 +72,40 @@ GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT,
               SETTINGS_IPV6ENABLED,
               hasIpv6Enabled,
               ipv6Enabled,
-              setIpv6Enabled)
+              setIpv6Enabled,
+              ipv6EnabledChanged)
 GETSETDEFAULT(SETTINGS_LOCALNETWORKACCESS_DEFAULT,
               bool,
               toBool,
               SETTINGS_LOCALNETWORKACCESS,
               hasLocalNetworkAccess,
               localNetworkAccess,
-              setLocalNetworkAccess)
+              setLocalNetworkAccess,
+              localNetworkAccessChanged)
 GETSETDEFAULT(SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
               bool,
               toBool,
               SETTINGS_UNSECUREDNETWORKALERT,
               hasUnsecuredNetworkAlert,
               unsecuredNetworkAlert,
-              setUnsecuredNetworkAlert)
+              setUnsecuredNetworkAlert,
+              unsecuredNetworkAlertChanged)
 GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
               bool,
               toBool,
               SETTINGS_CAPTIVEPORTALALERT,
               hasCaptivePortalAlert,
               captivePortalAlert,
-              setCaptivePortalAlert)
-GETSETDEFAULT(QString(), QString, toString, SETTINGS_LANGUAGE, hasLanguage, language, setLanguage)
+              setCaptivePortalAlert,
+              captivePortalAlertChanged)
+GETSETDEFAULT(QString(),
+              QString,
+              toString,
+              SETTINGS_LANGUAGE,
+              hasLanguage,
+              language,
+              setLanguage,
+              languageChanged)
 
 #undef GETSETDEFAULT
 
@@ -140,6 +152,6 @@ GETSET(QString,
        hasCurrentServerCity,
        currentServerCity,
        setCurrentServerCity)
-    GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
+GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
 
 #undef GETSET
