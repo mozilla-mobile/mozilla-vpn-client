@@ -19,7 +19,8 @@ public:
 
     void captivePortalNotificationRequested();
 
-    void notificationRequired(MozillaVPN *vpn);
+public Q_SLOTS:
+    void controllerStateChanged();
 
 signals:
     void quit();

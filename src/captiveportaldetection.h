@@ -11,12 +11,16 @@ class CaptivePortalDetection final : public QObject
 public:
     CaptivePortalDetection();
 
-    void start();
-    void stop();
-
 private:
     void handleSuccess();
     void handleFailure();
+
+public Q_SLOTS:
+    void controllerStateChanged();
+
+    void settingsChanged();
+
+    void detectCaptivePortal();
 
 signals:
     void captivePortalDetected();

@@ -9,35 +9,39 @@ constexpr const char *CAPTIVE_PORTAL_CONTENT = "success";
 
 CaptivePortalDetection::CaptivePortalDetection()
 {
-    connect(&m_timer, &QTimer::timeout, [this]() {
-        if (!m_active) {
-            return;
-        }
-
-        handleFailure();
-        stop();
-    });
+    connect(&m_timer, &QTimer::timeout, this, &CaptivePortalDetection::detectCaptivePortal);
 }
 
-void CaptivePortalDetection::start()
+void CaptivePortalDetection::controllerStateChanged()
 {
-    qDebug() << "CaptivePortalDetection start";
-    m_active = true;
+    qDebug() << "Controller state changed";
 
-    m_timer.start(CAPTIVE_PORTAL_TIMEOUT);
+    if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
+        m_timer.start(CAPTIVE_PORTAL_TIMEOUT);
+        detectCaptivePortal();
+    } else {
+        m_timer.stop();
+    }
+}
+
+void CaptivePortalDetection::settingsChanged()
+{
+    qDebug() << "Settings has changed";
+    m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
+}
+
+void CaptivePortalDetection::detectCaptivePortal()
+{
+    qDebug() << "Detecting captive portal - status:" << m_active;
+
+    if (!m_active) {
+        return;
+    }
 
     NetworkRequest *request = NetworkRequest::createForCaptivePortalDetection(this);
 
-    connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
+    connect(request, &NetworkRequest::requestFailed, [](QNetworkReply::NetworkError error) {
         qDebug() << "Captive portal request failed:" << error;
-
-        if (!m_active) {
-            qDebug() << "Disabled in the meantime.";
-            return;
-        }
-
-        handleFailure();
-        stop();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
@@ -49,29 +53,10 @@ void CaptivePortalDetection::start()
         }
 
         if (QString(data).trimmed() == CAPTIVE_PORTAL_CONTENT) {
-            handleSuccess();
-        } else {
-            handleFailure();
+            qDebug() << "No captive portal!";
+            return;
         }
 
-        stop();
+        emit captivePortalDetected();
     });
-}
-
-void CaptivePortalDetection::stop()
-{
-    qDebug() << "CaptivePortalDetection stop";
-    m_active = false;
-    m_timer.stop();
-}
-
-void CaptivePortalDetection::handleFailure()
-{
-    qDebug() << "Captive portal detected!";
-    emit captivePortalDetected();
-}
-
-void CaptivePortalDetection::handleSuccess()
-{
-    qDebug() << "No captive-portal detected!";
 }

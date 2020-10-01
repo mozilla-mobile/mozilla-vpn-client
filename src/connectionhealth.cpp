@@ -121,16 +121,4 @@ void ConnectionHealth::setStability(ConnectionStability stability)
 
     m_stability = stability;
     emit stabilityChanged();
-
-    if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
-        qDebug() << "Captive portal interaction";
-
-        if (stability != Stable) {
-            qDebug() << "Activate captive portal detection";
-            MozillaVPN::instance()->captivePortalDetection()->start();
-        } else {
-            qDebug() << "Deactivate captive portal detection";
-            MozillaVPN::instance()->captivePortalDetection()->stop();
-        }
-    }
 }

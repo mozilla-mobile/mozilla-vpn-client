@@ -74,6 +74,9 @@ public:
 
     void subscriptionNeeded();
 
+public Q_SLOTS:
+    void captivePortalDetected();
+
 private Q_SLOTS:
     void connected();
     void disconnected();

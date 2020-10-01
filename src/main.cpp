@@ -177,9 +177,8 @@ int main(int argc, char *argv[])
 
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::stateChanged,
-                     [systemTrayHandler = &systemTrayHandler]() {
-                         systemTrayHandler->notificationRequired(MozillaVPN::instance());
-                     });
+                     &systemTrayHandler,
+                     &SystemTrayHandler::controllerStateChanged);
 
     QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
                      &CaptivePortalDetection::captivePortalDetected,

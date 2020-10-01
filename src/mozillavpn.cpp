@@ -88,13 +88,20 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine)
         m_settingsHolder.setLanguage(language);
     });
 
+    connect(&m_controller,
+            &Controller::stateChanged,
+            &m_captivePortalDetection,
+            &CaptivePortalDetection::controllerStateChanged);
+
     connect(&m_settingsHolder,
             &SettingsHolder::captivePortalAlertChanged,
-            [this](bool captivePortalAlert) {
-                if (!captivePortalAlert) {
-                    m_captivePortalDetection.stop();
-                }
-            });
+            &m_captivePortalDetection,
+            &CaptivePortalDetection::settingsChanged);
+
+    connect(&m_captivePortalDetection,
+            &CaptivePortalDetection::captivePortalDetected,
+            &m_controller,
+            &Controller::captivePortalDetected);
 }
 
 MozillaVPN::~MozillaVPN() = default;
