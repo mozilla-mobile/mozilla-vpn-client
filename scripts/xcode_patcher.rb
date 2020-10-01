@@ -9,14 +9,17 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, version, platform)
+  def run(file, version, platform, configHash)
     open_project file
     open_target_main
 
-    setup_target_main version, platform
-    setup_target_extension version, platform
+    group = @project.main_group.new_group('Configuration')
+    @configFile = group.new_file('xcode.xconfig')
 
-    setup_target_loginitem version if platform == "macos"
+    setup_target_main version, platform, configHash
+    setup_target_extension version, platform, configHash
+
+    setup_target_loginitem version, configHash if platform == "macos"
 
     setup_target_go
 
@@ -35,8 +38,10 @@ class XCodeprojPatcher
     die 'Unable to open MozillaVPN target'
   end
 
-  def setup_target_main(version, platform)
+  def setup_target_main(version, platform, configHash)
     @target_main.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
@@ -45,8 +50,8 @@ class XCodeprojPatcher
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.macos.FirefoxVPN' if platform == 'macos'
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.ios.FirefoxVPN-staging' if platform == 'ios'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_MACOS'] if platform == 'macos'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_IOS'] if platform == 'ios'
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
 
       # other config
@@ -96,10 +101,12 @@ class XCodeprojPatcher
     }
   end
 
-  def setup_target_extension(version, platform)
+  def setup_target_extension(version, platform, configHash)
     @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :osx)
 
     @target_extension.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
@@ -108,8 +115,8 @@ class XCodeprojPatcher
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.network-extension' if platform == 'macos'
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.ios.FirefoxVPN-staging.network-extension' if platform == 'ios'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_MACOS'] if platform == 'macos'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_IOS'] if platform == 'ios'
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
@@ -229,16 +236,18 @@ class XCodeprojPatcher
     @target_extension.add_dependency target_go
   end
 
-  def setup_target_loginitem(version)
+  def setup_target_loginitem(version, configHash)
     @target_loginitem = @project.new_target(:application, 'MozillaVPNLoginItem', :osx)
 
     @target_loginitem.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= version
       config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.login-item'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['LOGIN_ID_MACOS']
       config.build_settings['PRODUCT_NAME'] = 'MozillaVPNLoginItem'
 
       # other configs
@@ -294,9 +303,25 @@ if ARGV.length < 3 || (ARGV[2] != "ios" && ARGV[2] != "macos")
   exit 1
 end
 
+if !File.exist?("xcode.xconfig")
+  puts "xcode.xconfig file is required! See the template file."
+  exit 1
+end
+
+config = Hash.new
+configFile = File.read("xcode.xconfig").split("\n")
+configFile.each { |line|
+  continue if line[0] == "#"
+
+  if line.include? "="
+    keys = line.split("=")
+    config[keys[0].strip] = keys[1].strip
+  end
+}
+
 platform = "macos"
 platform = "ios" if ARGV[2] == "ios"
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], platform
+r.run ARGV[0], ARGV[1], platform, config
 exit 0
