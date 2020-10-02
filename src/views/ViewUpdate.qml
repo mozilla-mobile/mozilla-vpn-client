@@ -85,7 +85,7 @@ Item {
 
     VPNFooterLink {
         id: manageAccount
-        text: qsTr("Manage account")
+        labelText: qsTr("Manage account")
         onClicked: VPN.openLink(VPN.LinkAccount)
     }
 

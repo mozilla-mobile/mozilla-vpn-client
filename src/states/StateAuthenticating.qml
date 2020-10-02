@@ -38,7 +38,7 @@ Item {
 
     VPNFooterLink {
         id: getHelp
-        text: qsTr("Cancel and try again")
+        labelText: qsTr("Cancel and try again")
         onClicked: VPN.cancelAuthentication()
     }
 

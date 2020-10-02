@@ -13,7 +13,7 @@ Item {
     id: viewInitialize
     VPNHeaderLink {
         id: headerLink
-        text: qsTr("Get Help")
+        labelText: qsTr("Get help")
         onClicked: stackview.push(getHelpComponent)
     }
 
@@ -47,7 +47,7 @@ Item {
 
     VPNFooterLink {
         id: learnMore
-        text: qsTr("Learn more")
+        labelText: qsTr("Learn more")
         onClicked: stackview.push("ViewOnboarding.qml")
     }
 

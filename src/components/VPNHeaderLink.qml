@@ -10,36 +10,10 @@ import QtGraphicalEffects 1.0
 import "../themes/themes.js" as Theme
 
 //VPNHeaderLink
-Text {
-    signal clicked
+VPNLink {
     anchors.top: parent.top
     anchors.right: parent.right
-    anchors.topMargin: 16
-    anchors.rightMargin: 16
-    font.family: vpnFontInter.name
-    font.pixelSize: 15
-
-    color: {
-        if (mouseArea.pressed) {
-            return Theme.bluePressed
-        }
-        if (mouseArea.containsMouse) {
-            return Theme.blueHovered
-        }
-        return Theme.blue
-    }
-
-    Behavior on color {
-        ColorAnimation {
-            duration: 200
-        }
-    }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        onClicked: parent.clicked()
-        cursorShape: "PointingHandCursor"
-        hoverEnabled: true
-    }
+    anchors.topMargin: 12
+    anchors.rightMargin: 12
+    horizontalPadding: 4
 }

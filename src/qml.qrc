@@ -355,5 +355,6 @@
         <file>components/VPNCheckBox.qml</file>
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNRadioSublabel.qml</file>
+        <file>components/VPNLink.qml</file>
     </qresource>
 </RCC>
