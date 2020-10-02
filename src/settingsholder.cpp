@@ -16,7 +16,7 @@ constexpr const char *SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char *SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char *SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
 constexpr const char *SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
-constexpr const char *SETTINGS_LANGUAGE = "language";
+constexpr const char *SETTINGS_LANGUAGECODE = "languageCode";
 constexpr const char *SETTINGS_TOKEN = "token";
 constexpr const char *SETTINGS_SERVERS = "servers";
 constexpr const char *SETTINGS_PRIVATEKEY = "privateKey";
@@ -101,11 +101,11 @@ GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
 GETSETDEFAULT(QString(),
               QString,
               toString,
-              SETTINGS_LANGUAGE,
-              hasLanguage,
-              language,
-              setLanguage,
-              languageChanged)
+              SETTINGS_LANGUAGECODE,
+              hasLanguageCode,
+              languageCode,
+              setLanguageCode,
+              languageCodeChanged)
 
 #undef GETSETDEFAULT
 

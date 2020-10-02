@@ -100,12 +100,3 @@ QVariant Localizer::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 }
-
-void Localizer::setLanguage(const QString &code)
-{
-    qDebug() << "Setting language:" << code;
-
-    loadLanguage(code);
-
-    emit languageChanged(code);
-}

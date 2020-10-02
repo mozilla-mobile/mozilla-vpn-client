@@ -40,10 +40,9 @@ Flickable {
         anchors.left: parent.left
         anchors.leftMargin: 18
 
-        checked: false // TODO : needs condition
+        checked: VPNSettings.languageCode === ""
         onClicked: {
-            VPNLocalizer.setLanguage("")
-            checked = !checked
+            VPNSettings.languageCode = ""
         }
 
         VPNRadioSublabel {
@@ -80,10 +79,9 @@ Flickable {
             anchors.leftMargin: 30
             anchors.topMargin: 30
 
-            checked: false // TODO : needs condition
+            checked: VPNSettings.languageCode === code
             onClicked: {
-                VPNLocalizer.setLanguage(code)
-                checked = !checked
+                VPNSettings.languageCode = code
             }
 
             VPNRadioSublabel {

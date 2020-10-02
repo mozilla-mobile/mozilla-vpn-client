@@ -80,11 +80,6 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine)
     });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 
-    connect(&m_localizer, &Localizer::languageChanged, [this](const QString &language) {
-        qDebug() << "Storing the language:" << language;
-        m_settingsHolder.setLanguage(language);
-    });
-
     connect(&m_controller,
             &Controller::stateChanged,
             &m_captivePortalDetection,
@@ -118,7 +113,7 @@ void MozillaVPN::initialize()
 
     m_releaseMonitor.runSoon();
 
-    m_localizer.initialize(m_settingsHolder.language());
+    m_localizer.initialize(m_settingsHolder.languageCode());
 
     if (!m_settingsHolder.hasToken()) {
         return;

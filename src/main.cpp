@@ -132,10 +132,13 @@ int main(int argc, char *argv[])
             return obj;
         });
 
-    QObject::connect(MozillaVPN::instance()->localizer(),
-                     &Localizer::languageChanged,
-                     &engine,
-                     &QQmlEngine::retranslate);
+    QObject::connect(MozillaVPN::instance()->settingsHolder(),
+                     &SettingsHolder::languageCodeChanged,
+                     [engine = &engine](const QString &languageCode) {
+                         qDebug() << "Storing the languageCode:" << languageCode;
+                         MozillaVPN::instance()->localizer()->loadLanguage(languageCode);
+                         engine->retranslate();
+                     });
 
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::readyToQuit,
