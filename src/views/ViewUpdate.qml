@@ -79,7 +79,7 @@ Item {
 
     VPNFooterLink {
         id: notNow
-        text: qsTr("Not now")
+        labelText: qsTr("Not now")
         onClicked: mainStackView.pop()
     }
 
