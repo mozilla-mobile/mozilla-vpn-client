@@ -9,6 +9,7 @@
 #include <QString>
 #include <QVector>
 #include <QtGlobal>
+#include <QStandardPaths>
 
 class QTextStream;
 
@@ -46,6 +47,8 @@ private:
     };
 
     static void prettyOutput(QTextStream &out, const Logger::Log &log);
+
+    QString openFile(QStandardPaths::StandardLocation location);
 
     QVector<Log> m_logs;
 };
