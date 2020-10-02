@@ -10,7 +10,7 @@ import QtGraphicalEffects 1.0
 import "../themes/themes.js" as Theme
 
 //VPNHeaderLink
-VPNLink {
+VPNLinkButton {
     anchors.top: parent.top
     anchors.right: parent.right
     anchors.topMargin: 12

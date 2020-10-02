@@ -5,7 +5,7 @@
 import QtQuick 2.0
 import "../themes/themes.js" as Theme
 
-VPNLink {
+VPNLinkButton {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
     anchors.bottomMargin: 36
