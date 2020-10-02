@@ -92,7 +92,17 @@ Item {
                     spacing: Theme.listSpacing
                     width: parent.width
                     anchors.fill: parent
-                    delegate: VPNRadioDelegate {}
+                    anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 14
+                    delegate: VPNRadioDelegate {
+                        radioButtonLabelText: modelData
+                        onClicked: {
+                            VPNController.changeServer(code, modelData)
+                            stackview.pop()
+                        }
+                        checked: code === VPNCurrentServer.countryCode
+                                 && modelData === VPNCurrentServer.city
+                        isHoverable: cityListVisible
+                    }
                 }
             }
 
