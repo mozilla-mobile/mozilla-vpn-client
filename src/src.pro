@@ -32,7 +32,10 @@ SOURCES += \
         device.cpp \
         devicemodel.cpp \
         errorhandler.cpp \
+        hacl-star/Hacl_Chacha20.c \
+        hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
+        hacl-star/Hacl_Poly1305_32.c \
         keys.cpp \
         localizer.cpp \
         logger.cpp \
