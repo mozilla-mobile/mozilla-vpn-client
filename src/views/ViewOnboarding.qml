@@ -18,7 +18,7 @@ Item {
 
     VPNHeaderLink {
         id: getHelp
-        text: qsTr("Skip")
+        labelText: qsTr("Skip")
         onClicked: stackview.pop()
     }
 

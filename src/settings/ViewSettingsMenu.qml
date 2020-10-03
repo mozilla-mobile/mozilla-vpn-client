@@ -140,7 +140,6 @@ Flickable {
                 if (pushGetHelp) {
                     return settingsStackView.push(getHelpComponent)
                 }
-
                 if (pushView) {
                     return settingsStackView.push(pushView)
                 }
@@ -156,18 +155,12 @@ Flickable {
     }
 
     VPNFooterLink {
-        text: qsTr("Sign out")
-        Layout.alignment: Qt.AlignHCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
-        color: Theme.red
-        font.weight: Font.Bold
-        font.family: vpnFont.name
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: VPNController.logout()
-        }
+        id: signOutLink
+        labelText: qsTr("Sign out")
+        isBoldLink: true
+        fontName: vpnFont.name
+        onClicked: VPNController.logout()
+        linkColor: Theme.redButton
     }
 
     ScrollBar.vertical: ScrollBar {}

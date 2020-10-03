@@ -79,13 +79,13 @@ Item {
 
     VPNFooterLink {
         id: notNow
-        text: qsTr("Not now")
+        labelText: qsTr("Not now")
         onClicked: mainStackView.pop()
     }
 
     VPNFooterLink {
         id: manageAccount
-        text: qsTr("Manage account")
+        labelText: qsTr("Manage account")
         onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
