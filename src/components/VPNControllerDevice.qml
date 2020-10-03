@@ -52,7 +52,6 @@ VPNClickableRow {
                 }
                 PropertyChanges {
                     target: icon
-                    // TODO: this should be an alert icon
                     source: "../resources/warning.svg"
                     sourceSize.height: 14
                     sourceSize.width: 14
