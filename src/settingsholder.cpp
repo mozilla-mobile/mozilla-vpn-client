@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "settingsholder.h"
+#include "cryptosettings.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -29,7 +30,11 @@ constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 
-SettingsHolder::SettingsHolder() : m_settings("mozilla", "vpn") {}
+const QSettings::Format MozFormat = QSettings::registerFormat("moz",
+                                                              CryptoSettings::readFile,
+                                                              CryptoSettings::writeFile);
+
+SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
 
 void SettingsHolder::clear()
 {

@@ -28,6 +28,7 @@ SOURCES += \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
+        cryptosettings.cpp \
         curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
@@ -67,6 +68,7 @@ HEADERS += \
         connectionhealth.h \
         controller.h \
         controllerimpl.h \
+        cryptosettings.h \
         curve25519.h \
         device.h \
         devicemodel.h \
