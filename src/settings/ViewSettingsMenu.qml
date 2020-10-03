@@ -99,9 +99,7 @@ Flickable {
 
     VPNHeadline {
         id: logoTitle
-        // TODO : Find out officially what should go here
-        // if the user hasn't set a `displayName`...
-        text: !VPNUser.displayName ? qsTr("Settings") : VPNUser.displayName
+        text: VPNUser.displayName ? VPNUser.displayName : qsTr("VPN User")
         anchors.top: logo.bottom
         anchors.topMargin: Theme.vSpacing
         height: 32
