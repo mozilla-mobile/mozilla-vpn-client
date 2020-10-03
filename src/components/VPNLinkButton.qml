@@ -8,7 +8,7 @@ import QtQuick.Controls 2.5
 import "../themes/themes.js" as Theme
 
 RoundButton {
-    property var labelText
+    required property var labelText
     property variant fontName: vpnFontInter.name
     property var linkColor: Theme.blueButton
     property var isBoldLink: false
@@ -74,7 +74,6 @@ RoundButton {
         }
     ]
 
-    focus: true
     focusPolicy: Qt.StrongFocus
 
     Keys.onSpacePressed: clicked()
