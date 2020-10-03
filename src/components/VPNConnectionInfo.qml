@@ -141,6 +141,8 @@ Item {
             anchors.topMargin: 8
             anchors.leftMargin: 8
 
+            accessibleName: qsTr("Close")
+
             Image {
                 anchors.centerIn: backButton
                 source: "../resources/close-white.svg"

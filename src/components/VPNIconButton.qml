@@ -14,6 +14,7 @@ RoundButton {
     id: iconButton
     property var backgroundColor: Theme.greyButton
     property var defaultColor: Theme.bgColor
+    required property var accessibleName
     signal clicked
 
     background: Rectangle {
@@ -21,6 +22,8 @@ RoundButton {
         radius: 4
         color: defaultColor
         opacity: 0
+        border.width: iconButton.activeFocus ? 2 : 0
+        border.color: Theme.blueFocusStroke
     }
     height: 40
     width: 40
@@ -41,6 +44,15 @@ RoundButton {
                color: backgroundColor.buttonHovered
                opacity: 1
             }
+        },
+
+        State {
+            name: "focused"
+            when: iconButton.activeFocus
+            PropertyChanges {
+               target: backgroundRect
+               opacity: 1
+            }
         }
     ]
 
@@ -51,6 +63,11 @@ RoundButton {
         onClicked: parent.clicked()
     }
 
+    focusPolicy: Qt.StrongFocus
+    Keys.onSpacePressed: clicked()
+    Keys.onReturnPressed: clicked()
+    Accessible.name: accessibleName
+    Accessible.onPressAction: clicked()
 
     transitions: [
         Transition {
@@ -63,7 +80,15 @@ RoundButton {
                 property: "opacity"
                 duration: 300
             }
-        }
+        },
 
+        Transition {
+            to: "focused"
+            PropertyAnimation {
+                target: backgroundRect
+                property: "opacity"
+                duration: 0
+            }
+        }
     ]
 }

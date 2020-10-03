@@ -384,6 +384,8 @@ Rectangle {
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
 
+        accessibleName: qsTr("Connection Information")
+
         VPNIcon {
             id: connectionInfoImage
             source: "../resources/connection-info.svg";
@@ -401,6 +403,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2
         anchors.rightMargin: Theme.windowMargin / 2
+
+        accessibleName: qsTr("Settings")
 
         VPNIcon {
             id: settingsImage
