@@ -113,6 +113,7 @@ linux {
     SOURCES += \
             platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
+            platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
@@ -147,12 +148,14 @@ else:macos {
 
     # For the loginitem
     LIBS += -framework ServiceManagement
+    LIBS += -framework Security
 
     SOURCES += \
             platforms/macos/macospingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/macos/macoscryptosettings.mm \
             platforms/macos/macosglue.mm \
             platforms/macos/macosutils.mm
 
@@ -213,6 +216,7 @@ else:ios {
     OBJECTIVE_SOURCES += \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
+            platforms/macos/macoscryptosettings.mm \
             platforms/macos/macosglue.mm \
             platforms/macos/macoscontroller.mm
 

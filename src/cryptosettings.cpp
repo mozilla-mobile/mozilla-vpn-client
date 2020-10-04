@@ -9,33 +9,8 @@
 
 constexpr const char *NONCE_KEY = "nonce_encrypt_key";
 
-constexpr int KEY_SIZE = 32;
 constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;
-
-// TODO: this function must be platform specific!
-// static
-uint8_t *CryptoSettings::getKey()
-{
-    static bool initialized = false;
-    static uint8_t key[KEY_SIZE];
-
-    if (!initialized) {
-        initialized = true;
-        for (size_t i = 0; i < sizeof(key); ++i) {
-            key[i] = i;
-        }
-    }
-
-    return key;
-}
-
-// TODO: this function must be platform specific!
-// static
-CryptoSettings::Version CryptoSettings::getSupportedVersion()
-{
-    return CryptoSettings::Encryption;
-}
 
 // static
 bool CryptoSettings::readFile(QIODevice &device, QSettings::SettingsMap &map)
@@ -210,6 +185,10 @@ bool CryptoSettings::writeEncryptedFile(QIODevice &device, const QSettings::Sett
     QByteArray content = json.toJson(QJsonDocument::Compact);
 
     uint8_t *key = getKey();
+    if (!key) {
+        qDebug() << "Invalid key";
+        return false;
+    }
 
     if (nonce.length() != NONCE_SIZE) {
         qDebug() << "Nonce not found. Let's generate it";
