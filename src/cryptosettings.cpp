@@ -74,8 +74,8 @@ bool CryptoSettings::readEncryptedFile(QIODevice &device, QSettings::SettingsMap
         return false;
     }
 
-    uint8_t *key = getKey();
-    if (!key) {
+    uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
+    if (!getKey(key)) {
         qDebug() << "Something went wrong reading the key";
         return false;
     }
@@ -184,8 +184,8 @@ bool CryptoSettings::writeEncryptedFile(QIODevice &device, const QSettings::Sett
     json.setObject(obj);
     QByteArray content = json.toJson(QJsonDocument::Compact);
 
-    uint8_t *key = getKey();
-    if (!key) {
+    uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
+    if (!getKey(key)) {
         qDebug() << "Invalid key";
         return false;
     }

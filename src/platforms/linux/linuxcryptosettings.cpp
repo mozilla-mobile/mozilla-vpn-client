@@ -4,10 +4,10 @@
 
 #include "cryptosettings.h"
 
-uint8_t *CryptoSettings::getKey()
+bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE])
 {
-    Q_ASSERT(false);
-    return nullptr;
+    Q_UNUSED(key);
+    return false;
 }
 
 // static

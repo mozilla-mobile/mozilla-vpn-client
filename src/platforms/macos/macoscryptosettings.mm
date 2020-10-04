@@ -7,8 +7,6 @@
 #include <QDebug>
 #include <QRandomGenerator>
 
-constexpr int KEY_SIZE = 32;
-
 constexpr const NSString* SERVICE = @"Mozilla VPN";
 
 #import <Foundation/Foundation.h>
@@ -21,7 +19,7 @@ static QByteArray key;
 } // anonymous
 
 // static
-uint8_t *CryptoSettings::getKey()
+bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 {
     if (!initialized) {
         initialized = true;
@@ -49,15 +47,16 @@ uint8_t *CryptoSettings::getKey()
             key = QByteArray::fromNSData(keyData);
 
             qDebug() << "Key found with length:" << key.length();
-            if (key.length() == KEY_SIZE) {
-                return (uint8_t *) key.data();
+            if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+                memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
+                return true;
             }
         }
 
         qDebug() << "Key not found. Let's create it. Error:" << status;
-        key = QByteArray(KEY_SIZE, 0x00);
+        key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
         QRandomGenerator* rg = QRandomGenerator::system();
-        for (int i = 0; i < KEY_SIZE; ++i) {
+        for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
             key[i] = rg->generate() & 0xFF;
         }
 
@@ -83,19 +82,22 @@ uint8_t *CryptoSettings::getKey()
         [query release];
     }
 
-    if (key.length() == KEY_SIZE) {
-        return (uint8_t *) key.data();
+    if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+        memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
+        return true;
     }
 
     qDebug() << "Invalid key";
-    return nullptr;
+    return false;
 }
 
 // static
 CryptoSettings::Version CryptoSettings::getSupportedVersion()
 {
     qDebug() << "Get supported settings method";
-    if (getKey()) {
+
+    uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
+    if (getKey(key)) {
         qDebug() << "Encryption supported!";
         return CryptoSettings::Encryption;
     }

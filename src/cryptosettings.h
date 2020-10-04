@@ -3,6 +3,8 @@
 
 #include <QSettings>
 
+constexpr int CRYPTO_SETTINGS_KEY_SIZE = 32;
+
 class CryptoSettings
 {
 public:
@@ -15,7 +17,7 @@ public:
     static bool writeFile(QIODevice &device, const QSettings::SettingsMap &map);
 
 private:
-    static uint8_t *getKey();
+    static bool getKey(uint8_t[CRYPTO_SETTINGS_KEY_SIZE]);
 
     static Version getSupportedVersion();
     static bool writeVersion(QIODevice &device, Version version);
