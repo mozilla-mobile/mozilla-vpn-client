@@ -103,6 +103,7 @@ linux {
 
     TARGET = mozillavpn
     QT += networkauth
+    QT += svg
 
     SOURCES += \
             platforms/linux/dbus.cpp \
