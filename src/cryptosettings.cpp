@@ -10,6 +10,12 @@
 constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;
 
+namespace {
+
+uint64_t lastNonce = 0;
+
+} // anonymous
+
 // static
 bool CryptoSettings::readFile(QIODevice &device, QSettings::SettingsMap &map)
 {
@@ -104,6 +110,10 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(QIODevice &device, QSettings:
         map.insert(i.key(), i.value().toVariant());
     }
 
+    Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
+    memcpy(&lastNonce, nonce.data(), sizeof(lastNonce));
+    qDebug() << "Nonce:" << lastNonce;
+
     return true;
 }
 
@@ -179,12 +189,10 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
         return false;
     }
 
-    qDebug() << "New writing, new nonce!";
-    QRandomGenerator *rg = QRandomGenerator::global();
+    Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
     QByteArray nonce = QByteArray(NONCE_SIZE, 0x00);
-    for (QByteArray::Iterator i = nonce.begin(); i != nonce.end(); ++i) {
-        *i = rg->generate() % 0xFF;
-    }
+    memcpy(nonce.data(), &(++lastNonce), sizeof(lastNonce));
+    qDebug() << "Incrementing nonce:" << lastNonce;
 
     QByteArray version(1, EncryptionChachaPolyV1);
     QByteArray ciphertext(content.length(), 0x00);
