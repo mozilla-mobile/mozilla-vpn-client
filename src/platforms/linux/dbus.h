@@ -24,6 +24,7 @@ public:
     QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys);
     QDBusPendingCallWatcher *deactivate();
     QDBusPendingCallWatcher *status();
+    QDBusPendingCallWatcher *logs();
 
 signals:
     void connected();

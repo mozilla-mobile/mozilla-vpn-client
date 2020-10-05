@@ -105,13 +105,6 @@ int main(int argc, char *argv[])
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNLogger", [](QQmlEngine *, QJSEngine *) -> QObject * {
-            QObject *obj = Logger::instance();
-            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-            return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer", [](QQmlEngine *, QJSEngine *) -> QObject * {
             QObject *obj = MozillaVPN::instance()->localizer();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);

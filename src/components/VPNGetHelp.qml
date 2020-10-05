@@ -61,7 +61,7 @@ Item {
                        VPN.openLink(VPN.LinkHelpSupport);
                        break;
                    case "view_logs":
-                       VPNLogger.viewLogs();
+                       VPN.viewLogs();
                        break;
                    }
                }

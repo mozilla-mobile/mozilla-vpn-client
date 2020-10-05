@@ -6,14 +6,8 @@
 
 #include <QDate>
 #include <QDebug>
-#include <QDesktopServices>
-#include <QDir>
-#include <QFileInfo>
 #include <QMessageLogContext>
-#include <QStandardPaths>
 #include <QString>
-#include <QUrl>
-#include <QVector>
 
 constexpr int LOG_MAX = 10000;
 
@@ -38,76 +32,6 @@ void Logger::messageHandler(QtMsgType type,
 
     QTextStream out(stderr);
     prettyOutput(out, logger.m_logs.last());
-}
-
-QString Logger::openFile(QStandardPaths::StandardLocation location)
-{
-    qDebug() << "Trying to save logs in:" << location;
-
-    if (!QFileInfo::exists(QStandardPaths::writableLocation(location))) {
-        return QString();
-    }
-
-    QString filename;
-    QDate now = QDate::currentDate();
-
-    QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month() << "-" << now.day()
-                           << ".txt";
-
-    QDir logDir(QStandardPaths::writableLocation(location));
-    QString logFile = logDir.filePath(filename);
-
-    if (QFileInfo::exists(logFile)) {
-        qDebug() << logFile << "exists. Let's try a new filename";
-
-        for (uint32_t i = 1;; ++i) {
-            QString filename;
-            QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month() << "-"
-                                   << now.day() << "_" << i << ".txt";
-            logFile = logDir.filePath(filename);
-            if (!QFileInfo::exists(logFile)) {
-                qDebug() << "Filename found!" << i;
-                break;
-            }
-        }
-    }
-
-    qDebug() << "Writing logs into: " << logFile;
-
-    QFile file(logFile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Failed to open the logfile";
-        return QString();
-    }
-
-    QTextStream out(&file);
-    for (QVector<Log>::ConstIterator i = m_logs.begin(); i != m_logs.end(); ++i) {
-        prettyOutput(out, *i);
-    }
-
-    file.close();
-    return logFile;
-}
-
-void Logger::viewLogs()
-{
-    qDebug() << "View logs";
-
-    QString filename = openFile(QStandardPaths::DesktopLocation);
-    if (filename.isEmpty()) {
-        filename = openFile(QStandardPaths::HomeLocation);
-    }
-    if (filename.isEmpty()) {
-        filename = openFile(QStandardPaths::TempLocation);
-    }
-    if (filename.isEmpty()) {
-        qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
-        return;
-    }
-
-    qDebug() << "Opening the logFile somehow:" << filename;
-    QUrl logFileUrl = QUrl::fromLocalFile(filename);
-    QDesktopServices::openUrl(logFileUrl);
 }
 
 // static

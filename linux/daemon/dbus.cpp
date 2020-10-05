@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbus.h"
+#include "../../src/logger.h"
 #include "dbus_adaptor.h"
 #include "polkithelper.h"
 
@@ -172,6 +173,22 @@ QString DBus::status()
     json.insert("rxBytes", QJsonValue(double(rxBytes)));
 
     return QJsonDocument(json).toJson();
+}
+
+QString DBus::logs()
+{
+    qDebug() << "Log request";
+
+    QString output;
+    QTextStream out(&output);
+
+    Logger *logger = Logger::instance();
+    for (QVector<Logger::Log>::ConstIterator i = logger->logs().begin(); i != logger->logs().end();
+         ++i) {
+        logger->prettyOutput(out, *i);
+    }
+
+    return output;
 }
 
 bool DBus::runWgQuick(WgQuickProcess::Op op,

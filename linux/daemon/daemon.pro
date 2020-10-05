@@ -19,6 +19,7 @@ SOURCES += \
         main.cpp \
         polkithelper.cpp \
         wgquickprocess.cpp \
+        ../../src/logger.cpp \
         ../../src/signalhandler.cpp \
         ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.c
 
@@ -26,6 +27,7 @@ HEADERS += \
         dbus.h \
         polkithelper.h \
         wgquickprocess.h \
+        ../../src/logger.h \
         ../../src/signalhandler.h \
         ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.h
 

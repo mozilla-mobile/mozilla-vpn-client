@@ -140,3 +140,9 @@ void MacOSController::checkStatus()
         emit statusUpdated(QString::fromNSString(serverIpv4Gateway), txBytes, rxBytes);
     }];
 }
+
+void MacOSController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+    callback("TODO");
+}

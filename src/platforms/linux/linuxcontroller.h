@@ -26,6 +26,8 @@ public:
 
     void checkStatus() override;
 
+    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+
 private:
     void monitorWatcher(QDBusPendingCallWatcher *watcher);
 

@@ -22,6 +22,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QPointer>
+#include <QStandardPaths>
 #include <QTimer>
 
 class QQmlApplicationEngine;
@@ -93,6 +94,8 @@ public:
     Q_INVOKABLE void postAuthenticationCompleted();
 
     Q_INVOKABLE void subscribe();
+
+    Q_INVOKABLE void viewLogs();
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
@@ -170,6 +173,8 @@ private:
     void stopSchedulingAccountAndServers();
 
     void setAlert(AlertType alert);
+
+    bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 
 signals:
     void stateChanged();

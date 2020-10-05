@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "device.h"
+#include "logger.h"
 #include "servercountrymodel.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
@@ -18,9 +19,12 @@
 
 #include <QDebug>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFileInfo>
 #include <QLocale>
 #include <QPointer>
 #include <QTimer>
+#include <QUrl>
 
 // TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
@@ -591,4 +595,140 @@ void MozillaVPN::subscribe()
 
     iap->start();
 #endif
+}
+
+bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
+{
+    qDebug() << "Trying to save logs in:" << location;
+
+    if (!QFileInfo::exists(QStandardPaths::writableLocation(location))) {
+        return false;
+    }
+
+    QString filename;
+    QDate now = QDate::currentDate();
+
+    QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month() << "-" << now.day()
+                           << ".txt";
+
+    QDir logDir(QStandardPaths::writableLocation(location));
+    QString logFile = logDir.filePath(filename);
+
+    if (QFileInfo::exists(logFile)) {
+        qDebug() << logFile << "exists. Let's try a new filename";
+
+        for (uint32_t i = 1;; ++i) {
+            QString filename;
+            QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month() << "-"
+                                   << now.day() << "_" << i << ".txt";
+            logFile = logDir.filePath(filename);
+            if (!QFileInfo::exists(logFile)) {
+                qDebug() << "Filename found!" << i;
+                break;
+            }
+        }
+    }
+
+    qDebug() << "Writing logs into: " << logFile;
+
+    QFile file(logFile);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "Failed to open the logfile";
+        return false;
+    }
+
+    QTextStream out(&file);
+
+    out << "Mozilla VPN logs"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        << Qt::endl
+#else
+        << endl
+#endif
+        << "================"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        << Qt::endl
+        << Qt::endl
+#else
+        << endl
+        << endl
+#endif
+        ;
+
+    Logger *logger = Logger::instance();
+    for (QVector<Logger::Log>::ConstIterator i = logger->logs().begin(); i != logger->logs().end();
+         ++i) {
+        logger->prettyOutput(out, *i);
+    }
+
+    file.close();
+
+    MozillaVPN::instance()->controller()->getBackendLogs([logFile](const QString &logs) {
+        qDebug() << "Logs from the backend service received";
+
+        QFile file(logFile);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+            qDebug() << "Failed to re-open the logfile";
+            return;
+        }
+
+        QTextStream out(&file);
+
+        out
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            << Qt::endl
+            << Qt::endl
+#else
+            << endl
+            << endl
+#endif
+            << "Mozilla VPN backend logs"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            << Qt::endl
+#else
+            << endl
+#endif
+            << "========================"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            << Qt::endl
+            << Qt::endl
+#else
+            << endl
+            << endl
+#endif
+            ;
+
+        if (!logs.isEmpty()) {
+            out << logs;
+        } else {
+            out << "No logs from the backend.";
+        }
+
+        file.close();
+
+        qDebug() << "Opening the logFile somehow:" << logFile;
+        QUrl logFileUrl = QUrl::fromLocalFile(logFile);
+        QDesktopServices::openUrl(logFileUrl);
+    });
+
+    return true;
+}
+
+void MozillaVPN::viewLogs()
+{
+    qDebug() << "View logs";
+
+    if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
+        return;
+    }
+
+    if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
+        return;
+    }
+
+    if (writeAndShowLogs(QStandardPaths::TempLocation)) {
+        return;
+    }
+
+    qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
 }

@@ -72,3 +72,15 @@ QDBusPendingCallWatcher *DBus::status()
                      &QDBusPendingCallWatcher::deleteLater);
     return watcher;
 }
+
+QDBusPendingCallWatcher *DBus::logs()
+{
+    qDebug() << "Logs via DBus";
+    QDBusPendingReply<QString> reply = m_dbus->logs();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
+}

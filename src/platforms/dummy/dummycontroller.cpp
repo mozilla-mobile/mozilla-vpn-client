@@ -38,3 +38,9 @@ void DummyController::checkStatus()
 
     emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
 }
+
+void DummyController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+    callback("DummyController is always happy");
+}

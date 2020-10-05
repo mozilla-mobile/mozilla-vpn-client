@@ -397,3 +397,9 @@ void Controller::captivePortalDetected()
     qDebug() << "Captive portal detected in state:" << m_state;
     // TODO: here we should disconnect the VPN and reconnect when the captive-portal-detection returns OK
 }
+
+void Controller::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+    m_impl->getBackendLogs(std::move(callback));
+}

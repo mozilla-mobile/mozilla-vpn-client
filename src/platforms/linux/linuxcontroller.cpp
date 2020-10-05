@@ -149,3 +149,23 @@ void LinuxController::checkStatus()
                                             rxBytes.toDouble());
                      });
 }
+
+void LinuxController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+
+    QDBusPendingCallWatcher *watcher = m_dbus->logs();
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     [callback = std::move(callback)](QDBusPendingCallWatcher *call) {
+                         QDBusPendingReply<QString> reply = *call;
+                         if (reply.isError()) {
+                             qDebug() << "Error received from the DBus service";
+                             callback("Failed to retrieve logs from the mozillavpn-daemon.");
+                             return;
+                         }
+
+                         QString status = reply.argumentAt<0>();
+                         callback(status);
+                     });
+}

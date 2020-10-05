@@ -12,6 +12,8 @@
 #include <QObject>
 #include <QTimer>
 
+#include <functional>
+
 class ControllerImpl;
 class MozillaVPN;
 
@@ -70,6 +72,8 @@ public:
     void updateRequired();
 
     void subscriptionNeeded();
+
+    void getBackendLogs(std::function<void(const QString &logs)> &&callback);
 
 public Q_SLOTS:
     void captivePortalDetected();

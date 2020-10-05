@@ -9,6 +9,8 @@
 
 #include <QObject>
 
+#include <functional>
+
 class Keys;
 class Device;
 class Server;
@@ -34,6 +36,8 @@ public:
     virtual void deactivate(bool forSwitching) = 0;
 
     virtual void checkStatus() = 0;
+
+    virtual void getBackendLogs(std::function<void(const QString &logs)> &&callback) = 0;
 
 signals:
     void initialized(bool status, Controller::State state, const QDateTime &connectionDate);

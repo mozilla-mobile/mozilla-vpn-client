@@ -2,14 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "../../src/logger.h"
+#include "../../src/signalhandler.h"
 #include "dbus.h"
 #include "dbus_adaptor.h"
-#include "../../src/signalhandler.h"
 
 #include <QCoreApplication>
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(Logger::messageHandler);
+
     QCoreApplication app(argc, argv);
 
     DBus *dbus = new DBus(&app);

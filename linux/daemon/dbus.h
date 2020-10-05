@@ -39,6 +39,8 @@ public Q_SLOTS:
 
     QString status();
 
+    QString logs();
+
 private:
     bool runWgQuick(WgQuickProcess::Op op,
                     const QString &privateKey,

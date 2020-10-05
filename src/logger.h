@@ -7,27 +7,15 @@
 
 #include <QDateTime>
 #include <QObject>
-#include <QStandardPaths>
-#include <QString>
 #include <QVector>
-#include <QtGlobal>
 
 class QTextStream;
 
-class Logger : public QObject
+class Logger final : public QObject
 {
     Q_OBJECT
 
 public:
-    static Logger *instance();
-
-    static void messageHandler(QtMsgType type,
-                               const QMessageLogContext &context,
-                               const QString &message);
-
-    Q_INVOKABLE void viewLogs();
-
-private:
     struct Log
     {
         Log() = default;
@@ -49,10 +37,17 @@ private:
         uint32_t m_line;
     };
 
+    static Logger *instance();
+
+    static void messageHandler(QtMsgType type,
+                               const QMessageLogContext &context,
+                               const QString &message);
+
     static void prettyOutput(QTextStream &out, const Logger::Log &log);
 
-    QString openFile(QStandardPaths::StandardLocation location);
+    const QVector<Log> &logs() const { return m_logs; }
 
+private:
     QVector<Log> m_logs;
 };
 
