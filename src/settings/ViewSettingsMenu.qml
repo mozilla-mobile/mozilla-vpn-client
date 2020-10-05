@@ -50,7 +50,7 @@ Flickable {
             settingTitle: qsTr("Give feedback")
             imageLeftSource: "../resources/settings/feedback.svg"
             imageRightSource: "../resources/externalLink.svg"
-            openUrl: "/r/vpn/client/feedback"
+            openUrl: VPN.LinkFeedback
         }
     }
 
