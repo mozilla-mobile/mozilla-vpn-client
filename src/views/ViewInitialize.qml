@@ -27,7 +27,7 @@ Item {
     VPNPanel {
         logo: "../resources/logo.svg"
         logoTitle: qsTr("Mozilla VPN")
-        logoSubtitle: qsTr("A fast, secure and easy to use VPN.")
+        logoSubtitle: qsTr("A fast, secure and easy to use VPN. Built by the makers of Firefox.")
     }
 
     VPNButton {
