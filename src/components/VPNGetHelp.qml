@@ -33,15 +33,9 @@ Item {
                 linkTitle: qsTr("Contact us")
                 clickId: "contact_us"
             }
-
             ListElement {
                 linkTitle: qsTr("Help & Support")
                 clickId: "help_support"
-            }
-
-            ListElement {
-                linkTitle: qsTr("Debug")
-                clickId: "debug"
             }
             ListElement {
                 linkTitle: qsTr("View log")
