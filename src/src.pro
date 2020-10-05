@@ -144,11 +144,11 @@ else:macos {
     LIBS += -framework ServiceManagement
 
     SOURCES += \
-            platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/macos/macosglue.mm \
             platforms/macos/macosutils.mm
 
     HEADERS += \
@@ -203,12 +203,12 @@ else:ios {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/ios/iaphandler.cpp \
-            platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
+            platforms/macos/macosglue.mm \
             platforms/macos/macoscontroller.mm
 
     HEADERS += \

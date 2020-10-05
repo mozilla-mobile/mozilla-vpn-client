@@ -9,8 +9,9 @@
 #include "device.h"
 #include "Mozilla_VPN-Swift.h"
 
-#include <QDebug>
 #include <QByteArray>
+#include <QDebug>
+#include <QFile>
 
 // Our Swift singleton.
 static MacOSControllerImpl *impl = nullptr;
@@ -144,5 +145,18 @@ void MacOSController::checkStatus()
 void MacOSController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
 {
     std::function<void(const QString &)> callback = std::move(a_callback);
-    callback("TODO");
+
+    QString groupId(GROUP_ID);
+    NSURL *groupPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupId.toNSString()];
+
+    NSURL *path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+
+    QFile file(QString::fromNSString([path path]));
+    if (!file.open(QIODevice::ReadOnly)) {
+        callback("Network extension log file missing or unreadable.");
+        return;
+    }
+
+    QByteArray content = file.readAll();
+    callback(content);
 }

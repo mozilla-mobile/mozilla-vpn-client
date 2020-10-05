@@ -61,6 +61,17 @@ class XCodeprojPatcher
       config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
       config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
 
+      groupId = "";
+      if (platform == 'macos')
+        groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
+      else
+        groupId = configHash['GROUP_ID_IOS']
+      end
+
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        'GROUP_ID=\"' + groupId + '\"',
+      ]
+
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
       end
@@ -145,8 +156,18 @@ class XCodeprojPatcher
         ]
       end
 
-      # This is needed to compile the macosglue without Qt.
-      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= 'MACOS_EXTENSION=1'
+      groupId = "";
+      if (platform == 'macos')
+        groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
+      else
+        groupId = configHash['GROUP_ID_IOS']
+      end
+
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        # This is needed to compile the macosglue without Qt.
+        'MACOS_EXTENSION=1',
+        'GROUP_ID=\"' + groupId + '\"',
+      ]
 
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
@@ -181,7 +202,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
-      'src/platforms/macos/macosglue.cpp',
+      'src/platforms/macos/macosglue.mm',
       'src/platforms/macos/macoslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)

@@ -10,6 +10,7 @@
 #ifndef MACOS_EXTENSION
 #include <QDebug>
 #else
+#import <Foundation/Foundation.h>
 #import <os/log.h>
 #endif
 
@@ -181,5 +182,36 @@ EXPORT void write_msg_to_log(const char *tag, const char *msg)
     qDebug() << "Swift log - tag:" << tag << "msg: " << msg;
 #else
     os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);
+
+    NSString *groupId = [NSString stringWithUTF8String: GROUP_ID];
+    NSURL *groupPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier: groupId];
+
+    NSURL *path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[path path]]) {
+        [[NSFileManager defaultManager] createFileAtPath:[path path] contents:nil attributes:nil];
+    }
+
+    NSError *error = nil;
+    NSFileHandle *fh = [NSFileHandle fileHandleForWritingToURL:path error:&error];
+    if (!fh) {
+        return;
+    }
+
+    NSString *dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
+                                                          dateStyle:NSDateFormatterShortStyle
+                                                          timeStyle:NSDateFormatterFullStyle];
+
+    NSString* str = [NSString stringWithFormat:@" - %s\n", msg];
+    NSData* data = [[dateString stringByAppendingString: str] dataUsingEncoding:NSUTF8StringEncoding];
+
+    @try {
+        [fh seekToEndOfFile];
+        [fh writeData:data];
+    }
+    @catch (NSException* exception) {}
+
+    [fh closeFile];
+
 #endif
 }
