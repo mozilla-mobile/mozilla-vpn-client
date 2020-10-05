@@ -10,7 +10,7 @@ class CryptoSettings
 public:
     enum Version {
         NoEncryption,
-        Encryption,
+        EncryptionChachaPolyV1,
     };
 
     static bool readFile(QIODevice &device, QSettings::SettingsMap &map);
@@ -23,10 +23,10 @@ private:
     static bool writeVersion(QIODevice &device, Version version);
 
     static bool readJsonFile(QIODevice &device, QSettings::SettingsMap &map);
-    static bool readEncryptedFile(QIODevice &device, QSettings::SettingsMap &map);
+    static bool readEncryptedChachaPolyV1File(QIODevice &device, QSettings::SettingsMap &map);
 
     static bool writeJsonFile(QIODevice &device, const QSettings::SettingsMap &map);
-    static bool writeEncryptedFile(QIODevice &device, const QSettings::SettingsMap &map);
+    static bool writeEncryptedChachaPolyV1File(QIODevice &device, const QSettings::SettingsMap &map);
 };
 
 #endif // CRYPTOSETTINGS_H

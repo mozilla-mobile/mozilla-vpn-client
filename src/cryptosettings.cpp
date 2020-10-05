@@ -7,8 +7,6 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-constexpr const char *NONCE_KEY = "nonce_encrypt_key";
-
 constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;
 
@@ -26,8 +24,8 @@ bool CryptoSettings::readFile(QIODevice &device, QSettings::SettingsMap &map)
     switch ((CryptoSettings::Version) version.at(0)) {
     case NoEncryption:
         return readJsonFile(device, map);
-    case Encryption:
-        return readEncryptedFile(device, map);
+    case EncryptionChachaPolyV1:
+        return readEncryptedChachaPolyV1File(device, map);
     default:
         qDebug() << "Unsupported version";
         return false;
@@ -54,7 +52,7 @@ bool CryptoSettings::readJsonFile(QIODevice &device, QSettings::SettingsMap &map
 }
 
 // static
-bool CryptoSettings::readEncryptedFile(QIODevice &device, QSettings::SettingsMap &map)
+bool CryptoSettings::readEncryptedChachaPolyV1File(QIODevice &device, QSettings::SettingsMap &map)
 {
     QByteArray nonce = device.read(NONCE_SIZE);
     if (nonce.length() != NONCE_SIZE) {
@@ -68,9 +66,9 @@ bool CryptoSettings::readEncryptedFile(QIODevice &device, QSettings::SettingsMap
         return false;
     }
 
-    QByteArray cipher = device.readAll();
-    if (cipher.length() == 0) {
-        qDebug() << "Failed to read the cipher";
+    QByteArray ciphertext = device.readAll();
+    if (ciphertext.length() == 0) {
+        qDebug() << "Failed to read the ciphertext";
         return false;
     }
 
@@ -80,15 +78,15 @@ bool CryptoSettings::readEncryptedFile(QIODevice &device, QSettings::SettingsMap
         return false;
     }
 
-    QByteArray version(1, Encryption);
-    QByteArray content(cipher.length(), 0x00);
+    QByteArray version(1, EncryptionChachaPolyV1);
+    QByteArray content(ciphertext.length(), 0x00);
     uint32_t result = Hacl_Chacha20Poly1305_32_aead_decrypt(key,
                                                             (uint8_t *) nonce.data(),
                                                             version.length(),
                                                             (uint8_t *) version.data(),
-                                                            cipher.length(),
+                                                            ciphertext.length(),
                                                             (uint8_t *) content.data(),
-                                                            (uint8_t *) cipher.data(),
+                                                            (uint8_t *) ciphertext.data(),
                                                             (uint8_t *) mac.data());
     qDebug() << "Result:" << result;
     if (result != 0) {
@@ -103,13 +101,9 @@ bool CryptoSettings::readEncryptedFile(QIODevice &device, QSettings::SettingsMap
 
     QJsonObject obj = json.object();
     for (QJsonObject::const_iterator i = obj.constBegin(); i != obj.constEnd(); ++i) {
-        if (i.key() != NONCE_KEY) {
-            map.insert(i.key(), i.value().toVariant());
-        }
+        map.insert(i.key(), i.value().toVariant());
     }
 
-    // Let's store the nonce into the map.
-    map.insert(NONCE_KEY, QVariant(nonce));
     return true;
 }
 
@@ -127,8 +121,8 @@ bool CryptoSettings::writeFile(QIODevice &device, const QSettings::SettingsMap &
     switch (version) {
     case NoEncryption:
         return writeJsonFile(device, map);
-    case Encryption:
-        return writeEncryptedFile(device, map);
+    case EncryptionChachaPolyV1:
+        return writeEncryptedChachaPolyV1File(device, map);
     default:
         qDebug() << "Unsupported version.";
         return false;
@@ -165,18 +159,13 @@ bool CryptoSettings::writeJsonFile(QIODevice &device, const QSettings::SettingsM
 }
 
 // static
-bool CryptoSettings::writeEncryptedFile(QIODevice &device, const QSettings::SettingsMap &map)
+bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
+                                                    const QSettings::SettingsMap &map)
 {
     qDebug() << "Write encrypted file";
 
-    QByteArray nonce;
     QJsonObject obj;
     for (QSettings::SettingsMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
-        if (i.key() == NONCE_KEY) {
-            nonce = i.value().toByteArray();
-            continue;
-        }
-
         obj.insert(i.key(), QJsonValue::fromVariant(i.value()));
     }
 
@@ -190,18 +179,15 @@ bool CryptoSettings::writeEncryptedFile(QIODevice &device, const QSettings::Sett
         return false;
     }
 
-    if (nonce.length() != NONCE_SIZE) {
-        qDebug() << "Nonce not found. Let's generate it";
-
-        QRandomGenerator* rg = QRandomGenerator::global();
-        nonce = QByteArray(NONCE_SIZE, 0x00);
-        for (QByteArray::Iterator i = nonce.begin(); i != nonce.end(); ++i) {
-            *i = rg->generate() % 0xFF;
-        }
+    qDebug() << "New writing, new nonce!";
+    QRandomGenerator *rg = QRandomGenerator::global();
+    QByteArray nonce = QByteArray(NONCE_SIZE, 0x00);
+    for (QByteArray::Iterator i = nonce.begin(); i != nonce.end(); ++i) {
+        *i = rg->generate() % 0xFF;
     }
 
-    QByteArray version(1, Encryption);
-    QByteArray cipher(content.length(), 0x00);
+    QByteArray version(1, EncryptionChachaPolyV1);
+    QByteArray ciphertext(content.length(), 0x00);
     QByteArray mac(MAC_SIZE, 0x00);
 
     Hacl_Chacha20Poly1305_32_aead_encrypt(key,
@@ -210,7 +196,7 @@ bool CryptoSettings::writeEncryptedFile(QIODevice &device, const QSettings::Sett
                                           (uint8_t *) version.data(),
                                           content.length(),
                                           (uint8_t *) content.data(),
-                                          (uint8_t *) cipher.data(),
+                                          (uint8_t *) ciphertext.data(),
                                           (uint8_t *) mac.data());
 
     if (device.write(nonce) != nonce.length()) {
@@ -223,7 +209,7 @@ bool CryptoSettings::writeEncryptedFile(QIODevice &device, const QSettings::Sett
         return false;
     }
 
-    if (device.write(cipher) != cipher.length()) {
+    if (device.write(ciphertext) != ciphertext.length()) {
         qDebug() << "Failed to write the cipher";
         return false;
     }

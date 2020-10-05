@@ -99,7 +99,7 @@ CryptoSettings::Version CryptoSettings::getSupportedVersion()
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (getKey(key)) {
         qDebug() << "Encryption supported!";
-        return CryptoSettings::Encryption;
+        return CryptoSettings::EncryptionChachaPolyV1;
     }
 
     qDebug() << "No encryption";
