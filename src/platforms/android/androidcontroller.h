@@ -27,6 +27,9 @@ public:
 
     void checkStatus() override;
 
+    void onRecviceConnected();
+    void onRecviceDisconnected();
+
 private:
     int64_t m_txBytes = 0;
     int64_t m_rxBytes = 0;

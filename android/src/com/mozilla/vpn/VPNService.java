@@ -12,20 +12,38 @@ import org.jetbrains.annotations.NotNull;
 
 public class VPNService extends WireGuardVpnService {
 
+    private  VPNService _this;
 
 
+
+    @Override
+    public void onCreate (){
+        super.onCreate();
+        _this = this;
+    }
+
+    private static TunnelManager<?> tm;
     @NotNull
     @Override
     public TunnelManager<?> getTunnelManager() {
-        return null;
+        if(tm == null){
+            tm = new TunnelManager(VPNService.class);
+        }
+        return tm;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
         System.out.println("HELLO WORLD");
+        String command = intent.getExtras().get(EXTRA_COMMAND).toString();
+        if(command == COMMAND_TURN_ON) {
+            // Start showing a notification
+        }else if( command == COMMAND_TURN_OFF){
+            // Stop showing a Notification
+        }
         // If we get killed, after returning from here, restart
-        return START_STICKY;
+        return super.onStartCommand(intent,flags,startId);
     }
 
     public static void startQtAndroidService(Context context) {
