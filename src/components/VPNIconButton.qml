@@ -14,7 +14,7 @@ RoundButton {
     id: iconButton
     property var backgroundColor: Theme.greyButton
     property var defaultColor: Theme.bgColor
-    required property var accessibleName
+    property var accessibleName
     signal clicked
 
     background: Rectangle {
