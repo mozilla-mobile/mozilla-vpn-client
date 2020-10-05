@@ -4,6 +4,8 @@
 
 #include "cryptosettings.h"
 
+void CryptoSettings::resetKey() {}
+
 bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE])
 {
     Q_UNUSED(key);

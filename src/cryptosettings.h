@@ -17,6 +17,7 @@ public:
     static bool writeFile(QIODevice &device, const QSettings::SettingsMap &map);
 
 private:
+    static void resetKey();
     static bool getKey(uint8_t[CRYPTO_SETTINGS_KEY_SIZE]);
 
     static Version getSupportedVersion();

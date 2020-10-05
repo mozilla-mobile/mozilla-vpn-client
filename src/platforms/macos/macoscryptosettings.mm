@@ -19,6 +19,29 @@ static QByteArray key;
 } // anonymous
 
 // static
+void CryptoSettings::reset()
+{
+    qDebug() << "Retriving the key from the keychain";
+
+    NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
+
+    NSString *appId = [[NSBundle mainBundle] bundleIdentifier];
+
+    NSMuableDictionary* query = [[NSMutableDictionary alloc] init];
+
+    [query setObject:(id) kSecClassGenericPassword forKey:(id) kSecClass];
+    [query setObject:service forKey:(id)kSecAttrGeneric];
+    [query setObject:service forKey:(id)kSecAttrAccount];
+    [query setObject:appId forKey:(id) kSecAttrService];
+
+    SecItemDelete((CFDictionaryRef) query);
+
+    [query release];
+
+    initialized = false;
+}
+
+// static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 {
     if (!initialized) {

@@ -183,16 +183,22 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
     json.setObject(obj);
     QByteArray content = json.toJson(QJsonDocument::Compact);
 
+    qDebug() << "Incrementing nonce:" << lastNonce;
+    if (++lastNonce == UINT64_MAX) {
+        qDebug() << "Reset the nonce and the key.";
+        resetKey();
+        lastNonce = 0;
+    }
+
+    Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
+    QByteArray nonce = QByteArray(NONCE_SIZE, 0x00);
+    memcpy(nonce.data(), &lastNonce, sizeof(lastNonce));
+
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (!getKey(key)) {
         qDebug() << "Invalid key";
         return false;
     }
-
-    Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
-    QByteArray nonce = QByteArray(NONCE_SIZE, 0x00);
-    memcpy(nonce.data(), &(++lastNonce), sizeof(lastNonce));
-    qDebug() << "Incrementing nonce:" << lastNonce;
 
     QByteArray version(1, EncryptionChachaPolyV1);
     QByteArray ciphertext(content.length(), 0x00);
