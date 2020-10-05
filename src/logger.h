@@ -5,11 +5,12 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <QDateTime>
 #include <QObject>
+#include <QStandardPaths>
 #include <QString>
 #include <QVector>
 #include <QtGlobal>
-#include <QStandardPaths>
 
 class QTextStream;
 
@@ -36,9 +37,11 @@ private:
             const QString &function,
             uint32_t line,
             const QString &message)
-            : m_file(file), m_function(function), m_message(message), m_type(type), m_line(line)
+            : m_dateTime(QDateTime::currentDateTime()), m_file(file), m_function(function),
+              m_message(message), m_type(type), m_line(line)
         {}
 
+        QDateTime m_dateTime;
         QString m_file;
         QString m_function;
         QString m_message;

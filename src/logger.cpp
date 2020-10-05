@@ -113,6 +113,8 @@ void Logger::viewLogs()
 // static
 void Logger::prettyOutput(QTextStream &out, const Logger::Log &log)
 {
+    out << "[" << log.m_dateTime.toString("dd.MM.yyyy hh:mm:ss.zzz") << "] ";
+
     switch (log.m_type) {
     case QtDebugMsg:
         out << "Debug: ";
