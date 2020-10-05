@@ -30,7 +30,7 @@ HEADERS += \
         ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.h
 
 isEmpty(PREFIX) {
-    PREFIX=/opt/$${TARGET}
+    PREFIX=/usr
 }
 
 target.path = $${PREFIX}/bin

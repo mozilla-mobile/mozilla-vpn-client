@@ -252,7 +252,7 @@ void Controller::quit()
 {
     qDebug() << "Quitting";
 
-    if (m_state == StateOff || m_state == StateDeviceLimit) {
+    if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit) {
         emit readyToQuit();
         return;
     }
