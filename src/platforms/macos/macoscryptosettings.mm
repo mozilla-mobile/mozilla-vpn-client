@@ -27,7 +27,7 @@ void CryptoSettings::resetKey()
 
     NSString *appId = [[NSBundle mainBundle] bundleIdentifier];
 
-    NSMuableDictionary* query = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
     [query setObject:(id) kSecClassGenericPassword forKey:(id) kSecClass];
     [query setObject:service forKey:(id)kSecAttrGeneric];
