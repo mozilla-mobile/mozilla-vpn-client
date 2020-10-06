@@ -70,9 +70,10 @@ private:
     Q_PROPERTY(QString versionString READ versionString CONSTANT)
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
+    Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
 
 public:
-    static void createInstance(QObject *parent, QQmlApplicationEngine *engine);
+    static void createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     static MozillaVPN *instance();
 
     State state() const { return m_state; }
@@ -153,8 +154,10 @@ public:
 
     CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
 
+    bool startMinimized() const { return m_startMinimized; }
+
 private:
-    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine);
+    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();
 
     static void deleteInstance();
@@ -219,6 +222,8 @@ private:
     bool m_updateRecommended = false;
 
     bool m_userAuthenticated = false;
+
+    bool m_startMinimized = false;
 
     CaptivePortalDetection m_captivePortalDetection;
 };

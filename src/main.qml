@@ -109,4 +109,10 @@ Window {
     VPNAlert {
         id: alertBox
     }
+
+    Component.onCompleted: {
+        if (VPN.startMinimized) {
+            this.showMinimized();
+        }
+    }
 }

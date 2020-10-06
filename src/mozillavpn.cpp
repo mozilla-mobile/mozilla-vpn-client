@@ -43,12 +43,12 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 static MozillaVPN *s_instance = nullptr;
 
 // static
-void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine* engine)
+void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
 {
     qDebug() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN(parent, engine);
+    s_instance = new MozillaVPN(parent, engine, startMinimized);
     s_instance->initialize();
 }
 
@@ -69,8 +69,8 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine)
-    : QObject(parent), m_engine(engine)
+MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
+    : QObject(parent), m_engine(engine), m_startMinimized(startMinimized)
 {
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
