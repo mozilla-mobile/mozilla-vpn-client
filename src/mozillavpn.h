@@ -179,6 +179,9 @@ private:
 
     bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 
+    bool writeLogs(QStandardPaths::StandardLocation location,
+                   std::function<void(const QString &filename)> &&a_callback);
+
 signals:
     void stateChanged();
     void alertChanged();

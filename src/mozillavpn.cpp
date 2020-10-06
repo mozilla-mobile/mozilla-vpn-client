@@ -599,7 +599,19 @@ void MozillaVPN::subscribe()
 
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
 {
+    return writeLogs(location, [](const QString& filename) {
+        qDebug() << "Opening the logFile somehow:" << filename;
+        QUrl url = QUrl::fromLocalFile(filename);
+        QDesktopServices::openUrl(url);
+    });
+}
+
+bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
+                           std::function<void(const QString &filename)> &&a_callback)
+{
     qDebug() << "Trying to save logs in:" << location;
+
+    std::function<void(const QString &filename)> callback = std::move(a_callback);
 
     if (!QFileInfo::exists(QStandardPaths::writableLocation(location))) {
         return false;
@@ -663,7 +675,8 @@ bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
 
     file.close();
 
-    MozillaVPN::instance()->controller()->getBackendLogs([logFile](const QString &logs) {
+    MozillaVPN::instance()->controller()->getBackendLogs([callback = std::move(callback),
+                                                          logFile](const QString &logs) {
         qDebug() << "Logs from the backend service received";
 
         QFile file(logFile);
@@ -706,9 +719,7 @@ bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
 
         file.close();
 
-        qDebug() << "Opening the logFile somehow:" << logFile;
-        QUrl logFileUrl = QUrl::fromLocalFile(logFile);
-        QDesktopServices::openUrl(logFileUrl);
+        callback(logFile);
     });
 
     return true;
