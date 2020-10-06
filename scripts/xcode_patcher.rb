@@ -277,6 +277,10 @@ class XCodeprojPatcher
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
       config.build_settings['SKIP_INSTALL'] = 'YES'
 
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        'APP_ID=\"' + configHash['APP_ID_MACOS'] + '\"',
+      ]
+
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
       end
