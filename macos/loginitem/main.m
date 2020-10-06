@@ -7,12 +7,11 @@
 int main()
 {
     NSString *appId = [NSString stringWithUTF8String: APP_ID];
-    NSAppleEventDescriptor *paramDescriptor = [NSAppleEventDescriptor descriptorWithString:@"-m -a"];
 
     [[NSWorkspace sharedWorkspace]
            launchAppWithBundleIdentifier:appId
                                  options:NSWorkspaceLaunchDefault
-          additionalEventParamDescriptor:paramDescriptor
+          additionalEventParamDescriptor:NULL
                         launchIdentifier:NULL];
 
     return 0;

@@ -21,7 +21,7 @@ static QByteArray key;
 // static
 void CryptoSettings::resetKey()
 {
-    qDebug() << "Retriving the key from the keychain";
+    qDebug() << "Retrieving the key from the keychain";
 
     NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
