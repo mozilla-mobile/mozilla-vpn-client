@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MozillaVPN
+Version=1.0
+Exec=/usr/bin/mozillavpn -m -s
+Comment=A fast, secure and easy to use VPN. Built by the makers of Firefox.
+Type=Application
+OnlyShowIn=GNOME;Unity;MATE;
+X-GNOME-AutoRestart=false
+X-GNOME-Autostart-Notify=true

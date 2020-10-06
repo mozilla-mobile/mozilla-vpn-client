@@ -17,6 +17,7 @@
 #endif
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QSystemTrayIcon>
@@ -30,19 +31,30 @@ int main(int argc, char *argv[])
     // The application.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
+
+    QCoreApplication::setApplicationName("Mozilla VPN");
+    QCoreApplication::setApplicationVersion(APP_VERSION);
+
     QIcon icon("://resources/logo.png");
     app.setWindowIcon(icon);
 
-    // Dependencies - so far, only for linux.
-#ifdef __linux__
-    if (!LinuxDependencies::checkDependencies()) {
-        return 1;
-    }
-#endif
+    QCommandLineParser parser;
+    parser.setApplicationDescription(
+        QApplication::tr("A fast, secure and easy to use VPN. Built by the makers of Firefox."));
+    parser.addHelpOption();
+    parser.addVersionOption();
 
-#ifdef MACOS_INTEGRATION
-    MacOSUtils::enableLoginItem();
-#endif
+    QCommandLineOption minimizedOption(QStringList() << "m"
+                                                     << "minimized",
+                                       QCoreApplication::tr("Start minimized"));
+    parser.addOption(minimizedOption);
+
+    QCommandLineOption startAtBootOption(QStringList() << "s"
+                                                       << "start-at-boot",
+                                         QCoreApplication::tr("Start at boot (if configured)"));
+    parser.addOption(startAtBootOption);
+
+    parser.process(app);
 
     // Signal handling for a proper shutdown.
     SignalHandler sh;
@@ -53,7 +65,27 @@ int main(int argc, char *argv[])
     // Create the QML engine and expose a few internal objects.
     QQmlApplicationEngine engine;
 
-    MozillaVPN::createInstance(&app, &engine);
+    MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
+
+    if (parser.isSet(startAtBootOption)) {
+        qDebug() << "Maybe start at boot";
+
+        if (!MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+            qDebug() << "We don't need to start at boot.";
+            return 0;
+        }
+    }
+
+#ifdef MACOS_INTEGRATION
+    MacOSUtils::enableLoginItem(!MozillaVPN::instance()->settingsHolder()->startAtBoot());
+#endif
+
+#ifdef __linux__
+    // Dependencies - so far, only for linux.
+    if (!LinuxDependencies::checkDependencies()) {
+        return 1;
+    }
+#endif
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {

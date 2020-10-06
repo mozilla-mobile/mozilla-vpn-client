@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "settingsholder.h"
+#include "cryptosettings.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -11,11 +12,13 @@ constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
 constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = false;
 constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = false;
+constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 
 constexpr const char *SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char *SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char *SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
 constexpr const char *SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
+constexpr const char *SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char *SETTINGS_LANGUAGECODE = "languageCode";
 constexpr const char *SETTINGS_TOKEN = "token";
 constexpr const char *SETTINGS_SERVERS = "servers";
@@ -29,7 +32,11 @@ constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 
-SettingsHolder::SettingsHolder() : m_settings("mozilla", "vpn") {}
+const QSettings::Format MozFormat = QSettings::registerFormat("moz",
+                                                              CryptoSettings::readFile,
+                                                              CryptoSettings::writeFile);
+
+SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
 
 void SettingsHolder::clear()
 {
@@ -98,6 +105,14 @@ GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
               captivePortalAlert,
               setCaptivePortalAlert,
               captivePortalAlertChanged)
+GETSETDEFAULT(SETTINGS_STARTATBOOT_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_STARTATBOOT,
+              hasStartAtBoot,
+              startAtBoot,
+              setStartAtBoot,
+              startAtBootChanged)
 GETSETDEFAULT(QString(),
               QString,
               toString,

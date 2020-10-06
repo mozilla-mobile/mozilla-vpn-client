@@ -28,11 +28,15 @@ SOURCES += \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
+        cryptosettings.cpp \
         curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
         errorhandler.cpp \
+        hacl-star/Hacl_Chacha20.c \
+        hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
+        hacl-star/Hacl_Poly1305_32.c \
         keys.cpp \
         localizer.cpp \
         logger.cpp \
@@ -64,6 +68,7 @@ HEADERS += \
         connectionhealth.h \
         controller.h \
         controllerimpl.h \
+        cryptosettings.h \
         curve25519.h \
         device.h \
         devicemodel.h \
@@ -108,6 +113,7 @@ linux {
     SOURCES += \
             platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
+            platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
@@ -142,12 +148,14 @@ else:macos {
 
     # For the loginitem
     LIBS += -framework ServiceManagement
+    LIBS += -framework Security
 
     SOURCES += \
             platforms/macos/macospingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/macos/macoscryptosettings.mm \
             platforms/macos/macosglue.mm \
             platforms/macos/macosutils.mm
 
@@ -208,6 +216,7 @@ else:ios {
     OBJECTIVE_SOURCES += \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
+            platforms/macos/macoscryptosettings.mm \
             platforms/macos/macosglue.mm \
             platforms/macos/macoscontroller.mm
 

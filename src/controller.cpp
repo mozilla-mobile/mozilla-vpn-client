@@ -83,6 +83,12 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
     if (state == StateOn) {
         connected();
         m_connectionDate = connectionDate;
+        return;
+    }
+
+    if (MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+        qDebug() << "Start on boot";
+        activate();
     }
 }
 
