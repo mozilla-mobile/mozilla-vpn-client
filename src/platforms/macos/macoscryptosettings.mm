@@ -19,7 +19,7 @@ static QByteArray key;
 } // anonymous
 
 // static
-void CryptoSettings::reset()
+void CryptoSettings::resetKey()
 {
     qDebug() << "Retriving the key from the keychain";
 
