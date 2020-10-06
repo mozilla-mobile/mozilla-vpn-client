@@ -14,6 +14,8 @@
 #import <os/log.h>
 #endif
 
+#define MAX_LOG_FILE_SIZE 1048576
+
 // Key base64/hex functions
 // ------------------------
 
@@ -186,14 +188,37 @@ EXPORT void write_msg_to_log(const char *tag, const char *msg)
     NSString *groupId = [NSString stringWithUTF8String: GROUP_ID];
     NSURL *groupPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier: groupId];
 
-    NSURL *path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+    NSURL *pathUrl = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+    NSString *path = [pathUrl path];
 
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[path path]]) {
-        [[NSFileManager defaultManager] createFileAtPath:[path path] contents:nil attributes:nil];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        [[NSFileManager defaultManager] createFileAtPath:path
+                                                contents:nil
+                                              attributes:nil];
+    } else {
+        NSError *error = nil;
+
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path
+                                                                                        error:&error];
+
+        if (error) {
+            return;
+        }
+
+        NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        long long fileSize = [fileSizeNumber longLongValue];
+
+        if (fileSize > MAX_LOG_FILE_SIZE) {
+            [[NSFileManager defaultManager] removeItemAtPath:path
+                                                       error: &error];
+            [[NSFileManager defaultManager] createFileAtPath:path
+                                                    contents:nil
+                                                  attributes:nil];
+        }
     }
 
     NSError *error = nil;
-    NSFileHandle *fh = [NSFileHandle fileHandleForWritingToURL:path error:&error];
+    NSFileHandle *fh = [NSFileHandle fileHandleForWritingToURL:pathUrl error:&error];
     if (!fh) {
         return;
     }
