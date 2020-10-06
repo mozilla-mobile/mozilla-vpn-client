@@ -10,19 +10,22 @@ THRESHOLD = 0.70 # 70% Target Completeness for import
 # Make sure the Target ts files are up to date
 os.system(f'lupdate src/src.pro -ts')
 
-for fileName in os.listdir('i18n'):
-    if(not fileName.endswith(".xlf")):
-        continue # Skip non xlf files
-    language = fileName.split("_")[1].split(".")[0]
-
-    tree = ET.parse('i18n/'+fileName)
+for path in os.listdir('i18n'):
+    if(not os.path.isdir(f'i18n/{path}')):
+        continue # Skip non dirs
+    if not len(path.split("-")[0]) == 2: # All language folders are format ab(-cd)/
+        continue # Skip folders that not have isoLang format
+    language = path
+    filePath = f'i18n/{language}/mozillavpn.xlf'
+    tree = ET.parse(filePath)
     root = tree.getroot()
     
     elementCount = 0
     translations = 0 
 
-    for element in root.iter("{urn:oasis:names:tc:xliff:document:1.2}target"):
+    for element in root.iter("{urn:oasis:names:tc:xliff:document:1.2}source"):
         elementCount+=1
+    for element in root.iter("{urn:oasis:names:tc:xliff:document:1.2}target"):
         if(element.text):
                 translations+=1
     
@@ -30,6 +33,6 @@ for fileName in os.listdir('i18n'):
     if(complete < THRESHOLD):
             print(f"❌\t- {language} is not completed {round(complete*100,2)}%, at least {THRESHOLD*100}% are needed")
             continue # Not enough translations next file please
-    basename = fileName.split(".")[0]
-    os.system(f'lconvert -i translations/{basename}.ts -i i18n/{basename}.xlf -o translations/{basename}.ts')
-    print(f"✔\t- {language} imported to translations/{basename}.ts")
+    basename = f'mozillavpn_{language}.ts'
+    os.system(f'lconvert -i translations/{basename} -i {filePath} -o translations/{basename}')
+    print(f"✔\t- {language} imported to translations/{basename}")

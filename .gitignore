@@ -24,3 +24,6 @@ translations/*.qm
 .qm
 .tmp
 xcode.xconfig
+.gradle/
+.idea/
+*.ts
