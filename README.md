@@ -1,8 +1,12 @@
 # Mozilla VPN
 
+See: https://vpn.mozilla.org
+
 ## Dependencies
 
 MozillaVPN requires Qt5 (5.15 or higher)
+
+## How to build from the source code
 
 ### Linux
 
@@ -57,3 +61,10 @@ The IOS procedure is similar to the macOS one:
   $ ./scripts/ios\_compile.sh
 4. Open Xcode and run/test/archive/ship the app
 
+### Other platforms
+
+We are working on Android and Windows.
+
+## Bug report
+
+Please file bugs here: https://github.com/bakulf/mv/issues
