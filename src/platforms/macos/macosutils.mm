@@ -17,9 +17,9 @@ QString MacOSUtils::computerName()
 }
 
 // static
-void MacOSUtils::enableLoginItem()
+void MacOSUtils::enableLoginItem(bool startAtBoot)
 {
     qDebug() << "Enabling login-item";
-    Boolean ok = SMLoginItemSetEnabled(CFSTR("org.mozilla.macos.FirefoxVPN.login-item"), YES);
+    Boolean ok = SMLoginItemSetEnabled(CFSTR("org.mozilla.macos.FirefoxVPN.login-item"), startAtBoot ? YES : NO);
     qDebug() << "Result: " << ok;
 }

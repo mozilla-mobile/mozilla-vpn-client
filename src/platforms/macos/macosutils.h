@@ -12,7 +12,7 @@ class MacOSUtils
 public:
     static QString computerName();
 
-    static void enableLoginItem();
+    static void enableLoginItem(bool startAtBoot);
 };
 
 #endif // MACOSUTILS_H

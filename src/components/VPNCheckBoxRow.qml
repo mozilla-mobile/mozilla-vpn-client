@@ -55,6 +55,7 @@ RowLayout {
             lineHeight: 21
             color: Theme.fontColor
             text: subLabelText
+            visible: !!subLabelText.length
         }
         Rectangle {
             id: divider

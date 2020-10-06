@@ -49,12 +49,11 @@ int main(int argc, char *argv[])
                                        QCoreApplication::tr("Start minimized"));
     parser.addOption(minimizedOption);
 
-#ifdef __linux__
     QCommandLineOption startAtBootOption(QStringList() << "s"
                                                        << "start-at-boot",
                                          QCoreApplication::tr("Start at boot (if configured)"));
     parser.addOption(startAtBootOption);
-#endif
+
     parser.process(app);
 
     // Signal handling for a proper shutdown.
@@ -68,21 +67,24 @@ int main(int argc, char *argv[])
 
     MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
 
-#ifdef __linux__
     if (parser.isSet(startAtBootOption)) {
         qDebug() << "Maybe start at boot";
-        // TODO: check some settings
-        return 0;
+
+        if (!MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+            qDebug() << "We don't need to start at boot.";
+            return 0;
+        }
     }
 
+#ifdef MACOS_INTEGRATION
+    MacOSUtils::enableLoginItem(!MozillaVPN::instance()->settingsHolder()->startAtBoot());
+#endif
+
+#ifdef __linux__
     // Dependencies - so far, only for linux.
     if (!LinuxDependencies::checkDependencies()) {
         return 1;
     }
-#endif
-
-#ifdef MACOS_INTEGRATION
-    MacOSUtils::enableLoginItem();
 #endif
 
     qmlRegisterSingletonType<MozillaVPN>(

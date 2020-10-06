@@ -120,6 +120,20 @@ Flickable {
         onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
+    VPNCheckBoxRow {
+        id: startAtBootCheckBox
+        labelText: qsTr("Launch VPN app on computer startup")
+        subLabelText: ""
+        isChecked: VPNSettings.startAtBoot
+        isEnabled: true
+        showDivider: true
+
+        anchors.top: manageAccountButton.bottom
+        anchors.topMargin: Theme.vSpacing
+
+        onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
+    }
+
     Component {
         id: getHelpComponent
         VPNGetHelp {
@@ -130,9 +144,9 @@ Flickable {
     ListView {
         id: settingsList
         interactive: false // disable scrolling on list since the entire window is scrollable
-        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height
+        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height - startAtBootCheckBox.height
         width: parent.width
-        anchors.top: manageAccountButton.bottom
+        anchors.top: startAtBootCheckBox.bottom
         anchors.topMargin: Theme.vSpacing
         spacing: Theme.listSpacing
 

@@ -19,6 +19,7 @@ class SettingsHolder : public QObject
                    NOTIFY unsecuredNetworkAlertChanged)
     Q_PROPERTY(bool captivePortalAlert READ captivePortalAlert WRITE setCaptivePortalAlert NOTIFY
                    captivePortalAlertChanged)
+    Q_PROPERTY(bool startAtBoot READ startAtBoot WRITE setStartAtBoot NOTIFY startAtBootChanged)
     Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
 
 public:
@@ -35,6 +36,7 @@ public:
     GETSET(bool, hasLocalNetworkAccess, localNetworkAccess, setLocalNetworkAccess)
     GETSET(bool, hasUnsecuredNetworkAlert, unsecuredNetworkAlert, setUnsecuredNetworkAlert)
     GETSET(bool, hasCaptivePortalAlert, captivePortalAlert, setCaptivePortalAlert)
+    GETSET(bool, hasStartAtBoot, startAtBoot, setStartAtBoot)
     GETSET(QString, hasLanguageCode, languageCode, setLanguageCode)
     GETSET(QString, hasToken, token, setToken)
     GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
@@ -54,6 +56,7 @@ signals:
     void localNetworkAccessChanged(bool value);
     void unsecuredNetworkAlertChanged(bool value);
     void captivePortalAlertChanged(bool value);
+    void startAtBootChanged(bool value);
     void languageCodeChanged(const QString &languageCode);
 
 private:
