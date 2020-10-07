@@ -45,8 +45,8 @@ The procedure to compile MozillaVPN for macOS is the following:
 2. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
-3. Run the script (use QTBIN env to set the path for the Qt5 macos build bin folder):
-  $ ./scripts/macos\_compile.sh
+3. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+  $ ./scripts/apple\_compile.sh macos
 4. Open Xcode and run/test/archive/ship the app
 
 ### IOS
@@ -57,8 +57,8 @@ The IOS procedure is similar to the macOS one:
 2. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
-3. Run the script (use QTBIN env to set the path for the Qt5 ios build bin folder):
-  $ ./scripts/ios\_compile.sh
+3. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
+  $ ./scripts/apple\_compile.sh ios
 4. Open Xcode and run/test/archive/ship the app
 
 ### Other platforms
