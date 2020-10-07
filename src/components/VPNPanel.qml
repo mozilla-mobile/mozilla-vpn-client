@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import QtGraphicalEffects 1.15
-import QtQuick.Layouts 1.11
+import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
 
@@ -14,6 +14,8 @@ Item {
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
+
+    property var logoY: 80
 
     anchors.horizontalCenter: parent.horizontalCenter
 
@@ -28,7 +30,7 @@ Item {
         width: 76
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 80
+        y: logoY
         Image {
             id: logo
             anchors.horizontalCenter: parent.horizontalCenter
