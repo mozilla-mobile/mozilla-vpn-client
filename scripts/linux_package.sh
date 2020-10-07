@@ -6,15 +6,16 @@
 
 . $(dirname $0)/commons.sh
 
+if [ -f .env ]; then
+  . .env
+fi
+
 print N "This script compiles MozillaVPN for Linux"
 print N ""
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
   print G "Usage:"
   print N "\t$0"
-  print N ""
-  print G "Config variables:"
-  print N "\tQTBIN=</path/of/the/qt/bin/folder>"
   print N ""
   exit 0
 fi
@@ -23,13 +24,7 @@ if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-if [ "$QTBIN" ]; then
-  QMAKE=$QTBIN/qmake
-else
-  QMAKE=qmake
-fi
-
-$QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
+qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 printn Y "Cleaning the folder... "
 make distclean &>/dev/null;
@@ -38,12 +33,15 @@ print G "done."
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
+print Y "Importing translation files..."
+python3 scripts/importLanguages.py || die "Failed to import"
+
 printn Y "Computing the version... "
 VERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ).$(date +"%Y%m%d%H%M")
 print G $VERSION
 
 print Y "Configuring the build (qmake)..."
-$QMAKE \
+qmake\
   VERSION=$VERSION \
   CONFIG+=static \
   QTPLUGIN+=qsvg \
