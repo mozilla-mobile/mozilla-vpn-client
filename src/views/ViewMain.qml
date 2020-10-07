@@ -20,7 +20,7 @@ Flickable {
 
     VPNAlert {
         id: alertBox
-        state: VPN.upgradeRecommended ? "recommended" : ""
+        state: VPN.alert && VPN.upgradeRecommended ? "recommended" : ""
         alertType: "update"
         alertColor: Theme.blueButton
         visible: state === "recommended"
