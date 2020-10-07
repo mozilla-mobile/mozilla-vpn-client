@@ -254,12 +254,9 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
-TRANSLATIONS += \
-    ../translations/mozillavpn_en.ts \ 
-    ../translations/mozillavpn_de.ts \
-    ../translations/mozillavpn_it.ts \
-    ../translations/mozillavpn_zh-cn.ts \
-    ../translations/mozillavpn_zh-tw.ts \
+exists($$PWD/../translations/translations.pri) {
+  include($$PWD/../translations/translations.pri)
+}
 
 CONFIG += lrelease
 CONFIG += embed_translations
