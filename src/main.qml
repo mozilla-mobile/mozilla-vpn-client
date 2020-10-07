@@ -100,14 +100,12 @@ Window {
                     }
                 }
             ]
-
-            VPNUpdateAlert {}
         }
     }
 
-
-    VPNAlert {
+    VPNSystemAlert {
         id: alertBox
+        z: 2
     }
 
     Component.onCompleted: {

@@ -316,7 +316,6 @@
         <file>resources/warning.svg</file>
         <file>resources/warning-orange.svg</file>
         <file>resources/fonts/Metropolis-Bold.otf</file>
-        <file>components/VPNUpdateAlert.qml</file>
         <file>states/StateUpdateRequired.qml</file>
         <file>views/ViewUpdate.qml</file>
         <file>resources/settings/getHelp.svg</file>
@@ -361,5 +360,7 @@
         <file>resources/connection-info-dark.svg</file>
         <file>components/VPNDropShadow.qml</file>
         <file>resources/down.svg</file>
+        <file>components/VPNButtonBase.qml</file>
+        <file>components/VPNSystemAlert.qml</file>
     </qresource>
 </RCC>
