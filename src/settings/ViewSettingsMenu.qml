@@ -168,15 +168,18 @@ Flickable {
                 imageRightSrc: imageRightSource
             }
         }
-    }
 
-    VPNFooterLink {
-        id: signOutLink
-        labelText: qsTr("Sign out")
-        isBoldLink: true
-        fontName: vpnFont.name
-        onClicked: VPNController.logout()
-        linkColor: Theme.redButton
+        footer: VPNLinkButton {
+            id: signOutLink
+            labelText: qsTr("Sign out")
+            isBoldLink: true
+            fontName: vpnFont.name
+            onClicked: VPNController.logout()
+            linkColor: Theme.redButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 36
+            anchors.topMargin: 36
+        }
     }
 
     ScrollBar.vertical: ScrollBar {}
