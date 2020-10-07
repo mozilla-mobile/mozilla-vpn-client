@@ -108,6 +108,9 @@ public class MacOSControllerImpl : NSObject {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
+        // Let's remove the previous config if it exists.
+        (tunnel!.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
+
         let keyData = Data(base64Key: serverPublicKey)!
         let ipv4GatewayIP = IPv4Address(serverIpv4Gateway)
         let ipv6GatewayIP = IPv6Address(serverIpv6Gateway)
