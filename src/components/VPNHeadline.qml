@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
-import QtGraphicalEffects 1.0
+import QtQuick 2.5
+import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.11
 
 import "../themes/themes.js" as Theme
