@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtGraphicalEffects 1.15
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
@@ -11,7 +11,7 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Item {
+Flickable {
     id: updatePanel
     state: VPN.updateRecommended ? "recommended" : "required"
 
@@ -20,21 +20,31 @@ Item {
             name: "recommended"
             PropertyChanges {
                 target: contentWrapper
-                logo: "../resources/update-recommended.svg"
                 logoTitle: qsTr("Update recomended")
                 logoSubtitle: qsTr("Please update the app before you\ncontinue to use the VPN")
+                logoY: 50
             }
             PropertyChanges {
-                target: notNow
-                visible: true
+                target: insetCircle
+                color: Theme.blue
             }
             PropertyChanges {
-                target: manageAccount
-                visible: false
+                target: insetImage
+                source: "../resources/down.svg"
             }
             PropertyChanges {
                 target: signOff
                 visible: false
+            }
+            PropertyChanges {
+                target: footerLink
+                onClicked: {
+                    // TODO Should we hide the alert after "Not now" is clicked ?
+                    // Can it be accessed again?
+                    alertBox.visible = true
+                    stackview.pop(StackView.Immediate)
+                }
+                anchors.bottomMargin: 40
             }
         },
 
@@ -42,67 +52,153 @@ Item {
             name: "required"
             PropertyChanges {
                 target: contentWrapper
-                logo: "../resources/update-required.svg"
                 logoTitle: qsTr("Update required")
                 logoSubtitle: qsTr("We detected and fixed a serious bug.\nYou must update your app.")
+                logoY: 35
             }
             PropertyChanges {
-                target: notNow
-                visible: false
+                target: insetCircle
+                color: Theme.red
             }
             PropertyChanges {
-                target: manageAccount
-                visible: VPN.userAuthenticated
+                target: insetImage
+                source: "../resources/warning-white.svg"
             }
             PropertyChanges {
                 target: signOff
                 visible: VPN.userAuthenticated
             }
+            PropertyChanges {
+                target: footerLink
+                anchors.bottom: signOff.top
+                anchors.bottomMargin: 16;
+                onClicked: {
+                    VPN.openLink(VPN.LinkAccount);
+                    // TODO - should anything happen here besides opening
+                    // the user account website?
+                }
+            }
         }
     ]
 
-    VPNPanel {
-        id: contentWrapper
+    contentHeight: (state === "recommended" || !VPN.userAuthenticated) ? 480 : 510
+    boundsBehavior: Flickable.StopAtBounds
+
+    opacity: 0
+    Component.onCompleted: {
+        opacity = 1
     }
 
-    // TODO: Your connection will not be secure while you update.
+    Behavior on opacity {
+        PropertyAnimation {
+            duration: 200
+        }
+    }
+
+    VPNPanel {
+        id: contentWrapper
+        logo: "../resources/update-lock.svg"
+        logoY: 35
+        Rectangle {
+            id: insetCircle
+            height: 42
+            width: height
+            radius: height / 2
+            border.width: 5
+            border.color: Theme.bgColor
+            antialiasing: true
+            anchors.left: contentWrapper.left
+            anchors.leftMargin: contentWrapper.width / 2
+            anchors.top: contentWrapper.top
+            anchors.topMargin: contentWrapper.logoY + 36
+
+            Image {
+                id: insetImage
+                anchors.centerIn: insetCircle
+                sourceSize.height: 13
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+    }
+
+    VPNDropShadow {
+        anchors.fill: alertUpdateRecommendedBox
+        source: alertUpdateRecommendedBox
+    }
+
+
+   Item {
+        id: alertUpdateRecommendedBox
+        anchors.top: parent.top
+        anchors.topMargin: contentWrapper.logoY + contentWrapper.childrenRect.height + Theme.vSpacing
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        width: parent.width - (Theme.windowMargin * 2)
+        height: insecureConnectionAlert.height + 32
+
+        Rectangle {
+            anchors.fill: alertUpdateRecommendedBox
+            color: Theme.white
+            radius: 8
+        }
+
+        RowLayout {
+            id: insecureConnectionAlert
+            Layout.minimumHeight: 40
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            anchors.centerIn: alertUpdateRecommendedBox
+            spacing: 16
+            Image {
+                id: alertUpdateRecommendedBoxClose
+                source: "../resources/connection-info-dark.svg"
+                sourceSize.width: 20
+                sourceSize.height: 20
+                antialiasing: true
+            }
+            Text {
+                id: alertUpdateRecommendedText
+                font.family: vpnFontInter.name
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.fontColorDark
+                Layout.maximumWidth: 250
+                Layout.alignment: Qt.AlignVCenter
+                wrapMode: Text.Wrap
+                text: qsTr("Your connection will not be secure while you update.")
+            }
+        }
+    }
 
     VPNButton {
+        id: updateBtn
         width: 282
         text: qsTr("Update now")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 300
+        anchors.bottom: footerLink.top
+        anchors.bottomMargin: Theme.vSpacing
         radius: 4
         onClicked: VPN.openLink(VPN.LinkUpdate)
     }
 
-    VPNFooterLink {
-        id: notNow
-        labelText: qsTr("Not now")
-        onClicked: mainStackView.pop()
-    }
-
-    VPNFooterLink {
-        id: manageAccount
-        labelText: qsTr("Manage account")
-        onClicked: VPN.openLink(VPN.LinkAccount)
-    }
-
-    Text {
-        id: signOff
-        anchors.top: manageAccount.bottom
+    VPNLinkButton {
+        id: footerLink
+        labelText: (updatePanel.state === "recommended") ? qsTr("Not now") : qsTr("Manage account")
         anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: Theme.fontSize
-        font.family: vpnFontInter.name
-        text: qsTr("Sign off")
-        color: "red"
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: VPNController.logout()
-            cursorShape: "PointingHandCursor"
-            hoverEnabled: true
-        }
+        anchors.bottom: parent.bottom
     }
+
+    VPNFooterLink {
+        id: signOff
+        labelText: qsTr("Sign out")
+        isBoldLink: true
+        fontName: vpnFont.name
+        onClicked: {
+            stackview.pop(StackView.Immediate)
+            VPNController.logout()
+        }
+        linkColor: Theme.redButton
+    }
+
+     ScrollBar.vertical: ScrollBar {}
 }

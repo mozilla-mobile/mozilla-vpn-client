@@ -15,6 +15,8 @@ Item {
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
 
+    property var logoY: 80
+
     anchors.horizontalCenter: parent.horizontalCenter
 
     Rectangle {
@@ -28,7 +30,7 @@ Item {
         width: 76
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 80
+        y: logoY
         Image {
             id: logo
             anchors.horizontalCenter: parent.horizontalCenter

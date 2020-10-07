@@ -356,5 +356,10 @@
         <file>components/VPNCheckBoxAlert.qml</file>
         <file>components/VPNRadioSublabel.qml</file>
         <file>components/VPNLinkButton.qml</file>
+        <file>resources/update-lock.svg</file>
+        <file>resources/warning-white.svg</file>
+        <file>resources/connection-info-dark.svg</file>
+        <file>components/VPNDropShadow.qml</file>
+        <file>resources/down.svg</file>
     </qresource>
 </RCC>
