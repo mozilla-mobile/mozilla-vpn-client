@@ -364,5 +364,6 @@
         <file>components/VPNSystemAlert.qml</file>
         <file>components/VPNSignOut.qml</file>
         <file>components/VPNFocus.qml</file>
+        <file>components/VPNList.qml</file>
     </qresource>
 </RCC>
