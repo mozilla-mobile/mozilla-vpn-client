@@ -87,16 +87,16 @@ Item {
         color: "#0C0C0D0A"
     }
 
-    ListView {
+    VPNList {
         id: settingList
         anchors.top: divider.bottom
         anchors.topMargin: 16
         anchors.bottomMargin: Theme.vSpacing
-        height: contentItem.childrenRect.height
+        height: parent.height - menu.height - aboutUsCopy.height - divider.height
         width: viewAboutUs.width
         spacing: Theme.listSpacing
-        interactive: false
         model: aboutUsListModel
+        listName: menu.title
 
         delegate: VPNExternalLinkListItem {
             title: linkTitle
@@ -104,6 +104,8 @@ Item {
             onClicked: VPN.openLink(openUrl)
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
+        }
     }
 }

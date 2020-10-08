@@ -153,14 +153,16 @@ Flickable {
         }
     }
 
-    ListView {
+    VPNList {
         id: settingsList
-        interactive: false // disable scrolling on list since the entire window is scrollable
-        height: settingsList.count * (40 + (Theme.listSpacing * 2))
+        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height - startAtBootCheckBox.height
         width: parent.width
         anchors.top: startAtBootCheckBox.bottom
         anchors.topMargin: Theme.vSpacing
         spacing: Theme.listSpacing
+
+        //% "Settings"
+        listName: qsTrId("settings")
 
         model: settingsMenuListModel
         delegate: VPNClickableRow {
@@ -188,5 +190,7 @@ Flickable {
         onClicked: VPNController.logout()
     }
 
-    ScrollBar.vertical: ScrollBar {}
+    ScrollBar.vertical: ScrollBar {
+        Accessible.ignored: true
+    }
 }
