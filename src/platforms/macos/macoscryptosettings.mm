@@ -44,6 +44,7 @@ void CryptoSettings::resetKey()
 // static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 {
+#ifdef MACOS_INTEGRATION
     if (!initialized) {
         initialized = true;
 
@@ -111,6 +112,10 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
     }
 
     qDebug() << "Invalid key";
+#else
+    Q_UNUSED(output);
+#endif
+
     return false;
 }
 
