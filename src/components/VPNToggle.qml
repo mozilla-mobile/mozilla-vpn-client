@@ -3,9 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Controls 2.5
+
 import Mozilla.VPN 1.0
 
-Rectangle {
+RoundButton {
     state: VPNController.state
 
     states: [
@@ -30,6 +32,11 @@ Rectangle {
                 target: toggle
                 color: "#9E9E9E"
             }
+            PropertyChanges {
+                target: toggleButton
+                Accessible.name: qsTr("Turn VPN on")
+                Accessible.description: qsTr("VPN is off")
+            }
         },
         State {
             name: VPNController.StateConnecting
@@ -42,6 +49,11 @@ Rectangle {
                 target: toggle
                 color: "#387E8A"
             }
+            PropertyChanges {
+                target: toggleButton
+                Accessible.name: qsTr("Turn VPN off")
+                Accessible.description: qsTr("VPN is on")
+            }
         },
         State {
             name: VPNController.StateOn
@@ -52,6 +64,10 @@ Rectangle {
             PropertyChanges {
                 target: toggle
                 color: "#3FE1B0"
+            }
+            PropertyChanges {
+                target: toggleButton
+                Accessible.name: "Disconnect"
             }
         },
         State {
@@ -89,6 +105,7 @@ Rectangle {
             }
         }
     ]
+
     transitions: [
         Transition {
             ParallelAnimation {
@@ -98,46 +115,119 @@ Rectangle {
                     duration: 200
                 }
                 ColorAnimation {
-                    targets: [toggle, cursor]
-                    duration: 300
+                    target: cursor
+                    duration: 200
                 }
             }
         }
     ]
 
-    id: toggle
+    id: toggleButton
+
     height: 32
     width: 60
     radius: 16
 
+    background: Rectangle {
+        id: toggle
+        anchors.fill: toggleButton
+        radius: toggleButton.radius
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+            }
+        }
+    }
+
+    focusPolicy: Qt.StrongFocus
+    Keys.onSpacePressed: handleClick()
+    Keys.onReturnPressed: handleClick()
+    Accessible.onPressAction: handleClick()
 
     Rectangle {
-        id: toggleHoverOutline
+        id: toggleOutline
         color: "transparent"
-        border.width: 5
         border.color: "#C2C2C2"
-        opacity: {
-            if (mouseArea.pressed &&
-                (VPNController.state === VPNController.StateOn ||
-                VPNController.state === VPNController.StateOff)) {
-                    return 0.3
-            }
-            if (mouseArea.containsMouse) {
-                return 0.2
-            }
-            return 0
-        }
-        anchors.fill: toggle
+        border.width: 5
         anchors.margins: -5
-        radius: toggleHoverOutline.height / 2
+        anchors.fill: toggle
+        radius: toggleOutline.height / 2
         antialiasing: true
 
         Behavior on opacity {
             PropertyAnimation {
-                duration:200
+                duration: toggleButton.activeFocus ? 0 : 200
             }
         }
 
+        state: "state-default"
+        states: [
+            State {
+                name: "state-default"
+                PropertyChanges {
+                    target: toggleOutline
+                    opacity: toggleButton.activeFocus ? .3 : 0
+                }
+                PropertyChanges {
+                    target: toggle
+                    color: {
+                        if (VPNController.state === VPNController.StateOn) {
+                            return "#3FE1B0"
+                        }
+
+                        if (VPNController.state === VPNController.StateOff) {
+                            return "#9E9E9E"
+                        }
+                        return toggle.color
+                    }
+                }
+            },
+            State {
+                name: "state-hovering"
+                PropertyChanges {
+                    target: toggleOutline
+                    opacity: .2
+                }
+                PropertyChanges {
+                    target: toggle
+                    color: {
+                        if (VPNController.state === VPNController.StateOn) {
+                            return "#3AD4B3"
+                        }
+                        if (VPNController.state === VPNController.StateOff) {
+                            return "#6D6D6E"
+                        }
+                        return toggle.color
+                    }
+                }
+            },
+            State {
+                name: "state-pressed"
+                PropertyChanges {
+                    target: toggleOutline
+                    opacity: {
+                        if (VPNController.state === VPNController.StateOn
+                                || VPNController.state === VPNController.StateOff) {
+                            return 0.3
+                        }
+                        return 0
+                    }
+                }
+                PropertyChanges {
+                    target: toggle
+                    color: {
+                        if (VPNController.state === VPNController.StateOn) {
+                            return "#1CC5A0"
+                        }
+                        if (VPNController.state === VPNController.StateOff) {
+                            return "#3D3D3D"
+                        }
+                        return toggle.color
+                    }
+                }
+            }
+        ]
     }
 
     Rectangle {
@@ -154,17 +244,20 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
+        onEntered: toggleOutline.state = "state-hovering"
+        onExited: toggleOutline.state = "state-default"
+        onPressed: toggleOutline.state = "state-pressed"
+        onClicked: toggleButton.handleClick()
+    }
 
-        onClicked: {
-            if (VPNController.state === VPNController.StateDeviceLimit ||
-                VPNController.state === VPNController.StateInitializing) {
-                return;
-            }
-            if (VPNController.state !== VPNController.StateOff) {
-                VPNController.deactivate()
-            } else {
-                VPNController.activate()
-            }
+    function handleClick() {
+        if (VPNController.state === VPNController.StateDeviceLimit
+                || VPNController.state === VPNController.StateInitializing) {
+            return toggleOutline.state = "state-default"
         }
+        if (VPNController.state !== VPNController.StateOff) {
+            return VPNController.deactivate()
+        }
+        return VPNController.activate()
     }
 }
