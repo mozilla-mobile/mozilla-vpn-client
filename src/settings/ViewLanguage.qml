@@ -10,7 +10,8 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
+Item {
+    id: container
     VPNMenu {
         id: menu
         title: qsTr("Language")
@@ -21,74 +22,88 @@ Flickable {
         id: radioButtonGroup
     }
 
-    VPNBoldLabel {
-        id: systemLabel
-        anchors.top: menu.bottom
-        anchors.topMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: Theme.windowMargin
-        width: parent.width
-        text: qsTr("System")
-    }
-
-    VPNRadioDelegate {
-        radioButtonLabelText: VPNLocalizer.systemLanguage
-
-        id: systemLanguage
-        anchors.top: systemLabel.bottom
-        anchors.topMargin: 16
-        anchors.left: parent.left
-        anchors.leftMargin: 18
-
-        checked: VPNSettings.languageCode === ""
-        onClicked: {
-            VPNSettings.languageCode = ""
-        }
-
-        VPNRadioSublabel {
-            text: VPNLocalizer.systemLocalizedLanguage
-        }
-    }
-
-    VPNBoldLabel {
-        id: additionalLabel
-        anchors.top: systemLanguage.bottom
-        anchors.topMargin: 28
-        anchors.left: parent.left
-        anchors.leftMargin: Theme.windowMargin
-        width: parent.width
-        text: qsTr("Additional")
-    }
-
     ListView {
-        height: parent.height - menu.height - systemLanguage.height - systemLabel.height
-        width: parent.width
-        anchors.top: additionalLabel.bottom
-        anchors.topMargin: 16
-        anchors.left: parent.left
-        anchors.leftMargin: 18
-        anchors.rightMargin: 18
+        id: languageList
         clip: true
+        anchors.top: menu.bottom
+        height: parent.height - menu.height
+        width: parent.width
         spacing: 26
-        interactive: false
-        model: VPNLocalizer
 
-        delegate: VPNRadioDelegate {
-            radioButtonLabelText: qsTr(language)
+        interactive: languageList.count > 3
 
-            anchors.leftMargin: 30
-            anchors.topMargin: 30
+        headerPositioning: ListView.InlineHeader
+        header: Item {
+            width: parent.width
+            height: 150
 
-            checked: VPNSettings.languageCode === code
-            onClicked: {
-                VPNSettings.languageCode = code
+            VPNBoldLabel {
+                id: systemLabel
+                anchors.top: parent.top
+                anchors.topMargin: 20
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.windowMargin
+                width: parent.width
+                text: qsTr("System")
             }
 
-            VPNRadioSublabel {
-                text: localizedLanguage
+            VPNRadioDelegate {
+                id: systemLanguage
+
+                radioButtonLabelText: VPNLocalizer.systemLanguage
+                checked: VPNSettings.languageCode === ""
+                onClicked: VPNSettings.languageCode = ""
+
+                anchors.top: systemLabel.bottom
+                anchors.topMargin: 16
+                anchors.left: parent.left
+                anchors.leftMargin: 18
+
+                VPNRadioSublabel {
+                    text: VPNLocalizer.systemLocalizedLanguage
+                }
+            }
+
+            VPNBoldLabel {
+                id: additionalLabel
+                anchors.top: systemLanguage.bottom
+                anchors.topMargin: 28
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.windowMargin
+                width: parent.width
+                text: qsTr("Additional")
             }
         }
-    }
 
-    ScrollBar.vertical: ScrollBar {}
+        model: VPNLocalizer
+        delegate: Item {
+            id: languageOption
+            width: languageList.width
+            height: radioDel.height
+
+            VPNRadioDelegate {
+                id: radioDel
+
+                radioButtonLabelText: qsTr(language)
+                checked: VPNSettings.languageCode === code
+                onClicked: VPNSettings.languageCode = code
+
+                anchors.left: parent.left
+                anchors.leftMargin: 18
+                anchors.topMargin: Theme.windowMargin
+
+                VPNRadioSublabel {
+                    text: localizedLanguage
+                }
+            }
+        }
+
+        footer: Rectangle {
+            height: 40
+            color: "transparent"
+            width: parent.width
+        }
+
+        ScrollBar.vertical: ScrollBar {}
+    }
 }
