@@ -119,11 +119,13 @@ CryptoSettings::Version CryptoSettings::getSupportedVersion()
 {
     qDebug() << "Get supported settings method";
 
+#ifdef MACOS_INTEGRATION
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (getKey(key)) {
         qDebug() << "Encryption supported!";
         return CryptoSettings::EncryptionChachaPolyV1;
     }
+#endif
 
     qDebug() << "No encryption";
     return CryptoSettings::NoEncryption;
