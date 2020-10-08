@@ -164,6 +164,7 @@ Flickable {
 
         model: settingsMenuListModel
         delegate: VPNClickableRow {
+            accessibleName: settingTitle
             onClicked: {
                 if (pushGetHelp) {
                     return settingsStackView.push(getHelpComponent)

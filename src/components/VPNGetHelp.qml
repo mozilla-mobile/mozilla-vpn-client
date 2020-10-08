@@ -49,6 +49,7 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             title: linkTitle
+            accessibleName: linkTitle
 
             function clickHandler(id) {
                    switch(id) {

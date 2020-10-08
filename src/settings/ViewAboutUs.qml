@@ -100,6 +100,7 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             title: linkTitle
+            accessibleName: linkTitle
             onClicked: VPN.openLink(openUrl)
         }
 

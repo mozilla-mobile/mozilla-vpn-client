@@ -10,6 +10,16 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 VPNClickableRow {
+    id: devices
+    //% "My devices"
+    property var titleText: qsTrId("myDevices")
+    accessibleName: `${titleText} - ${label.text}`
+
+    activeFocusOnTab: true
+    VPNFocus {
+        itemToFocus: devices
+    }
+
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 8
@@ -18,8 +28,8 @@ VPNClickableRow {
 
         VPNIconAndLabel {
             icon: "../resources/devices.svg"
-            //% "My devices"
-            title: qsTrId("myDevices")
+            title: titleText
+            Accessible.ignored: true
         }
 
         Item {
@@ -29,6 +39,7 @@ VPNClickableRow {
         VPNLightLabel {
             id: label
             Layout.rightMargin: 8
+            Accessible.ignored: true
         }
 
         VPNChevron {

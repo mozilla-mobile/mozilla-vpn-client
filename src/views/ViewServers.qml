@@ -48,6 +48,8 @@ Item {
                 id: serverCountryRow
                 onClicked: cityListVisible = !cityListVisible
 
+                accessibleName: name
+
                 RowLayout {
                     spacing: 0
                     height: 40
