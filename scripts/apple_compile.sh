@@ -27,8 +27,10 @@ fi
 QMAKE=qmake
 if [ "$1" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
   QMAKE=$QT_MACOS_BIN/qmake
+  PATH=$QT_MACOS_BIN:$PATH
 elif [ "$1" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
   QMAKE=$QT_IOS_BIN/qmake
+  PATH=$QT_IOS_BIN:$PATH
 fi
 
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
