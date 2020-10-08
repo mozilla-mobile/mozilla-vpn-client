@@ -24,7 +24,19 @@ RoundButton {
     background: Rectangle {
         color: "#0060DF"
         radius: 4
+
+        Rectangle {
+            radius: 4
+            border.width: button.visualFocus ? 2 : 0
+            border.color: Theme.blueFocusStroke
+            z: -1
+            anchors.fill: parent
+            anchors.margins: -4
+        }
     }
+
+    Keys.onReturnPressed: clicked()
+    Accessible.onPressAction: clicked()
 
     contentItem: Label {
         id: label
