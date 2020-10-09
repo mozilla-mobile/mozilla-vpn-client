@@ -15,7 +15,13 @@ SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
     setContextMenu(&m_menu);
 }
 
-void SystemTrayHandler::notificationRequired(MozillaVPN *vpn)
+void SystemTrayHandler::captivePortalNotificationRequested()
+{
+    qDebug() << "Capitve portal notification shown";
+    showMessage(tr("Captive portal detected!"), tr("TODO"), NoIcon, 2000);
+}
+
+void SystemTrayHandler::controllerStateChanged()
 {
     qDebug() << "Show notification";
 
@@ -23,7 +29,7 @@ void SystemTrayHandler::notificationRequired(MozillaVPN *vpn)
         return;
     }
 
-    switch (vpn->controller()->state()) {
+    switch (MozillaVPN::instance()->controller()->state()) {
     case Controller::StateOn:
         showMessage(tr("Mozilla VPN connected"), tr("TODO"), NoIcon, 2000);
         break;

@@ -34,6 +34,7 @@ LINUX="
   -egl \
   -opengl es2 \
   -no-linuxfb \
+  -bundled-xcb-xinput \
   -xcb \
 "
 

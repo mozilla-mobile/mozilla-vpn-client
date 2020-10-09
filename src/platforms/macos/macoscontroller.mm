@@ -9,8 +9,9 @@
 #include "device.h"
 #include "Mozilla_VPN-Swift.h"
 
-#include <QDebug>
 #include <QByteArray>
+#include <QDebug>
+#include <QFile>
 
 // Our Swift singleton.
 static MacOSControllerImpl *impl = nullptr;
@@ -30,7 +31,7 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
     impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
         ipv4Address:device->ipv4Address().toNSString()
         ipv6Address:device->ipv6Address().toNSString()
-        ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
+        ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
         closure:^(ConnectionState state, NSDate *date) {
             qDebug() << "Creation completed with connection state:" << state;
             creating = false;
@@ -82,8 +83,8 @@ void MacOSController::activate(const Server &server,
                        serverPublicKey:server.publicKey().toNSString()
                       serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                             serverPort:server.choosePort()
-                           ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6()
-                   localNetworkEnabled:MozillaVPN::instance()->settingsHolder()->localNetwork()
+                           ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
+                    localNetworkAccess:MozillaVPN::instance()->settingsHolder()->localNetworkAccess()
                        failureCallback:^() {
                            qDebug() << "MacOSSWiftController - connection failed";
                            emit disconnected();
@@ -139,4 +140,23 @@ void MacOSController::checkStatus()
         qDebug() << "ServerIpv4Gateway:" << serverIpv4Gateway << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
         emit statusUpdated(QString::fromNSString(serverIpv4Gateway), txBytes, rxBytes);
     }];
+}
+
+void MacOSController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+
+    QString groupId(GROUP_ID);
+    NSURL *groupPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupId.toNSString()];
+
+    NSURL *path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+
+    QFile file(QString::fromNSString([path path]));
+    if (!file.open(QIODevice::ReadOnly)) {
+        callback("Network extension log file missing or unreadable.");
+        return;
+    }
+
+    QByteArray content = file.readAll();
+    callback(content);
 }

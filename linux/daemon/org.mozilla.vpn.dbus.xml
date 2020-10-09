@@ -12,13 +12,16 @@
       <arg name="serverIpv6AddrIn" type="s" direction="in"/>
       <arg name="serverPort" type="i" direction="in"/>
       <arg name="ipv6Enabed" type="b" direction="in"/>
-      <arg name="localNetworkEnabed" type="b" direction="in"/>
+      <arg name="localNetworkAccess" type="b" direction="in"/>
     </method>
     <method name="deactivate">
       <arg type="b" direction="out"/>
     </method>
     <method name="status">
       <arg name="jsonStatus" type="s" direction="out"/>
+    </method>
+    <method name="logs">
+      <arg name="logs" type="s" direction="out"/>
     </method>
     <signal name="connected">
     </signal>

@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.5
-import QtGraphicalEffects 1.0
-import QtQuick.Layouts 1.11
+import QtQuick 2.5
+import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.15
+import QtQuick.Layouts 1.15
+
 import Mozilla.VPN 1.0
 
 import "../components"
@@ -50,11 +51,13 @@ Flickable {
             settingTitle: qsTr("Give feedback")
             imageLeftSource: "../resources/settings/feedback.svg"
             imageRightSource: "../resources/externalLink.svg"
-            openUrl: "/r/vpn/client/feedback"
+            openUrl: VPN.LinkFeedback
         }
     }
 
-    contentHeight: 660
+    contentHeight: 720
+    height: parent.height
+
     boundsBehavior: Flickable.StopAtBounds
 
     VPNIconButton {
@@ -65,6 +68,8 @@ Flickable {
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
+
+        accessibleName: qsTr("Back")
 
         Image {
             id: backImage
@@ -99,9 +104,7 @@ Flickable {
 
     VPNHeadline {
         id: logoTitle
-        // TODO : Find out officially what should go here
-        // if the user hasn't set a `displayName`...
-        text: !VPNUser.displayName ? qsTr("Settings") : VPNUser.displayName
+        text: VPNUser.displayName ? VPNUser.displayName : qsTr("VPN User")
         anchors.top: logo.bottom
         anchors.topMargin: Theme.vSpacing
         height: 32
@@ -120,6 +123,21 @@ Flickable {
         onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
+    VPNCheckBoxRow {
+        id: startAtBootCheckBox
+        labelText: qsTr("Launch VPN app on computer startup")
+        subLabelText: ""
+        isChecked: VPNSettings.startAtBoot
+        isEnabled: true
+        showDivider: true
+
+        anchors.top: manageAccountButton.bottom
+        anchors.topMargin: Theme.hSpacing * 1.5
+        anchors.rightMargin: Theme.hSpacing
+        width: parent.width - Theme.hSpacing
+        onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
+    }
+
     Component {
         id: getHelpComponent
         VPNGetHelp {
@@ -130,9 +148,9 @@ Flickable {
     ListView {
         id: settingsList
         interactive: false // disable scrolling on list since the entire window is scrollable
-        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height
+        height: settingsList.count * (40 + (Theme.listSpacing * 2))
         width: parent.width
-        anchors.top: manageAccountButton.bottom
+        anchors.top: startAtBootCheckBox.bottom
         anchors.topMargin: Theme.vSpacing
         spacing: Theme.listSpacing
 
@@ -142,7 +160,6 @@ Flickable {
                 if (pushGetHelp) {
                     return settingsStackView.push(getHelpComponent)
                 }
-
                 if (pushView) {
                     return settingsStackView.push(pushView)
                 }
@@ -158,18 +175,12 @@ Flickable {
     }
 
     VPNFooterLink {
-        text: qsTr("Sign out")
-        Layout.alignment: Qt.AlignHCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
-        color: Theme.red
-        font.weight: Font.Bold
-        font.family: vpnFont.name
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: VPNController.logout()
-        }
+        id: signOutLink
+        labelText: qsTr("Sign out")
+        isBoldLink: true
+        fontName: vpnFont.name
+        onClicked: VPNController.logout()
+        linkColor: Theme.redButton
     }
 
     ScrollBar.vertical: ScrollBar {}

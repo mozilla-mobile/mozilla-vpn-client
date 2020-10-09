@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.11
+import QtQuick 2.5
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 import "../themes/themes.js" as Theme
 
@@ -24,7 +24,19 @@ RoundButton {
     background: Rectangle {
         color: "#0060DF"
         radius: 4
+
+        Rectangle {
+            radius: 4
+            border.width: button.visualFocus ? 2 : 0
+            border.color: Theme.blueFocusStroke
+            z: -1
+            anchors.fill: parent
+            anchors.margins: -4
+        }
     }
+
+    Keys.onReturnPressed: clicked()
+    Accessible.onPressAction: clicked()
 
     contentItem: Label {
         id: label

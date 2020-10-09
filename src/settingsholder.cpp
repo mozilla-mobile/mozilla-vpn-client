@@ -3,16 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "settingsholder.h"
+#include "cryptosettings.h"
 
 #include <QDebug>
 #include <QSettings>
 
-constexpr bool SETTINGS_IPV6_DEFAULT = true;
-constexpr bool SETTINGS_LOCALNETWORK_DEFAULT = false;
+constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
+constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
+constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = false;
+constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = false;
+constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 
-constexpr const char *SETTINGS_IPV6 = "ipv6";
-constexpr const char *SETTINGS_LOCALNETWORK = "localNetwork";
-constexpr const char *SETTINGS_LANGUAGE = "language";
+constexpr const char *SETTINGS_IPV6ENABLED = "ipv6Enabled";
+constexpr const char *SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
+constexpr const char *SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
+constexpr const char *SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
+constexpr const char *SETTINGS_STARTATBOOT = "startAtBoot";
+constexpr const char *SETTINGS_LANGUAGECODE = "languageCode";
 constexpr const char *SETTINGS_TOKEN = "token";
 constexpr const char *SETTINGS_SERVERS = "servers";
 constexpr const char *SETTINGS_PRIVATEKEY = "privateKey";
@@ -25,7 +32,11 @@ constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 
-SettingsHolder::SettingsHolder() : m_settings("mozilla", "vpn") {}
+const QSettings::Format MozFormat = QSettings::registerFormat("moz",
+                                                              CryptoSettings::readFile,
+                                                              CryptoSettings::writeFile);
+
+SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
 
 void SettingsHolder::clear()
 {
@@ -46,49 +57,72 @@ void SettingsHolder::clear()
     // We do not remove language, ipv6 and localnetwork settings.
 }
 
-bool SettingsHolder::ipv6() const
-{
-    if (!m_settings.contains(SETTINGS_IPV6)) {
-        return SETTINGS_IPV6_DEFAULT;
+#define GETSETDEFAULT(def, type, toType, key, has, get, set, signal) \
+    bool SettingsHolder::has() const { return m_settings.contains(key); } \
+    type SettingsHolder::get() const \
+    { \
+        if (!has()) { \
+            return def; \
+        } \
+        return m_settings.value(key).toType(); \
+    } \
+    void SettingsHolder::set(const type &value) \
+    { \
+        qDebug() << "Setting" << key << "to" << value; \
+        m_settings.setValue(key, value); \
+        emit signal(value); \
     }
 
-    return m_settings.value(SETTINGS_IPV6).toBool();
-}
+GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_IPV6ENABLED,
+              hasIpv6Enabled,
+              ipv6Enabled,
+              setIpv6Enabled,
+              ipv6EnabledChanged)
+GETSETDEFAULT(SETTINGS_LOCALNETWORKACCESS_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_LOCALNETWORKACCESS,
+              hasLocalNetworkAccess,
+              localNetworkAccess,
+              setLocalNetworkAccess,
+              localNetworkAccessChanged)
+GETSETDEFAULT(SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_UNSECUREDNETWORKALERT,
+              hasUnsecuredNetworkAlert,
+              unsecuredNetworkAlert,
+              setUnsecuredNetworkAlert,
+              unsecuredNetworkAlertChanged)
+GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_CAPTIVEPORTALALERT,
+              hasCaptivePortalAlert,
+              captivePortalAlert,
+              setCaptivePortalAlert,
+              captivePortalAlertChanged)
+GETSETDEFAULT(SETTINGS_STARTATBOOT_DEFAULT,
+              bool,
+              toBool,
+              SETTINGS_STARTATBOOT,
+              hasStartAtBoot,
+              startAtBoot,
+              setStartAtBoot,
+              startAtBootChanged)
+GETSETDEFAULT(QString(),
+              QString,
+              toString,
+              SETTINGS_LANGUAGECODE,
+              hasLanguageCode,
+              languageCode,
+              setLanguageCode,
+              languageCodeChanged)
 
-void SettingsHolder::setIpv6(bool ipv6)
-{
-    qDebug() << "Setting Ipv6:" << ipv6;
-    m_settings.setValue(SETTINGS_IPV6, ipv6);
-}
-
-bool SettingsHolder::localNetwork() const
-{
-    if (!m_settings.contains(SETTINGS_LOCALNETWORK)) {
-        return SETTINGS_LOCALNETWORK_DEFAULT;
-    }
-
-    return m_settings.value(SETTINGS_LOCALNETWORK).toBool();
-}
-
-void SettingsHolder::setLocalNetwork(bool localNetwork)
-{
-    qDebug() << "Setting LocalNetwork:" << localNetwork;
-    m_settings.setValue(SETTINGS_LOCALNETWORK, localNetwork);
-}
-
-QString SettingsHolder::language() const
-{
-    if (m_settings.contains(SETTINGS_LANGUAGE)) {
-        return m_settings.value(SETTINGS_LANGUAGE).toString();
-    }
-    return QString();
-}
-
-void SettingsHolder::setLanguage(const QString &language)
-{
-    qDebug() << "Setting language:" << language;
-    m_settings.setValue(SETTINGS_LANGUAGE, language);
-}
+#undef GETSETDEFAULT
 
 #define GETSET(type, toType, key, has, get, set) \
     bool SettingsHolder::has() const { return m_settings.contains(key); } \
@@ -97,7 +131,11 @@ void SettingsHolder::setLanguage(const QString &language)
         Q_ASSERT(has()); \
         return m_settings.value(key).toType(); \
     } \
-    void SettingsHolder::set(const type &value) { m_settings.setValue(key, value); }
+    void SettingsHolder::set(const type &value) \
+    { \
+        qDebug() << "Setting" << key; \
+        m_settings.setValue(key, value); \
+    }
 
 GETSET(QString, toString, SETTINGS_TOKEN, hasToken, token, setToken)
 GETSET(QString, toString, SETTINGS_PRIVATEKEY, hasPrivateKey, privateKey, setPrivateKey)

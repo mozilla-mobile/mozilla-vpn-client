@@ -51,21 +51,16 @@ Controller::Controller()
 
 Controller::~Controller() = default;
 
-void Controller::setVPN(MozillaVPN *vpn)
-{
-    Q_ASSERT(!m_vpn);
-    m_vpn = vpn;
-}
-
 void Controller::initialize()
 {
     qDebug() << "Initializing the controller";
 
-    Q_ASSERT(m_vpn);
-
     if (m_state == StateInitializing) {
-        const Device *device = m_vpn->deviceModel()->currentDevice();
-        m_impl->initialize(device, m_vpn->keys());
+        MozillaVPN *vpn = MozillaVPN::instance();
+        Q_ASSERT(vpn);
+
+        const Device *device = vpn->deviceModel()->currentDevice();
+        m_impl->initialize(device, vpn->keys());
     }
 }
 
@@ -77,7 +72,7 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
     Q_ASSERT(m_state == StateInitializing);
 
     if (!status) {
-        m_vpn->errorHandle(ErrorHandler::BackendServiceError);
+        MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
     }
 
     Q_UNUSED(status);
@@ -92,6 +87,12 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
     if (state == StateOn) {
         connected();
         m_connectionDate = connectionDate;
+        return;
+    }
+
+    if (MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+        qDebug() << "Start on boot";
+        activate();
     }
 }
 
@@ -104,13 +105,16 @@ void Controller::activate()
         return;
     }
 
-    QList<Server> servers = m_vpn->getServers();
+    MozillaVPN *vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+
+    QList<Server> servers = vpn->getServers();
     Q_ASSERT(!servers.isEmpty());
 
     Server server = Server::weightChooser(servers);
     Q_ASSERT(server.initialized());
 
-    const Device *device = m_vpn->deviceModel()->currentDevice();
+    const Device *device = vpn->deviceModel()->currentDevice();
 
     if (m_state == StateOff) {
         setState(StateConnecting);
@@ -120,7 +124,7 @@ void Controller::activate()
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    m_impl->activate(server, device, m_vpn->keys(), m_state == StateSwitching);
+    m_impl->activate(server, device, vpn->keys(), m_state == StateSwitching);
 }
 
 void Controller::deactivate()
@@ -140,7 +144,7 @@ void Controller::deactivate()
 
     m_timer.stop();
 
-    m_vpn->connectionDataHolder()->reset();
+    MozillaVPN::instance()->connectionDataHolder()->reset();
     m_connectionHealth.stop();
 
     m_impl->deactivate(m_state == StateSwitching);
@@ -173,8 +177,7 @@ void Controller::connected()
     }
 
     m_timer.start(TIMER_MSEC);
-
-    m_vpn->connectionDataHolder()->reset();
+    MozillaVPN::instance()->connectionDataHolder()->reset();
 }
 
 void Controller::disconnected() {
@@ -182,7 +185,7 @@ void Controller::disconnected() {
 
     m_timer.stop();
 
-    m_vpn->connectionDataHolder()->reset();
+    MozillaVPN::instance()->connectionDataHolder()->reset();
     m_connectionHealth.stop();
 
     // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.
@@ -203,7 +206,7 @@ void Controller::disconnected() {
     }
 
     if (nextStep == None && m_state == StateSwitching) {
-        m_vpn->changeServer(m_switchingCountryCode, m_switchingCity);
+        MozillaVPN::instance()->changeServer(m_switchingCountryCode, m_switchingCity);
         activate();
         return;
     }
@@ -215,7 +218,9 @@ void Controller::timerTimeout()
 {
     Q_ASSERT(m_state == StateOn);
 
-    if (m_vpn->connectionDataHolder()->isRunning()) {
+    // If we don't have the connection-health system active or if the connection info view is shown, let's check the status.
+    if (!m_connectionHealth.isRunning()
+        || MozillaVPN::instance()->connectionDataHolder()->isRunning()) {
         m_impl->checkStatus();
     }
 
@@ -226,15 +231,17 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
 {
     Q_ASSERT(m_state == StateOn || m_state == StateOff);
 
-    if (m_vpn->currentServer()->countryCode() == countryCode
-        && m_vpn->currentServer()->city() == city) {
+    MozillaVPN *vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+
+    if (vpn->currentServer()->countryCode() == countryCode && vpn->currentServer()->city() == city) {
         qDebug() << "No server change needed";
         return;
     }
 
     if (m_state == StateOff) {
         qDebug() << "Change server";
-        m_vpn->changeServer(countryCode, city);
+        vpn->changeServer(countryCode, city);
         return;
     }
 
@@ -242,7 +249,7 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
 
     qDebug() << "Switching to a different server";
 
-    m_currentCity = m_vpn->currentServer()->city();
+    m_currentCity = vpn->currentServer()->city();
     m_switchingCountryCode = countryCode;
     m_switchingCity = city;
 
@@ -255,7 +262,7 @@ void Controller::quit()
 {
     qDebug() << "Quitting";
 
-    if (m_state == StateOff || m_state == StateDeviceLimit) {
+    if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit) {
         emit readyToQuit();
         return;
     }
@@ -306,7 +313,7 @@ void Controller::logout()
 {
     qDebug() << "Logout";
 
-    m_vpn->logout();
+    MozillaVPN::instance()->logout();
 
     if (m_state == StateOff) {
         return;
@@ -392,6 +399,17 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
         m_connectionHealth.start(serverIpv4Gateway);
     }
 
-    m_vpn->connectionDataHolder()->add(txBytes, rxBytes);
+    MozillaVPN::instance()->connectionDataHolder()->add(txBytes, rxBytes);
 }
 
+void Controller::captivePortalDetected()
+{
+    qDebug() << "Captive portal detected in state:" << m_state;
+    // TODO: here we should disconnect the VPN and reconnect when the captive-portal-detection returns OK
+}
+
+void Controller::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+    m_impl->getBackendLogs(std::move(callback));
+}

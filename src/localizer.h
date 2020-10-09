@@ -13,7 +13,6 @@ class Localizer final : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(QString systemLanguage READ systemLanguage CONSTANT)
     Q_PROPERTY(QString systemLocalizedLanguage READ systemLocalizedLanguage CONSTANT)
-    Q_PROPERTY(QString code READ code NOTIFY languageChanged)
 
 public:
     enum ServerCountryRoles {
@@ -27,9 +26,7 @@ public:
 
     void initialize(const QString &code);
 
-    Q_INVOKABLE void setLanguage(const QString &code);
-
-    QString code() const { return m_code; }
+    void loadLanguage(const QString &code);
 
     QString systemLanguage() const { return languageName(""); }
 
@@ -44,13 +41,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    void loadLanguage(const QString &code);
-
     QString languageName(const QString &code) const;
     QString localizedLanguageName(const QString &code) const;
-
-signals:
-    void languageChanged(const QString &code);
 
 private:
     QTranslator m_translator;

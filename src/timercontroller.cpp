@@ -130,3 +130,9 @@ void TimerController::checkStatus()
 {
     m_impl->checkStatus();
 }
+
+void TimerController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
+{
+    std::function<void(const QString &)> callback = std::move(a_callback);
+    m_impl->getBackendLogs(std::move(callback));
+}

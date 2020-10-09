@@ -6,7 +6,7 @@ Section: net
 Homepage: https://vpn.mozilla.org/
 Architecture: amd64
 Priority: optional
-Depends: libpolkit-gobject-1-0 (>=0.105-20ubuntu0.18.04.5), libxcb-xinput0 (>=1.13-2~ubuntu18.04), wireguard (>=1.0.20200513-1~18.04.2), wireguard-tools (>=1.0.20200513-1~18.04.2), wireguard (>=1.0.20200513-1~18.04.2), libicu66 (>=66.1-2ubuntu2)
+Depends: libpolkit-gobject-1-0 (>=0.105-20ubuntu0.18.04.5), wireguard (>=1.0.20200513-1~18.04.2), wireguard-tools (>=1.0.20200513-1~18.04.2), libicu66 (>=66.1-2ubuntu2), libxcb-xinerama0 (>=1.14-2), resolvconf (>=1.82)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  TODO
 

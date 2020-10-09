@@ -10,8 +10,11 @@
 #ifndef MACOS_EXTENSION
 #include <QDebug>
 #else
+#import <Foundation/Foundation.h>
 #import <os/log.h>
 #endif
+
+#define MAX_LOG_FILE_SIZE 1048576
 
 // Key base64/hex functions
 // ------------------------
@@ -181,5 +184,59 @@ EXPORT void write_msg_to_log(const char *tag, const char *msg)
     qDebug() << "Swift log - tag:" << tag << "msg: " << msg;
 #else
     os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);
+
+    NSString *groupId = [NSString stringWithUTF8String: GROUP_ID];
+    NSURL *groupPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier: groupId];
+
+    NSURL *pathUrl = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+    NSString *path = [pathUrl path];
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        [[NSFileManager defaultManager] createFileAtPath:path
+                                                contents:nil
+                                              attributes:nil];
+    } else {
+        NSError *error = nil;
+
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path
+                                                                                        error:&error];
+
+        if (error) {
+            return;
+        }
+
+        NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        long long fileSize = [fileSizeNumber longLongValue];
+
+        if (fileSize > MAX_LOG_FILE_SIZE) {
+            [[NSFileManager defaultManager] removeItemAtPath:path
+                                                       error: &error];
+            [[NSFileManager defaultManager] createFileAtPath:path
+                                                    contents:nil
+                                                  attributes:nil];
+        }
+    }
+
+    NSError *error = nil;
+    NSFileHandle *fh = [NSFileHandle fileHandleForWritingToURL:pathUrl error:&error];
+    if (!fh) {
+        return;
+    }
+
+    NSString *dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
+                                                          dateStyle:NSDateFormatterShortStyle
+                                                          timeStyle:NSDateFormatterFullStyle];
+
+    NSString* str = [NSString stringWithFormat:@" - %s\n", msg];
+    NSData* data = [[dateString stringByAppendingString: str] dataUsingEncoding:NSUTF8StringEncoding];
+
+    @try {
+        [fh seekToEndOfFile];
+        [fh writeData:data];
+    }
+    @catch (NSException* exception) {}
+
+    [fh closeFile];
+
 #endif
 }

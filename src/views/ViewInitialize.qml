@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
+import QtQuick 2.5
 
 import Mozilla.VPN 1.0
 
@@ -13,7 +13,7 @@ Item {
     id: viewInitialize
     VPNHeaderLink {
         id: headerLink
-        text: qsTr("Get Help")
+        labelText: qsTr("Get help")
         onClicked: stackview.push(getHelpComponent)
     }
 
@@ -27,7 +27,7 @@ Item {
     VPNPanel {
         logo: "../resources/logo.svg"
         logoTitle: qsTr("Mozilla VPN")
-        logoSubtitle: qsTr("A fast, secure and easy to use VPN.")
+        logoSubtitle: qsTr("A fast, secure and easy to use VPN. Built by the makers of Firefox.")
     }
 
     VPNButton {
@@ -47,7 +47,7 @@ Item {
 
     VPNFooterLink {
         id: learnMore
-        text: qsTr("Learn more")
+        labelText: qsTr("Learn more")
         onClicked: stackview.push("ViewOnboarding.qml")
     }
 

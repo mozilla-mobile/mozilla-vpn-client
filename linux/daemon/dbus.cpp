@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbus.h"
+#include "../../src/logger.h"
 #include "dbus_adaptor.h"
 #include "polkithelper.h"
 
@@ -56,7 +57,7 @@ bool DBus::activate(const QString &privateKey,
                     const QString &serverIpv6AddrIn,
                     int serverPort,
                     bool ipv6Enabled,
-                    bool localNetworkEnabled)
+                    bool localNetworkAccess)
 {
     qDebug() << "Activate";
 
@@ -81,7 +82,7 @@ bool DBus::activate(const QString &privateKey,
     m_lastServerIpv6AddrIn = serverIpv6AddrIn;
     m_lastServerPort = serverPort;
     m_lastIpv6Enabled = ipv6Enabled;
-    m_lastLocalNetworkEnabled = localNetworkEnabled;
+    m_lastLocalNetworkAccess = localNetworkAccess;
 
     bool status = runWgQuick(WgQuickProcess::Up,
                              privateKey,
@@ -93,7 +94,7 @@ bool DBus::activate(const QString &privateKey,
                              serverIpv6AddrIn,
                              serverPort,
                              ipv6Enabled,
-                             localNetworkEnabled);
+                             localNetworkAccess);
 
     qDebug() << "Status:" << status;
 
@@ -130,7 +131,7 @@ bool DBus::deactivate()
                              m_lastServerIpv6AddrIn,
                              m_lastServerPort,
                              m_lastIpv6Enabled,
-                             m_lastLocalNetworkEnabled);
+                             m_lastLocalNetworkAccess);
 
     qDebug() << "Status:" << status;
 
@@ -174,6 +175,22 @@ QString DBus::status()
     return QJsonDocument(json).toJson();
 }
 
+QString DBus::logs()
+{
+    qDebug() << "Log request";
+
+    QString output;
+    QTextStream out(&output);
+
+    Logger *logger = Logger::instance();
+    for (QVector<Logger::Log>::ConstIterator i = logger->logs().begin(); i != logger->logs().end();
+         ++i) {
+        logger->prettyOutput(out, *i);
+    }
+
+    return output;
+}
+
 bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &privateKey,
                       const QString &deviceIpv4Address,
@@ -184,7 +201,7 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &serverIpv6AddrIn,
                       int serverPort,
                       bool ipv6Enabled,
-                      bool localNetworkEnabled)
+                      bool localNetworkAccess)
 {
     WgQuickProcess *wgQuick = new WgQuickProcess(op);
 
@@ -197,7 +214,7 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  serverIpv6AddrIn,
                  serverPort,
                  ipv6Enabled,
-                 localNetworkEnabled);
+                 localNetworkAccess);
 
     enum Result {
         Pending,

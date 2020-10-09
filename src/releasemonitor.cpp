@@ -15,11 +15,6 @@
 // Any 6 hours, a new check
 constexpr uint32_t RELEASE_MONITOR_SEC = 21600;
 
-void ReleaseMonitor::setVPN(MozillaVPN *vpn)
-{
-    m_vpn = vpn;
-}
-
 void ReleaseMonitor::runSoon()
 {
     qDebug() << "ReleaseManager - Scheduling a quick timer";
@@ -30,7 +25,7 @@ void ReleaseMonitor::runInternal()
 {
     qDebug() << "ReleaseMonitor started";
 
-    NetworkRequest *request = NetworkRequest::createForVersions(m_vpn);
+    NetworkRequest *request = NetworkRequest::createForVersions(MozillaVPN::instance());
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
         qDebug() << "Versions request failed" << error;
@@ -105,11 +100,11 @@ void ReleaseMonitor::processData(const QByteArray &data)
 
     if (currentVersion < minimumVersion) {
         qDebug() << "ReleaseMonitor - update required";
-        m_vpn->setUpdateRecommended(false);
-        m_vpn->controller()->updateRequired();
+        MozillaVPN::instance()->setUpdateRecommended(false);
+        MozillaVPN::instance()->controller()->updateRequired();
         return;
     }
 
     qDebug() << "Update recommended: " << (currentVersion < latestVersion);
-    m_vpn->setUpdateRecommended(currentVersion < latestVersion);
+    MozillaVPN::instance()->setUpdateRecommended(currentVersion < latestVersion);
 }

@@ -12,28 +12,32 @@ class SettingsHolder : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool ipv6 READ ipv6 WRITE setIpv6 NOTIFY ipv6Changed)
-    Q_PROPERTY(bool localNetwork READ localNetwork WRITE setLocalNetwork NOTIFY localNetworkChanged)
+    Q_PROPERTY(bool ipv6Enabled READ ipv6Enabled WRITE setIpv6Enabled NOTIFY ipv6EnabledChanged)
+    Q_PROPERTY(bool localNetworkAccess READ localNetworkAccess WRITE setLocalNetworkAccess NOTIFY
+                   localNetworkAccessChanged)
+    Q_PROPERTY(bool unsecuredNetworkAlert READ unsecuredNetworkAlert WRITE setUnsecuredNetworkAlert
+                   NOTIFY unsecuredNetworkAlertChanged)
+    Q_PROPERTY(bool captivePortalAlert READ captivePortalAlert WRITE setCaptivePortalAlert NOTIFY
+                   captivePortalAlertChanged)
+    Q_PROPERTY(bool startAtBoot READ startAtBoot WRITE setStartAtBoot NOTIFY startAtBootChanged)
+    Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
 
 public:
     SettingsHolder();
 
     void clear();
 
-    bool ipv6() const;
-    void setIpv6(bool ipv6);
-
-    bool localNetwork() const;
-    void setLocalNetwork(bool localNetwork);
-
-    QString language() const;
-    void setLanguage(const QString &language);
-
 #define GETSET(type, has, get, set) \
     bool has() const; \
     type get() const; \
     void set(const type &value);
 
+    GETSET(bool, hasIpv6Enabled, ipv6Enabled, setIpv6Enabled)
+    GETSET(bool, hasLocalNetworkAccess, localNetworkAccess, setLocalNetworkAccess)
+    GETSET(bool, hasUnsecuredNetworkAlert, unsecuredNetworkAlert, setUnsecuredNetworkAlert)
+    GETSET(bool, hasCaptivePortalAlert, captivePortalAlert, setCaptivePortalAlert)
+    GETSET(bool, hasStartAtBoot, startAtBoot, setStartAtBoot)
+    GETSET(QString, hasLanguageCode, languageCode, setLanguageCode)
     GETSET(QString, hasToken, token, setToken)
     GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
     GETSET(QByteArray, hasServers, servers, setServers)
@@ -48,8 +52,12 @@ public:
 #undef GETSET
 
 signals:
-    void ipv6Changed();
-    void localNetworkChanged();
+    void ipv6EnabledChanged(bool value);
+    void localNetworkAccessChanged(bool value);
+    void unsecuredNetworkAlertChanged(bool value);
+    void captivePortalAlertChanged(bool value);
+    void startAtBootChanged(bool value);
+    void languageCodeChanged(const QString &languageCode);
 
 private:
     QSettings m_settings;

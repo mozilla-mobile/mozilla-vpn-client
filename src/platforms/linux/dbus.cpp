@@ -39,8 +39,8 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *devi
                            server.ipv4AddrIn(),
                            server.ipv6AddrIn(),
                            server.choosePort(),
-                           MozillaVPN::instance()->settingsHolder()->ipv6(),
-                           MozillaVPN::instance()->settingsHolder()->localNetwork());
+                           MozillaVPN::instance()->settingsHolder()->ipv6Enabled(),
+                           MozillaVPN::instance()->settingsHolder()->localNetworkAccess());
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,
@@ -65,6 +65,18 @@ QDBusPendingCallWatcher *DBus::status()
 {
     qDebug() << "Status via DBus";
     QDBusPendingReply<QString> reply = m_dbus->status();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
+}
+
+QDBusPendingCallWatcher *DBus::logs()
+{
+    qDebug() << "Logs via DBus";
+    QDBusPendingReply<QString> reply = m_dbus->logs();
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,

@@ -12,7 +12,7 @@ const blue = "#0060DF";
 const blueHovered = "#0250BB";
 const bluePressed = "#054096";
 const blueDisabled = "#a3c0f3";
-const blueFocusStroke = "#660060DF";
+const blueFocusStroke = "#66054096";
 
 const green = "#3FE1B0";
 
@@ -25,6 +25,9 @@ const orange = "#FFA436";
 const red = "#FF4F5E";
 const redHovered = "#E22850";
 const redPressed = "#C50042";
+const redFocusStroke = "#66C50042";
+
+const white = "#FFFFFF"
 
 const stateBgColor = "#321C64";
 
@@ -64,7 +67,8 @@ const externalLinkRow = {
 const redButton = {
     "defaultColor" : red,
     "buttonHovered": redHovered,
-    "buttonPressed": redPressed
+    "buttonPressed": redPressed,
+     "focusStroke": redFocusStroke
 };
 
 const greyButton = {

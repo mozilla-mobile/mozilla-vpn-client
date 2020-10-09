@@ -6,14 +6,13 @@
 
 int main()
 {
-    NSString *bundleIdentifier = [NSBundle.mainBundle objectForInfoDictionaryKey:@"org.mozilla.macos.FirefoxVPN"];
+    NSString *appId = [NSString stringWithUTF8String: APP_ID];
 
-    NSAppleEventDescriptor *paramDescriptor = [NSAppleEventDescriptor nullDescriptor];
-
-    [NSWorkspace.sharedWorkspace launchAppWithBundleIdentifier:bundleIdentifier
-                                                       options:NSWorkspaceLaunchWithoutActivation
-                                additionalEventParamDescriptor:paramDescriptor
-                                              launchIdentifier:NULL];
+    [[NSWorkspace sharedWorkspace]
+           launchAppWithBundleIdentifier:appId
+                                 options:NSWorkspaceLaunchDefault
+          additionalEventParamDescriptor:NULL
+                        launchIdentifier:NULL];
 
     return 0;
 }

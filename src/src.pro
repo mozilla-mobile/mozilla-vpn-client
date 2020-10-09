@@ -29,14 +29,19 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
+        captiveportaldetection.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
+        cryptosettings.cpp \
         curve25519.cpp \
         device.cpp \
         devicemodel.cpp \
         errorhandler.cpp \
+        hacl-star/Hacl_Chacha20.c \
+        hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
+        hacl-star/Hacl_Poly1305_32.c \
         keys.cpp \
         localizer.cpp \
         logger.cpp \
@@ -63,10 +68,12 @@ SOURCES += \
         user.cpp
 
 HEADERS += \
+        captiveportaldetection.h \
         connectiondataholder.h \
         connectionhealth.h \
         controller.h \
         controllerimpl.h \
+        cryptosettings.h \
         curve25519.h \
         device.h \
         devicemodel.h \
@@ -106,10 +113,12 @@ linux:!android {
 
     TARGET = mozillavpn
     QT += networkauth
+    QT += svg
 
     SOURCES += \
             platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
+            platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
@@ -187,13 +196,15 @@ else:macos {
 
     # For the loginitem
     LIBS += -framework ServiceManagement
+    LIBS += -framework Security
 
     SOURCES += \
-            platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/macos/macoscryptosettings.mm \
+            platforms/macos/macosglue.mm \
             platforms/macos/macosutils.mm
 
     HEADERS += \
@@ -225,7 +236,7 @@ else:macos {
                 ../wireguard-apple/WireGuard/Shared/Model \
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
-    QMAKE_INFO_PLIST=../macos/Info.plist
+    QMAKE_INFO_PLIST=../macos/app/Info.plist
 }
 
 # Platform-specific: IOS
@@ -248,12 +259,13 @@ else:ios {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/ios/iaphandler.cpp \
-            platforms/macos/macosglue.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
+            platforms/macos/macoscryptosettings.mm \
+            platforms/macos/macosglue.mm \
             platforms/macos/macoscontroller.mm
 
     HEADERS += \
@@ -266,7 +278,9 @@ else:ios {
             platforms/ios/authenticationlistener.h \
             platforms/macos/macoscontroller.h
 
-    QMAKE_INFO_PLIST=../ios/Info.plist
+    QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
+    QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images.xcassets
+    QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
 }
 
 # Anything else
@@ -280,16 +294,13 @@ CONFIG += qmltypes
 QML_IMPORT_NAME = Mozilla.VPN
 QML_IMPORT_MAJOR_VERSION = 1
 
-ICON = resources/icon.icns
-
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 
-TRANSLATIONS += \
-    ../translations/mozillavpn_en.ts \
-    ../translations/mozillavpn_it.ts \
-    ../translations/mozillavpn_zh.ts
+exists($$PWD/../translations/translations.pri) {
+  include($$PWD/../translations/translations.pri)
+}
 
 CONFIG += lrelease
 CONFIG += embed_translations

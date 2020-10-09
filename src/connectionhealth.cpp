@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+#include "mozillavpn.h"
 #include "pingsender.h"
 #include "server.h"
 
@@ -116,6 +117,8 @@ void ConnectionHealth::wait()
 
 void ConnectionHealth::setStability(ConnectionStability stability)
 {
+    qDebug() << "Stability changed:" << stability;
+
     m_stability = stability;
     emit stabilityChanged();
 }

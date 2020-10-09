@@ -30,7 +30,7 @@ public:
              const QString &serverIpv6AddrIn,
              int serverPort,
              bool ipv6Enabled,
-             bool localNetworkEnabled);
+             bool localNetworkAccess);
 
 signals:
     void failed();

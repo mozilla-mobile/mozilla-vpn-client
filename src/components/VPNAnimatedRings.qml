@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.5
-import QtGraphicalEffects 1.0
-import QtQuick.Layouts 1.11
+import QtQuick 2.5
+import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.15
+import QtQuick.Layouts 1.15
 
 import Mozilla.VPN 1.0
 
@@ -21,20 +21,20 @@ Rectangle {
     color: "transparent"
     visible: false
 
-
     Canvas {
         property real maxRadius: 175
         property real startNextRing: 95
         property real startingRadius: 50
         property real startingBorderWidth: 1
 
-        property real ring1Radius;
+
+        property real ring1Radius: startingRadius
         property real ring1BorderWidth: startingBorderWidth
 
-        property real ring2Radius;
+        property real ring2Radius: startingRadius
         property real ring2BorderWidth: startingBorderWidth
 
-        property real ring3Radius;
+        property real ring3Radius: startingRadius
         property real ring3BorderWidth: startingBorderWidth
 
         property bool drawingRing2: false
@@ -64,7 +64,7 @@ Rectangle {
             }
 
             // Start decrementing ring border width
-            if (rRadius >= 115 && rBorderWidth >= -0.1) {
+            if (rRadius >= 115 && rBorderWidth >= 0.1) {
                 rBorderWidth -= 0.05;
             }
 

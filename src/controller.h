@@ -12,6 +12,8 @@
 #include <QObject>
 #include <QTimer>
 
+#include <functional>
+
 class ControllerImpl;
 class MozillaVPN;
 
@@ -39,10 +41,7 @@ private:
 
 public:
     Controller();
-
     ~Controller();
-
-    void setVPN(MozillaVPN *vpn);
 
     void initialize();
 
@@ -74,6 +73,11 @@ public:
 
     void subscriptionNeeded();
 
+    void getBackendLogs(std::function<void(const QString &logs)> &&callback);
+
+public Q_SLOTS:
+    void captivePortalDetected();
+
 private Q_SLOTS:
     void connected();
     void disconnected();
@@ -96,8 +100,6 @@ private:
 
 private:
     State m_state = StateInitializing;
-
-    MozillaVPN *m_vpn = nullptr;
 
     QTimer m_timer;
 

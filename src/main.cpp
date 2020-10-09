@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "captiveportaldetection.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
@@ -16,6 +17,7 @@
 #endif
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QSystemTrayIcon>
@@ -29,19 +31,30 @@ int main(int argc, char *argv[])
     // The application.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
+
+    QCoreApplication::setApplicationName("Mozilla VPN");
+    QCoreApplication::setApplicationVersion(APP_VERSION);
+
     QIcon icon("://resources/logo.png");
     app.setWindowIcon(icon);
 
-    // Dependencies - so far, only for linux.
-#if defined (__linux__) && !defined (__ANDROID__)
-    if (!LinuxDependencies::checkDependencies()) {
-        return 1;
-    }
-#endif
+    QCommandLineParser parser;
+    parser.setApplicationDescription(
+        QApplication::tr("A fast, secure and easy to use VPN. Built by the makers of Firefox."));
+    parser.addHelpOption();
+    parser.addVersionOption();
 
-#ifdef MACOS_INTEGRATION
-    MacOSUtils::enableLoginItem();
-#endif
+    QCommandLineOption minimizedOption(QStringList() << "m"
+                                                     << "minimized",
+                                       QCoreApplication::tr("Start minimized"));
+    parser.addOption(minimizedOption);
+
+    QCommandLineOption startAtBootOption(QStringList() << "s"
+                                                       << "start-at-boot",
+                                         QCoreApplication::tr("Start at boot (if configured)"));
+    parser.addOption(startAtBootOption);
+
+    parser.process(app);
 
     // Signal handling for a proper shutdown.
     SignalHandler sh;
@@ -52,7 +65,27 @@ int main(int argc, char *argv[])
     // Create the QML engine and expose a few internal objects.
     QQmlApplicationEngine engine;
 
-    MozillaVPN::createInstance(&app, &engine);
+    MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
+
+    if (parser.isSet(startAtBootOption)) {
+        qDebug() << "Maybe start at boot";
+
+        if (!MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+            qDebug() << "We don't need to start at boot.";
+            return 0;
+        }
+    }
+
+#ifdef MACOS_INTEGRATION
+    MacOSUtils::enableLoginItem(!MozillaVPN::instance()->settingsHolder()->startAtBoot());
+#endif
+
+#if defined (__linux__) && !defined (__ANDROID__)
+    // Dependencies - so far, only for linux.
+    if (!LinuxDependencies::checkDependencies()) {
+        return 1;
+    }
+#endif
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {
@@ -104,13 +137,6 @@ int main(int argc, char *argv[])
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNLogger", [](QQmlEngine *, QJSEngine *) -> QObject * {
-            QObject *obj = Logger::instance();
-            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-            return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer", [](QQmlEngine *, QJSEngine *) -> QObject * {
             QObject *obj = MozillaVPN::instance()->localizer();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -131,10 +157,13 @@ int main(int argc, char *argv[])
             return obj;
         });
 
-    QObject::connect(MozillaVPN::instance()->localizer(),
-                     &Localizer::languageChanged,
-                     &engine,
-                     &QQmlEngine::retranslate);
+    QObject::connect(MozillaVPN::instance()->settingsHolder(),
+                     &SettingsHolder::languageCodeChanged,
+                     [engine = &engine](const QString &languageCode) {
+                         qDebug() << "Storing the languageCode:" << languageCode;
+                         MozillaVPN::instance()->localizer()->loadLanguage(languageCode);
+                         engine->retranslate();
+                     });
 
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::readyToQuit,
@@ -176,8 +205,13 @@ int main(int argc, char *argv[])
 
     QObject::connect(MozillaVPN::instance()->controller(),
                      &Controller::stateChanged,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::controllerStateChanged);
+
+    QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
+                     &CaptivePortalDetection::captivePortalDetected,
                      [systemTrayHandler = &systemTrayHandler]() {
-                         systemTrayHandler->notificationRequired(MozillaVPN::instance());
+                         systemTrayHandler->captivePortalNotificationRequested();
                      });
 
     // Let's go.

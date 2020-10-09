@@ -28,3 +28,7 @@ translations/*.qm
 # if someone opens the android/ subproject
 android/.gradle/
 android/.idea/
+xcode.xconfig
+.gradle/
+.idea/
+*.ts

@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "device.h"
+#include "logger.h"
 #include "servercountrymodel.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
@@ -18,9 +19,12 @@
 
 #include <QDebug>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFileInfo>
 #include <QLocale>
 #include <QPointer>
 #include <QTimer>
+#include <QUrl>
 
 // TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
@@ -39,12 +43,12 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 static MozillaVPN *s_instance = nullptr;
 
 // static
-void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine* engine)
+void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
 {
     qDebug() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN(parent, engine);
+    s_instance = new MozillaVPN(parent, engine, startMinimized);
     s_instance->initialize();
 }
 
@@ -65,12 +69,9 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine)
-    : QObject(parent), m_engine(engine)
+MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
+    : QObject(parent), m_engine(engine), m_startMinimized(startMinimized)
 {
-    m_controller.setVPN(this);
-    m_releaseMonitor.setVPN(this);
-
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
     connect(&m_accountAndServersTimer, &QTimer::timeout, [this]() {
@@ -83,10 +84,20 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine)
     });
     connect(&m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 
-    connect(&m_localizer, &Localizer::languageChanged, [this](const QString &language) {
-        qDebug() << "Storing the language:" << language;
-        m_settingsHolder.setLanguage(language);
-    });
+    connect(&m_controller,
+            &Controller::stateChanged,
+            &m_captivePortalDetection,
+            &CaptivePortalDetection::controllerStateChanged);
+
+    connect(&m_settingsHolder,
+            &SettingsHolder::captivePortalAlertChanged,
+            &m_captivePortalDetection,
+            &CaptivePortalDetection::settingsChanged);
+
+    connect(&m_captivePortalDetection,
+            &CaptivePortalDetection::captivePortalDetected,
+            &m_controller,
+            &Controller::captivePortalDetected);
 }
 
 MozillaVPN::~MozillaVPN() = default;
@@ -106,7 +117,7 @@ void MozillaVPN::initialize()
 
     m_releaseMonitor.runSoon();
 
-    m_localizer.initialize(m_settingsHolder.language());
+    m_localizer.initialize(m_settingsHolder.languageCode());
 
     if (!m_settingsHolder.hasToken()) {
         return;
@@ -403,6 +414,9 @@ void MozillaVPN::accountChecked(const QByteArray &json)
         m_controller.subscriptionNeeded();
     }
 #endif
+
+    // To test the subscription needed view, comment out this line:
+    //m_controller.subscriptionNeeded();
 }
 
 void MozillaVPN::cancelAuthentication()
@@ -418,6 +432,7 @@ void MozillaVPN::cancelAuthentication()
         delete *i;
     }
 
+    m_tasks.clear();
     m_task_running = false;
     m_settingsHolder.clear();
 
@@ -438,7 +453,9 @@ void MozillaVPN::logout()
     setUserAuthenticated(false);
 
     QString deviceName = Device::currentDeviceName();
-    scheduleTask(new TaskRemoveDevice(deviceName));
+    if (m_deviceModel.hasDevice(deviceName)) {
+        scheduleTask(new TaskRemoveDevice(deviceName));
+    }
 
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
         qDebug() << "Cleaning up all";
@@ -581,4 +598,151 @@ void MozillaVPN::subscribe()
 
     iap->start();
 #endif
+}
+
+bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
+{
+    return writeLogs(location, [](const QString& filename) {
+        qDebug() << "Opening the logFile somehow:" << filename;
+        QUrl url = QUrl::fromLocalFile(filename);
+        QDesktopServices::openUrl(url);
+    });
+}
+
+bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
+                           std::function<void(const QString &filename)> &&a_callback)
+{
+    qDebug() << "Trying to save logs in:" << location;
+
+    std::function<void(const QString &filename)> callback = std::move(a_callback);
+
+    if (!QFileInfo::exists(QStandardPaths::writableLocation(location))) {
+        return false;
+    }
+
+    QString filename;
+    QDate now = QDate::currentDate();
+
+    QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month() << "-" << now.day()
+                           << ".txt";
+
+    QDir logDir(QStandardPaths::writableLocation(location));
+    QString logFile = logDir.filePath(filename);
+
+    if (QFileInfo::exists(logFile)) {
+        qDebug() << logFile << "exists. Let's try a new filename";
+
+        for (uint32_t i = 1;; ++i) {
+            QString filename;
+            QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month() << "-"
+                                   << now.day() << "_" << i << ".txt";
+            logFile = logDir.filePath(filename);
+            if (!QFileInfo::exists(logFile)) {
+                qDebug() << "Filename found!" << i;
+                break;
+            }
+        }
+    }
+
+    qDebug() << "Writing logs into: " << logFile;
+
+    QFile file(logFile);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "Failed to open the logfile";
+        return false;
+    }
+
+    QTextStream out(&file);
+
+    out << "Mozilla VPN logs"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        << Qt::endl
+#else
+        << endl
+#endif
+        << "================"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        << Qt::endl
+        << Qt::endl
+#else
+        << endl
+        << endl
+#endif
+        ;
+
+    Logger *logger = Logger::instance();
+    for (QVector<Logger::Log>::ConstIterator i = logger->logs().begin(); i != logger->logs().end();
+         ++i) {
+        logger->prettyOutput(out, *i);
+    }
+
+    file.close();
+
+    MozillaVPN::instance()->controller()->getBackendLogs([callback = std::move(callback),
+                                                          logFile](const QString &logs) {
+        qDebug() << "Logs from the backend service received";
+
+        QFile file(logFile);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+            qDebug() << "Failed to re-open the logfile";
+            return;
+        }
+
+        QTextStream out(&file);
+
+        out
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            << Qt::endl
+            << Qt::endl
+#else
+            << endl
+            << endl
+#endif
+            << "Mozilla VPN backend logs"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            << Qt::endl
+#else
+            << endl
+#endif
+            << "========================"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            << Qt::endl
+            << Qt::endl
+#else
+            << endl
+            << endl
+#endif
+            ;
+
+        if (!logs.isEmpty()) {
+            out << logs;
+        } else {
+            out << "No logs from the backend.";
+        }
+
+        file.close();
+
+        callback(logFile);
+    });
+
+    return true;
+}
+
+void MozillaVPN::viewLogs()
+{
+    qDebug() << "View logs";
+
+    if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
+        return;
+    }
+
+    if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
+        return;
+    }
+
+    if (writeAndShowLogs(QStandardPaths::TempLocation)) {
+        return;
+    }
+
+    qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
 }

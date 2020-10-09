@@ -6,27 +6,31 @@
 
 . $(dirname $0)/commons.sh
 
-print N "This script compiles MozillaVPN for MacOS"
+print N "This script compiles MozillaVPN for MacOS/iOS"
 print N ""
 
-if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+if [ "$1" != "macos" ] && [ "$1" != "ios" ]; then
   print G "Usage:"
-  print N "\t$0"
+  print N "\t$0 <macos|ios>"
   print N ""
   print G "Config variables:"
-  print N "\tQTBIN=</path/of/the/qt/bin/folder>"
+  print N "\tQT_MACOS_BIN=</path/of/the/qt/bin/folder/for/macos>"
+  print N "\tQT_IOS_BIN=</path/of/the/qt/bin/folder/for/ios>"
   print N ""
   exit 0
 fi
 
-if ! [ -d "src" ] || ! [ -d "macos" ]; then
+if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-if [ "$QTBIN" ]; then
-  QMAKE=$QTBIN/qmake
-else
-  QMAKE=qmake
+QMAKE=qmake
+if [ "$1" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
+  QMAKE=$QT_MACOS_BIN/qmake
+  PATH=$QT_MACOS_BIN:$PATH
+elif [ "$1" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
+  QMAKE=$QT_IOS_BIN/qmake
+  PATH=$QT_IOS_BIN:$PATH
 fi
 
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
@@ -43,24 +47,41 @@ printn Y "Cleaning the existing project... "
 rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
-printn Y "Extract the project version..."
-VERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-print G "$VERSION"
-
-printn Y "Importing translation files"
+print Y "Importing translation files..."
 python3 scripts/importLanguages.py || die "Failed to import"
+
+printn Y "Extract the project version..."
+SHORTVERSION=$(cat src/src.pro | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
+print G "$SHORTVERSION - $FULLVERSION"
+
+MACOS_FLAGS="
+  QTPLUGIN+=qsvg
+  CONFIG-=static
+  MACOS_INTEGRATION=1
+"
+
+IOS_FLAGS="
+  IOS_INTEGRATION=1
+"
+
+if [ "$1" = "macos" ]; then
+  PLATFORM=$MACOS_FLAGS
+elif [ "$1" = "ios" ]; then
+  PLATFORM=$IOS_FLAGS
+else
+  die "Why we are here?"
+fi
 
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
-  QTPLUGIN+=qsvg \
-  CONFIG-=static \
-  MACOS_INTEGRATION=1 \
-  VERSION=$VERSION \
+  VERSION=$FULLVERSION \
   -spec macx-xcode \
+  $PLATFORM \
   src/src.pro  || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$VERSION" macos || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$1" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Opening in XCode..."

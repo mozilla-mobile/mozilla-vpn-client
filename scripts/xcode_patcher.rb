@@ -9,14 +9,17 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, version, platform)
+  def run(file, shortVersion, fullVersion, platform, configHash)
     open_project file
     open_target_main
 
-    setup_target_main version, platform
-    setup_target_extension version, platform
+    group = @project.main_group.new_group('Configuration')
+    @configFile = group.new_file('xcode.xconfig')
 
-    setup_target_loginitem version if platform == "macos"
+    setup_target_main shortVersion, fullVersion, platform, configHash
+    setup_target_extension shortVersion, fullVersion, platform, configHash
+
+    setup_target_loginitem shortVersion, fullVersion, configHash if platform == "macos"
 
     setup_target_go
 
@@ -35,18 +38,20 @@ class XCodeprojPatcher
     die 'Unable to open MozillaVPN target'
   end
 
-  def setup_target_main(version, platform)
+  def setup_target_main(shortVersion, fullVersion, platform, configHash)
     @target_main.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/app/WireGuard-Bridging-Header.h'
 
       # Versions and names
-      config.build_settings['MARKETING_VERSION'] ||= version
-      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.macos.FirefoxVPN' if platform == 'macos'
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'org.mozilla.ios.FirefoxVPN-staging' if platform == 'ios'
+      config.build_settings['MARKETING_VERSION'] ||= shortVersion
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_MACOS'] if platform == 'macos'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = configHash['APP_ID_IOS'] if platform == 'ios'
       config.build_settings['PRODUCT_NAME'] = 'Mozilla VPN'
 
       # other config
@@ -55,6 +60,17 @@ class XCodeprojPatcher
       config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
       config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
       config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
+
+      groupId = "";
+      if (platform == 'macos')
+        groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
+      else
+        groupId = configHash['GROUP_ID_IOS']
+      end
+
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        'GROUP_ID=\"' + groupId + '\"',
+      ]
 
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
@@ -96,20 +112,22 @@ class XCodeprojPatcher
     }
   end
 
-  def setup_target_extension(version, platform)
+  def setup_target_extension(shortVersion, fullVersion, platform, configHash)
     @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :osx)
 
     @target_extension.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/networkextension/WireGuardNetworkExtension-Bridging-Header.h'
 
       # Versions and names
-      config.build_settings['MARKETING_VERSION'] ||= version
-      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.network-extension' if platform == 'macos'
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.ios.FirefoxVPN-staging.network-extension' if platform == 'ios'
+      config.build_settings['MARKETING_VERSION'] ||= shortVersion
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_MACOS'] if platform == 'macos'
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NETEXT_ID_IOS'] if platform == 'ios'
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
@@ -138,8 +156,18 @@ class XCodeprojPatcher
         ]
       end
 
-      # This is needed to compile the macosglue without Qt.
-      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= 'MACOS_EXTENSION=1'
+      groupId = "";
+      if (platform == 'macos')
+        groupId = configHash['DEVELOPMENT_TEAM'] + "." + configHash['GROUP_ID_MACOS']
+      else
+        groupId = configHash['GROUP_ID_IOS']
+      end
+
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        # This is needed to compile the macosglue without Qt.
+        'MACOS_EXTENSION=1',
+        'GROUP_ID=\"' + groupId + '\"',
+      ]
 
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
@@ -174,7 +202,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
-      'src/platforms/macos/macosglue.cpp',
+      'src/platforms/macos/macosglue.mm',
       'src/platforms/macos/macoslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)
@@ -229,16 +257,18 @@ class XCodeprojPatcher
     @target_extension.add_dependency target_go
   end
 
-  def setup_target_loginitem(version)
+  def setup_target_loginitem(shortVersion, fullVersion, configHash)
     @target_loginitem = @project.new_target(:application, 'MozillaVPNLoginItem', :osx)
 
     @target_loginitem.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
       config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
 
       # Versions and names
-      config.build_settings['MARKETING_VERSION'] ||= version
-      config.build_settings['CURRENT_PROJECT_VERSION'] ||= version + "." + Time.now.strftime("%Y%m%d%H%M")
-      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= 'org.mozilla.macos.FirefoxVPN.login-item'
+      config.build_settings['MARKETING_VERSION'] ||= shortVersion
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['LOGIN_ID_MACOS']
       config.build_settings['PRODUCT_NAME'] = 'MozillaVPNLoginItem'
 
       # other configs
@@ -246,6 +276,10 @@ class XCodeprojPatcher
       config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/loginitem/MozillaVPNLoginItem.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
       config.build_settings['SKIP_INSTALL'] = 'YES'
+
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        'APP_ID=\"' + configHash['APP_ID_MACOS'] + '\"',
+      ]
 
       if config.name == 'Release'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] ||= '-Onone'
@@ -289,14 +323,30 @@ class XCodeprojPatcher
   end
 end
 
-if ARGV.length < 3 || (ARGV[2] != "ios" && ARGV[2] != "macos")
-  puts "Usage: <script> project_file version ios/macos"
+if ARGV.length < 4 || (ARGV[3] != "ios" && ARGV[3] != "macos")
+  puts "Usage: <script> project_file shortVersion fullVersion ios/macos"
   exit 1
 end
 
+if !File.exist?("xcode.xconfig")
+  puts "xcode.xconfig file is required! See the template file."
+  exit 1
+end
+
+config = Hash.new
+configFile = File.read("xcode.xconfig").split("\n")
+configFile.each { |line|
+  continue if line[0] == "#"
+
+  if line.include? "="
+    keys = line.split("=")
+    config[keys[0].strip] = keys[1].strip
+  end
+}
+
 platform = "macos"
-platform = "ios" if ARGV[2] == "ios"
+platform = "ios" if ARGV[3] == "ios"
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], platform
+r.run ARGV[0], ARGV[1], ARGV[2], platform, config
 exit 0

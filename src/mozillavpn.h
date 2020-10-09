@@ -5,6 +5,7 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "captiveportaldetection.h"
 #include "connectiondataholder.h"
 #include "controller.h"
 #include "devicemodel.h"
@@ -21,6 +22,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QPointer>
+#include <QStandardPaths>
 #include <QTimer>
 
 class QQmlApplicationEngine;
@@ -68,36 +70,49 @@ private:
     Q_PROPERTY(QString versionString READ versionString CONSTANT)
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
+    Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
 
 public:
-    static void createInstance(QObject *parent, QQmlApplicationEngine *engine);
+    static void createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     static MozillaVPN *instance();
 
     State state() const { return m_state; }
+    AlertType alert() const { return m_alert; }
 
     const QString &getApiUrl() const { return m_apiUrl; }
+    const QString &token() const { return m_token; }
 
+    // Exposed QML methods:
     Q_INVOKABLE void authenticate();
-
     Q_INVOKABLE void cancelAuthentication();
-
     Q_INVOKABLE void openLink(LinkType linkType);
-
     Q_INVOKABLE void removeDevice(const QString &deviceName);
-
     Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
-
     Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
-
     Q_INVOKABLE void postAuthenticationCompleted();
-
     Q_INVOKABLE void subscribe();
+    Q_INVOKABLE void viewLogs();
+
+    // QML object getters:
+    QQmlApplicationEngine *engine() { return m_engine; }
+
+    // Internal object getters:
+    ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
+    ConnectionHealth *connectionHealth() { return m_controller.connectionHealth(); }
+    CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
+    Controller *controller() { return &m_controller; }
+    ServerData *currentServer() { return &m_serverData; }
+    DeviceModel *deviceModel() { return &m_deviceModel; }
+    const Keys *keys() const { return &m_keys; }
+    Localizer* localizer() { return &m_localizer; }
+    ServerCountryModel *serverCountryModel() { return &m_serverCountryModel; }
+    SettingsHolder *settingsHolder() { return &m_settingsHolder; }
+    User *user() { return &m_user; }
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
     void authenticationCompleted(const QByteArray &json, const QString &token);
 
-    // The device has been added.
     void deviceAdded(const QString &deviceName, const QString &publicKey, const QString &privateKey);
 
     void deviceRemoved(const QString &deviceName);
@@ -106,23 +121,7 @@ public:
 
     void accountChecked(const QByteArray &json);
 
-    QString token() const { return m_token; }
-
-    QAbstractListModel *serverCountryModel() { return &m_serverCountryModel; }
-
-    DeviceModel *deviceModel() { return &m_deviceModel; }
-
-    ServerData *currentServer() { return &m_serverData; }
-
     const QList<Server> getServers() const;
-
-    User *user() { return &m_user; }
-
-    AlertType alert() const { return m_alert; }
-
-    Controller *controller() { return &m_controller; }
-
-    const Keys *keys() const { return &m_keys; }
 
     void errorHandle(ErrorHandler::ErrorType error);
 
@@ -132,23 +131,16 @@ public:
 
     void logout();
 
-    ConnectionHealth *connectionHealth() { return m_controller.connectionHealth(); }
-
     bool updateRecommended() const { return m_updateRecommended; }
+
     void setUpdateRecommended(bool value);
 
     bool userAuthenticated() const { return m_userAuthenticated; }
 
-    Localizer* localizer() { return &m_localizer; }
-
-    QQmlApplicationEngine *engine() { return m_engine; }
-
-    SettingsHolder *settingsHolder() { return &m_settingsHolder; }
-
-    ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
+    bool startMinimized() const { return m_startMinimized; }
 
 private:
-    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine);
+    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();
 
     static void deleteInstance();
@@ -168,6 +160,11 @@ private:
 
     void setAlert(AlertType alert);
 
+    bool writeAndShowLogs(QStandardPaths::StandardLocation location);
+
+    bool writeLogs(QStandardPaths::StandardLocation location,
+                   std::function<void(const QString &filename)> &&a_callback);
+
 signals:
     void stateChanged();
     void alertChanged();
@@ -176,41 +173,38 @@ signals:
     void deviceRemoving(const QString& deviceName);
 
 private:
-    QQmlApplicationEngine *m_engine;
+    // QML objects.
+    QQmlApplicationEngine *m_engine = nullptr;
 
-    SettingsHolder m_settingsHolder;
-
+    // Internal objects.
+    ConnectionDataHolder m_connectionDataHolder;
+    CaptivePortalDetection m_captivePortalDetection;
+    Controller m_controller;
+    DeviceModel m_deviceModel;
+    Keys m_keys;
     Localizer m_localizer;
-
-    QString m_token;
+    ReleaseMonitor m_releaseMonitor;
+    ServerCountryModel m_serverCountryModel;
+    ServerData m_serverData;
+    SettingsHolder m_settingsHolder;
     User m_user;
 
-    ServerData m_serverData;
-
-    Controller m_controller;
-
-    ConnectionDataHolder m_connectionDataHolder;
-
-    DeviceModel m_deviceModel;
-    ServerCountryModel m_serverCountryModel;
-
-    Keys m_keys;
-
+    // Task handling.
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
 
-    State m_state = StateInitialize;
     QString m_apiUrl;
+    QString m_token;
 
-    QTimer m_alertTimer;
+    State m_state = StateInitialize;
     AlertType m_alert = NoAlert;
 
+    QTimer m_alertTimer;
     QTimer m_accountAndServersTimer;
 
-    ReleaseMonitor m_releaseMonitor;
     bool m_updateRecommended = false;
-
     bool m_userAuthenticated = false;
+    bool m_startMinimized = false;
 };
 
 #endif // MOZILLAVPN_H

@@ -12,9 +12,8 @@ class MozillaVPN;
 class ReleaseMonitor final : public QObject
 {
     Q_OBJECT
-public:
-    void setVPN(MozillaVPN *vpn);
 
+public:
     void runSoon();
 
 private:
@@ -23,9 +22,6 @@ private:
     void schedule();
 
     void processData(const QByteArray &data);
-
-private:
-    MozillaVPN *m_vpn = nullptr;
 };
 
 #endif // RELEASEMONITOR_H

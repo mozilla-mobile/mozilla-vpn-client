@@ -13,6 +13,8 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+constexpr const char *CAPTIVE_PORTAL_URL = "http://detectportal.firefox.com/success.txt";
+
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
     qDebug() << "Network request created";
@@ -190,6 +192,20 @@ NetworkRequest *NetworkRequest::createForIpInfo(MozillaVPN *vpn)
 
     return r;
 }
+
+NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
+{
+    Q_ASSERT(parent);
+
+    NetworkRequest *r = new NetworkRequest(parent);
+
+    QUrl url(CAPTIVE_PORTAL_URL);
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+    return r;
+}
+
 void NetworkRequest::replyFinished(QNetworkReply *reply)
 {
     Q_ASSERT(reply);

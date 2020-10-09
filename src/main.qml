@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.5
+import QtQuick 2.5
+import QtQuick.Controls 2.15
 import QtQuick.Window 2.12
 
 import Mozilla.VPN 1.0
@@ -103,13 +103,17 @@ Window {
                     }
                 }
             ]
-
-            VPNUpdateAlert {}
         }
     }
 
-
-    VPNAlert {
+    VPNSystemAlert {
         id: alertBox
+        z: 2
+    }
+
+    Component.onCompleted: {
+        if (VPN.startMinimized) {
+            this.showMinimized();
+        }
     }
 }
