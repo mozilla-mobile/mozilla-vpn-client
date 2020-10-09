@@ -363,5 +363,6 @@
         <file>components/VPNButtonBase.qml</file>
         <file>components/VPNSystemAlert.qml</file>
         <file>components/VPNSignOut.qml</file>
+        <file>components/VPNFocus.qml</file>
     </qresource>
 </RCC>

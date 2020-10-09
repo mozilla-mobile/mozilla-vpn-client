@@ -22,8 +22,10 @@ RoundButton {
         anchors.fill: parent
         color: Theme.bgColor
         radius: 4
-        border.width: root.activeFocus ? 2 : 0
-        border.color: Theme.blueFocusStroke
+    }
+
+    VPNFocus {
+        itemToFocus: root
     }
 
     contentItem: Label {
