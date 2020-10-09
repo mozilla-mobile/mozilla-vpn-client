@@ -54,8 +54,7 @@ Item {
 
         VPNTextBlock {
             id: mozillaText
-            //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-            text: qsTrId(productDescription)
+            text: qsTrId("productDescription")
             anchors.top: mozillaLabel.bottom
             anchors.topMargin: 8
         }

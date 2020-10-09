@@ -30,7 +30,7 @@ Flickable {
             //% "IPv6"
             labelText: qsTrId("ipv6")
             //% "Push the internet forward with the latest version of the Internet Protocol"
-            subLabelText: qsTrId(ipv6.description)
+            subLabelText: qsTrId("ipv6.description")
             isChecked: (VPNSettings.ipv6Enabled)
             isEnabled: isVPNOff
             showDivider: isVPNOff
@@ -44,7 +44,7 @@ Flickable {
             //% "Local network access"
             labelText: qsTrId("lanAccess")
             //% "Access printers, streaming sticks and all other devices on your local network"
-            subLabelText: qsTrId(lanAccess.description)
+            subLabelText: qsTrId("lanAccess.description")
             isChecked: (VPNSettings.localNetworkAccess)
             isEnabled: isVPNOff
             showDivider: isVPNOff
