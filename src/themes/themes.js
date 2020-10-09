@@ -12,7 +12,7 @@ const blue = "#0060DF";
 const blueHovered = "#0250BB";
 const bluePressed = "#054096";
 const blueDisabled = "#a3c0f3";
-const blueFocusStroke = "#66054096";
+const blueFocusStroke = "#660060DF";
 
 const green = "#3FE1B0";
 
