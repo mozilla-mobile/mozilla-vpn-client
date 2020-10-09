@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
-#include "controllergetstatushelper.h"
 #include "controllerimpl.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -41,6 +40,7 @@ Controller::Controller()
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
     connect(m_impl.get(), &ControllerImpl::initialized, this, &Controller::implInitialized);
+    connect(m_impl.get(), &ControllerImpl::statusUpdated, this, &Controller::statusUpdated);
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 }
@@ -396,11 +396,27 @@ void Controller::getStatus(
         return;
     }
 
-    ControllerGetStatusHelper *helper = new ControllerGetStatusHelper(this, std::move(callback));
-    connect(m_impl.get(),
-            &ControllerImpl::statusUpdated,
-            helper,
-            &ControllerGetStatusHelper::statusUpdated);
+    bool requestStatus = m_getStatusCallbacks.isEmpty();
 
-    m_impl->checkStatus();
+    m_getStatusCallbacks.append(std::move(callback));
+
+    if (requestStatus) {
+        m_impl->checkStatus();
+    }
+}
+
+void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)
+{
+    qDebug() << "Status updated";
+    QList<std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>
+        list;
+
+    list.swap(m_getStatusCallbacks);
+    for (QList<std::function<void(
+             const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>::ConstIterator i
+         = list.begin();
+         i != list.end();
+         ++i) {
+        (*i)(serverIpv4Gateway, txBytes, rxBytes);
+    }
 }

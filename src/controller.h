@@ -84,6 +84,7 @@ private Q_SLOTS:
     void disconnected();
     void timerTimeout();
     void implInitialized(bool status, State state, const QDateTime &connectionDate);
+    void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
 
 signals:
     void initialized();
@@ -122,6 +123,9 @@ private:
     };
 
     NextStep m_nextStep = None;
+
+    QList<std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>
+        m_getStatusCallbacks;
 };
 
 #endif // CONTROLLER_H
