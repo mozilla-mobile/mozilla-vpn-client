@@ -45,6 +45,7 @@ SOURCES += \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
+        platforms/macos/macosstartatbootwatcher.cpp \
         releasemonitor.cpp \
         server.cpp \
         servercity.cpp \
@@ -81,6 +82,7 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
+        platforms/macos/macosstartatbootwatcher.h \
         releasemonitor.h \
         server.h \
         servercity.h \
