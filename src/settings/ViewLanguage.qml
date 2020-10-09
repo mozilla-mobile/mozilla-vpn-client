@@ -13,7 +13,8 @@ import "../themes/themes.js" as Theme
 Flickable {
     VPNMenu {
         id: menu
-        title: qsTr("Language")
+        //% "Language"
+        title: qsTrId("language")
         isSettingsView: true
     }
 
@@ -28,7 +29,8 @@ Flickable {
         anchors.left: parent.left
         anchors.leftMargin: Theme.windowMargin
         width: parent.width
-        text: qsTr("System")
+        //% "System"
+        text: qsTrId("system")
     }
 
     VPNRadioDelegate {
@@ -57,7 +59,9 @@ Flickable {
         anchors.left: parent.left
         anchors.leftMargin: Theme.windowMargin
         width: parent.width
-        text: qsTr("Additional")
+        //% "Additional"
+        //: As in additional languages available
+        text: qsTrId("additional")
     }
 
     ListView {

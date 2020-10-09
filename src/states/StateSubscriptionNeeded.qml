@@ -13,12 +13,14 @@ import "../components"
 
 Item {
     Text {
-        text: qsTr("Subscription needed")
+        //% "Subscription needed"
+        text: qsTrId("subscriptionNeeded")
     }
 
     VPNButton {
         width: 282
-        text: qsTr("Subscribe now")
+          //% "Subscribe now"
+        text: qsTrId("subscribeNow")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

@@ -109,7 +109,9 @@ Item {
             font.pixelSize: 15
             font.family: vpnFont.name
             font.weight: Font.Bold
-            text: qsTr("IP:") + " " + VPNConnectionData.ipAddress
+            //% "IP:"
+            //: The Current Ip adress
+            text: qsTrId("ip") + " " + VPNConnectionData.ipAddress
         }
 
         Row {
@@ -119,13 +121,17 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             VPNGraphLegendMarker {
-                markerLabel: qsTr("Download")
+                //% "download"
+                //: the current download speed
+                markerLabel: qsTrId("download")
                 rectColor: "#EE3389"
                 markerData: VPNConnectionData.rxBytes
             }
 
             VPNGraphLegendMarker {
-                markerLabel: qsTr("Upload")
+                //% "upload"
+                //: the current upload speed
+                markerLabel: qsTrId("upload")
                 rectColor: "#F68953"
                 markerData: VPNConnectionData.txBytes
             }
@@ -140,8 +146,8 @@ Item {
             anchors.left: parent.left
             anchors.topMargin: 8
             anchors.leftMargin: 8
-
-            accessibleName: qsTr("Close")
+            //% "close"
+            accessibleName: qsTrId("close")
 
             Image {
                 anchors.centerIn: backButton

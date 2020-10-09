@@ -18,37 +18,38 @@ Flickable {
     ListModel {
         id: settingsMenuListModel
         ListElement {
-            settingTitle: qsTr("Notifications")
+            settingTitle: qsTrId("notifications")
             imageLeftSource: "../resources/settings/notifications.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNotifications.qml"
         }
         ListElement {
-            settingTitle: qsTr("Network settings")
+            settingTitle: qsTrId("networkSettings")
             imageLeftSource: "../resources/settings/networkSettings.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNetworkSettings.qml"
         }
         ListElement {
-            settingTitle: qsTr("Language")
+            settingTitle: qsTrId("language")
             imageLeftSource: "../resources/settings/language.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewLanguage.qml"
         }
         ListElement {
-            settingTitle: qsTr("About us")
+            settingTitle: qsTrId("aboutUs")
             imageLeftSource: "../resources/settings/aboutUs.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewAboutUs.qml"
         }
         ListElement {
-            settingTitle: qsTr("Get help")
+            settingTitle: qsTrId("getHelp")
             imageLeftSource: "../resources/settings/getHelp.svg"
             imageRightSource: "../resources/chevron.svg"
             pushGetHelp: true
         }
         ListElement {
-            settingTitle: qsTr("Give feedback")
+            //% "Give feedback"
+            settingTitle: qsTrId("giveFeedback")
             imageLeftSource: "../resources/settings/feedback.svg"
             imageRightSource: "../resources/externalLink.svg"
             openUrl: VPN.LinkFeedback
@@ -67,7 +68,7 @@ Flickable {
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
 
-        accessibleName: qsTr("Back")
+        accessibleName: qsTrId("back")
 
         Image {
             id: backImage
@@ -102,7 +103,11 @@ Flickable {
 
     VPNHeadline {
         id: logoTitle
-        text: VPNUser.displayName ? VPNUser.displayName : qsTr("VPN User")
+ 
+        text: VPNUser.displayName ? 
+                    VPNUser.displayName : 
+                    //% "VPN User"
+                    qsTrId("vpnUser")
         anchors.top: logo.bottom
         anchors.topMargin: Theme.vSpacing
         height: 32
@@ -115,7 +120,8 @@ Flickable {
 
     VPNButton {
         id: manageAccountButton
-        text: qsTr("Manage account")
+        //: "Manage account"
+        text: qsTrId("manageAccount")
         anchors.top: logoSubtitle.bottom
         anchors.topMargin: Theme.vSpacing
         onClicked: VPN.openLink(VPN.LinkAccount)
@@ -123,7 +129,9 @@ Flickable {
 
     VPNCheckBoxRow {
         id: startAtBootCheckBox
-        labelText: qsTr("Launch VPN app on computer startup")
+        //: The back of the object, not the front
+        //% "Launch VPN app on Startup"
+        labelText: qsTrId("runOnBoot")
         subLabelText: ""
         isChecked: VPNSettings.startAtBoot
         isEnabled: true
@@ -173,7 +181,7 @@ Flickable {
 
     VPNFooterLink {
         id: signOutLink
-        labelText: qsTr("Sign out")
+        labelText: qsTrId("signOut")
         isBoldLink: true
         fontName: vpnFont.name
         onClicked: VPNController.logout()

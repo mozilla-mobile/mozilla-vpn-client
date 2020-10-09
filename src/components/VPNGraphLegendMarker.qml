@@ -13,14 +13,19 @@ Row {
 
     function computeRange() {
         if (markerData < 128000) {
-            return qsTr("Kbps");
+            //% "Kbps"
+            //: Kilobits per Secound
+            return qsTrId("kbps");
         }
 
         if (markerData < 128000000) {
-            return qsTr("Mbps")
+             //% "Mbps"
+             //: Megabits per Second
+            return qsTrId("mbps")
         }
-
-        return qsTr("Gbps");
+        //% "Gbps"
+        //: Gigabits per Second
+        return qsTrId("gbps");
     }
 
     function roundValue(value) {

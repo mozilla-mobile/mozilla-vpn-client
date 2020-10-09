@@ -17,8 +17,8 @@ constexpr int MAX_POINTS = 30;
 
 // Let's refresh the IP address any 10 seconds.
 constexpr int IPADDRESS_TIMER_MSEC = 10000;
-
-ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(tr("Unknown"))
+//% "Unknown"
+ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("unknown"))
 {
     emit ipAddressChanged();
 

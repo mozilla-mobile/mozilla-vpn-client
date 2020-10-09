@@ -33,8 +33,10 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "authentication-failed"
-                alertText: qsTr("Authentication error.")
-                alertLinkText: qsTr("Try again")
+                //% "Authentication error."
+                alertText: qsTrId("authenticationError")
+                //% "Try again."
+                alertLinkText: qsTrId("tryAgain")
                 opacity: 1
                 visible: true
             }
@@ -44,8 +46,9 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "connection-failed"
-                alertText: qsTr("Unable to connect.");
-                alertLinkText: qsTr("Try again")
+                //% "Unable to connect."
+                alertText: qsTrId("unableToConnect");
+                alertLinkText: qsTrId("tryAgain")
                 opacity: 1
                 visible: true
             }
@@ -56,8 +59,9 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "no-connection"
-                alertText: qsTr("No internet connection.")
-                alertLinkText: qsTr("Try again")
+                //% "No internet connection"
+                alertText: qsTrId("noInternet")
+                alertLinkText: qsTrId("tryAgain")
                 opacity: 1
                 visible: true
             }
@@ -67,8 +71,11 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "background-service"
-                alertText: qsTr("Background service error.");
-                alertLinkText: qsTr("Restore")
+                //% "Background service error."
+                alertText: qsTrId("backgroundServiceError");
+                //% "Restore"
+                //: Restore a service in case of an Error
+                alertLinkText: qsTrId("restore")
                 opacity: 1
                 visible: true
             }
@@ -77,7 +84,8 @@ VPNAlert {
             name: VPN.LogoutAlert
             PropertyChanges {
                 target: alertBox
-                alertText: qsTr("Signed out and device removed");
+                //% "Signed out and device removed"
+                alertText: qsTrId("deviceRemovedAndLogout");
                 opacity: 1
                 visible: true
             }

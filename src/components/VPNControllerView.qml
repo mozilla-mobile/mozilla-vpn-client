@@ -38,12 +38,14 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("VPN is off")
+                //% "VPN is off"
+                text: qsTrId("vpn.deactivated")
                 color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Turn on to protect your privacy")
+                //% "Turn on to protect your privacy"
+                text: qsTrId("vpn.activationSloagan")
                 color: Theme.fontColor
             }
             PropertyChanges {
@@ -75,12 +77,12 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("VPN is off")
+                text: qsTrId("vpn.deactivated")
                 color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Turn on to protect your privacy")
+                text: qsTrId("vpn.activationSloagan")
                 color: Theme.fontColor
                 opacity: 1
             }
@@ -113,12 +115,14 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("Connecting…")
+                //% "Connecting..."
+                text: qsTrId("connecting")
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Masking connection and location")
+                //% "Masking connection and location"
+                text: qsTrId("vpn.activating")
                 color: "#FFFFFF"
                 opacity: .8
             }
@@ -155,12 +159,14 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("VPN is on")
+                //% "VPN is on"
+                text: qsTrId("vpn.activated")
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Secure and private  •  ") + formatTime(VPNController.time)
+                //% "Secure and private  •  "
+                text: qsTrId("vpn.active") + formatTime(VPNController.time)
                 visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
                 color: "#FFFFFF"
                 opacity: .8
@@ -192,12 +198,14 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("Disconnecting…")
+                //% "Disconnecting…"
+                text: qsTrId("vpn.disconnecting")
                 color: Theme.fontColorDark
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Unmasking connection and location")
+                //% "Unmasking connection and location"
+                text: qsTrId("vpn.deactivating")
                 color: Theme.fontColor
                 opacity: 1
             }
@@ -230,12 +238,15 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("Switching…")
+                //% "Switching..."
+                text: qsTrId("vpn.switching")
                 color: "#FFFFFF"
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("From %1 to %2").arg(VPNController.currentCity).arg(VPNController.switchingCity)
+                //% "From %1 to %2"
+                //: Switches from location 1 to location 2 
+                text: qsTrId("vpn.switchingDetail").arg(VPNController.currentCity).arg(VPNController.switchingCity)
                 color: "#FFFFFF"
                 opacity: .8
             }
@@ -270,13 +281,13 @@ Rectangle {
             }
             PropertyChanges {
                 target: logoTitle
-                text: qsTr("VPN is off")
+                text: qsTrId("vpn.deactivated")
                 color: Theme.fontColorDark
                 opacity: .55
             }
             PropertyChanges {
                 target: logoSubtitle
-                text: qsTr("Turn on to protect your privacy")
+                text: qsTrId("vpn.activationSloagan")
                 color: Theme.fontColor
                 opacity: .55
             }
@@ -383,8 +394,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-
-        accessibleName: qsTr("Connection Information")
+        //% "Connection Information"
+        accessibleName: qsTrId("vpn.info")
 
         VPNIcon {
             id: connectionInfoImage
@@ -403,8 +414,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2
         anchors.rightMargin: Theme.windowMargin / 2
-
-        accessibleName: qsTr("Settings")
+        //% "Settings"
+        accessibleName: qsTrId("settings")
 
         VPNIcon {
             id: settingsImage
