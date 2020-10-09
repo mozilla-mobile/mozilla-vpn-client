@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 import os
 
 THRESHOLD = 0.70 # 70% Target Completeness for import
-
+TS_FILES = []
 # Make sure the Target ts files are up to date
 os.system(f'lupdate src/src.pro -ts')
 
@@ -36,3 +36,12 @@ for path in os.listdir('i18n'):
     basename = f'mozillavpn_{language}.ts'
     os.system(f'lconvert -i translations/{basename} -i {filePath} -o translations/{basename}')
     print(f"✔\t- {language} imported to translations/{basename}")
+    TS_FILES.append(f"translations/{basename}")
+
+# Write PRI file to import 
+projectFile = open("translations/translations.pri", "w")
+projectFile.write("TRANSLATIONS += \ \n")
+for path in TS_FILES:
+    projectFile.write(f"{TS_FILES} \ \n")
+projectFile.write("\n \n ##End")
+projectFile.close()

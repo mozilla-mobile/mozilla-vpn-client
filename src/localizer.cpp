@@ -12,13 +12,16 @@
 
 void Localizer::initialize(const QString& code)
 {
-    qDebug() << "Localizer initializing:" << code;
-
     m_code = code;
-    loadLanguage(code);
+    if(code.isEmpty()){
+        m_code = QString("en");
+    }
+    qDebug() << "Localizer initializing:" << m_code;
+
+
+    loadLanguage(m_code);
 
     QCoreApplication::installTranslator(&m_translator);
-
     QDir dir(":/i18n");
     QStringList files = dir.entryList();
     for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
@@ -42,7 +45,7 @@ void Localizer::loadLanguage(const QString& code)
     QLocale::setDefault(locale);
 
     if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-        qDebug() << "Loading the locale failed.";
+        qDebug() << "Loading the locale failed." << "code";
     }
 }
 
