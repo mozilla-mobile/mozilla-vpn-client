@@ -7,6 +7,7 @@
 
 #include "captiveportaldetection.h"
 #include "connectiondataholder.h"
+#include "connectionhealth.h"
 #include "controller.h"
 #include "devicemodel.h"
 #include "errorhandler.h"
@@ -98,7 +99,7 @@ public:
 
     // Internal object getters:
     ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
-    ConnectionHealth *connectionHealth() { return m_controller.connectionHealth(); }
+    ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
     CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
     Controller *controller() { return &m_controller; }
     ServerData *currentServer() { return &m_serverData; }
@@ -179,6 +180,7 @@ private:
     // Internal objects.
     ConnectionDataHolder m_connectionDataHolder;
     CaptivePortalDetection m_captivePortalDetection;
+    ConnectionHealth m_connectionHealth;
     Controller m_controller;
     DeviceModel m_deviceModel;
     Keys m_keys;

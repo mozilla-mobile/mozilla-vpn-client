@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
+#include "controllergetstatushelper.h"
 #include "controllerimpl.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -39,7 +40,6 @@ Controller::Controller()
 
     connect(m_impl.get(), &ControllerImpl::connected, this, &Controller::connected);
     connect(m_impl.get(), &ControllerImpl::disconnected, this, &Controller::disconnected);
-    connect(m_impl.get(), &ControllerImpl::statusUpdated, this, &Controller::statusUpdated);
     connect(m_impl.get(), &ControllerImpl::initialized, this, &Controller::implInitialized);
 
     connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
@@ -139,10 +139,6 @@ void Controller::deactivate()
     }
 
     m_timer.stop();
-
-    MozillaVPN::instance()->connectionDataHolder()->reset();
-    m_connectionHealth.stop();
-
     m_impl->deactivate(m_state == StateSwitching);
 }
 
@@ -173,16 +169,12 @@ void Controller::connected()
     }
 
     m_timer.start(TIMER_MSEC);
-    MozillaVPN::instance()->connectionDataHolder()->reset();
 }
 
 void Controller::disconnected() {
     qDebug() << "Disconnected from state:" << m_state;
 
     m_timer.stop();
-
-    MozillaVPN::instance()->connectionDataHolder()->reset();
-    m_connectionHealth.stop();
 
     // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.
     if (m_state != StateDisconnecting && m_state != StateSwitching) {
@@ -213,13 +205,6 @@ void Controller::disconnected() {
 void Controller::timerTimeout()
 {
     Q_ASSERT(m_state == StateOn);
-
-    // If we don't have the connection-health system active or if the connection info view is shown, let's check the status.
-    if (!m_connectionHealth.isRunning()
-        || MozillaVPN::instance()->connectionDataHolder()->isRunning()) {
-        m_impl->checkStatus();
-    }
-
     emit timeChanged();
 }
 
@@ -385,19 +370,6 @@ int Controller::time() const
     return m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000;
 }
 
-void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)
-{
-    if (m_state != StateOn) {
-        return;
-    }
-
-    if (!m_connectionHealth.isRunning()) {
-        m_connectionHealth.start(serverIpv4Gateway);
-    }
-
-    MozillaVPN::instance()->connectionDataHolder()->add(txBytes, rxBytes);
-}
-
 void Controller::captivePortalDetected()
 {
     qDebug() << "Captive portal detected in state:" << m_state;
@@ -408,4 +380,27 @@ void Controller::getBackendLogs(std::function<void(const QString &)> &&a_callbac
 {
     std::function<void(const QString &)> callback = std::move(a_callback);
     m_impl->getBackendLogs(std::move(callback));
+}
+
+void Controller::getStatus(
+    std::function<void(const QString &serverIpv4Gateway, uint64_t txByte, uint64_t rxBytes)>
+        &&a_callback)
+{
+    qDebug() << "check status";
+
+    std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
+        callback = std::move(a_callback);
+
+    if (m_state != StateOn) {
+        callback(QString(), 0, 0);
+        return;
+    }
+
+    ControllerGetStatusHelper *helper = new ControllerGetStatusHelper(this, std::move(callback));
+    connect(m_impl.get(),
+            &ControllerImpl::statusUpdated,
+            helper,
+            &ControllerGetStatusHelper::statusUpdated);
+
+    m_impl->checkStatus();
 }
