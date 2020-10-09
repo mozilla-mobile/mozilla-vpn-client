@@ -55,7 +55,9 @@ Flickable {
         }
     }
 
-    contentHeight: 660
+    contentHeight: 720
+    height: parent.height
+
     boundsBehavior: Flickable.StopAtBounds
 
     VPNIconButton {
@@ -130,8 +132,9 @@ Flickable {
         showDivider: true
 
         anchors.top: manageAccountButton.bottom
-        anchors.topMargin: Theme.vSpacing
-
+        anchors.topMargin: Theme.hSpacing * 1.5
+        anchors.rightMargin: Theme.hSpacing
+        width: parent.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
     }
 
@@ -145,7 +148,7 @@ Flickable {
     ListView {
         id: settingsList
         interactive: false // disable scrolling on list since the entire window is scrollable
-        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height - startAtBootCheckBox.height
+        height: settingsList.count * (40 + (Theme.listSpacing * 2))
         width: parent.width
         anchors.top: startAtBootCheckBox.bottom
         anchors.topMargin: Theme.vSpacing
