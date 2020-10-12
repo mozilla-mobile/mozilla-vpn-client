@@ -18,7 +18,8 @@ VPNClickableRow {
 
         VPNIconAndLabel {
             icon: "../resources/devices.svg"
-            title: qsTr("My devices")
+            //% "My devices"
+            title: qsTrId("myDevices")
         }
 
         Item {
@@ -39,7 +40,9 @@ VPNClickableRow {
                 name: "active" // normal mode
                 PropertyChanges {
                     target: label
-                    text: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices).arg(
+                    //% "%1 of %2"
+                    //: Context: You have "x of y" (y is max) devices in your account.
+                    text: qsTrId("activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(
                               VPNUser.maxDevices)
                 }
             },
@@ -47,7 +50,7 @@ VPNClickableRow {
                 name: "deviceLimit" // device limit mode
                 PropertyChanges {
                     target: label
-                    text: qsTr("%1 of %2").arg(VPNDeviceModel.activeDevices + 1).arg(
+                    text: qsTrId("activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(
                               VPNUser.maxDevices)
                 }
                 PropertyChanges {

@@ -13,7 +13,8 @@ import "../components"
 Flickable {
     VPNMenu {
         id: menu
-        title: qsTr("Notifications")
+        //% "Notifications"
+        title: qsTrId("notifications")
         isSettingsView: true
     }
 
@@ -25,8 +26,10 @@ Flickable {
         /* TODO
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
-            labelText: qsTr("Unsecured network alert")
-            subLabelText: qsTr("Get notified if you connect to an unsecured Wi-Fi network")
+            //% "Unsecured network alert"
+            labelText: qsTrId("unsecuredNetworkAlert")
+            //% "Get notified if you connect to an unsecured Wi-Fi network"
+            subLabelText: qsTrId("unsecuredNetworkAlert.description")
             isChecked: VPNSettings.unsecuredNetworkAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff
@@ -36,8 +39,10 @@ Flickable {
 
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
-            labelText: qsTr("Guest Wi-Fi portal alert")
-            subLabelText: qsTr("Get notified if a guest Wi-Fi portal is blocked due to VPN connection")
+            //% "Guest Wi-Fi portal alert"
+            labelText: qsTrId("guestWifiAlert")
+            //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
+            subLabelText: qsTrId("guestWifiAlert.description")
             isChecked: VPNSettings.captivePortalAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff

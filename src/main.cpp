@@ -39,18 +39,20 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
-        QApplication::tr("A fast, secure and easy to use VPN. Built by the makers of Firefox."));
+        qtTrId("productDescription"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     QCommandLineOption minimizedOption(QStringList() << "m"
                                                      << "minimized",
-                                       QCoreApplication::tr("Start minimized"));
+                                        //% "Start minimized"
+                                        qtTrId("startMinimized"));
     parser.addOption(minimizedOption);
 
     QCommandLineOption startAtBootOption(QStringList() << "s"
                                                        << "start-at-boot",
-                                         QCoreApplication::tr("Start at boot (if configured)"));
+                                        //% "Start at boot (if configured)"
+                                        qtTrId("startOnBoot"));
     parser.addOption(startAtBootOption);
 
     parser.process(app);

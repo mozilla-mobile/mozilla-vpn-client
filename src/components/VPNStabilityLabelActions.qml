@@ -15,7 +15,12 @@ ParallelAnimation {
     PropertyAction {
         target: stabilityLabel
         property: "text"
-        value: isConnectionUnstable ? qsTr("Unstable") : qsTr("No Signal")
+        value: isConnectionUnstable ?
+               //% "Unstable" 
+               //: Unstable Connection
+               qsTrId("unstable") :
+               //% "No Signal" 
+               qsTrId("noSignal")
     }
     PropertyAction {
         target: warningIcon

@@ -13,7 +13,8 @@ Item {
     id: viewInitialize
     VPNHeaderLink {
         id: headerLink
-        labelText: qsTr("Get help")
+        //% "Get help"
+        labelText: qsTrId("getHelp")
         onClicked: stackview.push(getHelpComponent)
     }
 
@@ -26,8 +27,9 @@ Item {
 
     VPNPanel {
         logo: "../resources/logo.svg"
-        logoTitle: qsTr("Mozilla VPN")
-        logoSubtitle: qsTr("A fast, secure and easy to use VPN. Built by the makers of Firefox.")
+        logoTitle: qsTrId("productName")
+        //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
+        logoSubtitle: qsTrId("productDescription")
     }
 
     VPNButton {
@@ -35,7 +37,8 @@ Item {
         anchors.bottom: learnMore.top
         anchors.bottomMargin: 24
         width: 282
-        text: qsTr("Get started")
+        //% "Get started"
+        text: qsTrId("getStarted")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
@@ -47,7 +50,8 @@ Item {
 
     VPNFooterLink {
         id: learnMore
-        labelText: qsTr("Learn more")
+        //% "Learn more"
+        labelText: qsTrId("learnMore")
         onClicked: stackview.push("ViewOnboarding.qml")
     }
 

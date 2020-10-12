@@ -18,15 +18,16 @@ Item {
 
     VPNHeaderLink {
         id: getHelp
-        labelText: qsTr("Skip")
+        //% "Skip"
+        labelText: qsTrId("skip")
         onClicked: stackview.pop()
     }
 
     VPNPanel {
         id: contentWrapper
         logo: `../resources/onboarding/${onboardingPanel.state}.svg`
-        logoTitle:  qsTr(PanelCopy.onboardingCopy[onboardingPanel.state].headline)
-        logoSubtitle: qsTr(PanelCopy.onboardingCopy[onboardingPanel.state].subtitle)
+        logoTitle:  (PanelCopy.onboardingCopy[onboardingPanel.state].headline)
+        logoSubtitle: (PanelCopy.onboardingCopy[onboardingPanel.state].subtitle)
 
         Component.onCompleted: fade.start()
         PropertyAnimation on opacity {
@@ -41,7 +42,10 @@ Item {
         property var onboardingOver: (panelNum === 4)
         id: nextPanel
         width: 282
-        text: onboardingOver ? qsTr("Get started") : qsTr("Next")
+        text: onboardingOver ? 
+            qsTrId("getStarted") : 
+            //% "Next"
+            qsTrId("next")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressIndicator.top

@@ -20,8 +20,10 @@ Flickable {
             name: "recommended"
             PropertyChanges {
                 target: contentWrapper
-                logoTitle: qsTr("Update recomended")
-                logoSubtitle: qsTr("Please update the app before you\ncontinue to use the VPN")
+                //% "Update recomended"
+                logoTitle: qsTrId("updateRecomended")
+                //% "Please update the app before you\ncontinue to use the VPN"
+                logoSubtitle: qsTrId("updateRecomended.description")
                 logoY: 50
             }
             PropertyChanges {
@@ -52,8 +54,10 @@ Flickable {
             name: "required"
             PropertyChanges {
                 target: contentWrapper
-                logoTitle: qsTr("Update required")
-                logoSubtitle: qsTr("We detected and fixed a serious bug.\nYou must update your app.")
+                //% "Update Required"
+                logoTitle: qsTrId("updateRequired")
+                //% "We detected and fixed a serious bug.\nYou must update your app."
+                logoSubtitle: qsTrId("updateRequire.reason")
                 logoY: 35
             }
             PropertyChanges {
@@ -164,7 +168,8 @@ Flickable {
                 Layout.maximumWidth: 250
                 Layout.alignment: Qt.AlignVCenter
                 wrapMode: Text.Wrap
-                text: qsTr("Your connection will not be secure while you update.")
+                //% "Your connection will not be secure while you update."
+                text: qsTrId("updateConnectionInsecureWarning")
             }
         }
     }
@@ -172,7 +177,7 @@ Flickable {
     VPNButton {
         id: updateBtn
         width: 282
-        text: qsTr("Update now")
+        text: qsTrId("updateNow")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: footerLink.top
@@ -183,14 +188,20 @@ Flickable {
 
     VPNLinkButton {
         id: footerLink
-        labelText: (updatePanel.state === "recommended") ? qsTr("Not now") : qsTr("Manage account")
+       
+        labelText: (updatePanel.state === "recommended") ? 
+            //% "Not now"
+            qsTrId("notNow") : 
+            //% "Manage account"
+            qsTrId("manageAccount")
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
     }
 
     VPNFooterLink {
         id: signOff
-        labelText: qsTr("Sign out")
+        //% "Sign Out"
+        labelText: qsTrId("signOut")
         isBoldLink: true
         fontName: vpnFont.name
         onClicked: {

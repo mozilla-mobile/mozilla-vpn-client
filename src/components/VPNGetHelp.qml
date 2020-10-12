@@ -15,7 +15,8 @@ Item {
 
     VPNMenu {
         id: menu
-        title: qsTr("Get help")
+        //% "Get Help"
+        title: qsTrId("getHelp")
         isSettingsView: true
     }
 
@@ -30,15 +31,18 @@ Item {
 
         model: ListModel {
             ListElement {
-                linkTitle: qsTr("Contact us")
+                //% "Contact us"
+                linkTitle: qsTrId("contactUs")
                 clickId: "contact_us"
             }
             ListElement {
-                linkTitle: qsTr("Help & Support")
+                //% "Help & Support"
+                linkTitle: qsTrId("helpAndSupport")
                 clickId: "help_support"
             }
             ListElement {
-                linkTitle: qsTr("View log")
+                //% "View log"
+                linkTitle: qsTrId("viewLog")
                 clickId: "view_logs"
             }
         }

@@ -6,10 +6,12 @@ import xml.etree.ElementTree as ET
 import os
 
 THRESHOLD = 0.70 # 70% Target Completeness for import
+FILES = []
 
-# Make sure the Target ts files are up to date
-os.system(f'lupdate src/src.pro -ts')
-
+# Step 1 - 
+# go through the i18n repo, check each xlf file and take 
+# note which lang is >70% complete
+# Adds path of {.xlf / .ts } to FILES
 for path in os.listdir('i18n'):
     if(not os.path.isdir(f'i18n/{path}')):
         continue # Skip non dirs
@@ -33,6 +35,31 @@ for path in os.listdir('i18n'):
     if(complete < THRESHOLD):
             print(f"❌\t- {language} is not completed {round(complete*100,2)}%, at least {THRESHOLD*100}% are needed")
             continue # Not enough translations next file please
-    basename = f'mozillavpn_{language}.ts'
-    os.system(f'lconvert -i translations/{basename} -i {filePath} -o translations/{basename}')
-    print(f"✔\t- {language} imported to translations/{basename}")
+    basename = f'mozillavpn_{language}'
+    print(f"✔\t- {language} added")
+    FILES.append({
+       "ts" : f"translations/{basename}.ts",
+       "xlf": filePath
+    })
+
+if len(FILES) == 0:
+    print("No Languages were imported")
+    exit(1)
+
+# Step 2 -  
+# Write PRI file to import the done languages 
+projectFile = open("translations/translations.pri", "w")
+projectFile.write("TRANSLATIONS += \ \n")
+for file in FILES:
+    projectFile.write(f"../{file['ts']} \ \n")
+projectFile.write("\n \n ##End")
+projectFile.close()
+print("Updated translations.pri")
+
+
+# Step 3 - generate new ts files
+os.system(f'lupdate src/src.pro -ts')
+# Step 4 - now import done translations into the files
+for file in FILES:
+    os.system(f"lconvert -i {file['ts']} -i {file['xlf']} -o {file['ts']}")
+print("Imported Languages")

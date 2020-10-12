@@ -20,7 +20,9 @@ VPNClickableRow {
 
         VPNIconAndLabel {
             icon: "../resources/connection.svg"
-            title: qsTr("Select location")
+            //% "Select location"
+            //: Select the Location of the VPN server
+            title: qsTrId("selectLocation")
         }
 
         Item {

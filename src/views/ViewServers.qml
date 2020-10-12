@@ -14,7 +14,7 @@ import "../themes/themes.js" as Theme
 Item {
     VPNMenu {
         id: menu
-        title: qsTr("Select location")
+        title: qsTrId("selectLocation")
     }
 
     ButtonGroup {

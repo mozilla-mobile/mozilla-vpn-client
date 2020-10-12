@@ -11,7 +11,8 @@ import "../components"
 Item {
     VPNHeadline {
         id: headline
-        text: qsTr("Waiting for sign in and subscription confirmation...")
+        //% "Waiting for sign in and subscription confirmation…"
+        text: qsTrId("waitForSignIn")
         anchors.top: parent.top
         anchors.topMargin: 32
     }
@@ -38,7 +39,8 @@ Item {
 
     VPNFooterLink {
         id: getHelp
-        labelText: qsTr("Cancel and try again")
+        //% "Cancel and try again"
+        labelText: qsTrId("cancelAndRetry")
         onClicked: VPN.cancelAuthentication()
     }
 

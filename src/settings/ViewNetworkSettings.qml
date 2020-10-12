@@ -15,7 +15,8 @@ import "../themes/themes.js" as Theme
 Flickable {
     VPNMenu {
         id: menu
-        title: qsTr("Network settings")
+        //% "Network settings"
+        title: qsTrId("networkSettings")
         isSettingsView: true
     }
 
@@ -26,8 +27,10 @@ Flickable {
 
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
-            labelText: qsTr("IPv6")
-            subLabelText: qsTr("Push the internet forward with the latest version of the Internet Protocol")
+            //% "IPv6"
+            labelText: qsTrId("ipv6")
+            //% "Push the internet forward with the latest version of the Internet Protocol"
+            subLabelText: qsTrId("ipv6.description")
             isChecked: (VPNSettings.ipv6Enabled)
             isEnabled: isVPNOff
             showDivider: isVPNOff
@@ -38,8 +41,10 @@ Flickable {
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             id: localNetwork
-            labelText: qsTr("Local network access")
-            subLabelText: qsTr("Access printers, streaming sticks and all other devices on your local network")
+            //% "Local network access"
+            labelText: qsTrId("lanAccess")
+            //% "Access printers, streaming sticks and all other devices on your local network"
+            subLabelText: qsTrId("lanAccess.description")
             isChecked: (VPNSettings.localNetworkAccess)
             isEnabled: isVPNOff
             showDivider: isVPNOff

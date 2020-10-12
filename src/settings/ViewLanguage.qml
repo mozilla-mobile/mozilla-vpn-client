@@ -14,7 +14,8 @@ Item {
     id: container
     VPNMenu {
         id: menu
-        title: qsTr("Language")
+        //% "Language"
+        title: qsTrId("language")
         isSettingsView: true
     }
 
@@ -44,7 +45,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin
                 width: parent.width
-                text: qsTr("System")
+                text: qsTrId("system")
             }
 
             VPNRadioDelegate {
@@ -71,7 +72,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin
                 width: parent.width
-                text: qsTr("Additional")
+                text: qsTrId("additional")
             }
         }
 

@@ -22,7 +22,8 @@ Window {
     minimumHeight: height
     minimumWidth: width
 
-    title: qsTr("Mozilla VPN")
+    //% "Mozilla VPN"
+    title: qsTrId("productName")
     color: "#F9F9FA"
 
     FontLoader { id: vpnFont; source: "qrc:/resources/fonts/Metropolis-Regular.otf" }

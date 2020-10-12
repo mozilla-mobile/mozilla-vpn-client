@@ -24,8 +24,10 @@ Flickable {
         alertType: "update"
         alertColor: Theme.blueButton
         visible: state === "recommended"
-        alertText: qsTr("New version is available.")
-        alertLinkText: qsTr("Update now")
+        //% "New version is available."
+        alertText: qsTrId("newVersionAvailable")
+        //% "Update now"
+        alertLinkText: qsTrId("updateNow")
         y: Theme.windowMargin
         width: parent.width - (Theme.windowMargin * 2)
     }
