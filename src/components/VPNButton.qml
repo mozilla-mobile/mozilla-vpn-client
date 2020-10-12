@@ -22,13 +22,20 @@ RoundButton {
     Layout.rightMargin: 16
 
     background: Rectangle {
-        color: "#0060DF"
+        id: bgColor
+        color: Theme.blueButton.defaultColor
         radius: 4
 
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+            }
+        }
+
         Rectangle {
-            radius: 4
-            border.width: button.visualFocus ? 2 : 0
-            border.color: Theme.blueFocusStroke
+            radius: 6
+            opacity: button.visualFocus ? 1 : 0
+            color: Theme.blueButton.focusStroke
             z: -1
             anchors.fill: parent
             anchors.margins: -4
@@ -48,5 +55,41 @@ RoundButton {
         font.family: vpnFont.name
         font.pixelSize: 15
         font.weight: Font.Bold
+    }
+
+
+    state: "state-default"
+    states: [
+        State {
+            name: "state-default"
+            PropertyChanges {
+                target: bgColor
+                color: Theme.blueButton.defaultColor
+            }
+        },
+        State {
+            name: "state-hovering"
+            PropertyChanges {
+                target: bgColor
+                color: Theme.blueButton.buttonHovered
+            }
+        },
+        State {
+            name: "state-pressed"
+            PropertyChanges {
+                target: bgColor
+                color: Theme.blueButton.buttonPressed
+            }
+        }
+
+    ]
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        onEntered: button.state = "state-hovering"
+        onExited: button.state = "state-default"
+        onPressed: button.state = "state-pressed"
+        onClicked: button.clicked();
     }
 }
