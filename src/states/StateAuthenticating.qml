@@ -11,7 +11,7 @@ import "../components"
 Item {
     VPNHeadline {
         id: headline
-        //% "Waiting for sign in and subscription confirmation..."
+        //% "Waiting for sign in and subscription confirmation…"
         text: qsTrId("waitForSignIn")
         anchors.top: parent.top
         anchors.topMargin: 32

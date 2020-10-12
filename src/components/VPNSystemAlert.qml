@@ -33,9 +33,9 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "authentication-failed"
-                //% "Authentication error."
+                //% "Authentication error"
                 alertText: qsTrId("authenticationError")
-                //% "Try again."
+                //% "Try again"
                 alertLinkText: qsTrId("tryAgain")
                 opacity: 1
                 visible: true
@@ -46,7 +46,7 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "connection-failed"
-                //% "Unable to connect."
+                //% "Unable to connect"
                 alertText: qsTrId("unableToConnect");
                 alertLinkText: qsTrId("tryAgain")
                 opacity: 1
@@ -71,7 +71,7 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "background-service"
-                //% "Background service error."
+                //% "Background service error"
                 alertText: qsTrId("backgroundServiceError");
                 //% "Restore"
                 //: Restore a service in case of an Error

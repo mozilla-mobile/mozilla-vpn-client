@@ -257,19 +257,19 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 exists($$PWD/../translations/translations.pri) {
-  include($$PWD/../translations/translations.pri)
+    include($$PWD/../translations/translations.pri)
 }
 else{
- message( Languages were not imported - using fallback english)
- TRANSLATIONS += \
-    ../translations/mozillavpn_en.ts \
+    message( Languages were not imported - using fallback english)
+    TRANSLATIONS += \
+        ../translations/mozillavpn_en.ts \
 
- ts.commands += lupdate $$PWD -ts $$PWD/../translations/mozillavpn_en.ts
- ts.CONFIG += no_check_exist
- ts.output = $$PWD/../translations/mozillavpn_en.ts
- ts.input = .
- QMAKE_EXTRA_TARGETS += ts
- PRE_TARGETDEPS += ts
+    ts.commands += lupdate $$PWD -ts $$PWD/../translations/mozillavpn_en.ts
+    ts.CONFIG += no_check_exist
+    ts.output = $$PWD/../translations/mozillavpn_en.ts
+    ts.input = .
+    QMAKE_EXTRA_TARGETS += ts
+    PRE_TARGETDEPS += ts
 }
 
 

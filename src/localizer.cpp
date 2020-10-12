@@ -14,7 +14,8 @@ void Localizer::initialize(const QString& code)
 {
     m_code = code;
     if(code.isEmpty()){
-        m_code = QString("en");
+        QLocale locale = QLocale::system();
+        m_code = locale.bcp47Name();
     }
     qDebug() << "Localizer initializing:" << m_code;
 
@@ -42,6 +43,9 @@ void Localizer::initialize(const QString& code)
 void Localizer::loadLanguage(const QString& code)
 {
     QLocale locale = QLocale(code);
+    if (code.isEmpty()) {
+        locale = QLocale::system();
+    }
     QLocale::setDefault(locale);
 
     if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
@@ -52,6 +56,9 @@ void Localizer::loadLanguage(const QString& code)
 QString Localizer::languageName(const QString &code) const
 {
     QLocale locale(code);
+    if (code.isEmpty()) {
+        locale = QLocale::system();
+    }
     if (locale.language() == QLocale::C) {
         return "English (US)";
     }
@@ -62,6 +69,9 @@ QString Localizer::languageName(const QString &code) const
 QString Localizer::localizedLanguageName(const QString &code) const
 {
     QLocale locale(code);
+    if (code.isEmpty()) {
+        locale = QLocale::system();
+    }
     if (locale.language() == QLocale::C) {
         return "English (US)";
     }

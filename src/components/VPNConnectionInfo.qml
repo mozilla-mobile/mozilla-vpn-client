@@ -109,9 +109,9 @@ Item {
             font.pixelSize: 15
             font.family: vpnFont.name
             font.weight: Font.Bold
-            //% "IP:"
+            //% "IP: %1"
             //: The Current Ip adress
-            text: qsTrId("ip") + " " + VPNConnectionData.ipAddress
+            text: qsTrId("ip").arg(VPNConnectionData.ipAddress)
         }
 
         Row {
@@ -146,7 +146,7 @@ Item {
             anchors.left: parent.left
             anchors.topMargin: 8
             anchors.leftMargin: 8
-            //% "close"
+            //% "Close"
             accessibleName: qsTrId("close")
 
             Image {
