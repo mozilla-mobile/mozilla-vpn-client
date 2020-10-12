@@ -15,12 +15,6 @@ SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
     setContextMenu(&m_menu);
 }
 
-void SystemTrayHandler::captivePortalNotificationRequested()
-{
-    qDebug() << "Capitve portal notification shown";
-    showMessage(tr("Captive portal detected!"), tr("TODO"), NoIcon, 2000);
-}
-
 void SystemTrayHandler::controllerStateChanged()
 {
     qDebug() << "Show notification";

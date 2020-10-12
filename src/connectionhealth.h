@@ -33,8 +33,6 @@ public:
 
     void stop();
 
-    bool isRunning() const { return m_state != Inactive; }
-
     ConnectionStability stability() const { return m_stability; }
 
 public Q_SLOTS:
