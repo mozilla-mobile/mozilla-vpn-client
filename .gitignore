@@ -21,6 +21,7 @@ dbus_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
 translations/*.qm
+translations/*.pri
 .qm
 .tmp
 xcode.xconfig
