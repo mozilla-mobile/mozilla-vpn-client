@@ -26,7 +26,7 @@ public:
 
     void initialize(const QString &code);
 
-    void loadLanguage(const QString &code);
+    bool loadLanguage(const QString &code);
 
     QString systemLanguage() const { return languageName(""); }
 

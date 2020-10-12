@@ -85,7 +85,7 @@ Item {
             VPNRadioDelegate {
                 id: radioDel
 
-                radioButtonLabelText: qsTr(language)
+                radioButtonLabelText: language
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
 

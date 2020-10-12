@@ -44,7 +44,7 @@ for path in os.listdir('i18n'):
 
 if len(FILES) == 0:
     print("No Languages were imported")
-    exit(1)
+    exit(0)
 
 # Step 2 -  
 # Write PRI file to import the done languages 

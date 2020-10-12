@@ -20,7 +20,9 @@ void Localizer::initialize(const QString& code)
     qDebug() << "Localizer initializing:" << m_code;
 
 
-    loadLanguage(m_code);
+    if (!loadLanguage(m_code) && m_code != "") {
+        return initialize("");
+    }
 
     QCoreApplication::installTranslator(&m_translator);
     QDir dir(":/i18n");
@@ -40,7 +42,7 @@ void Localizer::initialize(const QString& code)
     }
 }
 
-void Localizer::loadLanguage(const QString& code)
+bool Localizer::loadLanguage(const QString& code)
 {
     QLocale locale = QLocale(code);
     if (code.isEmpty()) {
@@ -50,7 +52,10 @@ void Localizer::loadLanguage(const QString& code)
 
     if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
         qDebug() << "Loading the locale failed." << "code";
+        return false;
     }
+
+    return true;
 }
 
 QString Localizer::languageName(const QString &code) const
