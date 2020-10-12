@@ -79,7 +79,10 @@
             <!-- extract android style -->
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
-        <service android:name=".VPNService">
+        <service android:name=".FancyVPN" android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
         </service>
     </application>
 
