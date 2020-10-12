@@ -17,8 +17,6 @@ class SystemTrayHandler : public QSystemTrayIcon
 public:
     SystemTrayHandler(const QIcon &icon, QObject *parent);
 
-    void captivePortalNotificationRequested();
-
 public Q_SLOTS:
     void controllerStateChanged();
 

@@ -39,8 +39,6 @@ public:
 
     static NetworkRequest *createForIpInfo(MozillaVPN *vpn);
 
-    static NetworkRequest *createForCaptivePortalDetection(QObject *parent);
-
 private:
     NetworkRequest(QObject *parent);
 

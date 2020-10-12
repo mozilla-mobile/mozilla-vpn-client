@@ -5,7 +5,6 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
-#include "captiveportaldetection.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
@@ -100,7 +99,6 @@ public:
     // Internal object getters:
     ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
     ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
-    CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
     Controller *controller() { return &m_controller; }
     ServerData *currentServer() { return &m_serverData; }
     DeviceModel *deviceModel() { return &m_deviceModel; }
@@ -179,7 +177,6 @@ private:
 
     // Internal objects.
     ConnectionDataHolder m_connectionDataHolder;
-    CaptivePortalDetection m_captivePortalDetection;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
     DeviceModel m_deviceModel;

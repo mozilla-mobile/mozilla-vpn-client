@@ -43,8 +43,6 @@ public:
     quint64 txBytes() const;
     quint64 rxBytes() const;
 
-    bool isRunning() const { return !!m_txSeries; }
-
 private:
     void add(uint64_t txBytes, uint64_t rxBytes);
 
