@@ -13,7 +13,7 @@
 #endif
 
 #ifdef MACOS_INTEGRATION
-#include "platforms/macos/macosutils.h"
+#include "platforms/macos/macosstartatbootwatcher.h"
 #endif
 
 #include <QApplication>
@@ -79,7 +79,12 @@ int main(int argc, char *argv[])
     }
 
 #ifdef MACOS_INTEGRATION
-    MacOSUtils::enableLoginItem(!MozillaVPN::instance()->settingsHolder()->startAtBoot());
+    MacOSStartAtBootWatcher startAtBootWatcher(
+        MozillaVPN::instance()->settingsHolder()->startAtBoot());
+    QObject::connect(MozillaVPN::instance()->settingsHolder(),
+                     &SettingsHolder::startAtBootChanged,
+                     &startAtBootWatcher,
+                     &MacOSStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #ifdef __linux__

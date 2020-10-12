@@ -17,12 +17,23 @@ constexpr int MAX_POINTS = 30;
 
 // Let's refresh the IP address any 10 seconds.
 constexpr int IPADDRESS_TIMER_MSEC = 10000;
+
+// Let's check the connection status any second.
+constexpr int CHECKSTATUS_TIMER_MSEC = 1000;
 //% "Unknown"
 ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("unknown"))
 {
     emit ipAddressChanged();
 
     connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
+    connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
+        MozillaVPN::instance()->controller()->getStatus(
+            [this](const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes) {
+                if (!serverIpv4Gateway.isEmpty()) {
+                    add(txBytes, rxBytes);
+                }
+            });
+    });
 }
 
 void ConnectionDataHolder::enable()
@@ -129,6 +140,8 @@ void ConnectionDataHolder::activate(const QVariant &a_txSeries,
         m_txSeries->append(m_txSeries->count(), 0);
         m_rxSeries->append(m_rxSeries->count(), 0);
     }
+
+    m_checkStatusTimer.start(CHECKSTATUS_TIMER_MSEC);
 }
 
 void ConnectionDataHolder::deactivate()
@@ -140,6 +153,8 @@ void ConnectionDataHolder::deactivate()
     m_axisY = nullptr;
     m_txSeries = nullptr;
     m_rxSeries = nullptr;
+
+    m_checkStatusTimer.stop();
 }
 
 void ConnectionDataHolder::computeAxes()
@@ -220,4 +235,13 @@ quint64 ConnectionDataHolder::bytes(bool index) const
     }
 
     return value;
+}
+
+void ConnectionDataHolder::connectionStateChanged()
+{
+    reset();
+
+    if (m_txSeries && MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
+        m_checkStatusTimer.start();
+    }
 }

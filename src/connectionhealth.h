@@ -37,6 +37,9 @@ public:
 
     ConnectionStability stability() const { return m_stability; }
 
+public Q_SLOTS:
+    void connectionStateChanged();
+
 private Q_SLOTS:
     void pingCompleted();
 

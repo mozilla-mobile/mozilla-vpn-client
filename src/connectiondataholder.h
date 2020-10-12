@@ -29,8 +29,6 @@ public:
     void enable();
     void disable();
 
-    void add(uint64_t txBytes, uint64_t rxBytes);
-
     Q_INVOKABLE void activate(const QVariant &txSeries,
                               const QVariant &rxSeries,
                               const QVariant &axisX,
@@ -48,11 +46,16 @@ public:
     bool isRunning() const { return !!m_txSeries; }
 
 private:
+    void add(uint64_t txBytes, uint64_t rxBytes);
+
     void computeAxes();
     void updateIpAddress();
 
     // Boolean because we have just first and second index in the vector.
     quint64 bytes(bool index) const;
+
+public Q_SLOTS:
+    void connectionStateChanged();
 
 signals:
     void ipAddressChanged();
@@ -73,6 +76,7 @@ private:
 
     QString m_ipAddress;
     QTimer m_ipAddressTimer;
+    QTimer m_checkStatusTimer;
 };
 
 #endif // CONNECTIONDATAHOLDER_H

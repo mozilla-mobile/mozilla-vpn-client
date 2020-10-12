@@ -98,6 +98,16 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &CaptivePortalDetection::captivePortalDetected,
             &m_controller,
             &Controller::captivePortalDetected);
+
+    connect(&m_controller,
+            &Controller::stateChanged,
+            &m_connectionDataHolder,
+            &ConnectionDataHolder::connectionStateChanged);
+
+    connect(&m_controller,
+            &Controller::stateChanged,
+            &m_connectionHealth,
+            &ConnectionHealth::connectionStateChanged);
 }
 
 MozillaVPN::~MozillaVPN() = default;

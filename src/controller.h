@@ -5,7 +5,6 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "connectionhealth.h"
 #include "server.h"
 
 #include <QDateTime>
@@ -63,8 +62,6 @@ public:
 
     const QString &switchingCity() const { return m_switchingCity; }
 
-    ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
-
     void setDeviceLimit(bool deviceLimit);
 
     bool isDeviceLimit() const { return m_state == StateDeviceLimit; }
@@ -74,6 +71,10 @@ public:
     void subscriptionNeeded();
 
     void getBackendLogs(std::function<void(const QString &logs)> &&callback);
+
+    void getStatus(
+        std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
+            &&callback);
 
 public Q_SLOTS:
     void captivePortalDetected();
@@ -112,8 +113,6 @@ private:
     QString m_switchingCountryCode;
     QString m_switchingCity;
 
-    ConnectionHealth m_connectionHealth;
-
     enum NextStep {
         None,
         Quit,
@@ -124,6 +123,9 @@ private:
     };
 
     NextStep m_nextStep = None;
+
+    QList<std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>
+        m_getStatusCallbacks;
 };
 
 #endif // CONTROLLER_H
