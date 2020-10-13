@@ -24,17 +24,7 @@ public:
     bool checkInterface();
 
 public Q_SLOTS:
-    bool activate(const QString &privateKey,
-                  const QString &deviceIpv4Address,
-                  const QString &deviceIpv6Address,
-                  const QString &serverIpv4Gateway,
-                  const QString &serverIpv6Gateway,
-                  const QString &serverPublicKey,
-                  const QString &serverIpv4AddrIn,
-                  const QString &serverIpv6AddrIn,
-                  int serverPort,
-                  bool ipv6Enabled,
-                  bool localNetworkAccess);
+    bool activate(const QString &jsonConfig);
 
     bool deactivate();
 

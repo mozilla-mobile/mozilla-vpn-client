@@ -44,7 +44,6 @@ SOURCES += \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
-        platforms/macos/macosstartatbootwatcher.cpp \
         releasemonitor.cpp \
         server.cpp \
         servercity.cpp \
@@ -80,7 +79,6 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
-        platforms/macos/macosstartatbootwatcher.h \
         releasemonitor.h \
         server.h \
         servercity.h \
@@ -152,6 +150,7 @@ else:macos {
 
     SOURCES += \
             platforms/macos/macospingsendworker.cpp \
+            platforms/macos/macosstartatbootwatcher.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
@@ -161,6 +160,7 @@ else:macos {
 
     HEADERS += \
             platforms/macos/macospingsendworker.h \
+            platforms/macos/macosstartatbootwatcher.h \
             tasks/authenticate/authenticationlistener.h
 
     OBJECTIVE_HEADERS += \
