@@ -107,8 +107,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             color: "#FFFFFF"
             font.pixelSize: 15
-            font.family: Theme.fontFamily
-            font.bold: true
+            font.family: Theme.fontBoldFamily
             //% "IP: %1"
             //: The Current Ip adress
             text: qsTrId("ip").arg(VPNConnectionData.ipAddress)

@@ -67,8 +67,7 @@ Row {
         Text {
             font.pixelSize: 14
             text: markerLabel
-            font.family: Theme.fontFamily
-            font.bold: true
+            font.family: Theme.fontBoldFamily
             color: "#FFFFFF"
         }
         Text {

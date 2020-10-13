@@ -52,9 +52,8 @@ RoundButton {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-        font.family: Theme.fontFamily
+        font.family: Theme.fontBoldFamily
         font.pixelSize: 15
-        font.bold: true
     }
 
 

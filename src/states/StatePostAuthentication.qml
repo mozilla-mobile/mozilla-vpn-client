@@ -50,8 +50,7 @@ Item {
         Text {
             id: wip
             font.pixelSize: 58
-            font.family: Theme.fontFamily
-            font.bold: true
+            font.family: Theme.fontBoldFamily
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.centerIn: gradientText
