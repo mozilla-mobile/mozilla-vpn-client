@@ -44,6 +44,7 @@ for path in os.listdir('i18n'):
 
 if len(FILES) == 0:
     print("No Languages were imported")
+    os.system(f'lupdate src/src.pro -ts translations/mozillavpn_en.ts')
     exit(0)
 
 # Step 2 -  
