@@ -35,6 +35,7 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *devi
                            device->ipv4Address(),
                            device->ipv6Address(),
                            server.ipv4Gateway(),
+                           server.ipv6Gateway(),
                            server.publicKey(),
                            server.ipv4AddrIn(),
                            server.ipv6AddrIn(),

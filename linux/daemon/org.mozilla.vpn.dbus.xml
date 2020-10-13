@@ -7,6 +7,7 @@
       <arg name="deviceIpv4Address" type="s" direction="in"/>
       <arg name="deviceIpv6Address" type="s" direction="in"/>
       <arg name="serverIpv4Gateway" type="s" direction="in"/>
+      <arg name="serverIpv6Gateway" type="s" direction="in"/>
       <arg name="serverPublicKey" type="s" direction="in"/>
       <arg name="serverIpv4AddrIn" type="s" direction="in"/>
       <arg name="serverIpv6AddrIn" type="s" direction="in"/>

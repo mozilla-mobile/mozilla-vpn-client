@@ -28,6 +28,7 @@ public Q_SLOTS:
                   const QString &deviceIpv4Address,
                   const QString &deviceIpv6Address,
                   const QString &serverIpv4Gateway,
+                  const QString &serverIpv6Gateway,
                   const QString &serverPublicKey,
                   const QString &serverIpv4AddrIn,
                   const QString &serverIpv6AddrIn,
@@ -47,6 +48,7 @@ private:
                     const QString &deviceIpv4Address,
                     const QString &deviceIpv6Address,
                     const QString &serverIpv4Gateway,
+                    const QString &serverIpv6Gateway,
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
                     const QString &serverIpv6AddrIn,
@@ -62,6 +64,7 @@ private:
     QString m_lastDeviceIpv4Address;
     QString m_lastDeviceIpv6Address;
     QString m_lastServerIpv4Gateway;
+    QString m_lastServerIpv6Gateway;
     QString m_lastServerPublicKey;
     QString m_lastServerIpv4AddrIn;
     QString m_lastServerIpv6AddrIn;
