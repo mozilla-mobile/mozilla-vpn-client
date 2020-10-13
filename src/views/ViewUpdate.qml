@@ -20,7 +20,7 @@ Flickable {
             name: "recommended"
             PropertyChanges {
                 target: contentWrapper
-                //% "Update recomended"
+                //% "Update recommended"
                 logoTitle: qsTrId("updateRecomended")
                 //% "Please update the app before you\ncontinue to use the VPN"
                 logoSubtitle: qsTrId("updateRecomended.description")

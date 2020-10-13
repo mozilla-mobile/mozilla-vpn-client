@@ -36,6 +36,7 @@ void SystemTrayHandler::controllerStateChanged()
 
     case Controller::StateSwitching:
         //% "Mozilla VPN switching"
+        //: This message is shown when the VPN is switching to a different server in a different location.
         showMessage(qtTrId("systrayStatusSwitch"), qtTrId("TODO"), NoIcon, 2000);
         break;
 

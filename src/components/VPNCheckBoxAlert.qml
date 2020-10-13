@@ -28,10 +28,10 @@ RowLayout {
     Text {
         text: VPNSettings.localNetwork ?
                   //% "VPN must be off before enabling"
-                  //: This is a Setting which requires the VPN to be disconnected to chance state 
+                  //: This is a Setting which requires the VPN to be disconnected to change state
                   qsTrId("vpn.turnOffAlert.enabling") :
                   //% "VPN must be off before disabling"
-                  //: This is a Setting which requires the VPN to be disconnected to chance state
+                  //: This is a Setting which requires the VPN to be disconnected to change state
                   qsTrId("vpn.turnOffAlert.disabling");
         color: Theme.red
         font.pixelSize: 13

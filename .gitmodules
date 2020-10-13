@@ -6,4 +6,4 @@
 	url = https://git.zx2c4.com/wireguard-tools/
 [submodule "i18n"]
 	path = i18n
-	url = https://github.com/strseb/vpnTranslations.git
+	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git

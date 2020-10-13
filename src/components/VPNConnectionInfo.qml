@@ -121,7 +121,7 @@ Item {
 
             VPNGraphLegendMarker {
                 //% "download"
-                //: the current download speed
+                //: the current download speed. The speed is shown at the next line.
                 markerLabel: qsTrId("download")
                 rectColor: "#EE3389"
                 markerData: VPNConnectionData.rxBytes

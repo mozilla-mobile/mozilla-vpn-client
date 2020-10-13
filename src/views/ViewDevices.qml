@@ -116,7 +116,7 @@ Item {
                                                   )) / 1000
 
                                 if (diff < 3600) {
-                                    //% "Added less than a hour ago"
+                                    //% "Added less than an hour ago"
                                     return qsTrId("addedltHour")
                                 }
 

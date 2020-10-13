@@ -45,6 +45,8 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin
                 width: parent.width
+                //% "System"
+                //: The system language
                 text: qsTrId("system")
             }
 
@@ -72,6 +74,8 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin
                 width: parent.width
+                //% "Additional"
+                //: List of the additional languages
                 text: qsTrId("additional")
             }
         }
