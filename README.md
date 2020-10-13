@@ -67,4 +67,4 @@ We are working on Android and Windows.
 
 ## Bug report
 
-Please file bugs here: https://github.com/bakulf/mv/issues
+Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
