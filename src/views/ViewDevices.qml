@@ -317,7 +317,7 @@ Item {
                 text: qsTrId("removeDeviceQuestion")
                 Layout.alignment: Qt.AlignCenter
                 font.pixelSize: Theme.fontSizeSmall
-                font.weight: Font.Bold
+                font.bold: true
                 color: Theme.fontColorDark
             }
 

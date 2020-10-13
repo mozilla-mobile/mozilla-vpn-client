@@ -108,7 +108,7 @@ Item {
             color: "#FFFFFF"
             font.pixelSize: 15
             font.family: Theme.fontFamily
-            font.weight: Font.Bold
+            font.bold: true
             //% "IP: %1"
             //: The Current Ip adress
             text: qsTrId("ip").arg(VPNConnectionData.ipAddress)

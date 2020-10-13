@@ -34,12 +34,7 @@ RoundButton {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: Theme.fontSize
         font.family: fontName
-
-        Component.onCompleted: {
-            if (isBoldLink) {
-                font.weight = Font.Bold
-            }
-        }
+        font.bold: isBoldLink
 
         Behavior on color {
             ColorAnimation {

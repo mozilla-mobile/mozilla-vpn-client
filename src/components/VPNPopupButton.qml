@@ -22,7 +22,7 @@ Button {
         id: buttonText
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.weight: Font.Bold
+        font.bold: true
         opacity: popupButton.hovered ? .9 : 1
         transitions: Transition {
             NumberAnimation {

@@ -54,7 +54,7 @@ RoundButton {
         elide: Text.ElideRight
         font.family: Theme.fontFamily
         font.pixelSize: 15
-        font.weight: Font.Bold
+        font.bold: true
     }
 
 

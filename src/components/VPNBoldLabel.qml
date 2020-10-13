@@ -11,6 +11,6 @@ import "../themes/themes.js" as Theme
 Label {
     font.pixelSize: Theme.fontSize
     font.family: Theme.fontFamily
-    font.weight: Font.Bold
+    font.bold: true
     color: Theme.fontColorDark
 }
