@@ -11,7 +11,6 @@ RoundButton {
     required property var labelText
     property variant fontName: Theme.fontInterFamily
     property var linkColor: Theme.blueButton
-    property var isBoldLink: false
     signal clicked
 
     id: root
@@ -34,7 +33,6 @@ RoundButton {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: Theme.fontSize
         font.family: fontName
-        font.bold: isBoldLink
 
         Behavior on color {
             ColorAnimation {

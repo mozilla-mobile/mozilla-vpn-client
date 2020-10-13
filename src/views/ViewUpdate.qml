@@ -198,17 +198,12 @@ Flickable {
         anchors.bottom: parent.bottom
     }
 
-    VPNFooterLink {
+    VPNSignOut {
         id: signOff
-        //% "Sign Out"
-        labelText: qsTrId("signOut")
-        isBoldLink: true
-        fontName: Theme.fontFamily
         onClicked: {
             stackview.pop(StackView.Immediate)
             VPNController.logout()
         }
-        linkColor: Theme.redButton
     }
 
      ScrollBar.vertical: ScrollBar {}

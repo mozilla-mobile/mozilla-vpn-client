@@ -362,5 +362,6 @@
         <file>resources/down.svg</file>
         <file>components/VPNButtonBase.qml</file>
         <file>components/VPNSystemAlert.qml</file>
+        <file>components/VPNSignOut.qml</file>
     </qresource>
 </RCC>
