@@ -41,7 +41,7 @@ void WgQuickProcess::run(const QString &privateKey,
 
     if (ipv6Enabled) {
         content.append(", ");
-        content.append(serverIpv4Gateway);
+        content.append(serverIpv6Gateway);
     }
 
     content.append("\n\n[Peer]\nPublicKey = ");
