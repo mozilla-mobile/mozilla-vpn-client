@@ -40,7 +40,7 @@ RowLayout {
             id: label
             text: labelText
             font.pixelSize: 15
-            font.family: vpnFontInter.name
+            font.family: Theme.fontInterFamily
             color: Theme.fontColorDark
             lineHeightMode: Text.FixedHeight
             lineHeight: Theme.labelLineHeight

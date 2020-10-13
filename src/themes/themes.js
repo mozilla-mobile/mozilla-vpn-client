@@ -34,6 +34,9 @@ const stateBgColor = "#321C64";
 const fontColor = "#6D6D6E";
 const fontColorDark = "#3D3D3D";
 
+const fontFamily = "Metropolis";
+const fontInterFamily = "InterUI";
+
 const fontSize = 15;
 const fontSizeLarge = 22;
 const fontSizeSmall = 13;

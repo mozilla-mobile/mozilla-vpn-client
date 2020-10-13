@@ -162,7 +162,7 @@ Flickable {
             }
             Text {
                 id: alertUpdateRecommendedText
-                font.family: vpnFontInter.name
+                font.family: Theme.fontInterFamily
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.fontColorDark
                 Layout.maximumWidth: 250
@@ -203,7 +203,7 @@ Flickable {
         //% "Sign Out"
         labelText: qsTrId("signOut")
         isBoldLink: true
-        fontName: vpnFont.name
+        fontName: Theme.fontFamily
         onClicked: {
             stackview.pop(StackView.Immediate)
             VPNController.logout()

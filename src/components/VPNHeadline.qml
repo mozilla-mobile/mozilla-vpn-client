@@ -18,7 +18,7 @@ Text {
     width: Theme.maxTextWidth
 
     color: Theme.fontColorDark
-    font.family: vpnFont.name
+    font.family: Theme.fontFamily
     font.pixelSize: 22
     lineHeightMode: Text.FixedHeight
     lineHeight: 32

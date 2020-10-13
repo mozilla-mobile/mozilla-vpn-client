@@ -9,7 +9,7 @@ import "../themes/themes.js" as Theme
 
 RoundButton {
     required property var labelText
-    property variant fontName: vpnFontInter.name
+    property variant fontName: Theme.fontInterFamily
     property var linkColor: Theme.blueButton
     property var isBoldLink: false
     signal clicked

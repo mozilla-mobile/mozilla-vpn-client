@@ -107,7 +107,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             color: "#FFFFFF"
             font.pixelSize: 15
-            font.family: vpnFont.name
+            font.family: Theme.fontFamily
             font.weight: Font.Bold
             //% "IP: %1"
             //: The Current Ip adress

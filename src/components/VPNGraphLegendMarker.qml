@@ -4,6 +4,8 @@
 
 import QtQuick 2.5
 
+import "../themes/themes.js" as Theme
+
 Row {
     property var markerLabel
     property var rectColor
@@ -59,20 +61,20 @@ Row {
             font.pixelSize: 10
             height: 16
             text: computeRange()
-            font.family: vpnFontInter.name
+            font.family: Theme.fontInterFamily
             color: "#FFFFFF"
         }
         Text {
             font.pixelSize: 14
             text: markerLabel
-            font.family: vpnFont.name
+            font.family: Theme.fontFamily
             font.weight: Font.Bold
             color: "#FFFFFF"
         }
         Text {
             font.pixelSize: 16
             text: computeValue()
-            font.family: vpnFontInter.name
+            font.family: Theme.fontInterFamily
             color: "#FFFFFF"
         }
     }

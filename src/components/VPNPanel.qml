@@ -54,7 +54,7 @@ Item {
         anchors.topMargin: 8
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 15
-        font.family: vpnFontInter.name
+        font.family: Theme.fontInterFamily
         wrapMode: Text.Wrap
         width: Theme.maxTextWidth
         color: Theme.fontColor

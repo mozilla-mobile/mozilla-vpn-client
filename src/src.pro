@@ -32,6 +32,7 @@ SOURCES += \
         device.cpp \
         devicemodel.cpp \
         errorhandler.cpp \
+        fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
@@ -71,6 +72,7 @@ HEADERS += \
         device.h \
         devicemodel.h \
         errorhandler.h \
+        fontloader.h \
         keys.h \
         localizer.h \
         logger.h \

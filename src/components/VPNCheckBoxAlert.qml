@@ -35,7 +35,7 @@ RowLayout {
                   qsTrId("vpn.turnOffAlert.disabling");
         color: Theme.red
         font.pixelSize: 13
-        font.family: vpnFontInter.name
+        font.family: Theme.fontInterFamily
         wrapMode: Text.Wrap
         verticalAlignment: Qt.AlignVCenter
         width: 260

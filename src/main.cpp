@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "fontloader.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
@@ -92,6 +93,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 #endif
+
+    FontLoader::loadFonts();
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {

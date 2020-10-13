@@ -186,7 +186,7 @@ Flickable {
         id: signOutLink
         labelText: qsTrId("signOut")
         isBoldLink: true
-        fontName: vpnFont.name
+        fontName: Theme.fontFamily
         onClicked: VPNController.logout()
         linkColor: Theme.redButton
     }

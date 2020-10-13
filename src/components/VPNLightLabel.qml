@@ -10,6 +10,6 @@ import "../themes/themes.js" as Theme
 // VPNLightLabel
 Label {
     font.pixelSize: Theme.fontSize
-    font.family: vpnFont.name
+    font.family: Theme.fontFamily
     color: Theme.fontColor
 }

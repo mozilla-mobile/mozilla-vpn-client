@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 Text {
     horizontalAlignment: Text.AlignHCenter
     font.pixelSize: Theme.fontSize
-    font.family: vpnFontInter.name
+    font.family: Theme.fontInterFamily
     lineHeightMode: Text.FixedHeight
     lineHeight: Theme.labelLineHeight
 }

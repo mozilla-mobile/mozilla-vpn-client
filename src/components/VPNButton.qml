@@ -52,7 +52,7 @@ RoundButton {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-        font.family: vpnFont.name
+        font.family: Theme.fontFamily
         font.pixelSize: 15
         font.weight: Font.Bold
     }

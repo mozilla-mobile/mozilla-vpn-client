@@ -12,9 +12,6 @@ import "../themes/themes.js" as Theme
 import "../components"
 
 Item {
-    FontLoader { id: boldest; source: "../resources/fonts/Metropolis-Bold.otf"; name: "MetropolisExtraBold";
-        onStatusChanged: console.log(FontLoader.Ready, "IS IT???")
-    }
     VPNHeadline {
         id: headline
         //% "Quick access"
@@ -34,7 +31,7 @@ Item {
         anchors.topMargin: 8
         horizontalAlignment: Text.AlignHCenter
         font.pixelSize: 15
-        font.family: vpnFontInter.name
+        font.family: Theme.fontInterFamily
         wrapMode: Text.Wrap
         width: Theme.maxTextWidth
         color: Theme.fontColor
@@ -53,7 +50,8 @@ Item {
         Text {
             id: wip
             font.pixelSize: 58
-            font.family: boldest.name
+            font.family: Theme.fontFamily
+            font.bold: true
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.centerIn: gradientText

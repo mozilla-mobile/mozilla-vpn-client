@@ -99,7 +99,7 @@ Item {
                             text: name
                             color: Theme.fontColorDark
                             font.pixelSize: Theme.fontSize
-                            font.family: vpnFontInter.name
+                            font.family: Theme.fontInterFamily
                             Layout.preferredWidth: 220
                             Layout.preferredHeight: Theme.labelLineHeight
                             elide: Text.ElideRight
@@ -133,7 +133,7 @@ Item {
                             text: deviceSubtitle()
                             Layout.preferredHeight: 21
                             font.pixelSize: Theme.fontSizeSmall
-                            font.family: vpnFontInter.name
+                            font.family: Theme.fontInterFamily
                             color: currentOne ? Theme.buttonColor : Theme.fontColor
                         }
                     }
@@ -329,7 +329,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 Layout.maximumWidth: 220
                 Layout.bottomMargin: 8
-                font.family: vpnFontInter.name
+                font.family: Theme.fontInterFamily
                 font.pixelSize: Theme.fontSizeSmallest
                 lineHeightMode: Text.FixedHeight
                 lineHeight: 14
