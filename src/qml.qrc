@@ -299,7 +299,8 @@
         <file>resources/onboarding/onboarding2.svg</file>
         <file>resources/fonts/InterUI.otf</file>
         <file>resources/fonts/Metropolis.otf</file>
-        <file>resources/fonts/Metropolis-Bold.otf</file>
+        <file>resources/fonts/Metropolis-ExtraBold.otf</file>
+        <file>resources/fonts/Metropolis-SemiBold.otf</file>
         <file>components/VPNPanel.qml</file>
         <file>components/VPNFooterLink.qml</file>
         <file>components/VPNHeaderLink.qml</file>

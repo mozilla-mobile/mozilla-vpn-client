@@ -35,7 +35,8 @@ const fontColor = "#6D6D6E";
 const fontColorDark = "#3D3D3D";
 
 const fontFamily = "Metropolis";
-const fontBoldFamily = "MetropolisExtraBold";
+const fontBoldFamily = "MetropolisSemiBold";
+const fontExtraBoldFamily = "MetropolisExtraBold";
 const fontInterFamily = "InterUI";
 
 const fontSize = 15;
