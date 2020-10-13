@@ -13,7 +13,7 @@ Label {
     anchors.leftMargin: Theme.hSpacing - 2
 
     font.family: Theme.fontInterFamily
-    font.pointSize: Theme.fontSize
+    font.pixelSize: Theme.fontSize
     color: Theme.fontColorDark
 
     states: State {
