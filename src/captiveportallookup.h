@@ -1,8 +1,9 @@
 #ifndef CAPTIVEPORTALLOOKUP_H
 #define CAPTIVEPORTALLOOKUP_H
 
+#include "captiveportal.h"
+
 #include <QObject>
-#include <QStringList>
 #include <QTimer>
 
 class QDnsLookup;
@@ -26,12 +27,12 @@ private:
     void abort();
 
 signals:
-    void completed(const QStringList &ips);
+    void completed(const CaptivePortal &cp);
 
 private:
     QTimer m_timer;
 
-    QStringList m_ips;
+    CaptivePortal m_data;
 
     int m_lookups = 0;
 };

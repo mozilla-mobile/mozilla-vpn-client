@@ -68,10 +68,12 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
 void MacOSController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
+                               const CaptivePortal &captivePortal,
                                bool forSwitching)
 {
     Q_UNUSED(device);
     Q_UNUSED(keys);
+    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
     qDebug() << "MacOSController activating" << server.hostname();

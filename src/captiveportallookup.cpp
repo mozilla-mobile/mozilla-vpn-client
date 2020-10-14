@@ -80,7 +80,15 @@ void CaptivePortalLookup::lookupCompleted(QDnsLookup *dnsLookup)
                 continue;
             }
 
-            m_ips.append(record.value().toString());
+            if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+                m_data.addIpv6Address(address.toString());
+                continue;
+            }
+
+            if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+                m_data.addIpv4Address(address.toString());
+                continue;
+            }
         }
     }
 
@@ -94,7 +102,7 @@ void CaptivePortalLookup::maybeComplete()
         return;
     }
 
-    emit completed(m_ips);
+    emit completed(m_data);
     deleteLater();
 }
 

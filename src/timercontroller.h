@@ -25,6 +25,7 @@ public:
     void activate(const Server &server,
                   const Device *device,
                   const Keys *keys,
+                  const CaptivePortal &captivePortal,
                   bool forSwitching) override;
 
     void deactivate(bool forSwitching) override;

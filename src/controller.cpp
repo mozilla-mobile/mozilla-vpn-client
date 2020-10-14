@@ -110,9 +110,7 @@ void Controller::activate()
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    std::function<void(const QStringList &)> cb = [this](const QStringList &ips) {
-        Q_UNUSED(ips);
-
+    std::function<void(const CaptivePortal &)> cb = [this](const CaptivePortal &captivePortal) {
         MozillaVPN *vpn = MozillaVPN::instance();
         Q_ASSERT(vpn);
 
@@ -124,21 +122,20 @@ void Controller::activate()
 
         const Device *device = vpn->deviceModel()->currentDevice();
 
-        // TODO: pass ips
-        m_impl->activate(server, device, vpn->keys(), m_state == StateSwitching);
+        m_impl->activate(server, device, vpn->keys(), captivePortal, m_state == StateSwitching);
     };
 
     if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
         CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
-        connect(lookup, &CaptivePortalLookup::completed, [cb](const QStringList &ips) {
-            qDebug() << "Captive portal lookup completed" << ips;
-            cb(ips);
+        connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
+            qDebug() << "Captive portal lookup completed";
+            cb(captivePortal);
         });
         lookup->start();
         return;
     }
 
-    cb(QStringList());
+    cb(CaptivePortal());
 }
 
 void Controller::deactivate()

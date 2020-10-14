@@ -33,6 +33,7 @@ void TimerController::initialize(const Device *device, const Keys *keys)
 void TimerController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
+                               const CaptivePortal &captivePortal,
                                bool forSwitching)
 {
     Q_ASSERT(m_state == None);
@@ -43,7 +44,7 @@ void TimerController::activate(const Server &server,
         m_timer.start(TIME_ACTIVATION);
     }
 
-    m_impl->activate(server, device, keys, forSwitching);
+    m_impl->activate(server, device, keys, captivePortal, forSwitching);
 }
 
 void TimerController::deactivate(bool forSwitching)
