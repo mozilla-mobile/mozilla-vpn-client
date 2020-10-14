@@ -3,13 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportaldetection.h"
+#include "captiveportal.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QDebug>
-
-constexpr int CAPTIVE_PORTAL_TIMEOUT = 10000;
-constexpr const char *CAPTIVE_PORTAL_CONTENT = "success";
 
 CaptivePortalDetection::CaptivePortalDetection()
 {
@@ -21,7 +19,7 @@ void CaptivePortalDetection::controllerStateChanged()
     qDebug() << "Controller state changed";
 
     if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-        m_timer.start(CAPTIVE_PORTAL_TIMEOUT);
+        m_timer.start(CAPTIVEPORTAL_REQUEST_TIMEOUT);
         detectCaptivePortal();
     } else {
         m_timer.stop();
@@ -56,7 +54,7 @@ void CaptivePortalDetection::detectCaptivePortal()
             return;
         }
 
-        if (QString(data).trimmed() == CAPTIVE_PORTAL_CONTENT) {
+        if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
             qDebug() << "No captive portal!";
             return;
         }
