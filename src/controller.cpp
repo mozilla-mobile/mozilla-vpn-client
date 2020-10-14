@@ -430,3 +430,9 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
         (*i)(serverIpv4Gateway, txBytes, rxBytes);
     }
 }
+
+void Controller::captivePortalDetected()
+{
+    qDebug() << "Captive portal detected in state:" << m_state;
+    // TODO: here we should disconnect the VPN and reconnect when the captive-portal-detection returns OK
+}

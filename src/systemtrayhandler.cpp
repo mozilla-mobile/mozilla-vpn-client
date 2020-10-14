@@ -45,3 +45,9 @@ void SystemTrayHandler::controllerStateChanged()
         break;
     }
 }
+
+void SystemTrayHandler::captivePortalNotificationRequested()
+{
+    qDebug() << "Capitve portal notification shown";
+    showMessage(tr("Captive portal detected!"), tr("TODO"), NoIcon, 2000);
+}

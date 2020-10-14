@@ -76,6 +76,9 @@ public:
         std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
             &&callback);
 
+public Q_SLOTS:
+    void captivePortalDetected();
+
 private Q_SLOTS:
     void connected();
     void disconnected();

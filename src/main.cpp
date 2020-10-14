@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "captiveportal/captiveportaldetection.h"
 #include "fontloader.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -216,6 +217,12 @@ int main(int argc, char *argv[])
                      &Controller::stateChanged,
                      &systemTrayHandler,
                      &SystemTrayHandler::controllerStateChanged);
+
+    QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
+                     &CaptivePortalDetection::captivePortalDetected,
+                     [systemTrayHandler = &systemTrayHandler]() {
+                         systemTrayHandler->captivePortalNotificationRequested();
+                     });
 
     // Let's go.
     return app.exec();

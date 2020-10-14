@@ -6,6 +6,7 @@
 constexpr int32_t CAPTIVEPORTAL_LOOKUPTIMER = 5000;
 
 constexpr const char *CAPTIVEPORTAL_HOST = "detectportal.firefox.com";
+constexpr const char *CAPTIVEPORTAL_URL = "http://detectportal.firefox.com/success.txt";
 
 class CaptivePortal final
 {
