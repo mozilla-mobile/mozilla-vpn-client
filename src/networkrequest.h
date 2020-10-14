@@ -44,7 +44,7 @@ public:
 private:
     NetworkRequest(QObject *parent);
 
-private Q_SLOTS:
+private slots:
     void replyFinished(QNetworkReply *reply);
 
 signals:

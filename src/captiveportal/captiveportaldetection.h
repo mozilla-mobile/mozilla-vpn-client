@@ -19,7 +19,7 @@ private:
     void handleSuccess();
     void handleFailure();
 
-public Q_SLOTS:
+public slots:
     void controllerStateChanged();
 
     void settingsChanged();

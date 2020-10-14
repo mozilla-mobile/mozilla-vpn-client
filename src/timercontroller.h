@@ -34,7 +34,7 @@ public:
 
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
-private Q_SLOTS:
+private slots:
     void timeout();
 
 private:

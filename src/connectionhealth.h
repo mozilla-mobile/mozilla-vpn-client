@@ -35,10 +35,10 @@ public:
 
     ConnectionStability stability() const { return m_stability; }
 
-public Q_SLOTS:
+public slots:
     void connectionStateChanged();
 
-private Q_SLOTS:
+private slots:
     void pingCompleted();
 
 signals:

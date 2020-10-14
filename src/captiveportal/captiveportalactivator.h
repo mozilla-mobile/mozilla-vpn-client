@@ -16,7 +16,7 @@ public:
 
     void run();
 
-private Q_SLOTS:
+private slots:
     void checkStatus();
 };
 

@@ -23,7 +23,7 @@ public:
 
     bool checkInterface();
 
-public Q_SLOTS:
+public slots:
     bool activate(const QString &jsonConfig);
 
     bool deactivate();

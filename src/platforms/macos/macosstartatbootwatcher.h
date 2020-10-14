@@ -14,7 +14,7 @@ class MacOSStartAtBootWatcher final : public QObject
 public:
     explicit MacOSStartAtBootWatcher(bool startAtBoot);
 
-public Q_SLOTS:
+public slots:
     void startAtBootChanged(bool value);
 };
 

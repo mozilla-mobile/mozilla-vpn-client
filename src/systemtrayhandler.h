@@ -19,7 +19,7 @@ public:
 
     void captivePortalNotificationRequested();
 
-public Q_SLOTS:
+public slots:
     void controllerStateChanged();
 
 signals:

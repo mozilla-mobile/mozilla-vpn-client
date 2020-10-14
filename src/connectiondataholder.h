@@ -52,7 +52,7 @@ private:
     // Boolean because we have just first and second index in the vector.
     quint64 bytes(bool index) const;
 
-public Q_SLOTS:
+public slots:
     void connectionStateChanged();
 
 signals:
