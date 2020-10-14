@@ -22,9 +22,12 @@ RoundButton {
         radius: 4
         color: defaultColor
         opacity: 0
-        border.width: iconButton.activeFocus ? 2 : 0
-        border.color: Theme.blueFocusStroke
     }
+
+    VPNFocus {
+        itemToFocus: iconButton
+    }
+
     height: 40
     width: 40
     states: [
@@ -42,15 +45,6 @@ RoundButton {
             PropertyChanges {
                target: backgroundRect
                color: backgroundColor.buttonHovered
-               opacity: 1
-            }
-        },
-
-        State {
-            name: "focused"
-            when: iconButton.activeFocus
-            PropertyChanges {
-               target: backgroundRect
                opacity: 1
             }
         }
@@ -79,15 +73,6 @@ RoundButton {
                 target: backgroundRect
                 property: "opacity"
                 duration: 300
-            }
-        },
-
-        Transition {
-            to: "focused"
-            PropertyAnimation {
-                target: backgroundRect
-                property: "opacity"
-                duration: 0
             }
         }
     ]

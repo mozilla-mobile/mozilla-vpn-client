@@ -12,10 +12,12 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 // VPNClickableRow
-Control {
+Item {
     // TODO: We can set the criteria on a row by row basis for
     // when that row should be disabled
     property var rowShouldBeDisabled: false
+
+    property var accessibleName
 
     property var backgroundColor: Theme.greyButton
     signal clicked
@@ -30,7 +32,9 @@ Control {
     width: parent.width - (Theme.windowMargin * 2)
     opacity: rowShouldBeDisabled ? .7 : 1
 
-    background: Rectangle {
+    enabled: !rowShouldBeDisabled
+
+    Rectangle {
         id: rowBackground
         anchors.fill: mainRow
         radius: 4
@@ -65,18 +69,14 @@ Control {
         }
     }
 
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         cursorShape: rowShouldBeDisabled ? Qt.ForbiddenCursor : Qt.PointingHandCursor
         hoverEnabled: !rowShouldBeDisabled
         focus: !rowShouldBeDisabled
-        onClicked: {
-            if (rowShouldBeDisabled) {
-                return
-            }
-            return mainRow.clicked()
-        }
+        onClicked: mainRow.clicked()
     }
 
     transitions: [
@@ -88,4 +88,13 @@ Control {
             }
         }
     ]
+
+    Keys.onSpacePressed: mainRow.clicked()
+    Keys.onReturnPressed: mainRow.clicked()
+
+    Accessible.role: Accessible.Button
+    Accessible.ignored: rowShouldBeDisabled
+    Accessible.name: accessibleName
+    Accessible.onPressAction: mainRow.clicked()
+    Accessible.focusable: true
 }

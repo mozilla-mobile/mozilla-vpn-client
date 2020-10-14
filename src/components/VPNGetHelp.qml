@@ -20,14 +20,15 @@ Item {
         isSettingsView: true
     }
 
-    ListView {
+    VPNList {
         height: parent.height - menu.height
         width: parent.width
         anchors.top: menu.bottom
         clip: true
         spacing: Theme.listSpacing
-        interactive: false
         anchors.topMargin: Theme.windowMargin
+
+        listName: menu.title
 
         model: ListModel {
             ListElement {
@@ -49,23 +50,26 @@ Item {
 
         delegate: VPNExternalLinkListItem {
             title: linkTitle
+            accessibleName: linkTitle
 
             function clickHandler(id) {
-                   switch(id) {
-                   case "contact_us":
-                       VPN.openLink(VPN.LinkContact);
-                       break;
-                   case "help_support":
-                       VPN.openLink(VPN.LinkHelpSupport);
-                       break;
-                   case "view_logs":
-                       VPN.viewLogs();
-                       break;
-                   }
-               }
+                switch(id) {
+                case "contact_us":
+                    VPN.openLink(VPN.LinkContact);
+                    break;
+                case "help_support":
+                    VPN.openLink(VPN.LinkHelpSupport);
+                    break;
+                case "view_logs":
+                    VPN.viewLogs();
+                    break;
+                }
+            }
             onClicked: clickHandler(clickId)
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
+        }
     }
 }
