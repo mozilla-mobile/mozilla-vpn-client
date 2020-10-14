@@ -64,4 +64,3 @@ void CaptivePortalDetection::detectCaptivePortal()
         emit captivePortalDetected();
     });
 }
-

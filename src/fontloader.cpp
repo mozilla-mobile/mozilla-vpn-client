@@ -14,9 +14,4 @@ void FontLoader::loadFonts()
         int id = QFontDatabase::addApplicationFont(":/resources/fonts/" + *i);
         qDebug() << "Result:" << id;
     }
-
-    QFontDatabase a;
-
-    qDebug() << a.families();
-    qDebug() << a.bold("MetropolisSemiBold", "Regular");
 }
