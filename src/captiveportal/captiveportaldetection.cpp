@@ -4,8 +4,8 @@
 
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
+#include "captiveportalrequest.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 
 #include <QDebug>
 
@@ -40,25 +40,19 @@ void CaptivePortalDetection::detectCaptivePortal()
         return;
     }
 
-    NetworkRequest *request = NetworkRequest::createForCaptivePortalDetection(this);
-
-    connect(request, &NetworkRequest::requestFailed, [](QNetworkReply::NetworkError error) {
-        qDebug() << "Captive portal request failed:" << error;
-    });
-
-    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "Captive portal request completed:" << data;
+    CaptivePortalRequest *request = new CaptivePortalRequest(this);
+    connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
+        qDebug() << "Captive portal request completed - detected:" << detected;
 
         if (!m_active) {
             qDebug() << "Disabled in the meantime.";
             return;
         }
 
-        if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-            qDebug() << "No captive portal!";
-            return;
+        if (detected) {
+            emit captivePortalDetected();
         }
-
-        emit captivePortalDetected();
     });
+
+    request->run();
 }

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
+#include "captiveportal/captiveportalactivator.h"
 #include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
 #include "mozillavpn.h"
@@ -372,6 +373,14 @@ bool Controller::processNextStep()
         return true;
     }
 
+    if (nextStep == WaitForCaptivePortal) {
+        CaptivePortalActivator *activator = new CaptivePortalActivator(this);
+        activator->run();
+
+        setState(StateOff); // TODO: probably we want a different state...
+        return true;
+    }
+
     return false;
 }
 
@@ -434,5 +443,11 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
 void Controller::captivePortalDetected()
 {
     qDebug() << "Captive portal detected in state:" << m_state;
-    // TODO: here we should disconnect the VPN and reconnect when the captive-portal-detection returns OK
+
+    if (m_state != StateOn) {
+        return;
+    }
+
+    m_nextStep = WaitForCaptivePortal;
+    deactivate();
 }

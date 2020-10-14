@@ -120,6 +120,7 @@ private:
         Disconnect,
         DeviceLimit,
         Subscribe,
+        WaitForCaptivePortal,
     };
 
     NextStep m_nextStep = None;
