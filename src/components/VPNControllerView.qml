@@ -423,15 +423,10 @@ Rectangle {
         }
     }
 
-    Text {
+    VPNHeadline {
         id: logoTitle
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.family: Theme.fontFamily
-        horizontalAlignment: Text.AlignHCenter
-        y: logo.y + logo.height + 26
-        font.pixelSize: 22
-        height: 32
+        anchors.top: logo.bottom
+        anchors.topMargin: 22
     }
 
     VPNInterLabel {

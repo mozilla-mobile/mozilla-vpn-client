@@ -45,20 +45,9 @@ Item {
         anchors.topMargin: 24
     }
 
-    Text {
+    VPNSubtitle {
         id: logoSubtitle
         x: 169
         y: 255
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoTitle.bottom
-        anchors.topMargin: 8
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 15
-        font.family: Theme.fontInterFamily
-        wrapMode: Text.Wrap
-        width: Theme.maxTextWidth
-        color: Theme.fontColor
-        lineHeightMode: Text.FixedHeight
-        lineHeight: 22
     }
 }

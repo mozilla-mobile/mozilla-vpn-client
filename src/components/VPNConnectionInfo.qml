@@ -97,7 +97,7 @@ Item {
             }
         }
 
-        Text {
+        VPNBoldLabel {
             anchors.top: parent.top
             anchors.topMargin: 24
             anchors.left: parent.left
@@ -105,9 +105,7 @@ Item {
             anchors.horizontalCenter: parent.center
             anchors.horizontalCenterOffset: 0
             horizontalAlignment: Text.AlignHCenter
-            color: "#FFFFFF"
-            font.pixelSize: 15
-            font.family: Theme.fontBoldFamily
+            color: Theme.white
             //% "IP: %1"
             //: The Current Ip adress
             text: qsTrId("ip").arg(VPNConnectionData.ipAddress)

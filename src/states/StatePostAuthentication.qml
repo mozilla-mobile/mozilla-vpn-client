@@ -20,23 +20,13 @@ Item {
         anchors.topMargin: 32
     }
 
-    Text {
+    VPNSubtitle {
         id: logoSubtitle
         //% "You can quickly access Mozilla VPN from your status bar."
         text: qsTrId("statusBarIntro")
         x: 169
         y: 255
-        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: headline.bottom
-        anchors.topMargin: 8
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 15
-        font.family: Theme.fontInterFamily
-        wrapMode: Text.Wrap
-        width: Theme.maxTextWidth
-        color: Theme.fontColor
-        lineHeightMode: Text.FixedHeight
-        lineHeight: 22
     }
 
     Item {

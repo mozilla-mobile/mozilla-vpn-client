@@ -94,18 +94,14 @@ Item {
                         Layout.topMargin: Theme.windowMargin / 2
                         spacing: 0
 
-                        Text {
+                        VPNInterLabel {
                             id: deviceName
                             text: name
                             color: Theme.fontColorDark
-                            font.pixelSize: Theme.fontSize
-                            font.family: Theme.fontInterFamily
-                            Layout.preferredWidth: 220
-                            Layout.preferredHeight: Theme.labelLineHeight
                             elide: Text.ElideRight
                         }
 
-                        Text {
+                        VPNTextBlock {
                             function deviceSubtitle() {
                                 if (currentOne) {
                                     //% "Current Device"
@@ -131,9 +127,7 @@ Item {
                             }
                             id: deviceDesc
                             text: deviceSubtitle()
-                            Layout.preferredHeight: 21
-                            font.pixelSize: Theme.fontSizeSmall
-                            font.family: Theme.fontInterFamily
+                            width: parent.width
                             color: currentOne ? Theme.buttonColor : Theme.fontColor
                         }
                     }
