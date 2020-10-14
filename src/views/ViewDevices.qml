@@ -21,7 +21,7 @@ Item {
             name: "active" // normal mode
             PropertyChanges {
                 target: menu
-                rightTitle: qsTrId(activeVsMaxDeviceCount).arg(
+                rightTitle: qsTrId("activeVsMaxDeviceCount").arg(
                                 VPNDeviceModel.activeDevices).arg(
                                 VPNUser.maxDevices)
 
@@ -31,7 +31,7 @@ Item {
             name: "deviceLimit" // device limit mode
             PropertyChanges {
                 target: menu
-                rightTitle: qsTrId(activeVsMaxDeviceCount).arg(
+                rightTitle: qsTrId("activeVsMaxDeviceCount").arg(
                                 VPNDeviceModel.activeDevices + 1).arg(
                                 VPNUser.maxDevices)
             }
