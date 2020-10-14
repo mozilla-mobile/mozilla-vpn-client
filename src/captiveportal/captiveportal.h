@@ -3,6 +3,10 @@
 
 #include <QStringList>
 
+constexpr int32_t CAPTIVEPORTAL_LOOKUPTIMER = 5000;
+
+constexpr const char *CAPTIVEPORTAL_HOST = "detectportal.firefox.com";
+
 class CaptivePortal final
 {
 public:

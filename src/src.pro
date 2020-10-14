@@ -24,8 +24,8 @@ INCLUDEPATH += \
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
-        captiveportal.cpp \
-        captiveportallookup.cpp \
+        captiveportal/captiveportal.cpp \
+        captiveportal/captiveportallookup.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
@@ -65,8 +65,8 @@ SOURCES += \
         user.cpp
 
 HEADERS += \
-        captiveportal.h \
-        captiveportallookup.h \
+        captiveportal/captiveportal.h \
+        captiveportal/captiveportallookup.h \
         connectiondataholder.h \
         connectionhealth.h \
         controller.h \

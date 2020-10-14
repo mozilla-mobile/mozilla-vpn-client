@@ -4,10 +4,6 @@
 #include <QHostAddress>
 #include <QtDebug>
 
-constexpr int32_t CAPTIVEPORTAL_TIMER = 5000;
-
-constexpr const char *CAPTIVEPORTAL_HOST = "detectportal.firefox.com";
-
 CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)
 {
     connect(&m_timer, &QTimer::timeout, [this]() { abort(); });
@@ -17,7 +13,7 @@ void CaptivePortalLookup::start()
 {
     qDebug() << "Captive portal lookup started";
     start(CAPTIVEPORTAL_HOST);
-    m_timer.start(CAPTIVEPORTAL_TIMER);
+    m_timer.start(CAPTIVEPORTAL_LOOKUPTIMER);
 }
 
 void CaptivePortalLookup::start(const QString &host)

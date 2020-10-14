@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
-#include "captiveportallookup.h"
+#include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
 #include "mozillavpn.h"
 #include "server.h"
