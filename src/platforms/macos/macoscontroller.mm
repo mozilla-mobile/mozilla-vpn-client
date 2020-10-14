@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macoscontroller.h"
+#include "captiveportal.h"
 #include "mozillavpn.h"
 #include "server.h"
 #include "keys.h"
@@ -80,11 +81,25 @@ void MacOSController::activate(const Server &server,
 
     Q_ASSERT(impl);
 
+    const QStringList& captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
+    NSMutableArray<NSString *> *captivePortalIpv4AddressesNS = [NSMutableArray<NSString *> arrayWithCapacity:captivePortalIpv4Addresses.length()];
+    for (const QString &ip : captivePortalIpv4Addresses) {
+        [captivePortalIpv4AddressesNS addObject:ip.toNSString()];
+    }
+
+    const QStringList& captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
+    NSMutableArray<NSString *> *captivePortalIpv6AddressesNS = [NSMutableArray<NSString *> arrayWithCapacity:captivePortalIpv6Addresses.length()];
+    for (const QString &ip : captivePortalIpv6Addresses) {
+        [captivePortalIpv6AddressesNS addObject:ip.toNSString()];
+    }
+
     [impl connectWithServerIpv4Gateway:server.ipv4Gateway().toNSString()
                      serverIpv6Gateway:server.ipv6Gateway().toNSString()
                        serverPublicKey:server.publicKey().toNSString()
                       serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                             serverPort:server.choosePort()
+            captivePortalIpv4Addresses:captivePortalIpv4AddressesNS
+            captivePortalIpv6Addresses:captivePortalIpv6AddressesNS
                            ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
                     localNetworkAccess:MozillaVPN::instance()->settingsHolder()->localNetworkAccess()
                        failureCallback:^() {

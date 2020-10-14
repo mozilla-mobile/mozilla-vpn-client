@@ -128,7 +128,8 @@ void Controller::activate()
     if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
         CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
         connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
-            qDebug() << "Captive portal lookup completed";
+            qDebug() << "Captive portal lookup completed - ipv4:" << captivePortal.ipv4Addresses()
+                     << "ipv6:" << captivePortal.ipv6Addresses();
             cb(captivePortal);
         });
         lookup->start();
