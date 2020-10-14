@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
+#include "captiveportallookup.h"
 #include "controllerimpl.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -101,17 +102,6 @@ void Controller::activate()
         return;
     }
 
-    MozillaVPN *vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-
-    QList<Server> servers = vpn->getServers();
-    Q_ASSERT(!servers.isEmpty());
-
-    Server server = Server::weightChooser(servers);
-    Q_ASSERT(server.initialized());
-
-    const Device *device = vpn->deviceModel()->currentDevice();
-
     if (m_state == StateOff) {
         setState(StateConnecting);
     }
@@ -120,7 +110,35 @@ void Controller::activate()
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    m_impl->activate(server, device, vpn->keys(), m_state == StateSwitching);
+    std::function<void(const QStringList &)> cb = [this](const QStringList &ips) {
+        Q_UNUSED(ips);
+
+        MozillaVPN *vpn = MozillaVPN::instance();
+        Q_ASSERT(vpn);
+
+        QList<Server> servers = vpn->getServers();
+        Q_ASSERT(!servers.isEmpty());
+
+        Server server = Server::weightChooser(servers);
+        Q_ASSERT(server.initialized());
+
+        const Device *device = vpn->deviceModel()->currentDevice();
+
+        // TODO: pass ips
+        m_impl->activate(server, device, vpn->keys(), m_state == StateSwitching);
+    };
+
+    if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
+        CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
+        connect(lookup, &CaptivePortalLookup::completed, [cb](const QStringList &ips) {
+            qDebug() << "Captive portal lookup completed" << ips;
+            cb(ips);
+        });
+        lookup->start();
+        return;
+    }
+
+    cb(QStringList());
 }
 
 void Controller::deactivate()
