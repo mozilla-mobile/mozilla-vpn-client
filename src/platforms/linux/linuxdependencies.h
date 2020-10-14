@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-class LinuxDependencies
+class LinuxDependencies final
 {
 public:
     static bool checkDependencies();

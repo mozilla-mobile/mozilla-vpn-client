@@ -14,7 +14,7 @@ class Device;
 class Keys;
 class QDBusPendingCallWatcher;
 
-class DBus : public QObject
+class DBus final : public QObject
 {
     Q_OBJECT
 

@@ -7,7 +7,7 @@
 
 #include <QNetworkReply>
 
-class ErrorHandler
+class ErrorHandler final
 {
 public:
     enum ErrorType {

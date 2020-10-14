@@ -3,7 +3,7 @@
 
 #include <QStringList>
 
-class CaptivePortal
+class CaptivePortal final
 {
 public:
     void addIpv4Address(const QString &address);

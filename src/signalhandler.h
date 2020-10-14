@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-class SignalHandler : public QObject
+class SignalHandler final : public QObject
 {
     Q_OBJECT
 

@@ -7,7 +7,7 @@
 
 #include <QString>
 
-class PolkitHelper
+class PolkitHelper final
 {
 public:
     static PolkitHelper *instance();

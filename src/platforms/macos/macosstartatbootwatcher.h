@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class MacOSStartAtBootWatcher : public QObject
+class MacOSStartAtBootWatcher final : public QObject
 {
     Q_OBJECT
 

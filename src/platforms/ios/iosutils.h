@@ -7,7 +7,7 @@
 
 #include <QString>
 
-class IOSUtils
+class IOSUtils final
 {
 public:
     static QString computerName();

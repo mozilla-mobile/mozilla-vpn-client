@@ -8,7 +8,7 @@
 
 class QDnsLookup;
 
-class CaptivePortalLookup : public QObject
+class CaptivePortalLookup final : public QObject
 {
     Q_OBJECT
 

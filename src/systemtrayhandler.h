@@ -10,7 +10,7 @@
 
 class MozillaVPN;
 
-class SystemTrayHandler : public QSystemTrayIcon
+class SystemTrayHandler final : public QSystemTrayIcon
 {
     Q_OBJECT
 

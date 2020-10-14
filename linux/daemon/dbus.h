@@ -11,7 +11,7 @@
 
 class DbusAdaptor;
 
-class DBus : public QObject
+class DBus final : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.mozilla.vpn.dbus")

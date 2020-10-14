@@ -10,7 +10,7 @@
 
 constexpr const char *WG_INTERFACE = "moz0";
 
-class WgQuickProcess : public QObject
+class WgQuickProcess final : public QObject
 {
     Q_OBJECT
 public:

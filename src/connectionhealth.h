@@ -11,7 +11,7 @@
 class Server;
 class PingSender;
 
-class ConnectionHealth : public QObject
+class ConnectionHealth final : public QObject
 {
 public:
     enum ConnectionStability {
