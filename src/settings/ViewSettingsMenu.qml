@@ -153,17 +153,20 @@ Flickable {
         }
     }
 
-    ListView {
+    VPNList {
         id: settingsList
-        interactive: false // disable scrolling on list since the entire window is scrollable
-        height: settingsList.count * (40 + (Theme.listSpacing * 2))
+        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height - startAtBootCheckBox.height
         width: parent.width
         anchors.top: startAtBootCheckBox.bottom
         anchors.topMargin: Theme.vSpacing
         spacing: Theme.listSpacing
 
+        //% "Settings"
+        listName: qsTrId("settings")
+
         model: settingsMenuListModel
         delegate: VPNClickableRow {
+            accessibleName: settingTitle
             onClicked: {
                 if (pushGetHelp) {
                     return settingsStackView.push(getHelpComponent)
@@ -182,14 +185,12 @@ Flickable {
         }
     }
 
-    VPNFooterLink {
+    VPNSignOut {
         id: signOutLink
-        labelText: qsTrId("signOut")
-        isBoldLink: true
-        fontName: Theme.fontFamily
         onClicked: VPNController.logout()
-        linkColor: Theme.redButton
     }
 
-    ScrollBar.vertical: ScrollBar {}
+    ScrollBar.vertical: ScrollBar {
+        Accessible.ignored: true
+    }
 }

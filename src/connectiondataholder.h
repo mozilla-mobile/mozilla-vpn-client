@@ -16,7 +16,7 @@ class QSplineSeries;
 class QValueAxis;
 }
 
-class ConnectionDataHolder : public QObject
+class ConnectionDataHolder final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
@@ -52,7 +52,7 @@ private:
     // Boolean because we have just first and second index in the vector.
     quint64 bytes(bool index) const;
 
-public Q_SLOTS:
+public slots:
     void connectionStateChanged();
 
 signals:

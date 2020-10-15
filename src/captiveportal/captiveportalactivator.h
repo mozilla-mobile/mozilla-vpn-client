@@ -2,23 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef SIGNALHANDLER_H
-#define SIGNALHANDLER_H
+#ifndef CAPTIVEPORTALACTIVATOR_H
+#define CAPTIVEPORTALACTIVATOR_H
 
 #include <QObject>
 
-class SignalHandler final : public QObject
+class CaptivePortalActivator : public QObject
 {
     Q_OBJECT
 
 public:
-    SignalHandler();
+    explicit CaptivePortalActivator(QObject *parent);
 
-private:
-    static void saHandler(int signal);
+    void run();
 
-signals:
-    void quitRequested();
+private slots:
+    void checkStatus();
 };
 
-#endif // SIGNALHANDLER_H
+#endif // CAPTIVEPORTALACTIVATOR_H

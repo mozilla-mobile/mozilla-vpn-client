@@ -13,7 +13,6 @@ Item {
     id: viewInitialize
     VPNHeaderLink {
         id: headerLink
-        //% "Get help"
         labelText: qsTrId("getHelp")
         onClicked: stackview.push(getHelpComponent)
     }

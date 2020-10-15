@@ -21,6 +21,13 @@ RoundButton {
     Layout.leftMargin: 16
     Layout.rightMargin: 16
 
+    VPNFocus {
+        itemToFocus: button
+        anchors.margins: -4
+        radius: 6
+        focusWidth: 5
+    }
+
     background: Rectangle {
         id: bgColor
         color: Theme.blueButton.defaultColor
@@ -30,15 +37,6 @@ RoundButton {
             ColorAnimation {
                 duration: 200
             }
-        }
-
-        Rectangle {
-            radius: 6
-            opacity: button.visualFocus ? 1 : 0
-            color: Theme.blueButton.focusStroke
-            z: -1
-            anchors.fill: parent
-            anchors.margins: -4
         }
     }
 

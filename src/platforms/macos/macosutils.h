@@ -7,7 +7,7 @@
 
 #include <QString>
 
-class MacOSUtils
+class MacOSUtils final
 {
 public:
     static QString computerName();

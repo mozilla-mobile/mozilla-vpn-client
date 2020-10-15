@@ -9,7 +9,7 @@
 
 constexpr int CRYPTO_SETTINGS_KEY_SIZE = 32;
 
-class CryptoSettings
+class CryptoSettings final
 {
 public:
     enum Version {

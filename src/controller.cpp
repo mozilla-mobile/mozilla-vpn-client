@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
+#include "captiveportal/captiveportalactivator.h"
+#include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -101,17 +103,6 @@ void Controller::activate()
         return;
     }
 
-    MozillaVPN *vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-
-    QList<Server> servers = vpn->getServers();
-    Q_ASSERT(!servers.isEmpty());
-
-    Server server = Server::weightChooser(servers);
-    Q_ASSERT(server.initialized());
-
-    const Device *device = vpn->deviceModel()->currentDevice();
-
     if (m_state == StateOff) {
         setState(StateConnecting);
     }
@@ -120,7 +111,33 @@ void Controller::activate()
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    m_impl->activate(server, device, vpn->keys(), m_state == StateSwitching);
+    std::function<void(const CaptivePortal &)> cb = [this](const CaptivePortal &captivePortal) {
+        MozillaVPN *vpn = MozillaVPN::instance();
+        Q_ASSERT(vpn);
+
+        QList<Server> servers = vpn->getServers();
+        Q_ASSERT(!servers.isEmpty());
+
+        Server server = Server::weightChooser(servers);
+        Q_ASSERT(server.initialized());
+
+        const Device *device = vpn->deviceModel()->currentDevice();
+
+        m_impl->activate(server, device, vpn->keys(), captivePortal, m_state == StateSwitching);
+    };
+
+    if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
+        CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
+        connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
+            qDebug() << "Captive portal lookup completed - ipv4:" << captivePortal.ipv4Addresses()
+                     << "ipv6:" << captivePortal.ipv6Addresses();
+            cb(captivePortal);
+        });
+        lookup->start();
+        return;
+    }
+
+    cb(CaptivePortal());
 }
 
 void Controller::deactivate()
@@ -356,6 +373,14 @@ bool Controller::processNextStep()
         return true;
     }
 
+    if (nextStep == WaitForCaptivePortal) {
+        CaptivePortalActivator *activator = new CaptivePortalActivator(this);
+        activator->run();
+
+        setState(StateOff); // TODO: probably we want a different state...
+        return true;
+    }
+
     return false;
 }
 
@@ -413,4 +438,16 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
          ++i) {
         (*i)(serverIpv4Gateway, txBytes, rxBytes);
     }
+}
+
+void Controller::captivePortalDetected()
+{
+    qDebug() << "Captive portal detected in state:" << m_state;
+
+    if (m_state != StateOn) {
+        return;
+    }
+
+    m_nextStep = WaitForCaptivePortal;
+    deactivate();
 }

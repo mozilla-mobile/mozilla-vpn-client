@@ -2,15 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef IOSUTILS_H
-#define IOSUTILS_H
+import QtQuick 2.0
 
-#include <QString>
+import "../themes/themes.js" as Theme
 
-class IOSUtils final
-{
-public:
-    static QString computerName();
-};
-
-#endif // IOSUTILS_H
+VPNFooterLink {
+    //% "Sign Out"
+    labelText: qsTrId("signOut")
+    fontName: Theme.fontBoldFamily
+    linkColor: Theme.redButton
+}

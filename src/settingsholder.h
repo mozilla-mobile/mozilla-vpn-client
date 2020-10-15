@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QSettings>
 
-class SettingsHolder : public QObject
+class SettingsHolder final : public QObject
 {
     Q_OBJECT
 

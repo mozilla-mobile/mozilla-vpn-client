@@ -76,7 +76,10 @@ public:
         std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
             &&callback);
 
-private Q_SLOTS:
+public slots:
+    void captivePortalDetected();
+
+private slots:
     void connected();
     void disconnected();
     void timerTimeout();
@@ -117,6 +120,7 @@ private:
         Disconnect,
         DeviceLimit,
         Subscribe,
+        WaitForCaptivePortal,
     };
 
     NextStep m_nextStep = None;

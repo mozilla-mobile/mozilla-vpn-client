@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkrequest.h"
+#include "captiveportal/captiveportal.h"
 #include "mozillavpn.h"
 
 #include <QDebug>
@@ -188,6 +189,19 @@ NetworkRequest *NetworkRequest::createForIpInfo(MozillaVPN *vpn)
 
     r->m_manager->get(r->m_request);
 
+    return r;
+}
+
+NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
+{
+    Q_ASSERT(parent);
+
+    NetworkRequest *r = new NetworkRequest(parent);
+
+    QUrl url(CAPTIVEPORTAL_URL);
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
     return r;
 }
 

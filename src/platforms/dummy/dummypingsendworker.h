@@ -22,7 +22,7 @@ public:
 
     explicit DummyPingSendWorker(State state);
 
-public Q_SLOTS:
+public slots:
     void sendPing(const QString &destination) override;
     void stopPing() override;
 

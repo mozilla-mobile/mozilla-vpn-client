@@ -13,7 +13,7 @@ class MacOSPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
 
-public Q_SLOTS:
+public slots:
     void sendPing(const QString &destination) override;
     void stopPing() override;
 

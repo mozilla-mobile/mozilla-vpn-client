@@ -9,7 +9,7 @@
 
 class QInAppStore;
 
-class IAPHandler : public QObject
+class IAPHandler final : public QObject
 {
     Q_OBJECT
 

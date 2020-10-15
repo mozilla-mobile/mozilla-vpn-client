@@ -5,6 +5,7 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "captiveportal/captiveportaldetection.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
@@ -97,6 +98,7 @@ public:
     QQmlApplicationEngine *engine() { return m_engine; }
 
     // Internal object getters:
+    CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
     ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
     ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
     Controller *controller() { return &m_controller; }
@@ -176,6 +178,7 @@ private:
     QQmlApplicationEngine *m_engine = nullptr;
 
     // Internal objects.
+    CaptivePortalDetection m_captivePortalDetection;
     ConnectionDataHolder m_connectionDataHolder;
     ConnectionHealth m_connectionHealth;
     Controller m_controller;

@@ -14,7 +14,7 @@ class QOAuthHttpServerReplyHandler;
 class QUrl;
 class QUrlQuery;
 
-class AuthenticationListener : public QObject
+class AuthenticationListener final : public QObject
 {
     Q_OBJECT
 public:
