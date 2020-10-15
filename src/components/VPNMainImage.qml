@@ -24,12 +24,6 @@ Rectangle {
         height: 32
         width: 32
         radius: 16
-        color: {
-            if (VPNController.state === VPNController.StateDisconnecting || VPNController.state === VPNController.StateOff) {
-                return "#FF4F5E";
-            }
-            return "#3FE1B0";
-        }
         x: 43
         y: 5
         scale: 1
@@ -128,14 +122,19 @@ Rectangle {
         }
     }
 
+    state: VPNController.state
+
     states: [
         State {
-            name: "vpn-connecting"
-            when: VPNController.state === VPNController.StateConnecting
+            name: VPNController.StateConnecting
             PropertyChanges {
                 target: logo
                 opacity: .6
                 showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: "#3FE1B0"
             }
             PropertyChanges {
                 target: insetIcon
@@ -143,42 +142,12 @@ Rectangle {
             }
         },
         State {
-            name: "vpn-disconnecting"
-            when: VPNController.state === VPNController.StateDisconnecting
+            name: VPNController.StateDisconnecting
             PropertyChanges {
                 target: logo
                 opacity: .55
                 showVPNOnIcon: false
             }
-            PropertyChanges {
-                target: insetCircle
-                opacity: "#FF4F5E"
-            }
-            PropertyChanges {
-                target: insetIcon
-                source: "../resources/shield-off.svg"
-            }
-        },
-        State {
-            name: "vpn-switching"
-            when: VPNController.state === VPNController.StateSwitching
-            PropertyChanges {
-                target: logo
-                opacity: .55
-                showVPNOnIcon: true
-            }
-            PropertyChanges {
-                target: insetCircle
-                opacity: "#FF4F5E"
-            }
-            PropertyChanges {
-                target: insetIcon
-                source: "../resources/switching.svg"
-            }
-        },
-        State {
-            name: "vpn-off"
-            when: VPNController.state === VPNController.StateOff
             PropertyChanges {
                 target: insetCircle
                 color: "#FF4F5E"
@@ -189,8 +158,34 @@ Rectangle {
             }
         },
         State {
-            name: "vpn-on"
-            when: VPNController.state === VPNController.StateOn
+            name: VPNController.StateSwitching
+            PropertyChanges {
+                target: logo
+                opacity: .55
+                showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: "#FF4F5E"
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "../resources/switching.svg"
+            }
+        },
+        State {
+            name: VPNController.StateOff
+            PropertyChanges {
+                target: insetCircle
+                color: "#FF4F5E"
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "../resources/shield-off.svg"
+            }
+        },
+        State {
+            name: VPNController.StateOn
             PropertyChanges {
                 target: logo
                 showVPNOnIcon: true
@@ -205,8 +200,7 @@ Rectangle {
             }
         },
         State {
-            name: "vpn-device-limit"
-            when: VPNController.state === VPNController.StateDeviceLimit
+            name: VPNController.StateDeviceLimit
             PropertyChanges {
                 target: logo
                 showVPNOnIcon: false
@@ -222,8 +216,7 @@ Rectangle {
             }
         },
         State {
-            name: "vpn-captive-portal"
-            when: VPNController.state === VPNController.StateCaptivePortalt
+            name: VPNController.StateCaptivePortal
             //TODO:
             PropertyChanges {
                 target: logo
@@ -243,19 +236,19 @@ Rectangle {
 
     transitions: [
         Transition {
-            to: "vpn-connecting"
+            to: VPNController.StateConnecting
             ScriptAction {
                 script: insetCirclePulse.start()
             }
         },
         Transition {
-            to: "vpn-disconnecting"
+            to: VPNController.StateDisconnecting
             ScriptAction {
                 script: insetCirclePulse.start()
             }
         },
         Transition {
-            to: "vpn-off"
+            to: VPNController.StateOff
             PropertyAnimation {
                 target: logo
                 property: "opacity"
@@ -263,7 +256,7 @@ Rectangle {
             }
         },
         Transition {
-            to: "vpn-on"
+            to: VPNController.StateOn
             ParallelAnimation {
                 PropertyAction {
                     target: insetIcon
@@ -278,7 +271,7 @@ Rectangle {
             }
         },
         Transition {
-            to: "vpn-switching"
+            to: VPNController.StateSwitching
             ParallelAnimation {
                 PropertyAnimation {
                     target: logo
