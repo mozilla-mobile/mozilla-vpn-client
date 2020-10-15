@@ -260,7 +260,8 @@ void Controller::quit()
 {
     qDebug() << "Quitting";
 
-    if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit) {
+    if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit
+        || m_state == StateCaptivePortal) {
         emit readyToQuit();
         return;
     }
@@ -377,7 +378,7 @@ bool Controller::processNextStep()
         CaptivePortalActivator *activator = new CaptivePortalActivator(this);
         activator->run();
 
-        setState(StateOff); // TODO: probably we want a different state...
+        setState(StateCaptivePortal);
         return true;
     }
 

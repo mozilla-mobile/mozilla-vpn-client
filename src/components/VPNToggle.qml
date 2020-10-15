@@ -107,6 +107,18 @@ RoundButton {
                 target: toggle
                 color: "#E7E7E7"
             }
+        },
+        State {
+            name: VPNController.StateCaptivePortal
+            //TODO:
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#E7E7E7"
+            }
         }
     ]
 

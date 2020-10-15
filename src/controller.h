@@ -29,6 +29,7 @@ public:
         StateDisconnecting,
         StateSwitching,
         StateDeviceLimit,
+        StateCaptivePortal,
     };
     Q_ENUM(State)
 
@@ -63,8 +64,6 @@ public:
     const QString &switchingCity() const { return m_switchingCity; }
 
     void setDeviceLimit(bool deviceLimit);
-
-    bool isDeviceLimit() const { return m_state == StateDeviceLimit; }
 
     void updateRequired();
 

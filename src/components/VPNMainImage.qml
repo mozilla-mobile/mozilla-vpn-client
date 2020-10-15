@@ -222,9 +222,27 @@ Rectangle {
                    target: insetIcon
                    source: "../resources/shield-off.svg"
                }
+           },
+           State {
+               name: "vpn-captive-portal"
+               when: VPNController.state === VPNController.StateCaptivePortalt
+               //TODO:
+               PropertyChanges {
+                   target: logo
+                   showVPNOnIcon: false
+                   opacity: .55
+               }
+               PropertyChanges {
+                   target: insetCircle
+                   color: "#FF4F5E"
+               }
+               PropertyChanges {
+                   target: insetIcon
+                   source: "../resources/shield-off.svg"
+               }
            }
-
        ]
+
        transitions: [
            Transition {
                to: "vpn-connecting"
