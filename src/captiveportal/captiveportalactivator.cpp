@@ -25,7 +25,7 @@ void CaptivePortalActivator::run()
 void CaptivePortalActivator::checkStatus()
 {
     // We have changed state.
-    if (MozillaVPN::instance()->controller()->state() != Controller::StateOff) {
+    if (MozillaVPN::instance()->controller()->state() != Controller::StateCaptivePortal) {
         deleteLater();
         return;
     }
@@ -35,7 +35,7 @@ void CaptivePortalActivator::checkStatus()
         qDebug() << "Captive portal detection:" << detected;
 
         // We have changed state.
-        if (MozillaVPN::instance()->controller()->state() != Controller::StateOff) {
+        if (MozillaVPN::instance()->controller()->state() != Controller::StateCaptivePortal) {
             deleteLater();
             return;
         }

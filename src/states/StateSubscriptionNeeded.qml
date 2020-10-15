@@ -5,13 +5,15 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 import "../components"
 
 Item {
+    // TODO (can be taken from the settings view):
+    // - manage account
+    // - sign off
+
     Text {
         //% "Subscription needed"
         text: qsTrId("subscriptionNeeded")
@@ -19,7 +21,7 @@ Item {
 
     VPNButton {
         width: 282
-          //% "Subscribe now"
+        //% "Subscribe now"
         text: qsTrId("subscribeNow")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
@@ -29,7 +31,4 @@ Item {
         onClicked: VPN.subscribe()
     }
 
-    // TODO (can be taken from the settings view):
-    // - manage account
-    // - sign off
 }

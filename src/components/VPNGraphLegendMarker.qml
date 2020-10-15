@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-
 import "../themes/themes.js" as Theme
 
 Row {
@@ -14,39 +13,37 @@ Row {
     // TODO: check if these 3 functions do the correct math to compute the values.
 
     function computeRange() {
-        if (markerData < 128000) {
+        if (markerData < 128000)
             //% "Kbps"
             //: Kilobits per Secound
             return qsTrId("kbps");
-        }
 
-        if (markerData < 128000000) {
-             //% "Mbps"
-             //: Megabits per Second
-            return qsTrId("mbps")
-        }
+        if (markerData < 1.28e+08)
+            //% "Mbps"
+            //: Megabits per Second
+            return qsTrId("mbps");
+
         //% "Gbps"
         //: Gigabits per Second
         return qsTrId("gbps");
     }
 
     function roundValue(value) {
-        return Math.round(value * 100) / 100
+        return Math.round(value * 100) / 100;
     }
 
     function computeValue() {
-        if (markerData < 128000) {
+        if (markerData < 128000)
             return roundValue(markerData / 8192);
-        }
 
-        if (markerData < 128000000) {
-            return roundValue(markerData / 8192000);
-        }
+        if (markerData < 1.28e+08)
+            return roundValue(markerData / 8.192e+06);
 
-        return roundValue(markeData / 8192000000);
+        return roundValue(markeData / 8.192e+09);
     }
 
     spacing: 12
+
     Rectangle {
         height: 12
         width: 12
@@ -55,8 +52,10 @@ Row {
         anchors.top: parent.top
         anchors.topMargin: 22
     }
+
     Column {
         spacing: 6
+
         Text {
             font.pixelSize: 10
             height: 16
@@ -64,17 +63,21 @@ Row {
             font.family: Theme.fontInterFamily
             color: "#FFFFFF"
         }
+
         Text {
             font.pixelSize: 14
             text: markerLabel
             font.family: Theme.fontBoldFamily
             color: "#FFFFFF"
         }
+
         Text {
             font.pixelSize: 16
             text: computeValue()
             font.family: Theme.fontInterFamily
             color: "#FFFFFF"
         }
+
     }
+
 }

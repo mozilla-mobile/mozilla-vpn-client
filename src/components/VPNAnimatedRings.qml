@@ -6,156 +6,142 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
 
 Rectangle {
-    property var yCenter: logo.y + 40 - 1
-    property bool startAnimation: false
-    onStartAnimationChanged: animatedRings.requestPaint();
-
     id: animatedRingsWrapper
 
+    property var yCenter: logo.y + 40 - 1
+    property bool startAnimation: false
+
+    onStartAnimationChanged: animatedRings.requestPaint()
     anchors.fill: box
     radius: box.radius
     color: "transparent"
     visible: false
 
     Canvas {
+        id: animatedRings
+
         property real maxRadius: 175
         property real startNextRing: 95
         property real startingRadius: 50
         property real startingBorderWidth: 1
-
-
         property real ring1Radius: startingRadius
         property real ring1BorderWidth: startingBorderWidth
-
         property real ring2Radius: startingRadius
         property real ring2BorderWidth: startingBorderWidth
-
         property real ring3Radius: startingRadius
         property real ring3BorderWidth: startingBorderWidth
-
         property bool drawingRing2: false
         property var drawingRing3: false
-
         property var ringXCenter: parent.width / 2
         property var ringYCenter: animatedRingsWrapper.yCenter
 
-        id: animatedRings
-        opacity: .1
-        height: animatedRingsWrapper.height
-        width: animatedRingsWrapper.width
-        anchors.fill: animatedRingsWrapper
-        onRing1RadiusChanged: animatedRings.requestPaint()
-        renderStrategy: Canvas.Threaded
-        contextType: "2d"
-
         function updateRing(rRadius, rBorderWidth) {
-            if (rRadius >= maxRadius) { // Restore to factory defaults
+            if (rRadius >= maxRadius) {
+                // Restore to factory defaults
                 rRadius = startingRadius;
                 rBorderWidth = startingBorderWidth;
             }
-
-             //Increase border width quickly on new ring creation
-            if (rRadius < 115 && rBorderWidth <= 4.5) {
+            //Increase border width quickly on new ring creation
+            if (rRadius < 115 && rBorderWidth <= 4.5)
                 rBorderWidth += 0.15;
-            }
 
             // Start decrementing ring border width
-            if (rRadius >= 115 && rBorderWidth >= 0.1) {
+            if (rRadius >= 115 && rBorderWidth >= 0.1)
                 rBorderWidth -= 0.05;
-            }
 
-            if (rRadius >= 135) {
+            if (rRadius >= 135)
                 rRadius += 0.45;
-            } else {
+            else
                 rRadius += 0.5;
-            }
-            return { rRadius, rBorderWidth };
+
+            return {
+                "rRadius": rRadius,
+                "rBorderWidth": rBorderWidth
+            };
         }
 
         function updateRing1() {
-            let {rRadius, rBorderWidth} = updateRing(ring1Radius, ring1BorderWidth);
-            ring1Radius = rRadius;
-            ring1BorderWidth = rBorderWidth;
+            let data = updateRing(ring1Radius, ring1BorderWidth);
+            ring1Radius = data.rRadius;
+            ring1BorderWidth = data.rBorderWidth;
         }
 
         function updateRing2() {
-            let {rRadius, rBorderWidth} = updateRing(ring2Radius, ring2BorderWidth);
-            ring2Radius = rRadius;
-            ring2BorderWidth = rBorderWidth;
+            let data = updateRing(ring2Radius, ring2BorderWidth);
+            ring2Radius = data.rRadius;
+            ring2BorderWidth = data.rBorderWidth;
         }
 
         function updateRing3() {
-            let {rRadius, rBorderWidth} = updateRing(ring3Radius, ring3BorderWidth);
-            ring3Radius = rRadius;
-            ring3BorderWidth = rBorderWidth;
+            let data = updateRing(ring3Radius, ring3BorderWidth);
+            ring3Radius = data.rRadius;
+            ring3BorderWidth = data.rBorderWidth;
         }
 
         function animateRings() {
             updateRing1();
-            if (drawingRing2) {
+            if (drawingRing2)
                 updateRing2();
-            }
-            if (drawingRing3) {
+
+            if (drawingRing3)
                 updateRing3();
-            }
+
         }
 
         function drawRing(ctx, ringRadius, borderWidth) {
             ctx.beginPath();
-            ctx.arc(ringXCenter, ringYCenter, ringRadius, 0, Math.PI * 2, true)
-            ctx.lineWidth =  borderWidth;
+            ctx.arc(ringXCenter, ringYCenter, ringRadius, 0, Math.PI * 2, true);
+            ctx.lineWidth = borderWidth;
             ctx.strokeStyle = "#FFFFFF";
             ctx.closePath();
             ctx.stroke();
         }
 
         function resetRingValues() {
-            ring1Radius = startingRadius
-            ring2Radius = startingRadius
-            ring3Radius = startingRadius
-
-            ring1BorderWidth = startingBorderWidth
-            ring2BorderWidth = startingBorderWidth
-            ring3BorderWidth = startingBorderWidth
-
-            drawingRing2 = false
-            drawingRing3 = false
-            return;
+            ring1Radius = startingRadius;
+            ring2Radius = startingRadius;
+            ring3Radius = startingRadius;
+            ring1BorderWidth = startingBorderWidth;
+            ring2BorderWidth = startingBorderWidth;
+            ring3BorderWidth = startingBorderWidth;
+            drawingRing2 = false;
+            drawingRing3 = false;
         }
 
+        opacity: 0.1
+        height: animatedRingsWrapper.height
+        width: animatedRingsWrapper.width
+        anchors.fill: animatedRingsWrapper
+        onRing1RadiusChanged: animatedRings.requestPaint()
+        renderStrategy: Canvas.Threaded
+        contextType: "2d"
         onPaint: {
-            let ctx = getContext("2d")
+            let ctx = getContext("2d");
             ctx.reset();
-
             if (!animatedRingsWrapper.startAnimation) {
                 resetRingValues();
-                return;
+                return ;
             }
             // Draw first ring
             drawRing(ctx, ring1Radius, ring1BorderWidth);
-
             // Draw second ring when the first ring's radius is 95
-            if (!drawingRing2 && ring1Radius === startNextRing) {
+            if (!drawingRing2 && ring1Radius === startNextRing)
                 drawingRing2 = true;
-            }
 
             // Draw third ring when the second ring's radius is 95
-            if (!drawingRing3 && ring2Radius === startNextRing) {
+            if (!drawingRing3 && ring2Radius === startNextRing)
                 drawingRing3 = true;
-            }
 
-            if (drawingRing2) {
-              drawRing(ctx, ring2Radius, ring2BorderWidth);
-            }
+            if (drawingRing2)
+                drawRing(ctx, ring2Radius, ring2BorderWidth);
 
-            if (drawingRing3) {
+            if (drawingRing3)
                 drawRing(ctx, ring3Radius, ring3BorderWidth);
-            }
-            animatedRings.requestAnimationFrame(animateRings)
+
+            animatedRings.requestAnimationFrame(animateRings);
         }
     }
 
@@ -172,23 +158,40 @@ Rectangle {
 
     RadialGradient {
         id: bgGradient
+
         antialiasing: true
-          anchors.fill: animatedRingsWrapper
-          verticalOffset: -68
-          gradient: Gradient {
-              GradientStop { position: 0.26; color: "transparent"}
-              GradientStop { position: 0.5; color: "#321C64" }
-          }
-          layer.enabled: true
-          layer.effect: OpacityMask {
-              maskSource: Item {
-                          width: animatedRingsWrapper.width
-                          height: animatedRingsWrapper.height
-                          Rectangle {
-                              anchors.fill: parent
-                              radius: animatedRingsWrapper.radius
-                          }
-                      }
-          }
-      }
+        anchors.fill: animatedRingsWrapper
+        verticalOffset: -68
+        layer.enabled: true
+
+        gradient: Gradient {
+            GradientStop {
+                position: 0.26
+                color: "transparent"
+            }
+
+            GradientStop {
+                position: 0.5
+                color: "#321C64"
+            }
+
+        }
+
+        layer.effect: OpacityMask {
+
+            maskSource: Item {
+                width: animatedRingsWrapper.width
+                height: animatedRingsWrapper.height
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: animatedRingsWrapper.radius
+                }
+
+            }
+
+        }
+
+    }
+
 }

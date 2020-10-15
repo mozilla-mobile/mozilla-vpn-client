@@ -5,24 +5,19 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 
 Flickable {
     VPNMenu {
         id: menu
+
         //% "Notifications"
         title: qsTrId("notifications")
         isSettingsView: true
     }
 
     ColumnLayout {
-        anchors.top: menu.bottom
-        Layout.preferredWidth: parent.width
-        spacing: 0
-
         /* TODO
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
@@ -37,8 +32,13 @@ Flickable {
         }
         */
 
+        anchors.top: menu.bottom
+        Layout.preferredWidth: parent.width
+        spacing: 0
+
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
+
             //% "Guest Wi-Fi portal alert"
             labelText: qsTrId("guestWifiAlert")
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
@@ -49,8 +49,12 @@ Flickable {
             onClicked: VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
         }
 
-        VPNCheckBoxAlert { }
+        VPNCheckBoxAlert {
+        }
+
     }
 
-    ScrollBar.vertical: ScrollBar {}
+    ScrollBar.vertical: ScrollBar {
+    }
+
 }

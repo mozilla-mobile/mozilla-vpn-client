@@ -4,23 +4,23 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 
 VPNClickableRow {
     id: servers
+
     //% "Select location"
     //: Select the Location of the VPN server
     property var titleText: qsTrId("selectLocation")
     //% "current location - %1"
     //: Accessibility description for current location of the VPN server
     property var descriptionText: qsTrId("currentLocation").arg(VPNCurrentServer.city)
-    accessibleName: `${titleText}: ${descriptionText}`
-    rowShouldBeDisabled: VPNController.state === VPNController.StateDeviceLimit
 
+    accessibleName: titleText + ": " + descriptionText
+    rowShouldBeDisabled: VPNController.state === VPNController.StateDeviceLimit
     activeFocusOnTab: true
+
     VPNFocus {
         itemToFocus: servers
     }
@@ -46,8 +46,7 @@ VPNClickableRow {
             Layout.preferredHeight: 16
             Layout.rightMargin: 8
             fillMode: Image.PreserveAspectFit
-            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase(
-                        ) + ".png"
+            source: "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
         }
 
         VPNLightLabel {
@@ -56,6 +55,9 @@ VPNClickableRow {
             Accessible.ignored: true
         }
 
-        VPNChevron { }
+        VPNChevron {
+        }
+
     }
+
 }

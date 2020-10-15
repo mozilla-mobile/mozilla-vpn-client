@@ -14,7 +14,6 @@ import "../resources/onboarding/onboardingCopy.js" as PanelCopy
 Item {
     property var panelNum: 1
     id: onboardingPanel
-    state: `onboarding${panelNum}`
 
     VPNHeaderLink {
         id: getHelp
@@ -25,9 +24,9 @@ Item {
 
     VPNPanel {
         id: contentWrapper
-        logo: `../resources/onboarding/${onboardingPanel.state}.svg`
-        logoTitle:  (PanelCopy.onboardingCopy[onboardingPanel.state].headline)
-        logoSubtitle: (PanelCopy.onboardingCopy[onboardingPanel.state].subtitle)
+        logo: "../resources/onboarding/onboarding" + onboardingPanel.panelNum + ".svg"
+        logoTitle:  (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].headline)
+        logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].subtitle)
 
         Component.onCompleted: fade.start()
         PropertyAnimation on opacity {

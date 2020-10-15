@@ -5,7 +5,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-
 import "../themes/themes.js" as Theme
 
 RoundButton {
@@ -14,12 +13,42 @@ RoundButton {
     height: 40
     width: Theme.maxTextWidth
     anchors.horizontalCenter: parent.horizontalCenter
-
     Layout.preferredHeight: 40
     Layout.fillWidth: true
-
     Layout.leftMargin: 16
     Layout.rightMargin: 16
+    Keys.onReturnPressed: clicked()
+    Accessible.onPressAction: clicked()
+    state: "state-default"
+    states: [
+        State {
+            name: "state-default"
+
+            PropertyChanges {
+                target: bgColor
+                color: Theme.blueButton.defaultColor
+            }
+
+        },
+        State {
+            name: "state-hovering"
+
+            PropertyChanges {
+                target: bgColor
+                color: Theme.blueButton.buttonHovered
+            }
+
+        },
+        State {
+            name: "state-pressed"
+
+            PropertyChanges {
+                target: bgColor
+                color: Theme.blueButton.buttonPressed
+            }
+
+        }
+    ]
 
     VPNFocus {
         itemToFocus: button
@@ -28,8 +57,18 @@ RoundButton {
         focusWidth: 5
     }
 
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        onEntered: button.state = "state-hovering"
+        onExited: button.state = "state-default"
+        onPressed: button.state = "state-pressed"
+        onClicked: button.clicked()
+    }
+
     background: Rectangle {
         id: bgColor
+
         color: Theme.blueButton.defaultColor
         radius: 4
 
@@ -37,14 +76,14 @@ RoundButton {
             ColorAnimation {
                 duration: 200
             }
-        }
-    }
 
-    Keys.onReturnPressed: clicked()
-    Accessible.onPressAction: clicked()
+        }
+
+    }
 
     contentItem: Label {
         id: label
+
         color: "#FFFFFF"
         text: button.text
         horizontalAlignment: Text.AlignHCenter
@@ -54,39 +93,4 @@ RoundButton {
         font.pixelSize: 15
     }
 
-
-    state: "state-default"
-    states: [
-        State {
-            name: "state-default"
-            PropertyChanges {
-                target: bgColor
-                color: Theme.blueButton.defaultColor
-            }
-        },
-        State {
-            name: "state-hovering"
-            PropertyChanges {
-                target: bgColor
-                color: Theme.blueButton.buttonHovered
-            }
-        },
-        State {
-            name: "state-pressed"
-            PropertyChanges {
-                target: bgColor
-                color: Theme.blueButton.buttonPressed
-            }
-        }
-
-    ]
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: button.state = "state-hovering"
-        onExited: button.state = "state-default"
-        onPressed: button.state = "state-pressed"
-        onClicked: button.clicked();
-    }
 }

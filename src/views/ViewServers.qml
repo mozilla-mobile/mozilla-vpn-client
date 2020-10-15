@@ -5,15 +5,14 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
     VPNMenu {
         id: menu
+
         title: qsTrId("selectLocation")
     }
 
@@ -28,9 +27,9 @@ Item {
         width: parent.width
         anchors.top: menu.bottom
         spacing: Theme.listSpacing
-
         clip: true
         model: VPNServerCountryModel
+
         header: Rectangle {
             height: 16
             width: serverList.width
@@ -38,16 +37,46 @@ Item {
         }
 
         delegate: Item {
-            property var cityListVisible: false
             id: serverCountry
+
+            property var cityListVisible: false
+
             state: cityListVisible ? "list-visible" : "list-hidden"
             width: serverList.width
             height: 40
+            states: [
+                State {
+                    name: "list-hidden"
+
+                    PropertyChanges {
+                        target: cityListWrapper
+                        opacity: 0
+                        height: 0
+                    }
+
+                },
+                State {
+                    name: "list-visible"
+
+                    PropertyChanges {
+                        target: cityListWrapper
+                        opacity: 1
+                        anchors.topMargin: 18
+                        height: (cityList.listLength * 48)
+                    }
+
+                    PropertyChanges {
+                        target: serverCountry
+                        height: cityListWrapper.height + 38
+                    }
+
+                }
+            ]
 
             VPNClickableRow {
                 id: serverCountryRow
-                onClicked: cityListVisible = !cityListVisible
 
+                onClicked: cityListVisible = !cityListVisible
                 accessibleName: name
 
                 RowLayout {
@@ -63,8 +92,8 @@ Item {
 
                     Image {
                         id: flag
-                        source: "../resources/flags/" + code.toUpperCase(
-                                    ) + ".png"
+
+                        source: "../resources/flags/" + code.toUpperCase() + ".png"
                         fillMode: Image.PreserveAspectFit
                         Layout.preferredWidth: Theme.iconSize
                         Layout.preferredHeight: Theme.iconSize
@@ -73,65 +102,47 @@ Item {
 
                     VPNBoldLabel {
                         id: countryName
+
                         text: name
                         Layout.leftMargin: Theme.hSpacing
                         Layout.fillWidth: true
                     }
+
                 }
+
             }
 
             Item {
                 id: cityListWrapper
+
                 anchors.top: serverCountryRow.bottom
                 width: parent.width
 
                 ListView {
+                    id: cityList
+
                     property var listLength: cities.length
 
-                    id: cityList
                     interactive: false
                     model: cities
                     spacing: Theme.listSpacing
                     width: parent.width
                     anchors.fill: parent
                     anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 14
+
                     delegate: VPNRadioDelegate {
                         radioButtonLabelText: modelData
                         onClicked: {
-                            VPNController.changeServer(code, modelData)
-                            stackview.pop()
+                            VPNController.changeServer(code, modelData);
+                            stackview.pop();
                         }
-                        checked: code === VPNCurrentServer.countryCode
-                                 && modelData === VPNCurrentServer.city
+                        checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
                         isHoverable: cityListVisible
                     }
+
                 }
+
             }
-
-            states: [
-                State {
-                    name: "list-hidden"
-                    PropertyChanges {
-                        target: cityListWrapper
-                        opacity: 0
-                        height: 0
-                    }
-                },
-
-                State {
-                    name: "list-visible"
-                    PropertyChanges {
-                        target: cityListWrapper
-                        opacity: 1
-                        anchors.topMargin: 18
-                        height: (cityList.listLength * 48)
-                    }
-                    PropertyChanges {
-                        target: serverCountry
-                        height: cityListWrapper.height + 38
-                    }
-                }
-            ]
 
             transitions: Transition {
                 NumberAnimation {
@@ -139,9 +150,14 @@ Item {
                     easing.type: Easing.InSine
                     duration: 200
                 }
+
             }
+
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+        }
+
     }
+
 }

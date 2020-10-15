@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxdependencies.h"
+#include "dbus.h"
 
 #include <QDebug>
 #include <QDir>
@@ -16,6 +17,8 @@ namespace {
 
 void showAlert(const QString &message)
 {
+    qDebug() << "Show alert:" << message;
+
     QMessageBox alert;
     alert.setText(message);
     alert.exec();
@@ -39,6 +42,41 @@ bool findInPath(const char *what)
     return false;
 }
 
+bool checkDaemonVersion()
+{
+    qDebug() << "Check Daemon Version";
+
+    DBus* dbus = new DBus(nullptr);
+    QDBusPendingCallWatcher *watcher = dbus->version();
+
+    bool completed = false;
+    bool value = false;
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     [completed = &completed, value = &value](QDBusPendingCallWatcher *call) {
+                         *completed = true;
+
+                         QDBusPendingReply<QString> reply = *call;
+                         if (reply.isError()) {
+                             qDebug() << "DBus message received - error";
+                             *value = false;
+                             return;
+                         }
+
+                         QString version = reply.argumentAt<0>();
+                         *value = version == APP_VERSION;
+
+                         qDebug() << "DBus message received - daemon version:" << version
+                                  << " - current version:" << APP_VERSION;
+                     });
+
+    while (!completed)  {
+       QCoreApplication::processEvents();
+    }
+
+    return value;
+}
+
 } // namespace
 
 // static
@@ -52,6 +90,11 @@ bool LinuxDependencies::checkDependencies()
 
     if (!findInPath(WG_QUICK)) {
         showAlert("Unable to locate wg-quick");
+        return false;
+    }
+
+    if (!checkDaemonVersion()) {
+        showAlert("mozillavpn-daemon needs to be updated or restared.");
         return false;
     }
 

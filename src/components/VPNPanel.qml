@@ -5,16 +5,13 @@
 import QtQuick 2.5
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
-Item {
 
+Item {
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
-
     property var logoY: 80
 
     anchors.horizontalCenter: parent.horizontalCenter
@@ -25,40 +22,36 @@ Item {
         // changes as Image.src is updated.
 
         id: logoWrapper
+
         color: "transparent"
         height: 76
         width: 76
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: logoY
+
         Image {
             id: logo
+
             anchors.horizontalCenter: parent.horizontalCenter
             sourceSize.height: 76
             fillMode: Image.PreserveAspectFit
         }
+
     }
 
     VPNHeadline {
         id: logoTitle
+
         anchors.top: logoWrapper.bottom
         anchors.topMargin: 24
     }
 
-    Text {
+    VPNSubtitle {
         id: logoSubtitle
+
         x: 169
         y: 255
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoTitle.bottom
-        anchors.topMargin: 8
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 15
-        font.family: Theme.fontInterFamily
-        wrapMode: Text.Wrap
-        width: Theme.maxTextWidth
-        color: Theme.fontColor
-        lineHeightMode: Text.FixedHeight
-        lineHeight: 22
     }
+
 }

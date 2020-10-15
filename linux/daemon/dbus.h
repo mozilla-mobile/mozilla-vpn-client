@@ -24,6 +24,8 @@ public:
     bool checkInterface();
 
 public slots:
+    QString version();
+
     bool activate(const QString &jsonConfig);
 
     bool deactivate();

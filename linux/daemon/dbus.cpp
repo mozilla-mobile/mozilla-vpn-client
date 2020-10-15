@@ -48,6 +48,12 @@ bool DBus::checkInterface()
     return true;
 }
 
+QString DBus::version()
+{
+    qDebug() << "Version request";
+    return APP_VERSION;
+}
+
 bool DBus::activate(const QString &jsonConfig)
 {
     qDebug() << "Activate";

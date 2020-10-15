@@ -6,355 +6,28 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 
 Rectangle {
-    state: VPNController.state
+    id: box
 
     function formatSingle(value) {
-        if (value === 0) return "00";
+        if (value === 0)
+            return "00";
+
         return (value < 10 ? "0" : "") + value;
     }
 
     function formatTime(time) {
         var secs = time % 60;
         time = Math.floor(time / 60);
-
         var mins = time % 60;
         time = Math.floor(time / 60);
-
         return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
-    states: [
-        State {
-            name: VPNController.StateInitializing
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoTitle
-                //% "VPN is off"
-                text: qsTrId("vpn.deactivated")
-                color: Theme.fontColorDark
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                //% "Turn on to protect your privacy"
-                text: qsTrId("vpn.activationSloagan")
-                color: Theme.fontColor
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-        },
-        State {
-            name: VPNController.StateOff
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoTitle
-                text: qsTrId("vpn.deactivated")
-                color: Theme.fontColorDark
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                text: qsTrId("vpn.activationSloagan")
-                color: Theme.fontColor
-                opacity: 1
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-        },
-        State {
-            name: VPNController.StateConnecting
-            PropertyChanges {
-                target: box
-                color: "#321C64"
-            }
-            PropertyChanges {
-                target: logoTitle
-                //% "Connecting…"
-                text: qsTrId("connecting")
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                //% "Masking connection and location"
-                text: qsTrId("vpn.activating")
-                color: "#FFFFFF"
-                opacity: .8
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings-white.svg"
-            }
-            PropertyChanges {
-                target: settingsButton
-                backgroundColor: Theme.whiteSettingsBtn
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-        },
-        State {
-            name: VPNController.StateOn
-            PropertyChanges {
-                target: box
-                color: "#321C64"
-            }
-            PropertyChanges {
-                target: logoTitle
-                //% "VPN is on"
-                text: qsTrId("vpn.activated")
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                //% "Secure and private  •  "
-                text: qsTrId("vpn.active") + formatTime(VPNController.time)
-                visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
-                color: "#FFFFFF"
-                opacity: .8
-            }
-            PropertyChanges {
-                target: settingsButton
-                backgroundColor: Theme.whiteSettingsBtn
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings-white.svg"
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: true
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: true
-                opacity: 1
-                startAnimation: true
-            }
-        },
-        State {
-            name: VPNController.StateDisconnecting
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoTitle
-                //% "Disconnecting…"
-                text: qsTrId("vpn.disconnecting")
-                color: Theme.fontColorDark
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                //% "Unmasking connection and location"
-                text: qsTrId("vpn.deactivating")
-                color: Theme.fontColor
-                opacity: 1
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-        },
-        State {
-            name: VPNController.StateSwitching
-            PropertyChanges {
-                target: box
-                color: "#321C64"
-            }
-            PropertyChanges {
-                target: logoTitle
-                //% "Switching…"
-                text: qsTrId("vpn.switching")
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                //% "From %1 to %2"
-                //: Switches from location 1 to location 2 
-                text: qsTrId("vpn.switchingDetail").arg(VPNController.currentCity).arg(VPNController.switchingCity)
-                color: "#FFFFFF"
-                opacity: .8
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings-white.svg"
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: true
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: true
-                opacity: 1
-                startAnimation: true
-            }
-        },
-        State {
-            name: VPNController.StateDeviceLimit
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-            PropertyChanges {
-                target: logoTitle
-                text: qsTrId("vpn.deactivated")
-                color: Theme.fontColorDark
-                opacity: .55
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                text: qsTrId("vpn.activationSloagan")
-                color: Theme.fontColor
-                opacity: .55
-            }
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            to: VPNController.StateConnecting
-            ColorAnimation {
-                target: box
-                property: "color"
-                duration: 200
-            }
-            ColorAnimation {
-                target: logoTitle
-                property: "color"
-                duration: 200
-            }
-            ColorAnimation {
-                target: logoSubtitle
-                property: "color"
-                duration: 200
-            }
-        },
-
-        Transition {
-            to: VPNController.StateDisconnecting
-            ColorAnimation {
-                target: box
-                property: "color"
-                duration: 200
-            }
-            ColorAnimation {
-                target: logoTitle
-                property: "color"
-                duration: 200
-            }
-            ColorAnimation {
-                target: logoSubtitle
-                property: "color"
-                duration: 200
-            }
-        }
-    ]
-
-    id: box
+    state: VPNController.state
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.margins: 16
@@ -362,6 +35,447 @@ Rectangle {
     height: 318
     width: parent.width - 32
     antialiasing: true
+    states: [
+        State {
+            name: VPNController.StateInitializing
+
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "VPN is off"
+                text: qsTrId("vpn.deactivated")
+                color: Theme.fontColorDark
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                //% "Turn on to protect your privacy"
+                text: qsTrId("vpn.activationSloagan")
+                color: Theme.fontColor
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        },
+        State {
+            name: VPNController.StateOff
+
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                text: qsTrId("vpn.deactivated")
+                color: Theme.fontColorDark
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                text: qsTrId("vpn.activationSloagan")
+                color: Theme.fontColor
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        },
+        State {
+            name: VPNController.StateConnecting
+
+            PropertyChanges {
+                target: box
+                color: "#321C64"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "Connecting…"
+                text: qsTrId("connecting")
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                //% "Masking connection and location"
+                text: qsTrId("vpn.activating")
+                color: "#FFFFFF"
+                opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings-white.svg"
+            }
+
+            PropertyChanges {
+                target: settingsButton
+                backgroundColor: Theme.whiteSettingsBtn
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        },
+        State {
+            name: VPNController.StateOn
+
+            PropertyChanges {
+                target: box
+                color: "#321C64"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "VPN is on"
+                text: qsTrId("vpn.activated")
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                //% "Secure and private  •  "
+                text: qsTrId("vpn.active") + formatTime(VPNController.time)
+                visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
+                color: "#FFFFFF"
+                opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: settingsButton
+                backgroundColor: Theme.whiteSettingsBtn
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings-white.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: true
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: true
+                opacity: 1
+                startAnimation: true
+            }
+
+        },
+        State {
+            name: VPNController.StateDisconnecting
+
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "Disconnecting…"
+                text: qsTrId("vpn.disconnecting")
+                color: Theme.fontColorDark
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                //% "Unmasking connection and location"
+                text: qsTrId("vpn.deactivating")
+                color: Theme.fontColor
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        },
+        State {
+            name: VPNController.StateSwitching
+
+            PropertyChanges {
+                target: box
+                color: "#321C64"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "Switching…"
+                text: qsTrId("vpn.switching")
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                //% "From %1 to %2"
+                //: Switches from location 1 to location 2
+                text: qsTrId("vpn.switchingDetail").arg(VPNController.currentCity).arg(VPNController.switchingCity)
+                color: "#FFFFFF"
+                opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings-white.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: true
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: true
+                opacity: 1
+                startAnimation: true
+            }
+
+        },
+        State {
+            name: VPNController.StateDeviceLimit
+
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                text: qsTrId("vpn.deactivated")
+                color: Theme.fontColorDark
+                opacity: 0.55
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                text: qsTrId("vpn.activationSloagan")
+                color: Theme.fontColor
+                opacity: 0.55
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        },
+        State {
+            name: VPNController.StateCaptivePortal
+
+            PropertyChanges {
+                target: box
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                text: qsTrId("vpn.deactivated") // TODO
+                color: Theme.fontColorDark
+                opacity: 0.55
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                text: qsTrId("vpn.activationSloagan") // TODO
+                color: Theme.fontColor
+                opacity: 0.55
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings.svg"
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        }
+    ]
+    transitions: [
+        Transition {
+            to: VPNController.StateConnecting
+
+            ColorAnimation {
+                target: box
+                property: "color"
+                duration: 200
+            }
+
+            ColorAnimation {
+                target: logoTitle
+                property: "color"
+                duration: 200
+            }
+
+            ColorAnimation {
+                target: logoSubtitle
+                property: "color"
+                duration: 200
+            }
+
+        },
+        Transition {
+            to: VPNController.StateDisconnecting
+
+            ColorAnimation {
+                target: box
+                property: "color"
+                duration: 200
+            }
+
+            ColorAnimation {
+                target: logoTitle
+                property: "color"
+                duration: 200
+            }
+
+            ColorAnimation {
+                target: logoSubtitle
+                property: "color"
+                duration: 200
+            }
+
+        }
+    ]
 
     VPNAnimatedRings {
         id: animatedRingsWrapper
@@ -369,6 +483,7 @@ Rectangle {
 
     VPNMainImage {
         id: logo
+
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: 50
@@ -378,18 +493,11 @@ Rectangle {
 
     VPNIconButton {
         id: connectionInfoButton
-        onClicked: connectionInfo.visible = true
 
+        onClicked: connectionInfo.visible = true
         defaultColor: box.color
         backgroundColor: Theme.whiteSettingsBtn
-        opacity: connectionInfoButton.visible? 1 : 0
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
-        }
-
+        opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
@@ -399,15 +507,25 @@ Rectangle {
 
         VPNIcon {
             id: connectionInfoImage
-            source: "../resources/connection-info.svg";
-            anchors.centerIn :connectionInfoButton
+
+            source: "../resources/connection-info.svg"
+            anchors.centerIn: connectionInfoButton
             sourceSize.height: 20
             sourceSize.width: 20
         }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+
+        }
+
     }
 
     VPNIconButton {
         id: settingsButton
+
         onClicked: stackview.push("../views/ViewSettings.qml")
         defaultColor: box.color
         anchors.top: parent.top
@@ -419,12 +537,17 @@ Rectangle {
 
         VPNIcon {
             id: settingsImage
-            anchors.centerIn :settingsButton
+
+            anchors.centerIn: settingsButton
         }
+
     }
 
-    Text {
+    VPNHeadline {
         id: logoTitle
+
+        anchors.top: logo.bottom
+        anchors.topMargin: 22
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         font.family: Theme.fontFamily
@@ -436,6 +559,7 @@ Rectangle {
 
     VPNInterLabel {
         id: logoSubtitle
+
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: logoTitle.y + logoTitle.height + 8
@@ -443,6 +567,7 @@ Rectangle {
 
     VPNConnectionStability {
         id: connectionStability
+
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: logoTitle.y + logoTitle.height + 8
@@ -451,6 +576,7 @@ Rectangle {
 
     VPNToggle {
         id: toggle
+
         y: logoSubtitle.y + logoSubtitle.height + 24
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
@@ -458,11 +584,12 @@ Rectangle {
 
     VPNConnectionInfo {
         id: connectionInfo
+
         anchors.fill: parent
         height: box.height
         width: box.width
         visible: false
-        opacity: connectionInfo.visible? 1 : 0
+        opacity: connectionInfo.visible ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -470,7 +597,9 @@ Rectangle {
                 property: "opacity"
                 duration: 200
             }
+
         }
 
     }
+
 }

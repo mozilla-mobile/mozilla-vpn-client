@@ -6,7 +6,6 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
@@ -15,6 +14,7 @@ Item {
 
     VPNMenu {
         id: menu
+
         //% "Get Help"
         title: qsTrId("getHelp")
         isSettingsView: true
@@ -27,7 +27,6 @@ Item {
         clip: true
         spacing: Theme.listSpacing
         anchors.topMargin: Theme.windowMargin
-
         listName: menu.title
 
         model: ListModel {
@@ -36,24 +35,25 @@ Item {
                 linkTitle: qsTrId("contactUs")
                 clickId: "contact_us"
             }
+
             ListElement {
                 //% "Help & Support"
                 linkTitle: qsTrId("helpAndSupport")
                 clickId: "help_support"
             }
+
             ListElement {
                 //% "View log"
                 linkTitle: qsTrId("viewLog")
                 clickId: "view_logs"
             }
+
         }
 
         delegate: VPNExternalLinkListItem {
-            title: linkTitle
-            accessibleName: linkTitle
 
             function clickHandler(id) {
-                switch(id) {
+                switch (id) {
                 case "contact_us":
                     VPN.openLink(VPN.LinkContact);
                     break;
@@ -65,11 +65,16 @@ Item {
                     break;
                 }
             }
+
+            title: linkTitle
+            accessibleName: linkTitle
             onClicked: clickHandler(clickId)
         }
 
         ScrollBar.vertical: ScrollBar {
             Accessible.ignored: true
         }
+
     }
+
 }

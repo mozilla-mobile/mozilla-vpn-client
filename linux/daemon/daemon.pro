@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+include($$PWD/../../version.pri)
+
 TEMPLATE  = app
 TARGET    = mozillavpn-daemon
 
@@ -13,6 +15,7 @@ CONFIG += c++1z
 QMAKE_CXXFLAGS *= -Werror
 
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
         dbus.cpp \

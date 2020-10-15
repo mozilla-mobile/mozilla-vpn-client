@@ -14,6 +14,11 @@ CaptivePortalDetection::CaptivePortalDetection()
     connect(&m_timer, &QTimer::timeout, this, &CaptivePortalDetection::detectCaptivePortal);
 }
 
+void CaptivePortalDetection::initialize()
+{
+    m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
+}
+
 void CaptivePortalDetection::controllerStateChanged()
 {
     qDebug() << "Controller state changed";
@@ -49,9 +54,12 @@ void CaptivePortalDetection::detectCaptivePortal()
             return;
         }
 
-        if (detected) {
-            emit captivePortalDetected();
+        // Comment this out to see the captive portal view each time.
+        if (!detected) {
+            return;
         }
+
+        emit captivePortalDetected();
     });
 
     request->run();

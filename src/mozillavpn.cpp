@@ -129,6 +129,8 @@ void MozillaVPN::initialize()
 
     m_localizer.initialize(m_settingsHolder.languageCode());
 
+    m_captivePortalDetection.initialize();
+
     if (!m_settingsHolder.hasToken()) {
         return;
     }
@@ -390,7 +392,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    if (!m_controller.isDeviceLimit()) {
+    if (m_controller.state() != Controller::StateDeviceLimit) {
         return;
     }
 
@@ -531,6 +533,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
     }
 
     if (alert == AuthenticationFailedAlert) {
+        m_controller.deactivate();
         m_settingsHolder.clear();
         setState(StateInitialize);
         return;

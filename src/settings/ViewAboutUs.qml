@@ -5,9 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
@@ -16,27 +14,32 @@ Item {
 
     ListModel {
         id: aboutUsListModel
+
         ListElement {
             //% "Terms of Service"
             linkTitle: qsTrId("tos")
             openUrl: VPN.LinkTermsOfService
         }
+
         ListElement {
             //% "Privacy Policy"
             linkTitle: qsTrId("privacyPolicy")
             openUrl: VPN.LinkPrivacyPolicy
         }
+
     }
 
     VPNMenu {
         id: menu
-         //% "About us"
+
+        //% "About us"
         title: qsTrId("aboutUs")
         isSettingsView: true
     }
 
     Rectangle {
         id: aboutUsCopy
+
         anchors.top: menu.bottom
         anchors.left: viewAboutUs.left
         anchors.topMargin: Theme.vSpacing
@@ -48,12 +51,14 @@ Item {
 
         VPNBoldLabel {
             id: mozillaLabel
+
             width: aboutUsCopy.width
             text: qsTrId("productName")
         }
 
         VPNTextBlock {
             id: mozillaText
+
             text: qsTrId("productDescription")
             anchors.top: mozillaLabel.bottom
             anchors.topMargin: 8
@@ -61,6 +66,7 @@ Item {
 
         VPNBoldLabel {
             id: releaseLabel
+
             //% "Release Version"
             text: qsTrId("releaseVersion")
             anchors.top: mozillaText.bottom
@@ -72,10 +78,12 @@ Item {
             anchors.topMargin: 8
             text: VPN.versionString
         }
+
     }
 
     Rectangle {
         id: divider
+
         height: 1
         width: viewAboutUs.width
         anchors.top: aboutUsCopy.bottom
@@ -89,6 +97,7 @@ Item {
 
     VPNList {
         id: settingList
+
         anchors.top: divider.bottom
         anchors.topMargin: 16
         anchors.bottomMargin: Theme.vSpacing
@@ -107,5 +116,7 @@ Item {
         ScrollBar.vertical: ScrollBar {
             Accessible.ignored: true
         }
+
     }
+
 }
