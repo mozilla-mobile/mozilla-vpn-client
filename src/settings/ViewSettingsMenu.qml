@@ -6,47 +6,55 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
 Flickable {
     id: scrollingFrame
 
+    contentHeight: 720
+    height: parent.height
+    boundsBehavior: Flickable.StopAtBounds
+
     ListModel {
         id: settingsMenuListModel
+
         ListElement {
             settingTitle: qsTrId("notifications")
             imageLeftSource: "../resources/settings/notifications.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNotifications.qml"
         }
+
         ListElement {
             settingTitle: qsTrId("networkSettings")
             imageLeftSource: "../resources/settings/networkSettings.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNetworkSettings.qml"
         }
+
         ListElement {
             settingTitle: qsTrId("language")
             imageLeftSource: "../resources/settings/language.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewLanguage.qml"
         }
+
         ListElement {
             settingTitle: qsTrId("aboutUs")
             imageLeftSource: "../resources/settings/aboutUs.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewAboutUs.qml"
         }
+
         ListElement {
             settingTitle: qsTrId("getHelp")
             imageLeftSource: "../resources/settings/getHelp.svg"
             imageRightSource: "../resources/chevron.svg"
             pushGetHelp: true
         }
+
         ListElement {
             //% "Give feedback"
             settingTitle: qsTrId("giveFeedback")
@@ -54,36 +62,33 @@ Flickable {
             imageRightSource: "../resources/externalLink.svg"
             openUrl: VPN.LinkFeedback
         }
+
     }
-
-    contentHeight: 720
-    height: parent.height
-
-    boundsBehavior: Flickable.StopAtBounds
 
     VPNIconButton {
         id: iconButton
-        onClicked: stackview.pop()
 
+        onClicked: stackview.pop()
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-
         accessibleName: qsTrId("back")
 
         Image {
             id: backImage
+
             source: "../resources/back.svg"
             sourceSize.width: Theme.iconSize
-
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
         }
+
     }
 
     Image {
         id: logo
+
         source: VPNUser.avatar
         anchors.horizontalCenter: parent.horizontalCenter
         height: 80
@@ -92,24 +97,28 @@ Flickable {
         layer.enabled: true
         anchors.top: parent.top
         anchors.topMargin: 32
-        layer.effect: OpacityMask {
-            maskSource: mask
-        }
+
         Rectangle {
             id: mask
+
             anchors.fill: parent
             radius: 40
             visible: false
         }
+
+        layer.effect: OpacityMask {
+            maskSource: mask
+        }
+
     }
 
     VPNHeadline {
         id: logoTitle
- 
-        text: VPNUser.displayName ? 
-                    VPNUser.displayName : 
-                    //% "VPN User"
-                    qsTrId("vpnUser")
+
+        //% "VPN User"
+        readonly property var textVpnUser: qsTrId("vpnUser")
+
+        text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         anchors.top: logo.bottom
         anchors.topMargin: Theme.vSpacing
         height: 32
@@ -117,11 +126,13 @@ Flickable {
 
     VPNSubtitle {
         id: logoSubtitle
+
         text: VPNUser.email
     }
 
     VPNButton {
         id: manageAccountButton
+
         //: "Manage account"
         text: qsTrId("manageAccount")
         anchors.top: logoSubtitle.bottom
@@ -131,6 +142,7 @@ Flickable {
 
     VPNCheckBoxRow {
         id: startAtBootCheckBox
+
         //: The back of the object, not the front
         //% "Launch VPN app on Startup"
         labelText: qsTrId("runOnBoot")
@@ -138,7 +150,6 @@ Flickable {
         isChecked: VPNSettings.startAtBoot
         isEnabled: true
         showDivider: true
-
         anchors.top: manageAccountButton.bottom
         anchors.topMargin: Theme.hSpacing * 1.5
         anchors.rightMargin: Theme.hSpacing
@@ -148,33 +159,35 @@ Flickable {
 
     Component {
         id: getHelpComponent
+
         VPNGetHelp {
             isSettingsView: true
         }
+
     }
 
     VPNList {
         id: settingsList
+
         height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height - startAtBootCheckBox.height
         width: parent.width
         anchors.top: startAtBootCheckBox.bottom
         anchors.topMargin: Theme.vSpacing
         spacing: Theme.listSpacing
-
         //% "Settings"
         listName: qsTrId("settings")
-
         model: settingsMenuListModel
+
         delegate: VPNClickableRow {
             accessibleName: settingTitle
             onClicked: {
-                if (pushGetHelp) {
-                    return settingsStackView.push(getHelpComponent)
-                }
-                if (pushView) {
-                    return settingsStackView.push(pushView)
-                }
-                return VPN.openLink(openUrl)
+                if (pushGetHelp)
+                    return settingsStackView.push(getHelpComponent);
+
+                if (pushView)
+                    return settingsStackView.push(pushView);
+
+                return VPN.openLink(openUrl);
             }
 
             VPNSettingsItem {
@@ -182,15 +195,19 @@ Flickable {
                 imageLeftSrc: imageLeftSource
                 imageRightSrc: imageRightSource
             }
+
         }
+
     }
 
     VPNSignOut {
         id: signOutLink
+
         onClicked: VPNController.logout()
     }
 
     ScrollBar.vertical: ScrollBar {
         Accessible.ignored: true
     }
+
 }

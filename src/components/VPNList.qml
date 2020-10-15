@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.5
-
 import "../themes/themes.js" as Theme
 
 ListView {
@@ -14,16 +13,15 @@ ListView {
 
     Accessible.role: Accessible.List
     Accessible.name: listName
-    activeFocusOnTab : true
+    activeFocusOnTab: true
     interactive: false // disable scrolling on list since the entire window is scrollable
+    highlightFollowsCurrentItem: true
+    Keys.onDownPressed: list.incrementCurrentIndex()
+    Keys.onUpPressed: list.decrementCurrentIndex()
 
     highlight: VPNFocus {
         itemToFocus: list
         itemToAnchor: list.currentItem
     }
 
-    highlightFollowsCurrentItem : true
-
-    Keys.onDownPressed: list.incrementCurrentIndex()
-    Keys.onUpPressed: list.decrementCurrentIndex()
 }

@@ -6,56 +6,65 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtGraphicalEffects 1.15
-
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 RowLayout {
+    id: checkBoxRow
+
     property var labelText
     property var subLabelText
     property bool isChecked
     property bool isEnabled: true
     property bool showDivider: true
 
-    signal clicked
+    signal clicked()
 
-    id: checkBoxRow
     Layout.topMargin: 18
     spacing: 0
 
     VPNCheckBox {
         id: checkBox
+
         Layout.leftMargin: 18
         onClicked: checkBoxRow.clicked()
         checked: isChecked
         enabled: isEnabled
-        opacity: isEnabled ? 1 : .5
+        opacity: isEnabled ? 1 : 0.5
     }
 
     ColumnLayout {
         id: labelWrapper
+
         Layout.fillWidth: true
         spacing: 0
 
         VPNInterLabel {
             id: label
+
             text: labelText
             color: Theme.fontColorDark
         }
+
         VPNTextBlock {
             id: subLabel
+
             width: Theme.maxTextWidth - Theme.windowMargin / 2
             Layout.preferredWidth: subLabel.width
             text: subLabelText
             visible: !!subLabelText.length
         }
+
         Rectangle {
             id: divider
+
             Layout.topMargin: 16
             Layout.preferredHeight: 1
-            Layout.fillWidth:true
+            Layout.fillWidth: true
             color: "#E7E7E7"
             visible: showDivider
         }
+
     }
+
 }

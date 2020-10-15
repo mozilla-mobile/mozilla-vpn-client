@@ -6,51 +6,78 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 
 CheckBox {
-    signal clicked
-
     id: checkBox
+
+    signal clicked()
+
     height: 20
     width: 20
     Layout.alignment: Qt.AlignTop
-    indicator: Rectangle {
-        id: checkBoxIndicator
-        height: 20
-        width: 20
-        color: "transparent"
-        border.color: Theme.fontColor
-        border.width: 2
-        radius: 4
-        antialiasing: true
+    state: "state-default"
+    states: [
+        State {
+            name: "state-pressed"
 
-        Behavior on border.color {
-            PropertyAnimation {
-                duration: 200
+            PropertyChanges {
+                target: checkBoxIndicator
+                border.color: checkBox.checked ? Theme.bluePressed : Theme.fontColorDark
             }
+
+            PropertyChanges {
+                target: checkmark
+                opacity: 1
+                checkmarkColor: checkBox.checked ? Theme.bluePressed : Theme.greyPressed
+            }
+
+        },
+        State {
+            name: "state-hovering"
+
+            PropertyChanges {
+                target: checkBoxIndicator
+                border.color: checkBox.checked ? Theme.blueHovered : Theme.fontColorDark
+            }
+
+            PropertyChanges {
+                target: checkmark
+                opacity: 1
+                checkmarkColor: checkBox.checked ? Theme.blueHovered : "#DBDBDB"
+            }
+
+        },
+        State {
+            name: "state-default"
+
+            PropertyChanges {
+                target: checkBoxIndicator
+                border.color: checkBox.checked ? Theme.blue : Theme.fontColor
+            }
+
+            PropertyChanges {
+                target: checkmark
+                opacity: checkBox.checked ? 1 : 0
+                checkmarkColor: checkBox.checked ? Theme.blue : "#DBDBDB"
+            }
+
         }
-    }
+    ]
 
     Item {
+        id: checkmark
+
         property var checkmarkColor: "#DBDBDB"
 
-        id: checkmark
         height: 20
         width: 20
         anchors.fill: checkBoxIndicator
 
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: 200
-            }
-        }
-
         Rectangle {
             id: checkmarkBg
+
             color: checkmark.checkmarkColor
             height: 20
             width: 20
@@ -62,11 +89,14 @@ CheckBox {
                 PropertyAnimation {
                     duration: 200
                 }
+
             }
+
         }
 
         Image {
             id: checkmarkIcon
+
             source: "../resources/checkmark.svg"
             sourceSize.height: 13
             sourceSize.width: 12
@@ -81,63 +111,53 @@ CheckBox {
             source: checkmarkBg
             maskSource: checkmarkIcon
         }
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 200
+            }
+
+        }
+
     }
 
     MouseArea {
         id: checkBoxMouseArea
+
         hoverEnabled: true
         height: 20
         width: 20
         propagateComposedEvents: true
         onEntered: checkBox.state = "state-hovering"
         onExited: checkBox.state = "state-default"
-        onReleased: if (checkBox.checked) { return checkBox.state = "state-default"; }
+        onReleased: if (checkBox.checked) {
+            return checkBox.state = "state-default";
+        }
         onPressed: checkBox.state = "state-pressed"
-
         onClicked: {
-            checkBox.clicked()
+            checkBox.clicked();
             mouse.accepted = false;
         }
     }
 
-    state: "state-default"
+    indicator: Rectangle {
+        id: checkBoxIndicator
 
-    states: [
-        State {
-          name: "state-pressed"
-          PropertyChanges {
-              target: checkBoxIndicator
-              border.color: checkBox.checked ? Theme.bluePressed : Theme.fontColorDark
-          }
-          PropertyChanges {
-              target: checkmark
-              opacity: 1
-              checkmarkColor: checkBox.checked ? Theme.bluePressed : Theme.greyPressed
-          }
-        },
-        State {
-          name: "state-hovering"
-          PropertyChanges {
-              target: checkBoxIndicator
-              border.color: checkBox.checked ? Theme.blueHovered : Theme.fontColorDark
-          }
-          PropertyChanges {
-              target: checkmark
-              opacity: 1
-              checkmarkColor: checkBox.checked ? Theme.blueHovered : "#DBDBDB"
-          }
-        },
-        State {
-            name: "state-default"
-            PropertyChanges {
-                target: checkBoxIndicator
-                border.color: checkBox.checked ? Theme.blue : Theme.fontColor
+        height: 20
+        width: 20
+        color: "transparent"
+        border.color: Theme.fontColor
+        border.width: 2
+        radius: 4
+        antialiasing: true
+
+        Behavior on border.color {
+            PropertyAnimation {
+                duration: 200
             }
-            PropertyChanges {
-                target: checkmark
-                opacity: checkBox.checked ? 1 : 0
-                checkmarkColor: checkBox.checked ? Theme.blue : "#DBDBDB"
-            }
+
         }
-    ]
+
+    }
+
 }

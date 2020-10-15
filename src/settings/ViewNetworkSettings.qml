@@ -6,15 +6,14 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
 Flickable {
     VPNMenu {
         id: menu
+
         //% "Network settings"
         title: qsTrId("networkSettings")
         isSettingsView: true
@@ -27,6 +26,7 @@ Flickable {
 
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
+
             //% "IPv6"
             labelText: qsTrId("ipv6")
             //% "Push the internet forward with the latest version of the Internet Protocol"
@@ -34,13 +34,14 @@ Flickable {
             isChecked: (VPNSettings.ipv6Enabled)
             isEnabled: isVPNOff
             showDivider: isVPNOff
-
             onClicked: VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
         }
 
         VPNCheckBoxRow {
-            property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             id: localNetwork
+
+            property bool isVPNOff: (VPNController.state === VPNController.StateOff)
+
             //% "Local network access"
             labelText: qsTrId("lanAccess")
             //% "Access printers, streaming sticks and all other devices on your local network"
@@ -48,12 +49,15 @@ Flickable {
             isChecked: (VPNSettings.localNetworkAccess)
             isEnabled: isVPNOff
             showDivider: isVPNOff
-
             onClicked: VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
         }
 
-        VPNCheckBoxAlert { }
+        VPNCheckBoxAlert {
+        }
+
     }
 
-    ScrollBar.vertical: ScrollBar {}
+    ScrollBar.vertical: ScrollBar {
+    }
+
 }
