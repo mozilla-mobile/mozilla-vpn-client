@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 Text {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.top: logoTitle.bottom
-    anchors.topMargin: 8
+    anchors.topMargin: Theme.windowMargin / 2
     horizontalAlignment: Text.AlignHCenter
     font.pixelSize: Theme.fontSize
     font.family: Theme.fontInterFamily

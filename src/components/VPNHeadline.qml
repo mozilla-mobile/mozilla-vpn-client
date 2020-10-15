@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 //VPNHeadline
 Text {
     horizontalAlignment: Text.AlignHCenter
-    anchors.horizontalCenterOffset: 1
+    anchors.horizontalCenterOffset: 0
     anchors.horizontalCenter: parent.horizontalCenter
     verticalAlignment: Text.AlignVCenter
     wrapMode: Text.Wrap

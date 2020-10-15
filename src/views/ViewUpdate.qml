@@ -160,14 +160,12 @@ Flickable {
                 sourceSize.height: 20
                 antialiasing: true
             }
-            Text {
+            VPNTextBlock {
                 id: alertUpdateRecommendedText
-                font.family: Theme.fontInterFamily
-                font.pixelSize: Theme.fontSizeSmall
                 color: Theme.fontColorDark
                 Layout.maximumWidth: 250
+                Layout.width: 250
                 Layout.alignment: Qt.AlignVCenter
-                wrapMode: Text.Wrap
                 //% "Your connection will not be secure while you update."
                 text: qsTrId("updateConnectionInsecureWarning")
             }
