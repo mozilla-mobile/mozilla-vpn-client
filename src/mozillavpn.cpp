@@ -531,6 +531,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
     }
 
     if (alert == AuthenticationFailedAlert) {
+        m_controller.deactivate();
         m_settingsHolder.clear();
         setState(StateInitialize);
         return;
