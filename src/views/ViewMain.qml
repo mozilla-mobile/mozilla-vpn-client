@@ -4,22 +4,21 @@
 
 import QtQuick 2.5
 import QtGraphicalEffects 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
 Flickable {
     id: mainView
+
     width: parent.width
     contentWidth: parent.width
     contentHeight: alertBox.isUpdateAlert ? (parent.height + Theme.windowMargin + alertBox.height) : parent.height
     boundsBehavior: Flickable.StopAtBounds
 
-
     VPNAlert {
         id: alertBox
+
         state: VPN.updateRecommended ? "recommended" : ""
         alertType: "update"
         alertColor: Theme.blueButton
@@ -35,14 +34,7 @@ Flickable {
     Item {
         height: parent.contentHeight
         width: parent.width
-        y: alertBox.visible ? alertBox.height + Theme.windowMargin : 0;
-
-        Behavior on y {
-            PropertyAnimation {
-                duration: 200
-                easing.type: Easing.OutCurve
-            }
-        }
+        y: alertBox.visible ? alertBox.height + Theme.windowMargin : 0
 
         VPNControllerView {
             id: box
@@ -55,6 +47,7 @@ Flickable {
 
         VPNControllerServer {
             id: serverInfo
+
             onClicked: stackview.push("ViewServers.qml")
             y: box.y + box.height + Theme.iconSize
         }
@@ -64,5 +57,15 @@ Flickable {
             anchors.topMargin: 8
             onClicked: stackview.push("ViewDevices.qml")
         }
+
+        Behavior on y {
+            PropertyAnimation {
+                duration: 200
+                easing.type: Easing.OutCurve
+            }
+
+        }
+
     }
+
 }

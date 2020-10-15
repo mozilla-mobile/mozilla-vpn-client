@@ -45,6 +45,8 @@ Item {
     VPNList {
         id: deviceList
 
+        property VPNIconButton focusedIconButton: null
+
         height: parent.height - menu.height
         width: parent.width
         anchors.top: menu.bottom
@@ -52,8 +54,6 @@ Item {
         interactive: true
         model: VPNDeviceModel
         spacing: 4
-
-        property VPNIconButton focusedIconButton: null
         onFocusChanged: {
             // Clear focus from the last focused remove button.
             if (deviceList.focusedIconButton) {
@@ -61,19 +61,16 @@ Item {
                 deviceList.focusedIconButton = null;
             }
         }
-
         listName: menu.title
 
         delegate: Container {
             id: device
 
             property var deviceName: name
+            //% "%1 %2"
+            property var accessibleName: qsTrId("deviceAccessibleName").arg(name).arg(deviceDesc.text)
 
             width: deviceList.width
-            //% "%1 %2"
-            property var accessibleName: qsTrId("deviceAccessibleName")
-                .arg(name)
-                .arg(deviceDesc.text)
 
             Connections {
 
@@ -89,7 +86,6 @@ Item {
             contentItem: ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
-
                 Accessible.name: device.accessibleName
                 Accessible.role: Accessible.ListItem
 
@@ -177,9 +173,9 @@ Item {
                         focusPolicy: deviceList.currentItem === device ? Qt.StrongFocus : Qt.NoFocus
                         onFocusChanged: {
                             // If the remove button gets a focus, remember it.
-                            if (focus) {
+                            if (focus)
                                 deviceList.focusedIconButton = this;
-                            }
+
                         }
 
                         VPNIcon {
@@ -275,6 +271,7 @@ Item {
         ScrollBar.vertical: ScrollBar {
             Accessible.ignored: true
         }
+
     }
 
     Rectangle {

@@ -6,11 +6,11 @@ import QtQuick 2.5
 import "../themes/themes.js" as Theme
 
 Row {
+    // TODO: check if these 3 functions do the correct math to compute the values.
+
     property var markerLabel
     property var rectColor
     property var markerData
-
-    // TODO: check if these 3 functions do the correct math to compute the values.
 
     function computeRange() {
         if (markerData < 128000)

@@ -56,7 +56,6 @@ Rectangle {
                 rRadius += 0.45;
             else
                 rRadius += 0.5;
-
             return {
                 "rRadius": rRadius,
                 "rBorderWidth": rBorderWidth

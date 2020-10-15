@@ -4,19 +4,24 @@
 
 import QtQuick 2.5
 import QtGraphicalEffects 1.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 import "../resources/onboarding/onboardingCopy.js" as PanelCopy
 
 Item {
-    property var panelNum: 1
     id: onboardingPanel
+
+    property var panelNum: 1
+
+    function goToNextPanel() {
+        onboardingPanel.panelNum++;
+        fade.start();
+    }
 
     VPNHeaderLink {
         id: getHelp
+
         //% "Skip"
         labelText: qsTrId("skip")
         onClicked: stackview.pop()
@@ -24,27 +29,33 @@ Item {
 
     VPNPanel {
         id: contentWrapper
-        logo: "../resources/onboarding/onboarding" + onboardingPanel.panelNum + ".svg"
-        logoTitle:  (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].headline)
-        logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].subtitle)
 
+        logo: "../resources/onboarding/onboarding" + onboardingPanel.panelNum + ".svg"
+        logoTitle: (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].headline)
+        logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].subtitle)
         Component.onCompleted: fade.start()
+
         PropertyAnimation on opacity {
             id: fade
+
             from: 0
             to: 1
             duration: 800
         }
+
     }
 
     VPNButton {
-        property var onboardingOver: (panelNum === 4)
         id: nextPanel
+
+        property var onboardingOver: (panelNum === 4)
+
+        //% "Next"
+        readonly property var textNext: qsTrId("next")
+
         width: 282
-        text: onboardingOver ? 
-            qsTrId("getStarted") : 
-            //% "Next"
-            qsTrId("next")
+        text: onboardingOver ? qsTrId("getStarted") : textNext
+
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressIndicator.top
@@ -55,14 +66,18 @@ Item {
 
     Row {
         id: progressIndicator
+
         spacing: 8
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 40
+
         Repeater {
             model: 4
+
             Rectangle {
                 id: circle
+
                 color: onboardingPanel.panelNum === (index + 1) ? Theme.buttonColor : Theme.greyPressed
                 height: 6
                 width: 6
@@ -72,13 +87,13 @@ Item {
                     ColorAnimation {
                         duration: 400
                     }
+
                 }
+
             }
+
         }
+
     }
 
-    function goToNextPanel() {
-        onboardingPanel.panelNum++;
-        fade.start();
-    }
 }
