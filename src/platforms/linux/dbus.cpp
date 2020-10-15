@@ -27,6 +27,18 @@ DBus::DBus(QObject *parent) : QObject(parent)
     connect(m_dbus, &OrgMozillaVpnDbusInterface::disconnected, this, &DBus::disconnected);
 }
 
+QDBusPendingCallWatcher *DBus::version()
+{
+    qDebug() << "Version via DBus";
+    QDBusPendingReply<QString> reply = m_dbus->version();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
+}
+
 QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *device, const Keys *keys)
 {
     QJsonObject json;

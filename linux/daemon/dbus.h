@@ -24,6 +24,8 @@ public:
     bool checkInterface();
 
 public Q_SLOTS:
+    QString version();
+
     bool activate(const QString &jsonConfig);
 
     bool deactivate();

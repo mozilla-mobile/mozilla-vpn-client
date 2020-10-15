@@ -21,6 +21,7 @@ class DBus : public QObject
 public:
     DBus(QObject *parent);
 
+    QDBusPendingCallWatcher *version();
     QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys);
     QDBusPendingCallWatcher *deactivate();
     QDBusPendingCallWatcher *status();
