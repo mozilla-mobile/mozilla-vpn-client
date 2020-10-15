@@ -44,7 +44,7 @@ Item {
         title: qsTrId("myDevices")
     }
 
-    ListView {
+    VPNList {
         id: deviceList
         height: parent.height - menu.height
         width: parent.width
@@ -54,11 +54,26 @@ Item {
         model: VPNDeviceModel
         spacing: 4
 
+        property VPNIconButton focusedIconButton: null
+        onFocusChanged: {
+            // Clear focus from the last focused remove button.
+            if (deviceList.focusedIconButton) {
+                deviceList.focusedIconButton.focus = false;
+                deviceList.focusedIconButton = null;
+            }
+        }
+
+        listName: menu.title
+
         delegate: Container {
             property var deviceName: name
 
             id: device
             width: deviceList.width
+            //% "%1 %2"
+            property var accessibleName: qsTrId("deviceAccessibleName")
+                .arg(name)
+                .arg(deviceDesc.text)
 
             Connections {
                 target: VPN
@@ -72,6 +87,9 @@ Item {
             contentItem: ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
+
+                Accessible.name: device.accessibleName
+                Accessible.role: Accessible.ListItem
 
                 RowLayout {
                     id: deviceRow
@@ -156,8 +174,16 @@ Item {
                         Layout.preferredHeight: 40
                         Layout.preferredWidth: 40
                         onClicked: removePopup.initializeAndOpen(name, index)
-                        //% "Remove"
-                        accessibleName: qsTrId("remove")
+                        //% "Remove %1"
+                        accessibleName: qsTrId("remove").arg(device.accessibleName)
+                        // Only allow focus within the current item in the list.
+                        focusPolicy: deviceList.currentItem === device ? Qt.StrongFocus : Qt.NoFocus
+                        onFocusChanged: {
+                            // If the remove button gets a focus, remember it.
+                            if (focus) {
+                                deviceList.focusedIconButton = this;
+                            }
+                        }
 
                         VPNIcon {
                             source: iconButton.iconSource
@@ -237,7 +263,9 @@ Item {
             width: parent.width
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
+        }
     }
 
     Rectangle {
