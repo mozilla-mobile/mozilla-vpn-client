@@ -5,15 +5,16 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 import "../components"
 
 Item {
+    Component.onCompleted: fade.start()
+
     VPNHeadline {
         id: headline
+
         //% "Quick access"
         text: qsTrId("quickAccess")
         anchors.top: parent.top
@@ -22,6 +23,7 @@ Item {
 
     VPNSubtitle {
         id: logoSubtitle
+
         //% "You can quickly access Mozilla VPN from your status bar."
         text: qsTrId("statusBarIntro")
         x: 169
@@ -31,6 +33,7 @@ Item {
 
     Item {
         id: gradientText
+
         width: 213
         height: 131
         anchors.horizontalCenter: parent.horizontalCenter
@@ -39,6 +42,7 @@ Item {
 
         Text {
             id: wip
+
             font.pixelSize: 58
             font.family: Theme.fontExtraBoldFamily
             horizontalAlignment: Text.AlignHCenter
@@ -55,25 +59,32 @@ Item {
             source: wip
             start: Qt.point(213, 0)
             end: Qt.point(0, 0)
+
             gradient: Gradient {
                 GradientStop {
-                    position: 0.0
+                    position: 0
                     color: "#FFA436"
                 }
+
                 GradientStop {
                     position: 0.31
                     color: "#FF4F5E"
                 }
+
                 GradientStop {
                     position: 0.66
                     color: "#FF298A"
                 }
+
                 GradientStop {
-                    position: 1.0
+                    position: 1
                     color: "#9059FF"
                 }
+
             }
+
         }
+
     }
 
     VPNButton {
@@ -88,11 +99,12 @@ Item {
         onClicked: VPN.postAuthenticationCompleted()
     }
 
-    Component.onCompleted: fade.start()
     PropertyAnimation on opacity {
         id: fade
+
         from: 0
         to: 1
         duration: 1000
     }
+
 }

@@ -4,30 +4,31 @@
 
 import QtQuick 2.5
 import QtCharts 2.0
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 
 Item {
     id: chartWrapper
-    anchors.fill: box
 
+    anchors.fill: box
     states: [
         State {
             name: "visible"
             when: chartWrapper.visible
+
             StateChangeScript {
                 script: VPNConnectionData.activate(txSeries, rxSeries, axisX, axisY)
             }
-        },
 
+        },
         State {
             name: "invisible"
             when: !chartWrapper.visible
+
             StateChangeScript {
-                script: VPNConnectionData.deactivate();
+                script: VPNConnectionData.deactivate()
             }
+
         }
     ]
 
@@ -41,6 +42,7 @@ Item {
 
         ChartView {
             id: chart
+
             antialiasing: true
             backgroundColor: "#321C64"
             width: parent.width
@@ -57,6 +59,7 @@ Item {
 
             ValueAxis {
                 id: axisX
+
                 min: 0
                 max: 29
                 tickCount: 5
@@ -68,6 +71,7 @@ Item {
 
             ValueAxis {
                 id: axisY
+
                 min: 10
                 max: 80
                 lineVisible: false
@@ -78,6 +82,7 @@ Item {
 
             SplineSeries {
                 id: txSeries
+
                 axisX: axisX
                 axisY: axisY
                 useOpenGL: false
@@ -88,6 +93,7 @@ Item {
 
             SplineSeries {
                 id: rxSeries
+
                 axisX: axisX
                 axisY: axisY
                 useOpenGL: true
@@ -95,6 +101,7 @@ Item {
                 color: "#EE3389"
                 width: 2
             }
+
         }
 
         VPNBoldLabel {
@@ -132,10 +139,12 @@ Item {
                 rectColor: "#F68953"
                 markerData: VPNConnectionData.txBytes
             }
+
         }
 
         VPNIconButton {
             id: backButton
+
             onClicked: chartWrapper.visible = false
             defaultColor: box.color
             backgroundColor: Theme.whiteSettingsBtn
@@ -152,6 +161,9 @@ Item {
                 sourceSize.height: 16
                 sourceSize.width: 16
             }
+
         }
+
     }
+
 }

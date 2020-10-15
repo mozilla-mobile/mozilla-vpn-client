@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-
 import Mozilla.VPN 1.0
-
 import "../components"
 
 Item {
+    Component.onCompleted: fade.start()
+
     VPNHeadline {
         id: headline
+
         //% "Waiting for sign in and subscription confirmation…"
         text: qsTrId("waitForSignIn")
         anchors.top: parent.top
@@ -19,6 +20,7 @@ Item {
 
     Image {
         id: spinner
+
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: headline.bottom
         anchors.topMargin: 96
@@ -28,27 +30,52 @@ Item {
 
         ParallelAnimation {
             id: startSpinning
+
             running: true
-            PropertyAnimation {target: spinner; property: "opacity"; from: 0; to: 1; duration: 300 }
-            PropertyAnimation { target: spinner; property: "scale"; from: .7; to: 1; duration: 300 }
-            PropertyAnimation { target: spinner; property: "rotation"; from: 0; to: 360; duration: 8000; loops: Animation.Infinite}
+
+            PropertyAnimation {
+                target: spinner
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 300
+            }
+
+            PropertyAnimation {
+                target: spinner
+                property: "scale"
+                from: 0.7
+                to: 1
+                duration: 300
+            }
+
+            PropertyAnimation {
+                target: spinner
+                property: "rotation"
+                from: 0
+                to: 360
+                duration: 8000
+                loops: Animation.Infinite
+            }
+
         }
+
     }
-
-
 
     VPNFooterLink {
         id: getHelp
+
         //% "Cancel and try again"
         labelText: qsTrId("cancelAndRetry")
         onClicked: VPN.cancelAuthentication()
     }
 
-    Component.onCompleted: fade.start()
     PropertyAnimation on opacity {
         id: fade
+
         from: 0
         to: 1
         duration: 1000
     }
+
 }

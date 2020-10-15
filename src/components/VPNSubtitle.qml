@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 
 // VPNSubtitle

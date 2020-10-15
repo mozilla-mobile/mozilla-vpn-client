@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-
 import "../themes/themes.js" as Theme
 
 // VPNBoldLabel

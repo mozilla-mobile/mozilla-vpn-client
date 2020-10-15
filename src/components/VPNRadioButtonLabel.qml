@@ -4,24 +4,24 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-
 import "../themes/themes.js" as Theme
 
 // VPNRadioButtonLabel
 Label {
     anchors.left: radioButton.right
     anchors.leftMargin: Theme.hSpacing - 2
-
     font.family: Theme.fontInterFamily
     font.pixelSize: Theme.fontSize
     color: Theme.fontColorDark
 
     states: State {
         when: radioControl.checked
+
         PropertyChanges {
             target: radioButtonLabel
             color: Theme.buttonColor
         }
+
     }
 
     transitions: Transition {
@@ -30,5 +30,7 @@ Label {
             properties: "color"
             duration: 100
         }
+
     }
+
 }

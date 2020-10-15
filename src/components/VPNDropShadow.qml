@@ -5,7 +5,6 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
-
 DropShadow {
     horizontalOffset: 0
     verticalOffset: 1

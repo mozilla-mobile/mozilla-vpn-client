@@ -4,16 +4,16 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-
 import Mozilla.VPN 1.0
-
 import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
     id: container
+
     VPNMenu {
         id: menu
+
         //% "Language"
         title: qsTrId("language")
         isSettingsView: true
@@ -25,21 +25,23 @@ Item {
 
     ListView {
         id: languageList
+
         clip: true
         anchors.top: menu.bottom
         height: parent.height - menu.height
         width: parent.width
         spacing: 26
-
         interactive: languageList.count > 3
-
         headerPositioning: ListView.InlineHeader
+        model: VPNLocalizer
+
         header: Item {
             width: parent.width
             height: 150
 
             VPNBoldLabel {
                 id: systemLabel
+
                 anchors.top: parent.top
                 anchors.topMargin: 20
                 anchors.left: parent.left
@@ -56,7 +58,6 @@ Item {
                 radioButtonLabelText: VPNLocalizer.systemLanguage
                 checked: VPNSettings.languageCode === ""
                 onClicked: VPNSettings.languageCode = ""
-
                 anchors.top: systemLabel.bottom
                 anchors.topMargin: 16
                 anchors.left: parent.left
@@ -65,10 +66,12 @@ Item {
                 VPNRadioSublabel {
                     text: VPNLocalizer.systemLocalizedLanguage
                 }
+
             }
 
             VPNBoldLabel {
                 id: additionalLabel
+
                 anchors.top: systemLanguage.bottom
                 anchors.topMargin: 28
                 anchors.left: parent.left
@@ -78,11 +81,12 @@ Item {
                 //: List of the additional languages
                 text: qsTrId("additional")
             }
+
         }
 
-        model: VPNLocalizer
         delegate: Item {
             id: languageOption
+
             width: languageList.width
             height: radioDel.height
 
@@ -92,7 +96,6 @@ Item {
                 radioButtonLabelText: language
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
-
                 anchors.left: parent.left
                 anchors.leftMargin: 18
                 anchors.topMargin: Theme.windowMargin
@@ -100,7 +103,9 @@ Item {
                 VPNRadioSublabel {
                     text: localizedLanguage
                 }
+
             }
+
         }
 
         footer: Rectangle {
@@ -109,6 +114,9 @@ Item {
             width: parent.width
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+        }
+
     }
+
 }
