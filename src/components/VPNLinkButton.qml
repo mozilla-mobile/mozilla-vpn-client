@@ -9,9 +9,8 @@ import "../themes/themes.js" as Theme
 
 RoundButton {
     required property var labelText
-    property variant fontName: vpnFontInter.name
+    property variant fontName: Theme.fontInterFamily
     property var linkColor: Theme.blueButton
-    property var isBoldLink: false
     signal clicked
 
     id: root
@@ -23,8 +22,10 @@ RoundButton {
         anchors.fill: parent
         color: Theme.bgColor
         radius: 4
-        border.width: root.activeFocus ? 2 : 0
-        border.color: Theme.blueFocusStroke
+    }
+
+    VPNFocus {
+        itemToFocus: root
     }
 
     contentItem: Label {
@@ -34,12 +35,6 @@ RoundButton {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: Theme.fontSize
         font.family: fontName
-
-        Component.onCompleted: {
-            if (isBoldLink) {
-                font.weight = Font.Bold
-            }
-        }
 
         Behavior on color {
             ColorAnimation {

@@ -15,53 +15,61 @@ Item {
 
     VPNMenu {
         id: menu
-        title: qsTr("Get help")
+        //% "Get Help"
+        title: qsTrId("getHelp")
         isSettingsView: true
     }
 
-    ListView {
+    VPNList {
         height: parent.height - menu.height
         width: parent.width
         anchors.top: menu.bottom
         clip: true
         spacing: Theme.listSpacing
-        interactive: false
         anchors.topMargin: Theme.windowMargin
+
+        listName: menu.title
 
         model: ListModel {
             ListElement {
-                linkTitle: qsTr("Contact us")
+                //% "Contact us"
+                linkTitle: qsTrId("contactUs")
                 clickId: "contact_us"
             }
             ListElement {
-                linkTitle: qsTr("Help & Support")
+                //% "Help & Support"
+                linkTitle: qsTrId("helpAndSupport")
                 clickId: "help_support"
             }
             ListElement {
-                linkTitle: qsTr("View log")
+                //% "View log"
+                linkTitle: qsTrId("viewLog")
                 clickId: "view_logs"
             }
         }
 
         delegate: VPNExternalLinkListItem {
             title: linkTitle
+            accessibleName: linkTitle
 
             function clickHandler(id) {
-                   switch(id) {
-                   case "contact_us":
-                       VPN.openLink(VPN.LinkContact);
-                       break;
-                   case "help_support":
-                       VPN.openLink(VPN.LinkHelpSupport);
-                       break;
-                   case "view_logs":
-                       VPN.viewLogs();
-                       break;
-                   }
-               }
+                switch(id) {
+                case "contact_us":
+                    VPN.openLink(VPN.LinkContact);
+                    break;
+                case "help_support":
+                    VPN.openLink(VPN.LinkHelpSupport);
+                    break;
+                case "view_logs":
+                    VPN.viewLogs();
+                    break;
+                }
+            }
             onClicked: clickHandler(clickId)
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
+        }
     }
 }

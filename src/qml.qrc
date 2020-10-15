@@ -297,9 +297,10 @@
         <file>resources/onboarding/onboarding4.svg</file>
         <file>resources/onboarding/onboarding3.svg</file>
         <file>resources/onboarding/onboarding2.svg</file>
-        <file>resources/fonts/Inter-UI-Regular.otf</file>
+        <file>resources/fonts/InterUI.otf</file>
+        <file>resources/fonts/Metropolis.otf</file>
+        <file>resources/fonts/Metropolis-ExtraBold.otf</file>
         <file>resources/fonts/Metropolis-SemiBold.otf</file>
-        <file>resources/fonts/Metropolis-Regular.otf</file>
         <file>components/VPNPanel.qml</file>
         <file>components/VPNFooterLink.qml</file>
         <file>components/VPNHeaderLink.qml</file>
@@ -315,7 +316,6 @@
         <file>components/VPNStabilityLabelActions.qml</file>
         <file>resources/warning.svg</file>
         <file>resources/warning-orange.svg</file>
-        <file>resources/fonts/Metropolis-Bold.otf</file>
         <file>states/StateUpdateRequired.qml</file>
         <file>views/ViewUpdate.qml</file>
         <file>resources/settings/getHelp.svg</file>
@@ -362,5 +362,8 @@
         <file>resources/down.svg</file>
         <file>components/VPNButtonBase.qml</file>
         <file>components/VPNSystemAlert.qml</file>
+        <file>components/VPNSignOut.qml</file>
+        <file>components/VPNFocus.qml</file>
+        <file>components/VPNList.qml</file>
     </qresource>
 </RCC>

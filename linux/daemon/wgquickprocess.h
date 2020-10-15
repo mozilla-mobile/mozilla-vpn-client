@@ -10,7 +10,7 @@
 
 constexpr const char *WG_INTERFACE = "moz0";
 
-class WgQuickProcess : public QObject
+class WgQuickProcess final : public QObject
 {
     Q_OBJECT
 public:
@@ -25,6 +25,7 @@ public:
              const QString &deviceIpv4Address,
              const QString &deviceIpv6Address,
              const QString &serverIpv4Gateway,
+             const QString &serverIpv6Gateway,
              const QString &serverPublicKey,
              const QString &serverIpv4AddrIn,
              const QString &serverIpv6AddrIn,

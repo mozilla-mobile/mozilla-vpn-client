@@ -14,7 +14,7 @@ import "../themes/themes.js" as Theme
 Item {
     VPNMenu {
         id: menu
-        title: qsTr("Select location")
+        title: qsTrId("selectLocation")
     }
 
     ButtonGroup {
@@ -47,6 +47,8 @@ Item {
             VPNClickableRow {
                 id: serverCountryRow
                 onClicked: cityListVisible = !cityListVisible
+
+                accessibleName: name
 
                 RowLayout {
                     spacing: 0

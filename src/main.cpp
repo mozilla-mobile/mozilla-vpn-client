@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "captiveportaldetection.h"
+#include "captiveportal/captiveportaldetection.h"
+#include "fontloader.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
@@ -13,7 +14,7 @@
 #endif
 
 #ifdef MACOS_INTEGRATION
-#include "platforms/macos/macosutils.h"
+#include "platforms/macos/macosstartatbootwatcher.h"
 #endif
 
 #include <QApplication>
@@ -40,18 +41,20 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
-        QApplication::tr("A fast, secure and easy to use VPN. Built by the makers of Firefox."));
+        qtTrId("productDescription"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     QCommandLineOption minimizedOption(QStringList() << "m"
                                                      << "minimized",
-                                       QCoreApplication::tr("Start minimized"));
+                                        //% "Start minimized"
+                                        qtTrId("startMinimized"));
     parser.addOption(minimizedOption);
 
     QCommandLineOption startAtBootOption(QStringList() << "s"
                                                        << "start-at-boot",
-                                         QCoreApplication::tr("Start at boot (if configured)"));
+                                        //% "Start at boot (if configured)"
+                                        qtTrId("startOnBoot"));
     parser.addOption(startAtBootOption);
 
     parser.process(app);
@@ -77,7 +80,12 @@ int main(int argc, char *argv[])
     }
 
 #ifdef MACOS_INTEGRATION
-    MacOSUtils::enableLoginItem(!MozillaVPN::instance()->settingsHolder()->startAtBoot());
+    MacOSStartAtBootWatcher startAtBootWatcher(
+        MozillaVPN::instance()->settingsHolder()->startAtBoot());
+    QObject::connect(MozillaVPN::instance()->settingsHolder(),
+                     &SettingsHolder::startAtBootChanged,
+                     &startAtBootWatcher,
+                     &MacOSStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #if defined (__linux__) && !defined (__ANDROID__)
@@ -86,6 +94,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 #endif
+
+    FontLoader::loadFonts();
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {

@@ -11,7 +11,7 @@
 class Server;
 class PingSender;
 
-class ConnectionHealth : public QObject
+class ConnectionHealth final : public QObject
 {
 public:
     enum ConnectionStability {
@@ -33,11 +33,12 @@ public:
 
     void stop();
 
-    bool isRunning() const { return m_state != Inactive; }
-
     ConnectionStability stability() const { return m_stability; }
 
-private Q_SLOTS:
+public slots:
+    void connectionStateChanged();
+
+private slots:
     void pingCompleted();
 
 signals:

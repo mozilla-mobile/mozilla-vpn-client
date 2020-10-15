@@ -9,7 +9,7 @@
 
 class SettingsHolder;
 
-class Keys
+class Keys final
 {
 public:
     bool fromSettings(SettingsHolder &settings);

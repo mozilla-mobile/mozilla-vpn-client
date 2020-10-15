@@ -12,7 +12,7 @@ const blue = "#0060DF";
 const blueHovered = "#0250BB";
 const bluePressed = "#054096";
 const blueDisabled = "#a3c0f3";
-const blueFocusStroke = "#66054096";
+const blueFocusStroke = "#660060DF";
 
 const green = "#3FE1B0";
 
@@ -33,6 +33,11 @@ const stateBgColor = "#321C64";
 
 const fontColor = "#6D6D6E";
 const fontColorDark = "#3D3D3D";
+
+const fontFamily = "Metropolis";
+const fontBoldFamily = "MetropolisSemiBold";
+const fontExtraBoldFamily = "MetropolisExtraBold";
+const fontInterFamily = "InterUI";
 
 const fontSize = 15;
 const fontSizeLarge = 22;

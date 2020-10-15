@@ -14,7 +14,8 @@ Item {
     id: container
     VPNMenu {
         id: menu
-        title: qsTr("Language")
+        //% "Language"
+        title: qsTrId("language")
         isSettingsView: true
     }
 
@@ -44,7 +45,9 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin
                 width: parent.width
-                text: qsTr("System")
+                //% "System"
+                //: The system language
+                text: qsTrId("system")
             }
 
             VPNRadioDelegate {
@@ -71,7 +74,9 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.windowMargin
                 width: parent.width
-                text: qsTr("Additional")
+                //% "Additional"
+                //: List of the additional languages
+                text: qsTrId("additional")
             }
         }
 
@@ -84,7 +89,7 @@ Item {
             VPNRadioDelegate {
                 id: radioDel
 
-                radioButtonLabelText: qsTr(language)
+                radioButtonLabelText: language
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
 

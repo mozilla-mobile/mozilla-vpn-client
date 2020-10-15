@@ -12,32 +12,21 @@ import "../themes/themes.js" as Theme
 import "../components"
 
 Item {
-    FontLoader { id: boldest; source: "../resources/fonts/Metropolis-Bold.otf"; name: "MetropolisExtraBold";
-        onStatusChanged: console.log(FontLoader.Ready, "IS IT???")
-    }
     VPNHeadline {
         id: headline
-        text: qsTr("Quick access")
+        //% "Quick access"
+        text: qsTrId("quickAccess")
         anchors.top: parent.top
         anchors.topMargin: 32
     }
 
-    Text {
+    VPNSubtitle {
         id: logoSubtitle
-        text: qsTr("You can quickly access Mozilla VPN from your status bar.")
+        //% "You can quickly access Mozilla VPN from your status bar."
+        text: qsTrId("statusBarIntro")
         x: 169
         y: 255
-        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: headline.bottom
-        anchors.topMargin: 8
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: 15
-        font.family: vpnFontInter.name
-        wrapMode: Text.Wrap
-        width: Theme.maxTextWidth
-        color: Theme.fontColor
-        lineHeightMode: Text.FixedHeight
-        lineHeight: 22
     }
 
     Item {
@@ -51,12 +40,13 @@ Item {
         Text {
             id: wip
             font.pixelSize: 58
-            font.family: boldest.name
+            font.family: Theme.fontExtraBoldFamily
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.centerIn: gradientText
             anchors.fill: gradientText
-            text: qsTr("WIP")
+            //% "WIP"
+            text: qsTrId("wip")
             visible: false
         }
 
@@ -88,7 +78,8 @@ Item {
 
     VPNButton {
         width: 282
-        text: qsTr("Continue")
+        //% "Continue"
+        text: qsTrId("continue")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

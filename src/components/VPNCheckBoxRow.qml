@@ -24,6 +24,7 @@ RowLayout {
     spacing: 0
 
     VPNCheckBox {
+        id: checkBox
         Layout.leftMargin: 18
         onClicked: checkBoxRow.clicked()
         checked: isChecked
@@ -36,23 +37,15 @@ RowLayout {
         Layout.fillWidth: true
         spacing: 0
 
-        Label {
+        VPNInterLabel {
             id: label
             text: labelText
-            font.pixelSize: 15
-            font.family: vpnFontInter.name
             color: Theme.fontColorDark
-            lineHeightMode: Text.FixedHeight
-            lineHeight: Theme.labelLineHeight
         }
-        Text {
+        VPNTextBlock {
             id: subLabel
-            font.pixelSize: 13
-            Layout.preferredWidth: 288
-            wrapMode: Text.Wrap
-            lineHeightMode: Text.FixedHeight
-            lineHeight: 21
-            color: Theme.fontColor
+            width: Theme.maxTextWidth - Theme.windowMargin / 2
+            Layout.preferredWidth: subLabel.width
             text: subLabelText
             visible: !!subLabelText.length
         }

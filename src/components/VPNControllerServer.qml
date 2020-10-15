@@ -10,7 +10,20 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 VPNClickableRow {
+    id: servers
+    //% "Select location"
+    //: Select the Location of the VPN server
+    property var titleText: qsTrId("selectLocation")
+    //% "current location - %1"
+    //: Accessibility description for current location of the VPN server
+    property var descriptionText: qsTrId("currentLocation").arg(VPNCurrentServer.city)
+    accessibleName: `${titleText}: ${descriptionText}`
     rowShouldBeDisabled: VPNController.state === VPNController.StateDeviceLimit
+
+    activeFocusOnTab: true
+    VPNFocus {
+        itemToFocus: servers
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -20,7 +33,8 @@ VPNClickableRow {
 
         VPNIconAndLabel {
             icon: "../resources/connection.svg"
-            title: qsTr("Select location")
+            title: titleText
+            Accessible.ignored: true
         }
 
         Item {
@@ -39,6 +53,7 @@ VPNClickableRow {
         VPNLightLabel {
             text: VPNCurrentServer.city
             Layout.rightMargin: 8
+            Accessible.ignored: true
         }
 
         VPNChevron { }

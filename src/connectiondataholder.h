@@ -16,7 +16,7 @@ class QSplineSeries;
 class QValueAxis;
 }
 
-class ConnectionDataHolder : public QObject
+class ConnectionDataHolder final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
@@ -28,8 +28,6 @@ public:
 
     void enable();
     void disable();
-
-    void add(uint64_t txBytes, uint64_t rxBytes);
 
     Q_INVOKABLE void activate(const QVariant &txSeries,
                               const QVariant &rxSeries,
@@ -45,14 +43,17 @@ public:
     quint64 txBytes() const;
     quint64 rxBytes() const;
 
-    bool isRunning() const { return !!m_txSeries; }
-
 private:
+    void add(uint64_t txBytes, uint64_t rxBytes);
+
     void computeAxes();
     void updateIpAddress();
 
     // Boolean because we have just first and second index in the vector.
     quint64 bytes(bool index) const;
+
+public slots:
+    void connectionStateChanged();
 
 signals:
     void ipAddressChanged();
@@ -73,6 +74,7 @@ private:
 
     QString m_ipAddress;
     QTimer m_ipAddressTimer;
+    QTimer m_checkStatusTimer;
 };
 
 #endif // CONNECTIONDATAHOLDER_H

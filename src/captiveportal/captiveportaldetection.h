@@ -15,11 +15,13 @@ class CaptivePortalDetection final : public QObject
 public:
     CaptivePortalDetection();
 
+    void initialize();
+
 private:
     void handleSuccess();
     void handleFailure();
 
-public Q_SLOTS:
+public slots:
     void controllerStateChanged();
 
     void settingsChanged();
@@ -35,3 +37,4 @@ private:
 };
 
 #endif // CAPTIVEPORTALDETECTION_H
+

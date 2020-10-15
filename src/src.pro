@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-!defined(VERSION, var):VERSION = 1
+include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT += network
@@ -29,7 +29,11 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
-        captiveportaldetection.cpp \
+        captiveportal/captiveportal.cpp \
+        captiveportal/captiveportalactivator.cpp \
+        captiveportal/captiveportaldetection.cpp \
+        captiveportal/captiveportallookup.cpp \
+        captiveportal/captiveportalrequest.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
@@ -38,6 +42,7 @@ SOURCES += \
         device.cpp \
         devicemodel.cpp \
         errorhandler.cpp \
+        fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
@@ -68,7 +73,11 @@ SOURCES += \
         user.cpp
 
 HEADERS += \
-        captiveportaldetection.h \
+        captiveportal/captiveportal.h \
+        captiveportal/captiveportalactivator.h \
+        captiveportal/captiveportaldetection.h \
+        captiveportal/captiveportallookup.h \
+        captiveportal/captiveportalrequest.h \
         connectiondataholder.h \
         connectionhealth.h \
         controller.h \
@@ -78,6 +87,7 @@ HEADERS += \
         device.h \
         devicemodel.h \
         errorhandler.h \
+        fontloader.h \
         keys.h \
         localizer.h \
         logger.h \
@@ -200,6 +210,7 @@ else:macos {
 
     SOURCES += \
             platforms/macos/macospingsendworker.cpp \
+            platforms/macos/macosstartatbootwatcher.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
@@ -209,6 +220,7 @@ else:macos {
 
     HEADERS += \
             platforms/macos/macospingsendworker.h \
+            platforms/macos/macosstartatbootwatcher.h \
             tasks/authenticate/authenticationlistener.h
 
     OBJECTIVE_HEADERS += \
@@ -299,8 +311,22 @@ QML_DESIGNER_IMPORT_PATH =
 
 
 exists($$PWD/../translations/translations.pri) {
-  include($$PWD/../translations/translations.pri)
+    include($$PWD/../translations/translations.pri)
+}
+else{
+    message( Languages were not imported - using fallback english)
+    TRANSLATIONS += \
+        ../translations/mozillavpn_en.ts \
+
+    ts.commands += lupdate $$PWD -ts $$PWD/../translations/mozillavpn_en.ts
+    ts.CONFIG += no_check_exist
+    ts.output = $$PWD/../translations/mozillavpn_en.ts
+    ts.input = .
+    QMAKE_EXTRA_TARGETS += ts
+    PRE_TARGETDEPS += ts
 }
 
+
+QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations

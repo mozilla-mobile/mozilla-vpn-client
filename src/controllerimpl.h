@@ -11,6 +11,7 @@
 
 #include <functional>
 
+class CaptivePortal;
 class Keys;
 class Device;
 class Server;
@@ -30,6 +31,7 @@ public:
     virtual void activate(const Server &server,
                           const Device *device,
                           const Keys *keys,
+                          const CaptivePortal &captivePortal,
                           bool forSwitching)
         = 0;
 

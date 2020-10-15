@@ -62,9 +62,12 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
 void LinuxController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
+                               const CaptivePortal &captivePortal,
                                bool forSwitching)
 {
+    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
+
     qDebug() << "LinuxController activated";
     monitorWatcher(m_dbus->activate(server, device, keys));
 }

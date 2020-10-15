@@ -48,16 +48,13 @@ bool DBus::checkInterface()
     return true;
 }
 
-bool DBus::activate(const QString &privateKey,
-                    const QString &deviceIpv4Address,
-                    const QString &deviceIpv6Address,
-                    const QString &serverIpv4Gateway,
-                    const QString &serverPublicKey,
-                    const QString &serverIpv4AddrIn,
-                    const QString &serverIpv6AddrIn,
-                    int serverPort,
-                    bool ipv6Enabled,
-                    bool localNetworkAccess)
+QString DBus::version()
+{
+    qDebug() << "Version request";
+    return APP_VERSION;
+}
+
+bool DBus::activate(const QString &jsonConfig)
 {
     qDebug() << "Activate";
 
@@ -73,28 +70,88 @@ bool DBus::activate(const QString &privateKey,
 
     m_connected = true;
 
-    m_lastPrivateKey = privateKey;
-    m_lastDeviceIpv4Address = deviceIpv4Address;
-    m_lastDeviceIpv6Address = deviceIpv6Address;
-    m_lastServerIpv4Gateway = serverIpv4Gateway;
-    m_lastServerPublicKey = serverPublicKey;
-    m_lastServerIpv4AddrIn = serverIpv4AddrIn;
-    m_lastServerIpv6AddrIn = serverIpv6AddrIn;
-    m_lastServerPort = serverPort;
-    m_lastIpv6Enabled = ipv6Enabled;
-    m_lastLocalNetworkAccess = localNetworkAccess;
+    QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
+    if (!json.isObject()) {
+        qDebug() << "Invalid input";
+        return false;
+    }
+
+    QJsonObject obj = json.object();
+
+#define GETVALUESTR(name, where) \
+    if (!obj.contains(name)) { \
+        qDebug() << name << " missing in the jsonConfig input"; \
+        return false; \
+    } \
+    { \
+        QJsonValue value = obj.take(name); \
+        if (!value.isString()) { \
+            qDebug() << name << " is not a string"; \
+            return false; \
+        } \
+        where = value.toString(); \
+    }
+
+    GETVALUESTR("privateKey", m_lastPrivateKey);
+    GETVALUESTR("deviceIpv4Address", m_lastDeviceIpv4Address);
+    GETVALUESTR("deviceIpv6Address", m_lastDeviceIpv6Address);
+    GETVALUESTR("serverIpv4Gateway", m_lastServerIpv4Gateway);
+    GETVALUESTR("serverIpv6Gateway", m_lastServerIpv6Gateway);
+    GETVALUESTR("serverPublicKey", m_lastServerPublicKey);
+    GETVALUESTR("serverIpv4AddrIn", m_lastServerIpv4AddrIn);
+    GETVALUESTR("serverIpv6AddrIn", m_lastServerIpv6AddrIn);
+
+#undef GETVALUESTR
+
+#define GETVALUEINT(name, where) \
+    if (!obj.contains(name)) { \
+        qDebug() << name << " missing in the jsoConfig input"; \
+        return false; \
+    } \
+    { \
+        QJsonValue value = obj.take(name); \
+        if (!value.isDouble()) { \
+            qDebug() << name << " is not a number"; \
+            return false; \
+        } \
+        where = value.toInt(); \
+    }
+
+    GETVALUEINT("serverPort", m_lastServerPort);
+
+#undef GETVALUEINT
+
+#define GETVALUEBOOL(name, where) \
+    if (!obj.contains(name)) { \
+        qDebug() << name << " missing in the jsoConfig input"; \
+        return false; \
+    } \
+    { \
+        QJsonValue value = obj.take(name); \
+        if (!value.isBool()) { \
+            qDebug() << name << " is not a boolean"; \
+            return false; \
+        } \
+        where = value.toBool(); \
+    }
+
+    GETVALUEBOOL("ipv6Enabled", m_lastIpv6Enabled);
+    GETVALUEBOOL("localNetworkAccess", m_lastLocalNetworkAccess);
+
+#undef GETVALUEBOOL
 
     bool status = runWgQuick(WgQuickProcess::Up,
-                             privateKey,
-                             deviceIpv4Address,
-                             deviceIpv6Address,
-                             serverIpv4Gateway,
-                             serverPublicKey,
-                             serverIpv4AddrIn,
-                             serverIpv6AddrIn,
-                             serverPort,
-                             ipv6Enabled,
-                             localNetworkAccess);
+                             m_lastPrivateKey,
+                             m_lastDeviceIpv4Address,
+                             m_lastDeviceIpv6Address,
+                             m_lastServerIpv4Gateway,
+                             m_lastServerIpv6Gateway,
+                             m_lastServerPublicKey,
+                             m_lastServerIpv4AddrIn,
+                             m_lastServerIpv6AddrIn,
+                             m_lastServerPort,
+                             m_lastIpv6Enabled,
+                             m_lastLocalNetworkAccess);
 
     qDebug() << "Status:" << status;
 
@@ -126,6 +183,7 @@ bool DBus::deactivate()
                              m_lastDeviceIpv4Address,
                              m_lastDeviceIpv6Address,
                              m_lastServerIpv4Gateway,
+                             m_lastServerIpv6Gateway,
                              m_lastServerPublicKey,
                              m_lastServerIpv4AddrIn,
                              m_lastServerIpv6AddrIn,
@@ -196,6 +254,7 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &deviceIpv4Address,
                       const QString &deviceIpv6Address,
                       const QString &serverIpv4Gateway,
+                      const QString &serverIpv6Gateway,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
                       const QString &serverIpv6AddrIn,
@@ -209,6 +268,7 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  deviceIpv4Address,
                  deviceIpv6Address,
                  serverIpv4Gateway,
+                 serverIpv6Gateway,
                  serverPublicKey,
                  serverIpv4AddrIn,
                  serverIpv6AddrIn,

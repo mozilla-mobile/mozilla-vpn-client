@@ -12,8 +12,8 @@ Label {
     anchors.left: radioButton.right
     anchors.leftMargin: Theme.hSpacing - 2
 
-    font.family: vpnFontInter.name
-    font.pointSize: Theme.fontSize
+    font.family: Theme.fontInterFamily
+    font.pixelSize: Theme.fontSize
     color: Theme.fontColorDark
 
     states: State {

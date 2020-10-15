@@ -27,20 +27,36 @@ DBus::DBus(QObject *parent) : QObject(parent)
     connect(m_dbus, &OrgMozillaVpnDbusInterface::disconnected, this, &DBus::disconnected);
 }
 
+QDBusPendingCallWatcher *DBus::version()
+{
+    qDebug() << "Version via DBus";
+    QDBusPendingReply<QString> reply = m_dbus->version();
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    QObject::connect(watcher,
+                     &QDBusPendingCallWatcher::finished,
+                     watcher,
+                     &QDBusPendingCallWatcher::deleteLater);
+    return watcher;
+}
+
 QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *device, const Keys *keys)
 {
+    QJsonObject json;
+    json.insert("privateKey", QJsonValue(keys->privateKey()));
+    json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
+    json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
+    json.insert("serverIpv4Gateway", QJsonValue(server.ipv4Gateway()));
+    json.insert("serverIpv6Gateway", QJsonValue(server.ipv6Gateway()));
+    json.insert("serverPublicKey", QJsonValue(server.publicKey()));
+    json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
+    json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
+    json.insert("serverPort", QJsonValue((double) server.choosePort()));
+    json.insert("ipv6Enabled", QJsonValue(MozillaVPN::instance()->settingsHolder()->ipv6Enabled()));
+    json.insert("localNetworkAccess",
+                QJsonValue(MozillaVPN::instance()->settingsHolder()->localNetworkAccess()));
+
     qDebug() << "Activate via DBus";
-    QDBusPendingReply<bool> reply
-        = m_dbus->activate(keys->privateKey(),
-                           device->ipv4Address(),
-                           device->ipv6Address(),
-                           server.ipv4Gateway(),
-                           server.publicKey(),
-                           server.ipv4AddrIn(),
-                           server.ipv6AddrIn(),
-                           server.choosePort(),
-                           MozillaVPN::instance()->settingsHolder()->ipv6Enabled(),
-                           MozillaVPN::instance()->settingsHolder()->localNetworkAccess());
+    QDBusPendingReply<bool> reply = m_dbus->activate(QJsonDocument(json).toJson());
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,

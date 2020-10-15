@@ -16,6 +16,7 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &deviceIpv4Address,
                          const QString &deviceIpv6Address,
                          const QString &serverIpv4Gateway,
+                         const QString &serverIpv6Gateway,
                          const QString &serverPublicKey,
                          const QString &serverIpv4AddrIn,
                          const QString &serverIpv6AddrIn,
@@ -41,7 +42,7 @@ void WgQuickProcess::run(const QString &privateKey,
 
     if (ipv6Enabled) {
         content.append(", ");
-        content.append(serverIpv4Gateway);
+        content.append(serverIpv6Gateway);
     }
 
     content.append("\n\n[Peer]\nPublicKey = ");

@@ -22,12 +22,9 @@ Window {
     minimumHeight: height
     minimumWidth: width
 
-    title: qsTr("Mozilla VPN")
+    //% "Mozilla VPN"
+    title: qsTrId("productName")
     color: "#F9F9FA"
-
-    FontLoader { id: vpnFont; source: "qrc:/resources/fonts/Metropolis-Regular.otf" }
-    FontLoader { id: vpnFontSemiBold; source: "qrc:/resources/fonts/Metropolis-SemiBold.otf" }
-    FontLoader { id: vpnFontInter; source: "qrc:/resources/fonts/Inter-UI-Regular.otf" }
 
     onClosing: {
         if(Qt.platform.os != "android"){
@@ -113,7 +110,7 @@ Window {
 
     Component.onCompleted: {
         if (VPN.startMinimized) {
-            this.showMinimized();
+            this.showMinimized()
         }
     }
 }

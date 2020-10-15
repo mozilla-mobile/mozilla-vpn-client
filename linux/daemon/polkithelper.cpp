@@ -8,7 +8,8 @@
 
 #include <QDebug>
 
-class Helper {
+class Helper final
+{
 public:
     Helper() = default;
     ~Helper()

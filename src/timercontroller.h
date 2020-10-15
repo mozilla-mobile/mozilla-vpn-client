@@ -13,7 +13,7 @@ constexpr uint32_t TIME_ACTIVATION = 1000;
 constexpr uint32_t TIME_DEACTIVATION = 1500;
 constexpr uint32_t TIME_SWITCHING = 2000;
 
-class TimerController : public ControllerImpl
+class TimerController final : public ControllerImpl
 {
     Q_OBJECT
 
@@ -25,6 +25,7 @@ public:
     void activate(const Server &server,
                   const Device *device,
                   const Keys *keys,
+                  const CaptivePortal &captivePortal,
                   bool forSwitching) override;
 
     void deactivate(bool forSwitching) override;
@@ -33,7 +34,7 @@ public:
 
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
-private Q_SLOTS:
+private slots:
     void timeout();
 
 private:

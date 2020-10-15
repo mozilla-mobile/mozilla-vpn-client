@@ -11,7 +11,7 @@
 
 class DbusAdaptor;
 
-class DBus : public QObject
+class DBus final : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.mozilla.vpn.dbus")
@@ -23,17 +23,10 @@ public:
 
     bool checkInterface();
 
-public Q_SLOTS:
-    bool activate(const QString &privateKey,
-                  const QString &deviceIpv4Address,
-                  const QString &deviceIpv6Address,
-                  const QString &serverIpv4Gateway,
-                  const QString &serverPublicKey,
-                  const QString &serverIpv4AddrIn,
-                  const QString &serverIpv6AddrIn,
-                  int serverPort,
-                  bool ipv6Enabled,
-                  bool localNetworkAccess);
+public slots:
+    QString version();
+
+    bool activate(const QString &jsonConfig);
 
     bool deactivate();
 
@@ -47,6 +40,7 @@ private:
                     const QString &deviceIpv4Address,
                     const QString &deviceIpv6Address,
                     const QString &serverIpv4Gateway,
+                    const QString &serverIpv6Gateway,
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
                     const QString &serverIpv6AddrIn,
@@ -62,6 +56,7 @@ private:
     QString m_lastDeviceIpv4Address;
     QString m_lastDeviceIpv6Address;
     QString m_lastServerIpv4Gateway;
+    QString m_lastServerIpv6Gateway;
     QString m_lastServerPublicKey;
     QString m_lastServerIpv4AddrIn;
     QString m_lastServerIpv6AddrIn;

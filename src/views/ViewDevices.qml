@@ -21,7 +21,7 @@ Item {
             name: "active" // normal mode
             PropertyChanges {
                 target: menu
-                rightTitle: qsTr("%1 of %2").arg(
+                rightTitle: qsTrId("activeVsMaxDeviceCount").arg(
                                 VPNDeviceModel.activeDevices).arg(
                                 VPNUser.maxDevices)
 
@@ -31,7 +31,7 @@ Item {
             name: "deviceLimit" // device limit mode
             PropertyChanges {
                 target: menu
-                rightTitle: qsTr("%1 of %2").arg(
+                rightTitle: qsTrId("activeVsMaxDeviceCount").arg(
                                 VPNDeviceModel.activeDevices + 1).arg(
                                 VPNUser.maxDevices)
             }
@@ -40,7 +40,8 @@ Item {
 
     VPNMenu {
         id: menu
-        title: qsTr("My devices")
+        //% "My devices"
+        title: qsTrId("myDevices")
     }
 
     ListView {
@@ -93,43 +94,40 @@ Item {
                         Layout.topMargin: Theme.windowMargin / 2
                         spacing: 0
 
-                        Text {
+                        VPNInterLabel {
                             id: deviceName
                             text: name
                             color: Theme.fontColorDark
-                            font.pixelSize: Theme.fontSize
-                            font.family: vpnFontInter.name
-                            Layout.preferredWidth: 220
-                            Layout.preferredHeight: Theme.labelLineHeight
                             elide: Text.ElideRight
                         }
 
-                        Text {
+                        VPNTextBlock {
                             function deviceSubtitle() {
                                 if (currentOne) {
-                                    return qsTr("Current device")
+                                    //% "Current Device"
+                                    return qsTrId("currentDevice")
                                 }
 
                                 const diff = (Date.now() - createdAt.valueOf(
                                                   )) / 1000
 
                                 if (diff < 3600) {
-                                    return qsTr("Added less than a hour ago")
+                                    //% "Added less than an hour ago"
+                                    return qsTrId("addedltHour")
                                 }
 
                                 if (diff < 86400) {
-                                    return qsTr("Added %1 hours ago").arg(
+                                     //% "Added %1 hours ago"
+                                    return qsTrId("addedXhoursAgo").arg(
                                                 Math.floor(diff / 3600))
                                 }
-
-                                return qsTr("Added %1 days ago").arg(
+                                //% "Added %1 days ago"
+                                return qsTrId("addedXdaysAgo").arg(
                                             Math.floor(diff / 86400))
                             }
                             id: deviceDesc
                             text: deviceSubtitle()
-                            Layout.preferredHeight: 21
-                            font.pixelSize: Theme.fontSizeSmall
-                            font.family: vpnFontInter.name
+                            width: parent.width
                             color: currentOne ? Theme.buttonColor : Theme.fontColor
                         }
                     }
@@ -152,8 +150,8 @@ Item {
                         Layout.preferredHeight: 40
                         Layout.preferredWidth: 40
                         onClicked: removePopup.initializeAndOpen(name, index)
-
-                        accessibleName: qsTr("Remove")
+                        //% "Remove"
+                        accessibleName: qsTrId("remove")
 
                         VPNIcon {
                             source: iconButton.iconSource
@@ -309,21 +307,23 @@ Item {
             }
 
             Text {
-                text: qsTr("Remove device?")
+                //% "Remove device?"
+                text: qsTrId("removeDeviceQuestion")
                 Layout.alignment: Qt.AlignCenter
                 font.pixelSize: Theme.fontSizeSmall
-                font.weight: Font.Bold
+                font.family: Theme.fontBoldFamily
                 color: Theme.fontColorDark
             }
 
             Text {
-                text: qsTr("Please confirm you would like to remove\n%1.").arg(
+                //% "Please confirm you would like to remove\n%1."
+                text: qsTrId("deviceRemovalConfirm").arg(
                           removePopup.deviceName)
                 Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Text.AlignHCenter
                 Layout.maximumWidth: 220
                 Layout.bottomMargin: 8
-                font.family: vpnFontInter.name
+                font.family: Theme.fontInterFamily
                 font.pixelSize: Theme.fontSizeSmallest
                 lineHeightMode: Text.FixedHeight
                 lineHeight: 14
@@ -336,7 +336,8 @@ Item {
                 spacing: 10
 
                 VPNPopupButton {
-                    buttonText: qsTr("Cancel")
+                    //% "Cancel"
+                    buttonText: qsTrId("cancel")
                     buttonTextColor: "#262626"
                     buttonColor: Theme.greyButton
                     onClicked: removePopup.state = "invisible"
@@ -344,7 +345,7 @@ Item {
 
                 VPNPopupButton {
                     id: removeBtn
-                    buttonText: qsTr("Remove")
+                    buttonText: qsTrId("remove")
                     buttonTextColor: "#FFFFFF"
                     buttonColor: Theme.redButton
                     onClicked: {

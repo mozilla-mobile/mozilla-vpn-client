@@ -10,7 +10,7 @@
 
 class MozillaVPN;
 
-class SystemTrayHandler : public QSystemTrayIcon
+class SystemTrayHandler final : public QSystemTrayIcon
 {
     Q_OBJECT
 
@@ -19,7 +19,7 @@ public:
 
     void captivePortalNotificationRequested();
 
-public Q_SLOTS:
+public slots:
     void controllerStateChanged();
 
 signals:

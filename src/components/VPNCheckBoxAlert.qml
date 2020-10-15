@@ -25,13 +25,16 @@ RowLayout {
         Layout.rightMargin: 8
         Layout.leftMargin: 4
     }
-    Text {
-        text: VPNSettings.localNetwork ? qsTr("VPN must be off before disabling") : qsTr("VPN must be off before enabling")
+    VPNTextBlock {
+        text: VPNSettings.localNetwork ?
+                  //% "VPN must be off before enabling"
+                  //: This is a Setting which requires the VPN to be disconnected to change state
+                  qsTrId("vpn.turnOffAlert.enabling") :
+                  //% "VPN must be off before disabling"
+                  //: This is a Setting which requires the VPN to be disconnected to change state
+                  qsTrId("vpn.turnOffAlert.disabling");
         color: Theme.red
-        font.pixelSize: 13
-        font.family: vpnFontInter.name
-        wrapMode: Text.Wrap
-        verticalAlignment: Qt.AlignVCenter
-        width: 260
+        width: parent.width - warningIcon.sourceSize.width - warningIcon.leftMargin - warningIcon.rightMargin
+        Layout.topMargin: 6
     }
 }

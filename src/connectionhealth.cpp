@@ -122,3 +122,23 @@ void ConnectionHealth::setStability(ConnectionStability stability)
     m_stability = stability;
     emit stabilityChanged();
 }
+
+void ConnectionHealth::connectionStateChanged()
+{
+    qDebug() << "Connection state changed";
+
+    if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+        stop();
+        return;
+    }
+
+    MozillaVPN::instance()->controller()->getStatus(
+        [this](const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes) {
+            Q_UNUSED(txBytes);
+            Q_UNUSED(rxBytes);
+
+            if (!serverIpv4Gateway.isEmpty()) {
+                start(serverIpv4Gateway);
+            }
+        });
+}

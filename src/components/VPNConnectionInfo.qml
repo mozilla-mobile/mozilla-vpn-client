@@ -97,7 +97,7 @@ Item {
             }
         }
 
-        Text {
+        VPNBoldLabel {
             anchors.top: parent.top
             anchors.topMargin: 24
             anchors.left: parent.left
@@ -105,11 +105,10 @@ Item {
             anchors.horizontalCenter: parent.center
             anchors.horizontalCenterOffset: 0
             horizontalAlignment: Text.AlignHCenter
-            color: "#FFFFFF"
-            font.pixelSize: 15
-            font.family: vpnFont.name
-            font.weight: Font.Bold
-            text: qsTr("IP:") + " " + VPNConnectionData.ipAddress
+            color: Theme.white
+            //% "IP: %1"
+            //: The Current Ip adress
+            text: qsTrId("ip").arg(VPNConnectionData.ipAddress)
         }
 
         Row {
@@ -119,13 +118,17 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             VPNGraphLegendMarker {
-                markerLabel: qsTr("Download")
+                //% "download"
+                //: the current download speed. The speed is shown at the next line.
+                markerLabel: qsTrId("download")
                 rectColor: "#EE3389"
                 markerData: VPNConnectionData.rxBytes
             }
 
             VPNGraphLegendMarker {
-                markerLabel: qsTr("Upload")
+                //% "upload"
+                //: the current upload speed
+                markerLabel: qsTrId("upload")
                 rectColor: "#F68953"
                 markerData: VPNConnectionData.txBytes
             }
@@ -140,8 +143,8 @@ Item {
             anchors.left: parent.left
             anchors.topMargin: 8
             anchors.leftMargin: 8
-
-            accessibleName: qsTr("Close")
+            //% "Close"
+            accessibleName: qsTrId("close")
 
             Image {
                 anchors.centerIn: backButton

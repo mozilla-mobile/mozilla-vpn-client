@@ -4,6 +4,8 @@
 
 import QtQuick 2.5
 
+import "../themes/themes.js" as Theme
+
 Row {
     property var markerLabel
     property var rectColor
@@ -13,14 +15,19 @@ Row {
 
     function computeRange() {
         if (markerData < 128000) {
-            return qsTr("Kbps");
+            //% "Kbps"
+            //: Kilobits per Secound
+            return qsTrId("kbps");
         }
 
         if (markerData < 128000000) {
-            return qsTr("Mbps")
+             //% "Mbps"
+             //: Megabits per Second
+            return qsTrId("mbps")
         }
-
-        return qsTr("Gbps");
+        //% "Gbps"
+        //: Gigabits per Second
+        return qsTrId("gbps");
     }
 
     function roundValue(value) {
@@ -54,20 +61,19 @@ Row {
             font.pixelSize: 10
             height: 16
             text: computeRange()
-            font.family: vpnFontInter.name
+            font.family: Theme.fontInterFamily
             color: "#FFFFFF"
         }
         Text {
             font.pixelSize: 14
             text: markerLabel
-            font.family: vpnFont.name
-            font.weight: Font.Bold
+            font.family: Theme.fontBoldFamily
             color: "#FFFFFF"
         }
         Text {
             font.pixelSize: 16
             text: computeValue()
-            font.family: vpnFontInter.name
+            font.family: Theme.fontInterFamily
             color: "#FFFFFF"
         }
     }

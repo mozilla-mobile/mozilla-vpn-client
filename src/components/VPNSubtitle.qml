@@ -11,10 +11,10 @@ import "../themes/themes.js" as Theme
 Text {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.top: logoTitle.bottom
-    anchors.topMargin: 8
+    anchors.topMargin: Theme.windowMargin / 2
     horizontalAlignment: Text.AlignHCenter
     font.pixelSize: Theme.fontSize
-    font.family: vpnFontInter.name
+    font.family: Theme.fontInterFamily
     wrapMode: Text.Wrap
     width: Theme.maxTextWidth
     color: Theme.fontColor

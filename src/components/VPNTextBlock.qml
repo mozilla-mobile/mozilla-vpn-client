@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 // VPNTextBlock
 Text {
     color: Theme.fontColor
-    font.family: vpnFontInter.name
+    font.family: Theme.fontInterFamily
     font.pixelSize: Theme.fontSizeSmall
     lineHeightMode: Text.FixedHeight
     lineHeight: 21

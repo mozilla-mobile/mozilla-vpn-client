@@ -34,8 +34,10 @@ RoundButton {
             }
             PropertyChanges {
                 target: toggleButton
-                Accessible.name: qsTr("Turn VPN on")
-                Accessible.description: qsTr("VPN is off")
+                //% "Turn VPN on"
+                Accessible.name: qsTrId("action.VPN.on")
+                //% "VPN is off"
+                Accessible.description: qsTrId("vpnIsOff")
             }
         },
         State {
@@ -51,8 +53,10 @@ RoundButton {
             }
             PropertyChanges {
                 target: toggleButton
-                Accessible.name: qsTr("Turn VPN off")
-                Accessible.description: qsTr("VPN is on")
+                 //% "Turn VPN off"
+                Accessible.name: qsTrId("action.VPN.off")
+                //% "VPN is on"
+                Accessible.description: qsTrId("vpnIsOn")
             }
         },
         State {
@@ -95,6 +99,18 @@ RoundButton {
         },
         State {
             name: VPNController.StateDeviceLimit
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+            PropertyChanges {
+                target: toggle
+                color: "#E7E7E7"
+            }
+        },
+        State {
+            name: VPNController.StateCaptivePortal
+            //TODO:
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 4

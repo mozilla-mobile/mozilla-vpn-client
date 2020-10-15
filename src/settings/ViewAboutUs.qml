@@ -17,18 +17,21 @@ Item {
     ListModel {
         id: aboutUsListModel
         ListElement {
-            linkTitle: qsTr("Terms of Service")
+            //% "Terms of Service"
+            linkTitle: qsTrId("tos")
             openUrl: VPN.LinkTermsOfService
         }
         ListElement {
-            linkTitle: qsTr("Privacy Policy")
+            //% "Privacy Policy"
+            linkTitle: qsTrId("privacyPolicy")
             openUrl: VPN.LinkPrivacyPolicy
         }
     }
 
     VPNMenu {
         id: menu
-        title: qsTr("About us")
+         //% "About us"
+        title: qsTrId("aboutUs")
         isSettingsView: true
     }
 
@@ -46,19 +49,20 @@ Item {
         VPNBoldLabel {
             id: mozillaLabel
             width: aboutUsCopy.width
-            text: qsTr("Mozilla VPN")
+            text: qsTrId("productName")
         }
 
         VPNTextBlock {
             id: mozillaText
-            text: qsTr("A fast, secure and easy to use VPN. Built by the makers of Firefox.")
+            text: qsTrId("productDescription")
             anchors.top: mozillaLabel.bottom
             anchors.topMargin: 8
         }
 
         VPNBoldLabel {
             id: releaseLabel
-            text: qsTr("Release Version")
+            //% "Release Version"
+            text: qsTrId("releaseVersion")
             anchors.top: mozillaText.bottom
             anchors.topMargin: 16
         }
@@ -83,22 +87,25 @@ Item {
         color: "#0C0C0D0A"
     }
 
-    ListView {
+    VPNList {
         id: settingList
         anchors.top: divider.bottom
         anchors.topMargin: 16
         anchors.bottomMargin: Theme.vSpacing
-        height: contentItem.childrenRect.height
+        height: parent.height - menu.height - aboutUsCopy.height - divider.height
         width: viewAboutUs.width
         spacing: Theme.listSpacing
-        interactive: false
         model: aboutUsListModel
+        listName: menu.title
 
         delegate: VPNExternalLinkListItem {
             title: linkTitle
+            accessibleName: linkTitle
             onClicked: VPN.openLink(openUrl)
         }
 
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
+        }
     }
 }

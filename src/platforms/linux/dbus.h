@@ -14,13 +14,14 @@ class Device;
 class Keys;
 class QDBusPendingCallWatcher;
 
-class DBus : public QObject
+class DBus final : public QObject
 {
     Q_OBJECT
 
 public:
     DBus(QObject *parent);
 
+    QDBusPendingCallWatcher *version();
     QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys);
     QDBusPendingCallWatcher *deactivate();
     QDBusPendingCallWatcher *status();

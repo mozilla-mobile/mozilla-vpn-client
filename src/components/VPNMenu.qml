@@ -23,8 +23,9 @@ Item {
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-
-        accessibleName: qsTr("Back")
+        //% "Back"
+        //: Go back 
+        accessibleName: qsTrId("back")
 
         Image {
             id: backImage

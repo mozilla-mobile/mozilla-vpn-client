@@ -10,7 +10,6 @@ import "../themes/themes.js" as Theme
 // VPNBoldLabel
 Label {
     font.pixelSize: Theme.fontSize
-    font.family: vpnFont.name
-    font.weight: Font.Bold
+    font.family: Theme.fontBoldFamily
     color: Theme.fontColorDark
 }

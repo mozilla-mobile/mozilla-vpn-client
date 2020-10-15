@@ -11,14 +11,14 @@ import "../themes/themes.js" as Theme
 //VPNHeadline
 Text {
     horizontalAlignment: Text.AlignHCenter
-    anchors.horizontalCenterOffset: 1
+    anchors.horizontalCenterOffset: 0
     anchors.horizontalCenter: parent.horizontalCenter
     verticalAlignment: Text.AlignVCenter
     wrapMode: Text.Wrap
     width: Theme.maxTextWidth
 
     color: Theme.fontColorDark
-    font.family: vpnFont.name
+    font.family: Theme.fontFamily
     font.pixelSize: 22
     lineHeightMode: Text.FixedHeight
     lineHeight: 32

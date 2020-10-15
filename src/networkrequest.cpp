@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkrequest.h"
+#include "captiveportal/captiveportal.h"
 #include "mozillavpn.h"
 
 #include <QDebug>
@@ -12,8 +13,6 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QUrl>
-
-constexpr const char *CAPTIVE_PORTAL_URL = "http://detectportal.firefox.com/success.txt";
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
@@ -199,7 +198,7 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
 
     NetworkRequest *r = new NetworkRequest(parent);
 
-    QUrl url(CAPTIVE_PORTAL_URL);
+    QUrl url(CAPTIVEPORTAL_URL);
     r->m_request.setUrl(url);
 
     r->m_manager->get(r->m_request);

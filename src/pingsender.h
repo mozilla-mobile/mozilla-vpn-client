@@ -28,7 +28,7 @@ signals:
     void sendPing(const QString &destination);
     void stopPing();
 
-private Q_SLOTS:
+private slots:
     void pingFailed();
     void pingSucceeded();
 

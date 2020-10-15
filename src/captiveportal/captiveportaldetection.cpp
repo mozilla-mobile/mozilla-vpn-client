@@ -3,17 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportaldetection.h"
+#include "captiveportal.h"
+#include "captiveportalrequest.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 
 #include <QDebug>
-
-constexpr int CAPTIVE_PORTAL_TIMEOUT = 10000;
-constexpr const char *CAPTIVE_PORTAL_CONTENT = "success";
 
 CaptivePortalDetection::CaptivePortalDetection()
 {
     connect(&m_timer, &QTimer::timeout, this, &CaptivePortalDetection::detectCaptivePortal);
+}
+
+void CaptivePortalDetection::initialize()
+{
+    m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
 }
 
 void CaptivePortalDetection::controllerStateChanged()
@@ -21,7 +24,7 @@ void CaptivePortalDetection::controllerStateChanged()
     qDebug() << "Controller state changed";
 
     if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-        m_timer.start(CAPTIVE_PORTAL_TIMEOUT);
+        m_timer.start(CAPTIVEPORTAL_REQUEST_TIMEOUT);
         detectCaptivePortal();
     } else {
         m_timer.stop();
@@ -42,25 +45,22 @@ void CaptivePortalDetection::detectCaptivePortal()
         return;
     }
 
-    NetworkRequest *request = NetworkRequest::createForCaptivePortalDetection(this);
-
-    connect(request, &NetworkRequest::requestFailed, [](QNetworkReply::NetworkError error) {
-        qDebug() << "Captive portal request failed:" << error;
-    });
-
-    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "Captive portal request completed:" << data;
+    CaptivePortalRequest *request = new CaptivePortalRequest(this);
+    connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
+        qDebug() << "Captive portal request completed - detected:" << detected;
 
         if (!m_active) {
             qDebug() << "Disabled in the meantime.";
             return;
         }
 
-        if (QString(data).trimmed() == CAPTIVE_PORTAL_CONTENT) {
-            qDebug() << "No captive portal!";
+        // Comment this out to see the captive portal view each time.
+        if (!detected) {
             return;
         }
 
         emit captivePortalDetected();
     });
+
+    request->run();
 }
