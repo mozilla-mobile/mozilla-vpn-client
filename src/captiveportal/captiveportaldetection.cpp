@@ -54,9 +54,12 @@ void CaptivePortalDetection::detectCaptivePortal()
             return;
         }
 
-        if (detected) {
-            emit captivePortalDetected();
+        // Comment this out to see the captive portal view each time.
+        if (!detected) {
+            return;
         }
+
+        emit captivePortalDetected();
     });
 
     request->run();
