@@ -13,6 +13,7 @@ RadioDelegate {
 
     property bool isHoverable: true
     property var radioButtonLabelText
+    property var accessibleName
 
     signal clicked()
 
@@ -83,6 +84,13 @@ RadioDelegate {
         onPressed: radioControl.state = "state-pressed"
         onClicked: parent.clicked()
     }
+
+    Keys.onSpacePressed: clicked()
+    Keys.onReturnPressed: clicked()
+
+    Accessible.name: accessibleName
+    Accessible.onPressAction: clicked()
+    Accessible.focusable: true
 
     background: Rectangle {
         color: "transparent"

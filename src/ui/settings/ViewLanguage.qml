@@ -11,6 +11,8 @@ import "../themes/themes.js" as Theme
 Item {
     id: container
 
+    readonly property int defaultMargin: 18
+
     VPNMenu {
         id: menu
 
@@ -23,82 +25,96 @@ Item {
         id: radioButtonGroup
     }
 
-    ListView {
-        id: languageList
-
-        clip: true
+    Flickable {
         anchors.top: menu.bottom
-        height: parent.height - menu.height
+        anchors.topMargin: 20
         width: parent.width
-        spacing: 26
-        interactive: languageList.count > 3
-        headerPositioning: ListView.InlineHeader
-        model: VPNLocalizer
+        height: parent.height - menu.height
+        contentWidth: parent.width
+        contentHeight: contentItem.childrenRect.height
+        boundsBehavior: Flickable.StopAtBounds
 
-        header: Item {
+        VPNBoldLabel {
+            id: systemLabel
+
+            anchors.left: parent.left
+            anchors.leftMargin: Theme.windowMargin
             width: parent.width
-            height: 150
+            //% "System"
+            //: The system language
+            text: qsTrId("system")
+            Accessible.role: Accessible.Heading
+        }
 
-            VPNBoldLabel {
-                id: systemLabel
+        VPNRadioDelegate {
+            id: systemLanguage
 
-                anchors.top: parent.top
-                anchors.topMargin: 20
-                anchors.left: parent.left
-                anchors.leftMargin: Theme.windowMargin
-                width: parent.width
-                //% "System"
-                //: The system language
-                text: qsTrId("system")
+            radioButtonLabelText: VPNLocalizer.systemLanguage
+            checked: VPNSettings.languageCode === ""
+            onClicked: VPNSettings.languageCode = ""
+            anchors.top: systemLabel.bottom
+            anchors.topMargin: 16
+            anchors.left: parent.left
+            anchors.leftMargin: defaultMargin
+            anchors.rightMargin: defaultMargin
+            width: parent.width - defaultMargin * 2
+            activeFocusOnTab: true
+            //% "%1 %2"
+            accessibleName: qsTrId("languageAccessibleName")
+                .arg(VPNLocalizer.systemLanguage)
+                .arg(VPNLocalizer.systemLocalizedLanguage)
+
+            VPNFocus {
+                itemToFocus: systemLanguage
             }
 
-            VPNRadioDelegate {
-                id: systemLanguage
-
-                radioButtonLabelText: VPNLocalizer.systemLanguage
-                checked: VPNSettings.languageCode === ""
-                onClicked: VPNSettings.languageCode = ""
-                anchors.top: systemLabel.bottom
-                anchors.topMargin: 16
-                anchors.left: parent.left
-                anchors.leftMargin: 18
-
-                VPNRadioSublabel {
-                    text: VPNLocalizer.systemLocalizedLanguage
-                }
-
-            }
-
-            VPNBoldLabel {
-                id: additionalLabel
-
-                anchors.top: systemLanguage.bottom
-                anchors.topMargin: 28
-                anchors.left: parent.left
-                anchors.leftMargin: Theme.windowMargin
-                width: parent.width
-                //% "Additional"
-                //: List of the additional languages
-                text: qsTrId("additional")
+            VPNRadioSublabel {
+                text: VPNLocalizer.systemLocalizedLanguage
             }
 
         }
 
-        delegate: Item {
-            id: languageOption
+        VPNBoldLabel {
+            id: additionalLabel
 
-            width: languageList.width
-            height: radioDel.height
+            anchors.top: systemLanguage.bottom
+            anchors.topMargin: 28
+            anchors.left: parent.left
+            anchors.leftMargin: Theme.windowMargin
+            width: parent.width
+            //% "Additional"
+            //: List of the additional languages
+            text: qsTrId("additional")
+            Accessible.role: Accessible.Heading
+        }
 
-            VPNRadioDelegate {
-                id: radioDel
+        VPNList {
+            id: additionalLanguageList
 
+            clip: true
+            anchors.top: additionalLabel.bottom
+            anchors.topMargin: 16
+            anchors.left: parent.left
+            anchors.leftMargin: defaultMargin
+            anchors.rightMargin: defaultMargin
+            width: parent.width - defaultMargin * 2
+            height: contentItem.childrenRect.height + 40
+            spacing: 26
+            listName: additionalLabel.text
+            model: VPNLocalizer
+
+            delegate: VPNRadioDelegate {
                 radioButtonLabelText: language
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
+
+                width: additionalLanguageList.width
                 anchors.left: parent.left
-                anchors.leftMargin: 18
                 anchors.topMargin: Theme.windowMargin
+                //% "%1 %2"
+                accessibleName: qsTrId("languageAccessibleName")
+                    .arg(language)
+                    .arg(localizedLanguage)
 
                 VPNRadioSublabel {
                     text: localizedLanguage
@@ -108,13 +124,8 @@ Item {
 
         }
 
-        footer: Rectangle {
-            height: 40
-            color: "transparent"
-            width: parent.width
-        }
-
         ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
         }
 
     }
