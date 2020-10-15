@@ -129,6 +129,8 @@ void MozillaVPN::initialize()
 
     m_localizer.initialize(m_settingsHolder.languageCode());
 
+    m_captivePortalDetection.initialize();
+
     if (!m_settingsHolder.hasToken()) {
         return;
     }

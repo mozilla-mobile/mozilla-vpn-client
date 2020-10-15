@@ -15,6 +15,8 @@ class CaptivePortalDetection final : public QObject
 public:
     CaptivePortalDetection();
 
+    void initialize();
+
 private:
     void handleSuccess();
     void handleFailure();

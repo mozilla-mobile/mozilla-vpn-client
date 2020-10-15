@@ -98,8 +98,8 @@ void Controller::activate()
 {
     qDebug() << "Activation" << m_state;
 
-    if (m_state != StateOff && m_state != StateSwitching) {
-        qDebug() << "Already disconnected";
+    if (m_state != StateOff && m_state != StateSwitching && m_state != StateCaptivePortal) {
+        qDebug() << "Already connected";
         return;
     }
 

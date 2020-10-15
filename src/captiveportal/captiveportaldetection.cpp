@@ -14,6 +14,11 @@ CaptivePortalDetection::CaptivePortalDetection()
     connect(&m_timer, &QTimer::timeout, this, &CaptivePortalDetection::detectCaptivePortal);
 }
 
+void CaptivePortalDetection::initialize()
+{
+    m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
+}
+
 void CaptivePortalDetection::controllerStateChanged()
 {
     qDebug() << "Controller state changed";
