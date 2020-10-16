@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    QIcon icon("://resources/logo.png");
+    QIcon icon("://ui/resources/logo.png");
     app.setWindowIcon(icon);
 
     QCommandLineParser parser;
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
                      Qt::QueuedConnection);
 
     // Here is the main QML file.
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,

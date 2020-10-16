@@ -11,11 +11,11 @@
 // static
 void FontLoader::loadFonts()
 {
-    QDir dir(":/resources/fonts");
+    QDir dir(":/ui/resources/fonts");
     QStringList files = dir.entryList();
     for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
         qDebug() << "Loading font:" << *i;
-        int id = QFontDatabase::addApplicationFont(":/resources/fonts/" + *i);
+        int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + *i);
         qDebug() << "Result:" << id;
     }
 }
