@@ -6,17 +6,20 @@
 
 #include <QDate>
 #include <QMessageLogContext>
+#include <QProcessEnvironment>
 #include <QString>
 #include <QTextStream>
 
 constexpr int LOG_MAX = 10000;
 
-static LogHandler logHandler;
+namespace {
+LogHandler *sLogHandler;
+}
 
 // static
 LogHandler *LogHandler::instance()
 {
-    return &logHandler;
+    return maybeCreate();
 }
 
 // static
@@ -24,27 +27,22 @@ void LogHandler::messageQTHandler(QtMsgType type,
                                   const QMessageLogContext &context,
                                   const QString &message)
 {
-    logHandler.m_logs.append(Log(type, context.file, context.function, context.line, message));
-
-    while (logHandler.m_logs.count() >= LOG_MAX) {
-        logHandler.m_logs.removeAt(0);
-    }
-
-    QTextStream out(stderr);
-    prettyOutput(out, logHandler.m_logs.last());
+    maybeCreate()->addLog(Log(type, context.file, context.function, context.line, message));
 }
 
 // static
 void LogHandler::messageHandler(const QString &module, const QString &message)
 {
-    logHandler.m_logs.append(Log(module, message));
+    maybeCreate()->addLog(Log(module, message));
+}
 
-    while (logHandler.m_logs.count() >= LOG_MAX) {
-        logHandler.m_logs.removeAt(0);
+// static
+LogHandler *LogHandler::maybeCreate()
+{
+    if (!sLogHandler) {
+        sLogHandler = new LogHandler();
     }
-
-    QTextStream out(stderr);
-    prettyOutput(out, logHandler.m_logs.last());
+    return sLogHandler;
 }
 
 // static
@@ -107,4 +105,46 @@ void LogHandler::prettyOutput(QTextStream &out, const LogHandler::Log &log)
 #else
     out << endl;
 #endif
+}
+
+LogHandler::LogHandler()
+{
+    QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+    if (pe.contains("MOZVPN_LOG")) {
+        QStringList parts = pe.value("MOZVPN_LOG").split(",");
+        for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
+            m_modules.append(i->trimmed());
+        }
+    }
+}
+
+void LogHandler::addLog(const Log &log)
+{
+    if (!matchModule(log)) {
+        return;
+    }
+
+    m_logs.append(log);
+
+    while (m_logs.count() >= LOG_MAX) {
+        m_logs.removeAt(0);
+    }
+
+    QTextStream out(stderr);
+    prettyOutput(out, m_logs.last());
+}
+
+bool LogHandler::matchModule(const Log &log) const
+{
+    // Let's include QT logs always.
+    if (log.m_fromQT) {
+        return true;
+    }
+
+    // If no modules has been specified, let's include all.
+    if (m_modules.isEmpty()) {
+        return true;
+    }
+
+    return m_modules.contains(log.m_module);
 }

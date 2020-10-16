@@ -56,6 +56,15 @@ public:
     const QVector<Log> &logs() const { return m_logs; }
 
 private:
+    LogHandler();
+
+    static LogHandler *maybeCreate();
+
+    void addLog(const Log &log);
+
+    bool matchModule(const Log &log) const;
+
+    QStringList m_modules;
     QVector<Log> m_logs;
 };
 
