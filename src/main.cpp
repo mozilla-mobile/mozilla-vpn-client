@@ -200,6 +200,7 @@ int main(int argc, char *argv[])
 
     // System tray icon and messages.
     QIcon trayIcon("://ui/resources/logo-tray.svg");
+    trayIcon.setIsMask(true);
     SystemTrayHandler systemTrayHandler(trayIcon, &app);
     systemTrayHandler.show();
 
