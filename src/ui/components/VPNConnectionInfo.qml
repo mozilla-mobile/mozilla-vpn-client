@@ -125,7 +125,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             VPNGraphLegendMarker {
-                //% "download"
+                //% "Download"
                 //: the current download speed. The speed is shown at the next line.
                 markerLabel: qsTrId("download")
                 rectColor: "#EE3389"
@@ -133,7 +133,7 @@ Item {
             }
 
             VPNGraphLegendMarker {
-                //% "upload"
+                //% "Upload"
                 //: the current upload speed
                 markerLabel: qsTrId("upload")
                 rectColor: "#F68953"
