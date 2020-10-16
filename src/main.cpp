@@ -65,6 +65,9 @@ int main(int argc, char *argv[])
         MozillaVPN::instance()->controller()->quit();
     });
 
+    // Font loader
+    FontLoader::loadFonts();
+
     // Create the QML engine and expose a few internal objects.
     QQmlApplicationEngine engine;
 
@@ -94,8 +97,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 #endif
-
-    FontLoader::loadFonts();
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {
