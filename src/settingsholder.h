@@ -49,6 +49,7 @@ public:
     GETSET(QString, hasCurrentServerCountry, currentServerCountry, setCurrentServerCountry)
     GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
     GETSET(QByteArray, hasDevices, devices, setDevices)
+    GETSET(QStringList, hasIapProducts, iapProducts, setIapProducts)
 #undef GETSET
 
 signals:

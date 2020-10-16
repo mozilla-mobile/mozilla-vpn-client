@@ -205,6 +205,27 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
     return r;
 }
 
+#ifdef IOS_INTEGRATION
+NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN* vpn)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token().toLocal8Bit());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/products/ios");
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+
+    return r;
+}
+#endif
+
 void NetworkRequest::replyFinished(QNetworkReply *reply)
 {
     Q_ASSERT(reply);

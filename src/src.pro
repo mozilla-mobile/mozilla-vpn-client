@@ -221,6 +221,7 @@ else:ios {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/ios/iaphandler.cpp \
+            platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
@@ -233,6 +234,7 @@ else:ios {
     HEADERS += \
             platforms/dummy/dummycontroller.h \
             platforms/ios/iaphandler.h \
+            platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \

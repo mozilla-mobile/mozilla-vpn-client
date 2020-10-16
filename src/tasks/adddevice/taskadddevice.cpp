@@ -49,6 +49,7 @@ void TaskAddDevice::run(MozillaVPN *vpn)
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         qDebug() << "Failed to add the device" << this << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
     });
 
     connect(request,

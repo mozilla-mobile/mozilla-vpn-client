@@ -3,12 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iaphandler.h"
+#include "mozillavpn.h"
 
 #include <QDebug>
 #include <QInAppStore>
 #include <QtPurchasing>
-
-constexpr const char *PRODUCT_ID = "org.mozilla.ios.FirefoxVPN_staging.product.test.1m_renew_subscription";
 
 void IAPHandler::start()
 {
@@ -59,6 +58,13 @@ void IAPHandler::start()
         transaction->finalize();
     });
 
-    m_appStore->registerProduct(QInAppProduct::Consumable, PRODUCT_ID);
+    const QStringList products = MozillaVPN::instance()->settingsHolder()->iapProducts();
+    Q_ASSERT(!products.isEmpty());
+
+    for (QStringList::ConstIterator i = products.begin(); i != products.end(); ++i) {
+        qDebug() << "Registration product:" << *i;
+        m_appStore->registerProduct(QInAppProduct::Consumable, *i);
+    }
+
     qDebug() << "Waiting for the registreation of products";
 }

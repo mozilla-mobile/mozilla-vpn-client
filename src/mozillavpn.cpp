@@ -15,6 +15,7 @@
 
 #ifdef IOS_INTEGRATION
 #include "platforms/ios/iaphandler.h"
+#include "platforms/ios/taskiosproducts.h"
 #endif
 
 #include <QDebug>
@@ -76,6 +77,10 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 
     connect(&m_accountAndServersTimer, &QTimer::timeout, [this]() {
         scheduleTask(new TaskAccountAndServers());
+
+#ifdef IOS_INTEGRATION
+        scheduleTask(new TaskIOSProducts());
+#endif
     });
 
     connect(&m_controller, &Controller::readyToUpdate, [this]() { setState(StateUpdateRequired); });
@@ -174,6 +179,10 @@ void MozillaVPN::initialize()
     m_token = m_settingsHolder.token();
 
     scheduleTask(new TaskAccountAndServers());
+
+#ifdef IOS_INTEGRATION
+    scheduleTask(new TaskIOSProducts());
+#endif
 
     setState(StateMain);
     setUserAuthenticated(true);
@@ -307,7 +316,10 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
 #ifdef IOS_INTEGRATION
     if (m_user.subscriptionNeeded()) {
-        setState(StatePostAuthentication);
+        scheduleTask(new TaskIOSProducts());
+        scheduleTask(new TaskFunction([this](MozillaVPN*) {
+            setState(StatePostAuthentication);
+        }));
         return;
     }
 #endif
@@ -338,6 +350,10 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     // Let's fetch the account and the servers.
     scheduleTask(new TaskAccountAndServers());
+
+#ifdef IOS_INTEGRATION
+    scheduleTask(new TaskIOSProducts());
+#endif
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {

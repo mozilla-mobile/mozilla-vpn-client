@@ -31,6 +31,7 @@ constexpr const char *SETTINGS_USER_SUBSCRIPTIONNEEDED = "user/subscriptionNeede
 constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
+constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 
 const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::readFile,
@@ -53,6 +54,7 @@ void SettingsHolder::clear()
     m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
     m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
     m_settings.remove(SETTINGS_DEVICES);
+    m_settings.remove(SETTINGS_IAPPRODUCTS);
 
     // We do not remove language, ipv6 and localnetwork settings.
 }
@@ -168,5 +170,6 @@ GETSET(QString,
        currentServerCity,
        setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
+GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts, iapProducts, setIapProducts)
 
 #undef GETSET
