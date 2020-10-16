@@ -218,8 +218,6 @@ else:ios {
 
     DEFINES += IOS_INTEGRATION
 
-    message(No integration required for this build - let\'s use the dummy controller)
-
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/ios/iaphandler.cpp \
