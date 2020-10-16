@@ -18,21 +18,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
+        ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
+        ../../src/logger.cpp \
         ../../src/loghandler.cpp \
+        ../../src/signalhandler.cpp \
         dbus.cpp \
         main.cpp \
         polkithelper.cpp \
-        wgquickprocess.cpp \
-        ../../src/signalhandler.cpp \
-        ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
+        wgquickprocess.cpp
 
 HEADERS += \
+        ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
+        ../../src/logger.h \
         ../../src/loghandler.h \
+        ../../src/signalhandler.h \
         dbus.h \
         polkithelper.h \
-        wgquickprocess.h \
-        ../../src/signalhandler.h \
-        ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
+        wgquickprocess.h
 
 isEmpty(PREFIX) {
     PREFIX=/usr

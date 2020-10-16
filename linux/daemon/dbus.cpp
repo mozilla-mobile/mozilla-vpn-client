@@ -3,12 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbus.h"
+#include "../../src/logger.h"
 #include "../../src/loghandler.h"
 #include "dbus_adaptor.h"
 #include "polkithelper.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -22,6 +22,10 @@ extern "C" {
 }
 #endif
 
+namespace {
+Logger logger("DBus");
+}
+
 DBus::DBus(QObject *parent) : QObject(parent) {}
 
 void DBus::setAdaptor(DbusAdaptor* adaptor)
@@ -32,16 +36,16 @@ void DBus::setAdaptor(DbusAdaptor* adaptor)
 
 bool DBus::checkInterface()
 {
-    qDebug() << "Checking interface";
+    logger.log() << "Checking interface";
 
     wg_device *device = nullptr;
     if (wg_get_device(&device, WG_INTERFACE) == 0) {
-        qDebug() << "Device already exists. Let's remove it.";
+        logger.log() << "Device already exists. Let's remove it.";
         wg_free_device(device);
 
         if (wg_del_device(WG_INTERFACE) != 0) {
-           qDebug() << "Failed to remove the device.";
-           return false;
+            logger.log() << "Failed to remove the device.";
+            return false;
         }
     }
 
@@ -50,21 +54,21 @@ bool DBus::checkInterface()
 
 QString DBus::version()
 {
-    qDebug() << "Version request";
+    logger.log() << "Version request";
     return APP_VERSION;
 }
 
 bool DBus::activate(const QString &jsonConfig)
 {
-    qDebug() << "Activate";
+    logger.log() << "Activate";
 
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.activate")) {
-        qDebug() << "Polkit rejected";
+        logger.log() << "Polkit rejected";
         return false;
     }
 
     if (m_connected) {
-        qDebug() << "Already connected";
+        logger.log() << "Already connected";
         return false;
     }
 
@@ -72,7 +76,7 @@ bool DBus::activate(const QString &jsonConfig)
 
     QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
     if (!json.isObject()) {
-        qDebug() << "Invalid input";
+        logger.log() << "Invalid input";
         return false;
     }
 
@@ -80,13 +84,13 @@ bool DBus::activate(const QString &jsonConfig)
 
 #define GETVALUESTR(name, where) \
     if (!obj.contains(name)) { \
-        qDebug() << name << " missing in the jsonConfig input"; \
+        logger.log() << name << " missing in the jsonConfig input"; \
         return false; \
     } \
     { \
         QJsonValue value = obj.take(name); \
         if (!value.isString()) { \
-            qDebug() << name << " is not a string"; \
+            logger.log() << name << " is not a string"; \
             return false; \
         } \
         where = value.toString(); \
@@ -105,13 +109,13 @@ bool DBus::activate(const QString &jsonConfig)
 
 #define GETVALUEINT(name, where) \
     if (!obj.contains(name)) { \
-        qDebug() << name << " missing in the jsoConfig input"; \
+        logger.log() << name << " missing in the jsoConfig input"; \
         return false; \
     } \
     { \
         QJsonValue value = obj.take(name); \
         if (!value.isDouble()) { \
-            qDebug() << name << " is not a number"; \
+            logger.log() << name << " is not a number"; \
             return false; \
         } \
         where = value.toInt(); \
@@ -123,13 +127,13 @@ bool DBus::activate(const QString &jsonConfig)
 
 #define GETVALUEBOOL(name, where) \
     if (!obj.contains(name)) { \
-        qDebug() << name << " missing in the jsoConfig input"; \
+        logger.log() << name << " missing in the jsoConfig input"; \
         return false; \
     } \
     { \
         QJsonValue value = obj.take(name); \
         if (!value.isBool()) { \
-            qDebug() << name << " is not a boolean"; \
+            logger.log() << name << " is not a boolean"; \
             return false; \
         } \
         where = value.toBool(); \
@@ -153,7 +157,7 @@ bool DBus::activate(const QString &jsonConfig)
                              m_lastIpv6Enabled,
                              m_lastLocalNetworkAccess);
 
-    qDebug() << "Status:" << status;
+    logger.log() << "Status:" << status;
 
     if (status) {
         emit m_adaptor->connected();
@@ -164,15 +168,15 @@ bool DBus::activate(const QString &jsonConfig)
 
 bool DBus::deactivate()
 {
-    qDebug() << "Deactivate";
+    logger.log() << "Deactivate";
 
     if (!m_connected) {
-        qDebug() << "Already disconnected";
+        logger.log() << "Already disconnected";
         return true;
     }
 
     if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.deactivate")) {
-        qDebug() << "Polkit rejected";
+        logger.log() << "Polkit rejected";
         return false;
     }
 
@@ -191,7 +195,7 @@ bool DBus::deactivate()
                              m_lastIpv6Enabled,
                              m_lastLocalNetworkAccess);
 
-    qDebug() << "Status:" << status;
+    logger.log() << "Status:" << status;
 
     if (status) {
         emit m_adaptor->disconnected();
@@ -202,13 +206,13 @@ bool DBus::deactivate()
 
 QString DBus::status()
 {
-    qDebug() << "Status request";
+    logger.log() << "Status request";
 
     QJsonObject json;
 
     wg_device *device = nullptr;
     if (wg_get_device(&device, WG_INTERFACE) != 0) {
-        qDebug() << "Unable to get device";
+        logger.log() << "Unable to get device";
         json.insert("status", QJsonValue(false));
         return QJsonDocument(json).toJson();
     }
@@ -235,15 +239,15 @@ QString DBus::status()
 
 QString DBus::logs()
 {
-    qDebug() << "Log request";
+    logger.log() << "Log request";
 
     QString output;
     QTextStream out(&output);
 
-    Logger *logger = Logger::instance();
-    for (QVector<Logger::Log>::ConstIterator i = logger->logs().begin(); i != logger->logs().end();
+    LogHandler *logHandler = LogHandler::instance();
+    for (QVector<LogHandler::Log>::ConstIterator i = logHandler->logs().begin(); i != logHandler->logs().end();
          ++i) {
-        logger->prettyOutput(out, *i);
+        logHandler->prettyOutput(out, *i);
     }
 
     return output;

@@ -3,12 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wgquickprocess.h"
+#include "../../src/logger.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QProcess>
 
 constexpr const char *WG_QUICK = "wg-quick";
+
+namespace {
+Logger logger("WgQuickProcess");
+}
 
 WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {}
 
@@ -106,7 +110,7 @@ void WgQuickProcess::run(const QString &privateKey,
     QProcess *wgQuickProcess = new QProcess(this);
 
     connect(wgQuickProcess, &QProcess::errorOccurred, [this](QProcess::ProcessError error) {
-        qDebug() << "Error occurred" << error;
+        logger.log() << "Error occurred" << error;
         deleteLater();
         emit failed();
     });
@@ -114,7 +118,7 @@ void WgQuickProcess::run(const QString &privateKey,
     connect(wgQuickProcess,
             QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
-                qDebug() << "Execution finished" << exitCode;
+                logger.log() << "Execution finished" << exitCode;
 
                 qWarning("wg-quick stdout:\n%ls\n",
                          qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
