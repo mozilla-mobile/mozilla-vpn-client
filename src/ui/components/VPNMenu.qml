@@ -14,6 +14,17 @@ Item {
 
     width: parent.width
     height: 56
+    // Ensure that menu is on top of possible scrollable
+    // content.
+    z: 1
+
+    Rectangle {
+        id: menuBackground
+        color: Theme.bgColor
+        y: 0
+        width: parent.width
+        height: 55
+    }
 
     VPNIconButton {
         id: iconButton
