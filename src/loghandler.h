@@ -18,21 +18,29 @@ public:
     {
         Log() = default;
 
+        Log(const QString &module,
+            const QString &message)
+            : m_dateTime(QDateTime::currentDateTime()), m_module(module), m_message(message),
+              m_fromQT(false)
+        {}
+
         Log(QtMsgType type,
             const QString &file,
             const QString &function,
             uint32_t line,
             const QString &message)
             : m_dateTime(QDateTime::currentDateTime()), m_file(file), m_function(function),
-              m_message(message), m_type(type), m_line(line)
+              m_message(message), m_type(type), m_line(line), m_fromQT(true)
         {}
 
         QDateTime m_dateTime;
         QString m_file;
         QString m_function;
+        QString m_module;
         QString m_message;
-        QtMsgType m_type;
-        int32_t m_line;
+        QtMsgType m_type = QtMsgType::QtDebugMsg;
+        int32_t m_line = -1;
+        bool m_fromQT = false;
     };
 
     static LogHandler *instance();
