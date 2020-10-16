@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationlistener.h"
+#include "logger.h"
 
 #include <limits>
-#include <QDebug>
 #include <QDesktopServices>
 #include <QOAuthHttpServerReplyHandler>
 #include <QRandomGenerator>
@@ -13,21 +13,23 @@
 
 namespace {
 
+Logger logger("AuthenticationListener");
+
 int choosePort(QVector<quint16> triedPorts)
 {
-    qDebug() << "Choosing port";
+    logger.log() << "Choosing port";
 
     while (true) {
         quint32 v = QRandomGenerator::global()->generate();
         quint16 port = 1024 + (v % (std::numeric_limits<quint16>::max() - 1024));
-        qDebug() << "Random port:" << port;
+        logger.log() << "Random port:" << port;
 
         if (!triedPorts.contains(port)) {
             triedPorts.append(port);
             return port;
         }
 
-        qDebug() << "Already tried!";
+        logger.log() << "Already tried!";
     }
 }
 
@@ -39,7 +41,7 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
     connect(m_server,
             &QAbstractOAuthReplyHandler::callbackReceived,
             [this](const QVariantMap &values) {
-                qDebug() << "AuthenticationListener data received:" << values;
+                logger.log() << "AuthenticationListener data received";
 
                 // Unknown connection.
                 if (!values.contains("code")) {
@@ -55,7 +57,7 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
 
 void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
 {
-    qDebug() << "AuthenticationListener initialize";
+    logger.log() << "AuthenticationListener initialize";
     Q_UNUSED(vpn);
 
     if (!m_server->isListening()) {
@@ -69,12 +71,12 @@ void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
     }
 
     if (!m_server->isListening()) {
-        qDebug() << "Unable to listen for the authentication server.";
+        logger.log() << "Unable to listen for the authentication server.";
         emit failed(ErrorHandler::BackendServiceError);
         return;
     }
 
-    qDebug() << "Port:" << m_server->port();
+    logger.log() << "Port:" << m_server->port();
     query.addQueryItem("port", QString::number(m_server->port()));
 
     url.setQuery(query);

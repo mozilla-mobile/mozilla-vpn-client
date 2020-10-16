@@ -3,10 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtrayhandler.h"
+#include "logger.h"
 #include "mozillavpn.h"
 
-#include <QDebug>
 #include <QMenu>
+
+namespace {
+Logger logger("SystemTrayHandler");
+}
 
 SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
     : QSystemTrayIcon(icon, parent)
@@ -17,7 +21,7 @@ SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
 
 void SystemTrayHandler::controllerStateChanged()
 {
-    qDebug() << "Show notification";
+    logger.log() << "Show notification";
 
     if (!supportsMessages()) {
         return;
@@ -48,6 +52,6 @@ void SystemTrayHandler::controllerStateChanged()
 
 void SystemTrayHandler::captivePortalNotificationRequested()
 {
-    qDebug() << "Capitve portal notification shown";
+    logger.log() << "Capitve portal notification shown";
     showMessage(tr("Captive portal detected!"), tr("TODO"), NoIcon, 2000);
 }

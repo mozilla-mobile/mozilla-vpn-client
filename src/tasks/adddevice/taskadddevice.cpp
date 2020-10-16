@@ -5,13 +5,15 @@
 #include "taskadddevice.h"
 #include "curve25519.h"
 #include "errorhandler.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QDebug>
 #include <QRandomGenerator>
 
 namespace {
+
+Logger logger("TaskAddDevice");
 
 QByteArray generatePrivateKey()
 {
@@ -36,18 +38,18 @@ TaskAddDevice::TaskAddDevice(const QString &deviceName)
 
 void TaskAddDevice::run(MozillaVPN *vpn)
 {
-    qDebug() << "Adding the device" << m_deviceName;
+    logger.log() << "Adding the device" << m_deviceName;
 
     QByteArray privateKey = generatePrivateKey();
     QByteArray publicKey = Curve25519::generatePublicKey(privateKey);
 
-    qDebug() << "Private key: " << privateKey;
-    qDebug() << "Public key: " << publicKey;
+    logger.log() << "Private key: " << privateKey;
+    logger.log() << "Public key: " << publicKey;
 
     NetworkRequest *request = NetworkRequest::createForDeviceCreation(vpn, m_deviceName, publicKey);
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        qDebug() << "Failed to add the device" << this << error;
+        logger.log() << "Failed to add the device" << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
     });
@@ -55,7 +57,7 @@ void TaskAddDevice::run(MozillaVPN *vpn)
     connect(request,
             &NetworkRequest::requestCompleted,
             [this, vpn, publicKey, privateKey](const QByteArray &) {
-                qDebug() << "Device added";
+                logger.log() << "Device added";
                 vpn->deviceAdded(m_deviceName, publicKey, privateKey);
                 emit completed();
             });

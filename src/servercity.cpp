@@ -4,7 +4,6 @@
 
 #include "servercity.h"
 
-#include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>

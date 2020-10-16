@@ -4,12 +4,15 @@
 
 #include "taskaccountandservers.h"
 #include "errorhandler.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "servercountrymodel.h"
 #include "serversfetcher.h"
 
-#include <QDebug>
+namespace {
+Logger logger("TaskAccountAndServers");
+}
 
 void TaskAccountAndServers::run(MozillaVPN *vpn)
 {
@@ -18,14 +21,14 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
     NetworkRequest *request = NetworkRequest::createForAccount(vpn);
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        qDebug() << "Account request failed" << error;
+        logger.log() << "Account request failed" << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
         m_accountCompleted = true;
         maybeCompleted();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
-        qDebug() << "Account request completed";
+        logger.log() << "Account request completed";
         vpn->accountChecked(data);
         m_accountCompleted = true;
         maybeCompleted();
@@ -34,7 +37,7 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
     m_fetcher = new ServersFetcher(this);
 
     connect(m_fetcher, &ServersFetcher::failed, [this, vpn](QNetworkReply::NetworkError error) {
-        qDebug() << "Failed to fetch servers" << error;
+        logger.log() << "Failed to fetch servers" << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
         m_serversCompleted = true;
         maybeCompleted();

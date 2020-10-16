@@ -3,18 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosstartatbootwatcher.h"
+#include "logger.h"
 #include "macosutils.h"
 
-#include <QDebug>
+namespace {
+Logger logger("MacOSStartAtBootWatcher");
+}
 
 MacOSStartAtBootWatcher::MacOSStartAtBootWatcher(bool startAtBoot)
 {
-    qDebug() << "StartAtBoot watcher";
+    logger.log() << "StartAtBoot watcher";
     MacOSUtils::enableLoginItem(startAtBoot);
 }
 
 void MacOSStartAtBootWatcher::startAtBootChanged(bool startAtBoot)
 {
-    qDebug() << "StartAtBoot changed:" << startAtBoot;
+    logger.log() << "StartAtBoot changed:" << startAtBoot;
     MacOSUtils::enableLoginItem(startAtBoot);
 }

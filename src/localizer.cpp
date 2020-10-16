@@ -3,12 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localizer.h"
+#include "logger.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 #include <QLocale>
+
+namespace {
+Logger logger("Localizer");
+}
 
 void Localizer::initialize(const QString& code)
 {
@@ -17,8 +21,7 @@ void Localizer::initialize(const QString& code)
         QLocale locale = QLocale::system();
         m_code = locale.bcp47Name();
     }
-    qDebug() << "Localizer initializing:" << m_code;
-
+    logger.log() << "Localizer initializing:" << m_code;
 
     if (!loadLanguage(m_code) && m_code != "") {
         return initialize("");
@@ -51,7 +54,8 @@ bool Localizer::loadLanguage(const QString& code)
     QLocale::setDefault(locale);
 
     if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-        qDebug() << "Loading the locale failed." << "code";
+        logger.log() << "Loading the locale failed."
+                     << "code";
         return false;
     }
 

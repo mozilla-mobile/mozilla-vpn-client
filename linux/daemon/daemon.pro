@@ -18,19 +18,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
+        ../../src/loghandler.cpp \
         dbus.cpp \
         main.cpp \
         polkithelper.cpp \
         wgquickprocess.cpp \
-        ../../src/logger.cpp \
         ../../src/signalhandler.cpp \
         ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
 
 HEADERS += \
+        ../../src/loghandler.h \
         dbus.h \
         polkithelper.h \
         wgquickprocess.h \
-        ../../src/logger.h \
         ../../src/signalhandler.h \
         ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
 

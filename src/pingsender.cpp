@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pingsender.h"
+#include "logger.h"
 #include "pingsendworker.h"
 
 #ifdef __linux__
@@ -17,7 +18,9 @@
 #include "platforms/dummy/dummypingsendworker.h"
 #endif
 
-#include <QDebug>
+namespace {
+Logger logger("PingSender");
+}
 
 PingSender::PingSender(QObject *parent) : QObject(parent)
 {
@@ -58,7 +61,7 @@ PingSender::~PingSender()
 
 void PingSender::send(const QString &destination)
 {
-    qDebug() << "PingSender send to" << destination;
+    logger.log() << "PingSender send to" << destination;
 
     m_active = true;
     emit sendPing(destination);
@@ -66,14 +69,14 @@ void PingSender::send(const QString &destination)
 
 void PingSender::stop()
 {
-    qDebug() << "PingSender stop";
+    logger.log() << "PingSender stop";
     m_active = false;
     emit stopPing();
 }
 
 void PingSender::pingFailed()
 {
-    qDebug() << "PingSender - Ping Failed";
+    logger.log() << "PingSender - Ping Failed";
 
     if (m_active) {
         emit completed();
@@ -82,7 +85,7 @@ void PingSender::pingFailed()
 
 void PingSender::pingSucceeded()
 {
-    qDebug() << "PingSender - Ping Succeded";
+    logger.log() << "PingSender - Ping Succeded";
     if (m_active) {
         emit completed();
     }

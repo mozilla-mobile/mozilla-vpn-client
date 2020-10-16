@@ -1,54 +1,40 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QDateTime>
-#include <QObject>
-#include <QVector>
+#include <QString>
+#include <QTextStream>
 
-class QTextStream;
+class QNetworkReply;
 
-class Logger final : public QObject
+class Logger
 {
-    Q_OBJECT
-
 public:
-    struct Log
+    Logger(const QString &module);
+
+    const QString &module() const { return m_module; }
+
+    class Log
     {
-        Log() = default;
+    public:
+        Log(Logger *logger);
+        ~Log();
 
-        Log(QtMsgType type,
-            const QString &file,
-            const QString &function,
-            uint32_t line,
-            const QString &message)
-            : m_dateTime(QDateTime::currentDateTime()), m_file(file), m_function(function),
-              m_message(message), m_type(type), m_line(line)
-        {}
+        Log &operator<<(uint64_t t);
+        Log &operator<<(const char *t);
+        Log &operator<<(const QString &t);
+        Log &operator<<(const QStringList &t);
+        Log &operator<<(const QByteArray &t);
 
-        QDateTime m_dateTime;
-        QString m_file;
-        QString m_function;
-        QString m_message;
-        QtMsgType m_type;
-        uint32_t m_line;
+    private:
+        Logger *m_logger;
+        QString m_buffer;
+        QTextStream m_ts;
     };
 
-    static Logger *instance();
-
-    static void messageHandler(QtMsgType type,
-                               const QMessageLogContext &context,
-                               const QString &message);
-
-    static void prettyOutput(QTextStream &out, const Logger::Log &log);
-
-    const QVector<Log> &logs() const { return m_logs; }
+    Log log();
 
 private:
-    QVector<Log> m_logs;
+    QString m_module;
 };
 
 #endif // LOGGER_H

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "releasemonitor.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -10,30 +11,33 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTimer>
-#include <QtDebug>
 
 // Any 6 hours, a new check
 constexpr uint32_t RELEASE_MONITOR_SEC = 21600;
 
+namespace {
+Logger logger("ReleaseMonitor");
+}
+
 void ReleaseMonitor::runSoon()
 {
-    qDebug() << "ReleaseManager - Scheduling a quick timer";
+    logger.log() << "ReleaseManager - Scheduling a quick timer";
     QTimer::singleShot(0, [this] { runInternal(); });
 }
 
 void ReleaseMonitor::runInternal()
 {
-    qDebug() << "ReleaseMonitor started";
+    logger.log() << "ReleaseMonitor started";
 
     NetworkRequest *request = NetworkRequest::createForVersions(MozillaVPN::instance());
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-        qDebug() << "Versions request failed" << error;
+        logger.log() << "Versions request failed" << error;
         schedule();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "Account request completed";
+        logger.log() << "Account request completed";
         processData(data);
         schedule();
     });
@@ -41,7 +45,7 @@ void ReleaseMonitor::runInternal()
 
 void ReleaseMonitor::schedule()
 {
-    qDebug() << "ReleaseMonitor scheduling";
+    logger.log() << "ReleaseMonitor scheduling";
     QTimer::singleShot(RELEASE_MONITOR_SEC * 1000, [this] { runInternal(); });
 }
 
@@ -64,7 +68,7 @@ void ReleaseMonitor::processData(const QByteArray &data)
         ;
 
     if (!obj.contains(platformKey)) {
-        qDebug() << "No key" << platformKey;
+        logger.log() << "No key" << platformKey;
         return;
     }
 
@@ -94,17 +98,17 @@ void ReleaseMonitor::processData(const QByteArray &data)
     double minimumVersion = minimumVersionValue.toString().toDouble();
     double currentVersion = QString(APP_VERSION).toDouble();
 
-    qDebug() << "Latest version:" << latestVersion;
-    qDebug() << "Minimum version:" << minimumVersion;
-    qDebug() << "Current version:" << currentVersion;
+    logger.log() << "Latest version:" << latestVersion;
+    logger.log() << "Minimum version:" << minimumVersion;
+    logger.log() << "Current version:" << currentVersion;
 
     if (currentVersion < minimumVersion) {
-        qDebug() << "ReleaseMonitor - update required";
+        logger.log() << "ReleaseMonitor - update required";
         MozillaVPN::instance()->setUpdateRecommended(false);
         MozillaVPN::instance()->controller()->updateRequired();
         return;
     }
 
-    qDebug() << "Update recommended: " << (currentVersion < latestVersion);
+    logger.log() << "Update recommended: " << (currentVersion < latestVersion);
     MozillaVPN::instance()->setUpdateRecommended(currentVersion < latestVersion);
 }

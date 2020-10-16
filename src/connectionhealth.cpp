@@ -3,11 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "pingsender.h"
 #include "server.h"
-
-#include <QDebug>
 
 // In seconds, the timeout for unstable pings.
 constexpr uint32_t TIMEOUT_UNSTABLE_SEC = 5;
@@ -18,6 +17,10 @@ constexpr uint32_t TIMEOUT_NOSIGNAL_SEC = 30;
 // Gap between 1 ping and the following one, in seconds.
 constexpr uint32_t WAITING_TIMEOUT_SEC = 2;
 
+namespace {
+Logger logger("ConnectionHealth");
+}
+
 ConnectionHealth::ConnectionHealth()
 {
     m_pingSender = new PingSender(this);
@@ -26,7 +29,7 @@ ConnectionHealth::ConnectionHealth()
     m_unstableTimer.setSingleShot(true);
     connect(&m_unstableTimer, &QTimer::timeout, [this]() {
         Q_ASSERT(m_state == Pending);
-        qDebug() << "ConnectionHealth: timeout";
+        logger.log() << "ConnectionHealth: timeout";
         m_state = Timeout;
         setStability(Unstable);
     });
@@ -34,7 +37,7 @@ ConnectionHealth::ConnectionHealth()
     m_noSignalTimer.setSingleShot(true);
     connect(&m_noSignalTimer, &QTimer::timeout, [this]() {
         Q_ASSERT(m_state == Timeout);
-        qDebug() << "ConnectionHealth: no signal";
+        logger.log() << "ConnectionHealth: no signal";
 
         m_pingSender->stop();
         wait();
@@ -50,7 +53,7 @@ ConnectionHealth::ConnectionHealth()
 
 void ConnectionHealth::start(const QString &serverIpv4Gateway)
 {
-    qDebug() << "ConnectionHealth activated for server:" << serverIpv4Gateway;
+    logger.log() << "ConnectionHealth activated for server:" << serverIpv4Gateway;
 
     setStability(Stable);
 
@@ -60,7 +63,7 @@ void ConnectionHealth::start(const QString &serverIpv4Gateway)
 
 void ConnectionHealth::stop()
 {
-    qDebug() << "ConnectionHealth deactivated";
+    logger.log() << "ConnectionHealth deactivated";
     m_state = Inactive;
 
     m_unstableTimer.stop();
@@ -73,7 +76,7 @@ void ConnectionHealth::sendPing()
 {
     Q_ASSERT(m_state == Waiting || m_state == Inactive);
 
-    qDebug() << "ConnectionHealth: Sending a ping";
+    logger.log() << "ConnectionHealth: Sending a ping";
 
     m_state = Pending;
     m_pingSender->send(m_gateway);
@@ -91,7 +94,7 @@ void ConnectionHealth::pingCompleted()
 {
     Q_ASSERT(m_state == Timeout || m_state == Pending);
 
-    qDebug() << "ConnectionHealth: Ping completed";
+    logger.log() << "ConnectionHealth: Ping completed";
 
     m_unstableTimer.stop();
     m_noSignalTimer.stop();
@@ -108,7 +111,7 @@ void ConnectionHealth::wait()
 {
     Q_ASSERT(m_state == Timeout || m_state == Pending);
 
-    qDebug() << "ConnectionHealth: Let's wait for the next ping to be sent";
+    logger.log() << "ConnectionHealth: Let's wait for the next ping to be sent";
 
     m_state = Waiting;
     Q_ASSERT(!m_waitingTimer.isActive());
@@ -117,7 +120,7 @@ void ConnectionHealth::wait()
 
 void ConnectionHealth::setStability(ConnectionStability stability)
 {
-    qDebug() << "Stability changed:" << stability;
+    logger.log() << "Stability changed:" << stability;
 
     m_stability = stability;
     emit stabilityChanged();
@@ -125,7 +128,7 @@ void ConnectionHealth::setStability(ConnectionStability stability)
 
 void ConnectionHealth::connectionStateChanged()
 {
-    qDebug() << "Connection state changed";
+    logger.log() << "Connection state changed";
 
     if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
         stop();

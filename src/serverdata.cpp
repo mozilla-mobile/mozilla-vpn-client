@@ -3,10 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverdata.h"
+#include "logger.h"
 #include "servercountrymodel.h"
 #include "settingsholder.h"
 
-#include <QDebug>
+namespace {
+Logger logger("ServerData");
+}
 
 bool ServerData::fromSettings(SettingsHolder &settingsHolder)
 {
@@ -17,7 +20,7 @@ bool ServerData::fromSettings(SettingsHolder &settingsHolder)
     m_countryCode = settingsHolder.currentServerCountry();
     m_city = settingsHolder.currentServerCity();
 
-    qDebug() << m_countryCode << m_city;
+    logger.log() << m_countryCode << m_city;
 
     m_initialized = true;
 
@@ -32,7 +35,7 @@ void ServerData::writeSettings(SettingsHolder &settingsHolder)
 
 void ServerData::initialize(const ServerCountry &country, const ServerCity &city)
 {
-    qDebug() << "Country:" << country.name() << "City:" << city.name();
+    logger.log() << "Country:" << country.name() << "City:" << city.name();
 
     m_initialized = true;
 

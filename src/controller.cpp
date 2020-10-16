@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportalactivator.h"
 #include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
 #include "timercontroller.h"
@@ -20,10 +21,13 @@
 #include "platforms/dummy/dummycontroller.h"
 #endif
 
-#include <QDebug>
 #include <QTimer>
 
 constexpr const uint32_t TIMER_MSEC = 1000;
+
+namespace {
+Logger logger("Controller");
+}
 
 Controller::Controller()
 {
@@ -51,7 +55,7 @@ Controller::~Controller() = default;
 
 void Controller::initialize()
 {
-    qDebug() << "Initializing the controller";
+    logger.log() << "Initializing the controller";
 
     if (m_state == StateInitializing) {
         MozillaVPN *vpn = MozillaVPN::instance();
@@ -64,8 +68,8 @@ void Controller::initialize()
 
 void Controller::implInitialized(bool status, State state, const QDateTime &connectionDate)
 {
-    qDebug() << "Controller activated with status:" << status << "state:" << state
-             << "connectionDate:" << connectionDate;
+    logger.log() << "Controller activated with status:" << status << "state:" << state
+                 << "connectionDate:" << connectionDate.toString();
 
     Q_ASSERT(m_state == StateInitializing);
 
@@ -89,17 +93,17 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
     }
 
     if (MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
-        qDebug() << "Start on boot";
+        logger.log() << "Start on boot";
         activate();
     }
 }
 
 void Controller::activate()
 {
-    qDebug() << "Activation" << m_state;
+    logger.log() << "Activation" << m_state;
 
     if (m_state != StateOff && m_state != StateSwitching && m_state != StateCaptivePortal) {
-        qDebug() << "Already connected";
+        logger.log() << "Already connected";
         return;
     }
 
@@ -129,8 +133,9 @@ void Controller::activate()
     if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
         CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
         connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
-            qDebug() << "Captive portal lookup completed - ipv4:" << captivePortal.ipv4Addresses()
-                     << "ipv6:" << captivePortal.ipv6Addresses();
+            logger.log() << "Captive portal lookup completed - ipv4:"
+                         << captivePortal.ipv4Addresses()
+                         << "ipv6:" << captivePortal.ipv6Addresses();
             cb(captivePortal);
         });
         lookup->start();
@@ -142,10 +147,10 @@ void Controller::activate()
 
 void Controller::deactivate()
 {
-    qDebug() << "Deactivation" << m_state;
+    logger.log() << "Deactivation" << m_state;
 
     if (m_state != StateOn && m_state != StateSwitching) {
-        qDebug() << "Already disconnected";
+        logger.log() << "Already disconnected";
         return;
     }
 
@@ -161,7 +166,7 @@ void Controller::deactivate()
 
 void Controller::connected()
 {
-    qDebug() << "Connected from state:" << m_state;
+    logger.log() << "Connected from state:" << m_state;
 
     // This is an unexpected connection. Let's use the Connecting state to animate the UI.
     if (m_state != StateConnecting && m_state != StateSwitching) {
@@ -189,7 +194,7 @@ void Controller::connected()
 }
 
 void Controller::disconnected() {
-    qDebug() << "Disconnected from state:" << m_state;
+    logger.log() << "Disconnected from state:" << m_state;
 
     m_timer.stop();
 
@@ -233,19 +238,19 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
     Q_ASSERT(vpn);
 
     if (vpn->currentServer()->countryCode() == countryCode && vpn->currentServer()->city() == city) {
-        qDebug() << "No server change needed";
+        logger.log() << "No server change needed";
         return;
     }
 
     if (m_state == StateOff) {
-        qDebug() << "Change server";
+        logger.log() << "Change server";
         vpn->changeServer(countryCode, city);
         return;
     }
 
     m_timer.stop();
 
-    qDebug() << "Switching to a different server";
+    logger.log() << "Switching to a different server";
 
     m_currentCity = vpn->currentServer()->city();
     m_switchingCountryCode = countryCode;
@@ -258,7 +263,7 @@ void Controller::changeServer(const QString &countryCode, const QString &city)
 
 void Controller::quit()
 {
-    qDebug() << "Quitting";
+    logger.log() << "Quitting";
 
     if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit
         || m_state == StateCaptivePortal) {
@@ -276,7 +281,7 @@ void Controller::quit()
 
 void Controller::updateRequired()
 {
-    qDebug() << "Update required";
+    logger.log() << "Update required";
 
     if (m_state == StateOff) {
         emit readyToUpdate();
@@ -293,7 +298,7 @@ void Controller::updateRequired()
 
 void Controller::subscriptionNeeded()
 {
-    qDebug() << "Subscription needed";
+    logger.log() << "Subscription needed";
 
     if (m_state == StateOff) {
         emit readyToSubscribe();
@@ -310,7 +315,7 @@ void Controller::subscriptionNeeded()
 
 void Controller::logout()
 {
-    qDebug() << "Logout";
+    logger.log() << "Logout";
 
     MozillaVPN::instance()->logout();
 
@@ -328,7 +333,7 @@ void Controller::logout()
 
 void Controller::setDeviceLimit(bool deviceLimit)
 {
-    qDebug() << "Device limit mode:" << deviceLimit;
+    logger.log() << "Device limit mode:" << deviceLimit;
 
     if (!deviceLimit) {
         Q_ASSERT(m_state == StateDeviceLimit);
@@ -406,7 +411,7 @@ void Controller::getStatus(
     std::function<void(const QString &serverIpv4Gateway, uint64_t txByte, uint64_t rxBytes)>
         &&a_callback)
 {
-    qDebug() << "check status";
+    logger.log() << "check status";
 
     std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
         callback = std::move(a_callback);
@@ -427,7 +432,7 @@ void Controller::getStatus(
 
 void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)
 {
-    qDebug() << "Status updated";
+    logger.log() << "Status updated";
     QList<std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>
         list;
 
@@ -443,7 +448,7 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
 
 void Controller::captivePortalDetected()
 {
-    qDebug() << "Captive portal detected in state:" << m_state;
+    logger.log() << "Captive portal detected in state:" << m_state;
 
     if (m_state != StateOn) {
         return;

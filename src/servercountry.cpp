@@ -5,7 +5,6 @@
 #include "servercountry.h"
 #include "serverdata.h"
 
-#include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>

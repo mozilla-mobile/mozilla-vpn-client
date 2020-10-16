@@ -45,6 +45,7 @@ SOURCES += \
         keys.cpp \
         localizer.cpp \
         logger.cpp \
+        loghandler.cpp \
         main.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
@@ -86,6 +87,7 @@ HEADERS += \
         keys.h \
         localizer.h \
         logger.h \
+        loghandler.h \
         mozillavpn.h \
         networkrequest.h \
         pingsender.h \

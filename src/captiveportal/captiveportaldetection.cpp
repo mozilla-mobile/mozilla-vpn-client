@@ -5,9 +5,12 @@
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
 #include "captiveportalrequest.h"
+#include "logger.h"
 #include "mozillavpn.h"
 
-#include <QDebug>
+namespace {
+Logger logger("CaptivePortalDetection");
+}
 
 CaptivePortalDetection::CaptivePortalDetection()
 {
@@ -21,7 +24,7 @@ void CaptivePortalDetection::initialize()
 
 void CaptivePortalDetection::controllerStateChanged()
 {
-    qDebug() << "Controller state changed";
+    logger.log() << "Controller state changed";
 
     if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
         m_timer.start(CAPTIVEPORTAL_REQUEST_TIMEOUT);
@@ -33,13 +36,13 @@ void CaptivePortalDetection::controllerStateChanged()
 
 void CaptivePortalDetection::settingsChanged()
 {
-    qDebug() << "Settings has changed";
+    logger.log() << "Settings has changed";
     m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
 }
 
 void CaptivePortalDetection::detectCaptivePortal()
 {
-    qDebug() << "Detecting captive portal - status:" << m_active;
+    logger.log() << "Detecting captive portal - status:" << m_active;
 
     if (!m_active) {
         return;
@@ -47,10 +50,10 @@ void CaptivePortalDetection::detectCaptivePortal()
 
     CaptivePortalRequest *request = new CaptivePortalRequest(this);
     connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-        qDebug() << "Captive portal request completed - detected:" << detected;
+        logger.log() << "Captive portal request completed - detected:" << detected;
 
         if (!m_active) {
-            qDebug() << "Disabled in the meantime.";
+            logger.log() << "Disabled in the meantime.";
             return;
         }
 

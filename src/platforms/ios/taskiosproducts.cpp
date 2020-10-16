@@ -3,27 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskiosproducts.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 
+namespace {
+Logger logger("TaskIOSProducts");
+
+}
 void TaskIOSProducts::run(MozillaVPN* vpn)
 {
     NetworkRequest *request = NetworkRequest::createForIOSProducts(vpn);
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        qDebug() << "IOS product request failed" << error;
+        logger.log() << "IOS product request failed" << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
-        qDebug() << "IOS product request completed" << data;
+        logger.log() << "IOS product request completed" << data;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         Q_ASSERT(json.isObject());

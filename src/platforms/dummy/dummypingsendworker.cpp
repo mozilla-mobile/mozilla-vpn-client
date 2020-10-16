@@ -3,18 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummypingsendworker.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QTimer>
 
 constexpr uint32_t SHORT_PING_TIMER_MSEC = 200;
 constexpr uint32_t LONG_PING_TIMER_MSEC = 6000;
 
+namespace {
+Logger logger("DummyPingSendWorker");
+}
+
 DummyPingSendWorker::DummyPingSendWorker(State state) : m_state(state) {}
 
 void DummyPingSendWorker::sendPing(const QString &destination)
 {
-    qDebug() << "Dummy ping to:" << destination;
+    logger.log() << "Dummy ping to:" << destination;
 
     if (!m_timer) {
         m_timer = new QTimer(this);
@@ -24,7 +28,6 @@ void DummyPingSendWorker::sendPing(const QString &destination)
 
     switch (m_state) {
     case Stable:
-        qDebug() << m_timer;
         m_timer->start(SHORT_PING_TIMER_MSEC);
         break;
     case Unstable:

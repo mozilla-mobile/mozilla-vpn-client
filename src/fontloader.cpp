@@ -3,10 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "fontloader.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFontDatabase>
+
+namespace {
+Logger logger("FontLoader");
+}
 
 // static
 void FontLoader::loadFonts()
@@ -14,8 +18,8 @@ void FontLoader::loadFonts()
     QDir dir(":/ui/resources/fonts");
     QStringList files = dir.entryList();
     for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
-        qDebug() << "Loading font:" << *i;
+        logger.log() << "Loading font:" << *i;
         int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + *i);
-        qDebug() << "Result:" << id;
+        logger.log() << "Result:" << id;
     }
 }

@@ -3,20 +3,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "devicemodel.h"
+#include "logger.h"
 #include "settingsholder.h"
 
-#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 
+namespace {
+Logger logger("DeviceModel");
+}
+
 void DeviceModel::fromJson(const QByteArray &s)
 {
-    qDebug() << "DeviceModel from json";
+    logger.log() << "DeviceModel from json";
 
     if (m_rawJson == s) {
-        qDebug() << "Nothing has changed";
+        logger.log() << "Nothing has changed";
         return;
     }
 
@@ -26,7 +30,7 @@ void DeviceModel::fromJson(const QByteArray &s)
 
 bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
 {
-    qDebug() << "Reading the device list from settings";
+    logger.log() << "Reading the device list from settings";
 
     if (!settingsHolder.hasDevices()) {
         return false;

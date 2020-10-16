@@ -1,88 +1,36 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 #include "logger.h"
+#include "loghandler.h"
 
-#include <QDate>
-#include <QDebug>
-#include <QMessageLogContext>
-#include <QString>
+Logger::Logger(const QString &module) : m_module(module) {}
 
-constexpr int LOG_MAX = 10000;
-
-static Logger logger;
-
-// static
-Logger *Logger::instance()
+Logger::Log Logger::log()
 {
-    return &logger;
+    return Log(this);
 }
 
-// static
-void Logger::messageHandler(QtMsgType type,
-                            const QMessageLogContext &context,
-                            const QString &message)
+Logger::Log::Log(Logger *logger) : m_logger(logger), m_ts(&m_buffer, QIODevice::WriteOnly) {}
+
+Logger::Log::~Log()
 {
-    logger.m_logs.append(Log(type, context.file, context.function, context.line, message));
-
-    while (logger.m_logs.count() >= LOG_MAX) {
-        logger.m_logs.removeAt(0);
-    }
-
-    QTextStream out(stderr);
-    prettyOutput(out, logger.m_logs.last());
+    LogHandler::messageHandler(m_logger->module(), m_buffer.trimmed());
 }
 
-// static
-void Logger::prettyOutput(QTextStream &out, const Logger::Log &log)
+#define CREATE_LOG_OP_REF(x) \
+    Logger::Log &Logger::Log::operator<<(x t) \
+    { \
+        m_ts << t << ' '; \
+        return *this; \
+    }
+
+CREATE_LOG_OP_REF(uint64_t);
+CREATE_LOG_OP_REF(const char *);
+CREATE_LOG_OP_REF(const QString &);
+CREATE_LOG_OP_REF(const QByteArray &);
+
+#undef CREATE_LOG_OP_REF
+
+Logger::Log &Logger::Log::operator<<(const QStringList &t)
 {
-    out << "[" << log.m_dateTime.toString("dd.MM.yyyy hh:mm:ss.zzz") << "] ";
-
-    switch (log.m_type) {
-    case QtDebugMsg:
-        out << "Debug: ";
-        break;
-    case QtInfoMsg:
-        out << "Info: ";
-        break;
-    case QtWarningMsg:
-        out << "Warning: ";
-        break;
-    case QtCriticalMsg:
-        out << "Critical: ";
-        break;
-    case QtFatalMsg:
-        out << "Fatal: ";
-        break;
-    default:
-        out << "?!?: ";
-        break;
-    }
-
-    out << log.m_message;
-
-    if (!log.m_file.isEmpty() || !log.m_function.isEmpty()) {
-        out << " (";
-
-        if (!log.m_file.isEmpty()) {
-            int pos = log.m_file.lastIndexOf("/");
-            out << log.m_file.right(log.m_file.length() - pos - 1) << ":" << log.m_line;
-            if (!log.m_function.isEmpty()) {
-                out << ", ";
-            }
-        }
-
-        if (!log.m_function.isEmpty()) {
-            out << log.m_function;
-        }
-
-        out << ")";
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-    out << Qt::endl;
-#else
-    out << endl;
-#endif
+    m_ts << '[' << t.join(",") << ']' << ' ';
+    return *this;
 }

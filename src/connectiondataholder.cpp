@@ -3,15 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectiondataholder.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QSplineSeries>
 #include <QValueAxis>
+
+namespace {
+Logger logger("ConnectionDataHolder");
+}
 
 constexpr int MAX_POINTS = 30;
 
@@ -48,7 +52,7 @@ void ConnectionDataHolder::disable()
 
 void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
 {
-    qDebug() << "New connection data:" << txBytes << rxBytes;
+    logger.log() << "New connection data:" << txBytes << rxBytes;
 
     Q_ASSERT(!!m_txSeries == !!m_rxSeries);
 
@@ -103,7 +107,7 @@ void ConnectionDataHolder::activate(const QVariant &a_txSeries,
                                     const QVariant &a_axisX,
                                     const QVariant &a_axisY)
 {
-    qDebug() << "Activated";
+    logger.log() << "Activated";
 
     QtCharts::QSplineSeries *txSeries = qobject_cast<QtCharts::QSplineSeries *>(
         a_txSeries.value<QObject *>());
@@ -146,7 +150,7 @@ void ConnectionDataHolder::activate(const QVariant &a_txSeries,
 
 void ConnectionDataHolder::deactivate()
 {
-    qDebug() << "Deactivated";
+    logger.log() << "Deactivated";
 
     reset();
     m_axisX = nullptr;
@@ -168,7 +172,7 @@ void ConnectionDataHolder::computeAxes()
 
 void ConnectionDataHolder::reset()
 {
-    qDebug() << "Resetting the data";
+    logger.log() << "Resetting the data";
 
     m_initialized = false;
     m_txBytes = 0;
@@ -193,15 +197,15 @@ void ConnectionDataHolder::reset()
 
 void ConnectionDataHolder::updateIpAddress()
 {
-    qDebug() << "Updating IP address";
+    logger.log() << "Updating IP address";
 
     NetworkRequest *request = NetworkRequest::createForIpInfo(MozillaVPN::instance());
     connect(request, &NetworkRequest::requestFailed, [](QNetworkReply::NetworkError error) {
-        qDebug() << "IP address request failed" << error;
+        logger.log() << "IP address request failed" << error;
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "IP address request completed";
+        logger.log() << "IP address request completed";
 
         QJsonDocument json = QJsonDocument::fromJson(data);
         Q_ASSERT(json.isObject());

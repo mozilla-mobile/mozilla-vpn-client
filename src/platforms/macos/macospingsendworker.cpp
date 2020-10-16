@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macospingsendworker.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QSocketNotifier>
 
 #include <arpa/inet.h>
@@ -16,6 +16,8 @@
 #include <unistd.h>
 
 namespace {
+
+Logger logger("MacOSPingSendWorker");
 
 int identifier()
 {
@@ -65,7 +67,7 @@ u_short in_cksum(u_short *addr, int len)
 
 void MacOSPingSendWorker::sendPing(const QString &destination)
 {
-    qDebug() << "MacOSPingSendWorker - sending ping to:" << destination;
+    logger.log() << "MacOSPingSendWorker - sending ping to:" << destination;
 
     Q_ASSERT(m_socket == 0);
 
@@ -76,7 +78,7 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
     }
 
     if (m_socket < 0) {
-        qDebug() << "Socket creation failed";
+        logger.log() << "Socket creation failed";
         emit pingFailed();
         releaseObjects();
         return;
@@ -88,7 +90,7 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
     dst.sin_len = sizeof(dst);
 
     if (inet_aton(destination.toLocal8Bit().constData(), &dst.sin_addr) == 0) {
-        qDebug() << "DNS lookup failed";
+        logger.log() << "DNS lookup failed";
         emit pingFailed();
         releaseObjects();
         return;
@@ -102,13 +104,13 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
 
     if (sendto(m_socket, (char *) &packet, sizeof(packet), 0, (struct sockaddr *) &dst, sizeof(dst))
         != sizeof(packet)) {
-        qDebug() << "Package sending failed";
+        logger.log() << "Package sending failed";
         emit pingFailed();
         releaseObjects();
         return;
     }
 
-    qDebug() << "Ping sent";
+    logger.log() << "Ping sent";
 
     m_socketNotifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
     connect(m_socketNotifier,
@@ -133,7 +135,7 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
 
                 int rc = recvmsg(socket, &msg, 0);
                 if (rc <= 0) {
-                    qDebug() << "Recvmsg failed";
+                    logger.log() << "Recvmsg failed";
                     emit pingFailed();
                     releaseObjects();
                     return;
@@ -144,7 +146,7 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
                 struct icmp *icmp = (struct icmp *) (((char *) packet) + hlen);
 
                 if (icmp->icmp_type == ICMP_ECHOREPLY && icmp->icmp_id == identifier()) {
-                    qDebug() << "Ping reply received";
+                    logger.log() << "Ping reply received";
                     emit pingSucceeded();
                     releaseObjects();
                 }
@@ -153,7 +155,7 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
 
 void MacOSPingSendWorker::stopPing()
 {
-    qDebug() << "MacOSPingSendWorker - stopped";
+    logger.log() << "MacOSPingSendWorker - stopped";
     releaseObjects();
 }
 

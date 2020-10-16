@@ -4,8 +4,8 @@
 
 #include "settingsholder.h"
 #include "cryptosettings.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QSettings>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
@@ -33,6 +33,10 @@ constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 
+namespace {
+Logger logger("SettingsHolder");
+}
+
 const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::readFile,
                                                               CryptoSettings::writeFile);
@@ -41,7 +45,7 @@ SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "
 
 void SettingsHolder::clear()
 {
-    qDebug() << "Clean up the settings";
+    logger.log() << "Clean up the settings";
 
     m_settings.remove(SETTINGS_TOKEN);
     m_settings.remove(SETTINGS_SERVERS);
@@ -70,7 +74,7 @@ void SettingsHolder::clear()
     } \
     void SettingsHolder::set(const type &value) \
     { \
-        qDebug() << "Setting" << key << "to" << value; \
+        logger.log() << "Setting" << key << "to" << value; \
         m_settings.setValue(key, value); \
         emit signal(value); \
     }
@@ -135,7 +139,7 @@ GETSETDEFAULT(QString(),
     } \
     void SettingsHolder::set(const type &value) \
     { \
-        qDebug() << "Setting" << key; \
+        logger.log() << "Setting" << key; \
         m_settings.setValue(key, value); \
     }
 

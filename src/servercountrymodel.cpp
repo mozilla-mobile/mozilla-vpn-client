@@ -3,19 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountrymodel.h"
+#include "logger.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "settingsholder.h"
 
-#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
 
+namespace {
+Logger logger("ServerCountryModel");
+}
+
 bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)
 {
-    qDebug() << "Reading the server list from settings";
+    logger.log() << "Reading the server list from settings";
 
     if (!settingsHolder.hasServers()) {
         return false;
@@ -29,10 +33,10 @@ bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)
 
 void ServerCountryModel::fromJson(const QByteArray &s)
 {
-    qDebug() << "Reading from JSON";
+    logger.log() << "Reading from JSON";
 
     if (m_rawJson == s) {
-        qDebug() << "Nothing has changed";
+        logger.log() << "Nothing has changed";
         return;
     }
 
@@ -116,7 +120,7 @@ QVariant ServerCountryModel::data(const QModelIndex &index, int role) const
 
 void ServerCountryModel::pickRandom(ServerData &data)
 {
-    qDebug() << "Choosing a random server";
+    logger.log() << "Choosing a random server";
 
     quint32 countryId = QRandomGenerator::global()->generate() % m_countries.length();
     const ServerCountry &country = m_countries[countryId];

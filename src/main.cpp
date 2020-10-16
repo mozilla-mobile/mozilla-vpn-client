@@ -5,6 +5,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "fontloader.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
 #include "systemtrayhandler.h"
@@ -24,10 +25,16 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
+namespace {
+Logger logger("main");
+}
+
 int main(int argc, char *argv[])
 {
     // Our logging system.
-    qInstallMessageHandler(Logger::messageHandler);
+    qInstallMessageHandler(LogHandler::messageQTHandler);
+
+    logger.log() << "MozillaVPN" << APP_VERSION;
 
     // The application.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -74,10 +81,10 @@ int main(int argc, char *argv[])
     MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
 
     if (parser.isSet(startAtBootOption)) {
-        qDebug() << "Maybe start at boot";
+        logger.log() << "Maybe start at boot";
 
         if (!MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
-            qDebug() << "We don't need to start at boot.";
+            logger.log() << "We don't need to start at boot.";
             return 0;
         }
     }
@@ -171,7 +178,7 @@ int main(int argc, char *argv[])
     QObject::connect(MozillaVPN::instance()->settingsHolder(),
                      &SettingsHolder::languageCodeChanged,
                      [engine = &engine](const QString &languageCode) {
-                         qDebug() << "Storing the languageCode:" << languageCode;
+                         logger.log() << "Storing the languageCode:" << languageCode;
                          MozillaVPN::instance()->localizer()->loadLanguage(languageCode);
                          engine->retranslate();
                      });

@@ -3,10 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummycontroller.h"
+#include "logger.h"
 #include "server.h"
 
-#include <QDebug>
 #include <QRandomGenerator>
+
+namespace {
+Logger logger("DummyController");
+}
 
 void DummyController::activate(const Server &server,
                                const Device *device,
@@ -19,7 +23,7 @@ void DummyController::activate(const Server &server,
     Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
-    qDebug() << "DummyController activated" << server.hostname();
+    logger.log() << "DummyController activated" << server.hostname();
 
     emit connected();
 }
@@ -28,7 +32,7 @@ void DummyController::deactivate(bool forSwitching)
 {
     Q_UNUSED(forSwitching);
 
-    qDebug() << "DummyController deactivated";
+    logger.log() << "DummyController deactivated";
 
     emit disconnected();
 }

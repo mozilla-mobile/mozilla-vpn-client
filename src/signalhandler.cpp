@@ -3,11 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "signalhandler.h"
+#include "logger.h"
 #include "signal.h"
 
-#include <QDebug>
+namespace {
 
-static SignalHandler *self = nullptr;
+Logger logger("SignalHandler");
+SignalHandler *self = nullptr;
+
+} // namespace
 
 SignalHandler::SignalHandler()
 {
@@ -34,7 +38,7 @@ SignalHandler::SignalHandler()
 
 void SignalHandler::saHandler(int signal)
 {
-    qDebug() << "Signal" << signal;
+    logger.log() << "Signal" << signal;
     Q_ASSERT(self);
     emit self->quitRequested();
 }

@@ -3,10 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationlistener.h"
+#include "logger.h"
 #include "mozillavpn.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QUrl>
 #include <QUrlQuery>
 #include <QtGui/qpa/qplatformnativeinterface.h>
@@ -17,7 +17,13 @@
 #import <UIKit/UIKit.h>
 #import <AuthenticationServices/ASWebAuthenticationSession.h>
 
-static ASWebAuthenticationSession *session = nullptr;
+namespace {
+
+Logger logger("AuthenticationListener");
+
+ASWebAuthenticationSession *session = nullptr;
+
+} // namespace
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
 @interface ContextProvider : NSObject <ASWebAuthenticationPresentationContextProviding> {
@@ -45,7 +51,7 @@ static ASWebAuthenticationSession *session = nullptr;
 
 void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
 {
-    qDebug() << "AuthenticationListener initialize" << session;
+    logger.log() << "AuthenticationListener initialize";
 
     query.addQueryItem("platform", "ios");
 
@@ -54,22 +60,23 @@ void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
 
     url.setQuery(query);
 
-    qDebug() << url;
     Q_ASSERT(!session);
     session = [[ASWebAuthenticationSession alloc] initWithURL:url.toNSURL() callbackURLScheme:@"mozilla-vpn" completionHandler:^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
         [session dealloc];
         session = nullptr;
 
         if (error) {
-            qDebug() << "Authentication failed:" << QString::fromNSString([error localizedDescription]);
-            qDebug() << "Suggestion:" << QString::fromNSString([error localizedRecoverySuggestion]);
-            qDebug() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
+            logger.log() << "Authentication failed:"
+                         << QString::fromNSString([error localizedDescription]);
+            logger.log() << "Suggestion:"
+                         << QString::fromNSString([error localizedRecoverySuggestion]);
+            logger.log() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
             emit failed(ErrorHandler::AuthenticationError);
             return;
         }
 
         QUrl callbackUrl = QUrl::fromNSURL(callbackURL);
-        qDebug() << "Authentication completed:" << callbackUrl;
+        logger.log() << "Authentication completed:" << callbackUrl.toString();
 
         Q_ASSERT(callbackUrl.hasQuery());
 
@@ -95,7 +102,7 @@ void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
         [session dealloc];
         session = nullptr;
 
-        qDebug() << "Authentication failed: session doesn't start.";
+        logger.log() << "Authentication failed: session doesn't start.";
         emit failed(ErrorHandler::BackendServiceError);
     }
 }
