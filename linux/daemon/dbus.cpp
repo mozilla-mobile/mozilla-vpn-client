@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-#include "../../wireguard-tools/contrib/embeddable-wg-library/wireguard.h"
+#include "../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h"
 
 #if defined(__cplusplus)
 }

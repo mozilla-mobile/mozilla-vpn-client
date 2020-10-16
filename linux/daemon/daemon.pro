@@ -24,7 +24,7 @@ SOURCES += \
         wgquickprocess.cpp \
         ../../src/logger.cpp \
         ../../src/signalhandler.cpp \
-        ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.c
+        ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
 
 HEADERS += \
         dbus.h \
@@ -32,7 +32,7 @@ HEADERS += \
         wgquickprocess.h \
         ../../src/logger.h \
         ../../src/signalhandler.h \
-        ../../wireguard-tools/contrib/embeddable-wg-library/wireguard.h
+        ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
 
 isEmpty(PREFIX) {
     PREFIX=/usr
