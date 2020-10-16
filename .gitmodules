@@ -1,9 +1,9 @@
-[submodule "wireguard-apple"]
-	path = wireguard-apple
-	url = https://git.zx2c4.com/wireguard-apple
 [submodule "i18n"]
 	path = i18n
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
 [submodule "3rdparty/wireguard-tools"]
 	path = 3rdparty/wireguard-tools
 	url = https://git.zx2c4.com/wireguard-tools
+[submodule "3rdparty/wireguard-apple"]
+	path = 3rdparty/wireguard-apple
+	url = https://git.zx2c4.com/wireguard-apple

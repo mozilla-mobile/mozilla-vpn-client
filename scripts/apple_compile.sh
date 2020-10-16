@@ -36,11 +36,11 @@ fi
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 printn Y "Retrieve the wireguard-go version... "
-(cd wireguard-apple/wireguard-go-bridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+(cd 3rdparty/wireguard-apple/wireguard-go-bridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
 print G "done."
 
 printn Y "Apply my monotonic patch... "
-cp macos/gobridge/goruntime-boottime-over-monotonic.diff wireguard-apple/wireguard-go-bridge || die "Failed"
+cp macos/gobridge/goruntime-boottime-over-monotonic.diff 3rdparty/wireguard-apple/wireguard-go-bridge || die "Failed"
 print G "done."
 
 printn Y "Cleaning the existing project... "

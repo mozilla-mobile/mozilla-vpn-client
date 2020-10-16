@@ -82,19 +82,19 @@ class XCodeprojPatcher
 
     [
       'macos/gobridge/wireguard-go-version.h',
-      'wireguard-apple/WireGuard/Shared/Keychain.swift',
-      'wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
-      'wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
-      'wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift',
-      'wireguard-apple/WireGuard/Shared/Model/NETunnelProviderProtocol+Extension.swift',
-      'wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration.swift',
-      'wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
-      'wireguard-apple/WireGuard/Shared/Model/Endpoint.swift',
-      'wireguard-apple/WireGuard/Shared/Model/String+ArrayConversion.swift',
-      'wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift',
-      'wireguard-apple/WireGuard/Shared/Model/DNSServer.swift',
-      'wireguard-apple/WireGuard/WireGuard/LocalizationHelper.swift',
-      'wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Keychain.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/NETunnelProviderProtocol+Extension.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/Endpoint.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/String+ArrayConversion.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/DNSServer.swift',
+      '3rdparty/wireguard-apple/WireGuard/WireGuard/LocalizationHelper.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
     ].each { |filename|
       file = group.new_file(filename)
       @target_main.add_file_references([file])
@@ -131,7 +131,7 @@ class XCodeprojPatcher
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
-      config.build_settings['INFOPLIST_FILE'] ||= 'wireguard-apple/WireGuard/WireGuardNetworkExtension/Info.plist'
+      config.build_settings['INFOPLIST_FILE'] ||= '3rdparty/wireguard-apple/WireGuard/WireGuardNetworkExtension/Info.plist'
       config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform + '/networkextension/MozillaVPNNetworkExtension.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
 
@@ -177,22 +177,22 @@ class XCodeprojPatcher
 
     group = @project.main_group.new_group('WireGuardExtension')
     [
-      'wireguard-apple/WireGuard/WireGuardNetworkExtension/PacketTunnelProvider.swift',
-      'wireguard-apple/WireGuard/WireGuardNetworkExtension/PacketTunnelSettingsGenerator.swift',
-      'wireguard-apple/WireGuard/WireGuardNetworkExtension/DNSResolver.swift',
-      'wireguard-apple/WireGuard/WireGuardNetworkExtension/ErrorNotifier.swift',
-      'wireguard-apple/WireGuard/Shared/Keychain.swift',
-      'wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
-      'wireguard-apple/WireGuard/Shared/Model/NETunnelProviderProtocol+Extension.swift',
-      'wireguard-apple/WireGuard/Shared/Model/String+ArrayConversion.swift',
-      'wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration.swift',
-      'wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
-      'wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
-      'wireguard-apple/WireGuard/Shared/Model/Endpoint.swift',
-      'wireguard-apple/WireGuard/Shared/Model/DNSServer.swift',
-      'wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift',
-      'wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift',
-      'wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
+      '3rdparty/wireguard-apple/WireGuard/WireGuardNetworkExtension/PacketTunnelProvider.swift',
+      '3rdparty/wireguard-apple/WireGuard/WireGuardNetworkExtension/PacketTunnelSettingsGenerator.swift',
+      '3rdparty/wireguard-apple/WireGuard/WireGuardNetworkExtension/DNSResolver.swift',
+      '3rdparty/wireguard-apple/WireGuard/WireGuardNetworkExtension/ErrorNotifier.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Keychain.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/NETunnelProviderProtocol+Extension.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/String+ArrayConversion.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/Endpoint.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/DNSServer.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift',
+      '3rdparty/wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
     ].each { |filename|
       file = group.new_file(filename)
       @target_extension.add_file_references([file])
@@ -245,7 +245,7 @@ class XCodeprojPatcher
   def setup_target_go
     target_go = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
 
-    target_go.build_working_directory = 'wireguard-apple/wireguard-go-bridge'
+    target_go.build_working_directory = '3rdparty/wireguard-apple/wireguard-go-bridge'
     target_go.build_tool_path = 'make'
     target_go.pass_build_settings_in_environment = '1'
     target_go.build_arguments_string = '$(ACTION)'
