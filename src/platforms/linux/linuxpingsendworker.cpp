@@ -60,13 +60,7 @@ void LinuxPingSendWorker::sendPing(const QString &destination)
     m_socketNotifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
     connect(m_socketNotifier,
             &QSocketNotifier::activated,
-            [this](
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-                QSocketDescriptor socket, QSocketNotifier::Type
-#else
-                int socket
-#endif
-            ) {
+            [this](QSocketDescriptor socket, QSocketNotifier::Type) {
                 socklen_t slen = 0;
                 unsigned char data[2048];
                 int rc = recvfrom(socket, data, sizeof data, 0, NULL, &slen);

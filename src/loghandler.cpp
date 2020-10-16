@@ -100,11 +100,7 @@ void LogHandler::prettyOutput(QTextStream &out, const LogHandler::Log &log)
         out << "(" << log.m_module << ") " << log.m_message;
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     out << Qt::endl;
-#else
-    out << endl;
-#endif
 }
 
 LogHandler::LogHandler()

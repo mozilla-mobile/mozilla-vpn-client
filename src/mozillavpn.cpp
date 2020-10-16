@@ -687,21 +687,7 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
 
     QTextStream out(&file);
 
-    out << "Mozilla VPN logs"
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        << Qt::endl
-#else
-        << endl
-#endif
-        << "================"
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        << Qt::endl
-        << Qt::endl
-#else
-        << endl
-        << endl
-#endif
-        ;
+    out << "Mozilla VPN logs" << Qt::endl << "================" << Qt::endl << Qt::endl;
 
     LogHandler *logHandler = LogHandler::instance();
     for (QVector<LogHandler::Log>::ConstIterator i = logHandler->logs().begin();
@@ -712,52 +698,34 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
 
     file.close();
 
-    MozillaVPN::instance()->controller()->getBackendLogs([callback = std::move(callback),
-                                                          logFile](const QString &logs) {
-        logger.log() << "Logs from the backend service received";
+    MozillaVPN::instance()->controller()->getBackendLogs(
+        [callback = std::move(callback), logFile](const QString &logs) {
+            logger.log() << "Logs from the backend service received";
 
-        QFile file(logFile);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-            logger.log() << "Failed to re-open the logfile";
-            return;
-        }
+            QFile file(logFile);
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+                logger.log() << "Failed to re-open the logfile";
+                return;
+            }
 
-        QTextStream out(&file);
+            QTextStream out(&file);
 
-        out
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            << Qt::endl
-            << Qt::endl
-#else
-            << endl
-            << endl
-#endif
-            << "Mozilla VPN backend logs"
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            << Qt::endl
-#else
-            << endl
-#endif
-            << "========================"
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            << Qt::endl
-            << Qt::endl
-#else
-            << endl
-            << endl
-#endif
-            ;
+            out << Qt::endl
+                << Qt::endl
+                << "Mozilla VPN backend logs" << Qt::endl
+                << "========================" << Qt::endl
+                << Qt::endl;
 
-        if (!logs.isEmpty()) {
-            out << logs;
-        } else {
-            out << "No logs from the backend.";
-        }
+            if (!logs.isEmpty()) {
+                out << logs;
+            } else {
+                out << "No logs from the backend.";
+            }
 
-        file.close();
+            file.close();
 
-        callback(logFile);
-    });
+            callback(logFile);
+        });
 
     return true;
 }

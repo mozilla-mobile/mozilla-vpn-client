@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
-
     QIcon icon("://ui/resources/logo-dock.png");
 
     app.setWindowIcon(icon);
