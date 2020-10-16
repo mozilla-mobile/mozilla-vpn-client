@@ -66,7 +66,6 @@
         <file>ui/views/ViewInitialize.qml</file>
         <file>ui/views/ViewOnboarding.qml</file>
         <file>ui/views/ViewUpdate.qml</file>
-        <file>ui/resources/logo.png</file>
         <file>ui/resources/flags/AC.png</file>
         <file>ui/resources/flags/AD.png</file>
         <file>ui/resources/flags/AE.png</file>
@@ -365,5 +364,7 @@
         <file>ui/resources/warning-white.svg</file>
         <file>ui/resources/connection-info-dark.svg</file>
         <file>ui/resources/down.svg</file>
+        <file>ui/resources/logo-dock.png</file>
+        <file>ui/resources/logo-tray.svg</file>
     </qresource>
 </RCC>

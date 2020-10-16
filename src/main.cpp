@@ -43,7 +43,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    QIcon icon("://ui/resources/logo.png");
+
+    QIcon icon("://ui/resources/logo-dock.png");
+
     app.setWindowIcon(icon);
 
     QCommandLineParser parser;
@@ -204,7 +206,9 @@ int main(int argc, char *argv[])
     engine.load(url);
 
     // System tray icon and messages.
-    SystemTrayHandler systemTrayHandler(icon, &app);
+    QIcon trayIcon("://ui/resources/logo-tray.svg");
+    trayIcon.setIsMask(true);
+    SystemTrayHandler systemTrayHandler(trayIcon, &app);
     systemTrayHandler.show();
 
     QObject::connect(&systemTrayHandler, &QSystemTrayIcon::activated, [engine = &engine]() {
