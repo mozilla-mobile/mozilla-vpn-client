@@ -96,7 +96,7 @@ bool LinuxDependencies::checkDependencies()
     }
 
     if (!checkDaemonVersion()) {
-        showAlert("mozillavpn-daemon needs to be updated or restared.");
+        showAlert("mozillavpn-daemon needs to be updated or restarted.");
         return false;
     }
 
