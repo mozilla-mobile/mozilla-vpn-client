@@ -36,7 +36,14 @@ mozillavpn-daemon (see the code in linux/daemon) via DBus.
 
 ### MacOS
 
-On macOS, we strongly suggest to compile Qt5 statically. See: ./scripts/qt5\_compile.sh
+On macOS, we strongly suggest to compile Qt5 statically. To do that, use:
+```
+curl https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz > qt.tar.xz
+tar -jvxf qt.tar.xz
+mv qt-everywhere-src-5.15.1 qt
+bash scripts/qt5_compile.sh `pwd`/qt qt
+export QT_MACOS_BIN=`pwd`/qt/qt/bin
+```
 
 The procedure to compile MozillaVPN for macOS is the following:
 
