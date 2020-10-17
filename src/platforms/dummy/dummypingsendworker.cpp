@@ -11,7 +11,7 @@ constexpr uint32_t SHORT_PING_TIMER_MSEC = 200;
 constexpr uint32_t LONG_PING_TIMER_MSEC = 6000;
 
 namespace {
-Logger logger("DummyPingSendWorker");
+Logger logger(LOG_NETWORKING, "DummyPingSendWorker");
 }
 
 DummyPingSendWorker::DummyPingSendWorker(State state) : m_state(state) {}

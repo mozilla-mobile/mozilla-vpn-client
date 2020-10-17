@@ -15,7 +15,7 @@ constexpr const char *WG_QUICK = "wg-quick";
 
 namespace {
 
-Logger logger("LinuxDependencies");
+Logger logger(LOG_LINUX, "LinuxDependencies");
 
 void showAlert(const QString &message)
 {

@@ -9,7 +9,7 @@
 #include "servercountrymodel.h"
 
 namespace {
-Logger logger("ServersFetcher");
+Logger logger(LOG_NETWORKING, "ServersFetcher");
 }
 
 void ServersFetcher::run(MozillaVPN *vpn)

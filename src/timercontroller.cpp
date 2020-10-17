@@ -6,7 +6,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger("TimerController");
+Logger logger(LOG_CONTROLLER, "TimerController");
 }
 
 TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)

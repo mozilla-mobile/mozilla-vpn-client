@@ -14,7 +14,7 @@
 #include <QValueAxis>
 
 namespace {
-Logger logger("ConnectionDataHolder");
+Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 }
 
 constexpr int MAX_POINTS = 30;

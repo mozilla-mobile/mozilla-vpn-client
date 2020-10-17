@@ -15,7 +15,7 @@
 #include <QUrl>
 
 namespace {
-Logger logger("NetworkRequest");
+Logger logger(LOG_NETWORKING, "NetworkRequest");
 }
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)

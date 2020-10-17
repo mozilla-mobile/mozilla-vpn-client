@@ -11,7 +11,7 @@
 #include <QCoreApplication>
 
 namespace {
-Logger logger("main");
+Logger logger(LOG_LINUX, "main");
 }
 
 int main(int argc, char *argv[])

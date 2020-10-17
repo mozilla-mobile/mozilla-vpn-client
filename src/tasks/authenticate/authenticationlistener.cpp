@@ -13,7 +13,7 @@
 
 namespace {
 
-Logger logger("AuthenticationListener");
+Logger logger(LOG_MAIN, "AuthenticationListener");
 
 int choosePort(QVector<quint16> triedPorts)
 {

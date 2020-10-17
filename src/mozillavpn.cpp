@@ -44,7 +44,7 @@ constexpr const uint32_t HIDE_ALERT_SEC = 4;
 static MozillaVPN *s_instance = nullptr;
 
 namespace {
-Logger logger("MozillaVPN");
+Logger logger(LOG_MAIN, "MozillaVPN");
 }
 
 // static

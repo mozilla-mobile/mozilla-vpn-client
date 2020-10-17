@@ -9,7 +9,7 @@
 #include <QRandomGenerator>
 
 namespace {
-Logger logger("DummyController");
+Logger logger(LOG_CONTROLLER, "DummyController");
 }
 
 void DummyController::activate(const Server &server,

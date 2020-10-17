@@ -8,7 +8,7 @@
 #include "networkrequest.h"
 
 namespace {
-Logger logger("CaptivePortalRequest");
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
 }
 
 CaptivePortalRequest::CaptivePortalRequest(QObject *parent) : QObject(parent)

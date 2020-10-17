@@ -12,7 +12,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger("DeviceModel");
+Logger logger(LOG_MODEL, "DeviceModel");
 }
 
 void DeviceModel::fromJson(const QByteArray &s)
