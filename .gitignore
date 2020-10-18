@@ -29,3 +29,4 @@ xcode.xconfig
 .idea/
 *.ts
 qt/
+build/
