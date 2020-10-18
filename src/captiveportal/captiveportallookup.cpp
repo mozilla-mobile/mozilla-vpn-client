@@ -9,7 +9,7 @@
 #include <QHostAddress>
 
 namespace {
-Logger logger("CaptivePortalLookup");
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
 }
 
 CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)

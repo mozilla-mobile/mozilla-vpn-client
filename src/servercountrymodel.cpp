@@ -14,7 +14,7 @@
 #include <QRandomGenerator>
 
 namespace {
-Logger logger("ServerCountryModel");
+Logger logger(LOG_MODEL, "ServerCountryModel");
 }
 
 bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)

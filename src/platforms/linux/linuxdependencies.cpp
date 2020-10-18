@@ -15,7 +15,7 @@ constexpr const char *WG_QUICK = "wg-quick";
 
 namespace {
 
-Logger logger("LinuxDependencies");
+Logger logger(LOG_LINUX, "LinuxDependencies");
 
 void showAlert(const QString &message)
 {
@@ -96,7 +96,7 @@ bool LinuxDependencies::checkDependencies()
     }
 
     if (!checkDaemonVersion()) {
-        showAlert("mozillavpn-daemon needs to be updated or restared.");
+        showAlert("mozillavpn-daemon needs to be updated or restarted.");
         return false;
     }
 

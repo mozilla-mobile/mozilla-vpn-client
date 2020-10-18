@@ -9,7 +9,7 @@
 #include "mozillavpn.h"
 
 namespace {
-Logger logger("CaptivePortalDetection");
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 }
 
 CaptivePortalDetection::CaptivePortalDetection()

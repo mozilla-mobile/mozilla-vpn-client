@@ -8,7 +8,7 @@
 #include "settingsholder.h"
 
 namespace {
-Logger logger("ServerData");
+Logger logger(LOG_MODEL, "ServerData");
 }
 
 bool ServerData::fromSettings(SettingsHolder &settingsHolder)

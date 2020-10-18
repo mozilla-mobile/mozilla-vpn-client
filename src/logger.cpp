@@ -1,7 +1,9 @@
 #include "logger.h"
 #include "loghandler.h"
 
-Logger::Logger(const QString &module) : m_module(module) {}
+Logger::Logger(const QString &module, const QString &className)
+    : m_module(module), m_className(className)
+{}
 
 Logger::Log Logger::log()
 {
@@ -12,7 +14,7 @@ Logger::Log::Log(Logger *logger) : m_logger(logger), m_ts(&m_buffer, QIODevice::
 
 Logger::Log::~Log()
 {
-    LogHandler::messageHandler(m_logger->module(), m_buffer.trimmed());
+    LogHandler::messageHandler(m_logger->module(), m_logger->className(), m_buffer.trimmed());
 }
 
 #define CREATE_LOG_OP_REF(x) \

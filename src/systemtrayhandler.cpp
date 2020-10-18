@@ -9,7 +9,7 @@
 #include <QMenu>
 
 namespace {
-Logger logger("SystemTrayHandler");
+Logger logger(LOG_MAIN, "SystemTrayHandler");
 }
 
 SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)

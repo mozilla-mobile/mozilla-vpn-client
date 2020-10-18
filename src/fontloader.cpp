@@ -9,7 +9,7 @@
 #include <QFontDatabase>
 
 namespace {
-Logger logger("FontLoader");
+Logger logger(LOG_MAIN, "FontLoader");
 }
 
 // static

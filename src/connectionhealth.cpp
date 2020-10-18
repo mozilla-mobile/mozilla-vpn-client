@@ -18,7 +18,7 @@ constexpr uint32_t TIMEOUT_NOSIGNAL_SEC = 30;
 constexpr uint32_t WAITING_TIMEOUT_SEC = 2;
 
 namespace {
-Logger logger("ConnectionHealth");
+Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
 
 ConnectionHealth::ConnectionHealth()

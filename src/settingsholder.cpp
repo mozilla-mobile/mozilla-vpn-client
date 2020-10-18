@@ -34,7 +34,7 @@ constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 
 namespace {
-Logger logger("SettingsHolder");
+Logger logger(LOG_MAIN, "SettingsHolder");
 }
 
 const QSettings::Format MozFormat = QSettings::registerFormat("moz",

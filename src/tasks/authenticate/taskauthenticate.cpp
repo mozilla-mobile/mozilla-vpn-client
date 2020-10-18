@@ -25,7 +25,7 @@
 
 namespace {
 
-Logger logger("TaskAuthenticate");
+Logger logger(LOG_MAIN, "TaskAuthenticate");
 
 QByteArray generatePkceCodeVerifier()
 {

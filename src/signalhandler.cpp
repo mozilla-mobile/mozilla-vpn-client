@@ -8,7 +8,8 @@
 
 namespace {
 
-Logger logger("SignalHandler");
+Logger logger(LOG_MAIN, "SignalHandler");
+
 SignalHandler *self = nullptr;
 
 } // namespace

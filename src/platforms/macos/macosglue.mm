@@ -180,7 +180,7 @@ EXPORT bool key_from_hex(uint8_t key[WG_KEY_LEN], const char *hex)
 
 #ifndef MACOS_EXTENSION
 namespace {
-Logger logger("MacOSGlue");
+Logger logger(LOG_MACOS, "MacOSGlue");
 }
 #endif
 

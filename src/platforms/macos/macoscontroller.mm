@@ -16,7 +16,7 @@
 
 namespace {
 
-Logger logger("MacOSController");
+Logger logger(LOG_CONTROLLER, "MacOSController");
 
 // Our Swift singleton.
 MacOSControllerImpl *impl = nullptr;

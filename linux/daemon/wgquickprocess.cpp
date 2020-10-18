@@ -11,7 +11,7 @@
 constexpr const char *WG_QUICK = "wg-quick";
 
 namespace {
-Logger logger("WgQuickProcess");
+Logger logger(LOG_LINUX, "WgQuickProcess");
 }
 
 WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {}

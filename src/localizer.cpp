@@ -11,7 +11,7 @@
 #include <QLocale>
 
 namespace {
-Logger logger("Localizer");
+Logger logger(LOG_MAIN, "Localizer");
 }
 
 void Localizer::initialize(const QString& code)

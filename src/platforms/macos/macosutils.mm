@@ -9,7 +9,7 @@
 #import <ServiceManagement/ServiceManagement.h>
 
 namespace {
-Logger logger("MacOSUtils");
+Logger logger(LOG_MACOS, "MacOSUtils");
 }
 
 // static

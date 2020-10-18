@@ -11,7 +11,7 @@
 #include "serversfetcher.h"
 
 namespace {
-Logger logger("TaskAccountAndServers");
+Logger logger(LOG_MAIN, "TaskAccountAndServers");
 }
 
 void TaskAccountAndServers::run(MozillaVPN *vpn)

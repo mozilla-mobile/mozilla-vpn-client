@@ -26,7 +26,7 @@
 constexpr const uint32_t TIMER_MSEC = 1000;
 
 namespace {
-Logger logger("Controller");
+Logger logger(LOG_CONTROLLER, "Controller");
 }
 
 Controller::Controller()

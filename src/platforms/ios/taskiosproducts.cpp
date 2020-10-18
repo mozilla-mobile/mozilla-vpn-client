@@ -13,7 +13,7 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger("TaskIOSProducts");
+Logger logger(LOG_IAP, "TaskIOSProducts");
 
 }
 void TaskIOSProducts::run(MozillaVPN* vpn)

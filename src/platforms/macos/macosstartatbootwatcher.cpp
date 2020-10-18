@@ -7,7 +7,7 @@
 #include "macosutils.h"
 
 namespace {
-Logger logger("MacOSStartAtBootWatcher");
+Logger logger(LOG_MACOS, "MacOSStartAtBootWatcher");
 }
 
 MacOSStartAtBootWatcher::MacOSStartAtBootWatcher(bool startAtBoot)

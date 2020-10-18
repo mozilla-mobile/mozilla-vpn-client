@@ -10,7 +10,7 @@
 #include <QtPurchasing>
 
 namespace {
-Logger logger("IAPHandler");
+Logger logger(LOG_IAP, "IAPHandler");
 }
 
 void IAPHandler::start()

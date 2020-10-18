@@ -13,7 +13,7 @@
 constexpr int CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC = 2000;
 
 namespace {
-Logger logger("CaptivePortalActivator");
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalActivator");
 }
 
 CaptivePortalActivator::CaptivePortalActivator(QObject *parent) : QObject(parent) {}

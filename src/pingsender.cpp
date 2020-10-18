@@ -19,7 +19,7 @@
 #endif
 
 namespace {
-Logger logger("PingSender");
+Logger logger(LOG_NETWORKING, "PingSender");
 }
 
 PingSender::PingSender(QObject *parent) : QObject(parent)

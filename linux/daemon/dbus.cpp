@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 namespace {
-Logger logger("DBus");
+Logger logger(LOG_LINUX, "DBus");
 }
 
 DBus::DBus(QObject *parent) : QObject(parent) {}

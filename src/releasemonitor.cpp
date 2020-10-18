@@ -16,7 +16,7 @@
 constexpr uint32_t RELEASE_MONITOR_SEC = 21600;
 
 namespace {
-Logger logger("ReleaseMonitor");
+Logger logger(LOG_MAIN, "ReleaseMonitor");
 }
 
 void ReleaseMonitor::runSoon()

@@ -31,9 +31,11 @@ void LogHandler::messageQTHandler(QtMsgType type,
 }
 
 // static
-void LogHandler::messageHandler(const QString &module, const QString &message)
+void LogHandler::messageHandler(const QString &module,
+                                const QString &className,
+                                const QString &message)
 {
-    maybeCreate()->addLog(Log(module, message));
+    maybeCreate()->addLog(Log(module, className, message));
 }
 
 // static
@@ -97,7 +99,7 @@ void LogHandler::prettyOutput(QTextStream &out, const LogHandler::Log &log)
             out << ")";
         }
     } else {
-        out << "(" << log.m_module << ") " << log.m_message;
+        out << "(" << log.m_module << " - " << log.m_className << ") " << log.m_message;
     }
 
     out << Qt::endl;

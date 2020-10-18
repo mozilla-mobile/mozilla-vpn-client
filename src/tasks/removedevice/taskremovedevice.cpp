@@ -10,7 +10,7 @@
 #include "user.h"
 
 namespace {
-Logger logger("TaskRemoveDevice");
+Logger logger(LOG_MAIN, "TaskRemoveDevice");
 }
 
 TaskRemoveDevice::TaskRemoveDevice(const QString &deviceName)
