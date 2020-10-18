@@ -29,6 +29,8 @@ public:
              const QString &serverPublicKey,
              const QString &serverIpv4AddrIn,
              const QString &serverIpv6AddrIn,
+             const QString &captivePortalIpv4Addresses,
+             const QString &captivePortalIpv6Addresses,
              int serverPort,
              bool ipv6Enabled,
              bool localNetworkAccess);

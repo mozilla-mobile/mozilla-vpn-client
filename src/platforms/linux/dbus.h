@@ -6,6 +6,7 @@
 #define DBUS_H
 
 #include "dbus_interface.h"
+#include "../captiveportal/captiveportal.h"
 
 #include <QObject>
 
@@ -22,7 +23,7 @@ public:
     DBus(QObject *parent);
 
     QDBusPendingCallWatcher *version();
-    QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys);
+    QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys, const CaptivePortal &captivePortal);
     QDBusPendingCallWatcher *deactivate();
     QDBusPendingCallWatcher *status();
     QDBusPendingCallWatcher *logs();

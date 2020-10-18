@@ -44,6 +44,8 @@ private:
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
                     const QString &serverIpv6AddrIn,
+                    const QString &captivePortalIpv4Addresses,
+                    const QString &captivePortalIpv6Addresses,
                     int serverPort,
                     bool ipv6Enabled,
                     bool localNetworkAccess);
@@ -60,6 +62,8 @@ private:
     QString m_lastServerPublicKey;
     QString m_lastServerIpv4AddrIn;
     QString m_lastServerIpv6AddrIn;
+    QString m_lastCaptivePortalIpv4Addresses;
+    QString m_lastCaptivePortalIpv6Addresses;
     int m_lastServerPort = 0;
     bool m_lastIpv6Enabled = false;
     bool m_lastLocalNetworkAccess = false;

@@ -73,7 +73,7 @@ void LinuxController::activate(const Server &server,
     Q_UNUSED(forSwitching);
 
     logger.log() << "LinuxController activated";
-    monitorWatcher(m_dbus->activate(server, device, keys));
+    monitorWatcher(m_dbus->activate(server, device, keys, captivePortal));
 }
 
 void LinuxController::deactivate(bool forSwitching)

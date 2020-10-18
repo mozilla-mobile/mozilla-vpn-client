@@ -104,12 +104,14 @@ bool DBus::activate(const QString &jsonConfig)
     GETVALUESTR("serverPublicKey", m_lastServerPublicKey);
     GETVALUESTR("serverIpv4AddrIn", m_lastServerIpv4AddrIn);
     GETVALUESTR("serverIpv6AddrIn", m_lastServerIpv6AddrIn);
+    GETVALUESTR("captivePortalIpv4Addresses", m_lastCaptivePortalIpv4Addresses);
+    GETVALUESTR("captivePortalIpv6Addresses", m_lastCaptivePortalIpv6Addresses);
 
 #undef GETVALUESTR
 
 #define GETVALUEINT(name, where) \
     if (!obj.contains(name)) { \
-        logger.log() << name << " missing in the jsoConfig input"; \
+        logger.log() << name << " missing in the jsonConfig input"; \
         return false; \
     } \
     { \
@@ -127,7 +129,7 @@ bool DBus::activate(const QString &jsonConfig)
 
 #define GETVALUEBOOL(name, where) \
     if (!obj.contains(name)) { \
-        logger.log() << name << " missing in the jsoConfig input"; \
+        logger.log() << name << " missing in the jsonConfig input"; \
         return false; \
     } \
     { \
@@ -153,6 +155,8 @@ bool DBus::activate(const QString &jsonConfig)
                              m_lastServerPublicKey,
                              m_lastServerIpv4AddrIn,
                              m_lastServerIpv6AddrIn,
+                             m_lastCaptivePortalIpv4Addresses,
+                             m_lastCaptivePortalIpv6Addresses,
                              m_lastServerPort,
                              m_lastIpv6Enabled,
                              m_lastLocalNetworkAccess);
@@ -191,6 +195,8 @@ bool DBus::deactivate()
                              m_lastServerPublicKey,
                              m_lastServerIpv4AddrIn,
                              m_lastServerIpv6AddrIn,
+                             m_lastCaptivePortalIpv4Addresses,
+                             m_lastCaptivePortalIpv6Addresses,
                              m_lastServerPort,
                              m_lastIpv6Enabled,
                              m_lastLocalNetworkAccess);
@@ -262,6 +268,8 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
                       const QString &serverIpv6AddrIn,
+                      const QString &captivePortalIpv4Addresses,
+                      const QString &captivePortalIpv6Addresses,
                       int serverPort,
                       bool ipv6Enabled,
                       bool localNetworkAccess)
@@ -276,6 +284,8 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  serverPublicKey,
                  serverIpv4AddrIn,
                  serverIpv6AddrIn,
+                 captivePortalIpv4Addresses,
+                 captivePortalIpv6Addresses,
                  serverPort,
                  ipv6Enabled,
                  localNetworkAccess);

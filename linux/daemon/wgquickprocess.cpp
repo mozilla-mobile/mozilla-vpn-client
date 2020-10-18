@@ -24,6 +24,8 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &serverPublicKey,
                          const QString &serverIpv4AddrIn,
                          const QString &serverIpv6AddrIn,
+                         const QString &captivePortalIpv4Addresses,
+                         const QString &captivePortalIpv6Addresses,
                          int serverPort,
                          bool ipv6Enabled,
                          bool localNetworkAccess)
@@ -65,6 +67,16 @@ void WgQuickProcess::run(const QString &privateKey,
     */
 
     content.append("\nAllowedIPs = 0.0.0.0/0");
+
+    if (captivePortalIpv4Addresses.length() > 0) {
+        content.append(", ");
+        content.append(captivePortalIpv4Addresses.toUtf8());
+    }
+    if (captivePortalIpv6Addresses.length() > 0) {
+        content.append(", ");
+        content.append(captivePortalIpv6Addresses.toUtf8());
+    }
+
 
     if (ipv6Enabled) {
         content.append(",::0");

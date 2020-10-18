@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
+#include "../captiveportal/captiveportal.h"
 
 #include <QDBusPendingCall>
 #include <QDBusPendingCallWatcher>
@@ -43,7 +44,7 @@ QDBusPendingCallWatcher *DBus::version()
     return watcher;
 }
 
-QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *device, const Keys *keys)
+QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *device, const Keys *keys, const CaptivePortal &captivePortal)
 {
     QJsonObject json;
     json.insert("privateKey", QJsonValue(keys->privateKey()));
@@ -54,6 +55,8 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *devi
     json.insert("serverPublicKey", QJsonValue(server.publicKey()));
     json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
     json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
+    json.insert("captivePortalIpv4Addresses", QJsonValue(captivePortal.ipv4Addresses().join(", ")));
+    json.insert("captivePortalIpv6Addresses", QJsonValue(captivePortal.ipv6Addresses().join(", ")));
     json.insert("serverPort", QJsonValue((double) server.choosePort()));
     json.insert("ipv6Enabled", QJsonValue(MozillaVPN::instance()->settingsHolder()->ipv6Enabled()));
     json.insert("localNetworkAccess",
