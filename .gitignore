@@ -28,3 +28,4 @@ xcode.xconfig
 .gradle/
 .idea/
 *.ts
+qt/
