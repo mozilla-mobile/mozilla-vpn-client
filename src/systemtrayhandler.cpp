@@ -52,6 +52,6 @@ void SystemTrayHandler::controllerStateChanged()
 
 void SystemTrayHandler::captivePortalNotificationRequested()
 {
-    logger.log() << "Capitve portal notification shown";
+    logger.log() << "Captive portal notification shown";
     showMessage(tr("Captive portal detected!"), tr("TODO"), NoIcon, 2000);
 }
