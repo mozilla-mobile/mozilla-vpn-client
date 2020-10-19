@@ -8,7 +8,6 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "servercountrymodel.h"
-#include "serversfetcher.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskAccountAndServers");
@@ -18,38 +17,47 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
 {
     // Account fetch and servers fetch run in parallel.
 
-    NetworkRequest *request = NetworkRequest::createForAccount(vpn);
+    // Account fetch
+    {
+        NetworkRequest *request = NetworkRequest::createForAccount(vpn);
 
-    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        logger.log() << "Account request failed" << error;
-        vpn->errorHandle(ErrorHandler::toErrorType(error));
-        m_accountCompleted = true;
-        maybeCompleted();
-    });
+        connect(request,
+                &NetworkRequest::requestFailed,
+                [this, vpn](QNetworkReply::NetworkError error) {
+                    logger.log() << "Account request failed" << error;
+                    vpn->errorHandle(ErrorHandler::toErrorType(error));
+                    m_accountCompleted = true;
+                    maybeCompleted();
+                });
 
-    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
-        logger.log() << "Account request completed";
-        vpn->accountChecked(data);
-        m_accountCompleted = true;
-        maybeCompleted();
-    });
+        connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
+            logger.log() << "Account request completed";
+            vpn->accountChecked(data);
+            m_accountCompleted = true;
+            maybeCompleted();
+        });
+    }
 
-    m_fetcher = new ServersFetcher(this);
+    // Server list fetch
+    {
+        NetworkRequest *request = NetworkRequest::createForServers(vpn);
 
-    connect(m_fetcher, &ServersFetcher::failed, [this, vpn](QNetworkReply::NetworkError error) {
-        logger.log() << "Failed to fetch servers" << error;
-        vpn->errorHandle(ErrorHandler::toErrorType(error));
-        m_serversCompleted = true;
-        maybeCompleted();
-    });
+        connect(request,
+                &NetworkRequest::requestFailed,
+                [this, vpn](QNetworkReply::NetworkError error) {
+                    logger.log() << "Failed to retrieve servers";
+                    vpn->errorHandle(ErrorHandler::toErrorType(error));
+                    m_serversCompleted = true;
+                    maybeCompleted();
+                });
 
-    connect(m_fetcher, &ServersFetcher::completed, [this, vpn](const QByteArray &serverData) {
-        vpn->serversFetched(serverData);
-        m_serversCompleted = true;
-        maybeCompleted();
-    });
-
-    m_fetcher->run(vpn);
+        connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
+            logger.log() << "Servers obtained";
+            vpn->serversFetched(data);
+            m_serversCompleted = true;
+            maybeCompleted();
+        });
+    }
 }
 
 void TaskAccountAndServers::maybeCompleted()

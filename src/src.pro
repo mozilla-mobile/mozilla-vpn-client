@@ -57,7 +57,6 @@ SOURCES += \
         servercountry.cpp \
         servercountrymodel.cpp \
         serverdata.cpp \
-        serversfetcher.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
@@ -99,7 +98,6 @@ HEADERS += \
         servercountry.h \
         servercountrymodel.h \
         serverdata.h \
-        serversfetcher.h \
         settingsholder.h \
         signalhandler.h \
         systemtrayhandler.h \
