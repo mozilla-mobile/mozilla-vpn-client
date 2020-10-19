@@ -69,7 +69,6 @@ void LinuxController::activate(const Server &server,
                                const CaptivePortal &captivePortal,
                                bool forSwitching)
 {
-    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
     logger.log() << "LinuxController activated";
