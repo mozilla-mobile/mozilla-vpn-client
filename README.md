@@ -54,7 +54,24 @@ The procedure to compile MozillaVPN for macOS is the following:
   $ git submodule update --remote
 3. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
   $ ./scripts/apple\_compile.sh macos
-4. Open Xcode and run/test/archive/ship the app
+4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+  $ cp xcode.xconfig.template xcode.xconfig
+5. Modify xcode.xconfig to something like:
+```
+DEVELOPMENT_TEAM = 43AQ936H96
+
+# MacOS configuration
+GROUP_ID_MACOS = <>
+APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
+NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
+LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login
+
+# IOS configuration
+GROUP_ID_IOS = <>
+APP_ID_IOS = <>
+NETEXT_ID_IOS = <>
+```
+6. Open Xcode and run/test/archive/ship the app
 
 ### IOS
 
@@ -64,9 +81,26 @@ The IOS procedure is similar to the macOS one:
 2. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
-3. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
+4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+  $ cp xcode.xconfig.template xcode.xconfig
+5. Modify xcode.xconfig to something like:
+```
+DEVELOPMENT_TEAM = 43AQ936H96
+
+# MacOS configuration
+GROUP_ID_MACOS = <>
+APP_ID_IOS = <>
+NETEXT_ID_IOS = <>
+LOGIN_ID_IOS = <>
+
+# IOS configuration
+GROUP_ID_IOS = <>
+APP_ID_IOS = org.mozilla.ios.FirefoxVPN
+NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
+```
+5. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
   $ ./scripts/apple\_compile.sh ios
-4. Open Xcode and run/test/archive/ship the app
+6. Open Xcode and run/test/archive/ship the app
 
 ### Other platforms
 
