@@ -19,7 +19,7 @@ Window {
     minimumHeight: height
     minimumWidth: width
     //% "Mozilla VPN"
-    title: qsTrId("productName")
+    title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {
         window.hide();

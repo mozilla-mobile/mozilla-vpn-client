@@ -115,7 +115,7 @@ Item {
             color: Theme.white
             //% "IP: %1"
             //: The Current Ip adress
-            text: qsTrId("ip").arg(VPNConnectionData.ipAddress)
+            text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
         }
 
         Row {
@@ -127,7 +127,7 @@ Item {
             VPNGraphLegendMarker {
                 //% "Download"
                 //: the current download speed. The speed is shown at the next line.
-                markerLabel: qsTrId("download")
+                markerLabel: qsTrId("vpn.connectionInfo.download")
                 rectColor: "#EE3389"
                 markerData: VPNConnectionData.rxBytes
             }
@@ -135,7 +135,7 @@ Item {
             VPNGraphLegendMarker {
                 //% "Upload"
                 //: the current upload speed
-                markerLabel: qsTrId("upload")
+                markerLabel: qsTrId("vpn.connectionInfo.upload")
                 rectColor: "#F68953"
                 markerData: VPNConnectionData.txBytes
             }
@@ -153,7 +153,7 @@ Item {
             anchors.topMargin: 8
             anchors.leftMargin: 8
             //% "Close"
-            accessibleName: qsTrId("close")
+            accessibleName: qsTrId("vpn.connectionInfo.close")
 
             Image {
                 anchors.centerIn: backButton

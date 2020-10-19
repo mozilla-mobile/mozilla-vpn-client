@@ -16,7 +16,7 @@ Item {
         id: headline
 
         //% "Quick access"
-        text: qsTrId("quickAccess")
+        text: qsTrId("vpn.postAuthentication..quickAccess")
         anchors.top: parent.top
         anchors.topMargin: 32
     }
@@ -25,7 +25,7 @@ Item {
         id: logoSubtitle
 
         //% "You can quickly access Mozilla VPN from your status bar."
-        text: qsTrId("statusBarIntro")
+        text: qsTrId("vpn.postAuthentication.statusBarIntro")
         x: 169
         y: 255
         anchors.top: headline.bottom
@@ -50,7 +50,7 @@ Item {
             anchors.centerIn: gradientText
             anchors.fill: gradientText
             //% "WIP"
-            text: qsTrId("wip")
+            text: qsTrId("vpn.postAuthentication.wip")
             visible: false
         }
 
@@ -90,7 +90,7 @@ Item {
     VPNButton {
         width: 282
         //% "Continue"
-        text: qsTrId("continue")
+        text: qsTrId("vpn.postAuthentication.continue")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

@@ -81,14 +81,14 @@ Rectangle {
             anchors.top: alertImg.bottom
             anchors.topMargin: 24
             //% "Remove a device"
-            text: qsTrId("doDeviceRemoval")
+            text: qsTrId("vpn.devices.doDeviceRemoval")
         }
 
         VPNSubtitle {
             anchors.top: alertHeadline.bottom
             anchors.topMargin: 8
             //% "You've reached your limit. To install the VPN on this device, you'll need to remove one."
-            text: qsTrId("maxDevicesReached")
+            text: qsTrId("vpn.devices.maxDevicesReached")
         }
 
     }

@@ -16,16 +16,16 @@ Row {
         if (markerData < 128000)
             //% "Kbps"
             //: Kilobits per Secound
-            return qsTrId("kbps");
+            return qsTrId("vpn.connectionInfo.kbps");
 
         if (markerData < 1.28e+08)
             //% "Mbps"
             //: Megabits per Second
-            return qsTrId("mbps");
+            return qsTrId("vpn.connectioInfo.mbps");
 
         //% "Gbps"
         //: Gigabits per Second
-        return qsTrId("gbps");
+        return qsTrId("vpn.connectionInfo.gbps");
     }
 
     function roundValue(value) {

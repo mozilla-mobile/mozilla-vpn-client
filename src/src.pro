@@ -274,7 +274,7 @@ else{
     TRANSLATIONS += \
         ../translations/mozillavpn_en.ts \
 
-    ts.commands += lupdate $$PWD -ts $$PWD/../translations/mozillavpn_en.ts
+    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/mozillavpn_en.ts
     ts.CONFIG += no_check_exist
     ts.output = $$PWD/../translations/mozillavpn_en.ts
     ts.input = .

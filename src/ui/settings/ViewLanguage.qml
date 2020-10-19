@@ -17,7 +17,7 @@ Item {
         id: menu
 
         //% "Language"
-        title: qsTrId("language")
+        title: qsTrId("vpn.settings.language")
         isSettingsView: true
     }
 
@@ -42,7 +42,7 @@ Item {
             width: parent.width
             //% "System"
             //: The system language
-            text: qsTrId("system")
+            text: qsTrId("vpn.settings.system")
             Accessible.role: Accessible.Heading
         }
 
@@ -60,7 +60,7 @@ Item {
             width: parent.width - defaultMargin * 2
             activeFocusOnTab: true
             //% "%1 %2"
-            accessibleName: qsTrId("languageAccessibleName")
+            accessibleName: qsTrId("vpn.settings.languageAccessibleName")
                 .arg(VPNLocalizer.systemLanguage)
                 .arg(VPNLocalizer.systemLocalizedLanguage)
 
@@ -84,7 +84,7 @@ Item {
             width: parent.width
             //% "Additional"
             //: List of the additional languages
-            text: qsTrId("additional")
+            text: qsTrId("vpn.settings.additional")
             Accessible.role: Accessible.Heading
         }
 
@@ -112,7 +112,7 @@ Item {
                 anchors.left: parent.left
                 anchors.topMargin: Theme.windowMargin
                 //% "%1 %2"
-                accessibleName: qsTrId("languageAccessibleName")
+                accessibleName: qsTrId("vpn.settings.languageAccessibleName")
                     .arg(language)
                     .arg(localizedLanguage)
 

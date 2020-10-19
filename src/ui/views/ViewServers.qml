@@ -13,7 +13,7 @@ Item {
     VPNMenu {
         id: menu
 
-        title: qsTrId("selectLocation")
+        title: qsTrId("vpn.servers.selectLocation")
     }
 
     ButtonGroup {

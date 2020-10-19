@@ -15,7 +15,7 @@ Logger logger(LOG_MAIN, "SystemTrayHandler");
 SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
     : QSystemTrayIcon(icon, parent)
 {   //% "Quit"
-    m_menu.addAction(qtTrId("systrayQuit"), this, &SystemTrayHandler::quit);
+    m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
     setContextMenu(&m_menu);
 }
 
@@ -30,18 +30,18 @@ void SystemTrayHandler::controllerStateChanged()
     switch (MozillaVPN::instance()->controller()->state()) {
     case Controller::StateOn:
         //% "Mozilla VPN connected"
-        showMessage(qtTrId("systrayStatusConnected"), qtTrId("TODO"), NoIcon, 2000);
+        showMessage(qtTrId("vpn.systray.statusConnected"), qtTrId("TODO"), NoIcon, 2000);
         break;
 
     case Controller::StateOff:
         //% "Mozilla VPN disconnected"
-        showMessage(qtTrId("systrayStatusDisconnected"), qtTrId("TODO"), NoIcon, 2000);
+        showMessage(qtTrId("vpn.systray.statusDisconnected"), qtTrId("TODO"), NoIcon, 2000);
         break;
 
     case Controller::StateSwitching:
         //% "Mozilla VPN switching"
         //: This message is shown when the VPN is switching to a different server in a different location.
-        showMessage(qtTrId("systrayStatusSwitch"), qtTrId("TODO"), NoIcon, 2000);
+        showMessage(qtTrId("vpn.systray.statusSwitch"), qtTrId("TODO"), NoIcon, 2000);
         break;
 
     default:
@@ -53,5 +53,6 @@ void SystemTrayHandler::controllerStateChanged()
 void SystemTrayHandler::captivePortalNotificationRequested()
 {
     logger.log() << "Capitve portal notification shown";
-    showMessage(tr("Captive portal detected!"), tr("TODO"), NoIcon, 2000);
+    //% "Captive portal detected"
+    showMessage(qtTrId("vpn.systray.captivePortalAlert"), tr("TODO"), NoIcon, 2000);
 }

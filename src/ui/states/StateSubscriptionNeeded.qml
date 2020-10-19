@@ -16,13 +16,13 @@ Item {
 
     Text {
         //% "Subscription needed"
-        text: qsTrId("subscriptionNeeded")
+        text: qsTrId("vpn.iap.subscriptionNeeded")
     }
 
     VPNButton {
         width: 282
         //% "Subscribe now"
-        text: qsTrId("subscribeNow")
+        text: qsTrId("vpn.iap.subscribeNow")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

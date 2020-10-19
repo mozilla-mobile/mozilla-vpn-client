@@ -24,9 +24,9 @@ Flickable {
         alertColor: Theme.blueButton
         visible: state === "recommended"
         //% "New version is available."
-        alertText: qsTrId("newVersionAvailable")
+        alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
-        alertLinkText: qsTrId("updateNow")
+        alertLinkText: qsTrId("vpn.updates.updateNow")
         y: Theme.windowMargin
         width: parent.width - (Theme.windowMargin * 2)
     }

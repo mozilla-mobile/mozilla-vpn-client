@@ -23,7 +23,7 @@ Item {
         id: getHelp
 
         //% "Skip"
-        labelText: qsTrId("skip")
+        labelText: qsTrId("vpn.onboarding.skip")
         onClicked: stackview.pop()
     }
 
@@ -51,10 +51,10 @@ Item {
         property var onboardingOver: (panelNum === 4)
 
         //% "Next"
-        readonly property var textNext: qsTrId("next")
+        readonly property var textNext: qsTrId("vpn.onboarding.next")
 
         width: 282
-        text: onboardingOver ? qsTrId("getStarted") : textNext
+        text: onboardingOver ? qsTrId("vpn.main.getStarted") : textNext
 
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter

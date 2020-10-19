@@ -11,7 +11,7 @@ VPNClickableRow {
     id: devices
 
     //% "My devices"
-    property var titleText: qsTrId("myDevices")
+    property var titleText: qsTrId("vpn.devices.myDevices")
 
     accessibleName: titleText + " - " + label.text
     activeFocusOnTab: true
@@ -34,7 +34,7 @@ VPNClickableRow {
                     target: label
                     //% "%1 of %2"
                     //: Context: You have "x of y" (y is max) devices in your account.
-                    text: qsTrId("activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
+                    text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
                 }
 
             },
@@ -43,7 +43,7 @@ VPNClickableRow {
 
                 PropertyChanges {
                     target: label
-                    text: qsTrId("activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
+                    text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
                 }
 
                 PropertyChanges {

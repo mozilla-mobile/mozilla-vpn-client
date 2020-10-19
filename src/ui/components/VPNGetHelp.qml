@@ -16,7 +16,7 @@ Item {
         id: menu
 
         //% "Get Help"
-        title: qsTrId("getHelp")
+        title: qsTrId("vpn.main.getHelp")
         isSettingsView: true
     }
 
@@ -32,19 +32,19 @@ Item {
         model: ListModel {
             ListElement {
                 //% "Contact us"
-                linkTitle: qsTrId("contactUs")
+                linkTitle: qsTrId("vpn.help.contactUs")
                 clickId: "contact_us"
             }
 
             ListElement {
                 //% "Help & Support"
-                linkTitle: qsTrId("helpAndSupport")
+                linkTitle: qsTrId("vpn.help.helpAndSupport")
                 clickId: "help_support"
             }
 
             ListElement {
                 //% "View log"
-                linkTitle: qsTrId("viewLog")
+                linkTitle: qsTrId("vpn.help.viewLog")
                 clickId: "view_logs"
             }
 

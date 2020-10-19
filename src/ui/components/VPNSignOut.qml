@@ -7,7 +7,7 @@ import "../themes/themes.js" as Theme
 
 VPNFooterLink {
     //% "Sign Out"
-    labelText: qsTrId("signOut")
+    labelText: qsTrId("vpn.main.signOut")
     fontName: Theme.fontBoldFamily
     linkColor: Theme.redButton
 }

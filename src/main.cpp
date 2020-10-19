@@ -49,20 +49,20 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
-        qtTrId("productDescription"));
+        qtTrId("vpn.main.productDescription"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     QCommandLineOption minimizedOption(QStringList() << "m"
                                                      << "minimized",
                                         //% "Start minimized"
-                                        qtTrId("startMinimized"));
+                                        qtTrId("vpn.main.startMinimized"));
     parser.addOption(minimizedOption);
 
     QCommandLineOption startAtBootOption(QStringList() << "s"
                                                        << "start-at-boot",
                                         //% "Start at boot (if configured)"
-                                        qtTrId("startOnBoot"));
+                                        qtTrId("vpn.main.startOnBoot"));
     parser.addOption(startAtBootOption);
 
     parser.process(app);

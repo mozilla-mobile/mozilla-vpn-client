@@ -13,7 +13,7 @@ Item {
     VPNHeaderLink {
         id: headerLink
 
-        labelText: qsTrId("getHelp")
+        labelText: qsTrId("vpn.main.getHelp")
         onClicked: stackview.push(getHelpComponent)
     }
 
@@ -28,9 +28,9 @@ Item {
 
     VPNPanel {
         logo: "../resources/logo.svg"
-        logoTitle: qsTrId("productName")
+        logoTitle: qsTrId("vpn.main.productName")
         //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-        logoSubtitle: qsTrId("productDescription")
+        logoSubtitle: qsTrId("vpn.main.productDescription")
     }
 
     VPNButton {
@@ -40,7 +40,7 @@ Item {
         anchors.bottomMargin: 24
         width: 282
         //% "Get started"
-        text: qsTrId("getStarted")
+        text: qsTrId("vpn.main.getStarted")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
@@ -54,7 +54,7 @@ Item {
         id: learnMore
 
         //% "Learn more"
-        labelText: qsTrId("learnMore")
+        labelText: qsTrId("vpn.main.learnMore")
         onClicked: stackview.push("ViewOnboarding.qml")
     }
 

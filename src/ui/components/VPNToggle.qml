@@ -58,9 +58,9 @@ RoundButton {
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN on"
-                Accessible.name: qsTrId("action.VPN.on")
+                Accessible.name: qsTrId("vpn.toggle.on")
                 //% "VPN is off"
-                Accessible.description: qsTrId("vpnIsOff")
+                Accessible.description: qsTrId("vpn.toggle.isOff")
             }
 
         },
@@ -81,9 +81,9 @@ RoundButton {
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN off"
-                Accessible.name: qsTrId("action.VPN.off")
+                Accessible.name: qsTrId("vpn.toggle.off")
                 //% "VPN is on"
-                Accessible.description: qsTrId("vpnIsOn")
+                Accessible.description: qsTrId("vpn.toggle.isOn")
             }
 
         },

@@ -26,9 +26,9 @@ Flickable {
             PropertyChanges {
                 target: contentWrapper
                 //% "Update recommended"
-                logoTitle: qsTrId("updateRecomended")
+                logoTitle: qsTrId("vpn.updates.updateRecomended")
                 //% "Please update the app before you\ncontinue to use the VPN"
-                logoSubtitle: qsTrId("updateRecomended.description")
+                logoSubtitle: qsTrId("vpn.updates.updateRecomended.description")
                 logoY: 50
             }
 
@@ -65,9 +65,9 @@ Flickable {
             PropertyChanges {
                 target: contentWrapper
                 //% "Update Required"
-                logoTitle: qsTrId("updateRequired")
+                logoTitle: qsTrId("vpn.updates.updateRequired")
                 //% "We detected and fixed a serious bug.\nYou must update your app."
-                logoSubtitle: qsTrId("updateRequire.reason")
+                logoSubtitle: qsTrId("vpn.updates.updateRequire.reason")
                 logoY: 35
             }
 
@@ -180,7 +180,7 @@ Flickable {
                 Layout.width: 250
                 Layout.alignment: Qt.AlignVCenter
                 //% "Your connection will not be secure while you update."
-                text: qsTrId("updateConnectionInsecureWarning")
+                text: qsTrId("vpn.updates.updateConnectionInsecureWarning")
             }
 
         }
@@ -191,7 +191,7 @@ Flickable {
         id: updateBtn
 
         width: 282
-        text: qsTrId("updateNow")
+        text: qsTrId("vpn.updates.updateNow")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: footerLink.top
@@ -204,9 +204,9 @@ Flickable {
         id: footerLink
 
         //% "Not now"
-        readonly property var textNotNow: qsTrId("notNow")
+        readonly property var textNotNow: qsTrId("vpn.updates.notNow")
         //% "Manage account"
-        readonly property var textManageAccount: qsTrId("manageAccount")
+        readonly property var textManageAccount: qsTrId("vpn.main.manageAccount")
 
         labelText: (updatePanel.state === "recommended") ? textNotNow : textManageAccount
         anchors.horizontalCenter: parent.horizontalCenter
