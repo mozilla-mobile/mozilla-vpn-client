@@ -336,7 +336,7 @@ end
 config = Hash.new
 configFile = File.read("xcode.xconfig").split("\n")
 configFile.each { |line|
-  continue if line[0] == "#"
+  next if line[0] == "#"
 
   if line.include? "="
     keys = line.split("=")
