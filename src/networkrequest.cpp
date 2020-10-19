@@ -224,6 +224,32 @@ NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN* vpn)
 
     return r;
 }
+
+NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn,
+                                                     const QString& orderId)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token().toLocal8Bit());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/purchases/ios");
+    r->m_request.setUrl(url);
+
+    QJsonObject obj;
+    obj.insert("receipt", QJsonValue(orderId));
+
+    QJsonDocument json;
+    json.setObject(obj);
+
+    r->m_manager->post(r->m_request, json.toJson());
+
+    return r;
+}
 #endif
 
 void NetworkRequest::replyFinished(QNetworkReply *reply)

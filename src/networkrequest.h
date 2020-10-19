@@ -43,6 +43,9 @@ public:
 
 #ifdef IOS_INTEGRATION
     static NetworkRequest *createForIOSProducts(MozillaVPN *vpn);
+
+    static NetworkRequest *createForIOSPurchase(MozillaVPN *vpn,
+                                                const QString& orderId);
 #endif
 
 private:
