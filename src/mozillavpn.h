@@ -69,6 +69,7 @@ private:
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
     Q_PROPERTY(QString versionString READ versionString CONSTANT)
+    Q_PROPERTY(QString buildString READ buildString CONSTANT)
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
@@ -129,6 +130,8 @@ public:
     void changeServer(const QString &countryCode, const QString &city);
 
     const QString versionString() const { return QString(APP_VERSION); }
+
+    const QString buildString() const;
 
     void logout();
 

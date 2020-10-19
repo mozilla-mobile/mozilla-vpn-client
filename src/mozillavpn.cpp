@@ -748,3 +748,8 @@ void MozillaVPN::viewLogs()
 
     qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
 }
+
+const QString MozillaVPN::buildString() const
+{
+    return BUILD_TYPE;
+}

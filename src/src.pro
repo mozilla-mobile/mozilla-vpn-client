@@ -114,6 +114,8 @@ HEADERS += \
 linux {
     message(Linux build)
 
+    DEFINES += BUILD_TYPE=\\\"linux\\\"
+
     QMAKE_CXXFLAGS *= -Werror
 
     TARGET = mozillavpn
@@ -149,6 +151,8 @@ linux {
 # Platform-specific: MacOS
 else:macos {
     message(MacOSX build)
+
+    DEFINES += BUILD_TYPE=\\\"macos\\\"
 
     QMAKE_CXXFLAGS *= -Werror
 
@@ -206,6 +210,8 @@ else:macos {
 # Platform-specific: IOS
 else:ios {
     message(IOS build)
+
+    DEFINES += BUILD_TYPE=\\\"ios\\\"
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
