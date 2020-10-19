@@ -366,5 +366,6 @@
         <file>ui/resources/down.svg</file>
         <file>ui/resources/logo-dock.png</file>
         <file>ui/resources/logo-tray.svg</file>
+        <file>ui/resources/close-dark.svg</file>
     </qresource>
 </RCC>

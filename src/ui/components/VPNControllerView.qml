@@ -526,7 +526,7 @@ Rectangle {
     VPNIconButton {
         id: settingsButton
 
-        onClicked: stackview.push("../views/ViewSettings.qml")
+        onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
         defaultColor: box.color
         anchors.top: parent.top
         anchors.right: parent.right
@@ -540,7 +540,6 @@ Rectangle {
 
             anchors.centerIn: settingsButton
         }
-
     }
 
     VPNHeadline {

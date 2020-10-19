@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import QtGraphicalEffects 1.15
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../components"
@@ -16,6 +16,10 @@ Flickable {
     contentHeight: 720
     height: parent.height
     boundsBehavior: Flickable.StopAtBounds
+    opacity: 0
+    Component.onCompleted: {
+        opacity = 1;
+    }
 
     ListModel {
         id: settingsMenuListModel
@@ -68,7 +72,7 @@ Flickable {
     VPNIconButton {
         id: iconButton
 
-        onClicked: stackview.pop()
+        onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
@@ -78,7 +82,7 @@ Flickable {
         Image {
             id: backImage
 
-            source: "../resources/back.svg"
+            source: "../resources/close-dark.svg"
             sourceSize.width: Theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
@@ -204,6 +208,13 @@ Flickable {
         id: signOutLink
 
         onClicked: VPNController.logout()
+    }
+
+    Behavior on opacity {
+        PropertyAnimation {
+            duration: 200
+        }
+
     }
 
     ScrollBar.vertical: ScrollBar {
