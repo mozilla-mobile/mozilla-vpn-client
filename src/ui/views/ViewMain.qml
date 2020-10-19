@@ -36,13 +36,13 @@ Flickable {
         width: parent.width
         y: alertBox.visible ? alertBox.height + Theme.windowMargin : 0
 
-        VPNControllerView {
-            id: box
-        }
-
         VPNDropShadow {
             anchors.fill: box
             source: box
+        }
+
+        VPNControllerView {
+            id: box
         }
 
         VPNControllerServer {
