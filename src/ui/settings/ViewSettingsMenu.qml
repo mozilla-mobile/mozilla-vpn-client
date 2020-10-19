@@ -74,9 +74,9 @@ Flickable {
 
         onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
-        anchors.right: parent.right
+        anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
-        anchors.rightMargin: Theme.windowMargin / 2
+        anchors.leftMargin: Theme.windowMargin / 2
         accessibleName: qsTrId("vpn.main.back")
 
         Image {
