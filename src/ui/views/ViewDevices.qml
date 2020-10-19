@@ -167,8 +167,9 @@ Item {
                         Layout.preferredHeight: 40
                         Layout.preferredWidth: 40
                         onClicked: removePopup.initializeAndOpen(name, index)
+                        //: "This is a label to make the icon button accessible
                         //% "Remove %1"
-                        accessibleName: qsTrId("remove").arg(device.accessibleName)
+                        accessibleName: qsTrId("removeDeviceA11Y").arg(device.accessibleName)
                         // Only allow focus within the current item in the list.
                         focusPolicy: deviceList.currentItem === device ? Qt.StrongFocus : Qt.NoFocus
                         onFocusChanged: {
@@ -413,7 +414,7 @@ Item {
 
                 VPNPopupButton {
                     //% "Cancel"
-                    buttonText: qsTrId("cancel")
+                    buttonText: qsTrId("cancelDeviceRemoval")
                     buttonTextColor: "#262626"
                     buttonColor: Theme.greyButton
                     onClicked: removePopup.state = "invisible"
@@ -422,7 +423,9 @@ Item {
                 VPNPopupButton {
                     id: removeBtn
 
-                    buttonText: qsTrId("remove")
+                    //: "This is the 'remove' device button.
+                    //% "Remove"
+                    buttonText: qsTrId("removeDeviceButton")
                     buttonTextColor: "#FFFFFF"
                     buttonColor: Theme.redButton
                     onClicked: {
