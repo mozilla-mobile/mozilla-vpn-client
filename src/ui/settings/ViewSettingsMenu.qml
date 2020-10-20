@@ -10,13 +10,13 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
+ScrollView {
     id: scrollingFrame
 
-    contentHeight: 720
     height: parent.height
-    boundsBehavior: Flickable.StopAtBounds
+    contentHeight: (height > 740) ? parent.height : 740
     opacity: 0
+    ScrollBar.vertical.policy: (height > 740) ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
     Component.onCompleted: {
         opacity = 1;
     }
@@ -215,10 +215,6 @@ Flickable {
             duration: 200
         }
 
-    }
-
-    ScrollBar.vertical: ScrollBar {
-        Accessible.ignored: true
     }
 
 }
