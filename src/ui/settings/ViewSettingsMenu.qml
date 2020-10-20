@@ -14,9 +14,9 @@ ScrollView {
     id: scrollingFrame
 
     height: parent.height
-    contentHeight: (height > 740) ? parent.height : 740
+    contentHeight: (height > Theme.settingsMaxContentHeight) ? parent.height : Theme.settingsMaxContentHeight
     opacity: 0
-    ScrollBar.vertical.policy: (height > 740) ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
+    ScrollBar.vertical.policy: (height > Theme.settingsMaxContentHeight) ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
     Component.onCompleted: {
         opacity = 1;
     }
