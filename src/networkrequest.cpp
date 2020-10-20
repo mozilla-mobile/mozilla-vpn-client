@@ -59,7 +59,7 @@ NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *
     json.setObject(obj);
 
     Q_ASSERT(r->m_manager);
-    r->m_manager->post(r->m_request, json.toJson());
+    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
 
     return r;
 }
@@ -90,7 +90,7 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
     json.setObject(obj);
 
     Q_ASSERT(r->m_manager);
-    r->m_manager->post(r->m_request, json.toJson());
+    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
 
     return r;
 }
@@ -246,7 +246,7 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn,
     QJsonDocument json;
     json.setObject(obj);
 
-    r->m_manager->post(r->m_request, json.toJson());
+    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
 
     return r;
 }

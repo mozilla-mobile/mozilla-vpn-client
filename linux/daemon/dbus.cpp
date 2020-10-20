@@ -264,7 +264,7 @@ QString DBus::status()
     if (wg_get_device(&device, WG_INTERFACE) != 0) {
         logger.log() << "Unable to get device";
         json.insert("status", QJsonValue(false));
-        return QJsonDocument(json).toJson();
+        return QJsonDocument(json).toJson(QJsonDocument::Compact);
     }
 
     uint64_t txBytes = 0;
@@ -284,7 +284,7 @@ QString DBus::status()
     json.insert("txBytes", QJsonValue(double(txBytes)));
     json.insert("rxBytes", QJsonValue(double(rxBytes)));
 
-    return QJsonDocument(json).toJson();
+    return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
 QString DBus::logs()

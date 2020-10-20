@@ -74,7 +74,7 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server,
     json.insert("allowedIPAddressRanges", allowedIPAddesses);
 
     logger.log() << "Activate via DBus";
-    QDBusPendingReply<bool> reply = m_dbus->activate(QJsonDocument(json).toJson());
+    QDBusPendingReply<bool> reply = m_dbus->activate(QJsonDocument(json).toJson(QJsonDocument::Compact));
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,
