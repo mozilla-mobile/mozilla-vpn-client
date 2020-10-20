@@ -46,8 +46,10 @@ for locale in os.listdir('i18n'):
 
 if len(FILES) == 0:
     print('No Languages were imported')
-    os.system(f'lupdate src/src.pro -ts translations/mozillavpn_en.ts')
-    exit(0)
+    os.system(f'lupdate src -no-obsolete -ts translations/mozillavpn_en.ts')
+    FILES.append({
+        'ts': os.path.join('translations', f'mozillavpn_en.ts')
+    })
 
 # Step 2
 # Write PRI file to import the done languages
@@ -55,15 +57,17 @@ with open('translations/translations.pri', 'w') as projectFile:
     projectFile.write('TRANSLATIONS += \\ \n')
     for file in FILES:
         projectFile.write(f"../{file['ts']} \\ \n")
-    projectFile.write('\n \n ##End')
+    projectFile.write('\n \n##End')
 print('Updated translations.pri')
 
 # Step 3
 # Generate new ts files
-os.system(f'lupdate src/src.pro -ts')
+os.system(f'lupdate src -ts')
 
 # Step 4
 # Now import done translations into the files
 for file in FILES:
-    os.system(f"lconvert -i {file['ts']} -if xlf -i {file['xliff']} -o {file['ts']}")
+    if 'xliff' in file.keys():
+        os.system(f"lconvert -i {file['ts']} -if xlf -i {file['xliff']} -o {file['ts']}")
+
 print('Imported Languages')
