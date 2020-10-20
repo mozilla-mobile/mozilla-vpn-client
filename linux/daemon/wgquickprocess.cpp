@@ -106,10 +106,10 @@ void WgQuickProcess::run(const QString &privateKey,
             [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
                 logger.log() << "Execution finished" << exitCode;
 
-                qWarning("wg-quick stdout:\n%ls\n",
-                         qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
-                qWarning("wg-quick stderr:\n%ls\n",
-                         qUtf16Printable(wgQuickProcess->readAllStandardError()));
+                logger.log() << "wg-quick stdout:" << Qt::endl
+                             << qUtf8Printable(wgQuickProcess->readAllStandardOutput()) << Qt::endl;
+                logger.log() << "wg-quick stderr:" << Qt::endl
+                             << qUtf8Printable(wgQuickProcess->readAllStandardError()) << Qt::endl;
 
                 deleteLater();
 

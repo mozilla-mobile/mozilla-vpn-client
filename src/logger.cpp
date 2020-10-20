@@ -36,3 +36,9 @@ Logger::Log &Logger::Log::operator<<(const QStringList &t)
     m_ts << '[' << t.join(",") << ']' << ' ';
     return *this;
 }
+
+Logger::Log &Logger::Log::operator<<(QTextStreamFunction t)
+{
+    m_ts << t;
+    return *this;
+}

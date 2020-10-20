@@ -43,6 +43,7 @@ public:
         Log &operator<<(const QString &t);
         Log &operator<<(const QStringList &t);
         Log &operator<<(const QByteArray &t);
+        Log &operator<<(QTextStreamFunction t);
 
     private:
         Logger *m_logger;
