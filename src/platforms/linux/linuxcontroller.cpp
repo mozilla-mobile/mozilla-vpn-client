@@ -69,11 +69,10 @@ void LinuxController::activate(const Server &server,
                                const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
-    Q_UNUSED(allowedIPAddressRanges);
     Q_UNUSED(forSwitching);
 
     logger.log() << "LinuxController activated";
-    monitorWatcher(m_dbus->activate(server, device, keys));
+    monitorWatcher(m_dbus->activate(server, device, keys, allowedIPAddressRanges));
 }
 
 void LinuxController::deactivate(bool forSwitching)

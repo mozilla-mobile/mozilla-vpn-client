@@ -22,6 +22,8 @@ extern "C" {
 }
 #endif
 
+constexpr const char *JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
+
 namespace {
 Logger logger(LOG_LINUX, "DBus");
 }
@@ -140,9 +142,57 @@ bool DBus::activate(const QString &jsonConfig)
     }
 
     GETVALUEBOOL("ipv6Enabled", m_lastIpv6Enabled);
-    GETVALUEBOOL("localNetworkAccess", m_lastLocalNetworkAccess);
 
 #undef GETVALUEBOOL
+
+    if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
+        logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "missing in the jsonconfig input";
+        return false;
+    }
+    {
+        QJsonValue value = obj.take(JSON_ALLOWEDIPADDRESSRANGES);
+        if (!value.isArray()) {
+            logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
+            return false;
+        }
+
+        QJsonArray array = value.toArray();
+        QStringList allowedIPAddressRanges;
+        for (QJsonArray::ConstIterator i = array.begin(); i != array.end(); ++i) {
+            if (!i->isObject()) {
+                logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "must contain only objects";
+                return false;
+            }
+
+            QJsonObject ipObj = i->toObject();
+
+            QJsonValue address = ipObj.take("address");
+            if (!address.isString()) {
+                logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "objects must have a string address";
+                return false;
+            }
+
+            QJsonValue range = ipObj.take("range");
+            if (!range.isDouble()) {
+                logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "object must have a numberic range";
+                return false;
+            }
+
+            QJsonValue isIpv6 = ipObj.take("isIpv6");
+            if (!isIpv6.isBool()) {
+                logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "object must have a boolean isIpv6";
+                return false;
+            }
+
+            if (isIpv6.toBool() && !m_lastIpv6Enabled) {
+                continue;
+            }
+
+            allowedIPAddressRanges.append(
+                QString("%1/%2").arg(address.toString()).arg(range.toInt(0)));
+        }
+        m_lastAllowedIPAddressRanges = allowedIPAddressRanges.join(", ");
+    }
 
     bool status = runWgQuick(WgQuickProcess::Up,
                              m_lastPrivateKey,
@@ -153,9 +203,9 @@ bool DBus::activate(const QString &jsonConfig)
                              m_lastServerPublicKey,
                              m_lastServerIpv4AddrIn,
                              m_lastServerIpv6AddrIn,
+                             m_lastAllowedIPAddressRanges,
                              m_lastServerPort,
-                             m_lastIpv6Enabled,
-                             m_lastLocalNetworkAccess);
+                             m_lastIpv6Enabled);
 
     logger.log() << "Status:" << status;
 
@@ -191,9 +241,9 @@ bool DBus::deactivate()
                              m_lastServerPublicKey,
                              m_lastServerIpv4AddrIn,
                              m_lastServerIpv6AddrIn,
+                             m_lastAllowedIPAddressRanges,
                              m_lastServerPort,
-                             m_lastIpv6Enabled,
-                             m_lastLocalNetworkAccess);
+                             m_lastIpv6Enabled);
 
     logger.log() << "Status:" << status;
 
@@ -262,9 +312,9 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                       const QString &serverPublicKey,
                       const QString &serverIpv4AddrIn,
                       const QString &serverIpv6AddrIn,
+                      const QString &allowedIPAddressRanges,
                       int serverPort,
-                      bool ipv6Enabled,
-                      bool localNetworkAccess)
+                      bool ipv6Enabled)
 {
     WgQuickProcess *wgQuick = new WgQuickProcess(op);
 
@@ -276,9 +326,9 @@ bool DBus::runWgQuick(WgQuickProcess::Op op,
                  serverPublicKey,
                  serverIpv4AddrIn,
                  serverIpv6AddrIn,
+                 allowedIPAddressRanges,
                  serverPort,
-                 ipv6Enabled,
-                 localNetworkAccess);
+                 ipv6Enabled);
 
     enum Result {
         Pending,
