@@ -164,6 +164,9 @@ QT += androidextras
 SOURCES += platforms/android/androidcontroller.cpp
 HEADERS += platforms/android/androidcontroller.h
 
+HEADERS += platforms/linux/linuxcryptosettings.h
+SOURCES+= platforms/linux/linuxcryptosettings.cpp
+
 SOURCES += platforms/linux/linuxpingsendworker.cpp \
         tasks/authenticate/authenticationlistener.cpp
 

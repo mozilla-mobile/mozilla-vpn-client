@@ -29,6 +29,7 @@ translations/*.pri
 # if someone opens the android/ subproject
 android/.gradle/
 android/.idea/
+android/build
 xcode.xconfig
 .gradle/
 .idea/

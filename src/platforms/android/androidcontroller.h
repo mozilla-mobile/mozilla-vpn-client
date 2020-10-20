@@ -6,21 +6,19 @@
 #define ANDROIDCONTROLLER_H
 
 #include "controllerimpl.h"
+#include <QAndroidBinder>
+#include <QAndroidServiceConnection>
 
-class AndroidController final : public ControllerImpl
+class AndroidController: public ControllerImpl, public QAndroidServiceConnection
 {
 public:
-    void initialize(const Device *device, const Keys *keys) override
-    {
-        Q_UNUSED(device);
-        Q_UNUSED(keys);
-
-        emit initialized(true, Controller::StateOff, QDateTime());
-    }
+    // from ControllerImpl
+    void initialize(const Device *device, const Keys *keys) override;
 
     void activate(const Server &data,
                   const Device *device,
                   const Keys *keys,
+                  const CaptivePortal &captivePortal,
                   bool forSwitching) override;
 
     void deactivate(bool forSwitching) override;
@@ -30,9 +28,27 @@ public:
     void onRecviceConnected();
     void onRecviceDisconnected();
 
+    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+
+    // from QAndroidServiceConnection
+    void onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder) override;
+    void onServiceDisconnected(const QString &name) override;
 private:
     int64_t m_txBytes = 0;
     int64_t m_rxBytes = 0;
+
+    QAndroidBinder m_serviceBinder;
+    bool GetVpnPermission();
+    class VPNBinder : public QAndroidBinder{
+    public:
+         void setController(AndroidController*);
+         bool onTransact(int code, const QAndroidParcel &data, const QAndroidParcel &reply, QAndroidBinder::CallType flags) override;
+
+    private:
+         AndroidController* mController;
+    };
+
+    VPNBinder m_binder;
 };
 
 #endif // DUMMYCONTROLLER_H
