@@ -141,8 +141,8 @@ Rectangle {
 
             PropertyChanges {
                 target: logoTitle
-                //% "Connecting…"
-                text: qsTrId("vpn.controller.connecting")
+                //% "Connecting"
+                text: qsTrId("vpn.controller.connecting") + " …"
                 color: "#FFFFFF"
             }
 
@@ -202,8 +202,8 @@ Rectangle {
 
             PropertyChanges {
                 target: logoSubtitle
-                //% "Secure and private  •  "
-                text: qsTrId("vpn.controller.active") + formatTime(VPNController.time)
+                //% "Secure and private"
+                text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
                 visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
                 color: "#FFFFFF"
                 opacity: 0.8
