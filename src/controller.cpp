@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportalactivator.h"
 #include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
+#include "ipaddressrange.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -127,7 +128,13 @@ void Controller::activate()
 
         const Device *device = vpn->deviceModel()->currentDevice();
 
-        m_impl->activate(server, device, vpn->keys(), captivePortal, m_state == StateSwitching);
+        const QList<IPAddressRange> allowedIPAddressRanges = getAllowedIPAddressRanges(
+            captivePortal);
+        m_impl->activate(server,
+                         device,
+                         vpn->keys(),
+                         allowedIPAddressRanges,
+                         m_state == StateSwitching);
     };
 
     if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
@@ -456,4 +463,43 @@ void Controller::captivePortalDetected()
 
     m_nextStep = WaitForCaptivePortal;
     deactivate();
+}
+
+QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal &captivePortal)
+{
+    bool ipv6Enabled = MozillaVPN::instance()->settingsHolder()->ipv6Enabled();
+
+    QList<IPAddressRange> list;
+
+    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+
+    if (ipv6Enabled) {
+        list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+    }
+
+    const QStringList &captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
+    for (QStringList::ConstIterator i = captivePortalIpv4Addresses.begin();
+         i != captivePortalIpv4Addresses.end();
+         ++i) {
+        list.append(IPAddressRange(*i, 0, IPAddressRange::IPv4));
+    }
+
+    if (ipv6Enabled) {
+        const QStringList &captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
+        for (QStringList::ConstIterator i = captivePortalIpv6Addresses.begin();
+             i != captivePortalIpv6Addresses.end();
+             ++i) {
+            list.append(IPAddressRange(*i, 0, IPAddressRange::IPv6));
+        }
+    }
+
+    if (MozillaVPN::instance()->settingsHolder()->localNetworkAccess()) {
+        list.append(IPAddressRange("128.0.0.1", 1, IPAddressRange::IPv4));
+
+        if (ipv6Enabled) {
+            list.append(IPAddressRange("8000::", 1, IPAddressRange::IPv6));
+        }
+    }
+
+    return list;
 }

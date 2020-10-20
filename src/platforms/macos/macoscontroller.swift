@@ -7,6 +7,20 @@ import NetworkExtension
 
 let vpnName = "Mozilla VPN"
 
+@objc class VPNIPAddressRange : NSObject {
+    public var address: NSString = ""
+    public var networkPrefixLength: UInt8 = 0
+    public var isIpv6: Bool = false
+
+    @objc init(address: NSString, networkPrefixLength: UInt8, isIpv6: Bool) {
+        super.init()
+
+        self.address = address
+        self.networkPrefixLength = networkPrefixLength
+        self.isIpv6 = isIpv6
+    }
+}
+
 public class MacOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
@@ -104,7 +118,7 @@ public class MacOSControllerImpl : NSObject {
         stateChangeCallback?(session.status == .connected)
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int, captivePortalIpv4Addresses: Array<String>, captivePortalIpv6Addresses: Array<String>, ipv6Enabled: Bool, localNetworkAccess: Bool, failureCallback: @escaping () -> Void) {
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -117,31 +131,13 @@ public class MacOSControllerImpl : NSObject {
 
         var peerConfiguration = PeerConfiguration(publicKey: keyData)
         peerConfiguration.endpoint = Endpoint(from: serverIpv4AddrIn + ":\(serverPort )")
-        peerConfiguration.allowedIPs = [
-            IPAddressRange(address: IPv4Address("0.0.0.0")!, networkPrefixLength: 0),
-        ]
+        peerConfiguration.allowedIPs = []
 
-        captivePortalIpv4Addresses.forEach {
-            peerConfiguration.allowedIPs.append(
-                IPAddressRange(address: IPv4Address($0)!, networkPrefixLength: 0)
-            )
-        }
-
-        if (ipv6Enabled) {
-            peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address("::")!, networkPrefixLength: 0))
-
-            captivePortalIpv6Addresses.forEach {
-                peerConfiguration.allowedIPs.append(
-                    IPAddressRange(address: IPv6Address($0)!, networkPrefixLength: 0)
-                )
-            }
-        }
-
-        if (localNetworkAccess) {
-            peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address("128.0.0.1")!, networkPrefixLength: 0))
-
-            if (ipv6Enabled) {
-                peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address("8000::")!, networkPrefixLength: 0))
+        allowedIPAddressRanges.forEach {
+            if (!$0.isIpv6) {
+                peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
+            } else if (ipv6Enabled) {
+                peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
             }
         }
 

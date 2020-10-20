@@ -7,6 +7,7 @@
 #include "captiveportal/captiveportal.h"
 #include "device.h"
 #include "keys.h"
+#include "ipaddressrange.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -75,28 +76,24 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
 void MacOSController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
     Q_UNUSED(device);
     Q_UNUSED(keys);
-    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
     logger.log() << "MacOSController activating" << server.hostname();
 
     Q_ASSERT(impl);
 
-    const QStringList& captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
-    NSMutableArray<NSString *> *captivePortalIpv4AddressesNS = [NSMutableArray<NSString *> arrayWithCapacity:captivePortalIpv4Addresses.length()];
-    for (const QString &ip : captivePortalIpv4Addresses) {
-        [captivePortalIpv4AddressesNS addObject:ip.toNSString()];
-    }
-
-    const QStringList& captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
-    NSMutableArray<NSString *> *captivePortalIpv6AddressesNS = [NSMutableArray<NSString *> arrayWithCapacity:captivePortalIpv6Addresses.length()];
-    for (const QString &ip : captivePortalIpv6Addresses) {
-        [captivePortalIpv6AddressesNS addObject:ip.toNSString()];
+    NSMutableArray<VPNIPAddressRange *> *allowedIPAddressRangesNS = [NSMutableArray<VPNIPAddressRange *> arrayWithCapacity: allowedIPAddressRanges.length()];
+    for (QList<IPAddressRange>::ConstIterator i = allowedIPAddressRanges.begin(); i != allowedIPAddressRanges.end(); ++i) {
+        VPNIPAddressRange* range = [[VPNIPAddressRange alloc]
+                                    initWithAddress:i->ipAddress().toNSString()
+                                    networkPrefixLength:i->range()
+                                    isIpv6:i->type() == IPAddressRange::IPv6];
+        [allowedIPAddressRangesNS addObject: [range autorelease]];
     }
 
     [impl
@@ -105,10 +102,8 @@ void MacOSController::activate(const Server &server,
                      serverPublicKey:server.publicKey().toNSString()
                     serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                           serverPort:server.choosePort()
-          captivePortalIpv4Addresses:captivePortalIpv4AddressesNS
-          captivePortalIpv6Addresses:captivePortalIpv6AddressesNS
+              allowedIPAddressRanges:allowedIPAddressRangesNS
                          ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
-                  localNetworkAccess:MozillaVPN::instance()->settingsHolder()->localNetworkAccess()
                      failureCallback:^() {
                          logger.log() << "MacOSSWiftController - connection failed";
                          emit disconnected();

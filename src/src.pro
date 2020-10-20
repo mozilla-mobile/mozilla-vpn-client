@@ -83,6 +83,7 @@ HEADERS += \
         devicemodel.h \
         errorhandler.h \
         fontloader.h \
+        ipaddressrange.h \
         keys.h \
         localizer.h \
         logger.h \
