@@ -19,6 +19,9 @@ Item {
     property var rowShouldBeDisabled: false
     property var accessibleName
     property var backgroundColor: Theme.greyButton
+    // By default, make background and mouse area fill the whole
+    // row.
+    property var anchorToFill: mainRow
 
     signal clicked()
 
@@ -51,7 +54,7 @@ Item {
     Rectangle {
         id: rowBackground
 
-        anchors.fill: mainRow
+        anchors.fill: anchorToFill
         radius: 4
         color: {
             if (rowShouldBeDisabled && mouseArea.pressed)
@@ -88,7 +91,7 @@ Item {
     MouseArea {
         id: mouseArea
 
-        anchors.fill: parent
+        anchors.fill: anchorToFill
         cursorShape: rowShouldBeDisabled ? Qt.ForbiddenCursor : Qt.PointingHandCursor
         hoverEnabled: !rowShouldBeDisabled
         focus: !rowShouldBeDisabled
