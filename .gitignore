@@ -26,5 +26,6 @@ translations/*.pri
 .tmp
 xcode.xconfig
 .gradle/
+android/build
 .idea/
 *.ts

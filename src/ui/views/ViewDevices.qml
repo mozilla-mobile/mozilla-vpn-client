@@ -134,7 +134,7 @@ Item {
                                     return qsTrId("vpn.devices.addedltHour");
 
                                 if (diff < 86400)
-                                    //% "Added %1 hours ago"
+                                    //% "Added a few hours ago (%1)"
                                     return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
 
                                 //% "Added %1 days ago"

@@ -87,7 +87,7 @@ Rectangle {
         VPNSubtitle {
             anchors.top: alertHeadline.bottom
             anchors.topMargin: 8
-            //% "You've reached your limit. To install the VPN on this device, you'll need to remove one."
+            //% "You’ve reached your limit. To install the VPN on this device, you’ll need to remove one."
             text: qsTrId("vpn.devices.maxDevicesReached")
         }
 

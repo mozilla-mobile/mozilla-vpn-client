@@ -142,7 +142,6 @@ class XCodeprojPatcher
         config.build_settings['OTHER_LDFLAGS'] ||= [
           "-stdlib=libc++",
           "-Wl,-rpath,@executable_path/Frameworks",
-          "-L/Users/baku/Qt/5.15.0/ios/plugins/platforms",
           "-framework",
           "AssetsLibrary",
           "-framework",

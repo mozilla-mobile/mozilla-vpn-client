@@ -49,14 +49,15 @@ The procedure to compile MozillaVPN for macOS is the following:
 
 1. Install XCodeProj:
   $ [sudo] gem install xcodeproj
-2. Update the submodules:
+1. Install go if you haven't done it before: https://golang.org/dl/
+1. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
-3. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+1. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
   $ ./scripts/apple\_compile.sh macos
-4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+1. Copy `xcode.xconfig.template` to `xcode.xconfig`
   $ cp xcode.xconfig.template xcode.xconfig
-5. Modify xcode.xconfig to something like:
+1. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -71,7 +72,7 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 ```
-6. Open Xcode and run/test/archive/ship the app
+1. Open Xcode and run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
 ```
@@ -86,12 +87,12 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 The IOS procedure is similar to the macOS one:
 1. Install XCodeProj:
   $ [sudo] gem install xcodeproj
-2. Update the submodules:
+1. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
-4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+1. Copy `xcode.xconfig.template` to `xcode.xconfig`
   $ cp xcode.xconfig.template xcode.xconfig
-5. Modify xcode.xconfig to something like:
+1. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -106,9 +107,9 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
-5. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
+1. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
   $ ./scripts/apple\_compile.sh ios
-6. Open Xcode and run/test/archive/ship the app
+1. Open Xcode and run/test/archive/ship the app
 
 ### Other platforms
 
