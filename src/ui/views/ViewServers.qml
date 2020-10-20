@@ -132,6 +132,7 @@ Item {
 
                     delegate: VPNRadioDelegate {
                         radioButtonLabelText: modelData
+                        accessibleName: modelData
                         onClicked: {
                             VPNController.changeServer(code, modelData);
                             stackview.pop();
