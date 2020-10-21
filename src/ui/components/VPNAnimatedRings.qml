@@ -18,6 +18,7 @@ Rectangle {
     anchors.fill: box
     radius: box.radius
     color: "transparent"
+    antialiasing: true
     visible: false
 
     Canvas {
@@ -27,14 +28,14 @@ Rectangle {
         property real startNextRing: 95
         property real startingRadius: 50
         property real startingBorderWidth: 1
-        property real ring1Radius: startingRadius
-        property real ring1BorderWidth: startingBorderWidth
-        property real ring2Radius: startingRadius
-        property real ring2BorderWidth: startingBorderWidth
-        property real ring3Radius: startingRadius
-        property real ring3BorderWidth: startingBorderWidth
-        property bool drawingRing2: false
-        property var drawingRing3: false
+        property real ring1Radius;
+        property real ring1BorderWidth;
+        property real ring2Radius;
+        property real ring2BorderWidth;
+        property real ring3Radius;
+        property real ring3BorderWidth;
+        property bool drawingRing2;
+        property var drawingRing3;
         property var ringXCenter: parent.width / 2
         property var ringYCenter: animatedRingsWrapper.yCenter
 
@@ -141,6 +142,10 @@ Rectangle {
                 drawRing(ctx, ring3Radius, ring3BorderWidth);
 
             animatedRings.requestAnimationFrame(animateRings);
+        }
+
+        Component.onCompleted: {
+            resetRingValues();
         }
     }
 
