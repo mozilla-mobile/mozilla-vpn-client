@@ -26,12 +26,13 @@ Item {
     }
 
     Flickable {
+        id: wrapper
         anchors.top: menu.bottom
         anchors.topMargin: 20
         width: parent.width
         height: parent.height - menu.height
         contentWidth: parent.width
-        contentHeight: contentItem.childrenRect.height
+        contentHeight: wrapper.childrenRect.height
         boundsBehavior: Flickable.StopAtBounds
 
         VPNBoldLabel {
