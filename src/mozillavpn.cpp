@@ -22,8 +22,10 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QLocale>
 #include <QPointer>
+#include <QScreen>
 #include <QTimer>
 #include <QUrl>
 
@@ -117,6 +119,18 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &CaptivePortalDetection::captivePortalDetected,
             &m_controller,
             &Controller::captivePortalDetected);
+
+
+    QScreen* screen = QGuiApplication::primaryScreen();
+    screen->setOrientationUpdateMask(
+        Qt::PortraitOrientation |
+        Qt::LandscapeOrientation |
+        Qt::InvertedPortraitOrientation |
+        Qt::InvertedLandscapeOrientation
+    );
+    connect(screen, &QScreen::orientationChanged, [](Qt::ScreenOrientation orientation) {
+        logger.log() << "Screen rotated:" << orientation;
+    });
 }
 
 MozillaVPN::~MozillaVPN() = default;
