@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtGraphicalEffects 1.15
 import Mozilla.VPN 1.0
+import QtQuick.Controls 2.15
 import "../components"
 import "../themes/themes.js" as Theme
 import "../resources/onboarding/onboardingCopy.js" as PanelCopy
@@ -14,33 +15,48 @@ Item {
 
     property var panelNum: 1
 
-    function goToNextPanel() {
-        onboardingPanel.panelNum++;
-        fade.start();
-    }
-
     VPNHeaderLink {
         id: getHelp
 
         //% "Skip"
-        labelText: qsTrId("vpn.onboarding.skip")
+//        labelText: qsTrId("vpn.onboarding.skip")
         onClicked: stackview.pop()
     }
 
-    VPNPanel {
-        id: contentWrapper
+    SwipeView {
+        id: swipeView
 
-        logo: "../resources/onboarding/onboarding" + onboardingPanel.panelNum + ".svg"
-        logoTitle: (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].headline)
-        logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + onboardingPanel.panelNum].subtitle)
-        Component.onCompleted: fade.start()
+        property real numPanels: 4
 
-        PropertyAnimation on opacity {
-            id: fade
+        currentIndex: 0
+        anchors.fill: parent
 
-            from: 0
-            to: 1
-            duration: 800
+        Repeater {
+            model: swipeView.numPanels
+
+            Loader {
+                active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
+
+                sourceComponent: VPNPanel {
+                    id: contentWrapper
+
+                    logo: "../resources/onboarding/onboarding" + (index + 1) + ".svg"
+                    logoTitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].headline)
+                    logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].subtitle)
+                    Component.onCompleted: fade.start()
+
+                    PropertyAnimation on opacity {
+                        id: fade
+
+                        from: 0
+                        to: 1
+                        duration: 800
+                    }
+
+                }
+
+            }
+
         }
 
     }
@@ -48,46 +64,41 @@ Item {
     VPNButton {
         id: nextPanel
 
-        property var onboardingOver: (panelNum === 4)
-
         //% "Next"
         readonly property var textNext: qsTrId("vpn.onboarding.next")
 
         width: 282
-        text: onboardingOver ? qsTrId("vpn.main.getStarted") : textNext
-
+        text: swipeView.currentIndex === 3 ? qsTrId("vpn.main.getStarted") : textNext
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressIndicator.top
         anchors.bottomMargin: 32
         radius: 4
-        onClicked: onboardingOver ? VPN.authenticate() : goToNextPanel()
+        onClicked: swipeView.currentIndex < 3 ? swipeView.currentIndex++ : VPN.authenticate()
     }
 
-    Row {
+    PageIndicator {
         id: progressIndicator
 
-        spacing: 8
-        anchors.horizontalCenter: parent.horizontalCenter
+        interactive: false
+        count: swipeView.count
+        currentIndex: swipeView.currentIndex
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 40
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 8
 
-        Repeater {
-            model: 4
+        delegate: Rectangle {
+            id: circle
 
-            Rectangle {
-                id: circle
+            color: index === swipeView.currentIndex ? Theme.buttonColor : Theme.greyPressed
+            height: 6
+            width: 6
+            radius: 6
 
-                color: onboardingPanel.panelNum === (index + 1) ? Theme.buttonColor : Theme.greyPressed
-                height: 6
-                width: 6
-                radius: 6
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 400
-                    }
-
+            Behavior on color {
+                ColorAnimation {
+                    duration: 400
                 }
 
             }
