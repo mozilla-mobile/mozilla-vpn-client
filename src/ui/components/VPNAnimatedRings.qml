@@ -28,14 +28,14 @@ Rectangle {
         property real startNextRing: 95
         property real startingRadius: 50
         property real startingBorderWidth: 1
-        property real ring1Radius;
-        property real ring1BorderWidth;
-        property real ring2Radius;
-        property real ring2BorderWidth;
-        property real ring3Radius;
-        property real ring3BorderWidth;
-        property bool drawingRing2;
-        property var drawingRing3;
+        property real ring1Radius
+        property real ring1BorderWidth
+        property real ring2Radius
+        property real ring2BorderWidth
+        property real ring3Radius
+        property real ring3BorderWidth
+        property bool drawingRing2
+        property var drawingRing3
         property var ringXCenter: parent.width / 2
         property var ringYCenter: animatedRingsWrapper.yCenter
 
