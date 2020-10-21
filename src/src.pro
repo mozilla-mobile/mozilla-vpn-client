@@ -277,9 +277,9 @@ exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 }
 else{
-    message( Languages were not imported - using fallback english)
+    message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
-        ../translations/mozillavpn_en.ts \
+        ../translations/mozillavpn_en.ts
 
     ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/mozillavpn_en.ts
     ts.CONFIG += no_check_exist
