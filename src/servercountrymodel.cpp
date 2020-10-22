@@ -69,9 +69,9 @@ void ServerCountryModel::fromJsonInternal()
     Q_ASSERT(countries.isArray());
 
     QJsonArray countriesArray = countries.toArray();
-    for (QJsonArray::Iterator i = countriesArray.begin(); i != countriesArray.end(); ++i) {
-        Q_ASSERT(i->isObject());
-        QJsonObject countryObj = i->toObject();
+    for (QJsonValue countryValue : countriesArray) {
+        Q_ASSERT(countryValue.isObject());
+        QJsonObject countryObj = countryValue.toObject();
         m_countries.append(ServerCountry::fromJson(countryObj));
     }
 
@@ -106,8 +106,8 @@ QVariant ServerCountryModel::data(const QModelIndex &index, int role) const
         QStringList list;
         const QList<ServerCity> &cities = m_countries.at(index.row()).cities();
 
-        for (QList<ServerCity>::ConstIterator i = cities.begin(); i != cities.end(); ++i) {
-            list.append(i->name());
+        for (const ServerCity &city : cities) {
+            list.append(city.name());
         }
 
         return QVariant(list);
@@ -174,9 +174,9 @@ bool ServerCountryModel::exists(ServerData &data) const
 
 const QList<Server> ServerCountryModel::getServers(const ServerData &data) const
 {
-    for (QList<ServerCountry>::ConstIterator i = m_countries.begin(); i != m_countries.end(); ++i) {
-        if (i->code() == data.countryCode()) {
-            return i->getServers(data);
+    for (const ServerCountry &country : m_countries) {
+        if (country.code() == data.countryCode()) {
+            return country.getServers(data);
         }
     }
 

@@ -110,8 +110,8 @@ LogHandler::LogHandler()
     QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
     if (pe.contains("MOZVPN_LOG")) {
         QStringList parts = pe.value("MOZVPN_LOG").split(",");
-        for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
-            m_modules.append(i->trimmed());
+        for (const QString &part : parts) {
+            m_modules.append(part.trimmed());
         }
     }
 }

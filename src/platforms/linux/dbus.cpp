@@ -62,13 +62,11 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server,
     json.insert("ipv6Enabled", QJsonValue(MozillaVPN::instance()->settingsHolder()->ipv6Enabled()));
 
     QJsonArray allowedIPAddesses;
-    for (QList<IPAddressRange>::ConstIterator i = allowedIPAddressRanges.begin();
-         i != allowedIPAddressRanges.end();
-         ++i) {
+    for (const IPAddressRange &i : allowedIPAddressRanges) {
         QJsonObject range;
-        range.insert("address", QJsonValue(i->ipAddress()));
-        range.insert("range", QJsonValue((double) i->range()));
-        range.insert("isIpv6", QJsonValue(i->type() == IPAddressRange::IPv6));
+        range.insert("address", QJsonValue(i.ipAddress()));
+        range.insert("range", QJsonValue((double) i.range()));
+        range.insert("isIpv6", QJsonValue(i.type() == IPAddressRange::IPv6));
         allowedIPAddesses.append(range);
     };
     json.insert("allowedIPAddressRanges", allowedIPAddesses);

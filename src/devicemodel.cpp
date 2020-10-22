@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMutableListIterator>
 
 namespace {
 Logger logger(LOG_MODEL, "DeviceModel");
@@ -78,8 +79,8 @@ bool DeviceModel::fromJsonInternal() {
     QJsonValue devices = obj.take("devices");
     Q_ASSERT(devices.isArray());
     QJsonArray devicesArray = devices.toArray();
-    for (QJsonArray::iterator i = devicesArray.begin(); i != devicesArray.end(); ++i) {
-        Device device = Device::fromJson(*i);
+    for (QJsonValue deviceValue : devicesArray) {
+        Device device = Device::fromJson(deviceValue);
         m_devices.append(device);
     }
 
@@ -133,8 +134,8 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
 bool DeviceModel::hasDevice(const QString &deviceName) const
 {
-    for (QList<Device>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
-        if (i->isDevice(deviceName)) {
+    for (const Device &device : m_devices) {
+        if (device.isDevice(deviceName)) {
             return true;
         }
     }
@@ -144,9 +145,9 @@ bool DeviceModel::hasDevice(const QString &deviceName) const
 
 const Device *DeviceModel::device(const QString &deviceName) const
 {
-    for (QList<Device>::ConstIterator i = m_devices.begin(); i != m_devices.end(); ++i) {
-        if (i->isDevice(deviceName)) {
-            return &(*i);
+    for (const Device &device : m_devices) {
+        if (device.isDevice(deviceName)) {
+            return &device;
         }
     }
 

@@ -444,12 +444,10 @@ void Controller::statusUpdated(const QString &serverIpv4Gateway, uint64_t txByte
         list;
 
     list.swap(m_getStatusCallbacks);
-    for (QList<std::function<void(
-             const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>::ConstIterator i
-         = list.begin();
-         i != list.end();
-         ++i) {
-        (*i)(serverIpv4Gateway, txBytes, rxBytes);
+    for (const std::function<
+             void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)> &func :
+         list) {
+        func(serverIpv4Gateway, txBytes, rxBytes);
     }
 }
 
@@ -478,18 +476,14 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal 
     }
 
     const QStringList &captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
-    for (QStringList::ConstIterator i = captivePortalIpv4Addresses.begin();
-         i != captivePortalIpv4Addresses.end();
-         ++i) {
-        list.append(IPAddressRange(*i, 0, IPAddressRange::IPv4));
+    for (const QString &address : captivePortalIpv4Addresses) {
+        list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
     }
 
     if (ipv6Enabled) {
         const QStringList &captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
-        for (QStringList::ConstIterator i = captivePortalIpv6Addresses.begin();
-             i != captivePortalIpv6Addresses.end();
-             ++i) {
-            list.append(IPAddressRange(*i, 0, IPAddressRange::IPv6));
+        for (const QString &address : captivePortalIpv6Addresses) {
+            list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
         }
     }
 

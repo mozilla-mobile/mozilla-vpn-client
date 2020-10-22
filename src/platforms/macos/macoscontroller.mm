@@ -88,11 +88,11 @@ void MacOSController::activate(const Server &server,
     Q_ASSERT(impl);
 
     NSMutableArray<VPNIPAddressRange *> *allowedIPAddressRangesNS = [NSMutableArray<VPNIPAddressRange *> arrayWithCapacity: allowedIPAddressRanges.length()];
-    for (QList<IPAddressRange>::ConstIterator i = allowedIPAddressRanges.begin(); i != allowedIPAddressRanges.end(); ++i) {
-        VPNIPAddressRange* range = [[VPNIPAddressRange alloc]
-                                    initWithAddress:i->ipAddress().toNSString()
-                                    networkPrefixLength:i->range()
-                                    isIpv6:i->type() == IPAddressRange::IPv6];
+    for (const IPAddressRange &i : allowedIPAddressRanges) {
+        VPNIPAddressRange *range = [[VPNIPAddressRange alloc]
+                initWithAddress:i.ipAddress().toNSString()
+            networkPrefixLength:i.range()
+                         isIpv6:i.type() == IPAddressRange::IPv6];
         [allowedIPAddressRangesNS addObject: [range autorelease]];
     }
 
@@ -144,11 +144,11 @@ void MacOSController::checkStatus()
         uint64_t rxBytes = 0;
 
         QStringList lines = config.split("\n");
-        for (QStringList::ConstIterator i = lines.begin(); i != lines.end(); ++i) {
-            if (i->startsWith("tx_bytes=")) {
-                txBytes = i->split("=")[1].toULongLong();
-            } else if (i->startsWith("rx_bytes=")) {
-                rxBytes = i->split("=")[1].toULongLong();
+        for (const QString &line : lines) {
+            if (line.startsWith("tx_bytes=")) {
+                txBytes = line.split("=")[1].toULongLong();
+            } else if (line.startsWith("rx_bytes=")) {
+                rxBytes = line.split("=")[1].toULongLong();
             }
 
             if (txBytes && rxBytes) {

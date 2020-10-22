@@ -46,9 +46,9 @@ Server Server::fromJson(QJsonObject &obj)
     Q_ASSERT(portRanges.isArray());
 
     QJsonArray portRangesArray = portRanges.toArray();
-    for (QJsonArray::Iterator i = portRangesArray.begin(); i != portRangesArray.end(); ++i) {
-        Q_ASSERT(i->isArray());
-        QJsonArray port = i->toArray();
+    for (QJsonValue portRangeValue : portRangesArray) {
+        Q_ASSERT(portRangeValue.isArray());
+        QJsonArray port = portRangeValue.toArray();
         Q_ASSERT(port.count() == 2);
 
         QJsonValue a = port.at(0);
@@ -67,18 +67,18 @@ const Server &Server::weightChooser(const QList<Server> &servers)
 {
     uint32_t weightSum = 0;
 
-    for (QList<Server>::ConstIterator i = servers.begin(); i != servers.end(); ++i) {
-        weightSum += i->weight();
+    for (const Server &server : servers) {
+        weightSum += server.weight();
     }
 
     quint32 r = QRandomGenerator::global()->generate() % (weightSum + 1);
 
-    for (QList<Server>::ConstIterator i = servers.begin(); i != servers.end(); ++i) {
-        if (i->weight() >= r) {
-            return *i;
+    for (const Server &server : servers) {
+        if (server.weight() >= r) {
+            return server;
         }
 
-        r -= i->weight();
+        r -= server.weight();
     }
 
     // This should not happen.

@@ -69,9 +69,9 @@ void IAPHandler::start()
     const QStringList products = MozillaVPN::instance()->settingsHolder()->iapProducts();
     Q_ASSERT(!products.isEmpty());
 
-    for (QStringList::ConstIterator i = products.begin(); i != products.end(); ++i) {
-        logger.log() << "Registration product:" << *i;
-        m_appStore->registerProduct(QInAppProduct::Consumable, *i);
+    for (const QString &product : products) {
+        logger.log() << "Registration product:" << product;
+        m_appStore->registerProduct(QInAppProduct::Consumable, product);
     }
 
     logger.log() << "Waiting for the registreation of products";

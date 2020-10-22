@@ -486,8 +486,8 @@ void MozillaVPN::cancelAuthentication()
         return;
     }
 
-    for (QList<QPointer<Task>>::Iterator i = m_tasks.begin(); i != m_tasks.end(); ++i) {
-        delete *i;
+    for (QPointer<Task> &task : m_tasks) {
+        delete task;
     }
 
     m_tasks.clear();
@@ -716,10 +716,8 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
     out << "Mozilla VPN logs" << Qt::endl << "================" << Qt::endl << Qt::endl;
 
     LogHandler *logHandler = LogHandler::instance();
-    for (QVector<LogHandler::Log>::ConstIterator i = logHandler->logs().begin();
-         i != logHandler->logs().end();
-         ++i) {
-        logHandler->prettyOutput(out, *i);
+    for (const LogHandler::Log &log : logHandler->logs()) {
+        logHandler->prettyOutput(out, log);
     }
 
     file.close();

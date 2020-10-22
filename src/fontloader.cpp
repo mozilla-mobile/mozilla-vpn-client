@@ -17,9 +17,9 @@ void FontLoader::loadFonts()
 {
     QDir dir(":/ui/resources/fonts");
     QStringList files = dir.entryList();
-    for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
-        logger.log() << "Loading font:" << *i;
-        int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + *i);
+    for (const QString &file : files) {
+        logger.log() << "Loading font:" << file;
+        int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + file);
         logger.log() << "Result:" << id;
     }
 }

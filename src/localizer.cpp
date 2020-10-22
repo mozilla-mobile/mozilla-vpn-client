@@ -27,12 +27,12 @@ void Localizer::initialize(const QString& code)
     QCoreApplication::installTranslator(&m_translator);
     QDir dir(":/i18n");
     QStringList files = dir.entryList();
-    for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
-        if (!i->endsWith(".qm")) {
+    for (const QString &file : files) {
+        if (!file.endsWith(".qm")) {
             continue;
         }
 
-        QStringList parts = i->split(".");
+        QStringList parts = file.split(".");
         Q_ASSERT(parts.length() == 2);
 
         parts = parts[0].split("_");

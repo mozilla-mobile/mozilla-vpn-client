@@ -37,9 +37,9 @@ ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
     ServerCountry sc(countryName.toString(), countryCode.toString());
 
     QJsonArray citiesArray = cities.toArray();
-    for (QJsonArray::Iterator i = citiesArray.begin(); i != citiesArray.end(); ++i) {
-        Q_ASSERT(i->isObject());
-        QJsonObject city = i->toObject();
+    for (QJsonValue cityValue : citiesArray) {
+        Q_ASSERT(cityValue.isObject());
+        QJsonObject city = cityValue.toObject();
         sc.m_cities.append(ServerCity::fromJson(city));
     }
 
@@ -50,9 +50,9 @@ ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
 
 const QList<Server> ServerCountry::getServers(const ServerData &data) const
 {
-    for (QList<ServerCity>::ConstIterator i = m_cities.begin(); i != m_cities.end(); ++i) {
-        if (i->name() == data.city()) {
-            return i->getServers();
+    for (const ServerCity &city : m_cities) {
+        if (city.name() == data.city()) {
+            return city.getServers();
         }
     }
 

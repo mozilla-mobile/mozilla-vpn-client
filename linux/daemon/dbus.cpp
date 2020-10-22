@@ -158,13 +158,13 @@ bool DBus::activate(const QString &jsonConfig)
 
         QJsonArray array = value.toArray();
         QStringList allowedIPAddressRanges;
-        for (QJsonArray::ConstIterator i = array.begin(); i != array.end(); ++i) {
-            if (!i->isObject()) {
+        for (QJsonValue i : array) {
+            if (!i.isObject()) {
                 logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "must contain only objects";
                 return false;
             }
 
-            QJsonObject ipObj = i->toObject();
+            QJsonObject ipObj = i.toObject();
 
             QJsonValue address = ipObj.take("address");
             if (!address.isString()) {
@@ -295,9 +295,8 @@ QString DBus::logs()
     QTextStream out(&output);
 
     LogHandler *logHandler = LogHandler::instance();
-    for (QVector<LogHandler::Log>::ConstIterator i = logHandler->logs().begin(); i != logHandler->logs().end();
-         ++i) {
-        logHandler->prettyOutput(out, *i);
+    for (const LogHandler::Log &log : logHandler->logs()) {
+        logHandler->prettyOutput(out, log);
     }
 
     return output;

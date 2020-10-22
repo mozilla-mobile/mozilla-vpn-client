@@ -10,7 +10,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QMutableListIterator>
 
 void User::fromJson(const QByteArray &json)
 {
