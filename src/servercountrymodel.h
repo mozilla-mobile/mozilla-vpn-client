@@ -30,7 +30,9 @@ public:
 
     void fromJson(const QByteArray &data);
 
-    void pickRandom(ServerData &data);
+    void pickRandom(ServerData &data) const;
+
+    bool exists(ServerData &data) const;
 
     const QList<Server> getServers(const ServerData &data) const;
 

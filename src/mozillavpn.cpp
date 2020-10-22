@@ -406,9 +406,8 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
     m_serverCountryModel.fromJson(serverData);
     m_settingsHolder.setServers(serverData);
 
-    // TODO: ... what about if the current server is gone?
-
-    if (!m_serverData.initialized()) {
+    // The serverData could be unset or invalid with the new server list.
+    if (!m_serverData.initialized() || !m_serverCountryModel.exists(m_serverData)) {
         m_serverCountryModel.pickRandom(m_serverData);
         Q_ASSERT(m_serverData.initialized());
         m_serverData.writeSettings(m_settingsHolder);
