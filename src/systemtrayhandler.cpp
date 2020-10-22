@@ -11,10 +11,10 @@
 #include <QMenu>
 
 constexpr const std::array<const char *, 4> ANIMATED_ICON_STEPS
-    = {"://ui/resources/logo-frame1.svg",
-       "://ui/resources/logo-frame2.svg",
-       "://ui/resources/logo-frame3.svg",
-       "://ui/resources/logo-frame4.svg"};
+    = {"://ui/resources/logo-connecting1.svg",
+       "://ui/resources/logo-connecting2.svg",
+       "://ui/resources/logo-connecting3.svg",
+       "://ui/resources/logo-connecting4.svg"};
 
 namespace {
 Logger logger(LOG_MAIN, "SystemTrayHandler");
@@ -46,7 +46,7 @@ void SystemTrayHandler::controllerStateChanged()
     switch (MozillaVPN::instance()->controller()->state()) {
     case Controller::StateOn:
 
-        showIcon("://ui/resources/logo-tray.svg");
+        showIcon("://ui/resources/logo-on.svg");
         //% "Mozilla VPN connected"
         showMessage(qtTrId("vpn.systray.statusConnected"), qtTrId("TODO"), NoIcon, 2000);
         break;
