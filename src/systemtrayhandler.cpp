@@ -11,10 +11,10 @@
 #include <QMenu>
 
 constexpr const std::array<const char *, 4> ANIMATED_ICON_STEPS
-    = {"://ui/resources/logo-connecting1.svg",
-       "://ui/resources/logo-connecting2.svg",
-       "://ui/resources/logo-connecting3.svg",
-       "://ui/resources/logo-connecting4.svg"};
+    = {"://ui/resources/logo-animated1.svg",
+       "://ui/resources/logo-animated2.svg",
+       "://ui/resources/logo-animated3.svg",
+       "://ui/resources/logo-animated4.svg"};
 
 namespace {
 Logger logger(LOG_MAIN, "SystemTrayHandler");
@@ -26,13 +26,7 @@ SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
     m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
     setContextMenu(&m_menu);
 
-    connect(&m_animatedIconTimer, &QTimer::timeout, [this]() {
-        Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
-        setIcon(QIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]));
-        if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
-            m_animatedIconIndex = 0;
-        }
-    });
+    connect(&m_animatedIconTimer, &QTimer::timeout, this, &SystemTrayHandler::animateIcon);
 }
 
 void SystemTrayHandler::controllerStateChanged()
@@ -58,14 +52,16 @@ void SystemTrayHandler::controllerStateChanged()
         break;
 
     case Controller::StateSwitching:
-        showIcon("://ui/resources/logo-tray.svg");
+        showAnimatedIcon();
         //% "Mozilla VPN switching"
         //: This message is shown when the VPN is switching to a different server in a different location.
         showMessage(qtTrId("vpn.systray.statusSwitch"), qtTrId("TODO"), NoIcon, 2000);
         break;
 
     case Controller::StateConnecting:
-        animateConnectingIcon();
+        [[fallthrough]];
+    case Controller::StateDisconnecting:
+        showAnimatedIcon();
         break;
 
     default:
@@ -81,9 +77,20 @@ void SystemTrayHandler::captivePortalNotificationRequested()
     showMessage(qtTrId("vpn.systray.captivePortalAlert"), tr("TODO"), NoIcon, 2000);
 }
 
-void SystemTrayHandler::animateConnectingIcon()
+void SystemTrayHandler::showAnimatedIcon()
 {
+    m_animatedIconIndex = 0;
     m_animatedIconTimer.start(200);
+    animateIcon();
+}
+
+void SystemTrayHandler::animateIcon()
+{
+    Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
+    setIcon(QIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]));
+    if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
+        m_animatedIconIndex = 0;
+    }
 }
 
 void SystemTrayHandler::showIcon(const QString &icon)

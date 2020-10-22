@@ -367,10 +367,10 @@
         <file>ui/resources/logo-dock.png</file>
         <file>ui/resources/logo-tray.svg</file>
         <file>ui/resources/close-dark.svg</file>
-        <file>ui/resources/logo-connecting1.svg</file>
-        <file>ui/resources/logo-connecting2.svg</file>
-        <file>ui/resources/logo-connecting3.svg</file>
-        <file>ui/resources/logo-connecting4.svg</file>
         <file>ui/resources/logo-on.svg</file>
+        <file>ui/resources/logo-animated1.svg</file>
+        <file>ui/resources/logo-animated2.svg</file>
+        <file>ui/resources/logo-animated3.svg</file>
+        <file>ui/resources/logo-animated4.svg</file>
     </qresource>
 </RCC>

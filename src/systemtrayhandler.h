@@ -23,11 +23,14 @@ public:
 public slots:
     void controllerStateChanged();
 
+private slots:
+    void animateIcon();
+
 signals:
     void quit();
 
 private:
-    void animateConnectingIcon();
+    void showAnimatedIcon();
     void showIcon(const QString &icon);
 
 private:
