@@ -46,7 +46,7 @@ void CryptoSettings::resetKey()
 // static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 {
-#ifdef MACOS_INTEGRATION
+#ifdef __APPLE__
     if (!initialized) {
         initialized = true;
 
@@ -126,7 +126,7 @@ CryptoSettings::Version CryptoSettings::getSupportedVersion()
 {
     logger.log() << "Get supported settings method";
 
-#ifdef MACOS_INTEGRATION
+#ifdef __APPLE__
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (getKey(key)) {
         logger.log() << "Encryption supported!";
