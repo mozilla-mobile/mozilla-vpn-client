@@ -50,7 +50,7 @@ print G "done."
 print Y "Importing translation files..."
 python3 scripts/importLanguages.py || die "Failed to import"
 
-printn Y "Extract the project version..."
+printn Y "Extract the project version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION"
