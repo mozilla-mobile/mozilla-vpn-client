@@ -367,5 +367,9 @@
         <file>ui/resources/logo-dock.png</file>
         <file>ui/resources/logo-tray.svg</file>
         <file>ui/resources/close-dark.svg</file>
+        <file>ui/resources/logo-frame1.svg</file>
+        <file>ui/resources/logo-frame2.svg</file>
+        <file>ui/resources/logo-frame3.svg</file>
+        <file>ui/resources/logo-frame4.svg</file>
     </qresource>
 </RCC>
