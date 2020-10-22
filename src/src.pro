@@ -226,6 +226,7 @@ else:ios {
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/ios/iosdatamigration.mm \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
             platforms/macos/macoscryptosettings.mm \
@@ -239,6 +240,7 @@ else:ios {
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \
+            platforms/ios/iosdatamigration.h \
             platforms/ios/iosutils.h \
             platforms/ios/authenticationlistener.h \
             platforms/macos/macoscontroller.h

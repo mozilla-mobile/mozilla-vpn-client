@@ -118,6 +118,27 @@ QVariant ServerCountryModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool ServerCountryModel::pickIfExists(const QString &countryCode,
+                                      const QString &cityCode,
+                                      ServerData &data) const
+{
+    logger.log() << "Checking if the server exists" << countryCode << cityCode;
+
+    for (const ServerCountry& country : m_countries) {
+        if (country.code() == countryCode) {
+            for (const ServerCity& city : country.cities()) {
+                if (city.code() == cityCode) {
+                    data.initialize(country, city);
+                    return true;
+                }
+            }
+            break;
+        }
+    }
+
+    return false;
+}
+
 void ServerCountryModel::pickRandom(ServerData &data) const
 {
     logger.log() << "Choosing a random server";
@@ -136,11 +157,10 @@ bool ServerCountryModel::exists(ServerData &data) const
     logger.log() << "Check if the server is still valid.";
     Q_ASSERT(data.initialized());
 
-    for (QList<ServerCountry>::ConstIterator i = m_countries.begin(); i != m_countries.end(); ++i) {
-        if (i->code() == data.countryCode()) {
-            const QList<ServerCity> &cities = i->cities();
-            for (QList<ServerCity>::ConstIterator c = cities.begin(); c != cities.end(); ++c) {
-                if (data.city() == c->name()) {
+    for (const ServerCountry& country : m_countries) {
+        if (country.code() == data.countryCode()) {
+            for (const ServerCity& city : country.cities()) {
+                if (data.city() == city.name()) {
                     return true;
                 }
             }

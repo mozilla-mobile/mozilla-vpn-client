@@ -16,6 +16,7 @@
 
 #ifdef IOS_INTEGRATION
 #include "platforms/ios/iaphandler.h"
+#include "platforms/ios/iosdatamigration.h"
 #include "platforms/ios/taskiosproducts.h"
 #endif
 
@@ -120,14 +121,10 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &m_controller,
             &Controller::captivePortalDetected);
 
-
-    QScreen* screen = QGuiApplication::primaryScreen();
-    screen->setOrientationUpdateMask(
-        Qt::PortraitOrientation |
-        Qt::LandscapeOrientation |
-        Qt::InvertedPortraitOrientation |
-        Qt::InvertedLandscapeOrientation
-    );
+    QScreen *screen = QGuiApplication::primaryScreen();
+    screen->setOrientationUpdateMask(Qt::PortraitOrientation | Qt::LandscapeOrientation
+                                     | Qt::InvertedPortraitOrientation
+                                     | Qt::InvertedLandscapeOrientation);
     connect(screen, &QScreen::orientationChanged, [](Qt::ScreenOrientation orientation) {
         logger.log() << "Screen rotated:" << orientation;
     });
@@ -149,6 +146,13 @@ void MozillaVPN::initialize()
 #endif
 
     m_releaseMonitor.runSoon();
+
+#ifdef IOS_INTEGRATION
+    if (!m_settingsHolder.hasNativeIOSDataMigrated()) {
+        IOSDataMigration::migrate();
+        m_settingsHolder.setNativeIOSDataMigrated(true);
+    }
+#endif
 
     m_localizer.initialize(m_settingsHolder.languageCode());
 
@@ -317,6 +321,12 @@ void MozillaVPN::maybeRunTask()
     task->run(this);
 }
 
+void MozillaVPN::setToken(const QString &token)
+{
+    m_settingsHolder.setToken(token);
+    m_token = token;
+}
+
 void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &token)
 {
     logger.log() << "Authentication completed";
@@ -327,9 +337,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     m_deviceModel.fromJson(json);
     m_deviceModel.writeSettings(m_settingsHolder);
 
-    m_settingsHolder.setToken(token);
-    m_token = token;
-
+    setToken(token);
     setUserAuthenticated(true);
 
 #ifdef IOS_INTEGRATION
@@ -399,12 +407,17 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
     m_deviceModel.removeDevice(deviceName);
 }
 
+void MozillaVPN::setServerList(const QByteArray &serverData)
+{
+    m_serverCountryModel.fromJson(serverData);
+    m_settingsHolder.setServers(serverData);
+}
+
 void MozillaVPN::serversFetched(const QByteArray &serverData)
 {
     logger.log() << "Server fetched!";
 
-    m_serverCountryModel.fromJson(serverData);
-    m_settingsHolder.setServers(serverData);
+    setServerList(serverData);
 
     // The serverData could be unset or invalid with the new server list.
     if (!m_serverData.initialized() || !m_serverCountryModel.exists(m_serverData)) {

@@ -19,6 +19,8 @@ public:
 
     const QString &name() const { return m_name; }
 
+    const QString &code() const { return m_code; }
+
     const QList<Server> getServers() const { return m_servers; }
 
 private:

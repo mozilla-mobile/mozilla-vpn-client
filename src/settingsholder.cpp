@@ -33,6 +33,10 @@ constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 
+#ifdef IOS_INTEGRATION
+constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
+#endif
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 }
@@ -175,5 +179,14 @@ GETSET(QString,
        setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
 GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts, iapProducts, setIapProducts)
+
+#ifdef IOS_INTEGRATION
+GETSET(bool,
+       toBool,
+       SETTINGS_NATIVEIOSDATAMIGRATED,
+       hasNativeIOSDataMigrated,
+       nativeIOSDataMigrated,
+       setNativeIOSDataMigrated)
+#endif
 
 #undef GETSET

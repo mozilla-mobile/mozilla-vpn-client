@@ -12,31 +12,24 @@
 // static
 Server Server::fromJson(QJsonObject &obj)
 {
-    Q_ASSERT(obj.contains("hostname"));
     QJsonValue hostname = obj.take("hostname");
     Q_ASSERT(hostname.isString());
 
-    Q_ASSERT(obj.contains("ipv4_addr_in"));
     QJsonValue ipv4AddrIn = obj.take("ipv4_addr_in");
     Q_ASSERT(ipv4AddrIn.isString());
 
-    Q_ASSERT(obj.contains("ipv4_gateway"));
     QJsonValue ipv4Gateway = obj.take("ipv4_gateway");
     Q_ASSERT(ipv4Gateway.isString());
 
-    Q_ASSERT(obj.contains("ipv6_addr_in"));
     QJsonValue ipv6AddrIn = obj.take("ipv6_addr_in");
-    Q_ASSERT(ipv6AddrIn.isString());
+    // If this object comes from the IOS migration, the ipv6_addr_in is missing.
 
-    Q_ASSERT(obj.contains("ipv6_gateway"));
     QJsonValue ipv6Gateway = obj.take("ipv6_gateway");
     Q_ASSERT(ipv6Gateway.isString());
 
-    Q_ASSERT(obj.contains("public_key"));
     QJsonValue publicKey = obj.take("public_key");
     Q_ASSERT(publicKey.isString());
 
-    Q_ASSERT(obj.contains("weight"));
     QJsonValue weight = obj.take("weight");
     Q_ASSERT(weight.isDouble());
 

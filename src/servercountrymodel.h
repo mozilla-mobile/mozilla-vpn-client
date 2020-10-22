@@ -32,6 +32,8 @@ public:
 
     void pickRandom(ServerData &data) const;
 
+    bool pickIfExists(const QString &countryCode, const QString &cityCode, ServerData &data) const;
+
     bool exists(ServerData &data) const;
 
     const QList<Server> getServers(const ServerData &data) const;

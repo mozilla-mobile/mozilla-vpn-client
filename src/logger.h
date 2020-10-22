@@ -16,6 +16,7 @@ constexpr const char *LOG_NETWORKING = "networking";
 
 #ifdef IOS_INTEGRATION
 constexpr const char *LOG_IAP = "iap";
+constexpr const char *LOG_IOS = "ios";
 #endif
 
 #ifdef __linux__
