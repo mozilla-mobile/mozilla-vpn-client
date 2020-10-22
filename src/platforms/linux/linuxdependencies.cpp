@@ -33,7 +33,7 @@ bool findInPath(const char *what)
 
     QStringList parts = QString(path).split(":");
     for (const QString &part : parts) {
-        QDir pathDir(path);
+        QDir pathDir(part);
         QFileInfo file(pathDir.filePath(what));
         if (file.exists()) {
             logger.log() << what << "found" << file.filePath();
