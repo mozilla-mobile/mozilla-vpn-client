@@ -54,6 +54,7 @@ const listSpacing = 8;
 const maxTextWidth = 296;
 const radius = 10;
 const windowMargin = 16;
+const windowMinHeight = 454
 
 const blueButton = {
     "defaultColor" : buttonColor,

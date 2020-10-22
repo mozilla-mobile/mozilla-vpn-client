@@ -13,23 +13,28 @@ import "../resources/onboarding/onboardingCopy.js" as PanelCopy
 Item {
     id: onboardingPanel
 
-    property var panelNum: 1
+    property real panelHeight: window.height - (nextPanel.height + nextPanel.anchors.bottomMargin + progressIndicator.height + progressIndicator.anchors.bottomMargin)
+    property real panelWidth: window.width
 
     SwipeView {
         id: swipeView
 
         currentIndex: 0
-        anchors.fill: parent
+        height: onboardingPanel.panelHeight
+        width: parent.width
 
         Repeater {
+            id: repeater
+
             model: 4
 
             Loader {
+                height: onboardingPanel.panelHeight
+                width: onboardingPanel.panelWidth
                 active: SwipeView.isCurrentItem
 
                 sourceComponent: VPNPanel {
-                    id: contentWrapper
-
+                    height: onboardingPanel.panelHeight
                     logo: "../resources/onboarding/onboarding" + (index + 1) + ".svg"
                     logoTitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].headline)
                     logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].subtitle)
