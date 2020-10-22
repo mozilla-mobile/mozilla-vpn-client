@@ -15,27 +15,17 @@ Item {
 
     property var panelNum: 1
 
-    VPNHeaderLink {
-        id: getHelp
-
-        //% "Skip"
-//        labelText: qsTrId("vpn.onboarding.skip")
-        onClicked: stackview.pop()
-    }
-
     SwipeView {
         id: swipeView
-
-        property real numPanels: 4
 
         currentIndex: 0
         anchors.fill: parent
 
         Repeater {
-            model: swipeView.numPanels
+            model: 4
 
             Loader {
-                active: SwipeView.isCurrentItem || SwipeView.isNextItem || SwipeView.isPreviousItem
+                active: SwipeView.isCurrentItem
 
                 sourceComponent: VPNPanel {
                     id: contentWrapper
@@ -61,6 +51,14 @@ Item {
 
     }
 
+    VPNHeaderLink {
+        id: getHelp
+
+        //% "Skip"
+        labelText: qsTrId("vpn.onboarding.skip")
+        onClicked: stackview.pop()
+    }
+
     VPNButton {
         id: nextPanel
 
@@ -68,13 +66,13 @@ Item {
         readonly property var textNext: qsTrId("vpn.onboarding.next")
 
         width: 282
-        text: swipeView.currentIndex === 3 ? qsTrId("vpn.main.getStarted") : textNext
+        text: swipeView.currentIndex === swipeView.count - 1 ? qsTrId("vpn.main.getStarted") : textNext
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressIndicator.top
         anchors.bottomMargin: 32
         radius: 4
-        onClicked: swipeView.currentIndex < 3 ? swipeView.currentIndex++ : VPN.authenticate()
+        onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.authenticate()
     }
 
     PageIndicator {
