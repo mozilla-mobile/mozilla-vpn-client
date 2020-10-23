@@ -18,6 +18,10 @@ Flickable {
     }
 
     ColumnLayout {
+        anchors.top: menu.bottom
+        Layout.preferredWidth: parent.width
+        spacing: 0
+
         /* TODO
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
@@ -31,10 +35,6 @@ Flickable {
             onClicked: VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
         }
         */
-
-        anchors.top: menu.bottom
-        Layout.preferredWidth: parent.width
-        spacing: 0
 
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
