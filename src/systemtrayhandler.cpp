@@ -37,6 +37,12 @@ void SystemTrayHandler::controllerStateChanged()
         return;
     }
 
+    // If we are in a non-main state, we don't need to show special icons.
+    if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+        showIcon("://ui/resources/logo-tray.svg");
+        return;
+    }
+
     switch (MozillaVPN::instance()->controller()->state()) {
     case Controller::StateOn:
         showIcon("://ui/resources/logo-on.svg");
