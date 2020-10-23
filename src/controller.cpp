@@ -399,6 +399,7 @@ bool Controller::processNextStep()
 
 void Controller::setState(State state)
 {
+    logger.log() << "Setting state:" << state;
     m_state = state;
     emit stateChanged();
 }

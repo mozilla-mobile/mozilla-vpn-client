@@ -372,5 +372,6 @@
         <file>ui/resources/logo-animated2.svg</file>
         <file>ui/resources/logo-animated3.svg</file>
         <file>ui/resources/logo-animated4.svg</file>
+        <file>ui/resources/logo-off.svg</file>
     </qresource>
 </RCC>

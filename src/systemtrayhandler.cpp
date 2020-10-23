@@ -39,14 +39,13 @@ void SystemTrayHandler::controllerStateChanged()
 
     switch (MozillaVPN::instance()->controller()->state()) {
     case Controller::StateOn:
-
         showIcon("://ui/resources/logo-on.svg");
         //% "Mozilla VPN connected"
         showMessage(qtTrId("vpn.systray.statusConnected"), qtTrId("TODO"), NoIcon, 2000);
         break;
 
     case Controller::StateOff:
-        showIcon("://ui/resources/logo-tray.svg");
+        showIcon("://ui/resources/logo-off.svg");
         //% "Mozilla VPN disconnected"
         showMessage(qtTrId("vpn.systray.statusDisconnected"), qtTrId("TODO"), NoIcon, 2000);
         break;
