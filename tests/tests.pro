@@ -8,6 +8,9 @@ TARGET = tests
 INCLUDEPATH += .
 
 HEADERS += \
+    ../src/logger.h \
+    ../src/loghandler.h \
+    ../src/serverdata.h \
     ../src/settingsholder.h \
     ../src/user.h \
     autotest.h \
@@ -15,6 +18,9 @@ HEADERS += \
     testuser.h
 
 SOURCES += \
+    ../src/logger.cpp \
+    ../src/loghandler.cpp \
+    ../src/serverdata.cpp \
     ../src/user.cpp \
     main.cpp \
     mocsettingsholder.cpp \

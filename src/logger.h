@@ -42,6 +42,7 @@ public:
     {
     public:
         Log(Logger *logger);
+        Log(const Log &o);
         ~Log();
 
         Log &operator<<(uint64_t t);

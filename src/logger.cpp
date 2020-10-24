@@ -20,6 +20,11 @@ Logger::Log Logger::log()
 
 Logger::Log::Log(Logger *logger) : m_logger(logger), m_ts(&m_buffer, QIODevice::WriteOnly) {}
 
+Logger::Log::Log(const Log &o)
+{
+    Q_UNUSED(o);
+}
+
 Logger::Log::~Log()
 {
     LogHandler::messageHandler(m_logger->modules(), m_logger->className(), m_buffer.trimmed());
