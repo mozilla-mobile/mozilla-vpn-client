@@ -22,7 +22,7 @@ class User final : public QObject
     Q_PROPERTY(int maxDevices READ maxDevices NOTIFY changed)
 
 public:
-    void fromJson(const QByteArray &json);
+    [[nodiscard]] bool fromJson(const QByteArray &json);
 
     bool fromSettings(SettingsHolder &settingsHolder);
 

@@ -331,7 +331,12 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 {
     logger.log() << "Authentication completed";
 
-    m_user.fromJson(json);
+    if (!m_user.fromJson(json)) {
+        logger.log() << "Failed to parse the User JSON data";
+        errorHandle(ErrorHandler::BackendServiceError);
+        return;
+    }
+
     m_user.writeSettings(m_settingsHolder);
 
     m_deviceModel.fromJson(json);
@@ -459,7 +464,12 @@ void MozillaVPN::accountChecked(const QByteArray &json)
 {
     logger.log() << "Account checked";
 
-    m_user.fromJson(json);
+    if (!m_user.fromJson(json)) {
+        logger.log() << "Failed to parse the User JSON data";
+        // We don't need to communicate it to the user. Let's ignore it.
+        return;
+    }
+
     m_user.writeSettings(m_settingsHolder);
 
     m_deviceModel.fromJson(json);
