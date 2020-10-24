@@ -18,22 +18,20 @@ Logger::Log Logger::log()
     return Log(this);
 }
 
-Logger::Log::Log(Logger *logger) : m_logger(logger), m_ts(&m_buffer, QIODevice::WriteOnly) {}
-
-Logger::Log::Log(const Log &o)
-{
-    Q_UNUSED(o);
-}
+Logger::Log::Log(Logger *logger) : m_logger(logger), m_data(new Data()) {}
 
 Logger::Log::~Log()
 {
-    LogHandler::messageHandler(m_logger->modules(), m_logger->className(), m_buffer.trimmed());
+    LogHandler::messageHandler(m_logger->modules(),
+                               m_logger->className(),
+                               m_data->m_buffer.trimmed());
+    delete m_data;
 }
 
 #define CREATE_LOG_OP_REF(x) \
     Logger::Log &Logger::Log::operator<<(x t) \
     { \
-        m_ts << t << ' '; \
+        m_data->m_ts << t << ' '; \
         return *this; \
     }
 
@@ -46,12 +44,12 @@ CREATE_LOG_OP_REF(const QByteArray &);
 
 Logger::Log &Logger::Log::operator<<(const QStringList &t)
 {
-    m_ts << '[' << t.join(",") << ']' << ' ';
+    m_data->m_ts << '[' << t.join(",") << ']' << ' ';
     return *this;
 }
 
 Logger::Log &Logger::Log::operator<<(QTextStreamFunction t)
 {
-    m_ts << t;
+    m_data->m_ts << t;
     return *this;
 }

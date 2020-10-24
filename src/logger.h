@@ -42,7 +42,6 @@ public:
     {
     public:
         Log(Logger *logger);
-        Log(const Log &o);
         ~Log();
 
         Log &operator<<(uint64_t t);
@@ -54,8 +53,16 @@ public:
 
     private:
         Logger *m_logger;
-        QString m_buffer;
-        QTextStream m_ts;
+
+        struct Data
+        {
+            Data() : m_ts(&m_buffer, QIODevice::WriteOnly) {}
+
+            QString m_buffer;
+            QTextStream m_ts;
+        };
+
+        Data *m_data;
     };
 
     Log log();
