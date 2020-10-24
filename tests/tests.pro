@@ -10,6 +10,9 @@ INCLUDEPATH += .
 HEADERS += \
     ../src/logger.h \
     ../src/loghandler.h \
+    ../src/server.h \
+    ../src/servercity.h \
+    ../src/servercountry.h \
     ../src/serverdata.h \
     ../src/settingsholder.h \
     ../src/user.h \
@@ -20,6 +23,9 @@ HEADERS += \
 SOURCES += \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
+    ../src/server.cpp \
+    ../src/servercity.cpp \
+    ../src/servercountry.cpp \
     ../src/serverdata.cpp \
     ../src/user.cpp \
     main.cpp \
