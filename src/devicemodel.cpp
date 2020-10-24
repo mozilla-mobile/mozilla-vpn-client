@@ -80,7 +80,10 @@ bool DeviceModel::fromJsonInternal() {
     Q_ASSERT(devices.isArray());
     QJsonArray devicesArray = devices.toArray();
     for (QJsonValue deviceValue : devicesArray) {
-        Device device = Device::fromJson(deviceValue);
+        Device device;
+        if (!device.fromJson(deviceValue)) {
+            return false;
+        }
         m_devices.append(device);
     }
 

@@ -9,6 +9,9 @@ class TestDevice : public QObject
 
 private slots:
     void basic();
+
+    void fromJson_data();
+    void fromJson();
 };
 
 #endif // TESTDEVICE_H

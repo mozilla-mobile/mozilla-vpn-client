@@ -8,6 +8,7 @@ TARGET = tests
 INCLUDEPATH += .
 
 HEADERS += \
+    ../src/device.h \
     ../src/logger.h \
     ../src/loghandler.h \
     ../src/server.h \
@@ -22,6 +23,7 @@ HEADERS += \
     testuser.h
 
 SOURCES += \
+    ../src/device.cpp \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
     ../src/server.cpp \

@@ -13,6 +13,8 @@ class QJsonValue;
 class Device final
 {
 public:
+    Device() {}
+
     Device(const QString &deviceName,
            const QDateTime &createdAt,
            const QString &publicKey,
@@ -23,7 +25,7 @@ public:
 
     static QString currentDeviceName();
 
-    static Device fromJson(const QJsonValue &json);
+    [[nodiscard]] bool fromJson(const QJsonValue &json);
 
     const QString &name() const { return m_deviceName; }
 
