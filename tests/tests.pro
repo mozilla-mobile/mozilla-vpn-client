@@ -10,9 +10,13 @@ INCLUDEPATH += .
 HEADERS += \
     ../src/settingsholder.h \
     ../src/user.h \
+    autotest.h \
+    testserverdata.h \
     testuser.h
 
 SOURCES += \
     ../src/user.cpp \
+    main.cpp \
     mocsettingsholder.cpp \
+    testserverdata.cpp \
     testuser.cpp

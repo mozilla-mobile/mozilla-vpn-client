@@ -4,6 +4,7 @@
 
 #include "testuser.h"
 #include "../src/user.h"
+#include "autotest.h"
 
 void TestUser::fromJson_data()
 {
@@ -123,4 +124,4 @@ void TestUser::fromJson()
     QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 }
 
-QTEST_MAIN(TestUser)
+DECLARE_TEST(TestUser)
