@@ -47,6 +47,7 @@
         <file>ui/components/VPNSignOut.qml</file>
         <file>ui/components/VPNFocus.qml</file>
         <file>ui/components/VPNList.qml</file>
+        <file>ui/components/VPNServerCountry.qml</file>
         <file>ui/themes/themes.js</file>
         <file>ui/settings/ViewAboutUs.qml</file>
         <file>ui/settings/ViewLanguage.qml</file>
