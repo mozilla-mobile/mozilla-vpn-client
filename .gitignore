@@ -29,3 +29,4 @@ xcode.xconfig
 android/build
 .idea/
 *.ts
+tests/tests
