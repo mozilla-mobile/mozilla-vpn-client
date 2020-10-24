@@ -17,7 +17,7 @@
 
 namespace {
 
-Logger logger(LOG_NETWORKING, "MacOSPingSendWorker");
+Logger logger({LOG_MACOS, LOG_NETWORKING}, "MacOSPingSendWorker");
 
 int identifier()
 {

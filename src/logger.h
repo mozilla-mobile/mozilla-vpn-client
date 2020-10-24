@@ -32,9 +32,10 @@ class QNetworkReply;
 class Logger
 {
 public:
-    Logger(const QString &module, const QString& className);
+    Logger(const QString &module, const QString &className);
+    Logger(const QStringList &modules, const QString &className);
 
-    const QString &module() const { return m_module; }
+    const QStringList &modules() const { return m_modules; }
     const QString &className() const { return m_className; }
 
     class Log
@@ -59,7 +60,7 @@ public:
     Log log();
 
 private:
-    QString m_module;
+    QStringList m_modules;
     QString m_className;
 };
 

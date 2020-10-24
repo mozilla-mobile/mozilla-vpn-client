@@ -19,7 +19,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "AuthenticationListener");
+Logger logger({LOG_IOS, LOG_MAIN}, "AuthenticationListener");
 
 ASWebAuthenticationSession *session = nullptr;
 

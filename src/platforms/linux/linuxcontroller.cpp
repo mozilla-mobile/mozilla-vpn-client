@@ -19,7 +19,7 @@
 #include <QString>
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LinuxController");
+Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxController");
 }
 
 LinuxController::LinuxController()

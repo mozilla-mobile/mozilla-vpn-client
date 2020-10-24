@@ -6,7 +6,11 @@
 #include "loghandler.h"
 
 Logger::Logger(const QString &module, const QString &className)
-    : m_module(module), m_className(className)
+    : Logger(QStringList({module}), className)
+{}
+
+Logger::Logger(const QStringList &modules, const QString &className)
+    : m_modules(modules), m_className(className)
 {}
 
 Logger::Log Logger::log()
@@ -18,7 +22,7 @@ Logger::Log::Log(Logger *logger) : m_logger(logger), m_ts(&m_buffer, QIODevice::
 
 Logger::Log::~Log()
 {
-    LogHandler::messageHandler(m_logger->module(), m_logger->className(), m_buffer.trimmed());
+    LogHandler::messageHandler(m_logger->modules(), m_logger->className(), m_buffer.trimmed());
 }
 
 #define CREATE_LOG_OP_REF(x) \
