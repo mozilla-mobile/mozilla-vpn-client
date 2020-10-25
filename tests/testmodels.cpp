@@ -409,6 +409,66 @@ void TestModels::serverCityFromJson()
     QCOMPARE(sc.getServers().length(), servers);
 }
 
+// ServerCountry
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::serverCountryBasic()
+{
+    ServerCountry sc;
+    QCOMPARE(sc.name(), "");
+    QCOMPARE(sc.code(), "");
+    QCOMPARE(sc.cities().isEmpty(), true);
+}
+
+void TestModels::serverCountryFromJson_data()
+{
+    QTest::addColumn<QJsonObject>("json");
+    QTest::addColumn<bool>("result");
+    QTest::addColumn<QString>("name");
+    QTest::addColumn<QString>("code");
+    QTest::addColumn<int>("cities");
+
+    QJsonObject obj;
+    QTest::addRow("empty") << obj << false;
+
+    obj.insert("name", "name");
+    QTest::addRow("name") << obj << false;
+
+    obj.insert("code", "code");
+    QTest::addRow("code") << obj << false;
+
+    obj.insert("cities", "cities");
+    QTest::addRow("cities invalid") << obj << false;
+
+    QJsonArray cities;
+    obj.insert("cities", cities);
+    QTest::addRow("cities empty") << obj << true << "name" << "code" << 0;
+}
+
+void TestModels::serverCountryFromJson()
+{
+    QFETCH(QJsonObject, json);
+    QFETCH(bool, result);
+
+    ServerCountry sc;
+    QCOMPARE(sc.fromJson(json), result);
+    if (!result) {
+        QCOMPARE(sc.name(), "");
+        QCOMPARE(sc.code(), "");
+        QCOMPARE(sc.cities().isEmpty(), true);
+        return;
+    }
+
+    QFETCH(QString, name);
+    QCOMPARE(sc.name(), name);
+
+    QFETCH(QString, code);
+    QCOMPARE(sc.code(), code);
+
+    QFETCH(int, cities);
+    QCOMPARE(sc.cities().length(), cities);
+}
+
 // ServerData
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -425,7 +485,8 @@ void TestModels::serverDataBasic()
         countryObj.insert("name", "serverCountryName");
         countryObj.insert("code", "serverCountryCode");
         countryObj.insert("cities", QJsonArray());
-        ServerCountry country = ServerCountry::fromJson(countryObj);
+        ServerCountry country;
+        QCOMPARE(country.fromJson(countryObj), true);
 
         QJsonObject cityObj;
         cityObj.insert("code", "serverCityCode");

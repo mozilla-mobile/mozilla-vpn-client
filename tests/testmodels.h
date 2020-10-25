@@ -27,7 +27,11 @@ private slots:
     void serverCityFromJson_data();
     void serverCityFromJson();
 
-    // TODO: servercountry
+    void serverCountryBasic();
+    void serverCountryFromJson_data();
+    void serverCountryFromJson();
+
+    // TODO: serverCountryModel
 
     void serverDataBasic();
 

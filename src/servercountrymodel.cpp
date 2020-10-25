@@ -72,7 +72,13 @@ void ServerCountryModel::fromJsonInternal()
     for (QJsonValue countryValue : countriesArray) {
         Q_ASSERT(countryValue.isObject());
         QJsonObject countryObj = countryValue.toObject();
-        m_countries.append(ServerCountry::fromJson(countryObj));
+
+        ServerCountry country;
+        if (!country.fromJson(countryObj)) {
+            // TODO
+        }
+
+        m_countries.append(country);
     }
 
     std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
