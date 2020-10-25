@@ -505,8 +505,6 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     m_user.writeSettings(m_settingsHolder);
     m_deviceModel.writeSettings(m_settingsHolder);
 
-    emit m_user.changed();
-
 #ifdef IOS_INTEGRATION
     if (m_user.subscriptionNeeded() && m_state == StateMain) {
         m_controller.subscriptionNeeded();
