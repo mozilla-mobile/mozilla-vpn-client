@@ -24,7 +24,7 @@ class User final : public QObject
 public:
     [[nodiscard]] bool fromJson(const QByteArray &json);
 
-    bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
     void writeSettings(SettingsHolder &settingsHolder);
 

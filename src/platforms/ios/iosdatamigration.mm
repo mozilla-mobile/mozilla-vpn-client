@@ -63,7 +63,10 @@ void migrateUserDefaultData()
 
             QJsonDocument doc;
             doc.setObject(countriesObj);
-            vpn->setServerList(doc.toJson());
+            if (!vpn->setServerList(doc.toJson())) {
+                logger.log() << "Server list cannot be imported";
+                return;
+            }
         }
     }
 

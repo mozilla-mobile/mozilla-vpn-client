@@ -142,7 +142,7 @@ public:
 
     void setToken(const QString &token);
 
-    void setServerList(const QByteArray& serverData);
+    [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);

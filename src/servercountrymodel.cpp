@@ -25,23 +25,30 @@ bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)
         return false;
     }
 
-    m_rawJson = settingsHolder.servers();
-    fromJsonInternal();
+    const QByteArray json = settingsHolder.servers();
+    if (!fromJsonInternal(json)) {
+        return true;
+    }
 
+    m_rawJson = json;
     return true;
 }
 
-void ServerCountryModel::fromJson(const QByteArray &s)
+bool ServerCountryModel::fromJson(const QByteArray &s)
 {
     logger.log() << "Reading from JSON";
 
-    if (m_rawJson == s) {
+    if (!s.isEmpty() && m_rawJson == s) {
         logger.log() << "Nothing has changed";
-        return;
+        return true;
+    }
+
+    if (!fromJsonInternal(s)) {
+        return false;
     }
 
     m_rawJson = s;
-    fromJsonInternal();
+    return true;
 }
 
 namespace {
@@ -53,29 +60,35 @@ bool sortCountryCallback(const ServerCountry &a, const ServerCountry &b)
 
 } // anonymous namespace
 
-void ServerCountryModel::fromJsonInternal()
+bool ServerCountryModel::fromJsonInternal(const QByteArray &s)
 {
     beginResetModel();
 
     m_countries.clear();
 
-    QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
+    QJsonDocument doc = QJsonDocument::fromJson(s);
+    if (!doc.isObject()) {
+        return false;
+    }
 
-    Q_ASSERT(doc.isObject());
     QJsonObject obj = doc.object();
 
-    Q_ASSERT(obj.contains("countries"));
     QJsonValue countries = obj.take("countries");
-    Q_ASSERT(countries.isArray());
+    if (!countries.isArray()) {
+        return false;
+    }
 
     QJsonArray countriesArray = countries.toArray();
     for (QJsonValue countryValue : countriesArray) {
-        Q_ASSERT(countryValue.isObject());
+        if (!countryValue.isObject()) {
+            return false;
+        }
+
         QJsonObject countryObj = countryValue.toObject();
 
         ServerCountry country;
         if (!country.fromJson(countryObj)) {
-            // TODO
+            return false;
         }
 
         m_countries.append(country);
@@ -84,6 +97,8 @@ void ServerCountryModel::fromJsonInternal()
     std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
 
     endResetModel();
+
+    return true;
 }
 
 QHash<int, QByteArray> ServerCountryModel::roleNames() const

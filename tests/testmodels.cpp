@@ -8,6 +8,7 @@
 #include "../src/keys.h"
 #include "../src/servercity.h"
 #include "../src/servercountry.h"
+#include "../src/servercountrymodel.h"
 #include "../src/serverdata.h"
 #include "../src/user.h"
 
@@ -467,6 +468,104 @@ void TestModels::serverCountryFromJson()
 
     QFETCH(int, cities);
     QCOMPARE(sc.cities().length(), cities);
+}
+
+// ServerCountryModel
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::serverCountryModelBasic()
+{
+    ServerCountryModel dm;
+
+    QHash<int, QByteArray> rn = dm.roleNames();
+    QCOMPARE(rn.count(), 3);
+    QCOMPARE(rn[ServerCountryModel::NameRole], "name");
+    QCOMPARE(rn[ServerCountryModel::CodeRole], "code");
+    QCOMPARE(rn[ServerCountryModel::CitiesRole], "cities");
+
+    QCOMPARE(dm.rowCount(QModelIndex()), 0);
+    QCOMPARE(dm.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
+}
+
+void TestModels::serverCountryModelFromJson_data()
+{
+    QTest::addColumn<QByteArray>("json");
+    QTest::addColumn<bool>("result");
+    QTest::addColumn<int>("countries");
+    QTest::addColumn<QVariant>("name");
+    QTest::addColumn<QVariant>("code");
+    QTest::addColumn<QVariant>("cities");
+
+    QTest::addRow("invalid") << QByteArray("") << false;
+    QTest::addRow("array") << QByteArray("[]") << false;
+
+    QJsonObject obj;
+    QTest::addRow("empty") << QJsonDocument(obj).toJson() << false;
+
+    obj.insert("countries", 42);
+    QTest::addRow("invalid countries") << QJsonDocument(obj).toJson() << false;
+
+    QJsonArray countries;
+    obj.insert("countries", countries);
+    QTest::addRow("good but empty")
+        << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant() << QVariant();
+
+    QJsonObject d;
+    d.insert("name", "serverCountryName");
+    d.insert("code", "serverCountryCode");
+    d.insert("cities", QJsonArray());
+
+    countries.append(d);
+    obj.insert("countries", countries);
+    QTest::addRow("good but empty cities")
+        << QJsonDocument(obj).toJson() << true << 1 << QVariant("serverCountryName")
+        << QVariant("serverCountryCode") << QVariant(QStringList{});
+
+    QJsonObject city;
+    city.insert("code", "serverCityCode");
+    city.insert("name", "serverCityName");
+    city.insert("servers", QJsonArray());
+
+    QJsonArray cities;
+    cities.append(city);
+
+    d.insert("cities", cities);
+    countries.replace(0, d);
+    obj.insert("countries", countries);
+    QTest::addRow("good but empty cities")
+        << QJsonDocument(obj).toJson() << true << 1 << QVariant("serverCountryName")
+        << QVariant("serverCountryCode") << QVariant(QStringList{"serverCityName"});
+}
+
+void TestModels::serverCountryModelFromJson()
+{
+    QFETCH(QByteArray, json);
+    QFETCH(bool, result);
+
+    ServerCountryModel m;
+    QCOMPARE(m.fromJson(json), result);
+
+    if (!result) {
+        return;
+    }
+
+    QFETCH(int, countries);
+
+    QCOMPARE(m.rowCount(QModelIndex()), countries);
+    QCOMPARE(m.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
+    QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CodeRole), QVariant());
+    QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole), QVariant());
+
+    QModelIndex index = m.index(0, 0);
+
+    QFETCH(QVariant, name);
+    QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+
+    QFETCH(QVariant, code);
+    QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+
+    QFETCH(QVariant, cities);
+    QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
 }
 
 // ServerData

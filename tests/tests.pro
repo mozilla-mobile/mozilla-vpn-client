@@ -16,6 +16,7 @@ HEADERS += \
     ../src/server.h \
     ../src/servercity.h \
     ../src/servercountry.h \
+    ../src/servercountrymodel.h \
     ../src/serverdata.h \
     ../src/settingsholder.h \
     ../src/user.h \
@@ -30,6 +31,7 @@ SOURCES += \
     ../src/server.cpp \
     ../src/servercity.cpp \
     ../src/servercountry.cpp \
+    ../src/servercountrymodel.cpp \
     ../src/serverdata.cpp \
     ../src/user.cpp \
     mocsettingsholder.cpp \

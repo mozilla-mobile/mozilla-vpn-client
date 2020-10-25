@@ -26,9 +26,9 @@ public:
 
     ServerCountryModel() = default;
 
-    bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
-    void fromJson(const QByteArray &data);
+    [[nodiscard]] bool fromJson(const QByteArray &data);
 
     void pickRandom(ServerData &data) const;
 
@@ -47,7 +47,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    void fromJsonInternal();
+    bool fromJsonInternal(const QByteArray &data);
 
 private:
     QByteArray m_rawJson;
