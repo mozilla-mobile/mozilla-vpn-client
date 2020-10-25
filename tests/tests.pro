@@ -4,7 +4,7 @@
 
 QT += testlib
 TEMPLATE = app
-TARGET = tests
+TARGET = testModels
 INCLUDEPATH += .
 
 HEADERS += \
