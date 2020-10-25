@@ -23,7 +23,10 @@ private slots:
     void serverFromJson_data();
     void serverFromJson();
 
-    // TODO: servercity
+    void serverCityBasic();
+    void serverCityFromJson_data();
+    void serverCityFromJson();
+
     // TODO: servercountry
 
     void serverDataBasic();

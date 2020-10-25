@@ -39,8 +39,14 @@ ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
     QJsonArray citiesArray = cities.toArray();
     for (QJsonValue cityValue : citiesArray) {
         Q_ASSERT(cityValue.isObject());
-        QJsonObject city = cityValue.toObject();
-        sc.m_cities.append(ServerCity::fromJson(city));
+        QJsonObject cityObject = cityValue.toObject();
+
+        ServerCity serverCity;
+        if (!serverCity.fromJson(cityObject)) {
+            // TODO
+        }
+
+        sc.m_cities.append(serverCity);
     }
 
     std::sort(sc.m_cities.begin(), sc.m_cities.end(), sortCityCallback);

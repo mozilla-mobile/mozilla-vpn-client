@@ -15,7 +15,7 @@ class QJsonObject;
 class ServerCity final
 {
 public:
-    static ServerCity fromJson(QJsonObject &obj);
+    [[nodiscard]] bool fromJson(QJsonObject &obj);
 
     const QString &name() const { return m_name; }
 
@@ -24,8 +24,6 @@ public:
     const QList<Server> getServers() const { return m_servers; }
 
 private:
-    ServerCity(const QString &name, const QString &code);
-
     QString m_name;
     QString m_code;
 

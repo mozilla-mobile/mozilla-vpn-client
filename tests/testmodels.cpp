@@ -349,6 +349,66 @@ void TestModels::serverFromJson()
     QCOMPARE(s.choosePort(), (uint32_t)port);
 }
 
+// ServerCity
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::serverCityBasic()
+{
+    ServerCity sc;
+    QCOMPARE(sc.name(), "");
+    QCOMPARE(sc.code(), "");
+    QCOMPARE(sc.getServers().isEmpty(), true);
+}
+
+void TestModels::serverCityFromJson_data()
+{
+    QTest::addColumn<QJsonObject>("json");
+    QTest::addColumn<bool>("result");
+    QTest::addColumn<QString>("name");
+    QTest::addColumn<QString>("code");
+    QTest::addColumn<int>("servers");
+
+    QJsonObject obj;
+    QTest::addRow("empty") << obj << false;
+
+    obj.insert("name", "name");
+    QTest::addRow("name") << obj << false;
+
+    obj.insert("code", "code");
+    QTest::addRow("code") << obj << false;
+
+    obj.insert("servers", "servers");
+    QTest::addRow("servers invalid") << obj << false;
+
+    QJsonArray servers;
+    obj.insert("servers", servers);
+    QTest::addRow("servers empty") << obj << true << "name" << "code" << 0;
+}
+
+void TestModels::serverCityFromJson()
+{
+    QFETCH(QJsonObject, json);
+    QFETCH(bool, result);
+
+    ServerCity sc;
+    QCOMPARE(sc.fromJson(json), result);
+    if (!result) {
+        QCOMPARE(sc.name(), "");
+        QCOMPARE(sc.code(), "");
+        QCOMPARE(sc.getServers().isEmpty(), true);
+        return;
+    }
+
+    QFETCH(QString, name);
+    QCOMPARE(sc.name(), name);
+
+    QFETCH(QString, code);
+    QCOMPARE(sc.code(), code);
+
+    QFETCH(int, servers);
+    QCOMPARE(sc.getServers().length(), servers);
+}
+
 // ServerData
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -371,7 +431,9 @@ void TestModels::serverDataBasic()
         cityObj.insert("code", "serverCityCode");
         cityObj.insert("name", "serverCityName");
         cityObj.insert("servers", QJsonArray());
-        ServerCity city = ServerCity::fromJson(cityObj);
+
+        ServerCity city;
+        QCOMPARE(city.fromJson(cityObj), true);
 
         sd.initialize(country, city);
         QCOMPARE(sd.initialized(), true);
@@ -389,6 +451,7 @@ void TestModels::serverDataBasic()
     QCOMPARE(sd.countryCode(), "new Country");
     QCOMPARE(sd.city(), "new City");
 }
+
 // User
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

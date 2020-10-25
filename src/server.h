@@ -14,8 +14,6 @@ class QJsonObject;
 class Server final
 {
 public:
-    Server() = default;
-
     [[nodiscard]] bool fromJson(QJsonObject &obj);
 
     static const Server &weightChooser(const QList<Server> &servers);
