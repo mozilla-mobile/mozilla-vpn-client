@@ -16,17 +16,21 @@ namespace {
 Logger logger(LOG_MODEL, "DeviceModel");
 }
 
-void DeviceModel::fromJson(const QByteArray &s)
+bool DeviceModel::fromJson(const QByteArray &s)
 {
     logger.log() << "DeviceModel from json";
 
-    if (m_rawJson == s) {
+    if (!s.isEmpty() && m_rawJson == s) {
         logger.log() << "Nothing has changed";
-        return;
+        return true;
+    }
+
+    if (!fromJsonInternal(s)) {
+        return false;
     }
 
     m_rawJson = s;
-    fromJsonInternal();
+    return true;
 }
 
 bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
@@ -37,12 +41,17 @@ bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
         return false;
     }
 
-    m_rawJson = settingsHolder.devices();
-    if (!fromJsonInternal()) {
+    const QByteArray &json = settingsHolder.devices();
+    if (!fromJsonInternal(json)) {
         return false;
     }
 
-    return !m_devices.isEmpty();
+    if (!m_devices.isEmpty()) {
+        return false;
+    }
+
+    m_rawJson = json;
+    return true;
 }
 
 namespace {
@@ -62,22 +71,27 @@ bool sortCallback(const Device &a, const Device &b)
 
 } // anonymous namespace
 
-bool DeviceModel::fromJsonInternal() {
+bool DeviceModel::fromJsonInternal(const QByteArray &json) {
     beginResetModel();
 
     m_devices.clear();
 
-    QJsonDocument doc = QJsonDocument::fromJson(m_rawJson);
-    if (doc.isNull()) {
+    QJsonDocument doc = QJsonDocument::fromJson(json);
+    if (!doc.isObject()) {
         return false;
     }
 
-    Q_ASSERT(doc.isObject());
     QJsonObject obj = doc.object();
 
-    Q_ASSERT(obj.contains("devices"));
+    if (!obj.contains("devices")) {
+        return false;
+    }
+
     QJsonValue devices = obj.take("devices");
-    Q_ASSERT(devices.isArray());
+    if (!devices.isArray()) {
+        return false;
+    }
+
     QJsonArray devicesArray = devices.toArray();
     for (QJsonValue deviceValue : devicesArray) {
         Device device;

@@ -13,7 +13,9 @@ private slots:
     void deviceFromJson_data();
     void deviceFromJson();
 
-    // TODO: devicemodel
+    void deviceModelBasic();
+    void deviceModelFromJson_data();
+    void deviceModelFromJson();
 
     void keysBasic();
 

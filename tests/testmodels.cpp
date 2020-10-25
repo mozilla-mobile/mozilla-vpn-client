@@ -4,6 +4,7 @@
 
 #include "testmodels.h"
 #include "../src/device.h"
+#include "../src/devicemodel.h"
 #include "../src/keys.h"
 #include "../src/servercity.h"
 #include "../src/servercountry.h"
@@ -41,25 +42,19 @@ void TestModels::deviceFromJson_data()
     QJsonObject obj;
     obj.insert("test", "");
     QTest::addRow("null") << QJsonDocument(obj).toJson() << false << ""
-                          << ""
-                          << QDateTime()
-                          << ""
+                          << "" << QDateTime() << ""
                           << "";
 
     QJsonObject d;
     obj.insert("test", d);
     QTest::addRow("empty") << QJsonDocument(obj).toJson() << false << ""
-                           << ""
-                           << QDateTime()
-                           << ""
+                           << "" << QDateTime() << ""
                            << "";
 
     d.insert("name", "deviceName");
     obj.insert("test", d);
     QTest::addRow("name") << QJsonDocument(obj).toJson() << false << ""
-                          << ""
-                          << QDateTime()
-                          << ""
+                          << "" << QDateTime() << ""
                           << "";
 
     d.insert("pubkey", "devicePubkey");
@@ -111,6 +106,93 @@ void TestModels::deviceFromJson()
     QCOMPARE(device.createdAt(), createdAt);
     QCOMPARE(device.ipv4Address(), ipv4Address);
     QCOMPARE(device.ipv6Address(), ipv6Address);
+}
+
+// DeviceModel
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::deviceModelBasic()
+{
+    DeviceModel dm;
+    QCOMPARE(dm.hasDevice("foo"), false);
+    dm.removeDevice("foo");
+    QCOMPARE(dm.device("foo"), nullptr);
+    QCOMPARE(dm.activeDevices(), 0);
+    QCOMPARE(dm.currentDevice(), nullptr);
+
+    QHash<int, QByteArray> rn = dm.roleNames();
+    QCOMPARE(rn.count(), 3);
+    QCOMPARE(rn[DeviceModel::NameRole], "name");
+    QCOMPARE(rn[DeviceModel::CurrentOneRole], "currentOne");
+    QCOMPARE(rn[DeviceModel::CreatedAtRole], "createdAt");
+
+    QCOMPARE(dm.rowCount(QModelIndex()), 0);
+    QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
+}
+
+void TestModels::deviceModelFromJson_data()
+{
+    QTest::addColumn<QByteArray>("json");
+    QTest::addColumn<bool>("result");
+    QTest::addColumn<int>("devices");
+    QTest::addColumn<QVariant>("deviceName");
+    QTest::addColumn<QVariant>("currentOne");
+    QTest::addColumn<QVariant>("createdAt");
+
+    QTest::addRow("invalid") << QByteArray("") << false;
+    QTest::addRow("array") << QByteArray("[]") << false;
+
+    QJsonObject obj;
+    QTest::addRow("empty") << QJsonDocument(obj).toJson() << false;
+
+    obj.insert("devices", 42);
+    QTest::addRow("invalid devices") << QJsonDocument(obj).toJson() << false;
+
+    QJsonArray devices;
+    obj.insert("devices", devices);
+    QTest::addRow("good but empty")
+        << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant() << QVariant();
+
+    QJsonObject d;
+    d.insert("name", "deviceName");
+    d.insert("pubkey", "devicePubkey");
+    d.insert("created_at", "2017-07-24T15:46:29");
+    d.insert("ipv4_address", "deviceIpv4");
+    d.insert("ipv6_address", "deviceIpv6");
+
+    devices.append(d);
+    obj.insert("devices", devices);
+    QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 1 << QVariant("deviceName")
+                          << QVariant(false)
+                          << QVariant(QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate));
+}
+
+void TestModels::deviceModelFromJson()
+{
+    QFETCH(QByteArray, json);
+    QFETCH(bool, result);
+
+    DeviceModel dm;
+    QCOMPARE(dm.fromJson(json), result);
+
+    if (!result) {
+        return;
+    }
+
+    QFETCH(int, devices);
+    QFETCH(QVariant, deviceName);
+    QFETCH(QVariant, currentOne);
+    QFETCH(QVariant, createdAt);
+
+    QCOMPARE(dm.rowCount(QModelIndex()), devices);
+    QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
+    QCOMPARE(dm.data(QModelIndex(), DeviceModel::CurrentOneRole), QVariant());
+    QCOMPARE(dm.data(QModelIndex(), DeviceModel::CreatedAtRole), QVariant());
+
+    QModelIndex index = dm.index(0, 0);
+    QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
+    QCOMPARE(dm.data(index, DeviceModel::CurrentOneRole), currentOne);
+    QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole), createdAt);
 }
 
 // Keys

@@ -9,6 +9,7 @@ INCLUDEPATH += .
 
 HEADERS += \
     ../src/device.h \
+    ../src/devicemodel.h \
     ../src/keys.h \
     ../src/logger.h \
     ../src/loghandler.h \
@@ -22,6 +23,7 @@ HEADERS += \
 
 SOURCES += \
     ../src/device.cpp \
+    ../src/devicemodel.cpp \
     ../src/keys.cpp \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
