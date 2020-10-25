@@ -4,6 +4,7 @@
 
 #include "testmodels.h"
 #include "../src/device.h"
+#include "../src/keys.h"
 #include "../src/servercity.h"
 #include "../src/servercountry.h"
 #include "../src/serverdata.h"
@@ -15,16 +16,16 @@
 
 // Device
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 void TestModels::deviceBasic()
 {
-    Device device("name", QDateTime(), "publicKey", "ipv4Address", "ipv6Address");
-    QCOMPARE(device.name(), "name");
+    Device device;
+    QCOMPARE(device.name(), "");
     QCOMPARE(device.createdAt(), QDateTime());
-    QCOMPARE(device.publicKey(), "publicKey");
-    QCOMPARE(device.ipv4Address(), "ipv4Address");
-    QCOMPARE(device.ipv6Address(), "ipv6Address");
-    QCOMPARE(device.isDevice("name"), true);
-    QCOMPARE(device.isDevice("another device"), false);
+    QCOMPARE(device.publicKey(), "");
+    QCOMPARE(device.ipv4Address(), "");
+    QCOMPARE(device.ipv6Address(), "");
+    QCOMPARE(device.isDevice("name"), false);
 }
 
 void TestModels::deviceFromJson_data()
@@ -112,6 +113,21 @@ void TestModels::deviceFromJson()
     QCOMPARE(device.ipv6Address(), ipv6Address);
 }
 
+// Keys
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::keysBasic()
+{
+    Keys k;
+    QCOMPARE(k.privateKey(), "");
+
+    k.storeKey("test");
+    QCOMPARE(k.privateKey(), "test");
+
+    k.forgetKey();
+    QCOMPARE(k.privateKey(), "");
+}
+
 // ServerData
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -154,6 +170,16 @@ void TestModels::serverDataBasic()
 }
 // User
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::userBasic()
+{
+    User user;
+    QCOMPARE(user.avatar(), "");
+    QCOMPARE(user.displayName(), "");
+    QCOMPARE(user.email(), "");
+    QCOMPARE(user.maxDevices(), 5);
+    QCOMPARE(user.subscriptionNeeded(), false);
+}
 
 void TestModels::userFromJson_data()
 {

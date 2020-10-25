@@ -13,8 +13,16 @@ private slots:
     void deviceFromJson_data();
     void deviceFromJson();
 
+    // TODO: devicemodel
+
+    void keysBasic();
+
+    // TODO: servercity
+    // TODO: servercountry
+
     void serverDataBasic();
 
+    void userBasic();
     void userFromJson_data();
     void userFromJson();
 };

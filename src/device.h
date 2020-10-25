@@ -13,16 +13,6 @@ class QJsonValue;
 class Device final
 {
 public:
-    Device() {}
-
-    Device(const QString &deviceName,
-           const QDateTime &createdAt,
-           const QString &publicKey,
-           const QString& ipv4Address,
-           const QString& ipv6Address)
-        : m_deviceName(deviceName), m_createdAt(createdAt), m_publicKey(publicKey), m_ipv4Address(ipv4Address), m_ipv6Address(ipv6Address)
-    {}
-
     static QString currentDeviceName();
 
     [[nodiscard]] bool fromJson(const QJsonValue &json);
