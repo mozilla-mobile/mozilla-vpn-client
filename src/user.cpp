@@ -21,32 +21,32 @@ bool User::fromJson(const QByteArray &json)
 
     QJsonObject obj = doc.object();
 
-#define STRSETTER(what, where) \
-    { \
-        QJsonValue value = obj.take(what); \
-        if (!value.isString()) { \
-            return false; \
-        } \
-        where = value.toString(); \
+    QJsonValue avatar = obj.take("avatar");
+    if (!avatar.isString()) {
+        return false;
     }
 
-    STRSETTER("avatar", m_avatar);
-    STRSETTER("display_name", m_displayName);
-    STRSETTER("email", m_email);
-#undef STRSETTER
+    QJsonValue displayName = obj.take("display_name");
+    if (!displayName.isString()) {
+        return false;
+    }
+
+    QJsonValue email = obj.take("email");
+    if (!email.isString()) {
+        return false;
+    }
 
     QJsonValue maxDevices = obj.take("max_devices");
     if (!maxDevices.isDouble()) {
         return false;
     }
-    m_maxDevices = maxDevices.toInt();
 
     QJsonValue subscriptions = obj.take("subscriptions");
     if (!subscriptions.isObject()) {
         return false;
     }
 
-    m_subscriptionNeeded = true;
+    bool subscriptionNeeded = true;
     QJsonObject subscriptionsObj = subscriptions.toObject();
     if (subscriptionsObj.contains("vpn")) {
         QJsonValue subVpn = subscriptionsObj.take("vpn");
@@ -60,8 +60,14 @@ bool User::fromJson(const QByteArray &json)
             return false;
         }
 
-        m_subscriptionNeeded = !active.toBool();
+        subscriptionNeeded = !active.toBool();
     }
+
+    m_avatar = avatar.toString();
+    m_displayName = displayName.toString();
+    m_email = email.toString();
+    m_maxDevices = maxDevices.toInt();
+    m_subscriptionNeeded = subscriptionNeeded;
 
     emit changed();
     return true;

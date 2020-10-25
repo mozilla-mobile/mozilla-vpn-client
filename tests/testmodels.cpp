@@ -232,8 +232,8 @@ void TestModels::serverBasic()
     QCOMPARE(s.ipv6AddrIn(), "");
     QCOMPARE(s.ipv6Gateway(), "");
     QCOMPARE(s.publicKey(), "");
-    QCOMPARE(s.weight(), 0);
-    QCOMPARE(s.choosePort(), 0);
+    QCOMPARE(s.weight(), (uint32_t)0);
+    QCOMPARE(s.choosePort(), (uint32_t)0);
 }
 
 void TestModels::serverFromJson_data()
@@ -275,7 +275,12 @@ void TestModels::serverFromJson_data()
 
     QJsonArray portRanges;
     obj.insert("port_ranges", portRanges);
-    QTest::addRow("portRanges") << obj << true << "hostname" << "ipv4AddrIn" << "ipv4Gateway" << "ipv6AddrIn" << "ipv6Gateway" << "publicKey" << 1234 << 0;
+    QTest::addRow("portRanges") << obj << true << "hostname"
+                                << "ipv4AddrIn"
+                                << "ipv4Gateway"
+                                << "ipv6AddrIn"
+                                << "ipv6Gateway"
+                                << "publicKey" << 1234 << 0;
 
     portRanges.append(42);
     obj.insert("port_ranges", portRanges);
@@ -296,7 +301,12 @@ void TestModels::serverFromJson_data()
     portRange.replace(1, 42);
     portRanges.replace(0, portRange);
     obj.insert("port_ranges", portRanges);
-    QTest::addRow("all good") << obj << true << "hostname" << "ipv4AddrIn" << "ipv4Gateway" << "ipv6AddrIn" << "ipv6Gateway" << "publicKey" << 1234 << 42;
+    QTest::addRow("all good") << obj << true << "hostname"
+                              << "ipv4AddrIn"
+                              << "ipv4Gateway"
+                              << "ipv6AddrIn"
+                              << "ipv6Gateway"
+                              << "publicKey" << 1234 << 42;
 }
 
 void TestModels::serverFromJson()
@@ -333,10 +343,10 @@ void TestModels::serverFromJson()
     QCOMPARE(s.publicKey(), publicKey);
 
     QFETCH(int, weight);
-    QCOMPARE(s.weight(), weight);
+    QCOMPARE(s.weight(), (uint32_t)weight);
 
     QFETCH(int, port);
-    QCOMPARE(s.choosePort(), port);
+    QCOMPARE(s.choosePort(), (uint32_t)port);
 }
 
 // ServerData
@@ -402,51 +412,31 @@ void TestModels::userFromJson_data()
     QTest::addColumn<int>("maxDevices");
     QTest::addColumn<bool>("subscriptionNeeded");
 
-    QTest::newRow("null") << QByteArray("") << false << ""
-                          << ""
-                          << "" << 5 << false;
-    QTest::newRow("invalid") << QByteArray("wow") << false << ""
-                             << ""
-                             << "" << 5 << false;
-    QTest::newRow("array") << QByteArray("[]") << false << ""
-                           << ""
-                           << "" << 5 << false;
+    QTest::newRow("null") << QByteArray("") << false;
+    QTest::newRow("invalid") << QByteArray("wow") << false;
+    QTest::newRow("array") << QByteArray("[]") << false;
 
     QJsonObject obj;
 
-    QTest::newRow("empty object") << QJsonDocument(obj).toJson() << false << ""
-                                  << ""
-                                  << "" << 5 << false;
+    QTest::newRow("empty object") << QJsonDocument(obj).toJson() << false;
 
     obj.insert("a", QJsonValue("b"));
-    QTest::newRow("no avatar") << QJsonDocument(obj).toJson() << false << ""
-                               << ""
-                               << "" << 5 << false;
+    QTest::newRow("no avatar") << QJsonDocument(obj).toJson() << false;
 
     obj.insert("avatar", QJsonValue("avatar"));
-    QTest::newRow("no displayName") << QJsonDocument(obj).toJson() << false << "avatar"
-                                    << ""
-                                    << "" << 5 << false;
+    QTest::newRow("no displayName") << QJsonDocument(obj).toJson() << false;
 
     obj.insert("display_name", QJsonValue("displayName"));
-    QTest::newRow("no email") << QJsonDocument(obj).toJson() << false << "avatar"
-                              << "displayName"
-                              << "" << 5 << false;
+    QTest::newRow("no email") << QJsonDocument(obj).toJson() << false;
 
     obj.insert("email", QJsonValue("email"));
-    QTest::newRow("no maxDevices") << QJsonDocument(obj).toJson() << false << "avatar"
-                                   << "displayName"
-                                   << "email" << 5 << false;
+    QTest::newRow("no maxDevices") << QJsonDocument(obj).toJson() << false;
 
     obj.insert("max_devices", QJsonValue(123));
-    QTest::newRow("no maxDevices") << QJsonDocument(obj).toJson() << false << "avatar"
-                                   << "displayName"
-                                   << "email" << 123 << false;
+    QTest::newRow("no maxDevices") << QJsonDocument(obj).toJson() << false;
 
     obj.insert("subscriptions", QJsonValue("wow"));
-    QTest::newRow("invalid subscription") << QJsonDocument(obj).toJson() << false << "avatar"
-                                          << "displayName"
-                                          << "email" << 123 << false;
+    QTest::newRow("invalid subscription") << QJsonDocument(obj).toJson() << false;
 
     QJsonObject subscription;
     obj.insert("subscriptions", subscription);
@@ -456,24 +446,17 @@ void TestModels::userFromJson_data()
 
     subscription.insert("vpn", QJsonValue("WOW"));
     obj.insert("subscriptions", subscription);
-    QTest::newRow("invalid vpn subscription") << QJsonDocument(obj).toJson() << false << "avatar"
-                                              << "displayName"
-                                              << "email" << 123 << true;
+    QTest::newRow("invalid vpn subscription") << QJsonDocument(obj).toJson() << false;
 
     QJsonObject subVpn;
     subscription.insert("vpn", subVpn);
     obj.insert("subscriptions", subscription);
-    QTest::newRow("empty vpn subscription") << QJsonDocument(obj).toJson() << false << "avatar"
-                                            << "displayName"
-                                            << "email" << 123 << true;
+    QTest::newRow("empty vpn subscription") << QJsonDocument(obj).toJson() << false;
 
     subVpn.insert("active", QJsonValue("sure!"));
     subscription.insert("vpn", subVpn);
     obj.insert("subscriptions", subscription);
-    QTest::newRow("invalid active vpn subscription")
-        << QJsonDocument(obj).toJson() << false << "avatar"
-        << "displayName"
-        << "email" << 123 << true;
+    QTest::newRow("invalid active vpn subscription") << QJsonDocument(obj).toJson() << false;
 
     subVpn.insert("active", QJsonValue(true));
     subscription.insert("vpn", subVpn);
@@ -497,6 +480,15 @@ void TestModels::userFromJson()
 
     User user;
     QCOMPARE(user.fromJson(json), result);
+
+    if (!result) {
+        QCOMPARE(user.avatar(), "");
+        QCOMPARE(user.displayName(), "");
+        QCOMPARE(user.email(), "");
+        QCOMPARE(user.maxDevices(), 5);
+        QCOMPARE(user.subscriptionNeeded(), false);
+        return;
+    }
 
     QFETCH(QString, avatar);
     QCOMPARE(user.avatar(), avatar);
