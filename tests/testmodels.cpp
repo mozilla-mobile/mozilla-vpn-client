@@ -87,24 +87,30 @@ void TestModels::deviceFromJson_data()
 void TestModels::deviceFromJson()
 {
     QFETCH(QByteArray, json);
-    QFETCH(bool, result);
-    QFETCH(QString, name);
-    QFETCH(QString, publicKey);
-    QFETCH(QDateTime, createdAt);
-    QFETCH(QString, ipv4Address);
-    QFETCH(QString, ipv6Address);
-
     QJsonDocument doc = QJsonDocument::fromJson(json);
+
     Q_ASSERT(doc.isObject());
     QJsonObject obj = doc.object();
     Q_ASSERT(obj.contains("test"));
 
     Device device;
+
+    QFETCH(bool, result);
     QCOMPARE(device.fromJson(obj.take("test")), result);
+
+    QFETCH(QString, name);
     QCOMPARE(device.name(), name);
+
+    QFETCH(QString, publicKey);
     QCOMPARE(device.publicKey(), publicKey);
+
+    QFETCH(QDateTime, createdAt);
     QCOMPARE(device.createdAt(), createdAt);
+
+    QFETCH(QString, ipv4Address);
     QCOMPARE(device.ipv4Address(), ipv4Address);
+
+    QFETCH(QString, ipv6Address);
     QCOMPARE(device.ipv6Address(), ipv6Address);
 }
 
@@ -180,9 +186,6 @@ void TestModels::deviceModelFromJson()
     }
 
     QFETCH(int, devices);
-    QFETCH(QVariant, deviceName);
-    QFETCH(QVariant, currentOne);
-    QFETCH(QVariant, createdAt);
 
     QCOMPARE(dm.rowCount(QModelIndex()), devices);
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
@@ -190,8 +193,14 @@ void TestModels::deviceModelFromJson()
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::CreatedAtRole), QVariant());
 
     QModelIndex index = dm.index(0, 0);
+
+    QFETCH(QVariant, deviceName);
     QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
+
+    QFETCH(QVariant, currentOne);
     QCOMPARE(dm.data(index, DeviceModel::CurrentOneRole), currentOne);
+
+    QFETCH(QVariant, createdAt);
     QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole), createdAt);
 }
 
@@ -208,6 +217,126 @@ void TestModels::keysBasic()
 
     k.forgetKey();
     QCOMPARE(k.privateKey(), "");
+}
+
+// Server
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::serverBasic()
+{
+    Server s;
+    QCOMPARE(s.initialized(), false);
+    QCOMPARE(s.hostname(), "");
+    QCOMPARE(s.ipv4AddrIn(), "");
+    QCOMPARE(s.ipv4Gateway(), "");
+    QCOMPARE(s.ipv6AddrIn(), "");
+    QCOMPARE(s.ipv6Gateway(), "");
+    QCOMPARE(s.publicKey(), "");
+    QCOMPARE(s.weight(), 0);
+    QCOMPARE(s.choosePort(), 0);
+}
+
+void TestModels::serverFromJson_data()
+{
+    QTest::addColumn<QJsonObject>("json");
+    QTest::addColumn<bool>("result");
+    QTest::addColumn<QString>("hostname");
+    QTest::addColumn<QString>("ipv4AddrIn");
+    QTest::addColumn<QString>("ipv4Gateway");
+    QTest::addColumn<QString>("ipv6AddrIn");
+    QTest::addColumn<QString>("ipv6Gateway");
+    QTest::addColumn<QString>("publicKey");
+    QTest::addColumn<int>("weight");
+    QTest::addColumn<int>("port");
+
+    QJsonObject obj;
+    QTest::addRow("empty") << obj << false;
+
+    obj.insert("hostname", "hostname");
+    QTest::addRow("hostname") << obj << false;
+
+    obj.insert("ipv4_addr_in", "ipv4AddrIn");
+    QTest::addRow("ipv4AddrIn") << obj << false;
+
+    obj.insert("ipv4_gateway", "ipv4Gateway");
+    QTest::addRow("ipv4Gateway") << obj << false;
+
+    obj.insert("ipv6_addr_in", "ipv6AddrIn");
+    QTest::addRow("ipv6AddrIn") << obj << false;
+
+    obj.insert("ipv6_gateway", "ipv6Gateway");
+    QTest::addRow("ipv6Gateway") << obj << false;
+
+    obj.insert("public_key", "publicKey");
+    QTest::addRow("publicKey") << obj << false;
+
+    obj.insert("weight", 1234);
+    QTest::addRow("weight") << obj << false;
+
+    QJsonArray portRanges;
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("portRanges") << obj << true << "hostname" << "ipv4AddrIn" << "ipv4Gateway" << "ipv6AddrIn" << "ipv6Gateway" << "publicKey" << 1234 << 0;
+
+    portRanges.append(42);
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("portRanges wrong type") << obj << false;
+
+    QJsonArray portRange;
+    portRanges.replace(0, portRange);
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("portRanges wrong number") << obj << false;
+
+    portRange.append("A");
+    portRange.append("B");
+    portRanges.replace(0, portRange);
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("portRanges wrong type") << obj << false;
+
+    portRange.replace(0, 42);
+    portRange.replace(1, 42);
+    portRanges.replace(0, portRange);
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("all good") << obj << true << "hostname" << "ipv4AddrIn" << "ipv4Gateway" << "ipv6AddrIn" << "ipv6Gateway" << "publicKey" << 1234 << 42;
+}
+
+void TestModels::serverFromJson()
+{
+    QFETCH(QJsonObject, json);
+    QFETCH(bool, result);
+
+    Server s;
+    QCOMPARE(s.fromJson(json), result);
+
+    if (!result) {
+        QCOMPARE(s.initialized(), false);
+        return;
+    }
+
+    QCOMPARE(s.initialized(), true);
+
+    QFETCH(QString, hostname);
+    QCOMPARE(s.hostname(), hostname);
+
+    QFETCH(QString, ipv4AddrIn);
+    QCOMPARE(s.ipv4AddrIn(), ipv4AddrIn);
+
+    QFETCH(QString, ipv4Gateway);
+    QCOMPARE(s.ipv4Gateway(), ipv4Gateway);
+
+    QFETCH(QString, ipv6AddrIn);
+    QCOMPARE(s.ipv6AddrIn(), ipv6AddrIn);
+
+    QFETCH(QString, ipv6Gateway);
+    QCOMPARE(s.ipv6Gateway(), ipv6Gateway);
+
+    QFETCH(QString, publicKey);
+    QCOMPARE(s.publicKey(), publicKey);
+
+    QFETCH(int, weight);
+    QCOMPARE(s.weight(), weight);
+
+    QFETCH(int, port);
+    QCOMPARE(s.choosePort(), port);
 }
 
 // ServerData
@@ -365,19 +494,23 @@ void TestModels::userFromJson()
 {
     QFETCH(QByteArray, json);
     QFETCH(bool, result);
-    QFETCH(QString, avatar);
-    QFETCH(QString, displayName);
-    QFETCH(QString, email);
-    QFETCH(int, maxDevices);
-    QFETCH(bool, subscriptionNeeded);
 
     User user;
     QCOMPARE(user.fromJson(json), result);
 
+    QFETCH(QString, avatar);
     QCOMPARE(user.avatar(), avatar);
+
+    QFETCH(QString, displayName);
     QCOMPARE(user.displayName(), displayName);
+
+    QFETCH(QString, email);
     QCOMPARE(user.email(), email);
+
+    QFETCH(int, maxDevices);
     QCOMPARE(user.maxDevices(), maxDevices);
+
+    QFETCH(bool, subscriptionNeeded);
     QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 }
 

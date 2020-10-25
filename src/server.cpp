@@ -9,57 +9,84 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-// static
-Server Server::fromJson(QJsonObject &obj)
+bool Server::fromJson(QJsonObject &obj)
 {
+    // Reset.
+    m_hostname = "";
+
     QJsonValue hostname = obj.take("hostname");
-    Q_ASSERT(hostname.isString());
+    if (!hostname.isString()) {
+        return false;
+    }
 
     QJsonValue ipv4AddrIn = obj.take("ipv4_addr_in");
-    Q_ASSERT(ipv4AddrIn.isString());
+    if (!ipv4AddrIn.isString()) {
+        return false;
+    }
 
     QJsonValue ipv4Gateway = obj.take("ipv4_gateway");
-    Q_ASSERT(ipv4Gateway.isString());
+    if (!ipv4Gateway.isString()) {
+        return false;
+    }
 
     QJsonValue ipv6AddrIn = obj.take("ipv6_addr_in");
     // If this object comes from the IOS migration, the ipv6_addr_in is missing.
 
     QJsonValue ipv6Gateway = obj.take("ipv6_gateway");
-    Q_ASSERT(ipv6Gateway.isString());
-
-    QJsonValue publicKey = obj.take("public_key");
-    Q_ASSERT(publicKey.isString());
-
-    QJsonValue weight = obj.take("weight");
-    Q_ASSERT(weight.isDouble());
-
-    Server s(hostname.toString(),
-             ipv4AddrIn.toString(),
-             ipv4Gateway.toString(),
-             ipv6AddrIn.toString(),
-             ipv6Gateway.toString(),
-             publicKey.toString(),
-             weight.toInt());
-
-    Q_ASSERT(obj.contains("port_ranges"));
-    QJsonValue portRanges = obj.take("port_ranges");
-    Q_ASSERT(portRanges.isArray());
-
-    QJsonArray portRangesArray = portRanges.toArray();
-    for (QJsonValue portRangeValue : portRangesArray) {
-        Q_ASSERT(portRangeValue.isArray());
-        QJsonArray port = portRangeValue.toArray();
-        Q_ASSERT(port.count() == 2);
-
-        QJsonValue a = port.at(0);
-        Q_ASSERT(a.isDouble());
-        QJsonValue b = port.at(1);
-        Q_ASSERT(b.isDouble());
-
-        s.m_portRanges.append(QPair<uint32_t, uint32_t>(a.toInt(), b.toInt()));
+    if (!ipv6Gateway.isString()) {
+        return false;
     }
 
-    return s;
+    QJsonValue publicKey = obj.take("public_key");
+    if (!publicKey.isString()) {
+        return false;
+    }
+
+    QJsonValue weight = obj.take("weight");
+    if (!weight.isDouble()) {
+        return false;
+    }
+
+    QJsonValue portRanges = obj.take("port_ranges");
+    if (!portRanges.isArray()) {
+        return false;
+    }
+
+    QList<QPair<uint32_t, uint32_t>> prList;
+    QJsonArray portRangesArray = portRanges.toArray();
+    for (QJsonValue portRangeValue : portRangesArray) {
+        if (!portRangeValue.isArray()) {
+            return false;
+        }
+
+        QJsonArray port = portRangeValue.toArray();
+        if (port.count() != 2) {
+            return false;
+        }
+
+        QJsonValue a = port.at(0);
+        if (!a.isDouble()) {
+            return false;
+        }
+
+        QJsonValue b = port.at(1);
+        if (!b.isDouble()) {
+            return false;
+        }
+
+        prList.append(QPair<uint32_t, uint32_t>(a.toInt(), b.toInt()));
+    }
+
+    m_hostname = hostname.toString();
+    m_ipv4AddrIn = ipv4AddrIn.toString();
+    m_ipv4Gateway = ipv4Gateway.toString();
+    m_ipv6AddrIn = ipv6AddrIn.toString();
+    m_ipv6Gateway = ipv6Gateway.toString();
+    m_portRanges.swap(prList);
+    m_publicKey = publicKey.toString();
+    m_weight = weight.toInt();
+
+    return true;
 }
 
 // static
@@ -88,6 +115,10 @@ const Server &Server::weightChooser(const QList<Server> &servers)
 
 uint32_t Server::choosePort() const
 {
+    if (m_portRanges.isEmpty()) {
+        return 0;
+    }
+
     quint32 r = QRandomGenerator::global()->generate() % m_portRanges.length();
     const QPair<uint32_t, uint32_t> &ports = m_portRanges.at(r);
 

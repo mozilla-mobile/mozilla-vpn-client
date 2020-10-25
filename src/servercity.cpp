@@ -30,8 +30,15 @@ ServerCity ServerCity::fromJson(QJsonObject &obj)
     QJsonArray serversArray = servers.toArray();
     for (QJsonValue serverValue : serversArray) {
         Q_ASSERT(serverValue.isObject());
-        QJsonObject server = serverValue.toObject();
-        sc.m_servers.append(Server::fromJson(server));
+
+        QJsonObject serverObj = serverValue.toObject();
+
+        Server server;
+        if (!server.fromJson(serverObj)) {
+          // TODO: return false!
+        }
+
+        sc.m_servers.append(server);
     }
 
     return sc;

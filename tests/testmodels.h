@@ -19,6 +19,10 @@ private slots:
 
     void keysBasic();
 
+    void serverBasic();
+    void serverFromJson_data();
+    void serverFromJson();
+
     // TODO: servercity
     // TODO: servercountry
 
