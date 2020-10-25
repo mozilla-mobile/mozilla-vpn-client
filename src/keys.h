@@ -14,6 +14,8 @@ class Keys final
 public:
     [[nodiscard]] bool fromSettings(SettingsHolder &settings);
 
+    bool initialized() const { return !m_privateKey.isEmpty(); }
+
     void storeKey(const QString &privateKey);
 
     void forgetKey();

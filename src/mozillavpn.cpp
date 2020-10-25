@@ -392,11 +392,23 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        // TODO: check if we are OK with the models!
-
-        if (m_state == StateAuthenticating) {
-            setState(StatePostAuthentication);
+        if (m_state != StateAuthenticating) {
+            return;
         }
+
+        if (!m_user.initialized() ||
+            !m_serverCountryModel.initialized() ||
+            !m_deviceModel.initialized() ||
+            !m_deviceModel.hasDevice(Device::currentDeviceName()) ||
+            !m_keys.initialized()) {
+            logger.log() << "Failed to complete the authentication";
+            errorHandle(ErrorHandler::BackendServiceError);
+            return;
+        }
+
+        Q_ASSERT(m_serverData.initialized());
+
+        setState(StatePostAuthentication);
     }));
 }
 

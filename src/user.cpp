@@ -13,6 +13,8 @@
 
 bool User::fromJson(const QByteArray &json)
 {
+    m_initialized = false;
+
     QJsonDocument doc = QJsonDocument::fromJson(json);
 
     if (!doc.isObject()) {
@@ -68,6 +70,7 @@ bool User::fromJson(const QByteArray &json)
     m_email = email.toString();
     m_maxDevices = maxDevices.toInt();
     m_subscriptionNeeded = subscriptionNeeded;
+    m_initialized = true;
 
     emit changed();
     return true;
@@ -86,6 +89,7 @@ bool User::fromSettings(SettingsHolder &settingsHolder)
     m_email = settingsHolder.userEmail();
     m_maxDevices = settingsHolder.userMaxDevices();
     m_subscriptionNeeded = settingsHolder.userSubscriptionNeeded();
+    m_initialized = true;
 
     return true;
 }

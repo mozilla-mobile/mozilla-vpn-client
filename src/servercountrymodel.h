@@ -30,6 +30,8 @@ public:
 
     [[nodiscard]] bool fromJson(const QByteArray &data);
 
+    bool initialized() const { return !m_rawJson.isEmpty(); }
+
     void pickRandom(ServerData &data) const;
 
     bool pickIfExists(const QString &countryCode, const QString &cityCode, ServerData &data) const;

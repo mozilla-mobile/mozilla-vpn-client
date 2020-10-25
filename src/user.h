@@ -28,6 +28,8 @@ public:
 
     void writeSettings(SettingsHolder &settingsHolder);
 
+    bool initialized() const { return m_initialized; }
+
     const QString &avatar() const { return m_avatar; }
 
     const QString &displayName() const { return m_displayName; }
@@ -47,6 +49,7 @@ private:
     QString m_email;
     int m_maxDevices = 5;
     bool m_subscriptionNeeded = false;
+    bool m_initialized = false;
 };
 
 #endif // USER_H

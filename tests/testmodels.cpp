@@ -121,6 +121,7 @@ void TestModels::deviceFromJson()
 void TestModels::deviceModelBasic()
 {
     DeviceModel dm;
+    QCOMPARE(dm.initialized(), false);
     QCOMPARE(dm.hasDevice("foo"), false);
     dm.removeDevice("foo");
     QCOMPARE(dm.device("foo"), nullptr);
@@ -183,11 +184,14 @@ void TestModels::deviceModelFromJson()
     QCOMPARE(dm.fromJson(json), result);
 
     if (!result) {
+        QCOMPARE(dm.initialized(), false);
+        QCOMPARE(dm.rowCount(QModelIndex()), 0);
         return;
     }
 
-    QFETCH(int, devices);
+    QCOMPARE(dm.initialized(), true);
 
+    QFETCH(int, devices);
     QCOMPARE(dm.rowCount(QModelIndex()), devices);
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::CurrentOneRole), QVariant());
@@ -211,12 +215,15 @@ void TestModels::deviceModelFromJson()
 void TestModels::keysBasic()
 {
     Keys k;
+    QCOMPARE(k.initialized(), false);
     QCOMPARE(k.privateKey(), "");
 
     k.storeKey("test");
+    QCOMPARE(k.initialized(), true);
     QCOMPARE(k.privateKey(), "test");
 
     k.forgetKey();
+    QCOMPARE(k.initialized(), false);
     QCOMPARE(k.privateKey(), "");
 }
 
@@ -476,6 +483,7 @@ void TestModels::serverCountryFromJson()
 void TestModels::serverCountryModelBasic()
 {
     ServerCountryModel dm;
+    QCOMPARE(dm.initialized(), false);
 
     QHash<int, QByteArray> rn = dm.roleNames();
     QCOMPARE(rn.count(), 3);
@@ -546,12 +554,16 @@ void TestModels::serverCountryModelFromJson()
     QCOMPARE(m.fromJson(json), result);
 
     if (!result) {
+        QCOMPARE(m.initialized(), false);
+        QCOMPARE(m.rowCount(QModelIndex()), 0);
         return;
     }
 
-    QFETCH(int, countries);
+    QCOMPARE(m.initialized(), true);
 
+    QFETCH(int, countries);
     QCOMPARE(m.rowCount(QModelIndex()), countries);
+
     QCOMPARE(m.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
     QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CodeRole), QVariant());
     QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole), QVariant());
@@ -618,6 +630,7 @@ void TestModels::serverDataBasic()
 void TestModels::userBasic()
 {
     User user;
+    QCOMPARE(user.initialized(), false);
     QCOMPARE(user.avatar(), "");
     QCOMPARE(user.displayName(), "");
     QCOMPARE(user.email(), "");
@@ -705,6 +718,7 @@ void TestModels::userFromJson()
     QCOMPARE(user.fromJson(json), result);
 
     if (!result) {
+        QCOMPARE(user.initialized(), false);
         QCOMPARE(user.avatar(), "");
         QCOMPARE(user.displayName(), "");
         QCOMPARE(user.email(), "");
@@ -712,6 +726,8 @@ void TestModels::userFromJson()
         QCOMPARE(user.subscriptionNeeded(), false);
         return;
     }
+
+    QCOMPARE(user.initialized(), true);
 
     QFETCH(QString, avatar);
     QCOMPARE(user.avatar(), avatar);

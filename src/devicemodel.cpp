@@ -46,7 +46,7 @@ bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
         return false;
     }
 
-    if (!m_devices.isEmpty()) {
+    if (m_devices.isEmpty()) {
         return false;
     }
 
@@ -74,6 +74,7 @@ bool sortCallback(const Device &a, const Device &b)
 bool DeviceModel::fromJsonInternal(const QByteArray &json) {
     beginResetModel();
 
+    m_rawJson = "";
     m_devices.clear();
 
     QJsonDocument doc = QJsonDocument::fromJson(json);

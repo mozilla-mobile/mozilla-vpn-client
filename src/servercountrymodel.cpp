@@ -64,6 +64,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray &s)
 {
     beginResetModel();
 
+    m_rawJson = "";
     m_countries.clear();
 
     QJsonDocument doc = QJsonDocument::fromJson(s);

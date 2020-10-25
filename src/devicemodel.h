@@ -28,6 +28,8 @@ public:
 
     [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
+    bool initialized() const { return !m_rawJson.isEmpty(); }
+
     void writeSettings(SettingsHolder &settingsHolder);
 
     bool hasDevice(const QString &deviceName) const;
