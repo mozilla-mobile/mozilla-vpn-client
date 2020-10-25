@@ -4,11 +4,17 @@
 
 #include <QtTest/QtTest>
 
-class TestUser: public QObject
+class TestModels: public QObject
 {
     Q_OBJECT
 
 private slots:
-    void fromJson_data();
-    void fromJson();
+    void deviceBasic();
+    void deviceFromJson_data();
+    void deviceFromJson();
+
+    void serverDataBasic();
+
+    void userFromJson_data();
+    void userFromJson();
 };

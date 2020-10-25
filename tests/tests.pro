@@ -17,10 +17,7 @@ HEADERS += \
     ../src/serverdata.h \
     ../src/settingsholder.h \
     ../src/user.h \
-    autotest.h \
-    testdevice.h \
-    testserverdata.h \
-    testuser.h
+    testmodels.h
 
 SOURCES += \
     ../src/device.cpp \
@@ -31,11 +28,8 @@ SOURCES += \
     ../src/servercountry.cpp \
     ../src/serverdata.cpp \
     ../src/user.cpp \
-    main.cpp \
     mocsettingsholder.cpp \
-    testdevice.cpp \
-    testserverdata.cpp \
-    testuser.cpp
+    testmodels.cpp
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
