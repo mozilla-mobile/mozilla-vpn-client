@@ -64,7 +64,7 @@ void WgQuickProcess::run(const QString &privateKey,
     }
     */
 
-    content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges));
+    content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
     if (!tmpDir.isValid()) {
         qWarning("Cannot create a temporary directory");
