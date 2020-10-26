@@ -70,6 +70,18 @@ void TestModels::deviceFromJson_data()
                             << "" << QDateTime() << ""
                             << "";
 
+    d.insert("created_at", 42);
+    obj.insert("test", d);
+    QTest::addRow("createdAt (invalid)") << QJsonDocument(obj).toJson() << false << ""
+                               << "" << QDateTime() << ""
+                               << "";
+
+    d.insert("created_at", "42");
+    obj.insert("test", d);
+    QTest::addRow("createdAt (invalid string)") << QJsonDocument(obj).toJson() << false << ""
+                               << "" << QDateTime() << ""
+                               << "";
+
     d.insert("created_at", "2017-07-24T15:46:29");
     obj.insert("test", d);
     QTest::addRow("createdAt") << QJsonDocument(obj).toJson() << false << ""
@@ -308,6 +320,12 @@ void TestModels::keysBasic()
     k.forgetKey();
     QVERIFY(!k.initialized());
     QCOMPARE(k.privateKey(), "");
+
+    SettingsHolder settings;
+    QCOMPARE(k.fromSettings(settings), false);
+
+    settings.setPrivateKey("WOW");
+    QCOMPARE(k.fromSettings(settings), true);
 }
 
 // Server
@@ -474,6 +492,30 @@ void TestModels::serverCityFromJson_data()
     QJsonArray servers;
     obj.insert("servers", servers);
     QTest::addRow("servers empty") << obj << true << "name" << "code" << 0;
+
+    servers.append(42);
+    obj.insert("servers", servers);
+    QTest::addRow("servers invalid") << obj << false;
+
+    QJsonObject server;
+    servers.replace(0, server);
+    obj.insert("servers", servers);
+    QTest::addRow("servers invalid") << obj << false;
+
+    server.insert("hostname", "hostname");
+    server.insert("ipv4_addr_in", "ipv4AddrIn");
+    server.insert("ipv4_gateway", "ipv4Gateway");
+    server.insert("ipv6_addr_in", "ipv6AddrIn");
+    server.insert("ipv6_gateway", "ipv6Gateway");
+    server.insert("public_key", "publicKey");
+    server.insert("weight", 1234);
+
+    QJsonArray portRanges;
+    server.insert("port_ranges", portRanges);
+
+    servers.replace(0, server);
+    obj.insert("servers", servers);
+    QTest::addRow("servers invalid") << obj << true << "name" << "code" << 1;
 }
 
 void TestModels::serverCityFromJson()
@@ -568,6 +610,9 @@ void TestModels::serverCountryModelBasic()
     ServerCountryModel dm;
     QVERIFY(!dm.initialized());
 
+    SettingsHolder settings;
+    QVERIFY(!dm.fromSettings(settings));
+
     QHash<int, QByteArray> rn = dm.roleNames();
     QCOMPARE(rn.count(), 3);
     QCOMPARE(rn[ServerCountryModel::NameRole], "name");
@@ -601,12 +646,16 @@ void TestModels::serverCountryModelFromJson_data()
     QTest::addRow("good but empty")
         << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant() << QVariant();
 
+    countries.append(42);
+    obj.insert("countries", countries);
+    QTest::addRow("invalid city") << QJsonDocument(obj).toJson() << false;
+
     QJsonObject d;
     d.insert("name", "serverCountryName");
     d.insert("code", "serverCountryCode");
     d.insert("cities", QJsonArray());
 
-    countries.append(d);
+    countries.replace(0, d);
     obj.insert("countries", countries);
     QTest::addRow("good but empty cities")
         << QJsonDocument(obj).toJson() << true << 1 << QVariant("serverCountryName")
@@ -661,6 +710,8 @@ void TestModels::serverCountryModelFromJson()
 
             QFETCH(QVariant, cities);
             QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+
+            QVERIFY(m.fromJson(json));
         }
     }
 
