@@ -20,7 +20,7 @@ Logger::Log Logger::log()
 
 void Logger::logNon200Reply(const int &status, const QByteArray &data)
 {
-    // Do we want to print out data here?
+    Logger::log() << "NON 200 Response received.";
     Logger::log() << "Request status code is: " << status << "data is: " << data << ".";
 }
 
