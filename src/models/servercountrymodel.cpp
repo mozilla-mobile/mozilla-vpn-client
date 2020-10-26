@@ -27,7 +27,7 @@ bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)
 
     const QByteArray json = settingsHolder.servers();
     if (!fromJsonInternal(json)) {
-        return true;
+        return false;
     }
 
     m_rawJson = json;

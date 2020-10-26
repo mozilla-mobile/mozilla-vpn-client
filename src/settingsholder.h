@@ -24,6 +24,7 @@ class SettingsHolder final : public QObject
 
 public:
     SettingsHolder();
+    ~SettingsHolder();
 
     void clear();
 

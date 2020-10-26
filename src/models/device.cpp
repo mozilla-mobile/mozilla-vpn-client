@@ -69,6 +69,11 @@ bool Device::fromJson(const QJsonValue &json)
         return false;
     }
 
+    QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
+    if (!date.isValid()) {
+        return false;
+    }
+
     QJsonValue ipv4Address = obj.take("ipv4_address");
     if (!ipv4Address.isString()) {
         return false;
@@ -76,11 +81,6 @@ bool Device::fromJson(const QJsonValue &json)
 
     QJsonValue ipv6Address = obj.take("ipv6_address");
     if (!ipv6Address.isString()) {
-        return false;
-    }
-
-    QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
-    if (!date.isValid()) {
         return false;
     }
 

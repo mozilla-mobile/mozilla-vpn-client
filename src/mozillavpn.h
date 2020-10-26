@@ -9,15 +9,15 @@
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
-#include "devicemodel.h"
 #include "errorhandler.h"
-#include "keys.h"
 #include "localizer.h"
+#include "models/devicemodel.h"
+#include "models/keys.h"
+#include "models/servercountrymodel.h"
+#include "models/serverdata.h"
+#include "models/user.h"
 #include "releasemonitor.h"
-#include "servercountrymodel.h"
-#include "serverdata.h"
 #include "settingsholder.h"
-#include "user.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -169,6 +169,8 @@ private:
 
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
+
+    bool modelsInitialized() const;
 
 signals:
     void stateChanged();

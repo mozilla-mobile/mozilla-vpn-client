@@ -34,8 +34,6 @@ public:
 
     bool hasDevice(const QString &deviceName) const;
 
-    void addDevice(const Device &device);
-
     void removeDevice(const QString &deviceName);
 
     const Device *device(const QString &deviceName) const;

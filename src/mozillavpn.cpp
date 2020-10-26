@@ -3,16 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
-#include "device.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "servercountrymodel.h"
+#include "models/device.h"
+#include "models/servercountrymodel.h"
+#include "models/user.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "user.h"
 
 #ifdef IOS_INTEGRATION
 #include "platforms/ios/iaphandler.h"
@@ -187,6 +187,12 @@ void MozillaVPN::initialize()
 
     if (!m_keys.fromSettings(m_settingsHolder)) {
         logger.log() << "No keys found";
+        m_settingsHolder.clear();
+        return;
+    }
+
+    if (!modelsInitialized()) {
+        logger.log() << "Models not initialized yet";
         m_settingsHolder.clear();
         return;
     }
@@ -396,11 +402,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
             return;
         }
 
-        if (!m_user.initialized() ||
-            !m_serverCountryModel.initialized() ||
-            !m_deviceModel.initialized() ||
-            !m_deviceModel.hasDevice(Device::currentDeviceName()) ||
-            !m_keys.initialized()) {
+        if (!modelsInitialized()) {
             logger.log() << "Failed to complete the authentication";
             errorHandle(ErrorHandler::BackendServiceError);
             return;
@@ -809,4 +811,13 @@ void MozillaVPN::viewLogs()
     }
 
     qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+}
+
+bool MozillaVPN::modelsInitialized() const
+{
+    return m_user.initialized() &&
+           m_serverCountryModel.initialized() &&
+           m_deviceModel.initialized() &&
+           m_deviceModel.hasDevice(Device::currentDeviceName()) &&
+           m_keys.initialized();
 }

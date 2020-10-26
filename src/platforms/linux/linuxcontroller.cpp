@@ -4,12 +4,12 @@
 
 #include "linuxcontroller.h"
 #include "dbus.h"
-#include "device.h"
 #include "errorhandler.h"
-#include "keys.h"
 #include "logger.h"
+#include "models/device.h"
+#include "models/keys.h"
+#include "models/server.h"
 #include "mozillavpn.h"
-#include "server.h"
 
 #include <QDBusPendingCallWatcher>
 #include <QJsonDocument>

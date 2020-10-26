@@ -4,9 +4,9 @@
 
 #include "connectionhealth.h"
 #include "logger.h"
+#include "models/server.h"
 #include "mozillavpn.h"
 #include "pingsender.h"
-#include "server.h"
 
 // In seconds, the timeout for unstable pings.
 constexpr uint32_t TIMEOUT_UNSTABLE_SEC = 5;

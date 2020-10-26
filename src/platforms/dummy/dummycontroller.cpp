@@ -4,7 +4,7 @@
 
 #include "dummycontroller.h"
 #include "logger.h"
-#include "server.h"
+#include "models/server.h"
 
 #include <QRandomGenerator>
 

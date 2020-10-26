@@ -34,29 +34,30 @@ SOURCES += \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
-        device.cpp \
-        devicemodel.cpp \
         errorhandler.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
-        keys.cpp \
         localizer.cpp \
         logger.cpp \
         loghandler.cpp \
         main.cpp \
+        models/user.cpp \
+        models/device.cpp \
+        models/devicemodel.cpp \
+        models/keys.cpp \
+        models/server.cpp \
+        models/servercity.cpp \
+        models/servercountry.cpp \
+        models/servercountrymodel.cpp \
+        models/serverdata.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
         releasemonitor.cpp \
-        server.cpp \
-        servercity.cpp \
-        servercountry.cpp \
-        servercountrymodel.cpp \
-        serverdata.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
@@ -64,8 +65,7 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        timercontroller.cpp \
-        user.cpp
+        timercontroller.cpp
 
 HEADERS += \
         captiveportal/captiveportal.h \
@@ -79,26 +79,27 @@ HEADERS += \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
-        device.h \
-        devicemodel.h \
         errorhandler.h \
         fontloader.h \
         ipaddressrange.h \
-        keys.h \
         localizer.h \
         logger.h \
         loghandler.h \
+        models/device.h \
+        models/devicemodel.h \
+        models/keys.h \
+        models/server.h \
+        models/servercity.h \
+        models/servercountry.h \
+        models/servercountrymodel.h \
+        models/serverdata.h \
+        models/user.h \
         mozillavpn.h \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
         releasemonitor.h \
-        server.h \
-        servercity.h \
-        servercountry.h \
-        servercountrymodel.h \
-        serverdata.h \
         settingsholder.h \
         signalhandler.h \
         systemtrayhandler.h \
@@ -108,8 +109,7 @@ HEADERS += \
         tasks/authenticate/taskauthenticate.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
-        timercontroller.h \
-        user.h
+        timercontroller.h
 
 # Platform-specific: Linux
 linux {

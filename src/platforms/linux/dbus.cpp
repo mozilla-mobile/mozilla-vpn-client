@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbus.h"
-#include "device.h"
 #include "ipaddressrange.h"
-#include "keys.h"
 #include "logger.h"
+#include "models/device.h"
+#include "models/keys.h"
+#include "models/server.h"
 #include "mozillavpn.h"
 #include "server.h"
 #include "../captiveportal/captiveportal.h"

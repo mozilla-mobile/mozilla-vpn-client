@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
-#include "../src/device.h"
-#include "../src/devicemodel.h"
-#include "../src/keys.h"
-#include "../src/servercity.h"
-#include "../src/servercountry.h"
-#include "../src/servercountrymodel.h"
-#include "../src/serverdata.h"
-#include "../src/user.h"
+#include "../src/models/device.h"
+#include "../src/models/devicemodel.h"
+#include "../src/models/keys.h"
+#include "../src/models/servercity.h"
+#include "../src/models/servercountry.h"
+#include "../src/models/servercountrymodel.h"
+#include "../src/models/serverdata.h"
+#include "../src/models/user.h"
+#include "../src/settingsholder.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -27,7 +28,12 @@ void TestModels::deviceBasic()
     QCOMPARE(device.publicKey(), "");
     QCOMPARE(device.ipv4Address(), "");
     QCOMPARE(device.ipv6Address(), "");
-    QCOMPARE(device.isDevice("name"), false);
+    QVERIFY(!device.isDevice("name"));
+}
+
+void TestModels::deviceCurrentDeviceName()
+{
+    QVERIFY(!Device::currentDeviceName().isEmpty());
 }
 
 void TestModels::deviceFromJson_data()
@@ -63,6 +69,18 @@ void TestModels::deviceFromJson_data()
     QTest::addRow("pubKey") << QJsonDocument(obj).toJson() << false << ""
                             << "" << QDateTime() << ""
                             << "";
+
+    d.insert("created_at", 42);
+    obj.insert("test", d);
+    QTest::addRow("createdAt (invalid)") << QJsonDocument(obj).toJson() << false << ""
+                               << "" << QDateTime() << ""
+                               << "";
+
+    d.insert("created_at", "42");
+    obj.insert("test", d);
+    QTest::addRow("createdAt (invalid string)") << QJsonDocument(obj).toJson() << false << ""
+                               << "" << QDateTime() << ""
+                               << "";
 
     d.insert("created_at", "2017-07-24T15:46:29");
     obj.insert("test", d);
@@ -121,8 +139,8 @@ void TestModels::deviceFromJson()
 void TestModels::deviceModelBasic()
 {
     DeviceModel dm;
-    QCOMPARE(dm.initialized(), false);
-    QCOMPARE(dm.hasDevice("foo"), false);
+    QVERIFY(!dm.initialized());
+    QVERIFY(!dm.hasDevice("foo"));
     dm.removeDevice("foo");
     QCOMPARE(dm.device("foo"), nullptr);
     QCOMPARE(dm.activeDevices(), 0);
@@ -141,25 +159,26 @@ void TestModels::deviceModelBasic()
 void TestModels::deviceModelFromJson_data()
 {
     QTest::addColumn<QByteArray>("json");
-    QTest::addColumn<bool>("result");
+    QTest::addColumn<bool>("resultFromJson");
+    QTest::addColumn<bool>("resultFromSettings");
     QTest::addColumn<int>("devices");
     QTest::addColumn<QVariant>("deviceName");
     QTest::addColumn<QVariant>("currentOne");
     QTest::addColumn<QVariant>("createdAt");
 
-    QTest::addRow("invalid") << QByteArray("") << false;
-    QTest::addRow("array") << QByteArray("[]") << false;
+    QTest::addRow("invalid") << QByteArray("") << false << false;
+    QTest::addRow("array") << QByteArray("[]") << false << false;
 
     QJsonObject obj;
-    QTest::addRow("empty") << QJsonDocument(obj).toJson() << false;
+    QTest::addRow("empty") << QJsonDocument(obj).toJson() << false << false;
 
     obj.insert("devices", 42);
-    QTest::addRow("invalid devices") << QJsonDocument(obj).toJson() << false;
+    QTest::addRow("invalid devices") << QJsonDocument(obj).toJson() << false << false;
 
     QJsonArray devices;
     obj.insert("devices", devices);
     QTest::addRow("good but empty")
-        << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant() << QVariant();
+        << QJsonDocument(obj).toJson() << true << false << 0 << QVariant() << QVariant() << QVariant();
 
     QJsonObject d;
     d.insert("name", "deviceName");
@@ -170,43 +189,119 @@ void TestModels::deviceModelFromJson_data()
 
     devices.append(d);
     obj.insert("devices", devices);
-    QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 1 << QVariant("deviceName")
+    QTest::addRow("good") << QJsonDocument(obj).toJson() << true << true << 1 << QVariant("deviceName")
                           << QVariant(false)
                           << QVariant(QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate));
+
+    d.insert("name", Device::currentDeviceName());
+    d.insert("pubkey", "devicePubkey");
+    d.insert("created_at", "2017-07-24T15:46:29");
+    d.insert("ipv4_address", "deviceIpv4");
+    d.insert("ipv6_address", "deviceIpv6");
+
+    devices.append(d);
+    obj.insert("devices", devices);
+    QTest::addRow("good - 2 devices")
+        << QJsonDocument(obj).toJson() << true << true << 2 << QVariant(Device::currentDeviceName())
+        << QVariant(true) << QVariant(QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate));
 }
 
 void TestModels::deviceModelFromJson()
 {
     QFETCH(QByteArray, json);
-    QFETCH(bool, result);
+    QFETCH(bool, resultFromJson);
+    QFETCH(bool, resultFromSettings);
 
-    DeviceModel dm;
-    QCOMPARE(dm.fromJson(json), result);
+    // fromJson
+    {
+        DeviceModel dm;
+        QCOMPARE(dm.fromJson(json), resultFromJson);
 
-    if (!result) {
-        QCOMPARE(dm.initialized(), false);
-        QCOMPARE(dm.rowCount(QModelIndex()), 0);
-        return;
+        if (!resultFromJson) {
+            QVERIFY(!dm.initialized());
+            QCOMPARE(dm.rowCount(QModelIndex()), 0);
+        } else {
+            QVERIFY(dm.initialized());
+
+            QFETCH(int, devices);
+            QCOMPARE(dm.rowCount(QModelIndex()), devices);
+            QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
+            QCOMPARE(dm.data(QModelIndex(), DeviceModel::CurrentOneRole), QVariant());
+            QCOMPARE(dm.data(QModelIndex(), DeviceModel::CreatedAtRole), QVariant());
+
+            QModelIndex index = dm.index(0, 0);
+
+            QFETCH(QVariant, deviceName);
+            QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
+
+            QFETCH(QVariant, currentOne);
+            QCOMPARE(dm.data(index, DeviceModel::CurrentOneRole), currentOne);
+
+            QFETCH(QVariant, createdAt);
+            QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole), createdAt);
+
+            QCOMPARE(dm.activeDevices(), devices);
+            QCOMPARE(!!dm.currentDevice(), currentOne.toBool());
+
+            if (devices > 0) {
+                QVERIFY(dm.hasDevice(deviceName.toString()));
+                QVERIFY(dm.device(deviceName.toString()) != nullptr);
+
+                dm.removeDevice("FOO");
+                QCOMPARE(dm.activeDevices(), devices);
+
+                dm.removeDevice(deviceName.toString());
+                QCOMPARE(dm.activeDevices(), devices - 1);
+            }
+        }
     }
 
-    QCOMPARE(dm.initialized(), true);
+    // fromSettings
+    {
+        SettingsHolder settings;
+        settings.setDevices(json);
 
-    QFETCH(int, devices);
-    QCOMPARE(dm.rowCount(QModelIndex()), devices);
-    QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
-    QCOMPARE(dm.data(QModelIndex(), DeviceModel::CurrentOneRole), QVariant());
-    QCOMPARE(dm.data(QModelIndex(), DeviceModel::CreatedAtRole), QVariant());
+        DeviceModel dm;
+        QCOMPARE(dm.fromSettings(settings), resultFromSettings);
 
-    QModelIndex index = dm.index(0, 0);
+        if (!resultFromSettings) {
+            QVERIFY(!dm.initialized());
+            QCOMPARE(dm.rowCount(QModelIndex()), 0);
+        } else {
+            QVERIFY(dm.initialized());
 
-    QFETCH(QVariant, deviceName);
-    QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
+            QFETCH(int, devices);
+            QCOMPARE(dm.rowCount(QModelIndex()), devices);
+            QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
+            QCOMPARE(dm.data(QModelIndex(), DeviceModel::CurrentOneRole), QVariant());
+            QCOMPARE(dm.data(QModelIndex(), DeviceModel::CreatedAtRole), QVariant());
 
-    QFETCH(QVariant, currentOne);
-    QCOMPARE(dm.data(index, DeviceModel::CurrentOneRole), currentOne);
+            QModelIndex index = dm.index(0, 0);
 
-    QFETCH(QVariant, createdAt);
-    QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole), createdAt);
+            QFETCH(QVariant, deviceName);
+            QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
+
+            QFETCH(QVariant, currentOne);
+            QCOMPARE(dm.data(index, DeviceModel::CurrentOneRole), currentOne);
+
+            QFETCH(QVariant, createdAt);
+            QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole), createdAt);
+
+            QCOMPARE(dm.activeDevices(), devices);
+            QCOMPARE(!!dm.currentDevice(), currentOne.toBool());
+
+            if (devices > 0) {
+                QVERIFY(dm.hasDevice(deviceName.toString()));
+                QVERIFY(dm.device(deviceName.toString()) != nullptr);
+
+                dm.removeDevice("FOO");
+                QCOMPARE(dm.activeDevices(), devices);
+
+                dm.removeDevice(deviceName.toString());
+                QCOMPARE(dm.activeDevices(), devices - 1);
+            }
+        }
+    }
 }
 
 // Keys
@@ -215,16 +310,22 @@ void TestModels::deviceModelFromJson()
 void TestModels::keysBasic()
 {
     Keys k;
-    QCOMPARE(k.initialized(), false);
+    QVERIFY(!k.initialized());
     QCOMPARE(k.privateKey(), "");
 
     k.storeKey("test");
-    QCOMPARE(k.initialized(), true);
+    QVERIFY(k.initialized());
     QCOMPARE(k.privateKey(), "test");
 
     k.forgetKey();
-    QCOMPARE(k.initialized(), false);
+    QVERIFY(!k.initialized());
     QCOMPARE(k.privateKey(), "");
+
+    SettingsHolder settings;
+    QCOMPARE(k.fromSettings(settings), false);
+
+    settings.setPrivateKey("WOW");
+    QCOMPARE(k.fromSettings(settings), true);
 }
 
 // Server
@@ -233,7 +334,7 @@ void TestModels::keysBasic()
 void TestModels::serverBasic()
 {
     Server s;
-    QCOMPARE(s.initialized(), false);
+    QVERIFY(!s.initialized());
     QCOMPARE(s.hostname(), "");
     QCOMPARE(s.ipv4AddrIn(), "");
     QCOMPARE(s.ipv4Gateway(), "");
@@ -326,11 +427,11 @@ void TestModels::serverFromJson()
     QCOMPARE(s.fromJson(json), result);
 
     if (!result) {
-        QCOMPARE(s.initialized(), false);
+        QVERIFY(!s.initialized());
         return;
     }
 
-    QCOMPARE(s.initialized(), true);
+    QVERIFY(s.initialized());
 
     QFETCH(QString, hostname);
     QCOMPARE(s.hostname(), hostname);
@@ -365,7 +466,7 @@ void TestModels::serverCityBasic()
     ServerCity sc;
     QCOMPARE(sc.name(), "");
     QCOMPARE(sc.code(), "");
-    QCOMPARE(sc.getServers().isEmpty(), true);
+    QVERIFY(sc.getServers().isEmpty());
 }
 
 void TestModels::serverCityFromJson_data()
@@ -391,6 +492,30 @@ void TestModels::serverCityFromJson_data()
     QJsonArray servers;
     obj.insert("servers", servers);
     QTest::addRow("servers empty") << obj << true << "name" << "code" << 0;
+
+    servers.append(42);
+    obj.insert("servers", servers);
+    QTest::addRow("servers invalid") << obj << false;
+
+    QJsonObject server;
+    servers.replace(0, server);
+    obj.insert("servers", servers);
+    QTest::addRow("servers invalid") << obj << false;
+
+    server.insert("hostname", "hostname");
+    server.insert("ipv4_addr_in", "ipv4AddrIn");
+    server.insert("ipv4_gateway", "ipv4Gateway");
+    server.insert("ipv6_addr_in", "ipv6AddrIn");
+    server.insert("ipv6_gateway", "ipv6Gateway");
+    server.insert("public_key", "publicKey");
+    server.insert("weight", 1234);
+
+    QJsonArray portRanges;
+    server.insert("port_ranges", portRanges);
+
+    servers.replace(0, server);
+    obj.insert("servers", servers);
+    QTest::addRow("servers invalid") << obj << true << "name" << "code" << 1;
 }
 
 void TestModels::serverCityFromJson()
@@ -403,7 +528,7 @@ void TestModels::serverCityFromJson()
     if (!result) {
         QCOMPARE(sc.name(), "");
         QCOMPARE(sc.code(), "");
-        QCOMPARE(sc.getServers().isEmpty(), true);
+        QVERIFY(sc.getServers().isEmpty());
         return;
     }
 
@@ -425,7 +550,7 @@ void TestModels::serverCountryBasic()
     ServerCountry sc;
     QCOMPARE(sc.name(), "");
     QCOMPARE(sc.code(), "");
-    QCOMPARE(sc.cities().isEmpty(), true);
+    QVERIFY(sc.cities().isEmpty());
 }
 
 void TestModels::serverCountryFromJson_data()
@@ -463,7 +588,7 @@ void TestModels::serverCountryFromJson()
     if (!result) {
         QCOMPARE(sc.name(), "");
         QCOMPARE(sc.code(), "");
-        QCOMPARE(sc.cities().isEmpty(), true);
+        QVERIFY(sc.cities().isEmpty());
         return;
     }
 
@@ -483,7 +608,10 @@ void TestModels::serverCountryFromJson()
 void TestModels::serverCountryModelBasic()
 {
     ServerCountryModel dm;
-    QCOMPARE(dm.initialized(), false);
+    QVERIFY(!dm.initialized());
+
+    SettingsHolder settings;
+    QVERIFY(!dm.fromSettings(settings));
 
     QHash<int, QByteArray> rn = dm.roleNames();
     QCOMPARE(rn.count(), 3);
@@ -518,12 +646,16 @@ void TestModels::serverCountryModelFromJson_data()
     QTest::addRow("good but empty")
         << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant() << QVariant();
 
+    countries.append(42);
+    obj.insert("countries", countries);
+    QTest::addRow("invalid city") << QJsonDocument(obj).toJson() << false;
+
     QJsonObject d;
     d.insert("name", "serverCountryName");
     d.insert("code", "serverCountryCode");
     d.insert("cities", QJsonArray());
 
-    countries.append(d);
+    countries.replace(0, d);
     obj.insert("countries", countries);
     QTest::addRow("good but empty cities")
         << QJsonDocument(obj).toJson() << true << 1 << QVariant("serverCountryName")
@@ -550,34 +682,72 @@ void TestModels::serverCountryModelFromJson()
     QFETCH(QByteArray, json);
     QFETCH(bool, result);
 
-    ServerCountryModel m;
-    QCOMPARE(m.fromJson(json), result);
+    // from json
+    {
+        ServerCountryModel m;
+        QCOMPARE(m.fromJson(json), result);
 
-    if (!result) {
-        QCOMPARE(m.initialized(), false);
-        QCOMPARE(m.rowCount(QModelIndex()), 0);
-        return;
+        if (!result) {
+            QVERIFY(!m.initialized());
+            QCOMPARE(m.rowCount(QModelIndex()), 0);
+        } else {
+            QVERIFY(m.initialized());
+
+            QFETCH(int, countries);
+            QCOMPARE(m.rowCount(QModelIndex()), countries);
+
+            QCOMPARE(m.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
+            QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CodeRole), QVariant());
+            QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole), QVariant());
+
+            QModelIndex index = m.index(0, 0);
+
+            QFETCH(QVariant, name);
+            QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+
+            QFETCH(QVariant, code);
+            QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+
+            QFETCH(QVariant, cities);
+            QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+
+            QVERIFY(m.fromJson(json));
+        }
     }
 
-    QCOMPARE(m.initialized(), true);
+    // from settings
+    {
+        SettingsHolder settings;
+        settings.setServers(json);
 
-    QFETCH(int, countries);
-    QCOMPARE(m.rowCount(QModelIndex()), countries);
+        ServerCountryModel m;
+        QCOMPARE(m.fromSettings(settings), result);
 
-    QCOMPARE(m.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
-    QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CodeRole), QVariant());
-    QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole), QVariant());
+        if (!result) {
+            QVERIFY(!m.initialized());
+            QCOMPARE(m.rowCount(QModelIndex()), 0);
+        } else {
+            QVERIFY(m.initialized());
 
-    QModelIndex index = m.index(0, 0);
+            QFETCH(int, countries);
+            QCOMPARE(m.rowCount(QModelIndex()), countries);
 
-    QFETCH(QVariant, name);
-    QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+            QCOMPARE(m.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
+            QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CodeRole), QVariant());
+            QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole), QVariant());
 
-    QFETCH(QVariant, code);
-    QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+            QModelIndex index = m.index(0, 0);
 
-    QFETCH(QVariant, cities);
-    QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+            QFETCH(QVariant, name);
+            QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
+
+            QFETCH(QVariant, code);
+            QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
+
+            QFETCH(QVariant, cities);
+            QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+        }
+    }
 }
 
 // ServerData
@@ -587,7 +757,7 @@ void TestModels::serverDataBasic()
 {
     ServerData sd;
 
-    QCOMPARE(sd.initialized(), false);
+    QVERIFY(!sd.initialized());
     QCOMPARE(sd.countryCode(), "");
     QCOMPARE(sd.city(), "");
 
@@ -597,7 +767,7 @@ void TestModels::serverDataBasic()
         countryObj.insert("code", "serverCountryCode");
         countryObj.insert("cities", QJsonArray());
         ServerCountry country;
-        QCOMPARE(country.fromJson(countryObj), true);
+        QVERIFY(country.fromJson(countryObj));
 
         QJsonObject cityObj;
         cityObj.insert("code", "serverCityCode");
@@ -605,21 +775,30 @@ void TestModels::serverDataBasic()
         cityObj.insert("servers", QJsonArray());
 
         ServerCity city;
-        QCOMPARE(city.fromJson(cityObj), true);
+        QVERIFY(city.fromJson(cityObj));
 
         sd.initialize(country, city);
-        QCOMPARE(sd.initialized(), true);
+        QVERIFY(sd.initialized());
         QCOMPARE(sd.countryCode(), "serverCountryCode");
         QCOMPARE(sd.city(), "serverCityName");
+
+        SettingsHolder settings;
+        sd.writeSettings(settings);
+
+        ServerData sd2;
+        QVERIFY(sd2.fromSettings(settings));
+        QVERIFY(sd2.initialized());
+        QCOMPARE(sd2.countryCode(), "serverCountryCode");
+        QCOMPARE(sd2.city(), "serverCityName");
     }
 
     sd.update("new Country", "new City");
-    QCOMPARE(sd.initialized(), true);
+    QVERIFY(sd.initialized());
     QCOMPARE(sd.countryCode(), "new Country");
     QCOMPARE(sd.city(), "new City");
 
     sd.forget();
-    QCOMPARE(sd.initialized(), false);
+    QVERIFY(!sd.initialized());
     QCOMPARE(sd.countryCode(), "new Country");
     QCOMPARE(sd.city(), "new City");
 }
@@ -630,12 +809,12 @@ void TestModels::serverDataBasic()
 void TestModels::userBasic()
 {
     User user;
-    QCOMPARE(user.initialized(), false);
+    QVERIFY(!user.initialized());
     QCOMPARE(user.avatar(), "");
     QCOMPARE(user.displayName(), "");
     QCOMPARE(user.email(), "");
     QCOMPARE(user.maxDevices(), 5);
-    QCOMPARE(user.subscriptionNeeded(), false);
+    QVERIFY(!user.subscriptionNeeded());
 }
 
 void TestModels::userFromJson_data()
@@ -718,16 +897,16 @@ void TestModels::userFromJson()
     QCOMPARE(user.fromJson(json), result);
 
     if (!result) {
-        QCOMPARE(user.initialized(), false);
+        QVERIFY(!user.initialized());
         QCOMPARE(user.avatar(), "");
         QCOMPARE(user.displayName(), "");
         QCOMPARE(user.email(), "");
         QCOMPARE(user.maxDevices(), 5);
-        QCOMPARE(user.subscriptionNeeded(), false);
+        QVERIFY(!user.subscriptionNeeded());
         return;
     }
 
-    QCOMPARE(user.initialized(), true);
+    QVERIFY(user.initialized());
 
     QFETCH(QString, avatar);
     QCOMPARE(user.avatar(), avatar);
@@ -743,6 +922,65 @@ void TestModels::userFromJson()
 
     QFETCH(bool, subscriptionNeeded);
     QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
+
+    SettingsHolder settings;
+    user.writeSettings(settings);
+
+    // FromSettings
+    {
+        User user;
+        QVERIFY(user.fromSettings(settings));
+        QVERIFY(user.initialized());
+
+        QFETCH(QString, avatar);
+        QCOMPARE(user.avatar(), avatar);
+
+        QFETCH(QString, displayName);
+        QCOMPARE(user.displayName(), displayName);
+
+        QFETCH(QString, email);
+        QCOMPARE(user.email(), email);
+
+        QFETCH(int, maxDevices);
+        QCOMPARE(user.maxDevices(), maxDevices);
+
+        QFETCH(bool, subscriptionNeeded);
+        QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
+    }
+}
+
+void TestModels::userFromSettings()
+{
+    SettingsHolder settings;
+
+    User user;
+    QVERIFY(!user.fromSettings(settings));
+    QVERIFY(!user.initialized());
+
+    settings.setUserAvatar("avatar");
+    QVERIFY(!user.fromSettings(settings));
+    QVERIFY(!user.initialized());
+
+    settings.setUserDisplayName("displayName");
+    QVERIFY(!user.fromSettings(settings));
+    QVERIFY(!user.initialized());
+
+    settings.setUserEmail("email");
+    QVERIFY(!user.fromSettings(settings));
+    QVERIFY(!user.initialized());
+
+    settings.setUserMaxDevices(123);
+    QVERIFY(!user.fromSettings(settings));
+    QVERIFY(!user.initialized());
+
+    settings.setUserSubscriptionNeeded(true);
+    QVERIFY(user.fromSettings(settings));
+    QVERIFY(user.initialized());
+    QCOMPARE(user.avatar(), "avatar");
+    QCOMPARE(user.displayName(), "displayName");
+    QCOMPARE(user.email(), "email");
+    QCOMPARE(user.maxDevices(), 123);
+    QCOMPARE(user.subscriptionNeeded(), true);
 }
 
 QTEST_MAIN(TestModels)

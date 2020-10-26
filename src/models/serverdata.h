@@ -41,6 +41,9 @@ signals:
     void changed();
 
 private:
+    void initializeInternal(const QString &countryCode, const QString &city);
+
+private:
     bool m_initialized = false;
 
     QString m_countryCode;
