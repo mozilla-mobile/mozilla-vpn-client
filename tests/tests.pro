@@ -5,7 +5,9 @@
 QT += testlib
 TEMPLATE = app
 TARGET = testModels
+
 INCLUDEPATH += .
+INCLUDEPATH += ../src
 
 HEADERS += \
     ../src/device.h \
@@ -36,6 +38,30 @@ SOURCES += \
     ../src/user.cpp \
     mocsettingsholder.cpp \
     testmodels.cpp
+
+# Platform-specific: MacOS
+macos {
+    # For the loginitem
+    LIBS += -framework ServiceManagement
+    LIBS += -framework Security
+
+    OBJECTIVE_SOURCES += \
+            ../src/platforms/macos/macosutils.mm
+
+    OBJECTIVE_HEADERS += \
+            ../src/platforms/macos/macosutils.h
+}
+
+# Platform-specific: IOS
+else:ios {
+    DEFINES += IOS_INTEGRATION
+
+    OBJECTIVE_SOURCES += \
+            ../src/platforms/ios/iosutils.mm
+
+    OBJECTIVE_HEADERS += \
+            ../src/platforms/ios/iosutils.h
+}
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
