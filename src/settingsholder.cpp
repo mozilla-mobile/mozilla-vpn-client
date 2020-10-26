@@ -47,6 +47,8 @@ const QSettings::Format MozFormat = QSettings::registerFormat("moz",
 
 SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
 
+SettingsHolder::~SettingsHolder() = default;
+
 void SettingsHolder::clear()
 {
     logger.log() << "Clean up the settings";

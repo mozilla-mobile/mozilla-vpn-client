@@ -31,7 +31,12 @@ constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 
-SettingsHolder::SettingsHolder() : m_settings("mozilla", "vpn") {}
+SettingsHolder::SettingsHolder() : m_settings("mozilla_testmodels", "vpn") {}
+
+SettingsHolder::~SettingsHolder()
+{
+    m_settings.clear();
+}
 
 void SettingsHolder::clear()
 {
