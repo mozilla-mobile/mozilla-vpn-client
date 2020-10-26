@@ -3,15 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
-#include "../src/device.h"
-#include "../src/devicemodel.h"
-#include "../src/keys.h"
-#include "../src/servercity.h"
-#include "../src/servercountry.h"
-#include "../src/servercountrymodel.h"
-#include "../src/serverdata.h"
+#include "../src/models/device.h"
+#include "../src/models/devicemodel.h"
+#include "../src/models/keys.h"
+#include "../src/models/servercity.h"
+#include "../src/models/servercountry.h"
+#include "../src/models/servercountrymodel.h"
+#include "../src/models/serverdata.h"
+#include "../src/models/user.h"
 #include "../src/settingsholder.h"
-#include "../src/user.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>

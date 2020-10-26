@@ -3,16 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
-#include "device.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "servercountrymodel.h"
+#include "models/device.h"
+#include "models/servercountrymodel.h"
+#include "models/user.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "user.h"
 
 #ifdef IOS_INTEGRATION
 #include "platforms/ios/iaphandler.h"

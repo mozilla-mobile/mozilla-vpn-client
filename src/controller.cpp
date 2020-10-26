@@ -8,8 +8,8 @@
 #include "controllerimpl.h"
 #include "ipaddressrange.h"
 #include "logger.h"
+#include "models/server.h"
 #include "mozillavpn.h"
-#include "server.h"
 #include "timercontroller.h"
 
 #ifdef __linux__

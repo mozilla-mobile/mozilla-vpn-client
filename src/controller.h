@@ -5,7 +5,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "server.h"
+#include "models/server.h"
 
 #include <QDateTime>
 #include <QList>

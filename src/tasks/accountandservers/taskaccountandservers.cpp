@@ -5,9 +5,9 @@
 #include "taskaccountandservers.h"
 #include "errorhandler.h"
 #include "logger.h"
+#include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "servercountrymodel.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskAccountAndServers");

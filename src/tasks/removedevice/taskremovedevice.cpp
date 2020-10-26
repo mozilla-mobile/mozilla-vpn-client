@@ -5,9 +5,9 @@
 #include "taskremovedevice.h"
 #include "errorhandler.h"
 #include "logger.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "user.h"
 
 namespace {
 Logger logger(LOG_MAIN, "TaskRemoveDevice");

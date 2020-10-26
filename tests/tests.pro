@@ -10,32 +10,32 @@ INCLUDEPATH += .
 INCLUDEPATH += ../src
 
 HEADERS += \
-    ../src/device.h \
-    ../src/devicemodel.h \
-    ../src/keys.h \
     ../src/logger.h \
     ../src/loghandler.h \
-    ../src/server.h \
-    ../src/servercity.h \
-    ../src/servercountry.h \
-    ../src/servercountrymodel.h \
-    ../src/serverdata.h \
+    ../src/models/device.h \
+    ../src/models/devicemodel.h \
+    ../src/models/keys.h \
+    ../src/models/server.h \
+    ../src/models/servercity.h \
+    ../src/models/servercountry.h \
+    ../src/models/servercountrymodel.h \
+    ../src/models/serverdata.h \
+    ../src/models/user.h \
     ../src/settingsholder.h \
-    ../src/user.h \
     testmodels.h
 
 SOURCES += \
-    ../src/device.cpp \
-    ../src/devicemodel.cpp \
-    ../src/keys.cpp \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
-    ../src/server.cpp \
-    ../src/servercity.cpp \
-    ../src/servercountry.cpp \
-    ../src/servercountrymodel.cpp \
-    ../src/serverdata.cpp \
-    ../src/user.cpp \
+    ../src/models/device.cpp \
+    ../src/models/devicemodel.cpp \
+    ../src/models/keys.cpp \
+    ../src/models/server.cpp \
+    ../src/models/servercity.cpp \
+    ../src/models/servercountry.cpp \
+    ../src/models/servercountrymodel.cpp \
+    ../src/models/serverdata.cpp \
+    ../src/models/user.cpp \
     mocsettingsholder.cpp \
     testmodels.cpp
 

@@ -5,9 +5,9 @@
 #include "taskauthenticate.h"
 #include "errorhandler.h"
 #include "logger.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "user.h"
 
 #ifdef IOS_INTEGRATION
 #include "platforms/ios/authenticationlistener.h"
