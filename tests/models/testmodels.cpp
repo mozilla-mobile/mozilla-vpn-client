@@ -73,14 +73,14 @@ void TestModels::deviceFromJson_data()
     d.insert("created_at", 42);
     obj.insert("test", d);
     QTest::addRow("createdAt (invalid)") << QJsonDocument(obj).toJson() << false << ""
-                               << "" << QDateTime() << ""
-                               << "";
+                                         << "" << QDateTime() << ""
+                                         << "";
 
     d.insert("created_at", "42");
     obj.insert("test", d);
     QTest::addRow("createdAt (invalid string)") << QJsonDocument(obj).toJson() << false << ""
-                               << "" << QDateTime() << ""
-                               << "";
+                                                << "" << QDateTime() << ""
+                                                << "";
 
     d.insert("created_at", "2017-07-24T15:46:29");
     obj.insert("test", d);
@@ -154,6 +154,12 @@ void TestModels::deviceModelBasic()
 
     QCOMPARE(dm.rowCount(QModelIndex()), 0);
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
+
+    SettingsHolder settings;
+    QVERIFY(!dm.fromSettings(settings));
+
+    dm.writeSettings(settings);
+    QVERIFY(!dm.fromSettings(settings));
 }
 
 void TestModels::deviceModelFromJson_data()
@@ -180,6 +186,10 @@ void TestModels::deviceModelFromJson_data()
     QTest::addRow("good but empty")
         << QJsonDocument(obj).toJson() << true << false << 0 << QVariant() << QVariant() << QVariant();
 
+    devices.append(42);
+    obj.insert("devices", devices);
+    QTest::addRow("invalid devices") << QJsonDocument(obj).toJson() << false << false;
+
     QJsonObject d;
     d.insert("name", "deviceName");
     d.insert("pubkey", "devicePubkey");
@@ -187,7 +197,7 @@ void TestModels::deviceModelFromJson_data()
     d.insert("ipv4_address", "deviceIpv4");
     d.insert("ipv6_address", "deviceIpv6");
 
-    devices.append(d);
+    devices.replace(0, d);
     obj.insert("devices", devices);
     QTest::addRow("good") << QJsonDocument(obj).toJson() << true << true << 1 << QVariant("deviceName")
                           << QVariant(false)
@@ -240,6 +250,8 @@ void TestModels::deviceModelFromJson()
             QFETCH(QVariant, createdAt);
             QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole), createdAt);
 
+            QCOMPARE(dm.data(index, DeviceModel::CreatedAtRole + 1), QVariant());
+
             QCOMPARE(dm.activeDevices(), devices);
             QCOMPARE(!!dm.currentDevice(), currentOne.toBool());
 
@@ -253,6 +265,8 @@ void TestModels::deviceModelFromJson()
                 dm.removeDevice(deviceName.toString());
                 QCOMPARE(dm.activeDevices(), devices - 1);
             }
+
+            QVERIFY(dm.fromJson(json));
         }
     }
 
@@ -356,7 +370,7 @@ void TestModels::serverFromJson_data()
     QTest::addColumn<QString>("ipv6Gateway");
     QTest::addColumn<QString>("publicKey");
     QTest::addColumn<int>("weight");
-    QTest::addColumn<int>("port");
+    QTest::addColumn<QList<int>>("ports");
 
     QJsonObject obj;
     QTest::addRow("empty") << obj << false;
@@ -389,7 +403,7 @@ void TestModels::serverFromJson_data()
                                 << "ipv4Gateway"
                                 << "ipv6AddrIn"
                                 << "ipv6Gateway"
-                                << "publicKey" << 1234 << 0;
+                                << "publicKey" << 1234 << QList<int>{0};
 
     portRanges.append(42);
     obj.insert("port_ranges", portRanges);
@@ -407,6 +421,12 @@ void TestModels::serverFromJson_data()
     QTest::addRow("portRanges wrong type") << obj << false;
 
     portRange.replace(0, 42);
+    portRange.replace(1, "B");
+    portRanges.replace(0, portRange);
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("all good") << obj << false;
+
+    portRange.replace(0, 42);
     portRange.replace(1, 42);
     portRanges.replace(0, portRange);
     obj.insert("port_ranges", portRanges);
@@ -415,7 +435,18 @@ void TestModels::serverFromJson_data()
                               << "ipv4Gateway"
                               << "ipv6AddrIn"
                               << "ipv6Gateway"
-                              << "publicKey" << 1234 << 42;
+                              << "publicKey" << 1234 << QList<int>{42};
+
+    portRange.replace(0, 42);
+    portRange.replace(1, 43);
+    portRanges.replace(0, portRange);
+    obj.insert("port_ranges", portRanges);
+    QTest::addRow("all good") << obj << true << "hostname"
+                              << "ipv4AddrIn"
+                              << "ipv4Gateway"
+                              << "ipv6AddrIn"
+                              << "ipv6Gateway"
+                              << "publicKey" << 1234 << QList<int>{42,43};
 }
 
 void TestModels::serverFromJson()
@@ -454,8 +485,22 @@ void TestModels::serverFromJson()
     QFETCH(int, weight);
     QCOMPARE(s.weight(), (uint32_t)weight);
 
-    QFETCH(int, port);
-    QCOMPARE(s.choosePort(), (uint32_t)port);
+    QFETCH(QList<int>, ports);
+    Q_ASSERT(ports.length() >= 1);
+    if (ports.length() == 1) {
+        QCOMPARE(s.choosePort(), (uint32_t)ports[0]);
+    } else {
+        QVERIFY(ports.contains(s.choosePort()));
+    }
+}
+
+void TestModels::serverWeightChooser()
+{
+    QList<Server> list;
+    list.append(Server());
+
+    const Server &s = Server::weightChooser(list);
+    QCOMPARE(&s, &list[0]);
 }
 
 // ServerCity
@@ -661,19 +706,34 @@ void TestModels::serverCountryModelFromJson_data()
         << QJsonDocument(obj).toJson() << true << 1 << QVariant("serverCountryName")
         << QVariant("serverCountryCode") << QVariant(QStringList{});
 
+    QJsonArray cities;
+    cities.append(42);
+
+    d.insert("cities", cities);
+    countries.replace(0, d);
+    obj.insert("countries", countries);
+    QTest::addRow("invalid city object") << QJsonDocument(obj).toJson() << false;
+
     QJsonObject city;
     city.insert("code", "serverCityCode");
     city.insert("name", "serverCityName");
     city.insert("servers", QJsonArray());
 
-    QJsonArray cities;
-    cities.append(city);
+    cities.replace(0, city);
 
     d.insert("cities", cities);
     countries.replace(0, d);
     obj.insert("countries", countries);
     QTest::addRow("good but empty cities")
         << QJsonDocument(obj).toJson() << true << 1 << QVariant("serverCountryName")
+        << QVariant("serverCountryCode") << QVariant(QStringList{"serverCityName"});
+
+    cities.append(city);
+    d.insert("cities", cities);
+    countries.append(d);
+    obj.insert("countries", countries);
+    QTest::addRow("good but empty cities")
+        << QJsonDocument(obj).toJson() << true << 2 << QVariant("serverCountryName")
         << QVariant("serverCountryCode") << QVariant(QStringList{"serverCityName"});
 }
 
@@ -746,6 +806,8 @@ void TestModels::serverCountryModelFromJson()
 
             QFETCH(QVariant, cities);
             QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
+
+            QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
         }
     }
 }
@@ -801,6 +863,9 @@ void TestModels::serverDataBasic()
     QVERIFY(!sd.initialized());
     QCOMPARE(sd.countryCode(), "new Country");
     QCOMPARE(sd.city(), "new City");
+
+    SettingsHolder settings;
+    QVERIFY(!sd.fromSettings(settings));
 }
 
 // User

@@ -21,7 +21,7 @@ make || die "Failed to compile"
 print G "done."
 
 print Y "Running tests..."
-./tests/testModels || die "Failed to run tests"
+./tests/models/testModels || die "Failed to run tests"
 print G "done."
 
 if ! [ -f $LLVM_PROFILE_FILE ]; then
@@ -29,12 +29,12 @@ if ! [ -f $LLVM_PROFILE_FILE ]; then
 fi
 
 printn Y "Merge the coverage report... "
-llvm-profdata-10 merge $LLVM_PROFILE_FILE -o $LLVM_PROFILE_DATA.final || die "Failed to merge the coverage report"
+llvm-profdata-10 merge $LLVM_PROFILE_FILE -o $LLVM_PROFILE_FILE.final || die "Failed to merge the coverage report"
 print G "done."
 
 print Y "Report:"
-llvm-cov-10 report ./tests/testModels -instr-profile=$LLVM_PROFILE_DATA.final src
+llvm-cov-10 report ./tests/models/testModels -instr-profile=$LLVM_PROFILE_FILE.final src/models
 
 printn Y "Generating the HTML report... "
-llvm-cov-10 show ./tests/testModels -instr-profile=$LLVM_PROFILE_DATA.final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
+llvm-cov-10 show ./tests/models/testModels -instr-profile=$LLVM_PROFILE_FILE.final src/models -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
 print G $REPORT_FILE

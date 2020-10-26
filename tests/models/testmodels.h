@@ -23,6 +23,7 @@ private slots:
     void serverBasic();
     void serverFromJson_data();
     void serverFromJson();
+    void serverWeightChooser();
 
     void serverCityBasic();
     void serverCityFromJson_data();
