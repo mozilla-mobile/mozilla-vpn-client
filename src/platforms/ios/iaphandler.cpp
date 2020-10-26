@@ -90,8 +90,13 @@ void IAPHandler::purchaseCompleted(const QString& orderId)
                 emit completed();
             });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &) {
-        logger.log() << "Purchase request completed";
-        emit completed();
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &status, const QByteArray &data) {
+        if (status == 200) {
+            logger.log() << "Purchase request completed";
+            emit completed();
+        } else {
+            logger.logNon200Reply(status, data);
+            return;
+        }
     });
 }

@@ -34,9 +34,14 @@ void TaskRemoveDevice::run(MozillaVPN *vpn)
         emit completed();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const int &, const QByteArray &) {
-        logger.log() << "Device removed";
-        vpn->deviceRemoved(m_deviceName);
-        emit completed();
+    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const int &status, const QByteArray &data) {
+        if (status == 200) {
+            logger.log() << "Device removed";
+            vpn->deviceRemoved(m_deviceName);
+            emit completed();
+        } else {
+            logger.logNon200Reply(status, data);
+            return;
+        }
     });
 }

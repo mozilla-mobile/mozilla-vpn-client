@@ -36,10 +36,15 @@ void ReleaseMonitor::runInternal()
         schedule();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &data) {
-        logger.log() << "Account request completed";
-        processData(data);
-        schedule();
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &status, const QByteArray &data) {
+        if (status == 200) {
+            logger.log() << "Account request completed";
+            processData(data);
+            schedule();
+        } else {
+            logger.logNon200Reply(status, data);
+            return;
+        }
     });
 }
 

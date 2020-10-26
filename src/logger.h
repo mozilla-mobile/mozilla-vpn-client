@@ -66,6 +66,7 @@ public:
     };
 
     Log log();
+    void logNon200Reply(const int &status, const QByteArray &data);
 
 private:
     QStringList m_modules;

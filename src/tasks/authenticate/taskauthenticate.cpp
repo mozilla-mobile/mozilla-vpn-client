@@ -80,9 +80,14 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
 
                 connect(request,
                         &NetworkRequest::requestCompleted,
-                        [this, vpn](const int &, const QByteArray &data) {
-                            logger.log() << "Authentication completed";
-                            authenticationCompleted(vpn, data);
+                        [this, vpn](const int &status, const QByteArray &data) {
+                            if (status == 200) {
+                                logger.log() << "Authentication completed";
+                                authenticationCompleted(vpn, data);
+                            } else {
+                                logger.logNon200Reply(status, data);
+                                return;
+                            }
                         });
             });
 

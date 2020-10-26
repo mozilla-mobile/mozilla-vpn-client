@@ -18,6 +18,12 @@ Logger::Log Logger::log()
     return Log(this);
 }
 
+void Logger::logNon200Reply(const int &status, const QByteArray &data)
+{
+    // Do we want to print out data here?
+    Logger::log() << "Request status code is: " << status << "data is: " << data << ".";
+}
+
 Logger::Log::Log(Logger *logger) : m_logger(logger), m_data(new Data()) {}
 
 Logger::Log::~Log()

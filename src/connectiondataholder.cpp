@@ -205,19 +205,25 @@ void ConnectionDataHolder::updateIpAddress()
         logger.log() << "IP address request failed" << error;
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &data) {
-        logger.log() << "IP address request completed";
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &status, const QByteArray &data) {
+        if (status == 200) {
+            logger.log() << "IP address request completed";
 
-        QJsonDocument json = QJsonDocument::fromJson(data);
-        Q_ASSERT(json.isObject());
-        QJsonObject obj = json.object();
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            Q_ASSERT(json.isObject());
+            QJsonObject obj = json.object();
 
-        Q_ASSERT(obj.contains("ip"));
-        QJsonValue value = obj.take("ip");
-        Q_ASSERT(value.isString());
+            Q_ASSERT(obj.contains("ip"));
+            QJsonValue value = obj.take("ip");
+            Q_ASSERT(value.isString());
 
-        m_ipAddress = value.toString();
-        emit ipAddressChanged();
+            m_ipAddress = value.toString();
+            emit ipAddressChanged();
+        } else {
+            logger.logNon200Reply(status, data);
+            return;
+        }
+
     });
 }
 

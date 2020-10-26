@@ -30,11 +30,16 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
                     maybeCompleted();
                 });
 
-        connect(request, &NetworkRequest::requestCompleted, [this, vpn](const int &, const QByteArray &data) {
-            logger.log() << "Account request completed";
-            vpn->accountChecked(data);
-            m_accountCompleted = true;
-            maybeCompleted();
+        connect(request, &NetworkRequest::requestCompleted, [this, vpn](const int &status, const QByteArray &data) {
+            if (status == 200) {
+                logger.log() << "Account request completed";
+                vpn->accountChecked(data);
+                m_accountCompleted = true;
+                maybeCompleted();
+            } else {
+                logger.logNon200Reply(status, data);
+                return;
+            }
         });
     }
 
@@ -51,11 +56,16 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
                     maybeCompleted();
                 });
 
-        connect(request, &NetworkRequest::requestCompleted, [this, vpn](const int &, const QByteArray &data) {
-            logger.log() << "Servers obtained";
-            vpn->serversFetched(data);
-            m_serversCompleted = true;
-            maybeCompleted();
+        connect(request, &NetworkRequest::requestCompleted, [this, vpn](const int &status, const QByteArray &data) {
+            if (status == 200) {
+                logger.log() << "Servers obtained";
+                vpn->serversFetched(data);
+                m_serversCompleted = true;
+                maybeCompleted();
+            } else {
+                logger.logNon200Reply(status, data);
+                return;
+            }
         });
     }
 }
