@@ -98,17 +98,20 @@ public:
     QQmlApplicationEngine *engine() { return m_engine; }
 
     // Internal object getters:
-    CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
-    ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
-    ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
-    Controller *controller() { return &m_controller; }
-    ServerData *currentServer() { return &m_serverData; }
-    DeviceModel *deviceModel() { return &m_deviceModel; }
-    const Keys *keys() const { return &m_keys; }
-    Localizer* localizer() { return &m_localizer; }
-    ServerCountryModel *serverCountryModel() { return &m_serverCountryModel; }
-    SettingsHolder *settingsHolder() { return &m_settingsHolder; }
-    User *user() { return &m_user; }
+    CaptivePortalDetection *captivePortalDetection()
+    {
+        return &m_private->m_captivePortalDetection;
+    }
+    ConnectionDataHolder *connectionDataHolder() { return &m_private->m_connectionDataHolder; }
+    ConnectionHealth *connectionHealth() { return &m_private->m_connectionHealth; }
+    Controller *controller() { return &m_private->m_controller; }
+    ServerData *currentServer() { return &m_private->m_serverData; }
+    DeviceModel *deviceModel() { return &m_private->m_deviceModel; }
+    const Keys *keys() const { return &m_private->m_keys; }
+    Localizer *localizer() { return &m_private->m_localizer; }
+    ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
+    SettingsHolder *settingsHolder() { return &m_private->m_settingsHolder; }
+    User *user() { return &m_private->m_user; }
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
@@ -184,18 +187,23 @@ private:
     QQmlApplicationEngine *m_engine = nullptr;
 
     // Internal objects.
-    CaptivePortalDetection m_captivePortalDetection;
-    ConnectionDataHolder m_connectionDataHolder;
-    ConnectionHealth m_connectionHealth;
-    Controller m_controller;
-    DeviceModel m_deviceModel;
-    Keys m_keys;
-    Localizer m_localizer;
-    ReleaseMonitor m_releaseMonitor;
-    ServerCountryModel m_serverCountryModel;
-    ServerData m_serverData;
-    SettingsHolder m_settingsHolder;
-    User m_user;
+    struct Private
+    {
+        CaptivePortalDetection m_captivePortalDetection;
+        ConnectionDataHolder m_connectionDataHolder;
+        ConnectionHealth m_connectionHealth;
+        Controller m_controller;
+        DeviceModel m_deviceModel;
+        Keys m_keys;
+        Localizer m_localizer;
+        ReleaseMonitor m_releaseMonitor;
+        ServerCountryModel m_serverCountryModel;
+        ServerData m_serverData;
+        SettingsHolder m_settingsHolder;
+        User m_user;
+    };
+
+    Private *m_private = nullptr;
 
     // Task handling.
     QList<QPointer<Task>> m_tasks;
