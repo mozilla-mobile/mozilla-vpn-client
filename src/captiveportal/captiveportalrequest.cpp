@@ -25,18 +25,24 @@ void CaptivePortalRequest::run()
         deleteLater();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &data) {
-        logger.log() << "Captive portal request completed:" << data;
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &status, const QByteArray &data) {
+        if (status == 200) {
+            logger.log() << "Captive portal request completed:" << data;
 
-        deleteLater();
+            deleteLater();
 
-        if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-            logger.log() << "No captive portal!";
+            if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
+                logger.log() << "No captive portal!";
+                emit completed(false);
+                return;
+            }
+
+            logger.log() << "Captive portal detected!";
+            emit completed(true);
+        } else {
+            logger.logNon200Reply(status, data);
             emit completed(false);
             return;
         }
-
-        logger.log() << "Captive portal detected!";
-        emit completed(true);
     });
 }
