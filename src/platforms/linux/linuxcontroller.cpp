@@ -66,13 +66,14 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
 void LinuxController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
+                               const CaptivePortal &captivePortal,
                                const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
     Q_UNUSED(forSwitching);
 
     logger.log() << "LinuxController activated";
-    monitorWatcher(m_dbus->activate(server, device, keys, allowedIPAddressRanges));
+    monitorWatcher(m_dbus->activate(server, device, keys, captivePortal, allowedIPAddressRanges));
 }
 
 void LinuxController::deactivate(bool forSwitching)

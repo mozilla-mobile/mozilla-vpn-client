@@ -6,6 +6,7 @@
 #define DBUS_H
 
 #include "dbus_interface.h"
+#include "../captiveportal/captiveportal.h"
 
 #include <QList>
 #include <QObject>
@@ -28,6 +29,7 @@ public:
     QDBusPendingCallWatcher *activate(const Server &server,
                                       const Device *device,
                                       const Keys *keys,
+                                      const CaptivePortal &captivePortal,
                                       const QList<IPAddressRange> &allowedIPAddressRanges);
 
     QDBusPendingCallWatcher *deactivate();

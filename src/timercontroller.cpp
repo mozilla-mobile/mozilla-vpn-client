@@ -4,6 +4,7 @@
 
 #include "timercontroller.h"
 #include "logger.h"
+#include "../captiveportal/captiveportal.h"
 
 namespace {
 Logger logger(LOG_CONTROLLER, "TimerController");
@@ -36,6 +37,7 @@ void TimerController::initialize(const Device *device, const Keys *keys)
 void TimerController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
+                               const CaptivePortal &captivePortal,
                                const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
@@ -47,7 +49,7 @@ void TimerController::activate(const Server &server,
         m_timer.start(TIME_ACTIVATION);
     }
 
-    m_impl->activate(server, device, keys, allowedIPAddressRanges, forSwitching);
+    m_impl->activate(server, device, keys, captivePortal, allowedIPAddressRanges, forSwitching);
 }
 
 void TimerController::deactivate(bool forSwitching)

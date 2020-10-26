@@ -6,6 +6,7 @@
 #define TIMERCONTROLLER_H
 
 #include "controllerimpl.h"
+#include "../captiveportal/captiveportal.h"
 
 #include <QTimer>
 
@@ -25,6 +26,7 @@ public:
     void activate(const Server &server,
                   const Device *device,
                   const Keys *keys,
+                  const CaptivePortal &captivePortal,
                   const QList<IPAddressRange> &allowedIPAddressRanges,
                   bool forSwitching) override;
 

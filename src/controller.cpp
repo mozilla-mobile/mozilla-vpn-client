@@ -133,6 +133,7 @@ void Controller::activate()
         m_impl->activate(server,
                          device,
                          vpn->keys(),
+                         captivePortal,
                          allowedIPAddressRanges,
                          m_state == StateSwitching);
     };

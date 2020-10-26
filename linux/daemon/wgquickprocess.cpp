@@ -24,6 +24,8 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &serverPublicKey,
                          const QString &serverIpv4AddrIn,
                          const QString &serverIpv6AddrIn,
+                         const QString &captivePortalIpv4Addresses,
+                         const QString &captivePortalIpv6Addresses,
                          const QString &allowedIPAddressRanges,
                          int serverPort,
                          bool ipv6Enabled)
@@ -65,6 +67,15 @@ void WgQuickProcess::run(const QString &privateKey,
     */
 
     content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
+
+    if (captivePortalIpv4Addresses.length() > 0) {
+        content.append(", ");
+        content.append(captivePortalIpv4Addresses.toUtf8());
+    }
+    if (captivePortalIpv6Addresses.length() > 0) {
+        content.append(", ");
+        content.append(captivePortalIpv6Addresses.toUtf8());
+    }
 
     if (!tmpDir.isValid()) {
         qWarning("Cannot create a temporary directory");
