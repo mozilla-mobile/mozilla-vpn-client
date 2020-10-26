@@ -12,6 +12,7 @@
 #include "../src/models/serverdata.h"
 #include "../src/models/user.h"
 #include "../src/settingsholder.h"
+#include "helper.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -1048,4 +1049,4 @@ void TestModels::userFromSettings()
     QCOMPARE(user.subscriptionNeeded(), true);
 }
 
-QTEST_MAIN(TestModels)
+static TestModels s_testModels;

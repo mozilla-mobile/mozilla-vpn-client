@@ -27,7 +27,7 @@ xcode.xconfig
 .gradle/
 android/build
 *.ts
-tests/models/testModels
+tests/tests
 build
 
 # Editors

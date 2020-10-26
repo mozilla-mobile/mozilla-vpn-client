@@ -8,6 +8,7 @@
 #include <QObject>
 
 class MozillaVPN;
+class TestNetworking;
 
 class ReleaseMonitor final : public QObject
 {
@@ -21,7 +22,9 @@ private:
 
     void schedule();
 
-    void processData(const QByteArray &data);
+    [[nodiscard]] bool processData(const QByteArray &data);
+
+    friend class TestNetworking;
 };
 
 #endif // RELEASEMONITOR_H

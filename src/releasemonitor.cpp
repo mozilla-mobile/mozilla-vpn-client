@@ -38,7 +38,11 @@ void ReleaseMonitor::runInternal()
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
         logger.log() << "Account request completed";
-        processData(data);
+
+        if (!processData(data)) {
+            logger.log() << "Ignore failure.";
+        }
+
         schedule();
     });
 }
@@ -49,10 +53,14 @@ void ReleaseMonitor::schedule()
     QTimer::singleShot(RELEASE_MONITOR_SEC * 1000, [this] { runInternal(); });
 }
 
-void ReleaseMonitor::processData(const QByteArray &data)
+bool ReleaseMonitor::processData(const QByteArray &data)
 {
     QJsonDocument json = QJsonDocument::fromJson(data);
-    Q_ASSERT(json.isObject());
+    if (!json.isObject()) {
+        logger.log() << "A valid JSON object expected";
+        return false;
+    }
+
     QJsonObject obj = json.object();
 
     QString platformKey =
@@ -69,30 +77,44 @@ void ReleaseMonitor::processData(const QByteArray &data)
 
     if (!obj.contains(platformKey)) {
         logger.log() << "No key" << platformKey;
-        return;
+        return false;
     }
 
     QJsonValue platformDataValue = obj.take(platformKey);
-    Q_ASSERT(platformDataValue.isObject());
+    if (!platformDataValue.isObject()) {
+        logger.log() << "Platform object not available";
+        return false;
+    }
+
     QJsonObject platformData = platformDataValue.toObject();
 
-    Q_ASSERT(platformData.contains("latest"));
     QJsonValue latestValue = platformData.take("latest");
-    Q_ASSERT(latestValue.isObject());
+    if (!latestValue.isObject()) {
+        logger.log() << "Platform.latest object not available";
+        return false;
+    }
+
     QJsonObject latestData = latestValue.toObject();
 
-    Q_ASSERT(latestData.contains("version"));
     QJsonValue latestVersionValue = latestData.take("version");
-    Q_ASSERT(latestVersionValue.isString());
+    if (!latestVersionValue.isString()) {
+        logger.log() << "Platform.latest.version string not available";
+        return false;
+    }
 
-    Q_ASSERT(platformData.contains("minimum"));
     QJsonValue minimumValue = platformData.take("minimum");
-    Q_ASSERT(minimumValue.isObject());
+    if (!minimumValue.isObject()) {
+        logger.log() << "Platform.minimum object not available";
+        return false;
+    }
+
     QJsonObject minimumData = minimumValue.toObject();
 
-    Q_ASSERT(minimumData.contains("version"));
     QJsonValue minimumVersionValue = minimumData.take("version");
-    Q_ASSERT(minimumVersionValue.isString());
+    if (!minimumVersionValue.isString()) {
+        logger.log() << "Platform.minimum.version string not available";
+        return false;
+    }
 
     double latestVersion = latestVersionValue.toString().toDouble();
     double minimumVersion = minimumVersionValue.toString().toDouble();
@@ -106,9 +128,10 @@ void ReleaseMonitor::processData(const QByteArray &data)
         logger.log() << "ReleaseMonitor - update required";
         MozillaVPN::instance()->setUpdateRecommended(false);
         MozillaVPN::instance()->controller()->updateRequired();
-        return;
+        return true;
     }
 
     logger.log() << "Update recommended: " << (currentVersion < latestVersion);
     MozillaVPN::instance()->setUpdateRecommended(currentVersion < latestVersion);
+    return true;
 }
