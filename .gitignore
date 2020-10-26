@@ -15,7 +15,6 @@ mozillavpn_metatypes.json
 mozillavpn_qmltyperegistrations.cpp
 qrc_qml.cpp
 .qmake.stash
-*.swp
 dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
@@ -27,6 +26,11 @@ translations/*.pri
 xcode.xconfig
 .gradle/
 android/build
-.idea/
 *.ts
 tests/testModels
+build
+
+# Editors
+*.swp
+.idea/
+.vscode/
