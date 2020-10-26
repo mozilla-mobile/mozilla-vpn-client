@@ -3,9 +3,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.wireguard.android.backend.*
 import com.wireguard.config.Config
+
+
+
 
 
 public class VPNService :   android.net.VpnService(), ServiceProxy  {
@@ -52,25 +54,47 @@ public class VPNService :   android.net.VpnService(), ServiceProxy  {
         this.tunnel = Tunnel("myCoolTunnel", conf);
     }
 
-    public fun turnOn() {
-        val tunnel = this.tunnel ?: return
+    public fun turnOn(): Boolean {
+        // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
+        // Step 1 - Call Prepare and Fire Permission Intent if needed
+        val intent = this.getPermissionIntent();
+        if(intent == null){
+            Log.e(TAG, "VPN Permission Already Present");
+        }
+        else{
+            Log.e(TAG, "Requesting VPN Permission");
+            this.startActivityForResult(intent);
+            return false;
+        };
+
+        val tunnel = this.tunnel ?: return false
+
+       tunnel.tunnelHandle?.let{
+           this.protect(it);
+       }
+
         val config = tunnel.config
-        Log.v(TAG, "Try to enable tunnel");
-        Builder()
-            .applyConfig(config)
-            .establish()
-            ?.let {
-                backend.tunnelUp(tunnel, it, config.toWgUserspaceString());
-            }
+        Log.v(TAG, "Try to turn on");
+        val b = Builder().applyConfig(config);
+        val file = b.establish();
+
+        if(file != null){
+                Log.v(TAG, "Got file Descriptor for VPN - Try to up");
+                backend.tunnelUp(tunnel, file, config.toWgUserspaceString());
+                return true;
+        }
+        Log.e(TAG, "Failed to get a File Descriptor for VPN");
+        return false;
     }
     public fun turnOff() {
         Log.v(TAG, "Try to disable tunnel");
         this.tunnel?.let { backend.tunnelDown(it) }
     }
-    companion object {
-        @JvmStatic
-        fun getPermissionIntent(context: Context): Intent? {
-            return prepare(context)
-        }
+    fun getPermissionIntent(): Intent? {
+        return prepare(this)
     }
+
+    // Implemented in
+    public external fun startActivityForResult(i: Intent);
+
 }

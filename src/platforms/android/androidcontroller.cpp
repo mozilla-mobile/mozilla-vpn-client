@@ -23,6 +23,7 @@
 #include <QJsonDocument>
 #include "device.h"
 #include "keys.h"
+#include "androidjniutils.h"
 #include "captiveportal/captiveportal.h"
 
 #define TAG "ANDROID_CONTROLLER"
@@ -36,6 +37,7 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
     {
         Q_UNUSED(device);
         Q_UNUSED(keys);
+        androidJNIUtils::init();
         LOGD("ANDROID-CONTROLLER -- Binding to Backend Service");
         QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.mozilla.vpn.VPNService"),
                                            *this, QtAndroid::BindFlag::AutoCreate);
@@ -52,7 +54,6 @@ void AndroidController::activate(const Server &server,
                                bool forSwitching)
 {
     Q_UNUSED(captivePortal);
-    GetVpnPermission();
 
     // Serialise arguments for the Background Service
     // TODO: Rework Scheme to minimum required properties
@@ -83,14 +84,20 @@ void AndroidController::activate(const Server &server,
     QJsonDocument doc;
     doc.setObject(args);
 
-    QAndroidParcel sendData;
+    QAndroidParcel sendData, replyData;
     //lolno Send own binder so service can async respond
     //sendData.writeBinder(m_binder);
     sendData.writeData(doc.toJson());
     LOGD("ANDROID-CONTROLLER --  Chars %d", doc.toJson().count());
     LOGD("ANDROID-CONTROLLER --  Send Activation Request to Service");
-    m_serviceBinder.transact(1,sendData);
-    emit connected();
+    m_serviceBinder.transact(1,sendData, &replyData);
+
+    bool connectionUp = replyData.readVariant().toBool();
+    if(connectionUp){
+        emit connected();
+        return;
+    }
+    emit disconnected();
 }
 
 void AndroidController::deactivate(bool forSwitching)
@@ -161,20 +168,4 @@ bool AndroidController::VPNBinder::onTransact(int code, const QAndroidParcel &da
 
 void AndroidController::VPNBinder::setController(AndroidController* c){
    mController = c;
-}
-
-bool AndroidController::GetVpnPermission(){
-    // Get the VPN Permission prepare Intent from the VPN service
-    QAndroidJniObject intent = QAndroidJniObject::callStaticObjectMethod(
-            "com/mozilla/vpn/VPNService",
-            "getPermissionIntent",
-            "(Landroid/content/Context;)V",
-            QtAndroid::androidActivity().object());
-
-    // Send the thing
-    QAndroidJniObject result = QtAndroid::androidActivity().callObjectMethod(
-                    "startActivityForResult",
-                    "(Landroid/content/Intent;I)", // call startActivityForResult(intent,int)
-                    intent.object());
-    return true;
 }

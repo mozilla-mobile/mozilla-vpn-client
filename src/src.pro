@@ -54,6 +54,7 @@ SOURCES += \
         mozillavpn.cpp \
         networkrequest.cpp \
         pingsender.cpp \
+        platforms/android/androidjniutils.cpp \
         platforms/dummy/dummypingsendworker.cpp \
         releasemonitor.cpp \
         server.cpp \
@@ -95,6 +96,7 @@ HEADERS += \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
+        platforms/android/androidjniutils.h \
         platforms/dummy/dummypingsendworker.h \
         releasemonitor.h \
         server.h \

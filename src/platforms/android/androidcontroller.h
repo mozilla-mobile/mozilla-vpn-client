@@ -38,7 +38,6 @@ private:
     int64_t m_rxBytes = 0;
 
     QAndroidBinder m_serviceBinder;
-    bool GetVpnPermission();
     class VPNBinder : public QAndroidBinder{
     public:
          void setController(AndroidController*);

@@ -1,11 +1,15 @@
 package com.mozilla.vpn
 
+import android.net.VpnService
 import android.os.Binder
 import android.os.Parcel
 import android.util.Log
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import org.json.JSONObject
+import org.qtproject.qt5.android.bindings.QtActivity
+import org.qtproject.qt5.android.bindings.QtActivityLoader
+import org.qtproject.qt5.android.bindings.QtApplication
 
 
 object ACTIONS{
@@ -29,10 +33,10 @@ public class VPNServiceBinder(service: VPNService): Binder() {
 
         when(code){
             ACTIONS.activate -> {
-                // In case of an Activation Request:
+                // Read JSON and Build Config Objects for the VPN
                 val buffer = data.createByteArray();
-                Log.e(TAG, "GOT Buffer size -> \n \n ${buffer?.size}");
                 val jString = buffer?.let { String(it) };
+                Log.d(TAG, jString);
                 val obj = JSONObject(jString);
 
                 // Build the Config for the new Tunnel
@@ -54,15 +58,24 @@ public class VPNServiceBinder(service: VPNService): Binder() {
                 // Add the Device Interface
                 {
                     val privateKey = obj.getJSONObject("keys").getString("privateKey");
+                    val jDevice = obj.getJSONObject("device");
                     val ifaceBuilder = Interface.Builder();
                     ifaceBuilder.parsePrivateKey(privateKey);
+                    ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")));
+                    ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")));
                     confBuilder.setInterface(ifaceBuilder.build());
                 }();
-                Log.e(TAG, "Build Config");
+
+                // Try to Turn on the Tunnel.
+                // Reply with QVariant<Bool> if it was sucsessfull.
+                val conf = confBuilder.build();
                 this.mService.createTunnel(confBuilder.build());
-                Log.e(TAG, "Created Tunnel");
-                this.mService.turnOn();
-                return true;
+                if(this.mService.turnOn()){
+                    reply?.writeByteArray(byteArrayOf(1));
+                    return true;
+                }
+                reply?.writeByteArray(byteArrayOf(0));
+                return false;
             }
 
             ACTIONS.deactivate -> {
