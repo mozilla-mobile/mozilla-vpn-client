@@ -266,5 +266,6 @@ void NetworkRequest::replyFinished(QNetworkReply *reply)
     }
 
     QByteArray data = reply->readAll();
-    emit requestCompleted(data);
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    emit requestCompleted(status, data);
 }

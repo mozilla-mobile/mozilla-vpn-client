@@ -36,7 +36,7 @@ void ReleaseMonitor::runInternal()
         schedule();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &data) {
         logger.log() << "Account request completed";
         processData(data);
         schedule();

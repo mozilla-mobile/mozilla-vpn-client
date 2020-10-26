@@ -56,7 +56,7 @@ private slots:
 
 signals:
     void requestFailed(QNetworkReply::NetworkError error);
-    void requestCompleted(const QByteArray &data);
+    void requestCompleted(int status, const QByteArray &data);
 
 private:
     QNetworkAccessManager *m_manager;

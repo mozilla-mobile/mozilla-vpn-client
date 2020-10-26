@@ -56,7 +56,7 @@ void TaskAddDevice::run(MozillaVPN *vpn)
 
     connect(request,
             &NetworkRequest::requestCompleted,
-            [this, vpn, publicKey, privateKey](const QByteArray &) {
+            [this, vpn, publicKey, privateKey](const int &, const QByteArray &) {
                 logger.log() << "Device added";
                 vpn->deviceAdded(m_deviceName, publicKey, privateKey);
                 emit completed();

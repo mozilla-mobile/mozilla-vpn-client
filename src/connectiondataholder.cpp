@@ -205,7 +205,7 @@ void ConnectionDataHolder::updateIpAddress()
         logger.log() << "IP address request failed" << error;
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &data) {
         logger.log() << "IP address request completed";
 
         QJsonDocument json = QJsonDocument::fromJson(data);

@@ -25,7 +25,7 @@ void CaptivePortalRequest::run()
         deleteLater();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
+    connect(request, &NetworkRequest::requestCompleted, [this](const int &, const QByteArray &data) {
         logger.log() << "Captive portal request completed:" << data;
 
         deleteLater();
