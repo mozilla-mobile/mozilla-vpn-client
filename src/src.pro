@@ -202,6 +202,8 @@ else:macos {
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
     QMAKE_INFO_PLIST=../macos/app/Info.plist
+    QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
+    QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
 }
 
 # Platform-specific: IOS
