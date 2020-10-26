@@ -92,6 +92,8 @@ bool Server::fromJson(QJsonObject &obj)
 // static
 const Server &Server::weightChooser(const QList<Server> &servers)
 {
+    Q_ASSERT(!servers.isEmpty());
+
     uint32_t weightSum = 0;
 
     for (const Server &server : servers) {

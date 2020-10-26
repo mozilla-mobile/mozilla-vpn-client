@@ -41,4 +41,5 @@ private slots:
     void userBasic();
     void userFromJson_data();
     void userFromJson();
+    void userFromSettings();
 };

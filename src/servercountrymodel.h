@@ -49,7 +49,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    bool fromJsonInternal(const QByteArray &data);
+    [[nodiscard]] bool fromJsonInternal(const QByteArray &data);
 
 private:
     QByteArray m_rawJson;

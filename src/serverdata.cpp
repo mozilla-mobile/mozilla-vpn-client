@@ -17,13 +17,9 @@ bool ServerData::fromSettings(SettingsHolder &settingsHolder)
         return false;
     }
 
-    m_countryCode = settingsHolder.currentServerCountry();
-    m_city = settingsHolder.currentServerCity();
-
     logger.log() << m_countryCode << m_city;
 
-    m_initialized = true;
-
+    initializeInternal(settingsHolder.currentServerCountry(), settingsHolder.currentServerCity());
     return true;
 }
 
@@ -37,18 +33,19 @@ void ServerData::initialize(const ServerCountry &country, const ServerCity &city
 {
     logger.log() << "Country:" << country.name() << "City:" << city.name();
 
-    m_initialized = true;
-
-    m_countryCode = country.code();
-    m_city = city.name();
-
+    initializeInternal(country.code(), city.name());
     emit changed();
 }
 
 void ServerData::update(const QString &countryCode, const QString &city)
 {
+    initializeInternal(countryCode, city);
+    emit changed();
+}
+
+void ServerData::initializeInternal(const QString &countryCode, const QString &city)
+{
+    m_initialized = true;
     m_countryCode = countryCode;
     m_city = city;
-
-    emit changed();
 }
