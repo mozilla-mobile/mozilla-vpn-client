@@ -170,6 +170,8 @@ private:
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
 
+    bool modelsInitialized() const;
+
 signals:
     void stateChanged();
     void alertChanged();

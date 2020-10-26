@@ -191,6 +191,12 @@ void MozillaVPN::initialize()
         return;
     }
 
+    if (!modelsInitialized()) {
+        logger.log() << "Models not initialized yet";
+        m_settingsHolder.clear();
+        return;
+    }
+
     Q_ASSERT(!m_serverData.initialized());
     if (!m_serverData.fromSettings(m_settingsHolder)) {
         m_serverCountryModel.pickRandom(m_serverData);
@@ -396,11 +402,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
             return;
         }
 
-        if (!m_user.initialized() ||
-            !m_serverCountryModel.initialized() ||
-            !m_deviceModel.initialized() ||
-            !m_deviceModel.hasDevice(Device::currentDeviceName()) ||
-            !m_keys.initialized()) {
+        if (!modelsInitialized()) {
             logger.log() << "Failed to complete the authentication";
             errorHandle(ErrorHandler::BackendServiceError);
             return;
@@ -809,4 +811,13 @@ void MozillaVPN::viewLogs()
     }
 
     qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+}
+
+bool MozillaVPN::modelsInitialized() const
+{
+    return m_user.initialized() &&
+           m_serverCountryModel.initialized() &&
+           m_deviceModel.initialized() &&
+           m_deviceModel.hasDevice(Device::currentDeviceName()) &&
+           m_keys.initialized();
 }
