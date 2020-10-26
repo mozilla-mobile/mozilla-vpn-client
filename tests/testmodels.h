@@ -10,6 +10,7 @@ class TestModels: public QObject
 
 private slots:
     void deviceBasic();
+    void deviceCurrentDeviceName();
     void deviceFromJson_data();
     void deviceFromJson();
 
