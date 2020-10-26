@@ -5,8 +5,8 @@
 #ifndef TIMERCONTROLLER_H
 #define TIMERCONTROLLER_H
 
+#include "captiveportal/captiveportal.h"
 #include "controllerimpl.h"
-#include "../captiveportal/captiveportal.h"
 
 #include <QTimer>
 

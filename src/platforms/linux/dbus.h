@@ -5,8 +5,8 @@
 #ifndef DBUS_H
 #define DBUS_H
 
+#include "captiveportal/captiveportal.h"
 #include "dbus_interface.h"
-#include "../captiveportal/captiveportal.h"
 
 #include <QList>
 #include <QObject>

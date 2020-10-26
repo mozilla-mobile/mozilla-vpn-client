@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "timercontroller.h"
+#include "captiveportal/captiveportal.h"
 #include "logger.h"
-#include "../captiveportal/captiveportal.h"
+#include "timercontroller.h"
 
 namespace {
 Logger logger(LOG_CONTROLLER, "TimerController");

@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "captiveportal/captiveportal.h"
 #include "dbus.h"
 #include "ipaddressrange.h"
 #include "logger.h"
@@ -9,8 +10,6 @@
 #include "models/keys.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "server.h"
-#include "../captiveportal/captiveportal.h"
 
 #include <QDBusPendingCall>
 #include <QDBusPendingCallWatcher>
