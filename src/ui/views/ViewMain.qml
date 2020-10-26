@@ -24,9 +24,9 @@ Flickable {
         alertColor: Theme.blueButton
         visible: state === "recommended"
         //% "New version is available."
-        alertText: qsTrId("newVersionAvailable")
+        alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
-        alertLinkText: qsTrId("updateNow")
+        alertLinkText: qsTrId("vpn.updates.updateNow")
         y: Theme.windowMargin
         width: parent.width - (Theme.windowMargin * 2)
     }
@@ -36,13 +36,13 @@ Flickable {
         width: parent.width
         y: alertBox.visible ? alertBox.height + Theme.windowMargin : 0
 
-        VPNControllerView {
-            id: box
-        }
-
         VPNDropShadow {
             anchors.fill: box
             source: box
+        }
+
+        VPNControllerView {
+            id: box
         }
 
         VPNControllerServer {

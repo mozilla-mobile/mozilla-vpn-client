@@ -13,18 +13,22 @@ Flickable {
         id: menu
 
         //% "Notifications"
-        title: qsTrId("notifications")
+        title: qsTrId("vpn.settings.notifications")
         isSettingsView: true
     }
 
     ColumnLayout {
+        anchors.top: menu.bottom
+        Layout.preferredWidth: parent.width
+        spacing: 0
+
         /* TODO
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
             //% "Unsecured network alert"
-            labelText: qsTrId("unsecuredNetworkAlert")
+            labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
             //% "Get notified if you connect to an unsecured Wi-Fi network"
-            subLabelText: qsTrId("unsecuredNetworkAlert.description")
+            subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
             isChecked: VPNSettings.unsecuredNetworkAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff
@@ -32,17 +36,13 @@ Flickable {
         }
         */
 
-        anchors.top: menu.bottom
-        Layout.preferredWidth: parent.width
-        spacing: 0
-
         VPNCheckBoxRow {
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
 
             //% "Guest Wi-Fi portal alert"
-            labelText: qsTrId("guestWifiAlert")
+            labelText: qsTrId("vpn.settings.guestWifiAlert")
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
-            subLabelText: qsTrId("guestWifiAlert.description")
+            subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
             isChecked: VPNSettings.captivePortalAlert
             isEnabled: isVPNOff
             showDivider: isVPNOff

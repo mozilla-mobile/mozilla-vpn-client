@@ -12,10 +12,10 @@ VPNClickableRow {
 
     //% "Select location"
     //: Select the Location of the VPN server
-    property var titleText: qsTrId("selectLocation")
+    property var titleText: qsTrId("vpn.servers.selectLocation")
     //% "current location - %1"
     //: Accessibility description for current location of the VPN server
-    property var descriptionText: qsTrId("currentLocation").arg(VPNCurrentServer.city)
+    property var descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.city)
 
     accessibleName: titleText + ": " + descriptionText
     rowShouldBeDisabled: VPNController.state === VPNController.StateDeviceLimit

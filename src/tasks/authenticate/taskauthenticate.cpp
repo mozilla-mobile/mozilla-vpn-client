@@ -134,7 +134,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray
     QJsonDocument userDoc;
     userDoc.setObject(userObj.toObject());
 
-    vpn->authenticationCompleted(userDoc.toJson(), tokenValue.toString());
+    vpn->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact), tokenValue.toString());
 
     emit completed();
 }

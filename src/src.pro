@@ -57,7 +57,6 @@ SOURCES += \
         servercountry.cpp \
         servercountrymodel.cpp \
         serverdata.cpp \
-        serversfetcher.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
@@ -84,6 +83,7 @@ HEADERS += \
         devicemodel.h \
         errorhandler.h \
         fontloader.h \
+        ipaddressrange.h \
         keys.h \
         localizer.h \
         logger.h \
@@ -99,7 +99,6 @@ HEADERS += \
         servercountry.h \
         servercountrymodel.h \
         serverdata.h \
-        serversfetcher.h \
         settingsholder.h \
         signalhandler.h \
         systemtrayhandler.h \
@@ -227,6 +226,7 @@ else:ios {
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/ios/iosdatamigration.mm \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
             platforms/macos/macoscryptosettings.mm \
@@ -240,6 +240,7 @@ else:ios {
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \
+            platforms/ios/iosdatamigration.h \
             platforms/ios/iosutils.h \
             platforms/ios/authenticationlistener.h \
             platforms/macos/macoscontroller.h
@@ -272,11 +273,11 @@ exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 }
 else{
-    message( Languages were not imported - using fallback english)
+    message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
-        ../translations/mozillavpn_en.ts \
+        ../translations/mozillavpn_en.ts
 
-    ts.commands += lupdate $$PWD -ts $$PWD/../translations/mozillavpn_en.ts
+    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/mozillavpn_en.ts
     ts.CONFIG += no_check_exist
     ts.output = $$PWD/../translations/mozillavpn_en.ts
     ts.input = .

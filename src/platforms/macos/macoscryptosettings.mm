@@ -13,7 +13,7 @@ constexpr const NSString* SERVICE = @"Mozilla VPN";
 
 namespace {
 
-Logger logger(LOG_MAIN, "MacOSCryptoSettings");
+Logger logger({LOG_MACOS, LOG_MAIN}, "MacOSCryptoSettings");
 
 bool initialized = false;
 QByteArray key;
@@ -23,7 +23,7 @@ QByteArray key;
 // static
 void CryptoSettings::resetKey()
 {
-    logger.log() << "Retrieving the key from the keychain";
+    logger.log() << "Reset the key in the keychain";
 
     NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -46,7 +46,7 @@ void CryptoSettings::resetKey()
 // static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 {
-#ifdef MACOS_INTEGRATION
+#if defined(IOS_INTEGRATION) or defined(MACOS_INTEGRATION)
     if (!initialized) {
         initialized = true;
 
@@ -126,7 +126,7 @@ CryptoSettings::Version CryptoSettings::getSupportedVersion()
 {
     logger.log() << "Get supported settings method";
 
-#ifdef MACOS_INTEGRATION
+#if defined(IOS_INTEGRATION) or defined(MACOS_INTEGRATION)
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (getKey(key)) {
         logger.log() << "Encryption supported!";

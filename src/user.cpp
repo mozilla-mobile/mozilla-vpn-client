@@ -10,54 +10,70 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QMutableListIterator>
 
-void User::fromJson(const QByteArray &json)
+bool User::fromJson(const QByteArray &json)
 {
+    m_initialized = false;
+
     QJsonDocument doc = QJsonDocument::fromJson(json);
 
-    Q_ASSERT(doc.isObject());
+    if (!doc.isObject()) {
+        return false;
+    }
+
     QJsonObject obj = doc.object();
 
-    Q_ASSERT(obj.contains("avatar"));
-    QJsonValue avatarValue = obj.take("avatar");
-    Q_ASSERT(avatarValue.isString());
-    m_avatar = avatarValue.toString();
+    QJsonValue avatar = obj.take("avatar");
+    if (!avatar.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("display_name"));
     QJsonValue displayName = obj.take("display_name");
-    Q_ASSERT(displayName.isString());
-    m_displayName = displayName.toString();
+    if (!displayName.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("email"));
     QJsonValue email = obj.take("email");
-    Q_ASSERT(email.isString());
-    m_email = email.toString();
+    if (!email.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("max_devices"));
     QJsonValue maxDevices = obj.take("max_devices");
-    Q_ASSERT(maxDevices.isDouble());
-    m_maxDevices = maxDevices.toInt();
+    if (!maxDevices.isDouble()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("subscriptions"));
     QJsonValue subscriptions = obj.take("subscriptions");
-    Q_ASSERT(subscriptions.isObject());
+    if (!subscriptions.isObject()) {
+        return false;
+    }
 
-    m_subscriptionNeeded = true;
+    bool subscriptionNeeded = true;
     QJsonObject subscriptionsObj = subscriptions.toObject();
     if (subscriptionsObj.contains("vpn")) {
         QJsonValue subVpn = subscriptionsObj.take("vpn");
-        Q_ASSERT(subVpn.isObject());
+        if (!subVpn.isObject()) {
+            return false;
+        }
 
         QJsonObject subVpnObj = subVpn.toObject();
-        Q_ASSERT(subVpnObj.contains("active"));
         QJsonValue active = subVpnObj.take("active");
-        Q_ASSERT(active.isBool());
+        if (!active.isBool()) {
+            return false;
+        }
 
-        m_subscriptionNeeded = !active.toBool();
+        subscriptionNeeded = !active.toBool();
     }
 
+    m_avatar = avatar.toString();
+    m_displayName = displayName.toString();
+    m_email = email.toString();
+    m_maxDevices = maxDevices.toInt();
+    m_subscriptionNeeded = subscriptionNeeded;
+    m_initialized = true;
+
     emit changed();
+    return true;
 }
 
 bool User::fromSettings(SettingsHolder &settingsHolder)
@@ -73,6 +89,7 @@ bool User::fromSettings(SettingsHolder &settingsHolder)
     m_email = settingsHolder.userEmail();
     m_maxDevices = settingsHolder.userMaxDevices();
     m_subscriptionNeeded = settingsHolder.userSubscriptionNeeded();
+    m_initialized = true;
 
     return true;
 }

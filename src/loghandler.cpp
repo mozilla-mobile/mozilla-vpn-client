@@ -31,11 +31,11 @@ void LogHandler::messageQTHandler(QtMsgType type,
 }
 
 // static
-void LogHandler::messageHandler(const QString &module,
+void LogHandler::messageHandler(const QStringList &modules,
                                 const QString &className,
                                 const QString &message)
 {
-    maybeCreate()->addLog(Log(module, className, message));
+    maybeCreate()->addLog(Log(modules, className, message));
 }
 
 // static
@@ -99,7 +99,7 @@ void LogHandler::prettyOutput(QTextStream &out, const LogHandler::Log &log)
             out << ")";
         }
     } else {
-        out << "(" << log.m_module << " - " << log.m_className << ") " << log.m_message;
+        out << "(" << log.m_modules.join("|") << " - " << log.m_className << ") " << log.m_message;
     }
 
     out << Qt::endl;
@@ -110,8 +110,8 @@ LogHandler::LogHandler()
     QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
     if (pe.contains("MOZVPN_LOG")) {
         QStringList parts = pe.value("MOZVPN_LOG").split(",");
-        for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
-            m_modules.append(i->trimmed());
+        for (const QString &part : parts) {
+            m_modules.append(part.trimmed());
         }
     }
 }
@@ -144,5 +144,11 @@ bool LogHandler::matchModule(const Log &log) const
         return true;
     }
 
-    return m_modules.contains(log.m_module);
+    for (const QString &module : log.m_modules) {
+        if (m_modules.contains(module)) {
+            return true;
+        }
+    }
+
+    return false;
 }

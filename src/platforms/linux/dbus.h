@@ -7,11 +7,13 @@
 
 #include "dbus_interface.h"
 
+#include <QList>
 #include <QObject>
 
 class Server;
 class Device;
 class Keys;
+class IPAddressRange;
 class QDBusPendingCallWatcher;
 
 class DBus final : public QObject
@@ -22,9 +24,16 @@ public:
     DBus(QObject *parent);
 
     QDBusPendingCallWatcher *version();
-    QDBusPendingCallWatcher *activate(const Server &server, const Device *device, const Keys *keys);
+
+    QDBusPendingCallWatcher *activate(const Server &server,
+                                      const Device *device,
+                                      const Keys *keys,
+                                      const QList<IPAddressRange> &allowedIPAddressRanges);
+
     QDBusPendingCallWatcher *deactivate();
+
     QDBusPendingCallWatcher *status();
+
     QDBusPendingCallWatcher *logs();
 
 signals:

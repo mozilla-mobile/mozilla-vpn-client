@@ -4,6 +4,7 @@
 
 #include "dbus.h"
 #include "device.h"
+#include "ipaddressrange.h"
 #include "keys.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -43,7 +44,10 @@ QDBusPendingCallWatcher *DBus::version()
     return watcher;
 }
 
-QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *device, const Keys *keys)
+QDBusPendingCallWatcher *DBus::activate(const Server &server,
+                                        const Device *device,
+                                        const Keys *keys,
+                                        const QList<IPAddressRange> &allowedIPAddressRanges)
 {
     QJsonObject json;
     json.insert("privateKey", QJsonValue(keys->privateKey()));
@@ -56,11 +60,19 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server, const Device *devi
     json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
     json.insert("serverPort", QJsonValue((double) server.choosePort()));
     json.insert("ipv6Enabled", QJsonValue(MozillaVPN::instance()->settingsHolder()->ipv6Enabled()));
-    json.insert("localNetworkAccess",
-                QJsonValue(MozillaVPN::instance()->settingsHolder()->localNetworkAccess()));
+
+    QJsonArray allowedIPAddesses;
+    for (const IPAddressRange &i : allowedIPAddressRanges) {
+        QJsonObject range;
+        range.insert("address", QJsonValue(i.ipAddress()));
+        range.insert("range", QJsonValue((double) i.range()));
+        range.insert("isIpv6", QJsonValue(i.type() == IPAddressRange::IPv6));
+        allowedIPAddesses.append(range);
+    };
+    json.insert("allowedIPAddressRanges", allowedIPAddesses);
 
     logger.log() << "Activate via DBus";
-    QDBusPendingReply<bool> reply = m_dbus->activate(QJsonDocument(json).toJson());
+    QDBusPendingReply<bool> reply = m_dbus->activate(QJsonDocument(json).toJson(QJsonDocument::Compact));
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     QObject::connect(watcher,
                      &QDBusPendingCallWatcher::finished,

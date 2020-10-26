@@ -20,7 +20,7 @@ Item {
 
             PropertyChanges {
                 target: menu
-                rightTitle: qsTrId("activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
+                rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
             }
 
         },
@@ -29,7 +29,7 @@ Item {
 
             PropertyChanges {
                 target: menu
-                rightTitle: qsTrId("activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
+                rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
             }
 
         }
@@ -39,7 +39,7 @@ Item {
         id: menu
 
         //% "My devices"
-        title: qsTrId("myDevices")
+        title: qsTrId("vpn.devices.myDevices")
     }
 
     VPNList {
@@ -68,7 +68,7 @@ Item {
 
             property var deviceName: name
             //% "%1 %2"
-            property var accessibleName: qsTrId("deviceAccessibleName").arg(name).arg(deviceDesc.text)
+            property var accessibleName: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
 
             width: deviceList.width
 
@@ -126,19 +126,19 @@ Item {
                             function deviceSubtitle() {
                                 if (currentOne)
                                     //% "Current Device"
-                                    return qsTrId("currentDevice");
+                                    return qsTrId("vpn.devices.currentDevice");
 
                                 const diff = (Date.now() - createdAt.valueOf()) / 1000;
                                 if (diff < 3600)
                                     //% "Added less than an hour ago"
-                                    return qsTrId("addedltHour");
+                                    return qsTrId("vpn.devices.addedltHour");
 
                                 if (diff < 86400)
-                                    //% "Added %1 hours ago"
-                                    return qsTrId("addedXhoursAgo").arg(Math.floor(diff / 3600));
+                                    //% "Added a few hours ago (%1)"
+                                    return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
 
                                 //% "Added %1 days ago"
-                                return qsTrId("addedXdaysAgo").arg(Math.floor(diff / 86400));
+                                return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
                             }
 
                             text: deviceSubtitle()
@@ -167,8 +167,9 @@ Item {
                         Layout.preferredHeight: 40
                         Layout.preferredWidth: 40
                         onClicked: removePopup.initializeAndOpen(name, index)
+                        //: "This is a label to make the icon button accessible
                         //% "Remove %1"
-                        accessibleName: qsTrId("remove").arg(device.accessibleName)
+                        accessibleName: qsTrId("vpn.devices.removeA11Y").arg(device.accessibleName)
                         // Only allow focus within the current item in the list.
                         focusPolicy: deviceList.currentItem === device ? Qt.StrongFocus : Qt.NoFocus
                         onFocusChanged: {
@@ -385,7 +386,7 @@ Item {
 
             Text {
                 //% "Remove device?"
-                text: qsTrId("removeDeviceQuestion")
+                text: qsTrId("vpn.devices.removeDeviceQuestion")
                 Layout.alignment: Qt.AlignCenter
                 font.pixelSize: Theme.fontSizeSmall
                 font.family: Theme.fontBoldFamily
@@ -394,7 +395,7 @@ Item {
 
             Text {
                 //% "Please confirm you would like to remove\n%1."
-                text: qsTrId("deviceRemovalConfirm").arg(removePopup.deviceName)
+                text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
                 Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Text.AlignHCenter
                 Layout.maximumWidth: 220
@@ -413,7 +414,7 @@ Item {
 
                 VPNPopupButton {
                     //% "Cancel"
-                    buttonText: qsTrId("cancel")
+                    buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
                     buttonTextColor: "#262626"
                     buttonColor: Theme.greyButton
                     onClicked: removePopup.state = "invisible"
@@ -422,7 +423,9 @@ Item {
                 VPNPopupButton {
                     id: removeBtn
 
-                    buttonText: qsTrId("remove")
+                    //: "This is the 'remove' device button.
+                    //% "Remove"
+                    buttonText: qsTrId("vpn.devices.removeDeviceButton")
                     buttonTextColor: "#FFFFFF"
                     buttonColor: Theme.redButton
                     onClicked: {

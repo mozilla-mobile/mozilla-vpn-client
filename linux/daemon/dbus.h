@@ -44,9 +44,9 @@ private:
                     const QString &serverPublicKey,
                     const QString &serverIpv4AddrIn,
                     const QString &serverIpv6AddrIn,
+                    const QString &allowedIPAddressRange,
                     int serverPort,
-                    bool ipv6Enabled,
-                    bool localNetworkAccess);
+                    bool ipv6Enabled);
 
 private:
     DbusAdaptor *m_adaptor = nullptr;
@@ -62,7 +62,7 @@ private:
     QString m_lastServerIpv6AddrIn;
     int m_lastServerPort = 0;
     bool m_lastIpv6Enabled = false;
-    bool m_lastLocalNetworkAccess = false;
+    QString m_lastAllowedIPAddressRanges;
 };
 
 #endif // DBUS_H

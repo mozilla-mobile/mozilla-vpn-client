@@ -12,7 +12,9 @@ class SettingsHolder;
 class Keys final
 {
 public:
-    bool fromSettings(SettingsHolder &settings);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settings);
+
+    bool initialized() const { return !m_privateKey.isEmpty(); }
 
     void storeKey(const QString &privateKey);
 

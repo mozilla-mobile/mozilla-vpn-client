@@ -25,7 +25,8 @@ constexpr int IPADDRESS_TIMER_MSEC = 10000;
 // Let's check the connection status any second.
 constexpr int CHECKSTATUS_TIMER_MSEC = 1000;
 //% "Unknown"
-ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("unknown"))
+//: Context - "The current ip-address is: unknown"
+ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectionInfo.unknown"))
 {
     emit ipAddressChanged();
 
@@ -233,9 +234,8 @@ quint64 ConnectionDataHolder::rxBytes() const
 quint64 ConnectionDataHolder::bytes(bool index) const
 {
     uint64_t value = 0;
-    for (QVector<QPair<uint64_t, uint64_t>>::ConstIterator i = m_data.begin(); i != m_data.end();
-         ++i) {
-        value = std::max(value, (!index ? i->first : i->second));
+    for (const QPair<uint64_t, uint64_t> &pair : m_data) {
+        value = std::max(value, (!index ? pair.first : pair.second));
     }
 
     return value;

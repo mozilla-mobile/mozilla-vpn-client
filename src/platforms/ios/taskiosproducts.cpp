@@ -41,9 +41,9 @@ void TaskIOSProducts::run(MozillaVPN* vpn)
         QJsonArray productsArray = productsValue.toArray();
 
         QStringList products;
-        for (QJsonArray::ConstIterator i = productsArray.begin(); i != productsArray.end(); ++i) {
-            Q_ASSERT(i->isString());
-            products.append(i->toString());
+        for (QJsonValue product : productsArray) {
+            Q_ASSERT(product.isString());
+            products.append(product.toString());
         }
 
         vpn->settingsHolder()->setIapProducts(products);

@@ -9,8 +9,6 @@
 
 #include <QPointer>
 
-class ServersFetcher;
-
 class TaskAccountAndServers final : public Task
 {
 public:
@@ -22,8 +20,6 @@ private:
     void maybeCompleted();
 
 private:
-    QPointer<ServersFetcher> m_fetcher;
-
     bool m_accountCompleted = false;
     bool m_serversCompleted = false;
 };

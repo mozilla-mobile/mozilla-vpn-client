@@ -26,11 +26,17 @@ public:
 
     ServerCountryModel() = default;
 
-    bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
-    void fromJson(const QByteArray &data);
+    [[nodiscard]] bool fromJson(const QByteArray &data);
 
-    void pickRandom(ServerData &data);
+    bool initialized() const { return !m_rawJson.isEmpty(); }
+
+    void pickRandom(ServerData &data) const;
+
+    bool pickIfExists(const QString &countryCode, const QString &cityCode, ServerData &data) const;
+
+    bool exists(ServerData &data) const;
 
     const QList<Server> getServers(const ServerData &data) const;
 
@@ -43,7 +49,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    void fromJsonInternal();
+    bool fromJsonInternal(const QByteArray &data);
 
 private:
     QByteArray m_rawJson;

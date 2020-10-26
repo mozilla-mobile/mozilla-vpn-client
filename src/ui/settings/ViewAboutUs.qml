@@ -17,13 +17,13 @@ Item {
 
         ListElement {
             //% "Terms of Service"
-            linkTitle: qsTrId("tos")
+            linkTitle: qsTrId("vpn.aboutUs.tos")
             openUrl: VPN.LinkTermsOfService
         }
 
         ListElement {
             //% "Privacy Policy"
-            linkTitle: qsTrId("privacyPolicy")
+            linkTitle: qsTrId("vpn.aboutUs.privacyPolicy")
             openUrl: VPN.LinkPrivacyPolicy
         }
 
@@ -33,7 +33,7 @@ Item {
         id: menu
 
         //% "About us"
-        title: qsTrId("aboutUs")
+        title: qsTrId("vpn.settings.aboutUs")
         isSettingsView: true
     }
 
@@ -53,13 +53,13 @@ Item {
             id: mozillaLabel
 
             width: aboutUsCopy.width
-            text: qsTrId("productName")
+            text: qsTrId("vpn.main.productName")
         }
 
         VPNTextBlock {
             id: mozillaText
 
-            text: qsTrId("productDescription")
+            text: qsTrId("vpn.main.productDescription")
             anchors.top: mozillaLabel.bottom
             anchors.topMargin: 8
         }
@@ -68,7 +68,7 @@ Item {
             id: releaseLabel
 
             //% "Release Version"
-            text: qsTrId("releaseVersion")
+            text: qsTrId("vpn.aboutUs.releaseVersion")
             anchors.top: mozillaText.bottom
             anchors.topMargin: 16
         }

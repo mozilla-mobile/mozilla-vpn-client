@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #ifndef LOGGER_H
 #define LOGGER_H
 
@@ -12,6 +16,7 @@ constexpr const char *LOG_NETWORKING = "networking";
 
 #ifdef IOS_INTEGRATION
 constexpr const char *LOG_IAP = "iap";
+constexpr const char *LOG_IOS = "ios";
 #endif
 
 #ifdef __linux__
@@ -27,9 +32,10 @@ class QNetworkReply;
 class Logger
 {
 public:
-    Logger(const QString &module, const QString& className);
+    Logger(const QString &module, const QString &className);
+    Logger(const QStringList &modules, const QString &className);
 
-    const QString &module() const { return m_module; }
+    const QStringList &modules() const { return m_modules; }
     const QString &className() const { return m_className; }
 
     class Log
@@ -43,17 +49,26 @@ public:
         Log &operator<<(const QString &t);
         Log &operator<<(const QStringList &t);
         Log &operator<<(const QByteArray &t);
+        Log &operator<<(QTextStreamFunction t);
 
     private:
         Logger *m_logger;
-        QString m_buffer;
-        QTextStream m_ts;
+
+        struct Data
+        {
+            Data() : m_ts(&m_buffer, QIODevice::WriteOnly) {}
+
+            QString m_buffer;
+            QTextStream m_ts;
+        };
+
+        Data *m_data;
     };
 
     Log log();
 
 private:
-    QString m_module;
+    QStringList m_modules;
     QString m_className;
 };
 

@@ -15,12 +15,12 @@ Logger logger(LOG_CONTROLLER, "DummyController");
 void DummyController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
     Q_UNUSED(device);
     Q_UNUSED(keys);
-    Q_UNUSED(captivePortal);
+    Q_UNUSED(allowedIPAddressRanges);
     Q_UNUSED(forSwitching);
 
     logger.log() << "DummyController activated" << server.hostname();

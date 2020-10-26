@@ -47,6 +47,7 @@
         <file>ui/components/VPNSignOut.qml</file>
         <file>ui/components/VPNFocus.qml</file>
         <file>ui/components/VPNList.qml</file>
+        <file>ui/components/VPNServerCountry.qml</file>
         <file>ui/themes/themes.js</file>
         <file>ui/settings/ViewAboutUs.qml</file>
         <file>ui/settings/ViewLanguage.qml</file>
@@ -366,5 +367,12 @@
         <file>ui/resources/down.svg</file>
         <file>ui/resources/logo-dock.png</file>
         <file>ui/resources/logo-tray.svg</file>
+        <file>ui/resources/close-dark.svg</file>
+        <file>ui/resources/logo-on.svg</file>
+        <file>ui/resources/logo-animated1.svg</file>
+        <file>ui/resources/logo-animated2.svg</file>
+        <file>ui/resources/logo-animated3.svg</file>
+        <file>ui/resources/logo-animated4.svg</file>
+        <file>ui/resources/logo-off.svg</file>
     </qresource>
 </RCC>

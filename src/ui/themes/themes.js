@@ -91,3 +91,5 @@ const removeDeviceBtn = {
     "buttonHovered": "#FFDFE7",
     "buttonPressed": "#FFBDC5"
 };
+
+const settingsMaxContentHeight = 740;

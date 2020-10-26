@@ -140,6 +140,10 @@ public:
 
     bool startMinimized() const { return m_startMinimized; }
 
+    void setToken(const QString &token);
+
+    [[nodiscard]] bool setServerList(const QByteArray& serverData);
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();

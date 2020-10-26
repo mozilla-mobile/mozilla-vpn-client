@@ -13,14 +13,14 @@ Item {
     VPNMenu {
         id: menu
 
-        title: qsTrId("selectLocation")
+        title: qsTrId("vpn.servers.selectLocation")
     }
 
     ButtonGroup {
         id: radioButtonGroup
     }
 
-    ListView {
+    VPNList {
         id: serverList
 
         height: parent.height - menu.height
@@ -29,6 +29,21 @@ Item {
         spacing: Theme.listSpacing
         clip: true
         model: VPNServerCountryModel
+        listName: menu.title
+        interactive: true
+        onActiveFocusChanged: {
+            if (activeFocus) {
+                currentItem.forceActiveFocus();
+            }
+        }
+        onCurrentIndexChanged: currentItem.forceActiveFocus()
+
+        highlight: VPNFocus {
+            itemToFocus: serverList
+            itemToAnchor: serverList.currentItem
+            z: 2
+            opacity: serverList.currentItem.isActive ? 0 : 1
+        }
 
         header: Rectangle {
             height: 16
@@ -36,126 +51,10 @@ Item {
             color: "transparent"
         }
 
-        delegate: Item {
-            id: serverCountry
-
-            property var cityListVisible: false
-
-            state: cityListVisible ? "list-visible" : "list-hidden"
-            width: serverList.width
-            height: 40
-            states: [
-                State {
-                    name: "list-hidden"
-
-                    PropertyChanges {
-                        target: cityListWrapper
-                        opacity: 0
-                        height: 0
-                    }
-
-                },
-                State {
-                    name: "list-visible"
-
-                    PropertyChanges {
-                        target: cityListWrapper
-                        opacity: 1
-                        anchors.topMargin: 18
-                        height: (cityList.listLength * 48)
-                    }
-
-                    PropertyChanges {
-                        target: serverCountry
-                        height: cityListWrapper.height + 38
-                    }
-
-                }
-            ]
-
-            VPNClickableRow {
-                id: serverCountryRow
-
-                onClicked: cityListVisible = !cityListVisible
-                accessibleName: name
-
-                RowLayout {
-                    spacing: 0
-                    height: 40
-                    anchors.fill: serverCountryRow
-                    anchors.leftMargin: 8
-                    anchors.rightMargin: 8
-
-                    VPNServerListToggle {
-                        id: serverListToggle
-                    }
-
-                    Image {
-                        id: flag
-
-                        source: "../resources/flags/" + code.toUpperCase() + ".png"
-                        fillMode: Image.PreserveAspectFit
-                        Layout.preferredWidth: Theme.iconSize
-                        Layout.preferredHeight: Theme.iconSize
-                        Layout.leftMargin: Theme.hSpacing
-                    }
-
-                    VPNBoldLabel {
-                        id: countryName
-
-                        text: name
-                        Layout.leftMargin: Theme.hSpacing
-                        Layout.fillWidth: true
-                    }
-
-                }
-
-            }
-
-            Item {
-                id: cityListWrapper
-
-                anchors.top: serverCountryRow.bottom
-                width: parent.width
-
-                ListView {
-                    id: cityList
-
-                    property var listLength: cities.length
-
-                    interactive: false
-                    model: cities
-                    spacing: Theme.listSpacing
-                    width: parent.width
-                    anchors.fill: parent
-                    anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 14
-
-                    delegate: VPNRadioDelegate {
-                        radioButtonLabelText: modelData
-                        onClicked: {
-                            VPNController.changeServer(code, modelData);
-                            stackview.pop();
-                        }
-                        checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
-                        isHoverable: cityListVisible
-                    }
-
-                }
-
-            }
-
-            transitions: Transition {
-                NumberAnimation {
-                    properties: "opacity, height, anchors.topMargin"
-                    easing.type: Easing.InSine
-                    duration: 200
-                }
-
-            }
-
-        }
+        delegate: VPNServerCountry {}
 
         ScrollBar.vertical: ScrollBar {
+            Accessible.ignored: true
         }
 
     }

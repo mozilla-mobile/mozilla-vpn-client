@@ -21,7 +21,7 @@ class ServerData final : public QObject
     Q_PROPERTY(QString city READ city NOTIFY changed)
 
 public:
-    bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
     void writeSettings(SettingsHolder &settingsHolder);
 

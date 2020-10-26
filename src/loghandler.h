@@ -18,10 +18,10 @@ public:
     {
         Log() = default;
 
-        Log(const QString &module,
+        Log(const QStringList &modules,
             const QString &className,
             const QString &message)
-            : m_dateTime(QDateTime::currentDateTime()), m_module(module),
+            : m_dateTime(QDateTime::currentDateTime()), m_modules(modules),
               m_className(className), m_message(message), m_fromQT(false)
         {}
 
@@ -37,7 +37,7 @@ public:
         QDateTime m_dateTime;
         QString m_file;
         QString m_function;
-        QString m_module;
+        QStringList m_modules;
         QString m_className;
         QString m_message;
         QtMsgType m_type = QtMsgType::QtDebugMsg;
@@ -51,7 +51,7 @@ public:
                                  const QMessageLogContext &context,
                                  const QString &message);
 
-    static void messageHandler(const QString &module, const QString& className,
+    static void messageHandler(const QStringList &modules, const QString& className,
                             const QString &message);
 
     static void prettyOutput(QTextStream &out, const LogHandler::Log &log);

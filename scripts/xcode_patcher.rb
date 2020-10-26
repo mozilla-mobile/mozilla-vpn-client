@@ -142,7 +142,6 @@ class XCodeprojPatcher
         config.build_settings['OTHER_LDFLAGS'] ||= [
           "-stdlib=libc++",
           "-Wl,-rpath,@executable_path/Frameworks",
-          "-L/Users/baku/Qt/5.15.0/ios/plugins/platforms",
           "-framework",
           "AssetsLibrary",
           "-framework",
@@ -336,7 +335,7 @@ end
 config = Hash.new
 configFile = File.read("xcode.xconfig").split("\n")
 configFile.each { |line|
-  continue if line[0] == "#"
+  next if line[0] == "#"
 
   if line.include? "="
     keys = line.split("=")

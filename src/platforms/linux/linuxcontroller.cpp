@@ -19,7 +19,7 @@
 #include <QString>
 
 namespace {
-Logger logger(LOG_CONTROLLER, "LinuxController");
+Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxController");
 }
 
 LinuxController::LinuxController()
@@ -66,14 +66,13 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
 void LinuxController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
-    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
     logger.log() << "LinuxController activated";
-    monitorWatcher(m_dbus->activate(server, device, keys));
+    monitorWatcher(m_dbus->activate(server, device, keys, allowedIPAddressRanges));
 }
 
 void LinuxController::deactivate(bool forSwitching)

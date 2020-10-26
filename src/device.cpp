@@ -46,37 +46,49 @@ QString Device::currentDeviceName()
     return deviceName;
 }
 
-Device Device::fromJson(const QJsonValue &json)
+bool Device::fromJson(const QJsonValue &json)
 {
-    Q_ASSERT(json.isObject());
+    if (!json.isObject()) {
+        return false;
+    }
+
     QJsonObject obj = json.toObject();
 
-    Q_ASSERT(obj.contains("name"));
     QJsonValue name = obj.take("name");
-    Q_ASSERT(name.isString());
+    if (!name.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("pubkey"));
     QJsonValue pubKey = obj.take("pubkey");
-    Q_ASSERT(pubKey.isString());
+    if (!pubKey.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("created_at"));
     QJsonValue createdAt = obj.take("created_at");
-    Q_ASSERT(createdAt.isString());
+    if (!createdAt.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("ipv4_address"));
     QJsonValue ipv4Address = obj.take("ipv4_address");
-    Q_ASSERT(ipv4Address.isString());
+    if (!ipv4Address.isString()) {
+        return false;
+    }
 
-    Q_ASSERT(obj.contains("ipv6_address"));
     QJsonValue ipv6Address = obj.take("ipv6_address");
-    Q_ASSERT(ipv6Address.isString());
+    if (!ipv6Address.isString()) {
+        return false;
+    }
 
     QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
-    Q_ASSERT(date.isValid());
+    if (!date.isValid()) {
+        return false;
+    }
 
-    return Device(name.toString(),
-                  date,
-                  pubKey.toString(),
-                  ipv4Address.toString(),
-                  ipv6Address.toString());
+    m_deviceName = name.toString();
+    m_createdAt = date;
+    m_publicKey = pubKey.toString();
+    m_ipv4Address = ipv4Address.toString();
+    m_ipv6Address = ipv6Address.toString();
+
+    return true;
 }

@@ -13,7 +13,7 @@ Item {
         id: headline
 
         //% "Waiting for sign in and subscription confirmation…"
-        text: qsTrId("waitForSignIn")
+        text: qsTrId("vpn.authenticating.waitForSignIn")
         anchors.top: parent.top
         anchors.topMargin: 32
     }
@@ -66,7 +66,7 @@ Item {
         id: getHelp
 
         //% "Cancel and try again"
-        labelText: qsTrId("cancelAndRetry")
+        labelText: qsTrId("vpn.authenticating.cancelAndRetry")
         onClicked: VPN.cancelAuthentication()
     }
 

@@ -21,21 +21,18 @@ void Localizer::initialize(const QString& code)
         QLocale locale = QLocale::system();
         m_code = locale.bcp47Name();
     }
-    logger.log() << "Localizer initializing:" << m_code;
 
-    if (!loadLanguage(m_code) && m_code != "") {
-        return initialize("");
-    }
+    loadLanguage(m_code);
 
     QCoreApplication::installTranslator(&m_translator);
     QDir dir(":/i18n");
     QStringList files = dir.entryList();
-    for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
-        if (!i->endsWith(".qm")) {
+    for (const QString &file : files) {
+        if (!file.endsWith(".qm")) {
             continue;
         }
 
-        QStringList parts = i->split(".");
+        QStringList parts = file.split(".");
         Q_ASSERT(parts.length() == 2);
 
         parts = parts[0].split("_");
@@ -45,7 +42,23 @@ void Localizer::initialize(const QString& code)
     }
 }
 
-bool Localizer::loadLanguage(const QString& code)
+void Localizer::loadLanguage(const QString &code)
+{
+    logger.log() << "Loading language:" << code;
+    if (loadLanguageInternal(code)) {
+        return;
+    }
+
+    logger.log() << "Loading default language (fallback)";
+    if (loadLanguageInternal("")) {
+        return;
+    }
+
+    logger.log() << "Loading 'en' language(fallback 2)";
+    loadLanguageInternal("en");
+}
+
+bool Localizer::loadLanguageInternal(const QString &code)
 {
     QLocale locale = QLocale(code);
     if (code.isEmpty()) {

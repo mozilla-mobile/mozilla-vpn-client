@@ -19,40 +19,54 @@ bool sortCityCallback(const ServerCity &a, const ServerCity &b)
 
 } // anonymous namespace
 
-// static
-ServerCountry ServerCountry::fromJson(QJsonObject &countryObj)
+bool ServerCountry::fromJson(QJsonObject &countryObj)
 {
-    Q_ASSERT(countryObj.contains("name"));
     QJsonValue countryName = countryObj.take("name");
-    Q_ASSERT(countryName.isString());
-
-    Q_ASSERT(countryObj.contains("code"));
-    QJsonValue countryCode = countryObj.take("code");
-    Q_ASSERT(countryCode.isString());
-
-    Q_ASSERT(countryObj.contains("cities"));
-    QJsonValue cities = countryObj.take("cities");
-    Q_ASSERT(cities.isArray());
-
-    ServerCountry sc(countryName.toString(), countryCode.toString());
-
-    QJsonArray citiesArray = cities.toArray();
-    for (QJsonArray::Iterator i = citiesArray.begin(); i != citiesArray.end(); ++i) {
-        Q_ASSERT(i->isObject());
-        QJsonObject city = i->toObject();
-        sc.m_cities.append(ServerCity::fromJson(city));
+    if (!countryName.isString()) {
+        return false;
     }
 
-    std::sort(sc.m_cities.begin(), sc.m_cities.end(), sortCityCallback);
+    QJsonValue countryCode = countryObj.take("code");
+    if (!countryCode.isString()) {
+        return false;
+    }
 
-    return sc;
+    QJsonValue cities = countryObj.take("cities");
+    if (!cities.isArray()) {
+        return false;
+    }
+
+    QList<ServerCity> scList;
+    QJsonArray citiesArray = cities.toArray();
+    for (QJsonValue cityValue : citiesArray) {
+        if (!cityValue.isObject()) {
+            return false;
+        }
+
+        QJsonObject cityObject = cityValue.toObject();
+
+        ServerCity serverCity;
+        if (!serverCity.fromJson(cityObject)) {
+            return false;
+        }
+
+        scList.append(serverCity);
+    }
+
+    m_name = countryName.toString();
+    m_code = countryCode.toString();
+    m_cities.swap(scList);
+
+    std::sort(m_cities.begin(), m_cities.end(), sortCityCallback);
+
+    return true;
 }
 
 const QList<Server> ServerCountry::getServers(const ServerData &data) const
 {
-    for (QList<ServerCity>::ConstIterator i = m_cities.begin(); i != m_cities.end(); ++i) {
-        if (i->name() == data.city()) {
-            return i->getServers();
+    for (const ServerCity &city : m_cities) {
+        if (city.name() == data.city()) {
+            return city.getServers();
         }
     }
 

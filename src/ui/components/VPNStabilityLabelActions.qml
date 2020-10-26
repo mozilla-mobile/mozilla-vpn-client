@@ -12,9 +12,9 @@ ParallelAnimation {
     property bool isConnectionUnstable: connectionStatus === VPNConnectionHealth.Unstable
     //% "Unstable"
     //: Unstable Connection
-    readonly property var textUnable: qsTrId("unstable")
+    readonly property var textUnable: qsTrId("vpn.connectionStability.unstable")
     //% "No Signal"
-    readonly property var textNoSignal: qsTrId("noSignal")
+    readonly property var textNoSignal: qsTrId("vpn.connectionStability.noSignal")
 
     PropertyAction {
         target: stabilityLabel

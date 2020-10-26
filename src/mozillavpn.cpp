@@ -16,14 +16,17 @@
 
 #ifdef IOS_INTEGRATION
 #include "platforms/ios/iaphandler.h"
+#include "platforms/ios/iosdatamigration.h"
 #include "platforms/ios/taskiosproducts.h"
 #endif
 
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QLocale>
 #include <QPointer>
+#include <QScreen>
 #include <QTimer>
 #include <QUrl>
 
@@ -117,6 +120,14 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &CaptivePortalDetection::captivePortalDetected,
             &m_controller,
             &Controller::captivePortalDetected);
+
+    QScreen *screen = QGuiApplication::primaryScreen();
+    screen->setOrientationUpdateMask(Qt::PortraitOrientation | Qt::LandscapeOrientation
+                                     | Qt::InvertedPortraitOrientation
+                                     | Qt::InvertedLandscapeOrientation);
+    connect(screen, &QScreen::orientationChanged, [](Qt::ScreenOrientation orientation) {
+        logger.log() << "Screen rotated:" << orientation;
+    });
 }
 
 MozillaVPN::~MozillaVPN() = default;
@@ -135,6 +146,13 @@ void MozillaVPN::initialize()
 #endif
 
     m_releaseMonitor.runSoon();
+
+#ifdef IOS_INTEGRATION
+    if (!m_settingsHolder.hasNativeIOSDataMigrated()) {
+        IOSDataMigration::migrate();
+        m_settingsHolder.setNativeIOSDataMigrated(true);
+    }
+#endif
 
     m_localizer.initialize(m_settingsHolder.languageCode());
 
@@ -303,19 +321,32 @@ void MozillaVPN::maybeRunTask()
     task->run(this);
 }
 
+void MozillaVPN::setToken(const QString &token)
+{
+    m_settingsHolder.setToken(token);
+    m_token = token;
+}
+
 void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &token)
 {
     logger.log() << "Authentication completed";
 
-    m_user.fromJson(json);
-    m_user.writeSettings(m_settingsHolder);
+    if (!m_user.fromJson(json)) {
+        logger.log() << "Failed to parse the User JSON data";
+        errorHandle(ErrorHandler::BackendServiceError);
+        return;
+    }
 
-    m_deviceModel.fromJson(json);
+    if (!m_deviceModel.fromJson(json)) {
+        logger.log() << "Failed to parse the DeviceModel JSON data";
+        errorHandle(ErrorHandler::BackendServiceError);
+        return;
+    }
+
+    m_user.writeSettings(m_settingsHolder);
     m_deviceModel.writeSettings(m_settingsHolder);
 
-    m_settingsHolder.setToken(token);
-    m_token = token;
-
+    setToken(token);
     setUserAuthenticated(true);
 
 #ifdef IOS_INTEGRATION
@@ -361,9 +392,23 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        if (m_state == StateAuthenticating) {
-            setState(StatePostAuthentication);
+        if (m_state != StateAuthenticating) {
+            return;
         }
+
+        if (!m_user.initialized() ||
+            !m_serverCountryModel.initialized() ||
+            !m_deviceModel.initialized() ||
+            !m_deviceModel.hasDevice(Device::currentDeviceName()) ||
+            !m_keys.initialized()) {
+            logger.log() << "Failed to complete the authentication";
+            errorHandle(ErrorHandler::BackendServiceError);
+            return;
+        }
+
+        Q_ASSERT(m_serverData.initialized());
+
+        setState(StatePostAuthentication);
     }));
 }
 
@@ -385,16 +430,28 @@ void MozillaVPN::deviceRemoved(const QString &deviceName)
     m_deviceModel.removeDevice(deviceName);
 }
 
+bool MozillaVPN::setServerList(const QByteArray &serverData)
+{
+    if (!m_serverCountryModel.fromJson(serverData)) {
+        logger.log() << "Failed to store the server-countries";
+        return false;
+    }
+
+    m_settingsHolder.setServers(serverData);
+    return true;
+}
+
 void MozillaVPN::serversFetched(const QByteArray &serverData)
 {
     logger.log() << "Server fetched!";
 
-    m_serverCountryModel.fromJson(serverData);
-    m_settingsHolder.setServers(serverData);
+    if (!setServerList(serverData)) {
+        // This is OK. The check is done elsewhere.
+        return;
+    }
 
-    // TODO: ... what about if the current server is gone?
-
-    if (!m_serverData.initialized()) {
+    // The serverData could be unset or invalid with the new server list.
+    if (!m_serverData.initialized() || !m_serverCountryModel.exists(m_serverData)) {
         m_serverCountryModel.pickRandom(m_serverData);
         Q_ASSERT(m_serverData.initialized());
         m_serverData.writeSettings(m_settingsHolder);
@@ -433,13 +490,20 @@ void MozillaVPN::accountChecked(const QByteArray &json)
 {
     logger.log() << "Account checked";
 
-    m_user.fromJson(json);
+    if (!m_user.fromJson(json)) {
+        logger.log() << "Failed to parse the User JSON data";
+        // We don't need to communicate it to the user. Let's ignore it.
+        return;
+    }
+
+    if (!m_deviceModel.fromJson(json)) {
+        logger.log() << "Failed to parse the DeviceModel JSON data";
+        // We don't need to communicate it to the user. Let's ignore it.
+        return;
+    }
+
     m_user.writeSettings(m_settingsHolder);
-
-    m_deviceModel.fromJson(json);
     m_deviceModel.writeSettings(m_settingsHolder);
-
-    emit m_user.changed();
 
 #ifdef IOS_INTEGRATION
     if (m_user.subscriptionNeeded() && m_state == StateMain) {
@@ -460,8 +524,8 @@ void MozillaVPN::cancelAuthentication()
         return;
     }
 
-    for (QList<QPointer<Task>>::Iterator i = m_tasks.begin(); i != m_tasks.end(); ++i) {
-        delete *i;
+    for (QPointer<Task> &task : m_tasks) {
+        delete task;
     }
 
     m_tasks.clear();
@@ -690,10 +754,8 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
     out << "Mozilla VPN logs" << Qt::endl << "================" << Qt::endl << Qt::endl;
 
     LogHandler *logHandler = LogHandler::instance();
-    for (QVector<LogHandler::Log>::ConstIterator i = logHandler->logs().begin();
-         i != logHandler->logs().end();
-         ++i) {
-        logHandler->prettyOutput(out, *i);
+    for (const LogHandler::Log &log : logHandler->logs()) {
+        logHandler->prettyOutput(out, log);
     }
 
     file.close();

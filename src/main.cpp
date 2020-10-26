@@ -25,6 +25,10 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
+#ifdef QT_DEBUG
+#include <QLoggingCategory>
+#endif
+
 namespace {
 Logger logger(LOG_MAIN, "main");
 }
@@ -33,6 +37,10 @@ int main(int argc, char *argv[])
 {
     // Our logging system.
     qInstallMessageHandler(LogHandler::messageQTHandler);
+
+#ifdef QT_DEBUG
+    QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.binding.removal.info=true"));
+#endif
 
     logger.log() << "MozillaVPN" << APP_VERSION;
 
@@ -49,20 +57,20 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
-        qtTrId("productDescription"));
+        qtTrId("vpn.main.productDescription"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     QCommandLineOption minimizedOption(QStringList() << "m"
                                                      << "minimized",
                                         //% "Start minimized"
-                                        qtTrId("startMinimized"));
+                                        qtTrId("vpn.main.startMinimized"));
     parser.addOption(minimizedOption);
 
     QCommandLineOption startAtBootOption(QStringList() << "s"
                                                        << "start-at-boot",
                                         //% "Start at boot (if configured)"
-                                        qtTrId("startOnBoot"));
+                                        qtTrId("vpn.main.startOnBoot"));
     parser.addOption(startAtBootOption);
 
     parser.process(app);

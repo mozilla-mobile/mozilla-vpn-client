@@ -24,11 +24,11 @@ public:
         CreatedAtRole,
     };
 
-    DeviceModel() = default;
+    [[nodiscard]] bool fromJson(const QByteArray& s);
 
-    void fromJson(const QByteArray& s);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
-    bool fromSettings(SettingsHolder &settingsHolder);
+    bool initialized() const { return !m_rawJson.isEmpty(); }
 
     void writeSettings(SettingsHolder &settingsHolder);
 
@@ -56,7 +56,7 @@ signals:
     void changed();
 
 private:
-    bool fromJsonInternal();
+    [[nodiscard]] bool fromJsonInternal(const QByteArray &json);
 
 private:
     QByteArray m_rawJson;

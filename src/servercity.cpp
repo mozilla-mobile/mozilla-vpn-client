@@ -8,31 +8,43 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-ServerCity::ServerCity(const QString &name, const QString &code) : m_name(name), m_code(code) {}
-
-// static
-ServerCity ServerCity::fromJson(QJsonObject &obj)
+bool ServerCity::fromJson(QJsonObject &obj)
 {
-    Q_ASSERT(obj.contains("code"));
-    QJsonValue code = obj.take("code");
-    Q_ASSERT(code.isString());
-
-    Q_ASSERT(obj.contains("name"));
     QJsonValue name = obj.take("name");
-    Q_ASSERT(name.isString());
-
-    ServerCity sc(name.toString(), code.toString());
-
-    Q_ASSERT(obj.contains("servers"));
-    QJsonValue servers = obj.take("servers");
-    Q_ASSERT(servers.isArray());
-
-    QJsonArray serversArray = servers.toArray();
-    for (QJsonArray::Iterator i = serversArray.begin(); i != serversArray.end(); ++i) {
-        Q_ASSERT(i->isObject());
-        QJsonObject server = i->toObject();
-        sc.m_servers.append(Server::fromJson(server));
+    if (!name.isString()) {
+        return false;
     }
 
-    return sc;
+    QJsonValue code = obj.take("code");
+    if (!code.isString()) {
+        return false;
+    }
+
+    QJsonValue serversValue = obj.take("servers");
+    if (!serversValue.isArray()) {
+        return false;
+    }
+
+    QList<Server> servers;
+    QJsonArray serversArray = serversValue.toArray();
+    for (QJsonValue serverValue : serversArray) {
+        if (!serverValue.isObject()) {
+            return false;
+        }
+
+        QJsonObject serverObj = serverValue.toObject();
+
+        Server server;
+        if (!server.fromJson(serverObj)) {
+            return false;
+        }
+
+        servers.append(server);
+    }
+
+    m_name = name.toString();
+    m_code = code.toString();
+    m_servers.swap(servers);
+
+    return true;
 }

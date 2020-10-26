@@ -17,7 +17,7 @@ class QStringList;
 class ServerCountry final
 {
 public:
-    static ServerCountry fromJson(QJsonObject &obj);
+    [[nodiscard]] bool fromJson(QJsonObject &obj);
 
     const QString &name() const { return m_name; }
 
@@ -28,8 +28,6 @@ public:
     const QList<Server> getServers(const ServerData &data) const;
 
 private:
-    ServerCountry(const QString &name, const QString &code) : m_name(name), m_code(code) {}
-
     QString m_name;
     QString m_code;
 

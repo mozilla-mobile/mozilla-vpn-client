@@ -6,26 +6,26 @@ import QtQuick 2.5
 import "../themes/themes.js" as Theme
 
 Row {
-    // TODO: check if these 3 functions do the correct math to compute the values.
-
     property var markerLabel
     property var rectColor
     property var markerData
 
     function computeRange() {
-        if (markerData < 128000)
+        if (markerData < 1.28e+05) {
             //% "Kbps"
             //: Kilobits per Secound
-            return qsTrId("kbps");
+            return qsTrId("vpn.connectionInfo.kbps");
+        }
 
-        if (markerData < 1.28e+08)
+        if (markerData < 1.28e+08) {
             //% "Mbps"
             //: Megabits per Second
-            return qsTrId("mbps");
+            return qsTrId("vpn.connectioInfo.mbps");
+        }
 
         //% "Gbps"
         //: Gigabits per Second
-        return qsTrId("gbps");
+        return qsTrId("vpn.connectionInfo.gbps");
     }
 
     function roundValue(value) {

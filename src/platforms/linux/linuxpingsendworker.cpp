@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 namespace {
-Logger logger(LOG_NETWORKING, "LinuxPingSendWorker");
+Logger logger({LOG_LINUX, LOG_NETWORKING}, "LinuxPingSendWorker");
 }
 
 void LinuxPingSendWorker::sendPing(const QString &destination)

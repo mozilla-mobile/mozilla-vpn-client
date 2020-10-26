@@ -22,11 +22,13 @@ class User final : public QObject
     Q_PROPERTY(int maxDevices READ maxDevices NOTIFY changed)
 
 public:
-    void fromJson(const QByteArray &json);
+    [[nodiscard]] bool fromJson(const QByteArray &json);
 
-    bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
 
     void writeSettings(SettingsHolder &settingsHolder);
+
+    bool initialized() const { return m_initialized; }
 
     const QString &avatar() const { return m_avatar; }
 
@@ -47,6 +49,7 @@ private:
     QString m_email;
     int m_maxDevices = 5;
     bool m_subscriptionNeeded = false;
+    bool m_initialized = false;
 };
 
 #endif // USER_H

@@ -135,7 +135,7 @@ RowLayout {
 
     VPNInterLabel {
         //% "Check Connection"
-        text: qsTrId("checkConnection")
+        text: qsTrId("vpn.connectionStability.checkConnection")
         color: "#FFFFFF"
         opacity: 0.8
     }

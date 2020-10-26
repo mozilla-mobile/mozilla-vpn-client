@@ -11,15 +11,21 @@ import "./components"
 Window {
     id: window
 
+    function fullscreenRequired() {
+        return Qt.platform.os === "android" ||
+                Qt.platform.os === "ios" ||
+                Qt.platform.os === "tvos";
+    }
+
     visible: true
-    width: 360
-    height: 454
+    width: fullscreenRequired() ? maximumWidth : 360
+    height: fullscreenRequired() ? maximumHeight : 454
     maximumHeight: height
     maximumWidth: width
     minimumHeight: height
     minimumWidth: width
     //% "Mozilla VPN"
-    title: qsTrId("productName")
+    title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {
         window.hide();

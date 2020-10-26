@@ -36,7 +36,7 @@ Item {
         anchors.leftMargin: Theme.windowMargin / 2
         //% "Back"
         //: Go back
-        accessibleName: qsTrId("back")
+        accessibleName: qsTrId("vpn.main.back")
 
         Image {
             id: backImage

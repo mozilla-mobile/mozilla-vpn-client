@@ -2,54 +2,58 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import QtGraphicalEffects 1.15
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
+ScrollView {
     id: scrollingFrame
 
-    contentHeight: 720
     height: parent.height
-    boundsBehavior: Flickable.StopAtBounds
+    contentHeight: (height > Theme.settingsMaxContentHeight) ? parent.height : Theme.settingsMaxContentHeight
+    opacity: 0
+    ScrollBar.vertical.policy: (height > Theme.settingsMaxContentHeight) ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
+    Component.onCompleted: {
+        opacity = 1;
+    }
 
     ListModel {
         id: settingsMenuListModel
 
         ListElement {
-            settingTitle: qsTrId("notifications")
+            settingTitle: qsTrId("vpn.settings.notifications")
             imageLeftSource: "../resources/settings/notifications.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNotifications.qml"
         }
 
         ListElement {
-            settingTitle: qsTrId("networkSettings")
+            settingTitle: qsTrId("vpn.settings.networking")
             imageLeftSource: "../resources/settings/networkSettings.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNetworkSettings.qml"
         }
 
         ListElement {
-            settingTitle: qsTrId("language")
+            settingTitle: qsTrId("vpn.settings.language")
             imageLeftSource: "../resources/settings/language.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewLanguage.qml"
         }
 
         ListElement {
-            settingTitle: qsTrId("aboutUs")
+            settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSource: "../resources/settings/aboutUs.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewAboutUs.qml"
         }
 
         ListElement {
-            settingTitle: qsTrId("getHelp")
+            settingTitle: qsTrId("vpn.main.getHelp")
             imageLeftSource: "../resources/settings/getHelp.svg"
             imageRightSource: "../resources/chevron.svg"
             pushGetHelp: true
@@ -57,7 +61,7 @@ Flickable {
 
         ListElement {
             //% "Give feedback"
-            settingTitle: qsTrId("giveFeedback")
+            settingTitle: qsTrId("vpn.settings.giveFeedback")
             imageLeftSource: "../resources/settings/feedback.svg"
             imageRightSource: "../resources/externalLink.svg"
             openUrl: VPN.LinkFeedback
@@ -68,17 +72,17 @@ Flickable {
     VPNIconButton {
         id: iconButton
 
-        onClicked: stackview.pop()
+        onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-        accessibleName: qsTrId("back")
+        accessibleName: qsTrId("vpn.main.back")
 
         Image {
             id: backImage
 
-            source: "../resources/back.svg"
+            source: "../resources/close-dark.svg"
             sourceSize.width: Theme.iconSize
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: iconButton
@@ -116,7 +120,7 @@ Flickable {
         id: logoTitle
 
         //% "VPN User"
-        readonly property var textVpnUser: qsTrId("vpnUser")
+        readonly property var textVpnUser: qsTrId("vpn.settings.user")
 
         text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         anchors.top: logo.bottom
@@ -134,7 +138,7 @@ Flickable {
         id: manageAccountButton
 
         //: "Manage account"
-        text: qsTrId("manageAccount")
+        text: qsTrId("vpn.main.manageAccount")
         anchors.top: logoSubtitle.bottom
         anchors.topMargin: Theme.vSpacing
         onClicked: VPN.openLink(VPN.LinkAccount)
@@ -145,7 +149,7 @@ Flickable {
 
         //: The back of the object, not the front
         //% "Launch VPN app on Startup"
-        labelText: qsTrId("runOnBoot")
+        labelText: qsTrId("vpn.settings.runOnBoot")
         subLabelText: ""
         isChecked: VPNSettings.startAtBoot
         isEnabled: true
@@ -175,7 +179,7 @@ Flickable {
         anchors.topMargin: Theme.vSpacing
         spacing: Theme.listSpacing
         //% "Settings"
-        listName: qsTrId("settings")
+        listName: qsTrId("vpn.main.settings")
         model: settingsMenuListModel
 
         delegate: VPNClickableRow {
@@ -206,8 +210,11 @@ Flickable {
         onClicked: VPNController.logout()
     }
 
-    ScrollBar.vertical: ScrollBar {
-        Accessible.ignored: true
+    Behavior on opacity {
+        PropertyAnimation {
+            duration: 200
+        }
+
     }
 
 }
