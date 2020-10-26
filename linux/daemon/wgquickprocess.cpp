@@ -32,28 +32,28 @@ void WgQuickProcess::run(const QString &privateKey,
 
     QByteArray content;
     content.append("[Interface]\nPrivateKey = ");
-    content.append(privateKey);
+    content.append(privateKey.toUtf8());
     content.append("\nAddress = ");
-    content.append(deviceIpv4Address);
+    content.append(deviceIpv4Address.toUtf8());
 
     if (ipv6Enabled) {
         content.append(", ");
-        content.append(deviceIpv6Address);
+        content.append(deviceIpv6Address.toUtf8());
     }
 
     content.append("\nDNS = ");
-    content.append(serverIpv4Gateway);
+    content.append(serverIpv4Gateway.toUtf8());
 
     if (ipv6Enabled) {
         content.append(", ");
-        content.append(serverIpv6Gateway);
+        content.append(serverIpv6Gateway.toUtf8());
     }
 
     content.append("\n\n[Peer]\nPublicKey = ");
-    content.append(serverPublicKey);
+    content.append(serverPublicKey.toUtf8());
     content.append("\nEndpoint = ");
-    content.append(serverIpv4AddrIn);
-    content.append(QString(":%1").arg(serverPort));
+    content.append(serverIpv4AddrIn.toUtf8());
+    content.append(QString(":%1").arg(serverPort).toUtf8());
 
     /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
      * to be happy if there are 2 endpoints.
@@ -64,7 +64,7 @@ void WgQuickProcess::run(const QString &privateKey,
     }
     */
 
-    content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges));
+    content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
     if (!tmpDir.isValid()) {
         qWarning("Cannot create a temporary directory");
