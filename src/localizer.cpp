@@ -14,10 +14,10 @@ namespace {
 Logger logger(LOG_MAIN, "Localizer");
 }
 
-void Localizer::initialize(const QString& code)
+void Localizer::initialize(const QString &code)
 {
     m_code = code;
-    if(code.isEmpty()){
+    if (code.isEmpty()) {
         QLocale locale = QLocale::system();
         m_code = locale.bcp47Name();
     }

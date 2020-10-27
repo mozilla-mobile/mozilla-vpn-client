@@ -8,9 +8,8 @@ QVector<QObject*> TestHelper::s_list;
 
 TestHelper::TestHelper()
 {
-   s_list.append(this);
+    s_list.append(this);
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -18,7 +17,6 @@ int main(int argc, char *argv[])
 
     int failures = 0;
 
-    QVector<QObject*>::iterator iter;
     for (QObject* obj : TestHelper::s_list) {
         int result = QTest::qExec(obj);
         if ( result != 0 )

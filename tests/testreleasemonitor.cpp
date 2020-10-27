@@ -10,9 +10,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-// ReleaseMonitor
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 void TestReleaseMonitor::basic_data()
 {
     QTest::addColumn<QByteArray>("json");

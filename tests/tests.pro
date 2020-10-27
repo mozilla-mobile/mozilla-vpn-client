@@ -14,6 +14,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../src
 
 HEADERS += \
+    ../src/localizer.h \
     ../src/logger.h \
     ../src/loghandler.h \
     ../src/models/device.h \
@@ -30,10 +31,13 @@ HEADERS += \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
     helper.h \
+    testlocalizer.h \
+    testlogger.h \
     testmodels.h \
     testreleasemonitor.h
 
 SOURCES += \
+    ../src/localizer.cpp \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
     ../src/models/device.cpp \
@@ -51,6 +55,8 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     mocsettingsholder.cpp \
+    testlocalizer.cpp \
+    testlogger.cpp \
     testmodels.cpp \
     testreleasemonitor.cpp
 
