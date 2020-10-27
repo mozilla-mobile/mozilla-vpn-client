@@ -6,8 +6,8 @@
 #define HELPER_H
 
 #include <QObject>
-#include <QtTest/QtTest>
 #include <QVector>
+#include <QtTest/QtTest>
 
 class TestHelper : public QObject
 {
@@ -17,12 +17,20 @@ public:
     explicit TestHelper();
 
 public:
-    enum NetworkStatus {
-        Success,
-        Failure,
+    struct NetworkConfig
+    {
+        enum NetworkStatus {
+            Success,
+            Failure,
+        };
+        NetworkStatus m_status;
+        QByteArray m_body;
+
+        NetworkConfig(NetworkStatus status, const QByteArray &body) : m_status(status), m_body(body)
+        {}
     };
-    static NetworkStatus networkStatus;
-    static QByteArray networkBody;
+
+    static QVector<NetworkConfig> networkConfig;
 
     static QVector<QObject *> testList;
 };

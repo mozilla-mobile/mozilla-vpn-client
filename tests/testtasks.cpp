@@ -14,14 +14,13 @@ void TestTasks::accountAndServers()
 
 void TestTasks::addDevice_success()
 {
-    TestHelper::networkStatus = TestHelper::Success;
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskAddDevice* task = new TaskAddDevice("foobar");
+    TaskAddDevice *task = new TaskAddDevice("foobar");
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() {
-        loop.exit();
-    });
+    connect(task, &Task::completed, [&]() { loop.exit(); });
 
     MozillaVPN::instance()->scheduleTask(task);
     loop.exec();
@@ -29,14 +28,13 @@ void TestTasks::addDevice_success()
 
 void TestTasks::addDevice_failure()
 {
-    TestHelper::networkStatus = TestHelper::Failure;
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    TaskAddDevice* task = new TaskAddDevice("foobar");
+    TaskAddDevice *task = new TaskAddDevice("foobar");
 
     QEventLoop loop;
-    connect(task, &Task::completed, [&]() {
-        loop.exit();
-    });
+    connect(task, &Task::completed, [&]() { loop.exit(); });
 
     MozillaVPN::instance()->scheduleTask(task);
     loop.exec();

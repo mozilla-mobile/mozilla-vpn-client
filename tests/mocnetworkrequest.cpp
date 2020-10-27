@@ -11,12 +11,16 @@ namespace {};
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
-    TimerSingleShot::create(this, 0, [this]() {
+    Q_ASSERT(!TestHelper::networkConfig.isEmpty());
+    TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
+
+    TimerSingleShot::create(this, 0, [this, nc]() {
         deleteLater();
-        if (TestHelper::networkStatus == TestHelper::Failure) {
+        if (nc.m_status == TestHelper::NetworkConfig::Failure) {
             emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError);
         } else {
-            emit requestCompleted(TestHelper::networkBody);
+            Q_ASSERT(nc.m_status == TestHelper::NetworkConfig::Success);
+            emit requestCompleted(nc.m_body);
         }
     });
 }

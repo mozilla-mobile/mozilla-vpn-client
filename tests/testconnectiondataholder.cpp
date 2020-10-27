@@ -10,7 +10,8 @@ void TestConnectionDataHolder::checkIpAddressFailure()
 {
     ConnectionDataHolder cdh;
 
-    TestHelper::networkStatus = TestHelper::Failure;
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
 
     QEventLoop loop;
     connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
@@ -43,10 +44,9 @@ void TestConnectionDataHolder::checkIpAddressSucceess()
 {
     ConnectionDataHolder cdh;
 
-    TestHelper::networkStatus = TestHelper::Success;
-
     QFETCH(QByteArray, json);
-    TestHelper::networkBody = json;
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
     QEventLoop loop;
     connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
@@ -56,7 +56,7 @@ void TestConnectionDataHolder::checkIpAddressSucceess()
         QCOMPARE(cdh.ipAddress(), ipAddress);
 
         loop.exit();
-    }); 
+    });
 
     cdh.enable();
     loop.exec();
