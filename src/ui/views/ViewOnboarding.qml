@@ -62,6 +62,7 @@ Item {
         //% "Skip"
         labelText: qsTrId("vpn.onboarding.skip")
         onClicked: stackview.pop()
+        visible: swipeView.currentIndex !== swipeView.count - 1
     }
 
     VPNButton {
@@ -70,12 +71,11 @@ Item {
         //% "Next"
         readonly property var textNext: qsTrId("vpn.onboarding.next")
 
-        width: 282
         text: swipeView.currentIndex === swipeView.count - 1 ? qsTrId("vpn.main.getStarted") : textNext
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressIndicator.top
-        anchors.bottomMargin: 32
+        anchors.bottomMargin: 28
         radius: 4
         onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.authenticate()
     }
@@ -87,7 +87,7 @@ Item {
         count: swipeView.count
         currentIndex: swipeView.currentIndex
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
+        anchors.bottomMargin: Math.min(window.height * 0.08, 60) - 4
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 8
 
