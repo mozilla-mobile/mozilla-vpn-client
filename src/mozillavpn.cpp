@@ -153,9 +153,9 @@ void MozillaVPN::initialize()
     m_private->m_releaseMonitor.runSoon();
 
 #ifdef IOS_INTEGRATION
-    if (!m_settingsHolder.hasNativeIOSDataMigrated()) {
+    if (!m_private->m_settingsHolder.hasNativeIOSDataMigrated()) {
         IOSDataMigration::migrate();
-        m_settingsHolder.setNativeIOSDataMigrated(true);
+        m_private->m_settingsHolder.setNativeIOSDataMigrated(true);
     }
 #endif
 
@@ -361,7 +361,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     setUserAuthenticated(true);
 
 #ifdef IOS_INTEGRATION
-    if (m_user.subscriptionNeeded()) {
+    if (m_private->m_user.subscriptionNeeded()) {
         scheduleTask(new TaskIOSProducts());
         scheduleTask(new TaskFunction([this](MozillaVPN*) {
             setState(StatePostAuthentication);
@@ -515,8 +515,8 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     m_private->m_deviceModel.writeSettings(m_private->m_settingsHolder);
 
 #ifdef IOS_INTEGRATION
-    if (m_user.subscriptionNeeded() && m_state == StateMain) {
-        m_controller.subscriptionNeeded();
+    if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
+        m_private->m_controller.subscriptionNeeded();
     }
 #endif
 
@@ -654,7 +654,7 @@ void MozillaVPN::postAuthenticationCompleted()
     }
 
 #ifdef IOS_INTEGRATION
-    if (m_user.subscriptionNeeded()) {
+    if (m_private->m_user.subscriptionNeeded()) {
         setState(StateSubscriptionNeeded);
         return;
     }

@@ -406,7 +406,7 @@ void Controller::setState(State state)
 
 int Controller::time() const
 {
-    return m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000;
+    return (int)(m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000);
 }
 
 void Controller::getBackendLogs(std::function<void(const QString &)> &&a_callback)
