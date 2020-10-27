@@ -11,12 +11,8 @@ RoundButton {
     id: button
 
     height: 40
-    width: Theme.maxTextWidth
+    width: Math.min(parent.width * .83, Theme.maxHorizontalContentWidth)
     anchors.horizontalCenter: parent.horizontalCenter
-    Layout.preferredHeight: 40
-    Layout.fillWidth: true
-    Layout.leftMargin: 16
-    Layout.rightMargin: 16
     Keys.onReturnPressed: clicked()
     Accessible.onPressAction: clicked()
     state: "state-default"
