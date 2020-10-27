@@ -12,17 +12,14 @@ void TestConnectionDataHolder::checkIpAddressFailure()
 
     TestHelper::networkStatus = TestHelper::Failure;
 
-    bool completed = false;
-    QTimer::singleShot(1, [&] {
+    QEventLoop loop;
+    connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
         cdh.disable();
-        completed = true;
-    });
+        loop.exit();
+    }); 
 
     cdh.enable();
-
-    while (!completed) {
-        QCoreApplication::processEvents();
-    }
+    loop.exec();
 }
 
 void TestConnectionDataHolder::checkIpAddressSucceess_data()
@@ -51,21 +48,18 @@ void TestConnectionDataHolder::checkIpAddressSucceess()
     QFETCH(QByteArray, json);
     TestHelper::networkBody = json;
 
-    bool completed = false;
-    QTimer::singleShot(10, [&] {
+    QEventLoop loop;
+    connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
         cdh.disable();
 
         QFETCH(QString, ipAddress);
         QCOMPARE(cdh.ipAddress(), ipAddress);
 
-        completed = true;
-    });
+        loop.exit();
+    }); 
 
     cdh.enable();
-
-    while (!completed) {
-        QCoreApplication::processEvents();
-    }
+    loop.exec();
 }
 
 static TestConnectionDataHolder s_testConnectionDataHolder;

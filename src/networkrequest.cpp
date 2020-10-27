@@ -38,13 +38,15 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 }
 
 // static
-NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *vpn,
+NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *parent,
+                                                                    MozillaVPN *vpn,
                                                                     const QString &pkceCodeSuccess,
                                                                     const QString &pkceCodeVerifier)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
     r->m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QUrl url(vpn->getApiUrl());
@@ -65,13 +67,15 @@ NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
+NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent,
+                                                        MozillaVPN *vpn,
                                                         const QString &deviceName,
                                                         const QString &pubKey)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(vpn->token().toLocal8Bit());
@@ -96,11 +100,14 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QString &pubKey)
+NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent,
+                                                       MozillaVPN *vpn,
+                                                       const QString &pubKey)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(vpn->token().toLocal8Bit());
@@ -120,11 +127,12 @@ NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QS
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForServers(QObject *parent, MozillaVPN *vpn)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(vpn->token().toLocal8Bit());
@@ -139,11 +147,12 @@ NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForVersions(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForVersions(QObject *parent, MozillaVPN *vpn)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QUrl url(vpn->getApiUrl());
     url.setPath("/api/v1/vpn/versions");
@@ -154,11 +163,12 @@ NetworkRequest *NetworkRequest::createForVersions(MozillaVPN *vpn)
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForAccount(QObject *parent, MozillaVPN *vpn)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(vpn->token().toLocal8Bit());
@@ -173,11 +183,12 @@ NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForIpInfo(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *vpn)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(vpn->token().toLocal8Bit());
@@ -206,8 +217,9 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
 }
 
 #ifdef IOS_INTEGRATION
-NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent, MozillaVPN *vpn)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
     NetworkRequest *r = new NetworkRequest(vpn);
@@ -225,11 +237,14 @@ NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN *vpn)
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn, const QString &orderId)
+NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
+                                                     MozillaVPN *vpn,
+                                                     const QString &orderId)
 {
+    Q_ASSERT(parent);
     Q_ASSERT(vpn);
 
-    NetworkRequest *r = new NetworkRequest(vpn);
+    NetworkRequest *r = new NetworkRequest(parent);
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(vpn->token().toLocal8Bit());

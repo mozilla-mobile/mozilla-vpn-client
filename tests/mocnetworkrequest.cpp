@@ -21,45 +21,41 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 }
 
 // static
-NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *vpn,
-                                                                    const QString &,
-                                                                    const QString &)
+NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *parent, MozillaVPN *, const QString &, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
-                                                        const QString &,
-                                                        const QString &)
+NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent, MozillaVPN *, const QString &, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QString &)
+NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent, MozillaVPN *, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForServers(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForVersions(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForVersions(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForAccount(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForIpInfo(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
 NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
@@ -68,14 +64,14 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
 }
 
 #ifdef IOS_INTEGRATION
-NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn, const QString &)
+NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent, MozillaVPN *, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 #endif
 

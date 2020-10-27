@@ -6,20 +6,31 @@
 #define RELEASEMONITOR_H
 
 #include <QObject>
+#include <QTimer>
 
 class ReleaseMonitor final : public QObject
 {
     Q_OBJECT
 
 public:
+    ReleaseMonitor();
+
     void runSoon();
 
-private:
+signals:
+    // for testing
+    void releaseChecked();
+
+private slots:
     void runInternal();
 
+private:
     void schedule();
 
     [[nodiscard]] bool processData(const QByteArray &data);
+
+private:
+    QTimer m_timer;
 };
 
 #endif // RELEASEMONITOR_H
