@@ -9,6 +9,8 @@ class TestReleaseMonitor final : public TestHelper
     Q_OBJECT
 
 private slots:
-    void basic_data();
-    void basic();
+    void failure();
+
+    void success_data();
+    void success();
 };

@@ -10,7 +10,23 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-void TestReleaseMonitor::basic_data()
+void TestReleaseMonitor::failure()
+{
+    ReleaseMonitor rm;
+
+    TestHelper::networkStatus = TestHelper::Failure;
+
+    bool completed = false;
+    QTimer::singleShot(10, [&] { completed = true; });
+
+    rm.runSoon();
+
+    while (!completed) {
+        QCoreApplication::processEvents();
+    }
+}
+
+void TestReleaseMonitor::success_data()
 {
     QTest::addColumn<QByteArray>("json");
     QTest::addColumn<bool>("result");
@@ -84,14 +100,22 @@ void TestReleaseMonitor::basic_data()
     QTest::addRow("completed!") << QJsonDocument(obj).toJson() << true;
 }
 
-void TestReleaseMonitor::basic()
+void TestReleaseMonitor::success()
 {
     ReleaseMonitor rm;
 
     QFETCH(QByteArray, json);
-    QFETCH(bool, result);
+    TestHelper::networkBody = json;
+    TestHelper::networkStatus = TestHelper::Success;
 
-    QCOMPARE(rm.processData(json), result);
+    bool completed = false;
+    QTimer::singleShot(10, [&] { completed = true; });
+
+    rm.runSoon();
+
+    while (!completed) {
+        QCoreApplication::processEvents();
+    }
 }
 
 static TestReleaseMonitor s_testReleaseMonitor;

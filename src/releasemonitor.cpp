@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "releasemonitor.h"
+#include "constants.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -11,9 +12,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTimer>
-
-// Any 6 hours, a new check
-constexpr uint32_t RELEASE_MONITOR_SEC = 21600;
 
 namespace {
 Logger logger(LOG_MAIN, "ReleaseMonitor");
@@ -50,7 +48,7 @@ void ReleaseMonitor::runInternal()
 void ReleaseMonitor::schedule()
 {
     logger.log() << "ReleaseMonitor scheduling";
-    QTimer::singleShot(RELEASE_MONITOR_SEC * 1000, [this] { runInternal(); });
+    QTimer::singleShot(Constants::RELEASE_MONITOR_MSEC, [this] { runInternal(); });
 }
 
 bool ReleaseMonitor::processData(const QByteArray &data)
