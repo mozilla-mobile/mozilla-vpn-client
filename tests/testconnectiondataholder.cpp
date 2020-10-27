@@ -41,6 +41,7 @@ void TestConnectionDataHolder::checkIpAddressSucceess_data()
     json.insert("ip", "42");
     QTest::addRow("valid ip") << QJsonDocument(json).toJson() << "42";
 }
+
 void TestConnectionDataHolder::checkIpAddressSucceess()
 {
     ConnectionDataHolder cdh;
