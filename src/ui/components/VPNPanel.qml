@@ -14,7 +14,7 @@ Item {
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
-
+    property var logoSize: 76
     anchors.horizontalCenter: parent.horizontalCenter
     width: parent.width
 
@@ -32,8 +32,8 @@ Item {
             id: logoWrapper
 
             color: "transparent"
-            height: 76
-            width: 76
+            height: logoSize
+            width: logoSize
             anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -41,7 +41,7 @@ Item {
                 id: logo
 
                 anchors.horizontalCenter: parent.horizontalCenter
-                sourceSize.height: 76
+                sourceSize.height: logoSize
                 fillMode: Image.PreserveAspectFit
             }
 
