@@ -16,6 +16,37 @@ Flickable {
     contentHeight: alertBox.isUpdateAlert ? (parent.height + Theme.windowMargin + alertBox.height) : parent.height
     boundsBehavior: Flickable.StopAtBounds
 
+    Item {
+        id: mobileHeader
+
+        height: 40
+        width: parent.width
+        anchors.top: parent.top
+        anchors.topMargin: Theme.windowMargin / 2
+        visible: parent.height > Theme.verticalBreakPoint1
+
+        Row {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 8
+
+            VPNIcon {
+                source: "../resources/logo-tray.svg"
+                sourceSize.height: 18
+                sourceSize.width: 18
+            }
+
+            VPNBoldLabel {
+                //% "Mozilla VPN"
+                text: qsTr("MozillaVPN")
+                color: "#000000"
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+        }
+
+    }
+
     VPNAlert {
         id: alertBox
 
@@ -34,7 +65,16 @@ Flickable {
     Item {
         height: parent.contentHeight
         width: parent.width
-        y: alertBox.visible ? alertBox.height + Theme.windowMargin : 0
+        y: {
+            let yDistance = 0;
+            if (alertBox.visible)
+                yDistance += alertBox.height + Theme.windowMargin;
+
+            if (mobileHeader.visible)
+                yDistance += mobileHeader.height;
+
+            return yDistance;
+        }
 
         VPNDropShadow {
             anchors.fill: box
