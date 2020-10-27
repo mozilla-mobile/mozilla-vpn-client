@@ -6,8 +6,7 @@
 #include "captiveportalrequest.h"
 #include "logger.h"
 #include "mozillavpn.h"
-
-#include <QTimer>
+#include "timersingleshot.h"
 
 // Let's try to detect the captive portal any X secs.
 constexpr int CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC = 2000;
@@ -21,9 +20,7 @@ CaptivePortalActivator::CaptivePortalActivator(QObject *parent) : QObject(parent
 void CaptivePortalActivator::run()
 {
     logger.log() << "Captive Portal Activator";
-    QTimer::singleShot(CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC,
-                       this,
-                       &CaptivePortalActivator::checkStatus);
+    TimerSingleShot::create(this, CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC, [this]() { checkStatus(); });
 }
 
 void CaptivePortalActivator::checkStatus()

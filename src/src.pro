@@ -65,7 +65,8 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        timercontroller.cpp
+        timercontroller.cpp \
+        timersingleshot.cpp
 
 HEADERS += \
         captiveportal/captiveportal.h \
@@ -110,7 +111,8 @@ HEADERS += \
         tasks/authenticate/taskauthenticate.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
-        timercontroller.h
+        timercontroller.h \
+        timersingleshot.h
 
 # Platform-specific: Linux
 linux {

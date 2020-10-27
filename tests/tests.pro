@@ -43,6 +43,7 @@ HEADERS += \
     ../src/task.h \
     ../src/tasks/adddevice/taskadddevice.h \
     ../src/tasks/function/taskfunction.h \
+    ../src/timersingleshot.h \
     helper.h \
     testconnectiondataholder.h \
     testlocalizer.h \
@@ -73,6 +74,7 @@ SOURCES += \
     ../src/models/user.cpp \
     ../src/releasemonitor.cpp \
     ../src/tasks/adddevice/taskadddevice.cpp \
+    ../src/timersingleshot.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../src/mozillavpn.h"
+#include "../src/timersingleshot.h"
 #include "helper.h"
 #include "networkrequest.h"
 
@@ -10,7 +11,7 @@ namespace {};
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
-    QTimer::singleShot(0, [this]() {
+    TimerSingleShot::create(this, 0, [this]() {
         deleteLater();
         if (TestHelper::networkStatus == TestHelper::Failure) {
             emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError);

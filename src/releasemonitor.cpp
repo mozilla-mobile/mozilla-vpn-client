@@ -7,11 +7,11 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "timersingleshot.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QTimer>
 
 namespace {
 Logger logger(LOG_MAIN, "ReleaseMonitor");
@@ -26,7 +26,7 @@ ReleaseMonitor::ReleaseMonitor()
 void ReleaseMonitor::runSoon()
 {
     logger.log() << "ReleaseManager - Scheduling a quick timer";
-    QTimer::singleShot(0, [this] { runInternal(); });
+    TimerSingleShot::create(this, 0, [this] { runInternal(); });
 }
 
 void ReleaseMonitor::runInternal()
