@@ -3,36 +3,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localizer.h"
+#include "logger.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 #include <QLocale>
 
-void Localizer::initialize(const QString& code)
+namespace {
+Logger logger(LOG_MAIN, "Localizer");
+}
+
+void Localizer::initialize(const QString &code)
 {
     m_code = code;
-    if(code.isEmpty()){
+    if (code.isEmpty()) {
         QLocale locale = QLocale::system();
         m_code = locale.bcp47Name();
     }
-    qDebug() << "Localizer initializing:" << m_code;
 
-
-    if (!loadLanguage(m_code) && m_code != "") {
-        return initialize("");
-    }
+    loadLanguage(m_code);
 
     QCoreApplication::installTranslator(&m_translator);
     QDir dir(":/i18n");
     QStringList files = dir.entryList();
-    for (QStringList::ConstIterator i = files.begin(); i != files.end(); ++i) {
-        if (!i->endsWith(".qm")) {
+    for (const QString &file : files) {
+        if (!file.endsWith(".qm")) {
             continue;
         }
 
-        QStringList parts = i->split(".");
+        QStringList parts = file.split(".");
         Q_ASSERT(parts.length() == 2);
 
         parts = parts[0].split("_");
@@ -42,7 +42,23 @@ void Localizer::initialize(const QString& code)
     }
 }
 
-bool Localizer::loadLanguage(const QString& code)
+void Localizer::loadLanguage(const QString &code)
+{
+    logger.log() << "Loading language:" << code;
+    if (loadLanguageInternal(code)) {
+        return;
+    }
+
+    logger.log() << "Loading default language (fallback)";
+    if (loadLanguageInternal("")) {
+        return;
+    }
+
+    logger.log() << "Loading 'en' language(fallback 2)";
+    loadLanguageInternal("en");
+}
+
+bool Localizer::loadLanguageInternal(const QString &code)
 {
     QLocale locale = QLocale(code);
     if (code.isEmpty()) {
@@ -51,7 +67,8 @@ bool Localizer::loadLanguage(const QString& code)
     QLocale::setDefault(locale);
 
     if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-        qDebug() << "Loading the locale failed." << "code";
+        logger.log() << "Loading the locale failed."
+                     << "code";
         return false;
     }
 

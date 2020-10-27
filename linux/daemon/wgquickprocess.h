@@ -29,9 +29,9 @@ public:
              const QString &serverPublicKey,
              const QString &serverIpv4AddrIn,
              const QString &serverIpv6AddrIn,
+             const QString &allowedIPAddressRanges,
              int serverPort,
-             bool ipv6Enabled,
-             bool localNetworkAccess);
+             bool ipv6Enabled);
 
 signals:
     void failed();

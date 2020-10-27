@@ -4,7 +4,12 @@
 
 #include "captiveportalrequest.h"
 #include "captiveportal.h"
+#include "logger.h"
 #include "networkrequest.h"
+
+namespace {
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
+}
 
 CaptivePortalRequest::CaptivePortalRequest(QObject *parent) : QObject(parent)
 {
@@ -15,23 +20,23 @@ void CaptivePortalRequest::run()
     NetworkRequest *request = NetworkRequest::createForCaptivePortalDetection(this);
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-        qDebug() << "Captive portal request failed:" << error;
+        logger.log() << "Captive portal request failed:" << error;
         emit completed(false);
         deleteLater();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "Captive portal request completed:" << data;
+        logger.log() << "Captive portal request completed:" << data;
 
         deleteLater();
 
         if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-            qDebug() << "No captive portal!";
+            logger.log() << "No captive portal!";
             emit completed(false);
             return;
         }
 
-        qDebug() << "Captive portal detected!";
+        logger.log() << "Captive portal detected!";
         emit completed(true);
     });
 }

@@ -3,15 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/logger.h"
+#include "../../src/loghandler.h"
 #include "../../src/signalhandler.h"
 #include "dbus.h"
 #include "dbus_adaptor.h"
 
 #include <QCoreApplication>
 
+namespace {
+Logger logger(LOG_LINUX, "main");
+}
+
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(Logger::messageHandler);
+    qInstallMessageHandler(LogHandler::messageQTHandler);
 
     QCoreApplication app(argc, argv);
 
@@ -20,11 +25,12 @@ int main(int argc, char *argv[])
     dbus->setAdaptor(adaptor);
 
     QDBusConnection connection = QDBusConnection::systemBus();
-    qDebug() << "Connecting to DBus...";
+    logger.log() << "Connecting to DBus...";
 
     if (!connection.registerService("org.mozilla.vpn.dbus")
         || !connection.registerObject("/", dbus)) {
-        qDebug() << "Connection failed:" << connection.lastError();
+        logger.log() << "Connection failed - name:" << connection.lastError().name()
+                     << "message:" << connection.lastError().message();
         app.exit(1);
         return 1;
     }
@@ -40,6 +46,6 @@ int main(int argc, char *argv[])
         app.quit();
     });
 
-    qDebug() << "Ready!";
+    logger.log() << "Ready!";
     return app.exec();
 }

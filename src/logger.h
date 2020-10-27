@@ -5,50 +5,71 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QDateTime>
-#include <QObject>
-#include <QVector>
+#include <QString>
+#include <QTextStream>
 
-class QTextStream;
+constexpr const char *LOG_CAPTIVEPORTAL = "captiveportal";
+constexpr const char *LOG_CONTROLLER = "controller";
+constexpr const char *LOG_MAIN = "main";
+constexpr const char *LOG_MODEL = "model";
+constexpr const char *LOG_NETWORKING = "networking";
 
-class Logger final : public QObject
+#ifdef IOS_INTEGRATION
+constexpr const char *LOG_IAP = "iap";
+constexpr const char *LOG_IOS = "ios";
+#endif
+
+#ifdef __linux__
+constexpr const char *LOG_LINUX = "linux";
+#endif
+
+#ifdef __APPLE__
+constexpr const char *LOG_MACOS = "macos";
+#endif
+
+class QNetworkReply;
+
+class Logger
 {
-    Q_OBJECT
-
 public:
-    struct Log
+    Logger(const QString &module, const QString &className);
+    Logger(const QStringList &modules, const QString &className);
+
+    const QStringList &modules() const { return m_modules; }
+    const QString &className() const { return m_className; }
+
+    class Log
     {
-        Log() = default;
+    public:
+        Log(Logger *logger);
+        ~Log();
 
-        Log(QtMsgType type,
-            const QString &file,
-            const QString &function,
-            uint32_t line,
-            const QString &message)
-            : m_dateTime(QDateTime::currentDateTime()), m_file(file), m_function(function),
-              m_message(message), m_type(type), m_line(line)
-        {}
+        Log &operator<<(uint64_t t);
+        Log &operator<<(const char *t);
+        Log &operator<<(const QString &t);
+        Log &operator<<(const QStringList &t);
+        Log &operator<<(const QByteArray &t);
+        Log &operator<<(QTextStreamFunction t);
 
-        QDateTime m_dateTime;
-        QString m_file;
-        QString m_function;
-        QString m_message;
-        QtMsgType m_type;
-        uint32_t m_line;
+    private:
+        Logger *m_logger;
+
+        struct Data
+        {
+            Data() : m_ts(&m_buffer, QIODevice::WriteOnly) {}
+
+            QString m_buffer;
+            QTextStream m_ts;
+        };
+
+        Data *m_data;
     };
 
-    static Logger *instance();
-
-    static void messageHandler(QtMsgType type,
-                               const QMessageLogContext &context,
-                               const QString &message);
-
-    static void prettyOutput(QTextStream &out, const Logger::Log &log);
-
-    const QVector<Log> &logs() const { return m_logs; }
+    Log log();
 
 private:
-    QVector<Log> m_logs;
+    QStringList m_modules;
+    QString m_className;
 };
 
 #endif // LOGGER_H

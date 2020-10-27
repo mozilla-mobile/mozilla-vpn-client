@@ -3,62 +3,95 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iaphandler.h"
+#include "logger.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
 
-#include <QDebug>
 #include <QInAppStore>
 #include <QtPurchasing>
 
-constexpr const char *PRODUCT_ID = "org.mozilla.ios.FirefoxVPN_staging.product.test.1m_renew_subscription";
+namespace {
+Logger logger(LOG_IAP, "IAPHandler");
+}
 
 void IAPHandler::start()
 {
-    qDebug() << "Starting the subscription";
+    logger.log() << "Starting the subscription";
 
     Q_ASSERT(!m_appStore);
     m_appStore = new QInAppStore(this);
 
     connect(m_appStore, &QInAppStore::productRegistered, [](QInAppProduct *product) {
-        qDebug() << "Product registered" << product;
-        qDebug() << "Title:" << product->title();
-        qDebug() << "Description:" << product->description();
-        qDebug() << "Price:" << product->price();
+        logger.log() << "Product registered";
+        logger.log() << "Title:" << product->title();
+        logger.log() << "Description:" << product->description();
+        logger.log() << "Price:" << product->price();
 
         product->purchase();
     });
 
-    connect(m_appStore, &QInAppStore::productUnknown, [this](QInAppProduct::ProductType productType, const QString &identifier) {
-        qDebug() << "Product registration failed:" << productType << identifier;
-        emit failed();
-    });
+    connect(m_appStore,
+            &QInAppStore::productUnknown,
+            [this](QInAppProduct::ProductType productType, const QString &identifier) {
+                logger.log() << "Product registration failed:" << productType << identifier;
+                emit failed();
+            });
 
     connect(m_appStore, &QInAppStore::transactionReady, [this](QInAppTransaction *transaction) {
-        qDebug() << "Transaction ready" << transaction << "status:" << transaction->status();
+        logger.log() << "Transaction ready - status:" << transaction->status();
 
         switch (transaction->status()) {
-            case QInAppTransaction::PurchaseFailed:
-                qDebug() << "Purchase Failed" << transaction->errorString() << "Reason:" << transaction->failureReason();
-                emit failed();
-                break;
+        case QInAppTransaction::PurchaseFailed:
+            logger.log() << "Purchase Failed" << transaction->errorString()
+                         << "Reason:" << transaction->failureReason();
+            emit failed();
+            break;
 
-            case QInAppTransaction::PurchaseApproved:
-                qDebug() << "Purchase approved";
-                emit completed();
-                break;
+        case QInAppTransaction::PurchaseApproved:
+            logger.log() << "Purchase approved";
+            purchaseCompleted(transaction->orderId());
+            break;
 
-            case QInAppTransaction::PurchaseRestored:
-                qDebug() << "Purchase Restored";
-                break;
+        case QInAppTransaction::PurchaseRestored:
+            logger.log() << "Purchase Restored";
+            break;
 
-            case QInAppTransaction::Unknown:
-            default:
-                qDebug() << "unexpected transaction state";
-                emit failed();
-                break;
+        case QInAppTransaction::Unknown:
+        default:
+            logger.log() << "unexpected transaction state";
+            emit failed();
+            break;
         }
 
         transaction->finalize();
     });
 
-    m_appStore->registerProduct(QInAppProduct::Consumable, PRODUCT_ID);
-    qDebug() << "Waiting for the registreation of products";
+    const QStringList products = MozillaVPN::instance()->settingsHolder()->iapProducts();
+    Q_ASSERT(!products.isEmpty());
+
+    for (const QString &product : products) {
+        logger.log() << "Registration product:" << product;
+        m_appStore->registerProduct(QInAppProduct::Consumable, product);
+    }
+
+    logger.log() << "Waiting for the registreation of products";
+}
+
+void IAPHandler::purchaseCompleted(const QString& orderId)
+{
+    MozillaVPN *vpn = MozillaVPN::instance();
+    NetworkRequest *request = NetworkRequest::createForIOSPurchase(vpn, orderId);
+
+    connect(request,
+            &NetworkRequest::requestFailed,
+            [this, vpn](QNetworkReply::NetworkError error) {
+                logger.log() << "Purchase request failed" << error;
+                vpn->errorHandle(ErrorHandler::toErrorType(error));
+                emit completed();
+            });
+
+    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &) {
+        logger.log() << "Purchase request completed";
+        emit completed();
+    });
 }

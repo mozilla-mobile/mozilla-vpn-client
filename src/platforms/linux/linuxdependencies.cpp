@@ -4,8 +4,8 @@
 
 #include "linuxdependencies.h"
 #include "dbus.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -15,9 +15,11 @@ constexpr const char *WG_QUICK = "wg-quick";
 
 namespace {
 
+Logger logger(LOG_LINUX, "LinuxDependencies");
+
 void showAlert(const QString &message)
 {
-    qDebug() << "Show alert:" << message;
+    logger.log() << "Show alert:" << message;
 
     QMessageBox alert;
     alert.setText(message);
@@ -30,11 +32,11 @@ bool findInPath(const char *what)
     Q_ASSERT(path);
 
     QStringList parts = QString(path).split(":");
-    for (QStringList::ConstIterator i = parts.begin(); i != parts.end(); ++i) {
-        QDir pathDir(*i);
+    for (const QString &part : parts) {
+        QDir pathDir(part);
         QFileInfo file(pathDir.filePath(what));
         if (file.exists()) {
-            qDebug() << what << "found" << file.filePath();
+            logger.log() << what << "found" << file.filePath();
             return true;
         }
     }
@@ -44,7 +46,7 @@ bool findInPath(const char *what)
 
 bool checkDaemonVersion()
 {
-    qDebug() << "Check Daemon Version";
+    logger.log() << "Check Daemon Version";
 
     DBus* dbus = new DBus(nullptr);
     QDBusPendingCallWatcher *watcher = dbus->version();
@@ -58,7 +60,7 @@ bool checkDaemonVersion()
 
                          QDBusPendingReply<QString> reply = *call;
                          if (reply.isError()) {
-                             qDebug() << "DBus message received - error";
+                             logger.log() << "DBus message received - error";
                              *value = false;
                              return;
                          }
@@ -66,8 +68,8 @@ bool checkDaemonVersion()
                          QString version = reply.argumentAt<0>();
                          *value = version == APP_VERSION;
 
-                         qDebug() << "DBus message received - daemon version:" << version
-                                  << " - current version:" << APP_VERSION;
+                         logger.log() << "DBus message received - daemon version:" << version
+                                      << " - current version:" << APP_VERSION;
                      });
 
     while (!completed)  {
@@ -94,7 +96,7 @@ bool LinuxDependencies::checkDependencies()
     }
 
     if (!checkDaemonVersion()) {
-        showAlert("mozillavpn-daemon needs to be updated or restared.");
+        showAlert("mozillavpn-daemon needs to be updated or restarted.");
         return false;
     }
 

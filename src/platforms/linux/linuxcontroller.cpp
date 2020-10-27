@@ -3,20 +3,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxcontroller.h"
-#include "device.h"
 #include "dbus.h"
 #include "errorhandler.h"
-#include "keys.h"
+#include "logger.h"
+#include "models/device.h"
+#include "models/keys.h"
+#include "models/server.h"
 #include "mozillavpn.h"
-#include "server.h"
 
 #include <QDBusPendingCallWatcher>
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QProcess>
 #include <QString>
+
+namespace {
+Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxController");
+}
 
 LinuxController::LinuxController()
 {
@@ -36,13 +40,13 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
                      [this](QDBusPendingCallWatcher *call) {
                          QDBusPendingReply<QString> reply = *call;
                          if (reply.isError()) {
-                             qDebug() << "Error received from the DBus service";
+                             logger.log() << "Error received from the DBus service";
                              emit initialized(false, Controller::StateOff, QDateTime());
                              return;
                          }
 
                          QString status = reply.argumentAt<0>();
-                         qDebug() << "Status:" << status;
+                         logger.log() << "Status:" << status;
 
                          QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
                          Q_ASSERT(json.isObject());
@@ -62,20 +66,19 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
 void LinuxController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
-    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
-    qDebug() << "LinuxController activated";
-    monitorWatcher(m_dbus->activate(server, device, keys));
+    logger.log() << "LinuxController activated";
+    monitorWatcher(m_dbus->activate(server, device, keys, allowedIPAddressRanges));
 }
 
 void LinuxController::deactivate(bool forSwitching)
 {
     Q_UNUSED(forSwitching);
-    qDebug() << "LinuxController deactivated";
+    logger.log() << "LinuxController deactivated";
     monitorWatcher(m_dbus->deactivate());
 }
 
@@ -86,7 +89,7 @@ void LinuxController::monitorWatcher(QDBusPendingCallWatcher *watcher)
                      [this](QDBusPendingCallWatcher *call) {
                          QDBusPendingReply<bool> reply = *call;
                          if (reply.isError()) {
-                             qDebug() << "Error received from the DBus service";
+                             logger.log() << "Error received from the DBus service";
                              MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
                              emit disconnected();
                              return;
@@ -94,12 +97,12 @@ void LinuxController::monitorWatcher(QDBusPendingCallWatcher *watcher)
 
                          bool status = reply.argumentAt<0>();
                          if (status) {
-                             qDebug() << "DBus service says: all good.";
+                             logger.log() << "DBus service says: all good.";
                              // we will receive the connected/disconnected() signal;
                              return;
                          }
 
-                         qDebug() << "DBus service says: error.";
+                         logger.log() << "DBus service says: error.";
                          MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
                          emit disconnected();
                      });
@@ -107,7 +110,7 @@ void LinuxController::monitorWatcher(QDBusPendingCallWatcher *watcher)
 
 void LinuxController::checkStatus()
 {
-    qDebug() << "Check status";
+    logger.log() << "Check status";
 
     QDBusPendingCallWatcher *watcher = m_dbus->status();
     QObject::connect(watcher,
@@ -115,12 +118,12 @@ void LinuxController::checkStatus()
                      [this](QDBusPendingCallWatcher *call) {
                          QDBusPendingReply<QString> reply = *call;
                          if (reply.isError()) {
-                             qDebug() << "Error received from the DBus service";
+                             logger.log() << "Error received from the DBus service";
                              return;
                          }
 
                          QString status = reply.argumentAt<0>();
-                         qDebug() << "Status:" << status;
+                         logger.log() << "Status:" << status;
 
                          QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
                          Q_ASSERT(json.isObject());
@@ -131,7 +134,7 @@ void LinuxController::checkStatus()
                          Q_ASSERT(statusValue.isBool());
 
                          if (!statusValue.toBool()) {
-                             qDebug() << "Unable to retrieve the status from the interface.";
+                             logger.log() << "Unable to retrieve the status from the interface.";
                              return;
                          }
 
@@ -163,7 +166,7 @@ void LinuxController::getBackendLogs(std::function<void(const QString &)> &&a_ca
                      [callback = std::move(callback)](QDBusPendingCallWatcher *call) {
                          QDBusPendingReply<QString> reply = *call;
                          if (reply.isError()) {
-                             qDebug() << "Error received from the DBus service";
+                             logger.log() << "Error received from the DBus service";
                              callback("Failed to retrieve logs from the mozillavpn-daemon.");
                              return;
                          }

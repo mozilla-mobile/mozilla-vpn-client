@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "releasemonitor.h"
+#include "constants.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -10,45 +12,53 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTimer>
-#include <QtDebug>
 
-// Any 6 hours, a new check
-constexpr uint32_t RELEASE_MONITOR_SEC = 21600;
+namespace {
+Logger logger(LOG_MAIN, "ReleaseMonitor");
+}
 
 void ReleaseMonitor::runSoon()
 {
-    qDebug() << "ReleaseManager - Scheduling a quick timer";
+    logger.log() << "ReleaseManager - Scheduling a quick timer";
     QTimer::singleShot(0, [this] { runInternal(); });
 }
 
 void ReleaseMonitor::runInternal()
 {
-    qDebug() << "ReleaseMonitor started";
+    logger.log() << "ReleaseMonitor started";
 
     NetworkRequest *request = NetworkRequest::createForVersions(MozillaVPN::instance());
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-        qDebug() << "Versions request failed" << error;
+        logger.log() << "Versions request failed" << error;
         schedule();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "Account request completed";
-        processData(data);
+        logger.log() << "Account request completed";
+
+        if (!processData(data)) {
+            logger.log() << "Ignore failure.";
+        }
+
         schedule();
     });
 }
 
 void ReleaseMonitor::schedule()
 {
-    qDebug() << "ReleaseMonitor scheduling";
-    QTimer::singleShot(RELEASE_MONITOR_SEC * 1000, [this] { runInternal(); });
+    logger.log() << "ReleaseMonitor scheduling";
+    QTimer::singleShot(Constants::RELEASE_MONITOR_MSEC, [this] { runInternal(); });
 }
 
-void ReleaseMonitor::processData(const QByteArray &data)
+bool ReleaseMonitor::processData(const QByteArray &data)
 {
     QJsonDocument json = QJsonDocument::fromJson(data);
-    Q_ASSERT(json.isObject());
+    if (!json.isObject()) {
+        logger.log() << "A valid JSON object expected";
+        return false;
+    }
+
     QJsonObject obj = json.object();
 
     QString platformKey =
@@ -64,47 +74,62 @@ void ReleaseMonitor::processData(const QByteArray &data)
         ;
 
     if (!obj.contains(platformKey)) {
-        qDebug() << "No key" << platformKey;
-        return;
+        logger.log() << "No key" << platformKey;
+        return false;
     }
 
     QJsonValue platformDataValue = obj.take(platformKey);
-    Q_ASSERT(platformDataValue.isObject());
+    if (!platformDataValue.isObject()) {
+        logger.log() << "Platform object not available";
+        return false;
+    }
+
     QJsonObject platformData = platformDataValue.toObject();
 
-    Q_ASSERT(platformData.contains("latest"));
     QJsonValue latestValue = platformData.take("latest");
-    Q_ASSERT(latestValue.isObject());
+    if (!latestValue.isObject()) {
+        logger.log() << "Platform.latest object not available";
+        return false;
+    }
+
     QJsonObject latestData = latestValue.toObject();
 
-    Q_ASSERT(latestData.contains("version"));
     QJsonValue latestVersionValue = latestData.take("version");
-    Q_ASSERT(latestVersionValue.isString());
+    if (!latestVersionValue.isString()) {
+        logger.log() << "Platform.latest.version string not available";
+        return false;
+    }
 
-    Q_ASSERT(platformData.contains("minimum"));
     QJsonValue minimumValue = platformData.take("minimum");
-    Q_ASSERT(minimumValue.isObject());
+    if (!minimumValue.isObject()) {
+        logger.log() << "Platform.minimum object not available";
+        return false;
+    }
+
     QJsonObject minimumData = minimumValue.toObject();
 
-    Q_ASSERT(minimumData.contains("version"));
     QJsonValue minimumVersionValue = minimumData.take("version");
-    Q_ASSERT(minimumVersionValue.isString());
+    if (!minimumVersionValue.isString()) {
+        logger.log() << "Platform.minimum.version string not available";
+        return false;
+    }
 
     double latestVersion = latestVersionValue.toString().toDouble();
     double minimumVersion = minimumVersionValue.toString().toDouble();
     double currentVersion = QString(APP_VERSION).toDouble();
 
-    qDebug() << "Latest version:" << latestVersion;
-    qDebug() << "Minimum version:" << minimumVersion;
-    qDebug() << "Current version:" << currentVersion;
+    logger.log() << "Latest version:" << latestVersion;
+    logger.log() << "Minimum version:" << minimumVersion;
+    logger.log() << "Current version:" << currentVersion;
 
     if (currentVersion < minimumVersion) {
-        qDebug() << "ReleaseMonitor - update required";
+        logger.log() << "ReleaseMonitor - update required";
         MozillaVPN::instance()->setUpdateRecommended(false);
         MozillaVPN::instance()->controller()->updateRequired();
-        return;
+        return true;
     }
 
-    qDebug() << "Update recommended: " << (currentVersion < latestVersion);
+    logger.log() << "Update recommended: " << (currentVersion < latestVersion);
     MozillaVPN::instance()->setUpdateRecommended(currentVersion < latestVersion);
+    return true;
 }

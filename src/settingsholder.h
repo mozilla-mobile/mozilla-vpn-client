@@ -24,6 +24,7 @@ class SettingsHolder final : public QObject
 
 public:
     SettingsHolder();
+    ~SettingsHolder();
 
     void clear();
 
@@ -49,6 +50,12 @@ public:
     GETSET(QString, hasCurrentServerCountry, currentServerCountry, setCurrentServerCountry)
     GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
     GETSET(QByteArray, hasDevices, devices, setDevices)
+    GETSET(QStringList, hasIapProducts, iapProducts, setIapProducts)
+
+#ifdef IOS_INTEGRATION
+    GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated, setNativeIOSDataMigrated)
+#endif
+
 #undef GETSET
 
 signals:

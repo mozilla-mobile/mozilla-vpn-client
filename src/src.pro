@@ -39,30 +39,31 @@ SOURCES += \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
-        device.cpp \
-        devicemodel.cpp \
         errorhandler.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
-        keys.cpp \
         localizer.cpp \
         logger.cpp \
+        loghandler.cpp \
         main.cpp \
+        models/user.cpp \
+        models/device.cpp \
+        models/devicemodel.cpp \
+        models/keys.cpp \
+        models/server.cpp \
+        models/servercity.cpp \
+        models/servercountry.cpp \
+        models/servercountrymodel.cpp \
+        models/serverdata.cpp \
         mozillavpn.cpp \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/android/androidjniutils.cpp \
         platforms/dummy/dummypingsendworker.cpp \
         releasemonitor.cpp \
-        server.cpp \
-        servercity.cpp \
-        servercountry.cpp \
-        servercountrymodel.cpp \
-        serverdata.cpp \
-        serversfetcher.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
         systemtrayhandler.cpp \
@@ -70,8 +71,7 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        timercontroller.cpp \
-        user.cpp
+        timercontroller.cpp
 
 HEADERS += \
         captiveportal/captiveportal.h \
@@ -81,17 +81,26 @@ HEADERS += \
         captiveportal/captiveportalrequest.h \
         connectiondataholder.h \
         connectionhealth.h \
+        constants.h \
         controller.h \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
-        device.h \
-        devicemodel.h \
         errorhandler.h \
         fontloader.h \
-        keys.h \
+        ipaddressrange.h \
         localizer.h \
         logger.h \
+        loghandler.h \
+        models/device.h \
+        models/devicemodel.h \
+        models/keys.h \
+        models/server.h \
+        models/servercity.h \
+        models/servercountry.h \
+        models/servercountrymodel.h \
+        models/serverdata.h \
+        models/user.h \
         mozillavpn.h \
         networkrequest.h \
         pingsender.h \
@@ -99,12 +108,6 @@ HEADERS += \
         platforms/android/androidjniutils.h \
         platforms/dummy/dummypingsendworker.h \
         releasemonitor.h \
-        server.h \
-        servercity.h \
-        servercountry.h \
-        servercountrymodel.h \
-        serverdata.h \
-        serversfetcher.h \
         settingsholder.h \
         signalhandler.h \
         systemtrayhandler.h \
@@ -114,8 +117,7 @@ HEADERS += \
         tasks/authenticate/taskauthenticate.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
-        timercontroller.h \
-        user.h
+        timercontroller.h
 
 # Platform-specific: Linux
 linux:!android {
@@ -249,11 +251,13 @@ else:macos {
     }
 
     INCLUDEPATH += \
-                ../wireguard-apple/WireGuard/WireGuard/Crypto \
-                ../wireguard-apple/WireGuard/Shared/Model \
+                ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
+                ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
     QMAKE_INFO_PLIST=../macos/app/Info.plist
+    QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
+    QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
 }
 
 # Platform-specific: IOS
@@ -271,14 +275,14 @@ else:ios {
 
     DEFINES += IOS_INTEGRATION
 
-    message(No integration required for this build - let\'s use the dummy controller)
-
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/ios/iaphandler.cpp \
+            platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/ios/iosdatamigration.mm \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
             platforms/macos/macoscryptosettings.mm \
@@ -288,9 +292,11 @@ else:ios {
     HEADERS += \
             platforms/dummy/dummycontroller.h \
             platforms/ios/iaphandler.h \
+            platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \
+            platforms/ios/iosdatamigration.h \
             platforms/ios/iosutils.h \
             platforms/ios/authenticationlistener.h \
             platforms/macos/macoscontroller.h
@@ -319,11 +325,11 @@ exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 }
 else{
-    message( Languages were not imported - using fallback english)
+    message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
-        ../translations/mozillavpn_en.ts \
+        ../translations/mozillavpn_en.ts
 
-    ts.commands += lupdate $$PWD -ts $$PWD/../translations/mozillavpn_en.ts
+    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/mozillavpn_en.ts
     ts.CONFIG += no_check_exist
     ts.output = $$PWD/../translations/mozillavpn_en.ts
     ts.input = .

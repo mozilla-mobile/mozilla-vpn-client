@@ -8,7 +8,7 @@
 #include <string.h>
 
 #ifndef MACOS_EXTENSION
-#include <QDebug>
+#include "logger.h"
 #else
 #import <Foundation/Foundation.h>
 #import <os/log.h>
@@ -178,10 +178,16 @@ EXPORT bool key_from_hex(uint8_t key[WG_KEY_LEN], const char *hex)
 // Logging functions
 // -----------------
 
+#ifndef MACOS_EXTENSION
+namespace {
+Logger logger(LOG_MACOS, "MacOSGlue");
+}
+#endif
+
 EXPORT void write_msg_to_log(const char *tag, const char *msg)
 {
 #ifndef MACOS_EXTENSION
-    qDebug() << "Swift log - tag:" << tag << "msg: " << msg;
+    logger.log() << "Swift log - tag:" << tag << "msg: " << msg;
 #else
     os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);
 

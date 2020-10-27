@@ -7,6 +7,7 @@
 
 #include <QMenu>
 #include <QSystemTrayIcon>
+#include <QTimer>
 
 class MozillaVPN;
 
@@ -22,11 +23,22 @@ public:
 public slots:
     void controllerStateChanged();
 
+private slots:
+    void animateIcon();
+
 signals:
     void quit();
 
 private:
+    void showAnimatedIcon();
+    void showIcon(const QString &icon);
+
+private:
     QMenu m_menu;
+
+    // Animated icon.
+    QTimer m_animatedIconTimer;
+    uint8_t m_animatedIconIndex = 0;
 };
 
 #endif // SYSTEMTRAYHANDLER_H

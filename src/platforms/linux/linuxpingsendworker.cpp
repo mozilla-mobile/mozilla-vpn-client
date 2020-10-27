@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxpingsendworker.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QSocketNotifier>
 
 #include <arpa/inet.h>
@@ -14,13 +14,17 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+namespace {
+Logger logger({LOG_LINUX, LOG_NETWORKING}, "LinuxPingSendWorker");
+}
+
 void LinuxPingSendWorker::sendPing(const QString &destination)
 {
-    qDebug() << "LinuxPingSendWorker - start" << destination;
+    logger.log() << "LinuxPingSendWorker - start" << destination;
 
     struct in_addr dst;
     if (inet_aton(destination.toLocal8Bit().constData(), &dst) == 0) {
-        qDebug() << "Lookup error";
+        logger.log() << "Lookup error";
         emit pingFailed();
         return;
     }
@@ -28,7 +32,7 @@ void LinuxPingSendWorker::sendPing(const QString &destination)
     Q_ASSERT(m_socket == 0);
     m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
     if (m_socket < 0) {
-        qDebug() << "Socket creation error";
+        logger.log() << "Socket creation error";
         emit pingFailed();
         releaseObjects();
         return;
@@ -45,35 +49,29 @@ void LinuxPingSendWorker::sendPing(const QString &destination)
 
     int rc = sendto(m_socket, &packet, sizeof packet, 0, (struct sockaddr *) &addr, sizeof addr);
     if (rc <= 0) {
-        qDebug() << "Sending ping failed";
+        logger.log() << "Sending ping failed";
         emit pingFailed();
         releaseObjects();
         return;
     }
 
-    qDebug() << "Ping sent";
+    logger.log() << "Ping sent";
 
     m_socketNotifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
     connect(m_socketNotifier,
             &QSocketNotifier::activated,
-            [this](
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-                QSocketDescriptor socket, QSocketNotifier::Type
-#else
-                int socket
-#endif
-            ) {
+            [this](QSocketDescriptor socket, QSocketNotifier::Type) {
                 socklen_t slen = 0;
                 unsigned char data[2048];
                 int rc = recvfrom(socket, data, sizeof data, 0, NULL, &slen);
                 if (rc <= 0) {
-                    qDebug() << "Recvfrom failed";
+                    logger.log() << "Recvfrom failed";
                     emit pingFailed();
                     releaseObjects();
                     return;
                 }
 
-                qDebug() << "Ping reply received";
+                logger.log() << "Ping reply received";
                 emit pingSucceeded();
                 releaseObjects();
             });
@@ -81,7 +79,7 @@ void LinuxPingSendWorker::sendPing(const QString &destination)
 
 void LinuxPingSendWorker::stopPing()
 {
-    qDebug() << "LinuxPingSendWorker - stopped";
+    logger.log() << "LinuxPingSendWorker - stopped";
     releaseObjects();
 }
 

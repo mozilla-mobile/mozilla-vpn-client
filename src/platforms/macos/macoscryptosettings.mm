@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "cryptosettings.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QRandomGenerator>
 
 constexpr const NSString* SERVICE = @"Mozilla VPN";
@@ -13,15 +13,17 @@ constexpr const NSString* SERVICE = @"Mozilla VPN";
 
 namespace {
 
-static bool initialized = false;
-static QByteArray key;
+Logger logger({LOG_MACOS, LOG_MAIN}, "MacOSCryptoSettings");
+
+bool initialized = false;
+QByteArray key;
 
 } // anonymous
 
 // static
 void CryptoSettings::resetKey()
 {
-    qDebug() << "Retrieving the key from the keychain";
+    logger.log() << "Reset the key in the keychain";
 
     NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -44,11 +46,11 @@ void CryptoSettings::resetKey()
 // static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 {
-#ifdef MACOS_INTEGRATION
+#if defined(IOS_INTEGRATION) or defined(MACOS_INTEGRATION)
     if (!initialized) {
         initialized = true;
 
-        qDebug() << "Retriving the key from the keychain";
+        logger.log() << "Retriving the key from the keychain";
 
         NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -70,14 +72,14 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
         if (status == noErr) {
             key = QByteArray::fromNSData(keyData);
 
-            qDebug() << "Key found with length:" << key.length();
+            logger.log() << "Key found with length:" << key.length();
             if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
                 memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
                 return true;
             }
         }
 
-        qDebug() << "Key not found. Let's create it. Error:" << status;
+        logger.log() << "Key not found. Let's create it. Error:" << status;
         key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
         QRandomGenerator* rg = QRandomGenerator::system();
         for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
@@ -99,7 +101,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
         status = SecItemAdd((CFDictionaryRef) query, NULL);
 
         if (status != noErr) {
-            qDebug() << "Failed to store the key. Error:" << status;
+            logger.log() << "Failed to store the key. Error:" << status;
             key = QByteArray();
         }
 
@@ -111,7 +113,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
         return true;
     }
 
-    qDebug() << "Invalid key";
+    logger.log() << "Invalid key";
 #else
     Q_UNUSED(output);
 #endif
@@ -122,16 +124,16 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
 // static
 CryptoSettings::Version CryptoSettings::getSupportedVersion()
 {
-    qDebug() << "Get supported settings method";
+    logger.log() << "Get supported settings method";
 
-#ifdef MACOS_INTEGRATION
+#if defined(IOS_INTEGRATION) or defined(MACOS_INTEGRATION)
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (getKey(key)) {
-        qDebug() << "Encryption supported!";
+        logger.log() << "Encryption supported!";
         return CryptoSettings::EncryptionChachaPolyV1;
     }
 #endif
 
-    qDebug() << "No encryption";
+    logger.log() << "No encryption";
     return CryptoSettings::NoEncryption;
 }

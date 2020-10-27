@@ -4,8 +4,8 @@
 
 #include "settingsholder.h"
 #include "cryptosettings.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QSettings>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
@@ -31,6 +31,15 @@ constexpr const char *SETTINGS_USER_SUBSCRIPTIONNEEDED = "user/subscriptionNeede
 constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
+constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
+
+#ifdef IOS_INTEGRATION
+constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
+#endif
+
+namespace {
+Logger logger(LOG_MAIN, "SettingsHolder");
+}
 
 const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::readFile,
@@ -38,9 +47,11 @@ const QSettings::Format MozFormat = QSettings::registerFormat("moz",
 
 SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
 
+SettingsHolder::~SettingsHolder() = default;
+
 void SettingsHolder::clear()
 {
-    qDebug() << "Clean up the settings";
+    logger.log() << "Clean up the settings";
 
     m_settings.remove(SETTINGS_TOKEN);
     m_settings.remove(SETTINGS_SERVERS);
@@ -53,6 +64,7 @@ void SettingsHolder::clear()
     m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
     m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
     m_settings.remove(SETTINGS_DEVICES);
+    m_settings.remove(SETTINGS_IAPPRODUCTS);
 
     // We do not remove language, ipv6 and localnetwork settings.
 }
@@ -68,7 +80,7 @@ void SettingsHolder::clear()
     } \
     void SettingsHolder::set(const type &value) \
     { \
-        qDebug() << "Setting" << key << "to" << value; \
+        logger.log() << "Setting" << key << "to" << value; \
         m_settings.setValue(key, value); \
         emit signal(value); \
     }
@@ -133,7 +145,7 @@ GETSETDEFAULT(QString(),
     } \
     void SettingsHolder::set(const type &value) \
     { \
-        qDebug() << "Setting" << key; \
+        logger.log() << "Setting" << key; \
         m_settings.setValue(key, value); \
     }
 
@@ -168,5 +180,15 @@ GETSET(QString,
        currentServerCity,
        setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
+GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts, iapProducts, setIapProducts)
+
+#ifdef IOS_INTEGRATION
+GETSET(bool,
+       toBool,
+       SETTINGS_NATIVEIOSDATAMIGRATED,
+       hasNativeIOSDataMigrated,
+       nativeIOSDataMigrated,
+       setNativeIOSDataMigrated)
+#endif
 
 #undef GETSET

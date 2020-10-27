@@ -3,10 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportallookup.h"
+#include "logger.h"
 
 #include <QDnsLookup>
 #include <QHostAddress>
-#include <QtDebug>
+
+namespace {
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
+}
 
 CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)
 {
@@ -15,14 +19,14 @@ CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)
 
 void CaptivePortalLookup::start()
 {
-    qDebug() << "Captive portal lookup started";
+    logger.log() << "Captive portal lookup started";
     start(CAPTIVEPORTAL_HOST);
     m_timer.start(CAPTIVEPORTAL_LOOKUPTIMER);
 }
 
 void CaptivePortalLookup::start(const QString &host)
 {
-    qDebug() << "Captive portal lookup started:" << host << "lookups:" << m_lookups;
+    logger.log() << "Captive portal lookup started:" << host << "lookups:" << m_lookups;
 
     // We have been aborted!
     if (m_lookups == -1) {
@@ -42,7 +46,7 @@ void CaptivePortalLookup::start(const QString &host)
 
 void CaptivePortalLookup::lookupCompleted(QDnsLookup *dnsLookup)
 {
-    qDebug() << "Captive portal lookup completed - lookups:" << m_lookups;
+    logger.log() << "Captive portal lookup completed - lookups:" << m_lookups;
 
     // We have been aborted!
     if (m_lookups == -1) {
@@ -54,7 +58,7 @@ void CaptivePortalLookup::lookupCompleted(QDnsLookup *dnsLookup)
 
     // Check the lookup succeeded.
     if (dnsLookup->error() != QDnsLookup::NoError) {
-        qDebug() << "DNS lookup failed";
+        logger.log() << "DNS lookup failed";
         dnsLookup->deleteLater();
         maybeComplete();
         return;
@@ -63,7 +67,7 @@ void CaptivePortalLookup::lookupCompleted(QDnsLookup *dnsLookup)
     // CNAME
     {
         const QList<QDnsDomainNameRecord> records = dnsLookup->canonicalNameRecords();
-        qDebug() << "Found CNAMEs:" << records.length();
+        logger.log() << "Found CNAMEs:" << records.length();
         for (const QDnsDomainNameRecord &record : records) {
             start(record.value());
         }
@@ -72,7 +76,7 @@ void CaptivePortalLookup::lookupCompleted(QDnsLookup *dnsLookup)
     // A
     {
         const QList<QDnsHostAddressRecord> records = dnsLookup->hostAddressRecords();
-        qDebug() << "Found As:" << records.length();
+        logger.log() << "Found As:" << records.length();
         for (const QDnsHostAddressRecord &record : records) {
             const QHostAddress &address = record.value();
             if (address.isBroadcast() || address.isLinkLocal() || address.isLoopback()
@@ -108,7 +112,7 @@ void CaptivePortalLookup::maybeComplete()
 
 void CaptivePortalLookup::abort()
 {
-    qDebug() << "Too much! Let's abort the lookup.";
+    logger.log() << "Too much! Let's abort the lookup.";
 
     m_lookups = -1;
     maybeComplete();

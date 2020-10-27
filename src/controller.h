@@ -5,16 +5,19 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "server.h"
+#include "models/server.h"
 
 #include <QDateTime>
+#include <QList>
 #include <QObject>
 #include <QTimer>
 
 #include <functional>
 
+class CaptivePortal;
 class ControllerImpl;
 class MozillaVPN;
+class IPAddressRange;
 
 class Controller final : public QObject
 {
@@ -97,6 +100,8 @@ private:
     void setState(State state);
 
     bool processNextStep();
+
+    QList<IPAddressRange> getAllowedIPAddressRanges(const CaptivePortal &captivePortal);
 
 private:
     State m_state = StateInitializing;

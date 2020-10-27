@@ -3,8 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "timercontroller.h"
+#include "logger.h"
 
-#include <QDebug>
+namespace {
+Logger logger(LOG_CONTROLLER, "TimerController");
+}
 
 TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
 {
@@ -33,7 +36,7 @@ void TimerController::initialize(const Device *device, const Keys *keys)
 void TimerController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
     Q_ASSERT(m_state == None);
@@ -44,7 +47,7 @@ void TimerController::activate(const Server &server,
         m_timer.start(TIME_ACTIVATION);
     }
 
-    m_impl->activate(server, device, keys, captivePortal, forSwitching);
+    m_impl->activate(server, device, keys, allowedIPAddressRanges, forSwitching);
 }
 
 void TimerController::deactivate(bool forSwitching)
@@ -60,7 +63,7 @@ void TimerController::deactivate(bool forSwitching)
 
 void TimerController::timeout()
 {
-    qDebug() << "TimerController - Timeout:" << m_state;
+    logger.log() << "TimerController - Timeout:" << m_state;
 
     Q_ASSERT(m_state != None);
 
@@ -81,7 +84,7 @@ void TimerController::timeout()
 
 void TimerController::maybeDone(bool isConnected)
 {
-    qDebug() << "TimerController - Operation completed:" << m_state << isConnected;
+    logger.log() << "TimerController - Operation completed:" << m_state << isConnected;
 
     if (m_state == Connecting) {
         if (m_timer.isActive()) {

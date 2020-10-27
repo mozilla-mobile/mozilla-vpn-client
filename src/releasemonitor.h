@@ -7,8 +7,6 @@
 
 #include <QObject>
 
-class MozillaVPN;
-
 class ReleaseMonitor final : public QObject
 {
     Q_OBJECT
@@ -21,7 +19,7 @@ private:
 
     void schedule();
 
-    void processData(const QByteArray &data);
+    [[nodiscard]] bool processData(const QByteArray &data);
 };
 
 #endif // RELEASEMONITOR_H

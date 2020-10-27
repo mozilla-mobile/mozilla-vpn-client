@@ -4,19 +4,23 @@
 
 #include "captiveportalactivator.h"
 #include "captiveportalrequest.h"
+#include "logger.h"
 #include "mozillavpn.h"
 
-#include <QDebug>
 #include <QTimer>
 
 // Let's try to detect the captive portal any X secs.
 constexpr int CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC = 2000;
 
+namespace {
+Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalActivator");
+}
+
 CaptivePortalActivator::CaptivePortalActivator(QObject *parent) : QObject(parent) {}
 
 void CaptivePortalActivator::run()
 {
-    qDebug() << "Captive Portal Activator";
+    logger.log() << "Captive Portal Activator";
     QTimer::singleShot(CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC,
                        this,
                        &CaptivePortalActivator::checkStatus);
@@ -32,7 +36,7 @@ void CaptivePortalActivator::checkStatus()
 
     CaptivePortalRequest *request = new CaptivePortalRequest(this);
     connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-        qDebug() << "Captive portal detection:" << detected;
+        logger.log() << "Captive portal detection:" << detected;
 
         // We have changed state.
         if (MozillaVPN::instance()->controller()->state() != Controller::StateCaptivePortal) {

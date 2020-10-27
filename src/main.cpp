@@ -5,6 +5,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "fontloader.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
 #include "systemtrayhandler.h"
@@ -24,10 +25,24 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
+#ifdef QT_DEBUG
+#include <QLoggingCategory>
+#endif
+
+namespace {
+Logger logger(LOG_MAIN, "main");
+}
+
 int main(int argc, char *argv[])
 {
     // Our logging system.
-    qInstallMessageHandler(Logger::messageHandler);
+    qInstallMessageHandler(LogHandler::messageQTHandler);
+
+#ifdef QT_DEBUG
+    QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.binding.removal.info=true"));
+#endif
+
+    logger.log() << "MozillaVPN" << APP_VERSION;
 
     // The application.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -36,25 +51,26 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    QIcon icon("://resources/logo.png");
+    QIcon icon("://ui/resources/logo-dock.png");
+
     app.setWindowIcon(icon);
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
-        qtTrId("productDescription"));
+        qtTrId("vpn.main.productDescription"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     QCommandLineOption minimizedOption(QStringList() << "m"
                                                      << "minimized",
                                         //% "Start minimized"
-                                        qtTrId("startMinimized"));
+                                        qtTrId("vpn.main.startMinimized"));
     parser.addOption(minimizedOption);
 
     QCommandLineOption startAtBootOption(QStringList() << "s"
                                                        << "start-at-boot",
                                         //% "Start at boot (if configured)"
-                                        qtTrId("startOnBoot"));
+                                        qtTrId("vpn.main.startOnBoot"));
     parser.addOption(startAtBootOption);
 
     parser.process(app);
@@ -65,16 +81,19 @@ int main(int argc, char *argv[])
         MozillaVPN::instance()->controller()->quit();
     });
 
+    // Font loader
+    FontLoader::loadFonts();
+
     // Create the QML engine and expose a few internal objects.
     QQmlApplicationEngine engine;
 
     MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
 
     if (parser.isSet(startAtBootOption)) {
-        qDebug() << "Maybe start at boot";
+        logger.log() << "Maybe start at boot";
 
         if (!MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
-            qDebug() << "We don't need to start at boot.";
+            logger.log() << "We don't need to start at boot.";
             return 0;
         }
     }
@@ -94,8 +113,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 #endif
-
-    FontLoader::loadFonts();
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {
@@ -170,7 +187,7 @@ int main(int argc, char *argv[])
     QObject::connect(MozillaVPN::instance()->settingsHolder(),
                      &SettingsHolder::languageCodeChanged,
                      [engine = &engine](const QString &languageCode) {
-                         qDebug() << "Storing the languageCode:" << languageCode;
+                         logger.log() << "Storing the languageCode:" << languageCode;
                          MozillaVPN::instance()->localizer()->loadLanguage(languageCode);
                          engine->retranslate();
                      });
@@ -182,7 +199,7 @@ int main(int argc, char *argv[])
                      Qt::QueuedConnection);
 
     // Here is the main QML file.
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,
@@ -196,7 +213,9 @@ int main(int argc, char *argv[])
     engine.load(url);
 
     // System tray icon and messages.
-    SystemTrayHandler systemTrayHandler(icon, &app);
+    QIcon trayIcon("://ui/resources/logo-tray.svg");
+    trayIcon.setIsMask(true);
+    SystemTrayHandler systemTrayHandler(trayIcon, &app);
     systemTrayHandler.show();
 
     QObject::connect(&systemTrayHandler, &QSystemTrayIcon::activated, [engine = &engine]() {

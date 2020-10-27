@@ -23,6 +23,9 @@ signals:
     void failed();
 
 private:
+    void purchaseCompleted(const QString& orderId);
+
+private:
     QInAppStore* m_appStore = nullptr;
 };
 

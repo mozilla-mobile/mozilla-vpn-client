@@ -3,12 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wgquickprocess.h"
+#include "../../src/logger.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QProcess>
 
 constexpr const char *WG_QUICK = "wg-quick";
+
+namespace {
+Logger logger(LOG_LINUX, "WgQuickProcess");
+}
 
 WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {}
 
@@ -20,36 +24,36 @@ void WgQuickProcess::run(const QString &privateKey,
                          const QString &serverPublicKey,
                          const QString &serverIpv4AddrIn,
                          const QString &serverIpv6AddrIn,
+                         const QString &allowedIPAddressRanges,
                          int serverPort,
-                         bool ipv6Enabled,
-                         bool localNetworkAccess)
+                         bool ipv6Enabled)
 {
     Q_UNUSED(serverIpv6AddrIn);
 
     QByteArray content;
     content.append("[Interface]\nPrivateKey = ");
-    content.append(privateKey);
+    content.append(privateKey.toUtf8());
     content.append("\nAddress = ");
-    content.append(deviceIpv4Address);
+    content.append(deviceIpv4Address.toUtf8());
 
     if (ipv6Enabled) {
         content.append(", ");
-        content.append(deviceIpv6Address);
+        content.append(deviceIpv6Address.toUtf8());
     }
 
     content.append("\nDNS = ");
-    content.append(serverIpv4Gateway);
+    content.append(serverIpv4Gateway.toUtf8());
 
     if (ipv6Enabled) {
         content.append(", ");
-        content.append(serverIpv6Gateway);
+        content.append(serverIpv6Gateway.toUtf8());
     }
 
     content.append("\n\n[Peer]\nPublicKey = ");
-    content.append(serverPublicKey);
+    content.append(serverPublicKey.toUtf8());
     content.append("\nEndpoint = ");
-    content.append(serverIpv4AddrIn);
-    content.append(QString(":%1").arg(serverPort));
+    content.append(serverIpv4AddrIn.toUtf8());
+    content.append(QString(":%1").arg(serverPort).toUtf8());
 
     /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
      * to be happy if there are 2 endpoints.
@@ -60,21 +64,7 @@ void WgQuickProcess::run(const QString &privateKey,
     }
     */
 
-    content.append("\nAllowedIPs = 0.0.0.0/0");
-
-    if (ipv6Enabled) {
-        content.append(",::0");
-    }
-
-    if (localNetworkAccess) {
-        content.append(",128.0.0.1/1");
-
-        if (ipv6Enabled) {
-            content.append(",8000::/1");
-        }
-    }
-
-    content.append("\n");
+    content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
     if (!tmpDir.isValid()) {
         qWarning("Cannot create a temporary directory");
@@ -106,7 +96,7 @@ void WgQuickProcess::run(const QString &privateKey,
     QProcess *wgQuickProcess = new QProcess(this);
 
     connect(wgQuickProcess, &QProcess::errorOccurred, [this](QProcess::ProcessError error) {
-        qDebug() << "Error occurred" << error;
+        logger.log() << "Error occurred" << error;
         deleteLater();
         emit failed();
     });
@@ -114,12 +104,12 @@ void WgQuickProcess::run(const QString &privateKey,
     connect(wgQuickProcess,
             QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
-                qDebug() << "Execution finished" << exitCode;
+                logger.log() << "Execution finished" << exitCode;
 
-                qWarning("wg-quick stdout:\n%ls\n",
-                         qUtf16Printable(wgQuickProcess->readAllStandardOutput()));
-                qWarning("wg-quick stderr:\n%ls\n",
-                         qUtf16Printable(wgQuickProcess->readAllStandardError()));
+                logger.log() << "wg-quick stdout:" << Qt::endl
+                             << qUtf8Printable(wgQuickProcess->readAllStandardOutput()) << Qt::endl;
+                logger.log() << "wg-quick stderr:" << Qt::endl
+                             << qUtf8Printable(wgQuickProcess->readAllStandardError()) << Qt::endl;
 
                 deleteLater();
 

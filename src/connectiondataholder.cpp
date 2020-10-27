@@ -3,25 +3,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectiondataholder.h"
+#include "constants.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QSplineSeries>
 #include <QValueAxis>
 
-constexpr int MAX_POINTS = 30;
+namespace {
+Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
+}
 
-// Let's refresh the IP address any 10 seconds.
-constexpr int IPADDRESS_TIMER_MSEC = 10000;
-
-// Let's check the connection status any second.
-constexpr int CHECKSTATUS_TIMER_MSEC = 1000;
 //% "Unknown"
-ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("unknown"))
+//: Context - "The current ip-address is: unknown"
+ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectionInfo.unknown"))
 {
     emit ipAddressChanged();
 
@@ -38,7 +37,7 @@ ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("unknown"))
 
 void ConnectionDataHolder::enable()
 {
-    m_ipAddressTimer.start(IPADDRESS_TIMER_MSEC);
+    m_ipAddressTimer.start(Constants::IPADDRESS_TIMER_MSEC);
 }
 
 void ConnectionDataHolder::disable()
@@ -48,7 +47,7 @@ void ConnectionDataHolder::disable()
 
 void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
 {
-    qDebug() << "New connection data:" << txBytes << rxBytes;
+    logger.log() << "New connection data:" << txBytes << rxBytes;
 
     Q_ASSERT(!!m_txSeries == !!m_rxSeries);
 
@@ -56,8 +55,8 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
         return;
     }
 
-    Q_ASSERT(m_txSeries->count() == MAX_POINTS);
-    Q_ASSERT(m_rxSeries->count() == MAX_POINTS);
+    Q_ASSERT(m_txSeries->count() == Constants::CHARTS_MAX_POINTS);
+    Q_ASSERT(m_rxSeries->count() == Constants::CHARTS_MAX_POINTS);
 
     // This is the first time we receive data. We need at least 2 calls in order to count the delta.
     if (m_initialized == false) {
@@ -76,14 +75,14 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes)
     m_rxBytes = tmpRxBytes;
 
     m_maxBytes = std::max(m_maxBytes, std::max(txBytes, rxBytes));
-    m_data.append(QPair(txBytes, rxBytes));
+    m_data.append(QPair<uint64_t, uint64_t>(txBytes, rxBytes));
 
-    while (m_data.length() > MAX_POINTS) {
+    while (m_data.length() > Constants::CHARTS_MAX_POINTS) {
         m_data.removeAt(0);
     }
 
     int i = 0;
-    for (; i < MAX_POINTS - m_data.length(); ++i) {
+    for (; i < Constants::CHARTS_MAX_POINTS - m_data.length(); ++i) {
         m_txSeries->replace(i, i, 0);
         m_rxSeries->replace(i, i, 0);
     }
@@ -103,7 +102,7 @@ void ConnectionDataHolder::activate(const QVariant &a_txSeries,
                                     const QVariant &a_axisX,
                                     const QVariant &a_axisY)
 {
-    qDebug() << "Activated";
+    logger.log() << "Activated";
 
     QtCharts::QSplineSeries *txSeries = qobject_cast<QtCharts::QSplineSeries *>(
         a_txSeries.value<QObject *>());
@@ -136,17 +135,17 @@ void ConnectionDataHolder::activate(const QVariant &a_txSeries,
     }
 
     // Let's be sure we have all the x/y points.
-    while (m_txSeries->count() < MAX_POINTS) {
+    while (m_txSeries->count() < Constants::CHARTS_MAX_POINTS) {
         m_txSeries->append(m_txSeries->count(), 0);
         m_rxSeries->append(m_rxSeries->count(), 0);
     }
 
-    m_checkStatusTimer.start(CHECKSTATUS_TIMER_MSEC);
+    m_checkStatusTimer.start(Constants::CHECKSTATUS_TIMER_MSEC);
 }
 
 void ConnectionDataHolder::deactivate()
 {
-    qDebug() << "Deactivated";
+    logger.log() << "Deactivated";
 
     reset();
     m_axisX = nullptr;
@@ -168,7 +167,7 @@ void ConnectionDataHolder::computeAxes()
 
 void ConnectionDataHolder::reset()
 {
-    qDebug() << "Resetting the data";
+    logger.log() << "Resetting the data";
 
     m_initialized = false;
     m_txBytes = 0;
@@ -179,10 +178,10 @@ void ConnectionDataHolder::reset()
     emit bytesChanged();
 
     if (m_txSeries) {
-        Q_ASSERT(m_txSeries->count() == MAX_POINTS);
-        Q_ASSERT(m_rxSeries->count() == MAX_POINTS);
+        Q_ASSERT(m_txSeries->count() == Constants::CHARTS_MAX_POINTS);
+        Q_ASSERT(m_rxSeries->count() == Constants::CHARTS_MAX_POINTS);
 
-        for (int i = 0; i < MAX_POINTS; ++i) {
+        for (int i = 0; i < Constants::CHARTS_MAX_POINTS; ++i) {
             m_txSeries->replace(i, i, 0);
             m_rxSeries->replace(i, i, 0);
         }
@@ -193,23 +192,34 @@ void ConnectionDataHolder::reset()
 
 void ConnectionDataHolder::updateIpAddress()
 {
-    qDebug() << "Updating IP address";
+    logger.log() << "Updating IP address";
+
+    if (m_updatingIpAddress) {
+        return;
+    }
+    m_updatingIpAddress = true;
 
     NetworkRequest *request = NetworkRequest::createForIpInfo(MozillaVPN::instance());
-    connect(request, &NetworkRequest::requestFailed, [](QNetworkReply::NetworkError error) {
-        qDebug() << "IP address request failed" << error;
+    connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
+        logger.log() << "IP address request failed" << error;
+        m_updatingIpAddress = false;
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        qDebug() << "IP address request completed";
+        logger.log() << "IP address request completed";
+        m_updatingIpAddress = false;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
-        Q_ASSERT(json.isObject());
+        if (!json.isObject()) {
+            return;
+        }
+
         QJsonObject obj = json.object();
 
-        Q_ASSERT(obj.contains("ip"));
         QJsonValue value = obj.take("ip");
-        Q_ASSERT(value.isString());
+        if (!value.isString()) {
+            return;
+        }
 
         m_ipAddress = value.toString();
         emit ipAddressChanged();
@@ -229,9 +239,8 @@ quint64 ConnectionDataHolder::rxBytes() const
 quint64 ConnectionDataHolder::bytes(bool index) const
 {
     uint64_t value = 0;
-    for (QVector<QPair<uint64_t, uint64_t>>::ConstIterator i = m_data.begin(); i != m_data.end();
-         ++i) {
-        value = std::max(value, (!index ? i->first : i->second));
+    for (const QPair<uint64_t, uint64_t> &pair : m_data) {
+        value = std::max(value, (!index ? pair.first : pair.second));
     }
 
     return value;

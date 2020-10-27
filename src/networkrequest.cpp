@@ -4,9 +4,9 @@
 
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
+#include "logger.h"
 #include "mozillavpn.h"
 
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
@@ -14,9 +14,13 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+namespace {
+Logger logger(LOG_NETWORKING, "NetworkRequest");
+}
+
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
-    qDebug() << "Network request created";
+    logger.log() << "Network request created";
 
     QByteArray userAgent;
     userAgent.append("MozillaVPN/" APP_VERSION " (");
@@ -55,9 +59,7 @@ NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *
     json.setObject(obj);
 
     Q_ASSERT(r->m_manager);
-    qDebug() << "Network starting: " << json;
-
-    r->m_manager->post(r->m_request, json.toJson());
+    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
 
     return r;
 }
@@ -88,9 +90,7 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
     json.setObject(obj);
 
     Q_ASSERT(r->m_manager);
-    qDebug() << "Network starting: " << json;
-
-    r->m_manager->post(r->m_request, json.toJson());
+    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
 
     return r;
 }
@@ -113,7 +113,7 @@ NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QS
     QUrl u(url);
     Q_ASSERT(r->m_manager);
     r->m_request.setUrl(QUrl(url));
-    qDebug() << "Network starting" << r->m_request.url();
+    logger.log() << "Network starting" << r->m_request.url().toString();
 
     r->m_manager->sendCustomRequest(r->m_request, "DELETE");
 
@@ -205,15 +205,61 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
     return r;
 }
 
+#ifdef IOS_INTEGRATION
+NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN *vpn)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token().toLocal8Bit());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/products/ios");
+    r->m_request.setUrl(url);
+
+    r->m_manager->get(r->m_request);
+
+    return r;
+}
+
+NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn, const QString &orderId)
+{
+    Q_ASSERT(vpn);
+
+    NetworkRequest *r = new NetworkRequest(vpn);
+
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(vpn->token().toLocal8Bit());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(vpn->getApiUrl());
+    url.setPath("/api/v1/vpn/purchases/ios");
+    r->m_request.setUrl(url);
+
+    QJsonObject obj;
+    obj.insert("receipt", QJsonValue(orderId));
+
+    QJsonDocument json;
+    json.setObject(obj);
+
+    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
+
+    return r;
+}
+#endif
+
 void NetworkRequest::replyFinished(QNetworkReply *reply)
 {
     Q_ASSERT(reply);
     Q_ASSERT(reply->isFinished());
 
-    qDebug() << "Network reply received: " << reply;
+    logger.log() << "Network reply received";
 
     if (reply->error() != QNetworkReply::NoError) {
-        qDebug() << "Network error: " << reply->error() << "body: " << reply->readAll();
+        logger.log() << "Network error: " << reply->error() << "body: " << reply->readAll();
         emit requestFailed(reply->error());
         return;
     }

@@ -41,6 +41,13 @@ public:
 
     static NetworkRequest *createForCaptivePortalDetection(QObject *parent);
 
+#ifdef IOS_INTEGRATION
+    static NetworkRequest *createForIOSProducts(MozillaVPN *vpn);
+
+    static NetworkRequest *createForIOSPurchase(MozillaVPN *vpn,
+                                                const QString& orderId);
+#endif
+
 private:
     NetworkRequest(QObject *parent);
 

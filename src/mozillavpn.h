@@ -9,15 +9,15 @@
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
-#include "devicemodel.h"
 #include "errorhandler.h"
-#include "keys.h"
 #include "localizer.h"
+#include "models/devicemodel.h"
+#include "models/keys.h"
+#include "models/servercountrymodel.h"
+#include "models/serverdata.h"
+#include "models/user.h"
 #include "releasemonitor.h"
-#include "servercountrymodel.h"
-#include "serverdata.h"
 #include "settingsholder.h"
-#include "user.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -98,17 +98,20 @@ public:
     QQmlApplicationEngine *engine() { return m_engine; }
 
     // Internal object getters:
-    CaptivePortalDetection *captivePortalDetection() { return &m_captivePortalDetection; }
-    ConnectionDataHolder *connectionDataHolder() { return &m_connectionDataHolder; }
-    ConnectionHealth *connectionHealth() { return &m_connectionHealth; }
-    Controller *controller() { return &m_controller; }
-    ServerData *currentServer() { return &m_serverData; }
-    DeviceModel *deviceModel() { return &m_deviceModel; }
-    const Keys *keys() const { return &m_keys; }
-    Localizer* localizer() { return &m_localizer; }
-    ServerCountryModel *serverCountryModel() { return &m_serverCountryModel; }
-    SettingsHolder *settingsHolder() { return &m_settingsHolder; }
-    User *user() { return &m_user; }
+    CaptivePortalDetection *captivePortalDetection()
+    {
+        return &m_private->m_captivePortalDetection;
+    }
+    ConnectionDataHolder *connectionDataHolder() { return &m_private->m_connectionDataHolder; }
+    ConnectionHealth *connectionHealth() { return &m_private->m_connectionHealth; }
+    Controller *controller() { return &m_private->m_controller; }
+    ServerData *currentServer() { return &m_private->m_serverData; }
+    DeviceModel *deviceModel() { return &m_private->m_deviceModel; }
+    const Keys *keys() const { return &m_private->m_keys; }
+    Localizer *localizer() { return &m_private->m_localizer; }
+    ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
+    SettingsHolder *settingsHolder() { return &m_private->m_settingsHolder; }
+    User *user() { return &m_private->m_user; }
 
     // Called at the end of the authentication flow. We can continue adding the device
     // if it doesn't exist yet, or we can go to OFF state.
@@ -140,6 +143,10 @@ public:
 
     bool startMinimized() const { return m_startMinimized; }
 
+    void setToken(const QString &token);
+
+    [[nodiscard]] bool setServerList(const QByteArray& serverData);
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();
@@ -166,6 +173,8 @@ private:
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
 
+    bool modelsInitialized() const;
+
 signals:
     void stateChanged();
     void alertChanged();
@@ -178,18 +187,23 @@ private:
     QQmlApplicationEngine *m_engine = nullptr;
 
     // Internal objects.
-    CaptivePortalDetection m_captivePortalDetection;
-    ConnectionDataHolder m_connectionDataHolder;
-    ConnectionHealth m_connectionHealth;
-    Controller m_controller;
-    DeviceModel m_deviceModel;
-    Keys m_keys;
-    Localizer m_localizer;
-    ReleaseMonitor m_releaseMonitor;
-    ServerCountryModel m_serverCountryModel;
-    ServerData m_serverData;
-    SettingsHolder m_settingsHolder;
-    User m_user;
+    struct Private
+    {
+        CaptivePortalDetection m_captivePortalDetection;
+        ConnectionDataHolder m_connectionDataHolder;
+        ConnectionHealth m_connectionHealth;
+        Controller m_controller;
+        DeviceModel m_deviceModel;
+        Keys m_keys;
+        Localizer m_localizer;
+        ReleaseMonitor m_releaseMonitor;
+        ServerCountryModel m_serverCountryModel;
+        ServerData m_serverData;
+        SettingsHolder m_settingsHolder;
+        User m_user;
+    };
+
+    Private *m_private = nullptr;
 
     // Task handling.
     QList<QPointer<Task>> m_tasks;

@@ -3,11 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosutils.h"
-
-#include <QDebug>
+#include "logger.h"
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
+
+namespace {
+Logger logger(LOG_MACOS, "MacOSUtils");
+}
 
 // static
 QString MacOSUtils::computerName()
@@ -19,7 +22,7 @@ QString MacOSUtils::computerName()
 // static
 void MacOSUtils::enableLoginItem(bool startAtBoot)
 {
-    qDebug() << "Enabling login-item";
+    logger.log() << "Enabling login-item";
     Boolean ok = SMLoginItemSetEnabled(CFSTR("org.mozilla.macos.FirefoxVPN.login-item"), startAtBoot ? YES : NO);
-    qDebug() << "Result: " << ok;
+    logger.log() << "Result: " << ok;
 }

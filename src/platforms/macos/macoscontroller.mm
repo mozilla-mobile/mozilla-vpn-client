@@ -3,24 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macoscontroller.h"
-#include "captiveportal.h"
+#include "Mozilla_VPN-Swift.h"
+#include "captiveportal/captiveportal.h"
+#include "device.h"
+#include "keys.h"
+#include "ipaddressrange.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
-#include "keys.h"
-#include "device.h"
-#include "Mozilla_VPN-Swift.h"
 
 #include <QByteArray>
-#include <QDebug>
 #include <QFile>
 
+namespace {
+
+Logger logger({LOG_MACOS, LOG_CONTROLLER}, "MacOSController");
+
 // Our Swift singleton.
-static MacOSControllerImpl *impl = nullptr;
+MacOSControllerImpl *impl = nullptr;
+
+} // namespace
 
 void MacOSController::initialize(const Device *device, const Keys *keys) {
     Q_ASSERT(!impl);
 
-    qDebug() << "Initializing Swift Controller";
+    logger.log() << "Initializing Swift Controller";
 
     static bool creating = false;
     // No nested creation!
@@ -34,7 +41,7 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
         ipv6Address:device->ipv6Address().toNSString()
         ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
         closure:^(ConnectionState state, NSDate *date) {
-            qDebug() << "Creation completed with connection state:" << state;
+            logger.log() << "Creation completed with connection state:" << state;
             creating = false;
 
             switch (state) {
@@ -56,7 +63,7 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
             }
         }
         callback:^(BOOL a_connected) {
-            qDebug() << "State changed: " << a_connected;
+            logger.log() << "State changed: " << a_connected;
             if (a_connected) {
                 emit connected();
                 return;
@@ -69,50 +76,45 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
 void MacOSController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
     Q_UNUSED(device);
     Q_UNUSED(keys);
-    Q_UNUSED(captivePortal);
     Q_UNUSED(forSwitching);
 
-    qDebug() << "MacOSController activating" << server.hostname();
+    logger.log() << "MacOSController activating" << server.hostname();
 
     Q_ASSERT(impl);
 
-    const QStringList& captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
-    NSMutableArray<NSString *> *captivePortalIpv4AddressesNS = [NSMutableArray<NSString *> arrayWithCapacity:captivePortalIpv4Addresses.length()];
-    for (const QString &ip : captivePortalIpv4Addresses) {
-        [captivePortalIpv4AddressesNS addObject:ip.toNSString()];
+    NSMutableArray<VPNIPAddressRange *> *allowedIPAddressRangesNS = [NSMutableArray<VPNIPAddressRange *> arrayWithCapacity: allowedIPAddressRanges.length()];
+    for (const IPAddressRange &i : allowedIPAddressRanges) {
+        VPNIPAddressRange *range = [[VPNIPAddressRange alloc]
+                initWithAddress:i.ipAddress().toNSString()
+            networkPrefixLength:i.range()
+                         isIpv6:i.type() == IPAddressRange::IPv6];
+        [allowedIPAddressRangesNS addObject: [range autorelease]];
     }
 
-    const QStringList& captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
-    NSMutableArray<NSString *> *captivePortalIpv6AddressesNS = [NSMutableArray<NSString *> arrayWithCapacity:captivePortalIpv6Addresses.length()];
-    for (const QString &ip : captivePortalIpv6Addresses) {
-        [captivePortalIpv6AddressesNS addObject:ip.toNSString()];
-    }
-
-    [impl connectWithServerIpv4Gateway:server.ipv4Gateway().toNSString()
-                     serverIpv6Gateway:server.ipv6Gateway().toNSString()
-                       serverPublicKey:server.publicKey().toNSString()
-                      serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
-                            serverPort:server.choosePort()
-            captivePortalIpv4Addresses:captivePortalIpv4AddressesNS
-            captivePortalIpv6Addresses:captivePortalIpv6AddressesNS
-                           ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
-                    localNetworkAccess:MozillaVPN::instance()->settingsHolder()->localNetworkAccess()
-                       failureCallback:^() {
-                           qDebug() << "MacOSSWiftController - connection failed";
-                           emit disconnected();
-                       }];
+    [impl
+        connectWithServerIpv4Gateway:server.ipv4Gateway().toNSString()
+                   serverIpv6Gateway:server.ipv6Gateway().toNSString()
+                     serverPublicKey:server.publicKey().toNSString()
+                    serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
+                          serverPort:server.choosePort()
+              allowedIPAddressRanges:allowedIPAddressRangesNS
+                         ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
+                     failureCallback:^() {
+                         logger.log() << "MacOSSWiftController - connection failed";
+                         emit disconnected();
+                     }];
 }
 
 void MacOSController::deactivate(bool forSwitching)
 {
     Q_UNUSED(forSwitching);
 
-    qDebug() << "MacOSController deactivated";
+    logger.log() << "MacOSController deactivated";
 
     Q_ASSERT(impl);
     [impl disconnect];
@@ -120,10 +122,10 @@ void MacOSController::deactivate(bool forSwitching)
 
 void MacOSController::checkStatus()
 {
-    qDebug() << "Checking status";
+    logger.log() << "Checking status";
 
     if (m_checkingStatus) {
-        qDebug() << "We are still waiting for the previous status.";
+        logger.log() << "We are still waiting for the previous status.";
         return;
     }
 
@@ -142,11 +144,11 @@ void MacOSController::checkStatus()
         uint64_t rxBytes = 0;
 
         QStringList lines = config.split("\n");
-        for (QStringList::ConstIterator i = lines.begin(); i != lines.end(); ++i) {
-            if (i->startsWith("tx_bytes=")) {
-                txBytes = i->split("=")[1].toULongLong();
-            } else if (i->startsWith("rx_bytes=")) {
-                rxBytes = i->split("=")[1].toULongLong();
+        for (const QString &line : lines) {
+            if (line.startsWith("tx_bytes=")) {
+                txBytes = line.split("=")[1].toULongLong();
+            } else if (line.startsWith("rx_bytes=")) {
+                rxBytes = line.split("=")[1].toULongLong();
             }
 
             if (txBytes && rxBytes) {
@@ -154,7 +156,9 @@ void MacOSController::checkStatus()
             }
         }
 
-        qDebug() << "ServerIpv4Gateway:" << serverIpv4Gateway << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
+        logger.log() << "ServerIpv4Gateway:" << QString::fromNSString(serverIpv4Gateway)
+                     << "RxBytes:" << rxBytes
+                     << "TxBytes:" << txBytes;
         emit statusUpdated(QString::fromNSString(serverIpv4Gateway), txBytes, rxBytes);
     }];
 }

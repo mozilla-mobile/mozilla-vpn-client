@@ -4,11 +4,14 @@
 
 #include "taskremovedevice.h"
 #include "errorhandler.h"
+#include "logger.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "user.h"
 
-#include <QDebug>
+namespace {
+Logger logger(LOG_MAIN, "TaskRemoveDevice");
+}
 
 TaskRemoveDevice::TaskRemoveDevice(const QString &deviceName)
     : Task("TaskRemoveDevice"), m_deviceName(deviceName)
@@ -16,7 +19,7 @@ TaskRemoveDevice::TaskRemoveDevice(const QString &deviceName)
 
 void TaskRemoveDevice::run(MozillaVPN *vpn)
 {
-    qDebug() << "Removing the device" << m_deviceName;
+    logger.log() << "Removing the device" << m_deviceName;
 
     const Device *device = vpn->deviceModel()->device(m_deviceName);
     Q_ASSERT(device);
@@ -26,13 +29,13 @@ void TaskRemoveDevice::run(MozillaVPN *vpn)
     NetworkRequest *request = NetworkRequest::createForDeviceRemoval(vpn, publicKey);
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        qDebug() << "Failed to remove the device" << error;
+        logger.log() << "Failed to remove the device" << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
         emit completed();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &) {
-        qDebug() << "Device removed";
+        logger.log() << "Device removed";
         vpn->deviceRemoved(m_deviceName);
         emit completed();
     });

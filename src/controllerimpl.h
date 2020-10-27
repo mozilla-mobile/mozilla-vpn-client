@@ -11,11 +11,11 @@
 
 #include <functional>
 
-class CaptivePortal;
 class Keys;
 class Device;
 class Server;
 class QDateTime;
+class IPAddressRange;
 
 class ControllerImpl : public QObject
 {
@@ -31,7 +31,7 @@ public:
     virtual void activate(const Server &server,
                           const Device *device,
                           const Keys *keys,
-                          const CaptivePortal &captivePortal,
+                          const QList<IPAddressRange> &allowedIPAddressRanges,
                           bool forSwitching)
         = 0;
 

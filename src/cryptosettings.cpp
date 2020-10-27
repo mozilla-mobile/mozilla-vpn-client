@@ -4,8 +4,8 @@
 
 #include "cryptosettings.h"
 #include "hacl-star/Hacl_Chacha20Poly1305_32.h"
+#include "logger.h"
 
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -16,6 +16,8 @@ constexpr int MAC_SIZE = 16;
 
 namespace {
 
+Logger logger(LOG_MAIN, "CryptoSettings");
+
 uint64_t lastNonce = 0;
 
 } // anonymous
@@ -23,11 +25,11 @@ uint64_t lastNonce = 0;
 // static
 bool CryptoSettings::readFile(QIODevice &device, QSettings::SettingsMap &map)
 {
-    qDebug() << "Read the settings file";
+    logger.log() << "Read the settings file";
 
     QByteArray version = device.read(1);
     if (version.length() != 1) {
-        qDebug() << "Failed to read the version";
+        logger.log() << "Failed to read the version";
         return false;
     }
 
@@ -37,7 +39,7 @@ bool CryptoSettings::readFile(QIODevice &device, QSettings::SettingsMap &map)
     case EncryptionChachaPolyV1:
         return readEncryptedChachaPolyV1File(device, map);
     default:
-        qDebug() << "Unsupported version";
+        logger.log() << "Unsupported version";
         return false;
     }
 }
@@ -49,7 +51,7 @@ bool CryptoSettings::readJsonFile(QIODevice &device, QSettings::SettingsMap &map
 
     QJsonDocument json = QJsonDocument::fromJson(content);
     if (!json.isObject()) {
-        qDebug() << "Invalid content read from the JSON file";
+        logger.log() << "Invalid content read from the JSON file";
         return false;
     }
 
@@ -66,25 +68,25 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(QIODevice &device, QSettings:
 {
     QByteArray nonce = device.read(NONCE_SIZE);
     if (nonce.length() != NONCE_SIZE) {
-        qDebug() << "Failed to read the nonce";
+        logger.log() << "Failed to read the nonce";
         return false;
     }
 
     QByteArray mac = device.read(MAC_SIZE);
     if (mac.length() != MAC_SIZE) {
-        qDebug() << "Failed to read the MAC";
+        logger.log() << "Failed to read the MAC";
         return false;
     }
 
     QByteArray ciphertext = device.readAll();
     if (ciphertext.length() == 0) {
-        qDebug() << "Failed to read the ciphertext";
+        logger.log() << "Failed to read the ciphertext";
         return false;
     }
 
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (!getKey(key)) {
-        qDebug() << "Something went wrong reading the key";
+        logger.log() << "Something went wrong reading the key";
         return false;
     }
 
@@ -98,14 +100,14 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(QIODevice &device, QSettings:
                                                             (uint8_t *) content.data(),
                                                             (uint8_t *) ciphertext.data(),
                                                             (uint8_t *) mac.data());
-    qDebug() << "Result:" << result;
+    logger.log() << "Result:" << result;
     if (result != 0) {
         return false;
     }
 
     QJsonDocument json = QJsonDocument::fromJson(content);
     if (!json.isObject()) {
-        qDebug() << "Invalid content read from the JSON file";
+        logger.log() << "Invalid content read from the JSON file";
         return false;
     }
 
@@ -116,7 +118,7 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(QIODevice &device, QSettings:
 
     Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
     memcpy(&lastNonce, nonce.data(), sizeof(lastNonce));
-    qDebug() << "Nonce:" << lastNonce;
+    logger.log() << "Nonce:" << lastNonce;
 
     return true;
 }
@@ -124,11 +126,11 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(QIODevice &device, QSettings:
 // static
 bool CryptoSettings::writeFile(QIODevice &device, const QSettings::SettingsMap &map)
 {
-    qDebug() << "Writing the settings file";
+    logger.log() << "Writing the settings file";
 
     Version version = getSupportedVersion();
     if (!writeVersion(device, version)) {
-        qDebug() << "Failed to write the version";
+        logger.log() << "Failed to write the version";
         return false;
     }
 
@@ -138,7 +140,7 @@ bool CryptoSettings::writeFile(QIODevice &device, const QSettings::SettingsMap &
     case EncryptionChachaPolyV1:
         return writeEncryptedChachaPolyV1File(device, map);
     default:
-        qDebug() << "Unsupported version.";
+        logger.log() << "Unsupported version.";
         return false;
     }
 }
@@ -153,7 +155,7 @@ bool CryptoSettings::writeVersion(QIODevice &device, CryptoSettings::Version ver
 // static
 bool CryptoSettings::writeJsonFile(QIODevice &device, const QSettings::SettingsMap &map)
 {
-    qDebug() << "Write plaintext JSON file";
+    logger.log() << "Write plaintext JSON file";
 
     QJsonObject obj;
     for (QSettings::SettingsMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
@@ -165,7 +167,7 @@ bool CryptoSettings::writeJsonFile(QIODevice &device, const QSettings::SettingsM
     QByteArray content = json.toJson(QJsonDocument::Compact);
 
     if (device.write(content) != content.length()) {
-        qDebug() << "Failed to write the content";
+        logger.log() << "Failed to write the content";
         return false;
     }
 
@@ -176,7 +178,7 @@ bool CryptoSettings::writeJsonFile(QIODevice &device, const QSettings::SettingsM
 bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
                                                     const QSettings::SettingsMap &map)
 {
-    qDebug() << "Write encrypted file";
+    logger.log() << "Write encrypted file";
 
     QJsonObject obj;
     for (QSettings::SettingsMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
@@ -187,9 +189,9 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
     json.setObject(obj);
     QByteArray content = json.toJson(QJsonDocument::Compact);
 
-    qDebug() << "Incrementing nonce:" << lastNonce;
+    logger.log() << "Incrementing nonce:" << lastNonce;
     if (++lastNonce == UINT64_MAX) {
-        qDebug() << "Reset the nonce and the key.";
+        logger.log() << "Reset the nonce and the key.";
         resetKey();
         lastNonce = 0;
     }
@@ -200,7 +202,7 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
 
     uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
     if (!getKey(key)) {
-        qDebug() << "Invalid key";
+        logger.log() << "Invalid key";
         return false;
     }
 
@@ -218,17 +220,17 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(QIODevice &device,
                                           (uint8_t *) mac.data());
 
     if (device.write(nonce) != nonce.length()) {
-        qDebug() << "Failed to write the nonce";
+        logger.log() << "Failed to write the nonce";
         return false;
     }
 
     if (device.write(mac) != mac.length()) {
-        qDebug() << "Failed to write the MAC";
+        logger.log() << "Failed to write the MAC";
         return false;
     }
 
     if (device.write(ciphertext) != ciphertext.length()) {
-        qDebug() << "Failed to write the cipher";
+        logger.log() << "Failed to write the cipher";
         return false;
     }
 
