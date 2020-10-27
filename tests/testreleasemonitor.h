@@ -4,11 +4,11 @@
 
 #include "helper.h"
 
-class TestNetworking: public TestHelper
+class TestReleaseMonitor: public TestHelper
 {
     Q_OBJECT
 
 private slots:
-    void releaseMonitorBasic_data();
-    void releaseMonitorBasic();
+    void basic_data();
+    void basic();
 };

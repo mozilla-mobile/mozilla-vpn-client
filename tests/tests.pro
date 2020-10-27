@@ -5,7 +5,7 @@
 QT += testlib
 QT += network
 
-DEFINES += APP_VERSION=\\\"test\\\"
+DEFINES += APP_VERSION=\\\"1234\\\"
 
 TEMPLATE = app
 TARGET = tests
@@ -31,7 +31,7 @@ HEADERS += \
     ../src/settingsholder.h \
     helper.h \
     testmodels.h \
-    testnetworking.h
+    testreleasemonitor.h
 
 SOURCES += \
     ../src/logger.cpp \
@@ -52,7 +52,7 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocsettingsholder.cpp \
     testmodels.cpp \
-    testnetworking.cpp
+    testreleasemonitor.cpp
 
 # Platform-specific: MacOS
 macos {

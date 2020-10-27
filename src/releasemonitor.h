@@ -7,8 +7,7 @@
 
 #include <QObject>
 
-class MozillaVPN;
-class TestNetworking;
+class TestReleaseMonitor;
 
 class ReleaseMonitor final : public QObject
 {
@@ -24,7 +23,7 @@ private:
 
     [[nodiscard]] bool processData(const QByteArray &data);
 
-    friend class TestNetworking;
+    friend class TestReleaseMonitor;
 };
 
 #endif // RELEASEMONITOR_H
