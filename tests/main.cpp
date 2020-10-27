@@ -4,8 +4,7 @@
 
 #include "helper.h"
 
-TestHelper::NetworkStatus TestHelper::networkStatus = TestHelper::Failure;
-QByteArray TestHelper::networkBody;
+QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 QVector<QObject *> TestHelper::testList;
 
 TestHelper::TestHelper()
