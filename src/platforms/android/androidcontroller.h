@@ -31,8 +31,7 @@ public:
     void onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder) override;
     void onServiceDisconnected(const QString &name) override;
 private:
-    int64_t m_txBytes = 0;
-    int64_t m_rxBytes = 0;
+    Server m_server;
 
     QAndroidBinder m_serviceBinder;
     class VPNBinder : public QAndroidBinder{
@@ -42,6 +41,8 @@ private:
 
     private:
          AndroidController* mController;
+         int64_t m_txBytes = 0;
+         int64_t m_rxBytes = 0;
     };
 
     VPNBinder m_binder;

@@ -5,11 +5,13 @@ import android.os.IBinder
 import android.util.Log
 import com.wireguard.android.backend.*
 import com.wireguard.config.Config
+import com.wireguard.crypto.Key
+import com.wireguard.crypto.KeyFormatException
 
 
-class VPNService :   android.net.VpnService(), ServiceProxy  {
+class VPNService :   android.net.VpnService()  {
     private val tag = "VPNService"
-    private var tunnel: Tunnel? = null
+    var tunnel: Tunnel? = null
     private var mBinder: VPNServiceBinder? = null
 
     /**
@@ -43,8 +45,45 @@ class VPNService :   android.net.VpnService(), ServiceProxy  {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun getStatistic(tunnel: Tunnel): Statistics {
-        TODO("Not yet implemented")
+    fun getStatistic(): Statistics? {
+        val stats = Statistics()
+        val config = tunnel?.let{backend.getConfig(it)} ?: return null
+        var key: Key? = null
+        var rx: Long = 0
+        var tx: Long = 0
+        for (line in config.split("\\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+            if (line.startsWith("public_key=")) {
+                key?.let { stats.add(it, rx, tx) }
+                rx = 0
+                tx = 0
+                key = try {
+                    Key.fromHex(line.substring(11))
+                } catch (ignored: KeyFormatException) {
+                    null
+                }
+
+            } else if (line.startsWith("rx_bytes=")) {
+                if (key == null)
+                    continue
+                rx = try {
+                    java.lang.Long.parseLong(line.substring(9))
+                } catch (ignored: NumberFormatException) {
+                    0
+                }
+
+            } else if (line.startsWith("tx_bytes=")) {
+                if (key == null)
+                    continue
+                tx = try {
+                    java.lang.Long.parseLong(line.substring(9))
+                } catch (ignored: NumberFormatException) {
+                    0
+                }
+
+            }
+        }
+        key?.let { stats.add(it, rx, tx) }
+        return stats
     }
 
     fun createTunnel(conf: Config){

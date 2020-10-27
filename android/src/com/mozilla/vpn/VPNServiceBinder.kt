@@ -22,6 +22,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val activate = 1
         const val deactivate = 2
         const val registerEventListener = 3
+        const val requestStatistic = 4
     }
 
     /**
@@ -63,6 +64,13 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 mListeners.add(binder)
                 Log.d(tag,"Registered ${mListeners.size} EventListeners")
             }
+            ACTIONS.requestStatistic ->{
+                val statistics = this.mService.getStatistic();
+                val obj = JSONObject()
+                obj.put("totalRX", statistics?.totalRx())
+                obj.put("totalTX", statistics?.totalTx())
+                dispatchEvent(EVENTS.statisticUpdate, obj.toString());
+            }
             else -> {
                 Log.e(tag, "Received invalid bind request \t Code -> $code")
                 // If we're hitting this there is probably something wrong in the client.
@@ -83,7 +91,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         mListeners.forEach {
            if(it.isBinderAlive){
                val data = Parcel.obtain()
-               data.writeString(payload)
+               data.writeByteArray(payload.toByteArray(charset("UTF-8")))
                it.transact(code, data, Parcel.obtain(),0)
            }
         }
@@ -95,8 +103,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
     object EVENTS {
         const val connected = 1
         const val disconnected = 2
-        const val logs = 3
-        const val transmitted = 4
+        const val statisticUpdate = 3
     }
 
 

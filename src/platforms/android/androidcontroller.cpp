@@ -41,11 +41,11 @@
 const int ACTION_ACTIVATE = 1;
 const int ACTION_DEACTIVATE =2;
 const int ACTION_REGISTERLISTENER = 3;
+const int ACTION_REQUEST_STATISTIC = 4;
 // Event Types that will be Dispatched after registration
 const int EVENT_CONNECTED = 1;
 const int EVENT_DISCONNECTED =2;
-const int EVENT_LOGS = 3;
-const int EVENT_TXUPDATE =4;
+const int EVENT_STATISTIC_UPDATE =3;
 
 
 
@@ -72,6 +72,7 @@ void AndroidController::activate(const Server &server,
                                bool forSwitching)
 {
     Q_UNUSED(captivePortal);
+    m_server = server;
 
     // Serialise arguments for the VPNService
     QJsonObject jDevice;
@@ -117,11 +118,8 @@ void AndroidController::deactivate(bool forSwitching)
 
 void AndroidController::checkStatus()
 {
-    // TODO: Implement Really.
-    m_txBytes += QRandomGenerator::global()->generate() % 100000;
-    m_rxBytes += QRandomGenerator::global()->generate() % 100000;
-
-    emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
+    QAndroidParcel nullParcel;
+    m_serviceBinder.transact(ACTION_REQUEST_STATISTIC,nullParcel,nullptr);
 }
 
 void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
@@ -172,12 +170,13 @@ bool AndroidController::VPNBinder::onTransact(int code, const QAndroidParcel &da
     case EVENT_DISCONNECTED:
        emit mController->disconnected();
         break;
-    case EVENT_TXUPDATE:
-    case EVENT_LOGS:
-        // TODO: Implement.
+    case EVENT_STATISTIC_UPDATE:
+        // Data is here a JSON String
+        QJsonDocument doc = QJsonDocument::fromJson(data.readData());
+        m_rxBytes = doc.object()["totalRX"].toInt();
+        m_txBytes = doc.object()["totalTX"].toInt();
+        emit mController->statusUpdated(mController->m_server.ipv4Gateway(), m_txBytes, m_rxBytes);
         break;
-    default:
-        return false;
     }
     return true;
 }
