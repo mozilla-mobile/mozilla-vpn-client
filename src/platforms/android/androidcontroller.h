@@ -25,9 +25,6 @@ public:
 
     void checkStatus() override;
 
-    void onRecviceConnected();
-    void onRecviceDisconnected();
-
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
     // from QAndroidServiceConnection

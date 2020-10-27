@@ -1,5 +1,5 @@
 package com.mozilla.vpn
-import android.content.Context
+
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
@@ -7,21 +7,21 @@ import com.wireguard.android.backend.*
 import com.wireguard.config.Config
 
 
+class VPNService :   android.net.VpnService(), ServiceProxy  {
+    private val tag = "VPNService"
+    private var tunnel: Tunnel? = null
+    private var mBinder: VPNServiceBinder? = null
 
-
-
-public class VPNService :   android.net.VpnService(), ServiceProxy  {
-    val TAG = "VPNService";
-    var tunnel: Tunnel? = null
-    var mBinder: VPNServiceBinder? = null;
-    private val REQUEST_CODE_VPN_PERMISSION = 23491
-
+    /**
+     * EntryPoint for the Service, gets Called when AndroidController.cpp
+     * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
+     */
     override fun onBind(intent: Intent?): IBinder? {
         if(mBinder == null){
-            mBinder = VPNServiceBinder(this);
+            mBinder = VPNServiceBinder(this)
         }
-        Log.v(TAG, "Got Bind request");
-        return mBinder;
+        Log.v(tag, "Got Bind request")
+        return mBinder
     }
 
     private val backend: VpnServiceBackend = VpnServiceBackend(
@@ -32,69 +32,65 @@ public class VPNService :   android.net.VpnService(), ServiceProxy  {
         }
     )
 
-
+    /**
+     * Might be the entryPoint if the Service gets Started via an
+     * Service Intent (Settings or vice versa)
+     */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if(mBinder == null){
-            mBinder = VPNServiceBinder(this);
+            mBinder = VPNServiceBinder(this)
         }
-        Log.v(TAG, "ON START COMMAND");
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun getStatistic(tunnel: Tunnel): Statistics {
         TODO("Not yet implemented")
-
     }
 
-    public fun createTunnel(conf: Config){
-        if(this.tunnel != null){
-            // Use Exsisting tunnel
-            return;
-        }
-        this.tunnel = Tunnel("myCoolTunnel", conf);
+    fun createTunnel(conf: Config){
+        this.tunnel = Tunnel("myCoolTunnel", conf)
     }
 
-    public fun turnOn(): Boolean {
+    fun turnOn(): Boolean {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
-        // Step 1 - Call Prepare and Fire Permission Intent if needed
-        val intent = this.getPermissionIntent();
+        // Call Prepare, if we get an Intent back, we dont have the VPN Permission
+        // from the user. So we need to pass this to our main Activity and exit here.
+        val intent = prepare(this)
         if(intent == null){
-            Log.e(TAG, "VPN Permission Already Present");
+            Log.e(tag, "VPN Permission Already Present")
         }
         else{
-            Log.e(TAG, "Requesting VPN Permission");
-            this.startActivityForResult(intent);
-            return false;
-        };
-
+            Log.e(tag, "Requesting VPN Permission")
+            this.startActivityForResult(intent)
+            return false
+        }
         val tunnel = this.tunnel ?: return false
 
        tunnel.tunnelHandle?.let{
-           this.protect(it);
+           this.protect(it)
        }
-
         val config = tunnel.config
-        Log.v(TAG, "Try to turn on");
-        val b = Builder().applyConfig(config);
-        val file = b.establish();
+        val fileDescriptor = Builder().applyConfig(config).establish()
 
-        if(file != null){
-                Log.v(TAG, "Got file Descriptor for VPN - Try to up");
-                backend.tunnelUp(tunnel, file, config.toWgUserspaceString());
-                return true;
+        if(fileDescriptor != null){
+                Log.v(tag, "Got file Descriptor for VPN - Try to up")
+            backend.tunnelUp(tunnel, fileDescriptor, config.toWgUserspaceString())
+            return true
         }
-        Log.e(TAG, "Failed to get a File Descriptor for VPN");
-        return false;
+        Log.e(tag, "Failed to get a File Descriptor for VPN")
+        return false
     }
-    public fun turnOff() {
-        Log.v(TAG, "Try to disable tunnel");
+
+    fun turnOff() {
+        Log.v(tag, "Try to disable tunnel")
         this.tunnel?.let { backend.tunnelDown(it) }
     }
-    fun getPermissionIntent(): Intent? {
-        return prepare(this)
-    }
 
-    // Implemented in
-    public external fun startActivityForResult(i: Intent);
+    /**
+     * Fetches the Global QTAndroidActivity and calls startActivityForResult with the given intent
+     * Is used to request the VPN-Permission, if not given.
+     * Actually Implemented in src/platforms/android/AndroidJNIUtils.cpp
+     */
+    external fun startActivityForResult(i: Intent)
 
 }

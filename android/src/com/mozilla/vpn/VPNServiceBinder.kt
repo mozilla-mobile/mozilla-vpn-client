@@ -1,98 +1,129 @@
 package com.mozilla.vpn
 
-import android.net.VpnService
 import android.os.Binder
+import android.os.IBinder
 import android.os.Parcel
 import android.util.Log
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import org.json.JSONObject
-import org.qtproject.qt5.android.bindings.QtActivity
-import org.qtproject.qt5.android.bindings.QtActivityLoader
-import org.qtproject.qt5.android.bindings.QtApplication
+
+class VPNServiceBinder(service: VPNService) : Binder() {
+
+    private val mService = service
+    private val tag = "VPNServiceBinder"
+    private val mListeners =  mutableListOf<IBinder>()
 
 
-object ACTIONS{
-    val initialize = 0;
-    val activate = 1;
-    val deactivate = 2;
-    val checkStatus = 3;
-    val getBackendLogs = 4;
-    val emitConnected = 5;
-    val emitDisconnected = 6;
-}
+    /**
+     * The codes this Binder does accept in [onTransact]
+     */
+    object ACTIONS {
+        const val activate = 1
+        const val deactivate = 2
+        const val registerEventListener = 3
+    }
 
-public class VPNServiceBinder(service: VPNService): Binder() {
-
-    val mService = service;
-    val TAG = "VPNServiceBinder";
-
+    /**
+     * Gets called when the VPNServiceBinder gets a request from a Client.
+     * The [code] determines what action is requested. - see [ACTIONS]
+     * [data] may contain a utf-8 encoded json string with optional args or is null.
+     * [reply] is a pointer to a buffer in the clients memory, to reply results.
+     * we use this to send result data.
+     *
+     * returns true if the [code] was accepted
+     */
     override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
-        Log.e(TAG, "GOT TRANSACTION $code");
+        Log.i(tag, "GOT TRANSACTION $code")
 
-
-        when(code){
+        when (code) {
             ACTIONS.activate -> {
-                // Read JSON and Build Config Objects for the VPN
-                val buffer = data.createByteArray();
-                val jString = buffer?.let { String(it) };
-                Log.d(TAG, jString);
-                val obj = JSONObject(jString);
+                // [data] is here a json containing the wireguard conf
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val config = buildConfigFromJSON(json)
 
-                // Build the Config for the new Tunnel
-                val confBuilder = Config.Builder();
-
-                //Add Peers (Servers)
-                {   val jServer = obj.getJSONObject("server");
-                    val peerBuilder = Peer.Builder();
-                    val ep = InetEndpoint.parse(jServer.getString("ipv4AddrIn")+":"+jServer.getString("port"));
-                    peerBuilder.setEndpoint(ep);
-                    peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
-                    //peerBuilder.setPreSharedKey(); // We dont have that.
-                    // peerBuilder.setPersistentKeepalive(); //
-                    // no idea.
-                    val internet = InetNetwork.parse("0.0.0.0/0") // ALL THZE interwebs
-                    peerBuilder.addAllowedIp(internet);
-                    confBuilder.addPeer(peerBuilder.build())
-                }();
-                // Add the Device Interface
-                {
-                    val privateKey = obj.getJSONObject("keys").getString("privateKey");
-                    val jDevice = obj.getJSONObject("device");
-                    val ifaceBuilder = Interface.Builder();
-                    ifaceBuilder.parsePrivateKey(privateKey);
-                    ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")));
-                    ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")));
-                    confBuilder.setInterface(ifaceBuilder.build());
-                }();
-
-                // Try to Turn on the Tunnel.
-                // Reply with QVariant<Bool> if it was sucsessfull.
-                val conf = confBuilder.build();
-                this.mService.createTunnel(confBuilder.build());
-                if(this.mService.turnOn()){
-                    reply?.writeByteArray(byteArrayOf(1));
-                    return true;
+                this.mService.createTunnel(config)
+                if (this.mService.turnOn()) {
+                    dispatchEvent(EVENTS.connected, "")
+                }else{
+                    dispatchEvent(EVENTS.disconnected, "")
                 }
-                reply?.writeByteArray(byteArrayOf(0));
-                return false;
+                return true
             }
-
             ACTIONS.deactivate -> {
-                this.mService.turnOff();
-                reply?.writeByteArray(byteArrayOf(1, 2, 3));
-                return true;
+                // [data] here is empty
+                this.mService.turnOff()
+                dispatchEvent(EVENTS.disconnected, "")
+                return true
             }
-            else->{
-                // Unknown Code
-                Log.e(TAG, "Unknown Transaction Code $code");
+            ACTIONS.registerEventListener -> {
+                // [data] contains the Binder that we need to dispatch the Events
+                val binder = data.readStrongBinder()
+                mListeners.add(binder)
+                Log.d(tag,"Registered ${mListeners.size} EventListeners")
+            }
+            else -> {
+                Log.e(tag, "Received invalid bind request \t Code -> $code")
+                // If we're hitting this there is probably something wrong in the client.
+                return false
             }
 
         }
+        return false
+    }
+
+    /**
+     * Dispatches an Event to all registered Binders
+     * [code] the Event that happened - see [EVENTS]
+     * To register an Eventhandler use [onTransact] with
+     * [ACTIONS.registerEventListener]
+     */
+    private fun dispatchEvent(code: Int, payload: String){
+        mListeners.forEach {
+           if(it.isBinderAlive){
+               val data = Parcel.obtain()
+               data.writeString(payload)
+               it.transact(code, data, Parcel.obtain(),0)
+           }
+        }
+    }
+
+    /**
+     *  The codes we Are Using in case of [dispatchEvent]
+     */
+    object EVENTS {
+        const val connected = 1
+        const val disconnected = 2
+        const val logs = 3
+        const val transmitted = 4
+    }
 
 
+    /**
+     * Create a Wireguard [Config]  from a [json] string -
+     * The [json] will be created in AndroidController.cpp
+     */
+    private fun buildConfigFromJSON(json: String?): Config {
+        val confBuilder = Config.Builder()
+        val obj = JSONObject(json)
+        val jServer = obj.getJSONObject("server")
+        val peerBuilder = Peer.Builder()
+        val ep =
+            InetEndpoint.parse(jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"))
+        peerBuilder.setEndpoint(ep)
+        peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
+        val internet = InetNetwork.parse("0.0.0.0/0") // aka The whole internet.
+        peerBuilder.addAllowedIp(internet)
+        confBuilder.addPeer(peerBuilder.build())
 
-
-        return super.onTransact(code, data, reply, flags)
+        val privateKey = obj.getJSONObject("keys").getString("privateKey")
+        val jDevice = obj.getJSONObject("device")
+        val ifaceBuilder = Interface.Builder()
+        ifaceBuilder.parsePrivateKey(privateKey)
+        ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
+        ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
+        confBuilder.setInterface(ifaceBuilder.build())
+        return confBuilder.build()
     }
 }

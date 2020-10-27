@@ -10,41 +10,26 @@
 #include <QDebug>
 #include <android/log.h>
 
-#define TAG "JNI_UTILS"
-#define  LOGV(...)  __android_log_print(ANDROID_LOG_VERBOSE,    TAG, __VA_ARGS__)
-#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,       TAG, __VA_ARGS__)
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,      TAG, __VA_ARGS__)
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,       TAG, __VA_ARGS__)
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,      TAG, __VA_ARGS__)
-
-
-
-
-
-void androidJNIUtils::callFromJava(JNIEnv *env, jobject /*thiz*/, jstring value)
-{
-    qDebug() << env->GetStringUTFChars(value, nullptr);
-    LOGD("%s",env->GetStringUTFChars(value, nullptr));
-
-}
-
-
+/**
+ * @brief Starts the Given intent in Context of the QTActivity
+ * @param env
+ * @param intent
+ */
 void androidJNIUtils::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent)
 {
-    // Send the thing
     Q_UNUSED(env);
-   LOGD("Trying to request VPN Permission");
     QtAndroid::startActivity(intent,123, [](int a, int b, const QAndroidJniObject& c){
+        // TODO: Automaticly make the Android Controller Retry if the result is positive.
+        // TODO: Maybe move into AndroidController?
         Q_UNUSED(a);
         Q_UNUSED(b);
         Q_UNUSED(c);
-        LOGD("GOT INTENT RESULT");
     });
-
-    LOGD("Intent was dispatched");
     return;
 }
-
+/**
+ * @brief Registers the native JNIUtils functions in the Java Env.
+ */
 void androidJNIUtils::init(){
     JNINativeMethod methods[] {
         {"startActivityForResult", "(Landroid/content/Intent;)V", reinterpret_cast<void *>(startActivityForResult)}};

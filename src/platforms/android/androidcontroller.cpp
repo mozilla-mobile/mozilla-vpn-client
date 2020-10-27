@@ -26,6 +26,7 @@
 #include "androidjniutils.h"
 #include "captiveportal/captiveportal.h"
 
+
 #define TAG "ANDROID_CONTROLLER"
 #define  LOGV(...)  __android_log_print(ANDROID_LOG_VERBOSE,    TAG, __VA_ARGS__)
 #define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,       TAG, __VA_ARGS__)
@@ -33,16 +34,33 @@
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,       TAG, __VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,      TAG, __VA_ARGS__)
 
+
+// Binder Codes for VPNServiceBinder
+// See also - VPNServiceBinder.kt
+// Actions that are Requestable
+const int ACTION_ACTIVATE = 1;
+const int ACTION_DEACTIVATE =2;
+const int ACTION_REGISTERLISTENER = 3;
+// Event Types that will be Dispatched after registration
+const int EVENT_CONNECTED = 1;
+const int EVENT_DISCONNECTED =2;
+const int EVENT_LOGS = 3;
+const int EVENT_TXUPDATE =4;
+
+
+
+
+
 void AndroidController::initialize(const Device *device, const Keys *keys)
     {
         Q_UNUSED(device);
         Q_UNUSED(keys);
-        androidJNIUtils::init();
-        LOGD("ANDROID-CONTROLLER -- Binding to Backend Service");
+        androidJNIUtils::init(); // Inject our Native Implemented Methods into the JNI
+        // Start the VPN Service (if not yet) and Bind to it
         QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.mozilla.vpn.VPNService"),
                                            *this, QtAndroid::BindFlag::AutoCreate);
         m_binder.setController(this);
-
+        // TODO: Check the State - might be not OFF on Connection.
         emit initialized(true, Controller::StateOff, QDateTime());
         LOGD("ANDROID-CONTROLLER -- INITIALISED");
     }
@@ -55,8 +73,7 @@ void AndroidController::activate(const Server &server,
 {
     Q_UNUSED(captivePortal);
 
-    // Serialise arguments for the Background Service
-    // TODO: Rework Scheme to minimum required properties
+    // Serialise arguments for the VPNService
     QJsonObject jDevice;
     jDevice["publicKey"] = device->publicKey();
     jDevice["name"] = device->name();
@@ -84,60 +101,27 @@ void AndroidController::activate(const Server &server,
     QJsonDocument doc;
     doc.setObject(args);
 
-    QAndroidParcel sendData, replyData;
-    //lolno Send own binder so service can async respond
-    //sendData.writeBinder(m_binder);
+    QAndroidParcel sendData;
     sendData.writeData(doc.toJson());
-    LOGD("ANDROID-CONTROLLER --  Chars %d", doc.toJson().count());
     LOGD("ANDROID-CONTROLLER --  Send Activation Request to Service");
-    m_serviceBinder.transact(1,sendData, &replyData);
-
-    bool connectionUp = replyData.readVariant().toBool();
-    if(connectionUp){
-        emit connected();
-        return;
-    }
-    emit disconnected();
+    
+    m_serviceBinder.transact(ACTION_ACTIVATE,sendData, nullptr);
 }
 
 void AndroidController::deactivate(bool forSwitching)
 {
     Q_UNUSED(forSwitching);
-
-    qDebug() << "ANDROID-CONTROLLER --  deactivated";
-    LOGD("ANDROID-CONTROLLER --  deactivated");
-    QAndroidParcel sendData, replyData;
-    sendData.writeVariant(1);
-    m_serviceBinder.transact(2,sendData,&replyData);
-
-    try {
-        int reply = replyData.readVariant().toInt();
-
-        if(reply == 1){
-            emit disconnected();
-            LOGD("ANDROID-CONTROLLER --  activated");
-        }else{
-             emit connected();
-        }
-    } catch (QAndroidJniExceptionCleaner e) {
-        LOGD("ANDROID-CONTROLLER --  failed to read " );
-   }
+    QAndroidParcel nullData;
+    m_serviceBinder.transact(ACTION_DEACTIVATE,nullData, nullptr);
 }
 
 void AndroidController::checkStatus()
 {
+    // TODO: Implement Really.
     m_txBytes += QRandomGenerator::global()->generate() % 100000;
     m_rxBytes += QRandomGenerator::global()->generate() % 100000;
 
     emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
-}
-// unused
-void AndroidController::onRecviceConnected(){
-    emit connected();
-}
-// unused
-void AndroidController::onRecviceDisconnected(){
-    emit disconnected();
 }
 
 void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
@@ -147,22 +131,54 @@ void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_
 }
 
 void AndroidController::onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder){
+    Q_UNUSED(name);
     m_serviceBinder = serviceBinder;
-    qDebug() << "ANDROID-CONTROLLER -- A service is Connected to the QT main thread" << name;
-    LOGD("ANDROID-CONTROLLER -- A service is Connected to the QT main thread");
+
+    // Send the Service our Binder to recive incoming Events
+    QAndroidParcel binderParcel;
+    binderParcel.writeBinder(m_binder);
+    m_serviceBinder.transact(ACTION_REGISTERLISTENER,binderParcel,nullptr);
+
+    LOGD("ANDROID-CONTROLLER -- The VPN service is Connected to the QT main thread");
+
 }
+
 void AndroidController::onServiceDisconnected(const QString &name){
-    LOGD("ANDROID-CONTROLLER -- A service is DISCONNECTED ");
-    qDebug() << "ANDROID-CONTROLLER -- A service is DISCONNECTED " << name;
+    Q_UNUSED(name);
+    // TODO: Maybe restart? Or crash?
+    LOGD("ANDROID-CONTROLLER -- The VPN service has disconnected from the Activity ");
 }
 
 
 
 
-
+/**
+ * @brief AndroidController::VPNBinder::onTransact
+ * @param code the Event-Type we get From the VPNService See
+ * @param data - Might contain UTF-8 JSON in case the Event has a payload
+ * @param reply - always null
+ * @param flags - unused
+ * @return Returns true is the code was a valid Event Code
+ */
 bool AndroidController::VPNBinder::onTransact(int code, const QAndroidParcel &data, const QAndroidParcel &reply, QAndroidBinder::CallType flags){
-    qDebug() << " ~~ client: onTransact " << code << data.readVariant() << int(flags);
-    reply.writeData("Yupee");
+   Q_UNUSED(data);
+   Q_UNUSED(reply);
+   Q_UNUSED(flags);
+   LOGD("ANDROID-VPNBINDER -- Recived Event %i ",code);
+    switch (code) {
+    case EVENT_CONNECTED:
+        emit mController->connected();
+        break;
+    case EVENT_DISCONNECTED:
+       emit mController->disconnected();
+        break;
+    case EVENT_TXUPDATE:
+    case EVENT_LOGS:
+        // TODO: Implement.
+        break;
+    default:
+        return false;
+    }
     return true;
 }
 
