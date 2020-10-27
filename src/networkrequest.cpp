@@ -206,7 +206,7 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
 }
 
 #ifdef IOS_INTEGRATION
-NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN* vpn)
+NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN *vpn)
 {
     Q_ASSERT(vpn);
 
@@ -225,8 +225,7 @@ NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN* vpn)
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn,
-                                                     const QString& orderId)
+NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn, const QString &orderId)
 {
     Q_ASSERT(vpn);
 

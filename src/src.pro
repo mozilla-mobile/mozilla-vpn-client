@@ -75,6 +75,7 @@ HEADERS += \
         captiveportal/captiveportalrequest.h \
         connectiondataholder.h \
         connectionhealth.h \
+        constants.h \
         controller.h \
         controllerimpl.h \
         cryptosettings.h \

@@ -4,10 +4,12 @@
 
 #include "helper.h"
 
-class TestLocalizer final : public TestHelper
+class TestConnectionDataHolder final : public TestHelper
 {
     Q_OBJECT
 
 private slots:
-    void basic();
+    void checkIpAddressFailure();
+    void checkIpAddressSucceess_data();
+    void checkIpAddressSucceess();
 };

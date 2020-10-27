@@ -16,7 +16,15 @@ class TestHelper : public QObject
 public:
     explicit TestHelper();
 
-    static QVector<QObject*> s_list;
+public:
+    enum NetworkStatus {
+        Success,
+        Failure,
+    };
+    static NetworkStatus networkStatus;
+    static QByteArray networkBody;
+
+    static QVector<QObject *> testList;
 };
 
 #endif // HELPER_H

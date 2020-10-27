@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestModels: public TestHelper
+class TestModels final : public TestHelper
 {
     Q_OBJECT
 

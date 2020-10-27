@@ -7,7 +7,9 @@
 
 #include <QObject>
 
+#ifdef UNIT_TEST
 class TestReleaseMonitor;
+#endif
 
 class ReleaseMonitor final : public QObject
 {
@@ -23,7 +25,9 @@ private:
 
     [[nodiscard]] bool processData(const QByteArray &data);
 
+#ifdef UNIT_TEST
     friend class TestReleaseMonitor;
+#endif
 };
 
 #endif // RELEASEMONITOR_H

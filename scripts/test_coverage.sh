@@ -28,8 +28,8 @@ if ! [ -f $LLVM_PROFILE_FILE ]; then
   die "No report generated!"
 fi
 
+printn Y "Merge the profile data... "
 llvm-profdata-10 merge $LLVM_PROFILE_FILE -o $LLVM_PROFILE_FILE-final || die "Failed to merge the coverage report"
-
 print G "done."
 
 print Y "Report:"

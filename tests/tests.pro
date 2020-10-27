@@ -3,9 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 QT += testlib
+QT += charts
 QT += network
 
 DEFINES += APP_VERSION=\\\"1234\\\"
+DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += UNIT_TEST
 
 TEMPLATE = app
 TARGET = tests
@@ -14,6 +17,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../src
 
 HEADERS += \
+    ../src/connectiondataholder.h \
     ../src/localizer.h \
     ../src/logger.h \
     ../src/loghandler.h \
@@ -31,12 +35,14 @@ HEADERS += \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
     helper.h \
+    testconnectiondataholder.h \
     testlocalizer.h \
     testlogger.h \
     testmodels.h \
     testreleasemonitor.h
 
 SOURCES += \
+    ../src/connectiondataholder.cpp \
     ../src/localizer.cpp \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
@@ -49,22 +55,30 @@ SOURCES += \
     ../src/models/servercountrymodel.cpp \
     ../src/models/serverdata.cpp \
     ../src/models/user.cpp \
-    ../src/networkrequest.cpp \
     ../src/releasemonitor.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \
+    mocnetworkrequest.cpp \
     mocsettingsholder.cpp \
+    testconnectiondataholder.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testmodels.cpp \
     testreleasemonitor.cpp
 
+# Platform-specific: Linux
+linux {
+    # QMAKE_CXXFLAGS *= -Werror
+}
+
 # Platform-specific: MacOS
-macos {
+else:macos {
     # For the loginitem
     LIBS += -framework ServiceManagement
     LIBS += -framework Security
+
+    # QMAKE_CXXFLAGS *= -Werror
 
     OBJECTIVE_SOURCES += \
             ../src/platforms/macos/macosutils.mm

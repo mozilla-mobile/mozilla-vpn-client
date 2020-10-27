@@ -72,6 +72,8 @@ private:
     uint64_t m_rxBytes = 0;
     uint64_t m_maxBytes = 0;
 
+    bool m_updatingIpAddress = false;
+
     QString m_ipAddress;
     QTimer m_ipAddressTimer;
     QTimer m_checkStatusTimer;

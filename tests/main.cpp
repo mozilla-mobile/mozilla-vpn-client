@@ -4,11 +4,13 @@
 
 #include "helper.h"
 
-QVector<QObject*> TestHelper::s_list;
+TestHelper::NetworkStatus TestHelper::networkStatus = TestHelper::Failure;
+QByteArray TestHelper::networkBody;
+QVector<QObject *> TestHelper::testList;
 
 TestHelper::TestHelper()
 {
-    s_list.append(this);
+    testList.append(this);
 }
 
 int main(int argc, char *argv[])
@@ -17,7 +19,7 @@ int main(int argc, char *argv[])
 
     int failures = 0;
 
-    for (QObject* obj : TestHelper::s_list) {
+    for (QObject *obj : TestHelper::testList) {
         int result = QTest::qExec(obj);
         if ( result != 0 )
         {

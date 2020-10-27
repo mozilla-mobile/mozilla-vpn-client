@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestReleaseMonitor: public TestHelper
+class TestReleaseMonitor final : public TestHelper
 {
     Q_OBJECT
 
