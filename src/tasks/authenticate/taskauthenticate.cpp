@@ -65,10 +65,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
             [this, vpn, pkceCodeVerifier](const QString &pkceCodeSucces) {
                 logger.log() << "Authentication completed with code:" << pkceCodeSucces;
 
-                NetworkRequest *request
-                    = NetworkRequest::createForAuthenticationVerification(vpn,
-                                                                          pkceCodeSucces,
-                                                                          pkceCodeVerifier);
+                NetworkRequest *request = NetworkRequest::createForAuthenticationVerification(this, vpn, pkceCodeSucces, pkceCodeVerifier);
 
                 connect(request,
                         &NetworkRequest::requestFailed,

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "task.h"
 
 // The singleton.
 static MozillaVPN *s_instance = nullptr;
@@ -52,8 +53,10 @@ void MozillaVPN::openLink(LinkType)
 {
 }
 
-void MozillaVPN::scheduleTask(Task *)
+void MozillaVPN::scheduleTask(Task *task)
 {
+    task->run(this);
+    task->deleteLater();
 }
 
 void MozillaVPN::maybeRunTask()

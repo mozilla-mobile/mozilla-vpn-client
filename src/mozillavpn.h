@@ -29,6 +29,10 @@
 class QQmlApplicationEngine;
 class Task;
 
+#ifdef UNIT_TEST
+class TestTasks;
+#endif
+
 class MozillaVPN final : public QObject
 {
     Q_OBJECT
@@ -221,6 +225,10 @@ private:
     bool m_updateRecommended = false;
     bool m_userAuthenticated = false;
     bool m_startMinimized = false;
+
+#ifdef UNIT_TEST
+   friend class TestTasks;
+#endif
 };
 
 #endif // MOZILLAVPN_H

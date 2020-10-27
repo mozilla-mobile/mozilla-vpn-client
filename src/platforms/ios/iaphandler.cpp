@@ -80,7 +80,7 @@ void IAPHandler::start()
 void IAPHandler::purchaseCompleted(const QString& orderId)
 {
     MozillaVPN *vpn = MozillaVPN::instance();
-    NetworkRequest *request = NetworkRequest::createForIOSPurchase(vpn, orderId);
+    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, vpn, orderId);
 
     connect(request,
             &NetworkRequest::requestFailed,

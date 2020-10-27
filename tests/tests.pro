@@ -13,11 +13,17 @@ DEFINES += UNIT_TEST
 TEMPLATE = app
 TARGET = tests
 
-INCLUDEPATH += .
-INCLUDEPATH += ../src
+INCLUDEPATH += \
+            . \
+            ../src \
+            ../src/hacl-star \
+            ../src/hacl-star/kremlin \
+            ../src/hacl-star/kremlin/minimal
 
 HEADERS += \
     ../src/connectiondataholder.h \
+    ../src/curve25519.h \
+    ../src/errorhandler.h \
     ../src/localizer.h \
     ../src/logger.h \
     ../src/loghandler.h \
@@ -34,15 +40,25 @@ HEADERS += \
     ../src/networkrequest.h \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
+    ../src/task.h \
+    ../src/tasks/adddevice/taskadddevice.h \
+    ../src/tasks/function/taskfunction.h \
     helper.h \
     testconnectiondataholder.h \
     testlocalizer.h \
     testlogger.h \
     testmodels.h \
-    testreleasemonitor.h
+    testreleasemonitor.h \
+    testtasks.h
 
 SOURCES += \
     ../src/connectiondataholder.cpp \
+    ../src/curve25519.cpp \
+    ../src/errorhandler.cpp \
+    ../src/hacl-star/Hacl_Chacha20.c \
+    ../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
+    ../src/hacl-star/Hacl_Curve25519_51.c \
+    ../src/hacl-star/Hacl_Poly1305_32.c \
     ../src/localizer.cpp \
     ../src/logger.cpp \
     ../src/loghandler.cpp \
@@ -56,6 +72,7 @@ SOURCES += \
     ../src/models/serverdata.cpp \
     ../src/models/user.cpp \
     ../src/releasemonitor.cpp \
+    ../src/tasks/adddevice/taskadddevice.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \
@@ -65,7 +82,8 @@ SOURCES += \
     testlocalizer.cpp \
     testlogger.cpp \
     testmodels.cpp \
-    testreleasemonitor.cpp
+    testreleasemonitor.cpp \
+    testtasks.cpp
 
 # Platform-specific: Linux
 linux {

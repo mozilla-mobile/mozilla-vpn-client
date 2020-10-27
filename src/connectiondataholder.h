@@ -56,6 +56,9 @@ public slots:
     void connectionStateChanged();
 
 signals:
+    // for testing.
+    void ipAddressChecked();
+
     void ipAddressChanged();
     void bytesChanged();
 

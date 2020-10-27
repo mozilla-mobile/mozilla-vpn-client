@@ -199,30 +199,29 @@ void ConnectionDataHolder::updateIpAddress()
     }
     m_updatingIpAddress = true;
 
-    NetworkRequest *request = NetworkRequest::createForIpInfo(MozillaVPN::instance());
+    NetworkRequest *request = NetworkRequest::createForIpInfo(this, MozillaVPN::instance());
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
         logger.log() << "IP address request failed" << error;
         m_updatingIpAddress = false;
+        emit ipAddressChecked();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
         logger.log() << "IP address request completed";
-        m_updatingIpAddress = false;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
-        if (!json.isObject()) {
-            return;
+        if (json.isObject()) {
+            QJsonObject obj = json.object();
+
+            QJsonValue value = obj.take("ip");
+            if (value.isString()) {
+                m_ipAddress = value.toString();
+                emit ipAddressChanged();
+            }
         }
 
-        QJsonObject obj = json.object();
-
-        QJsonValue value = obj.take("ip");
-        if (!value.isString()) {
-            return;
-        }
-
-        m_ipAddress = value.toString();
-        emit ipAddressChanged();
+        m_updatingIpAddress = false;
+        emit ipAddressChecked();
     });
 }
 
