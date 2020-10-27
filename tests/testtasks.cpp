@@ -4,12 +4,43 @@
 
 #include "testtasks.h"
 #include "../src/mozillavpn.h"
+#include "../src/tasks/accountandservers/taskaccountandservers.h"
 #include "../src/tasks/adddevice/taskadddevice.h"
 #include "../src/tasks/function/taskfunction.h"
 
 void TestTasks::accountAndServers()
 {
-    // TODO
+    // Failure
+    {
+        TestHelper::networkConfig.append(
+            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
+        TestHelper::networkConfig.append(
+            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
+
+        TaskAccountAndServers *task = new TaskAccountAndServers();
+
+        QEventLoop loop;
+        connect(task, &Task::completed, [&]() { loop.exit(); });
+
+        MozillaVPN::instance()->scheduleTask(task);
+        loop.exec();
+    }
+
+    // Success
+    {
+        TestHelper::networkConfig.append(
+            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, QByteArray()));
+        TestHelper::networkConfig.append(
+            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, QByteArray()));
+
+        TaskAccountAndServers *task = new TaskAccountAndServers();
+
+        QEventLoop loop;
+        connect(task, &Task::completed, [&]() { loop.exit(); });
+
+        MozillaVPN::instance()->scheduleTask(task);
+        loop.exec();
+    }
 }
 
 void TestTasks::addDevice_success()

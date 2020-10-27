@@ -56,7 +56,7 @@ void MozillaVPN::openLink(LinkType)
 void MozillaVPN::scheduleTask(Task *task)
 {
     task->run(this);
-    task->deleteLater();
+    connect(task, &Task::completed, task, &Task::deleteLater);
 }
 
 void MozillaVPN::maybeRunTask()

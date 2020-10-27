@@ -41,6 +41,7 @@ HEADERS += \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
     ../src/task.h \
+    ../src/tasks/accountandservers/taskaccountandservers.h \
     ../src/tasks/adddevice/taskadddevice.h \
     ../src/tasks/function/taskfunction.h \
     ../src/timersingleshot.h \
@@ -73,6 +74,7 @@ SOURCES += \
     ../src/models/serverdata.cpp \
     ../src/models/user.cpp \
     ../src/releasemonitor.cpp \
+    ../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../src/tasks/adddevice/taskadddevice.cpp \
     ../src/timersingleshot.cpp \
     main.cpp \
