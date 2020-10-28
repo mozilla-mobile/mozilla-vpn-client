@@ -4,6 +4,7 @@
 
 #include "testconnectiondataholder.h"
 #include "../src/connectiondataholder.h"
+#include "../src/constants.h"
 #include "helper.h"
 
 #include <QSplineSeries>
@@ -20,7 +21,7 @@ void TestConnectionDataHolder::checkIpAddressFailure()
     connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
         cdh.disable();
         loop.exit();
-    }); 
+    });
 
     cdh.enable();
     loop.exec();
@@ -61,7 +62,7 @@ void TestConnectionDataHolder::checkIpAddressSucceess()
         QCOMPARE(cdh.ipAddress(), ipAddress);
 
         QFETCH(bool, signal);
-        QCOMPARE(spy.count(), signal ? 1 : 0); 
+        QCOMPARE(spy.count(), signal ? 1 : 0);
 
         loop.exit();
     });
@@ -87,6 +88,19 @@ void TestConnectionDataHolder::chart()
                  QVariant::fromValue(rxSeries),
                  QVariant::fromValue(axisX),
                  QVariant::fromValue(axisY));
+
+    QCOMPARE(spy.count(), 0);
+    QCOMPARE(txSeries->count(), Constants::CHARTS_MAX_POINTS);
+    QCOMPARE(rxSeries->count(), Constants::CHARTS_MAX_POINTS);
+
+    QEventLoop loop;
+    connect(&cdh, &ConnectionDataHolder::bytesChanged, [&] {
+        if (spy.count() >= Constants::CHARTS_MAX_POINTS * 2) {
+            loop.exit();
+        }
+    });
+
+    loop.exec();
 }
 
 static TestConnectionDataHolder s_testConnectionDataHolder;

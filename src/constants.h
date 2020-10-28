@@ -14,7 +14,11 @@ constexpr int IPADDRESS_TIMER_MSEC = 0;
 #endif
 
 // Let's check the connection status any second.
+#ifndef UNIT_TEST
 constexpr int CHECKSTATUS_TIMER_MSEC = 1000;
+#else
+constexpr int CHECKSTATUS_TIMER_MSEC = 0;
+#endif
 
 // Number of points for the charts.
 constexpr int CHARTS_MAX_POINTS = 30;
