@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
-#include "server.h"
-
 #include <QDebug>
 #include <QRandomGenerator>
 #include <QAndroidJniObject>
@@ -21,10 +19,13 @@
 #include <android/log.h>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include "device.h"
-#include "keys.h"
+#include <QJsonArray>
+#include "models/device.h"
+#include "models/keys.h"
+#include "models/server.h"
+#include "ipaddressrange.h"
 #include "androidjniutils.h"
-#include "captiveportal/captiveportal.h"
+
 
 
 #define TAG "ANDROID_CONTROLLER"
@@ -68,10 +69,9 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
 void AndroidController::activate(const Server &server,
                                const Device *device,
                                const Keys *keys,
-                               const CaptivePortal &captivePortal,
+                               const QList<IPAddressRange> &allowedIPAddressRanges,
                                bool forSwitching)
 {
-    Q_UNUSED(captivePortal);
     m_server = server;
 
     // Serialise arguments for the VPNService
@@ -93,19 +93,26 @@ void AndroidController::activate(const Server &server,
     jServer["publicKey"] = server.publicKey();
     jServer["port"] = (int) server.choosePort();
 
+    QJsonArray allowedIPs;
+    foreach( auto item, allowedIPAddressRanges){
+        QJsonValue val;
+        val= item.toString();
+        allowedIPs.append(val);
+    }
+
     QJsonObject args;
     args["device"] = jDevice;
     args["keys"] = jKeys;
     args["server"] = jServer;
     args["forSwitching"] = forSwitching;
+    args["allowedIPs"] = allowedIPs;
+
 
     QJsonDocument doc;
     doc.setObject(args);
 
     QAndroidParcel sendData;
-    sendData.writeData(doc.toJson());
-    LOGD("ANDROID-CONTROLLER --  Send Activation Request to Service");
-    
+    sendData.writeData(doc.toJson()); 
     m_serviceBinder.transact(ACTION_ACTIVATE,sendData, nullptr);
 }
 

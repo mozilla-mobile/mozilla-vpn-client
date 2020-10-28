@@ -1,5 +1,6 @@
 package com.mozilla.vpn
 
+import android.nfc.Tag
 import android.os.Binder
 import android.os.IBinder
 import android.os.Parcel
@@ -113,6 +114,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      */
     private fun buildConfigFromJSON(json: String?): Config {
         val confBuilder = Config.Builder()
+        Log.e(tag, json)
         val obj = JSONObject(json)
         val jServer = obj.getJSONObject("server")
         val peerBuilder = Peer.Builder()
@@ -120,8 +122,18 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             InetEndpoint.parse(jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"))
         peerBuilder.setEndpoint(ep)
         peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
-        val internet = InetNetwork.parse("0.0.0.0/0") // aka The whole internet.
-        peerBuilder.addAllowedIp(internet)
+
+        val jAllowedIPList = obj.getJSONArray("allowedIPs");
+        if(jAllowedIPList == null){
+            val internet = InetNetwork.parse("0.0.0.0/0") // aka The whole internet.
+            peerBuilder.addAllowedIp(internet)
+        }else{
+            (0..jAllowedIPList.length()).toList().forEach {
+                val network = InetNetwork.parse(jAllowedIPList.getString(it))
+                peerBuilder.addAllowedIp(network)
+            }
+        }
+
         confBuilder.addPeer(peerBuilder.build())
 
         val privateKey = obj.getJSONObject("keys").getString("privateKey")

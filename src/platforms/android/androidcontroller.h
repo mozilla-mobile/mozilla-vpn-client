@@ -18,7 +18,7 @@ public:
     void activate(const Server &data,
                   const Device *device,
                   const Keys *keys,
-                  const CaptivePortal &captivePortal,
+                  const QList<IPAddressRange> &allowedIPAddressRanges,
                   bool forSwitching) override;
 
     void deactivate(bool forSwitching) override;
