@@ -68,6 +68,7 @@ Item {
 
             property var deviceName: name
             //% "%1 %2"
+            //: Example: "deviceName deviceDescription"
             property var accessibleName: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
 
             width: deviceList.width
@@ -167,7 +168,7 @@ Item {
                         Layout.preferredHeight: 40
                         Layout.preferredWidth: 40
                         onClicked: removePopup.initializeAndOpen(name, index)
-                        //: "This is a label to make the icon button accessible
+                        //: Label used for accessibility on the button to remove a device
                         //% "Remove %1"
                         accessibleName: qsTrId("vpn.devices.removeA11Y").arg(device.accessibleName)
                         // Only allow focus within the current item in the list.
@@ -394,6 +395,7 @@ Item {
             }
 
             Text {
+                //: %1 is the name of the device being removed. "\n" is used to display it on a new line, please keep it in the translation.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
                 Layout.alignment: Qt.AlignHCenter
