@@ -179,6 +179,9 @@ private:
 
     bool modelsInitialized() const;
 
+private slots:
+    void taskCompleted();
+
 signals:
     void stateChanged();
     void alertChanged();

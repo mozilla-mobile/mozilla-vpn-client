@@ -164,3 +164,7 @@ bool MozillaVPN::modelsInitialized() const
 {
     return true;
 }
+
+void MozillaVPN::taskCompleted()
+{
+}

@@ -35,32 +35,33 @@ void LinuxController::initialize(const Device *device, const Keys *keys)
     Q_UNUSED(keys);
 
     QDBusPendingCallWatcher *watcher = m_dbus->status();
-    QObject::connect(watcher,
-                     &QDBusPendingCallWatcher::finished,
-                     [this](QDBusPendingCallWatcher *call) {
-                         QDBusPendingReply<QString> reply = *call;
-                         if (reply.isError()) {
-                             logger.log() << "Error received from the DBus service";
-                             emit initialized(false, Controller::StateOff, QDateTime());
-                             return;
-                         }
+    watcher->setParent(this);
+    connect(watcher,
+            &QDBusPendingCallWatcher::finished,
+            [this](QDBusPendingCallWatcher *call) {
+                QDBusPendingReply<QString> reply = *call;
+                if (reply.isError()) {
+                    logger.log() << "Error received from the DBus service";
+                    emit initialized(false, Controller::StateOff, QDateTime());
+                    return;
+                }
 
-                         QString status = reply.argumentAt<0>();
-                         logger.log() << "Status:" << status;
+                QString status = reply.argumentAt<0>();
+                logger.log() << "Status:" << status;
 
-                         QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
-                         Q_ASSERT(json.isObject());
+                QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
+                Q_ASSERT(json.isObject());
 
-                         QJsonObject obj = json.object();
-                         Q_ASSERT(obj.contains("status"));
-                         QJsonValue statusValue = obj.take("status");
-                         Q_ASSERT(statusValue.isBool());
+                QJsonObject obj = json.object();
+                Q_ASSERT(obj.contains("status"));
+                QJsonValue statusValue = obj.take("status");
+                Q_ASSERT(statusValue.isBool());
 
-                         emit initialized(true,
-                                          statusValue.toBool() ? Controller::StateOn
-                                                               : Controller::StateOff,
-                                          QDateTime::currentDateTime());
-                     });
+                emit initialized(true,
+                                 statusValue.toBool() ? Controller::StateOn
+                                                      : Controller::StateOff,
+                                 QDateTime::currentDateTime());
+            });
 }
 
 void LinuxController::activate(const Server &server,
@@ -84,28 +85,29 @@ void LinuxController::deactivate(bool forSwitching)
 
 void LinuxController::monitorWatcher(QDBusPendingCallWatcher *watcher)
 {
-    QObject::connect(watcher,
-                     &QDBusPendingCallWatcher::finished,
-                     [this](QDBusPendingCallWatcher *call) {
-                         QDBusPendingReply<bool> reply = *call;
-                         if (reply.isError()) {
-                             logger.log() << "Error received from the DBus service";
-                             MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
-                             emit disconnected();
-                             return;
-                         }
+    watcher->setParent(this);
+    connect(watcher,
+            &QDBusPendingCallWatcher::finished,
+            [this](QDBusPendingCallWatcher *call) {
+                QDBusPendingReply<bool> reply = *call;
+                if (reply.isError()) {
+                    logger.log() << "Error received from the DBus service";
+                    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+                    emit disconnected();
+                    return;
+                }
 
-                         bool status = reply.argumentAt<0>();
-                         if (status) {
-                             logger.log() << "DBus service says: all good.";
-                             // we will receive the connected/disconnected() signal;
-                             return;
-                         }
+                bool status = reply.argumentAt<0>();
+                if (status) {
+                    logger.log() << "DBus service says: all good.";
+                    // we will receive the connected/disconnected() signal;
+                    return;
+                }
 
-                         logger.log() << "DBus service says: error.";
-                         MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
-                         emit disconnected();
-                     });
+                logger.log() << "DBus service says: error.";
+                MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+                emit disconnected();
+            });
 }
 
 void LinuxController::checkStatus()
@@ -113,47 +115,48 @@ void LinuxController::checkStatus()
     logger.log() << "Check status";
 
     QDBusPendingCallWatcher *watcher = m_dbus->status();
-    QObject::connect(watcher,
-                     &QDBusPendingCallWatcher::finished,
-                     [this](QDBusPendingCallWatcher *call) {
-                         QDBusPendingReply<QString> reply = *call;
-                         if (reply.isError()) {
-                             logger.log() << "Error received from the DBus service";
-                             return;
-                         }
+    watcher->setParent(this);
+    connect(watcher,
+            &QDBusPendingCallWatcher::finished,
+            [this](QDBusPendingCallWatcher *call) {
+                QDBusPendingReply<QString> reply = *call;
+                if (reply.isError()) {
+                    logger.log() << "Error received from the DBus service";
+                    return;
+                }
 
-                         QString status = reply.argumentAt<0>();
-                         logger.log() << "Status:" << status;
+                QString status = reply.argumentAt<0>();
+                logger.log() << "Status:" << status;
 
-                         QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
-                         Q_ASSERT(json.isObject());
+                QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
+                Q_ASSERT(json.isObject());
 
-                         QJsonObject obj = json.object();
-                         Q_ASSERT(obj.contains("status"));
-                         QJsonValue statusValue = obj.take("status");
-                         Q_ASSERT(statusValue.isBool());
+                QJsonObject obj = json.object();
+                Q_ASSERT(obj.contains("status"));
+                QJsonValue statusValue = obj.take("status");
+                Q_ASSERT(statusValue.isBool());
 
-                         if (!statusValue.toBool()) {
-                             logger.log() << "Unable to retrieve the status from the interface.";
-                             return;
-                         }
+                if (!statusValue.toBool()) {
+                    logger.log() << "Unable to retrieve the status from the interface.";
+                    return;
+                }
 
-                         Q_ASSERT(obj.contains("serverIpv4Gateway"));
-                         QJsonValue serverIpv4Gateway = obj.take("serverIpv4Gateway");
-                         Q_ASSERT(serverIpv4Gateway.isString());
+                Q_ASSERT(obj.contains("serverIpv4Gateway"));
+                QJsonValue serverIpv4Gateway = obj.take("serverIpv4Gateway");
+                Q_ASSERT(serverIpv4Gateway.isString());
 
-                         Q_ASSERT(obj.contains("txBytes"));
-                         QJsonValue txBytes = obj.take("txBytes");
-                         Q_ASSERT(txBytes.isDouble());
+                Q_ASSERT(obj.contains("txBytes"));
+                QJsonValue txBytes = obj.take("txBytes");
+                Q_ASSERT(txBytes.isDouble());
 
-                         Q_ASSERT(obj.contains("rxBytes"));
-                         QJsonValue rxBytes = obj.take("rxBytes");
-                         Q_ASSERT(rxBytes.isDouble());
+                Q_ASSERT(obj.contains("rxBytes"));
+                QJsonValue rxBytes = obj.take("rxBytes");
+                Q_ASSERT(rxBytes.isDouble());
 
-                         emit statusUpdated(serverIpv4Gateway.toString(),
-                                            txBytes.toDouble(),
-                                            rxBytes.toDouble());
-                     });
+                emit statusUpdated(serverIpv4Gateway.toString(),
+                                   txBytes.toDouble(),
+                                   rxBytes.toDouble());
+            });
 }
 
 void LinuxController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
@@ -161,17 +164,18 @@ void LinuxController::getBackendLogs(std::function<void(const QString &)> &&a_ca
     std::function<void(const QString &)> callback = std::move(a_callback);
 
     QDBusPendingCallWatcher *watcher = m_dbus->logs();
-    QObject::connect(watcher,
-                     &QDBusPendingCallWatcher::finished,
-                     [callback = std::move(callback)](QDBusPendingCallWatcher *call) {
-                         QDBusPendingReply<QString> reply = *call;
-                         if (reply.isError()) {
-                             logger.log() << "Error received from the DBus service";
-                             callback("Failed to retrieve logs from the mozillavpn-daemon.");
-                             return;
-                         }
+    watcher->setParent(this);
+    connect(watcher,
+            &QDBusPendingCallWatcher::finished,
+            [callback = std::move(callback)](QDBusPendingCallWatcher *call) {
+                QDBusPendingReply<QString> reply = *call;
+                if (reply.isError()) {
+                    logger.log() << "Error received from the DBus service";
+                    callback("Failed to retrieve logs from the mozillavpn-daemon.");
+                    return;
+                }
 
-                         QString status = reply.argumentAt<0>();
-                         callback(status);
-                     });
+                QString status = reply.argumentAt<0>();
+                callback(status);
+            });
 }

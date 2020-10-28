@@ -12,4 +12,6 @@ private slots:
     void checkIpAddressFailure();
     void checkIpAddressSucceess_data();
     void checkIpAddressSucceess();
+
+    void chart();
 };

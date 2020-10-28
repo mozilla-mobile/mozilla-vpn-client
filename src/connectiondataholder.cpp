@@ -104,32 +104,36 @@ void ConnectionDataHolder::activate(const QVariant &a_txSeries,
 
     QtCharts::QSplineSeries *txSeries = qobject_cast<QtCharts::QSplineSeries *>(
         a_txSeries.value<QObject *>());
+    Q_ASSERT(txSeries);
 
     if (m_txSeries != txSeries) {
         m_txSeries = txSeries;
-        connect(txSeries, &QObject::destroyed, [this]() { deactivate(); });
+        connect(txSeries, &QObject::destroyed, this, &ConnectionDataHolder::deactivate);
     }
 
     QtCharts::QSplineSeries *rxSeries = qobject_cast<QtCharts::QSplineSeries *>(
         a_rxSeries.value<QObject *>());
+    Q_ASSERT(rxSeries);
 
     if (m_rxSeries != rxSeries) {
         m_rxSeries = rxSeries;
-        connect(rxSeries, &QObject::destroyed, [this]() { deactivate(); });
+        connect(rxSeries, &QObject::destroyed, this, &ConnectionDataHolder::deactivate);
     }
 
     QtCharts::QValueAxis *axisX = qobject_cast<QtCharts::QValueAxis *>(a_axisX.value<QObject *>());
+    Q_ASSERT(axisX);
 
     if (m_axisX != axisX) {
         m_axisX = axisX;
-        connect(axisX, &QObject::destroyed, [this]() { deactivate(); });
+        connect(axisX, &QObject::destroyed, this, &ConnectionDataHolder::deactivate);
     }
 
     QtCharts::QValueAxis *axisY = qobject_cast<QtCharts::QValueAxis *>(a_axisY.value<QObject *>());
+    Q_ASSERT(axisY);
 
     if (m_axisY != axisY) {
         m_axisY = axisY;
-        connect(axisY, &QObject::destroyed, [this]() { deactivate(); });
+        connect(axisY, &QObject::destroyed, this, &ConnectionDataHolder::deactivate);
     }
 
     // Let's be sure we have all the x/y points.

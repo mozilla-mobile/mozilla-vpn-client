@@ -122,14 +122,6 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &CaptivePortalDetection::captivePortalDetected,
             &m_private->m_controller,
             &Controller::captivePortalDetected);
-
-    QScreen *screen = QGuiApplication::primaryScreen();
-    screen->setOrientationUpdateMask(Qt::PortraitOrientation | Qt::LandscapeOrientation
-                                     | Qt::InvertedPortraitOrientation
-                                     | Qt::InvertedLandscapeOrientation);
-    connect(screen, &QScreen::orientationChanged, [](Qt::ScreenOrientation orientation) {
-        logger.log() << "Screen rotated:" << orientation;
-    });
 }
 
 MozillaVPN::~MozillaVPN()
@@ -320,16 +312,18 @@ void MozillaVPN::maybeRunTask()
     QPointer<Task> task = m_tasks.takeFirst();
     Q_ASSERT(!task.isNull());
 
-    QObject::connect(task, &Task::completed, this, [this]() {
-        logger.log() << "Task completed";
-
-        m_task_running = false;
-        maybeRunTask();
-    });
-
+    QObject::connect(task, &Task::completed, this, &MozillaVPN::taskCompleted);
     QObject::connect(task, &Task::completed, task, &Task::deleteLater);
 
     task->run(this);
+}
+
+void MozillaVPN::taskCompleted()
+{
+    logger.log() << "Task completed";
+
+    m_task_running = false;
+    maybeRunTask();
 }
 
 void MozillaVPN::setToken(const QString &token)

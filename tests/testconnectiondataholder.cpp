@@ -6,6 +6,9 @@
 #include "../src/connectiondataholder.h"
 #include "helper.h"
 
+#include <QSplineSeries>
+#include <QValueAxis>
+
 void TestConnectionDataHolder::checkIpAddressFailure()
 {
     ConnectionDataHolder cdh;
@@ -65,6 +68,25 @@ void TestConnectionDataHolder::checkIpAddressSucceess()
 
     cdh.enable();
     loop.exec();
+}
+
+void TestConnectionDataHolder::chart()
+{
+    ConnectionDataHolder cdh;
+    QSignalSpy spy(&cdh, &ConnectionDataHolder::bytesChanged);
+
+    cdh.add(123, 123);
+    QCOMPARE(spy.count(), 0);
+
+    QtCharts::QSplineSeries *txSeries = new QtCharts::QSplineSeries(this);
+    QtCharts::QSplineSeries *rxSeries = new QtCharts::QSplineSeries(this);
+    QtCharts::QValueAxis *axisX = new QtCharts::QValueAxis(this);
+    QtCharts::QValueAxis *axisY = new QtCharts::QValueAxis(this);
+
+    cdh.activate(QVariant::fromValue(txSeries),
+                 QVariant::fromValue(rxSeries),
+                 QVariant::fromValue(axisX),
+                 QVariant::fromValue(axisY));
 }
 
 static TestConnectionDataHolder s_testConnectionDataHolder;
