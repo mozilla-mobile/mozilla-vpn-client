@@ -22,8 +22,6 @@ Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 //: Context - "The current ip-address is: unknown"
 ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectionInfo.unknown"))
 {
-    emit ipAddressChanged();
-
     connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
     connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
         MozillaVPN::instance()->controller()->getStatus(

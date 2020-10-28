@@ -27,22 +27,24 @@ void TestConnectionDataHolder::checkIpAddressSucceess_data()
 {
     QTest::addColumn<QByteArray>("json");
     QTest::addColumn<QString>("ipAddress");
+    QTest::addColumn<bool>("signal");
 
-    QTest::addRow("invalid") << QByteArray("") << "vpn.connectionInfo.unknown";
+    QTest::addRow("invalid") << QByteArray("") << "vpn.connectionInfo.unknown" << false;
 
     QJsonObject json;
-    QTest::addRow("empty") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown";
+    QTest::addRow("empty") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown" << false;
 
     json.insert("ip", 42);
-    QTest::addRow("invalid ip") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown";
+    QTest::addRow("invalid ip") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown" << false;
 
     json.insert("ip", "42");
-    QTest::addRow("valid ip") << QJsonDocument(json).toJson() << "42";
+    QTest::addRow("valid ip") << QJsonDocument(json).toJson() << "42" << true;
 }
 
 void TestConnectionDataHolder::checkIpAddressSucceess()
 {
     ConnectionDataHolder cdh;
+    QSignalSpy spy(&cdh, &ConnectionDataHolder::ipAddressChanged);
 
     QFETCH(QByteArray, json);
     TestHelper::networkConfig.append(
@@ -54,6 +56,9 @@ void TestConnectionDataHolder::checkIpAddressSucceess()
 
         QFETCH(QString, ipAddress);
         QCOMPARE(cdh.ipAddress(), ipAddress);
+
+        QFETCH(bool, signal);
+        QCOMPARE(spy.count(), signal ? 1 : 0); 
 
         loop.exit();
     });
