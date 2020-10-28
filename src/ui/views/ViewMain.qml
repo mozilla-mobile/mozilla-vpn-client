@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import Mozilla.VPN 1.0
 import "../components"
@@ -11,10 +12,64 @@ import "../themes/themes.js" as Theme
 Flickable {
     id: mainView
 
+    property var flickContentHeight: {
+        flickContentHeight = 444;
+        if (alertBox.visible)
+            flickContentHeight += alertBox.height + Theme.windowMargin;
+
+        if (mobileHeader.visible)
+            flickContentHeight += mobileHeader.height;
+
+    }
+
     width: parent.width
     contentWidth: parent.width
-    contentHeight: alertBox.isUpdateAlert ? (parent.height + Theme.windowMargin + alertBox.height) : parent.height
+    contentHeight: Math.max(flickContentHeight, window.height)
     boundsBehavior: Flickable.StopAtBounds
+    states: [
+        State {
+            when: window.height > Theme.verticalBreakPoint1
+
+            PropertyChanges {
+                target: mobileHeader
+                visible: true
+            }
+
+            PropertyChanges {
+                target: mainContent
+                y: {
+                    if (alertBox.visible) {
+                        mainContent.y = alertBox.height + Theme.windowMargin + mobileHeader.height;
+                        alertBox.y = mobileHeader.height + Theme.windowMargin;
+                    } else {
+                        mainContent.y = mobileHeader.height;
+                    }
+                }
+            }
+
+        },
+        State {
+            when: window.height < 500
+
+            PropertyChanges {
+                target: mobileHeader
+                visible: false
+            }
+
+            PropertyChanges {
+                target: mainContent
+                y: {
+                    if (alertBox.visible) {
+                        mainContent.y = alertBox.height + Theme.windowMargin;
+                        alertBox.y = Theme.windowMargin;
+                    } else {
+                        mainContent.y = 0;
+                    }
+                }
+            }
+
+        }
+    ]
 
     Item {
         id: mobileHeader
@@ -23,7 +78,7 @@ Flickable {
         width: parent.width
         anchors.top: parent.top
         anchors.topMargin: Theme.windowMargin / 2
-        visible: parent.height > Theme.verticalBreakPoint1
+        visible: window.height > Theme.verticalBreakPoint1
 
         Row {
             anchors.verticalCenter: parent.verticalCenter
@@ -38,7 +93,7 @@ Flickable {
 
             VPNBoldLabel {
                 //% "Mozilla VPN"
-                text: qsTr("MozillaVPN")
+                text: qsTrId("MozillaVPN")
                 color: "#000000"
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -50,6 +105,17 @@ Flickable {
     VPNAlert {
         id: alertBox
 
+        function updatePageLayout() {
+            let alertHeight = alertBox.height + Theme.windowMargin;
+            flickContentHeight -= alertHeight;
+            if (!visible && mobileHeader.visible)
+                mainContent.y = mobileHeader.height;
+
+            if (!visible && !mobileHeader.visible)
+                mainContent.y = 0;
+
+        }
+
         state: VPN.updateRecommended ? "recommended" : ""
         alertType: "update"
         alertColor: Theme.blueButton
@@ -58,23 +124,13 @@ Flickable {
         alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
         alertLinkText: qsTrId("vpn.updates.updateNow")
-        y: Theme.windowMargin
         width: parent.width - (Theme.windowMargin * 2)
     }
 
     Item {
-        height: parent.contentHeight
+        id: mainContent
+
         width: parent.width
-        y: {
-            let yDistance = 0;
-            if (alertBox.visible)
-                yDistance += alertBox.height + Theme.windowMargin;
-
-            if (mobileHeader.visible)
-                yDistance += mobileHeader.height;
-
-            return yDistance;
-        }
 
         VPNDropShadow {
             anchors.fill: box
@@ -106,6 +162,11 @@ Flickable {
 
         }
 
+    }
+
+    ScrollBar.vertical: ScrollBar {
+        policy: window.height > flickContentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
+        Accessible.ignored: true
     }
 
 }

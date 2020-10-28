@@ -110,6 +110,7 @@ Rectangle {
         onClicked: {
             alertBox.visible = false;
             if (alertType === "update") {
+               parent.updatePageLayout();
                return VPN.hideUpdateRecommendedAlert();
             }
             return VPN.hideAlert();
