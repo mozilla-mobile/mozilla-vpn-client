@@ -33,7 +33,7 @@ VPNClickableRow {
                 PropertyChanges {
                     target: label
                     //% "%1 of %2"
-                    //: Context: You have "x of y" (y is max) devices in your account.
+                    //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
                     text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
                 }
 
