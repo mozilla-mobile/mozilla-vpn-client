@@ -42,13 +42,27 @@ namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 }
 
+#ifndef UNIT_TEST
 const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::readFile,
                                                               CryptoSettings::writeFile);
+#endif
 
-SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
+SettingsHolder::SettingsHolder()
+    :
+#ifndef UNIT_TEST
+      m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn")
+#else
+      m_settings("mozilla_testing", "vpn")
+#endif
+{}
 
-SettingsHolder::~SettingsHolder() = default;
+SettingsHolder::~SettingsHolder()
+{
+#ifdef UNIT_TEST
+    m_settings.clear();
+#endif
+}
 
 void SettingsHolder::clear()
 {

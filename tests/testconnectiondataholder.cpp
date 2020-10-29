@@ -102,8 +102,8 @@ void TestConnectionDataHolder::chart()
 
     loop.exec();
 
-    QCOMPARE(cdh.txBytes(), 0);
-    QCOMPARE(cdh.rxBytes(), 0);
+    QCOMPARE(cdh.txBytes(), (uint32_t) 0);
+    QCOMPARE(cdh.rxBytes(), (uint32_t) 0);
 }
 
 static TestConnectionDataHolder s_testConnectionDataHolder;

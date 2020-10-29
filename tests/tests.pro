@@ -74,6 +74,7 @@ SOURCES += \
     ../src/models/serverdata.cpp \
     ../src/models/user.cpp \
     ../src/releasemonitor.cpp \
+    ../src/settingsholder.cpp \
     ../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../src/tasks/adddevice/taskadddevice.cpp \
     ../src/timersingleshot.cpp \
@@ -81,7 +82,6 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
-    mocsettingsholder.cpp \
     testconnectiondataholder.cpp \
     testlocalizer.cpp \
     testlogger.cpp \

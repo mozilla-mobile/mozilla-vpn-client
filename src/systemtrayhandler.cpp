@@ -53,7 +53,7 @@ void SystemTrayHandler::controllerStateChanged()
         showIcon("://ui/resources/logo-on.svg");
         //% "VPN connected"
         title = qtTrId("vpn.systray.statusConnected.title");
-        //% "Connected to %1 - %2";
+        //% "Connected to %1 - %2"
         //: Shown as message body in a notification. %1 is the country, %2 is the city.
         message = qtTrId("vpn.systray.statusConnected.message")
                       .arg(vpn->currentServer()->country())
