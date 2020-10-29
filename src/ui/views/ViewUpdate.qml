@@ -9,21 +9,12 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
+VPNFlickable {
     id: updatePanel
 
-    // Approximate height of components on load, written statically to avoid a binding loop
-    property var childContentY: state === "recommended" ? 496 : 518
-    property var windowHeightExceedsContentHeight: (window.height > childContentY)
-
+    flickContentHeight: state === "recommended" ? 496 : 518
     state: VPN.updateRecommended ? "recommended" : "required"
-    anchors.fill: parent
-    contentHeight: windowHeightExceedsContentHeight ? window.height : childContentY
-    boundsBehavior: Flickable.StopAtBounds
-    opacity: 0
-    Component.onCompleted: {
-        opacity = 1;
-    }
+
     states: [
         State {
             name: "recommended"
@@ -235,18 +226,6 @@ Flickable {
             }
         }
 
-    }
-
-    Behavior on opacity {
-        PropertyAnimation {
-            duration: 200
-        }
-
-    }
-
-    ScrollBar.vertical: ScrollBar {
-        policy: windowHeightExceedsContentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
-        Accessible.ignored: true
     }
 
 }
