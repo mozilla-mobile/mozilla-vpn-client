@@ -14,6 +14,9 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+// Timeout for the network requests.
+constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
+
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
 }
@@ -35,6 +38,8 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 
     connect(m_manager, &QNetworkAccessManager::finished, this, &NetworkRequest::replyFinished);
     connect(m_manager, &QNetworkAccessManager::finished, this, &NetworkRequest::deleteLater);
+
+    m_request.setTransferTimeout(REQUEST_TIMEOUT_MSEC);
 }
 
 // static
