@@ -5,6 +5,7 @@
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
 #include "captiveportalrequest.h"
+#include "constants.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -27,7 +28,7 @@ void CaptivePortalDetection::controllerStateChanged()
     logger.log() << "Controller state changed";
 
     if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-        m_timer.start(CAPTIVEPORTAL_REQUEST_TIMEOUT);
+        m_timer.start(Constants::CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC);
         detectCaptivePortal();
     } else {
         m_timer.stop();

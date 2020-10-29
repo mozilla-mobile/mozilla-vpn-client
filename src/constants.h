@@ -30,6 +30,9 @@ CONSTEXPR(int, CHARTS_MAX_POINTS, 30, 30, 30);
 CONSTEXPR(uint32_t, RELEASE_MONITOR_MSEC, 21600000, 4000, 0)
 
 // in milliseconds, how often we should fetch the server list and the account.
-CONSTEXPR(uint32_t, SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC, 3600000, 4000, 0);
+CONSTEXPR(uint32_t, SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC, 3600000, 4000, 0)
+
+// how often we check the captive portal when the VPN is on.
+CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
 
 }; // namespace Constants

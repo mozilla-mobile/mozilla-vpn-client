@@ -12,7 +12,6 @@ constexpr int32_t CAPTIVEPORTAL_LOOKUPTIMER = 5000;
 constexpr const char *CAPTIVEPORTAL_HOST = "detectportal.firefox.com";
 constexpr const char *CAPTIVEPORTAL_URL = "http://detectportal.firefox.com/success.txt";
 
-constexpr int CAPTIVEPORTAL_REQUEST_TIMEOUT = 10000;
 constexpr const char *CAPTIVEPORTAL_REQUEST_CONTENT = "success";
 
 class CaptivePortal final

@@ -61,7 +61,7 @@ public class MacOSControllerImpl : NSObject {
                 return
             }
 
-            let tunnel = managers?.first
+            let tunnel = managers?.first { $0.localizedDescription == vpnName }
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = NETunnelProviderManager()
@@ -70,16 +70,6 @@ public class MacOSControllerImpl : NSObject {
             }
 
             Logger.global?.log(message: "Tunnel already exists")
-
-            let proto = tunnel!.protocolConfiguration as? NETunnelProviderProtocol
-            if proto == nil {
-                tunnel!.removeFromPreferences { _ in }
-
-                Logger.global?.log(message: "Creating the tunnel because its proto is invalid")
-                self!.tunnel = NETunnelProviderManager()
-                closure(ConnectionState.Disconnected, nil)
-                return
-            }
 
             self!.tunnel = tunnel
             if tunnel?.connection.status == .connected {
