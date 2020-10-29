@@ -13,19 +13,20 @@ Logger logger(LOG_MODEL, "ServerData");
 
 bool ServerData::fromSettings(SettingsHolder &settingsHolder)
 {
-    if (!settingsHolder.hasCurrentServerCountry() || !settingsHolder.hasCurrentServerCity()) {
+    if (!settingsHolder.hasCurrentServerCountry() || !settingsHolder.hasCurrentServerCity() || !settingsHolder.hasCurrentServerCountryCode()) {
         return false;
     }
 
-    logger.log() << m_countryCode << m_city;
+    initializeInternal(settingsHolder.currentServerCountryCode(), settingsHolder.currentServerCountry(), settingsHolder.currentServerCity());
 
-    initializeInternal(settingsHolder.currentServerCountry(), settingsHolder.currentServerCity());
+    logger.log() << m_countryCode << m_country << m_city;
     return true;
 }
 
 void ServerData::writeSettings(SettingsHolder &settingsHolder)
 {
-    settingsHolder.setCurrentServerCountry(m_countryCode);
+    settingsHolder.setCurrentServerCountryCode(m_countryCode);
+    settingsHolder.setCurrentServerCountry(m_country);
     settingsHolder.setCurrentServerCity(m_city);
 }
 
@@ -33,19 +34,20 @@ void ServerData::initialize(const ServerCountry &country, const ServerCity &city
 {
     logger.log() << "Country:" << country.name() << "City:" << city.name();
 
-    initializeInternal(country.code(), city.name());
+    initializeInternal(country.code(), country.name(), city.name());
     emit changed();
 }
 
-void ServerData::update(const QString &countryCode, const QString &city)
+void ServerData::update(const QString &countryCode, const QString &country, const QString &city)
 {
-    initializeInternal(countryCode, city);
+    initializeInternal(countryCode, country, city);
     emit changed();
 }
 
-void ServerData::initializeInternal(const QString &countryCode, const QString &city)
+void ServerData::initializeInternal(const QString &countryCode, const QString &country, const QString &city)
 {
     m_initialized = true;
     m_countryCode = countryCode;
+    m_country = country;
     m_city = city;
 }

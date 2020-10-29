@@ -634,7 +634,9 @@ const QList<Server> MozillaVPN::getServers() const
 
 void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
 {
-    m_private->m_serverData.update(countryCode, city);
+    QString countryName = m_private->m_serverCountryModel.countryName(countryCode);
+
+    m_private->m_serverData.update(countryCode, countryName, city);
     m_private->m_serverData.writeSettings(m_private->m_settingsHolder);
 }
 

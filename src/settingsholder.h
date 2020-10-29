@@ -47,6 +47,7 @@ public:
     GETSET(QString, hasUserEmail, userEmail, setUserEmail)
     GETSET(int, hasUserMaxDevices, userMaxDevices, setUserMaxDevices)
     GETSET(bool, hasUserSubscriptionNeeded, userSubscriptionNeeded, setUserSubscriptionNeeded)
+    GETSET(QString, hasCurrentServerCountryCode, currentServerCountryCode, setCurrentServerCountryCode)
     GETSET(QString, hasCurrentServerCountry, currentServerCountry, setCurrentServerCountry)
     GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
     GETSET(QByteArray, hasDevices, devices, setDevices)

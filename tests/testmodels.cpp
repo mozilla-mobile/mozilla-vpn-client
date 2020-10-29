@@ -777,6 +777,9 @@ void TestModels::serverCountryModelFromJson()
             QFETCH(QVariant, cities);
             QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
 
+            QCOMPARE(m.countryName(code.toString()), name.toString());
+            QCOMPARE(m.countryName("invalid"), QString());
+
             QVERIFY(m.fromJson(json));
         }
     }
@@ -814,6 +817,9 @@ void TestModels::serverCountryModelFromJson()
             QCOMPARE(m.data(index, ServerCountryModel::CitiesRole), cities);
 
             QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
+
+            QCOMPARE(m.countryName(code.toString()), name.toString());
+            QCOMPARE(m.countryName("invalid"), QString());
         }
     }
 }
@@ -828,6 +834,7 @@ void TestModels::serverDataBasic()
 
     QVERIFY(!sd.initialized());
     QCOMPARE(sd.countryCode(), "");
+    QCOMPARE(sd.country(), "");
     QCOMPARE(sd.city(), "");
 
     {
@@ -851,6 +858,7 @@ void TestModels::serverDataBasic()
 
         QVERIFY(sd.initialized());
         QCOMPARE(sd.countryCode(), "serverCountryCode");
+        QCOMPARE(sd.country(), "serverCountryName");
         QCOMPARE(sd.city(), "serverCityName");
 
         SettingsHolder settings;
@@ -860,23 +868,26 @@ void TestModels::serverDataBasic()
         QVERIFY(sd2.fromSettings(settings));
         QVERIFY(sd2.initialized());
         QCOMPARE(sd2.countryCode(), "serverCountryCode");
+        QCOMPARE(sd2.country(), "serverCountryName");
         QCOMPARE(sd2.city(), "serverCityName");
 
         QCOMPARE(spy.count(), 1);
     }
 
-    sd.update("new Country", "new City");
+    sd.update("new Country Code", "new Country", "new City");
     QCOMPARE(spy.count(), 2);
 
     QVERIFY(sd.initialized());
-    QCOMPARE(sd.countryCode(), "new Country");
+    QCOMPARE(sd.countryCode(), "new Country Code");
+    QCOMPARE(sd.country(), "new Country");
     QCOMPARE(sd.city(), "new City");
 
     sd.forget();
     QCOMPARE(spy.count(), 2);
 
     QVERIFY(!sd.initialized());
-    QCOMPARE(sd.countryCode(), "new Country");
+    QCOMPARE(sd.countryCode(), "new Country Code");
+    QCOMPARE(sd.country(), "new Country");
     QCOMPARE(sd.city(), "new City");
 
     SettingsHolder settings;

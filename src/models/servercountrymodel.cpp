@@ -204,3 +204,14 @@ const QList<Server> ServerCountryModel::getServers(const ServerData &data) const
 
     return QList<Server>();
 }
+
+const QString ServerCountryModel::countryName(const QString& countryCode) const
+{
+    for (const ServerCountry &country : m_countries) {
+        if (country.code() == countryCode) {
+            return country.name();
+        }
+    }
+
+    return QString();
+}

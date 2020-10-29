@@ -28,6 +28,7 @@ constexpr const char *SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char *SETTINGS_USER_EMAIL = "user/email";
 constexpr const char *SETTINGS_USER_MAXDEVICES = "user/maxDevices";
 constexpr const char *SETTINGS_USER_SUBSCRIPTIONNEEDED = "user/subscriptionNeeded";
+constexpr const char *SETTINGS_CURRENTSERVER_COUNTRYCODE = "currentServer/countryCode";
 constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
@@ -61,6 +62,7 @@ void SettingsHolder::clear()
     m_settings.remove(SETTINGS_USER_EMAIL);
     m_settings.remove(SETTINGS_USER_MAXDEVICES);
     m_settings.remove(SETTINGS_USER_SUBSCRIPTIONNEEDED);
+    m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRYCODE);
     m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
     m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
     m_settings.remove(SETTINGS_DEVICES);
@@ -167,6 +169,12 @@ GETSET(bool,
        hasUserSubscriptionNeeded,
        userSubscriptionNeeded,
        setUserSubscriptionNeeded)
+GETSET(QString,
+       toString,
+       SETTINGS_CURRENTSERVER_COUNTRYCODE,
+       hasCurrentServerCountryCode,
+       currentServerCountryCode,
+       setCurrentServerCountryCode)
 GETSET(QString,
        toString,
        SETTINGS_CURRENTSERVER_COUNTRY,

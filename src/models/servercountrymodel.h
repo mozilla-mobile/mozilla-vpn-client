@@ -40,6 +40,8 @@ public:
 
     const QList<Server> getServers(const ServerData &data) const;
 
+    const QString countryName(const QString &countryCode) const;
+
     // QAbstractListModel methods
 
     QHash<int, QByteArray> roleNames() const override;
