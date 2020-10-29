@@ -9,23 +9,19 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
+VPNFlickable {
     id: mainView
 
-    property var flickContentHeight: {
+    flickContentHeight:  {
         flickContentHeight = 444;
         if (alertBox.visible)
-            flickContentHeight += alertBox.height + Theme.windowMargin;
+            childContentY += alertBox.height + Theme.windowMargin;
 
         if (mobileHeader.visible)
-            flickContentHeight += mobileHeader.height;
+            childContentY += mobileHeader.height;
 
     }
 
-    width: parent.width
-    contentWidth: parent.width
-    contentHeight: Math.max(flickContentHeight, window.height)
-    boundsBehavior: Flickable.StopAtBounds
     states: [
         State {
             when: window.height > Theme.verticalBreakPoint1
@@ -163,10 +159,4 @@ Flickable {
         }
 
     }
-
-    ScrollBar.vertical: ScrollBar {
-        policy: window.height > flickContentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
-        Accessible.ignored: true
-    }
-
 }
