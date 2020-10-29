@@ -594,7 +594,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
         break;
 
     case ErrorHandler::AuthenticationError:
-        alert = AuthenticationFailedAlert;
+        if (m_userAuthenticated) {
+            alert = AuthenticationFailedAlert;
+        }
         break;
 
     case ErrorHandler::BackendServiceError:
