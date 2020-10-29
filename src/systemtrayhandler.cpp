@@ -79,7 +79,7 @@ void SystemTrayHandler::captivePortalNotificationRequested()
 {
     logger.log() << "Capitve portal notification shown";
     //% "Captive portal detected"
-    showMessage(qtTrId("vpn.systray.captivePortalAlert"), tr("TODO"), NoIcon, 2000);
+    showMessage(qtTrId("vpn.systray.captivePortalAlert"), qtTrId("TODO"), NoIcon, 2000);
 }
 
 void SystemTrayHandler::showAnimatedIcon()

@@ -68,6 +68,7 @@ Item {
             id: releaseLabel
 
             //% "Release Version"
+            //: Refers to the installed version;  Example - "Release Version: 1.23"
             text: qsTrId("vpn.aboutUs.releaseVersion")
             anchors.top: mozillaText.bottom
             anchors.topMargin: 16

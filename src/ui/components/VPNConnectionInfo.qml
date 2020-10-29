@@ -114,7 +114,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             color: Theme.white
             //% "IP: %1"
-            //: The Current Ip adress
+            //: The current IP address
             text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
         }
 
@@ -126,7 +126,7 @@ Item {
 
             VPNGraphLegendMarker {
                 //% "Download"
-                //: the current download speed. The speed is shown at the next line.
+                //: The current download speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.download")
                 rectColor: "#EE3389"
                 markerData: VPNConnectionData.rxBytes
@@ -134,7 +134,7 @@ Item {
 
             VPNGraphLegendMarker {
                 //% "Upload"
-                //: the current upload speed
+                //: The current upload speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.upload")
                 rectColor: "#F68953"
                 markerData: VPNConnectionData.txBytes

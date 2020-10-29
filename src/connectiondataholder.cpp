@@ -19,7 +19,7 @@ Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 }
 
 //% "Unknown"
-//: Context - "The current ip-address is: unknown"
+//: This refers to the current IP address, i.e. "IP: Unknown".
 ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectionInfo.unknown"))
 {
     connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
