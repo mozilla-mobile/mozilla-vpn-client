@@ -96,7 +96,10 @@ void SystemTrayHandler::captivePortalNotificationRequested()
 {
     logger.log() << "Capitve portal notification shown";
     //% "Captive portal detected"
-    showMessage(qtTrId("vpn.systray.captivePortalAlert"), qtTrId("TODO"), NoIcon, 2000);
+    QString title = qtTrId("vpn.systray.captivePortalAlert.title");
+    //% "VPN will automatically reconnect when ready
+    QString message = qtTrId("vpn.systray.captivePortalAlert.message");
+    showMessage(title, message, NoIcon, 2000);
 }
 
 void SystemTrayHandler::showAnimatedIcon()
