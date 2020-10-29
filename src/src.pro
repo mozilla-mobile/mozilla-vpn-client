@@ -125,6 +125,7 @@ linux {
     QT += svg
 
     SOURCES += \
+            platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
@@ -133,6 +134,7 @@ linux {
             tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
+            platforms/linux/backendlogsobserver.h \
             platforms/linux/dbus.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \

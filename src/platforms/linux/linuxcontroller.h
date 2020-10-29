@@ -29,8 +29,10 @@ public:
 
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
-private:
-    void monitorWatcher(QDBusPendingCallWatcher *watcher);
+private slots:
+    void checkStatusCompleted(QDBusPendingCallWatcher *call);
+    void initializeCompleted(QDBusPendingCallWatcher *call);
+    void operationCompleted(QDBusPendingCallWatcher *call);
 
 private:
     DBus *m_dbus = nullptr;
