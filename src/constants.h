@@ -6,7 +6,7 @@
 
 namespace Constants {
 
-// Let's refresh the IP address any 10 seconds.
+// Let's refresh the IP address any 10 seconds (in milliseconds).
 #ifndef UNIT_TEST
 constexpr int IPADDRESS_TIMER_MSEC = 10000;
 #else
@@ -29,4 +29,12 @@ constexpr uint32_t RELEASE_MONITOR_MSEC = 21600000;
 #else
 constexpr uint32_t RELEASE_MONITOR_MSEC = 0;
 #endif
+
+// in milliseconds, how often we should fetch the server list and the account.
+#ifndef QT_DEBUG
+constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC = 3600000;
+#else
+constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC = 120000;
+#endif
+
 }; // namespace Constants

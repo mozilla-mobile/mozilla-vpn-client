@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "constants.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "models/device.h"
@@ -36,9 +37,6 @@ constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudop
 #ifdef QT_DEBUG
 constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 #endif
-
-// in seconds, how often we should fetch the server list and the account.
-constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC = 3600;
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -675,7 +673,7 @@ void MozillaVPN::setUserAuthenticated(bool state)
 void MozillaVPN::startSchedulingAccountAndServers()
 {
     logger.log() << "Start scheduling account and servers";
-    m_accountAndServersTimer.start(SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC * 1000);
+    m_accountAndServersTimer.start(Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
 }
 
 void MozillaVPN::stopSchedulingAccountAndServers()
