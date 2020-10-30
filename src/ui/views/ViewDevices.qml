@@ -85,6 +85,7 @@ Item {
             }
 
             contentItem: ColumnLayout {
+                width: parent.width
                 anchors.fill: parent
                 spacing: 0
                 Accessible.name: device.accessibleName
@@ -97,6 +98,7 @@ Item {
                     Layout.leftMargin: Theme.windowMargin
                     Layout.rightMargin: Theme.windowMargin / 2
                     spacing: 0
+                    Layout.preferredWidth: parent.width
 
                     VPNIcon {
                         id: deviceIcon
@@ -109,8 +111,11 @@ Item {
                     }
 
                     ColumnLayout {
+                        id: deviceInfo
+
                         Layout.alignment: Qt.AlignTop
                         Layout.topMargin: Theme.windowMargin / 2
+                        Layout.preferredWidth: deviceRow.Layout.preferredWidth - deviceIcon.Layout.rightMargin - deviceIcon.sourceSize.width - iconButton.width - Theme.windowMargin
                         spacing: 0
 
                         VPNInterLabel {
@@ -119,6 +124,9 @@ Item {
                             text: name
                             color: Theme.fontColorDark
                             elide: Text.ElideRight
+                            Layout.alignment: Qt.AlignLeft
+                            horizontalAlignment: Text.AlignLeft
+                            Layout.preferredWidth: deviceInfo.Layout.preferredWidth - Theme.windowMargin / 2
                         }
 
                         VPNTextBlock {
@@ -149,9 +157,6 @@ Item {
 
                     }
 
-                    Item {
-                        Layout.fillWidth: true
-                    }
 
                     VPNIconButton {
                         id: iconButton
