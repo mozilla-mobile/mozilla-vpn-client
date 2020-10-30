@@ -14,6 +14,10 @@ Flickable {
     property var windowHeightExceedsContentHeight: (window.height > flickContentHeight)
 
     function ensureVisible(item) {
+        if (windowHeightExceedsContentHeight) {
+            return;
+        }
+
         let yPosition = item.mapToItem(contentItem, 0, 0).y;
         let ext = item.height + yPosition;
         if (yPosition < contentY || yPosition > contentY + height || ext < contentY || ext > contentY + height) {
