@@ -56,16 +56,22 @@ public:
 private:
     NetworkRequest(QObject *parent);
 
+    void deleteRequest();
+    void getRequest();
+    void postRequest(const QByteArray &body);
+
+    void handleReply(QNetworkReply *reply);
+
 private slots:
-    void replyFinished(QNetworkReply *reply);
+    void replyFinished();
 
 signals:
     void requestFailed(QNetworkReply::NetworkError error);
     void requestCompleted(const QByteArray &data);
 
 private:
-    QNetworkAccessManager *m_manager;
     QNetworkRequest m_request;
+    QNetworkReply *m_reply = nullptr;
 };
 
 #endif // NETWORKREQUEST_H

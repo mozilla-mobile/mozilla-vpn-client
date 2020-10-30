@@ -80,7 +80,7 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent, MozillaVPN
 }
 #endif
 
-void NetworkRequest::replyFinished(QNetworkReply *)
+void NetworkRequest::replyFinished()
 {
     QFAIL("Not called!");
 }

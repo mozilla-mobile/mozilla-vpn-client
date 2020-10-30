@@ -33,12 +33,6 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
     userAgent.append(")");
 
     m_request.setRawHeader("User-Agent", userAgent);
-
-    m_manager = new QNetworkAccessManager(this);
-
-    connect(m_manager, &QNetworkAccessManager::finished, this, &NetworkRequest::replyFinished);
-    connect(m_manager, &QNetworkAccessManager::finished, this, &NetworkRequest::deleteLater);
-
     m_request.setTransferTimeout(REQUEST_TIMEOUT_MSEC);
 }
 
@@ -65,9 +59,7 @@ NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *par
     QJsonDocument json;
     json.setObject(obj);
 
-    Q_ASSERT(r->m_manager);
-    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
-
+    r->postRequest(json.toJson(QJsonDocument::Compact));
     return r;
 }
 
@@ -98,8 +90,7 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent,
     QJsonDocument json;
     json.setObject(obj);
 
-    Q_ASSERT(r->m_manager);
-    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
+    r->postRequest(json.toJson(QJsonDocument::Compact));
 
     return r;
 }
@@ -123,11 +114,10 @@ NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent,
     url.append(QUrl::toPercentEncoding(pubKey));
 
     QUrl u(url);
-    Q_ASSERT(r->m_manager);
     r->m_request.setUrl(QUrl(url));
     logger.log() << "Network starting" << r->m_request.url().toString();
 
-    r->m_manager->sendCustomRequest(r->m_request, "DELETE");
+    r->deleteRequest();
 
     return r;
 }
@@ -147,7 +137,7 @@ NetworkRequest *NetworkRequest::createForServers(QObject *parent, MozillaVPN *vp
     url.setPath("/api/v1/vpn/servers");
     r->m_request.setUrl(url);
 
-    r->m_manager->get(r->m_request);
+    r->getRequest();
 
     return r;
 }
@@ -163,7 +153,7 @@ NetworkRequest *NetworkRequest::createForVersions(QObject *parent, MozillaVPN *v
     url.setPath("/api/v1/vpn/versions");
     r->m_request.setUrl(url);
 
-    r->m_manager->get(r->m_request);
+    r->getRequest();
 
     return r;
 }
@@ -183,7 +173,7 @@ NetworkRequest *NetworkRequest::createForAccount(QObject *parent, MozillaVPN *vp
     url.setPath("/api/v1/vpn/account");
     r->m_request.setUrl(url);
 
-    r->m_manager->get(r->m_request);
+    r->getRequest();
 
     return r;
 }
@@ -203,7 +193,7 @@ NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *vpn
     url.setPath("/api/v1/vpn/ipinfo");
     r->m_request.setUrl(url);
 
-    r->m_manager->get(r->m_request);
+    r->getRequest();
 
     return r;
 }
@@ -217,7 +207,8 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
     QUrl url(CAPTIVEPORTAL_URL);
     r->m_request.setUrl(url);
 
-    r->m_manager->get(r->m_request);
+    r->getRequest();
+
     return r;
 }
 
@@ -271,19 +262,49 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
 }
 #endif
 
-void NetworkRequest::replyFinished(QNetworkReply *reply)
+void NetworkRequest::replyFinished()
 {
-    Q_ASSERT(reply);
-    Q_ASSERT(reply->isFinished());
+    Q_ASSERT(m_reply);
+    Q_ASSERT(m_reply->isFinished());
 
     logger.log() << "Network reply received";
 
-    if (reply->error() != QNetworkReply::NoError) {
-        logger.log() << "Network error: " << reply->error() << "body: " << reply->readAll();
-        emit requestFailed(reply->error());
+    if (m_reply->error() != QNetworkReply::NoError) {
+        logger.log() << "Network error: " << m_reply->error() << "body: " << m_reply->readAll();
+        emit requestFailed(m_reply->error());
         return;
     }
 
-    QByteArray data = reply->readAll();
+    QByteArray data = m_reply->readAll();
     emit requestCompleted(data);
+}
+
+void NetworkRequest::getRequest()
+{
+    QNetworkAccessManager *manager = MozillaVPN::instance()->networkAccessManager();
+    handleReply(manager->get(m_request));
+}
+
+void NetworkRequest::deleteRequest()
+{
+    QNetworkAccessManager *manager = MozillaVPN::instance()->networkAccessManager();
+    handleReply(manager->sendCustomRequest(m_request, "DELETE"));
+}
+
+void NetworkRequest::postRequest(const QByteArray &body)
+{
+    QNetworkAccessManager *manager = MozillaVPN::instance()->networkAccessManager();
+    handleReply(manager->post(m_request, body));
+}
+
+void NetworkRequest::handleReply(QNetworkReply *reply)
+{
+    Q_ASSERT(reply);
+    Q_ASSERT(!m_reply);
+
+    m_reply = reply;
+    m_reply->setParent(this);
+
+    connect(m_reply, &QNetworkReply::finished, this, &NetworkRequest::replyFinished);
+    connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
 }

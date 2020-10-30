@@ -151,6 +151,8 @@ public:
 
     [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
+    QNetworkAccessManager *networkAccessManager();
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();

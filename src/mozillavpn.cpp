@@ -27,6 +27,7 @@
 #include <QGuiApplication>
 #include <QLocale>
 #include <QPointer>
+#include <QQmlApplicationEngine>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -822,4 +823,9 @@ bool MozillaVPN::modelsInitialized() const
            && m_private->m_deviceModel.initialized()
            && m_private->m_deviceModel.hasDevice(Device::currentDeviceName())
            && m_private->m_keys.initialized();
+}
+
+QNetworkAccessManager *MozillaVPN::networkAccessManager()
+{
+    return m_engine->networkAccessManager();
 }
