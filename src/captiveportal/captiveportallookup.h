@@ -28,7 +28,8 @@ private:
 
     void maybeComplete();
 
-    void abort();
+private slots:
+    void timeout();
 
 signals:
     void completed(const CaptivePortal &cp);

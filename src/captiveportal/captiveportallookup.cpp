@@ -14,7 +14,7 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
 
 CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)
 {
-    connect(&m_timer, &QTimer::timeout, [this]() { abort(); });
+    connect(&m_timer, &QTimer::timeout, this, &CaptivePortalLookup::timeout);
 }
 
 void CaptivePortalLookup::start()
@@ -110,9 +110,9 @@ void CaptivePortalLookup::maybeComplete()
     deleteLater();
 }
 
-void CaptivePortalLookup::abort()
+void CaptivePortalLookup::timeout()
 {
-    logger.log() << "Too much! Let's abort the lookup.";
+    logger.log() << "Lookup timeout! Let's abort the lookup.";
 
     m_lookups = -1;
     maybeComplete();
