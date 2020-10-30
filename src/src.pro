@@ -64,6 +64,7 @@ SOURCES += \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
+        tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         timersingleshot.cpp
@@ -110,6 +111,7 @@ HEADERS += \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
+        tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \

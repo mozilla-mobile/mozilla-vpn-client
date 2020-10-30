@@ -168,9 +168,9 @@ private:
 
     void setUserAuthenticated(bool state);
 
-    void startSchedulingAccountAndServers();
+    void startSchedulingPeriodicOperations();
 
-    void stopSchedulingAccountAndServers();
+    void stopSchedulingPeriodicOperations();
 
     void setAlert(AlertType alert);
 
@@ -225,7 +225,7 @@ private:
     AlertType m_alert = NoAlert;
 
     QTimer m_alertTimer;
-    QTimer m_accountAndServersTimer;
+    QTimer m_periodicOperationsTimer;
 
     bool m_updateRecommended = false;
     bool m_userAuthenticated = false;

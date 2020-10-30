@@ -23,6 +23,7 @@ INCLUDEPATH += \
 HEADERS += \
     ../src/connectiondataholder.h \
     ../src/curve25519.h \
+    ../src/dohrequest.h \
     ../src/errorhandler.h \
     ../src/localizer.h \
     ../src/logger.h \
@@ -47,6 +48,7 @@ HEADERS += \
     ../src/timersingleshot.h \
     helper.h \
     testconnectiondataholder.h \
+    testdoh.h \
     testlocalizer.h \
     testlogger.h \
     testmodels.h \
@@ -56,6 +58,7 @@ HEADERS += \
 SOURCES += \
     ../src/connectiondataholder.cpp \
     ../src/curve25519.cpp \
+    ../src/dohrequest.cpp \
     ../src/errorhandler.cpp \
     ../src/hacl-star/Hacl_Chacha20.c \
     ../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
@@ -83,6 +86,7 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testconnectiondataholder.cpp \
+    testdoh.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testmodels.cpp \

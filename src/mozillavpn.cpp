@@ -12,6 +12,7 @@
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
@@ -81,8 +82,10 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 {
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
-    connect(&m_accountAndServersTimer, &QTimer::timeout, [this]() {
+    connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
         scheduleTask(new TaskAccountAndServers());
+
+        scheduleTask(new TaskCaptivePortalLookup());
 
 #ifdef IOS_INTEGRATION
         scheduleTask(new TaskIOSProducts());
@@ -204,6 +207,8 @@ void MozillaVPN::initialize()
 
     scheduleTask(new TaskAccountAndServers());
 
+    scheduleTask(new TaskCaptivePortalLookup());
+
 #ifdef IOS_INTEGRATION
     scheduleTask(new TaskIOSProducts());
 #endif
@@ -222,10 +227,10 @@ void MozillaVPN::setState(State state)
     if (m_state == StateMain) {
         m_private->m_connectionDataHolder.enable();
         m_private->m_controller.initialize();
-        startSchedulingAccountAndServers();
+        startSchedulingPeriodicOperations();
     } else {
         m_private->m_connectionDataHolder.disable();
-        stopSchedulingAccountAndServers();
+        stopSchedulingPeriodicOperations();
     }
 }
 
@@ -673,16 +678,16 @@ void MozillaVPN::setUserAuthenticated(bool state)
     emit userAuthenticationChanged();
 }
 
-void MozillaVPN::startSchedulingAccountAndServers()
+void MozillaVPN::startSchedulingPeriodicOperations()
 {
     logger.log() << "Start scheduling account and servers" << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
-    m_accountAndServersTimer.start(Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
+    m_periodicOperationsTimer.start(Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
 }
 
-void MozillaVPN::stopSchedulingAccountAndServers()
+void MozillaVPN::stopSchedulingPeriodicOperations()
 {
     logger.log() << "Stop scheduling account and servers";
-    m_accountAndServersTimer.stop();
+    m_periodicOperationsTimer.stop();
 }
 
 void MozillaVPN::subscribe()
