@@ -15,6 +15,7 @@ RoundButton {
     anchors.horizontalCenter: parent.horizontalCenter
     Keys.onReturnPressed: clicked()
     Accessible.onPressAction: clicked()
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(button)
     state: "state-default"
     states: [
         State {

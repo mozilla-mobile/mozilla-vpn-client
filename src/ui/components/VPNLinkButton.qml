@@ -19,6 +19,9 @@ RoundButton {
     height: 28
     state: "state-default"
     focusPolicy: Qt.StrongFocus
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
+
+
     Keys.onSpacePressed: clicked()
     Keys.onReturnPressed: clicked()
     Accessible.name: labelText

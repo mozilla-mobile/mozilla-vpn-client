@@ -24,6 +24,7 @@ RoundButton {
     Keys.onReturnPressed: clicked()
     Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(iconButton)
     states: [
         State {
             when: mouseArea.pressed
