@@ -374,5 +374,6 @@
         <file>ui/resources/logo-animated3.svg</file>
         <file>ui/resources/logo-animated4.svg</file>
         <file>ui/resources/logo-off.svg</file>
+        <file>ui/components/VPNFlickable.qml</file>
     </qresource>
 </RCC>
