@@ -20,8 +20,8 @@ public:
     const QStringList &ipv4Addresses() const { return m_ipv4Addresses; }
     const QStringList &ipv6Addresses() const { return m_ipv6Addresses; }
 
-    void addIpv4Address(const QString &address);
-    void addIpv6Address(const QString &address);
+    void setIpv4Addresses(const QStringList &list) { m_ipv4Addresses = list; }
+    void setIpv6Addresses(const QStringList &list) { m_ipv6Addresses = list; }
 
 private:
     QStringList m_ipv4Addresses;

@@ -91,7 +91,6 @@ NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent,
     json.setObject(obj);
 
     r->postRequest(json.toJson(QJsonDocument::Compact));
-
     return r;
 }
 
@@ -118,7 +117,6 @@ NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent,
     logger.log() << "Network starting" << r->m_request.url().toString();
 
     r->deleteRequest();
-
     return r;
 }
 
@@ -138,7 +136,6 @@ NetworkRequest *NetworkRequest::createForServers(QObject *parent, MozillaVPN *vp
     r->m_request.setUrl(url);
 
     r->getRequest();
-
     return r;
 }
 
@@ -154,7 +151,6 @@ NetworkRequest *NetworkRequest::createForVersions(QObject *parent, MozillaVPN *v
     r->m_request.setUrl(url);
 
     r->getRequest();
-
     return r;
 }
 
@@ -174,7 +170,6 @@ NetworkRequest *NetworkRequest::createForAccount(QObject *parent, MozillaVPN *vp
     r->m_request.setUrl(url);
 
     r->getRequest();
-
     return r;
 }
 
@@ -194,7 +189,6 @@ NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *vpn
     r->m_request.setUrl(url);
 
     r->getRequest();
-
     return r;
 }
 
@@ -208,7 +202,20 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
     r->m_request.setUrl(url);
 
     r->getRequest();
+    return r;
+}
 
+NetworkRequest *NetworkRequest::createForDOH(QObject *parent,
+                                             const QUrl &dohUrl,
+                                             const QByteArray &dohHost)
+{
+    NetworkRequest *r = new NetworkRequest(parent);
+
+    r->m_request.setUrl(dohUrl);
+    r->m_request.setRawHeader("Host", dohHost);
+    r->m_request.setRawHeader("Accept", "application/dns-json");
+
+    r->getRequest();
     return r;
 }
 

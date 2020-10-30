@@ -24,7 +24,6 @@ INCLUDEPATH += \
 DEPENDPATH  += $${INCLUDEPATH}
 
 SOURCES += \
-        captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportallookup.cpp \
@@ -34,6 +33,7 @@ SOURCES += \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
+        dohrequest.cpp \
         errorhandler.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -81,6 +81,7 @@ HEADERS += \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
+        dohrequest.h \
         errorhandler.h \
         fontloader.h \
         ipaddressrange.h \

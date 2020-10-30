@@ -45,6 +45,10 @@ public:
 
     static NetworkRequest *createForCaptivePortalDetection(QObject *parent);
 
+    static NetworkRequest *createForDOH(QObject *parent,
+                                        const QUrl &dohUrl,
+                                        const QByteArray &dohHost);
+
 #ifdef IOS_INTEGRATION
     static NetworkRequest *createForIOSProducts(QObject *parent, MozillaVPN *vpn);
 

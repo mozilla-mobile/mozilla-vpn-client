@@ -24,9 +24,7 @@ public:
 private:
     void start(const QString &host);
 
-    void lookupCompleted(QDnsLookup *dnsLookup);
-
-    void maybeComplete();
+    void complete();
 
 private slots:
     void timeout();
@@ -38,8 +36,7 @@ private:
     QTimer m_timer;
 
     CaptivePortal m_data;
-
-    int m_lookups = 0;
+    bool m_completed = false;
 };
 
 #endif // CAPTIVEPORTALLOOKUP_H
