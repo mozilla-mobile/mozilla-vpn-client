@@ -70,6 +70,11 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent,
     return new NetworkRequest(parent);
 }
 
+NetworkRequest *NetworkRequest::createForDOH(QObject *parent, const QUrl &, const QByteArray &)
+{
+    return new NetworkRequest(parent);
+}
+
 #ifdef IOS_INTEGRATION
 NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent, MozillaVPN *)
 {
