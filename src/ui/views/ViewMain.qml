@@ -15,16 +15,16 @@ VPNFlickable {
     flickContentHeight:  {
         flickContentHeight = 444;
         if (alertBox.visible)
-            childContentY += alertBox.height + Theme.windowMargin;
+            flickContentHeight += alertBox.height + Theme.windowMargin;
 
         if (mobileHeader.visible)
-            childContentY += mobileHeader.height;
+            flickContentHeight += mobileHeader.height;
 
     }
 
     states: [
         State {
-            when: window.height > Theme.verticalBreakPoint1
+            when: window.fullscreenRequired()
 
             PropertyChanges {
                 target: mobileHeader
@@ -45,7 +45,7 @@ VPNFlickable {
 
         },
         State {
-            when: window.height < 500
+            when: !window.fullscreenRequired()
 
             PropertyChanges {
                 target: mobileHeader
@@ -74,7 +74,7 @@ VPNFlickable {
         width: parent.width
         anchors.top: parent.top
         anchors.topMargin: Theme.windowMargin / 2
-        visible: window.height > Theme.verticalBreakPoint1
+        visible: window.fullscreenRequired()
 
         Row {
             anchors.verticalCenter: parent.verticalCenter

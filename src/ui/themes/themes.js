@@ -94,6 +94,4 @@ const removeDeviceBtn = {
 };
 
 const settingsMaxContentHeight = 740;
-
-const verticalBreakPoint1 = 500;
 const maxHorizontalContentWidth = 460
