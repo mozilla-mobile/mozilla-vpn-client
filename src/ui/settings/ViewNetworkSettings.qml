@@ -10,7 +10,11 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
+VPNFlickable {
+    id: vpnFlickable
+
+    flickContentHeight: vpnFlickable.childrenRect.height
+
     VPNMenu {
         id: menu
 
@@ -55,9 +59,6 @@ Flickable {
         VPNCheckBoxAlert {
         }
 
-    }
-
-    ScrollBar.vertical: ScrollBar {
     }
 
 }
