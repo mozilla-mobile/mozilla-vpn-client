@@ -37,9 +37,8 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
     QByteArray key = QByteArray::fromBase64(keys->privateKey().toLocal8Bit());
 
     impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
-        ipv4Address:device->ipv4Address().toNSString()
-        ipv6Address:device->ipv6Address().toNSString()
-        ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
+        deviceIpv4Address:device->ipv4Address().toNSString()
+        deviceIpv6Address:device->ipv6Address().toNSString()
         closure:^(ConnectionState state, NSDate *date) {
             logger.log() << "Creation completed with connection state:" << state;
             creating = false;
