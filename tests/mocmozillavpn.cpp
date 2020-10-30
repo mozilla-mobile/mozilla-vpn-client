@@ -133,13 +133,9 @@ void MozillaVPN::setUserAuthenticated(bool)
 {
 }
 
-void MozillaVPN::startSchedulingAccountAndServers()
-{
-}
+void MozillaVPN::startSchedulingPeriodicOperations() {}
 
-void MozillaVPN::stopSchedulingAccountAndServers()
-{
-}
+void MozillaVPN::stopSchedulingPeriodicOperations() {}
 
 void MozillaVPN::subscribe()
 {
