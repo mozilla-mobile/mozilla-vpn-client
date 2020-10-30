@@ -25,15 +25,14 @@ Item {
         id: radioButtonGroup
     }
 
-    Flickable {
+    VPNFlickable {
         id: wrapper
         anchors.top: menu.bottom
         anchors.topMargin: 20
         width: parent.width
         height: parent.height - menu.height
         contentWidth: parent.width
-        contentHeight: wrapper.childrenRect.height
-        boundsBehavior: Flickable.StopAtBounds
+        flickContentHeight: wrapper.childrenRect.height
 
         VPNBoldLabel {
             id: systemLabel
@@ -123,10 +122,6 @@ Item {
 
             }
 
-        }
-
-        ScrollBar.vertical: ScrollBar {
-            Accessible.ignored: true
         }
 
     }

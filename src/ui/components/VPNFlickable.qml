@@ -8,8 +8,21 @@ import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
 Flickable {
+    id: vpnFlickable
+
     property var flickContentHeight
     property var windowHeightExceedsContentHeight: (window.height > flickContentHeight)
+
+    function ensureVisible(item) {
+        let yPosition = item.mapToItem(contentItem, 0, 0).y;
+        let ext = item.height + yPosition;
+        if (yPosition < contentY || yPosition > contentY + height || ext < contentY || ext > contentY + height) {
+            let destinationY = Math.max(0, Math.min(yPosition - height + item.height, contentHeight - height));
+            ensureVisAnimation.to = destinationY;
+            ensureVisAnimation.start();
+        }
+        return;
+    }
 
     contentHeight: Math.max(window.height, flickContentHeight)
     boundsBehavior: Flickable.StopAtBounds
@@ -18,11 +31,16 @@ Flickable {
         opacity = 1;
     }
 
-    Behavior on opacity {
-        PropertyAnimation {
-            duration: 200
-        }
+    NumberAnimation on contentY {
+        id: ensureVisAnimation
 
+        to: 0 //Dummy value - will be set up when this animation is called.
+        duration: 300
+        easing.type: Easing.OutQuad
+    }
+
+    PropertyAnimation on opacity {
+        duration: 200
     }
 
     ScrollBar.vertical: ScrollBar {
