@@ -6,6 +6,7 @@
 #define CAPTIVEPORTALREQUEST_H
 
 #include <QObject>
+#include <QUrl>
 
 class CaptivePortalRequest : public QObject
 {
@@ -18,6 +19,14 @@ public:
 
 signals:
     void completed(bool detected);
+
+private:
+    void createRequest(const QUrl &url);
+    void maybeComplete();
+
+private:
+    uint32_t m_pendingRequests = 0;
+    bool m_completed = false;
 };
 
 #endif // CAPTIVEPORTALREQUEST_H

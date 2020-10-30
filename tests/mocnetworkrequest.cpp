@@ -63,7 +63,9 @@ NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *)
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
+NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent,
+                                                                const QUrl &,
+                                                                const QByteArray &)
 {
     return new NetworkRequest(parent);
 }

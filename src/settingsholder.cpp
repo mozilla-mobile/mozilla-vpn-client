@@ -33,6 +33,8 @@ constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
+constexpr const char *SETTINGS_CAPTIVEPORTALIPV4ADDRESSES = "captivePortal/ipv4Addresses";
+constexpr const char *SETTINGS_CAPTIVEPORTALIPV6ADDRESSES = "captivePortal/ipv6Addresses";
 
 #ifdef IOS_INTEGRATION
 constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -203,6 +205,18 @@ GETSET(QString,
        setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
 GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts, iapProducts, setIapProducts)
+GETSET(QStringList,
+       toStringList,
+       SETTINGS_CAPTIVEPORTALIPV4ADDRESSES,
+       hasCaptivePortalIpv4Addresses,
+       captivePortalIpv4Addresses,
+       setCaptivePortalIpv4Addresses)
+GETSET(QStringList,
+       toStringList,
+       SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
+       hasCaptivePortalIpv6Addresses,
+       captivePortalIpv6Addresses,
+       setCaptivePortalIpv6Addresses)
 
 #ifdef IOS_INTEGRATION
 GETSET(bool,

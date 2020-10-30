@@ -43,7 +43,9 @@ public:
 
     static NetworkRequest *createForIpInfo(QObject *parent, MozillaVPN *vpn);
 
-    static NetworkRequest *createForCaptivePortalDetection(QObject *parent);
+    static NetworkRequest *createForCaptivePortalDetection(QObject *parent,
+                                                           const QUrl &url,
+                                                           const QByteArray &host);
 
     static NetworkRequest *createForDOH(QObject *parent,
                                         const QUrl &dohUrl,

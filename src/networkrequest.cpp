@@ -192,14 +192,16 @@ NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *vpn
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
+NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent,
+                                                                const QUrl &url,
+                                                                const QByteArray &host)
 {
     Q_ASSERT(parent);
 
     NetworkRequest *r = new NetworkRequest(parent);
 
-    QUrl url(CAPTIVEPORTAL_URL);
     r->m_request.setUrl(url);
+    r->m_request.setRawHeader("Host", host);
 
     r->getRequest();
     return r;

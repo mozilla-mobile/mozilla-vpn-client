@@ -52,6 +52,14 @@ public:
     GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
     GETSET(QByteArray, hasDevices, devices, setDevices)
     GETSET(QStringList, hasIapProducts, iapProducts, setIapProducts)
+    GETSET(QStringList,
+           hasCaptivePortalIpv4Addresses,
+           captivePortalIpv4Addresses,
+           setCaptivePortalIpv4Addresses)
+    GETSET(QStringList,
+           hasCaptivePortalIpv6Addresses,
+           captivePortalIpv6Addresses,
+           setCaptivePortalIpv6Addresses)
 
 #ifdef IOS_INTEGRATION
     GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated, setNativeIOSDataMigrated)
