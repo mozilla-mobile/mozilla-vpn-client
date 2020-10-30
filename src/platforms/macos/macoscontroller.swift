@@ -40,6 +40,7 @@ public class MacOSControllerImpl : NSObject {
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.vpnStatusDidChange(notification:)), name: Notification.Name.NEVPNStatusDidChange, object: nil)
 
+        // TODO: create the interface only when needed otherwise ipv6 config is not correctly set if it changes.
         interface = InterfaceConfiguration(privateKey: privateKey)
         if let ipv4Address = IPAddressRange(from: ipv4Address),
            let ipv6Address = IPAddressRange(from: ipv6Address) {
@@ -211,7 +212,7 @@ public class MacOSControllerImpl : NSObject {
         do {
             try session.sendProviderMessage(Data([UInt8(0)])) { [callback] data in
                 guard let data = data,
-                        let configString = String(data: data, encoding: .utf8)
+                      let configString = String(data: data, encoding: .utf8)
                 else {
                     Logger.global?.log(message: "Failed to convert data to string")
                     callback("", "")
