@@ -18,6 +18,7 @@ CheckBox {
     width: 20
     Layout.alignment: Qt.AlignTop
     state: "state-default"
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(checkBox)
     states: [
         State {
             name: "state-pressed"
