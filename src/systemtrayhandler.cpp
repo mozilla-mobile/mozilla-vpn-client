@@ -112,7 +112,11 @@ void SystemTrayHandler::showAnimatedIcon()
 void SystemTrayHandler::animateIcon()
 {
     Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
-    setIcon(QIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]));
+
+    QIcon trayIconMask(ANIMATED_ICON_STEPS[m_animatedIconIndex++]);
+    trayIconMask.setIsMask(true);
+    setIcon(trayIconMask);
+
     if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
         m_animatedIconIndex = 0;
     }
@@ -121,5 +125,7 @@ void SystemTrayHandler::animateIcon()
 void SystemTrayHandler::showIcon(const QString &icon)
 {
     m_animatedIconTimer.stop();
-    setIcon(QIcon(icon));
+    QIcon trayIconMask(icon);
+    trayIconMask.setIsMask(true);
+    setIcon(QIcon(trayIconMask));
 }
