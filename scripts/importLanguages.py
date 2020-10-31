@@ -58,6 +58,7 @@ with open('translations/translations.pri', 'w') as projectFile:
     for file in FILES:
         projectFile.write(f"../{file['ts']} \\ \n")
     projectFile.write('\n \n##End')
+    os.system(f"touch ${file['ts']}")
 print('Updated translations.pri')
 
 # Step 3
@@ -68,6 +69,6 @@ os.system(f'lupdate src -ts')
 # Now import done translations into the files
 for file in FILES:
     if 'xliff' in file.keys():
-        os.system(f"lconvert -i {file['ts']} -if xlf -i {file['xliff']} -o {file['ts']}")
+        os.system(f"lconvert -if xlf -i {file['xliff']} -o {file['ts']}")
 
 print('Imported Languages')
