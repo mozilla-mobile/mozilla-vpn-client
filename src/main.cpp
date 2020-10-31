@@ -237,6 +237,11 @@ int main(int argc, char *argv[])
                      &systemTrayHandler,
                      &SystemTrayHandler::controllerStateChanged);
 
+    QObject::connect(MozillaVPN::instance()->statusIcon(),
+                     &StatusIcon::iconChanged,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::setIcon);
+
     QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
                      &CaptivePortalDetection::captivePortalDetected,
                      [systemTrayHandler = &systemTrayHandler]() {

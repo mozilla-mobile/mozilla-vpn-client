@@ -1,0 +1,80 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "statusicon.h"
+#include "logger.h"
+#include "mozillavpn.h"
+
+namespace {
+Logger logger(LOG_MAIN, "StatusIcon");
+
+constexpr const std::array<const char *, 4> ANIMATED_ICON_STEPS
+    = {"://ui/resources/logo-animated1.svg",
+       "://ui/resources/logo-animated2.svg",
+       "://ui/resources/logo-animated3.svg",
+       "://ui/resources/logo-animated4.svg"};
+} // namespace
+
+StatusIcon::StatusIcon()
+{
+    connect(&m_animatedIconTimer, &QTimer::timeout, this, &StatusIcon::animateIcon);
+}
+
+void StatusIcon::activateAnimation()
+{
+    m_animatedIconIndex = 0;
+    m_animatedIconTimer.start(200);
+    animateIcon();
+}
+
+void StatusIcon::animateIcon()
+{
+    Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
+    setIcon(QIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]));
+    if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
+        m_animatedIconIndex = 0;
+    }
+}
+
+void StatusIcon::controllerStateChanged()
+{
+    logger.log() << "Show notification";
+
+    m_animatedIconTimer.stop();
+
+    MozillaVPN *vpn = MozillaVPN::instance();
+
+    // If we are in a non-main state, we don't need to show special icons.
+    if (vpn->state() != MozillaVPN::StateMain) {
+        setIcon(QIcon("://ui/resources/logo-tray.svg"));
+        return;
+    }
+
+    switch (vpn->controller()->state()) {
+    case Controller::StateOn:
+        setIcon(QIcon("://ui/resources/logo-on.svg"));
+        break;
+
+    case Controller::StateOff:
+        setIcon(QIcon("://ui/resources/logo-off.svg"));
+        break;
+
+    case Controller::StateSwitching:
+        [[fallthrough]];
+    case Controller::StateConnecting:
+        [[fallthrough]];
+    case Controller::StateDisconnecting:
+        activateAnimation();
+        break;
+
+    default:
+        setIcon(QIcon("://ui/resources/logo-tray.svg"));
+        break;
+    }
+}
+
+void StatusIcon::setIcon(const QIcon &icon)
+{
+    emit iconChanged(icon);
+}
