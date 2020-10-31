@@ -84,7 +84,11 @@ void MacOSController::activate(const Server &server,
 
     logger.log() << "MacOSController activating" << server.hostname();
 
-    Q_ASSERT(impl);
+    if (!impl) {
+        logger.log() << "Controller not correctly initialized";
+        emit disconnected();
+        return;
+    }
 
     NSMutableArray<VPNIPAddressRange *> *allowedIPAddressRangesNS = [NSMutableArray<VPNIPAddressRange *> arrayWithCapacity: allowedIPAddressRanges.length()];
     for (const IPAddressRange &i : allowedIPAddressRanges) {
@@ -115,7 +119,12 @@ void MacOSController::deactivate(bool forSwitching)
 
     logger.log() << "MacOSController deactivated";
 
-    Q_ASSERT(impl);
+    if (!impl) {
+        logger.log() << "Controller not correctly initialized";
+        emit disconnected();
+        return;
+    }
+
     [impl disconnect];
 }
 
@@ -125,6 +134,11 @@ void MacOSController::checkStatus()
 
     if (m_checkingStatus) {
         logger.log() << "We are still waiting for the previous status.";
+        return;
+    }
+
+    if (!impl) {
+        logger.log() << "Controller not correctly initialized";
         return;
     }
 
