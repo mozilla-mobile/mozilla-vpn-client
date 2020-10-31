@@ -12,10 +12,10 @@ Item {
     VPNHeadline {
         id: headline
 
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.08
         //% "Waiting for sign in and subscription confirmation…"
         text: qsTrId("vpn.authenticating.waitForSignIn")
-        anchors.top: parent.top
-        anchors.topMargin: 32
     }
 
     Image {
@@ -63,7 +63,7 @@ Item {
     }
 
     VPNFooterLink {
-        id: getHelp
+        id: footerLink
 
         //% "Cancel and try again"
         labelText: qsTrId("vpn.authenticating.cancelAndRetry")

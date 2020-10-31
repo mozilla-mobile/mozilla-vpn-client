@@ -40,6 +40,7 @@ Item {
     Accessible.name: accessibleName
     Accessible.onPressAction: mainRow.clicked()
     Accessible.focusable: true
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(mainRow)
     transitions: [
         Transition {
             NumberAnimation {

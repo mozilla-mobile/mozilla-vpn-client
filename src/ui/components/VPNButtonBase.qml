@@ -8,6 +8,8 @@ import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
 RoundButton {
+    id: root
+
     property variant targetEl
     property var enableHover: true
     property var bgColor: Theme.blueButton
@@ -17,6 +19,8 @@ RoundButton {
     Keys.onSpacePressed: clicked()
     Keys.onReturnPressed: clicked()
     Accessible.onPressAction: clicked()
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
+
     state: "state-default"
     states: [
         State {
