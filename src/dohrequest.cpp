@@ -54,7 +54,7 @@ void DOHRequest::resolveInternal(const QString &host, uint32_t type)
             });
 
     connect(request, &NetworkRequest::requestCompleted, [this, type](const QByteArray &data) {
-        logger.log() << "DOH request completed" << data;
+        logger.log() << "DOH request completed";
         parseResult(data);
         maybeCompleted(type);
     });
