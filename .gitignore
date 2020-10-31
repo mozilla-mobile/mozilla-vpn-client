@@ -34,3 +34,5 @@ build
 *.swp
 .idea/
 .vscode/
+Debug/
+Debug-iphone*
