@@ -24,6 +24,11 @@ RoundButton {
     Keys.onReturnPressed: clicked()
     Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
+
+    VPNToolTip {
+        text: accessibleName
+    }
+
     states: [
         State {
             when: mouseArea.pressed
