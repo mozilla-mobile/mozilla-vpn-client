@@ -49,7 +49,7 @@ Item {
         VPNRadioDelegate {
             id: systemLanguage
 
-            radioButtonLabelText: VPNLocalizer.systemLanguage
+            radioButtonLabelText: VPNLocalizer.systemLocalizedLanguage
             checked: VPNSettings.languageCode === ""
             onClicked: VPNSettings.languageCode = ""
             anchors.top: systemLabel.bottom
@@ -69,7 +69,7 @@ Item {
             }
 
             VPNRadioSublabel {
-                text: VPNLocalizer.systemLocalizedLanguage
+                text: VPNLocalizer.systemLanguage
             }
 
         }
@@ -104,7 +104,7 @@ Item {
             model: VPNLocalizer
 
             delegate: VPNRadioDelegate {
-                radioButtonLabelText: language
+                radioButtonLabelText: localizedLanguage
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
 
@@ -117,7 +117,7 @@ Item {
                     .arg(localizedLanguage)
 
                 VPNRadioSublabel {
-                    text: localizedLanguage
+                    text: language
                 }
 
             }
