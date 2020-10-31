@@ -123,10 +123,10 @@ QVariant Localizer::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case LanguageRole:
-        return QVariant(localizedLanguageName(m_languages.at(index.row())));
+        return QVariant(languageName(m_languages.at(index.row())));
 
     case LocalizedLanguageRole:
-        return QVariant(languageName(m_languages.at(index.row())));
+        return QVariant(localizedLanguageName(m_languages.at(index.row())));
 
     case CodeRole:
         return QVariant(m_languages.at(index.row()));
