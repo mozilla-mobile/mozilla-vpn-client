@@ -127,5 +127,5 @@ void SystemTrayHandler::showIcon(const QString &icon)
     m_animatedIconTimer.stop();
     QIcon trayIconMask(icon);
     trayIconMask.setIsMask(true);
-    setIcon(QIcon(trayIconMask));
+    setIcon(trayIconMask);
 }
