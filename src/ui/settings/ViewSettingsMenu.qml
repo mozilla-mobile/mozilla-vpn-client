@@ -125,7 +125,6 @@ ScrollView {
         text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         anchors.top: logo.bottom
         anchors.topMargin: Theme.vSpacing
-        height: 32
     }
 
     VPNSubtitle {
