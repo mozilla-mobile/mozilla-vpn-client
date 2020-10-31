@@ -35,10 +35,6 @@ Rectangle {
         radius: 4
         z: 2
         onClicked: {
-            // TODO Try again
-            // TODO Try again
-            // TODO Restore
-
             switch (alertType) {
             case ("update"):
                 stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
@@ -47,8 +43,11 @@ Rectangle {
                 VPN.authenticate();
                 break;
             case ("connection-failed"):
+                // TODO Try again
             case ("no-connection"):
+                // TODO Try again
             case ("background-service"):
+                // TODO Restore
             default:
                 VPN.hideAlert();
             }
