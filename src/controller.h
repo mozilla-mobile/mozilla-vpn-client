@@ -64,6 +64,8 @@ public:
 
     const QString &currentCity() const { return m_currentCity; }
 
+    const QString &switchingCountryCode() const { return m_switchingCountryCode; }
+
     const QString &switchingCity() const { return m_switchingCity; }
 
     void setDeviceLimit(bool deviceLimit);
