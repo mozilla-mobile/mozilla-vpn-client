@@ -24,6 +24,7 @@ signals:
     void quit();
 
 public slots:
+    void iconChanged(const QString &icon);
     void controllerStateChanged();
 
 private:

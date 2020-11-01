@@ -5,6 +5,7 @@
 #include "systemtrayhandler.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "statusicon.h"
 
 #include <array>
 #include <QIcon>
@@ -19,6 +20,8 @@ SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
 {   //% "Quit"
     m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
     setContextMenu(&m_menu);
+
+    iconChanged(MozillaVPN::instance()->statusIcon()->iconString());
 }
 
 void SystemTrayHandler::controllerStateChanged()
@@ -81,4 +84,9 @@ void SystemTrayHandler::captivePortalNotificationRequested()
     //% "VPN will automatically reconnect when ready
     QString message = qtTrId("vpn.systray.captivePortalAlert.message");
     showMessage(title, message, NoIcon, 2000);
+}
+
+void SystemTrayHandler::iconChanged(const QString &icon)
+{
+    setIcon(QIcon(icon));
 }
