@@ -44,9 +44,9 @@ void SystemTrayHandler::controllerStateChanged()
 
     switch (vpn->controller()->state()) {
     case Controller::StateOn:
-        //% "VPN connected"
+        //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
-        //% "Connected to %1 - %2"
+        //% "Connected to %1, %2"
         //: Shown as message body in a notification. %1 is the country, %2 is the city.
         message = qtTrId("vpn.systray.statusConnected.message")
                       .arg(vpn->currentServer()->country())
@@ -54,16 +54,26 @@ void SystemTrayHandler::controllerStateChanged()
         break;
 
     case Controller::StateOff:
-        //% "VPN disconnected"
-        title = qtTrId("vpn.systray.statusDisconnected");
-        message = qtTrId("TODO");
+        //% "VPN Disconnected"
+        title = qtTrId("vpn.systray.statusDisconnected.title");
+        //% "Disconnected from to %1, %2"
+        //: Shown as message body in a notification. %1 is the country, %2 is the city.
+        message = qtTrId("vpn.systray.statusDisconnected.message")
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city());
         break;
 
     case Controller::StateSwitching:
-        //% "VPN switching"
-        //: This message is shown when the VPN is switching to a different server in a different location.
-        title = qtTrId("vpn.systray.statusSwitch");
-        message = qtTrId("TODO");
+        //% "VPN Switched Servers"
+        title = qtTrId("vpn.systray.statusSwitch.title");
+        //% "Switched from %1, %2 to %3, %4"
+        //: Shown as message body in a notification. %1 and %3 are countries, %2 and %4 are cities.
+        message = qtTrId("vpn.systray.statusSwtich.message")
+                      .arg(vpn->serverCountryModel()->countryName(
+                          vpn->controller()->switchingCountryCode()))
+                      .arg(vpn->controller()->switchingCity())
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city());
         break;
 
     default:
