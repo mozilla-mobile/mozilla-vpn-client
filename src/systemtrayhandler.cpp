@@ -88,5 +88,7 @@ void SystemTrayHandler::captivePortalNotificationRequested()
 
 void SystemTrayHandler::iconChanged(const QString &icon)
 {
-    setIcon(QIcon(icon));
+    QIcon trayIconMask(icon);
+    trayIconMask.setIsMask(true);
+    setIcon(trayIconMask);
 }
