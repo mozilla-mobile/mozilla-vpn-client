@@ -60,6 +60,7 @@ SOURCES += \
         releasemonitor.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
+        statusicon.cpp \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
@@ -106,6 +107,7 @@ HEADERS += \
         releasemonitor.h \
         settingsholder.h \
         signalhandler.h \
+        statusicon.h \
         systemtrayhandler.h \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
