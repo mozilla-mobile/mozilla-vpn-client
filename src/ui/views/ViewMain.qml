@@ -82,7 +82,7 @@ VPNFlickable {
             spacing: 8
 
             VPNIcon {
-                source: "../resources/logo-tray.svg"
+                source: VPNStatusIcon.iconUrl
                 sourceSize.height: 18
                 sourceSize.width: 18
             }

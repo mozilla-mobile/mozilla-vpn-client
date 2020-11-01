@@ -184,6 +184,13 @@ int main(int argc, char *argv[])
             return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNStatusIcon", [](QQmlEngine *, QJSEngine *) -> QObject * {
+            QObject *obj = MozillaVPN::instance()->statusIcon();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+        });
+
     QObject::connect(MozillaVPN::instance()->settingsHolder(),
                      &SettingsHolder::languageCodeChanged,
                      [engine = &engine](const QString &languageCode) {
@@ -240,7 +247,7 @@ int main(int argc, char *argv[])
     QObject::connect(MozillaVPN::instance()->statusIcon(),
                      &StatusIcon::iconChanged,
                      &systemTrayHandler,
-                     &SystemTrayHandler::setIcon);
+                     &SystemTrayHandler::iconChanged);
 
     QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
                      &CaptivePortalDetection::captivePortalDetected,
