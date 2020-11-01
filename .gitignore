@@ -29,10 +29,14 @@ android/build
 *.ts
 tests/tests
 build
+Debug/
+Debug-iphone*
+Release/
+Release-iphone*
+macos/gobridge/wireguard-go-version.h
 
 # Editors
 *.swp
 .idea/
 .vscode/
-Debug/
-Debug-iphone*
+MozillaVPN.xcodeproj/
