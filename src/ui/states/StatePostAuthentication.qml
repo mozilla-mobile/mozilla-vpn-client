@@ -15,10 +15,10 @@ Item {
     VPNHeadline {
         id: headline
 
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.08
         //% "Quick access"
         text: qsTrId("vpn.postAuthentication..quickAccess")
-        anchors.top: parent.top
-        anchors.topMargin: 32
     }
 
     VPNSubtitle {
@@ -88,7 +88,8 @@ Item {
     }
 
     VPNButton {
-        width: 282
+        id: button
+
         //% "Continue"
         text: qsTrId("vpn.postAuthentication.continue")
         anchors.horizontalCenterOffset: 0

@@ -8,7 +8,10 @@ import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../components"
 
-Flickable {
+VPNFlickable {
+    id: vpnFlickable
+
+    flickContentHeight: vpnFlickable.childrenRect.height
     VPNMenu {
         id: menu
 
@@ -52,9 +55,6 @@ Flickable {
         VPNCheckBoxAlert {
         }
 
-    }
-
-    ScrollBar.vertical: ScrollBar {
     }
 
 }

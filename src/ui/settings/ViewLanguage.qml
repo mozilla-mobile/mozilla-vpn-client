@@ -25,15 +25,14 @@ Item {
         id: radioButtonGroup
     }
 
-    Flickable {
+    VPNFlickable {
         id: wrapper
         anchors.top: menu.bottom
         anchors.topMargin: 20
         width: parent.width
         height: parent.height - menu.height
         contentWidth: parent.width
-        contentHeight: wrapper.childrenRect.height
-        boundsBehavior: Flickable.StopAtBounds
+        flickContentHeight: wrapper.childrenRect.height
 
         VPNBoldLabel {
             id: systemLabel
@@ -50,7 +49,7 @@ Item {
         VPNRadioDelegate {
             id: systemLanguage
 
-            radioButtonLabelText: VPNLocalizer.systemLanguage
+            radioButtonLabelText: VPNLocalizer.systemLocalizedLanguage
             checked: VPNSettings.languageCode === ""
             onClicked: VPNSettings.languageCode = ""
             anchors.top: systemLabel.bottom
@@ -70,7 +69,7 @@ Item {
             }
 
             VPNRadioSublabel {
-                text: VPNLocalizer.systemLocalizedLanguage
+                text: VPNLocalizer.systemLanguage
             }
 
         }
@@ -105,7 +104,7 @@ Item {
             model: VPNLocalizer
 
             delegate: VPNRadioDelegate {
-                radioButtonLabelText: language
+                radioButtonLabelText: localizedLanguage
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
 
@@ -118,15 +117,11 @@ Item {
                     .arg(localizedLanguage)
 
                 VPNRadioSublabel {
-                    text: localizedLanguage
+                    text: language
                 }
 
             }
 
-        }
-
-        ScrollBar.vertical: ScrollBar {
-            Accessible.ignored: true
         }
 
     }

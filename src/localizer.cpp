@@ -16,10 +16,12 @@ Logger logger(LOG_MAIN, "Localizer");
 
 void Localizer::initialize(const QString &code)
 {
+    QLocale locale = QLocale::system();
+    QString systemCode = locale.bcp47Name();
+
     m_code = code;
     if (code.isEmpty()) {
-        QLocale locale = QLocale::system();
-        m_code = locale.bcp47Name();
+        m_code = systemCode;
     }
 
     loadLanguage(m_code);
@@ -38,7 +40,10 @@ void Localizer::initialize(const QString &code)
         parts = parts[0].split("_");
         Q_ASSERT(parts.length() == 2);
 
-        m_languages.append(parts.at(1));
+        QString code = parts.at(1);
+        if (code != systemCode) {
+            m_languages.append(code);
+        }
     }
 }
 
@@ -64,6 +69,7 @@ bool Localizer::loadLanguageInternal(const QString &code)
     if (code.isEmpty()) {
         locale = QLocale::system();
     }
+
     QLocale::setDefault(locale);
 
     if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
@@ -81,6 +87,7 @@ QString Localizer::languageName(const QString &code) const
     if (code.isEmpty()) {
         locale = QLocale::system();
     }
+
     if (locale.language() == QLocale::C) {
         return "English (US)";
     }
@@ -94,6 +101,7 @@ QString Localizer::localizedLanguageName(const QString &code) const
     if (code.isEmpty()) {
         locale = QLocale::system();
     }
+
     if (locale.language() == QLocale::C) {
         return "English (US)";
     }
@@ -123,10 +131,10 @@ QVariant Localizer::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case LanguageRole:
-        return QVariant(localizedLanguageName(m_languages.at(index.row())));
+        return QVariant(languageName(m_languages.at(index.row())));
 
     case LocalizedLanguageRole:
-        return QVariant(languageName(m_languages.at(index.row())));
+        return QVariant(localizedLanguageName(m_languages.at(index.row())));
 
     case CodeRole:
         return QVariant(m_languages.at(index.row()));

@@ -5,12 +5,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 
-Item {
-    StackView {
-        id: stackview
+StackView {
+    id: stackview
 
-        anchors.fill: parent
-        initialItem: "../views/ViewMain.qml"
-    }
-
+    initialItem: "../views/ViewMain.qml"
 }

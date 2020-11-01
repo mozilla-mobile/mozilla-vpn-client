@@ -107,6 +107,13 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
+            &m_private->m_statusIcon,
+            &StatusIcon::stateChanged);
+
+    connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon, &StatusIcon::stateChanged);
+
+    connect(&m_private->m_controller,
+            &Controller::stateChanged,
             &m_private->m_connectionHealth,
             &ConnectionHealth::connectionStateChanged);
 
