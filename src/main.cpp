@@ -18,6 +18,10 @@
 #include "platforms/macos/macosstartatbootwatcher.h"
 #endif
 
+#ifdef Q_OS_MAC
+#include "platforms/macos/macosutils.h"
+#endif
+
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QIcon>
@@ -112,6 +116,10 @@ int main(int argc, char *argv[])
     if (!LinuxDependencies::checkDependencies()) {
         return 1;
     }
+#endif
+
+#ifdef Q_OS_MAC
+    MacOSUtils::setDockClickHandler();
 #endif
 
     qmlRegisterSingletonType<MozillaVPN>(
