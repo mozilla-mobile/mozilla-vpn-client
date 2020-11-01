@@ -57,7 +57,7 @@ with open('translations/translations.pri', 'w') as projectFile:
     projectFile.write('TRANSLATIONS += \\ \n')
     for file in FILES:
         projectFile.write(f"../{file['ts']} \\ \n")
-        os.system(f"touch ${file['ts']}")
+        os.system(f"touch {file['ts']}")
     projectFile.write('\n \n##End')
 print('Updated translations.pri')
 
