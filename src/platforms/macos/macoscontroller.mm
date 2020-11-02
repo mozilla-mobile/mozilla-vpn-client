@@ -4,7 +4,6 @@
 
 #include "macoscontroller.h"
 #include "Mozilla_VPN-Swift.h"
-#include "captiveportal/captiveportal.h"
 #include "device.h"
 #include "keys.h"
 #include "ipaddressrange.h"
