@@ -526,7 +526,7 @@ void MozillaVPN::accountChecked(const QByteArray &json)
 #endif
 
     // To test the subscription needed view, comment out this line:
-    //m_controller.subscriptionNeeded();
+    //m_private->m_controller.subscriptionNeeded();
 }
 
 void MozillaVPN::cancelAuthentication()
