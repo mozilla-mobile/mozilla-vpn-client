@@ -6,6 +6,8 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
+#include <array>
+
 namespace {
 Logger logger(LOG_MAIN, "StatusIcon");
 
