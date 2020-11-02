@@ -16,9 +16,6 @@
 
 #ifdef MACOS_INTEGRATION
 #include "platforms/macos/macosstartatbootwatcher.h"
-#endif
-
-#ifdef Q_OS_MAC
 #include "platforms/macos/macosutils.h"
 #endif
 
@@ -108,6 +105,8 @@ int main(int argc, char *argv[])
                      &SettingsHolder::startAtBootChanged,
                      &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
+
+    MacOSUtils::setDockClickHandler();
 #endif
 
 #ifdef __linux__
@@ -115,10 +114,6 @@ int main(int argc, char *argv[])
     if (!LinuxDependencies::checkDependencies()) {
         return 1;
     }
-#endif
-
-#ifdef Q_OS_MAC
-    MacOSUtils::setDockClickHandler();
 #endif
 
     qmlRegisterSingletonType<MozillaVPN>(
