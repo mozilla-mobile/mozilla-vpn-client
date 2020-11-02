@@ -10,25 +10,36 @@ import "../themes/themes.js" as Theme
 import "../components"
 
 Item {
-    // TODO (can be taken from the settings view):
-    // - manage account
-    // - sign off
-
     Text {
+        id: message
+
         //% "Subscription needed"
         text: qsTrId("vpn.iap.subscriptionNeeded")
     }
 
     VPNButton {
-        width: 282
+        id: manageAccountButton
+
+        text: qsTrId("vpn.main.manageAccount")
+        anchors.top: message.bottom
+        anchors.topMargin: Theme.vSpacing
+        onClicked: VPN.openLink(VPN.LinkAccount)
+    }
+
+    VPNButton {
+        id: subscribeNow
+
         //% "Subscribe now"
         text: qsTrId("vpn.iap.subscribeNow")
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 32
+        anchors.top: manageAccountButton.bottom
+        anchors.topMargin: Theme.vSpacing
         radius: 5
         onClicked: VPN.subscribe()
     }
 
+    VPNSignOut {
+        id: signOutLink
+
+        onClicked: VPNController.logout()
+    }
 }
