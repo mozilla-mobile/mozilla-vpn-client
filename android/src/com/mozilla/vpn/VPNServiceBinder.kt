@@ -122,7 +122,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         if (json == null) {
             return confBuilder.build()
         }
-        Log.e(tag, json)
         val obj = JSONObject(json)
         val jServer = obj.getJSONObject("server")
         val peerBuilder = Peer.Builder()
