@@ -61,7 +61,6 @@ SOURCES += \
         mozillavpn.cpp \
         networkrequest.cpp \
         pingsender.cpp \
-        platforms/android/androidjniutils.cpp \
         platforms/dummy/dummypingsendworker.cpp \
         releasemonitor.cpp \
         settingsholder.cpp \
@@ -108,7 +107,6 @@ HEADERS += \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
-        platforms/android/androidjniutils.h \
         platforms/dummy/dummypingsendworker.h \
         releasemonitor.h \
         settingsholder.h \
@@ -175,16 +173,23 @@ QT += androidextras
 SOURCES += platforms/android/androidcontroller.cpp
 HEADERS += platforms/android/androidcontroller.h
 
-HEADERS += platforms/linux/linuxcryptosettings.h
-SOURCES+= platforms/linux/linuxcryptosettings.cpp
 
+# Usable Linux Imports
 SOURCES += platforms/linux/linuxpingsendworker.cpp \
-        tasks/authenticate/authenticationlistener.cpp
+        tasks/authenticate/authenticationlistener.cpp\
+        platforms/linux/linuxcryptosettings.cpp
 
 HEADERS +=platforms/linux/linuxpingsendworker.h \
+        platforms/linux/linuxcryptosettings.h \
         tasks/authenticate/authenticationlistener.h
 
-include(platforms/android/openSSL/openssl.pri)
+# We need to compile our own openssl :/ 
+exists(../3rdparty/openSSL/openssl.pri) {
+   include(../3rdparty/openSSL/openssl.pri)
+} else{
+   error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build )
+}
+
 
 
 # For the android build we need to unset those

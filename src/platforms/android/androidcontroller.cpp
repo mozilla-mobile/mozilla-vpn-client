@@ -16,7 +16,6 @@
 #include <QAndroidServiceConnection>
 #include <QAndroidBinder>
 #include <QAndroidParcel>
-#include <android/log.h>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -24,16 +23,7 @@
 #include "models/keys.h"
 #include "models/server.h"
 #include "ipaddressrange.h"
-#include "androidjniutils.h"
 
-
-
-#define TAG "ANDROID_CONTROLLER"
-#define  LOGV(...)  __android_log_print(ANDROID_LOG_VERBOSE,    TAG, __VA_ARGS__)
-#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,       TAG, __VA_ARGS__)
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,      TAG, __VA_ARGS__)
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,       TAG, __VA_ARGS__)
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,      TAG, __VA_ARGS__)
 
 
 // Binder Codes for VPNServiceBinder
@@ -56,14 +46,21 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
     {
         Q_UNUSED(device);
         Q_UNUSED(keys);
-        androidJNIUtils::init(); // Inject our Native Implemented Methods into the JNI
+        // Hook in the native implementation for startActivityForResult into the JNI
+        JNINativeMethod methods[] {{"startActivityForResult", "(Landroid/content/Intent;)V", reinterpret_cast<void *>(startActivityForResult)}};
+        QAndroidJniObject javaClass("com/mozilla/vpn/VPNService");
+        QAndroidJniEnvironment env;
+        jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
+        env->RegisterNatives(objectClass,
+                            methods,
+                            sizeof(methods) / sizeof(methods[0]));
+        env->DeleteLocalRef(objectClass);
+
         // Start the VPN Service (if not yet) and Bind to it
         QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.mozilla.vpn.VPNService"),
                                            *this, QtAndroid::BindFlag::AutoCreate);
         m_binder.setController(this);
-        // TODO: Check the State - might be not OFF on Connection.
         emit initialized(true, Controller::StateOff, QDateTime());
-        LOGD("ANDROID-CONTROLLER -- INITIALISED");
     }
 
 void AndroidController::activate(const Server &server,
@@ -108,9 +105,7 @@ void AndroidController::activate(const Server &server,
     args["allowedIPs"] = allowedIPs;
 
 
-    QJsonDocument doc;
-    doc.setObject(args);
-
+    QJsonDocument doc(args);
     QAndroidParcel sendData;
     sendData.writeData(doc.toJson()); 
     m_serviceBinder.transact(ACTION_ACTIVATE,sendData, nullptr);
@@ -132,6 +127,7 @@ void AndroidController::checkStatus()
 void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
 {
     std::function<void(const QString &)> callback = std::move(a_callback);
+    // TODO: Get backend Logs
     callback("ANDROID-CONTROLLER --  DummyController is always happy");
 }
 
@@ -143,15 +139,11 @@ void AndroidController::onServiceConnected(const QString &name, const QAndroidBi
     QAndroidParcel binderParcel;
     binderParcel.writeBinder(m_binder);
     m_serviceBinder.transact(ACTION_REGISTERLISTENER,binderParcel,nullptr);
-
-    LOGD("ANDROID-CONTROLLER -- The VPN service is Connected to the QT main thread");
-
 }
 
 void AndroidController::onServiceDisconnected(const QString &name){
     Q_UNUSED(name);
     // TODO: Maybe restart? Or crash?
-    LOGD("ANDROID-CONTROLLER -- The VPN service has disconnected from the Activity ");
 }
 
 
@@ -169,7 +161,6 @@ bool AndroidController::VPNBinder::onTransact(int code, const QAndroidParcel &da
    Q_UNUSED(data);
    Q_UNUSED(reply);
    Q_UNUSED(flags);
-   LOGD("ANDROID-VPNBINDER -- Recived Event %i ",code);
     switch (code) {
     case EVENT_CONNECTED:
         emit mController->connected();
@@ -190,4 +181,23 @@ bool AndroidController::VPNBinder::onTransact(int code, const QAndroidParcel &da
 
 void AndroidController::VPNBinder::setController(AndroidController* c){
    mController = c;
+}
+
+
+/**
+ * @brief Starts the Given intent in Context of the QTActivity
+ * @param env
+ * @param intent
+ */
+void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent)
+{
+    Q_UNUSED(env);
+    QtAndroid::startActivity(intent,123, [](int a, int b, const QAndroidJniObject& c){
+        // TODO: Automaticly make the Android Controller Retry if the result is positive.
+        // TODO: Maybe move into AndroidController?
+        Q_UNUSED(a);
+        Q_UNUSED(b);
+        Q_UNUSED(c);
+    });
+    return;
 }

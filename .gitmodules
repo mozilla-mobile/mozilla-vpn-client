@@ -1,9 +1,7 @@
 [submodule "i18n"]
 	path = i18n
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
-[submodule "openSSL"]
-	path = src/platforms/android/openSSL
-	url = https://github.com/KDAB/android_openssl
+	branch= master
 [submodule "android/modules/wireguard"]
 	path = android/modules/wireguard
 	url = https://github.com/mozilla-mobile/guardian-vpn-android.git
@@ -14,3 +12,6 @@
 [submodule "3rdparty/wireguard-apple"]
 	path = 3rdparty/wireguard-apple
 	url = https://git.zx2c4.com/wireguard-apple
+[submodule "3rdparty/openSSL"]
+	path = 3rdparty/openSSL
+	url = https://github.com/KDAB/android_openssl

@@ -1,20 +1,22 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.mozilla.vpn
 
-import android.nfc.Tag
 import android.os.Binder
 import android.os.IBinder
 import android.os.Parcel
 import android.util.Log
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
+import java.lang.Exception
 import org.json.JSONObject
 
 class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private val mListeners =  mutableListOf<IBinder>()
-
+    private val mListeners = mutableListOf<IBinder>()
 
     /**
      * The codes this Binder does accept in [onTransact]
@@ -40,15 +42,20 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
         when (code) {
             ACTIONS.activate -> {
-                // [data] is here a json containing the wireguard conf
-                val buffer = data.createByteArray()
-                val json = buffer?.let { String(it) }
-                val config = buildConfigFromJSON(json)
+                try {
+                    // [data] is here a json containing the wireguard conf
+                    val buffer = data.createByteArray()
+                    val json = buffer?.let { String(it) }
+                    val config = buildConfigFromJSON(json)
 
-                this.mService.createTunnel(config)
-                if (this.mService.turnOn()) {
-                    dispatchEvent(EVENTS.connected, "")
-                }else{
+                    this.mService.createTunnel(config)
+                    if (this.mService.turnOn()) {
+                        dispatchEvent(EVENTS.connected, "")
+                    } else {
+                        dispatchEvent(EVENTS.disconnected, "")
+                    }
+                } catch (e: Exception) {
+                    Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                     dispatchEvent(EVENTS.disconnected, "")
                 }
                 return true
@@ -63,21 +70,20 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
-                Log.d(tag,"Registered ${mListeners.size} EventListeners")
+                Log.d(tag, "Registered ${mListeners.size} EventListeners")
             }
-            ACTIONS.requestStatistic ->{
-                val statistics = this.mService.getStatistic();
+            ACTIONS.requestStatistic -> {
+                val statistics = this.mService.getStatistic()
                 val obj = JSONObject()
                 obj.put("totalRX", statistics?.totalRx())
                 obj.put("totalTX", statistics?.totalTx())
-                dispatchEvent(EVENTS.statisticUpdate, obj.toString());
+                dispatchEvent(EVENTS.statisticUpdate, obj.toString())
             }
             else -> {
                 Log.e(tag, "Received invalid bind request \t Code -> $code")
                 // If we're hitting this there is probably something wrong in the client.
                 return false
             }
-
         }
         return false
     }
@@ -88,12 +94,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * To register an Eventhandler use [onTransact] with
      * [ACTIONS.registerEventListener]
      */
-    private fun dispatchEvent(code: Int, payload: String){
+    private fun dispatchEvent(code: Int, payload: String) {
         mListeners.forEach {
-           if(it.isBinderAlive){
+           if (it.isBinderAlive) {
                val data = Parcel.obtain()
                data.writeByteArray(payload.toByteArray(charset("UTF-8")))
-               it.transact(code, data, Parcel.obtain(),0)
+               it.transact(code, data, Parcel.obtain(), 0)
            }
         }
     }
@@ -107,13 +113,15 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val statisticUpdate = 3
     }
 
-
     /**
      * Create a Wireguard [Config]  from a [json] string -
      * The [json] will be created in AndroidController.cpp
      */
     private fun buildConfigFromJSON(json: String?): Config {
         val confBuilder = Config.Builder()
+        if (json == null) {
+            return confBuilder.build()
+        }
         Log.e(tag, json)
         val obj = JSONObject(json)
         val jServer = obj.getJSONObject("server")
@@ -123,12 +131,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         peerBuilder.setEndpoint(ep)
         peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
 
-        val jAllowedIPList = obj.getJSONArray("allowedIPs");
-        if(jAllowedIPList == null){
+        val jAllowedIPList = obj.getJSONArray("allowedIPs")
+        if (jAllowedIPList.length() == 0) {
             val internet = InetNetwork.parse("0.0.0.0/0") // aka The whole internet.
             peerBuilder.addAllowedIp(internet)
-        }else{
-            (0..jAllowedIPList.length()).toList().forEach {
+        } else {
+            (0 until jAllowedIPList.length()).toList().forEach {
                 val network = InetNetwork.parse(jAllowedIPList.getString(it))
                 peerBuilder.addAllowedIp(network)
             }

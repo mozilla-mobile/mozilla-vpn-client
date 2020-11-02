@@ -34,6 +34,7 @@ private:
     Server m_server;
 
     QAndroidBinder m_serviceBinder;
+    static void startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent);
     class VPNBinder : public QAndroidBinder{
     public:
          void setController(AndroidController*);

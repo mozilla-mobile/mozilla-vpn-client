@@ -1,3 +1,6 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.mozilla.vpn
 
 import android.content.Intent
@@ -8,8 +11,7 @@ import com.wireguard.config.Config
 import com.wireguard.crypto.Key
 import com.wireguard.crypto.KeyFormatException
 
-
-class VPNService :   android.net.VpnService()  {
+class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     var tunnel: Tunnel? = null
     private var mBinder: VPNServiceBinder? = null
@@ -19,7 +21,7 @@ class VPNService :   android.net.VpnService()  {
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
-        if(mBinder == null){
+        if (mBinder == null) {
             mBinder = VPNServiceBinder(this)
         }
         Log.v(tag, "Got Bind request")
@@ -39,7 +41,7 @@ class VPNService :   android.net.VpnService()  {
      * Service Intent (Settings or vice versa)
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if(mBinder == null){
+        if (mBinder == null) {
             mBinder = VPNServiceBinder(this)
         }
         return super.onStartCommand(intent, flags, startId)
@@ -47,7 +49,7 @@ class VPNService :   android.net.VpnService()  {
 
     fun getStatistic(): Statistics? {
         val stats = Statistics()
-        val config = tunnel?.let{backend.getConfig(it)} ?: return null
+        val config = tunnel?.let { backend.getConfig(it) } ?: return null
         var key: Key? = null
         var rx: Long = 0
         var tx: Long = 0
@@ -61,7 +63,6 @@ class VPNService :   android.net.VpnService()  {
                 } catch (ignored: KeyFormatException) {
                     null
                 }
-
             } else if (line.startsWith("rx_bytes=")) {
                 if (key == null)
                     continue
@@ -70,7 +71,6 @@ class VPNService :   android.net.VpnService()  {
                 } catch (ignored: NumberFormatException) {
                     0
                 }
-
             } else if (line.startsWith("tx_bytes=")) {
                 if (key == null)
                     continue
@@ -79,14 +79,13 @@ class VPNService :   android.net.VpnService()  {
                 } catch (ignored: NumberFormatException) {
                     0
                 }
-
             }
         }
         key?.let { stats.add(it, rx, tx) }
         return stats
     }
 
-    fun createTunnel(conf: Config){
+    fun createTunnel(conf: Config) {
         this.tunnel = Tunnel("myCoolTunnel", conf)
     }
 
@@ -95,23 +94,22 @@ class VPNService :   android.net.VpnService()  {
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
         // from the user. So we need to pass this to our main Activity and exit here.
         val intent = prepare(this)
-        if(intent == null){
+        if (intent == null) {
             Log.e(tag, "VPN Permission Already Present")
-        }
-        else{
+        } else {
             Log.e(tag, "Requesting VPN Permission")
             this.startActivityForResult(intent)
             return false
         }
         val tunnel = this.tunnel ?: return false
 
-       tunnel.tunnelHandle?.let{
+       tunnel.tunnelHandle?.let {
            this.protect(it)
        }
         val config = tunnel.config
         val fileDescriptor = Builder().applyConfig(config).establish()
 
-        if(fileDescriptor != null){
+        if (fileDescriptor != null) {
                 Log.v(tag, "Got file Descriptor for VPN - Try to up")
             backend.tunnelUp(tunnel, fileDescriptor, config.toWgUserspaceString())
             return true
@@ -131,5 +129,4 @@ class VPNService :   android.net.VpnService()  {
      * Actually Implemented in src/platforms/android/AndroidJNIUtils.cpp
      */
     external fun startActivityForResult(i: Intent)
-
 }
