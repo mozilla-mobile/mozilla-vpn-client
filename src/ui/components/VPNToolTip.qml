@@ -12,7 +12,7 @@ ToolTip {
     id: toolTip
 
     visible: mouseArea.containsMouse || activeFocus
-    onVisibleChanged: fadeDown.start()
+    onVisibleChanged: if (visible) fadeDown.start()
     leftMargin: Theme.windowMargin * 1.5
     rightMargin: Theme.windowMargin * 1.5
     delay: 1500
