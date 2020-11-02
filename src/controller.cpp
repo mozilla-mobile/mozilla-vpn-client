@@ -53,6 +53,11 @@ Controller::Controller()
 
 Controller::~Controller() = default;
 
+Controller::State Controller::state() const
+{
+    return m_state;
+}
+
 void Controller::initialize()
 {
     logger.log() << "Initializing the controller";

@@ -48,7 +48,7 @@ public:
 
     void initialize();
 
-    State state() const { return m_state; }
+    State state() const;
 
     Q_INVOKABLE void activate();
 
@@ -63,6 +63,8 @@ public:
     int time() const;
 
     const QString &currentCity() const { return m_currentCity; }
+
+    const QString &switchingCountryCode() const { return m_switchingCountryCode; }
 
     const QString &switchingCity() const { return m_switchingCity; }
 

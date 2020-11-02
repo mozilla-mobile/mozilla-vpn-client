@@ -9,49 +9,58 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 Item {
+    id: panel
+
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
-    property var logoY: 80
-
+    property var logoSize: 76
     anchors.horizontalCenter: parent.horizontalCenter
+    width: parent.width
 
     Rectangle {
-        // We nest the panel Image inside this Rectangle to prevent
-        // logoTitle and logoSubittle from wiggling when Image.height
-        // changes as Image.src is updated.
+        id: contentWrapper
 
-        id: logoWrapper
+        height: contentWrapper.childrenRect.height
+        anchors.centerIn: panel
 
-        color: "transparent"
-        height: 76
-        width: 76
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: logoY
+        Rectangle {
+            // We nest the panel Image inside this Rectangle to prevent
+            // logoTitle and logoSubittle from wiggling when Image.height
+            // changes as Image.src is updated.
 
-        Image {
-            id: logo
+            id: logoWrapper
 
+            color: "transparent"
+            height: logoSize
+            width: logoSize
+            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
-            sourceSize.height: 76
-            fillMode: Image.PreserveAspectFit
+
+            Image {
+                id: logo
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                sourceSize.height: logoSize
+                fillMode: Image.PreserveAspectFit
+            }
+
         }
 
-    }
+        VPNHeadline {
+            id: logoTitle
 
-    VPNHeadline {
-        id: logoTitle
+            anchors.top: logoWrapper.bottom
+            anchors.topMargin: 24
+        }
 
-        anchors.top: logoWrapper.bottom
-        anchors.topMargin: 24
-    }
+        VPNSubtitle {
+            id: logoSubtitle
 
-    VPNSubtitle {
-        id: logoSubtitle
+            anchors.top: logoTitle.bottom
+            anchors.topMargin: 12
+        }
 
-        x: 169
-        y: 255
     }
 
 }

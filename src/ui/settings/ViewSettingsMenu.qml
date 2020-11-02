@@ -10,17 +10,10 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-ScrollView {
-    id: scrollingFrame
+VPNFlickable {
+    id: vpnFlickable
 
-    height: parent.height
-    contentHeight: (height > Theme.settingsMaxContentHeight) ? parent.height : Theme.settingsMaxContentHeight
-    opacity: 0
-    ScrollBar.vertical.policy: (height > Theme.settingsMaxContentHeight) ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
-    Component.onCompleted: {
-        opacity = 1;
-    }
-
+    flickContentHeight: Theme.settingsMaxContentHeight
     ListModel {
         id: settingsMenuListModel
 
@@ -125,7 +118,6 @@ ScrollView {
         text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         anchors.top: logo.bottom
         anchors.topMargin: Theme.vSpacing
-        height: 32
     }
 
     VPNSubtitle {
@@ -208,13 +200,6 @@ ScrollView {
         id: signOutLink
 
         onClicked: VPNController.logout()
-    }
-
-    Behavior on opacity {
-        PropertyAnimation {
-            duration: 200
-        }
-
     }
 
 }

@@ -18,6 +18,7 @@
 #include "models/user.h"
 #include "releasemonitor.h"
 #include "settingsholder.h"
+#include "statusicon.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -81,7 +82,7 @@ public:
     static void createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     static MozillaVPN *instance();
 
-    State state() const { return m_state; }
+    State state() const;
     AlertType alert() const { return m_alert; }
 
     const QString &getApiUrl() const { return m_apiUrl; }
@@ -115,6 +116,7 @@ public:
     Localizer *localizer() { return &m_private->m_localizer; }
     ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
     SettingsHolder *settingsHolder() { return &m_private->m_settingsHolder; }
+    StatusIcon *statusIcon() { return &m_private->m_statusIcon; }
     User *user() { return &m_private->m_user; }
 
     // Called at the end of the authentication flow. We can continue adding the device
@@ -209,6 +211,7 @@ private:
         ServerCountryModel m_serverCountryModel;
         ServerData m_serverData;
         SettingsHolder m_settingsHolder;
+        StatusIcon m_statusIcon;
         User m_user;
     };
 

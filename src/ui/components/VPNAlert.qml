@@ -4,113 +4,106 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-
 import Mozilla.VPN 1.0
-
 import "../themes/themes.js" as Theme
 
 Rectangle {
-    property var alertType: "";
-    property var alertColor: Theme.redButton;
-    property var alertText: "";
-    property var alertLinkText: "";
-
     id: alertBox
+
+    property var alertType: ""
+    property var alertColor: Theme.redButton
+    property var alertText: ""
+    property var alertLinkText: ""
+
     color: alertColor.defaultColor
-    height: 40
+    height: Math.max(40, (label.paintedHeight + Theme.windowMargin))
     width: parent.width - Theme.windowMargin
     y: parent.height - 48
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.margins: Theme.windowMargin / 2
     radius: 4
 
-    Behavior on color {
-        ColorAnimation {
-            duration: 200
-        }
-    }
-
     VPNButtonBase {
+        id: alertAction
+
         bgColor: alertColor
         enableHover: alertLinkText.length > 0
         targetEl: alertBox
-
-        id: alertAction
-        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        height: label.paintedHeight + Theme.windowMargin
         width: parent.width - closeButton.width
         radius: 4
         z: 2
-
-        Rectangle {
-            anchors.fill: parent
-             anchors.margins: -3
-             border.color: alertColor.focusStroke // TODO: Figure these out
-             border.width: parent.activeFocus ? 4 : 0;
-             color: "transparent"
-             opacity: parent.activeFocus ? 1 : 0;
-             radius: 7
-         }
-
         onClicked: {
-            switch(alertType) {
-
+            switch (alertType) {
             case ("update"):
-                stackview.push("../views/ViewUpdate.qml", StackView.Immediate)
+                stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
                 break;
-
             case ("authentication-failed"):
                 VPN.authenticate();
                 break;
-
             case ("connection-failed"):
                 // TODO Try again
-
             case ("no-connection"):
                 // TODO Try again
-
             case ("background-service"):
                 // TODO Restore
-
             default:
                 VPN.hideAlert();
             }
         }
 
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: -3
+            border.color: alertColor.focusStroke // TODO: Figure these out
+            border.width: parent.activeFocus ? 4 : 0
+            color: "transparent"
+            opacity: parent.activeFocus ? 1 : 0
+            radius: 7
+        }
+
         Label {
+            id: label
+
             anchors.centerIn: parent
-            text: alertBox.alertText + " " + "<b><u>"+ alertLinkText + "</b></u>"
+            text: alertBox.alertText + " " + "<b><u>" + alertLinkText + "</b></u>"
+            horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeSmall
             color: Theme.white
+            width: alertAction.width - Theme.windowMargin
+            wrapMode: Label.WordWrap
         }
+
     }
 
     Rectangle {
         anchors.fill: closeButton
         anchors.margins: -3
         border.color: alertColor.focusStroke // TODO: Figure these out
-        border.width: closeButton.activeFocus ? 4 : 0;
+        border.width: closeButton.activeFocus ? 4 : 0
         color: "transparent"
-        opacity: closeButton.activeFocus ? 1 : 0;
+        opacity: closeButton.activeFocus ? 1 : 0
         radius: 7
         z: 2
-     }
+    }
 
     VPNButtonBase {
-        targetEl: backgroundRect
-        bgColor: alertColor
         id: closeButton
 
+        targetEl: backgroundRect
+        bgColor: alertColor
         height: parent.height
-        width: parent.height
+        width: 40
         clip: true
         anchors.right: parent.right
         anchors.rightMargin: 0
-
         Accessible.name: "Close"
         onClicked: {
             alertBox.visible = false;
             if (alertType === "update") {
-               return VPN.hideUpdateRecommendedAlert();
+                parent.updatePageLayout();
+                return VPN.hideUpdateRecommendedAlert();
             }
             return VPN.hideAlert();
         }
@@ -119,24 +112,38 @@ Rectangle {
         // where closeButton meets alertAction
         Rectangle {
             id: backgroundRect
+
             height: parent.height
-            width: parent.height + 10
+            width: parent.width + 10
             anchors.left: closeButton.left
-            anchors.leftMargin: - 10
+            anchors.leftMargin: -10
             radius: 4
+
             Behavior on color {
                 ColorAnimation {
                     duration: 200
                 }
+
             }
+
         }
 
         Image {
             id: alertBoxClose
+
             source: "../resources/close-white.svg"
             sourceSize.width: 12
             sourceSize.height: 12
             anchors.centerIn: closeButton
         }
+
     }
+
+    Behavior on color {
+        ColorAnimation {
+            duration: 200
+        }
+
+    }
+
 }

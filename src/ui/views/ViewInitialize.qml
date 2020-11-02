@@ -31,6 +31,8 @@ Item {
         logoTitle: qsTrId("vpn.main.productName")
         //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         logoSubtitle: qsTrId("vpn.main.productDescription")
+        logoSize: 80
+        height: parent.height - (getStarted.height + getStarted.anchors.bottomMargin + learnMore.height + learnMore.anchors.bottomMargin)
     }
 
     VPNButton {
@@ -38,7 +40,6 @@ Item {
 
         anchors.bottom: learnMore.top
         anchors.bottomMargin: 24
-        width: 282
         //% "Get started"
         text: qsTrId("vpn.main.getStarted")
         anchors.horizontalCenterOffset: 0

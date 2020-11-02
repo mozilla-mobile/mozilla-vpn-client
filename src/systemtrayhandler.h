@@ -20,25 +20,15 @@ public:
 
     void captivePortalNotificationRequested();
 
-public slots:
-    void controllerStateChanged();
-
-private slots:
-    void animateIcon();
-
 signals:
     void quit();
 
-private:
-    void showAnimatedIcon();
-    void showIcon(const QString &icon);
+public slots:
+    void iconChanged(const QString &icon);
+    void controllerStateChanged();
 
 private:
     QMenu m_menu;
-
-    // Animated icon.
-    QTimer m_animatedIconTimer;
-    uint8_t m_animatedIconIndex = 0;
 };
 
 #endif // SYSTEMTRAYHANDLER_H

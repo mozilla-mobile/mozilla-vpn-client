@@ -5,6 +5,8 @@
 #include "helper.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
+MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
+Controller::State TestHelper::controllerState = Controller::StateInitializing;
 QVector<QObject *> TestHelper::testList;
 
 TestHelper::TestHelper()

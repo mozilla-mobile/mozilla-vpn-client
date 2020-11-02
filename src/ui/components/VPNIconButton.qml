@@ -29,6 +29,8 @@ RoundButton {
         text: accessibleName
     }
 
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(iconButton)
+    
     states: [
         State {
             when: mouseArea.pressed
