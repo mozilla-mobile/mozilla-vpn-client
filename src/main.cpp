@@ -26,7 +26,6 @@
 #include <QCommandLineParser>
 #include <QIcon>
 #include <QQmlApplicationEngine>
-#include <QSystemTrayIcon>
 #include <QWindow>
 
 #ifdef QT_DEBUG
@@ -227,21 +226,8 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
-    // System tray icon and messages.
-    QIcon trayIcon("://ui/resources/logo-tray.svg");
-    trayIcon.setIsMask(true);
-    SystemTrayHandler systemTrayHandler(trayIcon, &app);
+    SystemTrayHandler systemTrayHandler(&app);
     systemTrayHandler.show();
-
-    QObject::connect(&systemTrayHandler, &QSystemTrayIcon::activated, [engine = &engine]() {
-        QObject *rootObject = engine->rootObjects().first();
-        QWindow *window = qobject_cast<QWindow *>(rootObject);
-        Q_ASSERT(window);
-
-        window->show();
-        window->raise();
-        window->requestActivate();
-    });
 
     QObject::connect(&systemTrayHandler, &SystemTrayHandler::quit, []() {
         MozillaVPN::instance()->controller()->quit();

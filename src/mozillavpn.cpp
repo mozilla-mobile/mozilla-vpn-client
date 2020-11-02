@@ -22,6 +22,7 @@
 #include "platforms/ios/taskiosproducts.h"
 #endif
 
+#include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
@@ -32,6 +33,7 @@
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
+#include <QWindow>
 
 // TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
@@ -845,4 +847,15 @@ bool MozillaVPN::modelsInitialized() const
 QNetworkAccessManager *MozillaVPN::networkAccessManager()
 {
     return m_engine->networkAccessManager();
+}
+
+void MozillaVPN::showWindow()
+{
+    QObject *rootObject = m_engine->rootObjects().first();
+    QWindow *window = qobject_cast<QWindow *>(rootObject);
+    Q_ASSERT(window);
+
+    window->show();
+    window->raise();
+    window->requestActivate();
 }
