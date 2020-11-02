@@ -138,6 +138,11 @@ MozillaVPN::~MozillaVPN()
     delete m_private;
 }
 
+MozillaVPN::State MozillaVPN::state() const
+{
+    return m_state;
+}
+
 void MozillaVPN::initialize()
 {
     logger.log() << "MozillaVPN Initialization";

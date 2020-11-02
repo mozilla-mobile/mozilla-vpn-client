@@ -82,7 +82,7 @@ public:
     static void createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     static MozillaVPN *instance();
 
-    State state() const { return m_state; }
+    State state() const;
     AlertType alert() const { return m_alert; }
 
     const QString &getApiUrl() const { return m_apiUrl; }

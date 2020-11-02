@@ -48,7 +48,7 @@ public:
 
     void initialize();
 
-    State state() const { return m_state; }
+    State state() const;
 
     Q_INVOKABLE void activate();
 
