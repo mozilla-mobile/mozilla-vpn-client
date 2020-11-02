@@ -6,6 +6,7 @@
 #define LOGHANDLER_H
 
 #include <QDateTime>
+#include <QMutex>
 #include <QObject>
 #include <QVector>
 
@@ -56,7 +57,7 @@ public:
 
     static void prettyOutput(QTextStream &out, const LogHandler::Log &log);
 
-    const QVector<Log> &logs() const { return m_logs; }
+    const QVector<Log> &logs();
 
 private:
     LogHandler();
@@ -65,9 +66,14 @@ private:
 
     void addLog(const Log &log);
 
-    bool matchModule(const Log &log) const;
+    bool matchModule(const Log &log, const QMutexLocker &proofOfLock) const;
 
+    QMutex m_mutex;
+
+    // Protected by mutex.
     QStringList m_modules;
+
+    // Protected by mutex.
     QVector<Log> m_logs;
 };
 

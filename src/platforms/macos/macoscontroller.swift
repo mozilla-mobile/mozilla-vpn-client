@@ -25,11 +25,13 @@ public class MacOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
     private var stateChangeCallback: ((Bool) -> Void?)? = nil
-    var interface:InterfaceConfiguration? = nil
+    private var privateKey : Data? = nil
+    private var deviceIpv4Address: String? = nil
+    private var deviceIpv6Address: String? = nil
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
-    @objc init(privateKey: Data, ipv4Address: String, ipv6Address: String, ipv6Enabled: Bool, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
+    @objc init(privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
         super.init()
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
@@ -37,17 +39,11 @@ public class MacOSControllerImpl : NSObject {
         Logger.configureGlobal(tagged: "APP", withFilePath: "")
 
         stateChangeCallback = callback
+        self.privateKey = privateKey
+        self.deviceIpv4Address = deviceIpv4Address
+        self.deviceIpv6Address = deviceIpv6Address
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.vpnStatusDidChange(notification:)), name: Notification.Name.NEVPNStatusDidChange, object: nil)
-
-        interface = InterfaceConfiguration(privateKey: privateKey)
-        if let ipv4Address = IPAddressRange(from: ipv4Address),
-           let ipv6Address = IPAddressRange(from: ipv6Address) {
-            interface!.addresses = [ipv4Address]
-            if (ipv6Enabled) {
-                interface!.addresses.append(ipv6Address)
-            }
-        }
 
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             if let error = error {
@@ -61,7 +57,7 @@ public class MacOSControllerImpl : NSObject {
                 return
             }
 
-            let tunnel = managers?.first
+            let tunnel = managers?.first { $0.localizedDescription == vpnName }
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = NETunnelProviderManager()
@@ -70,16 +66,6 @@ public class MacOSControllerImpl : NSObject {
             }
 
             Logger.global?.log(message: "Tunnel already exists")
-
-            let proto = tunnel!.protocolConfiguration as? NETunnelProviderProtocol
-            if proto == nil {
-                tunnel!.removeFromPreferences { _ in }
-
-                Logger.global?.log(message: "Creating the tunnel because its proto is invalid")
-                self!.tunnel = NETunnelProviderManager()
-                closure(ConnectionState.Disconnected, nil)
-                return
-            }
 
             self!.tunnel = tunnel
             if tunnel?.connection.status == .connected {
@@ -144,13 +130,22 @@ public class MacOSControllerImpl : NSObject {
         var peerConfigurations: [PeerConfiguration] = []
         peerConfigurations.append(peerConfiguration)
 
-        interface!.dns = [ DNSServer(address: ipv4GatewayIP!)]
+        var interface = InterfaceConfiguration(privateKey: privateKey!)
+
+        if let ipv4Address = IPAddressRange(from: deviceIpv4Address!),
+           let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
+            interface.addresses = [ipv4Address]
+            if (ipv6Enabled) {
+                interface.addresses.append(ipv6Address)
+            }
+        }
+        interface.dns = [ DNSServer(address: ipv4GatewayIP!)]
 
         if (ipv6Enabled) {
-            interface!.dns.append(DNSServer(address: ipv6GatewayIP!))
+            interface.dns.append(DNSServer(address: ipv6GatewayIP!))
         }
 
-        let config = TunnelConfiguration(name: vpnName, interface: interface!, peers: peerConfigurations)
+        let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
         tunnel!.protocolConfiguration = NETunnelProviderProtocol(tunnelConfiguration: config)
         tunnel!.localizedDescription = vpnName
@@ -221,7 +216,7 @@ public class MacOSControllerImpl : NSObject {
         do {
             try session.sendProviderMessage(Data([UInt8(0)])) { [callback] data in
                 guard let data = data,
-                        let configString = String(data: data, encoding: .utf8)
+                      let configString = String(data: data, encoding: .utf8)
                 else {
                     Logger.global?.log(message: "Failed to convert data to string")
                     callback("", "")

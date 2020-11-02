@@ -31,22 +31,25 @@ public:
 
     const QString &countryCode() const { return m_countryCode; }
 
+    const QString &country() const { return m_country; }
+
     const QString &city() const { return m_city; }
 
     void forget() { m_initialized = false; }
 
-    void update(const QString &countryCode, const QString &city);
+    void update(const QString &countryCode, const QString &country, const QString &city);
 
 signals:
     void changed();
 
 private:
-    void initializeInternal(const QString &countryCode, const QString &city);
+    void initializeInternal(const QString &countryCode, const QString &country, const QString &city);
 
 private:
     bool m_initialized = false;
 
     QString m_countryCode;
+    QString m_country;
     QString m_city;
 };
 

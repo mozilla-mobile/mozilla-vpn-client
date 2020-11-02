@@ -37,30 +37,42 @@ void SystemTrayHandler::controllerStateChanged()
         return;
     }
 
+    MozillaVPN *vpn = MozillaVPN::instance();
+
     // If we are in a non-main state, we don't need to show special icons.
-    if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+    if (vpn->state() != MozillaVPN::StateMain) {
         showIcon("://ui/resources/logo-tray.svg");
         return;
     }
 
-    switch (MozillaVPN::instance()->controller()->state()) {
+    QString title;
+    QString message;
+
+    switch (vpn->controller()->state()) {
     case Controller::StateOn:
         showIcon("://ui/resources/logo-on.svg");
-        //% "Mozilla VPN connected"
-        showMessage(qtTrId("vpn.systray.statusConnected"), qtTrId("TODO"), NoIcon, 2000);
+        //% "VPN connected"
+        title = qtTrId("vpn.systray.statusConnected.title");
+        //% "Connected to %1 - %2"
+        //: Shown as message body in a notification. %1 is the country, %2 is the city.
+        message = qtTrId("vpn.systray.statusConnected.message")
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city());
         break;
 
     case Controller::StateOff:
         showIcon("://ui/resources/logo-off.svg");
-        //% "Mozilla VPN disconnected"
-        showMessage(qtTrId("vpn.systray.statusDisconnected"), qtTrId("TODO"), NoIcon, 2000);
+        //% "VPN disconnected"
+        title = qtTrId("vpn.systray.statusDisconnected");
+        message = qtTrId("TODO");
         break;
 
     case Controller::StateSwitching:
         showAnimatedIcon();
-        //% "Mozilla VPN switching"
+        //% "VPN switching"
         //: This message is shown when the VPN is switching to a different server in a different location.
-        showMessage(qtTrId("vpn.systray.statusSwitch"), qtTrId("TODO"), NoIcon, 2000);
+        title = qtTrId("vpn.systray.statusSwitch");
+        message = qtTrId("TODO");
         break;
 
     case Controller::StateConnecting:
@@ -73,13 +85,21 @@ void SystemTrayHandler::controllerStateChanged()
         showIcon("://ui/resources/logo-tray.svg");
         break;
     }
+
+    Q_ASSERT(title.isEmpty() == message.isEmpty());
+    if (!title.isEmpty()) {
+        showMessage(title, message, NoIcon, 2000);
+    }
 }
 
 void SystemTrayHandler::captivePortalNotificationRequested()
 {
     logger.log() << "Capitve portal notification shown";
     //% "Captive portal detected"
-    showMessage(qtTrId("vpn.systray.captivePortalAlert"), tr("TODO"), NoIcon, 2000);
+    QString title = qtTrId("vpn.systray.captivePortalAlert.title");
+    //% "VPN will automatically reconnect when ready
+    QString message = qtTrId("vpn.systray.captivePortalAlert.message");
+    showMessage(title, message, NoIcon, 2000);
 }
 
 void SystemTrayHandler::showAnimatedIcon()

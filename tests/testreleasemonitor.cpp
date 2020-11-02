@@ -13,17 +13,14 @@
 void TestReleaseMonitor::failure()
 {
     ReleaseMonitor rm;
-
-    TestHelper::networkStatus = TestHelper::Failure;
-
-    bool completed = false;
-    QTimer::singleShot(10, [&] { completed = true; });
-
     rm.runSoon();
 
-    while (!completed) {
-        QCoreApplication::processEvents();
-    }
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
+
+    QEventLoop loop;
+    connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
+    loop.exec();
 }
 
 void TestReleaseMonitor::success_data()
@@ -103,19 +100,15 @@ void TestReleaseMonitor::success_data()
 void TestReleaseMonitor::success()
 {
     ReleaseMonitor rm;
-
-    QFETCH(QByteArray, json);
-    TestHelper::networkBody = json;
-    TestHelper::networkStatus = TestHelper::Success;
-
-    bool completed = false;
-    QTimer::singleShot(10, [&] { completed = true; });
-
     rm.runSoon();
 
-    while (!completed) {
-        QCoreApplication::processEvents();
-    }
+    QFETCH(QByteArray, json);
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
+
+    QEventLoop loop;
+    connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
+    loop.exec();
 }
 
 static TestReleaseMonitor s_testReleaseMonitor;

@@ -10,9 +10,9 @@
 constexpr int32_t CAPTIVEPORTAL_LOOKUPTIMER = 5000;
 
 constexpr const char *CAPTIVEPORTAL_HOST = "detectportal.firefox.com";
-constexpr const char *CAPTIVEPORTAL_URL = "http://detectportal.firefox.com/success.txt";
+constexpr const char *CAPTIVEPORTAL_URL_IPV4 = "http://%1/success.txt";
+constexpr const char *CAPTIVEPORTAL_URL_IPV6 = "http://[%1]/success.txt";
 
-constexpr int CAPTIVEPORTAL_REQUEST_TIMEOUT = 10000;
 constexpr const char *CAPTIVEPORTAL_REQUEST_CONTENT = "success";
 
 class CaptivePortal final
@@ -21,8 +21,8 @@ public:
     const QStringList &ipv4Addresses() const { return m_ipv4Addresses; }
     const QStringList &ipv6Addresses() const { return m_ipv6Addresses; }
 
-    void addIpv4Address(const QString &address);
-    void addIpv6Address(const QString &address);
+    void setIpv4Addresses(const QStringList &list) { m_ipv4Addresses = list; }
+    void setIpv6Addresses(const QStringList &list) { m_ipv6Addresses = list; }
 
 private:
     QStringList m_ipv4Addresses;

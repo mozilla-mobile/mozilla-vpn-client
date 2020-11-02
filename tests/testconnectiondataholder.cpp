@@ -4,68 +4,106 @@
 
 #include "testconnectiondataholder.h"
 #include "../src/connectiondataholder.h"
+#include "../src/constants.h"
 #include "helper.h"
+
+#include <QSplineSeries>
+#include <QValueAxis>
 
 void TestConnectionDataHolder::checkIpAddressFailure()
 {
     ConnectionDataHolder cdh;
 
-    TestHelper::networkStatus = TestHelper::Failure;
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    bool completed = false;
-    QTimer::singleShot(1, [&] {
+    QEventLoop loop;
+    connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
         cdh.disable();
-        completed = true;
+        loop.exit();
     });
 
     cdh.enable();
-
-    while (!completed) {
-        QCoreApplication::processEvents();
-    }
+    loop.exec();
 }
 
 void TestConnectionDataHolder::checkIpAddressSucceess_data()
 {
     QTest::addColumn<QByteArray>("json");
     QTest::addColumn<QString>("ipAddress");
+    QTest::addColumn<bool>("signal");
 
-    QTest::addRow("invalid") << QByteArray("") << "vpn.connectionInfo.unknown";
+    QTest::addRow("invalid") << QByteArray("") << "vpn.connectionInfo.unknown" << false;
 
     QJsonObject json;
-    QTest::addRow("empty") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown";
+    QTest::addRow("empty") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown" << false;
 
     json.insert("ip", 42);
-    QTest::addRow("invalid ip") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown";
+    QTest::addRow("invalid ip") << QJsonDocument(json).toJson() << "vpn.connectionInfo.unknown" << false;
 
     json.insert("ip", "42");
-    QTest::addRow("valid ip") << QJsonDocument(json).toJson() << "42";
+    QTest::addRow("valid ip") << QJsonDocument(json).toJson() << "42" << true;
 }
 
 void TestConnectionDataHolder::checkIpAddressSucceess()
 {
     ConnectionDataHolder cdh;
-
-    TestHelper::networkStatus = TestHelper::Success;
+    QSignalSpy spy(&cdh, &ConnectionDataHolder::ipAddressChanged);
 
     QFETCH(QByteArray, json);
-    TestHelper::networkBody = json;
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
-    bool completed = false;
-    QTimer::singleShot(10, [&] {
+    QEventLoop loop;
+    connect(&cdh, &ConnectionDataHolder::ipAddressChecked, [&] {
         cdh.disable();
 
         QFETCH(QString, ipAddress);
         QCOMPARE(cdh.ipAddress(), ipAddress);
 
-        completed = true;
+        QFETCH(bool, signal);
+        QCOMPARE(spy.count(), signal ? 1 : 0);
+
+        loop.exit();
     });
 
     cdh.enable();
+    loop.exec();
+}
 
-    while (!completed) {
-        QCoreApplication::processEvents();
-    }
+void TestConnectionDataHolder::chart()
+{
+    ConnectionDataHolder cdh;
+    QSignalSpy spy(&cdh, &ConnectionDataHolder::bytesChanged);
+
+    cdh.add(123, 123);
+    QCOMPARE(spy.count(), 0);
+
+    QtCharts::QSplineSeries *txSeries = new QtCharts::QSplineSeries(this);
+    QtCharts::QSplineSeries *rxSeries = new QtCharts::QSplineSeries(this);
+    QtCharts::QValueAxis *axisX = new QtCharts::QValueAxis(this);
+    QtCharts::QValueAxis *axisY = new QtCharts::QValueAxis(this);
+
+    cdh.activate(QVariant::fromValue(txSeries),
+                 QVariant::fromValue(rxSeries),
+                 QVariant::fromValue(axisX),
+                 QVariant::fromValue(axisY));
+
+    QCOMPARE(spy.count(), 0);
+    QCOMPARE(txSeries->count(), Constants::CHARTS_MAX_POINTS);
+    QCOMPARE(rxSeries->count(), Constants::CHARTS_MAX_POINTS);
+
+    QEventLoop loop;
+    connect(&cdh, &ConnectionDataHolder::bytesChanged, [&] {
+        if (spy.count() >= Constants::CHARTS_MAX_POINTS * 2) {
+            loop.exit();
+        }
+    });
+
+    loop.exec();
+
+    QCOMPARE(cdh.txBytes(), (uint32_t) 0);
+    QCOMPARE(cdh.rxBytes(), (uint32_t) 0);
 }
 
 static TestConnectionDataHolder s_testConnectionDataHolder;

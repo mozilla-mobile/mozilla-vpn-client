@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozillavpn.h"
+#include "constants.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "models/device.h"
@@ -11,6 +12,7 @@
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
@@ -26,6 +28,7 @@
 #include <QGuiApplication>
 #include <QLocale>
 #include <QPointer>
+#include <QQmlApplicationEngine>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -36,9 +39,6 @@ constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudop
 #ifdef QT_DEBUG
 constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 #endif
-
-// in seconds, how often we should fetch the server list and the account.
-constexpr const uint32_t SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC = 3600;
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -82,8 +82,10 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 {
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
-    connect(&m_accountAndServersTimer, &QTimer::timeout, [this]() {
+    connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
         scheduleTask(new TaskAccountAndServers());
+
+        scheduleTask(new TaskCaptivePortalLookup());
 
 #ifdef IOS_INTEGRATION
         scheduleTask(new TaskIOSProducts());
@@ -122,14 +124,6 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &CaptivePortalDetection::captivePortalDetected,
             &m_private->m_controller,
             &Controller::captivePortalDetected);
-
-    QScreen *screen = QGuiApplication::primaryScreen();
-    screen->setOrientationUpdateMask(Qt::PortraitOrientation | Qt::LandscapeOrientation
-                                     | Qt::InvertedPortraitOrientation
-                                     | Qt::InvertedLandscapeOrientation);
-    connect(screen, &QScreen::orientationChanged, [](Qt::ScreenOrientation orientation) {
-        logger.log() << "Screen rotated:" << orientation;
-    });
 }
 
 MozillaVPN::~MozillaVPN()
@@ -213,6 +207,8 @@ void MozillaVPN::initialize()
 
     scheduleTask(new TaskAccountAndServers());
 
+    scheduleTask(new TaskCaptivePortalLookup());
+
 #ifdef IOS_INTEGRATION
     scheduleTask(new TaskIOSProducts());
 #endif
@@ -231,10 +227,10 @@ void MozillaVPN::setState(State state)
     if (m_state == StateMain) {
         m_private->m_connectionDataHolder.enable();
         m_private->m_controller.initialize();
-        startSchedulingAccountAndServers();
+        startSchedulingPeriodicOperations();
     } else {
         m_private->m_connectionDataHolder.disable();
-        stopSchedulingAccountAndServers();
+        stopSchedulingPeriodicOperations();
     }
 }
 
@@ -320,16 +316,18 @@ void MozillaVPN::maybeRunTask()
     QPointer<Task> task = m_tasks.takeFirst();
     Q_ASSERT(!task.isNull());
 
-    QObject::connect(task, &Task::completed, this, [this]() {
-        logger.log() << "Task completed";
-
-        m_task_running = false;
-        maybeRunTask();
-    });
-
+    QObject::connect(task, &Task::completed, this, &MozillaVPN::taskCompleted);
     QObject::connect(task, &Task::completed, task, &Task::deleteLater);
 
     task->run(this);
+}
+
+void MozillaVPN::taskCompleted()
+{
+    logger.log() << "Task completed";
+
+    m_task_running = false;
+    maybeRunTask();
 }
 
 void MozillaVPN::setToken(const QString &token)
@@ -600,7 +598,9 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
         break;
 
     case ErrorHandler::AuthenticationError:
-        alert = AuthenticationFailedAlert;
+        if (m_userAuthenticated) {
+            alert = AuthenticationFailedAlert;
+        }
         break;
 
     case ErrorHandler::BackendServiceError:
@@ -640,7 +640,9 @@ const QList<Server> MozillaVPN::getServers() const
 
 void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
 {
-    m_private->m_serverData.update(countryCode, city);
+    QString countryName = m_private->m_serverCountryModel.countryName(countryCode);
+
+    m_private->m_serverData.update(countryCode, countryName, city);
     m_private->m_serverData.writeSettings(m_private->m_settingsHolder);
 }
 
@@ -676,16 +678,16 @@ void MozillaVPN::setUserAuthenticated(bool state)
     emit userAuthenticationChanged();
 }
 
-void MozillaVPN::startSchedulingAccountAndServers()
+void MozillaVPN::startSchedulingPeriodicOperations()
 {
-    logger.log() << "Start scheduling account and servers";
-    m_accountAndServersTimer.start(SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_SEC * 1000);
+    logger.log() << "Start scheduling account and servers" << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
+    m_periodicOperationsTimer.start(Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
 }
 
-void MozillaVPN::stopSchedulingAccountAndServers()
+void MozillaVPN::stopSchedulingPeriodicOperations()
 {
     logger.log() << "Stop scheduling account and servers";
-    m_accountAndServersTimer.stop();
+    m_periodicOperationsTimer.stop();
 }
 
 void MozillaVPN::subscribe()
@@ -826,4 +828,9 @@ bool MozillaVPN::modelsInitialized() const
            && m_private->m_deviceModel.initialized()
            && m_private->m_deviceModel.hasDevice(Device::currentDeviceName())
            && m_private->m_keys.initialized();
+}
+
+QNetworkAccessManager *MozillaVPN::networkAccessManager()
+{
+    return m_engine->networkAccessManager();
 }

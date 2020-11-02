@@ -7,30 +7,37 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "timersingleshot.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QTimer>
 
 namespace {
 Logger logger(LOG_MAIN, "ReleaseMonitor");
 }
 
+ReleaseMonitor::ReleaseMonitor()
+{
+    m_timer.setSingleShot(true);
+    connect(&m_timer, &QTimer::timeout, this, &ReleaseMonitor::runInternal);
+}
+
 void ReleaseMonitor::runSoon()
 {
     logger.log() << "ReleaseManager - Scheduling a quick timer";
-    QTimer::singleShot(0, [this] { runInternal(); });
+    TimerSingleShot::create(this, 0, [this] { runInternal(); });
 }
 
 void ReleaseMonitor::runInternal()
 {
     logger.log() << "ReleaseMonitor started";
 
-    NetworkRequest *request = NetworkRequest::createForVersions(MozillaVPN::instance());
+    NetworkRequest *request = NetworkRequest::createForVersions(this, MozillaVPN::instance());
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
         logger.log() << "Versions request failed" << error;
+        emit releaseChecked();
         schedule();
     });
 
@@ -41,6 +48,7 @@ void ReleaseMonitor::runInternal()
             logger.log() << "Ignore failure.";
         }
 
+        emit releaseChecked();
         schedule();
     });
 }
@@ -48,7 +56,7 @@ void ReleaseMonitor::runInternal()
 void ReleaseMonitor::schedule()
 {
     logger.log() << "ReleaseMonitor scheduling";
-    QTimer::singleShot(Constants::RELEASE_MONITOR_MSEC, [this] { runInternal(); });
+    m_timer.start(Constants::RELEASE_MONITOR_MSEC);
 }
 
 bool ReleaseMonitor::processData(const QByteArray &data)

@@ -47,10 +47,19 @@ public:
     GETSET(QString, hasUserEmail, userEmail, setUserEmail)
     GETSET(int, hasUserMaxDevices, userMaxDevices, setUserMaxDevices)
     GETSET(bool, hasUserSubscriptionNeeded, userSubscriptionNeeded, setUserSubscriptionNeeded)
+    GETSET(QString, hasCurrentServerCountryCode, currentServerCountryCode, setCurrentServerCountryCode)
     GETSET(QString, hasCurrentServerCountry, currentServerCountry, setCurrentServerCountry)
     GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
     GETSET(QByteArray, hasDevices, devices, setDevices)
     GETSET(QStringList, hasIapProducts, iapProducts, setIapProducts)
+    GETSET(QStringList,
+           hasCaptivePortalIpv4Addresses,
+           captivePortalIpv4Addresses,
+           setCaptivePortalIpv4Addresses)
+    GETSET(QStringList,
+           hasCaptivePortalIpv6Addresses,
+           captivePortalIpv6Addresses,
+           setCaptivePortalIpv6Addresses)
 
 #ifdef IOS_INTEGRATION
     GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated, setNativeIOSDataMigrated)

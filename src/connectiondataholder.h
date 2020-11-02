@@ -16,6 +16,10 @@ class QSplineSeries;
 class QValueAxis;
 }
 
+#ifdef UNIT_TEST
+class TestConnectionDataHolder;
+#endif
+
 class ConnectionDataHolder final : public QObject
 {
     Q_OBJECT
@@ -34,8 +38,6 @@ public:
                               const QVariant &axisX,
                               const QVariant &axisY);
 
-    Q_INVOKABLE void deactivate();
-
     const QString &ipAddress() const { return m_ipAddress; }
 
     void reset();
@@ -53,9 +55,14 @@ private:
     quint64 bytes(bool index) const;
 
 public slots:
+    Q_INVOKABLE void deactivate();
+
     void connectionStateChanged();
 
 signals:
+    // for testing.
+    void ipAddressChecked();
+
     void ipAddressChanged();
     void bytesChanged();
 
@@ -77,6 +84,10 @@ private:
     QString m_ipAddress;
     QTimer m_ipAddressTimer;
     QTimer m_checkStatusTimer;
+
+#ifdef UNIT_TEST
+    friend class TestConnectionDataHolder;
+#endif
 };
 
 #endif // CONNECTIONDATAHOLDER_H

@@ -46,10 +46,6 @@ bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
         return false;
     }
 
-    if (m_devices.isEmpty()) {
-        return false;
-    }
-
     m_rawJson = json;
     return true;
 }

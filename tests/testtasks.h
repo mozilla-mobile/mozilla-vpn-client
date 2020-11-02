@@ -4,14 +4,19 @@
 
 #include "helper.h"
 
-class TestConnectionDataHolder final : public TestHelper
+class TestTasks final : public TestHelper
 {
     Q_OBJECT
 
 private slots:
-    void checkIpAddressFailure();
-    void checkIpAddressSucceess_data();
-    void checkIpAddressSucceess();
+    void accountAndServers();
 
-    void chart();
+    void addDevice_success();
+    void addDevice_failure();
+
+    void authenticate();
+
+    void function();
+
+    void removeDevice();
 };

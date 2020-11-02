@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../src/mozillavpn.h"
+#include "../src/timersingleshot.h"
 #include "helper.h"
 #include "networkrequest.h"
 
@@ -10,76 +11,83 @@ namespace {};
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
-    QTimer::singleShot(0, [this]() {
+    Q_ASSERT(!TestHelper::networkConfig.isEmpty());
+    TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
+
+    TimerSingleShot::create(this, 0, [this, nc]() {
         deleteLater();
-        if (TestHelper::networkStatus == TestHelper::Failure) {
+        if (nc.m_status == TestHelper::NetworkConfig::Failure) {
             emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError);
         } else {
-            emit requestCompleted(TestHelper::networkBody);
+            Q_ASSERT(nc.m_status == TestHelper::NetworkConfig::Success);
+            emit requestCompleted(nc.m_body);
         }
     });
 }
 
 // static
-NetworkRequest *NetworkRequest::createForAuthenticationVerification(MozillaVPN *vpn,
-                                                                    const QString &,
-                                                                    const QString &)
+NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *parent, MozillaVPN *, const QString &, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceCreation(MozillaVPN *vpn,
-                                                        const QString &,
-                                                        const QString &)
+NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent, MozillaVPN *, const QString &, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceRemoval(MozillaVPN *vpn, const QString &)
+NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent, MozillaVPN *, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForServers(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForServers(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForVersions(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForVersions(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForAccount(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForAccount(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForIpInfo(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent)
+NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent,
+                                                                const QUrl &,
+                                                                const QByteArray &)
+{
+    return new NetworkRequest(parent);
+}
+
+NetworkRequest *NetworkRequest::createForDOH(QObject *parent, const QUrl &, const QByteArray &)
 {
     return new NetworkRequest(parent);
 }
 
 #ifdef IOS_INTEGRATION
-NetworkRequest *NetworkRequest::createForIOSProducts(MozillaVPN *vpn)
+NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent, MozillaVPN *)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForIOSPurchase(MozillaVPN *vpn, const QString &)
+NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent, MozillaVPN *, const QString &)
 {
-    return new NetworkRequest(vpn);
+    return new NetworkRequest(parent);
 }
 #endif
 
-void NetworkRequest::replyFinished(QNetworkReply *)
+void NetworkRequest::replyFinished()
 {
     QFAIL("Not called!");
 }

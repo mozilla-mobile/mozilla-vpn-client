@@ -21,46 +21,63 @@ public:
 
     // This object deletes itself at the end of the operation.
 
-    static NetworkRequest *createForAuthenticationVerification(MozillaVPN *vpn,
+    static NetworkRequest *createForAuthenticationVerification(QObject *parent,
+                                                               MozillaVPN *vpn,
                                                                const QString &pkceCodeSuccess,
                                                                const QString &pkceCodeVerifier);
 
-    static NetworkRequest *createForDeviceCreation(MozillaVPN *vpn,
+    static NetworkRequest *createForDeviceCreation(QObject *parent,
+                                                   MozillaVPN *vpn,
                                                    const QString &deviceName,
                                                    const QString &pubKey);
 
-    static NetworkRequest *createForDeviceRemoval(MozillaVPN *vpn, const QString &pubKey);
+    static NetworkRequest *createForDeviceRemoval(QObject *parent,
+                                                  MozillaVPN *vpn,
+                                                  const QString &pubKey);
 
-    static NetworkRequest *createForServers(MozillaVPN *vpn);
+    static NetworkRequest *createForServers(QObject *parent, MozillaVPN *vpn);
 
-    static NetworkRequest *createForAccount(MozillaVPN *vpn);
+    static NetworkRequest *createForAccount(QObject *parent, MozillaVPN *vpn);
 
-    static NetworkRequest *createForVersions(MozillaVPN *vpn);
+    static NetworkRequest *createForVersions(QObject *parent, MozillaVPN *vpn);
 
-    static NetworkRequest *createForIpInfo(MozillaVPN *vpn);
+    static NetworkRequest *createForIpInfo(QObject *parent, MozillaVPN *vpn);
 
-    static NetworkRequest *createForCaptivePortalDetection(QObject *parent);
+    static NetworkRequest *createForCaptivePortalDetection(QObject *parent,
+                                                           const QUrl &url,
+                                                           const QByteArray &host);
+
+    static NetworkRequest *createForDOH(QObject *parent,
+                                        const QUrl &dohUrl,
+                                        const QByteArray &dohHost);
 
 #ifdef IOS_INTEGRATION
-    static NetworkRequest *createForIOSProducts(MozillaVPN *vpn);
+    static NetworkRequest *createForIOSProducts(QObject *parent, MozillaVPN *vpn);
 
-    static NetworkRequest *createForIOSPurchase(MozillaVPN *vpn,
-                                                const QString& orderId);
+    static NetworkRequest *createForIOSPurchase(QObject *parent,
+                                                MozillaVPN *vpn,
+                                                const QString &orderId);
 #endif
 
 private:
     NetworkRequest(QObject *parent);
 
+    void deleteRequest();
+    void getRequest();
+    void postRequest(const QByteArray &body);
+
+    void handleReply(QNetworkReply *reply);
+
 private slots:
-    void replyFinished(QNetworkReply *reply);
+    void replyFinished();
 
 signals:
     void requestFailed(QNetworkReply::NetworkError error);
     void requestCompleted(const QByteArray &data);
 
 private:
-    QNetworkAccessManager *m_manager;
     QNetworkRequest m_request;
+    QNetworkReply *m_reply = nullptr;
 };
 
 #endif // NETWORKREQUEST_H

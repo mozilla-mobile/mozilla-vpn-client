@@ -4,14 +4,11 @@
 
 #include "helper.h"
 
-class TestConnectionDataHolder final : public TestHelper
+class TestDOH : public TestHelper
 {
     Q_OBJECT
 
 private slots:
-    void checkIpAddressFailure();
-    void checkIpAddressSucceess_data();
-    void checkIpAddressSucceess();
-
-    void chart();
+    void basic_data();
+    void basic();
 };

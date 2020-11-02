@@ -29,7 +29,6 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
-        captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportallookup.cpp \
@@ -39,6 +38,7 @@ SOURCES += \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
+        dohrequest.cpp \
         errorhandler.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -70,8 +70,10 @@ SOURCES += \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
+        tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        timercontroller.cpp
+        timercontroller.cpp \
+        timersingleshot.cpp
 
 HEADERS += \
         captiveportal/captiveportal.h \
@@ -86,6 +88,7 @@ HEADERS += \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
+        dohrequest.h \
         errorhandler.h \
         fontloader.h \
         ipaddressrange.h \
@@ -115,9 +118,11 @@ HEADERS += \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
+        tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
-        timercontroller.h
+        timercontroller.h \
+        timersingleshot.h
 
 # Platform-specific: Linux
 linux:!android {
@@ -130,6 +135,7 @@ linux:!android {
     QT += svg
 
     SOURCES += \
+            platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbus.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
@@ -138,6 +144,7 @@ linux:!android {
             tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
+            platforms/linux/backendlogsobserver.h \
             platforms/linux/dbus.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \

@@ -3,10 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "captiveportallookup.h"
+#include "dohrequest.h"
 #include "logger.h"
-
-#include <QDnsLookup>
-#include <QHostAddress>
+#include "mozillavpn.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
@@ -14,106 +13,55 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
 
 CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)
 {
-    connect(&m_timer, &QTimer::timeout, [this]() { abort(); });
+    SettingsHolder *settingsHolder = MozillaVPN::instance()->settingsHolder();
+    Q_ASSERT(settingsHolder);
+
+    if (settingsHolder->hasCaptivePortalIpv4Addresses()) {
+        m_data.setIpv4Addresses(settingsHolder->captivePortalIpv4Addresses());
+    }
+
+    if (settingsHolder->hasCaptivePortalIpv6Addresses()) {
+        m_data.setIpv6Addresses(settingsHolder->captivePortalIpv6Addresses());
+    }
+
+    connect(&m_timer, &QTimer::timeout, this, &CaptivePortalLookup::timeout);
 }
 
 void CaptivePortalLookup::start()
 {
     logger.log() << "Captive portal lookup started";
-    start(CAPTIVEPORTAL_HOST);
     m_timer.start(CAPTIVEPORTAL_LOOKUPTIMER);
+
+    DOHRequest *request = new DOHRequest(this);
+    connect(request,
+            &DOHRequest::completed,
+            [this](const QStringList &ipv4Addresses, const QStringList &ipv6Addresses) {
+                logger.log() << "Lookup completed - ipv4:" << ipv4Addresses
+                             << "ipv6:" << ipv6Addresses;
+                m_data.setIpv4Addresses(ipv4Addresses);
+                m_data.setIpv6Addresses(ipv6Addresses);
+                complete();
+            });
+
+    request->resolve(CAPTIVEPORTAL_HOST);
 }
 
-void CaptivePortalLookup::start(const QString &host)
+void CaptivePortalLookup::timeout()
 {
-    logger.log() << "Captive portal lookup started:" << host << "lookups:" << m_lookups;
-
-    // We have been aborted!
-    if (m_lookups == -1) {
-        return;
-    }
-
-    ++m_lookups;
-
-    QDnsLookup *dnsLookup = new QDnsLookup(this);
-
-    connect(dnsLookup, &QDnsLookup::finished, [this, dnsLookup]() { lookupCompleted(dnsLookup); });
-
-    dnsLookup->setType(QDnsLookup::ANY);
-    dnsLookup->setName(host);
-    dnsLookup->lookup();
+    logger.log() << "Lookup timeout! Let's abort the lookup.";
+    complete();
 }
 
-void CaptivePortalLookup::lookupCompleted(QDnsLookup *dnsLookup)
+void CaptivePortalLookup::complete()
 {
-    logger.log() << "Captive portal lookup completed - lookups:" << m_lookups;
+    m_completed = true;
 
-    // We have been aborted!
-    if (m_lookups == -1) {
-        return;
-    }
+    SettingsHolder *settingsHolder = MozillaVPN::instance()->settingsHolder();
+    Q_ASSERT(settingsHolder);
 
-    Q_ASSERT(m_lookups > 0);
-    --m_lookups;
-
-    // Check the lookup succeeded.
-    if (dnsLookup->error() != QDnsLookup::NoError) {
-        logger.log() << "DNS lookup failed";
-        dnsLookup->deleteLater();
-        maybeComplete();
-        return;
-    }
-
-    // CNAME
-    {
-        const QList<QDnsDomainNameRecord> records = dnsLookup->canonicalNameRecords();
-        logger.log() << "Found CNAMEs:" << records.length();
-        for (const QDnsDomainNameRecord &record : records) {
-            start(record.value());
-        }
-    }
-
-    // A
-    {
-        const QList<QDnsHostAddressRecord> records = dnsLookup->hostAddressRecords();
-        logger.log() << "Found As:" << records.length();
-        for (const QDnsHostAddressRecord &record : records) {
-            const QHostAddress &address = record.value();
-            if (address.isBroadcast() || address.isLinkLocal() || address.isLoopback()
-                || address.isMulticast() || address.isNull()) {
-                continue;
-            }
-
-            if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-                m_data.addIpv6Address(address.toString());
-                continue;
-            }
-
-            if (address.protocol() == QAbstractSocket::IPv4Protocol) {
-                m_data.addIpv4Address(address.toString());
-                continue;
-            }
-        }
-    }
-
-    dnsLookup->deleteLater();
-    maybeComplete();
-}
-
-void CaptivePortalLookup::maybeComplete()
-{
-    if (m_lookups > 0) {
-        return;
-    }
+    settingsHolder->setCaptivePortalIpv4Addresses(m_data.ipv4Addresses());
+    settingsHolder->setCaptivePortalIpv6Addresses(m_data.ipv6Addresses());
 
     emit completed(m_data);
     deleteLater();
-}
-
-void CaptivePortalLookup::abort()
-{
-    logger.log() << "Too much! Let's abort the lookup.";
-
-    m_lookups = -1;
-    maybeComplete();
 }

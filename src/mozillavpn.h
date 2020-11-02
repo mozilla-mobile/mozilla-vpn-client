@@ -29,6 +29,10 @@
 class QQmlApplicationEngine;
 class Task;
 
+#ifdef UNIT_TEST
+class TestTasks;
+#endif
+
 class MozillaVPN final : public QObject
 {
     Q_OBJECT
@@ -147,6 +151,8 @@ public:
 
     [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
+    QNetworkAccessManager *networkAccessManager();
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();
@@ -162,9 +168,9 @@ private:
 
     void setUserAuthenticated(bool state);
 
-    void startSchedulingAccountAndServers();
+    void startSchedulingPeriodicOperations();
 
-    void stopSchedulingAccountAndServers();
+    void stopSchedulingPeriodicOperations();
 
     void setAlert(AlertType alert);
 
@@ -174,6 +180,9 @@ private:
                    std::function<void(const QString &filename)> &&a_callback);
 
     bool modelsInitialized() const;
+
+private slots:
+    void taskCompleted();
 
 signals:
     void stateChanged();
@@ -216,11 +225,15 @@ private:
     AlertType m_alert = NoAlert;
 
     QTimer m_alertTimer;
-    QTimer m_accountAndServersTimer;
+    QTimer m_periodicOperationsTimer;
 
     bool m_updateRecommended = false;
     bool m_userAuthenticated = false;
     bool m_startMinimized = false;
+
+#ifdef UNIT_TEST
+   friend class TestTasks;
+#endif
 };
 
 #endif // MOZILLAVPN_H

@@ -28,10 +28,13 @@ constexpr const char *SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char *SETTINGS_USER_EMAIL = "user/email";
 constexpr const char *SETTINGS_USER_MAXDEVICES = "user/maxDevices";
 constexpr const char *SETTINGS_USER_SUBSCRIPTIONNEEDED = "user/subscriptionNeeded";
+constexpr const char *SETTINGS_CURRENTSERVER_COUNTRYCODE = "currentServer/countryCode";
 constexpr const char *SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char *SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
+constexpr const char *SETTINGS_CAPTIVEPORTALIPV4ADDRESSES = "captivePortal/ipv4Addresses";
+constexpr const char *SETTINGS_CAPTIVEPORTALIPV6ADDRESSES = "captivePortal/ipv6Addresses";
 
 #ifdef IOS_INTEGRATION
 constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -41,13 +44,27 @@ namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 }
 
+#ifndef UNIT_TEST
 const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::readFile,
                                                               CryptoSettings::writeFile);
+#endif
 
-SettingsHolder::SettingsHolder() : m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn") {}
+SettingsHolder::SettingsHolder()
+    :
+#ifndef UNIT_TEST
+      m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn")
+#else
+      m_settings("mozilla_testing", "vpn")
+#endif
+{}
 
-SettingsHolder::~SettingsHolder() = default;
+SettingsHolder::~SettingsHolder()
+{
+#ifdef UNIT_TEST
+    m_settings.clear();
+#endif
+}
 
 void SettingsHolder::clear()
 {
@@ -61,6 +78,7 @@ void SettingsHolder::clear()
     m_settings.remove(SETTINGS_USER_EMAIL);
     m_settings.remove(SETTINGS_USER_MAXDEVICES);
     m_settings.remove(SETTINGS_USER_SUBSCRIPTIONNEEDED);
+    m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRYCODE);
     m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
     m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
     m_settings.remove(SETTINGS_DEVICES);
@@ -169,6 +187,12 @@ GETSET(bool,
        setUserSubscriptionNeeded)
 GETSET(QString,
        toString,
+       SETTINGS_CURRENTSERVER_COUNTRYCODE,
+       hasCurrentServerCountryCode,
+       currentServerCountryCode,
+       setCurrentServerCountryCode)
+GETSET(QString,
+       toString,
        SETTINGS_CURRENTSERVER_COUNTRY,
        hasCurrentServerCountry,
        currentServerCountry,
@@ -181,6 +205,18 @@ GETSET(QString,
        setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices, setDevices)
 GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts, iapProducts, setIapProducts)
+GETSET(QStringList,
+       toStringList,
+       SETTINGS_CAPTIVEPORTALIPV4ADDRESSES,
+       hasCaptivePortalIpv4Addresses,
+       captivePortalIpv4Addresses,
+       setCaptivePortalIpv4Addresses)
+GETSET(QStringList,
+       toStringList,
+       SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
+       hasCaptivePortalIpv6Addresses,
+       captivePortalIpv6Addresses,
+       setCaptivePortalIpv6Addresses)
 
 #ifdef IOS_INTEGRATION
 GETSET(bool,

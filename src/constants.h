@@ -6,23 +6,33 @@
 
 namespace Constants {
 
-// Let's refresh the IP address any 10 seconds.
-#ifndef UNIT_TEST
-constexpr int IPADDRESS_TIMER_MSEC = 10000;
+#if defined(UNIT_TEST)
+#define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \
+    constexpr type what = testingValue;
+#elif defined(QT_DEBUG)
+#define CONSTEXPR(type, what, releaseValue, debugValue, tstingValue) \
+    constexpr type what = debugValue;
 #else
-constexpr int IPADDRESS_TIMER_MSEC = 0;
+#define CONSTEXPR(type, what, releaseValue, debugValue, tstingValue) \
+    constexpr type what = releaseValue;
 #endif
+
+// Let's refresh the IP address any 10 seconds (in milliseconds).
+CONSTEXPR(uint32_t, IPADDRESS_TIMER_MSEC, 10000, 2000, 0)
 
 // Let's check the connection status any second.
-constexpr int CHECKSTATUS_TIMER_MSEC = 1000;
+CONSTEXPR(uint32_t, CHECKSTATUS_TIMER_MSEC, 1000, 1000, 0)
 
 // Number of points for the charts.
-constexpr int CHARTS_MAX_POINTS = 30;
+CONSTEXPR(int, CHARTS_MAX_POINTS, 30, 30, 30);
 
 // Any 6 hours, a new check
-#ifndef UNIT_TEST
-constexpr uint32_t RELEASE_MONITOR_MSEC = 21600000;
-#else
-constexpr uint32_t RELEASE_MONITOR_MSEC = 0;
-#endif
+CONSTEXPR(uint32_t, RELEASE_MONITOR_MSEC, 21600000, 4000, 0)
+
+// in milliseconds, how often we should fetch the server list and the account.
+CONSTEXPR(uint32_t, SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC, 3600000, 4000, 0)
+
+// how often we check the captive portal when the VPN is on.
+CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
+
 }; // namespace Constants

@@ -11,6 +11,7 @@
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "timercontroller.h"
+#include "timersingleshot.h"
 
 #if defined (__linux__) && !defined(__ANDROID__)
 #include "platforms/linux/linuxcontroller.h"
@@ -23,8 +24,6 @@
 #else
 #include "platforms/dummy/dummycontroller.h"
 #endif
-
-#include <QTimer>
 
 constexpr const uint32_t TIMER_MSEC = 1000;
 
@@ -185,7 +184,7 @@ void Controller::connected()
 
         m_connectionDate = QDateTime::currentDateTime();
 
-        QTimer::singleShot(TIME_ACTIVATION, [this]() {
+        TimerSingleShot::create(this, TIME_ACTIVATION, [this]() {
             if (m_state == StateConnecting) {
                 connected();
             }
@@ -212,7 +211,7 @@ void Controller::disconnected() {
     // This is an unexpected disconnection. Let's use the Disconnecting state to animate the UI.
     if (m_state != StateDisconnecting && m_state != StateSwitching) {
         setState(StateDisconnecting);
-        QTimer::singleShot(TIME_DEACTIVATION, [this]() {
+        TimerSingleShot::create(this, TIME_DEACTIVATION, [this]() {
             if (m_state == StateDisconnecting) {
                 disconnected();
             }

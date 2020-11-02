@@ -6,6 +6,7 @@
 
 #include <QDate>
 #include <QMessageLogContext>
+#include <QMutexLocker>
 #include <QProcessEnvironment>
 #include <QString>
 #include <QTextStream>
@@ -118,7 +119,9 @@ LogHandler::LogHandler()
 
 void LogHandler::addLog(const Log &log)
 {
-    if (!matchModule(log)) {
+    QMutexLocker lock(&m_mutex);
+
+    if (!matchModule(log, lock)) {
         return;
     }
 
@@ -132,8 +135,10 @@ void LogHandler::addLog(const Log &log)
     prettyOutput(out, m_logs.last());
 }
 
-bool LogHandler::matchModule(const Log &log) const
+bool LogHandler::matchModule(const Log &log, const QMutexLocker &proofOfLock) const
 {
+    Q_UNUSED(proofOfLock);
+
     // Let's include QT logs always.
     if (log.m_fromQT) {
         return true;
@@ -151,4 +156,10 @@ bool LogHandler::matchModule(const Log &log) const
     }
 
     return false;
+}
+
+const QVector<LogHandler::Log> &LogHandler::logs()
+{
+    QMutexLocker lock(&m_mutex);
+    return m_logs;
 }
