@@ -13,6 +13,8 @@ public:
     static QString computerName();
 
     static void enableLoginItem(bool startAtBoot);
+
+    static void setDockClickHandler();
 };
 
 #endif // MACOSUTILS_H

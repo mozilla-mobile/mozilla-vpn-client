@@ -237,8 +237,7 @@ NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent, MozillaVPN
     url.setPath("/api/v1/vpn/products/ios");
     r->m_request.setUrl(url);
 
-    r->m_manager->get(r->m_request);
-
+    r->getRequest();
     return r;
 }
 
@@ -265,8 +264,7 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
     QJsonDocument json;
     json.setObject(obj);
 
-    r->m_manager->post(r->m_request, json.toJson(QJsonDocument::Compact));
-
+    r->postRequest(json.toJson(QJsonDocument::Compact));
     return r;
 }
 #endif

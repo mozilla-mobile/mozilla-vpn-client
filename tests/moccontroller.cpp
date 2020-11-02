@@ -2,7 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozillavpn.h"
+#include "../src/mozillavpn.h"
+#include "helper.h"
+
+Controller::State Controller::state() const
+{
+    return TestHelper::controllerState;
+}
 
 void Controller::updateRequired()
 {

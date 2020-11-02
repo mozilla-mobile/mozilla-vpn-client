@@ -44,8 +44,8 @@ for locale in os.listdir('i18n'):
         'xliff': filePath
     })
 
-if len(FILES) == 0:
-    print('No Languages were imported')
+if len(FILES) == 0 or len([x for x in FILES if x['ts'] == os.path.join('translations', f'mozillavpn_en.ts')]) == 0:
+    print('No fallback language (en) was imported')
     os.system(f'lupdate src -no-obsolete -ts translations/mozillavpn_en.ts')
     FILES.append({
         'ts': os.path.join('translations', f'mozillavpn_en.ts')
@@ -57,6 +57,7 @@ with open('translations/translations.pri', 'w') as projectFile:
     projectFile.write('TRANSLATIONS += \\ \n')
     for file in FILES:
         projectFile.write(f"../{file['ts']} \\ \n")
+        os.system(f"touch {file['ts']}")
     projectFile.write('\n \n##End')
 print('Updated translations.pri')
 
@@ -68,6 +69,6 @@ os.system(f'lupdate src -ts')
 # Now import done translations into the files
 for file in FILES:
     if 'xliff' in file.keys():
-        os.system(f"lconvert -i {file['ts']} -if xlf -i {file['xliff']} -o {file['ts']}")
+        os.system(f"lconvert -if xlf -i {file['xliff']} -o {file['ts']}")
 
 print('Imported Languages')

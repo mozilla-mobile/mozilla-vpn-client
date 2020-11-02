@@ -18,6 +18,10 @@
 #include "platforms/macos/macosstartatbootwatcher.h"
 #endif
 
+#ifdef Q_OS_MAC
+#include "platforms/macos/macosutils.h"
+#endif
+
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QIcon>
@@ -114,6 +118,10 @@ int main(int argc, char *argv[])
     }
 #endif
 
+#ifdef Q_OS_MAC
+    MacOSUtils::setDockClickHandler();
+#endif
+
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine *, QJSEngine *) -> QObject * {
             QObject *obj = MozillaVPN::instance();
@@ -184,6 +192,13 @@ int main(int argc, char *argv[])
             return obj;
         });
 
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNStatusIcon", [](QQmlEngine *, QJSEngine *) -> QObject * {
+            QObject *obj = MozillaVPN::instance()->statusIcon();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+        });
+
     QObject::connect(MozillaVPN::instance()->settingsHolder(),
                      &SettingsHolder::languageCodeChanged,
                      [engine = &engine](const QString &languageCode) {
@@ -236,6 +251,11 @@ int main(int argc, char *argv[])
                      &Controller::stateChanged,
                      &systemTrayHandler,
                      &SystemTrayHandler::controllerStateChanged);
+
+    QObject::connect(MozillaVPN::instance()->statusIcon(),
+                     &StatusIcon::iconChanged,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::iconChanged);
 
     QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
                      &CaptivePortalDetection::captivePortalDetected,

@@ -2,10 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
+#include "helper.h"
 
-Loader {
-    id: loader
+class TestTimerSingleShot : public TestHelper
+{
+    Q_OBJECT
 
-    source: "../views/ViewUpdate.qml"
-}
+private slots:
+    void basic();
+};

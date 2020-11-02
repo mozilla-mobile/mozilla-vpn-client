@@ -53,7 +53,7 @@ void CaptivePortalDetection::detectCaptivePortal()
     connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
         logger.log() << "Captive portal request completed - detected:" << detected;
 
-        if (!m_active) {
+        if (!m_active || MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
             logger.log() << "Disabled in the meantime.";
             return;
         }

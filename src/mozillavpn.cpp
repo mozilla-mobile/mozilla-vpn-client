@@ -107,6 +107,13 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
+            &m_private->m_statusIcon,
+            &StatusIcon::stateChanged);
+
+    connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon, &StatusIcon::stateChanged);
+
+    connect(&m_private->m_controller,
+            &Controller::stateChanged,
             &m_private->m_connectionHealth,
             &ConnectionHealth::connectionStateChanged);
 
@@ -129,6 +136,11 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 MozillaVPN::~MozillaVPN()
 {
     delete m_private;
+}
+
+MozillaVPN::State MozillaVPN::state() const
+{
+    return m_state;
 }
 
 void MozillaVPN::initialize()
@@ -519,7 +531,7 @@ void MozillaVPN::accountChecked(const QByteArray &json)
 #endif
 
     // To test the subscription needed view, comment out this line:
-    //m_controller.subscriptionNeeded();
+    //m_private->m_controller.subscriptionNeeded();
 }
 
 void MozillaVPN::cancelAuthentication()
