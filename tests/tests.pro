@@ -41,6 +41,7 @@ HEADERS += \
     ../src/networkrequest.h \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
+    ../src/statusicon.h \
     ../src/task.h \
     ../src/tasks/accountandservers/taskaccountandservers.h \
     ../src/tasks/adddevice/taskadddevice.h \
@@ -53,6 +54,7 @@ HEADERS += \
     testlogger.h \
     testmodels.h \
     testreleasemonitor.h \
+    teststatusicon.h \
     testtasks.h
 
 SOURCES += \
@@ -78,6 +80,7 @@ SOURCES += \
     ../src/models/user.cpp \
     ../src/releasemonitor.cpp \
     ../src/settingsholder.cpp \
+    ../src/statusicon.cpp \
     ../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../src/tasks/adddevice/taskadddevice.cpp \
     ../src/timersingleshot.cpp \
@@ -91,6 +94,7 @@ SOURCES += \
     testlogger.cpp \
     testmodels.cpp \
     testreleasemonitor.cpp \
+    teststatusicon.cpp \
     testtasks.cpp
 
 # Platform-specific: Linux
