@@ -16,7 +16,7 @@ class SystemTrayHandler final : public QSystemTrayIcon
     Q_OBJECT
 
 public:
-    SystemTrayHandler(const QIcon &icon, QObject *parent);
+    explicit SystemTrayHandler(QObject *parent);
 
     void captivePortalNotificationRequested();
 

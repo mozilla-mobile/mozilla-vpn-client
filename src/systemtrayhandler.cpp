@@ -15,9 +15,15 @@ namespace {
 Logger logger(LOG_MAIN, "SystemTrayHandler");
 }
 
-SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
-    : QSystemTrayIcon(icon, parent)
-{   //% "Quit"
+SystemTrayHandler::SystemTrayHandler(QObject *parent)
+    : QSystemTrayIcon(parent)
+{
+    //% "Show Mozilla VPN"
+    m_menu.addAction(qtTrId("systray.show"), MozillaVPN::instance(), &MozillaVPN::showWindow);
+
+    m_menu.addSeparator();
+
+    //% "Quit"
     m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
     setContextMenu(&m_menu);
 

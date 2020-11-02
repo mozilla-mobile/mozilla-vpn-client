@@ -155,6 +155,8 @@ public:
 
     QNetworkAccessManager *networkAccessManager();
 
+    void showWindow();
+
 private:
     MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
     ~MozillaVPN();

@@ -3,12 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosutils.h"
+#include "mozillavpn.h"
 #include "logger.h"
 
 #include <objc/message.h>
 #include <objc/objc.h>
-#include <QApplication>
-#include <QWindow>
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -39,11 +38,7 @@ bool dockClickHandler(id self, SEL cmd, ...)
     Q_UNUSED(cmd);
 
     logger.log() << "Dock icon clicked.";
-
-    for (QWindow *window : QApplication::topLevelWindows()) {
-        window->show();
-    }
-
+    MozillaVPN::instance()->showWindow();
     return FALSE;
 }
 
