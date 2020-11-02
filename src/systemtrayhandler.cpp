@@ -75,11 +75,11 @@ void SystemTrayHandler::controllerStateChanged()
         //% "Switched from %1, %2 to %3, %4"
         //: Shown as message body in a notification. %1 and %3 are countries, %2 and %4 are cities.
         message = qtTrId("vpn.systray.statusSwtich.message")
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city())
                       .arg(vpn->serverCountryModel()->countryName(
                           vpn->controller()->switchingCountryCode()))
-                      .arg(vpn->controller()->switchingCity())
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
+                      .arg(vpn->controller()->switchingCity());
         break;
 
     default:
