@@ -55,7 +55,8 @@ HEADERS += \
     testmodels.h \
     testreleasemonitor.h \
     teststatusicon.h \
-    testtasks.h
+    testtasks.h \
+    testtimersingleshot.h
 
 SOURCES += \
     ../src/connectiondataholder.cpp \
@@ -95,7 +96,8 @@ SOURCES += \
     testmodels.cpp \
     testreleasemonitor.cpp \
     teststatusicon.cpp \
-    testtasks.cpp
+    testtasks.cpp \
+    testtimersingleshot.cpp
 
 # Platform-specific: Linux
 linux {
