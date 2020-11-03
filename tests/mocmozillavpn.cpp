@@ -178,3 +178,10 @@ void MozillaVPN::showWindow()
 void MozillaVPN::requestSettings() {}
 
 void MozillaVPN::requestAbout() {}
+
+void MozillaVPN::requestViewLogs() {}
+
+QString MozillaVPN::retrieveLogs()
+{
+    return "LOGS!";
+}
