@@ -97,7 +97,7 @@ void SystemTrayHandler::captivePortalNotificationRequested()
     logger.log() << "Capitve portal notification shown";
     //% "Captive portal detected"
     QString title = qtTrId("vpn.systray.captivePortalAlert.title");
-    //% "VPN will automatically reconnect when ready
+    //% "VPN will automatically reconnect when ready"
     QString message = qtTrId("vpn.systray.captivePortalAlert.message");
     showMessage(title, message, NoIcon, 2000);
 }
