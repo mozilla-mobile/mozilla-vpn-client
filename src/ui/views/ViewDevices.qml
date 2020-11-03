@@ -63,6 +63,16 @@ Item {
         }
         listName: menu.title
 
+        removeDisplaced: Transition {
+            NumberAnimation { properties: "x,y"; duration: Theme.removeDeviceAnimation }
+        }
+
+        remove: Transition {
+            ParallelAnimation {
+                NumberAnimation { property: "opacity"; to: 0; duration: Theme.removeDeviceAnimation }
+            }
+        }
+
         delegate: Container {
             id: device
 

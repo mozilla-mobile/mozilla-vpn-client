@@ -93,5 +93,8 @@ const removeDeviceBtn = {
     "buttonPressed": "#FFBDC5"
 };
 
+// In milliseconds, the animation of a single device removal
+const removeDeviceAnimation = 300;
+
 const settingsMaxContentHeight = 740;
 const maxHorizontalContentWidth = 460

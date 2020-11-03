@@ -170,19 +170,25 @@ const Device *DeviceModel::device(const QString &deviceName) const
 
 void DeviceModel::removeDevice(const QString &deviceName)
 {
-    beginResetModel();
-
-    QMutableListIterator<Device> i(m_devices);
-    while (i.hasNext()) {
-        const Device &device = i.next();
-        if (device.isDevice(deviceName)) {
-            i.remove();
-            break;
+    for (int i = 0; i < m_devices.length(); ++i) {
+        if (m_devices.at(i).isDevice(deviceName)) {
+            removeRow(i);
+            emit changed();
+            return;
         }
     }
+}
 
-    endResetModel();
-    emit changed();
+bool DeviceModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    Q_ASSERT(count == 1);
+    Q_UNUSED(parent);
+
+    beginRemoveRows(parent, row, row);
+    m_devices.removeAt(row);
+    endRemoveRows();
+
+    return true;
 }
 
 const Device* DeviceModel::currentDevice() const {
