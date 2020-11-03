@@ -19,6 +19,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QTextCodec>
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
@@ -33,6 +34,8 @@ const int ACTION_ACTIVATE = 1;
 const int ACTION_DEACTIVATE =2;
 const int ACTION_REGISTERLISTENER = 3;
 const int ACTION_REQUEST_STATISTIC = 4;
+const int ACTION_REQUEST_LOG = 5;
+
 // Event Types that will be Dispatched after registration
 const int EVENT_CONNECTED = 1;
 const int EVENT_DISCONNECTED =2;
@@ -127,8 +130,11 @@ void AndroidController::checkStatus()
 void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
 {
     std::function<void(const QString &)> callback = std::move(a_callback);
-    // TODO: Get backend Logs
-    callback("ANDROID-CONTROLLER --  DummyController is always happy");
+    QAndroidParcel nullData,replyData;
+    m_serviceBinder.transact(ACTION_REQUEST_LOG,nullData, &replyData);
+    // Note: 106 means UTF-8 encoding
+    QString logs = QTextCodec::codecForMib(106)->toUnicode(replyData.readData());
+    callback(logs);
 }
 
 void AndroidController::onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder){
@@ -193,8 +199,6 @@ void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jo
 {
     Q_UNUSED(env);
     QtAndroid::startActivity(intent,123, [](int a, int b, const QAndroidJniObject& c){
-        // TODO: Automaticly make the Android Controller Retry if the result is positive.
-        // TODO: Maybe move into AndroidController?
         Q_UNUSED(a);
         Q_UNUSED(b);
         Q_UNUSED(c);

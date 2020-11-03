@@ -11,6 +11,8 @@ import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import java.lang.Exception
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class VPNServiceBinder(service: VPNService) : Binder() {
 
@@ -26,6 +28,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val deactivate = 2
         const val registerEventListener = 3
         const val requestStatistic = 4
+        const val requestLog = 5
     }
 
     /**
@@ -79,6 +82,16 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 obj.put("totalTX", statistics?.totalTx())
                 dispatchEvent(EVENTS.statisticUpdate, obj.toString())
             }
+            ACTIONS.requestLog ->{
+                // Grabs all the Logs and writes them into [reply]
+                val process = Runtime.getRuntime().exec("logcat -d");
+                val bufferedReader = BufferedReader(
+                    InputStreamReader(process.inputStream));
+                val allText = bufferedReader.use(BufferedReader::readText)
+                reply?.writeByteArray(allText.toByteArray(charset("UTF-8")))
+
+            }
+
             else -> {
                 Log.e(tag, "Received invalid bind request \t Code -> $code")
                 // If we're hitting this there is probably something wrong in the client.
