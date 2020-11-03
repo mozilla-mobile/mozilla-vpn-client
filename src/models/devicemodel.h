@@ -56,6 +56,8 @@ signals:
 private:
     [[nodiscard]] bool fromJsonInternal(const QByteArray &json);
 
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
 private:
     QByteArray m_rawJson;
 
