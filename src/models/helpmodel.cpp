@@ -50,7 +50,7 @@ void HelpModel::open(int id)
 
     const HelpEntry &entry = s_helpEntries.at(id);
     if (entry.m_viewLog) {
-        MozillaVPN::instance()->viewLogs();
+        emit MozillaVPN::instance()->requestViewLogs();
         return;
     }
 

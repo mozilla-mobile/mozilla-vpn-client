@@ -376,5 +376,6 @@
         <file>ui/components/VPNToolTip.qml</file>
         <file>ui/components/VPNFlickable.qml</file>
         <file>ui/components/VPNAboutUs.qml</file>
+        <file>ui/views/ViewLogs.qml</file>
     </qresource>
 </RCC>
