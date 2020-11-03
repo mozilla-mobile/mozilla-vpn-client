@@ -170,3 +170,7 @@ bool MozillaVPN::modelsInitialized() const
 void MozillaVPN::taskCompleted()
 {
 }
+
+void MozillaVPN::showWindow()
+{
+}
