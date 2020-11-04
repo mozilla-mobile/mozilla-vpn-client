@@ -198,7 +198,7 @@ OBJECTS_DIR =
 MOC_DIR =
 RCC_DIR =
 UI_DIR =
-ANDROID_ABIS = x86
+ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 
 
 DISTFILES += \
