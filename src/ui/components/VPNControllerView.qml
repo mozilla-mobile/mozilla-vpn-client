@@ -541,6 +541,13 @@ Rectangle {
 
             anchors.centerIn: settingsButton
         }
+
+        Connections {
+            target: VPN
+            function onSettingsNeeded() {
+                settingsButton.clicked();
+            }
+        }
     }
 
     VPNHeadline {

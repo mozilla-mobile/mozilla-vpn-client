@@ -196,6 +196,7 @@ signals:
     void updateRecommendedChanged();
     void userAuthenticationChanged();
     void deviceRemoving(const QString& deviceName);
+    void settingsNeeded();
 
 private:
     // QML objects.
