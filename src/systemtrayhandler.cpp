@@ -23,7 +23,17 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
 
     m_menu.addSeparator();
 
-    //% "Quit"
+    MozillaVPN *vpn = MozillaVPN::instance();
+
+    //% "Help"
+    QMenu *help = m_menu.addMenu(qtTrId("systray.help"));
+    vpn->helpModel()->forEach([&](const QString &name, int id) {
+        help->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
+    });
+
+    m_menu.addSeparator();
+
+    //% "Quit Mozilla VPN"
     m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
     setContextMenu(&m_menu);
 

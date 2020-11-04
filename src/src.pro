@@ -44,6 +44,7 @@ SOURCES += \
         logger.cpp \
         loghandler.cpp \
         main.cpp \
+        models/helpmodel.cpp \
         models/user.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
         loghandler.h \
         models/device.h \
         models/devicemodel.h \
+        models/helpmodel.h \
         models/keys.h \
         models/server.h \
         models/servercity.h \
