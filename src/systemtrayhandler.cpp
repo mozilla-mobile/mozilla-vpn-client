@@ -31,6 +31,10 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
         help->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
     });
 
+    m_preferencesAction = m_menu.addAction(qtTrId("systray.preferences"));
+    m_preferencesAction->setVisible(MozillaVPN::instance()->state() == MozillaVPN::StateMain);
+    // TODO: preferences!
+
     m_menu.addSeparator();
 
     //% "Quit Mozilla VPN"
@@ -44,11 +48,12 @@ void SystemTrayHandler::controllerStateChanged()
 {
     logger.log() << "Show notification";
 
+    MozillaVPN *vpn = MozillaVPN::instance();
+    m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+
     if (!supportsMessages()) {
         return;
     }
-
-    MozillaVPN *vpn = MozillaVPN::instance();
 
     // If we are in a non-main state.
     if (vpn->state() != MozillaVPN::StateMain) {
