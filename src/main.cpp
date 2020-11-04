@@ -88,20 +88,20 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
+    MozillaVPN *vpn = MozillaVPN::instance();
 
     if (parser.isSet(startAtBootOption)) {
         logger.log() << "Maybe start at boot";
 
-        if (!MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+        if (!vpn->settingsHolder()->startAtBoot()) {
             logger.log() << "We don't need to start at boot.";
             return 0;
         }
     }
 
 #ifdef MACOS_INTEGRATION
-    MacOSStartAtBootWatcher startAtBootWatcher(
-        MozillaVPN::instance()->settingsHolder()->startAtBoot());
-    QObject::connect(MozillaVPN::instance()->settingsHolder(),
+    MacOSStartAtBootWatcher startAtBootWatcher(vpn->settingsHolder()->startAtBoot());
+    QObject::connect(vpn->settingsHolder(),
                      &SettingsHolder::startAtBootChanged,
                      &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
             return obj;
         });
 
-    QObject::connect(MozillaVPN::instance()->settingsHolder(),
+    QObject::connect(vpn->settingsHolder(),
                      &SettingsHolder::languageCodeChanged,
                      [engine = &engine](const QString &languageCode) {
                          logger.log() << "Storing the languageCode:" << languageCode;
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
                          engine->retranslate();
                      });
 
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(vpn->controller(),
                      &Controller::readyToQuit,
                      &app,
                      QCoreApplication::quit,
@@ -235,17 +235,22 @@ int main(int argc, char *argv[])
         MozillaVPN::instance()->controller()->quit();
     });
 
-    QObject::connect(MozillaVPN::instance()->controller(),
+    QObject::connect(vpn,
+                     &MozillaVPN::stateChanged,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::controllerStateChanged);
+
+    QObject::connect(vpn->controller(),
                      &Controller::stateChanged,
                      &systemTrayHandler,
                      &SystemTrayHandler::controllerStateChanged);
 
-    QObject::connect(MozillaVPN::instance()->statusIcon(),
+    QObject::connect(vpn->statusIcon(),
                      &StatusIcon::iconChanged,
                      &systemTrayHandler,
                      &SystemTrayHandler::iconChanged);
 
-    QObject::connect(MozillaVPN::instance()->captivePortalDetection(),
+    QObject::connect(vpn->captivePortalDetection(),
                      &CaptivePortalDetection::captivePortalDetected,
                      [systemTrayHandler = &systemTrayHandler]() {
                          systemTrayHandler->captivePortalNotificationRequested();

@@ -10,6 +10,7 @@
 #include <QTimer>
 
 class MozillaVPN;
+class QAction;
 
 class SystemTrayHandler final : public QSystemTrayIcon
 {
@@ -29,6 +30,7 @@ public slots:
 
 private:
     QMenu m_menu;
+    QAction *m_preferencesAction = nullptr;
 };
 
 #endif // SYSTEMTRAYHANDLER_H
