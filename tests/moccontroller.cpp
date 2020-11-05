@@ -19,3 +19,5 @@ void Controller::getStatus(std::function<void(const QString &serverIpv4Gateway, 
         callback = std::move(a_callback);
     callback("127.0.0.1", 0, 0);
 }
+
+void Controller::quit() {}

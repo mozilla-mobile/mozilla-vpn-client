@@ -859,3 +859,11 @@ void MozillaVPN::showWindow()
     window->raise();
     window->requestActivate();
 }
+
+void MozillaVPN::requestSettings()
+{
+    logger.log() << "Settings required";
+
+    showWindow();
+    emit settingsNeeded();
+}

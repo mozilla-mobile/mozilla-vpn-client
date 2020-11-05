@@ -19,6 +19,12 @@
 #include "platforms/macos/macosutils.h"
 #endif
 
+#ifdef Q_OS_MAC
+#ifndef IOS_INTEGRATION
+#include "platforms/macos/macosmenubar.h"
+#endif
+#endif
+
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QIcon>
@@ -231,10 +237,6 @@ int main(int argc, char *argv[])
     SystemTrayHandler systemTrayHandler(&app);
     systemTrayHandler.show();
 
-    QObject::connect(&systemTrayHandler, &SystemTrayHandler::quit, []() {
-        MozillaVPN::instance()->controller()->quit();
-    });
-
     QObject::connect(vpn,
                      &MozillaVPN::stateChanged,
                      &systemTrayHandler,
@@ -244,6 +246,23 @@ int main(int argc, char *argv[])
                      &Controller::stateChanged,
                      &systemTrayHandler,
                      &SystemTrayHandler::controllerStateChanged);
+
+#ifdef Q_OS_MAC
+#ifndef IOS_INTEGRATION
+    MacOSMenuBar menuBar;
+    menuBar.initialize();
+
+    QObject::connect(vpn,
+                     &MozillaVPN::stateChanged,
+                     &menuBar,
+                     &MacOSMenuBar::controllerStateChanged);
+
+    QObject::connect(vpn->controller(),
+                     &Controller::stateChanged,
+                     &menuBar,
+                     &MacOSMenuBar::controllerStateChanged);
+#endif
+#endif
 
     QObject::connect(vpn->statusIcon(),
                      &StatusIcon::iconChanged,

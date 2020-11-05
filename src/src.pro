@@ -174,6 +174,7 @@ else:macos {
     LIBS += -framework Security
 
     SOURCES += \
+            platforms/macos/macosmenubar.cpp \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             tasks/authenticate/authenticationlistener.cpp
@@ -184,6 +185,7 @@ else:macos {
             platforms/macos/macosutils.mm
 
     HEADERS += \
+            platforms/macos/macosmenubar.h \
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             tasks/authenticate/authenticationlistener.h

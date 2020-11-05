@@ -5,6 +5,7 @@
 #ifndef MACOSUTILS_H
 #define MACOSUTILS_H
 
+#include <QObject>
 #include <QString>
 
 class MacOSUtils final

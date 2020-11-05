@@ -545,6 +545,9 @@ Rectangle {
         Connections {
             target: VPN
             function onSettingsNeeded() {
+                while(stackview.depth > 1) {
+                    stackview.pop(null, StackView.Immediate);
+                }
                 settingsButton.clicked();
             }
         }
