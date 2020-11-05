@@ -27,6 +27,7 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
     m_lastLocationLabel = m_menu.addAction("", vpn->controller(), &Controller::activate);
     m_lastLocationLabel->setEnabled(false);
 
+    //% "Disconnect"
     m_disconnectAction = m_menu.addAction(qtTrId("systray.disconnect"),
                                           vpn->controller(),
                                           &Controller::deactivate);
@@ -44,6 +45,7 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
         help->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
     });
 
+    //% "Preferences…"
     m_preferencesAction = m_menu.addAction(qtTrId("systray.preferences"),
                                            vpn,
                                            &MozillaVPN::requestSettings);
@@ -151,7 +153,6 @@ void SystemTrayHandler::updateMenu()
     }
 
     QString statusLabel;
-    QString message;
 
     switch (vpn->controller()->state()) {
     case Controller::StateOn:
@@ -194,7 +195,9 @@ void SystemTrayHandler::updateMenu()
 
     m_lastLocationLabel->setIcon(flagIcon);
     m_lastLocationLabel->setText(
-        qtTrId("%1, %2").arg(vpn->currentServer()->country()).arg(vpn->currentServer()->city()));
+        //% "%1, %2"
+        //: Location in the systray. %1 is the country, %2 is the city.
+        qtTrId("vpn.systray.location").arg(vpn->currentServer()->country()).arg(vpn->currentServer()->city()));
     m_lastLocationLabel->setEnabled(vpn->controller()->state() == Controller::StateOff);
 }
 
