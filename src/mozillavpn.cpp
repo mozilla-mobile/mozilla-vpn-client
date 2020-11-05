@@ -867,3 +867,11 @@ void MozillaVPN::requestSettings()
     showWindow();
     emit settingsNeeded();
 }
+
+void MozillaVPN::requestAbout()
+{
+    logger.log() << "About view requested";
+
+    showWindow();
+    emit aboutNeeded();
+}

@@ -19,6 +19,7 @@ public slots:
     void controllerStateChanged();
 
 private:
+    QAction *m_aboutAction = nullptr;
     QAction *m_preferencesAction = nullptr;
 };
 

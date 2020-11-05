@@ -49,7 +49,6 @@
         <file>ui/components/VPNList.qml</file>
         <file>ui/components/VPNServerCountry.qml</file>
         <file>ui/themes/themes.js</file>
-        <file>ui/settings/ViewAboutUs.qml</file>
         <file>ui/settings/ViewLanguage.qml</file>
         <file>ui/settings/ViewNetworkSettings.qml</file>
         <file>ui/settings/ViewNotifications.qml</file>
@@ -380,5 +379,6 @@
         <file>ui/components/VPNFlickable.qml</file>
         <file>ui/resources/updateRecommended.svg</file>
         <file>ui/resources/updateRequired.svg</file>
+        <file>ui/components/VPNAboutUs.qml</file>
     </qresource>
 </RCC>
