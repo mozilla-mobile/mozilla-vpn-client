@@ -5,62 +5,74 @@
 import QtQuick 2.5
 import Mozilla.VPN 1.0
 import "../components"
+import "../themes/themes.js" as Theme
+
 
 Item {
+    id: root
     Component.onCompleted: fade.start()
+    height: parent.height
+    width: parent.width
 
     VPNHeadline {
         id: headline
 
-        anchors.top: parent.top
-        anchors.topMargin: parent.height * 0.08
+        anchors.top: root.top
+        anchors.topMargin: root.height * 0.08
+        anchors.horizontalCenter: root.horizontalCenter
+        width: Math.min(Theme.maxTextWidth, root.width * .85)
         //% "Waiting for sign in and subscription confirmation…"
         text: qsTrId("vpn.authenticating.waitForSignIn")
     }
 
-    Image {
-        id: spinner
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: headline.bottom
-        anchors.topMargin: 96
-        sourceSize.height: 80
-        fillMode: Image.PreserveAspectFit
-        source: "../resources/spinner.svg"
 
-        ParallelAnimation {
-            id: startSpinning
+        Image {
+            id: spinner
 
-            running: true
+            anchors.horizontalCenter: root.horizontalCenter
+            anchors.verticalCenter: root.verticalCenter
 
-            PropertyAnimation {
-                target: spinner
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 300
-            }
+            sourceSize.height: 80
 
-            PropertyAnimation {
-                target: spinner
-                property: "scale"
-                from: 0.7
-                to: 1
-                duration: 300
-            }
+            fillMode: Image.PreserveAspectFit
+            source: "../resources/spinner.svg"
 
-            PropertyAnimation {
-                target: spinner
-                property: "rotation"
-                from: 0
-                to: 360
-                duration: 8000
-                loops: Animation.Infinite
+            ParallelAnimation {
+                id: startSpinning
+
+                running: true
+
+                PropertyAnimation {
+                    target: spinner
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 300
+                }
+
+                PropertyAnimation {
+                    target: spinner
+                    property: "scale"
+                    from: 0.7
+                    to: 1
+                    duration: 300
+                }
+
+                PropertyAnimation {
+                    target: spinner
+                    property: "rotation"
+                    from: 0
+                    to: 360
+                    duration: 8000
+                    loops: Animation.Infinite
+                }
+
             }
 
         }
 
-    }
+
 
     VPNFooterLink {
         id: footerLink

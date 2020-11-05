@@ -18,4 +18,5 @@ Text {
     font.pixelSize: 22
     lineHeightMode: Text.FixedHeight
     lineHeight: 32
+    Layout.alignment: Qt.AlignHCenter
 }

@@ -378,5 +378,7 @@
         <file>ui/views/ViewSubscriptionNeeded.qml</file>
         <file>ui/components/VPNCallout.qml</file>
         <file>ui/components/VPNFlickable.qml</file>
+        <file>ui/resources/updateRecommended.svg</file>
+        <file>ui/resources/updateRequired.svg</file>
     </qresource>
 </RCC>

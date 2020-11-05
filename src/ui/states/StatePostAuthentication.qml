@@ -17,6 +17,7 @@ Item {
 
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.08
+        anchors.horizontalCenter: parent.horizontalCenter
         //% "Quick access"
         text: qsTrId("vpn.postAuthentication..quickAccess")
     }
@@ -26,19 +27,17 @@ Item {
 
         //% "You can quickly access Mozilla VPN from your status bar."
         text: qsTrId("vpn.postAuthentication.statusBarIntro")
-        x: 169
-        y: 255
         anchors.top: headline.bottom
+        anchors.topMargin: 12
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     Item {
         id: gradientText
 
-        width: 213
-        height: 131
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoSubtitle.bottom
-        anchors.topMargin: 67
+        width: parent.width
+        height: parent.height
+        anchors.top: parent.top
 
         Text {
             id: wip
