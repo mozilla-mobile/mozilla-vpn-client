@@ -25,9 +25,11 @@ void MacOSMenuBar::initialize()
     QMenu *fileMenu = menuBar->addMenu(qtTrId("menubar.file.title"));
 
     // This will be moved into the application menu.
-    fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+    QAction *quit = fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+    quit->setMenuRole(QAction::QuitRole);
 
     m_preferencesAction = fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
+    m_preferencesAction->setMenuRole(QAction::PreferencesRole);
     m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
     //% "Close"
