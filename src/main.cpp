@@ -240,17 +240,22 @@ int main(int argc, char *argv[])
     QObject::connect(vpn,
                      &MozillaVPN::stateChanged,
                      &systemTrayHandler,
-                     &SystemTrayHandler::controllerStateChanged);
-
-    QObject::connect(vpn->controller(),
-                     &Controller::stateChanged,
-                     &systemTrayHandler,
-                     &SystemTrayHandler::controllerStateChanged);
+                     &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn->currentServer(),
                      &ServerData::changed,
                      &systemTrayHandler,
-                     &SystemTrayHandler::controllerStateChanged);
+                     &SystemTrayHandler::updateContextMenu);
+
+    QObject::connect(vpn->controller(),
+                     &Controller::stateChanged,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::updateContextMenu);
+
+    QObject::connect(vpn->controller(),
+                     &Controller::stateChanged,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::showNotification);
 
 #ifdef Q_OS_MAC
 #ifndef IOS_INTEGRATION
@@ -272,7 +277,7 @@ int main(int argc, char *argv[])
     QObject::connect(vpn->statusIcon(),
                      &StatusIcon::iconChanged,
                      &systemTrayHandler,
-                     &SystemTrayHandler::iconChanged);
+                     &SystemTrayHandler::updateIcon);
 
     QObject::connect(vpn->captivePortalDetection(),
                      &CaptivePortalDetection::captivePortalDetected,
