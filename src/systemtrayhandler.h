@@ -22,12 +22,10 @@ public:
     void captivePortalNotificationRequested();
 
 public slots:
-    void iconChanged(const QString &icon);
-    void controllerStateChanged();
+    void updateIcon(const QString &icon);
 
-private:
     void showNotification();
-    void updateMenu();
+    void updateContextMenu();
 
 private:
     QMenu m_menu;
