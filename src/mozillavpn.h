@@ -189,6 +189,7 @@ private:
 
 public slots:
     void requestSettings();
+    void requestAbout();
 
 private slots:
     void taskCompleted();
@@ -200,6 +201,7 @@ signals:
     void userAuthenticationChanged();
     void deviceRemoving(const QString& deviceName);
     void settingsNeeded();
+    void aboutNeeded();
 
 private:
     // QML objects.

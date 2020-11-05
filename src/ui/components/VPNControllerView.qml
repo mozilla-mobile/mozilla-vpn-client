@@ -542,13 +542,27 @@ Rectangle {
             anchors.centerIn: settingsButton
         }
 
+        Component {
+            id: aboutUsComponent
+
+            VPNAboutUs {
+                isSettingsView: false
+            }
+
+        }
         Connections {
             target: VPN
             function onSettingsNeeded() {
                 while(stackview.depth > 1) {
                     stackview.pop(null, StackView.Immediate);
                 }
-                settingsButton.clicked();
+                stackview.push("../views/ViewSettings.qml", StackView.Immediate);
+            }
+            function onAboutNeeded() {
+                while(stackview.depth > 1) {
+                    stackview.pop(null, StackView.Immediate);
+                }
+                stackview.push(aboutUsComponent);
             }
         }
     }
