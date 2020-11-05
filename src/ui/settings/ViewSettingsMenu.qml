@@ -42,7 +42,7 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSource: "../resources/settings/aboutUs.svg"
             imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewAboutUs.qml"
+            pushAboutUs: true
         }
 
         ListElement {
@@ -162,6 +162,14 @@ VPNFlickable {
 
     }
 
+    Component {
+        id: aboutUsComponent
+
+        VPNAboutUs {
+            isSettingsView: true
+        }
+    }
+
     VPNList {
         id: settingsList
 
@@ -177,6 +185,9 @@ VPNFlickable {
         delegate: VPNClickableRow {
             accessibleName: settingTitle
             onClicked: {
+                if (pushAboutUs)
+                    return settingsStackView.push(aboutUsComponent);
+
                 if (pushGetHelp)
                     return settingsStackView.push(getHelpComponent);
 

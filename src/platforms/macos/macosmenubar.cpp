@@ -24,10 +24,16 @@ void MacOSMenuBar::initialize()
     //% "File"
     QMenu *fileMenu = menuBar->addMenu(qtTrId("menubar.file.title"));
 
-    // This will be moved into the application menu.
+    // Do not use qtTrId here!
     QAction *quit = fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
     quit->setMenuRole(QAction::QuitRole);
 
+    // Do not use qtTrId here!
+    m_aboutAction = fileMenu->addAction("about.vpn", vpn, &MozillaVPN::requestAbout);
+    m_aboutAction->setMenuRole(QAction::AboutRole);
+    m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+
+    // Do not use qtTrId here!
     m_preferencesAction = fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
     m_preferencesAction->setMenuRole(QAction::PreferencesRole);
     m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
@@ -49,4 +55,5 @@ void MacOSMenuBar::controllerStateChanged()
 {
     MozillaVPN *vpn = MozillaVPN::instance();
     m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+    m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 }
