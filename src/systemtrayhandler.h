@@ -26,7 +26,16 @@ public slots:
     void controllerStateChanged();
 
 private:
+    void showNotification();
+    void updateMenu();
+
+private:
     QMenu m_menu;
+
+    QAction *m_statusLabel = nullptr;
+    QAction *m_lastLocationLabel = nullptr;
+    QAction *m_disconnectAction = nullptr;
+    QAction *m_separator = nullptr;
     QAction *m_preferencesAction = nullptr;
 };
 

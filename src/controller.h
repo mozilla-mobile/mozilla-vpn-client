@@ -50,10 +50,6 @@ public:
 
     State state() const;
 
-    Q_INVOKABLE void activate();
-
-    Q_INVOKABLE void deactivate();
-
     Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
 
     Q_INVOKABLE void logout();
@@ -79,9 +75,13 @@ public:
             &&callback);
 
 public slots:
-    void captivePortalDetected();
+    Q_INVOKABLE void activate();
+
+    Q_INVOKABLE void deactivate();
 
     Q_INVOKABLE void quit();
+
+    void captivePortalDetected();
 
 private slots:
     void connected();
