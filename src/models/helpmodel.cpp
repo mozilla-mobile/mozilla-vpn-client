@@ -29,15 +29,16 @@ void maybeInitialize()
 
     s_initialized = true;
 
+    //% "View log"
+    s_helpEntries.append(HelpEntry(qtTrId("help.viewLog"), true, MozillaVPN::LinkContact));
+
+    s_helpEntries.append(
+        //% "Support Website"
+        HelpEntry(qtTrId("help.supportWebsite"), false, MozillaVPN::LinkHelpSupport));
+
     //% "Contact us"
     s_helpEntries.append(HelpEntry(qtTrId("help.contactUs"), false, MozillaVPN::LinkContact));
 
-    s_helpEntries.append(
-        //% "Help & Support"
-        HelpEntry(qtTrId("help.helpAndSupport"), false, MozillaVPN::LinkHelpSupport));
-
-    //% "View log"
-    s_helpEntries.append(HelpEntry(qtTrId("help.viewLog"), true, MozillaVPN::LinkContact));
 }
 
 } // namespace
