@@ -3,11 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosutils.h"
-#include "mozillavpn.h"
 #include "logger.h"
+#include "models/helpmodel.h"
+#include "mozillavpn.h"
 
 #include <objc/message.h>
 #include <objc/objc.h>
+
+#include <QMenuBar>
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>

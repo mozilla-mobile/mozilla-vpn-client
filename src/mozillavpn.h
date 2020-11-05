@@ -187,6 +187,9 @@ private:
 
     bool modelsInitialized() const;
 
+public slots:
+    void requestSettings();
+
 private slots:
     void taskCompleted();
 

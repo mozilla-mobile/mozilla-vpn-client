@@ -56,8 +56,6 @@ public:
 
     Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
 
-    Q_INVOKABLE void quit();
-
     Q_INVOKABLE void logout();
 
     int time() const;
@@ -82,6 +80,8 @@ public:
 
 public slots:
     void captivePortalDetected();
+
+    Q_INVOKABLE void quit();
 
 private slots:
     void connected();

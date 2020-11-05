@@ -32,15 +32,14 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
     });
 
     m_preferencesAction = m_menu.addAction(qtTrId("systray.preferences"),
-                                           this,
-                                           &SystemTrayHandler::requestSettings);
-    m_preferencesAction->setVisible(MozillaVPN::instance()->state() == MozillaVPN::StateMain);
-    // TODO: preferences!
+                                           vpn,
+                                           &MozillaVPN::requestSettings);
+    m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
     m_menu.addSeparator();
 
     //% "Quit Mozilla VPN"
-    m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
+    m_menu.addAction(qtTrId("systray.quit"), vpn->controller(), &Controller::quit);
     setContextMenu(&m_menu);
 
     iconChanged(MozillaVPN::instance()->statusIcon()->iconString());
@@ -124,14 +123,4 @@ void SystemTrayHandler::iconChanged(const QString &icon)
     QIcon trayIconMask(icon);
     trayIconMask.setIsMask(true);
     setIcon(trayIconMask);
-}
-
-void SystemTrayHandler::requestSettings()
-{
-    logger.log() << "Settings required";
-
-    MozillaVPN *vpn = MozillaVPN::instance();
-
-    vpn->showWindow();
-    emit vpn->settingsNeeded();
 }

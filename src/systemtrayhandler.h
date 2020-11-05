@@ -21,12 +21,6 @@ public:
 
     void captivePortalNotificationRequested();
 
-signals:
-    void quit();
-
-private slots:
-    void requestSettings();
-
 public slots:
     void iconChanged(const QString &icon);
     void controllerStateChanged();
