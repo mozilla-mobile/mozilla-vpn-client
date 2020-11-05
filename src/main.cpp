@@ -247,6 +247,11 @@ int main(int argc, char *argv[])
                      &systemTrayHandler,
                      &SystemTrayHandler::controllerStateChanged);
 
+    QObject::connect(vpn->currentServer(),
+                     &ServerData::changed,
+                     &systemTrayHandler,
+                     &SystemTrayHandler::controllerStateChanged);
+
 #ifdef Q_OS_MAC
 #ifndef IOS_INTEGRATION
     MacOSMenuBar menuBar;
