@@ -21,8 +21,8 @@ void MacOSMenuBar::initialize()
 
     QMenuBar *menuBar = new QMenuBar(nullptr);
 
-    // File menu
-    QMenu *fileMenu = menuBar->addMenu("menubar.file.title");
+    //% "File"
+    QMenu *fileMenu = menuBar->addMenu(qtTrId("menubar.file.title"));
 
     // This will be moved into the application menu.
     fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
@@ -36,7 +36,7 @@ void MacOSMenuBar::initialize()
                                          &Controller::quit);
     close->setShortcut(QKeySequence::Close);
 
-    // Help menu
+    //% "Help"
     QMenu *helpMenu = menuBar->addMenu(qtTrId("menubar.help.title"));
     vpn->helpModel()->forEach([&](const QString &name, int id) {
         helpMenu->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
