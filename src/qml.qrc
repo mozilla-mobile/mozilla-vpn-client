@@ -375,6 +375,8 @@
         <file>ui/resources/logo-animated4.svg</file>
         <file>ui/resources/logo-off.svg</file>
         <file>ui/components/VPNToolTip.qml</file>
+        <file>ui/views/ViewSubscriptionNeeded.qml</file>
+        <file>ui/components/VPNCallout.qml</file>
         <file>ui/components/VPNFlickable.qml</file>
     </qresource>
 </RCC>
