@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 
 Item {
     id: viewAboutUs
+    property alias isSettingsView: menu.isSettingsView
 
     ListModel {
         id: aboutUsListModel

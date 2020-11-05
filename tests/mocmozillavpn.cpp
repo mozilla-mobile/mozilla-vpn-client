@@ -176,3 +176,5 @@ void MozillaVPN::showWindow()
 }
 
 void MozillaVPN::requestSettings() {}
+
+void MozillaVPN::requestAbout() {}
