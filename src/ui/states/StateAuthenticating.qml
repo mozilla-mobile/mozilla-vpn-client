@@ -25,54 +25,50 @@ Item {
         text: qsTrId("vpn.authenticating.waitForSignIn")
     }
 
+    Image {
+        id: spinner
 
+        anchors.horizontalCenter: root.horizontalCenter
+        anchors.verticalCenter: root.verticalCenter
 
-        Image {
-            id: spinner
+        sourceSize.height: 80
 
-            anchors.horizontalCenter: root.horizontalCenter
-            anchors.verticalCenter: root.verticalCenter
+        fillMode: Image.PreserveAspectFit
+        source: "../resources/spinner.svg"
 
-            sourceSize.height: 80
+        ParallelAnimation {
+            id: startSpinning
 
-            fillMode: Image.PreserveAspectFit
-            source: "../resources/spinner.svg"
+            running: true
 
-            ParallelAnimation {
-                id: startSpinning
+            PropertyAnimation {
+                target: spinner
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 300
+            }
 
-                running: true
+            PropertyAnimation {
+                target: spinner
+                property: "scale"
+                from: 0.7
+                to: 1
+                duration: 300
+            }
 
-                PropertyAnimation {
-                    target: spinner
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 300
-                }
-
-                PropertyAnimation {
-                    target: spinner
-                    property: "scale"
-                    from: 0.7
-                    to: 1
-                    duration: 300
-                }
-
-                PropertyAnimation {
-                    target: spinner
-                    property: "rotation"
-                    from: 0
-                    to: 360
-                    duration: 8000
-                    loops: Animation.Infinite
-                }
-
+            PropertyAnimation {
+                target: spinner
+                property: "rotation"
+                from: 0
+                to: 360
+                duration: 8000
+                loops: Animation.Infinite
             }
 
         }
 
-
+    }
 
     VPNFooterLink {
         id: footerLink
