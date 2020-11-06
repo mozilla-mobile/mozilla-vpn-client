@@ -13,12 +13,15 @@ VPNFlickable {
     id: mainView
 
     flickContentHeight:  {
-        flickContentHeight = 444;
-        if (alertBox.visible)
-            flickContentHeight += alertBox.height + Theme.windowMargin;
+        let flickHeight = 444;
+        if (alertBox.visible) {
+            flickHeight += alertBox.height + Theme.windowMargin;
+        }
 
-        if (mobileHeader.visible)
-            flickContentHeight += mobileHeader.height;
+        if (mobileHeader.visible) {
+            flickHeight += mobileHeader.height;
+        }
+        return flickHeight;
 
     }
 
@@ -33,14 +36,11 @@ VPNFlickable {
 
             PropertyChanges {
                 target: mainContent
-                y: {
-                    if (alertBox.visible) {
-                        mainContent.y = alertBox.height + Theme.windowMargin + mobileHeader.height;
-                        alertBox.y = mobileHeader.height + Theme.windowMargin;
-                    } else {
-                        mainContent.y = mobileHeader.height;
-                    }
-                }
+                y: alertBox.visible ? alertBox.height + Theme.windowMargin + mobileHeader.height : mobileHeader.height
+            }
+            PropertyChanges {
+                target: alertBox
+                y: alertBox.visible ? mobileHeader.height + Theme.windowMargin : 0
             }
 
         },
@@ -54,14 +54,12 @@ VPNFlickable {
 
             PropertyChanges {
                 target: mainContent
-                y: {
-                    if (alertBox.visible) {
-                        mainContent.y = alertBox.height + Theme.windowMargin;
-                        alertBox.y = Theme.windowMargin;
-                    } else {
-                        mainContent.y = 0;
-                    }
-                }
+                y: alertBox.visible ? alertBox.height + Theme.windowMargin : 0
+            }
+
+            PropertyChanges {
+                target: alertBox
+                y: Theme.windowMargin
             }
 
         }
@@ -101,17 +99,6 @@ VPNFlickable {
     VPNAlert {
         id: alertBox
 
-        function updatePageLayout() {
-            let alertHeight = alertBox.height + Theme.windowMargin;
-            flickContentHeight -= alertHeight;
-            if (!visible && mobileHeader.visible)
-                mainContent.y = mobileHeader.height;
-
-            if (!visible && !mobileHeader.visible)
-                mainContent.y = 0;
-
-        }
-
         state: VPN.updateRecommended ? "recommended" : ""
         alertType: "update"
         alertColor: Theme.blueButton
@@ -121,6 +108,43 @@ VPNFlickable {
         //% "Update now"
         alertLinkText: qsTrId("vpn.updates.updateNow")
         width: parent.width - (Theme.windowMargin * 2)
+
+        SequentialAnimation {
+            id: closeAlert
+
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: alertBox
+                    property: "opacity"
+                    to: 0
+                    duration: 100
+                }
+
+                PropertyAnimation {
+                    target: mainView
+                    property: "flickContentHeight"
+                    to: mainView.flickContentHeight - alertBox.height - Theme.windowMargin
+                    duration: 200
+                }
+
+                PropertyAnimation {
+                    target: mainContent
+                    property: "y"
+                    to : {
+                        if (mobileHeader.visible) {
+                            return mobileHeader.height
+                        }
+                        return 0
+                    }
+                    duration: 200
+                }
+            }
+            PropertyAction {
+                target: alertBox
+                property: "visible"
+                value: "false"
+            }
+        }
     }
 
     Item {
