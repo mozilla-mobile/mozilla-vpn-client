@@ -836,6 +836,21 @@ void MozillaVPN::viewLogs()
     qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
 }
 
+QString MozillaVPN::retrieveLogs()
+{
+    logger.log() << "Retrieve logs";
+
+    QString logs;
+    QTextStream out(&logs);
+
+    LogHandler *logHandler = LogHandler::instance();
+    for (const LogHandler::Log &log : logHandler->logs()) {
+        logHandler->prettyOutput(out, log);
+    }
+
+    return logs;
+}
+
 bool MozillaVPN::modelsInitialized() const
 {
     return m_private->m_user.initialized() && m_private->m_serverCountryModel.initialized()
@@ -874,4 +889,12 @@ void MozillaVPN::requestAbout()
 
     showWindow();
     emit aboutNeeded();
+}
+
+void MozillaVPN::requestViewLogs()
+{
+    logger.log() << "View log requested";
+
+    showWindow();
+    emit viewLogsNeeded();
 }
