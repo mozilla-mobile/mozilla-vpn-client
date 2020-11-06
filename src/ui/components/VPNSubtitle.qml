@@ -3,14 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 // VPNSubtitle
 Text {
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.top: logoTitle.bottom
-    anchors.topMargin: Theme.windowMargin / 2
     horizontalAlignment: Text.AlignHCenter
     font.pixelSize: Theme.fontSize
     font.family: Theme.fontInterFamily

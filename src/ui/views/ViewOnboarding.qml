@@ -16,25 +16,28 @@ Item {
     property real panelHeight: window.height - (nextPanel.height + nextPanel.anchors.bottomMargin + progressIndicator.height + progressIndicator.anchors.bottomMargin)
     property real panelWidth: window.width
 
+    width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
+    anchors.horizontalCenter: parent.horizontalCenter
+
     SwipeView {
         id: swipeView
 
         currentIndex: 0
         height: onboardingPanel.panelHeight
-        width: parent.width
+        width: onboardingPanel.width - Theme.windowMargin * 4
+        anchors.horizontalCenter: onboardingPanel.horizontalCenter
 
         Repeater {
             id: repeater
 
             model: 4
+            anchors.fill: parent
 
             Loader {
                 height: onboardingPanel.panelHeight
-                width: onboardingPanel.panelWidth
                 active: SwipeView.isCurrentItem
 
                 sourceComponent: VPNPanel {
-                    height: onboardingPanel.panelHeight
                     logo: "../resources/onboarding/onboarding" + (index + 1) + ".svg"
                     logoTitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].headline)
                     logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].subtitle)

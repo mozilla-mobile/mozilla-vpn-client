@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
 RoundButton {
@@ -16,10 +17,10 @@ RoundButton {
     signal clicked()
 
     radius: 4
-    height: 28
     state: "state-default"
     focusPolicy: Qt.StrongFocus
     onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
+    horizontalPadding: Theme.hSpacing
 
 
     Keys.onSpacePressed: clicked()
@@ -56,28 +57,30 @@ RoundButton {
         }
     ]
 
-    VPNFocus {
-        itemToFocus: root
-    }
-
-    MouseArea {
-        id: mouseArea
-
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: root.state = "state-hovering"
-        onExited: root.state = "state-default"
-        onPressed: root.state = "state-pressed"
-        onClicked: parent.clicked()
-        cursorShape: "PointingHandCursor"
-    }
 
     background: Rectangle {
         id: backgroundRect
 
-        anchors.fill: parent
         color: Theme.bgColor
         radius: 4
+
+        MouseArea {
+            id: mouseArea
+
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: root.state = "state-hovering"
+            onExited: root.state = "state-default"
+            onPressed: root.state = "state-pressed"
+            onClicked: root.clicked()
+            cursorShape: "PointingHandCursor"
+        }
+
+        VPNFocus {
+            itemToFocus: root
+            itemToAnchor: backgroundRect
+        }
+
     }
 
     contentItem: Label {

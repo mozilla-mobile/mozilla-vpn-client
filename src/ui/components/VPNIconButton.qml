@@ -78,7 +78,7 @@ RoundButton {
 
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: parent.clicked()
+        onClicked: iconButton.clicked()
     }
 
     background: Rectangle {

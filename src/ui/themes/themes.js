@@ -74,13 +74,16 @@ const redButton = {
     "defaultColor" : red,
     "buttonHovered": redHovered,
     "buttonPressed": redPressed,
-     "focusStroke": redFocusStroke
+    "focusStroke": redFocusStroke,
+    "focusBorder": redPressed
 };
 
 const greyButton = {
     "defaultColor": grey,
     "buttonHovered": greyHovered,
-    "buttonPressed": greyPressed
+    "buttonPressed": greyPressed,
+    "focusStroke": greyPressed,
+    "focusBorder": fontColorDark
 };
 
 const whiteSettingsBtn = {
@@ -91,6 +94,14 @@ const whiteSettingsBtn = {
 const removeDeviceBtn = {
     "buttonHovered": "#FFDFE7",
     "buttonPressed": "#FFBDC5"
+};
+
+const cancelRemovePopup = {
+    "defaultColor": grey,
+    "buttonHovered": "#CCCCCC",
+    "buttonPressed": greyPressed,
+    "focusStroke": greyPressed,
+    "focusBorder": fontColorDark
 };
 
 // In milliseconds, the animation of a single device removal

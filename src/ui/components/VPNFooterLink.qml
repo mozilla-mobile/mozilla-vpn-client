@@ -9,5 +9,4 @@ VPNLinkButton {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
     anchors.bottomMargin: Math.min(window.height * .08, 60)
-    horizontalPadding: Theme.hSpacing
 }

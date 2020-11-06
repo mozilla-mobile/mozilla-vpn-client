@@ -13,4 +13,5 @@ Text {
     font.family: Theme.fontInterFamily
     lineHeightMode: Text.FixedHeight
     lineHeight: Theme.labelLineHeight
+    wrapMode: Text.Wrap
 }

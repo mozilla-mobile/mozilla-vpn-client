@@ -11,8 +11,10 @@ RoundButton {
     id: button
 
     height: 40
+    Layout.preferredHeight: Layout ? 40 : undefined
     width: Math.min(parent.width * .83, Theme.maxHorizontalContentWidth)
-    anchors.horizontalCenter: parent.horizontalCenter
+    Layout.preferredWidth: Layout ? Math.min(parent.width * .83, Theme.maxHorizontalContentWidth): undefined
+    Layout.alignment: Layout ? Qt.AlignHCenter : undefined
     Keys.onReturnPressed: clicked()
     Accessible.onPressAction: clicked()
     onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(button)
