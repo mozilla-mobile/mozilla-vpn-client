@@ -100,9 +100,8 @@ Rectangle {
         anchors.rightMargin: 0
         Accessible.name: "Close"
         onClicked: {
-            alertBox.visible = false;
             if (alertType === "update") {
-                parent.updatePageLayout();
+                closeAlert.start()
                 return VPN.hideUpdateRecommendedAlert();
             }
             return VPN.hideAlert();
