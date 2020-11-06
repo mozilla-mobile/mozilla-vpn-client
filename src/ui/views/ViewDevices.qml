@@ -73,6 +73,14 @@ Item {
             interactive: false
             model: VPNDeviceModel
             spacing: 4
+            Keys.onDownPressed: {
+                vpnFlickable.ensureVisible(currentItem);
+                list.incrementCurrentIndex()
+            }
+            Keys.onUpPressed: {
+                vpnFlickable.ensureVisible(currentItem);
+                list.decrementCurrentIndex()
+            }
             onFocusChanged: {
                 // Clear focus from the last focused remove button.
                 if (deviceList.focusedIconButton) {
@@ -301,180 +309,15 @@ Item {
 
         }
 
-        Rectangle {
-            id: removePopupDarkBg
-
-            anchors.fill: parent
-            height: parent.height
-            width: parent.width
-            color: "#0c0c0d"
-            opacity: removePopup.state === "visible" ? 0.25 : 0
-
-            transitions: Transition {
-                NumberAnimation {
-                    target: removePopupDarkBg
-                    property: "opacity"
-                    duration: 200
-                }
-
-            }
-
-        }
-
-        Rectangle {
-            id: rectangularGlowClippingPath
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 96
-            width: 260
-            height: 232
-            radius: 10
-            opacity: removePopup.state === "visible" ? "1" : 0
-
-            RectangularGlow {
-                id: rectangularGlow
-
-                anchors.fill: rectangularGlowClippingPath
-                glowRadius: 10
-                spread: 0.1
-                color: "black"
-                cornerRadius: rectangularGlowClippingPath.radius + glowRadius
-                opacity: 0.4
-            }
-
-            transitions: Transition {
-                NumberAnimation {
-                    target: rectangularGlowClippingPath
-                    property: "opacity"
-                    duration: 200
-                }
-
-            }
-
-        }
-
-        Rectangle {
-            id: removePopup
-
-            property var deviceName
-
-            function initializeAndOpen(name) {
-                removePopup.deviceName = name;
-                removePopup.state = "visible";
-            }
-
-            state: "invisible"
-            anchors.fill: rectangularGlowClippingPath
-            color: "#E1E1E1"
-            radius: 10
-            height: 232
-            states: [
-                State {
-                    name: "invisible"
-
-                    PropertyChanges {
-                        target: removePopup
-                        opacity: 0
-                    }
-
-                },
-                State {
-                    name: "visible"
-
-                    PropertyChanges {
-                        target: removePopup
-                        opacity: 1
-                    }
-
-                }
-            ]
-
-            ColumnLayout {
-                id: removePopupContent
-
-                anchors.fill: removePopup
-                anchors.centerIn: removePopup
-                anchors.leftMargin: Theme.windowMargin
-                anchors.rightMargin: Theme.windowMargin
-                anchors.topMargin: 8
-                anchors.bottomMargin: 30
-                spacing: 0
-
-                Image {
-                    Layout.alignment: Qt.AlignHCenter
-                    fillMode: Image.PreserveAspectFit
-                    source: "../resources/removeDevice.png"
-                    Layout.preferredHeight: 64
-                    Layout.preferredWidth: 64
-                    Layout.bottomMargin: 12
-                }
-
-                Text {
-                    //% "Remove device?"
-                    text: qsTrId("vpn.devices.removeDeviceQuestion")
-                    Layout.alignment: Qt.AlignCenter
-                    font.pixelSize: Theme.fontSizeSmall
-                    font.family: Theme.fontBoldFamily
-                    color: Theme.fontColorDark
-                }
-
-                Text {
-                    //: %1 is the name of the device being removed. "\n" is used to display it on a new line, please keep it in the translation.
-                    //% "Please confirm you would like to remove\n%1."
-                    text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
-                    Layout.alignment: Qt.AlignHCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.maximumWidth: 220
-                    Layout.bottomMargin: 8
-                    font.family: Theme.fontInterFamily
-                    font.pixelSize: Theme.fontSizeSmallest
-                    lineHeightMode: Text.FixedHeight
-                    lineHeight: 14
-                    wrapMode: Text.Wrap
-                    color: "#262626"
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 10
-
-                    VPNPopupButton {
-                        //% "Cancel"
-                        buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
-                        buttonTextColor: "#262626"
-                        buttonColor: Theme.greyButton
-                        onClicked: removePopup.state = "invisible"
-                    }
-
-                    VPNPopupButton {
-                        id: removeBtn
-
-                        //: "This is the 'remove' device button.
-                        //% "Remove"
-                        buttonText: qsTrId("vpn.devices.removeDeviceButton")
-                        buttonTextColor: "#FFFFFF"
-                        buttonColor: Theme.redButton
-                        onClicked: {
-                            VPN.removeDevice(removePopup.deviceName);
-                            removePopup.state = "invisible";
-                        }
-                    }
-
-                }
-
-            }
-
-            transitions: Transition {
-                NumberAnimation {
-                    properties: "opacity"
-                    duration: 100
-                }
-
-            }
-
-        }
-
     }
 
+    VPNRemoveDevicePopup {
+        id: removePopup
+        property var deviceName
+
+        function initializeAndOpen(name) {
+            removePopup.deviceName = name;
+            removePopup.open()
+        }
+    }
 }

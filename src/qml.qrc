@@ -380,5 +380,6 @@
         <file>ui/resources/updateRecommended.svg</file>
         <file>ui/resources/updateRequired.svg</file>
         <file>ui/components/VPNAboutUs.qml</file>
+        <file>ui/components/VPNRemoveDevicePopup.qml</file>
     </qresource>
 </RCC>
