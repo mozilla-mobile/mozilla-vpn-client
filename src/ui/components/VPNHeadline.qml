@@ -10,14 +10,13 @@ import "../themes/themes.js" as Theme
 //VPNHeadline
 Text {
     horizontalAlignment: Text.AlignHCenter
-    anchors.horizontalCenterOffset: 0
-    anchors.horizontalCenter: parent.horizontalCenter
     verticalAlignment: Text.AlignVCenter
-    wrapMode: Text.Wrap
+    wrapMode: Text.WordWrap
     width: Theme.maxTextWidth
     color: Theme.fontColorDark
     font.family: Theme.fontFamily
     font.pixelSize: 22
     lineHeightMode: Text.FixedHeight
     lineHeight: 32
+    Layout.alignment: Qt.AlignHCenter
 }
