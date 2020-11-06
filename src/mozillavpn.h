@@ -99,6 +99,7 @@ public:
     Q_INVOKABLE void postAuthenticationCompleted();
     Q_INVOKABLE void subscribe();
     Q_INVOKABLE void viewLogs();
+    Q_INVOKABLE QString retrieveLogs();
 
     // QML object getters:
     QQmlApplicationEngine *engine() { return m_engine; }
@@ -190,6 +191,7 @@ private:
 public slots:
     void requestSettings();
     void requestAbout();
+    void requestViewLogs();
 
 private slots:
     void taskCompleted();
@@ -202,6 +204,7 @@ signals:
     void deviceRemoving(const QString& deviceName);
     void settingsNeeded();
     void aboutNeeded();
+    void viewLogsNeeded();
 
 private:
     // QML objects.
