@@ -111,7 +111,7 @@ bool DBus::activate(const QString &jsonConfig)
 
 #define GETVALUEINT(name, where) \
     if (!obj.contains(name)) { \
-        logger.log() << name << " missing in the jsoConfig input"; \
+        logger.log() << name << " missing in the jsonConfig input"; \
         return false; \
     } \
     { \
@@ -129,7 +129,7 @@ bool DBus::activate(const QString &jsonConfig)
 
 #define GETVALUEBOOL(name, where) \
     if (!obj.contains(name)) { \
-        logger.log() << name << " missing in the jsoConfig input"; \
+        logger.log() << name << " missing in the jsonConfig input"; \
         return false; \
     } \
     { \
