@@ -75,11 +75,9 @@ Item {
             spacing: 4
             Keys.onDownPressed: {
                 vpnFlickable.ensureVisible(currentItem);
-                list.incrementCurrentIndex()
             }
             Keys.onUpPressed: {
                 vpnFlickable.ensureVisible(currentItem);
-                list.decrementCurrentIndex()
             }
             onFocusChanged: {
                 // Clear focus from the last focused remove button.

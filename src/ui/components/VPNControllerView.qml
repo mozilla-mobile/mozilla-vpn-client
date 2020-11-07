@@ -485,7 +485,6 @@ Rectangle {
     VPNMainImage {
         id: logo
 
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: 50
         height: 80
@@ -570,38 +569,37 @@ Rectangle {
     VPNHeadline {
         id: logoTitle
 
-        anchors.top: logo.bottom
-        anchors.topMargin: 22
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.family: Theme.fontFamily
         horizontalAlignment: Text.AlignHCenter
-        y: logo.y + logo.height + 26
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: logo.bottom
+        anchors.topMargin: 24
         font.pixelSize: 22
-        height: 32
     }
 
     VPNInterLabel {
         id: logoSubtitle
 
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: logoTitle.y + logoTitle.height + 8
+        anchors.top: logoTitle.bottom
+        anchors.topMargin: Theme.windowMargin / 2
+        lineHeight: Theme.controllerInterLineHeight
+        width: box.width - Theme.windowMargin * 3
     }
 
     VPNConnectionStability {
         id: connectionStability
 
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: logoTitle.y + logoTitle.height + 8
+        anchors.top: logoTitle.bottom
+        anchors.topMargin: Theme.windowMargin / 2
         visible: false
     }
 
     VPNToggle {
         id: toggle
 
-        y: logoSubtitle.y + logoSubtitle.height + 24
+        anchors.bottom: box.bottom
+        anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
     }

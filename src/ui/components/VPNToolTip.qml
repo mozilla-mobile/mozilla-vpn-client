@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 ToolTip {
     id: toolTip
 
-    visible: mouseArea.containsMouse || activeFocus
+    visible: mouseArea.containsMouse || parent.activeFocus
     onVisibleChanged: if (visible) fadeDown.start()
     leftMargin: Theme.windowMargin * 1.5
     rightMargin: Theme.windowMargin * 1.5
