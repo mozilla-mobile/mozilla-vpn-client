@@ -26,6 +26,11 @@ Popup {
     Accessible.role: Accessible.Dialog
     Accessible.name: popupTitle.text
 
+   onClosed: {
+       removeBtn.focus = false;
+       cancelBtn.focus = false
+   }
+
 
     Overlay.modal: Rectangle {
         color: "#4D0C0C0D"
@@ -121,7 +126,6 @@ Popup {
                     buttonTextColor: "#262626"
                     bgColor: Theme.cancelRemovePopup
                     onClicked: {
-                        cancelBtn.focus = false;
                         popup.close();
                     }
                 }
@@ -137,7 +141,6 @@ Popup {
                     onClicked: {
                         VPN.removeDevice(removePopup.deviceName);
                         popup.close();
-                        removeBtn.focus = false;
                     }
                 }
 
