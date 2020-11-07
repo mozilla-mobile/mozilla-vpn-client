@@ -103,6 +103,15 @@ Window {
                         source: "states/StateSubscriptionNeeded.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateDeviceLimit
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateDeviceLimit.qml"
+                    }
+
                 }
             ]
 

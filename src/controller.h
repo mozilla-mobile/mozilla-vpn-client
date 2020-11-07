@@ -26,7 +26,6 @@ class Controller final : public QObject
 public:
     enum State {
         StateInitializing,
-        StateDeviceLimit,
         StateOff,
         StateConnecting,
         StateOn,
@@ -61,8 +60,6 @@ public:
     const QString &switchingCountryCode() const { return m_switchingCountryCode; }
 
     const QString &switchingCity() const { return m_switchingCity; }
-
-    void setDeviceLimit(bool deviceLimit);
 
     void updateRequired();
 

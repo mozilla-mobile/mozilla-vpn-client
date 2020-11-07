@@ -25,7 +25,7 @@ VPNClickableRow {
         anchors.leftMargin: 8
         anchors.rightMargin: 8
         spacing: 0
-        state: VPNController.state !== VPNController.StateDeviceLimit ? "active" : "deviceLimit"
+        state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
         states: [
             State {
                 name: "active" // normal mode

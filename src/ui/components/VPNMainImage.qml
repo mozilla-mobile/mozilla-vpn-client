@@ -110,7 +110,7 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateDeviceLimit
+            name: VPNController.StateInitializing
 
             PropertyChanges {
                 target: logo

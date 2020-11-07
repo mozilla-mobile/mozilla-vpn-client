@@ -59,6 +59,7 @@
         <file>ui/states/StateAuthenticating.qml</file>
         <file>ui/states/StatePostAuthentication.qml</file>
         <file>ui/states/StateUpdateRequired.qml</file>
+        <file>ui/states/StateDeviceLimit.qml</file>
         <file>ui/views/ViewMain.qml</file>
         <file>ui/views/ViewDevices.qml</file>
         <file>ui/views/ViewServers.qml</file>

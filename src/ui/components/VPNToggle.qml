@@ -10,7 +10,7 @@ RoundButton {
     id: toggleButton
 
     function handleClick() {
-        if (VPNController.state === VPNController.StateDeviceLimit || VPNController.state === VPNController.StateInitializing)
+        if (VPNController.state === VPNController.StateInitializing)
             return toggleOutline.state = "state-default";
 
         if (VPNController.state !== VPNController.StateOff)
@@ -132,20 +132,6 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#387E8A"
-            }
-
-        },
-        State {
-            name: VPNController.StateDeviceLimit
-
-            PropertyChanges {
-                target: cursor
-                anchors.leftMargin: 4
-            }
-
-            PropertyChanges {
-                target: toggle
-                color: "#E7E7E7"
             }
 
         },

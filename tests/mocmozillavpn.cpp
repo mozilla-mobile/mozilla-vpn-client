@@ -185,5 +185,3 @@ QString MozillaVPN::retrieveLogs()
 {
     return "LOGS!";
 }
-
-void MozillaVPN::maybeActivateController() {}
