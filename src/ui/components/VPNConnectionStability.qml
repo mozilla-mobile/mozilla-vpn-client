@@ -111,7 +111,7 @@ RowLayout {
                 id: warningIcon
 
                 sourceSize.height: 14
-                sourceSize.width: sourceSize.height
+                sourceSize.width: 14
                 fillMode: Image.PreserveAspectFit
             }
 
