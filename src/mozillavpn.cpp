@@ -237,8 +237,13 @@ void MozillaVPN::setState(State state)
     m_state = state;
     emit stateChanged();
 
+    maybeActivateController();
+}
+
+void MozillaVPN::maybeActivateController()
+{
     // If we are activating the app, let's initialize the controller.
-    if (m_state == StateMain) {
+    if (m_state == StateMain && m_private->m_deviceModel.currentDevice()) {
         m_private->m_connectionDataHolder.enable();
         m_private->m_controller.initialize();
         startSchedulingPeriodicOperations();
@@ -503,8 +508,10 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     scheduleTask(new TaskAccountAndServers());
 
     // Finally we are able to activate the client.
-    scheduleTask(
-        new TaskFunction([this](MozillaVPN *) { m_private->m_controller.setDeviceLimit(false); }));
+    scheduleTask(new TaskFunction([this](MozillaVPN *) {
+        m_private->m_controller.setDeviceLimit(false);
+        maybeActivateController();
+    }));
 }
 
 void MozillaVPN::accountChecked(const QByteArray &json)

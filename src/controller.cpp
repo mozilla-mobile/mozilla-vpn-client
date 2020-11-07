@@ -348,21 +348,12 @@ void Controller::setDeviceLimit(bool deviceLimit)
 
     if (!deviceLimit) {
         Q_ASSERT(m_state == StateDeviceLimit);
-        setState(StateOff);
+        setState(StateInitializing);
         return;
     }
 
-    if (m_state == StateOff) {
-        setState(StateDeviceLimit);
-        return;
-    }
-
-    m_nextStep = DeviceLimit;
-
-    if (m_state == StateOn) {
-        deactivate();
-        return;
-    }
+    Q_ASSERT(m_state == StateInitializing);
+    setState(StateDeviceLimit);
 }
 
 bool Controller::processNextStep()
@@ -382,11 +373,6 @@ bool Controller::processNextStep()
 
     if (nextStep == Subscribe) {
         emit readyToSubscribe();
-        return true;
-    }
-
-    if (nextStep == DeviceLimit) {
-        setState(StateDeviceLimit);
         return true;
     }
 

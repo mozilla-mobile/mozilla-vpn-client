@@ -26,12 +26,12 @@ class Controller final : public QObject
 public:
     enum State {
         StateInitializing,
+        StateDeviceLimit,
         StateOff,
         StateConnecting,
         StateOn,
         StateDisconnecting,
         StateSwitching,
-        StateDeviceLimit,
         StateCaptivePortal,
     };
     Q_ENUM(State)
@@ -124,7 +124,6 @@ private:
         Quit,
         Update,
         Disconnect,
-        DeviceLimit,
         Subscribe,
         WaitForCaptivePortal,
     };
