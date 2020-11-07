@@ -88,6 +88,7 @@ VPNFlickable {
         id: vpnPanel
         logoSize: 80
         logo:  VPNUser.avatar
+        //% "VPN User"
         readonly property var textVpnUser: qsTrId("vpn.settings.user")
         logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         logoSubtitle: VPNUser.email
