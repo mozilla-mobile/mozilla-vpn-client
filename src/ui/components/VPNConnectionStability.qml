@@ -9,6 +9,7 @@ import "../themes/themes.js" as Theme
 
 RowLayout {
     id: stability
+    Layout.preferredHeight: Theme.controllerInterLineHeight
 
     spacing: 0
     opacity: 0
@@ -101,16 +102,16 @@ RowLayout {
         Layout.minimumWidth: 60
 
         Rectangle {
-            height: 22
-            width: 15
+            height: 16
+            width: 14
             color: "transparent"
-            Layout.rightMargin: 8
+            Layout.rightMargin: 6
 
             Image {
                 id: warningIcon
 
-                sourceSize.height: 15
-                sourceSize.width: 15
+                sourceSize.height: 14
+                sourceSize.width: 14
                 fillMode: Image.PreserveAspectFit
             }
 
@@ -118,19 +119,19 @@ RowLayout {
 
         VPNInterLabel {
             id: stabilityLabel
+            lineHeight: Theme.controllerInterLineHeight
         }
 
     }
 
     Rectangle {
-        Layout.preferredHeight: 5
-        Layout.preferredWidth: 5
+        Layout.preferredHeight: 4
+        Layout.preferredWidth: 4
         color: "#FFFFFF"
         opacity: 0.8
         radius: 3
-        Layout.leftMargin: 12
-        Layout.rightMargin: 12
-        Layout.bottomMargin: 4
+        Layout.leftMargin: Theme.windowMargin / 2
+        Layout.rightMargin: Layout.leftMargin
     }
 
     VPNInterLabel {
@@ -138,6 +139,7 @@ RowLayout {
         text: qsTrId("vpn.connectionStability.checkConnection")
         color: "#FFFFFF"
         opacity: 0.8
+        lineHeight: Theme.controllerInterLineHeight
     }
 
 }
