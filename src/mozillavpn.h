@@ -188,6 +188,8 @@ private:
 
     bool modelsInitialized() const;
 
+    void maybeActivateController();
+
 public slots:
     void requestSettings();
     void requestAbout();
