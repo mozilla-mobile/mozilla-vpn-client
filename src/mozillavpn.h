@@ -47,6 +47,7 @@ public:
         StateMain,
         StateUpdateRequired,
         StateSubscriptionNeeded,
+        StateDeviceLimit,
     };
     Q_ENUM(State);
 
@@ -187,8 +188,6 @@ private:
                    std::function<void(const QString &filename)> &&a_callback);
 
     bool modelsInitialized() const;
-
-    void maybeActivateController();
 
 public slots:
     void requestSettings();

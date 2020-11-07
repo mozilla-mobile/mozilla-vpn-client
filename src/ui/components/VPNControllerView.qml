@@ -335,54 +335,6 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateDeviceLimit
-
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-
-            PropertyChanges {
-                target: logoTitle
-                text: qsTrId("vpn.controller.deactivated")
-                color: Theme.fontColorDark
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: logoSubtitle
-                text: qsTrId("vpn.controller.activationSloagan")
-                color: Theme.fontColor
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-
-        },
-        State {
             name: VPNController.StateCaptivePortal
 
             PropertyChanges {

@@ -32,7 +32,7 @@ Item {
         interactive: true
         flickContentHeight: maxDevicesReached.height + deviceList.height
         contentHeight: maxDevicesReached.height + deviceList.height
-        state: VPNController.state !== VPNController.StateDeviceLimit ? "active" : "deviceLimit"
+        state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
         states: [
             State {
                 name: "active" // normal mode

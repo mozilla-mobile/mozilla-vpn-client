@@ -276,8 +276,7 @@ void Controller::quit()
 {
     logger.log() << "Quitting";
 
-    if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit
-        || m_state == StateCaptivePortal) {
+    if (m_state == StateInitializing || m_state == StateOff || m_state == StateCaptivePortal) {
         emit readyToQuit();
         return;
     }
@@ -340,20 +339,6 @@ void Controller::logout()
         deactivate();
         return;
     }
-}
-
-void Controller::setDeviceLimit(bool deviceLimit)
-{
-    logger.log() << "Device limit mode:" << deviceLimit;
-
-    if (!deviceLimit) {
-        Q_ASSERT(m_state == StateDeviceLimit);
-        setState(StateInitializing);
-        return;
-    }
-
-    Q_ASSERT(m_state == StateInitializing);
-    setState(StateDeviceLimit);
 }
 
 bool Controller::processNextStep()

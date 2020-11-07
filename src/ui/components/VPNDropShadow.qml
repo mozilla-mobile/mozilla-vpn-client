@@ -39,13 +39,6 @@ DropShadow {
             }
         },
         State {
-            name: VPNController.StateDeviceLimit
-            PropertyChanges {
-                target: dropShadow
-                opacity: .3
-            }
-        },
-        State {
             name: VPNController.StateDisconnecting
             PropertyChanges {
                 target:dropShadow

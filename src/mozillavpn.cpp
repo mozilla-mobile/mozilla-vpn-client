@@ -100,7 +100,6 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
     connect(&m_private->m_controller, &Controller::readyToSubscribe, [this]() {
         setState(StateSubscriptionNeeded);
     });
-    connect(&m_private->m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
@@ -237,11 +236,6 @@ void MozillaVPN::setState(State state)
     m_state = state;
     emit stateChanged();
 
-    maybeActivateController();
-}
-
-void MozillaVPN::maybeActivateController()
-{
     // If we are activating the app, let's initialize the controller.
     if (m_state == StateMain && m_private->m_deviceModel.currentDevice()) {
         m_private->m_connectionDataHolder.enable();
@@ -396,10 +390,9 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     }
 
     if (deviceCount >= m_private->m_user.maxDevices()) {
-        // We need to go to "device limit" mode
+        // We need to go to "device limit" mode after the post-authentication state.
         scheduleTask(new TaskFunction([this](MozillaVPN *) {
             if (m_state == StateAuthenticating) {
-                m_private->m_controller.setDeviceLimit(true);
                 setState(StatePostAuthentication);
             }
         }));
@@ -494,7 +487,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    if (m_private->m_controller.state() != Controller::StateDeviceLimit) {
+    if (m_state != StateDeviceLimit) {
         return;
     }
 
@@ -509,8 +502,19 @@ void MozillaVPN::removeDevice(const QString &deviceName)
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        m_private->m_controller.setDeviceLimit(false);
-        maybeActivateController();
+        if (m_state != StateDeviceLimit) {
+            return;
+        }
+
+        if (!modelsInitialized()) {
+            logger.log() << "Models not initialized yet";
+            errorHandle(ErrorHandler::BackendServiceError);
+            m_private->m_settingsHolder.clear();
+            setState(StateInitialize);
+            return;
+        }
+
+        setState(StateMain);
     }));
 }
 
@@ -673,6 +677,12 @@ void MozillaVPN::postAuthenticationCompleted()
 
     // Super racy, but it could happen that we are already in update-required state.
     if (m_state == StateUpdateRequired) {
+        return;
+    }
+
+    int deviceCount = m_private->m_deviceModel.activeDevices();
+    if (deviceCount >= m_private->m_user.maxDevices()) {
+        setState(StateDeviceLimit);
         return;
     }
 
