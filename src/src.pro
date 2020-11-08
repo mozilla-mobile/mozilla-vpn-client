@@ -58,6 +58,7 @@ SOURCES += \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
+        qmlengineholder.cpp \
         releasemonitor.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
@@ -106,6 +107,7 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
+        qmlengineholder.h \
         releasemonitor.h \
         settingsholder.h \
         signalhandler.h \

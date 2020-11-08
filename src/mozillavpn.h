@@ -28,7 +28,6 @@
 #include <QStandardPaths>
 #include <QTimer>
 
-class QQmlApplicationEngine;
 class Task;
 
 #ifdef UNIT_TEST
@@ -81,7 +80,7 @@ private:
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
 
 public:
-    static void createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
+    static void createInstance(QObject *parent, bool startMinimized);
     static MozillaVPN *instance();
 
     State state() const;
@@ -101,9 +100,6 @@ public:
     Q_INVOKABLE void subscribe();
     Q_INVOKABLE void viewLogs();
     Q_INVOKABLE QString retrieveLogs();
-
-    // QML object getters:
-    QQmlApplicationEngine *engine() { return m_engine; }
 
     // Internal object getters:
     CaptivePortalDetection *captivePortalDetection()
@@ -157,12 +153,8 @@ public:
 
     [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
-    QNetworkAccessManager *networkAccessManager();
-
-    void showWindow();
-
 private:
-    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
+    MozillaVPN(QObject *parent, bool startMinimized);
     ~MozillaVPN();
 
     static void deleteInstance();
@@ -208,9 +200,6 @@ signals:
     void viewLogsNeeded();
 
 private:
-    // QML objects.
-    QQmlApplicationEngine *m_engine = nullptr;
-
     // Internal objects.
     struct Private
     {

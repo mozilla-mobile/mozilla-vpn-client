@@ -9,7 +9,7 @@
 // The singleton.
 static MozillaVPN *s_instance = nullptr;
 
-void MozillaVPN::createInstance(QObject *, QQmlApplicationEngine *, bool)
+void MozillaVPN::createInstance(QObject *, bool)
 {
     Q_ASSERT(false);
 }
@@ -24,15 +24,13 @@ void MozillaVPN::deleteInstance()
 MozillaVPN *MozillaVPN::instance()
 {
     if (!s_instance) {
-        s_instance = new MozillaVPN(nullptr, nullptr, false);
+        s_instance = new MozillaVPN(nullptr, false);
     }
 
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *, QQmlApplicationEngine *, bool)
-{
-}
+MozillaVPN::MozillaVPN(QObject *, bool) {}
 
 MozillaVPN::~MozillaVPN()
 {
@@ -167,13 +165,7 @@ bool MozillaVPN::modelsInitialized() const
     return true;
 }
 
-void MozillaVPN::taskCompleted()
-{
-}
-
-void MozillaVPN::showWindow()
-{
-}
+void MozillaVPN::taskCompleted() {}
 
 void MozillaVPN::requestSettings() {}
 
