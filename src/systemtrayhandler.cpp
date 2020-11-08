@@ -5,6 +5,7 @@
 #include "systemtrayhandler.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 #include "statusicon.h"
 
 #include <array>
@@ -35,7 +36,9 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
     m_separator = m_menu.addSeparator();
 
     //% "Show Mozilla VPN"
-    m_menu.addAction(qtTrId("systray.show"), MozillaVPN::instance(), &MozillaVPN::showWindow);
+    m_menu.addAction(qtTrId("systray.show"),
+                     QmlEngineHolder::instance(),
+                     &QmlEngineHolder::showWindow);
 
     m_menu.addSeparator();
 

@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 #include "signalhandler.h"
 #include "systemtrayhandler.h"
 
@@ -28,7 +29,6 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QIcon>
-#include <QQmlApplicationEngine>
 #include <QWindow>
 
 #ifdef QT_DEBUG
@@ -91,9 +91,10 @@ int main(int argc, char *argv[])
     FontLoader::loadFonts();
 
     // Create the QML engine and expose a few internal objects.
-    QQmlApplicationEngine engine;
+    QmlEngineHolder::createInstance(&app);
+    QQmlApplicationEngine *engine = QmlEngineHolder::instance()->engine();
 
-    MozillaVPN::createInstance(&app, &engine, parser.isSet(minimizedOption));
+    MozillaVPN::createInstance(&app, parser.isSet(minimizedOption));
     MozillaVPN *vpn = MozillaVPN::instance();
 
     if (parser.isSet(startAtBootOption)) {
@@ -208,10 +209,10 @@ int main(int argc, char *argv[])
 
     QObject::connect(vpn->settingsHolder(),
                      &SettingsHolder::languageCodeChanged,
-                     [engine = &engine](const QString &languageCode) {
+                     [](const QString &languageCode) {
                          logger.log() << "Storing the languageCode:" << languageCode;
                          MozillaVPN::instance()->localizer()->loadLanguage(languageCode);
-                         engine->retranslate();
+                         QmlEngineHolder::instance()->engine()->retranslate();
                      });
 
     QObject::connect(vpn->controller(),
@@ -223,7 +224,7 @@ int main(int argc, char *argv[])
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
     QObject::connect(
-        &engine,
+        QmlEngineHolder::instance()->engine(),
         &QQmlApplicationEngine::objectCreated,
         &app,
         [url](QObject *obj, const QUrl &objUrl) {
@@ -232,7 +233,7 @@ int main(int argc, char *argv[])
             }
         },
         Qt::QueuedConnection);
-    engine.load(url);
+    engine->load(url);
 
     SystemTrayHandler systemTrayHandler(&app);
     systemTrayHandler.show();

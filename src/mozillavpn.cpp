@@ -9,6 +9,7 @@
 #include "models/device.h"
 #include "models/servercountrymodel.h"
 #include "models/user.h"
+#include "qmlengineholder.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -53,12 +54,12 @@ Logger logger(LOG_MAIN, "MozillaVPN");
 }
 
 // static
-void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
+void MozillaVPN::createInstance(QObject *parent, bool startMinimized)
 {
     logger.log() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN(parent, engine, startMinimized);
+    s_instance = new MozillaVPN(parent, startMinimized);
     s_instance->initialize();
 }
 
@@ -79,8 +80,8 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
-    : QObject(parent), m_engine(engine), m_private(new Private()), m_startMinimized(startMinimized)
+MozillaVPN::MozillaVPN(QObject *parent, bool startMinimized)
+    : QObject(parent), m_private(new Private()), m_startMinimized(startMinimized)
 {
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
@@ -876,27 +877,11 @@ bool MozillaVPN::modelsInitialized() const
            && m_private->m_keys.initialized();
 }
 
-QNetworkAccessManager *MozillaVPN::networkAccessManager()
-{
-    return m_engine->networkAccessManager();
-}
-
-void MozillaVPN::showWindow()
-{
-    QObject *rootObject = m_engine->rootObjects().first();
-    QWindow *window = qobject_cast<QWindow *>(rootObject);
-    Q_ASSERT(window);
-
-    window->show();
-    window->raise();
-    window->requestActivate();
-}
-
 void MozillaVPN::requestSettings()
 {
     logger.log() << "Settings required";
 
-    showWindow();
+    QmlEngineHolder::instance()->showWindow();
     emit settingsNeeded();
 }
 
@@ -904,7 +889,7 @@ void MozillaVPN::requestAbout()
 {
     logger.log() << "About view requested";
 
-    showWindow();
+    QmlEngineHolder::instance()->showWindow();
     emit aboutNeeded();
 }
 
@@ -912,6 +897,6 @@ void MozillaVPN::requestViewLogs()
 {
     logger.log() << "View log requested";
 
-    showWindow();
+    QmlEngineHolder::instance()->showWindow();
     emit viewLogsNeeded();
 }

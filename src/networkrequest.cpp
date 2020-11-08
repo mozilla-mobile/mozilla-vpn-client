@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportal.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -288,19 +289,19 @@ void NetworkRequest::replyFinished()
 
 void NetworkRequest::getRequest()
 {
-    QNetworkAccessManager *manager = MozillaVPN::instance()->networkAccessManager();
+    QNetworkAccessManager *manager = QmlEngineHolder::instance()->networkAccessManager();
     handleReply(manager->get(m_request));
 }
 
 void NetworkRequest::deleteRequest()
 {
-    QNetworkAccessManager *manager = MozillaVPN::instance()->networkAccessManager();
+    QNetworkAccessManager *manager = QmlEngineHolder::instance()->networkAccessManager();
     handleReply(manager->sendCustomRequest(m_request, "DELETE"));
 }
 
 void NetworkRequest::postRequest(const QByteArray &body)
 {
-    QNetworkAccessManager *manager = MozillaVPN::instance()->networkAccessManager();
+    QNetworkAccessManager *manager = QmlEngineHolder::instance()->networkAccessManager();
     handleReply(manager->post(m_request, body));
 }
 
