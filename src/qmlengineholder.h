@@ -13,7 +13,8 @@ class QNetworkAccessManager;
 class QmlEngineHolder final : public QObject
 {
 public:
-    static void createInstance(QObject *parent);
+    QmlEngineHolder();
+    ~QmlEngineHolder();
 
     static QmlEngineHolder *instance();
 
@@ -22,9 +23,6 @@ public:
     QNetworkAccessManager *networkAccessManager();
 
     void showWindow();
-
-private:
-    explicit QmlEngineHolder(QObject *parent);
 
 private:
     QQmlApplicationEngine m_engine;
