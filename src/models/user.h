@@ -10,7 +10,6 @@
 #include <QStringList>
 
 class QJsonObject;
-class SettingsHolder;
 
 class User final : public QObject
 {
@@ -24,9 +23,9 @@ class User final : public QObject
 public:
     [[nodiscard]] bool fromJson(const QByteArray &json);
 
-    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings();
 
-    void writeSettings(SettingsHolder &settingsHolder);
+    void writeSettings();
 
     bool initialized() const { return m_initialized; }
 

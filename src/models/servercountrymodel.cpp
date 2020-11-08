@@ -17,15 +17,18 @@ namespace {
 Logger logger(LOG_MODEL, "ServerCountryModel");
 }
 
-bool ServerCountryModel::fromSettings(SettingsHolder &settingsHolder)
+bool ServerCountryModel::fromSettings()
 {
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
     logger.log() << "Reading the server list from settings";
 
-    if (!settingsHolder.hasServers()) {
+    if (!settingsHolder->hasServers()) {
         return false;
     }
 
-    const QByteArray json = settingsHolder.servers();
+    const QByteArray json = settingsHolder->servers();
     if (!fromJsonInternal(json)) {
         return false;
     }

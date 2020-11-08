@@ -33,15 +33,18 @@ bool DeviceModel::fromJson(const QByteArray &s)
     return true;
 }
 
-bool DeviceModel::fromSettings(SettingsHolder &settingsHolder)
+bool DeviceModel::fromSettings()
 {
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
     logger.log() << "Reading the device list from settings";
 
-    if (!settingsHolder.hasDevices()) {
+    if (!settingsHolder->hasDevices()) {
         return false;
     }
 
-    const QByteArray &json = settingsHolder.devices();
+    const QByteArray &json = settingsHolder->devices();
     if (!fromJsonInternal(json)) {
         return false;
     }
@@ -106,9 +109,9 @@ bool DeviceModel::fromJsonInternal(const QByteArray &json) {
     return true;
 }
 
-void DeviceModel::writeSettings(SettingsHolder &settingsHolder)
+void DeviceModel::writeSettings()
 {
-    settingsHolder.setDevices(m_rawJson);
+    SettingsHolder::instance()->setDevices(m_rawJson);
 }
 
 QHash<int, QByteArray> DeviceModel::roleNames() const

@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 #include "timercontroller.h"
 #include "timersingleshot.h"
 
@@ -97,7 +98,7 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
         return;
     }
 
-    if (MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+    if (SettingsHolder::instance()->startAtBoot()) {
         logger.log() << "Start on boot";
         activate();
     }
@@ -141,7 +142,7 @@ void Controller::activate()
                          m_state == StateSwitching);
     };
 
-    if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
+    if (SettingsHolder::instance()->captivePortalAlert()) {
         CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
         connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
             logger.log() << "Captive portal lookup completed - ipv4:"
@@ -441,7 +442,7 @@ void Controller::captivePortalDetected()
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal &captivePortal)
 {
-    bool ipv6Enabled = MozillaVPN::instance()->settingsHolder()->ipv6Enabled();
+    bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
     QList<IPAddressRange> list;
 
@@ -463,7 +464,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal 
         }
     }
 
-    if (MozillaVPN::instance()->settingsHolder()->localNetworkAccess()) {
+    if (SettingsHolder::instance()->localNetworkAccess()) {
         list.append(IPAddressRange("128.0.0.1", 1, IPAddressRange::IPv4));
 
         if (ipv6Enabled) {

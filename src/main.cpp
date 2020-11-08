@@ -8,6 +8,7 @@
 #include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "settingsholder.h"
 #include "signalhandler.h"
 #include "systemtrayhandler.h"
 
@@ -61,6 +62,8 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(icon);
 
+    SettingsHolder::createInstance(&app);
+
     QCommandLineParser parser;
     parser.setApplicationDescription(
         qtTrId("vpn.main.productDescription"));
@@ -100,15 +103,15 @@ int main(int argc, char *argv[])
     if (parser.isSet(startAtBootOption)) {
         logger.log() << "Maybe start at boot";
 
-        if (!vpn->settingsHolder()->startAtBoot()) {
+        if (!SettingsHolder::instance()->startAtBoot()) {
             logger.log() << "We don't need to start at boot.";
             return 0;
         }
     }
 
 #ifdef MACOS_INTEGRATION
-    MacOSStartAtBootWatcher startAtBootWatcher(vpn->settingsHolder()->startAtBoot());
-    QObject::connect(vpn->settingsHolder(),
+    MacOSStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
+    QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged,
                      &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
@@ -188,7 +191,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNSettings", [](QQmlEngine *, QJSEngine *) -> QObject * {
-            QObject *obj = MozillaVPN::instance()->settingsHolder();
+            QObject *obj = SettingsHolder::instance();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
             return obj;
         });
@@ -207,7 +210,7 @@ int main(int argc, char *argv[])
             return obj;
         });
 
-    QObject::connect(vpn->settingsHolder(),
+    QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::languageCodeChanged,
                      [](const QString &languageCode) {
                          logger.log() << "Storing the languageCode:" << languageCode;

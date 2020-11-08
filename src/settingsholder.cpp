@@ -42,6 +42,24 @@ constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
 
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
+
+SettingsHolder *s_instance = nullptr;
+}
+
+// static
+void SettingsHolder::createInstance(QObject *parent)
+{
+    logger.log() << "Creating SettingsHolder instance";
+
+    Q_ASSERT(!s_instance);
+    s_instance = new SettingsHolder(parent);
+}
+
+// static
+SettingsHolder *SettingsHolder::instance()
+{
+    Q_ASSERT(s_instance);
+    return s_instance;
 }
 
 #ifndef UNIT_TEST
@@ -50,8 +68,8 @@ const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::writeFile);
 #endif
 
-SettingsHolder::SettingsHolder()
-    :
+SettingsHolder::SettingsHolder(QObject *parent)
+    : QObject(parent),
 #ifndef UNIT_TEST
       m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn")
 #else
@@ -61,6 +79,9 @@ SettingsHolder::SettingsHolder()
 
 SettingsHolder::~SettingsHolder()
 {
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
+
 #ifdef UNIT_TEST
     m_settings.clear();
 #endif

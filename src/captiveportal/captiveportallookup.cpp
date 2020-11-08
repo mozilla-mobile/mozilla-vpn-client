@@ -5,7 +5,7 @@
 #include "captiveportallookup.h"
 #include "dohrequest.h"
 #include "logger.h"
-#include "mozillavpn.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
@@ -13,7 +13,7 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalLookup");
 
 CaptivePortalLookup::CaptivePortalLookup(QObject *parent) : QObject(parent)
 {
-    SettingsHolder *settingsHolder = MozillaVPN::instance()->settingsHolder();
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
 
     if (settingsHolder->hasCaptivePortalIpv4Addresses()) {
@@ -56,7 +56,7 @@ void CaptivePortalLookup::complete()
 {
     m_completed = true;
 
-    SettingsHolder *settingsHolder = MozillaVPN::instance()->settingsHolder();
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
 
     settingsHolder->setCaptivePortalIpv4Addresses(m_data.ipv4Addresses());

@@ -76,29 +76,35 @@ bool User::fromJson(const QByteArray &json)
     return true;
 }
 
-bool User::fromSettings(SettingsHolder &settingsHolder)
+bool User::fromSettings()
 {
-    if (!settingsHolder.hasUserAvatar() || !settingsHolder.hasUserDisplayName()
-        || !settingsHolder.hasUserEmail() || !settingsHolder.hasUserMaxDevices()
-        || !settingsHolder.hasUserSubscriptionNeeded()) {
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
+    if (!settingsHolder->hasUserAvatar() || !settingsHolder->hasUserDisplayName()
+        || !settingsHolder->hasUserEmail() || !settingsHolder->hasUserMaxDevices()
+        || !settingsHolder->hasUserSubscriptionNeeded()) {
         return false;
     }
 
-    m_avatar = settingsHolder.userAvatar();
-    m_displayName = settingsHolder.userDisplayName();
-    m_email = settingsHolder.userEmail();
-    m_maxDevices = settingsHolder.userMaxDevices();
-    m_subscriptionNeeded = settingsHolder.userSubscriptionNeeded();
+    m_avatar = settingsHolder->userAvatar();
+    m_displayName = settingsHolder->userDisplayName();
+    m_email = settingsHolder->userEmail();
+    m_maxDevices = settingsHolder->userMaxDevices();
+    m_subscriptionNeeded = settingsHolder->userSubscriptionNeeded();
     m_initialized = true;
 
     return true;
 }
 
-void User::writeSettings(SettingsHolder &settingsHolder)
+void User::writeSettings()
 {
-    settingsHolder.setUserAvatar(m_avatar);
-    settingsHolder.setUserDisplayName(m_displayName);
-    settingsHolder.setUserEmail(m_email);
-    settingsHolder.setUserMaxDevices(m_maxDevices);
-    settingsHolder.setUserSubscriptionNeeded(m_subscriptionNeeded);
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
+    settingsHolder->setUserAvatar(m_avatar);
+    settingsHolder->setUserDisplayName(m_displayName);
+    settingsHolder->setUserEmail(m_email);
+    settingsHolder->setUserMaxDevices(m_maxDevices);
+    settingsHolder->setUserSubscriptionNeeded(m_subscriptionNeeded);
 }
