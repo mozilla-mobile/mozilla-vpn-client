@@ -159,7 +159,7 @@ void TestModels::deviceModelBasic()
     {
         QObject parent;
 
-        SettingsHolder::createInstance(&parent);
+        QVERIFY(!!SettingsHolder::createInstance(&parent));
         QVERIFY(!dm.fromSettings());
 
         dm.writeSettings();
@@ -280,7 +280,7 @@ void TestModels::deviceModelFromJson()
     // fromSettings
     {
         QObject parent;
-        SettingsHolder::createInstance(&parent);
+        QVERIFY(!!SettingsHolder::createInstance(&parent));
         SettingsHolder::instance()->setDevices(json);
 
         DeviceModel dm;
@@ -348,7 +348,7 @@ void TestModels::keysBasic()
 
     {
         QObject parent;
-        SettingsHolder::createInstance(&parent);
+        QVERIFY(!!SettingsHolder::createInstance(&parent));
 
         QCOMPARE(k.fromSettings(), false);
 
@@ -671,7 +671,7 @@ void TestModels::serverCountryModelBasic()
     QVERIFY(!dm.initialized());
 
     QObject parent;
-    SettingsHolder::createInstance(&parent);
+    QVERIFY(!!SettingsHolder::createInstance(&parent));
 
     QVERIFY(!dm.fromSettings());
 
@@ -798,7 +798,7 @@ void TestModels::serverCountryModelFromJson()
     // from settings
     {
         QObject parent;
-        SettingsHolder::createInstance(&parent);
+        QVERIFY(!!SettingsHolder::createInstance(&parent));
 
         SettingsHolder::instance()->setServers(json);
 
@@ -876,7 +876,7 @@ void TestModels::serverDataBasic()
 
         {
             QObject parent;
-            SettingsHolder::createInstance(&parent);
+            QVERIFY(!!SettingsHolder::createInstance(&parent));
 
             sd.writeSettings();
 
@@ -909,7 +909,7 @@ void TestModels::serverDataBasic()
 
     {
         QObject parent;
-        SettingsHolder::createInstance(&parent);
+        QVERIFY(!!SettingsHolder::createInstance(&parent));
         QVERIFY(!sd.fromSettings());
         QCOMPARE(spy.count(), 2);
     }
@@ -1041,7 +1041,7 @@ void TestModels::userFromJson()
 
     {
         QObject parent;
-        SettingsHolder::createInstance(&parent);
+        QVERIFY(!!SettingsHolder::createInstance(&parent));
         user.writeSettings();
 
         // FromSettings
@@ -1074,7 +1074,7 @@ void TestModels::userFromJson()
 void TestModels::userFromSettings()
 {
     QObject parent;
-    SettingsHolder::createInstance(&parent);
+    QVERIFY(!!SettingsHolder::createInstance(&parent));
 
     User user;
     QSignalSpy spy(&user, &User::changed);

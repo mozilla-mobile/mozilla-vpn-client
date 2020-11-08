@@ -4,6 +4,7 @@
 
 #include "captiveportal/captiveportaldetection.h"
 #include "fontloader.h"
+#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
@@ -62,7 +63,9 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(icon);
 
-    SettingsHolder::createInstance(&app);
+    SettingsHolder *settingsHolder = SettingsHolder::createInstance(&app);
+
+    Localizer::createInstance(settingsHolder);
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
@@ -103,15 +106,15 @@ int main(int argc, char *argv[])
     if (parser.isSet(startAtBootOption)) {
         logger.log() << "Maybe start at boot";
 
-        if (!SettingsHolder::instance()->startAtBoot()) {
+        if (!settingsHolder->startAtBoot()) {
             logger.log() << "We don't need to start at boot.";
             return 0;
         }
     }
 
 #ifdef MACOS_INTEGRATION
-    MacOSStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
+    MacOSStartAtBootWatcher startAtBootWatcher(settingsHolder->startAtBoot());
+    QObject::connect(settingsHolder,
                      &SettingsHolder::startAtBootChanged,
                      &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
@@ -184,7 +187,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNLocalizer", [](QQmlEngine *, QJSEngine *) -> QObject * {
-            QObject *obj = MozillaVPN::instance()->localizer();
+            QObject *obj = Localizer::instance();
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
             return obj;
         });
@@ -210,11 +213,11 @@ int main(int argc, char *argv[])
             return obj;
         });
 
-    QObject::connect(SettingsHolder::instance(),
+    QObject::connect(settingsHolder,
                      &SettingsHolder::languageCodeChanged,
                      [](const QString &languageCode) {
                          logger.log() << "Storing the languageCode:" << languageCode;
-                         MozillaVPN::instance()->localizer()->loadLanguage(languageCode);
+                         Localizer::instance()->loadLanguage(languageCode);
                          QmlEngineHolder::instance()->engine()->retranslate();
                      });
 

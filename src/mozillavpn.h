@@ -10,7 +10,6 @@
 #include "connectionhealth.h"
 #include "controller.h"
 #include "errorhandler.h"
-#include "localizer.h"
 #include "models/devicemodel.h"
 #include "models/helpmodel.h"
 #include "models/keys.h"
@@ -112,7 +111,6 @@ public:
     DeviceModel *deviceModel() { return &m_private->m_deviceModel; }
     const Keys *keys() const { return &m_private->m_keys; }
     HelpModel *helpModel() { return &m_private->m_helpModel; }
-    Localizer *localizer() { return &m_private->m_localizer; }
     ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
     StatusIcon *statusIcon() { return &m_private->m_statusIcon; }
     User *user() { return &m_private->m_user; }
@@ -208,7 +206,6 @@ private:
         DeviceModel m_deviceModel;
         Keys m_keys;
         HelpModel m_helpModel;
-        Localizer m_localizer;
         ReleaseMonitor m_releaseMonitor;
         ServerCountryModel m_serverCountryModel;
         ServerData m_serverData;

@@ -5,25 +5,28 @@
 #include "testlocalizer.h"
 #include "../src/localizer.h"
 #include "helper.h"
+#include "settingsholder.h"
 
 void TestLocalizer::basic()
 {
-    Localizer l;
+    QObject parent;
+    Localizer::createInstance(SettingsHolder::createInstance(&parent));
+    Localizer *l = Localizer::instance();
 
-    l.initialize("");
-    l.initialize("uk");
+    l->initialize("");
+    l->initialize("uk");
 
-    QVERIFY(!l.systemLanguage().isEmpty());
-    QVERIFY(!l.systemLocalizedLanguage().isEmpty());
+    QVERIFY(!l->systemLanguage().isEmpty());
+    QVERIFY(!l->systemLocalizedLanguage().isEmpty());
 
-    QHash<int, QByteArray> rn = l.roleNames();
+    QHash<int, QByteArray> rn = l->roleNames();
     QCOMPARE(rn.count(), 3);
     QCOMPARE(rn[Localizer::LanguageRole], "language");
     QCOMPARE(rn[Localizer::LocalizedLanguageRole], "localizedLanguage");
     QCOMPARE(rn[Localizer::CodeRole], "code");
 
-    QCOMPARE(l.rowCount(QModelIndex()), 0);
-    QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
+    QCOMPARE(l->rowCount(QModelIndex()), 0);
+    QCOMPARE(l->data(QModelIndex(), Localizer::LanguageRole), QVariant());
 }
 
 static TestLocalizer s_testLocalizer;

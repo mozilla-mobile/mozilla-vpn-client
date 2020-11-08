@@ -47,12 +47,13 @@ SettingsHolder *s_instance = nullptr;
 }
 
 // static
-void SettingsHolder::createInstance(QObject *parent)
+SettingsHolder *SettingsHolder::createInstance(QObject *parent)
 {
     logger.log() << "Creating SettingsHolder instance";
 
     Q_ASSERT(!s_instance);
     s_instance = new SettingsHolder(parent);
+    return s_instance;
 }
 
 // static
