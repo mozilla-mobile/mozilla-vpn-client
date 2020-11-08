@@ -23,7 +23,9 @@ class SettingsHolder final : public QObject
     Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
 
 public:
-    SettingsHolder();
+    static void createInstance(QObject *parent);
+
+    static SettingsHolder *instance();
     ~SettingsHolder();
 
     void clear();
@@ -74,6 +76,9 @@ signals:
     void captivePortalAlertChanged(bool value);
     void startAtBootChanged(bool value);
     void languageCodeChanged(const QString &languageCode);
+
+private:
+    explicit SettingsHolder(QObject *parent);
 
 private:
     QSettings m_settings;

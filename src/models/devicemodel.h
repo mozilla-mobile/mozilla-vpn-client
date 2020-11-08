@@ -10,8 +10,6 @@
 
 #include "device.h"
 
-class SettingsHolder;
-
 class DeviceModel final : public QAbstractListModel
 {
     Q_OBJECT
@@ -26,11 +24,11 @@ public:
 
     [[nodiscard]] bool fromJson(const QByteArray& s);
 
-    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings();
 
     bool initialized() const { return !m_rawJson.isEmpty(); }
 
-    void writeSettings(SettingsHolder &settingsHolder);
+    void writeSettings();
 
     bool hasDevice(const QString &deviceName) const;
 

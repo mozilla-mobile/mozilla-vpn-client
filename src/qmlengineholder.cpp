@@ -21,6 +21,7 @@ void QmlEngineHolder::createInstance(QObject *parent)
     s_instance = new QmlEngineHolder(parent);
 }
 
+// static
 QmlEngineHolder *QmlEngineHolder::instance()
 {
     Q_ASSERT(s_instance);

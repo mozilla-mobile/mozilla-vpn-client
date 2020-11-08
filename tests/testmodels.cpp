@@ -156,11 +156,15 @@ void TestModels::deviceModelBasic()
     QCOMPARE(dm.rowCount(QModelIndex()), 0);
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-    SettingsHolder settings;
-    QVERIFY(!dm.fromSettings(settings));
+    {
+        QObject parent;
 
-    dm.writeSettings(settings);
-    QVERIFY(!dm.fromSettings(settings));
+        SettingsHolder::createInstance(&parent);
+        QVERIFY(!dm.fromSettings());
+
+        dm.writeSettings();
+        QVERIFY(!dm.fromSettings());
+    }
 }
 
 void TestModels::deviceModelFromJson_data()
@@ -275,12 +279,13 @@ void TestModels::deviceModelFromJson()
 
     // fromSettings
     {
-        SettingsHolder settings;
-        settings.setDevices(json);
+        QObject parent;
+        SettingsHolder::createInstance(&parent);
+        SettingsHolder::instance()->setDevices(json);
 
         DeviceModel dm;
         QSignalSpy signalSpy(&dm, &DeviceModel::changed);
-        QCOMPARE(dm.fromSettings(settings), result);
+        QCOMPARE(dm.fromSettings(), result);
 
         if (!result) {
             QVERIFY(!dm.initialized());
@@ -341,11 +346,15 @@ void TestModels::keysBasic()
     QVERIFY(!k.initialized());
     QCOMPARE(k.privateKey(), "");
 
-    SettingsHolder settings;
-    QCOMPARE(k.fromSettings(settings), false);
+    {
+        QObject parent;
+        SettingsHolder::createInstance(&parent);
 
-    settings.setPrivateKey("WOW");
-    QCOMPARE(k.fromSettings(settings), true);
+        QCOMPARE(k.fromSettings(), false);
+
+        SettingsHolder::instance()->setPrivateKey("WOW");
+        QCOMPARE(k.fromSettings(), true);
+    }
 }
 
 // Server
@@ -661,8 +670,10 @@ void TestModels::serverCountryModelBasic()
     ServerCountryModel dm;
     QVERIFY(!dm.initialized());
 
-    SettingsHolder settings;
-    QVERIFY(!dm.fromSettings(settings));
+    QObject parent;
+    SettingsHolder::createInstance(&parent);
+
+    QVERIFY(!dm.fromSettings());
 
     QHash<int, QByteArray> rn = dm.roleNames();
     QCOMPARE(rn.count(), 3);
@@ -786,11 +797,13 @@ void TestModels::serverCountryModelFromJson()
 
     // from settings
     {
-        SettingsHolder settings;
-        settings.setServers(json);
+        QObject parent;
+        SettingsHolder::createInstance(&parent);
+
+        SettingsHolder::instance()->setServers(json);
 
         ServerCountryModel m;
-        QCOMPARE(m.fromSettings(settings), result);
+        QCOMPARE(m.fromSettings(), result);
 
         if (!result) {
             QVERIFY(!m.initialized());
@@ -861,17 +874,21 @@ void TestModels::serverDataBasic()
         QCOMPARE(sd.country(), "serverCountryName");
         QCOMPARE(sd.city(), "serverCityName");
 
-        SettingsHolder settings;
-        sd.writeSettings(settings);
+        {
+            QObject parent;
+            SettingsHolder::createInstance(&parent);
 
-        ServerData sd2;
-        QVERIFY(sd2.fromSettings(settings));
-        QVERIFY(sd2.initialized());
-        QCOMPARE(sd2.countryCode(), "serverCountryCode");
-        QCOMPARE(sd2.country(), "serverCountryName");
-        QCOMPARE(sd2.city(), "serverCityName");
+            sd.writeSettings();
 
-        QCOMPARE(spy.count(), 1);
+            ServerData sd2;
+            QVERIFY(sd2.fromSettings());
+            QVERIFY(sd2.initialized());
+            QCOMPARE(sd2.countryCode(), "serverCountryCode");
+            QCOMPARE(sd2.country(), "serverCountryName");
+            QCOMPARE(sd2.city(), "serverCityName");
+
+            QCOMPARE(spy.count(), 1);
+        }
     }
 
     sd.update("new Country Code", "new Country", "new City");
@@ -890,9 +907,12 @@ void TestModels::serverDataBasic()
     QCOMPARE(sd.country(), "new Country");
     QCOMPARE(sd.city(), "new City");
 
-    SettingsHolder settings;
-    QVERIFY(!sd.fromSettings(settings));
-    QCOMPARE(spy.count(), 2);
+    {
+        QObject parent;
+        SettingsHolder::createInstance(&parent);
+        QVERIFY(!sd.fromSettings());
+        QCOMPARE(spy.count(), 2);
+    }
 }
 
 // User
@@ -1019,68 +1039,72 @@ void TestModels::userFromJson()
     QFETCH(bool, subscriptionNeeded);
     QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 
-    SettingsHolder settings;
-    user.writeSettings(settings);
-
-    // FromSettings
     {
-        User user;
-        QSignalSpy spy(&user, &User::changed);
+        QObject parent;
+        SettingsHolder::createInstance(&parent);
+        user.writeSettings();
 
-        QVERIFY(user.fromSettings(settings));
-        QVERIFY(user.initialized());
-        QCOMPARE(spy.count(), 0);
+        // FromSettings
+        {
+            User user;
+            QSignalSpy spy(&user, &User::changed);
 
-        QFETCH(QString, avatar);
-        QCOMPARE(user.avatar(), avatar);
+            QVERIFY(user.fromSettings());
+            QVERIFY(user.initialized());
+            QCOMPARE(spy.count(), 0);
 
-        QFETCH(QString, displayName);
-        QCOMPARE(user.displayName(), displayName);
+            QFETCH(QString, avatar);
+            QCOMPARE(user.avatar(), avatar);
 
-        QFETCH(QString, email);
-        QCOMPARE(user.email(), email);
+            QFETCH(QString, displayName);
+            QCOMPARE(user.displayName(), displayName);
 
-        QFETCH(int, maxDevices);
-        QCOMPARE(user.maxDevices(), maxDevices);
+            QFETCH(QString, email);
+            QCOMPARE(user.email(), email);
 
-        QFETCH(bool, subscriptionNeeded);
-        QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
+            QFETCH(int, maxDevices);
+            QCOMPARE(user.maxDevices(), maxDevices);
+
+            QFETCH(bool, subscriptionNeeded);
+            QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
+        }
     }
 }
 
 void TestModels::userFromSettings()
 {
-    SettingsHolder settings;
+    QObject parent;
+    SettingsHolder::createInstance(&parent);
 
     User user;
     QSignalSpy spy(&user, &User::changed);
 
-    QVERIFY(!user.fromSettings(settings));
+    QVERIFY(!user.fromSettings());
     QVERIFY(!user.initialized());
     QCOMPARE(spy.count(), 0);
 
-    settings.setUserAvatar("avatar");
-    QVERIFY(!user.fromSettings(settings));
+    SettingsHolder::instance()->setUserAvatar("avatar");
+    QVERIFY(!user.fromSettings());
     QVERIFY(!user.initialized());
     QCOMPARE(spy.count(), 0);
 
-    settings.setUserDisplayName("displayName");
-    QVERIFY(!user.fromSettings(settings));
+    SettingsHolder::instance()->setUserDisplayName("displayName");
+    QVERIFY(!user.fromSettings());
     QVERIFY(!user.initialized());
     QCOMPARE(spy.count(), 0);
 
-    settings.setUserEmail("email");
-    QVERIFY(!user.fromSettings(settings));
+    SettingsHolder::instance()->setUserEmail("email");
+    QVERIFY(!user.fromSettings());
     QVERIFY(!user.initialized());
     QCOMPARE(spy.count(), 0);
 
-    settings.setUserMaxDevices(123);
-    QVERIFY(!user.fromSettings(settings));
+    SettingsHolder::instance()->setUserMaxDevices(123);
+    QVERIFY(!user.fromSettings());
     QVERIFY(!user.initialized());
     QCOMPARE(spy.count(), 0);
 
-    settings.setUserSubscriptionNeeded(true);
-    QVERIFY(user.fromSettings(settings));
+    SettingsHolder::instance()->setUserSubscriptionNeeded(true);
+    QVERIFY(user.fromSettings());
     QVERIFY(user.initialized());
     QCOMPARE(spy.count(), 0);
     QCOMPARE(user.avatar(), "avatar");

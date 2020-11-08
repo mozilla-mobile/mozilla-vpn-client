@@ -9,6 +9,7 @@
 #include "models/keys.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 #include <QDBusPendingCall>
 #include <QDBusPendingCallWatcher>
@@ -59,7 +60,7 @@ QDBusPendingCallWatcher *DBus::activate(const Server &server,
     json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
     json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
     json.insert("serverPort", QJsonValue((double) server.choosePort()));
-    json.insert("ipv6Enabled", QJsonValue(MozillaVPN::instance()->settingsHolder()->ipv6Enabled()));
+    json.insert("ipv6Enabled", QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
 
     QJsonArray allowedIPAddesses;
     for (const IPAddressRange &i : allowedIPAddressRanges) {

@@ -18,7 +18,6 @@
 #include "models/serverdata.h"
 #include "models/user.h"
 #include "releasemonitor.h"
-#include "settingsholder.h"
 #include "statusicon.h"
 
 #include <QList>
@@ -115,7 +114,6 @@ public:
     HelpModel *helpModel() { return &m_private->m_helpModel; }
     Localizer *localizer() { return &m_private->m_localizer; }
     ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
-    SettingsHolder *settingsHolder() { return &m_private->m_settingsHolder; }
     StatusIcon *statusIcon() { return &m_private->m_statusIcon; }
     User *user() { return &m_private->m_user; }
 
@@ -214,7 +212,6 @@ private:
         ReleaseMonitor m_releaseMonitor;
         ServerCountryModel m_serverCountryModel;
         ServerData m_serverData;
-        SettingsHolder m_settingsHolder;
         StatusIcon m_statusIcon;
         User m_user;
     };

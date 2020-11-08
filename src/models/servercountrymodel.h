@@ -12,7 +12,6 @@
 #include <QObject>
 #include <QPointer>
 
-class SettingsHolder;
 class ServerData;
 
 class ServerCountryModel final : public QAbstractListModel
@@ -26,7 +25,7 @@ public:
 
     ServerCountryModel() = default;
 
-    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings();
 
     [[nodiscard]] bool fromJson(const QByteArray &data);
 
