@@ -171,8 +171,6 @@ void MozillaVPN::initialize()
     SettingsHolder *settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
 
-    m_private->m_localizer.initialize(settingsHolder->languageCode());
-
     m_private->m_captivePortalDetection.initialize();
 
     if (!settingsHolder->hasToken()) {
