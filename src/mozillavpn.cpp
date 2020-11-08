@@ -47,12 +47,10 @@ constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudo
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
-// The singleton.
-static MozillaVPN *s_instance = nullptr;
-
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
-}
+MozillaVPN *s_instance = nullptr;
+} // namespace
 
 // static
 void MozillaVPN::createInstance(QObject *parent, bool startMinimized)
