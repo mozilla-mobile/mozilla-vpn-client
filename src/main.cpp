@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     FontLoader::loadFonts();
 
     // Create the QML engine and expose a few internal objects.
-    QmlEngineHolder::createInstance(&app);
+    QmlEngineHolder engineHolder;
     QQmlApplicationEngine *engine = QmlEngineHolder::instance()->engine();
 
     MozillaVPN::createInstance(&app, parser.isSet(minimizedOption));

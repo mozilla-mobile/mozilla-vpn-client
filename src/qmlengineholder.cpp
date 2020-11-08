@@ -12,13 +12,16 @@ Logger logger(LOG_MAIN, "QmlEngineHolder");
 QmlEngineHolder *s_instance = nullptr;
 } // namespace
 
-// static
-void QmlEngineHolder::createInstance(QObject *parent)
+QmlEngineHolder::QmlEngineHolder()
 {
-    logger.log() << "Creating QmlEngineHolder";
-
     Q_ASSERT(!s_instance);
-    s_instance = new QmlEngineHolder(parent);
+    s_instance = this;
+}
+
+QmlEngineHolder::~QmlEngineHolder()
+{
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
 }
 
 // static
@@ -27,8 +30,6 @@ QmlEngineHolder *QmlEngineHolder::instance()
     Q_ASSERT(s_instance);
     return s_instance;
 }
-
-QmlEngineHolder::QmlEngineHolder(QObject *parent) : QObject(parent) {}
 
 QNetworkAccessManager *QmlEngineHolder::networkAccessManager()
 {
