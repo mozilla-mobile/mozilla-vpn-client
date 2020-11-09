@@ -53,35 +53,19 @@ MozillaVPN *s_instance = nullptr;
 } // namespace
 
 // static
-void MozillaVPN::createInstance(QObject *parent, bool startMinimized)
-{
-    logger.log() << "Creating MozillaVPN singleton";
-
-    Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN(parent, startMinimized);
-    s_instance->initialize();
-}
-
-// static
-void MozillaVPN::deleteInstance()
-{
-    logger.log() << "Deleting MozillaVPN singleton";
-
-    Q_ASSERT(s_instance);
-    delete s_instance;
-    s_instance = nullptr;
-}
-
-// static
 MozillaVPN *MozillaVPN::instance()
 {
     Q_ASSERT(s_instance);
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent, bool startMinimized)
-    : QObject(parent), m_private(new Private()), m_startMinimized(startMinimized)
+MozillaVPN::MozillaVPN() : m_private(new Private())
 {
+    logger.log() << "Creating MozillaVPN singleton";
+
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
     connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
@@ -136,6 +120,11 @@ MozillaVPN::MozillaVPN(QObject *parent, bool startMinimized)
 
 MozillaVPN::~MozillaVPN()
 {
+    logger.log() << "Deleting MozillaVPN singleton";
+
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
+
     delete m_private;
 }
 
@@ -147,6 +136,9 @@ MozillaVPN::State MozillaVPN::state() const
 void MozillaVPN::initialize()
 {
     logger.log() << "MozillaVPN Initialization";
+
+    Q_ASSERT(!m_initialized);
+    m_initialized = true;
 
     // This is our first state.
     Q_ASSERT(m_state == StateInitialize);

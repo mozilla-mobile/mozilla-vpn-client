@@ -9,8 +9,8 @@
 
 void TestLocalizer::basic()
 {
-    QObject parent;
-    Localizer::createInstance(SettingsHolder::createInstance(&parent));
+    SettingsHolder settings;
+    Localizer::createInstance(&settings);
     Localizer *l = Localizer::instance();
 
     l->initialize("");

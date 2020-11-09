@@ -23,10 +23,10 @@ class SettingsHolder final : public QObject
     Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY languageCodeChanged)
 
 public:
-    static SettingsHolder *createInstance(QObject *parent);
+    SettingsHolder();
+    ~SettingsHolder();
 
     static SettingsHolder *instance();
-    ~SettingsHolder();
 
     void clear();
 

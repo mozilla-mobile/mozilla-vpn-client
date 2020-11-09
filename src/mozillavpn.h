@@ -78,8 +78,12 @@ private:
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
 
 public:
-    static void createInstance(QObject *parent, bool startMinimized);
+    MozillaVPN();
+    ~MozillaVPN();
+
     static MozillaVPN *instance();
+
+    void initialize();
 
     State state() const;
     AlertType alert() const { return m_alert; }
@@ -145,18 +149,13 @@ public:
 
     bool startMinimized() const { return m_startMinimized; }
 
+    void setStartMinimized(bool startMinimized) { m_startMinimized = startMinimized; }
+
     void setToken(const QString &token);
 
     [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
 private:
-    MozillaVPN(QObject *parent, bool startMinimized);
-    ~MozillaVPN();
-
-    static void deleteInstance();
-
-    void initialize();
-
     void setState(State state);
 
     void scheduleTask(Task *task);
@@ -196,6 +195,8 @@ signals:
     void viewLogsNeeded();
 
 private:
+    bool m_initialized = false;
+
     // Internal objects.
     struct Private
     {

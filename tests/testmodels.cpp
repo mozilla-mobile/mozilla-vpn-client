@@ -156,15 +156,12 @@ void TestModels::deviceModelBasic()
     QCOMPARE(dm.rowCount(QModelIndex()), 0);
     QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-    {
-        QObject parent;
+    SettingsHolder settingsHolder;
 
-        QVERIFY(!!SettingsHolder::createInstance(&parent));
-        QVERIFY(!dm.fromSettings());
+    QVERIFY(!dm.fromSettings());
 
-        dm.writeSettings();
-        QVERIFY(!dm.fromSettings());
-    }
+    dm.writeSettings();
+    QVERIFY(!dm.fromSettings());
 }
 
 void TestModels::deviceModelFromJson_data()
@@ -279,8 +276,7 @@ void TestModels::deviceModelFromJson()
 
     // fromSettings
     {
-        QObject parent;
-        QVERIFY(!!SettingsHolder::createInstance(&parent));
+        SettingsHolder settingsHolder;
         SettingsHolder::instance()->setDevices(json);
 
         DeviceModel dm;
@@ -347,8 +343,7 @@ void TestModels::keysBasic()
     QCOMPARE(k.privateKey(), "");
 
     {
-        QObject parent;
-        QVERIFY(!!SettingsHolder::createInstance(&parent));
+        SettingsHolder settingsHolder;
 
         QCOMPARE(k.fromSettings(), false);
 
@@ -670,8 +665,7 @@ void TestModels::serverCountryModelBasic()
     ServerCountryModel dm;
     QVERIFY(!dm.initialized());
 
-    QObject parent;
-    QVERIFY(!!SettingsHolder::createInstance(&parent));
+    SettingsHolder settingsHolder;
 
     QVERIFY(!dm.fromSettings());
 
@@ -797,8 +791,7 @@ void TestModels::serverCountryModelFromJson()
 
     // from settings
     {
-        QObject parent;
-        QVERIFY(!!SettingsHolder::createInstance(&parent));
+        SettingsHolder settingsHolder;
 
         SettingsHolder::instance()->setServers(json);
 
@@ -875,8 +868,7 @@ void TestModels::serverDataBasic()
         QCOMPARE(sd.city(), "serverCityName");
 
         {
-            QObject parent;
-            QVERIFY(!!SettingsHolder::createInstance(&parent));
+            SettingsHolder settingsHolder;
 
             sd.writeSettings();
 
@@ -908,8 +900,7 @@ void TestModels::serverDataBasic()
     QCOMPARE(sd.city(), "new City");
 
     {
-        QObject parent;
-        QVERIFY(!!SettingsHolder::createInstance(&parent));
+        SettingsHolder settingsHolder;
         QVERIFY(!sd.fromSettings());
         QCOMPARE(spy.count(), 2);
     }
@@ -1040,8 +1031,7 @@ void TestModels::userFromJson()
     QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 
     {
-        QObject parent;
-        QVERIFY(!!SettingsHolder::createInstance(&parent));
+        SettingsHolder settingsHolder;
         user.writeSettings();
 
         // FromSettings
@@ -1073,8 +1063,7 @@ void TestModels::userFromJson()
 
 void TestModels::userFromSettings()
 {
-    QObject parent;
-    QVERIFY(!!SettingsHolder::createInstance(&parent));
+    SettingsHolder settingsHolder;
 
     User user;
     QSignalSpy spy(&user, &User::changed);
