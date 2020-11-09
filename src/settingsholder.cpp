@@ -47,16 +47,6 @@ SettingsHolder *s_instance = nullptr;
 }
 
 // static
-SettingsHolder *SettingsHolder::createInstance(QObject *parent)
-{
-    logger.log() << "Creating SettingsHolder instance";
-
-    Q_ASSERT(!s_instance);
-    s_instance = new SettingsHolder(parent);
-    return s_instance;
-}
-
-// static
 SettingsHolder *SettingsHolder::instance()
 {
     Q_ASSERT(s_instance);
@@ -69,14 +59,19 @@ const QSettings::Format MozFormat = QSettings::registerFormat("moz",
                                                               CryptoSettings::writeFile);
 #endif
 
-SettingsHolder::SettingsHolder(QObject *parent)
-    : QObject(parent),
+SettingsHolder::SettingsHolder()
+    :
 #ifndef UNIT_TEST
       m_settings(MozFormat, QSettings::UserScope, "mozilla", "vpn")
 #else
       m_settings("mozilla_testing", "vpn")
 #endif
-{}
+{
+    logger.log() << "Creating SettingsHolder instance";
+
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+}
 
 SettingsHolder::~SettingsHolder()
 {

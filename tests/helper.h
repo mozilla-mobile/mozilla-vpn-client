@@ -17,7 +17,7 @@ class TestHelper : public QObject
     Q_OBJECT
 
 public:
-    explicit TestHelper();
+    TestHelper();
 
 public:
     struct NetworkConfig
