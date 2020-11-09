@@ -23,6 +23,15 @@ Popup {
     anchors.centerIn: parent
     closePolicy: Popup.CloseOnEscape
 
+    Accessible.role: Accessible.Dialog
+    Accessible.name: popupTitle.text
+
+   onClosed: {
+       removeBtn.focus = false;
+       cancelBtn.focus = false
+   }
+
+
     Overlay.modal: Rectangle {
         color: "#4D0C0C0D"
     }
@@ -57,8 +66,6 @@ Popup {
             anchors.centerIn: contentRoot
             width: contentRoot.width - Theme.windowMargin * 2
 
-            Rectangle {
-            }
 
             Image {
                 Layout.alignment: Qt.AlignHCenter
@@ -82,6 +89,8 @@ Popup {
             }
 
             VPNTextBlock {
+                id: popupTitle
+
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
                 Layout.topMargin: 10
@@ -90,6 +99,9 @@ Popup {
                 //: %1 is the name of the device being removed. "\n" is used to display it on a new line, please keep it in the translation.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
+
+                Accessible.name: popupTitle.text
+                Accessible.role: Accessible.StaticText
             }
 
             GridLayout {
@@ -114,7 +126,6 @@ Popup {
                     buttonTextColor: "#262626"
                     bgColor: Theme.cancelRemovePopup
                     onClicked: {
-                        cancelBtn.focus = false;
                         popup.close();
                     }
                 }
@@ -130,7 +141,6 @@ Popup {
                     onClicked: {
                         VPN.removeDevice(removePopup.deviceName);
                         popup.close();
-                        removeBtn.focus = false;
                     }
                 }
 
