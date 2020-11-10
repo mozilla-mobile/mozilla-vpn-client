@@ -24,9 +24,7 @@ int CommandStatus::run(QStringList &tokens)
         Q_UNREACHABLE();
     }
 
-    if (!SettingsHolder::instance()->hasToken()) {
-        QTextStream stream(stdout);
-        stream << "User status: not authenticated" << Qt::endl;
+    if (!userAuthenticated()) {
         return 0;
     }
 

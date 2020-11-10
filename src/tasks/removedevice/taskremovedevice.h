@@ -15,6 +15,9 @@ public:
     void run(MozillaVPN *vpn) override;
 
 private:
+    void maybeReset();
+
+private:
     QString m_deviceName;
 };
 
