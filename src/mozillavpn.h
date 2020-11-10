@@ -154,6 +154,8 @@ public:
 
     void reset();
 
+    bool modelsInitialized() const;
+
 private:
     void setState(State state);
 
@@ -172,8 +174,6 @@ private:
 
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
-
-    bool modelsInitialized() const;
 
 public slots:
     void requestSettings();
