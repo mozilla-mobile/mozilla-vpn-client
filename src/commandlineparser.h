@@ -33,11 +33,16 @@ public:
                               QList<Option *> &options,
                               bool hasCommands);
 
+    static Option helpOption();
+
+    static void showHelp(const QString &app,
+                         const QList<Option *> &options,
+                         bool hasCommands,
+                         bool compact);
+
 private:
     static bool parseOptions(QStringList &tokens, QList<Option *> &options);
     static bool parseOption(const QString &option, bool shortOption, QList<Option *> &options);
-
-    static void showHelp(const QString &app, const QList<Option *> &options, bool hasCommands);
 };
 
 #endif // COMMANDLINEPARSER_H

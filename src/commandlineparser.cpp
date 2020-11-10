@@ -26,16 +26,16 @@ void CommandLineParser::parse(int argc, char *argv[])
 
     QList<Option *> options;
 
-    Option helpOption("h", "help", "Displays help on commandline options");
-    options.append(&helpOption);
+    Option hOption = helpOption();
+    options.append(&hOption);
 
     Option versionOption("v", "version", "Displays version information.");
     options.append(&versionOption);
 
     parse(tokens, options, true);
 
-    if (helpOption.m_set) {
-        showHelp(argv[0], options, true);
+    if (hOption.m_set) {
+        showHelp(argv[0], options, true, false);
         exit(0);
     }
 
@@ -131,14 +131,15 @@ void CommandLineParser::unknownOption(const QString &option,
 {
     QTextStream stream(stderr);
     stream << "unknown option: " << option << Qt::endl;
-    showHelp(app, options, hasCommands);
+    showHelp(app, options, hasCommands, true);
     exit(1);
 }
 
 // static
 void CommandLineParser::showHelp(const QString &app,
                                  const QList<Option *> &options,
-                                 bool hasCommands)
+                                 bool hasCommands,
+                                 bool compact)
 {
     QTextStream stream(stdout);
     stream << "usage: " << app;
@@ -153,15 +154,34 @@ void CommandLineParser::showHelp(const QString &app,
 
     stream << Qt::endl;
 
+    if (compact) {
+        return;
+    }
+
+    if (!options.isEmpty()) {
+        stream << Qt::endl;
+        stream << "List of options:" << Qt::endl;
+        for (const Option *o : options) {
+            QString desc = QString("-%1 | --%2").arg(o->m_short).arg(o->m_long);
+            stream << "  " << desc << " ";
+
+            for (int i = desc.length(); i < 20; ++i) {
+                stream << " ";
+            }
+
+            stream << o->m_description << Qt::endl;
+        }
+    }
+
     if (!hasCommands) {
         return;
     }
 
     stream << Qt::endl;
-    stream << "List of the commands:" << Qt::endl;
+    stream << "List of commands:" << Qt::endl;
 
     for (Command *command : Command::s_commands) {
-        stream << "  " << command->name();
+        stream << "  " << command->name() << " ";
 
         for (int i = command->name().length(); i < 20; ++i) {
             stream << " ";
@@ -169,4 +189,10 @@ void CommandLineParser::showHelp(const QString &app,
 
         stream << command->description() << Qt::endl;
     }
+}
+
+// static
+CommandLineParser::Option CommandLineParser::helpOption()
+{
+    return Option("h", "help", "Displays help on commandline options");
 }
