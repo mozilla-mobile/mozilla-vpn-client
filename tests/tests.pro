@@ -5,6 +5,7 @@
 QT += testlib
 QT += charts
 QT += network
+QT += qml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -38,7 +39,9 @@ HEADERS += \
     ../src/models/serverdata.h \
     ../src/models/user.h \
     ../src/mozillavpn.h \
+    ../src/networkmanager.h \
     ../src/networkrequest.h \
+    ../src/qmlengineholder.h \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
     ../src/statusicon.h \
@@ -79,6 +82,8 @@ SOURCES += \
     ../src/models/servercountrymodel.cpp \
     ../src/models/serverdata.cpp \
     ../src/models/user.cpp \
+    ../src/networkmanager.cpp \
+    ../src/qmlengineholder.cpp \
     ../src/releasemonitor.cpp \
     ../src/settingsholder.cpp \
     ../src/statusicon.cpp \
