@@ -45,9 +45,15 @@ CommandUI::CommandUI() : Command("ui", "Start the UI.") {}
 
 int CommandUI::run(QStringList &tokens)
 {
+    Q_ASSERT(!tokens.isEmpty());
+    QString app = tokens[0];
+
     CommandLineParser clp;
 
     QList<CommandLineParser::Option *> options;
+
+    CommandLineParser::Option hOption = CommandLineParser::helpOption();
+    options.append(&hOption);
 
     CommandLineParser::Option minimizedOption("m", "minimized", "Start minimized");
     options.append(&minimizedOption);
@@ -60,8 +66,13 @@ int CommandUI::run(QStringList &tokens)
     clp.parse(tokens, options, false);
 
     if (!tokens.isEmpty()) {
-        clp.unknownOption("ui", tokens[0], options, false);
+        clp.unknownOption(app, tokens[0], options, false);
         Q_UNREACHABLE();
+    }
+
+    if (hOption.m_set) {
+        clp.showHelp(app, options, false, false);
+        return 0;
     }
 
     logger.log() << "UI starting";

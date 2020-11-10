@@ -17,19 +17,31 @@ CommandServers::CommandServers() : Command("servers", "Show the list of servers.
 int CommandServers::run(QStringList &tokens)
 {
     Q_ASSERT(!tokens.isEmpty());
+    QString app = tokens[0];
 
     CommandLineParser clp;
 
     QList<CommandLineParser::Option *> options;
 
+    CommandLineParser::Option hOption = CommandLineParser::helpOption();
+    options.append(&hOption);
+
     CommandLineParser::Option verboseOption("v", "verbose", "Verbose");
     options.append(&verboseOption);
+
+    CommandLineParser::Option cacheOption("c", "cache", "From Cache");
+    options.append(&cacheOption);
 
     clp.parse(tokens, options, false);
 
     if (!tokens.isEmpty()) {
-        clp.unknownOption("ui", tokens[0], options, false);
+        clp.unknownOption(app, tokens[0], options, false);
         Q_UNREACHABLE();
+    }
+
+    if (hOption.m_set) {
+        clp.showHelp(app, options, false, false);
+        return 0;
     }
 
     if (!SettingsHolder::instance()->hasToken()) {
@@ -41,12 +53,21 @@ int CommandServers::run(QStringList &tokens)
     SimpleNetworkManager snm;
 
     MozillaVPN vpn;
-    TaskAccountAndServers *task = new TaskAccountAndServers();
-    task->run(&vpn);
 
-    QEventLoop loop;
-    QObject::connect(task, &Task::completed, [&] { loop.exit(); });
-    loop.exec();
+    if (!cacheOption.m_set) {
+        TaskAccountAndServers *task = new TaskAccountAndServers();
+        task->run(&vpn);
+
+        QEventLoop loop;
+        QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+        loop.exec();
+    } else {
+        if (!vpn.serverCountryModel()->fromSettings()) {
+            QTextStream stream(stdout);
+            stream << "No cache available" << Qt::endl;
+            return 0;
+        }
+    }
 
     QTextStream stream(stdout);
 
