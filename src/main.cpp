@@ -36,6 +36,5 @@ int main(int argc, char *argv[])
     Localizer::createInstance(&settingsHolder);
 
     CommandLineParser clp;
-    clp.parse(argc, argv);
-    Q_UNREACHABLE();
+    return clp.parse(argc, argv);
 }

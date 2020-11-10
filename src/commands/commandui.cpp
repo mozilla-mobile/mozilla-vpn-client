@@ -63,11 +63,12 @@ int CommandUI::run(QStringList &tokens)
                                                 "Start at boot (if configured)");
     options.append(&startAtBootOption);
 
-    clp.parse(tokens, options, false);
+    if (clp.parse(tokens, options, false)) {
+        return 1;
+    }
 
     if (!tokens.isEmpty()) {
-        clp.unknownOption(app, tokens[0], options, false);
-        Q_UNREACHABLE();
+        return clp.unknownOption(app, tokens[0], options, false);
     }
 
     if (hOption.m_set) {
@@ -86,8 +87,7 @@ int CommandUI::run(QStringList &tokens)
 
         if (!SettingsHolder::instance()->startAtBoot()) {
             logger.log() << "We don't need to start at boot.";
-            exit(0);
-            Q_UNREACHABLE();
+            return 0;
         }
     }
 

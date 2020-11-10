@@ -20,8 +20,7 @@ int CommandStatus::run(QStringList &tokens)
 
     if (tokens.length() > 1) {
         QList<CommandLineParser::Option *> options;
-        CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
-        Q_UNREACHABLE();
+        return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
     }
 
     if (!userAuthenticated()) {
