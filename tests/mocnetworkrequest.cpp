@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../src/mozillavpn.h"
 #include "../src/timersingleshot.h"
 #include "helper.h"
 #include "networkrequest.h"
@@ -26,39 +25,39 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 }
 
 // static
-NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *parent, MozillaVPN *, const QString &, const QString &)
+NetworkRequest *NetworkRequest::createForAuthenticationVerification(QObject *parent, const QString &, const QString &)
 {
     return new NetworkRequest(parent);
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent, MozillaVPN *, const QString &, const QString &)
+NetworkRequest *NetworkRequest::createForDeviceCreation(QObject *parent, const QString &, const QString &)
 {
     return new NetworkRequest(parent);
 }
 
 // static
-NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent, MozillaVPN *, const QString &)
+NetworkRequest *NetworkRequest::createForDeviceRemoval(QObject *parent, const QString &)
 {
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForServers(QObject *parent, MozillaVPN *)
+NetworkRequest *NetworkRequest::createForServers(QObject *parent)
 {
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForVersions(QObject *parent, MozillaVPN *)
+NetworkRequest *NetworkRequest::createForVersions(QObject *parent)
 {
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForAccount(QObject *parent, MozillaVPN *)
+NetworkRequest *NetworkRequest::createForAccount(QObject *parent)
 {
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent, MozillaVPN *)
+NetworkRequest *NetworkRequest::createForIpInfo(QObject *parent)
 {
     return new NetworkRequest(parent);
 }
@@ -76,12 +75,12 @@ NetworkRequest *NetworkRequest::createForDOH(QObject *parent, const QUrl &, cons
 }
 
 #ifdef IOS_INTEGRATION
-NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent, MozillaVPN *)
+NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent)
 {
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent, MozillaVPN *, const QString &)
+NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent, const QString &)
 {
     return new NetworkRequest(parent);
 }

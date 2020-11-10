@@ -30,6 +30,7 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         command.cpp \
         commandlineparser.cpp \
+        commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
         connectiondataholder.cpp \
@@ -86,6 +87,7 @@ HEADERS += \
         captiveportal/captiveportalrequest.h \
         command.h \
         commandlineparser.h \
+        commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
         connectiondataholder.h \

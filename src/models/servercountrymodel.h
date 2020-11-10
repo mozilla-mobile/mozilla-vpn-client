@@ -41,6 +41,8 @@ public:
 
     const QString countryName(const QString &countryCode) const;
 
+    const QList<ServerCountry>& countries() const { return m_countries; }
+
     // QAbstractListModel methods
 
     QHash<int, QByteArray> roleNames() const override;
