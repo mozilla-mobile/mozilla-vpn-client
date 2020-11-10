@@ -560,14 +560,22 @@ void MozillaVPN::logout()
     QString deviceName = Device::currentDeviceName();
     if (m_private->m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
+    } else {
+        // Reset is called by TaskRemoveDevice.
+        reset();
     }
+}
 
-    scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        logger.log() << "Cleaning up all";
-        SettingsHolder::instance()->clear();
-        m_private->m_keys.forgetKey();
-        m_private->m_serverData.forget();
-    }));
+void MozillaVPN::reset()
+{
+    logger.log() << "Cleaning up all";
+
+    m_tasks.clear();
+    m_task_running = false;
+
+    SettingsHolder::instance()->clear();
+    m_private->m_keys.forgetKey();
+    m_private->m_serverData.forget();
 }
 
 void MozillaVPN::setAlert(AlertType alert)

@@ -44,10 +44,8 @@ int CommandServers::run(QStringList &tokens)
         return 0;
     }
 
-    if (!SettingsHolder::instance()->hasToken()) {
-        QTextStream stream(stdout);
-        stream << "User status: not authenticated" << Qt::endl;
-        return 0;
+    if (!userAuthenticated()) {
+        return 1;
     }
 
     SimpleNetworkManager snm;

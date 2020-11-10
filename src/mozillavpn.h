@@ -110,7 +110,7 @@ public:
     Controller *controller() { return &m_private->m_controller; }
     ServerData *currentServer() { return &m_private->m_serverData; }
     DeviceModel *deviceModel() { return &m_private->m_deviceModel; }
-    const Keys *keys() const { return &m_private->m_keys; }
+    Keys *keys() { return &m_private->m_keys; }
     HelpModel *helpModel() { return &m_private->m_helpModel; }
     ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
     StatusIcon *statusIcon() { return &m_private->m_statusIcon; }
@@ -151,6 +151,8 @@ public:
     void setToken(const QString &token);
 
     [[nodiscard]] bool setServerList(const QByteArray& serverData);
+
+    void reset();
 
 private:
     void setState(State state);
