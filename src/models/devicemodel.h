@@ -38,6 +38,8 @@ public:
 
     int activeDevices() const { return m_devices.count(); }
 
+    const QList<Device>& devices() const { return m_devices; }
+
     const Device* currentDevice() const;
 
     // QAbstractListModel methods

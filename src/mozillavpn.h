@@ -88,9 +88,6 @@ public:
     State state() const;
     AlertType alert() const { return m_alert; }
 
-    const QString &getApiUrl() const { return m_apiUrl; }
-    const QString &token() const { return m_token; }
-
     // Exposed QML methods:
     Q_INVOKABLE void authenticate();
     Q_INVOKABLE void cancelAuthentication();
@@ -219,9 +216,6 @@ private:
     // Task handling.
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
-
-    QString m_apiUrl;
-    QString m_token;
 
     State m_state = StateInitialize;
     AlertType m_alert = NoAlert;

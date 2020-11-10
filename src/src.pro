@@ -59,6 +59,7 @@ SOURCES += \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
         mozillavpn.cpp \
+        networkmanager.cpp \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
@@ -66,6 +67,7 @@ SOURCES += \
         releasemonitor.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
+        simplenetworkmanager.cpp \
         statusicon.cpp \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
@@ -111,6 +113,7 @@ HEADERS += \
         models/serverdata.h \
         models/user.h \
         mozillavpn.h \
+        networkmanager.h \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
@@ -119,6 +122,7 @@ HEADERS += \
         releasemonitor.h \
         settingsholder.h \
         signalhandler.h \
+        simplenetworkmanager.h \
         statusicon.h \
         systemtrayhandler.h \
         task.h \

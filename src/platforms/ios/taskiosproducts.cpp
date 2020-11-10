@@ -18,7 +18,7 @@ Logger logger(LOG_IAP, "TaskIOSProducts");
 }
 void TaskIOSProducts::run(MozillaVPN* vpn)
 {
-    NetworkRequest *request = NetworkRequest::createForIOSProducts(this, vpn);
+    NetworkRequest *request = NetworkRequest::createForIOSProducts(this);
 
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         logger.log() << "IOS product request failed" << error;
