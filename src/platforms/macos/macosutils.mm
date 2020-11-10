@@ -5,7 +5,7 @@
 #include "macosutils.h"
 #include "logger.h"
 #include "models/helpmodel.h"
-#include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 #include <objc/message.h>
 #include <objc/objc.h>
@@ -41,7 +41,7 @@ bool dockClickHandler(id self, SEL cmd, ...)
     Q_UNUSED(cmd);
 
     logger.log() << "Dock icon clicked.";
-    MozillaVPN::instance()->showWindow();
+    QmlEngineHolder::instance()->showWindow();
     return FALSE;
 }
 

@@ -109,8 +109,8 @@ int CommandUI::run(QStringList &tokens)
     vpn.initialize();
 
 #ifdef MACOS_INTEGRATION
-    MacOSStartAtBootWatcher startAtBootWatcher(settingsHolder->startAtBoot());
-    QObject::connect(settingsHolder,
+    MacOSStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
+    QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged,
                      &startAtBootWatcher,
                      &MacOSStartAtBootWatcher::startAtBootChanged);
