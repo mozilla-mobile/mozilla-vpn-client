@@ -34,6 +34,7 @@ SOURCES += \
         commands/commanddeactivate.cpp \
         commands/commandlogin.cpp \
         commands/commandlogout.cpp \
+        commands/commandselect.cpp \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
@@ -95,6 +96,7 @@ HEADERS += \
         commands/commanddeactivate.h \
         commands/commandlogin.h \
         commands/commandlogout.h \
+        commands/commandselect.h \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \

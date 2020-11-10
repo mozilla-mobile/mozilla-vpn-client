@@ -28,16 +28,7 @@ int CommandActivate::run(QStringList &tokens)
     SimpleNetworkManager snm;
 
     MozillaVPN vpn;
-    if (!vpn.deviceModel()->fromSettings() || !vpn.serverCountryModel()->fromSettings()
-        || !vpn.user()->fromSettings() || !vpn.keys()->fromSettings() || !vpn.currentServer()->fromSettings()) {
-        QTextStream stream(stdout);
-        stream << "No cache available" << Qt::endl;
-        return 1;
-    }
-
-    if (!vpn.modelsInitialized()) {
-        QTextStream stream(stdout);
-        stream << "Something went wrong when initializing the models" << Qt::endl;
+    if (!loadModels()) {
         return 1;
     }
 

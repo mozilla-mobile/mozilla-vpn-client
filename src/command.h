@@ -19,7 +19,10 @@ public:
 
     const QString &description() const { return m_description; }
 
+protected:
     bool userAuthenticated();
+
+    bool loadModels();
 
 private:
     QString m_name;
