@@ -17,6 +17,7 @@ VPNButtonBase {
     enabled: popup.visible
     Layout.fillWidth: true
     Layout.fillHeight: true
+    Accessible.name: buttonText.text
 
     Rectangle {
         id: buttonBackground
