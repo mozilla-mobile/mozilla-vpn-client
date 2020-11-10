@@ -30,6 +30,10 @@
 #endif
 #endif
 
+#ifdef QT_DEBUG
+#include "inspector/inspectorserver.h"
+#endif
+
 #include <QApplication>
 #include <QWindow>
 
@@ -281,6 +285,10 @@ int CommandUI::run(QStringList &tokens)
                          [systemTrayHandler = &systemTrayHandler]() {
                              systemTrayHandler->captivePortalNotificationRequested();
                          });
+
+#ifdef QT_DEBUG
+        InspectorServer inspectServer;
+#endif
 
         // Let's go.
         return qApp->exec();
