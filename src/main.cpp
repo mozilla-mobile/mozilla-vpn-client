@@ -22,19 +22,6 @@ int main(int argc, char *argv[])
 
     logger.log() << "MozillaVPN" << APP_VERSION;
 
-    // The application.
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication app(argc, argv);
-
-    QCoreApplication::setApplicationName("Mozilla VPN");
-    QCoreApplication::setApplicationVersion(APP_VERSION);
-
-    QIcon icon("://ui/resources/logo-dock.png");
-    app.setWindowIcon(icon);
-
-    SettingsHolder settingsHolder;
-    Localizer::createInstance(&settingsHolder);
-
     CommandLineParser clp;
     return clp.parse(argc, argv);
 }

@@ -4,10 +4,9 @@
 
 #include "commandlogout.h"
 #include "commandlineparser.h"
+#include "localizer.h"
 #include "models/device.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
 #include <QEventLoop>
@@ -18,39 +17,38 @@ CommandLogout::CommandLogout() : Command("logout", "Logout the current user.") {
 int CommandLogout::run(QStringList &tokens)
 {
     Q_ASSERT(!tokens.isEmpty());
+    return runCommandLineApp([&]() {
+        if (tokens.length() > 1) {
+            QList<CommandLineParser::Option *> options;
+            return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+        }
 
-    if (tokens.length() > 1) {
-        QList<CommandLineParser::Option *> options;
-        return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
-    }
+        if (!userAuthenticated()) {
+            return 1;
+        }
 
-    if (!userAuthenticated()) {
-        return 1;
-    }
+        MozillaVPN vpn;
 
-    SimpleNetworkManager snm;
+        if (!vpn.deviceModel()->fromSettings()) {
+            QTextStream stream(stdout);
+            stream << "No cache available" << Qt::endl;
+            return 1;
+        }
 
-    MozillaVPN vpn;
+        QString deviceName = Device::currentDeviceName();
+        if (vpn.deviceModel()->hasDevice(deviceName)) {
+            TaskRemoveDevice *task = new TaskRemoveDevice(deviceName);
+            task->run(&vpn);
 
-    if (!vpn.deviceModel()->fromSettings()) {
-        QTextStream stream(stdout);
-        stream << "No cache available" << Qt::endl;
-        return 1;
-    }
+            QEventLoop loop;
+            QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+            loop.exec();
+        } else {
+            vpn.reset();
+        }
 
-    QString deviceName = Device::currentDeviceName();
-    if (vpn.deviceModel()->hasDevice(deviceName)) {
-        TaskRemoveDevice *task = new TaskRemoveDevice(deviceName);
-        task->run(&vpn);
-
-        QEventLoop loop;
-        QObject::connect(task, &Task::completed, [&] { loop.exit(); });
-        loop.exec();
-    } else {
-        vpn.reset();
-    }
-
-    return 0;
+        return 0;
+    });
 }
 
 static CommandLogout s_commandLogout;

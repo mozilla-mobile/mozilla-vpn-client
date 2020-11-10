@@ -5,6 +5,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include <functional>
 #include <QStringList>
 #include <QVector>
 
@@ -23,6 +24,12 @@ protected:
     bool userAuthenticated();
 
     bool loadModels();
+
+    int runCommandLineApp(std::function<int()> &&callback);
+
+    int runGuiApp(std::function<int()> &&callback);
+
+    int runQmlApp(std::function<int()> &&callback);
 
 private:
     QString m_name;
