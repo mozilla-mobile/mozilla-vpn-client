@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 
 #include <QInAppStore>
 #include <QtPurchasing>
@@ -66,7 +67,7 @@ void IAPHandler::start()
         transaction->finalize();
     });
 
-    const QStringList products = MozillaVPN::instance()->settingsHolder()->iapProducts();
+    const QStringList products = SettingsHolder::instance()->iapProducts();
     Q_ASSERT(!products.isEmpty());
 
     for (const QString &product : products) {

@@ -139,9 +139,9 @@ void MozillaVPN::initialize()
     m_private->m_releaseMonitor.runSoon();
 
 #ifdef IOS_INTEGRATION
-    if (!m_private->m_settingsHolder.hasNativeIOSDataMigrated()) {
+    if (!SettingsHolder::instance()->hasNativeIOSDataMigrated()) {
         IOSDataMigration::migrate();
-        m_private->m_settingsHolder.setNativeIOSDataMigrated(true);
+        SettingsHolder::instance()->setNativeIOSDataMigrated(true);
     }
 #endif
 

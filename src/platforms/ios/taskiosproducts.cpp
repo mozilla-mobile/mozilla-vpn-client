@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -46,7 +47,7 @@ void TaskIOSProducts::run(MozillaVPN* vpn)
             products.append(product.toString());
         }
 
-        vpn->settingsHolder()->setIapProducts(products);
+        SettingsHolder::instance()->setIapProducts(products);
         emit completed();
     });
 }

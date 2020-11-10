@@ -98,7 +98,7 @@ void migrateUserDefaultData()
         ServerData serverData;
         if (vpn->serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
             logger.log() << "ServerCity found";
-            serverData.writeSettings(*vpn->settingsHolder());
+            serverData.writeSettings();
         }
     }
 }
