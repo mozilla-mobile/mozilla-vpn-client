@@ -22,6 +22,8 @@ INCLUDEPATH += \
             ../src/hacl-star/kremlin/minimal
 
 HEADERS += \
+    ../src/command.h \
+    ../src/commandlineparser.h \
     ../src/connectiondataholder.h \
     ../src/curve25519.h \
     ../src/dohrequest.h \
@@ -44,6 +46,7 @@ HEADERS += \
     ../src/qmlengineholder.h \
     ../src/releasemonitor.h \
     ../src/settingsholder.h \
+    ../src/simplenetworkmanager.h \
     ../src/statusicon.h \
     ../src/task.h \
     ../src/tasks/accountandservers/taskaccountandservers.h \
@@ -51,6 +54,7 @@ HEADERS += \
     ../src/tasks/function/taskfunction.h \
     ../src/timersingleshot.h \
     helper.h \
+    testcommandlineparser.h \
     testconnectiondataholder.h \
     testdoh.h \
     testlocalizer.h \
@@ -62,6 +66,8 @@ HEADERS += \
     testtimersingleshot.h
 
 SOURCES += \
+    ../src/command.cpp \
+    ../src/commandlineparser.cpp \
     ../src/connectiondataholder.cpp \
     ../src/curve25519.cpp \
     ../src/dohrequest.cpp \
@@ -86,6 +92,7 @@ SOURCES += \
     ../src/qmlengineholder.cpp \
     ../src/releasemonitor.cpp \
     ../src/settingsholder.cpp \
+    ../src/simplenetworkmanager.cpp \
     ../src/statusicon.cpp \
     ../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../src/tasks/adddevice/taskadddevice.cpp \
@@ -94,6 +101,7 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testdoh.cpp \
     testlocalizer.cpp \
