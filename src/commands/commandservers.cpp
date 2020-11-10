@@ -32,11 +32,12 @@ int CommandServers::run(QStringList &tokens)
     CommandLineParser::Option cacheOption("c", "cache", "From Cache");
     options.append(&cacheOption);
 
-    clp.parse(tokens, options, false);
+    if (clp.parse(tokens, options, false)) {
+        return 1;
+    }
 
     if (!tokens.isEmpty()) {
-        clp.unknownOption(app, tokens[0], options, false);
-        Q_UNREACHABLE();
+        return clp.unknownOption(app, tokens[0], options, false);
     }
 
     if (hOption.m_set) {

@@ -17,12 +17,11 @@ CommandLogout::CommandLogout() : Command("logout", "Logout the current user.") {
 
 int CommandLogout::run(QStringList &tokens)
 {
-    Q_ASSERT(tokens.isEmpty());
+    Q_ASSERT(!tokens.isEmpty());
 
     if (tokens.length() > 1) {
         QList<CommandLineParser::Option *> options;
-        CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
-        Q_UNREACHABLE();
+        return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
     }
 
     if (!userAuthenticated()) {
@@ -32,6 +31,12 @@ int CommandLogout::run(QStringList &tokens)
     SimpleNetworkManager snm;
 
     MozillaVPN vpn;
+
+    if (!vpn.deviceModel()->fromSettings()) {
+        QTextStream stream(stdout);
+        stream << "No cache available" << Qt::endl;
+        return 1;
+    }
 
     QString deviceName = Device::currentDeviceName();
     if (vpn.deviceModel()->hasDevice(deviceName)) {

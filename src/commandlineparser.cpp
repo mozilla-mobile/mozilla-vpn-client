@@ -15,7 +15,7 @@ namespace {
 Logger logger(LOG_MAIN, "CommandLineParser");
 }
 
-void CommandLineParser::parse(int argc, char *argv[])
+int CommandLineParser::parse(int argc, char *argv[])
 {
     Q_ASSERT(argc >= 1);
 
@@ -32,17 +32,19 @@ void CommandLineParser::parse(int argc, char *argv[])
     Option versionOption("v", "version", "Displays version information.");
     options.append(&versionOption);
 
-    parse(tokens, options, true);
+    if (parse(tokens, options, true)) {
+        return 1;
+    }
 
     if (hOption.m_set) {
         showHelp(argv[0], options, true, false);
-        exit(0);
+        return 0;
     }
 
     if (versionOption.m_set) {
         QTextStream stream(stdout);
         stream << argv[0] << " " << APP_VERSION << Qt::endl;
-        exit(0);
+        return 0;
     }
 
     if (tokens.isEmpty()) {
@@ -52,17 +54,17 @@ void CommandLineParser::parse(int argc, char *argv[])
     for (Command *command : Command::s_commands) {
         if (command->name() == tokens[0]) {
             tokens[0] = QString("%1 %2").arg(argv[0]).arg(tokens[0]);
-            exit(command->run(tokens));
+            return command->run(tokens);
         }
     }
 
     QTextStream stream(stderr);
     stream << argv[0] << ": '" << tokens[0] << "' is not a valid command. See '" << argv[0]
            << " --help'." << Qt::endl;
-    exit(1);
+    return 1;
 }
 
-void CommandLineParser::parse(QStringList &tokens, QList<Option *> &options, bool hasCommands)
+int CommandLineParser::parse(QStringList &tokens, QList<Option *> &options, bool hasCommands)
 {
     Q_ASSERT(!tokens.isEmpty());
 
@@ -70,9 +72,10 @@ void CommandLineParser::parse(QStringList &tokens, QList<Option *> &options, boo
 
     if (!parseOptions(tokens, options)) {
         Q_ASSERT(!tokens.isEmpty());
-        unknownOption(tokens[0], app, options, hasCommands);
-        Q_UNREACHABLE();
+        return unknownOption(tokens[0], app, options, hasCommands);
     }
+
+    return 0;
 }
 
 // static
@@ -124,15 +127,15 @@ bool CommandLineParser::parseOption(const QString &option,
 }
 
 //static
-void CommandLineParser::unknownOption(const QString &option,
-                                      const QString &app,
-                                      QList<Option *> &options,
-                                      bool hasCommands)
+int CommandLineParser::unknownOption(const QString &option,
+                                     const QString &app,
+                                     QList<Option *> &options,
+                                     bool hasCommands)
 {
     QTextStream stream(stderr);
     stream << "unknown option: " << option << Qt::endl;
     showHelp(app, options, hasCommands, true);
-    exit(1);
+    return 1;
 }
 
 // static

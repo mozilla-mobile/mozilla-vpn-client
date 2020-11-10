@@ -24,14 +24,14 @@ public:
         bool m_set = false;
     };
 
-    void parse(int argc, char *argv[]);
+    [[nodiscard]] int parse(int argc, char *argv[]);
 
-    void parse(QStringList &tokens, QList<Option *> &options, bool hasCommands);
+    [[nodiscard]] int parse(QStringList &tokens, QList<Option *> &options, bool hasCommands);
 
-    static void unknownOption(const QString &option,
-                              const QString &app,
-                              QList<Option *> &options,
-                              bool hasCommands);
+    [[nodiscard]] static int unknownOption(const QString &option,
+                                           const QString &app,
+                                           QList<Option *> &options,
+                                           bool hasCommands);
 
     static Option helpOption();
 
