@@ -95,7 +95,6 @@ Item {
         anchors.fill: anchorToFill
         cursorShape: rowShouldBeDisabled ? Qt.ForbiddenCursor : Qt.PointingHandCursor
         hoverEnabled: !rowShouldBeDisabled
-        focus: !rowShouldBeDisabled
         onClicked: mainRow.clicked()
     }
 
