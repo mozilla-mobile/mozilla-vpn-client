@@ -88,7 +88,6 @@ private slots:
     void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
 
 signals:
-    void initialized();
     void stateChanged();
     void timeChanged();
     void readyToQuit();

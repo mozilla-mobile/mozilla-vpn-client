@@ -4,6 +4,7 @@
 
 #include "commandlogin.h"
 #include "commandlineparser.h"
+#include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
@@ -32,13 +33,22 @@ int CommandLogin::run(QStringList &tokens)
     SimpleNetworkManager snm;
 
     MozillaVPN vpn;
-
-    TaskAuthenticate *task = new TaskAuthenticate();
-    task->run(&vpn);
+    vpn.authenticate();
 
     QEventLoop loop;
-    QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
+        if (vpn.state() == MozillaVPN::StatePostAuthentication) {
+            loop.exit();
+        }
+    });
     loop.exec();
+
+    QString deviceName = Device::currentDeviceName();
+    if (!vpn.deviceModel()->hasDevice(deviceName)) {
+        QTextStream stream(stdout);
+        stream << "Device limit reached" << Qt::endl;
+        return 1;
+    }
 
     return 0;
 }

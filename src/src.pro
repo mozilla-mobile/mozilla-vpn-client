@@ -30,6 +30,8 @@ SOURCES += \
         captiveportal/captiveportalrequest.cpp \
         command.cpp \
         commandlineparser.cpp \
+        commands/commandactivate.cpp \
+        commands/commanddeactivate.cpp \
         commands/commandlogin.cpp \
         commands/commandlogout.cpp \
         commands/commandservers.cpp \
@@ -89,6 +91,8 @@ HEADERS += \
         captiveportal/captiveportalrequest.h \
         command.h \
         commandlineparser.h \
+        commands/commandactivate.h \
+        commands/commanddeactivate.h \
         commands/commandlogin.h \
         commands/commandlogout.h \
         commands/commandservers.h \
