@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
+#include "settingsholder.h"
 
 #include <QByteArray>
 #include <QFile>
@@ -105,7 +106,7 @@ void MacOSController::activate(const Server &server,
                     serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                           serverPort:server.choosePort()
               allowedIPAddressRanges:allowedIPAddressRangesNS
-                         ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
+                         ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
                      failureCallback:^() {
                          logger.log() << "MacOSSWiftController - connection failed";
                          emit disconnected();
