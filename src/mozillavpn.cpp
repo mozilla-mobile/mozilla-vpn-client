@@ -37,13 +37,6 @@
 #include <QUrl>
 #include <QWindow>
 
-// TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
-constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-
-#ifdef QT_DEBUG
-constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-#endif
-
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
@@ -143,12 +136,6 @@ void MozillaVPN::initialize()
     // This is our first state.
     Q_ASSERT(m_state == StateInitialize);
 
-    // API URL depends on the type of build.
-    m_apiUrl = API_URL_PROD;
-#ifdef QT_DEBUG
-    m_apiUrl = API_URL_DEBUG;
-#endif
-
     m_private->m_releaseMonitor.runSoon();
 
 #ifdef IOS_INTEGRATION
@@ -209,8 +196,6 @@ void MozillaVPN::initialize()
         m_private->m_serverData.writeSettings();
     }
 
-    m_token = settingsHolder->token();
-
     scheduleTask(new TaskAccountAndServers());
 
     scheduleTask(new TaskCaptivePortalLookup());
@@ -259,37 +244,37 @@ void MozillaVPN::openLink(LinkType linkType)
 
     switch (linkType) {
     case LinkAccount:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/account");
         break;
 
     case LinkContact:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/contact");
         break;
 
     case LinkFeedback:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/client/feedback");
         break;
 
     case LinkHelpSupport:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/support");
         break;
 
     case LinkTermsOfService:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/terms");
         break;
 
     case LinkPrivacyPolicy:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/privacy");
         break;
 
     case LinkUpdate:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         // TODO
         break;
 
@@ -339,7 +324,6 @@ void MozillaVPN::taskCompleted()
 void MozillaVPN::setToken(const QString &token)
 {
     SettingsHolder::instance()->setToken(token);
-    m_token = token;
 }
 
 void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &token)

@@ -201,7 +201,7 @@ void ConnectionDataHolder::updateIpAddress()
     }
     m_updatingIpAddress = true;
 
-    NetworkRequest *request = NetworkRequest::createForIpInfo(this, MozillaVPN::instance());
+    NetworkRequest *request = NetworkRequest::createForIpInfo(this);
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
         logger.log() << "IP address request failed" << error;
         m_updatingIpAddress = false;

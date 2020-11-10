@@ -79,14 +79,13 @@ void IAPHandler::start()
 
 void IAPHandler::purchaseCompleted(const QString& orderId)
 {
-    MozillaVPN *vpn = MozillaVPN::instance();
-    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, vpn, orderId);
+    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, orderId);
 
     connect(request,
             &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error) {
+            [this](QNetworkReply::NetworkError error) {
                 logger.log() << "Purchase request failed" << error;
-                vpn->errorHandle(ErrorHandler::toErrorType(error));
+                MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
                 emit completed();
             });
 

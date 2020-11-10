@@ -9,7 +9,6 @@
 #include <QNetworkRequest>
 #include <QObject>
 
-class MozillaVPN;
 class QNetworkAccessManager;
 
 class NetworkRequest final : public QObject
@@ -22,26 +21,23 @@ public:
     // This object deletes itself at the end of the operation.
 
     static NetworkRequest *createForAuthenticationVerification(QObject *parent,
-                                                               MozillaVPN *vpn,
                                                                const QString &pkceCodeSuccess,
                                                                const QString &pkceCodeVerifier);
 
     static NetworkRequest *createForDeviceCreation(QObject *parent,
-                                                   MozillaVPN *vpn,
                                                    const QString &deviceName,
                                                    const QString &pubKey);
 
     static NetworkRequest *createForDeviceRemoval(QObject *parent,
-                                                  MozillaVPN *vpn,
                                                   const QString &pubKey);
 
-    static NetworkRequest *createForServers(QObject *parent, MozillaVPN *vpn);
+    static NetworkRequest *createForServers(QObject *parent);
 
-    static NetworkRequest *createForAccount(QObject *parent, MozillaVPN *vpn);
+    static NetworkRequest *createForAccount(QObject *parent);
 
-    static NetworkRequest *createForVersions(QObject *parent, MozillaVPN *vpn);
+    static NetworkRequest *createForVersions(QObject *parent);
 
-    static NetworkRequest *createForIpInfo(QObject *parent, MozillaVPN *vpn);
+    static NetworkRequest *createForIpInfo(QObject *parent);
 
     static NetworkRequest *createForCaptivePortalDetection(QObject *parent,
                                                            const QUrl &url,
@@ -52,10 +48,9 @@ public:
                                         const QByteArray &dohHost);
 
 #ifdef IOS_INTEGRATION
-    static NetworkRequest *createForIOSProducts(QObject *parent, MozillaVPN *vpn);
+    static NetworkRequest *createForIOSProducts(QObject *parentn);
 
     static NetworkRequest *createForIOSPurchase(QObject *parent,
-                                                MozillaVPN *vpn,
                                                 const QString &orderId);
 #endif
 

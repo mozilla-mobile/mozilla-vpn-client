@@ -19,7 +19,7 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
 
     // Account fetch
     {
-        NetworkRequest *request = NetworkRequest::createForAccount(this, vpn);
+        NetworkRequest *request = NetworkRequest::createForAccount(this);
 
         connect(request,
                 &NetworkRequest::requestFailed,
@@ -40,7 +40,7 @@ void TaskAccountAndServers::run(MozillaVPN *vpn)
 
     // Server list fetch
     {
-        NetworkRequest *request = NetworkRequest::createForServers(this, vpn);
+        NetworkRequest *request = NetworkRequest::createForServers(this);
 
         connect(request,
                 &NetworkRequest::requestFailed,

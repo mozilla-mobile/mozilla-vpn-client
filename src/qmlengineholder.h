@@ -5,12 +5,11 @@
 #ifndef QMLENGINEHOLDER_H
 #define QMLENGINEHOLDER_H
 
-#include <QObject>
+#include "networkmanager.h"
+
 #include <QQmlApplicationEngine>
 
-class QNetworkAccessManager;
-
-class QmlEngineHolder final : public QObject
+class QmlEngineHolder final : public NetworkManager
 {
 public:
     QmlEngineHolder();
@@ -20,7 +19,7 @@ public:
 
     QQmlApplicationEngine *engine() { return &m_engine; }
 
-    QNetworkAccessManager *networkAccessManager();
+    QNetworkAccessManager *networkAccessManager() override;
 
     void showWindow();
 

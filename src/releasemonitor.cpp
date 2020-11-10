@@ -33,7 +33,7 @@ void ReleaseMonitor::runInternal()
 {
     logger.log() << "ReleaseMonitor started";
 
-    NetworkRequest *request = NetworkRequest::createForVersions(this, MozillaVPN::instance());
+    NetworkRequest *request = NetworkRequest::createForVersions(this);
 
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
         logger.log() << "Versions request failed" << error;
