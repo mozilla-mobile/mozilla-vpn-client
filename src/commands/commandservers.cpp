@@ -60,12 +60,8 @@ int CommandServers::run(QStringList &tokens)
         QEventLoop loop;
         QObject::connect(task, &Task::completed, [&] { loop.exit(); });
         loop.exec();
-    } else {
-        if (!vpn.serverCountryModel()->fromSettings()) {
-            QTextStream stream(stdout);
-            stream << "No cache available" << Qt::endl;
-            return 0;
-        }
+    } else if (!loadModels()) {
+        return 0;
     }
 
     QTextStream stream(stdout);
@@ -76,10 +72,10 @@ int CommandServers::run(QStringList &tokens)
                << Qt::endl;
         for (const ServerCity &city : country.cities()) {
             stream << "  - City: " << city.name() << " (" << city.code() << ")" << Qt::endl;
-            if (verboseOption.m_set) {
-                for (const Server &server : city.getServers()) {
-                    stream << "    - Server:" << Qt::endl;
-                    stream << "        hostname: " << server.hostname() << Qt::endl;
+            for (const Server &server : city.getServers()) {
+                stream << "    - Server: " << server.hostname() << Qt::endl;
+
+                if (verboseOption.m_set) {
                     stream << "        ipv4 addr-in: " << server.ipv4AddrIn() << Qt::endl;
                     stream << "        ipv4 gateway: " << server.ipv4Gateway() << Qt::endl;
                     stream << "        ipv6 addr-in: " << server.ipv6AddrIn() << Qt::endl;

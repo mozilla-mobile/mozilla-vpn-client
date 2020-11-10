@@ -17,10 +17,30 @@ CommandStatus::CommandStatus() : Command("status", "Show the current VPN status.
 int CommandStatus::run(QStringList &tokens)
 {
     Q_ASSERT(!tokens.isEmpty());
+    QString app = tokens[0];
 
-    if (tokens.length() > 1) {
+    CommandLineParser clp;
+
+    QList<CommandLineParser::Option *> options;
+
+    CommandLineParser::Option hOption = CommandLineParser::helpOption();
+    options.append(&hOption);
+
+    CommandLineParser::Option cacheOption("c", "cache", "From Cache");
+    options.append(&cacheOption);
+
+    if (clp.parse(tokens, options, false)) {
+        return 1;
+    }
+
+    if (!tokens.isEmpty()) {
         QList<CommandLineParser::Option *> options;
         return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+    }
+
+    if (hOption.m_set) {
+        clp.showHelp(app, options, false, false);
+        return 0;
     }
 
     if (!userAuthenticated()) {
@@ -33,12 +53,19 @@ int CommandStatus::run(QStringList &tokens)
     SimpleNetworkManager snm;
 
     MozillaVPN vpn;
-    TaskAccountAndServers* task = new TaskAccountAndServers();
-    task->run(&vpn);
 
-    QEventLoop loop;
-    QObject::connect(task, &Task::completed, [&] { loop.exit(); });
-    loop.exec();
+    if (!loadModels()) {
+        return 1;
+    }
+
+    if (!cacheOption.m_set) {
+        TaskAccountAndServers *task = new TaskAccountAndServers();
+        task->run(&vpn);
+
+        QEventLoop loop;
+        QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+        loop.exec();
+    }
 
     User *user = vpn.user();
     Q_ASSERT(user);
