@@ -681,8 +681,9 @@ void MozillaVPN::postAuthenticationCompleted()
         return;
     }
 
-    int deviceCount = m_private->m_deviceModel.activeDevices();
-    if (deviceCount >= m_private->m_user.maxDevices()) {
+    QString deviceName = Device::currentDeviceName();
+    if (!m_private->m_deviceModel.hasDevice(deviceName)) {
+        Q_ASSERT(m_private->m_deviceModel.activeDevices() == m_private->m_user.maxDevices());
         setState(StateDeviceLimit);
         return;
     }
