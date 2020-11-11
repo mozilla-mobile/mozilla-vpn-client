@@ -183,6 +183,10 @@ void MozillaVPN::initialize()
         return;
     }
 
+    if (!m_private->m_captivePortal.fromSettings()) {
+        // We do not care about CaptivePortal settings.
+    }
+
     if (!modelsInitialized()) {
         logger.log() << "Models not initialized yet";
         settingsHolder->clear();

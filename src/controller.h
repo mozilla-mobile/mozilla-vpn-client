@@ -99,7 +99,7 @@ private:
 
     bool processNextStep();
 
-    QList<IPAddressRange> getAllowedIPAddressRanges(const CaptivePortal &captivePortal);
+    QList<IPAddressRange> getAllowedIPAddressRanges();
 
 private:
     State m_state = StateInitializing;
