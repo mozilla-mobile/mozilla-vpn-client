@@ -145,6 +145,9 @@ HEADERS += \
         timersingleshot.h
 
 debug {
+    QT+= testlib
+    CONFIG += no_testcase_installs
+
     SOURCES += \
             inspector/inspectorconnection.cpp \
             inspector/inspectorserver.cpp

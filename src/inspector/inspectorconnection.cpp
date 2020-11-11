@@ -8,7 +8,9 @@
 #include "qmlengineholder.h"
 
 #include <QQuickItem>
+#include <QQuickWindow>
 #include <QTcpSocket>
+#include <QTest>
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorConnection");
@@ -80,7 +82,7 @@ void InspectorConnection::parseCommand(const QString &command)
             return;
         }
 
-        QObject *obj = findObject(parts[1]);
+        QQuickItem *obj = findObject(parts[1]);
         if (!obj) {
             m_connection->write("ko\n");
             return;
@@ -96,7 +98,7 @@ void InspectorConnection::parseCommand(const QString &command)
             return;
         }
 
-        QObject *obj = findObject(parts[1]);
+        QQuickItem *obj = findObject(parts[1]);
         if (!obj) {
             m_connection->write("ko\n");
             return;
@@ -113,6 +115,28 @@ void InspectorConnection::parseCommand(const QString &command)
         return;
     }
 
+    if (parts[0].trimmed() == "click") {
+        if (parts.length() != 2) {
+            tooManyArguments(1);
+            return;
+        }
+
+        QQuickItem *obj = findObject(parts[1]);
+        if (!obj) {
+            m_connection->write("ko\n");
+            return;
+        }
+
+        QPointF pointF = obj->mapToScene(QPoint(0, 0));
+        QPoint point = pointF.toPoint();
+        point.rx() += obj->width() / 2;
+        point.ry() += obj->height() / 2;
+        QTest::mouseClick(obj->window(), Qt::LeftButton, Qt::NoModifier, point);
+
+        m_connection->write("ok\n");
+        return;
+    }
+
     m_connection->write("invalid command\n");
 }
 
@@ -121,7 +145,7 @@ void InspectorConnection::tooManyArguments(int arguments)
     m_connection->write(QString("too many arguments (%1 expected)\n").arg(arguments).toLocal8Bit());
 }
 
-QObject *InspectorConnection::findObject(const QString &name)
+QQuickItem *InspectorConnection::findObject(const QString &name)
 {
     QQmlApplicationEngine *engine = QmlEngineHolder::instance()->engine();
     for (QObject *rootObject : engine->rootObjects()) {
@@ -129,7 +153,7 @@ QObject *InspectorConnection::findObject(const QString &name)
             continue;
         }
 
-        QObject *obj = rootObject->findChild<QQuickItem *>(name);
+        QQuickItem *obj = rootObject->findChild<QQuickItem *>(name);
         if (obj) {
             return obj;
         }
