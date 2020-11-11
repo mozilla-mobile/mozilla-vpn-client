@@ -23,7 +23,7 @@ private slots:
     void readData();
     void parseCommand(const QString &command);
     void tooManyArguments(int arguments);
-    QObject *findObject(const QString &name);
+    QQuickItem *findObject(const QString &name);
 
 private:
     QTcpSocket *m_connection;
