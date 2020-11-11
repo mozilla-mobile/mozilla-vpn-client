@@ -9,14 +9,23 @@
 print N "This script runs functiona tests"
 print N ""
 
-# TODO: support the execution for macos and windows
-if ! [ -f "src/mozillavpn" ] || ! [ -d "tests" ]; then
+if [ "$1" == "" ] || ! [ -f "$1" ]; then
+  print G "Usage:"
+  print N "\t$0 /path/mozillavpn"
+  exit 1
+fi
+
+if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
+printn Y "Retrieving mozillavpn version... "
+$1 -v 2>/dev/null || die "Failed."
+print G "done."
+
 for i in tests/functional/test*; do
   print Y "Running the app..."
-  ./src/mozillavpn &>/dev/null &
+  $1 &>/dev/null &
   PID=$!
   print G "done."
 
