@@ -70,14 +70,15 @@ module.exports = {
     assert(await this.hasElement(id), 'Property checks must be done on existing elements');
     const buffer = await this._writeCommand(`property ${id} ${property}`);
     if (buffer == 'ko') return null;
-    return buffer;
+    if (buffer[0] != '-' || buffer[buffer.length - 1] != '-') return null;
+    return buffer.substring(1, buffer.length - 1);
   },
 
   async waitForElementProperty(id, property, value) {
     assert(await this.hasElement(id), 'Property checks must be done on existing elements');
     for (let i = 0; i < 10; ++i) {
       const real = await this.getElementProperty(id, property);
-      if (real == `-${value}-`) return;
+      if (real == value) return;
       await this.wait();
     }
     throw new Error('Timeout for element property');

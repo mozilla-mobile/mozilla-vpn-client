@@ -25,6 +25,7 @@ describe('Run and quit', function() {
     // TODO: we should check more elements.
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
   });
 
   it('Open the help menu', async () => {
@@ -37,10 +38,19 @@ describe('Run and quit', function() {
 
   it('Go back to the main view', async() => {
     await vpn.clickOnElement('getHelpBack');
-    await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+
+    // This is needed just for humans. The UI is already in the other state
+    // before completing the animation.
+    await vpn.wait();
+  });
+
+  it('Open onboarding', async() => {
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+
+    await vpn.clickOnElement('learnMoreLink');
 
     // This is needed just for humans. The UI is already in the other state
     // before completing the animation.

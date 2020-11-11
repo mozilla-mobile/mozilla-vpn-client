@@ -54,6 +54,7 @@ Item {
 
     VPNFooterLink {
         id: learnMore
+        objectName: "learnMoreLink"
 
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
