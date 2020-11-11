@@ -208,7 +208,7 @@ void MozillaVPN::initialize()
     scheduleTask(new TaskIOSProducts());
 #endif
 
-    setState(StateMain);
+    maybeStateMain();
     setUserAuthenticated(true);
 }
 
@@ -227,6 +227,27 @@ void MozillaVPN::setState(State state)
         m_private->m_connectionDataHolder.disable();
         stopSchedulingPeriodicOperations();
     }
+}
+
+void MozillaVPN::maybeStateMain()
+{
+    logger.log() << "Maybe state main";
+
+#ifdef IOS_INTEGRATION
+    if (m_private->m_user.subscriptionNeeded()) {
+        setState(StateSubscriptionNeeded);
+        return;
+    }
+#endif
+
+    QString deviceName = Device::currentDeviceName();
+    if (!m_private->m_deviceModel.hasDevice(deviceName)) {
+        Q_ASSERT(m_private->m_deviceModel.activeDevices() == m_private->m_user.maxDevices());
+        setState(StateDeviceLimit);
+        return;
+    }
+
+    setState(StateMain);
 }
 
 void MozillaVPN::authenticate()
@@ -495,7 +516,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
             return;
         }
 
-        setState(StateMain);
+        maybeStateMain();
     }));
 }
 
@@ -520,7 +541,8 @@ void MozillaVPN::accountChecked(const QByteArray &json)
 
 #ifdef IOS_INTEGRATION
     if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-        m_private->m_controller.subscriptionNeeded();
+        maybeStateMain();
+        return;
     }
 #endif
 
@@ -669,21 +691,7 @@ void MozillaVPN::postAuthenticationCompleted()
         return;
     }
 
-    QString deviceName = Device::currentDeviceName();
-    if (!m_private->m_deviceModel.hasDevice(deviceName)) {
-        Q_ASSERT(m_private->m_deviceModel.activeDevices() == m_private->m_user.maxDevices());
-        setState(StateDeviceLimit);
-        return;
-    }
-
-#ifdef IOS_INTEGRATION
-    if (m_private->m_user.subscriptionNeeded()) {
-        setState(StateSubscriptionNeeded);
-        return;
-    }
-#endif
-
-    setState(StateMain);
+    maybeStateMain();
 }
 
 void MozillaVPN::setUpdateRecommended(bool value)
@@ -716,18 +724,36 @@ void MozillaVPN::subscribe()
     logger.log() << "Subscription required";
 
 #ifdef IOS_INTEGRATION
+    startIAP(false /* restore */);
+#endif
+}
+
+void MozillaVPN::restoreSubscription()
+{
+    logger.log() << "Restore subscription";
+
+#ifdef IOS_INTEGRATION
+    startIAP(true /* restore */);
+#endif
+}
+
+#ifdef IOS_INTEGRATION
+void MozillaVPN::startIAP(bool restore)
+{
     IAPHandler *iap = new IAPHandler(this);
 
     connect(iap, &IAPHandler::completed, [this]() {
         logger.log() << "Subscription completed";
         scheduleTask(new TaskAccountAndServers());
+
+        scheduleTask(new TaskFunction([this](MozillaVPN *) { maybeStateMain(); }));
     });
 
     connect(iap, &IAPHandler::failed, [] { logger.log() << "Subscription failed"; });
 
-    iap->start();
-#endif
+    iap->start(restore);
 }
+#endif
 
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
 {

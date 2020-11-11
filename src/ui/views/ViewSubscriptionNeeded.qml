@@ -66,7 +66,7 @@ VPNFlickable {
     VPNPanel {
         id: vpnPanel
 
-        // TO DO: Get pricing from settings?
+        // TODO: Get pricing from settings?
         //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
         //% "Subscribe for %1/mo"
         logoTitle: qsTrId("vpn.subscription.title").arg(Number(4.99).toLocaleCurrencyString(Qt.locale(VPNSettings.languageCode)))
@@ -164,10 +164,7 @@ VPNFlickable {
             //% "Restore purchases"
             labelText: qsTrId("vpn.main.restorePurchases")
             Layout.alignment: Qt.AlignHCenter
-            onClicked: {
-                // TODO
-                console.log("What should happen when we click 'Restore Purchases'?");
-            }
+            onClicked: VPN.restoreSubscription()
         }
 
         VPNSignOut {
@@ -176,7 +173,6 @@ VPNFlickable {
             anchors.horizontalCenter: undefined
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
-                stackview.pop(StackView.Immediate);
                 VPNController.logout();
             }
         }

@@ -98,6 +98,7 @@ public:
     Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
     Q_INVOKABLE void postAuthenticationCompleted();
     Q_INVOKABLE void subscribe();
+    Q_INVOKABLE void restoreSubscription();
     Q_INVOKABLE void viewLogs();
     Q_INVOKABLE QString retrieveLogs();
 
@@ -161,6 +162,8 @@ public:
 private:
     void setState(State state);
 
+    void maybeStateMain();
+
     void scheduleTask(Task *task);
     void maybeRunTask();
 
@@ -176,6 +179,10 @@ private:
 
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
+
+#ifdef IOS_INTEGRATION
+    void startIAP(bool restore);
+#endif
 
 public slots:
     void requestSettings();
