@@ -5,8 +5,8 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include "../src/mozillavpn.h"
-#include "../src/controller.h"
+#include "../../src/mozillavpn.h"
+#include "../../src/controller.h"
 
 #include <QObject>
 #include <QVector>

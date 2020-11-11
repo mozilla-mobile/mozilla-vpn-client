@@ -12,7 +12,7 @@ REPORT_FILE=/tmp/report.html
 print N "This script runs tests and show the coverage"
 print N ""
 
-if ! [ -d "src" ] && ! [ -d "tests" ]; then
+if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
@@ -21,7 +21,7 @@ make || die "Failed to compile"
 print G "done."
 
 print Y "Running tests..."
-./tests/tests || die "Failed to run tests"
+./tests/unit/tests || die "Failed to run tests"
 print G "done."
 
 if ! [ -f $LLVM_PROFILE_FILE ]; then
@@ -33,8 +33,8 @@ llvm-profdata-10 merge $LLVM_PROFILE_FILE -o $LLVM_PROFILE_FILE-final || die "Fa
 print G "done."
 
 print Y "Report:"
-llvm-cov-10 report ./tests/tests -instr-profile=$LLVM_PROFILE_FILE-final src
+llvm-cov-10 report ./tests/unit/tests -instr-profile=$LLVM_PROFILE_FILE-final src
 
 printn Y "Generating the HTML report... "
-llvm-cov-10 show ./tests/tests -instr-profile=$LLVM_PROFILE_FILE-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
+llvm-cov-10 show ./tests/unit/tests -instr-profile=$LLVM_PROFILE_FILE-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
 print G $REPORT_FILE
