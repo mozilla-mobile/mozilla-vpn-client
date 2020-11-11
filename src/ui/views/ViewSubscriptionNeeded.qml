@@ -105,7 +105,7 @@ VPNFlickable {
         VPNCallout {
             //% "No activity logs"
             calloutTitle: qsTrId("vpn.subscription.featureTitle1")
-            //% "We're Mozilla. We're on your side."
+            //% "We’re Mozilla. We’re on your side."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
             calloutImage: "../resources/onboarding/onboarding1.svg"
         }
@@ -129,7 +129,7 @@ VPNFlickable {
         VPNCallout {
             //% "Connect up to %1 devices"
             calloutTitle: qsTrId("vpn.subscription.featureTitle4").arg(VPNUser.maxDevices)
-            //% "We won't restrict your bandwidth."
+            //% "We won’t restrict your bandwidth."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle4")
             calloutImage: "../resources/onboarding/onboarding4.svg"
         }
