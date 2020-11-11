@@ -41,7 +41,7 @@ Item {
             anchors.leftMargin: Theme.windowMargin
             width: parent.width
             //% "System"
-            //: The system language
+            //: Language of the system.
             text: qsTrId("vpn.settings.system")
             Accessible.role: Accessible.Heading
         }
@@ -83,7 +83,7 @@ Item {
             anchors.leftMargin: Theme.windowMargin
             width: parent.width
             //% "Additional"
-            //: List of the additional languages
+            //: Header for the additional languages in settings
             text: qsTrId("vpn.settings.additional")
             Accessible.role: Accessible.Heading
         }

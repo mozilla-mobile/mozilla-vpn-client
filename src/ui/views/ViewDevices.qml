@@ -174,11 +174,12 @@ Item {
 
                                     const diff = (Date.now() - createdAt.valueOf()) / 1000;
                                     if (diff < 3600)
-                                         //% "Added less than an hour ago"
+                                        //% "Added less than an hour ago"
                                         return qsTrId("vpn.devices.addedltHour");
 
                                     if (diff < 86400)
-                                         //% "Added a few hours ago (%1)"
+                                        //: %1 is the number of hours.
+                                        //% "Added a few hours ago (%1)"
                                         return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
 
                                     //% "Added %1 days ago"
@@ -207,7 +208,7 @@ Item {
                             Layout.preferredHeight: 40
                             Layout.preferredWidth: 40
                             onClicked: removePopup.initializeAndOpen(name, index)
-                            //: Label used for accessibility on the button to remove a device
+                            //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
                             //% "Remove %1"
                             accessibleName: qsTrId("vpn.devices.removeA11Y").arg(device.accessibleName)
                             // Only allow focus within the current item in the list.

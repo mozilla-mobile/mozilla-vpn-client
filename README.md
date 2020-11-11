@@ -31,7 +31,7 @@ sudo apt install sudo clang build-dep qt5-default libxcb-xinerama0-dev
 bash scripts/qt5_compile.sh qt qt
 ```
 
-See https://wiki.qt.io/Building\_Qt\_5\_from\_Git#Linux.2FX11 if you get stuck or are on another distro.
+See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or are on another distro.
 
 Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
