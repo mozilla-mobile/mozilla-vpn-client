@@ -76,6 +76,8 @@ fi
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$FULLVERSION \
+  CONFIG-=debug \
+  CONFIG+=release \
   -spec macx-xcode \
   $PLATFORM \
   src/src.pro  || die "Compilation failed"
