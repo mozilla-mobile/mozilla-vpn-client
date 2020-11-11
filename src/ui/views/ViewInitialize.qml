@@ -12,6 +12,7 @@ Item {
 
     VPNHeaderLink {
         id: headerLink
+        objectName: "getHelpLink"
 
         labelText: qsTrId("vpn.main.getHelp")
         onClicked: stackview.push(getHelpComponent)

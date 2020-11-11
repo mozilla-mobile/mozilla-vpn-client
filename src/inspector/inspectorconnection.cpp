@@ -4,7 +4,10 @@
 
 #include "inspectorconnection.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "qmlengineholder.h"
 
+#include <QQuickItem>
 #include <QTcpSocket>
 
 namespace {
@@ -40,6 +43,97 @@ void InspectorConnection::readData()
         QByteArray line = m_buffer.left(pos);
         m_buffer.remove(0, pos + 1);
 
-        logger.log() << "LINE:" << line;
+        QString command(line);
+        command = command.trimmed();
+
+        if (command.isEmpty()) {
+            continue;
+        }
+
+        parseCommand(command);
     }
+}
+
+void InspectorConnection::parseCommand(const QString &command)
+{
+    Q_ASSERT(!command.isEmpty());
+
+    logger.log() << "command received: " << command;
+
+    QStringList parts = command.split(" ");
+    Q_ASSERT(!parts.isEmpty());
+
+    if (parts[0].trimmed() == "quit") {
+        if (parts.length() != 1) {
+            tooManyArguments(0);
+            return;
+        }
+
+        m_connection->write("ok\n");
+        MozillaVPN::instance()->controller()->quit();
+        return;
+    }
+
+    if (parts[0].trimmed() == "has") {
+        if (parts.length() != 2) {
+            tooManyArguments(1);
+            return;
+        }
+
+        QObject *obj = findObject(parts[1]);
+        if (!obj) {
+            m_connection->write("ko\n");
+            return;
+        }
+
+        m_connection->write("ok\n");
+        return;
+    }
+
+    if (parts[0].trimmed() == "property") {
+        if (parts.length() != 3) {
+            tooManyArguments(2);
+            return;
+        }
+
+        QObject *obj = findObject(parts[1]);
+        if (!obj) {
+            m_connection->write("ko\n");
+            return;
+        }
+
+        QVariant property = obj->property(parts[2].toLocal8Bit());
+        if (!property.isValid()) {
+            m_connection->write("ko\n");
+            return;
+        }
+
+        m_connection->write(
+            QString("-%1-\n").arg(property.toString().toHtmlEscaped()).toLocal8Bit());
+        return;
+    }
+
+    m_connection->write("invalid command\n");
+}
+
+void InspectorConnection::tooManyArguments(int arguments)
+{
+    m_connection->write(QString("too many arguments (%1 expected)\n").arg(arguments).toLocal8Bit());
+}
+
+QObject *InspectorConnection::findObject(const QString &name)
+{
+    QQmlApplicationEngine *engine = QmlEngineHolder::instance()->engine();
+    for (QObject *rootObject : engine->rootObjects()) {
+        if (!rootObject) {
+            continue;
+        }
+
+        QObject *obj = rootObject->findChild<QQuickItem *>(name);
+        if (obj) {
+            return obj;
+        }
+    }
+
+    return nullptr;
 }
