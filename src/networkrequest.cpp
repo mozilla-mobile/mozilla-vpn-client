@@ -239,6 +239,7 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
     Q_ASSERT(parent);
 
     NetworkRequest *r = new NetworkRequest(parent);
+    r->m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QByteArray authorizationHeader = "Bearer ";
     authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -250,6 +251,7 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
 
     QJsonObject obj;
     obj.insert("receipt", QJsonValue(orderId));
+    obj.insert("appId", "org.mozilla.ios.FirefoxVPN");
 
     QJsonDocument json;
     json.setObject(obj);
