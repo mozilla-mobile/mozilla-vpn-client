@@ -50,10 +50,10 @@ int CommandUI::run(QStringList &tokens)
         QString appName = tokens[0];
 
         CommandLineParser::Option hOption = CommandLineParser::helpOption();
-        CommandLineParser::Option minimizedOption("m", "minimized", "Start minimized");
+        CommandLineParser::Option minimizedOption("m", "minimized", "Start minimized.");
         CommandLineParser::Option startAtBootOption("s",
                                                     "start-at-boot",
-                                                    "Start at boot (if configured)");
+                                                    "Start at boot (if configured).");
 
         QList<CommandLineParser::Option *> options;
         options.append(&hOption);

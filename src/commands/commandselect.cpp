@@ -10,7 +10,7 @@
 
 #include <QTextStream>
 
-CommandSelect::CommandSelect() : Command("select", "Select a server") {}
+CommandSelect::CommandSelect() : Command("select", "Select a server.") {}
 
 int CommandSelect::run(QStringList &tokens)
 {
