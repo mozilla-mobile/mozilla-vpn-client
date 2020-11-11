@@ -288,6 +288,10 @@ int CommandUI::run(QStringList &tokens)
 
 #ifdef QT_DEBUG
         InspectorServer inspectServer;
+        QObject::connect(vpn.controller(),
+                         &Controller::readyToQuit,
+                         &inspectServer,
+                         &InspectorServer::close);
 #endif
 
         // Let's go.

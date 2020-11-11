@@ -65,6 +65,17 @@ void InspectorConnection::parseCommand(const QString &command)
     QStringList parts = command.split(" ");
     Q_ASSERT(!parts.isEmpty());
 
+    if (parts[0].trimmed() == "reset") {
+        if (parts.length() != 1) {
+            tooManyArguments(0);
+            return;
+        }
+
+        m_connection->write("ok\n");
+        MozillaVPN::instance()->reset();
+        return;
+    }
+
     if (parts[0].trimmed() == "quit") {
         if (parts.length() != 1) {
             tooManyArguments(0);
