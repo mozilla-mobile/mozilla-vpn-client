@@ -100,7 +100,6 @@ VPNFlickable {
     VPNButton {
         id: manageAccountButton
 
-        //: "Manage account"
         text: qsTrId("vpn.main.manageAccount")
         anchors.top: vpnPanel.bottom
         anchors.topMargin: Theme.vSpacing
@@ -111,7 +110,6 @@ VPNFlickable {
     VPNCheckBoxRow {
         id: startAtBootCheckBox
 
-        //: The back of the object, not the front
         //% "Launch VPN app on Startup"
         labelText: qsTrId("vpn.settings.runOnBoot")
         subLabelText: ""

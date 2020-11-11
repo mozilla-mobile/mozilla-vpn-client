@@ -67,6 +67,7 @@ VPNFlickable {
         id: vpnPanel
 
         // TO DO: Get pricing from settings?
+        //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
         //% "Subscribe for %1/mo"
         logoTitle: qsTrId("vpn.subscription.title").arg(Number(4.99).toLocaleCurrencyString(Qt.locale(VPNSettings.languageCode)))
         //% "30-day money-back guarantee"
@@ -105,7 +106,7 @@ VPNFlickable {
         VPNCallout {
             //% "No activity logs"
             calloutTitle: qsTrId("vpn.subscription.featureTitle1")
-            //% "We're Mozilla. We're on your side."
+            //% "We’re Mozilla. We’re on your side."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
             calloutImage: "../resources/onboarding/onboarding1.svg"
         }
@@ -119,6 +120,7 @@ VPNFlickable {
         }
 
         VPNCallout {
+            //: The + after each variable stands for “more than”.
             //% "%1+ servers in %2+ countries"
             calloutTitle: qsTrId("vpn.subscription.featureTitle3").arg(getNumServers()).arg(formatNumberForCallout(VPNServerCountryModel.rowCount()))
             //% "Protect your access to the web."
@@ -129,7 +131,7 @@ VPNFlickable {
         VPNCallout {
             //% "Connect up to %1 devices"
             calloutTitle: qsTrId("vpn.subscription.featureTitle4").arg(VPNUser.maxDevices)
-            //% "We won't restrict your bandwidth."
+            //% "We won’t restrict your bandwidth."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle4")
             calloutImage: "../resources/onboarding/onboarding4.svg"
         }

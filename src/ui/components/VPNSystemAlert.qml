@@ -88,7 +88,7 @@ VPNAlert {
                 //% "Background service error"
                 alertText: qsTrId("vpn.alert.backgroundServiceError")
                 //% "Restore"
-                //: Restore a service in case of an Error
+                //: Restore a service in case of error.
                 alertLinkText: qsTrId("vpn.alert.restore")
                 opacity: 1
                 visible: true
