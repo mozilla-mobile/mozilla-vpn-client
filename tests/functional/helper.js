@@ -7,14 +7,14 @@ const net = require('net');
 const client = new net.Socket();
 
 module.exports = {
-  _waitRead: null,
-
   async connect() {
     client.on('data', (data) => {
       assert(this._waitRead, 'No waiting callback?');
-      const wr = this._waitRead;
-      this._waitRead = null;
-      wr(String.fromCharCode.apply(String, data).trim());
+      this._resolveWaitRead(String.fromCharCode.apply(String, data).trim());
+    });
+
+    client.on('close', () => {
+      this._resolveWaitRead('');
     });
 
     for (let i = 0; i < 10; ++i) {
@@ -41,7 +41,7 @@ module.exports = {
 
   async quit() {
     const buffer = await this._writeCommand('quit');
-    assert(buffer == 'ok', 'Invalid answer');
+    assert(buffer == 'ok' || buffer == '', 'Invalid answer');
   },
 
   async hasElement(id) {
@@ -94,5 +94,14 @@ module.exports = {
       this._waitRead = resolve;
       client.write(`${command}\n`);
     });
+  },
+
+  _waitRead: null,
+  _resolveWaitRead(data) {
+    if (this._waitRead) {
+      const wr = this._waitRead;
+      this._waitRead = null;
+      wr(data);
+    }
   },
 };

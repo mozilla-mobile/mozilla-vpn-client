@@ -32,7 +32,7 @@ for i in tests/functional/test*; do
   print Y "Running the test: $i"
   mocha $i || ERROR=yes
 
-  wait
+  wait $PID
 
   if [ "$ERROR" = yes ]; then
     print R "Nooo"

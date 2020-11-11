@@ -19,7 +19,7 @@ describe('Run and quit', function() {
 
   after(() => vpn.disconnect());
 
-  it('reset the app', () => vpn.reset());
+  it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
     // TODO: we should check more elements.
@@ -47,5 +47,5 @@ describe('Run and quit', function() {
     await vpn.wait();
   });
 
-  it('quit the app', () => vpn.quit());
+  it('quit the app', async () => await vpn.quit());
 });
