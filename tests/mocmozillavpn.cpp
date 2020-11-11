@@ -132,6 +132,8 @@ void MozillaVPN::subscribe()
 {
 }
 
+void MozillaVPN::restoreSubscription() {}
+
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation)
 {
     return true;
