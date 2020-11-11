@@ -240,6 +240,14 @@ void MozillaVPN::maybeStateMain()
     }
 #endif
 
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    if (!settingsHolder->hasPostAuthenticationShown()
+        || !settingsHolder->postAuthenticationShown()) {
+        settingsHolder->setPostAuthenticationShown(true);
+        setState(StatePostAuthentication);
+        return;
+    }
+
     QString deviceName = Device::currentDeviceName();
     if (!m_private->m_deviceModel.hasDevice(deviceName)) {
         Q_ASSERT(m_private->m_deviceModel.activeDevices() == m_private->m_user.maxDevices());
@@ -377,7 +385,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     if (m_private->m_user.subscriptionNeeded()) {
         scheduleTask(new TaskIOSProducts());
         scheduleTask(new TaskFunction([this](MozillaVPN*) {
-            setState(StatePostAuthentication);
+            maybeStateMain();
         }));
         return;
     }
@@ -395,7 +403,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
         // We need to go to "device limit" mode after the post-authentication state.
         scheduleTask(new TaskFunction([this](MozillaVPN *) {
             if (m_state == StateAuthenticating) {
-                setState(StatePostAuthentication);
+                maybeStateMain();
             }
         }));
 
@@ -427,7 +435,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
         Q_ASSERT(m_private->m_serverData.initialized());
 
-        setState(StatePostAuthentication);
+        maybeStateMain();
     }));
 }
 

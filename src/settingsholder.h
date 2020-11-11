@@ -62,6 +62,7 @@ public:
            hasCaptivePortalIpv6Addresses,
            captivePortalIpv6Addresses,
            setCaptivePortalIpv6Addresses)
+    GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown, setPostAuthenticationShown);
 
 #ifdef IOS_INTEGRATION
     GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated, setNativeIOSDataMigrated)

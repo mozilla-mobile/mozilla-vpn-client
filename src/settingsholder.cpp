@@ -35,6 +35,7 @@ constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 constexpr const char *SETTINGS_CAPTIVEPORTALIPV4ADDRESSES = "captivePortal/ipv4Addresses";
 constexpr const char *SETTINGS_CAPTIVEPORTALIPV6ADDRESSES = "captivePortal/ipv6Addresses";
+constexpr const char *SETTINGS_POSTAUTHENTICATIONSHOWN = "postAuthenticationShown";
 
 #ifdef IOS_INTEGRATION
 constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -234,6 +235,12 @@ GETSET(QStringList,
        hasCaptivePortalIpv6Addresses,
        captivePortalIpv6Addresses,
        setCaptivePortalIpv6Addresses)
+GETSET(bool,
+       toBool,
+       SETTINGS_POSTAUTHENTICATIONSHOWN,
+       hasPostAuthenticationShown,
+       postAuthenticationShown,
+       setPostAuthenticationShown);
 
 #ifdef IOS_INTEGRATION
 GETSET(bool,
