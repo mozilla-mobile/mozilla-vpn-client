@@ -21,7 +21,7 @@ int CommandStatus::run(QStringList &tokens)
         QString appName = tokens[0];
 
         CommandLineParser::Option hOption = CommandLineParser::helpOption();
-        CommandLineParser::Option cacheOption("c", "cache", "From Cache");
+        CommandLineParser::Option cacheOption("c", "cache", "From local cache.");
 
         QList<CommandLineParser::Option *> options;
         options.append(&hOption);

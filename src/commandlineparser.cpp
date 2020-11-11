@@ -197,5 +197,5 @@ void CommandLineParser::showHelp(const QString &app,
 // static
 CommandLineParser::Option CommandLineParser::helpOption()
 {
-    return Option("h", "help", "Displays help on commandline options");
+    return Option("h", "help", "Displays help on commandline options.");
 }
