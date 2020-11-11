@@ -9,6 +9,7 @@
 #include <QObject>
 
 class QTcpSocket;
+class QQuickItem;
 
 class InspectorConnection : public QObject
 {
@@ -20,6 +21,9 @@ public:
 
 private slots:
     void readData();
+    void parseCommand(const QString &command);
+    void tooManyArguments(int arguments);
+    QObject *findObject(const QString &name);
 
 private:
     QTcpSocket *m_connection;
