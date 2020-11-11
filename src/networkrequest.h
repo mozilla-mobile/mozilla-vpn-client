@@ -46,10 +46,10 @@ public:
     static NetworkRequest *createForCaptivePortalLookup(QObject *parent);
 
 #ifdef IOS_INTEGRATION
-    static NetworkRequest *createForIOSProducts(QObject *parentn);
+    static NetworkRequest *createForIOSProducts(QObject *parent);
 
     static NetworkRequest *createForIOSPurchase(QObject *parent,
-                                                const QString &orderId);
+                                                const QString &receipt);
 #endif
 
 private:

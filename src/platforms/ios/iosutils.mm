@@ -12,3 +12,11 @@ QString IOSUtils::computerName()
     NSString *name = [[UIDevice currentDevice] name];
     return QString::fromNSString(name);
 }
+
+// static
+QByteArray IOSUtils::IAPReceipt()
+{
+    NSURL *url = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSData *content = [NSData dataWithContentsOfURL: url];
+    return QByteArray::fromNSData(content);
+}

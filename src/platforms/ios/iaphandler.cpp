@@ -4,6 +4,7 @@
 
 #include "platforms/ios/iaphandler.h"
 #include "logger.h"
+#include "iosutils.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
@@ -55,7 +56,7 @@ void IAPHandler::start(bool restore)
 
         case QInAppTransaction::PurchaseApproved:
             logger.log() << "Purchase approved";
-            purchaseCompleted(transaction->orderId());
+            purchaseCompleted();
             break;
 
         case QInAppTransaction::PurchaseRestored:
@@ -83,9 +84,11 @@ void IAPHandler::start(bool restore)
     logger.log() << "Waiting for the registreation of products";
 }
 
-void IAPHandler::purchaseCompleted(const QString& orderId)
+void IAPHandler::purchaseCompleted()
 {
-    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, orderId);
+    QByteArray receipt = IOSUtils::IAPReceipt();
+    QByteArray receipt64 = receipt.toBase64();
+    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, receipt64);
 
     connect(request,
             &NetworkRequest::requestFailed,
