@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testconnectiondataholder.h"
-#include "../src/connectiondataholder.h"
-#include "../src/constants.h"
+#include "../../src/connectiondataholder.h"
+#include "../../src/constants.h"
 #include "helper.h"
 
 #include <QSplineSeries>

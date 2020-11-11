@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testlocalizer.h"
-#include "../src/localizer.h"
+#include "../../src/localizer.h"
 #include "helper.h"
 #include "settingsholder.h"
 
