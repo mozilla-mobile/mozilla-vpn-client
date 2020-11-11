@@ -79,8 +79,10 @@ $QMAKE \
   CONFIG-=debug \
   CONFIG+=release \
   -spec macx-xcode \
+  CONFIG-=debug \
+  CONFIG+=release \
   $PLATFORM \
-  src/src.pro  || die "Compilation failed"
+  src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
 ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$1" || die "Failed to merge xcode with wireguard"
