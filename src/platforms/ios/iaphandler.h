@@ -16,7 +16,7 @@ class IAPHandler final : public QObject
 public:
     IAPHandler(QObject *parent) : QObject(parent) {}
 
-    void start();
+    void start(bool restore);
 
 signals:
     void completed();

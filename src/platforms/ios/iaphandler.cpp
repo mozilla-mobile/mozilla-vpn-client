@@ -15,18 +15,23 @@ namespace {
 Logger logger(LOG_IAP, "IAPHandler");
 }
 
-void IAPHandler::start()
+void IAPHandler::start(bool restore)
 {
     logger.log() << "Starting the subscription";
 
     Q_ASSERT(!m_appStore);
     m_appStore = new QInAppStore(this);
 
-    connect(m_appStore, &QInAppStore::productRegistered, [](QInAppProduct *product) {
+    connect(m_appStore, &QInAppStore::productRegistered, [this, restore](QInAppProduct *product) {
         logger.log() << "Product registered";
         logger.log() << "Title:" << product->title();
         logger.log() << "Description:" << product->description();
         logger.log() << "Price:" << product->price();
+
+        if (restore) {
+            m_appStore->restorePurchases();
+            return;
+        }
 
         product->purchase();
     });
