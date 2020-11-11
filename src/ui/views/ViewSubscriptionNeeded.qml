@@ -67,6 +67,7 @@ VPNFlickable {
         id: vpnPanel
 
         // TO DO: Get pricing from settings?
+        //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
         //% "Subscribe for %1/mo"
         logoTitle: qsTrId("vpn.subscription.title").arg(Number(4.99).toLocaleCurrencyString(Qt.locale(VPNSettings.languageCode)))
         //% "30-day money-back guarantee"
@@ -119,6 +120,7 @@ VPNFlickable {
         }
 
         VPNCallout {
+            //: The + after each variable stands for “more than”.
             //% "%1+ servers in %2+ countries"
             calloutTitle: qsTrId("vpn.subscription.featureTitle3").arg(getNumServers()).arg(formatNumberForCallout(VPNServerCountryModel.rowCount()))
             //% "Protect your access to the web."

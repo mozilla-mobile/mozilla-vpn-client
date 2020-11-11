@@ -96,7 +96,7 @@ Popup {
                 Layout.topMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 color: Theme.fontColorDark
-                //: %1 is the name of the device being removed. "\n" is used to display it on a new line, please keep it in the translation.
+                //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
 
@@ -133,7 +133,7 @@ Popup {
                 VPNPopupButton {
                     id: removeBtn
 
-                    //: "This is the 'remove' device button.
+                    //: This is the “remove” device button.
                     //% "Remove"
                     buttonText: qsTrId("vpn.devices.removeDeviceButton")
                     buttonTextColor: "#FFFFFF"

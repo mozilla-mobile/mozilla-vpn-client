@@ -203,7 +203,7 @@ Rectangle {
             PropertyChanges {
                 target: logoSubtitle
                 //% "Secure and private"
-                //: Refers to the state of the users current internet connection
+                //: This refers to the user’s internet connection.
                 text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
                 visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
                 color: "#FFFFFF"

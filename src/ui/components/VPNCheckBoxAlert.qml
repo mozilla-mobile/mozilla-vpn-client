@@ -28,10 +28,10 @@ RowLayout {
 
     VPNTextBlock {
         //% "VPN must be off before enabling"
-        //: This is a Setting which requires the VPN to be disconnected to change state
+        //: Associated to a setting that requires the VPN to be disconnected to change state
         readonly property var textAlertEnabled: qsTrId("vpn.turnOffAlert.enabling")
         //% "VPN must be off before disabling"
-        //: This is a Setting which requires the VPN to be disconnected to change state
+        //: Associated to a setting that requires the VPN to be disconnected to change state
         readonly property var textAlertDisabled: qsTrId("vpn.turnOffAlert.disabling")
 
         text: VPNSettings.localNetwork ? textAlertEnabled : textAlertDisabled

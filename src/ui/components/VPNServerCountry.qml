@@ -158,7 +158,7 @@ VPNClickableRow {
         }
         Accessible.role: Accessible.List
         //% "Cities"
-        //: The title of the cities list.
+        //: The title for the list of cities.
         Accessible.name: qsTrId("cities")
         // Only allow focus within the current item in the list.
         activeFocusOnTab: serverCountry.ListView.isCurrentItem
