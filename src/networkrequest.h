@@ -43,9 +43,7 @@ public:
                                                            const QUrl &url,
                                                            const QByteArray &host);
 
-    static NetworkRequest *createForDOH(QObject *parent,
-                                        const QUrl &dohUrl,
-                                        const QByteArray &dohHost);
+    static NetworkRequest *createForCaptivePortalLookup(QObject *parent);
 
 #ifdef IOS_INTEGRATION
     static NetworkRequest *createForIOSProducts(QObject *parentn);

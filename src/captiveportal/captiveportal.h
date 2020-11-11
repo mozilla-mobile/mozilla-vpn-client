@@ -18,11 +18,14 @@ constexpr const char *CAPTIVEPORTAL_REQUEST_CONTENT = "success";
 class CaptivePortal final
 {
 public:
+    [[nodiscard]] bool fromJson(const QByteArray &json);
+
+    [[nodiscard]] bool fromSettings();
+
+    void writeSettings();
+
     const QStringList &ipv4Addresses() const { return m_ipv4Addresses; }
     const QStringList &ipv6Addresses() const { return m_ipv6Addresses; }
-
-    void setIpv4Addresses(const QStringList &list) { m_ipv4Addresses = list; }
-    void setIpv6Addresses(const QStringList &list) { m_ipv6Addresses = list; }
 
 private:
     QStringList m_ipv4Addresses;

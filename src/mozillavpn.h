@@ -5,6 +5,7 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
@@ -101,6 +102,7 @@ public:
     Q_INVOKABLE QString retrieveLogs();
 
     // Internal object getters:
+    CaptivePortal *captivePortal() { return &m_private->m_captivePortal; }
     CaptivePortalDetection *captivePortalDetection()
     {
         return &m_private->m_captivePortalDetection;
@@ -199,6 +201,7 @@ private:
     // Internal objects.
     struct Private
     {
+        CaptivePortal m_captivePortal;
         CaptivePortalDetection m_captivePortalDetection;
         ConnectionDataHolder m_connectionDataHolder;
         ConnectionHealth m_connectionHealth;

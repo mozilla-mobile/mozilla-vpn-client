@@ -22,11 +22,11 @@ INCLUDEPATH += \
             ../src/hacl-star/kremlin/minimal
 
 HEADERS += \
+    ../src/captiveportal/captiveportal.h \
     ../src/command.h \
     ../src/commandlineparser.h \
     ../src/connectiondataholder.h \
     ../src/curve25519.h \
-    ../src/dohrequest.h \
     ../src/errorhandler.h \
     ../src/localizer.h \
     ../src/logger.h \
@@ -56,7 +56,6 @@ HEADERS += \
     helper.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
-    testdoh.h \
     testlocalizer.h \
     testlogger.h \
     testmodels.h \
@@ -66,11 +65,11 @@ HEADERS += \
     testtimersingleshot.h
 
 SOURCES += \
+    ../src/captiveportal/captiveportal.cpp \
     ../src/command.cpp \
     ../src/commandlineparser.cpp \
     ../src/connectiondataholder.cpp \
     ../src/curve25519.cpp \
-    ../src/dohrequest.cpp \
     ../src/errorhandler.cpp \
     ../src/hacl-star/Hacl_Chacha20.c \
     ../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
@@ -103,7 +102,6 @@ SOURCES += \
     mocnetworkrequest.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
-    testdoh.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
     testmodels.cpp \

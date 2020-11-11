@@ -43,6 +43,10 @@ bool Command::loadModels()
         return false;
     }
 
+    if (!vpn->captivePortal()->fromSettings()) {
+        // We do not care about these settings.
+    }
+
     return true;
 }
 

@@ -198,15 +198,17 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent,
     return r;
 }
 
-NetworkRequest *NetworkRequest::createForDOH(QObject *parent,
-                                             const QUrl &dohUrl,
-                                             const QByteArray &dohHost)
+NetworkRequest *NetworkRequest::createForCaptivePortalLookup(QObject *parent)
 {
     NetworkRequest *r = new NetworkRequest(parent);
 
-    r->m_request.setUrl(dohUrl);
-    r->m_request.setRawHeader("Host", dohHost);
-    r->m_request.setRawHeader("Accept", "application/dns-json");
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+    r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+    QUrl url(NetworkManager::instance()->apiUrl());
+    url.setPath("/api/v1/vpn/dns/detectportal");
+    r->m_request.setUrl(url);
 
     r->getRequest();
     return r;

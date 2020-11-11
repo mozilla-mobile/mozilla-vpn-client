@@ -69,7 +69,7 @@ NetworkRequest *NetworkRequest::createForCaptivePortalDetection(QObject *parent,
     return new NetworkRequest(parent);
 }
 
-NetworkRequest *NetworkRequest::createForDOH(QObject *parent, const QUrl &, const QByteArray &)
+NetworkRequest *NetworkRequest::createForCaptivePortalLookup(QObject *parent)
 {
     return new NetworkRequest(parent);
 }

@@ -29,7 +29,7 @@ int CommandLogout::run(QStringList &tokens)
 
         MozillaVPN vpn;
 
-        if (!vpn.deviceModel()->fromSettings()) {
+        if (!loadModels()) {
             QTextStream stream(stdout);
             stream << "No cache available" << Qt::endl;
             return 1;

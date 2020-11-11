@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
+#include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportalactivator.h"
-#include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
 #include "ipaddressrange.h"
 #include "logger.h"
@@ -121,40 +121,19 @@ void Controller::activate()
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    std::function<void(const CaptivePortal &)> cb = [this](const CaptivePortal &captivePortal) {
-        MozillaVPN *vpn = MozillaVPN::instance();
-        Q_ASSERT(vpn);
+    MozillaVPN *vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
 
-        QList<Server> servers = vpn->getServers();
-        Q_ASSERT(!servers.isEmpty());
+    QList<Server> servers = vpn->getServers();
+    Q_ASSERT(!servers.isEmpty());
 
-        Server server = Server::weightChooser(servers);
-        Q_ASSERT(server.initialized());
+    Server server = Server::weightChooser(servers);
+    Q_ASSERT(server.initialized());
 
-        const Device *device = vpn->deviceModel()->currentDevice();
+    const Device *device = vpn->deviceModel()->currentDevice();
 
-        const QList<IPAddressRange> allowedIPAddressRanges = getAllowedIPAddressRanges(
-            captivePortal);
-        m_impl->activate(server,
-                         device,
-                         vpn->keys(),
-                         allowedIPAddressRanges,
-                         m_state == StateSwitching);
-    };
-
-    if (SettingsHolder::instance()->captivePortalAlert()) {
-        CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
-        connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
-            logger.log() << "Captive portal lookup completed - ipv4:"
-                         << captivePortal.ipv4Addresses()
-                         << "ipv6:" << captivePortal.ipv6Addresses();
-            cb(captivePortal);
-        });
-        lookup->start();
-        return;
-    }
-
-    cb(CaptivePortal());
+    const QList<IPAddressRange> allowedIPAddressRanges = getAllowedIPAddressRanges();
+    m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges, m_state == StateSwitching);
 }
 
 void Controller::deactivate()
@@ -440,7 +419,7 @@ void Controller::captivePortalDetected()
     deactivate();
 }
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal &captivePortal)
+QList<IPAddressRange> Controller::getAllowedIPAddressRanges()
 {
     bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
@@ -452,15 +431,18 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal 
         list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     }
 
-    const QStringList &captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
-    for (const QString &address : captivePortalIpv4Addresses) {
-        list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
-    }
+    if (SettingsHolder::instance()->captivePortalAlert()) {
+        CaptivePortal *captivePortal = MozillaVPN::instance()->captivePortal();
+        const QStringList &captivePortalIpv4Addresses = captivePortal->ipv4Addresses();
+        for (const QString &address : captivePortalIpv4Addresses) {
+            list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
+        }
 
-    if (ipv6Enabled) {
-        const QStringList &captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
-        for (const QString &address : captivePortalIpv6Addresses) {
-            list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
+        if (ipv6Enabled) {
+            const QStringList &captivePortalIpv6Addresses = captivePortal->ipv6Addresses();
+            for (const QString &address : captivePortalIpv6Addresses) {
+                list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
+            }
         }
     }
 
