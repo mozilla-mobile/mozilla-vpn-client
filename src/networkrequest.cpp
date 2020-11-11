@@ -234,7 +234,7 @@ NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent)
 }
 
 NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
-                                                     const QString &orderId)
+                                                     const QString &receipt)
 {
     Q_ASSERT(parent);
 
@@ -250,7 +250,7 @@ NetworkRequest *NetworkRequest::createForIOSPurchase(QObject *parent,
     r->m_request.setUrl(url);
 
     QJsonObject obj;
-    obj.insert("receipt", QJsonValue(orderId));
+    obj.insert("receipt", QJsonValue(receipt));
     obj.insert("appId", "org.mozilla.ios.FirefoxVPN");
 
     QJsonDocument json;
