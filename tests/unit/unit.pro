@@ -26,8 +26,10 @@ HEADERS += \
     ../../src/command.h \
     ../../src/commandlineparser.h \
     ../../src/connectiondataholder.h \
+    ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
+    ../../src/ipaddressrange.h \
     ../../src/localizer.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
