@@ -74,9 +74,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
     connect(&m_private->m_controller, &Controller::readyToUpdate, [this]() {
         setState(StateUpdateRequired);
     });
-    connect(&m_private->m_controller, &Controller::readyToSubscribe, [this]() {
-        setState(StateSubscriptionNeeded);
-    });
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
@@ -238,7 +235,7 @@ void MozillaVPN::maybeStateMain()
 
 #ifdef MVPN_IOS
     if (m_private->m_user.subscriptionNeeded()) {
-        m_private->m_controller.subscriptionNeeded();
+        setState(StateSubscriptionNeeded);
         return;
     }
 #endif
@@ -749,12 +746,16 @@ void MozillaVPN::startIAP(bool restore)
 {
     IAPHandler *iap = new IAPHandler(this);
 
-    connect(iap, &IAPHandler::completed, [this]() {
+    connect(iap, &IAPHandler::completed, [this, iap]() {
         logger.log() << "Subscription completed";
         completeActivation();
+        iap->deleteLater();
     });
 
-    connect(iap, &IAPHandler::failed, [] { logger.log() << "Subscription failed"; });
+    connect(iap, &IAPHandler::failed, [iap] {
+        logger.log() << "Subscription failed";
+        iap->deleteLater();
+    });
 
     iap->start(restore);
 }

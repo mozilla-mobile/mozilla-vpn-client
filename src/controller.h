@@ -63,8 +63,6 @@ public:
 
     void updateRequired();
 
-    void subscriptionNeeded();
-
     void getBackendLogs(std::function<void(const QString &logs)> &&callback);
 
     void getStatus(
@@ -92,7 +90,6 @@ signals:
     void timeChanged();
     void readyToQuit();
     void readyToUpdate();
-    void readyToSubscribe();
 
 private:
     void setState(State state);
@@ -120,7 +117,6 @@ private:
         Quit,
         Update,
         Disconnect,
-        Subscribe,
         WaitForCaptivePortal,
     };
 
