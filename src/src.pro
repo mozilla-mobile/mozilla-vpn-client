@@ -214,8 +214,10 @@ else:android{
 
     DEFINES += MVPN_ANDROID
 
-    SOURCES += platforms/android/androidcontroller.cpp
-    HEADERS += platforms/android/androidcontroller.h
+    SOURCES +=  platforms/android/androidcontroller.cpp \
+                platforms/android/androidutils.cpp
+    HEADERS +=  platforms/android/androidcontroller.h \
+                platforms/android/androidutils.h
 
 
     # Usable Linux Imports
