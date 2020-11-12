@@ -54,6 +54,8 @@ void MozillaVPN::maybeRunTask()
 {
 }
 
+void MozillaVPN::deleteTasks() {}
+
 void MozillaVPN::setToken(const QString &) 
 {
 }

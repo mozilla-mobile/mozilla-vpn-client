@@ -166,6 +166,7 @@ private:
 
     void scheduleTask(Task *task);
     void maybeRunTask();
+    void deleteTasks();
 
     void setUserAuthenticated(bool state);
 
@@ -183,6 +184,8 @@ private:
 #ifdef IOS_INTEGRATION
     void startIAP(bool restore);
 #endif
+
+    void completeActivation();
 
 public slots:
     void requestSettings();

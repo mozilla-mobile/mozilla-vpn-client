@@ -31,21 +31,12 @@ void TaskRemoveDevice::run(MozillaVPN *vpn)
     connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
         logger.log() << "Failed to remove the device" << error;
         vpn->errorHandle(ErrorHandler::toErrorType(error));
-        maybeReset();
         emit completed();
     });
 
     connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &) {
         logger.log() << "Device removed";
         vpn->deviceRemoved(m_deviceName);
-        maybeReset();
         emit completed();
     });
-}
-
-void TaskRemoveDevice::maybeReset()
-{
-    if (Device::currentDeviceName() == m_deviceName) {
-        MozillaVPN::instance()->reset();
-    }
 }
