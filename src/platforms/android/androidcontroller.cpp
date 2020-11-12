@@ -37,40 +37,43 @@ const int ACTION_REQUEST_STATISTIC = 4;
 const int ACTION_REQUEST_LOG = 5;
 
 // Event Types that will be Dispatched after registration
+const int EVENT_INIT = 0;
 const int EVENT_CONNECTED = 1;
 const int EVENT_DISCONNECTED =2;
 const int EVENT_STATISTIC_UPDATE =3;
+const int EVENT_BACKEND_LOGS=4;
+
 
 
 
 
 
 void AndroidController::initialize(const Device *device, const Keys *keys)
-    {
-        Q_UNUSED(device);
-        Q_UNUSED(keys);
-        // Hook in the native implementation for startActivityForResult into the JNI
-        JNINativeMethod methods[] {{"startActivityForResult", "(Landroid/content/Intent;)V", reinterpret_cast<void *>(startActivityForResult)}};
-        QAndroidJniObject javaClass("com/mozilla/vpn/VPNService");
-        QAndroidJniEnvironment env;
-        jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
-        env->RegisterNatives(objectClass,
-                            methods,
-                            sizeof(methods) / sizeof(methods[0]));
-        env->DeleteLocalRef(objectClass);
+{
+    Q_UNUSED(device);
+    Q_UNUSED(keys);
+    // Hook in the native implementation for startActivityForResult into the JNI
+    JNINativeMethod methods[] {{"startActivityForResult", "(Landroid/content/Intent;)V", reinterpret_cast<void *>(startActivityForResult)}};
+    QAndroidJniObject javaClass("com/mozilla/vpn/VPNService");
+    QAndroidJniEnvironment env;
+    jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
+    env->RegisterNatives(objectClass,
+                         methods,
+                         sizeof(methods) / sizeof(methods[0]));
+    env->DeleteLocalRef(objectClass);
 
-        // Start the VPN Service (if not yet) and Bind to it
-        QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.mozilla.vpn.VPNService"),
-                                           *this, QtAndroid::BindFlag::AutoCreate);
-        m_binder.setController(this);
-        emit initialized(true, Controller::StateOff, QDateTime());
-    }
+    // Start the VPN Service (if not yet) and Bind to it
+    QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.mozilla.vpn.VPNService"),
+                           *this, QtAndroid::BindFlag::AutoCreate);
+    m_binder.setController(this);
+    emit initialized(true, Controller::StateOff, QDateTime());
+}
 
 void AndroidController::activate(const Server &server,
-                               const Device *device,
-                               const Keys *keys,
-                               const QList<IPAddressRange> &allowedIPAddressRanges,
-                               bool forSwitching)
+                                 const Device *device,
+                                 const Keys *keys,
+                                 const QList<IPAddressRange> &allowedIPAddressRanges,
+                                 bool forSwitching)
 {
     m_server = server;
 
@@ -110,7 +113,7 @@ void AndroidController::activate(const Server &server,
 
     QJsonDocument doc(args);
     QAndroidParcel sendData;
-    sendData.writeData(doc.toJson()); 
+    sendData.writeData(doc.toJson());
     m_serviceBinder.transact(ACTION_ACTIVATE,sendData, nullptr);
 }
 
@@ -129,18 +132,14 @@ void AndroidController::checkStatus()
 
 void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
 {
-    std::function<void(const QString &)> callback = std::move(a_callback);
+    m_logCallback = std::move(a_callback);
     QAndroidParcel nullData,replyData;
     m_serviceBinder.transact(ACTION_REQUEST_LOG,nullData, &replyData);
-    // Note: 106 means UTF-8 encoding
-    QString logs = QTextCodec::codecForMib(106)->toUnicode(replyData.readData());
-    callback(logs);
 }
 
 void AndroidController::onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder){
     Q_UNUSED(name);
     m_serviceBinder = serviceBinder;
-
     // Send the Service our Binder to recive incoming Events
     QAndroidParcel binderParcel;
     binderParcel.writeBinder(m_binder);
@@ -164,29 +163,41 @@ void AndroidController::onServiceDisconnected(const QString &name){
  * @return Returns true is the code was a valid Event Code
  */
 bool AndroidController::VPNBinder::onTransact(int code, const QAndroidParcel &data, const QAndroidParcel &reply, QAndroidBinder::CallType flags){
-   Q_UNUSED(data);
-   Q_UNUSED(reply);
-   Q_UNUSED(flags);
+    Q_UNUSED(data);
+    Q_UNUSED(reply);
+    Q_UNUSED(flags);
+    QJsonDocument doc;
+    QString logs;
     switch (code) {
+    case EVENT_INIT:
+        break;
     case EVENT_CONNECTED:
         emit mController->connected();
         break;
     case EVENT_DISCONNECTED:
-       emit mController->disconnected();
+        emit mController->disconnected();
         break;
     case EVENT_STATISTIC_UPDATE:
         // Data is here a JSON String
-        QJsonDocument doc = QJsonDocument::fromJson(data.readData());
-        m_rxBytes = doc.object()["totalRX"].toInt();
-        m_txBytes = doc.object()["totalTX"].toInt();
-        emit mController->statusUpdated(mController->m_server.ipv4Gateway(), m_txBytes, m_rxBytes);
+        doc = QJsonDocument::fromJson(data.readData());
+        emit mController->statusUpdated(mController->m_server.ipv4Gateway(),
+                                        doc.object()["totalTX"].toInt(),
+                                        doc.object()["totalRX"].toInt());
+        break;
+    case EVENT_BACKEND_LOGS:
+        // Note: 106 means UTF-8 encoding
+        logs = QTextCodec::codecForMib(106)->toUnicode(data.readData());
+        if(mController->m_logCallback){
+            mController->m_logCallback(logs);
+        }
         break;
     }
+
     return true;
 }
 
 void AndroidController::VPNBinder::setController(AndroidController* c){
-   mController = c;
+    mController = c;
 }
 
 

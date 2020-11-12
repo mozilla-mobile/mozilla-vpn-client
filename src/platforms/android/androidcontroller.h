@@ -32,21 +32,21 @@ public:
     void onServiceDisconnected(const QString &name) override;
 private:
     Server m_server;
+    std::function<void(const QString &)> m_logCallback;
 
     QAndroidBinder m_serviceBinder;
-    static void startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent);
     class VPNBinder : public QAndroidBinder{
     public:
-         void setController(AndroidController*);
-         bool onTransact(int code, const QAndroidParcel &data, const QAndroidParcel &reply, QAndroidBinder::CallType flags) override;
+        void setController(AndroidController*);
+        bool onTransact(int code, const QAndroidParcel &data, const QAndroidParcel &reply, QAndroidBinder::CallType flags) override;
 
     private:
-         AndroidController* mController;
-         int64_t m_txBytes = 0;
-         int64_t m_rxBytes = 0;
+        AndroidController* mController;
     };
 
     VPNBinder m_binder;
+
+    static void startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent);
 };
 
-#endif // DUMMYCONTROLLER_H
+#endif // ANDROIDCONTROLLER_H

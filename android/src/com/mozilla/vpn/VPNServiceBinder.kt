@@ -74,6 +74,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.d(tag, "Registered ${mListeners.size} EventListeners")
+                dispatchEvent(EVENTS.init, "")
             }
             ACTIONS.requestStatistic -> {
                 val statistics = this.mService.getStatistic()
@@ -83,12 +84,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 dispatchEvent(EVENTS.statisticUpdate, obj.toString())
             }
             ACTIONS.requestLog ->{
-                // Grabs all the Logs and writes them into [reply]
+                // Grabs all the Logs and dispatch new Log Event
                 val process = Runtime.getRuntime().exec("logcat -d");
                 val bufferedReader = BufferedReader(
-                    InputStreamReader(process.inputStream));
+                    InputStreamReader(process.inputStream))
                 val allText = bufferedReader.use(BufferedReader::readText)
-                reply?.writeByteArray(allText.toByteArray(charset("UTF-8")))
+                dispatchEvent(EVENTS.backendLogs, allText)
 
             }
 
@@ -121,9 +122,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      *  The codes we Are Using in case of [dispatchEvent]
      */
     object EVENTS {
+        const val init= 0
         const val connected = 1
         const val disconnected = 2
         const val statisticUpdate = 3
+        const val backendLogs = 4
     }
 
     /**
