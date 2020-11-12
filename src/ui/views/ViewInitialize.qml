@@ -38,6 +38,7 @@ Item {
 
     VPNButton {
         id: getStarted
+        objectName: "getStarted"
 
         anchors.bottom: learnMore.top
         anchors.bottomMargin: 24
