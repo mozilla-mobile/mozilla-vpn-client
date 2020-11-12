@@ -235,7 +235,7 @@ void MozillaVPN::maybeStateMain()
 
 #ifdef MVPN_IOS
     if (m_private->m_user.subscriptionNeeded()) {
-        setState(StateSubscriptionNeeded);
+        m_private->m_controller.subscriptionNeeded();
         return;
     }
 #endif
