@@ -290,23 +290,6 @@ void Controller::updateRequired()
     }
 }
 
-void Controller::subscriptionNeeded()
-{
-    logger.log() << "Subscription needed";
-
-    if (m_state == StateOff) {
-        emit readyToSubscribe();
-        return;
-    }
-
-    m_nextStep = Subscribe;
-
-    if (m_state == StateOn) {
-        deactivate();
-        return;
-    }
-}
-
 void Controller::logout()
 {
     logger.log() << "Logout";
@@ -337,11 +320,6 @@ bool Controller::processNextStep()
 
     if (nextStep == Update) {
         emit readyToUpdate();
-        return true;
-    }
-
-    if (nextStep == Subscribe) {
-        emit readyToSubscribe();
         return true;
     }
 
