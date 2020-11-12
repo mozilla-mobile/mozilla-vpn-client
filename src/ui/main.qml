@@ -16,10 +16,6 @@ Window {
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
-    function isDesktop() {
-        return  Qt.platform.os !== "android" &&
-                Qt.platform.os !== "ios" 
-    }
 
     visible: true
     width: fullscreenRequired() ? maximumWidth : 360
@@ -32,7 +28,7 @@ Window {
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {
-        if(isDesktop()){
+        if(!fullscreenRequired()){
             // Caling window.hide() on mobile 
             // would leave the app in a limbo state
              window.hide()
