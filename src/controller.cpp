@@ -14,13 +14,13 @@
 #include "timercontroller.h"
 #include "timersingleshot.h"
 
-#if defined (__linux__) && !defined(__ANDROID__)
+#if LINUX_INTEGRATION
 #include "platforms/linux/linuxcontroller.h"
 #elif MACOS_INTEGRATION
 #include "platforms/macos/macoscontroller.h"
 #elif IOS_INTEGRATION
 #include "platforms/macos/macoscontroller.h"
-#elif defined(__ANDROID__)
+#elif ANDROID_INTEGRATION
 #include "platforms/android/androidcontroller.h"
 #else
 #include "platforms/dummy/dummycontroller.h"
@@ -35,13 +35,13 @@ Logger logger(LOG_CONTROLLER, "Controller");
 Controller::Controller()
 {
     m_impl.reset(new TimerController(
-#if defined (__linux__) && !defined(__ANDROID__)
+#if LINUX_INTEGRATION
         new LinuxController()
 #elif MACOS_INTEGRATION
         new MacOSController()
 #elif IOS_INTEGRATION
         new MacOSController()
-#elif defined(__ANDROID__)
+#elif ANDROID_INTEGRATION
         new AndroidController()
 #else
         new DummyController()

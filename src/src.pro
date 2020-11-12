@@ -164,6 +164,7 @@ debug {
 
 # Platform-specific: Linux
 linux:!android {
+    DEFINES += LINUX_INTEGRATION
     message(Linux build)
 
     QMAKE_CXXFLAGS *= -Werror
@@ -201,6 +202,7 @@ linux:!android {
 }
 
 else:android{
+    DEFINES += ANDROID_INTEGRATION
     message(Android build)
 
     QMAKE_CXXFLAGS *= -Werror
