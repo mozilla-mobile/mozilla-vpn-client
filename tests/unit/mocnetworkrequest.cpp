@@ -74,7 +74,7 @@ NetworkRequest *NetworkRequest::createForCaptivePortalLookup(QObject *parent)
     return new NetworkRequest(parent);
 }
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 NetworkRequest *NetworkRequest::createForIOSProducts(QObject *parent)
 {
     return new NetworkRequest(parent);

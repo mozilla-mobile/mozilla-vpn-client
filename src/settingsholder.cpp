@@ -37,7 +37,7 @@ constexpr const char *SETTINGS_CAPTIVEPORTALIPV4ADDRESSES = "captivePortal/ipv4A
 constexpr const char *SETTINGS_CAPTIVEPORTALIPV6ADDRESSES = "captivePortal/ipv6Addresses";
 constexpr const char *SETTINGS_POSTAUTHENTICATIONSHOWN = "postAuthenticationShown";
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
 #endif
 
@@ -242,7 +242,7 @@ GETSET(bool,
        postAuthenticationShown,
        setPostAuthenticationShown);
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 GETSET(bool,
        toBool,
        SETTINGS_NATIVEIOSDATAMIGRATED,

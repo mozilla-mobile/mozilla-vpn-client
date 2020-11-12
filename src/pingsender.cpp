@@ -6,9 +6,9 @@
 #include "logger.h"
 #include "pingsendworker.h"
 
-#ifdef __linux__
+#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 #include "platforms/linux/linuxpingsendworker.h"
-#elif __APPLE__
+#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
 #include "platforms/macos/macospingsendworker.h"
 #else
 #include "platforms/dummy/dummypingsendworker.h"
@@ -25,9 +25,9 @@ Logger logger(LOG_NETWORKING, "PingSender");
 PingSender::PingSender(QObject *parent) : QObject(parent)
 {
     PingSendWorker *worker =
-#ifdef __linux__
+#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
         new LinuxPingSendWorker();
-#elif __APPLE__
+#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
         new MacOSPingSendWorker();
 #else
         new DummyPingSendWorker(DummyPingSendWorker::Stable);

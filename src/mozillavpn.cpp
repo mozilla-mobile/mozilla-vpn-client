@@ -18,7 +18,7 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 #include "platforms/ios/iaphandler.h"
 #include "platforms/ios/iosdatamigration.h"
 #include "platforms/ios/taskiosproducts.h"
@@ -66,7 +66,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
 
         scheduleTask(new TaskCaptivePortalLookup());
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
         scheduleTask(new TaskIOSProducts());
 #endif
     });
@@ -138,7 +138,7 @@ void MozillaVPN::initialize()
 
     m_private->m_releaseMonitor.runSoon();
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     if (!SettingsHolder::instance()->hasNativeIOSDataMigrated()) {
         IOSDataMigration::migrate();
         SettingsHolder::instance()->setNativeIOSDataMigrated(true);
@@ -204,7 +204,7 @@ void MozillaVPN::initialize()
 
     scheduleTask(new TaskCaptivePortalLookup());
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     scheduleTask(new TaskIOSProducts());
 #endif
 
@@ -233,7 +233,7 @@ void MozillaVPN::maybeStateMain()
 {
     logger.log() << "Maybe state main";
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     if (m_private->m_user.subscriptionNeeded()) {
         setState(StateSubscriptionNeeded);
         return;
@@ -383,7 +383,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     setToken(token);
     setUserAuthenticated(true);
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     if (m_private->m_user.subscriptionNeeded()) {
         scheduleTask(new TaskIOSProducts());
         scheduleTask(new TaskFunction([this](MozillaVPN*) {
@@ -417,7 +417,7 @@ void MozillaVPN::completeActivation()
     // Let's fetch the account and the servers.
     scheduleTask(new TaskAccountAndServers());
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     scheduleTask(new TaskIOSProducts());
 #endif
 
@@ -543,7 +543,7 @@ void MozillaVPN::accountChecked(const QByteArray &json)
     m_private->m_user.writeSettings();
     m_private->m_deviceModel.writeSettings();
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
         maybeStateMain();
         return;
@@ -730,7 +730,7 @@ void MozillaVPN::subscribe()
 {
     logger.log() << "Subscription required";
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     startIAP(false /* restore */);
 #endif
 }
@@ -739,12 +739,12 @@ void MozillaVPN::restoreSubscription()
 {
     logger.log() << "Restore subscription";
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     startIAP(true /* restore */);
 #endif
 }
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 void MozillaVPN::startIAP(bool restore)
 {
     IAPHandler *iap = new IAPHandler(this);

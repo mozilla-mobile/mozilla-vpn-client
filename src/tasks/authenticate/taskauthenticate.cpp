@@ -10,7 +10,7 @@
 #include "networkmanager.h"
 #include "networkrequest.h"
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 #include "platforms/ios/authenticationlistener.h"
 #else
 #include "tasks/authenticate/authenticationlistener.h"
@@ -96,12 +96,16 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
 
     QString path("/api/v2/vpn/login/");
 
-#ifdef IOS_INTEGRATION
+#if defined(MVPN_IOS)
     path.append("ios");
-#elif __linux__
+#elif defined(MVPN_LINUX)
     path.append("linux");
-#elif __APPLE__
+#elif defined(MVPN_ANDROID)
+    path.append("android");
+#elif defined(MVPN_MACOS)
     path.append("macos");
+#else
+    #error Not supported
 #endif
 
     QUrl url(NetworkManager::instance()->apiUrl());

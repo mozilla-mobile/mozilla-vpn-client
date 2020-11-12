@@ -181,7 +181,7 @@ private:
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     void startIAP(bool restore);
 #endif
 
