@@ -108,7 +108,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
     connect(&m_private->m_controller,
             &Controller::stateChanged,
             &m_private->m_connectionDataHolder,
-            &ConnectionDataHolder::connectionStateChanged);
+            &ConnectionDataHolder::stateChanged);
+
+    connect(this,
+            &MozillaVPN::stateChanged,
+            &m_private->m_connectionDataHolder,
+            &ConnectionDataHolder::stateChanged);
 }
 
 MozillaVPN::~MozillaVPN()
@@ -384,9 +389,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 #ifdef MVPN_IOS
     if (m_private->m_user.subscriptionNeeded()) {
         scheduleTask(new TaskIOSProducts());
-        scheduleTask(new TaskFunction([this](MozillaVPN*) {
-            maybeStateMain();
-        }));
+        scheduleTask(new TaskFunction([this](MozillaVPN *) { maybeStateMain(); }));
         return;
     }
 #endif
@@ -583,9 +586,7 @@ void MozillaVPN::logout()
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    scheduleTask(new TaskFunction([](MozillaVPN *vpn) {
-        vpn->reset();
-    }));
+    scheduleTask(new TaskFunction([](MozillaVPN *vpn) { vpn->reset(); }));
 }
 
 void MozillaVPN::reset()
@@ -714,7 +715,8 @@ void MozillaVPN::setUserAuthenticated(bool state)
 
 void MozillaVPN::startSchedulingPeriodicOperations()
 {
-    logger.log() << "Start scheduling account and servers" << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
+    logger.log() << "Start scheduling account and servers"
+                 << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
     m_periodicOperationsTimer.start(Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
 }
 
