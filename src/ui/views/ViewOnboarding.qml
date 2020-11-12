@@ -60,7 +60,7 @@ Item {
     }
 
     VPNHeaderLink {
-        id: getHelp
+        objectName: "skipOnboarding"
 
         //% "Skip"
         labelText: qsTrId("vpn.onboarding.skip")
