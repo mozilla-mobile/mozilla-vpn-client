@@ -1,16 +1,11 @@
-#ifndef ANDROIDUTILS_H
-#define ANDROIDUTILS_H
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include <QAndroidBinder>
-#include <QAndroidIntent>
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
-#include <QtAndroid>
+#include <QString>
 
-class AndroidUtils
+class AndroidUtils final
 {
 public:
     static QString GetDeviceName();
 };
-
-#endif // ANDROIDUTILS_H
