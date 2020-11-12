@@ -6,6 +6,10 @@
 
 . $(dirname $0)/commons.sh
 
+if [ -f .env ]; then
+  . .env
+fi
+
 print N "This script compiles MozillaVPN for MacOS/iOS"
 print N ""
 
@@ -27,10 +31,8 @@ fi
 QMAKE=qmake
 if [ "$1" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
   QMAKE=$QT_MACOS_BIN/qmake
-  PATH=$QT_MACOS_BIN:$PATH
 elif [ "$1" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
   QMAKE=$QT_IOS_BIN/qmake
-  PATH=$QT_IOS_BIN:$PATH
 fi
 
 $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
@@ -58,11 +60,11 @@ print G "$SHORTVERSION - $FULLVERSION"
 MACOS_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
-  MACOS_INTEGRATION=1
+  MVPN_MACOS=1
 "
 
 IOS_FLAGS="
-  IOS_INTEGRATION=1
+  MVPN_IOS=1
 "
 
 if [ "$1" = "macos" ]; then
