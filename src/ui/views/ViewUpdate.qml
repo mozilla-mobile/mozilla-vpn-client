@@ -9,37 +9,22 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-Flickable {
-    id: updatePanel
+VPNFlickable {
+    id: vpnFlickable
 
+    flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (Theme.windowMargin * 4)
     state: VPN.updateRecommended ? "recommended" : "required"
-    contentHeight: (state === "recommended" || !VPN.userAuthenticated) ? 480 : 510
-    boundsBehavior: Flickable.StopAtBounds
-    opacity: 0
-    Component.onCompleted: {
-        opacity = 1;
-    }
     states: [
         State {
             name: "recommended"
 
             PropertyChanges {
-                target: contentWrapper
+                target: vpnPanel
                 //% "Update recommended"
                 logoTitle: qsTrId("vpn.updates.updateRecomended")
-                //% "Please update the app before you\ncontinue to use the VPN"
+                //% "Please update the app before you continue to use the VPN"
                 logoSubtitle: qsTrId("vpn.updates.updateRecomended.description")
-                logoY: 50
-            }
-
-            PropertyChanges {
-                target: insetCircle
-                color: Theme.blue
-            }
-
-            PropertyChanges {
-                target: insetImage
-                source: "../resources/down.svg"
+                logo: "../resources/updateRecommended.svg"
             }
 
             PropertyChanges {
@@ -55,7 +40,6 @@ Flickable {
                     alertBox.visible = true;
                     stackview.pop(StackView.Immediate);
                 }
-                anchors.bottomMargin: 40
             }
 
         },
@@ -63,22 +47,12 @@ Flickable {
             name: "required"
 
             PropertyChanges {
-                target: contentWrapper
-                //% "Update Required"
+                target: vpnPanel
+                //% "Update required"
                 logoTitle: qsTrId("vpn.updates.updateRequired")
-                //% "We detected and fixed a serious bug.\nYou must update your app."
+                //% "We detected and fixed a serious bug. You must update your app."
                 logoSubtitle: qsTrId("vpn.updates.updateRequire.reason")
-                logoY: 35
-            }
-
-            PropertyChanges {
-                target: insetCircle
-                color: Theme.red
-            }
-
-            PropertyChanges {
-                target: insetImage
-                source: "../resources/warning-white.svg"
+                logo: "../resources/updateRequired.svg"
             }
 
             PropertyChanges {
@@ -88,8 +62,6 @@ Flickable {
 
             PropertyChanges {
                 target: footerLink
-                anchors.bottom: signOff.top
-                anchors.bottomMargin: 16
                 onClicked: {
                     // TODO - should anything happen here besides opening
                     // the user account website?
@@ -100,57 +72,55 @@ Flickable {
         }
     ]
 
-    VPNPanel {
-        id: contentWrapper
+    Item {
+        id: spacer1
 
-        logo: "../resources/update-lock.svg"
-        logoY: 35
-
-        Rectangle {
-            id: insetCircle
-
-            height: 42
-            width: height
-            radius: height / 2
-            border.width: 5
-            border.color: Theme.bgColor
-            antialiasing: true
-            anchors.left: contentWrapper.left
-            anchors.leftMargin: contentWrapper.width / 2
-            anchors.top: contentWrapper.top
-            anchors.topMargin: contentWrapper.logoY + 36
-
-            Image {
-                id: insetImage
-
-                anchors.centerIn: insetCircle
-                sourceSize.height: 13
-                fillMode: Image.PreserveAspectFit
-            }
-
-        }
-
+        height: Math.max(Theme.windowMargin * 2, ( window.height - flickContentHeight ) / 2)
+        width: vpnFlickable.width
     }
 
-    VPNDropShadow {
-        anchors.fill: alertUpdateRecommendedBox
-        source: alertUpdateRecommendedBox
+    VPNPanel {
+        id: vpnPanel
+
+        property var childRectHeight: vpnPanel.childrenRect.height
+
+        anchors.top: spacer1.bottom
+        width: Math.min(vpnFlickable.width - Theme.windowMargin * 4, Theme.maxHorizontalContentWidth)
+        logoSize: 80
     }
 
     Item {
-        id: alertUpdateRecommendedBox
+        id: spacer2
 
-        anchors.top: parent.top
-        anchors.topMargin: contentWrapper.logoY + contentWrapper.childrenRect.height + Theme.vSpacing
+        anchors.top: vpnPanel.bottom
+        height: Math.max(Theme.windowMargin * 2, (window.height -flickContentHeight ) / 2)
+        width: vpnFlickable.width
+    }
+
+    VPNDropShadow {
+        anchors.fill: alertWrapperBackground
+        source: alertWrapperBackground
+    }
+
+    Rectangle {
+        id: alertWrapperBackground
+
+        anchors.fill: alertWrapper
+        color: Theme.white
+        radius: 8
+        anchors.topMargin: -Theme.windowMargin
+        anchors.bottomMargin: -Theme.windowMargin
+        anchors.leftMargin: -Theme.windowMargin
+        anchors.rightMargin: -Theme.windowMargin
+    }
+
+    ColumnLayout {
+        id: alertWrapper
+
+        anchors.top: spacer2.bottom
+        anchors.topMargin: Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width - (Theme.windowMargin * 2)
-        height: insecureConnectionAlert.height + 32
-
-        Rectangle {
-            anchors.fill: alertUpdateRecommendedBox
-            color: Theme.white
-            radius: 8
-        }
+        width: Math.min(vpnFlickable.width - (Theme.windowMargin * 4), Theme.maxHorizontalContentWidth)
 
         RowLayout {
             id: insecureConnectionAlert
@@ -158,12 +128,9 @@ Flickable {
             Layout.minimumHeight: 40
             Layout.fillHeight: true
             Layout.fillWidth: true
-            anchors.centerIn: alertUpdateRecommendedBox
             spacing: 16
 
             Image {
-                id: alertUpdateRecommendedBoxClose
-
                 source: "../resources/connection-info-dark.svg"
                 sourceSize.width: 20
                 sourceSize.height: 20
@@ -176,8 +143,7 @@ Flickable {
                 font.family: Theme.fontInterFamily
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.fontColorDark
-                Layout.maximumWidth: 250
-                Layout.width: 250
+                Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 //% "Your connection will not be secure while you update."
                 text: qsTrId("vpn.updates.updateConnectionInsecureWarning")
@@ -187,49 +153,59 @@ Flickable {
 
     }
 
-    VPNButton {
-        id: updateBtn
+    ColumnLayout {
+        id: footerContent
 
-        width: 282
-        text: qsTrId("vpn.updates.updateNow")
-        anchors.horizontalCenterOffset: 0
+        anchors.top: alertWrapperBackground.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: footerLink.top
-        anchors.bottomMargin: Theme.vSpacing
-        radius: 4
-        onClicked: VPN.openLink(VPN.LinkUpdate)
-    }
+        width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
+        spacing: Theme.windowMargin * 1.25
 
-    VPNLinkButton {
-        id: footerLink
-
-        //% "Not now"
-        readonly property var textNotNow: qsTrId("vpn.updates.notNow")
-        //% "Manage account"
-        readonly property var textManageAccount: qsTrId("vpn.main.manageAccount")
-
-        labelText: (updatePanel.state === "recommended") ? textNotNow : textManageAccount
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-    }
-
-    VPNSignOut {
-        id: signOff
-
-        onClicked: {
-            stackview.pop(StackView.Immediate);
-            VPNController.logout();
-        }
-    }
-
-    Behavior on opacity {
-        PropertyAnimation {
-            duration: 200
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Theme.windowMargin / 2
+            color: "transparent"
         }
 
-    }
+        VPNButton {
+            id: updateBtn
 
-    ScrollBar.vertical: ScrollBar {
+            text: qsTrId("vpn.updates.updateNow")
+            radius: 4
+            onClicked: VPN.openLink(VPN.LinkUpdate)
+        }
+
+        VPNLinkButton {
+            id: footerLink
+
+            //% "Not now"
+            readonly property var textNotNow: qsTrId("vpn.updates.notNow")
+            //% "Manage account"
+            readonly property var textManageAccount: qsTrId("vpn.main.manageAccount")
+
+            Layout.alignment: Qt.AlignHCenter
+            labelText: (vpnFlickable.state === "recommended") ? textNotNow : textManageAccount
+        }
+
+        VPNSignOut {
+            id: signOff
+
+            anchors.bottom: undefined
+            anchors.bottomMargin: undefined
+            anchors.horizontalCenter: undefined
+            Layout.alignment: Qt.AlignHCenter
+            onClicked: {
+                stackview.pop(StackView.Immediate);
+                VPNController.logout();
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Theme.windowMargin * 2
+            color: "transparent"
+        }
+
     }
 
 }

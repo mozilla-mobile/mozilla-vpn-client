@@ -10,8 +10,6 @@
 
 #include "device.h"
 
-class SettingsHolder;
-
 class DeviceModel final : public QAbstractListModel
 {
     Q_OBJECT
@@ -26,11 +24,11 @@ public:
 
     [[nodiscard]] bool fromJson(const QByteArray& s);
 
-    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings();
 
     bool initialized() const { return !m_rawJson.isEmpty(); }
 
-    void writeSettings(SettingsHolder &settingsHolder);
+    void writeSettings();
 
     bool hasDevice(const QString &deviceName) const;
 
@@ -39,6 +37,8 @@ public:
     const Device *device(const QString &deviceName) const;
 
     int activeDevices() const { return m_devices.count(); }
+
+    const QList<Device>& devices() const { return m_devices; }
 
     const Device* currentDevice() const;
 
@@ -55,6 +55,8 @@ signals:
 
 private:
     [[nodiscard]] bool fromJsonInternal(const QByteArray &json);
+
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 private:
     QByteArray m_rawJson;

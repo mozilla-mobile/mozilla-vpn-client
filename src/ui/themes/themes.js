@@ -47,6 +47,7 @@ const fontWeightBold = 600;
 
 const iconSize = 16;
 const labelLineHeight = 22;
+const controllerInterLineHeight = 18;
 
 const hSpacing = 20;
 const vSpacing = 24;
@@ -54,6 +55,7 @@ const listSpacing = 8;
 const maxTextWidth = 296;
 const radius = 10;
 const windowMargin = 16;
+const windowMinHeight = 454
 
 const blueButton = {
     "defaultColor" : buttonColor,
@@ -73,13 +75,16 @@ const redButton = {
     "defaultColor" : red,
     "buttonHovered": redHovered,
     "buttonPressed": redPressed,
-     "focusStroke": redFocusStroke
+    "focusStroke": redFocusStroke,
+    "focusBorder": redPressed
 };
 
 const greyButton = {
     "defaultColor": grey,
     "buttonHovered": greyHovered,
-    "buttonPressed": greyPressed
+    "buttonPressed": greyPressed,
+    "focusStroke": greyPressed,
+    "focusBorder": fontColorDark
 };
 
 const whiteSettingsBtn = {
@@ -92,4 +97,16 @@ const removeDeviceBtn = {
     "buttonPressed": "#FFBDC5"
 };
 
+const cancelRemovePopup = {
+    "defaultColor": grey,
+    "buttonHovered": "#CCCCCC",
+    "buttonPressed": greyPressed,
+    "focusStroke": greyPressed,
+    "focusBorder": fontColorDark
+};
+
+// In milliseconds, the animation of a single device removal
+const removeDeviceAnimation = 300;
+
 const settingsMaxContentHeight = 740;
+const maxHorizontalContentWidth = 460

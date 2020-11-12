@@ -5,6 +5,7 @@
 #ifndef MACOSUTILS_H
 #define MACOSUTILS_H
 
+#include <QObject>
 #include <QString>
 
 class MacOSUtils final
@@ -13,6 +14,8 @@ public:
     static QString computerName();
 
     static void enableLoginItem(bool startAtBoot);
+
+    static void setDockClickHandler();
 };
 
 #endif // MACOSUTILS_H

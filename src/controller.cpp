@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
+#include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportalactivator.h"
-#include "captiveportal/captiveportallookup.h"
 #include "controllerimpl.h"
 #include "ipaddressrange.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 #include "timercontroller.h"
 #include "timersingleshot.h"
 
@@ -57,6 +58,11 @@ Controller::Controller()
 
 Controller::~Controller() = default;
 
+Controller::State Controller::state() const
+{
+    return m_state;
+}
+
 void Controller::initialize()
 {
     logger.log() << "Initializing the controller";
@@ -96,7 +102,7 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
         return;
     }
 
-    if (MozillaVPN::instance()->settingsHolder()->startAtBoot()) {
+    if (SettingsHolder::instance()->startAtBoot()) {
         logger.log() << "Start on boot";
         activate();
     }
@@ -119,40 +125,19 @@ void Controller::activate()
 
     m_connectionDate = QDateTime::currentDateTime();
 
-    std::function<void(const CaptivePortal &)> cb = [this](const CaptivePortal &captivePortal) {
-        MozillaVPN *vpn = MozillaVPN::instance();
-        Q_ASSERT(vpn);
+    MozillaVPN *vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
 
-        QList<Server> servers = vpn->getServers();
-        Q_ASSERT(!servers.isEmpty());
+    QList<Server> servers = vpn->getServers();
+    Q_ASSERT(!servers.isEmpty());
 
-        Server server = Server::weightChooser(servers);
-        Q_ASSERT(server.initialized());
+    Server server = Server::weightChooser(servers);
+    Q_ASSERT(server.initialized());
 
-        const Device *device = vpn->deviceModel()->currentDevice();
+    const Device *device = vpn->deviceModel()->currentDevice();
 
-        const QList<IPAddressRange> allowedIPAddressRanges = getAllowedIPAddressRanges(
-            captivePortal);
-        m_impl->activate(server,
-                         device,
-                         vpn->keys(),
-                         allowedIPAddressRanges,
-                         m_state == StateSwitching);
-    };
-
-    if (MozillaVPN::instance()->settingsHolder()->captivePortalAlert()) {
-        CaptivePortalLookup *lookup = new CaptivePortalLookup(this);
-        connect(lookup, &CaptivePortalLookup::completed, [cb](const CaptivePortal &captivePortal) {
-            logger.log() << "Captive portal lookup completed - ipv4:"
-                         << captivePortal.ipv4Addresses()
-                         << "ipv6:" << captivePortal.ipv6Addresses();
-            cb(captivePortal);
-        });
-        lookup->start();
-        return;
-    }
-
-    cb(CaptivePortal());
+    const QList<IPAddressRange> allowedIPAddressRanges = getAllowedIPAddressRanges();
+    m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges, m_state == StateSwitching);
 }
 
 void Controller::deactivate()
@@ -275,8 +260,7 @@ void Controller::quit()
 {
     logger.log() << "Quitting";
 
-    if (m_state == StateInitializing || m_state == StateOff || m_state == StateDeviceLimit
-        || m_state == StateCaptivePortal) {
+    if (m_state == StateInitializing || m_state == StateOff || m_state == StateCaptivePortal) {
         emit readyToQuit();
         return;
     }
@@ -341,29 +325,6 @@ void Controller::logout()
     }
 }
 
-void Controller::setDeviceLimit(bool deviceLimit)
-{
-    logger.log() << "Device limit mode:" << deviceLimit;
-
-    if (!deviceLimit) {
-        Q_ASSERT(m_state == StateDeviceLimit);
-        setState(StateOff);
-        return;
-    }
-
-    if (m_state == StateOff) {
-        setState(StateDeviceLimit);
-        return;
-    }
-
-    m_nextStep = DeviceLimit;
-
-    if (m_state == StateOn) {
-        deactivate();
-        return;
-    }
-}
-
 bool Controller::processNextStep()
 {
     NextStep nextStep = m_nextStep;
@@ -381,11 +342,6 @@ bool Controller::processNextStep()
 
     if (nextStep == Subscribe) {
         emit readyToSubscribe();
-        return true;
-    }
-
-    if (nextStep == DeviceLimit) {
-        setState(StateDeviceLimit);
         return true;
     }
 
@@ -467,9 +423,9 @@ void Controller::captivePortalDetected()
     deactivate();
 }
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal &captivePortal)
+QList<IPAddressRange> Controller::getAllowedIPAddressRanges()
 {
-    bool ipv6Enabled = MozillaVPN::instance()->settingsHolder()->ipv6Enabled();
+    bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
     QList<IPAddressRange> list;
 
@@ -479,19 +435,22 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const CaptivePortal 
         list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     }
 
-    const QStringList &captivePortalIpv4Addresses = captivePortal.ipv4Addresses();
-    for (const QString &address : captivePortalIpv4Addresses) {
-        list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
-    }
+    if (SettingsHolder::instance()->captivePortalAlert()) {
+        CaptivePortal *captivePortal = MozillaVPN::instance()->captivePortal();
+        const QStringList &captivePortalIpv4Addresses = captivePortal->ipv4Addresses();
+        for (const QString &address : captivePortalIpv4Addresses) {
+            list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
+        }
 
-    if (ipv6Enabled) {
-        const QStringList &captivePortalIpv6Addresses = captivePortal.ipv6Addresses();
-        for (const QString &address : captivePortalIpv6Addresses) {
-            list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
+        if (ipv6Enabled) {
+            const QStringList &captivePortalIpv6Addresses = captivePortal->ipv6Addresses();
+            for (const QString &address : captivePortalIpv6Addresses) {
+                list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
+            }
         }
     }
 
-    if (MozillaVPN::instance()->settingsHolder()->localNetworkAccess()) {
+    if (SettingsHolder::instance()->localNetworkAccess()) {
         list.append(IPAddressRange("128.0.0.1", 1, IPAddressRange::IPv4));
 
         if (ipv6Enabled) {

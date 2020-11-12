@@ -16,14 +16,14 @@ class IAPHandler final : public QObject
 public:
     IAPHandler(QObject *parent) : QObject(parent) {}
 
-    void start();
+    void start(bool restore);
 
 signals:
     void completed();
     void failed();
 
 private:
-    void purchaseCompleted(const QString& orderId);
+    void purchaseCompleted();
 
 private:
     QInAppStore* m_appStore = nullptr;

@@ -11,7 +11,7 @@ ParallelAnimation {
     property var connectionStatus: VPNConnectionHealth.stability
     property bool isConnectionUnstable: connectionStatus === VPNConnectionHealth.Unstable
     //% "Unstable"
-    //: Unstable Connection
+    //: This refers to the user’s internet connection.
     readonly property var textUnable: qsTrId("vpn.connectionStability.unstable")
     //% "No Signal"
     readonly property var textNoSignal: qsTrId("vpn.connectionStability.noSignal")

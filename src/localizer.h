@@ -8,6 +8,8 @@
 #include <QAbstractListModel>
 #include <QTranslator>
 
+class SettingsHolder;
+
 class Localizer final : public QAbstractListModel
 {
     Q_OBJECT
@@ -21,7 +23,10 @@ public:
         CodeRole,
     };
 
-    Localizer() = default;
+    static void createInstance(SettingsHolder *settingsHolder);
+
+    static Localizer *instance();
+
     ~Localizer() = default;
 
     void initialize(const QString &code);
@@ -41,6 +46,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
+    Localizer(QObject *parent);
+
     QString languageName(const QString &code) const;
     QString localizedLanguageName(const QString &code) const;
 

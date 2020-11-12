@@ -5,6 +5,7 @@
 #include "authenticationlistener.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
 
 #include <QApplication>
 #include <QUrl>
@@ -87,7 +88,7 @@ void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
     }];
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-    QObject *rootObject = vpn->engine()->rootObjects().first();
+    QObject *rootObject = QmlEngineHolder::instance()->engine()->rootObjects().first();
     QWindow *window = qobject_cast<QWindow *>(rootObject);
     Q_ASSERT(window);
 

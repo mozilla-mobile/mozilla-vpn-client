@@ -5,13 +5,16 @@
 #include "keys.h"
 #include "settingsholder.h"
 
-bool Keys::fromSettings(SettingsHolder &settingsHolder)
+bool Keys::fromSettings()
 {
-    if (!settingsHolder.hasPrivateKey()) {
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
+    if (!settingsHolder->hasPrivateKey()) {
         return false;
     }
 
-    m_privateKey = settingsHolder.privateKey();
+    m_privateKey = settingsHolder->privateKey();
     return true;
 }
 

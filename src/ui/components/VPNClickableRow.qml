@@ -40,6 +40,7 @@ Item {
     Accessible.name: accessibleName
     Accessible.onPressAction: mainRow.clicked()
     Accessible.focusable: true
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(mainRow)
     transitions: [
         Transition {
             NumberAnimation {
@@ -94,7 +95,6 @@ Item {
         anchors.fill: anchorToFill
         cursorShape: rowShouldBeDisabled ? Qt.ForbiddenCursor : Qt.PointingHandCursor
         hoverEnabled: !rowShouldBeDisabled
-        focus: !rowShouldBeDisabled
         onClicked: mainRow.clicked()
     }
 

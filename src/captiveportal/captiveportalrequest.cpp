@@ -5,7 +5,6 @@
 #include "captiveportalrequest.h"
 #include "captiveportal.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -19,7 +18,7 @@ CaptivePortalRequest::CaptivePortalRequest(QObject *parent) : QObject(parent)
 
 void CaptivePortalRequest::run()
 {
-    SettingsHolder *settings = MozillaVPN::instance()->settingsHolder();
+    SettingsHolder *settings = SettingsHolder::instance();
 
     QStringList ipv4Addresses;
     if (settings->hasCaptivePortalIpv4Addresses()) {

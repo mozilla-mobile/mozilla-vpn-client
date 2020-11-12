@@ -21,7 +21,7 @@ ListView {
 
     highlight: VPNFocus {
         itemToFocus: list
-        itemToAnchor: list.currentItem
+        itemToAnchor: list.currentItem ? list.currentItem : undefined
     }
 
 }

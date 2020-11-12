@@ -25,9 +25,9 @@ public:
 
     const QString &publicKey() const { return m_publicKey; }
 
-    const QString& ipv4Address() const { return m_ipv4Address; }
+    const QString &ipv4Address() const { return m_ipv4Address; }
 
-    const QString& ipv6Address() const { return m_ipv6Address; }
+    const QString &ipv6Address() const { return m_ipv6Address; }
 
 private:
     QString m_deviceName;

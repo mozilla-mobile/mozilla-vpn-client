@@ -31,7 +31,6 @@ public:
         StateOn,
         StateDisconnecting,
         StateSwitching,
-        StateDeviceLimit,
         StateCaptivePortal,
     };
     Q_ENUM(State)
@@ -48,15 +47,9 @@ public:
 
     void initialize();
 
-    State state() const { return m_state; }
-
-    Q_INVOKABLE void activate();
-
-    Q_INVOKABLE void deactivate();
+    State state() const;
 
     Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
-
-    Q_INVOKABLE void quit();
 
     Q_INVOKABLE void logout();
 
@@ -64,9 +57,9 @@ public:
 
     const QString &currentCity() const { return m_currentCity; }
 
-    const QString &switchingCity() const { return m_switchingCity; }
+    const QString &switchingCountryCode() const { return m_switchingCountryCode; }
 
-    void setDeviceLimit(bool deviceLimit);
+    const QString &switchingCity() const { return m_switchingCity; }
 
     void updateRequired();
 
@@ -79,6 +72,12 @@ public:
             &&callback);
 
 public slots:
+    Q_INVOKABLE void activate();
+
+    Q_INVOKABLE void deactivate();
+
+    Q_INVOKABLE void quit();
+
     void captivePortalDetected();
 
 private slots:
@@ -89,7 +88,6 @@ private slots:
     void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
 
 signals:
-    void initialized();
     void stateChanged();
     void timeChanged();
     void readyToQuit();
@@ -101,7 +99,7 @@ private:
 
     bool processNextStep();
 
-    QList<IPAddressRange> getAllowedIPAddressRanges(const CaptivePortal &captivePortal);
+    QList<IPAddressRange> getAllowedIPAddressRanges();
 
 private:
     State m_state = StateInitializing;
@@ -122,7 +120,6 @@ private:
         Quit,
         Update,
         Disconnect,
-        DeviceLimit,
         Subscribe,
         WaitForCaptivePortal,
     };

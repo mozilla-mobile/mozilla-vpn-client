@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
@@ -20,7 +21,7 @@ CaptivePortalDetection::CaptivePortalDetection()
 
 void CaptivePortalDetection::initialize()
 {
-    m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
+    m_active = SettingsHolder::instance()->captivePortalAlert();
 }
 
 void CaptivePortalDetection::controllerStateChanged()
@@ -38,7 +39,7 @@ void CaptivePortalDetection::controllerStateChanged()
 void CaptivePortalDetection::settingsChanged()
 {
     logger.log() << "Settings has changed";
-    m_active = MozillaVPN::instance()->settingsHolder()->captivePortalAlert();
+    m_active = SettingsHolder::instance()->captivePortalAlert();
 }
 
 void CaptivePortalDetection::detectCaptivePortal()
@@ -53,7 +54,7 @@ void CaptivePortalDetection::detectCaptivePortal()
     connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
         logger.log() << "Captive portal request completed - detected:" << detected;
 
-        if (!m_active) {
+        if (!m_active || MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
             logger.log() << "Disabled in the meantime.";
             return;
         }

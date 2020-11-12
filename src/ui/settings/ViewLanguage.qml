@@ -25,15 +25,14 @@ Item {
         id: radioButtonGroup
     }
 
-    Flickable {
+    VPNFlickable {
         id: wrapper
         anchors.top: menu.bottom
         anchors.topMargin: 20
         width: parent.width
         height: parent.height - menu.height
         contentWidth: parent.width
-        contentHeight: wrapper.childrenRect.height
-        boundsBehavior: Flickable.StopAtBounds
+        flickContentHeight: wrapper.childrenRect.height
 
         VPNBoldLabel {
             id: systemLabel
@@ -42,7 +41,7 @@ Item {
             anchors.leftMargin: Theme.windowMargin
             width: parent.width
             //% "System"
-            //: The system language
+            //: Language of the system.
             text: qsTrId("vpn.settings.system")
             Accessible.role: Accessible.Heading
         }
@@ -50,7 +49,7 @@ Item {
         VPNRadioDelegate {
             id: systemLanguage
 
-            radioButtonLabelText: VPNLocalizer.systemLanguage
+            radioButtonLabelText: VPNLocalizer.systemLocalizedLanguage
             checked: VPNSettings.languageCode === ""
             onClicked: VPNSettings.languageCode = ""
             anchors.top: systemLabel.bottom
@@ -70,7 +69,7 @@ Item {
             }
 
             VPNRadioSublabel {
-                text: VPNLocalizer.systemLocalizedLanguage
+                text: VPNLocalizer.systemLanguage
             }
 
         }
@@ -84,7 +83,7 @@ Item {
             anchors.leftMargin: Theme.windowMargin
             width: parent.width
             //% "Additional"
-            //: List of the additional languages
+            //: Header for the additional languages in settings
             text: qsTrId("vpn.settings.additional")
             Accessible.role: Accessible.Heading
         }
@@ -105,7 +104,7 @@ Item {
             model: VPNLocalizer
 
             delegate: VPNRadioDelegate {
-                radioButtonLabelText: language
+                radioButtonLabelText: localizedLanguage
                 checked: VPNSettings.languageCode === code
                 onClicked: VPNSettings.languageCode = code
 
@@ -118,15 +117,11 @@ Item {
                     .arg(localizedLanguage)
 
                 VPNRadioSublabel {
-                    text: localizedLanguage
+                    text: language
                 }
 
             }
 
-        }
-
-        ScrollBar.vertical: ScrollBar {
-            Accessible.ignored: true
         }
 
     }

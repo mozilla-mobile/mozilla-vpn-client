@@ -131,8 +131,10 @@ void LogHandler::addLog(const Log &log)
         m_logs.removeAt(0);
     }
 
+#ifdef QT_DEBUG
     QTextStream out(stderr);
     prettyOutput(out, m_logs.last());
+#endif
 }
 
 bool LogHandler::matchModule(const Log &log, const QMutexLocker &proofOfLock) const

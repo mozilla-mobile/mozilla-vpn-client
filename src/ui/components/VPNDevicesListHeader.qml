@@ -4,30 +4,30 @@
 
 import QtQuick 2.5
 import Mozilla.VPN 1.0
+import "../themes/themes.js" as Theme
 
-Rectangle {
+Item {
     id: listHeader
 
     property var pendingDeviceRemoval: false
 
     width: deviceList.width
-    color: "transparent"
     state: "deviceLimitNotReached"
     states: [
         State {
             name: "deviceLimitReached"
-            when: deviceWrapper.state === "deviceLimit"
+            when: vpnFlickable.state === "deviceLimit"
 
             PropertyChanges {
                 target: listHeader
-                height: 252
+                height: spacer.height * 2 + vpnPanel.height
                 opacity: 1
             }
 
         },
         State {
             name: "deviceLimitNotReached"
-            when: deviceWrapper.state === "active"
+            when: vpnFlickable.state === "active"
 
             PropertyChanges {
                 target: listHeader
@@ -60,37 +60,33 @@ Rectangle {
     ]
 
     Rectangle {
-        id: deviceLimitAlert
+        id: spacer
 
-        anchors.fill: parent
-        anchors.topMargin: 32
+        anchors.top: listHeader.top
+        height: Theme.windowMargin * 2
+        width: listHeader.width
         color: "transparent"
+    }
 
-        Image {
-            id: alertImg
+    VPNPanel {
+        id: vpnPanel
 
-            source: "../resources/devicesLimit.svg"
-            sourceSize.width: 80
-            fillMode: Image.PreserveAspectFit
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
+        anchors.top: spacer.bottom
+        logoSize: 80
+        logo: "../resources/devicesLimit.svg"
+        //% "Remove a device"
+        logoTitle: qsTrId("vpn.devices.doDeviceRemoval")
+        //% "You’ve reached your limit. To install the VPN on this device, you’ll need to remove one."
+        logoSubtitle: qsTrId("vpn.devices.maxDevicesReached")
+    }
 
-        VPNHeadline {
-            id: alertHeadline
+    Rectangle {
+        id: bottomSpacer
 
-            anchors.top: alertImg.bottom
-            anchors.topMargin: 24
-            //% "Remove a device"
-            text: qsTrId("vpn.devices.doDeviceRemoval")
-        }
-
-        VPNSubtitle {
-            anchors.top: alertHeadline.bottom
-            anchors.topMargin: 8
-            //% "You’ve reached your limit. To install the VPN on this device, you’ll need to remove one."
-            text: qsTrId("vpn.devices.maxDevicesReached")
-        }
-
+        anchors.top: vpnPanel.bottom
+        height: Theme.windowMargin * 2
+        width: listHeader.width
+        color: "transparent"
     }
 
 }

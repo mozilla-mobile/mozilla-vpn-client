@@ -107,6 +107,15 @@ Window {
                         source: "states/StateSubscriptionNeeded.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateDeviceLimit
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateDeviceLimit.qml"
+                    }
+
                 }
             ]
 
@@ -118,6 +127,19 @@ Window {
 
         }
 
+    }
+
+    Connections {
+        target: VPN
+        function onViewLogsNeeded() {
+            if (Qt.platform.os !== "android" &&
+                    Qt.platform.os !== "ios" &&
+                    Qt.platform.os !== "tvos") {
+                VPN.viewLogs();
+            } else {
+                mainStackView.push("views/ViewLogs.qml");
+            }
+        }
     }
 
     VPNSystemAlert {

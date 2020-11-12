@@ -33,10 +33,16 @@ xcode.xconfig
 .gradle/
 android/build
 *.ts
-tests/tests
+tests/unit/tests
 build
+Debug/
+Debug-iphone*
+Release/
+Release-iphone*
+macos/gobridge/wireguard-go-version.h
 
 # Editors
 *.swp
 .idea/
 .vscode/
+MozillaVPN.xcodeproj/

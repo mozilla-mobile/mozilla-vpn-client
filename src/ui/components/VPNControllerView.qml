@@ -203,7 +203,7 @@ Rectangle {
             PropertyChanges {
                 target: logoSubtitle
                 //% "Secure and private"
-                //: Refers to the state of the users current internet connection
+                //: This refers to the user’s internet connection.
                 text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
                 visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
                 color: "#FFFFFF"
@@ -335,54 +335,6 @@ Rectangle {
 
         },
         State {
-            name: VPNController.StateDeviceLimit
-
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-
-            PropertyChanges {
-                target: logoTitle
-                text: qsTrId("vpn.controller.deactivated")
-                color: Theme.fontColorDark
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: logoSubtitle
-                text: qsTrId("vpn.controller.activationSloagan")
-                color: Theme.fontColor
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
-            }
-
-        },
-        State {
             name: VPNController.StateCaptivePortal
 
             PropertyChanges {
@@ -485,7 +437,6 @@ Rectangle {
     VPNMainImage {
         id: logo
 
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         y: 50
         height: 80
@@ -541,43 +492,66 @@ Rectangle {
 
             anchors.centerIn: settingsButton
         }
+
+        Component {
+            id: aboutUsComponent
+
+            VPNAboutUs {
+                isSettingsView: false
+            }
+
+        }
+        Connections {
+            target: VPN
+            function onSettingsNeeded() {
+                while(stackview.depth > 1) {
+                    stackview.pop(null, StackView.Immediate);
+                }
+                stackview.push("../views/ViewSettings.qml", StackView.Immediate);
+            }
+            function onAboutNeeded() {
+                while(stackview.depth > 1) {
+                    stackview.pop(null, StackView.Immediate);
+                }
+                stackview.push(aboutUsComponent);
+            }
+        }
     }
 
     VPNHeadline {
         id: logoTitle
 
-        anchors.top: logo.bottom
-        anchors.topMargin: 22
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.family: Theme.fontFamily
         horizontalAlignment: Text.AlignHCenter
-        y: logo.y + logo.height + 26
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: logo.bottom
+        anchors.topMargin: 24
         font.pixelSize: 22
-        height: 32
     }
 
     VPNInterLabel {
         id: logoSubtitle
 
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: logoTitle.y + logoTitle.height + 8
+        anchors.top: logoTitle.bottom
+        anchors.topMargin: Theme.windowMargin / 2
+        lineHeight: Theme.controllerInterLineHeight
+        width: box.width - Theme.windowMargin * 3
     }
 
     VPNConnectionStability {
         id: connectionStability
 
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        y: logoTitle.y + logoTitle.height + 8
+        anchors.top: logoTitle.bottom
+        anchors.topMargin: Theme.windowMargin / 2
         visible: false
     }
 
     VPNToggle {
         id: toggle
 
-        y: logoSubtitle.y + logoSubtitle.height + 24
+        anchors.bottom: box.bottom
+        anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
     }

@@ -12,7 +12,6 @@
 #include <QObject>
 #include <QPointer>
 
-class SettingsHolder;
 class ServerData;
 
 class ServerCountryModel final : public QAbstractListModel
@@ -26,7 +25,7 @@ public:
 
     ServerCountryModel() = default;
 
-    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings();
 
     [[nodiscard]] bool fromJson(const QByteArray &data);
 
@@ -41,6 +40,8 @@ public:
     const QList<Server> getServers(const ServerData &data) const;
 
     const QString countryName(const QString &countryCode) const;
+
+    const QList<ServerCountry>& countries() const { return m_countries; }
 
     // QAbstractListModel methods
 

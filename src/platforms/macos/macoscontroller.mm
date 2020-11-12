@@ -4,13 +4,13 @@
 
 #include "macoscontroller.h"
 #include "Mozilla_VPN-Swift.h"
-#include "captiveportal/captiveportal.h"
 #include "device.h"
 #include "keys.h"
 #include "ipaddressrange.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
+#include "settingsholder.h"
 
 #include <QByteArray>
 #include <QFile>
@@ -84,7 +84,11 @@ void MacOSController::activate(const Server &server,
 
     logger.log() << "MacOSController activating" << server.hostname();
 
-    Q_ASSERT(impl);
+    if (!impl) {
+        logger.log() << "Controller not correctly initialized";
+        emit disconnected();
+        return;
+    }
 
     NSMutableArray<VPNIPAddressRange *> *allowedIPAddressRangesNS = [NSMutableArray<VPNIPAddressRange *> arrayWithCapacity: allowedIPAddressRanges.length()];
     for (const IPAddressRange &i : allowedIPAddressRanges) {
@@ -102,7 +106,7 @@ void MacOSController::activate(const Server &server,
                     serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
                           serverPort:server.choosePort()
               allowedIPAddressRanges:allowedIPAddressRangesNS
-                         ipv6Enabled:MozillaVPN::instance()->settingsHolder()->ipv6Enabled()
+                         ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
                      failureCallback:^() {
                          logger.log() << "MacOSSWiftController - connection failed";
                          emit disconnected();
@@ -115,7 +119,12 @@ void MacOSController::deactivate(bool forSwitching)
 
     logger.log() << "MacOSController deactivated";
 
-    Q_ASSERT(impl);
+    if (!impl) {
+        logger.log() << "Controller not correctly initialized";
+        emit disconnected();
+        return;
+    }
+
     [impl disconnect];
 }
 
@@ -125,6 +134,11 @@ void MacOSController::checkStatus()
 
     if (m_checkingStatus) {
         logger.log() << "We are still waiting for the previous status.";
+        return;
+    }
+
+    if (!impl) {
+        logger.log() << "Controller not correctly initialized";
         return;
     }
 

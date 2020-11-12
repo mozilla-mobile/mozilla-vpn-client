@@ -5,19 +5,20 @@
 #ifndef MOZILLAVPN_H
 #define MOZILLAVPN_H
 
+#include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
 #include "errorhandler.h"
-#include "localizer.h"
 #include "models/devicemodel.h"
+#include "models/helpmodel.h"
 #include "models/keys.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/user.h"
 #include "releasemonitor.h"
-#include "settingsholder.h"
+#include "statusicon.h"
 
 #include <QList>
 #include <QNetworkReply>
@@ -26,7 +27,6 @@
 #include <QStandardPaths>
 #include <QTimer>
 
-class QQmlApplicationEngine;
 class Task;
 
 #ifdef UNIT_TEST
@@ -45,6 +45,7 @@ public:
         StateMain,
         StateUpdateRequired,
         StateSubscriptionNeeded,
+        StateDeviceLimit,
     };
     Q_ENUM(State);
 
@@ -78,14 +79,15 @@ private:
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
 
 public:
-    static void createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
+    MozillaVPN();
+    ~MozillaVPN();
+
     static MozillaVPN *instance();
 
-    State state() const { return m_state; }
-    AlertType alert() const { return m_alert; }
+    void initialize();
 
-    const QString &getApiUrl() const { return m_apiUrl; }
-    const QString &token() const { return m_token; }
+    State state() const;
+    AlertType alert() const { return m_alert; }
 
     // Exposed QML methods:
     Q_INVOKABLE void authenticate();
@@ -96,12 +98,12 @@ public:
     Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
     Q_INVOKABLE void postAuthenticationCompleted();
     Q_INVOKABLE void subscribe();
+    Q_INVOKABLE void restoreSubscription();
     Q_INVOKABLE void viewLogs();
-
-    // QML object getters:
-    QQmlApplicationEngine *engine() { return m_engine; }
+    Q_INVOKABLE QString retrieveLogs();
 
     // Internal object getters:
+    CaptivePortal *captivePortal() { return &m_private->m_captivePortal; }
     CaptivePortalDetection *captivePortalDetection()
     {
         return &m_private->m_captivePortalDetection;
@@ -111,10 +113,10 @@ public:
     Controller *controller() { return &m_private->m_controller; }
     ServerData *currentServer() { return &m_private->m_serverData; }
     DeviceModel *deviceModel() { return &m_private->m_deviceModel; }
-    const Keys *keys() const { return &m_private->m_keys; }
-    Localizer *localizer() { return &m_private->m_localizer; }
+    Keys *keys() { return &m_private->m_keys; }
+    HelpModel *helpModel() { return &m_private->m_helpModel; }
     ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
-    SettingsHolder *settingsHolder() { return &m_private->m_settingsHolder; }
+    StatusIcon *statusIcon() { return &m_private->m_statusIcon; }
     User *user() { return &m_private->m_user; }
 
     // Called at the end of the authentication flow. We can continue adding the device
@@ -147,24 +149,24 @@ public:
 
     bool startMinimized() const { return m_startMinimized; }
 
+    void setStartMinimized(bool startMinimized) { m_startMinimized = startMinimized; }
+
     void setToken(const QString &token);
 
     [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
-    QNetworkAccessManager *networkAccessManager();
+    void reset();
+
+    bool modelsInitialized() const;
 
 private:
-    MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized);
-    ~MozillaVPN();
-
-    static void deleteInstance();
-
-    void initialize();
-
     void setState(State state);
+
+    void maybeStateMain();
 
     void scheduleTask(Task *task);
     void maybeRunTask();
+    void deleteTasks();
 
     void setUserAuthenticated(bool state);
 
@@ -179,7 +181,16 @@ private:
     bool writeLogs(QStandardPaths::StandardLocation location,
                    std::function<void(const QString &filename)> &&a_callback);
 
-    bool modelsInitialized() const;
+#ifdef IOS_INTEGRATION
+    void startIAP(bool restore);
+#endif
+
+    void completeActivation();
+
+public slots:
+    void requestSettings();
+    void requestAbout();
+    void requestViewLogs();
 
 private slots:
     void taskCompleted();
@@ -190,25 +201,28 @@ signals:
     void updateRecommendedChanged();
     void userAuthenticationChanged();
     void deviceRemoving(const QString& deviceName);
+    void settingsNeeded();
+    void aboutNeeded();
+    void viewLogsNeeded();
 
 private:
-    // QML objects.
-    QQmlApplicationEngine *m_engine = nullptr;
+    bool m_initialized = false;
 
     // Internal objects.
     struct Private
     {
+        CaptivePortal m_captivePortal;
         CaptivePortalDetection m_captivePortalDetection;
         ConnectionDataHolder m_connectionDataHolder;
         ConnectionHealth m_connectionHealth;
         Controller m_controller;
         DeviceModel m_deviceModel;
         Keys m_keys;
-        Localizer m_localizer;
+        HelpModel m_helpModel;
         ReleaseMonitor m_releaseMonitor;
         ServerCountryModel m_serverCountryModel;
         ServerData m_serverData;
-        SettingsHolder m_settingsHolder;
+        StatusIcon m_statusIcon;
         User m_user;
     };
 
@@ -217,9 +231,6 @@ private:
     // Task handling.
     QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
-
-    QString m_apiUrl;
-    QString m_token;
 
     State m_state = StateInitialize;
     AlertType m_alert = NoAlert;

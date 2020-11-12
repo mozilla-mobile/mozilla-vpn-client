@@ -7,6 +7,5 @@ import QtQuick 2.5
 Loader {
     id: loader
 
-    anchors.fill: parent
     source: "../views/ViewUpdate.qml"
 }

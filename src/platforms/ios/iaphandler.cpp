@@ -4,8 +4,10 @@
 
 #include "platforms/ios/iaphandler.h"
 #include "logger.h"
+#include "iosutils.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 
 #include <QInAppStore>
 #include <QtPurchasing>
@@ -14,18 +16,23 @@ namespace {
 Logger logger(LOG_IAP, "IAPHandler");
 }
 
-void IAPHandler::start()
+void IAPHandler::start(bool restore)
 {
     logger.log() << "Starting the subscription";
 
     Q_ASSERT(!m_appStore);
     m_appStore = new QInAppStore(this);
 
-    connect(m_appStore, &QInAppStore::productRegistered, [](QInAppProduct *product) {
+    connect(m_appStore, &QInAppStore::productRegistered, [this, restore](QInAppProduct *product) {
         logger.log() << "Product registered";
         logger.log() << "Title:" << product->title();
         logger.log() << "Description:" << product->description();
         logger.log() << "Price:" << product->price();
+
+        if (restore) {
+            m_appStore->restorePurchases();
+            return;
+        }
 
         product->purchase();
     });
@@ -49,7 +56,7 @@ void IAPHandler::start()
 
         case QInAppTransaction::PurchaseApproved:
             logger.log() << "Purchase approved";
-            purchaseCompleted(transaction->orderId());
+            purchaseCompleted();
             break;
 
         case QInAppTransaction::PurchaseRestored:
@@ -66,7 +73,7 @@ void IAPHandler::start()
         transaction->finalize();
     });
 
-    const QStringList products = MozillaVPN::instance()->settingsHolder()->iapProducts();
+    const QStringList products = SettingsHolder::instance()->iapProducts();
     Q_ASSERT(!products.isEmpty());
 
     for (const QString &product : products) {
@@ -77,16 +84,17 @@ void IAPHandler::start()
     logger.log() << "Waiting for the registreation of products";
 }
 
-void IAPHandler::purchaseCompleted(const QString& orderId)
+void IAPHandler::purchaseCompleted()
 {
-    MozillaVPN *vpn = MozillaVPN::instance();
-    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, vpn, orderId);
+    QByteArray receipt = IOSUtils::IAPReceipt();
+    QByteArray receipt64 = receipt.toBase64();
+    NetworkRequest *request = NetworkRequest::createForIOSPurchase(this, receipt64);
 
     connect(request,
             &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error) {
+            [this](QNetworkReply::NetworkError error) {
                 logger.log() << "Purchase request failed" << error;
-                vpn->errorHandle(ErrorHandler::toErrorType(error));
+                MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
                 emit completed();
             });
 
