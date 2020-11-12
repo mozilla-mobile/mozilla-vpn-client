@@ -204,6 +204,12 @@ void ConnectionDataHolder::updateIpAddress()
     NetworkRequest *request = NetworkRequest::createForIpInfo(this);
     connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
         logger.log() << "IP address request failed" << error;
+
+        ErrorHandler::ErrorType errorType = ErrorHandler::toErrorType(error);
+        if (errorType == ErrorHandler::AuthenticationError) {
+            MozillaVPN::instance()->errorHandle(errorType);
+        }
+
         m_updatingIpAddress = false;
         emit ipAddressChecked();
     });

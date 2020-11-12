@@ -27,8 +27,6 @@ void Controller::timerTimeout() {}
 
 void Controller::changeServer(const QString &, const QString &) {}
 
-void Controller::subscriptionNeeded() {}
-
 void Controller::logout() {}
 
 bool Controller::processNextStep()
