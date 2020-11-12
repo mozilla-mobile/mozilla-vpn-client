@@ -6,10 +6,11 @@
 #define ANDROIDCONTROLLER_H
 
 #include "controllerimpl.h"
+
 #include <QAndroidBinder>
 #include <QAndroidServiceConnection>
 
-class AndroidController: public ControllerImpl, public QAndroidServiceConnection
+class AndroidController : public ControllerImpl, public QAndroidServiceConnection
 {
 public:
     // from ControllerImpl
@@ -30,18 +31,23 @@ public:
     // from QAndroidServiceConnection
     void onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder) override;
     void onServiceDisconnected(const QString &name) override;
+
 private:
     Server m_server;
     std::function<void(const QString &)> m_logCallback;
 
     QAndroidBinder m_serviceBinder;
-    class VPNBinder : public QAndroidBinder{
+    class VPNBinder : public QAndroidBinder
+    {
     public:
-        void setController(AndroidController*);
-        bool onTransact(int code, const QAndroidParcel &data, const QAndroidParcel &reply, QAndroidBinder::CallType flags) override;
+        void setController(AndroidController *);
+        bool onTransact(int code,
+                        const QAndroidParcel &data,
+                        const QAndroidParcel &reply,
+                        QAndroidBinder::CallType flags) override;
 
     private:
-        AndroidController* mController;
+        AndroidController *mController;
     };
 
     VPNBinder m_binder;

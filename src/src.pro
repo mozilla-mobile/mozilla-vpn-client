@@ -231,16 +231,13 @@ else:android{
        error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build )
     }
 
-
-
     # For the android build we need to unset those
-    # Otherwise the packaging will fail 🙅‍
+    # Otherwise the packaging will fail 🙅
     OBJECTS_DIR =
     MOC_DIR =
     RCC_DIR =
     UI_DIR =
     ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
-
 
     DISTFILES += \
         ../android/AndroidManifest.xml \
