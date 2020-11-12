@@ -9,6 +9,8 @@
 #include "models/device.h"
 #include "models/servercountrymodel.h"
 #include "models/user.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -22,6 +24,7 @@
 #include "platforms/ios/taskiosproducts.h"
 #endif
 
+#include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
@@ -32,43 +35,15 @@
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
-
-// TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
-constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-
-#ifdef QT_DEBUG
-constexpr const char *API_URL_DEBUG = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-#endif
+#include <QWindow>
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
 
-// The singleton.
-static MozillaVPN *s_instance = nullptr;
-
 namespace {
 Logger logger(LOG_MAIN, "MozillaVPN");
-}
-
-// static
-void MozillaVPN::createInstance(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
-{
-    logger.log() << "Creating MozillaVPN singleton";
-
-    Q_ASSERT(!s_instance);
-    s_instance = new MozillaVPN(parent, engine, startMinimized);
-    s_instance->initialize();
-}
-
-// static
-void MozillaVPN::deleteInstance()
-{
-    logger.log() << "Deleting MozillaVPN singleton";
-
-    Q_ASSERT(s_instance);
-    delete s_instance;
-    s_instance = nullptr;
-}
+MozillaVPN *s_instance = nullptr;
+} // namespace
 
 // static
 MozillaVPN *MozillaVPN::instance()
@@ -77,9 +52,13 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool startMinimized)
-    : QObject(parent), m_engine(engine), m_private(new Private()), m_startMinimized(startMinimized)
+MozillaVPN::MozillaVPN() : m_private(new Private())
 {
+    logger.log() << "Creating MozillaVPN singleton";
+
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
     connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
@@ -98,12 +77,18 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
     connect(&m_private->m_controller, &Controller::readyToSubscribe, [this]() {
         setState(StateSubscriptionNeeded);
     });
-    connect(&m_private->m_controller, &Controller::initialized, [this]() { setState(StateMain); });
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
             &m_private->m_connectionDataHolder,
             &ConnectionDataHolder::connectionStateChanged);
+
+    connect(&m_private->m_controller,
+            &Controller::stateChanged,
+            &m_private->m_statusIcon,
+            &StatusIcon::stateChanged);
+
+    connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon, &StatusIcon::stateChanged);
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
@@ -115,7 +100,7 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
             &m_private->m_captivePortalDetection,
             &CaptivePortalDetection::controllerStateChanged);
 
-    connect(&m_private->m_settingsHolder,
+    connect(SettingsHolder::instance(),
             &SettingsHolder::captivePortalAlertChanged,
             &m_private->m_captivePortalDetection,
             &CaptivePortalDetection::settingsChanged);
@@ -128,82 +113,92 @@ MozillaVPN::MozillaVPN(QObject *parent, QQmlApplicationEngine *engine, bool star
 
 MozillaVPN::~MozillaVPN()
 {
+    logger.log() << "Deleting MozillaVPN singleton";
+
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
+
     delete m_private;
+}
+
+MozillaVPN::State MozillaVPN::state() const
+{
+    return m_state;
 }
 
 void MozillaVPN::initialize()
 {
     logger.log() << "MozillaVPN Initialization";
 
+    Q_ASSERT(!m_initialized);
+    m_initialized = true;
+
     // This is our first state.
     Q_ASSERT(m_state == StateInitialize);
-
-    // API URL depends on the type of build.
-    m_apiUrl = API_URL_PROD;
-#ifdef QT_DEBUG
-    m_apiUrl = API_URL_DEBUG;
-#endif
 
     m_private->m_releaseMonitor.runSoon();
 
 #ifdef IOS_INTEGRATION
-    if (!m_private->m_settingsHolder.hasNativeIOSDataMigrated()) {
+    if (!SettingsHolder::instance()->hasNativeIOSDataMigrated()) {
         IOSDataMigration::migrate();
-        m_private->m_settingsHolder.setNativeIOSDataMigrated(true);
+        SettingsHolder::instance()->setNativeIOSDataMigrated(true);
     }
 #endif
 
-    m_private->m_localizer.initialize(m_private->m_settingsHolder.languageCode());
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
 
     m_private->m_captivePortalDetection.initialize();
 
-    if (!m_private->m_settingsHolder.hasToken()) {
+    if (!settingsHolder->hasToken()) {
         return;
     }
 
     logger.log() << "We have a valid token";
-    if (!m_private->m_user.fromSettings(m_private->m_settingsHolder)) {
+    if (!m_private->m_user.fromSettings()) {
         return;
     }
 
-    if (!m_private->m_serverCountryModel.fromSettings(m_private->m_settingsHolder)) {
+    if (!m_private->m_serverCountryModel.fromSettings()) {
         logger.log() << "No server list found";
-        m_private->m_settingsHolder.clear();
+        settingsHolder->clear();
         return;
     }
 
-    if (!m_private->m_deviceModel.fromSettings(m_private->m_settingsHolder)) {
+    if (!m_private->m_deviceModel.fromSettings()) {
         logger.log() << "No devices found";
-        m_private->m_settingsHolder.clear();
+        settingsHolder->clear();
         return;
     }
 
     if (!m_private->m_deviceModel.hasDevice(Device::currentDeviceName())) {
         logger.log() << "The current device has not been found";
-        m_private->m_settingsHolder.clear();
+        settingsHolder->clear();
         return;
     }
 
-    if (!m_private->m_keys.fromSettings(m_private->m_settingsHolder)) {
+    if (!m_private->m_keys.fromSettings()) {
         logger.log() << "No keys found";
-        m_private->m_settingsHolder.clear();
+        settingsHolder->clear();
         return;
+    }
+
+    if (!m_private->m_captivePortal.fromSettings()) {
+        // We do not care about CaptivePortal settings.
     }
 
     if (!modelsInitialized()) {
         logger.log() << "Models not initialized yet";
-        m_private->m_settingsHolder.clear();
+        settingsHolder->clear();
         return;
     }
 
     Q_ASSERT(!m_private->m_serverData.initialized());
-    if (!m_private->m_serverData.fromSettings(m_private->m_settingsHolder)) {
+    if (!m_private->m_serverData.fromSettings()) {
         m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
         Q_ASSERT(m_private->m_serverData.initialized());
-        m_private->m_serverData.writeSettings(m_private->m_settingsHolder);
+        m_private->m_serverData.writeSettings();
     }
-
-    m_token = m_private->m_settingsHolder.token();
 
     scheduleTask(new TaskAccountAndServers());
 
@@ -213,7 +208,7 @@ void MozillaVPN::initialize()
     scheduleTask(new TaskIOSProducts());
 #endif
 
-    setState(StateMain);
+    maybeStateMain();
     setUserAuthenticated(true);
 }
 
@@ -224,13 +219,44 @@ void MozillaVPN::setState(State state)
     emit stateChanged();
 
     // If we are activating the app, let's initialize the controller.
-    if (m_state == StateMain) {
+    if (m_state == StateMain && m_private->m_deviceModel.currentDevice()) {
         m_private->m_connectionDataHolder.enable();
         m_private->m_controller.initialize();
         startSchedulingPeriodicOperations();
     } else {
         m_private->m_connectionDataHolder.disable();
         stopSchedulingPeriodicOperations();
+    }
+}
+
+void MozillaVPN::maybeStateMain()
+{
+    logger.log() << "Maybe state main";
+
+#ifdef IOS_INTEGRATION
+    if (m_private->m_user.subscriptionNeeded()) {
+        setState(StateSubscriptionNeeded);
+        return;
+    }
+#endif
+
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    if (!settingsHolder->hasPostAuthenticationShown()
+        || !settingsHolder->postAuthenticationShown()) {
+        settingsHolder->setPostAuthenticationShown(true);
+        setState(StatePostAuthentication);
+        return;
+    }
+
+    QString deviceName = Device::currentDeviceName();
+    if (!m_private->m_deviceModel.hasDevice(deviceName)) {
+        Q_ASSERT(m_private->m_deviceModel.activeDevices() == m_private->m_user.maxDevices());
+        setState(StateDeviceLimit);
+        return;
+    }
+
+    if (m_state != StateUpdateRequired) {
+        setState(StateMain);
     }
 }
 
@@ -253,37 +279,37 @@ void MozillaVPN::openLink(LinkType linkType)
 
     switch (linkType) {
     case LinkAccount:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/account");
         break;
 
     case LinkContact:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/contact");
         break;
 
     case LinkFeedback:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/client/feedback");
         break;
 
     case LinkHelpSupport:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/support");
         break;
 
     case LinkTermsOfService:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/terms");
         break;
 
     case LinkPrivacyPolicy:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         url.append("/r/vpn/privacy");
         break;
 
     case LinkUpdate:
-        url = getApiUrl();
+        url = NetworkManager::instance()->apiUrl();
         // TODO
         break;
 
@@ -332,8 +358,7 @@ void MozillaVPN::taskCompleted()
 
 void MozillaVPN::setToken(const QString &token)
 {
-    m_private->m_settingsHolder.setToken(token);
-    m_token = token;
+    SettingsHolder::instance()->setToken(token);
 }
 
 void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &token)
@@ -352,8 +377,8 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
         return;
     }
 
-    m_private->m_user.writeSettings(m_private->m_settingsHolder);
-    m_private->m_deviceModel.writeSettings(m_private->m_settingsHolder);
+    m_private->m_user.writeSettings();
+    m_private->m_deviceModel.writeSettings();
 
     setToken(token);
     setUserAuthenticated(true);
@@ -362,12 +387,17 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     if (m_private->m_user.subscriptionNeeded()) {
         scheduleTask(new TaskIOSProducts());
         scheduleTask(new TaskFunction([this](MozillaVPN*) {
-            setState(StatePostAuthentication);
+            maybeStateMain();
         }));
         return;
     }
 #endif
 
+    completeActivation();
+}
+
+void MozillaVPN::completeActivation()
+{
     int deviceCount = m_private->m_deviceModel.activeDevices();
 
     QString deviceName = Device::currentDeviceName();
@@ -377,15 +407,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
     }
 
     if (deviceCount >= m_private->m_user.maxDevices()) {
-        // We need to go to "device limit" mode
-        scheduleTask(new TaskFunction([this](MozillaVPN *) {
-            if (m_state == StateAuthenticating) {
-                m_private->m_controller.setDeviceLimit(true);
-                setState(StatePostAuthentication);
-            }
-        }));
-
-        // Nothing else to do.
+        maybeStateMain();
         return;
     }
 
@@ -401,10 +423,6 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
     // Finally we are able to activate the client.
     scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        if (m_state != StateAuthenticating) {
-            return;
-        }
-
         if (!modelsInitialized()) {
             logger.log() << "Failed to complete the authentication";
             errorHandle(ErrorHandler::BackendServiceError);
@@ -413,7 +431,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray &json, const QString &
 
         Q_ASSERT(m_private->m_serverData.initialized());
 
-        setState(StatePostAuthentication);
+        maybeStateMain();
     }));
 }
 
@@ -424,7 +442,7 @@ void MozillaVPN::deviceAdded(const QString &deviceName,
     Q_UNUSED(publicKey);
     logger.log() << "Device added" << deviceName;
 
-    m_private->m_settingsHolder.setPrivateKey(privateKey);
+    SettingsHolder::instance()->setPrivateKey(privateKey);
     m_private->m_keys.storeKey(privateKey);
 }
 
@@ -442,7 +460,7 @@ bool MozillaVPN::setServerList(const QByteArray &serverData)
         return false;
     }
 
-    m_private->m_settingsHolder.setServers(serverData);
+    SettingsHolder::instance()->setServers(serverData);
     return true;
 }
 
@@ -460,7 +478,7 @@ void MozillaVPN::serversFetched(const QByteArray &serverData)
         || !m_private->m_serverCountryModel.exists(m_private->m_serverData)) {
         m_private->m_serverCountryModel.pickRandom(m_private->m_serverData);
         Q_ASSERT(m_private->m_serverData.initialized());
-        m_private->m_serverData.writeSettings(m_private->m_settingsHolder);
+        m_private->m_serverData.writeSettings();
     }
 }
 
@@ -475,7 +493,7 @@ void MozillaVPN::removeDevice(const QString &deviceName)
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    if (m_private->m_controller.state() != Controller::StateDeviceLimit) {
+    if (m_state != StateDeviceLimit) {
         return;
     }
 
@@ -489,8 +507,21 @@ void MozillaVPN::removeDevice(const QString &deviceName)
     scheduleTask(new TaskAccountAndServers());
 
     // Finally we are able to activate the client.
-    scheduleTask(
-        new TaskFunction([this](MozillaVPN *) { m_private->m_controller.setDeviceLimit(false); }));
+    scheduleTask(new TaskFunction([this](MozillaVPN *) {
+        if (m_state != StateDeviceLimit) {
+            return;
+        }
+
+        if (!modelsInitialized()) {
+            logger.log() << "Models not initialized yet";
+            errorHandle(ErrorHandler::BackendServiceError);
+            SettingsHolder::instance()->clear();
+            setState(StateInitialize);
+            return;
+        }
+
+        maybeStateMain();
+    }));
 }
 
 void MozillaVPN::accountChecked(const QByteArray &json)
@@ -509,17 +540,18 @@ void MozillaVPN::accountChecked(const QByteArray &json)
         return;
     }
 
-    m_private->m_user.writeSettings(m_private->m_settingsHolder);
-    m_private->m_deviceModel.writeSettings(m_private->m_settingsHolder);
+    m_private->m_user.writeSettings();
+    m_private->m_deviceModel.writeSettings();
 
 #ifdef IOS_INTEGRATION
     if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-        m_private->m_controller.subscriptionNeeded();
+        maybeStateMain();
+        return;
     }
 #endif
 
     // To test the subscription needed view, comment out this line:
-    //m_controller.subscriptionNeeded();
+    //m_private->m_controller.subscriptionNeeded();
 }
 
 void MozillaVPN::cancelAuthentication()
@@ -531,14 +563,7 @@ void MozillaVPN::cancelAuthentication()
         return;
     }
 
-    for (QPointer<Task> &task : m_tasks) {
-        delete task;
-    }
-
-    m_tasks.clear();
-    m_task_running = false;
-    m_private->m_settingsHolder.clear();
-
+    reset();
     setState(StateInitialize);
 }
 
@@ -560,12 +585,30 @@ void MozillaVPN::logout()
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    scheduleTask(new TaskFunction([this](MozillaVPN *) {
-        logger.log() << "Cleaning up all";
-        m_private->m_settingsHolder.clear();
-        m_private->m_keys.forgetKey();
-        m_private->m_serverData.forget();
+    scheduleTask(new TaskFunction([](MozillaVPN *vpn) {
+        vpn->reset();
     }));
+}
+
+void MozillaVPN::reset()
+{
+    logger.log() << "Cleaning up all";
+
+    deleteTasks();
+
+    SettingsHolder::instance()->clear();
+    m_private->m_keys.forgetKey();
+    m_private->m_serverData.forget();
+}
+
+void MozillaVPN::deleteTasks()
+{
+    for (QPointer<Task> &task : m_tasks) {
+        delete task;
+    }
+
+    m_tasks.clear();
+    m_task_running = false;
 }
 
 void MozillaVPN::setAlert(AlertType alert)
@@ -627,7 +670,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
 
     if (alert == AuthenticationFailedAlert) {
         m_private->m_controller.deactivate();
-        m_private->m_settingsHolder.clear();
+        reset();
         setState(StateInitialize);
         return;
     }
@@ -643,7 +686,7 @@ void MozillaVPN::changeServer(const QString &countryCode, const QString &city)
     QString countryName = m_private->m_serverCountryModel.countryName(countryCode);
 
     m_private->m_serverData.update(countryCode, countryName, city);
-    m_private->m_serverData.writeSettings(m_private->m_settingsHolder);
+    m_private->m_serverData.writeSettings();
 }
 
 void MozillaVPN::postAuthenticationCompleted()
@@ -655,14 +698,7 @@ void MozillaVPN::postAuthenticationCompleted()
         return;
     }
 
-#ifdef IOS_INTEGRATION
-    if (m_private->m_user.subscriptionNeeded()) {
-        setState(StateSubscriptionNeeded);
-        return;
-    }
-#endif
-
-    setState(StateMain);
+    maybeStateMain();
 }
 
 void MozillaVPN::setUpdateRecommended(bool value)
@@ -695,18 +731,34 @@ void MozillaVPN::subscribe()
     logger.log() << "Subscription required";
 
 #ifdef IOS_INTEGRATION
+    startIAP(false /* restore */);
+#endif
+}
+
+void MozillaVPN::restoreSubscription()
+{
+    logger.log() << "Restore subscription";
+
+#ifdef IOS_INTEGRATION
+    startIAP(true /* restore */);
+#endif
+}
+
+#ifdef IOS_INTEGRATION
+void MozillaVPN::startIAP(bool restore)
+{
     IAPHandler *iap = new IAPHandler(this);
 
     connect(iap, &IAPHandler::completed, [this]() {
         logger.log() << "Subscription completed";
-        scheduleTask(new TaskAccountAndServers());
+        completeActivation();
     });
 
     connect(iap, &IAPHandler::failed, [] { logger.log() << "Subscription failed"; });
 
-    iap->start();
-#endif
+    iap->start(restore);
 }
+#endif
 
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location)
 {
@@ -822,6 +874,21 @@ void MozillaVPN::viewLogs()
     qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
 }
 
+QString MozillaVPN::retrieveLogs()
+{
+    logger.log() << "Retrieve logs";
+
+    QString logs;
+    QTextStream out(&logs);
+
+    LogHandler *logHandler = LogHandler::instance();
+    for (const LogHandler::Log &log : logHandler->logs()) {
+        logHandler->prettyOutput(out, log);
+    }
+
+    return logs;
+}
+
 bool MozillaVPN::modelsInitialized() const
 {
     return m_private->m_user.initialized() && m_private->m_serverCountryModel.initialized()
@@ -830,7 +897,26 @@ bool MozillaVPN::modelsInitialized() const
            && m_private->m_keys.initialized();
 }
 
-QNetworkAccessManager *MozillaVPN::networkAccessManager()
+void MozillaVPN::requestSettings()
 {
-    return m_engine->networkAccessManager();
+    logger.log() << "Settings required";
+
+    QmlEngineHolder::instance()->showWindow();
+    emit settingsNeeded();
+}
+
+void MozillaVPN::requestAbout()
+{
+    logger.log() << "About view requested";
+
+    QmlEngineHolder::instance()->showWindow();
+    emit aboutNeeded();
+}
+
+void MozillaVPN::requestViewLogs()
+{
+    logger.log() << "View log requested";
+
+    QmlEngineHolder::instance()->showWindow();
+    emit viewLogsNeeded();
 }

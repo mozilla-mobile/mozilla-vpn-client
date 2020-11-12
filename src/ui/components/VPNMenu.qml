@@ -8,9 +8,11 @@ import "../themes/themes.js" as Theme
 Item {
     id: menuBar
 
+    property alias objectName: iconButton.objectName
     property alias title: title.text
     property alias rightTitle: rightTitle.text
     property bool isSettingsView: false
+    property bool isMainView: false
 
     width: parent.width
     height: 56
@@ -29,7 +31,7 @@ Item {
     VPNIconButton {
         id: iconButton
 
-        onClicked: isSettingsView ? settingsStackView.pop() : stackview.pop()
+        onClicked: isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2

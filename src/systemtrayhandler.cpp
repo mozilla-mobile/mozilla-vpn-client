@@ -5,43 +5,147 @@
 #include "systemtrayhandler.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
+#include "statusicon.h"
 
 #include <array>
 #include <QIcon>
 #include <QMenu>
 
-constexpr const std::array<const char *, 4> ANIMATED_ICON_STEPS
-    = {"://ui/resources/logo-animated1.svg",
-       "://ui/resources/logo-animated2.svg",
-       "://ui/resources/logo-animated3.svg",
-       "://ui/resources/logo-animated4.svg"};
-
 namespace {
 Logger logger(LOG_MAIN, "SystemTrayHandler");
 }
 
-SystemTrayHandler::SystemTrayHandler(const QIcon &icon, QObject *parent)
-    : QSystemTrayIcon(icon, parent)
-{   //% "Quit"
-    m_menu.addAction(qtTrId("systray.quit"), this, &SystemTrayHandler::quit);
+SystemTrayHandler::SystemTrayHandler(QObject *parent)
+    : QSystemTrayIcon(parent)
+{
+    MozillaVPN *vpn = MozillaVPN::instance();
+
+    // Status label
+    m_statusLabel = m_menu.addAction("");
+    m_statusLabel->setEnabled(false);
+
+    m_lastLocationLabel = m_menu.addAction("", vpn->controller(), &Controller::activate);
+    m_lastLocationLabel->setEnabled(false);
+
+    //% "Disconnect"
+    m_disconnectAction = m_menu.addAction(qtTrId("systray.disconnect"),
+                                          vpn->controller(),
+                                          &Controller::deactivate);
+
+    m_separator = m_menu.addSeparator();
+
+    //% "Show Mozilla VPN"
+    m_menu.addAction(qtTrId("systray.show"),
+                     QmlEngineHolder::instance(),
+                     &QmlEngineHolder::showWindow);
+
+    m_menu.addSeparator();
+
+    //% "Help"
+    QMenu *help = m_menu.addMenu(qtTrId("systray.help"));
+    vpn->helpModel()->forEach([&](const QString &name, int id) {
+        help->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
+    });
+
+    //% "Preferences…"
+    m_preferencesAction = m_menu.addAction(qtTrId("systray.preferences"),
+                                           vpn,
+                                           &MozillaVPN::requestSettings);
+
+    m_menu.addSeparator();
+
+    //% "Quit Mozilla VPN"
+    m_menu.addAction(qtTrId("systray.quit"), vpn->controller(), &Controller::quit);
     setContextMenu(&m_menu);
 
-    connect(&m_animatedIconTimer, &QTimer::timeout, this, &SystemTrayHandler::animateIcon);
+    updateIcon(MozillaVPN::instance()->statusIcon()->iconString());
+
+    updateContextMenu();
 }
 
-void SystemTrayHandler::controllerStateChanged()
+void SystemTrayHandler::updateContextMenu()
 {
-    logger.log() << "Show notification";
-
-    if (!supportsMessages()) {
-        return;
-    }
+    logger.log() << "Update context menu";
 
     MozillaVPN *vpn = MozillaVPN::instance();
 
-    // If we are in a non-main state, we don't need to show special icons.
+    bool isStateMain = vpn->state() == MozillaVPN::StateMain;
+    m_preferencesAction->setVisible(isStateMain);
+
+    m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() == Controller::StateOn);
+
+    m_statusLabel->setVisible(isStateMain);
+    m_lastLocationLabel->setVisible(isStateMain);
+
+    m_separator->setVisible(isStateMain);
+
+    // If we are in a non-main state, we don't need to show notifications.
+    if (!isStateMain) {
+        return;
+    }
+
+    QString statusLabel;
+
+    switch (vpn->controller()->state()) {
+    case Controller::StateOn:
+        //% "Connected to:"
+        statusLabel = qtTrId("vpn.systray.status.connectedTo");
+        break;
+
+    case Controller::StateOff:
+        //% "Connect to the last location:"
+        statusLabel = qtTrId("vpn.systray.status.connectTo");
+        break;
+
+    case Controller::StateSwitching:
+        [[fallthrough]];
+    case Controller::StateConnecting:
+        //% "Connecting to:"
+        statusLabel = qtTrId("vpn.systray.status.connectingTo");
+        break;
+
+    case Controller::StateDisconnecting:
+        //% "Disconnecting from:"
+        statusLabel = qtTrId("vpn.systray.status.disconnectingFrom");
+        break;
+
+    default:
+        m_statusLabel->setVisible(false);
+        m_lastLocationLabel->setVisible(false);
+        m_separator->setVisible(false);
+        return;
+    }
+
+    Q_ASSERT(!statusLabel.isEmpty());
+    m_statusLabel->setVisible(true);
+    m_statusLabel->setText(statusLabel);
+
+    m_lastLocationLabel->setVisible(true);
+
+    QIcon flagIcon(
+        QString("://ui/resources/flags/%1.png").arg(vpn->currentServer()->countryCode().toUpper()));
+
+    m_lastLocationLabel->setIcon(flagIcon);
+    m_lastLocationLabel->setText(
+        //% "%1, %2"
+        //: Location in the systray. %1 is the country, %2 is the city.
+        qtTrId("vpn.systray.location")
+            .arg(vpn->currentServer()->country())
+            .arg(vpn->currentServer()->city()));
+    m_lastLocationLabel->setEnabled(vpn->controller()->state() == Controller::StateOff);
+}
+
+void SystemTrayHandler::showNotification()
+{
+    logger.log() << "Show notification";
+
+    MozillaVPN *vpn = MozillaVPN::instance();
     if (vpn->state() != MozillaVPN::StateMain) {
-        showIcon("://ui/resources/logo-tray.svg");
+        return;
+    }
+
+    if (!supportsMessages()) {
         return;
     }
 
@@ -50,10 +154,9 @@ void SystemTrayHandler::controllerStateChanged()
 
     switch (vpn->controller()->state()) {
     case Controller::StateOn:
-        showIcon("://ui/resources/logo-on.svg");
-        //% "VPN connected"
+        //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
-        //% "Connected to %1 - %2"
+        //% "Connected to %1, %2"
         //: Shown as message body in a notification. %1 is the country, %2 is the city.
         message = qtTrId("vpn.systray.statusConnected.message")
                       .arg(vpn->currentServer()->country())
@@ -61,32 +164,34 @@ void SystemTrayHandler::controllerStateChanged()
         break;
 
     case Controller::StateOff:
-        showIcon("://ui/resources/logo-off.svg");
-        //% "VPN disconnected"
-        title = qtTrId("vpn.systray.statusDisconnected");
-        message = qtTrId("TODO");
+        //% "VPN Disconnected"
+        title = qtTrId("vpn.systray.statusDisconnected.title");
+        //% "Disconnected from to %1, %2"
+        //: Shown as message body in a notification. %1 is the country, %2 is the city.
+        message = qtTrId("vpn.systray.statusDisconnected.message")
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city());
         break;
 
     case Controller::StateSwitching:
-        showAnimatedIcon();
-        //% "VPN switching"
-        //: This message is shown when the VPN is switching to a different server in a different location.
-        title = qtTrId("vpn.systray.statusSwitch");
-        message = qtTrId("TODO");
-        break;
-
-    case Controller::StateConnecting:
-        [[fallthrough]];
-    case Controller::StateDisconnecting:
-        showAnimatedIcon();
+        //% "VPN Switched Servers"
+        title = qtTrId("vpn.systray.statusSwitch.title");
+        //% "Switched from %1, %2 to %3, %4"
+        //: Shown as message body in a notification. %1 and %3 are countries, %2 and %4 are cities.
+        message = qtTrId("vpn.systray.statusSwtich.message")
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city())
+                      .arg(vpn->serverCountryModel()->countryName(
+                          vpn->controller()->switchingCountryCode()))
+                      .arg(vpn->controller()->switchingCity());
         break;
 
     default:
-        showIcon("://ui/resources/logo-tray.svg");
         break;
     }
 
     Q_ASSERT(title.isEmpty() == message.isEmpty());
+
     if (!title.isEmpty()) {
         showMessage(title, message, NoIcon, 2000);
     }
@@ -97,29 +202,14 @@ void SystemTrayHandler::captivePortalNotificationRequested()
     logger.log() << "Capitve portal notification shown";
     //% "Captive portal detected"
     QString title = qtTrId("vpn.systray.captivePortalAlert.title");
-    //% "VPN will automatically reconnect when ready
+    //% "VPN will automatically reconnect when ready"
     QString message = qtTrId("vpn.systray.captivePortalAlert.message");
     showMessage(title, message, NoIcon, 2000);
 }
 
-void SystemTrayHandler::showAnimatedIcon()
+void SystemTrayHandler::updateIcon(const QString &icon)
 {
-    m_animatedIconIndex = 0;
-    m_animatedIconTimer.start(200);
-    animateIcon();
-}
-
-void SystemTrayHandler::animateIcon()
-{
-    Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
-    setIcon(QIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]));
-    if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
-        m_animatedIconIndex = 0;
-    }
-}
-
-void SystemTrayHandler::showIcon(const QString &icon)
-{
-    m_animatedIconTimer.stop();
-    setIcon(QIcon(icon));
+    QIcon trayIconMask(icon);
+    trayIconMask.setIsMask(true);
+    setIcon(trayIconMask);
 }

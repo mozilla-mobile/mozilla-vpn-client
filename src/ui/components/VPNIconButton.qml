@@ -24,6 +24,13 @@ RoundButton {
     Keys.onReturnPressed: clicked()
     Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
+
+    VPNToolTip {
+        text: accessibleName
+    }
+
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(iconButton)
+    
     states: [
         State {
             when: mouseArea.pressed
@@ -71,7 +78,7 @@ RoundButton {
 
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: parent.clicked()
+        onClicked: iconButton.clicked()
     }
 
     background: Rectangle {

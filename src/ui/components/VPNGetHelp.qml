@@ -14,6 +14,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "getHelpBack"
 
         //% "Get Help"
         title: qsTrId("vpn.main.getHelp")
@@ -29,46 +30,12 @@ Item {
         anchors.topMargin: Theme.windowMargin
         listName: menu.title
 
-        model: ListModel {
-            ListElement {
-                //% "Contact us"
-                linkTitle: qsTrId("vpn.help.contactUs")
-                clickId: "contact_us"
-            }
-
-            ListElement {
-                //% "Help & Support"
-                linkTitle: qsTrId("vpn.help.helpAndSupport")
-                clickId: "help_support"
-            }
-
-            ListElement {
-                //% "View log"
-                linkTitle: qsTrId("vpn.help.viewLog")
-                clickId: "view_logs"
-            }
-
-        }
+        model: VPNHelpModel
 
         delegate: VPNExternalLinkListItem {
-
-            function clickHandler(id) {
-                switch (id) {
-                case "contact_us":
-                    VPN.openLink(VPN.LinkContact);
-                    break;
-                case "help_support":
-                    VPN.openLink(VPN.LinkHelpSupport);
-                    break;
-                case "view_logs":
-                    VPN.viewLogs();
-                    break;
-                }
-            }
-
-            title: linkTitle
-            accessibleName: linkTitle
-            onClicked: clickHandler(clickId)
+            title: name
+            accessibleName: name
+            onClicked: VPNHelpModel.open(id)
         }
 
         ScrollBar.vertical: ScrollBar {

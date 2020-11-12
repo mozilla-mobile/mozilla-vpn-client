@@ -26,6 +26,8 @@ public:
     SettingsHolder();
     ~SettingsHolder();
 
+    static SettingsHolder *instance();
+
     void clear();
 
 #define GETSET(type, has, get, set) \
@@ -60,6 +62,7 @@ public:
            hasCaptivePortalIpv6Addresses,
            captivePortalIpv6Addresses,
            setCaptivePortalIpv6Addresses)
+    GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown, setPostAuthenticationShown);
 
 #ifdef IOS_INTEGRATION
     GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated, setNativeIOSDataMigrated)
@@ -74,6 +77,9 @@ signals:
     void captivePortalAlertChanged(bool value);
     void startAtBootChanged(bool value);
     void languageCodeChanged(const QString &languageCode);
+
+private:
+    explicit SettingsHolder(QObject *parent);
 
 private:
     QSettings m_settings;

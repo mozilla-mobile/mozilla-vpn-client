@@ -3,8 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcaptiveportallookup.h"
+#include "captiveportal/captiveportal.h"
 #include "logger.h"
-#include "captiveportal/captiveportallookup.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
 
 namespace {
 Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
@@ -12,11 +14,21 @@ Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
 
 void TaskCaptivePortalLookup::run(MozillaVPN *vpn)
 {
-    Q_UNUSED(vpn);
-
     logger.log() << "Resolving the captive portal detector URL";
 
-    CaptivePortalLookup* cpl = new CaptivePortalLookup(this);
-    connect(cpl, &CaptivePortalLookup::completed, this, &TaskCaptivePortalLookup::completed);
-    cpl->start();
+    NetworkRequest *request = NetworkRequest::createForCaptivePortalLookup(this);
+    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
+        logger.log() << "Failed to add the device" << error;
+        vpn->errorHandle(ErrorHandler::toErrorType(error));
+        emit completed();
+    });
+
+    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
+        logger.log() << "Lookup completed";
+        if (vpn->captivePortal()->fromJson(data)) {
+            vpn->captivePortal()->writeSettings();
+        }
+
+        emit completed();
+    });
 }

@@ -21,17 +21,17 @@ following dependencies:
 
 #### Building qt5
 
-Qt5 can be installed in a number of ways. To build statically on Ubuntu, download the latest QT source code from:
-https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
+Qt5 can be installed in a number of ways. To build statically on Ubuntu, follow these steps:
 
 ```
+curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
 tar xvf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
 sudo apt install sudo clang build-dep qt5-default libxcb-xinerama0-dev
 bash scripts/qt5_compile.sh qt qt
 ```
 
-See https://wiki.qt.io/Building\_Qt\_5\_from\_Git#Linux.2FX11 if you get stuck or are on another distro.
+See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or are on another distro.
 
 Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
@@ -84,9 +84,10 @@ mozillavpn-daemon needs privileged access and so if you do not run as root, you 
 
 ### MacOS
 
-On macOS, we strongly suggest to compile Qt5 statically. To do that, download the latest QT source code from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
+On macOS, we strongly suggest to compile Qt5 statically. To do that, follow these steps:
 
 ```
+curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
 tar vxf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
 bash scripts/qt5_compile.sh `pwd`/qt qt

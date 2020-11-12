@@ -10,35 +10,31 @@
 #include <QTimer>
 
 class MozillaVPN;
+class QAction;
 
 class SystemTrayHandler final : public QSystemTrayIcon
 {
     Q_OBJECT
 
 public:
-    SystemTrayHandler(const QIcon &icon, QObject *parent);
+    explicit SystemTrayHandler(QObject *parent);
 
     void captivePortalNotificationRequested();
 
 public slots:
-    void controllerStateChanged();
+    void updateIcon(const QString &icon);
 
-private slots:
-    void animateIcon();
-
-signals:
-    void quit();
-
-private:
-    void showAnimatedIcon();
-    void showIcon(const QString &icon);
+    void showNotification();
+    void updateContextMenu();
 
 private:
     QMenu m_menu;
 
-    // Animated icon.
-    QTimer m_animatedIconTimer;
-    uint8_t m_animatedIconIndex = 0;
+    QAction *m_statusLabel = nullptr;
+    QAction *m_lastLocationLabel = nullptr;
+    QAction *m_disconnectAction = nullptr;
+    QAction *m_separator = nullptr;
+    QAction *m_preferencesAction = nullptr;
 };
 
 #endif // SYSTEMTRAYHANDLER_H

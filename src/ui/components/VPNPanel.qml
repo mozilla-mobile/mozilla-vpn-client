@@ -3,55 +3,90 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
-import Mozilla.VPN 1.0
-import "../themes/themes.js" as Theme
+import QtGraphicalEffects 1.15
 
-Item {
+import "../themes/themes.js" as Theme
+ColumnLayout {
+    id: panel
+
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
-    property var logoY: 80
+    property var logoSize: 76
+    property var maskImage: false
+    property var imageIsVector: true
 
+    width:  Math.min(parent.width * .8, Theme.maxHorizontalContentWidth - Theme.windowMargin * 4)
     anchors.horizontalCenter: parent.horizontalCenter
+    spacing: 0
 
-    Rectangle {
-        // We nest the panel Image inside this Rectangle to prevent
-        // logoTitle and logoSubittle from wiggling when Image.height
-        // changes as Image.src is updated.
+    ColumnLayout {
+        id: contentWrapper
 
-        id: logoWrapper
+        Layout.alignment: Qt.AlignCenter
+        spacing: 0
 
-        color: "transparent"
-        height: 76
-        width: 76
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: logoY
+        Rectangle {
+            id: logoWrapper
 
-        Image {
-            id: logo
+            color: "transparent"
+            Layout.preferredHeight: Math.max(logoSize, 76)
+            Layout.fillWidth: true
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            sourceSize.height: 76
-            fillMode: Image.PreserveAspectFit
+            Image {
+                id: logo
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: logoWrapper.bottom
+                verticalAlignment: Image.AlignBottom
+                anchors.bottomMargin: 0
+                sourceSize.height: panel.imageIsVector ? logoSize : undefined
+                sourceSize.width: panel.imageIsVector ? logoSize : undefined
+                fillMode: Image.PreserveAspectFit
+                layer.enabled: true
+                Component.onCompleted: {
+                    if (!panel.imageIsVector) {
+                        logo.height = logoSize;
+                        logo.width = logoSize;
+                        logo.smooth = true;
+                    }
+                }
+
+                Rectangle {
+                    id: mask
+
+                    anchors.fill: parent
+                    radius: logoSize / 2
+                    visible: false
+                }
+
+                layer.effect: OpacityMask {
+                    maskSource: panel.maskImage ? mask : undefined
+                }
+
+            }
+
         }
 
-    }
+        VPNHeadline {
+            id: logoTitle
 
-    VPNHeadline {
-        id: logoTitle
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: 24
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+        }
 
-        anchors.top: logoWrapper.bottom
-        anchors.topMargin: 24
-    }
+        VPNSubtitle {
+            id: logoSubtitle
 
-    VPNSubtitle {
-        id: logoSubtitle
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: 12
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+        }
 
-        x: 169
-        y: 255
     }
 
 }

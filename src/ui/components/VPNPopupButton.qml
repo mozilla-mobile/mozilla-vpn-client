@@ -7,25 +7,56 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
-Button {
-    id: popupButton
+VPNButtonBase {
+    id: button
 
     property alias buttonText: buttonText.text
     property alias buttonTextColor: buttonText.color
-    property var buttonColor
 
-    enabled: (removePopup.state === "visible")
-    Layout.preferredHeight: 28
+    targetEl: buttonBackground
+    enabled: popup.visible
     Layout.fillWidth: true
-    Layout.preferredWidth: rectangularGlowClippingPath.width - (16 * 2)
+    Layout.fillHeight: true
+    Accessible.name: buttonText.text
 
-    contentItem: Text {
+    Rectangle {
+        id: buttonBackground
+
+        anchors.fill: button
+        height: button.contentItem.paintedHeight
+        radius: 4
+        color: bgColor.defaultColor
+        border.width: 1
+        border.color: button.activeFocus ? bgColor.focusBorder : color
+        z: -1
+
+        Rectangle {
+            anchors.fill: buttonBackground
+            anchors.margins: -2
+            opacity: button.activeFocus ? 1 : 0
+            radius: buttonBackground.radius + 2
+            color: bgColor.focusStroke
+            z: -2
+        }
+
+        Behavior on color {
+            PropertyAnimation {
+                target: buttonBackground
+                duration: 300
+            }
+
+        }
+
+    }
+
+    contentItem: VPNInterLabel {
         id: buttonText
 
+        lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.family: Theme.fontBoldFamily
-        opacity: popupButton.hovered ? 0.9 : 1
+        wrapMode: Text.WordWrap
+        opacity: button.hovered ? 0.9 : 1
 
         transitions: Transition {
             NumberAnimation {
@@ -33,52 +64,6 @@ Button {
                 property: "opacity"
                 duration: 200
                 easing.type: Easing.InOutQuad
-            }
-
-        }
-
-    }
-
-    background: Rectangle {
-        id: buttonBackgroundColor
-
-        radius: 5
-        color: buttonColor.defaultColor
-        states: [
-            State {
-                when: mouseArea.containsMouse
-
-                PropertyChanges {
-                    target: buttonBackgroundColor
-                    color: buttonColor.buttonHovered
-                }
-
-            },
-            State {
-                when: mouseArea.pressed
-
-                PropertyChanges {
-                    target: buttonBackgroundColor
-                    color: buttonColor.buttonPressed
-                }
-
-            }
-        ]
-
-        MouseArea {
-            id: mouseArea
-
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: popupButton.clicked()
-            propagateComposedEvents: (removePopup.state === "visible")
-        }
-
-        transitions: Transition {
-            ColorAnimation {
-                target: buttonBackgroundColor
-                property: "color"
-                duration: 200
             }
 
         }

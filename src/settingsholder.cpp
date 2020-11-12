@@ -35,6 +35,7 @@ constexpr const char *SETTINGS_DEVICES = "devices";
 constexpr const char *SETTINGS_IAPPRODUCTS = "iapProducts";
 constexpr const char *SETTINGS_CAPTIVEPORTALIPV4ADDRESSES = "captivePortal/ipv4Addresses";
 constexpr const char *SETTINGS_CAPTIVEPORTALIPV6ADDRESSES = "captivePortal/ipv6Addresses";
+constexpr const char *SETTINGS_POSTAUTHENTICATIONSHOWN = "postAuthenticationShown";
 
 #ifdef IOS_INTEGRATION
 constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -42,6 +43,15 @@ constexpr const char *SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
 
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
+
+SettingsHolder *s_instance = nullptr;
+}
+
+// static
+SettingsHolder *SettingsHolder::instance()
+{
+    Q_ASSERT(s_instance);
+    return s_instance;
 }
 
 #ifndef UNIT_TEST
@@ -57,10 +67,18 @@ SettingsHolder::SettingsHolder()
 #else
       m_settings("mozilla_testing", "vpn")
 #endif
-{}
+{
+    logger.log() << "Creating SettingsHolder instance";
+
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+}
 
 SettingsHolder::~SettingsHolder()
 {
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
+
 #ifdef UNIT_TEST
     m_settings.clear();
 #endif
@@ -217,6 +235,12 @@ GETSET(QStringList,
        hasCaptivePortalIpv6Addresses,
        captivePortalIpv6Addresses,
        setCaptivePortalIpv6Addresses)
+GETSET(bool,
+       toBool,
+       SETTINGS_POSTAUTHENTICATIONSHOWN,
+       hasPostAuthenticationShown,
+       postAuthenticationShown,
+       setPostAuthenticationShown);
 
 #ifdef IOS_INTEGRATION
 GETSET(bool,

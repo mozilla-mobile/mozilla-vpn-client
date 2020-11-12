@@ -13,23 +13,31 @@ import "../resources/onboarding/onboardingCopy.js" as PanelCopy
 Item {
     id: onboardingPanel
 
-    property var panelNum: 1
+    property real panelHeight: window.height - (nextPanel.height + nextPanel.anchors.bottomMargin + progressIndicator.height + progressIndicator.anchors.bottomMargin)
+    property real panelWidth: window.width
+
+    width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
+    anchors.horizontalCenter: parent.horizontalCenter
 
     SwipeView {
         id: swipeView
 
         currentIndex: 0
-        anchors.fill: parent
+        height: onboardingPanel.panelHeight
+        width: onboardingPanel.width - Theme.windowMargin * 4
+        anchors.horizontalCenter: onboardingPanel.horizontalCenter
 
         Repeater {
+            id: repeater
+
             model: 4
+            anchors.fill: parent
 
             Loader {
+                height: onboardingPanel.panelHeight
                 active: SwipeView.isCurrentItem
 
                 sourceComponent: VPNPanel {
-                    id: contentWrapper
-
                     logo: "../resources/onboarding/onboarding" + (index + 1) + ".svg"
                     logoTitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].headline)
                     logoSubtitle: (PanelCopy.onboardingCopy["onboarding" + (index + 1)].subtitle)
@@ -52,11 +60,12 @@ Item {
     }
 
     VPNHeaderLink {
-        id: getHelp
+        objectName: "skipOnboarding"
 
         //% "Skip"
         labelText: qsTrId("vpn.onboarding.skip")
         onClicked: stackview.pop()
+        visible: swipeView.currentIndex !== swipeView.count - 1
     }
 
     VPNButton {
@@ -65,12 +74,11 @@ Item {
         //% "Next"
         readonly property var textNext: qsTrId("vpn.onboarding.next")
 
-        width: 282
         text: swipeView.currentIndex === swipeView.count - 1 ? qsTrId("vpn.main.getStarted") : textNext
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressIndicator.top
-        anchors.bottomMargin: 32
+        anchors.bottomMargin: 28
         radius: 4
         onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.authenticate()
     }
@@ -82,7 +90,7 @@ Item {
         count: swipeView.count
         currentIndex: swipeView.currentIndex
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 40
+        anchors.bottomMargin: Math.min(window.height * 0.08, 60) - 4
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 8
 

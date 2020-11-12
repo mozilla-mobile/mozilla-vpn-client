@@ -7,12 +7,10 @@
 
 #include <QString>
 
-class SettingsHolder;
-
 class Keys final
 {
 public:
-    [[nodiscard]] bool fromSettings(SettingsHolder &settings);
+    [[nodiscard]] bool fromSettings();
 
     bool initialized() const { return !m_privateKey.isEmpty(); }
 

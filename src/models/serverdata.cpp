@@ -11,23 +11,32 @@ namespace {
 Logger logger(LOG_MODEL, "ServerData");
 }
 
-bool ServerData::fromSettings(SettingsHolder &settingsHolder)
+bool ServerData::fromSettings()
 {
-    if (!settingsHolder.hasCurrentServerCountry() || !settingsHolder.hasCurrentServerCity() || !settingsHolder.hasCurrentServerCountryCode()) {
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
+    if (!settingsHolder->hasCurrentServerCountry() || !settingsHolder->hasCurrentServerCity()
+        || !settingsHolder->hasCurrentServerCountryCode()) {
         return false;
     }
 
-    initializeInternal(settingsHolder.currentServerCountryCode(), settingsHolder.currentServerCountry(), settingsHolder.currentServerCity());
+    initializeInternal(settingsHolder->currentServerCountryCode(),
+                       settingsHolder->currentServerCountry(),
+                       settingsHolder->currentServerCity());
 
     logger.log() << m_countryCode << m_country << m_city;
     return true;
 }
 
-void ServerData::writeSettings(SettingsHolder &settingsHolder)
+void ServerData::writeSettings()
 {
-    settingsHolder.setCurrentServerCountryCode(m_countryCode);
-    settingsHolder.setCurrentServerCountry(m_country);
-    settingsHolder.setCurrentServerCity(m_city);
+    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
+    settingsHolder->setCurrentServerCountryCode(m_countryCode);
+    settingsHolder->setCurrentServerCountry(m_country);
+    settingsHolder->setCurrentServerCity(m_city);
 }
 
 void ServerData::initialize(const ServerCountry &country, const ServerCity &city)

@@ -141,6 +141,7 @@ void ConnectionHealth::connectionStateChanged()
             Q_UNUSED(rxBytes);
 
             if (!serverIpv4Gateway.isEmpty()) {
+                stop();
                 start(serverIpv4Gateway);
             }
         });

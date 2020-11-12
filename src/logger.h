@@ -14,6 +14,10 @@ constexpr const char *LOG_MAIN = "main";
 constexpr const char *LOG_MODEL = "model";
 constexpr const char *LOG_NETWORKING = "networking";
 
+#ifdef QT_DEBUG
+constexpr const char *LOG_INSPECTOR = "inspector";
+#endif
+
 #ifdef IOS_INTEGRATION
 constexpr const char *LOG_IAP = "iap";
 constexpr const char *LOG_IOS = "ios";

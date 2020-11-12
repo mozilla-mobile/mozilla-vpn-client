@@ -11,7 +11,6 @@ class ServerCountryModel;
 class ServerCountry;
 class ServerCity;
 class Server;
-class SettingsHolder;
 
 class ServerData final : public QObject
 {
@@ -21,9 +20,9 @@ class ServerData final : public QObject
     Q_PROPERTY(QString city READ city NOTIFY changed)
 
 public:
-    [[nodiscard]] bool fromSettings(SettingsHolder &settingsHolder);
+    [[nodiscard]] bool fromSettings();
 
-    void writeSettings(SettingsHolder &settingsHolder);
+    void writeSettings();
 
     void initialize(const ServerCountry &country, const ServerCity &city);
 

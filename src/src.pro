@@ -29,16 +29,25 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
+        captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
-        captiveportal/captiveportallookup.cpp \
         captiveportal/captiveportalrequest.cpp \
+        command.cpp \
+        commandlineparser.cpp \
+        commands/commandactivate.cpp \
+        commands/commanddeactivate.cpp \
+        commands/commandlogin.cpp \
+        commands/commandlogout.cpp \
+        commands/commandselect.cpp \
+        commands/commandservers.cpp \
+        commands/commandstatus.cpp \
+        commands/commandui.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
-        dohrequest.cpp \
         errorhandler.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
@@ -49,6 +58,7 @@ SOURCES += \
         logger.cpp \
         loghandler.cpp \
         main.cpp \
+        models/helpmodel.cpp \
         models/user.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
@@ -59,12 +69,16 @@ SOURCES += \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
         mozillavpn.cpp \
+        networkmanager.cpp \
         networkrequest.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
+        qmlengineholder.cpp \
         releasemonitor.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
+        simplenetworkmanager.cpp \
+        statusicon.cpp \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
@@ -78,8 +92,17 @@ HEADERS += \
         captiveportal/captiveportal.h \
         captiveportal/captiveportalactivator.h \
         captiveportal/captiveportaldetection.h \
-        captiveportal/captiveportallookup.h \
         captiveportal/captiveportalrequest.h \
+        command.h \
+        commandlineparser.h \
+        commands/commandactivate.h \
+        commands/commanddeactivate.h \
+        commands/commandlogin.h \
+        commands/commandlogout.h \
+        commands/commandselect.h \
+        commands/commandservers.h \
+        commands/commandstatus.h \
+        commands/commandui.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -87,7 +110,6 @@ HEADERS += \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
-        dohrequest.h \
         errorhandler.h \
         fontloader.h \
         ipaddressrange.h \
@@ -96,6 +118,7 @@ HEADERS += \
         loghandler.h \
         models/device.h \
         models/devicemodel.h \
+        models/helpmodel.h \
         models/keys.h \
         models/server.h \
         models/servercity.h \
@@ -104,13 +127,17 @@ HEADERS += \
         models/serverdata.h \
         models/user.h \
         mozillavpn.h \
+        networkmanager.h \
         networkrequest.h \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
+        qmlengineholder.h \
         releasemonitor.h \
         settingsholder.h \
         signalhandler.h \
+        simplenetworkmanager.h \
+        statusicon.h \
         systemtrayhandler.h \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
@@ -121,6 +148,19 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
         timersingleshot.h
+
+debug {
+    QT+= testlib
+    CONFIG += no_testcase_installs
+
+    SOURCES += \
+            inspector/inspectorconnection.cpp \
+            inspector/inspectorserver.cpp
+
+    HEADERS += \
+            inspector/inspectorconnection.h \
+            inspector/inspectorserver.h
+}
 
 # Platform-specific: Linux
 linux:!android {
@@ -229,6 +269,7 @@ else:macos {
     LIBS += -framework Security
 
     SOURCES += \
+            platforms/macos/macosmenubar.cpp \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             tasks/authenticate/authenticationlistener.cpp
@@ -239,6 +280,7 @@ else:macos {
             platforms/macos/macosutils.mm
 
     HEADERS += \
+            platforms/macos/macosmenubar.h \
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             tasks/authenticate/authenticationlistener.h

@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
+#include "networkmanager.h"
 #include "networkrequest.h"
 
 #ifdef IOS_INTEGRATION
@@ -65,7 +66,10 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
             [this, vpn, pkceCodeVerifier](const QString &pkceCodeSucces) {
                 logger.log() << "Authentication completed with code:" << pkceCodeSucces;
 
-                NetworkRequest *request = NetworkRequest::createForAuthenticationVerification(this, vpn, pkceCodeSucces, pkceCodeVerifier);
+                NetworkRequest *request
+                    = NetworkRequest::createForAuthenticationVerification(this,
+                                                                          pkceCodeSucces,
+                                                                          pkceCodeVerifier);
 
                 connect(request,
                         &NetworkRequest::requestFailed,
@@ -100,7 +104,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     path.append("macos");
 #endif
 
-    QUrl url(vpn->getApiUrl());
+    QUrl url(NetworkManager::instance()->apiUrl());
     url.setPath(path);
 
     QUrlQuery query;

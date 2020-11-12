@@ -91,6 +91,7 @@ RadioDelegate {
     Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
     Accessible.focusable: true
+    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(radioControl)
 
     background: Rectangle {
         color: "transparent"

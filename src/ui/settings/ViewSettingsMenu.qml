@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtGraphicalEffects 1.15
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
@@ -10,17 +9,10 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-ScrollView {
-    id: scrollingFrame
+VPNFlickable {
+    id: vpnFlickable
 
-    height: parent.height
-    contentHeight: (height > Theme.settingsMaxContentHeight) ? parent.height : Theme.settingsMaxContentHeight
-    opacity: 0
-    ScrollBar.vertical.policy: (height > Theme.settingsMaxContentHeight) ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
-    Component.onCompleted: {
-        opacity = 1;
-    }
-
+    flickContentHeight: settingsList.y + (settingsList.count * 56) + signOutLink.height + signOutLink.anchors.bottomMargin
     ListModel {
         id: settingsMenuListModel
 
@@ -49,7 +41,7 @@ ScrollView {
             settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSource: "../resources/settings/aboutUs.svg"
             imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewAboutUs.qml"
+            pushAboutUs: true
         }
 
         ListElement {
@@ -90,64 +82,34 @@ ScrollView {
 
     }
 
-    Image {
-        id: logo
 
-        source: VPNUser.avatar
-        anchors.horizontalCenter: parent.horizontalCenter
-        height: 80
-        smooth: true
-        fillMode: Image.PreserveAspectFit
-        layer.enabled: true
-        anchors.top: parent.top
-        anchors.topMargin: 32
 
-        Rectangle {
-            id: mask
-
-            anchors.fill: parent
-            radius: 40
-            visible: false
-        }
-
-        layer.effect: OpacityMask {
-            maskSource: mask
-        }
-
-    }
-
-    VPNHeadline {
-        id: logoTitle
-
+    VPNPanel {
+        id: vpnPanel
+        logoSize: 80
+        logo:  VPNUser.avatar
         //% "VPN User"
         readonly property var textVpnUser: qsTrId("vpn.settings.user")
-
-        text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
-        anchors.top: logo.bottom
-        anchors.topMargin: Theme.vSpacing
-        height: 32
-    }
-
-    VPNSubtitle {
-        id: logoSubtitle
-
-        text: VPNUser.email
+        logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
+        logoSubtitle: VPNUser.email
+        y: (Math.max(window.height * .08, Theme.windowMargin * 2))
+        maskImage: true
+        imageIsVector: false
     }
 
     VPNButton {
         id: manageAccountButton
 
-        //: "Manage account"
         text: qsTrId("vpn.main.manageAccount")
-        anchors.top: logoSubtitle.bottom
+        anchors.top: vpnPanel.bottom
         anchors.topMargin: Theme.vSpacing
+        anchors.horizontalCenter: parent.horizontalCenter
         onClicked: VPN.openLink(VPN.LinkAccount)
     }
 
     VPNCheckBoxRow {
         id: startAtBootCheckBox
 
-        //: The back of the object, not the front
         //% "Launch VPN app on Startup"
         labelText: qsTrId("vpn.settings.runOnBoot")
         subLabelText: ""
@@ -170,13 +132,20 @@ ScrollView {
 
     }
 
+    Component {
+        id: aboutUsComponent
+
+        VPNAboutUs {
+            isSettingsView: true
+        }
+    }
+
     VPNList {
         id: settingsList
 
-        height: parent.height - manageAccountButton.height - logoSubtitle.height - logoTitle.height - startAtBootCheckBox.height
+        height: parent.height - y
         width: parent.width
-        anchors.top: startAtBootCheckBox.bottom
-        anchors.topMargin: Theme.vSpacing
+        y: startAtBootCheckBox.y + startAtBootCheckBox.height + Theme.vSpacing
         spacing: Theme.listSpacing
         //% "Settings"
         listName: qsTrId("vpn.main.settings")
@@ -185,6 +154,9 @@ ScrollView {
         delegate: VPNClickableRow {
             accessibleName: settingTitle
             onClicked: {
+                if (pushAboutUs)
+                    return settingsStackView.push(aboutUsComponent);
+
                 if (pushGetHelp)
                     return settingsStackView.push(getHelpComponent);
 
@@ -208,13 +180,6 @@ ScrollView {
         id: signOutLink
 
         onClicked: VPNController.logout()
-    }
-
-    Behavior on opacity {
-        PropertyAnimation {
-            duration: 200
-        }
-
     }
 
 }
