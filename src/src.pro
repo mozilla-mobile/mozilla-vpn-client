@@ -144,6 +144,19 @@ HEADERS += \
         timercontroller.h \
         timersingleshot.h
 
+debug {
+    QT+= testlib
+    CONFIG += no_testcase_installs
+
+    SOURCES += \
+            inspector/inspectorconnection.cpp \
+            inspector/inspectorserver.cpp
+
+    HEADERS += \
+            inspector/inspectorconnection.h \
+            inspector/inspectorserver.h
+}
+
 # Platform-specific: Linux
 linux {
     message(Linux build)

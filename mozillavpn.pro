@@ -9,7 +9,7 @@
 
 TEMPLATE = subdirs
 SUBDIRS += src
-SUBDIRS += tests
+SUBDIRS += tests/unit
 
 linux {
     SUBDIRS += linux

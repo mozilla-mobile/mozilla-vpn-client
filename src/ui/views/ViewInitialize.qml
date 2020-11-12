@@ -12,6 +12,7 @@ Item {
 
     VPNHeaderLink {
         id: headerLink
+        objectName: "getHelpLink"
 
         labelText: qsTrId("vpn.main.getHelp")
         onClicked: stackview.push(getHelpComponent)
@@ -53,6 +54,7 @@ Item {
 
     VPNFooterLink {
         id: learnMore
+        objectName: "learnMoreLink"
 
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
