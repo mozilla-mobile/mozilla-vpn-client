@@ -70,12 +70,14 @@ bool ReleaseMonitor::processData(const QByteArray &data)
     QJsonObject obj = json.object();
 
     QString platformKey =
-#ifdef IOS_INTEGRATION
+#if defined(MVPN_IOS)
         "ios"
-#elif __APPLE__
+#elif defined(MVPN_MACOS)
         "macos"
-#elif __linux__
+#elif defined(MVPN_LINUX)
         "linux"
+#elif defined(MVPN_ANDROID)
+        "android"
 #else
         "dummy"
 #endif

@@ -45,7 +45,7 @@ public:
 
     static NetworkRequest *createForCaptivePortalLookup(QObject *parent);
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     static NetworkRequest *createForIOSProducts(QObject *parent);
 
     static NetworkRequest *createForIOSPurchase(QObject *parent,

@@ -64,7 +64,7 @@ public:
            setCaptivePortalIpv6Addresses)
     GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown, setPostAuthenticationShown);
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
     GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated, setNativeIOSDataMigrated)
 #endif
 

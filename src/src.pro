@@ -172,6 +172,8 @@ linux:!android {
     QT += networkauth
     QT += svg
 
+    DEFINES += MVPN_LINUX
+
     SOURCES += \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbus.cpp \
@@ -209,6 +211,8 @@ else:android{
     QT += networkauth
     QT += svg
     QT += androidextras
+
+    DEFINES += MVPN_ANDROID
 
     SOURCES += platforms/android/androidcontroller.cpp
     HEADERS += platforms/android/androidcontroller.h
@@ -265,6 +269,8 @@ else:macos {
     LIBS += -framework ServiceManagement
     LIBS += -framework Security
 
+    DEFINES += MVPN_MACOS
+
     SOURCES += \
             platforms/macos/macosmenubar.cpp \
             platforms/macos/macospingsendworker.cpp \
@@ -285,7 +291,7 @@ else:macos {
     OBJECTIVE_HEADERS += \
             platforms/macos/macosutils.h
 
-    isEmpty(MACOS_INTEGRATION) {
+    isEmpty(MVPN_MACOS) {
         message(No integration required for this build - let\'s use the dummy controller)
 
         SOURCES += platforms/dummy/dummycontroller.cpp
@@ -293,7 +299,7 @@ else:macos {
     } else {
         message(Wireguard integration)
 
-        DEFINES += MACOS_INTEGRATION
+        DEFINES += MVPN_MACOS_INTEGRATION
 
         OBJECTIVE_SOURCES += \
                 platforms/macos/macoscontroller.mm
@@ -325,7 +331,7 @@ else:ios {
     # For the authentication
     LIBS += -framework AuthenticationServices
 
-    DEFINES += IOS_INTEGRATION
+    DEFINES += MVPN_IOS
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \

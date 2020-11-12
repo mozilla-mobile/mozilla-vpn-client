@@ -15,17 +15,17 @@
 #include "signalhandler.h"
 #include "systemtrayhandler.h"
 
-#ifdef __linux__
+#ifdef MVPN_LINUX
 #include "platforms/linux/linuxdependencies.h"
 #endif
 
-#ifdef MACOS_INTEGRATION
+#ifdef MVPN_MACOS
 #include "platforms/macos/macosstartatbootwatcher.h"
 #include "platforms/macos/macosutils.h"
 #endif
 
 #ifdef Q_OS_MAC
-#ifndef IOS_INTEGRATION
+#ifndef MVPN_IOS
 #include "platforms/macos/macosmenubar.h"
 #endif
 #endif
@@ -106,7 +106,7 @@ int CommandUI::run(QStringList &tokens)
         QQmlApplicationEngine *engine = QmlEngineHolder::instance()->engine();
         vpn.initialize();
 
-#ifdef MACOS_INTEGRATION
+#ifdef MVPN_MACOS
         MacOSStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
         QObject::connect(SettingsHolder::instance(),
                          &SettingsHolder::startAtBootChanged,
@@ -116,7 +116,7 @@ int CommandUI::run(QStringList &tokens)
         MacOSUtils::setDockClickHandler();
 #endif
 
-#if defined(__linux__) & !defined(__ANDROID__)
+#ifdef MVPN_LINUX
         // Dependencies - so far, only for linux.
         if (!LinuxDependencies::checkDependencies()) {
             return 1;
@@ -259,7 +259,7 @@ int CommandUI::run(QStringList &tokens)
                          &SystemTrayHandler::showNotification);
 
 #ifdef Q_OS_MAC
-#ifndef IOS_INTEGRATION
+#ifndef MVPN_IOS
         MacOSMenuBar menuBar;
         menuBar.initialize();
 

@@ -18,16 +18,16 @@ constexpr const char *LOG_NETWORKING = "networking";
 constexpr const char *LOG_INSPECTOR = "inspector";
 #endif
 
-#ifdef IOS_INTEGRATION
+#ifdef MVPN_IOS
 constexpr const char *LOG_IAP = "iap";
 constexpr const char *LOG_IOS = "ios";
 #endif
 
-#ifdef __linux__
+#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 constexpr const char *LOG_LINUX = "linux";
 #endif
 
-#ifdef __APPLE__
+#if __APPLE__
 constexpr const char *LOG_MACOS = "macos";
 #endif
 

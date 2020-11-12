@@ -131,9 +131,9 @@ void LogHandler::addLog(const Log &log)
         m_logs.removeAt(0);
     }
 
-#ifdef QT_DEBUG
     QTextStream out(stderr);
     prettyOutput(out, m_logs.last());
+#ifdef QT_DEBUG
 #endif
 }
 

@@ -132,7 +132,7 @@ else:macos {
 
 # Platform-specific: IOS
 else:ios {
-    DEFINES += IOS_INTEGRATION
+    DEFINES += MVPN_IOS
 
     OBJECTIVE_SOURCES += \
             ../../src/platforms/ios/iosutils.mm
