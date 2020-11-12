@@ -4,6 +4,7 @@
 
 #include "connectiondataholder.h"
 #include "constants.h"
+#include "controller.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -31,6 +32,19 @@ ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectio
                 }
             });
     });
+
+    connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, [this]() {
+        if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
+            enable();
+        } else {
+            disable();
+        }
+    });
+
+    connect(MozillaVPN::instance()->controller(),
+            &Controller::stateChanged,
+            this,
+            &ConnectionDataHolder::connectionStateChanged);
 }
 
 void ConnectionDataHolder::enable()

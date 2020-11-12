@@ -52,12 +52,15 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN() : m_private(new Private())
+MozillaVPN::MozillaVPN()
 {
     logger.log() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
     s_instance = this;
+
+    // the Private class must be allocated after the singleton.
+    m_private = new Private();
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
@@ -77,11 +80,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
     connect(&m_private->m_controller, &Controller::readyToSubscribe, [this]() {
         setState(StateSubscriptionNeeded);
     });
-
-    connect(&m_private->m_controller,
-            &Controller::stateChanged,
-            &m_private->m_connectionDataHolder,
-            &ConnectionDataHolder::connectionStateChanged);
 
     connect(&m_private->m_controller,
             &Controller::stateChanged,
@@ -219,12 +217,10 @@ void MozillaVPN::setState(State state)
     emit stateChanged();
 
     // If we are activating the app, let's initialize the controller.
-    if (m_state == StateMain && m_private->m_deviceModel.currentDevice()) {
-        m_private->m_connectionDataHolder.enable();
+    if (m_state == StateMain) {
         m_private->m_controller.initialize();
         startSchedulingPeriodicOperations();
     } else {
-        m_private->m_connectionDataHolder.disable();
         stopSchedulingPeriodicOperations();
     }
 }
