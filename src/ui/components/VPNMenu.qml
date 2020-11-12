@@ -8,6 +8,7 @@ import "../themes/themes.js" as Theme
 Item {
     id: menuBar
 
+    property alias objectName: iconButton.objectName
     property alias title: title.text
     property alias rightTitle: rightTitle.text
     property bool isSettingsView: false

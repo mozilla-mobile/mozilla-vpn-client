@@ -14,6 +14,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "getHelpBack"
 
         //% "Get Help"
         title: qsTrId("vpn.main.getHelp")

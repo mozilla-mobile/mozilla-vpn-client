@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testlogger.h"
-#include "../src/logger.h"
-#include "../src/loghandler.h"
+#include "../../src/logger.h"
+#include "../../src/loghandler.h"
 #include "helper.h"
 
 void TestLogger::logger()
