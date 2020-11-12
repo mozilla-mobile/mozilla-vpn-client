@@ -23,6 +23,7 @@ translations/*.qm
 translations/*.pri
 .qm
 .tmp
+.env
 
 # Ignore files that might be added by Android Studio
 # if someone opens the android/ subproject
