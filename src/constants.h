@@ -17,8 +17,8 @@ namespace Constants {
     constexpr type what = releaseValue;
 #endif
 
-// Let's refresh the IP address any 10 seconds (in milliseconds).
-CONSTEXPR(uint32_t, IPADDRESS_TIMER_MSEC, 10000, 2000, 0)
+// Let's refresh the IP address any 10 minutes (in milliseconds).
+CONSTEXPR(uint32_t, IPADDRESS_TIMER_MSEC, 600000, 2000, 0)
 
 // Let's check the connection status any second.
 CONSTEXPR(uint32_t, CHECKSTATUS_TIMER_MSEC, 1000, 1000, 0)
