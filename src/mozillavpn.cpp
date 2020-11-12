@@ -52,15 +52,12 @@ MozillaVPN *MozillaVPN::instance()
     return s_instance;
 }
 
-MozillaVPN::MozillaVPN()
+MozillaVPN::MozillaVPN() : m_private(new Private())
 {
     logger.log() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
     s_instance = this;
-
-    // the Private class must be allocated after the singleton.
-    m_private = new Private();
 
     connect(&m_alertTimer, &QTimer::timeout, [this]() { setAlert(NoAlert); });
 
@@ -107,6 +104,11 @@ MozillaVPN::MozillaVPN()
             &CaptivePortalDetection::captivePortalDetected,
             &m_private->m_controller,
             &Controller::captivePortalDetected);
+
+    connect(&m_private->m_controller,
+            &Controller::stateChanged,
+            &m_private->m_connectionDataHolder,
+            &ConnectionDataHolder::connectionStateChanged);
 }
 
 MozillaVPN::~MozillaVPN()
