@@ -247,17 +247,22 @@ quint64 ConnectionDataHolder::bytes(bool index) const
     return value;
 }
 
-void ConnectionDataHolder::connectionStateChanged()
+void ConnectionDataHolder::stateChanged()
 {
-    if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
-        enable();
-    } else {
+    logger.log() << "state changed";
+
+    MozillaVPN *vpn = MozillaVPN::instance();
+
+    if (vpn->state() != MozillaVPN::StateMain) {
         disable();
+        return;
     }
+
+    enable();
 
     reset();
 
-    if (m_txSeries && MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
+    if (m_txSeries && vpn->controller()->state() == Controller::StateOn) {
         m_checkStatusTimer.start();
     }
 }

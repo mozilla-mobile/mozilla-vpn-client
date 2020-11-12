@@ -57,7 +57,7 @@ private:
 public slots:
     Q_INVOKABLE void deactivate();
 
-    void connectionStateChanged();
+    void stateChanged();
 
 signals:
     // for testing.
