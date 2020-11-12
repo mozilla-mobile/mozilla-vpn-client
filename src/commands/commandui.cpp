@@ -116,7 +116,7 @@ int CommandUI::run(QStringList &tokens)
         MacOSUtils::setDockClickHandler();
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) & !defined(__ANDROID__)
         // Dependencies - so far, only for linux.
         if (!LinuxDependencies::checkDependencies()) {
             return 1;
