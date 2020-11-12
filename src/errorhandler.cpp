@@ -41,6 +41,8 @@ ErrorHandler::ErrorType ErrorHandler::toErrorType(QNetworkReply::NetworkError er
         [[fallthrough]];
     case QNetworkReply::UnknownNetworkError:
         // On mac, this means: no internet
+        // On Android check if 
+        // openSSL is missing.
         return NoConnectionError;
 
     case QNetworkReply::OperationCanceledError:

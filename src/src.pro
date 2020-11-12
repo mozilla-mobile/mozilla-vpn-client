@@ -23,6 +23,11 @@ INCLUDEPATH += \
 
 DEPENDPATH  += $${INCLUDEPATH}
 
+OBJECTS_DIR = .obj
+MOC_DIR = .moc
+RCC_DIR = .rcc
+UI_DIR = .ui
+
 SOURCES += \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
@@ -158,7 +163,7 @@ debug {
 }
 
 # Platform-specific: Linux
-linux {
+linux:!android {
     message(Linux build)
 
     QMAKE_CXXFLAGS *= -Werror
@@ -193,6 +198,60 @@ linux {
 
     target.path = $${PREFIX}/bin
     INSTALLS += target
+}
+
+else:android{
+    message(Android build)
+
+    QMAKE_CXXFLAGS *= -Werror
+
+    TARGET = mozillavpn
+    QT += networkauth
+    QT += svg
+    QT += androidextras
+
+    SOURCES += platforms/android/androidcontroller.cpp
+    HEADERS += platforms/android/androidcontroller.h
+
+
+    # Usable Linux Imports
+    SOURCES += platforms/linux/linuxpingsendworker.cpp \
+            tasks/authenticate/authenticationlistener.cpp\
+            platforms/linux/linuxcryptosettings.cpp
+
+    HEADERS +=platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxcryptosettings.h \
+            tasks/authenticate/authenticationlistener.h
+
+    # We need to compile our own openssl :/
+    exists(../3rdparty/openSSL/openssl.pri) {
+       include(../3rdparty/openSSL/openssl.pri)
+    } else{
+       message(Have you imported the 3rd-party git submodules? Read the README.md)
+       error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build )
+    }
+
+
+
+    # For the android build we need to unset those
+    # Otherwise the packaging will fail 🙅‍
+    OBJECTS_DIR =
+    MOC_DIR =
+    RCC_DIR =
+    UI_DIR =
+    ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
+
+
+    DISTFILES += \
+        ../android/AndroidManifest.xml \
+        ../android/build.gradle \
+        ../android/gradle/wrapper/gradle-wrapper.jar \
+        ../android/gradle/wrapper/gradle-wrapper.properties \
+        ../android/gradlew \
+        ../android/gradlew.bat \
+        ../android/res/values/libs.xml
+
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../android
 }
 
 # Platform-specific: MacOS
@@ -316,10 +375,6 @@ QML_IMPORT_MAJOR_VERSION = 1
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-OBJECTS_DIR = .obj
-MOC_DIR = .moc
-RCC_DIR = .rcc
-UI_DIR = .ui
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)

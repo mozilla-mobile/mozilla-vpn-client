@@ -23,6 +23,12 @@ translations/*.qm
 translations/*.pri
 .qm
 .tmp
+
+# Ignore files that might be added by Android Studio
+# if someone opens the android/ subproject
+android/.gradle/
+android/.idea/
+android/build
 xcode.xconfig
 .gradle/
 android/build

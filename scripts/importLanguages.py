@@ -63,7 +63,7 @@ print('Updated translations.pri')
 
 # Step 3
 # Generate new ts files
-os.system(f'lupdate src -ts')
+os.system(f'lupdate src/src.pro')
 
 # Step 4
 # Now import done translations into the files
