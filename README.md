@@ -160,9 +160,30 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
   $ ./scripts/apple\_compile.sh ios
 1. Open Xcode and run/test/archive/ship the app
 
+### Android 
+
+1. Install go if you haven't done it before: https://golang.org/dl/
+2. Install Android SDK/NDK + JDK - https://doc.qt.io/qt-5/android-getting-started.html
+3. We currently require NDK r20b and SDK >=21
+4. Update the submodules:
+```bash 
+  $ git submodule init
+  $ git submodule update --remote
+```
+
+5. Build the apk
+```bash 
+  $  ./scripts/android_package.sh /path/to/Qt/5.15.x/
+```
+6. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
+7. Install with adb on device/emulator
+```bash
+  $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
+```
+
 ### Other platforms
 
-We are working on Android and Windows.
+We are working on Windows.
 
 ## Bug report
 

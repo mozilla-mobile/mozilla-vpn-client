@@ -22,6 +22,7 @@ public:
     const QString &ipAddress() const { return m_ipAddress; }
     uint32_t range() const { return m_range; }
     IPAddressType type() const { return m_type; }
+    const QString toString() const { return QString("%1/%1").arg(m_ipAddress).arg(m_range);}
 
 private:
     QString m_ipAddress;

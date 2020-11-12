@@ -28,7 +28,11 @@ Window {
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {
-        window.hide();
+        if(!fullscreenRequired()){
+            // Caling window.hide() on mobile 
+            // would leave the app in a limbo state
+             window.hide()
+        }
         close.accepted = false;
     }
     Component.onCompleted: {
