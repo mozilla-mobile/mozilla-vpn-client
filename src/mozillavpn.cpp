@@ -746,12 +746,16 @@ void MozillaVPN::startIAP(bool restore)
 {
     IAPHandler *iap = new IAPHandler(this);
 
-    connect(iap, &IAPHandler::completed, [this]() {
+    connect(iap, &IAPHandler::completed, [this, iap]() {
         logger.log() << "Subscription completed";
         completeActivation();
+        iap->deleteLater();
     });
 
-    connect(iap, &IAPHandler::failed, [] { logger.log() << "Subscription failed"; });
+    connect(iap, &IAPHandler::failed, [iap] {
+        logger.log() << "Subscription failed";
+        iap->deleteLater();
+    });
 
     iap->start(restore);
 }
