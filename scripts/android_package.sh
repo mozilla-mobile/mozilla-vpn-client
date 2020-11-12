@@ -8,7 +8,6 @@
 if [ -f .env ]; then
   . .env
 fi
-# export ANDROID_NDK_ROOT = /Users/mozilla/Library/Android/sdk/ndk/21.1.6352462
 
 
 print N "This script compiles MozillaVPN for Android"
@@ -45,7 +44,7 @@ if [ -z "${ANDROID_SDK_ROOT}" ]; then
   die "Could not find 'ANDROID_SDK_ROOT' in env"
 fi
 
-qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
+$1/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 
 printn Y "Cleaning the folder... "
@@ -66,7 +65,7 @@ print Y "Configuring the android build"
 
 cd .tmp/
 
-/Users/mozilla/Qt/5.15.1/android/bin/qmake -spec android-clang \
+$1/android/bin/qmake -spec android-clang \
   CONFIG+=debug \
   CONFIG+=qml_debug \
   ANDROID_ABIS="armeabi-v7a" \

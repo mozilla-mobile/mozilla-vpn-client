@@ -16,6 +16,7 @@ QMAKE_CXXFLAGS *= -Werror
 
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += MVPN_LINUX
 
 SOURCES += \
         ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
