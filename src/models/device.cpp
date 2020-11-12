@@ -16,6 +16,8 @@
 #include "platforms/ios/iosutils.h"
 #elif MVPN_MACOS
 #include "platforms/macos/macosutils.h"
+#elif MVPN_ANDROID
+#include "platforms/android/androidutils.h"
 #endif
 
 QString Device::currentDeviceName()
@@ -27,6 +29,8 @@ QString Device::currentDeviceName()
 #elif MVPN_MACOS
         // MacOS has a funny way to rename the hostname based on the network status.
         MacOSUtils::computerName();
+#elif MVPN_ANDROID
+    AndroidUtils::GetDeviceName();
 #else
         QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
         + QSysInfo::productVersion();
