@@ -21,7 +21,6 @@
 #include <QRandomGenerator>
 #include <QTextCodec>
 #include <QtAndroid>
-#include "mozillavpn.h"
 
 // Binder Codes for VPNServiceBinder
 // See also - VPNServiceBinder.kt
@@ -32,7 +31,6 @@ const int ACTION_REGISTERLISTENER = 3;
 const int ACTION_REQUEST_STATISTIC = 4;
 const int ACTION_REQUEST_LOG = 5;
 const int ACTION_RESUME_ACTIVATE = 6;
-
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
