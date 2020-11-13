@@ -226,7 +226,6 @@ else:android{
             platforms/linux/linuxcryptosettings.cpp
 
     HEADERS +=platforms/linux/linuxpingsendworker.h \
-            platforms/linux/linuxcryptosettings.h \
             tasks/authenticate/authenticationlistener.h
 
     # We need to compile our own openssl :/
