@@ -15,7 +15,7 @@ bool CloseEventHandler::eventHandled()
 {
     logger.log() << "Close event handled";
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID)
     for (int i = m_layers.length() - 1; i >= 0; --i) {
         const Layer &layer = m_layers.at(i);
 
@@ -50,9 +50,16 @@ bool CloseEventHandler::eventHandled()
 
         continue;
     }
-#endif
 
     return false;
+#elif defined(MVPN_IOS)
+    return false;
+#elif defined(MVPN_LINUX) || defined(MVPN_MACOS)
+    logger.log() << "We should not be here! Why CloseEventHandler::eventHandled() is called on desktop?!?";
+    return true;
+#else
+  #error Unsupported platform
+#endif
 }
 
 void CloseEventHandler::addStackView(const QVariant &stackView)
