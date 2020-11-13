@@ -15,7 +15,7 @@ public:
         Q_UNUSED(device);
         Q_UNUSED(keys);
 
-        emit initialized(true, Controller::StateOff, QDateTime());
+        emit initialized(true, false, QDateTime());
     }
 
     void activate(const Server &data,

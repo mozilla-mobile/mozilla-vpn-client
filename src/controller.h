@@ -82,7 +82,7 @@ private slots:
     void connected();
     void disconnected();
     void timerTimeout();
-    void implInitialized(bool status, State state, const QDateTime &connectionDate);
+    void implInitialized(bool status, bool connected, const QDateTime &connectionDate);
     void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
 
 signals:
