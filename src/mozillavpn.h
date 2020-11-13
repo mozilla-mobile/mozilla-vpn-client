@@ -7,6 +7,7 @@
 
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "closeeventhandler.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
@@ -108,6 +109,7 @@ public:
     {
         return &m_private->m_captivePortalDetection;
     }
+    CloseEventHandler *closeEventHandler() { return &m_private->m_closeEventHandler; }
     ConnectionDataHolder *connectionDataHolder() { return &m_private->m_connectionDataHolder; }
     ConnectionHealth *connectionHealth() { return &m_private->m_connectionHealth; }
     Controller *controller() { return &m_private->m_controller; }
@@ -213,6 +215,7 @@ private:
     {
         CaptivePortal m_captivePortal;
         CaptivePortalDetection m_captivePortalDetection;
+        CloseEventHandler m_closeEventHandler;
         ConnectionDataHolder m_connectionDataHolder;
         ConnectionHealth m_connectionHealth;
         Controller m_controller;

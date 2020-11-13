@@ -28,12 +28,14 @@ Window {
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {
-        if(!fullscreenRequired()){
-            // Caling window.hide() on mobile 
-            // would leave the app in a limbo state
-             window.hide()
+        console.log("Closing request handling");
+
+        if (VPNCloseEventHandler.eventHandled()) {
+            close.accepted = false;
+            return;
         }
-        close.accepted = false;
+
+        console.log("closing.");
     }
     Component.onCompleted: {
         if (VPN.startMinimized)
@@ -41,7 +43,7 @@ Window {
 
     }
 
-    StackView {
+    VPNStackView {
         id: mainStackView
 
         initialItem: mainView
