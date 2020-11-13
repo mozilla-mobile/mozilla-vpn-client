@@ -57,6 +57,7 @@ SOURCES += \
         localizer.cpp \
         logger.cpp \
         loghandler.cpp \
+        logoutobserver.cpp \
         main.cpp \
         models/helpmodel.cpp \
         models/user.cpp \
@@ -116,6 +117,7 @@ HEADERS += \
         localizer.h \
         logger.h \
         loghandler.h \
+        logoutobserver.h \
         models/device.h \
         models/devicemodel.h \
         models/helpmodel.h \

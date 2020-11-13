@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "logoutobserver.h"
 #include "models/device.h"
 #include "models/servercountrymodel.h"
 #include "models/user.h"
@@ -216,8 +217,8 @@ void MozillaVPN::initialize()
     scheduleTask(new TaskIOSProducts());
 #endif
 
-    maybeStateMain();
     setUserAuthenticated(true);
+    maybeStateMain();
 }
 
 void MozillaVPN::setState(State state)
@@ -275,6 +276,12 @@ void MozillaVPN::authenticate()
     setState(StateAuthenticating);
 
     hideAlert();
+
+    if (m_userAuthenticated) {
+        LogoutObserver *lo = new LogoutObserver(this);
+        connect(lo, &LogoutObserver::ready, [this]() { scheduleTask(new TaskAuthenticate()); });
+        return;
+    }
 
     scheduleTask(new TaskAuthenticate());
 }
@@ -584,14 +591,15 @@ void MozillaVPN::logout()
         setState(StateInitialize);
     }
 
-    setUserAuthenticated(false);
-
     QString deviceName = Device::currentDeviceName();
     if (m_private->m_deviceModel.hasDevice(deviceName)) {
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    scheduleTask(new TaskFunction([](MozillaVPN *vpn) { vpn->reset(); }));
+    scheduleTask(new TaskFunction([](MozillaVPN *vpn) {
+        vpn->reset();
+        vpn->setUserAuthenticated(false);
+    }));
 }
 
 void MozillaVPN::reset()
