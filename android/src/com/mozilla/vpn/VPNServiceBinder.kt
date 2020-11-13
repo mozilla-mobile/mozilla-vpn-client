@@ -29,6 +29,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val registerEventListener = 3
         const val requestStatistic = 4
         const val requestLog = 5
+        const val resumeActivate =6;
     }
 
     /**
@@ -52,6 +53,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     val config = buildConfigFromJSON(json)
 
                     this.mService.createTunnel(config)
+                    if(!mService.checkPermissions()){
+                        // The Permission Promt was already
+                        // send, in case it's accepted we will 
+                        // recive ACTIONS.resumeActivate
+                        return true;
+                    }
                     if (this.mService.turnOn()) {
                         dispatchEvent(EVENTS.connected, "")
                     } else {
@@ -62,6 +69,19 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     dispatchEvent(EVENTS.disconnected, "")
                 }
                 return true
+            }
+            ACTIONS.resumeActivate -> {
+                // [data] is empty
+                // Activate the current tunnel
+                if(!mService.checkPermissions()){
+                    return true;
+                }
+                if (this.mService.turnOn()) {
+                    dispatchEvent(EVENTS.connected, "")
+                } else {
+                    dispatchEvent(EVENTS.disconnected, "")
+                }
+                return true;
             }
             ACTIONS.deactivate -> {
                 // [data] here is empty
