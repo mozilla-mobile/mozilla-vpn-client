@@ -30,6 +30,13 @@ Window {
     onClosing: {
         console.log("Closing request handling");
 
+        // No desktop, we go in background mode.
+        if (!fullscreenRequired()) {
+            close.accepted = false;
+            window.hide();
+            return;
+        }
+
         if (VPNCloseEventHandler.eventHandled()) {
             close.accepted = false;
             return;
