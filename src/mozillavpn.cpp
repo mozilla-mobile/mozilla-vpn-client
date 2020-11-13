@@ -71,6 +71,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
 #endif
     });
 
+    connect(this, &MozillaVPN::stateChanged, [this]() {
+        if (m_state != StateMain) {
+            m_private->m_controller.deactivate();
+        }
+    });
+
     connect(&m_private->m_controller, &Controller::readyToUpdate, [this]() {
         setState(StateUpdateRequired);
     });
@@ -667,7 +673,6 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error)
     }
 
     if (alert == AuthenticationFailedAlert) {
-        m_private->m_controller.deactivate();
         reset();
         setState(StateInitialize);
         return;
