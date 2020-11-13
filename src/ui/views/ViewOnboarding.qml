@@ -113,4 +113,21 @@ Item {
 
     }
 
+    Component.onCompleted: VPNCloseEventHandler.addView(onboardingPanel)
+
+    Connections {
+        target: VPNCloseEventHandler
+        function onGoBack(item) {
+            if (item !== onboardingPanel) {
+                return;
+            }
+
+            if (swipeView.currentIndex === 0) {
+                stackview.pop();
+                return;
+            }
+
+            swipeView.currentIndex--;
+        }
+    }
 }

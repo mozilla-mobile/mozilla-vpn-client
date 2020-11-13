@@ -17,6 +17,7 @@ class CloseEventHandler : public QObject
 public:
     Q_INVOKABLE bool eventHandled();
     Q_INVOKABLE void addStackView(const QVariant &stackView);
+    Q_INVOKABLE void addView(const QVariant &view);
 
 signals:
     void goBack(QQuickItem *item);
@@ -25,7 +26,20 @@ private slots:
     void removeItem(QObject *item);
 
 private:
-    QList<QQuickItem *> m_stackViews;
+    struct Layer
+    {
+        enum Type {
+            eStackView,
+            eView,
+        };
+
+        Layer(QQuickItem *layer, Type type) : m_layer(layer), m_type(type) {}
+
+        QQuickItem *m_layer;
+        Type m_type;
+    };
+
+    QList<Layer> m_layers;
 };
 
 #endif // CLOSEEVENTHANDLER_H
