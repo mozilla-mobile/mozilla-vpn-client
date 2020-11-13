@@ -13,6 +13,8 @@
 class AndroidController : public ControllerImpl, public QAndroidServiceConnection
 {
 public:
+    AndroidController();
+
     // from ControllerImpl
     void initialize(const Device *device, const Keys *keys) override;
 
@@ -40,14 +42,15 @@ private:
     class VPNBinder : public QAndroidBinder
     {
     public:
-        void setController(AndroidController *);
+        VPNBinder(AndroidController *controller) : m_controller(controller) {}
+
         bool onTransact(int code,
                         const QAndroidParcel &data,
                         const QAndroidParcel &reply,
                         QAndroidBinder::CallType flags) override;
 
     private:
-        AndroidController *mController;
+        AndroidController *m_controller = nullptr;
     };
 
     VPNBinder m_binder;

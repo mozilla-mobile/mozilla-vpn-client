@@ -76,9 +76,9 @@ void Controller::initialize()
     }
 }
 
-void Controller::implInitialized(bool status, State state, const QDateTime &connectionDate)
+void Controller::implInitialized(bool status, bool a_connected, const QDateTime &connectionDate)
 {
-    logger.log() << "Controller activated with status:" << status << "state:" << state
+    logger.log() << "Controller activated with status:" << status << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
     Q_ASSERT(m_state == StateInitializing);
@@ -93,10 +93,10 @@ void Controller::implInitialized(bool status, State state, const QDateTime &conn
         return;
     }
 
-    setState(state);
+    setState(a_connected ? StateOn : StateOff);
 
     // If we are connected already at startup time, we can trigger the connection sequence of tasks.
-    if (state == StateOn) {
+    if (a_connected) {
         connected();
         m_connectionDate = connectionDate;
         return;

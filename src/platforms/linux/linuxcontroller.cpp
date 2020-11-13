@@ -47,7 +47,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher *call)
     QDBusPendingReply<QString> reply = *call;
     if (reply.isError()) {
         logger.log() << "Error received from the DBus service";
-        emit initialized(false, Controller::StateOff, QDateTime());
+        emit initialized(false, false, QDateTime());
         return;
     }
 
@@ -62,9 +62,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher *call)
     QJsonValue statusValue = obj.take("status");
     Q_ASSERT(statusValue.isBool());
 
-    emit initialized(true,
-                     statusValue.toBool() ? Controller::StateOn : Controller::StateOff,
-                     QDateTime::currentDateTime());
+    emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
 }
 
 void LinuxController::activate(const Server &server,
