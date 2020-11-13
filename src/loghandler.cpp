@@ -11,6 +11,10 @@
 #include <QString>
 #include <QTextStream>
 
+#ifdef MVPN_ANDROID
+#include <android/log.h>
+#endif
+
 constexpr int LOG_MAX = 10000;
 
 namespace {
@@ -131,9 +135,18 @@ void LogHandler::addLog(const Log &log)
         m_logs.removeAt(0);
     }
 
+#ifdef MVPN_ANDROID
+    QByteArray buffer;
+    QTextStream out(&buffer);
+    prettyOutput(out, m_logs.last());
+
+    const char *str = buffer.constData();
+    if (str) {
+        __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
+    }
+#else
     QTextStream out(stderr);
     prettyOutput(out, m_logs.last());
-#ifdef QT_DEBUG
 #endif
 }
 
