@@ -89,18 +89,26 @@ class VPNService : android.net.VpnService() {
         this.tunnel = Tunnel("myCoolTunnel", conf)
     }
 
-    fun turnOn(): Boolean {
+    /*
+    * Checks if the VPN Permission is given. 
+    * If the permission is given, returns true
+    * Requests permission and returns false if not.
+    */
+    fun checkPermissions(): Boolean{
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
         // from the user. So we need to pass this to our main Activity and exit here.
         val intent = prepare(this)
         if (intent == null) {
             Log.e(tag, "VPN Permission Already Present")
-        } else {
-            Log.e(tag, "Requesting VPN Permission")
-            this.startActivityForResult(intent)
-            return false
+            return true;
         }
+        Log.e(tag, "Requesting VPN Permission")
+        this.startActivityForResult(intent)
+        return false;
+    }
+
+    fun turnOn(): Boolean {
         val tunnel = this.tunnel ?: return false
 
        tunnel.tunnelHandle?.let {

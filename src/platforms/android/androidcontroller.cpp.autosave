@@ -271,5 +271,4 @@ void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jo
        emit controller->disconnected();
 
     });
-    return;
 }

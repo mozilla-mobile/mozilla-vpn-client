@@ -13,7 +13,9 @@
 class AndroidController : public ControllerImpl, public QAndroidServiceConnection
 {
 public:
+    
     AndroidController();
+    static AndroidController* Instance();
 
     // from ControllerImpl
     void initialize(const Device *device, const Keys *keys) override;
@@ -23,6 +25,7 @@ public:
                   const Keys *keys,
                   const QList<IPAddressRange> &allowedIPAddressRanges,
                   bool forSwitching) override;
+    void resume_activate();
 
     void deactivate(bool forSwitching) override;
 
