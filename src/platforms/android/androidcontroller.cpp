@@ -4,6 +4,7 @@
 
 #include "androidcontroller.h"
 #include "ipaddressrange.h"
+#include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
@@ -14,7 +15,6 @@
 #include <QAndroidJniObject>
 #include <QAndroidParcel>
 #include <QAndroidServiceConnection>
-#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -38,10 +38,19 @@ const int EVENT_DISCONNECTED = 2;
 const int EVENT_STATISTIC_UPDATE = 3;
 const int EVENT_BACKEND_LOGS = 4;
 
+namespace {
+Logger logger(LOG_ANDROID, "AndroidController");
+}
+
+AndroidController::AndroidController() : m_binder(this) {}
+
 void AndroidController::initialize(const Device *device, const Keys *keys)
 {
+    logger.log() << "Initializing";
+
     Q_UNUSED(device);
     Q_UNUSED(keys);
+
     // Hook in the native implementation for startActivityForResult into the JNI
     JNINativeMethod methods[]{{"startActivityForResult",
                                "(Landroid/content/Intent;)V",
@@ -57,8 +66,6 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
                                           "com.mozilla.vpn.VPNService"),
                            *this,
                            QtAndroid::BindFlag::AutoCreate);
-    m_binder.setController(this);
-    emit initialized(true, Controller::StateOff, QDateTime());
 }
 
 void AndroidController::activate(const Server &server,
@@ -67,6 +74,8 @@ void AndroidController::activate(const Server &server,
                                  const QList<IPAddressRange> &allowedIPAddressRanges,
                                  bool forSwitching)
 {
+    logger.log() << "Activation";
+
     m_server = server;
 
     // Serialise arguments for the VPNService
@@ -110,6 +119,8 @@ void AndroidController::activate(const Server &server,
 
 void AndroidController::deactivate(bool forSwitching)
 {
+    logger.log() << "deactivation";
+
     Q_UNUSED(forSwitching);
     QAndroidParcel nullData;
     m_serviceBinder.transact(ACTION_DEACTIVATE, nullData, nullptr);
@@ -117,12 +128,16 @@ void AndroidController::deactivate(bool forSwitching)
 
 void AndroidController::checkStatus()
 {
+    logger.log() << "check status";
+
     QAndroidParcel nullParcel;
     m_serviceBinder.transact(ACTION_REQUEST_STATISTIC, nullParcel, nullptr);
 }
 
 void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
 {
+    logger.log() << "get logs";
+
     m_logCallback = std::move(a_callback);
     QAndroidParcel nullData, replyData;
     m_serviceBinder.transact(ACTION_REQUEST_LOG, nullData, &replyData);
@@ -130,8 +145,12 @@ void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_
 
 void AndroidController::onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder)
 {
+    logger.log() << "Server connected";
+
     Q_UNUSED(name);
+
     m_serviceBinder = serviceBinder;
+
     // Send the Service our Binder to recive incoming Events
     QAndroidParcel binderParcel;
     binderParcel.writeBinder(m_binder);
@@ -140,6 +159,8 @@ void AndroidController::onServiceConnected(const QString &name, const QAndroidBi
 
 void AndroidController::onServiceDisconnected(const QString &name)
 {
+    logger.log() << "Server disconnected";
+
     Q_UNUSED(name);
     // TODO: Maybe restart? Or crash?
 }
@@ -160,39 +181,46 @@ bool AndroidController::VPNBinder::onTransact(int code,
     Q_UNUSED(data);
     Q_UNUSED(reply);
     Q_UNUSED(flags);
+
     QJsonDocument doc;
     QString logs;
     switch (code) {
     case EVENT_INIT:
+        logger.log() << "Transact: init";
+        emit m_controller->initialized(true, false, QDateTime());
         break;
     case EVENT_CONNECTED:
-        emit mController->connected();
+        logger.log() << "Transact: connected";
+        emit m_controller->connected();
         break;
     case EVENT_DISCONNECTED:
-        emit mController->disconnected();
+        logger.log() << "Transact: disconnected";
+        emit m_controller->disconnected();
         break;
     case EVENT_STATISTIC_UPDATE:
+        logger.log() << "Transact:: update";
+
         // Data is here a JSON String
         doc = QJsonDocument::fromJson(data.readData());
-        emit mController->statusUpdated(mController->m_server.ipv4Gateway(),
-                                        doc.object()["totalTX"].toInt(),
-                                        doc.object()["totalRX"].toInt());
+        emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
+                                         doc.object()["totalTX"].toInt(),
+                                         doc.object()["totalRX"].toInt());
         break;
     case EVENT_BACKEND_LOGS:
+        logger.log() << "Transact: backend logs";
+
         // Note: 106 means UTF-8 encoding
         logs = QTextCodec::codecForMib(106)->toUnicode(data.readData());
-        if (mController->m_logCallback) {
-            mController->m_logCallback(logs);
+        if (m_controller->m_logCallback) {
+            m_controller->m_logCallback(logs);
         }
+        break;
+    default:
+        logger.log() << "Transact: Invalid!";
         break;
     }
 
     return true;
-}
-
-void AndroidController::VPNBinder::setController(AndroidController *c)
-{
-    mController = c;
 }
 
 /**
@@ -202,6 +230,8 @@ void AndroidController::VPNBinder::setController(AndroidController *c)
  */
 void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent)
 {
+    logger.log() << "start activity";
+
     Q_UNUSED(env);
     QtAndroid::startActivity(intent, 123, [](int a, int b, const QAndroidJniObject &c) {
         Q_UNUSED(a);

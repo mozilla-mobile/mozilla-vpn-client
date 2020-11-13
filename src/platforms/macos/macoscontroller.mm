@@ -47,17 +47,17 @@ void MacOSController::initialize(const Device *device, const Keys *keys) {
             case ConnectionStateError: {
                 [impl dealloc];
                 impl = nullptr;
-                emit initialized(false, Controller::StateOff, QDateTime());
+                emit initialized(false, false, QDateTime());
                 return;
             }
             case ConnectionStateConnected: {
                 Q_ASSERT(date);
                 QDateTime qtDate(QDateTime::fromNSDate(date));
-                emit initialized(true, Controller::StateOn, qtDate);
+                emit initialized(true, true, qtDate);
                 return;
             }
             case ConnectionStateDisconnected:
-                emit initialized(true, Controller::StateOff, QDateTime());
+                emit initialized(true, false, QDateTime());
                 return;
             }
         }
