@@ -439,6 +439,7 @@ void MozillaVPN::completeActivation()
         if (!modelsInitialized()) {
             logger.log() << "Failed to complete the authentication";
             errorHandle(ErrorHandler::BackendServiceError);
+            setUserAuthenticated(false);
             return;
         }
 
@@ -596,10 +597,7 @@ void MozillaVPN::logout()
         scheduleTask(new TaskRemoveDevice(deviceName));
     }
 
-    scheduleTask(new TaskFunction([](MozillaVPN *vpn) {
-        vpn->reset();
-        vpn->setUserAuthenticated(false);
-    }));
+    scheduleTask(new TaskFunction([](MozillaVPN *vpn) { vpn->reset(); }));
 }
 
 void MozillaVPN::reset()
@@ -611,6 +609,8 @@ void MozillaVPN::reset()
     SettingsHolder::instance()->clear();
     m_private->m_keys.forgetKey();
     m_private->m_serverData.forget();
+
+    setUserAuthenticated(false);
 }
 
 void MozillaVPN::deleteTasks()

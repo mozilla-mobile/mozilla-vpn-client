@@ -149,6 +149,7 @@ public class MacOSControllerImpl : NSObject {
 
         tunnel!.protocolConfiguration = NETunnelProviderProtocol(tunnelConfiguration: config)
         tunnel!.localizedDescription = vpnName
+        tunnel!.isEnabled = true
 
         tunnel!.saveToPreferences { [unowned self] saveError in
             if let error = saveError {
