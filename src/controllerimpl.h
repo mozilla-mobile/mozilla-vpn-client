@@ -57,11 +57,11 @@ public:
 
 signals:
     // This signal is emitted when the controller is initialized. Note that the
-    // VPN tunnel can be already active. In this case, "state" should be set to
-    // StateOn and the "connectionDate" should be set to the activation date if
+    // VPN tunnel can be already active. In this case, "connected" should be set to
+    // true and the "connectionDate" should be set to the activation date if
     // known.
     // If "status" is set to false, the backend service is considered unavailable.
-    void initialized(bool status, Controller::State state, const QDateTime &connectionDate);
+    void initialized(bool status, bool connected, const QDateTime &connectionDate);
 
     // These 2 signals can be dispatched at any time.
     void connected();
