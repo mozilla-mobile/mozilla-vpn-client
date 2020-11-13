@@ -27,6 +27,7 @@ private:
 
 private:
     QInAppStore* m_appStore = nullptr;
+    bool m_completed = false;
 };
 
 #endif // IAPHANDLER_H

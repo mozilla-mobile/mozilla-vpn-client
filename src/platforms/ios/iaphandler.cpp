@@ -47,6 +47,12 @@ void IAPHandler::start(bool restore)
     connect(m_appStore, &QInAppStore::transactionReady, [this](QInAppTransaction *transaction) {
         logger.log() << "Transaction ready - status:" << transaction->status();
 
+        if (m_completed) {
+            transaction->finalize();
+            return;
+        }
+        m_completed = true;
+
         switch (transaction->status()) {
         case QInAppTransaction::PurchaseFailed:
             logger.log() << "Purchase Failed" << transaction->errorString()
