@@ -383,5 +383,6 @@
         <file>ui/components/VPNAboutUs.qml</file>
         <file>ui/components/VPNRemoveDevicePopup.qml</file>
         <file>ui/views/ViewLogs.qml</file>
+        <file>ui/components/VPNStackView.qml</file>
     </qresource>
 </RCC>
