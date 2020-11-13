@@ -35,7 +35,7 @@ int CommandLogin::run(QStringList &tokens)
 
         QEventLoop loop;
         QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
-            if (vpn.state() == MozillaVPN::StatePostAuthentication) {
+            if (vpn.state() == MozillaVPN::StatePostAuthentication || vpn.state() == MozillaVPN::StateMain) {
                 loop.exit();
             }
         });

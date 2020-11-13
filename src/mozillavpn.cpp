@@ -240,6 +240,7 @@ void MozillaVPN::maybeStateMain()
     }
 #endif
 
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
     SettingsHolder *settingsHolder = SettingsHolder::instance();
     if (!settingsHolder->hasPostAuthenticationShown()
         || !settingsHolder->postAuthenticationShown()) {
@@ -247,6 +248,7 @@ void MozillaVPN::maybeStateMain()
         setState(StatePostAuthentication);
         return;
     }
+#endif
 
     QString deviceName = Device::currentDeviceName();
     if (!m_private->m_deviceModel.hasDevice(deviceName)) {

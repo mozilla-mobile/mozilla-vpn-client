@@ -101,6 +101,7 @@ void SettingsHolder::clear()
     m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
     m_settings.remove(SETTINGS_DEVICES);
     m_settings.remove(SETTINGS_IAPPRODUCTS);
+    m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
 
     // We do not remove language, ipv6 and localnetwork settings.
 }
