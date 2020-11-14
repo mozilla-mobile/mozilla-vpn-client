@@ -19,6 +19,8 @@ public:
 
     static NetworkManager *instance();
 
+    static QByteArray userAgent();
+
     const QString &apiUrl() const { return m_apiUrl; }
 
     virtual QNetworkAccessManager *networkAccessManager() = 0;

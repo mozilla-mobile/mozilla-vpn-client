@@ -149,6 +149,14 @@ Window {
                 mainStackView.push("views/ViewLogs.qml");
             }
         }
+
+        function onLoadAndroidAuthenticationView() {
+            if (Qt.platform.os !== "android") {
+                console.log("Unexpected android authentication view request!");
+            }
+
+            mainStackView.push("../platforms/android/androidauthenticationview.qml", StackView.Immediate)
+        }
     }
 
     VPNSystemAlert {
