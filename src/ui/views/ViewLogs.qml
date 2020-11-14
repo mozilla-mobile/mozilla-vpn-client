@@ -33,4 +33,16 @@ Item {
             text: VPN.retrieveLogs()
         }
     }
+
+    Component.onCompleted: VPNCloseEventHandler.addView(logs)
+
+    Connections {
+        target: VPNCloseEventHandler
+        function onGoBack(item) {
+            if (item === logs) {
+                mainStackView.pop();
+            }
+        }
+    }
+
 }
