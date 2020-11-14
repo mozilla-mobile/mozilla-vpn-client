@@ -5,7 +5,9 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 
-StackView {
+import "../components"
+
+VPNStackView {
     id: stackview
 
     initialItem: "../views/ViewMain.qml"

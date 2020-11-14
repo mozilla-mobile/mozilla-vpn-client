@@ -4,6 +4,7 @@
 
 #include "commandui.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "fontloader.h"
 #include "localizer.h"
@@ -203,6 +204,13 @@ int CommandUI::run(QStringList &tokens)
         qmlRegisterSingletonType<MozillaVPN>(
             "Mozilla.VPN", 1, 0, "VPNStatusIcon", [](QQmlEngine *, QJSEngine *) -> QObject * {
                 QObject *obj = MozillaVPN::instance()->statusIcon();
+                QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+                return obj;
+            });
+
+        qmlRegisterSingletonType<MozillaVPN>(
+            "Mozilla.VPN", 1, 0, "VPNCloseEventHandler", [](QQmlEngine *, QJSEngine *) -> QObject * {
+                QObject *obj = MozillaVPN::instance()->closeEventHandler();
                 QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
                 return obj;
             });

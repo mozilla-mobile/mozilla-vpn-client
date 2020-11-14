@@ -33,6 +33,7 @@ SOURCES += \
         captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportalrequest.cpp \
+        closeeventhandler.cpp \
         command.cpp \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
@@ -94,6 +95,7 @@ HEADERS += \
         captiveportal/captiveportalactivator.h \
         captiveportal/captiveportaldetection.h \
         captiveportal/captiveportalrequest.h \
+        closeeventhandler.h \
         command.h \
         commandlineparser.h \
         commands/commandactivate.h \

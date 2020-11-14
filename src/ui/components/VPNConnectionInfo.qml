@@ -166,4 +166,15 @@ Item {
 
     }
 
+    Component.onCompleted: VPNCloseEventHandler.addView(chartWrapper)
+
+    Connections {
+        target: VPNCloseEventHandler
+        function onGoBack(item) {
+            if (item === chartWrapper) {
+                backButton.clicked();
+            }
+        }
+    }
+
 }
