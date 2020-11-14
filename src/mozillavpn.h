@@ -137,6 +137,8 @@ public:
 
     void errorHandle(ErrorHandler::ErrorType error);
 
+    void abortAuthentication();
+
     void changeServer(const QString &countryCode, const QString &city);
 
     const QString versionString() const { return QString(APP_VERSION); }
@@ -206,6 +208,10 @@ signals:
     void settingsNeeded();
     void aboutNeeded();
     void viewLogsNeeded();
+
+#ifdef MVPN_ANDROID
+    void loadAndroidAuthenticationView();
+#endif
 
 private:
     bool m_initialized = false;

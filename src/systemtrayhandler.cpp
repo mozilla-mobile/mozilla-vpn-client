@@ -124,7 +124,7 @@ void SystemTrayHandler::updateContextMenu()
     m_lastLocationLabel->setVisible(true);
 
     QIcon flagIcon(
-        QString("://ui/resources/flags/%1.png").arg(vpn->currentServer()->countryCode().toUpper()));
+        QString(":/ui/resources/flags/%1.png").arg(vpn->currentServer()->countryCode().toUpper()));
 
     m_lastLocationLabel->setIcon(flagIcon);
     m_lastLocationLabel->setText(

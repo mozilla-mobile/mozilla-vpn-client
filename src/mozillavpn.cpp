@@ -287,6 +287,13 @@ void MozillaVPN::authenticate()
     scheduleTask(new TaskAuthenticate());
 }
 
+void MozillaVPN::abortAuthentication()
+{
+    logger.log() << "Abort authentication";
+    Q_ASSERT(m_state == StateAuthenticating);
+    setState(StateInitialize);
+}
+
 void MozillaVPN::openLink(LinkType linkType)
 {
     logger.log() << "Opening link: " << linkType;

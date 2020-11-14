@@ -39,3 +39,16 @@ NetworkManager *NetworkManager::instance()
     Q_ASSERT(s_instance);
     return s_instance;
 }
+
+// static
+QByteArray NetworkManager::userAgent()
+{
+    QByteArray userAgent;
+    userAgent.append("MozillaVPN/" APP_VERSION " (");
+    userAgent.append(QSysInfo::productType().toLocal8Bit());
+    userAgent.append(" ");
+    userAgent.append(QSysInfo::productVersion().toLocal8Bit());
+    userAgent.append(")");
+
+    return userAgent;
+}
