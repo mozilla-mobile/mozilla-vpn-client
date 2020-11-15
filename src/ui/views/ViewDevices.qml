@@ -216,7 +216,7 @@ Item {
                     onClicked: removePopup.initializeAndOpen(name, index)
                     //: Label used for accessibility on the button to remove a device
                     //% "Remove %1"
-                    accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.accessibleName)
+                    accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.deviceName)
                     // Only allow focus within the current item in the list.
                     focusPolicy: deviceList.currentItem === deviceRow ? Qt.StrongFocus : Qt.NoFocus
                     onFocusChanged: {
