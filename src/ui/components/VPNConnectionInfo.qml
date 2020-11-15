@@ -146,8 +146,7 @@ Item {
             id: backButton
 
             onClicked: chartWrapper.visible = false
-            defaultColor: box.color
-            backgroundColor: Theme.whiteSettingsBtn
+            buttonColorScheme: Theme.iconButtonDarkBackground
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.topMargin: 8

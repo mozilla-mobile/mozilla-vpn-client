@@ -47,10 +47,11 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
+        showLoader: true
         onClicked: {
-            fadeOut.start();
             VPN.authenticate();
         }
+
     }
 
     VPNFooterLink {
@@ -60,15 +61,6 @@ Item {
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
         onClicked: stackview.push("ViewOnboarding.qml")
-    }
-
-    PropertyAnimation on opacity {
-        id: fadeOut
-
-        target: viewInitialize
-        from: 1
-        to: 0
-        duration: 200
     }
 
 }

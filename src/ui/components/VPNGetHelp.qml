@@ -25,7 +25,6 @@ Item {
         height: parent.height - menu.height
         width: parent.width
         anchors.top: menu.bottom
-        clip: true
         spacing: Theme.listSpacing
         anchors.topMargin: Theme.windowMargin
         listName: menu.title

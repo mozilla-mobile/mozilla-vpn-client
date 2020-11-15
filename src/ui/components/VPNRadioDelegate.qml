@@ -14,16 +14,42 @@ RadioDelegate {
     property bool isHoverable: true
     property var radioButtonLabelText
     property var accessibleName
+    property var uiState: Theme.uiState
 
     signal clicked()
 
     ButtonGroup.group: radioButtonGroup
     width: parent.width
-    height: 40
-    state: "state-default"
+    height: Theme.rowHeight
+
+    Component.onCompleted: {
+        state = uiState.stateDefault
+    }
+
+    onFocusChanged: {
+        if (!radioControl.focus)
+            return mouseArea.changeState(uiState.stateDefault);
+        if (typeof (ensureVisible) !== "undefined")
+            ensureVisible(radioControl);
+    }
+
+    Keys.onPressed: {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            mouseArea.changeState(uiState.stateDefault);
+    }
+
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            radioControl.clicked();
+    }
+
+    Accessible.name: accessibleName
+    Accessible.onPressAction: clicked()
+    Accessible.focusable: true
+
     states: [
         State {
-            name: "state-pressed"
+            name: uiState.statePressed
 
             PropertyChanges {
                 target: radioButtonInsetCircle
@@ -33,12 +59,12 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked ? Theme.bluePressed : "#3D3D3D"
+                border.color: radioControl.checked? Theme.bluePressed : "#3D3D3D"
             }
 
         },
         State {
-            name: "state-default"
+            name: uiState.stateDefault
 
             PropertyChanges {
                 target: radioButtonInsetCircle
@@ -48,16 +74,17 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked ? Theme.blue : Theme.fontColor
+                border.color: radioControl.checked || radioControl.activeFocus ? Theme.blue : Theme.fontColor
             }
 
         },
         State {
-            name: "state-hovering"
+            name: uiState.stateHovered
 
             PropertyChanges {
                 target: radioButtonInsetCircle
                 color: radioControl.checked ? Theme.bluePressed : Theme.greyHovered
+                scale: 0.6
             }
 
             PropertyChanges {
@@ -74,27 +101,12 @@ RadioDelegate {
         text: radioButtonLabelText
     }
 
-    MouseArea {
-        id: radioMouseArea
-
-        anchors.fill: radioControl
-        hoverEnabled: isHoverable
-        onEntered: radioControl.state = "state-hovering"
-        onExited: radioControl.state = "state-default"
-        onPressed: radioControl.state = "state-pressed"
-        onClicked: parent.clicked()
-    }
-
-    Keys.onSpacePressed: clicked()
-    Keys.onReturnPressed: clicked()
-
-    Accessible.name: accessibleName
-    Accessible.onPressAction: clicked()
-    Accessible.focusable: true
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(radioControl)
-
     background: Rectangle {
         color: "transparent"
+    }
+
+    VPNMouseArea {
+        id: mouseArea
     }
 
     indicator: Rectangle {
@@ -104,28 +116,35 @@ RadioDelegate {
         implicitWidth: 20
         implicitHeight: 20
         radius: implicitWidth * 0.5
-        border.width: 2
+        border.width: Theme.focusBorderWidth
         color: Theme.bgColor
+        antialiasing: true
+        smooth: true
 
         Rectangle {
             id: radioButtonInsetCircle
-
             anchors.fill: parent
             radius: radioButton.implicitHeight / 2
-            scale: 0.6
 
             Behavior on color {
                 ColorAnimation {
-                    duration: 300
+                    duration: 200
                 }
 
             }
 
         }
 
+        // Radio focus outline
+        VPNFocusOutline {
+            focusedComponent: radioControl
+            setMargins: -3
+            radius: height / 2
+        }
+
         Behavior on border.color {
             ColorAnimation {
-                duration: 300
+                duration: 200
             }
 
         }

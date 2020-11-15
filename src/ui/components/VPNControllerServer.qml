@@ -21,9 +21,6 @@ VPNClickableRow {
     rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit
     activeFocusOnTab: true
 
-    VPNFocus {
-        itemToFocus: servers
-    }
 
     RowLayout {
         anchors.fill: parent

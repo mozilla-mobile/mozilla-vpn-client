@@ -4,109 +4,151 @@
 
 .pragma library
 
-const buttonColor = "#0060DF";
 const bgColor = "#F9F9FA";
-const bgWhite = "#FFFFFF";
+const bgColor30 = "#4DF9F9FA";
+const bgColor80 = "#CCF9F9FA";
+const bgColorTransparent = "#00F9F9FA";
 
 const blue = "#0060DF";
 const blueHovered = "#0250BB";
 const bluePressed = "#054096";
 const blueDisabled = "#a3c0f3";
-const blueFocusStroke = "#660060DF";
+const blueFocusOutline = "#4d0a84ff";
+const blueFocusBorder = "#0a84ff";
 
 const green = "#3FE1B0";
-
 const grey = "#CACACA";
 const greyHovered = "#E6E6E6";
 const greyPressed = "#C2C2C2";
-
+const ink = "#321C64";
 const orange = "#FFA436";
-
 const red = "#FF4F5E";
 const redHovered = "#E22850";
 const redPressed = "#C50042";
-const redFocusStroke = "#66C50042";
-
+const redfocusOutline = "#66C50042";
 const white = "#FFFFFF"
-
-const stateBgColor = "#321C64";
 
 const fontColor = "#6D6D6E";
 const fontColorDark = "#3D3D3D";
-
 const fontFamily = "Metropolis";
 const fontBoldFamily = "MetropolisSemiBold";
 const fontExtraBoldFamily = "MetropolisExtraBold";
 const fontInterFamily = "InterUI";
-
 const fontSize = 15;
 const fontSizeLarge = 22;
 const fontSizeSmall = 13;
 const fontSizeSmallest = 11;
 const fontWeightBold = 600;
-
 const iconSize = 16;
 const labelLineHeight = 22;
 const controllerInterLineHeight = 18;
-
 const hSpacing = 20;
 const vSpacing = 24;
 const listSpacing = 8;
 const maxTextWidth = 296;
-const radius = 10;
 const windowMargin = 16;
-const windowMinHeight = 454
+
+const darkFocusBorder = fontColor
+const lightFocusBorder = "#d5d3e0"
 
 const blueButton = {
-    "defaultColor" : buttonColor,
+    "defaultColor" : blue,
     "buttonHovered": blueHovered,
     "buttonPressed": bluePressed,
     "buttonDisabled": blueDisabled,
-    "focusStroke": blueFocusStroke
+    "focusBgColor": blue,
+    "focusOutline": blueFocusOutline,
+    "focusBorder": blueFocusBorder,
 };
 
-
-const externalLinkRow = {
-    buttonPressed: "#AECBF2",
-    buttonHovered: "#D4E2F6"
+const clickableRowBlue = {
+    "defaultColor": bgColor,
+    "buttonHovered": "#D4E2F6",
+    "buttonPressed": "#AECBF2",
+    "focusOutline": bgColorTransparent,
+    "focusBorder": blueFocusBorder,
 };
+
+const iconButtonLightBackground = {
+    "defaultColor": bgColorTransparent,
+    "buttonHovered": greyHovered,
+    "buttonPressed": greyPressed,
+    "focusOutline": bgColorTransparent,
+    "focusBorder": darkFocusBorder,
+};
+
+const iconButtonDarkBackground = {
+    "defaultColor": "#00321C64",
+    "buttonHovered": "#5b4983",
+    "buttonPressed": "#8477a2",
+    "focusOutline": "#005b4983",
+    "focusBorder": lightFocusBorder,
+};
+
+const linkButton = {
+    "defaultColor" : bgColorTransparent,
+    "buttonHovered": bgColorTransparent,
+    "buttonPressed": bgColorTransparent,
+    "focusOutline": bgColorTransparent,
+    "focusBorder": darkFocusBorder,
+};
+
+const popupButtonCancel = {
+    "defaultColor": grey,
+    "buttonHovered": "#CCCCCC",
+    "buttonPressed": greyPressed,
+    "focusOutline": greyPressed,
+    "focusBorder": darkFocusBorder
+};
+
 
 const redButton = {
     "defaultColor" : red,
     "buttonHovered": redHovered,
     "buttonPressed": redPressed,
-    "focusStroke": redFocusStroke,
-    "focusBorder": redPressed
+    "focusOutline": redfocusOutline,
+    "focusBorder": redPressed,
 };
 
-const greyButton = {
-    "defaultColor": grey,
-    "buttonHovered": greyHovered,
-    "buttonPressed": greyPressed,
-    "focusStroke": greyPressed,
-    "focusBorder": fontColorDark
-};
-
-const whiteSettingsBtn = {
-    "buttonHovered": "#5b4983",
-    "buttonPressed": "#8477a2"
-};
 
 const removeDeviceBtn = {
+    "defaultColor": bgColorTransparent,
     "buttonHovered": "#FFDFE7",
-    "buttonPressed": "#FFBDC5"
+    "buttonPressed": "#FFBDC5",
+    "focusOutline": bgColorTransparent,
+    "focusBorder": red,
 };
 
-const cancelRemovePopup = {
-    "defaultColor": grey,
-    "buttonHovered": "#CCCCCC",
-    "buttonPressed": greyPressed,
-    "focusStroke": greyPressed,
-    "focusBorder": fontColorDark
+const vpnToggleConnected = {
+    "defaultColor":  "#3FE1B0",
+    "buttonHovered": "#3AD4B3",
+    "buttonPressed": "#1CC5A0",
+    "focusOutline": bgColor30,
+    "focusBorder": lightFocusBorder,
 };
+
+const vpnToggleDisconnected = {
+    "defaultColor": "#9E9E9E",
+    "buttonHovered": fontColor,
+    "buttonPressed": fontColorDark,
+    "focusOutline": "transparent",
+    "focusBorder": darkFocusBorder,
+};
+
+const cornerRadius = 4;
+const focusBorderWidth = 2;
 
 // In milliseconds, the animation of a single device removal
 const removeDeviceAnimation = 300;
-
+const rowHeight = 40;
 const settingsMaxContentHeight = 740;
-const maxHorizontalContentWidth = 460
+const maxHorizontalContentWidth = 460;
+
+const uiState = {
+    "stateDefault": "state-default",
+    "stateHovered": "state-hovered",
+    "statePressed": "state-pressed",
+    "stateFocused": "state-focused",
+    "stateLoading": "state-loading",
+};
+

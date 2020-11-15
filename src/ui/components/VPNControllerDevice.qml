@@ -10,15 +10,14 @@ import "../themes/themes.js" as Theme
 VPNClickableRow {
     id: devices
 
+        Accessible.role: Accessible.Button
+
     //% "My devices"
     property var titleText: qsTrId("vpn.devices.myDevices")
 
     accessibleName: titleText + " - " + label.text
     activeFocusOnTab: true
 
-    VPNFocus {
-        itemToFocus: devices
-    }
 
     RowLayout {
         anchors.fill: parent

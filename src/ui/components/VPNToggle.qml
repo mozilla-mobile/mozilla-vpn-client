@@ -6,27 +6,28 @@ import QtQuick 2.5
 import QtQuick.Controls 2.5
 import Mozilla.VPN 1.0
 
-RoundButton {
+import "../themes/themes.js" as Theme
+
+VPNButtonBase {
     id: toggleButton
 
-    function handleClick() {
-        if (VPNController.state === VPNController.StateInitializing)
-            return toggleOutline.state = "state-default";
+    property var toggleColor: Theme.vpnToggleDisconnected
 
+    function handleClick() {
         if (VPNController.state !== VPNController.StateOff)
             return VPNController.deactivate();
 
         return VPNController.activate();
     }
 
+    // property in VPNButtonBase {}
+    visualStateItem: toggle
+    onClicked: handleClick()
     state: VPNController.state
     height: 32
     width: 60
     radius: 16
-    focusPolicy: Qt.StrongFocus
-    Keys.onSpacePressed: handleClick()
-    Keys.onReturnPressed: handleClick()
-    Accessible.onPressAction: handleClick()
+    hoverEnabled: false
     states: [
         State {
             name: VPNController.StateInitializing
@@ -39,6 +40,12 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#9E9E9E"
+                border.color: Theme.white
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: Theme.vpnToggleDisconnected
             }
 
         },
@@ -53,6 +60,7 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#9E9E9E"
+                border.color: Theme.white
             }
 
             PropertyChanges {
@@ -61,6 +69,7 @@ RoundButton {
                 Accessible.name: qsTrId("vpn.toggle.on")
                 //% "VPN is off"
                 Accessible.description: qsTrId("vpn.toggle.isOff")
+                toggleColor: Theme.vpnToggleDisconnected
             }
 
         },
@@ -76,6 +85,7 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#387E8A"
+                border.color: Theme.ink
             }
 
             PropertyChanges {
@@ -84,6 +94,7 @@ RoundButton {
                 Accessible.name: qsTrId("vpn.toggle.off")
                 //% "VPN is on"
                 Accessible.description: qsTrId("vpn.toggle.isOn")
+                toggleColor: Theme.vpnToggleConnected
             }
 
         },
@@ -98,11 +109,13 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#3FE1B0"
+                border.color: Theme.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 Accessible.name: "Disconnect"
+                toggleColor: Theme.vpnToggleConnected
             }
 
         },
@@ -117,6 +130,12 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#CECECE"
+                border.color: Theme.white
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: Theme.vpnToggleDisconnected
             }
 
         },
@@ -132,6 +151,12 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#387E8A"
+                border.color: Theme.ink
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: Theme.vpnToggleConnected
             }
 
         },
@@ -147,6 +172,12 @@ RoundButton {
             PropertyChanges {
                 target: toggle
                 color: "#E7E7E7"
+                border.color: Theme.white
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: Theme.vpnToggleDisconnected
             }
 
         }
@@ -170,98 +201,70 @@ RoundButton {
         }
     ]
 
-    Rectangle {
-        id: toggleOutline
+    // Focus rings
+    VPNFocusBorder {
+        id: focusHandler
 
-        color: "transparent"
-        border.color: "#C2C2C2"
-        border.width: 5
-        anchors.margins: -5
         anchors.fill: toggle
-        radius: toggleOutline.height / 2
-        antialiasing: true
-        state: "state-default"
-        states: [
-            State {
-                name: "state-default"
+        anchors.margins: -4
+        radius: height / 2
+        border.color: toggleColor.focusBorder
+        color: "transparent"
+        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff) ? 1 : 0
 
-                PropertyChanges {
-                    target: toggleOutline
-                    opacity: toggleButton.activeFocus ? 0.3 : 0
-                }
+        VPNFocusOutline {
+            id: vpnFocusOutline
 
-                PropertyChanges {
-                    target: toggle
-                    color: {
-                        if (VPNController.state === VPNController.StateOn)
-                            return "#3FE1B0";
-
-                        if (VPNController.state === VPNController.StateOff)
-                            return "#9E9E9E";
-
-                        return toggle.color;
-                    }
-                }
-
-            },
-            State {
-                name: "state-hovering"
-
-                PropertyChanges {
-                    target: toggleOutline
-                    opacity: 0.2
-                }
-
-                PropertyChanges {
-                    target: toggle
-                    color: {
-                        if (VPNController.state === VPNController.StateOn)
-                            return "#3AD4B3";
-
-                        if (VPNController.state === VPNController.StateOff)
-                            return "#6D6D6E";
-
-                        return toggle.color;
-                    }
-                }
-
-            },
-            State {
-                name: "state-pressed"
-
-                PropertyChanges {
-                    target: toggleOutline
-                    opacity: {
-                        if (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff)
-                            return 0.3;
-
-                        return 0;
-                    }
-                }
-
-                PropertyChanges {
-                    target: toggle
-                    color: {
-                        if (VPNController.state === VPNController.StateOn)
-                            return "#1CC5A0";
-
-                        if (VPNController.state === VPNController.StateOff)
-                            return "#3D3D3D";
-
-                        return toggle.color;
-                    }
-                }
-
-            }
-        ]
-
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: toggleButton.activeFocus ? 0 : 200
-            }
-
+            anchors.fill: focusHandler
+            focusedComponent: focusHandler
+            setMargins: -6
+            radius: height / 2
+            border.width: 7
+            color: "transparent"
+            border.color: toggleColor.focusOutline
+            opacity: 0.25
         }
 
+    }
+
+    // Faint outline visible on hover and press
+    Rectangle {
+        id: hoverPressHandler
+
+        color: "#C2C2C2"
+        state: toggle.state
+        opacity: {
+            if (state === uiState.stateDefault || toggleButton.activeFocus)
+                return 0;
+
+            if (state === uiState.stateHovered)
+                return 0.2;
+
+            if (state === uiState.statePressed)
+                return 0.3;
+
+        }
+        z: -1
+        anchors.fill: toggle
+        radius: height / 2
+        anchors.margins: -5
+
+        PropertyAnimation on opacity {
+            duration: 200
+        }
+
+    }
+
+    // Toggle background color changes on hover and press
+    VPNUIStates {
+        itemToFocus: toggleButton
+        itemToAnchor: toggle
+        colorScheme: toggleColor
+        radius: height / 2
+        setMargins: -7
+        showFocusRings: false
+        opacity: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff) ? 1 : 0
+        z: 1
     }
 
     Rectangle {
@@ -273,24 +276,26 @@ RoundButton {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.topMargin: 4
+        z: 2
     }
 
-    MouseArea {
+    VPNMouseArea {
         id: mouseArea
 
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: toggleOutline.state = "state-hovering"
-        onExited: toggleOutline.state = "state-default"
-        onPressed: toggleOutline.state = "state-pressed"
-        onClicked: toggleButton.handleClick()
+        targetEl: toggle
+        anchors.fill: toggle
+        hoverEnabled: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff)
+        cursorShape: Qt.PointingHandCursor
+        onClicked: handleClick()
     }
 
     background: Rectangle {
         id: toggle
 
+        Component.onCompleted: state = uiState.stateDefault
+        border.width: 0
         anchors.fill: toggleButton
-        radius: toggleButton.radius
+        radius: height / 2
 
         Behavior on color {
             ColorAnimation {
@@ -302,3 +307,4 @@ RoundButton {
     }
 
 }
+
