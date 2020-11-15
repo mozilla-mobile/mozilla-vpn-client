@@ -5,16 +5,15 @@
 import QtQuick 2.5
 import "../themes/themes.js" as Theme
 
-// VPNFocus
 Rectangle {
-    property var itemToFocus
-    property var itemToAnchor
-    property var focusWidth: 2
 
-    radius: 4
+    id: focusInnerBorder
+
     color: "transparent"
-    border.width: itemToFocus.activeFocus ? focusWidth : 0
-    border.color: Theme.blueFocusStroke
-    anchors.fill: itemToAnchor || itemToFocus
-    z: 1
+    anchors.fill: parent
+    radius: parent.radius
+    border.width: Theme.focusBorderWidth
+    border.color: colorScheme.focusBorder
+    opacity: itemToFocus.activeFocus ? 1 : 0
+    antialiasing: true
 }

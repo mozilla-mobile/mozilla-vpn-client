@@ -25,7 +25,6 @@ Flickable {
             ensureVisAnimation.to = destinationY;
             ensureVisAnimation.start();
         }
-        return;
     }
 
     contentHeight: Math.max(window.height, flickContentHeight)

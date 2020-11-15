@@ -16,7 +16,7 @@ Item {
     property real panelHeight: window.height - (nextPanel.height + nextPanel.anchors.bottomMargin + progressIndicator.height + progressIndicator.anchors.bottomMargin)
     property real panelWidth: window.width
 
-    width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
+    width: Math.min(onboardingPanel.width, Theme.maxHorizontalContentWidth)
     anchors.horizontalCenter: parent.horizontalCenter
 
     SwipeView {
@@ -76,10 +76,10 @@ Item {
 
         text: swipeView.currentIndex === swipeView.count - 1 ? qsTrId("vpn.main.getStarted") : textNext
         anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: onboardingPanel.horizontalCenter
         anchors.bottom: progressIndicator.top
         anchors.bottomMargin: 28
-        radius: 4
+        radius: Theme.cornerRadius
         onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.authenticate()
     }
 
@@ -92,12 +92,12 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Math.min(window.height * 0.08, 60) - 4
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 8
+        spacing: Theme.windowMargin / 2
 
         delegate: Rectangle {
             id: circle
 
-            color: index === swipeView.currentIndex ? Theme.buttonColor : Theme.greyPressed
+            color: index === swipeView.currentIndex ? Theme.blue : Theme.greyPressed
             height: 6
             width: 6
             radius: 6

@@ -26,8 +26,9 @@ VPNClickableRow {
     state: cityListVisible ? "list-visible" : "list-hidden"
     width: ListView.view.width
     onClicked: cityListVisible = !cityListVisible
+
     accessibleName: name
-    anchorToFill: serverCountryRow
+
     states: [
         State {
             name: "list-hidden"
@@ -60,6 +61,7 @@ VPNClickableRow {
     ]
     // Override default VPNClickableRow transition.
     transitions: []
+
     Behavior on height {
         NumberAnimation {
             easing.type: Easing.InSine
@@ -107,7 +109,7 @@ VPNClickableRow {
         id: serverCountryRow
 
         spacing: 0
-        height: 40
+        height: Theme.rowHeight
         width: parent.width
 
         VPNServerListToggle {
@@ -178,11 +180,6 @@ VPNClickableRow {
             }
 
             cityList.decrementCurrentIndex()
-        }
-
-        highlight: VPNFocus {
-            itemToFocus: cityList
-            itemToAnchor: cityList.currentItem
         }
 
         delegate: VPNRadioDelegate {

@@ -8,85 +8,29 @@ import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-RoundButton {
+VPNButtonBase {
     id: iconButton
 
-    property var backgroundColor: Theme.greyButton
-    property var defaultColor: Theme.bgColor
     property var accessibleName
+    property var buttonColorScheme: Theme.iconButtonLightBackground
 
-    signal clicked()
+    height: Theme.rowHeight
+    width: Theme.rowHeight
 
-    height: 40
-    width: 40
-    focusPolicy: Qt.StrongFocus
-    Keys.onSpacePressed: clicked()
-    Keys.onReturnPressed: clicked()
     Accessible.name: accessibleName
-    Accessible.onPressAction: clicked()
+    Component.onCompleted: state = uiState.stateDefault
 
     VPNToolTip {
         text: accessibleName
     }
 
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(iconButton)
-    
-    states: [
-        State {
-            when: mouseArea.pressed
-
-            PropertyChanges {
-                target: backgroundRect
-                color: backgroundColor.buttonPressed
-                opacity: 1
-            }
-
-        },
-        State {
-            when: mouseArea.containsMouse
-
-            PropertyChanges {
-                target: backgroundRect
-                color: backgroundColor.buttonHovered
-                opacity: 1
-            }
-
-        }
-    ]
-    transitions: [
-        Transition {
-            ColorAnimation {
-                target: backgroundRect
-                duration: 300
-            }
-
-            PropertyAnimation {
-                target: backgroundRect
-                property: "opacity"
-                duration: 300
-            }
-
-        }
-    ]
-
-    VPNFocus {
-        itemToFocus: iconButton
-    }
-
-    MouseArea {
+    VPNMouseArea {
         id: mouseArea
-
-        anchors.fill: parent
-        hoverEnabled: true
-        onClicked: iconButton.clicked()
     }
 
-    background: Rectangle {
-        id: backgroundRect
-
-        radius: 4
-        color: defaultColor
-        opacity: 0
+    VPNUIStates {
+        itemToFocus: iconButton
+        colorScheme: buttonColorScheme
     }
 
 }

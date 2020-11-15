@@ -18,10 +18,4 @@ ListView {
     highlightFollowsCurrentItem: true
     Keys.onDownPressed: list.incrementCurrentIndex()
     Keys.onUpPressed: list.decrementCurrentIndex()
-
-    highlight: VPNFocus {
-        itemToFocus: list
-        itemToAnchor: list.currentItem ? list.currentItem : undefined
-    }
-
 }

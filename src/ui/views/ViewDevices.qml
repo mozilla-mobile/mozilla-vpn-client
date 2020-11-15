@@ -32,6 +32,7 @@ Item {
         interactive: true
         flickContentHeight: maxDevicesReached.height + deviceList.height
         contentHeight: maxDevicesReached.height + deviceList.height
+        contentWidth: window.width
         state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
         states: [
             State {
@@ -41,7 +42,8 @@ Item {
                     target: menu
                     rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
                 }
-       },
+
+            },
             State {
                 name: "deviceLimit" // device limit mode
 
@@ -51,15 +53,13 @@ Item {
                 }
 
             }
-
         ]
 
         VPNDevicesListHeader {
-                 id: maxDevicesReached
+            id: maxDevicesReached
 
-                 width: root.width
-             }
-
+            width: root.width
+        }
 
         VPNList {
             id: deviceList
@@ -67,12 +67,12 @@ Item {
             property VPNIconButton focusedIconButton: null
 
             height: count * 80
-            width: root.width
+            width: parent.width - Theme.windowMargin
             anchors.top: maxDevicesReached.bottom
-            clip: true
+            anchors.horizontalCenter: parent.horizontalCenter
             interactive: false
             model: VPNDeviceModel
-            spacing: 4
+            spacing: 20
             Keys.onDownPressed: {
                 vpnFlickable.ensureVisible(currentItem);
             }
@@ -88,24 +88,47 @@ Item {
             }
             listName: menu.title
 
+            highlight: Rectangle {
+                color: Theme.greyHovered
+                anchors.fill: deviceList.currentItem ? deviceList.currentItem : undefined
+                anchors.topMargin: deviceList.currentItem ? -10 : undefined
+                anchors.bottomMargin: deviceList.currentItem ? -10 : undefined
+                anchors.leftMargin: deviceList.currentItem ? -8 : undefined
+                anchors.rightMargin: deviceList.currentItem ? -8 : undefined
+                opacity: deviceList.currentItem && deviceList.currentItem.activeFocus ? 1 : 0
+            }
+
             removeDisplaced: Transition {
-                NumberAnimation { properties: "x,y"; duration: Theme.removeDeviceAnimation }
+                NumberAnimation {
+                    properties: "x,y"
+                    duration: Theme.removeDeviceAnimation
+                }
+
             }
 
             remove: Transition {
                 ParallelAnimation {
-                    NumberAnimation { property: "opacity"; to: 0; duration: Theme.removeDeviceAnimation }
+                    NumberAnimation {
+                        property: "opacity"
+                        to: 0
+                        duration: Theme.removeDeviceAnimation
+                    }
+
                 }
+
             }
 
-            delegate: Container {
-                id: device
+            delegate: RowLayout {
+                id: deviceRow
 
                 property var deviceName: name
+                property var buttonIsActive: false
+
+                spacing: 0
                 //% "%1 %2"
                 //: Example: "deviceName deviceDescription"
-                property var accessibleName: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
-
+                Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
+                Accessible.role: Accessible.ListItem
                 width: deviceList.width
 
                 Connections {
@@ -118,178 +141,157 @@ Item {
                     target: VPN
                 }
 
-                contentItem: ColumnLayout {
-                    width: parent.width
-                    anchors.fill: parent
+                VPNIcon {
+                    id: deviceIcon
+
+                    source: "../resources/devices.svg"
+                    fillMode: Image.PreserveAspectFit
+                    Layout.leftMargin: Theme.windowMargin / 2
+                    Layout.rightMargin: Theme.windowMargin
+                    Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                    Layout.topMargin: Theme.windowMargin / 2
+                }
+
+                ColumnLayout {
+                    id: deviceInfo
+
+                    Layout.alignment: Qt.AlignLeft
+                    Layout.topMargin: Theme.windowMargin / 2
+                    Layout.preferredWidth: deviceRow.Layout.preferredWidth - deviceIcon.Layout.rightMargin - deviceIcon.sourceSize.width - iconButton.width - Theme.windowMargin
                     spacing: 0
-                    Accessible.name: device.accessibleName
-                    Accessible.role: Accessible.ListItem
 
-                    RowLayout {
-                        id: deviceRow
+                    VPNInterLabel {
+                        id: deviceName
 
-                        Layout.topMargin: 10
-                        Layout.leftMargin: Theme.windowMargin
-                        Layout.rightMargin: Theme.windowMargin / 2
-                        spacing: 0
-                        Layout.preferredWidth: parent.width
+                        text: name
+                        color: Theme.fontColorDark
+                        elide: Text.ElideRight
+                        Layout.alignment: Qt.AlignLeft
+                        horizontalAlignment: Text.AlignLeft
+                        Layout.preferredWidth: deviceInfo.Layout.preferredWidth - Theme.windowMargin / 2
+                        Layout.fillWidth: true
+                    }
 
-                        VPNIcon {
-                            id: deviceIcon
+                    VPNTextBlock {
+                        //% "Current Device"
+                        //% "Added less than an hour ago"
+                        //% "Added a few hours ago (%1)"
 
-                            source: "../resources/devices.svg"
-                            fillMode: Image.PreserveAspectFit
-                            Layout.rightMargin: Theme.windowMargin
-                            Layout.alignment: Qt.AlignTop
-                            Layout.topMargin: Theme.windowMargin / 2
+                        id: deviceDesc
+
+                        function deviceSubtitle() {
+                            if (currentOne)
+                                return qsTrId("vpn.devices.currentDevice");
+
+                            const diff = (Date.now() - createdAt.valueOf()) / 1000;
+                            if (diff < 3600)
+                                return qsTrId("vpn.devices.addedltHour");
+
+                            if (diff < 86400)
+                                return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
+
+                            //% "Added %1 days ago"
+                            return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
                         }
 
-                        ColumnLayout {
-                            id: deviceInfo
+                        text: deviceSubtitle()
+                        width: parent.width
+                        color: currentOne ? Theme.blue : Theme.fontColor
+                    }
 
-                            Layout.alignment: Qt.AlignTop
-                            Layout.topMargin: Theme.windowMargin / 2
-                            Layout.preferredWidth: deviceRow.Layout.preferredWidth - deviceIcon.Layout.rightMargin - deviceIcon.sourceSize.width - iconButton.width - Theme.windowMargin
-                            spacing: 0
+                }
 
-                            VPNInterLabel {
-                                id: deviceName
+                VPNIconButton {
+                    id: iconButton
 
-                                text: name
-                                color: Theme.fontColorDark
-                                elide: Text.ElideRight
-                                Layout.alignment: Qt.AlignLeft
-                                horizontalAlignment: Text.AlignLeft
-                                Layout.preferredWidth: deviceInfo.Layout.preferredWidth - Theme.windowMargin / 2
-                            }
+                    property var iconSource: "../resources/delete.svg"
+                    property real iconHeightWidth: 22
+                    property bool startRotation: false
 
-                            VPNTextBlock {
-                                id: deviceDesc
+                    buttonColorScheme: Theme.removeDeviceBtn
+                    visible: !currentOne
+                    Layout.alignment: Qt.AlignTop | Qt.AlignRight
+                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredWidth: Theme.rowHeight
+                    onClicked: removePopup.initializeAndOpen(name, index)
+                    //: Label used for accessibility on the button to remove a device
+                    //% "Remove %1"
+                    accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.accessibleName)
+                    // Only allow focus within the current item in the list.
+                    focusPolicy: deviceList.currentItem === deviceRow ? Qt.StrongFocus : Qt.NoFocus
+                    onFocusChanged: {
+                        // If the remove button gets a focus, remember it.
+                        if (focus)
+                            deviceList.focusedIconButton = this;
 
-                                function deviceSubtitle() {
+                    }
 
-                                    if (currentOne)
-                                        //% "Current Device"
-                                        return qsTrId("vpn.devices.currentDevice");
+                    VPNIcon {
+                        source: iconButton.iconSource
+                        anchors.centerIn: iconButton
+                        sourceSize.height: iconButton.iconHeightWidth
+                        sourceSize.width: iconButton.iconHeightWidth
+                        rotation: iconButton.startRotation ? 360 : 0
 
-                                    const diff = (Date.now() - createdAt.valueOf()) / 1000;
-                                    if (diff < 3600)
-                                        //% "Added less than an hour ago"
-                                        return qsTrId("vpn.devices.addedltHour");
-
-                                    if (diff < 86400)
-                                        //: %1 is the number of hours.
-                                        //% "Added a few hours ago (%1)"
-                                        return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
-
-                                    //% "Added %1 days ago"
-                                    return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
-                                }
-
-                                text: deviceSubtitle()
-                                width: parent.width
-                                color: currentOne ? Theme.buttonColor : Theme.fontColor
-                            }
-
-                        }
-
-                        VPNIconButton {
-                            id: iconButton
-
-                            property var iconSource: "../resources/delete.svg"
-                            property real iconHeightWidth: 22
-                            property bool startRotation: false
-
-                            backgroundColor: Theme.removeDeviceBtn
-                            visible: !currentOne
-                            Layout.rightMargin: 0
-                            Layout.topMargin: 0
-                            Layout.alignment: Qt.AlignTop
-                            Layout.preferredHeight: 40
-                            Layout.preferredWidth: 40
-                            onClicked: removePopup.initializeAndOpen(name, index)
-                            //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
-                            //% "Remove %1"
-                            accessibleName: qsTrId("vpn.devices.removeA11Y").arg(device.accessibleName)
-                            // Only allow focus within the current item in the list.
-                            focusPolicy: deviceList.currentItem === device ? Qt.StrongFocus : Qt.NoFocus
-                            onFocusChanged: {
-                                // If the remove button gets a focus, remember it.
-                                if (focus)
-                                    deviceList.focusedIconButton = this;
-
-                            }
-
-                            VPNIcon {
-                                source: iconButton.iconSource
-                                anchors.centerIn: iconButton
-                                sourceSize.height: iconButton.iconHeightWidth
-                                sourceSize.width: iconButton.iconHeightWidth
-                                rotation: iconButton.startRotation ? 360 : 0
-
-                                Behavior on rotation {
-                                    PropertyAnimation {
-                                        duration: 5000
-                                        loops: Animation.Infinite
-                                    }
-
-                                }
-
+                        Behavior on rotation {
+                            PropertyAnimation {
+                                duration: 5000
+                                loops: Animation.Infinite
                             }
 
                         }
 
-                        SequentialAnimation {
-                            id: deviceRemovalTransition
+                    }
 
-                            ParallelAnimation {
-                                PropertyAnimation {
-                                    target: iconButton
-                                    property: "opacity"
-                                    from: 1
-                                    to: 0
-                                    duration: 100
-                                }
+                }
 
-                                PropertyAnimation {
-                                    targets: [deviceName, deviceDesc, deviceIcon]
-                                    property: "opacity"
-                                    from: 1
-                                    to: 0.6
-                                    duration: 100
-                                }
+                SequentialAnimation {
+                    id: deviceRemovalTransition
 
-                            }
+                    ParallelAnimation {
+                        PropertyAnimation {
+                            target: iconButton
+                            property: "opacity"
+                            from: 1
+                            to: 0
+                            duration: 100
+                        }
 
-                            PropertyAction {
-                                target: iconButton
-                                property: "iconHeightWidth"
-                                value: 20
-                            }
+                        PropertyAnimation {
+                            targets: [deviceName, deviceDesc, deviceIcon]
+                            property: "opacity"
+                            from: 1
+                            to: 0.6
+                            duration: 100
+                        }
 
-                            PropertyAction {
-                                target: iconButton
-                                property: "iconSource"
-                                value: "../resources/spinner.svg"
-                            }
+                    }
 
-                            ParallelAnimation {
-                                PropertyAnimation {
-                                    target: iconButton
-                                    property: "opacity"
-                                    from: 0
-                                    to: 1
-                                    duration: 300
-                                }
+                    PropertyAction {
+                        target: iconButton
+                        property: "iconHeightWidth"
+                        value: 20
+                    }
 
-                                PropertyAction {
-                                    target: iconButton
-                                    property: "startRotation"
-                                    value: true
-                                }
+                    PropertyAction {
+                        target: iconButton
+                        property: "iconSource"
+                        value: "../resources/spinner.svg"
+                    }
 
-                            }
+                    ParallelAnimation {
+                        PropertyAnimation {
+                            target: iconButton
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: 300
+                        }
 
+                        PropertyAction {
+                            target: iconButton
+                            property: "startRotation"
+                            value: true
                         }
 
                     }
@@ -312,11 +314,14 @@ Item {
 
     VPNRemoveDevicePopup {
         id: removePopup
+
         property var deviceName
 
         function initializeAndOpen(name) {
             removePopup.deviceName = name;
-            removePopup.open()
+            removePopup.open();
         }
+
     }
+
 }

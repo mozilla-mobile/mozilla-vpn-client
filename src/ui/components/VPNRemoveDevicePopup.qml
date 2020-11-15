@@ -124,7 +124,7 @@ Popup {
                     //% "Cancel"
                     buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
                     buttonTextColor: "#262626"
-                    bgColor: Theme.cancelRemovePopup
+                    colorScheme: Theme.popupButtonCancel
                     onClicked: {
                         popup.close();
                     }
@@ -136,8 +136,8 @@ Popup {
                     //: This is the “remove” device button.
                     //% "Remove"
                     buttonText: qsTrId("vpn.devices.removeDeviceButton")
-                    buttonTextColor: "#FFFFFF"
-                    bgColor: Theme.redButton
+                    buttonTextColor: Theme.white
+                    colorScheme: Theme.redButton
                     onClicked: {
                         VPN.removeDevice(removePopup.deviceName);
                         popup.close();
