@@ -152,6 +152,7 @@ VPNFlickable {
         VPNButton {
             //% "Subscribe now"
             text: qsTrId("vpn.updates.subscribeNow")
+            showLoader: true
             onClicked: VPN.subscribe()
         }
 
