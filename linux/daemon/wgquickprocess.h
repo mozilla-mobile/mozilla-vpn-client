@@ -40,7 +40,7 @@ signals:
 private:
     Op m_op;
 
-    QTemporaryDir tmpDir;
+    QTemporaryDir m_tmpDir;
 };
 
 #endif // WGQUICKPROCESS_H
