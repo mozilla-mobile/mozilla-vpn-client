@@ -92,21 +92,27 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString &url)
     }
 
     QUrl loadingUrl(url);
-    if (loadingUrl.path() != "/vpn/client/login/success") {
-        return false;
-    }
+    if (loadingUrl.path() == "/vpn/client/login/success") {
+        QUrlQuery query(loadingUrl.query());
+        if (!query.hasQueryItem("code")) {
+            emit m_listener->failed(ErrorHandler::BackendServiceError);
+            m_listener = nullptr;
+            return true;
+        }
 
-    QUrlQuery query(loadingUrl.query());
-    if (!query.hasQueryItem("code")) {
-        emit m_listener->failed(ErrorHandler::BackendServiceError);
+        QString code = query.queryItemValue("code");
+        emit m_listener->completed(code);
+        m_listener = nullptr;
         return true;
     }
 
-    QString code = query.queryItemValue("code");
-    emit m_listener->completed(code);
-    m_listener = nullptr;
+    if (loadingUrl.path() == "/vpn/client/login/error") {
+        emit m_listener->failed(ErrorHandler::AuthenticationError);
+        m_listener = nullptr;
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 void AndroidUtils::abortAuthentication()
