@@ -10,67 +10,41 @@ import "../themes/themes.js" as Theme
 RoundButton {
     id: root
 
-    property variant targetEl
-    property var enableHover: true
-    property var bgColor: Theme.blueButton
+    property var visualStateItem: root
+    property var uiState: Theme.uiState
+    property var loaderVisible: false
 
-    enabled: enableHover
     focusPolicy: Qt.StrongFocus
-    Keys.onSpacePressed: clicked()
-    Keys.onReturnPressed: clicked()
+    Keys.onPressed: {
+        if (loaderVisible) {
+            return;
+        }
+
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            visualStateItem.state = uiState.statePressed;
+
+    }
+    Keys.onReleased: {
+        if (loaderVisible) {
+            return
+        }
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
+            visualStateItem.state = uiState.stateDefault;
+        }
+        if (event.key === Qt.Key_Return)
+            clicked();
+    }
+
+    Accessible.role: Accessible.Button
     Accessible.onPressAction: clicked()
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
+    Accessible.focusable: true
 
-    state: "state-default"
-    states: [
-        State {
-            name: "state-default"
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            return visualStateItem.state = uiState.stateDefault;
 
-            PropertyChanges {
-                target: targetEl
-                color: bgColor.defaultColor
-            }
-
-        },
-        State {
-            name: "state-hovering"
-
-            PropertyChanges {
-                target: targetEl
-                color: bgColor.buttonHovered
-            }
-
-        },
-        State {
-            name: "state-pressed"
-
-            PropertyChanges {
-                target: targetEl
-                color: bgColor.buttonPressed
-            }
-
-        }
-    ]
-
-    MouseArea {
-        id: mouseArea
-
-        function changeState(stateName) {
-            if (enableHover)
-                parent.state = stateName;
-
-        }
-
-        anchors.fill: parent
-        hoverEnabled: enableHover
-        onEntered: changeState("state-hovering")
-        onExited: changeState("state-default")
-        onPressed: changeState("state-pressed")
-        onClicked: {
-            if (enableHover)
-                parent.clicked();
-
-        }
+        if (typeof (ensureVisible) !== "undefined")
+            return ensureVisible(visualStateItem);
     }
 
     background: Rectangle {

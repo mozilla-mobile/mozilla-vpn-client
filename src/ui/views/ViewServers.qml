@@ -38,13 +38,6 @@ Item {
         }
         onCurrentIndexChanged: currentItem.forceActiveFocus()
 
-        highlight: VPNFocus {
-            itemToFocus: serverList
-            itemToAnchor: serverList.currentItem
-            z: 2
-            opacity: serverList.currentItem.isActive ? 0 : 1
-        }
-
         header: Rectangle {
             height: 16
             width: serverList.width

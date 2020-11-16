@@ -161,7 +161,7 @@ Rectangle {
 
             PropertyChanges {
                 target: settingsButton
-                backgroundColor: Theme.whiteSettingsBtn
+                buttonColorScheme: Theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -212,7 +212,7 @@ Rectangle {
 
             PropertyChanges {
                 target: settingsButton
-                backgroundColor: Theme.whiteSettingsBtn
+                buttonColorScheme: Theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -259,6 +259,11 @@ Rectangle {
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
+            }
+
+            PropertyChanges {
+                target: settingsButton
+                buttonColorScheme: Theme.iconButtonLightBackground
             }
 
             PropertyChanges {
@@ -309,6 +314,11 @@ Rectangle {
             PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
+            }
+
+            PropertyChanges {
+                target: settingsButton
+                buttonColorScheme: Theme.iconButtonDarkBackground
             }
 
             PropertyChanges {
@@ -447,8 +457,7 @@ Rectangle {
         id: connectionInfoButton
 
         onClicked: connectionInfo.visible = true
-        defaultColor: box.color
-        backgroundColor: Theme.whiteSettingsBtn
+        buttonColorScheme: Theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
         anchors.left: parent.left
@@ -464,6 +473,7 @@ Rectangle {
             anchors.centerIn: connectionInfoButton
             sourceSize.height: 20
             sourceSize.width: 20
+            visible: connectionInfoButton.visible
         }
 
         Behavior on opacity {
@@ -479,7 +489,6 @@ Rectangle {
         id: settingsButton
 
         onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
-        defaultColor: box.color
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2

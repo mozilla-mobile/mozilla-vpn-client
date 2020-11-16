@@ -15,26 +15,24 @@ Rectangle {
     property var alertText: ""
     property var alertLinkText: ""
 
-    color: alertColor.defaultColor
-    height: Math.max(40, (label.paintedHeight + Theme.windowMargin))
+    color: "transparent"
+    height: Math.max(40, (labelWrapper.height + Theme.windowMargin))
     width: parent.width - Theme.windowMargin
     y: parent.height - 48
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.margins: Theme.windowMargin / 2
-    radius: 4
+    radius: Theme.cornerRadius
 
     VPNButtonBase {
         id: alertAction
 
-        bgColor: alertColor
-        enableHover: alertLinkText.length > 0
-        targetEl: alertBox
-        anchors.verticalCenter: parent.verticalCenter
-        height: label.paintedHeight + Theme.windowMargin
-        width: parent.width - closeButton.width
-        radius: 4
-        z: 2
+        anchors.fill: alertBox
+        radius: Theme.cornerRadius
         onClicked: {
+            // TODO Try again
+            // TODO Try again
+            // TODO Restore
+
             switch (alertType) {
             case ("update"):
                 stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
@@ -43,72 +41,80 @@ Rectangle {
                 VPN.authenticate();
                 break;
             case ("connection-failed"):
-                // TODO Try again
             case ("no-connection"):
-                // TODO Try again
             case ("background-service"):
-                // TODO Restore
             default:
                 VPN.hideAlert();
             }
         }
 
+        VPNUIStates {
+            itemToFocus: parent
+            colorScheme: alertColor
+            setMargins: -3
+        }
+
         Rectangle {
-            anchors.fill: parent
-            anchors.margins: -3
-            border.color: alertColor.focusStroke // TODO: Figure these out
-            border.width: parent.activeFocus ? 4 : 0
+            id: labelWrapper
+
             color: "transparent"
-            opacity: parent.activeFocus ? 1 : 0
-            radius: 7
+            height: label.paintedHeight
+            anchors.left: alertAction.left
+            width: alertAction.width - Theme.rowHeight
+            anchors.verticalCenter: parent.verticalCenter
+
+            Label {
+                id: label
+                 anchors.centerIn: parent
+                 text: alertBox.alertText + " " + "<b><u>" + alertLinkText + "</b></u>"
+                 horizontalAlignment: Text.AlignHCenter
+                 font.pixelSize: Theme.fontSizeSmall
+                 color: Theme.white
+                 width: labelWrapper.width - Theme.windowMargin
+                 wrapMode: Label.WordWrap
+             }
+
         }
 
-        Label {
-            id: label
-
-            anchors.centerIn: parent
-            text: alertBox.alertText + " " + "<b><u>" + alertLinkText + "</b></u>"
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeSmall
-            color: Theme.white
-            width: alertAction.width - Theme.windowMargin
-            wrapMode: Label.WordWrap
+        VPNMouseArea {
         }
-
     }
 
-    Rectangle {
+    VPNFocusOutline {
+        focusColorScheme: alertColor
+        focusedComponent: closeButton
         anchors.fill: closeButton
-        anchors.margins: -3
-        border.color: alertColor.focusStroke // TODO: Figure these out
-        border.width: closeButton.activeFocus ? 4 : 0
-        color: "transparent"
-        opacity: closeButton.activeFocus ? 1 : 0
-        radius: 7
-        z: 2
+        setMargins: -3
     }
 
     VPNButtonBase {
+        // Hack to create the two right angle corners
+        // where closeButton meets alertAction
+
         id: closeButton
 
-        targetEl: backgroundRect
-        bgColor: alertColor
         height: parent.height
-        width: 40
+        width: Theme.rowHeight
         clip: true
         anchors.right: parent.right
         anchors.rightMargin: 0
+        radius: 0
         Accessible.name: "Close"
         onClicked: {
             if (alertType === "update") {
-                closeAlert.start()
+                closeAlert.start();
                 return VPN.hideUpdateRecommendedAlert();
             }
             return VPN.hideAlert();
         }
 
-        // Hack to create the two right angle corners
-        // where closeButton meets alertAction
+        VPNFocusBorder {
+            anchors.fill: closeButton
+            border.color: alertColor.focusBorder
+            opacity: closeButton.activeFocus ? 1 : 0
+            z: 1
+        }
+
         Rectangle {
             id: backgroundRect
 
@@ -117,6 +123,14 @@ Rectangle {
             anchors.left: closeButton.left
             anchors.leftMargin: -10
             radius: 4
+            color: "transparent"
+            clip: true
+            state: closeButton.state
+
+            VPNUIStates {
+                colorScheme: alertColor
+                setMargins: -3
+            }
 
             Behavior on color {
                 ColorAnimation {
@@ -136,13 +150,15 @@ Rectangle {
             anchors.centerIn: closeButton
         }
 
-    }
-
-    Behavior on color {
-        ColorAnimation {
-            duration: 200
+        VPNMouseArea {
         }
 
+    }
+
+    VPNFocusBorder {
+        anchors.fill: alertBox
+        border.color: alertColor.focusBorder
+        opacity: alertAction.activeFocus ? 1 : 0
     }
 
 }
