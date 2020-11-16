@@ -279,7 +279,8 @@ void MozillaVPN::authenticate()
 
     if (m_userAuthenticated) {
         LogoutObserver *lo = new LogoutObserver(this);
-        connect(lo, &LogoutObserver::ready, [this]() { scheduleTask(new TaskAuthenticate()); });
+        // Let's use QueuedConnection to avoid nexted tasks executions.
+        connect(lo, &LogoutObserver::ready, this, &MozillaVPN::authenticate, Qt::QueuedConnection);
         return;
     }
 
