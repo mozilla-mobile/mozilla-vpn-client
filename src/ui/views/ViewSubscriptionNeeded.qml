@@ -35,23 +35,18 @@ VPNFlickable {
     width: window.width
     flickContentHeight: footerContent.height + spacer1.height + vpnPanel.height + featureListBackground.height + (Theme.windowMargin * 4)
 
-    VPNIconButton {
-        id: iconButton
+    VPNHeaderLink {
+        id: headerLink
 
-        onClicked: stackview.pop(StackView.Immediate)
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: Theme.windowMargin / 2
-        anchors.leftMargin: Theme.windowMargin / 2
-        accessibleName: qsTrId("vpn.main.back")
+        labelText: qsTrId("vpn.main.getHelp")
+        onClicked: stackview.push(getHelpComponent)
+    }
 
-        Image {
-            id: backImage
+    Component {
+        id: getHelpComponent
 
-            source: "../resources/close-dark.svg"
-            sourceSize.width: Theme.iconSize
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: iconButton
+        VPNGetHelp {
+            isSettingsView: false
         }
 
     }

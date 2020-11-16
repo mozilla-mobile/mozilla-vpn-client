@@ -3,8 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Controls 2.15
 
-Loader {
-    id: loader
-    source: "../views/ViewSubscriptionNeeded.qml"
+StackView {
+    id: stackview
+
+    initialItem: "../views/ViewSubscriptionNeeded.qml"
 }
