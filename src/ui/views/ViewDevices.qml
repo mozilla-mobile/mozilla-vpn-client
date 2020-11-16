@@ -173,22 +173,25 @@ Item {
                     }
 
                     VPNTextBlock {
-                        //% "Current Device"
-                        //% "Added less than an hour ago"
-                        //% "Added a few hours ago (%1)"
-
                         id: deviceDesc
 
                         function deviceSubtitle() {
-                            if (currentOne)
+                            if (currentOne) {
+                                //% "Current Device"
                                 return qsTrId("vpn.devices.currentDevice");
+                            }
 
                             const diff = (Date.now() - createdAt.valueOf()) / 1000;
-                            if (diff < 3600)
+                            if (diff < 3600) {
+                                //% "Added less than an hour ago"
                                 return qsTrId("vpn.devices.addedltHour");
+                            }
 
-                            if (diff < 86400)
+                            if (diff < 86400) {
+                                //: %1 is the number of hours.
+                                //% "Added a few hours ago (%1)"
                                 return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
+                            }
 
                             //% "Added %1 days ago"
                             return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
@@ -214,7 +217,7 @@ Item {
                     Layout.preferredHeight: Theme.rowHeight
                     Layout.preferredWidth: Theme.rowHeight
                     onClicked: removePopup.initializeAndOpen(name, index)
-                    //: Label used for accessibility on the button to remove a device
+                    //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
                     //% "Remove %1"
                     accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.deviceName)
                     // Only allow focus within the current item in the list.
