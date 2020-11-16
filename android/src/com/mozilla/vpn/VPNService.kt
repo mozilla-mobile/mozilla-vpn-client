@@ -4,10 +4,22 @@
 
 package com.mozilla.vpn
 
+import android.R
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.wireguard.android.backend.*
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import com.wireguard.android.backend.Statistics
+import com.wireguard.android.backend.Tunnel
+import com.wireguard.android.backend.VpnServiceBackend
+import com.wireguard.android.backend.applyConfig
 import com.wireguard.config.Config
 import com.wireguard.crypto.Key
 import com.wireguard.crypto.KeyFormatException
@@ -95,7 +107,7 @@ class VPNService : android.net.VpnService() {
     * If the permission is given, returns true
     * Requests permission and returns false if not.
     */
-    fun checkPermissions(): Boolean{
+    fun checkPermissions(): Boolean {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
         // from the user. So we need to pass this to our main Activity and exit here.
@@ -112,15 +124,16 @@ class VPNService : android.net.VpnService() {
     fun turnOn(): Boolean {
         val tunnel = this.tunnel ?: return false
 
-       tunnel.tunnelHandle?.let {
-           this.protect(it)
-       }
+        tunnel.tunnelHandle?.let {
+            this.protect(it)
+        }
         val config = tunnel.config
         val fileDescriptor = Builder().applyConfig(config).establish()
 
         if (fileDescriptor != null) {
-                Log.v(tag, "Got file Descriptor for VPN - Try to up")
+            Log.v(tag, "Got file Descriptor for VPN - Try to up")
             backend.tunnelUp(tunnel, fileDescriptor, config.toWgUserspaceString())
+            this.startSticky()
             return true
         }
         Log.e(tag, "Failed to get a File Descriptor for VPN")
@@ -130,6 +143,46 @@ class VPNService : android.net.VpnService() {
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
         this.tunnel?.let { backend.tunnelDown(it) }
+        stopForeground(true)
+    }
+
+    val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
+    val CONNECTED_NOTIFICATION_ID = 1337
+
+    /*
+    * Creates a Sticky Notification for this
+    * Service and Calls startForeground to 
+    * make sure we cant get closed as long
+    * as we're connected
+     */
+    fun startSticky() {
+        // For Android 8+ We need to Register a Notification Channel
+        val notificationManager: NotificationManager =
+            this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "vpn"
+            val descriptionText = "  "
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            notificationManager.createNotificationChannel(channel)
+        }
+        // Create the Intent that Should be Fired if the User Clicks the notification
+        val mainActivityName = "org.qtproject.qt5.android.bindings.QtActivity";
+        val activity = Class.forName(mainActivityName);
+        val intent = Intent(this, activity)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+
+        val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(com.mozilla.vpn.R.drawable.ic_logo_on)
+            .setContentTitle("Todo: Connected Title")
+            .setContentText("Todo: you're connected")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+        startForeground(CONNECTED_NOTIFICATION_ID, builder.build())
     }
 
     /**
