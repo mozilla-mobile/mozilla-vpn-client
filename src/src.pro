@@ -215,22 +215,28 @@ else:android{
     QT += networkauth
     QT += svg
     QT += androidextras
+    QT += qml
 
     DEFINES += MVPN_ANDROID
 
-    SOURCES +=  platforms/android/androidcontroller.cpp \
-                platforms/android/androidutils.cpp
-    HEADERS +=  platforms/android/androidcontroller.h \
-                platforms/android/androidutils.h
+    INCLUDEPATH += platforms/android
 
+    SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
+                platforms/android/androidcontroller.cpp \
+                platforms/android/androidutils.cpp \
+                platforms/android/androidwebview.cpp
+    HEADERS +=  platforms/android/androidauthenticationlistener.h \
+                platforms/android/androidcontroller.h \
+                platforms/android/androidutils.h \
+                platforms/android/androidwebview.h
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsendworker.cpp \
-            tasks/authenticate/authenticationlistener.cpp\
-            platforms/linux/linuxcryptosettings.cpp
+               tasks/authenticate/authenticationlistener.cpp \
+               platforms/linux/linuxcryptosettings.cpp
 
-    HEADERS +=platforms/linux/linuxpingsendworker.h \
-            tasks/authenticate/authenticationlistener.h
+    HEADERS += platforms/linux/linuxpingsendworker.h \
+               tasks/authenticate/authenticationlistener.h
 
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
