@@ -75,6 +75,8 @@ Popup {
             }
 
             VPNInterLabel {
+                id: popupTitle
+
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
@@ -89,7 +91,7 @@ Popup {
             }
 
             VPNTextBlock {
-                id: popupTitle
+                id: popupText
 
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -99,9 +101,6 @@ Popup {
                 //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
-
-                Accessible.name: popupTitle.text
-                Accessible.role: Accessible.StaticText
             }
 
             GridLayout {
