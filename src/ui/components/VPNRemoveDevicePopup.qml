@@ -26,10 +26,13 @@ Popup {
     Accessible.role: Accessible.Dialog
     Accessible.name: popupTitle.text
 
-   onClosed: {
-       removeBtn.focus = false;
-       cancelBtn.focus = false
-   }
+    onClosed: {
+        // When closing the dialog, put the focus back on the
+        // remove button that originally triggered the dialog.
+        if (deviceList.focusedIconButton) {
+            deviceList.focusedIconButton.forceActiveFocus();
+        }
+    }
 
 
     Overlay.modal: Rectangle {
@@ -127,6 +130,8 @@ Popup {
                     onClicked: {
                         popup.close();
                     }
+                    focus: true
+                    Accessible.defaultButton: true
                 }
 
                 VPNPopupButton {
