@@ -7,89 +7,47 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
-RoundButton {
+VPNButtonBase {
     id: button
 
-    height: 40
-    Layout.preferredHeight: Layout ? 40 : undefined
-    width: Math.min(parent.width * .83, Theme.maxHorizontalContentWidth)
-    Layout.preferredWidth: Layout ? Math.min(parent.width * .83, Theme.maxHorizontalContentWidth): undefined
+    property var showLoader: false
+
+    height: Theme.rowHeight
+    Layout.preferredHeight: Layout ? Theme.rowHeight : undefined
+    width: Math.min(parent.width * 0.83, Theme.maxHorizontalContentWidth)
+    Layout.preferredWidth: Layout ? Math.min(parent.width * 0.83, Theme.maxHorizontalContentWidth) : undefined
     Layout.alignment: Layout ? Qt.AlignHCenter : undefined
-    Keys.onReturnPressed: clicked()
-    Accessible.onPressAction: clicked()
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(button)
-    state: "state-default"
-    states: [
-        State {
-            name: "state-default"
-
-            PropertyChanges {
-                target: bgColor
-                color: Theme.blueButton.defaultColor
-            }
-
-        },
-        State {
-            name: "state-hovering"
-
-            PropertyChanges {
-                target: bgColor
-                color: Theme.blueButton.buttonHovered
-            }
-
-        },
-        State {
-            name: "state-pressed"
-
-            PropertyChanges {
-                target: bgColor
-                color: Theme.blueButton.buttonPressed
-            }
-
-        }
-    ]
-
-    VPNFocus {
-        itemToFocus: button
-        anchors.margins: -4
-        radius: 6
-        focusWidth: 5
+    Component.onCompleted: {
+        state = uiState.stateDefault;
+        loaderVisible = false;
     }
 
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: button.state = "state-hovering"
-        onExited: button.state = "state-default"
-        onPressed: button.state = "state-pressed"
-        onClicked: button.clicked()
+    onClicked: if (showLoader) loader.startLoader();
+
+    VPNUIStates {
+        colorScheme: Theme.blueButton
+        setMargins: -5
     }
 
-    background: Rectangle {
-        id: bgColor
+    VPNButtonLoader {
+        id: loader
+    }
 
-        color: Theme.blueButton.defaultColor
-        radius: 4
-
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
-            }
-
-        }
-
+    VPNMouseArea {
+        hoverEnabled: loaderVisible === false
     }
 
     contentItem: Label {
         id: label
 
-        color: "#FFFFFF"
+        color: Theme.white
         text: button.text
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
+        width: button.width
         font.family: Theme.fontBoldFamily
-        font.pixelSize: 15
+        font.pixelSize: Theme.fontSize
     }
 
 }

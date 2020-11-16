@@ -64,9 +64,6 @@ Item {
                 .arg(VPNLocalizer.systemLanguage)
                 .arg(VPNLocalizer.systemLocalizedLanguage)
 
-            VPNFocus {
-                itemToFocus: systemLanguage
-            }
 
             VPNRadioSublabel {
                 text: VPNLocalizer.systemLanguage
@@ -91,7 +88,6 @@ Item {
         VPNList {
             id: additionalLanguageList
 
-            clip: true
             anchors.top: additionalLabel.bottom
             anchors.topMargin: 16
             anchors.left: parent.left

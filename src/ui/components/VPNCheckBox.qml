@@ -10,18 +10,61 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 CheckBox {
+    // TODO
+    // property var accessibleName
+
     id: checkBox
+
+    property var uiState: Theme.uiState
 
     signal clicked()
 
     height: 20
     width: 20
     Layout.alignment: Qt.AlignTop
-    state: "state-default"
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(checkBox)
+    Component.onCompleted: state = uiState.stateDefault
+    hoverEnabled: false
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            mouseArea.changeState(uiState.stateDefault);
+
+        if (activeFocus && typeof (ensureVisible) !== "undefined")
+            ensureVisible(checkBox);
+
+    }
+    Keys.onPressed: {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            mouseArea.changeState(uiState.statePressed);
+
+    }
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            mouseArea.changeState(uiState.stateDefault);
+
+    }
+    Keys.onReturnPressed: checkBox.clicked()
+    // TODO
+    // Accessible.name: accessibleName
+    Accessible.onPressAction: clicked()
+    Accessible.focusable: true
     states: [
         State {
-            name: "state-pressed"
+            name: uiState.stateDefault
+
+            PropertyChanges {
+                target: checkBoxIndicator
+                border.color: checkBox.checked || checkBox.activeFocus ? Theme.blue : Theme.fontColor
+            }
+
+            PropertyChanges {
+                target: checkmark
+                opacity: checkBox.checked ? 1 : 0
+                checkmarkColor: checkBox.checked ? Theme.blue : "#DBDBDB"
+            }
+
+        },
+        State {
+            name: uiState.statePressed
 
             PropertyChanges {
                 target: checkBoxIndicator
@@ -36,7 +79,7 @@ CheckBox {
 
         },
         State {
-            name: "state-hovering"
+            name: uiState.stateHovered
 
             PropertyChanges {
                 target: checkBoxIndicator
@@ -47,21 +90,6 @@ CheckBox {
                 target: checkmark
                 opacity: 1
                 checkmarkColor: checkBox.checked ? Theme.blueHovered : "#DBDBDB"
-            }
-
-        },
-        State {
-            name: "state-default"
-
-            PropertyChanges {
-                target: checkBoxIndicator
-                border.color: checkBox.checked ? Theme.blue : Theme.fontColor
-            }
-
-            PropertyChanges {
-                target: checkmark
-                opacity: checkBox.checked ? 1 : 0
-                checkmarkColor: checkBox.checked ? Theme.blue : "#DBDBDB"
             }
 
         }
@@ -115,30 +143,15 @@ CheckBox {
 
         Behavior on opacity {
             PropertyAnimation {
-                duration: 200
+                duration: 100
             }
 
         }
 
     }
 
-    MouseArea {
-        id: checkBoxMouseArea
-
-        hoverEnabled: true
-        height: 20
-        width: 20
-        propagateComposedEvents: true
-        onEntered: checkBox.state = "state-hovering"
-        onExited: checkBox.state = "state-default"
-        onReleased: if (checkBox.checked) {
-            return checkBox.state = "state-default";
-        }
-        onPressed: checkBox.state = "state-pressed"
-        onClicked: {
-            checkBox.clicked();
-            mouse.accepted = false;
-        }
+    VPNMouseArea {
+        id: mouseArea
     }
 
     indicator: Rectangle {
@@ -146,15 +159,22 @@ CheckBox {
 
         height: 20
         width: 20
-        color: "transparent"
+        color: Theme.bgColor
         border.color: Theme.fontColor
         border.width: 2
         radius: 4
         antialiasing: true
+        state: checkBox.state
+
+        VPNUIStates {
+            itemToFocus: checkBox
+            colorScheme: Theme.blueButton
+            visible: isEnabled
+        }
 
         Behavior on border.color {
             PropertyAnimation {
-                duration: 200
+                duration: 100
             }
 
         }

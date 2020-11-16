@@ -12,7 +12,7 @@ import "../themes/themes.js" as Theme
 VPNClickableRow {
     property alias title: title.text
 
-    backgroundColor: Theme.externalLinkRow
+    backgroundColor: Theme.clickableRowBlue
 
     RowLayout {
         anchors.fill: parent
