@@ -51,6 +51,10 @@ AndroidController::AndroidController() : m_binder(this) {
     Q_ASSERT(s_instance == nullptr);
     s_instance = this;
 }
+AndroidController::~AndroidController(){
+    s_instance = nullptr;
+}
+
 AndroidController* AndroidController::Instance() {
    return s_instance;
 }

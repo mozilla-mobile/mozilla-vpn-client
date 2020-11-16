@@ -12,9 +12,10 @@
 
 class AndroidController : public ControllerImpl, public QAndroidServiceConnection
 {
-public:  
+public:
     AndroidController();
     static AndroidController* Instance();
+    ~AndroidController();
 
     // from ControllerImpl
     void initialize(const Device *device, const Keys *keys) override;
