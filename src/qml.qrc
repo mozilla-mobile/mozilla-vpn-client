@@ -341,7 +341,6 @@
         <file>ui/resources/onboarding/onboarding2.svg</file>
         <file>ui/resources/fonts/InterUI.otf</file>
         <file>ui/resources/fonts/Metropolis.otf</file>
-        <file>ui/resources/fonts/Metropolis-ExtraBold.otf</file>
         <file>ui/resources/fonts/Metropolis-SemiBold.otf</file>
         <file>ui/resources/onboarding/onboardingCopy.js</file>
         <file>ui/resources/spinner.svg</file>
@@ -389,5 +388,6 @@
         <file>ui/components/VPNFocusBorder.qml</file>
         <file>ui/resources/buttonLoader.svg</file>
         <file>ui/components/VPNButtonLoader.qml</file>
+        <file>ui/resources/quick-access.svg</file>
     </qresource>
 </RCC>
