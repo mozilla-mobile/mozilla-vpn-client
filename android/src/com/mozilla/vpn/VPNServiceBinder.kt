@@ -29,7 +29,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val registerEventListener = 3
         const val requestStatistic = 4
         const val requestLog = 5
-        const val resumeActivate =6;
+        const val resumeActivate = 6;
     }
 
     /**
