@@ -13,6 +13,7 @@ Item {
     property alias rightTitle: rightTitle.text
     property bool isSettingsView: false
     property bool isMainView: false
+    readonly property bool accessibleIgnored: root.isModalDialogOpened
 
     width: parent.width
     height: 56
@@ -39,6 +40,7 @@ Item {
         //% "Back"
         //: Go back
         accessibleName: qsTrId("vpn.main.back")
+        Accessible.ignored: accessibleIgnored
 
         Image {
             id: backImage
@@ -56,6 +58,7 @@ Item {
 
         anchors.top: menuBar.top
         anchors.centerIn: menuBar
+        Accessible.ignored: accessibleIgnored
     }
 
     VPNLightLabel {
@@ -64,6 +67,7 @@ Item {
         anchors.verticalCenter: menuBar.verticalCenter
         anchors.right: menuBar.right
         anchors.rightMargin: Theme.windowMargin
+        Accessible.ignored: accessibleIgnored
     }
 
     Rectangle {
