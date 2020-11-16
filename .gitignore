@@ -30,6 +30,7 @@ translations/*.pri
 android/.gradle/
 android/.idea/
 android/build
+android/local.properties
 xcode.xconfig
 .gradle/
 android/build
