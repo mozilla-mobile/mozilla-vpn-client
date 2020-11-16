@@ -9,7 +9,7 @@ Rectangle {
     id: loader
     anchors.fill: parent
     anchors.margins: -1
-    radius: parent.radius
+    radius: Theme.cornerRadius
     opacity: 0
     color: "#98bff2"
 
@@ -41,7 +41,7 @@ Rectangle {
             target: loader
             property: "opacity"
             from: 0
-            to: .95
+            to: 1
             duration: 200
             easing.type: Easing.OutCurve
         }
