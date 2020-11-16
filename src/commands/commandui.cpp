@@ -35,6 +35,11 @@
 #include "inspector/inspectorserver.h"
 #endif
 
+#ifdef MVPN_ANDROID
+#include "platforms/android/androidutils.h"
+#include "platforms/android/androidwebview.h"
+#endif
+
 #include <QApplication>
 #include <QWindow>
 
@@ -215,6 +220,17 @@ int CommandUI::run(QStringList &tokens)
                 return obj;
             });
 
+#ifdef MVPN_ANDROID
+        qmlRegisterSingletonType<MozillaVPN>(
+            "Mozilla.VPN", 1, 0, "VPNAndroidUtils", [](QQmlEngine *, QJSEngine *) -> QObject * {
+                QObject *obj = AndroidUtils::instance();
+                QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+                return obj;
+            });
+
+        qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
+#endif
+
         QObject::connect(SettingsHolder::instance(),
                          &SettingsHolder::languageCodeChanged,
                          [](const QString &languageCode) {
@@ -232,7 +248,7 @@ int CommandUI::run(QStringList &tokens)
         // Here is the main QML file.
         const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
         QObject::connect(
-            QmlEngineHolder::instance()->engine(),
+            engine,
             &QQmlApplicationEngine::objectCreated,
             qApp,
             [url](QObject *obj, const QUrl &objUrl) {

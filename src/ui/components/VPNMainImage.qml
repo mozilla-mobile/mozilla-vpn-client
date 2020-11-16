@@ -273,6 +273,10 @@ Rectangle {
         antialiasing: true
         smooth: true
         onPaint: {
+            if (!context) {
+                return;
+            }
+
             context.reset();
             // background fill
             let gradient = context.createRadialGradient(90, 0, 21, 90, 0, 100);

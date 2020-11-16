@@ -5,6 +5,10 @@
 #include "authenticationlistener.h"
 #include "logger.h"
 
+#ifdef MVPN_ANDROID
+#include "platforms/android/androidauthenticationlistener.h"
+#endif
+
 #include <limits>
 #include <QDesktopServices>
 #include <QOAuthHttpServerReplyHandler>
@@ -34,6 +38,16 @@ int choosePort(QVector<quint16> triedPorts)
 }
 
 } // anonymous namespace
+
+// static
+AuthenticationListener *AuthenticationListener::create(QObject *parent)
+{
+#ifdef MVPN_ANDROID
+    return new AndroidAuthenticationListener(parent);
+#else
+    return new AuthenticationListener(parent);
+#endif
+}
 
 AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent)
 {
