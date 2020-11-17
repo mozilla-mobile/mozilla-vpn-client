@@ -39,24 +39,26 @@ const int EVENT_DISCONNECTED = 2;
 const int EVENT_STATISTIC_UPDATE = 3;
 const int EVENT_BACKEND_LOGS = 4;
 
-
-
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
-AndroidController* s_instance = nullptr;
+AndroidController *s_instance = nullptr;
 
-}
+} // namespace
 
-AndroidController::AndroidController() : m_binder(this) {
-    Q_ASSERT(s_instance == nullptr);
+AndroidController::AndroidController() : m_binder(this)
+{
+    Q_ASSERT(!s_instance);
     s_instance = this;
 }
-AndroidController::~AndroidController(){
+AndroidController::~AndroidController()
+{
+    Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }
 
-AndroidController* AndroidController::Instance() {
-   return s_instance;
+AndroidController *AndroidController::instance()
+{
+    return s_instance;
 }
 
 void AndroidController::initialize(const Device *device, const Keys *keys)
@@ -133,9 +135,10 @@ void AndroidController::activate(const Server &server,
 }
 // Activates the tunnel that is currently set
 // in the VPN Service
-void AndroidController::resume_activate(){
+void AndroidController::resume_activate()
+{
     QAndroidParcel nullData;
-    m_serviceBinder.transact(ACTION_RESUME_ACTIVATE,nullData, nullptr);
+    m_serviceBinder.transact(ACTION_RESUME_ACTIVATE, nullData, nullptr);
 }
 
 void AndroidController::deactivate(bool forSwitching)
@@ -254,24 +257,27 @@ void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jo
 {
     logger.log() << "start activity";
     Q_UNUSED(env);
-    QtAndroid::startActivity(intent, 1337, [](int receiverRequestCode, int resultCode, const QAndroidJniObject &data) {
-        // Currently this function just used in VPNService.kt::checkPersmissions.
-        // So the result we're getting is if the User gave us the Vpn.bind permission.
-        // In case of NO we should abort.
-        Q_UNUSED(receiverRequestCode);
-        Q_UNUSED(data);
+    QtAndroid::startActivity(
+        intent, 1337, [](int receiverRequestCode, int resultCode, const QAndroidJniObject &data) {
+            // Currently this function just used in VPNService.kt::checkPersmissions.
+            // So the result we're getting is if the User gave us the Vpn.bind permission.
+            // In case of NO we should abort.
+            Q_UNUSED(receiverRequestCode);
+            Q_UNUSED(data);
 
-        AndroidController* controller = AndroidController::Instance();
-        Q_ASSERT(controller);
-        if(resultCode == ACTIVITY_RESULT_OK){
-            logger.log() << "VPN PROMPT RESULT - Accepted";
-            controller->resume_activate();
-            return;
-        }
-        // If the request got rejected abort the current connection.
-       logger.log() << "VPN PROMPT RESULT - Rejected";
-       emit controller->disconnected();
+            AndroidController *controller = AndroidController::instance();
+            if (!controller) {
+                return;
+            }
 
-    });
+            if (resultCode == ACTIVITY_RESULT_OK) {
+                logger.log() << "VPN PROMPT RESULT - Accepted";
+                controller->resume_activate();
+                return;
+            }
+            // If the request got rejected abort the current connection.
+            logger.log() << "VPN PROMPT RESULT - Rejected";
+            emit controller->disconnected();
+        });
     return;
 }

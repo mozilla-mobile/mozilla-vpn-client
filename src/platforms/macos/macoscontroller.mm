@@ -24,6 +24,19 @@ MacOSControllerImpl *impl = nullptr;
 
 } // namespace
 
+MacOSController::MacOSController()
+{
+    Q_ASSERT(!impl);
+}
+
+MacOSController::~MacOSController()
+{
+    if (impl) {
+        [impl dealloc];
+        impl = nullptr;
+    }
+}
+
 void MacOSController::initialize(const Device *device, const Keys *keys) {
     Q_ASSERT(!impl);
 
