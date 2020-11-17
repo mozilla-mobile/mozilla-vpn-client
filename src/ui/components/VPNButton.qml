@@ -10,8 +10,6 @@ import "../themes/themes.js" as Theme
 VPNButtonBase {
     id: button
 
-    property var showLoader: false
-
     height: Theme.rowHeight
     Layout.preferredHeight: Layout ? Theme.rowHeight : undefined
     width: Math.min(parent.width * 0.83, Theme.maxHorizontalContentWidth)
@@ -19,10 +17,7 @@ VPNButtonBase {
     Layout.alignment: Layout ? Qt.AlignHCenter : undefined
     Component.onCompleted: {
         state = uiState.stateDefault;
-        loaderVisible = false;
     }
-
-    onClicked: if (showLoader) loader.startLoader();
 
     VPNUIStates {
         colorScheme: Theme.blueButton
@@ -31,6 +26,7 @@ VPNButtonBase {
 
     VPNButtonLoader {
         id: loader
+        state: loaderVisible ? "active" : "inactive"
     }
 
     VPNMouseArea {

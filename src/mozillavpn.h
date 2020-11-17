@@ -79,6 +79,7 @@ private:
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
     Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
+    Q_PROPERTY(bool subscriptionActive READ subscriptionActive NOTIFY subscriptionActiveChanged)
 
 public:
     MozillaVPN();
@@ -157,6 +158,8 @@ public:
 
     bool startOnBootSupported() const;
 
+    bool subscriptionActive() const { return m_subscriptionActive; }
+
     void setStartMinimized(bool startMinimized) { m_startMinimized = startMinimized; }
 
     void setToken(const QString &token);
@@ -212,10 +215,10 @@ signals:
     void settingsNeeded();
     void aboutNeeded();
     void viewLogsNeeded();
+    void subscriptionActiveChanged();
 
-#ifdef MVPN_ANDROID
+    // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine complains...
     void loadAndroidAuthenticationView();
-#endif
 
 private:
     bool m_initialized = false;
@@ -254,6 +257,7 @@ private:
     bool m_updateRecommended = false;
     bool m_userAuthenticated = false;
     bool m_startMinimized = false;
+    bool m_subscriptionActive = false;
 
 #ifdef UNIT_TEST
    friend class TestTasks;
