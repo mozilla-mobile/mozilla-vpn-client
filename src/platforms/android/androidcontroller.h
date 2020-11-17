@@ -14,7 +14,7 @@ class AndroidController : public ControllerImpl, public QAndroidServiceConnectio
 {
 public:
     AndroidController();
-    static AndroidController* Instance();
+    static AndroidController *instance();
     ~AndroidController();
 
     // from ControllerImpl
