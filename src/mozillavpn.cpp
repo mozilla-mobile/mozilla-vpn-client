@@ -767,16 +767,29 @@ void MozillaVPN::restoreSubscription()
 #ifdef MVPN_IOS
 void MozillaVPN::startIAP(bool restore)
 {
+    m_subscriptionActive = true;
+    emit subscriptionActiveChanged();
+
     IAPHandler *iap = new IAPHandler(this);
 
     connect(iap, &IAPHandler::completed, [this, iap]() {
         logger.log() << "Subscription completed";
         completeActivation();
+
+        Q_ASSERT(m_subscriptionActive);
+        m_subscriptionActive = false;
+        emit subscriptionActiveChanged();
+
         iap->deleteLater();
     });
 
-    connect(iap, &IAPHandler::failed, [iap] {
+    connect(iap, &IAPHandler::failed, [this, iap] {
         logger.log() << "Subscription failed";
+
+        Q_ASSERT(m_subscriptionActive);
+        m_subscriptionActive = false;
+        emit subscriptionActiveChanged();
+
         iap->deleteLater();
     });
 
