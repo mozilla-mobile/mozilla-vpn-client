@@ -12,6 +12,12 @@ VPNButtonBase {
     id: toggleButton
 
     property var toggleColor: Theme.vpnToggleDisconnected
+    property var describedBy: logoTitle.text
+    property var labelledBy: logoSubtitle.text
+    property var toolTipTitle: ""
+
+
+    Accessible.name: VPNController.state === VPNController.StateOn ? describedBy + ". " + toolTipTitle : describedBy + ". " + labelledBy + "."
 
     function handleClick() {
         if (VPNController.state !== VPNController.StateOff)
@@ -66,10 +72,7 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN on"
-                Accessible.name: qsTrId("vpn.toggle.on")
-                //% "VPN is off"
-                Accessible.description: qsTrId("vpn.toggle.isOff")
-                toggleColor: Theme.vpnToggleDisconnected
+                toolTipTitle: qsTrId("vpn.toggle.on")
             }
 
         },
@@ -91,9 +94,7 @@ VPNButtonBase {
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN off"
-                Accessible.name: qsTrId("vpn.toggle.off")
-                //% "VPN is on"
-                Accessible.description: qsTrId("vpn.toggle.isOn")
+                toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: Theme.vpnToggleConnected
             }
 
@@ -114,7 +115,7 @@ VPNButtonBase {
 
             PropertyChanges {
                 target: toggleButton
-                Accessible.name: "Disconnect"
+                toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: Theme.vpnToggleConnected
             }
 
@@ -287,6 +288,10 @@ VPNButtonBase {
         hoverEnabled: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff)
         cursorShape: Qt.PointingHandCursor
         onClicked: handleClick()
+    }
+
+    VPNToolTip {
+        text: toolTipTitle
     }
 
     background: Rectangle {
