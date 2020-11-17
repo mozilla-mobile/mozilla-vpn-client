@@ -169,4 +169,6 @@ QString MozillaVPN::retrieveLogs()
     return "LOGS!";
 }
 
+void MozillaVPN::storeInClipboard(const QString &) {}
+
 bool MozillaVPN::startOnBootSupported() const { return false; }

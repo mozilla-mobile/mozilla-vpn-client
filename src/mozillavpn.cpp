@@ -26,6 +26,7 @@
 #endif
 
 #include <QApplication>
+#include <QClipboard>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
@@ -911,6 +912,12 @@ QString MozillaVPN::retrieveLogs()
     }
 
     return logs;
+}
+
+void MozillaVPN::storeInClipboard(const QString &text)
+{
+    logger.log() << "Store in clipboard";
+    QApplication::clipboard()->setText(text);
 }
 
 bool MozillaVPN::modelsInitialized() const
