@@ -280,11 +280,19 @@ void MozillaVPN::authenticate()
 
     if (m_userAuthenticated) {
         LogoutObserver *lo = new LogoutObserver(this);
-        connect(lo, &LogoutObserver::ready, [this]() { scheduleTask(new TaskAuthenticate()); });
+        // Let's use QueuedConnection to avoid nexted tasks executions.
+        connect(lo, &LogoutObserver::ready, this, &MozillaVPN::authenticate, Qt::QueuedConnection);
         return;
     }
 
     scheduleTask(new TaskAuthenticate());
+}
+
+void MozillaVPN::abortAuthentication()
+{
+    logger.log() << "Abort authentication";
+    Q_ASSERT(m_state == StateAuthenticating);
+    setState(StateInitialize);
 }
 
 void MozillaVPN::openLink(LinkType linkType)
@@ -942,4 +950,13 @@ void MozillaVPN::requestViewLogs()
 
     QmlEngineHolder::instance()->showWindow();
     emit viewLogsNeeded();
+}
+
+bool MozillaVPN::startOnBootSupported() const
+{
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS)
+    return true;
+#else
+    return false;
+#endif
 }

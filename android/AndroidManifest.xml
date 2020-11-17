@@ -8,7 +8,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
          Remove the comment if you do not require these default permissions. -->
     <!-- %%INSERT_PERMISSIONS -->
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
          Remove the comment if you do not require these default features. -->
     <!-- %%INSERT_FEATURES -->
@@ -26,6 +26,8 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             android:name="org.qtproject.qt5.android.bindings.QtActivity"
             android:label="Mozilla VPN"
             android:screenOrientation="unspecified"
+            android:theme="@style/splashScreenTheme"
+            android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,7 +97,8 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             <!-- extract android style -->
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
-        <service android:name=".VPNService" android:permission="android.permission.BIND_VPN_SERVICE">
+        <service android:name=".VPNService"
+            android:permission="android.permission.BIND_VPN_SERVICE">
             <intent-filter>
                 <action android:name="android.net.VpnService"/>
             </intent-filter>

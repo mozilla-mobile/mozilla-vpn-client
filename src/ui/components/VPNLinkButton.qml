@@ -12,24 +12,36 @@ RoundButton {
 
     required property var labelText
     property variant fontName: Theme.fontInterFamily
+    property var uiState:Theme.uiState
     property var linkColor: Theme.blueButton
 
     signal clicked()
 
     radius: 4
-    state: "state-default"
     focusPolicy: Qt.StrongFocus
     onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
     horizontalPadding: Theme.hSpacing
 
+    Keys.onPressed: {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            state = uiState.statePressed;
+    }
 
-    Keys.onSpacePressed: clicked()
-    Keys.onReturnPressed: clicked()
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            root.clicked();
+            state = uiState.stateDefault;
+    }
+
+
     Accessible.name: labelText
     Accessible.onPressAction: clicked()
+
+    Component.onCompleted: state = uiState.stateDefault;
+
     states: [
         State {
-            name: "state-hovering"
+            name: uiState.stateHovered
 
             PropertyChanges {
                 target: label
@@ -38,7 +50,7 @@ RoundButton {
 
         },
         State {
-            name: "state-pressed"
+            name: uiState.statePressed
 
             PropertyChanges {
                 target: label
@@ -47,7 +59,7 @@ RoundButton {
 
         },
         State {
-            name: "state-default"
+            name: uiState.stateDefault
 
             PropertyChanges {
                 target: label
@@ -57,30 +69,18 @@ RoundButton {
         }
     ]
 
+    VPNMouseArea {
+
+    }
+
+    VPNUIStates {
+        itemToFocus: root
+    }
+
 
     background: Rectangle {
         id: backgroundRect
-
-        color: Theme.bgColor
-        radius: 4
-
-        MouseArea {
-            id: mouseArea
-
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: root.state = "state-hovering"
-            onExited: root.state = "state-default"
-            onPressed: root.state = "state-pressed"
-            onClicked: root.clicked()
-            cursorShape: "PointingHandCursor"
-        }
-
-        VPNFocus {
-            itemToFocus: root
-            itemToAnchor: backgroundRect
-        }
-
+        color: "transparent"
     }
 
     contentItem: Label {

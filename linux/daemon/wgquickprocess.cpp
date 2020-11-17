@@ -66,13 +66,13 @@ void WgQuickProcess::run(const QString &privateKey,
 
     content.append(QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
-    if (!tmpDir.isValid()) {
+    if (!m_tmpDir.isValid()) {
         qWarning("Cannot create a temporary directory");
         emit failed();
         return;
     }
 
-    QDir dir(tmpDir.path());
+    QDir dir(m_tmpDir.path());
     QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
     if (!file.open(QIODevice::ReadWrite)) {
         qWarning("Unable to create a file in the temporary folder");

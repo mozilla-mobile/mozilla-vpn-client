@@ -19,7 +19,7 @@ Label {
 
         PropertyChanges {
             target: radioButtonLabel
-            color: Theme.buttonColor
+            color: Theme.blue
         }
 
     }

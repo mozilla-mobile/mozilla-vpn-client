@@ -17,6 +17,10 @@ class Server;
 class QDateTime;
 class IPAddressRange;
 
+// This object is allocated when the VPN is about to be activated.
+// It's kept alive, basically forever, except in these scenarios, in which it's recreated:
+// - the user does a logout
+// - there is an authentication falure
 class ControllerImpl : public QObject
 {
     Q_OBJECT

@@ -10,11 +10,13 @@ LogoutObserver::LogoutObserver(QObject *parent) : QObject(parent)
     MozillaVPN *vpn = MozillaVPN::instance();
     Q_ASSERT(vpn->userAuthenticated());
 
-    connect(vpn, &MozillaVPN::userAuthenticationChanged, [this]() {
+    connect(vpn, &MozillaVPN::userAuthenticationChanged, this, &LogoutObserver::userAuthenticationChanged);
+}
+
+void LogoutObserver::userAuthenticationChanged() {
         MozillaVPN *vpn = MozillaVPN::instance();
         if (!vpn->userAuthenticated()) {
             emit ready();
             deleteLater();
         }
-    });
 }

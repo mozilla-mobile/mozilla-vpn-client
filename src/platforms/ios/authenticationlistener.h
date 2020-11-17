@@ -19,14 +19,19 @@ class AuthenticationListener final : public QObject
     Q_OBJECT
 
 public:
-    explicit AuthenticationListener(QObject *parent) : QObject(parent) {}
+    static AuthenticationListener *create(QObject *parent);
 
     void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query);
+
+private:
+    explicit AuthenticationListener(QObject *parent);
 
 signals:
     void completed(const QString &code);
 
     void failed(ErrorHandler::ErrorType error);
+
+    void abortedByUser();
 
 private:
     QOAuthHttpServerReplyHandler *m_server = nullptr;

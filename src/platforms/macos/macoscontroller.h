@@ -10,6 +10,9 @@
 class MacOSController final : public ControllerImpl
 {
 public:
+    MacOSController();
+    ~MacOSController();
+
     void initialize(const Device *device, const Keys *keys) override;
 
     void activate(const Server &data,

@@ -28,12 +28,21 @@ Window {
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {
-        if(!fullscreenRequired()){
-            // Caling window.hide() on mobile 
-            // would leave the app in a limbo state
-             window.hide()
+        console.log("Closing request handling");
+
+        // No desktop, we go in background mode.
+        if (!fullscreenRequired()) {
+            close.accepted = false;
+            window.hide();
+            return;
         }
-        close.accepted = false;
+
+        if (VPNCloseEventHandler.eventHandled()) {
+            close.accepted = false;
+            return;
+        }
+
+        console.log("closing.");
     }
     Component.onCompleted: {
         if (VPN.startMinimized)
@@ -41,7 +50,7 @@ Window {
 
     }
 
-    StackView {
+    VPNStackView {
         id: mainStackView
 
         initialItem: mainView
@@ -139,6 +148,14 @@ Window {
             } else {
                 mainStackView.push("views/ViewLogs.qml");
             }
+        }
+
+        function onLoadAndroidAuthenticationView() {
+            if (Qt.platform.os !== "android") {
+                console.log("Unexpected android authentication view request!");
+            }
+
+            mainStackView.push("../platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
     }
 
