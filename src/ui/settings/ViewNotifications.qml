@@ -7,11 +7,14 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../components"
+import "../themes/themes.js" as Theme
 
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: vpnFlickable.childrenRect.height
+    flickContentHeight: columnLayout.height + menu.height
+    width: window.width
+
     VPNMenu {
         id: menu
 
@@ -21,8 +24,9 @@ VPNFlickable {
     }
 
     ColumnLayout {
+        id: columnLayout
         anchors.top: menu.bottom
-        Layout.preferredWidth: parent.width
+        width: vpnFlickable.width - Theme.windowMargin
         spacing: 0
 
         /* TODO
