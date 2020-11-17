@@ -25,13 +25,30 @@ Item {
     }
 
     ScrollView {
-        height: parent.height - menu.height
+        id: logScrollView
+
+        height: parent.height - menu.height - copyLogs.height
         width: parent.width
         anchors.top: menu.bottom
 
         VPNTextBlock {
+            id: logText
+
             text: VPN.retrieveLogs()
         }
+    }
+
+    VPNButton {
+        id: copyLogs
+
+        width: parent.width
+        anchors.top: logScrollView.bottom
+
+        //% "Copy"
+        //: Copy into the OS clipboard
+        text: qsTrId("vpn.viewLogs.copy")
+        radius: 4
+        onClicked: VPN.storeInClipboard(logText.text)
     }
 
     Component.onCompleted: VPNCloseEventHandler.addView(logs)
@@ -44,5 +61,4 @@ Item {
             }
         }
     }
-
 }

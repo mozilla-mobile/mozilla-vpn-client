@@ -103,6 +103,7 @@ public:
     Q_INVOKABLE void restoreSubscription();
     Q_INVOKABLE void viewLogs();
     Q_INVOKABLE QString retrieveLogs();
+    Q_INVOKABLE void storeInClipboard(const QString &text);
 
     // Internal object getters:
     CaptivePortal *captivePortal() { return &m_private->m_captivePortal; }
