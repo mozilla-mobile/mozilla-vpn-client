@@ -121,6 +121,8 @@ VPNFlickable {
         anchors.rightMargin: Theme.hSpacing
         width: parent.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
+
+        visible: VPN.startOnBootSupported
     }
 
     Component {
@@ -145,7 +147,7 @@ VPNFlickable {
 
         height: parent.height - y
         width: parent.width
-        y: startAtBootCheckBox.y + startAtBootCheckBox.height + Theme.vSpacing
+        y: Theme.vSpacing + (VPN.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
         spacing: Theme.listSpacing
         //% "Settings"
         listName: qsTrId("vpn.main.settings")
