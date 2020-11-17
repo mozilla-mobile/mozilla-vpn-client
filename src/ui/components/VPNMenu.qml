@@ -13,7 +13,7 @@ Item {
     property alias rightTitle: rightTitle.text
     property bool isSettingsView: false
     property bool isMainView: false
-    readonly property bool accessibleIgnored: root.isModalDialogOpened
+    property bool accessibleIgnored: false
 
     width: parent.width
     height: 56
