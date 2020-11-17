@@ -78,6 +78,7 @@ private:
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
+    Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
 
 public:
     MozillaVPN();
@@ -152,6 +153,8 @@ public:
     bool userAuthenticated() const { return m_userAuthenticated; }
 
     bool startMinimized() const { return m_startMinimized; }
+
+    bool startOnBootSupported() const;
 
     void setStartMinimized(bool startMinimized) { m_startMinimized = startMinimized; }
 

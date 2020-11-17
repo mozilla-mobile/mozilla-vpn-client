@@ -944,3 +944,12 @@ void MozillaVPN::requestViewLogs()
     QmlEngineHolder::instance()->showWindow();
     emit viewLogsNeeded();
 }
+
+bool MozillaVPN::startOnBootSupported() const
+{
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS)
+    return true;
+#else
+    return false;
+#endif
+}
