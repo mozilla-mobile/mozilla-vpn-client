@@ -31,6 +31,8 @@ public:
 
     void checkStatus() override;
 
+    void enableStartAtBoot(bool enabled);
+
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
     // from QAndroidServiceConnection

@@ -31,6 +31,7 @@ const int ACTION_REGISTERLISTENER = 3;
 const int ACTION_REQUEST_STATISTIC = 4;
 const int ACTION_REQUEST_LOG = 5;
 const int ACTION_RESUME_ACTIVATE = 6;
+const int ACTION_ENABLE_START_ON_BOOT=7;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -83,6 +84,12 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
                                           "com.mozilla.vpn.VPNService"),
                            *this,
                            QtAndroid::BindFlag::AutoCreate);
+}
+
+void AndroidController::enableStartAtBoot(bool enabled){
+    QAndroidParcel data;
+    data.writeVariant(enabled);
+    m_serviceBinder.transact(ACTION_ENABLE_START_ON_BOOT, data, nullptr);
 }
 
 void AndroidController::activate(const Server &server,

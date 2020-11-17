@@ -26,6 +26,10 @@
 #include "platforms/ios/taskiosproducts.h"
 #endif
 
+#ifdef MVPN_ANDROID
+#include "platforms/android/androidutils.h"
+#endif
+
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
@@ -980,6 +984,8 @@ bool MozillaVPN::startOnBootSupported() const
 {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS)
     return true;
+#elif defined (MVPN_ANDROID)
+    return AndroidUtils::CanEnableStartOnBoot();
 #else
     return false;
 #endif
