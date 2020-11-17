@@ -13,6 +13,8 @@ import "../themes/themes.js" as Theme
 Item {
     id: root
 
+    property var isModalDialogOpened: false
+
     height: window.height
     width: window.width
 
@@ -87,6 +89,7 @@ Item {
                 }
             }
             listName: menu.title
+            Accessible.ignored: root.isModalDialogOpened
 
             highlight: Rectangle {
                 color: Theme.greyHovered
@@ -129,6 +132,7 @@ Item {
                 //: Example: "deviceName deviceDescription"
                 Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
                 Accessible.role: Accessible.ListItem
+                Accessible.ignored: root.isModalDialogOpened
                 width: deviceList.width
 
                 Connections {
@@ -170,6 +174,7 @@ Item {
                         horizontalAlignment: Text.AlignLeft
                         Layout.preferredWidth: deviceInfo.Layout.preferredWidth - Theme.windowMargin / 2
                         Layout.fillWidth: true
+                        Accessible.ignored: root.isModalDialogOpened
                     }
 
                     VPNTextBlock {
@@ -200,6 +205,7 @@ Item {
                         text: deviceSubtitle()
                         width: parent.width
                         color: currentOne ? Theme.blue : Theme.fontColor
+                        Accessible.ignored: root.isModalDialogOpened
                     }
 
                 }
@@ -228,6 +234,7 @@ Item {
                             deviceList.focusedIconButton = this;
 
                     }
+                    Accessible.ignored: root.isModalDialogOpened
 
                     VPNIcon {
                         source: iconButton.iconSource
