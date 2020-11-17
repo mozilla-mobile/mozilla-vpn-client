@@ -16,4 +16,7 @@ Text {
     lineHeight: 21
     width: Theme.maxTextWidth
     wrapMode: Text.Wrap
+
+    Accessible.role: Accessible.StaticText
+    Accessible.name: text
 }

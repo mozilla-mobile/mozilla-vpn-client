@@ -26,10 +26,18 @@ Popup {
     Accessible.role: Accessible.Dialog
     Accessible.name: popupTitle.text
 
-   onClosed: {
-       removeBtn.focus = false;
-       cancelBtn.focus = false
-   }
+    onOpened: {
+        root.isModalDialogOpened = true;
+    }
+
+    onClosed: {
+        root.isModalDialogOpened = false;
+        // When closing the dialog, put the focus back on the
+        // remove button that originally triggered the dialog.
+        if (deviceList.focusedIconButton) {
+            deviceList.focusedIconButton.forceActiveFocus();
+        }
+    }
 
 
     Overlay.modal: Rectangle {
@@ -75,6 +83,8 @@ Popup {
             }
 
             VPNInterLabel {
+                id: popupTitle
+
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
@@ -89,7 +99,7 @@ Popup {
             }
 
             VPNTextBlock {
-                id: popupTitle
+                id: popupText
 
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -99,9 +109,6 @@ Popup {
                 //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
-
-                Accessible.name: popupTitle.text
-                Accessible.role: Accessible.StaticText
             }
 
             GridLayout {
@@ -128,6 +135,8 @@ Popup {
                     onClicked: {
                         popup.close();
                     }
+                    focus: true
+                    Accessible.defaultButton: true
                 }
 
                 VPNPopupButton {
