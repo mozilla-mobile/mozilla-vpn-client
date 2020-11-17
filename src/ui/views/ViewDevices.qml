@@ -13,7 +13,7 @@ import "../themes/themes.js" as Theme
 Item {
     id: root
 
-    property var isModalDialogOpened: false
+    property var isModalDialogOpened: removePopup.visible
 
     height: window.height
     width: window.width
@@ -23,6 +23,7 @@ Item {
 
         //% "My devices"
         title: qsTrId("vpn.devices.myDevices")
+        accessibleIgnored: isModalDialogOpened
     }
 
     VPNFlickable {
@@ -125,7 +126,6 @@ Item {
                 id: deviceRow
 
                 property var deviceName: name
-                property var buttonIsActive: false
 
                 spacing: 0
                 //% "%1 %2"
