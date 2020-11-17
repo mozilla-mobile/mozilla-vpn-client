@@ -63,6 +63,7 @@ Item {
             text: qsTrId("vpn.main.productDescription")
             anchors.top: mozillaLabel.bottom
             anchors.topMargin: 8
+            width: aboutUsCopy.width
         }
 
         VPNBoldLabel {

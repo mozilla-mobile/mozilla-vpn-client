@@ -16,17 +16,26 @@ RowLayout {
     Layout.rightMargin: Theme.windowMargin
     spacing: 0
 
-    VPNIcon {
-        id: warningIcon
-
-        source: "../resources/warning.svg"
-        sourceSize.height: 14
-        sourceSize.width: 14
+    Rectangle {
+        color: "transparent"
+        Layout.preferredHeight: message.lineHeight
+        Layout.maximumHeight: message.lineHeight
+        Layout.preferredWidth: 14
         Layout.rightMargin: 8
         Layout.leftMargin: 4
+        Layout.alignment: Qt.AlignTop
+        VPNIcon {
+            id: warningIcon
+
+            source: "../resources/warning.svg"
+            sourceSize.height: 14
+            sourceSize.width: 14
+            Layout.alignment: Qt.AlignVCenter
+        }
     }
 
     VPNTextBlock {
+        id: message
         //% "VPN must be off before enabling"
         //: Associated to a setting that requires the VPN to be disconnected to change state
         readonly property var textAlertEnabled: qsTrId("vpn.turnOffAlert.enabling")
@@ -36,8 +45,7 @@ RowLayout {
 
         text: VPNSettings.localNetwork ? textAlertEnabled : textAlertDisabled
         color: Theme.red
-        width: parent.width - warningIcon.sourceSize.width - warningIcon.leftMargin - warningIcon.rightMargin
-        Layout.topMargin: 6
+        Layout.fillWidth: true
     }
 
 }
