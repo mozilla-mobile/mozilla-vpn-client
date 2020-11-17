@@ -47,10 +47,7 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        showLoader: true
-        onClicked: {
-            VPN.authenticate();
-        }
+        onClicked: VPN.authenticate()
 
     }
 

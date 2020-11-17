@@ -13,17 +13,66 @@ Rectangle {
     opacity: 0
     color: "#98bff2"
 
-    function startLoader() {
-        loaderVisible = true; // loaderVisible property in VPNButtonBase {}
-        loaderAnimation.start();
-    }
+    state: "inactive"
 
-    function stopLoader() {
-        loaderVisible = false;
-        loaderAnimation.stop();
-        hideLoader.start();
-    }
+    states: [
+        State {
+            name: "active"
+        },
 
+        State {
+            name: "inactive"
+        }
+    ]
+
+    transitions: [
+        Transition {
+            to: "active"
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: loader
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 200
+                    easing.type: Easing.OutCurve
+                }
+
+                PropertyAnimation {
+                    target: loadingIcon
+                    property: "scale"
+                    from: 0.4
+                    to: 1
+                    duration: 200
+                    easing.type: Easing.OutCurve
+                }
+            }
+        },
+
+        Transition {
+            to: "inactive"
+
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: loader
+                    property: "opacity"
+                    from: 1
+                    to: 0
+                    duration: 200
+                    easing.type: Easing.OutCurve
+                }
+
+                PropertyAnimation {
+                    target: loadingIcon
+                    property: "scale"
+                    from: 1
+                    to: 0.4
+                    duration: 200
+                    easing.type: Easing.OutCurve
+                }
+            }
+        }
+    ]
 
     VPNIcon {
         id: loadingIcon
@@ -34,47 +83,15 @@ Rectangle {
         sourceSize.width: 28
     }
 
-    ParallelAnimation {
-        id: loaderAnimation
-
-        PropertyAnimation {
-            target: loader
-            property: "opacity"
-            from: 0
-            to: 1
-            duration: 200
-            easing.type: Easing.OutCurve
-        }
-
-        PropertyAnimation {
-            target: loadingIcon
-            property: "scale"
-            from: 0.4
-            to: 1
-            duration: 200
-            easing.type: Easing.OutCurve
-        }
-
-        PropertyAnimation {
-            target: loadingIcon
-            property: "rotation"
-            from: 0
-            to: 360
-            duration: 4000
-            loops: Animation.Infinite
-        }
-
-    }
-
-    ParallelAnimation {
-        id: hideLoader
-        PropertyAnimation {
-            target: loadingIcon
-            property: "opacity"
-            from: 1
-            to: 0
-            duration: 200
-        }
+    PropertyAnimation {
+        id: animation
+        running: loader.state == "active"
+        target: loadingIcon
+        property: "rotation"
+        from: 0
+        to: 360
+        duration: 4000
+        loops: Animation.Infinite
     }
 
 }
