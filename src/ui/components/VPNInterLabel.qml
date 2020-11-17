@@ -14,4 +14,7 @@ Text {
     lineHeightMode: Text.FixedHeight
     lineHeight: Theme.labelLineHeight
     wrapMode: Text.Wrap
+
+    Accessible.role: Accessible.StaticText
+    Accessible.name: text
 }

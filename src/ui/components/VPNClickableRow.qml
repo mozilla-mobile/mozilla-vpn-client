@@ -10,22 +10,16 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-// VPNClickableRow
-Item {
+VPNButtonBase {
     id: mainRow
 
-    // TODO: We can set the criteria on a row by row basis for
-    // when that row should be disabled
     property var rowShouldBeDisabled: false
     property var accessibleName
-    property var backgroundColor: Theme.greyButton
-    // By default, make background and mouse area fill the whole
-    // row.
-    property var anchorToFill: mainRow
+    property var backgroundColor: Theme.iconButtonLightBackground
 
-    signal clicked()
+    visualStateItem: rowVisualStates
 
-    height: 40
+    height: Theme.rowHeight
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.leftMargin: Theme.windowMargin / 2
@@ -33,69 +27,40 @@ Item {
     width: parent.width - (Theme.windowMargin * 2)
     opacity: rowShouldBeDisabled ? 0.7 : 1
     enabled: !rowShouldBeDisabled
-    Keys.onSpacePressed: mainRow.clicked()
-    Keys.onReturnPressed: mainRow.clicked()
-    Accessible.role: Accessible.Button
+
     Accessible.ignored: rowShouldBeDisabled
     Accessible.name: accessibleName
-    Accessible.onPressAction: mainRow.clicked()
-    Accessible.focusable: true
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(mainRow)
-    transitions: [
-        Transition {
-            NumberAnimation {
-                target: mainRow
-                property: "opacity"
-                duration: 200
-            }
 
-        }
-    ]
-
-    Rectangle {
-        id: rowBackground
-
-        anchors.fill: anchorToFill
-        radius: 4
-        color: {
-            if (rowShouldBeDisabled && mouseArea.pressed)
-                return Theme.bgColor;
-
-            if (mouseArea.pressed)
-                return backgroundColor.buttonPressed;
-
-            if (mouseArea.containsMouse)
-                return backgroundColor.buttonHovered;
-
-            // The default color is set to Theme.bgColor
-            // because transitioning from "transparent" to
-            // other hex values results in weirdness.
-            return Theme.bgColor;
-        }
-
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
-            }
-
-        }
-
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: 200
-            }
-
-        }
-
+    PropertyAnimation on opacity {
+        duration: 200
     }
 
-    MouseArea {
-        id: mouseArea
+    // visual state changes are applied to this
+    // component to prevent state overwrite conflicts
+    // in VPNServerCountry {}
+    Rectangle {
+        id: rowVisualStates
 
-        anchors.fill: anchorToFill
-        cursorShape: rowShouldBeDisabled ? Qt.ForbiddenCursor : Qt.PointingHandCursor
+        width: mainRow.width
+        height: Theme.rowHeight
+        anchors.top: mainRow.top
+        radius: Theme.cornerRadius
+        border.width: Theme.focusBorderWidth
+        border.color: "transparent"
+        color: "transparent"
+        Component.onCompleted: rowVisualStates.state = uiState.stateDefault
+    }
+
+    VPNUIStates {
+        id: vpnFocus
+
+        itemToAnchor: rowVisualStates
+        colorScheme: backgroundColor
+    }
+
+    VPNMouseArea {
         hoverEnabled: !rowShouldBeDisabled
-        onClicked: mainRow.clicked()
+        targetEl: rowVisualStates
     }
 
 }

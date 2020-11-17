@@ -30,6 +30,7 @@ const int ACTION_DEACTIVATE = 2;
 const int ACTION_REGISTERLISTENER = 3;
 const int ACTION_REQUEST_STATISTIC = 4;
 const int ACTION_REQUEST_LOG = 5;
+const int ACTION_RESUME_ACTIVATE = 6;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -40,9 +41,25 @@ const int EVENT_BACKEND_LOGS = 4;
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
+AndroidController *s_instance = nullptr;
+
+} // namespace
+
+AndroidController::AndroidController() : m_binder(this)
+{
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+}
+AndroidController::~AndroidController()
+{
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
 }
 
-AndroidController::AndroidController() : m_binder(this) {}
+AndroidController *AndroidController::instance()
+{
+    return s_instance;
+}
 
 void AndroidController::initialize(const Device *device, const Keys *keys)
 {
@@ -115,6 +132,13 @@ void AndroidController::activate(const Server &server,
     QAndroidParcel sendData;
     sendData.writeData(doc.toJson());
     m_serviceBinder.transact(ACTION_ACTIVATE, sendData, nullptr);
+}
+// Activates the tunnel that is currently set
+// in the VPN Service
+void AndroidController::resume_activate()
+{
+    QAndroidParcel nullData;
+    m_serviceBinder.transact(ACTION_RESUME_ACTIVATE, nullData, nullptr);
 }
 
 void AndroidController::deactivate(bool forSwitching)
@@ -223,6 +247,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
     return true;
 }
 
+const int ACTIVITY_RESULT_OK = 0xffffffff;
 /**
  * @brief Starts the Given intent in Context of the QTActivity
  * @param env
@@ -231,12 +256,28 @@ bool AndroidController::VPNBinder::onTransact(int code,
 void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent)
 {
     logger.log() << "start activity";
-
     Q_UNUSED(env);
-    QtAndroid::startActivity(intent, 123, [](int a, int b, const QAndroidJniObject &c) {
-        Q_UNUSED(a);
-        Q_UNUSED(b);
-        Q_UNUSED(c);
-    });
+    QtAndroid::startActivity(
+        intent, 1337, [](int receiverRequestCode, int resultCode, const QAndroidJniObject &data) {
+            // Currently this function just used in VPNService.kt::checkPersmissions.
+            // So the result we're getting is if the User gave us the Vpn.bind permission.
+            // In case of NO we should abort.
+            Q_UNUSED(receiverRequestCode);
+            Q_UNUSED(data);
+
+            AndroidController *controller = AndroidController::instance();
+            if (!controller) {
+                return;
+            }
+
+            if (resultCode == ACTIVITY_RESULT_OK) {
+                logger.log() << "VPN PROMPT RESULT - Accepted";
+                controller->resume_activate();
+                return;
+            }
+            // If the request got rejected abort the current connection.
+            logger.log() << "VPN PROMPT RESULT - Rejected";
+            emit controller->disconnected();
+        });
     return;
 }

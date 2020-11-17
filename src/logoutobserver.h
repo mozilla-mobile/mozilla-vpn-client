@@ -15,6 +15,9 @@ public:
 
 signals:
     void ready();
+
+private slots:
+    void userAuthenticationChanged();
 };
 
 #endif // LOGOUTOBSERVER_H

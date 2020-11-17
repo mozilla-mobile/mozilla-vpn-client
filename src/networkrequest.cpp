@@ -25,15 +25,7 @@ Logger logger(LOG_NETWORKING, "NetworkRequest");
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
     logger.log() << "Network request created";
-
-    QByteArray userAgent;
-    userAgent.append("MozillaVPN/" APP_VERSION " (");
-    userAgent.append(QSysInfo::productType().toLocal8Bit());
-    userAgent.append(" ");
-    userAgent.append(QSysInfo::productVersion().toLocal8Bit());
-    userAgent.append(")");
-
-    m_request.setRawHeader("User-Agent", userAgent);
+    m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
     m_request.setTransferTimeout(REQUEST_TIMEOUT_MSEC);
 }
 

@@ -45,7 +45,7 @@
         <file>ui/components/VPNButtonBase.qml</file>
         <file>ui/components/VPNSystemAlert.qml</file>
         <file>ui/components/VPNSignOut.qml</file>
-        <file>ui/components/VPNFocus.qml</file>
+        <file>ui/components/VPNUIStates.qml</file>
         <file>ui/components/VPNList.qml</file>
         <file>ui/components/VPNServerCountry.qml</file>
         <file>ui/themes/themes.js</file>
@@ -341,7 +341,6 @@
         <file>ui/resources/onboarding/onboarding2.svg</file>
         <file>ui/resources/fonts/InterUI.otf</file>
         <file>ui/resources/fonts/Metropolis.otf</file>
-        <file>ui/resources/fonts/Metropolis-ExtraBold.otf</file>
         <file>ui/resources/fonts/Metropolis-SemiBold.otf</file>
         <file>ui/resources/onboarding/onboardingCopy.js</file>
         <file>ui/resources/spinner.svg</file>
@@ -383,5 +382,13 @@
         <file>ui/components/VPNAboutUs.qml</file>
         <file>ui/components/VPNRemoveDevicePopup.qml</file>
         <file>ui/views/ViewLogs.qml</file>
+        <file>ui/components/VPNStackView.qml</file>
+        <file>ui/components/VPNFocusOutline.qml</file>
+        <file>ui/components/VPNMouseArea.qml</file>
+        <file>ui/components/VPNFocusBorder.qml</file>
+        <file>ui/resources/buttonLoader.svg</file>
+        <file>ui/components/VPNButtonLoader.qml</file>
+        <file>ui/resources/quick-access.svg</file>
+        <file>platforms/android/androidauthenticationview.qml</file>
     </qresource>
 </RCC>

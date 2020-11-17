@@ -7,6 +7,7 @@
 
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "closeeventhandler.h"
 #include "connectiondataholder.h"
 #include "connectionhealth.h"
 #include "controller.h"
@@ -77,6 +78,7 @@ private:
     Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
     Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
     Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
+    Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
 
 public:
     MozillaVPN();
@@ -109,6 +111,7 @@ public:
     {
         return &m_private->m_captivePortalDetection;
     }
+    CloseEventHandler *closeEventHandler() { return &m_private->m_closeEventHandler; }
     ConnectionDataHolder *connectionDataHolder() { return &m_private->m_connectionDataHolder; }
     ConnectionHealth *connectionHealth() { return &m_private->m_connectionHealth; }
     Controller *controller() { return &m_private->m_controller; }
@@ -136,6 +139,8 @@ public:
 
     void errorHandle(ErrorHandler::ErrorType error);
 
+    void abortAuthentication();
+
     void changeServer(const QString &countryCode, const QString &city);
 
     const QString versionString() const { return QString(APP_VERSION); }
@@ -149,6 +154,8 @@ public:
     bool userAuthenticated() const { return m_userAuthenticated; }
 
     bool startMinimized() const { return m_startMinimized; }
+
+    bool startOnBootSupported() const;
 
     void setStartMinimized(bool startMinimized) { m_startMinimized = startMinimized; }
 
@@ -206,6 +213,10 @@ signals:
     void aboutNeeded();
     void viewLogsNeeded();
 
+#ifdef MVPN_ANDROID
+    void loadAndroidAuthenticationView();
+#endif
+
 private:
     bool m_initialized = false;
 
@@ -214,6 +225,7 @@ private:
     {
         CaptivePortal m_captivePortal;
         CaptivePortalDetection m_captivePortalDetection;
+        CloseEventHandler m_closeEventHandler;
         ConnectionDataHolder m_connectionDataHolder;
         ConnectionHealth m_connectionHealth;
         Controller m_controller;

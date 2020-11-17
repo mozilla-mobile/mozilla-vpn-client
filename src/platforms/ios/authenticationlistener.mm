@@ -50,8 +50,18 @@ ASWebAuthenticationSession *session = nullptr;
 @end
 #endif
 
-void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
+// static
+AuthenticationListener *AuthenticationListener::create(QObject *parent)
 {
+    return new AuthenticationListener(parent);
+}
+
+AuthenticationListener::AuthenticationListener(QObject *parent): QObject(parent) {}
+
+void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
+{
+    Q_UNUSED(vpn);
+
     logger.log() << "AuthenticationListener initialize";
 
     query.addQueryItem("platform", "ios");
@@ -72,7 +82,13 @@ void AuthenticationListener::start(MozillaVPN* vpn, QUrl &url, QUrlQuery &query)
             logger.log() << "Suggestion:"
                          << QString::fromNSString([error localizedRecoverySuggestion]);
             logger.log() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
-            emit failed(ErrorHandler::AuthenticationError);
+
+            if ([error code] == ASWebAuthenticationSessionErrorCodeCanceledLogin) {
+                emit abortedByUser();
+            } else {
+                emit failed(ErrorHandler::BackendServiceError);
+            }
+
             return;
         }
 

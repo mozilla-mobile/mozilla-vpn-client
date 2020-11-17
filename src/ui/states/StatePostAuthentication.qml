@@ -32,58 +32,12 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-    Item {
-        id: gradientText
 
-        width: parent.width
-        height: parent.height
-        anchors.top: parent.top
-
-        Text {
-            id: wip
-
-            font.pixelSize: 58
-            font.family: Theme.fontExtraBoldFamily
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            anchors.centerIn: gradientText
-            anchors.fill: gradientText
-            //% "WIP"
-            text: qsTrId("vpn.postAuthentication.wip")
-            visible: false
-        }
-
-        LinearGradient {
-            anchors.fill: wip
-            source: wip
-            start: Qt.point(213, 0)
-            end: Qt.point(0, 0)
-
-            gradient: Gradient {
-                GradientStop {
-                    position: 0
-                    color: "#FFA436"
-                }
-
-                GradientStop {
-                    position: 0.31
-                    color: "#FF4F5E"
-                }
-
-                GradientStop {
-                    position: 0.66
-                    color: "#FF298A"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#9059FF"
-                }
-
-            }
-
-        }
-
+    Image {
+        source: "../resources/quick-access.svg"
+        sourceSize.height: 120
+        sourceSize.width: 120
+        anchors.centerIn: parent
     }
 
     VPNButton {

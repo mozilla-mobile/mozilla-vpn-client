@@ -26,10 +26,13 @@ Popup {
     Accessible.role: Accessible.Dialog
     Accessible.name: popupTitle.text
 
-   onClosed: {
-       removeBtn.focus = false;
-       cancelBtn.focus = false
-   }
+    onClosed: {
+        // When closing the dialog, put the focus back on the
+        // remove button that originally triggered the dialog.
+        if (deviceList.focusedIconButton) {
+            deviceList.focusedIconButton.forceActiveFocus();
+        }
+    }
 
 
     Overlay.modal: Rectangle {
@@ -75,6 +78,8 @@ Popup {
             }
 
             VPNInterLabel {
+                id: popupTitle
+
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
@@ -89,7 +94,7 @@ Popup {
             }
 
             VPNTextBlock {
-                id: popupTitle
+                id: popupText
 
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -99,9 +104,6 @@ Popup {
                 //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
-
-                Accessible.name: popupTitle.text
-                Accessible.role: Accessible.StaticText
             }
 
             GridLayout {
@@ -124,10 +126,12 @@ Popup {
                     //% "Cancel"
                     buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
                     buttonTextColor: "#262626"
-                    bgColor: Theme.cancelRemovePopup
+                    colorScheme: Theme.popupButtonCancel
                     onClicked: {
                         popup.close();
                     }
+                    focus: true
+                    Accessible.defaultButton: true
                 }
 
                 VPNPopupButton {
@@ -136,8 +140,8 @@ Popup {
                     //: This is the “remove” device button.
                     //% "Remove"
                     buttonText: qsTrId("vpn.devices.removeDeviceButton")
-                    buttonTextColor: "#FFFFFF"
-                    bgColor: Theme.redButton
+                    buttonTextColor: Theme.white
+                    colorScheme: Theme.redButton
                     onClicked: {
                         VPN.removeDevice(removePopup.deviceName);
                         popup.close();

@@ -12,41 +12,24 @@ VPNButtonBase {
 
     property alias buttonText: buttonText.text
     property alias buttonTextColor: buttonText.color
+    property var colorScheme
+    property var uiState:Theme.uiState
 
-    targetEl: buttonBackground
     enabled: popup.visible
     Layout.fillWidth: true
     Layout.fillHeight: true
     Accessible.name: buttonText.text
+    state: "state-default"
 
-    Rectangle {
-        id: buttonBackground
+    Component.onCompleted: state = uiState.stateDefault
 
-        anchors.fill: button
-        height: button.contentItem.paintedHeight
-        radius: 4
-        color: bgColor.defaultColor
-        border.width: 1
-        border.color: button.activeFocus ? bgColor.focusBorder : color
-        z: -1
+    VPNUIStates {
+        borderWidth: 1
+        colorScheme: parent.colorScheme
+    }
 
-        Rectangle {
-            anchors.fill: buttonBackground
-            anchors.margins: -2
-            opacity: button.activeFocus ? 1 : 0
-            radius: buttonBackground.radius + 2
-            color: bgColor.focusStroke
-            z: -2
-        }
-
-        Behavior on color {
-            PropertyAnimation {
-                target: buttonBackground
-                duration: 300
-            }
-
-        }
-
+    VPNMouseArea {
+        targetEl: button
     }
 
     contentItem: VPNInterLabel {
@@ -56,18 +39,8 @@ VPNButtonBase {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
-        opacity: button.hovered ? 0.9 : 1
-
-        transitions: Transition {
-            NumberAnimation {
-                target: buttonText
-                property: "opacity"
-                duration: 200
-                easing.type: Easing.InOutQuad
-            }
-
-        }
 
     }
 
 }
+

@@ -50,4 +50,15 @@ Item {
         radius: 4
         onClicked: VPN.storeInClipboard(logText.text)
     }
+
+    Component.onCompleted: VPNCloseEventHandler.addView(logs)
+
+    Connections {
+        target: VPNCloseEventHandler
+        function onGoBack(item) {
+            if (item === logs) {
+                mainStackView.pop();
+            }
+        }
+    }
 }

@@ -34,6 +34,24 @@ Logger logger(LOG_CONTROLLER, "Controller");
 
 Controller::Controller()
 {
+    connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
+}
+
+Controller::~Controller() = default;
+
+Controller::State Controller::state() const
+{
+    return m_state;
+}
+
+void Controller::initialize()
+{
+    logger.log() << "Initializing the controller";
+
+    if (m_state != StateInitializing) {
+        setState(StateInitializing);
+    }
+
     m_impl.reset(new TimerController(
 #if defined(MVPN_LINUX)
         new LinuxController()
@@ -53,27 +71,11 @@ Controller::Controller()
     connect(m_impl.get(), &ControllerImpl::initialized, this, &Controller::implInitialized);
     connect(m_impl.get(), &ControllerImpl::statusUpdated, this, &Controller::statusUpdated);
 
-    connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
-}
+    MozillaVPN *vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
 
-Controller::~Controller() = default;
-
-Controller::State Controller::state() const
-{
-    return m_state;
-}
-
-void Controller::initialize()
-{
-    logger.log() << "Initializing the controller";
-
-    if (m_state == StateInitializing) {
-        MozillaVPN *vpn = MozillaVPN::instance();
-        Q_ASSERT(vpn);
-
-        const Device *device = vpn->deviceModel()->currentDevice();
-        m_impl->initialize(device, vpn->keys());
-    }
+    const Device *device = vpn->deviceModel()->currentDevice();
+    m_impl->initialize(device, vpn->keys());
 }
 
 void Controller::implInitialized(bool status, bool a_connected, const QDateTime &connectionDate)
@@ -137,6 +139,8 @@ void Controller::activate()
     const Device *device = vpn->deviceModel()->currentDevice();
 
     const QList<IPAddressRange> allowedIPAddressRanges = getAllowedIPAddressRanges();
+
+    Q_ASSERT(m_impl);
     m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges, m_state == StateSwitching);
 }
 
@@ -156,6 +160,8 @@ void Controller::deactivate()
     }
 
     m_timer.stop();
+
+    Q_ASSERT(m_impl);
     m_impl->deactivate(m_state == StateSwitching);
 }
 
@@ -349,6 +355,12 @@ int Controller::time() const
 void Controller::getBackendLogs(std::function<void(const QString &)> &&a_callback)
 {
     std::function<void(const QString &)> callback = std::move(a_callback);
+
+    if (!m_impl) {
+        callback(QString());
+        return;
+    }
+
     m_impl->getBackendLogs(std::move(callback));
 }
 
@@ -370,7 +382,7 @@ void Controller::getStatus(
 
     m_getStatusCallbacks.append(std::move(callback));
 
-    if (requestStatus) {
+    if (m_impl && requestStatus) {
         m_impl->checkStatus();
     }
 }

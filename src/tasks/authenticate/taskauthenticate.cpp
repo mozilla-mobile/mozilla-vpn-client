@@ -59,7 +59,7 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
     logger.log() << "pkceCodeVerifier:" << pkceCodeVerifier;
     logger.log() << "pkceCodeChallenge:" << pkceCodeChallenge;
 
-    m_authenticationListener = new AuthenticationListener(this);
+    m_authenticationListener = AuthenticationListener::create(this);
 
     connect(m_authenticationListener,
             &AuthenticationListener::completed,
@@ -91,6 +91,11 @@ void TaskAuthenticate::run(MozillaVPN *vpn)
             &AuthenticationListener::failed,
             [this, vpn](const ErrorHandler::ErrorType error) {
         vpn->errorHandle(error);
+        emit completed();
+    });
+
+    connect(m_authenticationListener, &AuthenticationListener::abortedByUser, [this, vpn]() {
+        vpn->abortAuthentication();
         emit completed();
     });
 

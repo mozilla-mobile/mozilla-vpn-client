@@ -5,12 +5,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 
+import "../components"
+
 Item {
-    StackView {
+    VPNStackView {
         id: stackview
 
         anchors.fill: parent
         initialItem: "../views/ViewInitialize.qml"
     }
-
 }
