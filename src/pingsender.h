@@ -5,37 +5,32 @@
 #ifndef PINGSENDER_H
 #define PINGSENDER_H
 
+#include <QElapsedTimer>
 #include <QObject>
-#include <QThread>
+
+class QThread;
 
 class PingSender final : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit PingSender(QObject *parent);
-
-    ~PingSender();
+    PingSender(QObject *parent, QThread *thread);
 
     void send(const QString &destination);
 
-    void stop();
-
 signals:
-    void completed();
+    void completed(PingSender *pingSender, uint32_t msec);
 
     // internal only
     void sendPing(const QString &destination);
-    void stopPing();
 
 private slots:
     void pingFailed();
     void pingSucceeded();
 
 private:
-    QThread m_workerThread;
-
-    bool m_active = false;
+    QElapsedTimer m_time;
 };
 
 #endif // PINGSENDER_H

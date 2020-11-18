@@ -5,7 +5,9 @@
 #ifndef CONNECTIONHEALTH_H
 #define CONNECTIONHEALTH_H
 
+#include <QList>
 #include <QObject>
+#include <QThread>
 #include <QTimer>
 
 class Server;
@@ -28,6 +30,7 @@ private:
 
 public:
     ConnectionHealth();
+    ~ConnectionHealth();
 
     void start(const QString &serverIpv4Gateway);
 
@@ -38,43 +41,27 @@ public:
 public slots:
     void connectionStateChanged();
 
-private slots:
-    void pingCompleted();
-
 signals:
     void stabilityChanged();
 
 private:
-    void sendPing();
-    void wait();
     void setStability(ConnectionStability stability);
+    void nextPing();
+
+    void pingReceived(PingSender *pingSender, uint32_t msec);
+    void noSignalDetected();
 
 private:
     ConnectionStability m_stability = Stable;
 
-    enum State {
-        // Ping sent, but not received yet.
-        Pending,
-
-        // The ping response has taken too much.
-        Timeout,
-
-        // We are waiting for the next ping to be sent.
-        Waiting,
-
-        // All disabled.
-        Inactive,
-    };
-
-    State m_state = Inactive;
-
     QString m_gateway;
 
-    QTimer m_unstableTimer;
+    QTimer m_pingTimer;
     QTimer m_noSignalTimer;
-    QTimer m_waitingTimer;
 
-    PingSender *m_pingSender = nullptr;
+    QList<PingSender *> m_pings;
+
+    QThread m_pingThread;
 };
 
 #endif // CONNECTIONHEALTH_H

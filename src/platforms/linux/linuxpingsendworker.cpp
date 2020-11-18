@@ -77,12 +77,6 @@ void LinuxPingSendWorker::sendPing(const QString &destination)
             });
 }
 
-void LinuxPingSendWorker::stopPing()
-{
-    logger.log() << "LinuxPingSendWorker - stopped";
-    releaseObjects();
-}
-
 void LinuxPingSendWorker::releaseObjects()
 {
     if (m_socket > 0) {

@@ -13,7 +13,6 @@ class PingSendWorker : public QObject
 
 public slots:
     virtual void sendPing(const QString &destination) = 0;
-    virtual void stopPing() = 0;
 
 signals:
     void pingSucceeded();
