@@ -12,6 +12,7 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
 
+    width: window.width
     flickContentHeight: settingsList.y + (settingsList.count * 56) + signOutLink.height + signOutLink.anchors.bottomMargin
     ListModel {
         id: settingsMenuListModel
@@ -119,7 +120,7 @@ VPNFlickable {
         anchors.top: manageAccountButton.bottom
         anchors.topMargin: Theme.hSpacing * 1.5
         anchors.rightMargin: Theme.hSpacing
-        width: parent.width - Theme.hSpacing
+        width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
 
         visible: VPN.startOnBootSupported

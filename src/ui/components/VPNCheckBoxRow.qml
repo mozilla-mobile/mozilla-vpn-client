@@ -20,6 +20,7 @@ RowLayout {
 
     signal clicked()
 
+    Layout.fillWidth: true
     Layout.topMargin: 18
     spacing: 0
 
@@ -41,16 +42,17 @@ RowLayout {
 
         VPNInterLabel {
             id: label
-
+            Layout.alignment: Qt.AlignLeft
+            Layout.fillWidth: true
             text: labelText
             color: Theme.fontColorDark
+            horizontalAlignment: Text.AlignLeft
         }
 
         VPNTextBlock {
             id: subLabel
 
-            width: Theme.maxTextWidth - Theme.windowMargin / 2
-            Layout.preferredWidth: subLabel.width
+            Layout.fillWidth: true
             text: subLabelText
             visible: !!subLabelText.length
         }
