@@ -15,13 +15,14 @@ TaskControllerAction::TaskControllerAction(TaskControllerAction::TaskAction acti
 {
     logger.log() << "TaskControllerAction created for"
                  << (action == eActivate ? "activation" : "deactivation");
+
+    connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::completed);
 }
 
 void TaskControllerAction::run(MozillaVPN *vpn)
 {
     logger.log() << "TaskControllerAction run";
 
-    connect(vpn->controller(), &Controller::stateChanged, this, &TaskControllerAction::stateChanged);
     switch (m_action) {
     case eActivate:
         vpn->controller()->activate();
@@ -31,14 +32,6 @@ void TaskControllerAction::run(MozillaVPN *vpn)
         vpn->controller()->deactivate();
         break;
     }
-}
 
-void TaskControllerAction::stateChanged()
-{
-    Controller::State state = MozillaVPN::instance()->controller()->state();
-    logger.log() << "state changed received:" << state;
-
-    if (state == Controller::StateOn || state == Controller::StateOff) {
-        emit completed();
-    }
+    m_timer.start();
 }

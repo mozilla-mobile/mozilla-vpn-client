@@ -75,7 +75,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
 
     connect(this, &MozillaVPN::stateChanged, [this]() {
         if (m_state != StateMain) {
-            deactivate();
+            // We don't call deactivate() because that is meant to be used for
+            // UI interactions only and it deletes all the pending tasks.
+            scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
         }
     });
 
