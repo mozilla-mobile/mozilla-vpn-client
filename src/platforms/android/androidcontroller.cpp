@@ -143,6 +143,14 @@ void AndroidController::resume_activate()
 
 void AndroidController::deactivate(bool forSwitching)
 {
+    if(forSwitching){
+        // Just show that we're disconnected
+        // we're doing the actual disconnect once
+        // the vpn-service has the new server ready in Action->Activate
+        emit disconnected();
+        logger.log() << "deactivation skipped for Switching";
+        return;
+    }
     logger.log() << "deactivation";
 
     Q_UNUSED(forSwitching);
