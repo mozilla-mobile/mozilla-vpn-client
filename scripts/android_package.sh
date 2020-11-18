@@ -99,7 +99,7 @@ else
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 
-print Y "Compiling apk_install_target in /.tmp/"
+print Y "Compiling apk_install_target in .tmp/"
 make -j16 sub-src-apk_install_target || die "Compile of QT project failed"
 
 print Y "Bundleing APK"
@@ -107,4 +107,4 @@ cd src/
 make apk || die "Compile of QT project failed"
 print G "All done!"
 
-print N "Your .APK is Located in ./tmp/src/android-build/mozillavpn.apk"
+print N "Your .APK is Located in .tmp/src/android-build/mozillavpn.apk"
