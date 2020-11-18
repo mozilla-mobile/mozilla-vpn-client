@@ -7,6 +7,10 @@
 
 #include "task.h"
 
+#include <QTimer>
+
+// The purpose of this task is to block any other task when activating/deactivating the VPN.
+// It doesn't relay on the Controller state, but just wait a bit: 1 second is enough.
 class TaskControllerAction : public Task
 {
 public:
@@ -24,6 +28,8 @@ private slots:
 
 private:
     const TaskAction m_action;
+
+    QTimer m_timer;
 };
 
 #endif // TASKCONTROLLERACTION_H
