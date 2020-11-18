@@ -86,6 +86,7 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
+        tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         timersingleshot.cpp
@@ -148,6 +149,7 @@ HEADERS += \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
+        tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \

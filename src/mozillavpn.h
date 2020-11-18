@@ -105,6 +105,8 @@ public:
     Q_INVOKABLE void viewLogs();
     Q_INVOKABLE QString retrieveLogs();
     Q_INVOKABLE void storeInClipboard(const QString &text);
+    Q_INVOKABLE void activate();
+    Q_INVOKABLE void deactivate();
 
     // Internal object getters:
     CaptivePortal *captivePortal() { return &m_private->m_captivePortal; }
@@ -245,8 +247,8 @@ private:
     Private *m_private = nullptr;
 
     // Task handling.
-    QList<QPointer<Task>> m_tasks;
     bool m_task_running = false;
+    QList<QPointer<Task>> m_tasks;
 
     State m_state = StateInitialize;
     AlertType m_alert = NoAlert;

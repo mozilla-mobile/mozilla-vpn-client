@@ -49,7 +49,7 @@ void CaptivePortalActivator::checkStatus()
         // It seems that the captive-portal is gone. We can reactivate the VPN.
 
         deleteLater();
-        MozillaVPN::instance()->controller()->activate();
+        MozillaVPN::instance()->activate();
     });
 
     request->run();
