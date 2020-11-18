@@ -24,5 +24,5 @@ AndroidStartAtBootWatcher::AndroidStartAtBootWatcher(bool startAtBoot)
 void AndroidStartAtBootWatcher::startAtBootChanged(bool startAtBoot)
 {
     logger.log() << "StartAtBoot changed:" << startAtBoot;
-    AndroidController::Instance()->enableStartAtBoot(startAtBoot);
+    AndroidController::instance()->enableStartAtBoot(startAtBoot);
 }
