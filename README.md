@@ -173,7 +173,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 
 5. Build the apk
 ```bash 
-  $  ./scripts/android_package.sh /path/to/Qt/5.15.x/
+  $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
 6. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
 7. Install with adb on device/emulator
