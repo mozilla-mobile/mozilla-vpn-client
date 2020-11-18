@@ -82,8 +82,13 @@ void LinuxController::activate(const Server &server,
 
 void LinuxController::deactivate(bool forSwitching)
 {
-    Q_UNUSED(forSwitching);
     logger.log() << "LinuxController deactivated";
+
+    if (forSwitching) {
+        logger.log() << "No disconnect for quick server switching";
+        return;
+    }
+
     connect(m_dbus->deactivate(),
             &QDBusPendingCallWatcher::finished,
             this,

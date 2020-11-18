@@ -70,8 +70,11 @@ bool DBus::activate(const QString &jsonConfig)
     }
 
     if (m_connected) {
-        logger.log() << "Already connected";
-        return false;
+        if (!deactivate()) {
+            return false;
+        }
+
+        Q_ASSERT(!m_connected);
     }
 
     m_connected = true;
