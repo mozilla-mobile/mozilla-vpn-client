@@ -20,15 +20,15 @@ VPNButtonBase {
     Accessible.name: VPNController.state === VPNController.StateOn ? describedBy + ". " + toolTipTitle : describedBy + ". " + labelledBy + "."
 
     function handleClick() {
-        if (VPNController.state !== VPNController.StateOff)
-            return VPNController.deactivate();
+        if (VPNController.state !== VPNController.StateOff) {
+            return VPN.deactivate();
+        }
 
-        return VPNController.activate();
+        return VPN.activate();
     }
 
     // property in VPNButtonBase {}
     visualStateItem: toggle
-    onClicked: handleClick()
     state: VPNController.state
     height: 32
     width: 60

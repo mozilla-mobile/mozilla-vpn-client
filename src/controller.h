@@ -70,9 +70,9 @@ public:
             &&callback);
 
 public slots:
-    Q_INVOKABLE void activate();
+    void activate();
 
-    Q_INVOKABLE void deactivate();
+    void deactivate();
 
     Q_INVOKABLE void quit();
 

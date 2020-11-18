@@ -16,6 +16,7 @@
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
 
@@ -75,7 +76,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
 
     connect(this, &MozillaVPN::stateChanged, [this]() {
         if (m_state != StateMain) {
-            m_private->m_controller.deactivate();
+            deactivate();
         }
     });
 
@@ -377,6 +378,7 @@ void MozillaVPN::taskCompleted()
     logger.log() << "Task completed";
 
     m_task_running = false;
+
     maybeRunTask();
 }
 
@@ -972,4 +974,16 @@ bool MozillaVPN::startOnBootSupported() const
 #else
     return false;
 #endif
+}
+
+void MozillaVPN::activate()
+{
+    deleteTasks();
+    scheduleTask(new TaskControllerAction(TaskControllerAction::eActivate));
+}
+
+void MozillaVPN::deactivate()
+{
+    deleteTasks();
+    scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
 }

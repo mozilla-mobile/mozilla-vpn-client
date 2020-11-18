@@ -172,3 +172,7 @@ QString MozillaVPN::retrieveLogs()
 void MozillaVPN::storeInClipboard(const QString &) {}
 
 bool MozillaVPN::startOnBootSupported() const { return false; }
+
+void MozillaVPN::activate() {}
+
+void MozillaVPN::deactivate() {}
