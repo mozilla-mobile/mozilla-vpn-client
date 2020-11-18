@@ -15,7 +15,6 @@ class MacOSPingSendWorker final : public PingSendWorker
 
 public slots:
     void sendPing(const QString &destination) override;
-    void stopPing() override;
 
 private:
     void releaseObjects();

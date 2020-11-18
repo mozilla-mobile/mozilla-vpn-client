@@ -18,75 +18,48 @@
 #include "platforms/dummy/dummypingsendworker.h"
 #endif
 
+#include <QThread>
+
 namespace {
 Logger logger(LOG_NETWORKING, "PingSender");
 }
 
-PingSender::PingSender(QObject *parent) : QObject(parent)
+PingSender::PingSender(QObject *parent, QThread *thread) : QObject(parent)
 {
+    m_time.start();
+
     PingSendWorker *worker =
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
         new LinuxPingSendWorker();
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
         new MacOSPingSendWorker();
 #else
-        new DummyPingSendWorker(DummyPingSendWorker::Stable);
+        new DummyPingSendWorker();
 #endif
 
-    // Uncomment the following lines to enable the DummyPingSendWorker. There are 3 modes:
-    // - Stable: the network is stable
-    // - Unstable: after 5 seconds, we go to unstable
-    // - NoSignal: after 30 seconds (after the Unstable state) we go to no-signal
-    //
-    //#ifdef QT_DEBUG
-    //    worker = new DummyPingSendWorker(DummyPingSendWorker::NoSignal);
-    //#endif
+    worker->moveToThread(thread);
 
-    worker->moveToThread(&m_workerThread);
-
-    connect(&m_workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
     connect(this, &PingSender::sendPing, worker, &PingSendWorker::sendPing);
-    connect(this, &PingSender::stopPing, worker, &PingSendWorker::stopPing);
+    connect(this, &QObject::destroyed, worker, &QObject::deleteLater);
     connect(worker, &PingSendWorker::pingFailed, this, &PingSender::pingFailed);
     connect(worker, &PingSendWorker::pingSucceeded, this, &PingSender::pingSucceeded);
-
-    m_workerThread.start();
-}
-
-PingSender::~PingSender()
-{
-    m_workerThread.quit();
-    m_workerThread.wait();
 }
 
 void PingSender::send(const QString &destination)
 {
     logger.log() << "PingSender send to" << destination;
-
-    m_active = true;
     emit sendPing(destination);
-}
-
-void PingSender::stop()
-{
-    logger.log() << "PingSender stop";
-    m_active = false;
-    emit stopPing();
 }
 
 void PingSender::pingFailed()
 {
     logger.log() << "PingSender - Ping Failed";
-
-    if (m_active) {
-        emit completed();
-    }
+    emit completed(this, m_time.elapsed());
 }
 
 void PingSender::pingSucceeded()
 {
     logger.log() << "PingSender - Ping Succeded";
-    if (m_active) {
-        emit completed();
-    }
+    emit completed(this, m_time.elapsed());
 }

@@ -153,12 +153,6 @@ void MacOSPingSendWorker::sendPing(const QString &destination)
             });
 }
 
-void MacOSPingSendWorker::stopPing()
-{
-    logger.log() << "MacOSPingSendWorker - stopped";
-    releaseObjects();
-}
-
 void MacOSPingSendWorker::releaseObjects()
 {
     if (m_socket > 0) {
