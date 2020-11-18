@@ -28,7 +28,7 @@ public slots:
 
     bool activate(const QString &jsonConfig);
 
-    bool deactivate();
+    bool deactivate(bool serverSwitching = false);
 
     QString status();
 
