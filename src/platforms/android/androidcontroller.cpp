@@ -87,6 +87,11 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
 }
 
 void AndroidController::enableStartAtBoot(bool enabled){
+    m_enabledStartAtBoot = enabled;
+    m_startAtBootWasSet = true;
+    if(!m_serviceConnected){
+        return;
+    }
     QAndroidParcel data;
     data.writeVariant(enabled);
     m_serviceBinder.transact(ACTION_ENABLE_START_ON_BOOT, data, nullptr);
@@ -185,7 +190,7 @@ void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_
 void AndroidController::onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder)
 {
     logger.log() << "Server connected";
-
+    m_serviceConnected = true;
     Q_UNUSED(name);
 
     m_serviceBinder = serviceBinder;
@@ -194,12 +199,18 @@ void AndroidController::onServiceConnected(const QString &name, const QAndroidBi
     QAndroidParcel binderParcel;
     binderParcel.writeBinder(m_binder);
     m_serviceBinder.transact(ACTION_REGISTERLISTENER, binderParcel, nullptr);
+
+    if(m_startAtBootWasSet){
+        // In case we we're asked to SetStartAtBoot
+        // before our Service was connected - lets follow up with that
+        enableStartAtBoot(m_enabledStartAtBoot);
+    }
 }
 
 void AndroidController::onServiceDisconnected(const QString &name)
 {
     logger.log() << "Server disconnected";
-
+    m_serviceConnected = false;
     Q_UNUSED(name);
     // TODO: Maybe restart? Or crash?
 }
@@ -222,11 +233,17 @@ bool AndroidController::VPNBinder::onTransact(int code,
     Q_UNUSED(flags);
 
     QJsonDocument doc;
-    QString logs;
+    QString buffer;
     switch (code) {
     case EVENT_INIT:
         logger.log() << "Transact: init";
-        emit m_controller->initialized(true, false, QDateTime());
+         buffer = QTextCodec::codecForMib(106)->toUnicode(data.readData());
+         if(buffer == "connected"){
+            emit m_controller->initialized(true, true, QDateTime());
+         }else{
+            emit m_controller->initialized(true, false, QDateTime());
+         }
+
         break;
     case EVENT_CONNECTED:
         logger.log() << "Transact: connected";
@@ -249,9 +266,9 @@ bool AndroidController::VPNBinder::onTransact(int code,
         logger.log() << "Transact: backend logs";
 
         // Note: 106 means UTF-8 encoding
-        logs = QTextCodec::codecForMib(106)->toUnicode(data.readData());
+        buffer = QTextCodec::codecForMib(106)->toUnicode(data.readData());
         if (m_controller->m_logCallback) {
-            m_controller->m_logCallback(logs);
+            m_controller->m_logCallback(buffer);
         }
         break;
     default:

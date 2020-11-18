@@ -117,7 +117,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.d(tag, "Registered ${mListeners.size} EventListeners")
-                dispatchEvent(EVENTS.init, "")
+                if(mService.isUp()){
+                    dispatchEvent(EVENTS.init, "connected")
+                }else{
+                    dispatchEvent(EVENTS.init, "disconnected")
+                }
             }
             ACTIONS.requestStatistic -> {
                 val statistics = this.mService.getStatistic()

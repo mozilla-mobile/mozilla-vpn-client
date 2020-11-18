@@ -985,7 +985,7 @@ bool MozillaVPN::startOnBootSupported() const
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS)
     return true;
 #elif defined (MVPN_ANDROID)
-    return AndroidUtils::CanEnableStartOnBoot();
+    return AndroidUtils::canEnableStartOnBoot();
 #else
     return false;
 #endif

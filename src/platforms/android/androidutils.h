@@ -20,7 +20,7 @@ class AndroidUtils final : public QObject
 public:
     static QString GetDeviceName();
 
-    static bool CanEnableStartOnBoot();
+    static bool canEnableStartOnBoot();
 
     static AndroidUtils *instance();
 

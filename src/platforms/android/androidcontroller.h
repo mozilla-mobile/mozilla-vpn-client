@@ -41,6 +41,9 @@ public:
 
 private:
     Server m_server;
+    bool m_enabledStartAtBoot = false;
+    bool m_startAtBootWasSet = false;
+    bool m_serviceConnected = false;
     std::function<void(const QString &)> m_logCallback;
 
     QAndroidBinder m_serviceBinder;

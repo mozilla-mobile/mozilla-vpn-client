@@ -230,10 +230,18 @@ class VPNService : android.net.VpnService() {
         startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
     }
 
+    fun isUp(): Boolean{
+        return tunnel?.isUp() ?: return false
+    }
+
     /**
      * Fetches the Global QTAndroidActivity and calls startActivityForResult with the given intent
      * Is used to request the VPN-Permission, if not given.
      * Actually Implemented in src/platforms/android/AndroidJNIUtils.cpp
      */
     external fun startActivityForResult(i: Intent)
+
+}
+fun Tunnel.isUp(): Boolean {
+    return this.state == Tunnel.State.Up
 }

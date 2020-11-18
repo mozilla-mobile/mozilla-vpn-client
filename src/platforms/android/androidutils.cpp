@@ -41,7 +41,7 @@ QString AndroidUtils::GetDeviceName()
 };
 
 // Static
-bool AndroidUtils::CanEnableStartOnBoot()
+bool AndroidUtils::canEnableStartOnBoot()
 {
     jboolean res = QAndroidJniObject::callStaticMethod<jboolean>("com/mozilla/vpn/BootReceiver", "canEnableVPNOnBoot");
     return bool(res);
