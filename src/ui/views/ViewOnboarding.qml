@@ -16,7 +16,7 @@ Item {
     property real panelHeight: window.height - (nextPanel.height + nextPanel.anchors.bottomMargin + progressIndicator.height + progressIndicator.anchors.bottomMargin)
     property real panelWidth: window.width
 
-    width: Math.min(onboardingPanel.width, Theme.maxHorizontalContentWidth)
+    width: window.width
     anchors.horizontalCenter: parent.horizontalCenter
 
     SwipeView {
