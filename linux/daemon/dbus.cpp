@@ -69,16 +69,6 @@ bool DBus::activate(const QString &jsonConfig)
         return false;
     }
 
-    if (m_connected) {
-        if (!deactivate()) {
-            return false;
-        }
-
-        Q_ASSERT(!m_connected);
-    }
-
-    m_connected = true;
-
     QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
     if (!json.isObject()) {
         logger.log() << "Invalid input";
@@ -197,6 +187,16 @@ bool DBus::activate(const QString &jsonConfig)
         m_lastAllowedIPAddressRanges = allowedIPAddressRanges.join(", ");
     }
 
+    if (m_connected) {
+        if (!deactivate(true)) {
+            return false;
+        }
+
+        Q_ASSERT(!m_connected);
+    }
+
+    m_connected = true;
+
     bool status = runWgQuick(WgQuickProcess::Up,
                              m_lastPrivateKey,
                              m_lastDeviceIpv4Address,
@@ -219,7 +219,7 @@ bool DBus::activate(const QString &jsonConfig)
     return status;
 }
 
-bool DBus::deactivate()
+bool DBus::deactivate(bool serverSwitching)
 {
     logger.log() << "Deactivate";
 
@@ -250,7 +250,8 @@ bool DBus::deactivate()
 
     logger.log() << "Status:" << status;
 
-    if (status) {
+    // No notification for server switching.
+    if (!serverSwitching && status) {
         emit m_adaptor->disconnected();
     }
 
