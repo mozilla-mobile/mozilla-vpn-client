@@ -24,7 +24,6 @@
 #include <QList>
 #include <QNetworkReply>
 #include <QObject>
-#include <QPointer>
 #include <QStandardPaths>
 #include <QTimer>
 
@@ -247,8 +246,8 @@ private:
     Private *m_private = nullptr;
 
     // Task handling.
-    bool m_task_running = false;
-    QList<QPointer<Task>> m_tasks;
+    Task *m_running_task = nullptr;
+    QList<Task *> m_tasks;
 
     State m_state = StateInitialize;
     AlertType m_alert = NoAlert;

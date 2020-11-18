@@ -33,7 +33,6 @@
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QLocale>
-#include <QPointer>
 #include <QQmlApplicationEngine>
 #include <QScreen>
 #include <QTimer>
@@ -359,25 +358,26 @@ void MozillaVPN::maybeRunTask()
 {
     logger.log() << "Tasks: " << m_tasks.size();
 
-    if (m_task_running || m_tasks.empty()) {
+    if (m_running_task || m_tasks.empty()) {
         return;
     }
 
-    m_task_running = true;
-    QPointer<Task> task = m_tasks.takeFirst();
-    Q_ASSERT(!task.isNull());
+    m_running_task = m_tasks.takeFirst();
+    Q_ASSERT(m_running_task);
 
-    QObject::connect(task, &Task::completed, this, &MozillaVPN::taskCompleted);
-    QObject::connect(task, &Task::completed, task, &Task::deleteLater);
+    QObject::connect(m_running_task, &Task::completed, this, &MozillaVPN::taskCompleted);
 
-    task->run(this);
+    m_running_task->run(this);
 }
 
 void MozillaVPN::taskCompleted()
 {
     logger.log() << "Task completed";
 
-    m_task_running = false;
+    Q_ASSERT(m_running_task);
+    m_running_task->deleteLater();
+    m_running_task->disconnect();
+    m_running_task = nullptr;
 
     maybeRunTask();
 }
@@ -626,12 +626,17 @@ void MozillaVPN::reset()
 
 void MozillaVPN::deleteTasks()
 {
-    for (QPointer<Task> &task : m_tasks) {
-        delete task;
+    for (Task *task : m_tasks) {
+        task->deleteLater();
     }
 
     m_tasks.clear();
-    m_task_running = false;
+
+    if (m_running_task) {
+        m_running_task->deleteLater();
+        m_running_task->disconnect();
+        m_running_task = nullptr;
+    }
 }
 
 void MozillaVPN::setAlert(AlertType alert)
