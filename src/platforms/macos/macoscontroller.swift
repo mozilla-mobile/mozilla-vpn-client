@@ -28,6 +28,7 @@ public class MacOSControllerImpl : NSObject {
     private var privateKey : Data? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
+    private var switchingServer: Bool = false
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
@@ -101,12 +102,22 @@ public class MacOSControllerImpl : NSObject {
             return
         }
 
+        // No notifications when switching server
+        if (switchingServer) {
+            return
+        }
+
         stateChangeCallback?(session.status == .connected)
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, failureCallback: @escaping () -> Void) {
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, forSwitching: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
+
+        if (forSwitching) {
+            switchingServer = true
+            (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+        }
 
         // Let's remove the previous config if it exists.
         (tunnel!.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
@@ -168,6 +179,9 @@ public class MacOSControllerImpl : NSObject {
                 }
 
                 Logger.global?.log(message: "Loading the tunnel succeeded")
+
+                // If we were switching server, now it's time to consider the operation completed.
+                switchingServer = false
 
                 do {
                     try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()

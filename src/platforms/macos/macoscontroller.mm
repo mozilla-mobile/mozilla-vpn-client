@@ -93,7 +93,6 @@ void MacOSController::activate(const Server &server,
 {
     Q_UNUSED(device);
     Q_UNUSED(keys);
-    Q_UNUSED(forSwitching);
 
     logger.log() << "MacOSController activating" << server.hostname();
 
@@ -120,6 +119,7 @@ void MacOSController::activate(const Server &server,
                           serverPort:server.choosePort()
               allowedIPAddressRanges:allowedIPAddressRangesNS
                          ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
+                        forSwitching:forSwitching
                      failureCallback:^() {
                          logger.log() << "MacOSSWiftController - connection failed";
                          emit disconnected();
@@ -128,9 +128,13 @@ void MacOSController::activate(const Server &server,
 
 void MacOSController::deactivate(bool forSwitching)
 {
-    Q_UNUSED(forSwitching);
-
     logger.log() << "MacOSController deactivated";
+
+    if (forSwitching) {
+        logger.log() << "We do not need to disable the VPN for switching.";
+        emit disconnected();
+        return;
+    }
 
     if (!impl) {
         logger.log() << "Controller not correctly initialized";
