@@ -52,6 +52,17 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     val json = buffer?.let { String(it) }
                     val config = buildConfigFromJSON(json)
 
+                    var forSwitching = false;
+                    json?.let {
+                        val obj = JSONObject(it)
+                        forSwitching = obj.getBoolean("forSwitching")
+                    }
+                    if(forSwitching){
+                        // In case the activation is for switching purposes
+                        // We never turned the vpn off so far.
+                        this.mService.turnOff();
+                    }
+
                     this.mService.createTunnel(config)
                     if(!mService.checkPermissions()){
                         // The Permission Promt was already
