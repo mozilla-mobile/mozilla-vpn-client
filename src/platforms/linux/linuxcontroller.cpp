@@ -86,6 +86,7 @@ void LinuxController::deactivate(bool forSwitching)
 
     if (forSwitching) {
         logger.log() << "No disconnect for quick server switching";
+        emit disconnected();
         return;
     }
 
