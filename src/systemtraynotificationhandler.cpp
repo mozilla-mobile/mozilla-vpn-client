@@ -9,7 +9,7 @@ SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject *parent)
     : NotificationHandler(parent)
 {}
 
-void SystemTrayNotificationHandler::notify(const QString &title, const QString &message)
+void SystemTrayNotificationHandler::notify(const QString &title, const QString &message, int timerSec)
 {
-    SystemTrayHandler::instance()->showMessage(title, message, SystemTrayHandler::NoIcon, 2000);
+    SystemTrayHandler::instance()->showMessage(title, message, SystemTrayHandler::NoIcon, timerSec * 1000);
 }

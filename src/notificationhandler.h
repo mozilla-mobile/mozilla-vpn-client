@@ -21,7 +21,7 @@ public slots:
 protected:
     explicit NotificationHandler(QObject *parent);
 
-    virtual void notify(const QString &title, const QString &message) = 0;
+    virtual void notify(const QString &title, const QString &message, int timerSec) = 0;
 };
 
 #endif // NOTIFICATIONHANDLER_H

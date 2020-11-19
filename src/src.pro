@@ -353,6 +353,11 @@ else:ios {
     # For the authentication
     LIBS += -framework AuthenticationServices
 
+    # For notifications
+    LIBS += -framework UIKit
+    LIBS += -framework Foundation
+    LIBS += -framework UserNotifications
+
     DEFINES += MVPN_IOS
 
     SOURCES += \

@@ -13,7 +13,10 @@ public:
     IOSNotificationHandler(QObject *parent);
 
 protected:
-    void notify(const QString &title, const QString &message) override;
+    void notify(const QString &title, const QString &message, int timerSec) override;
+
+private:
+    void *m_delegate;
 };
 
 #endif // IOSNOTIFICATIONHANDLER_H
