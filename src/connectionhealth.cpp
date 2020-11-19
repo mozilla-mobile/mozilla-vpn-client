@@ -15,10 +15,10 @@ constexpr uint32_t PING_TIMOUT_SEC = 2;
 constexpr int PINGS_MAX = 10;
 
 // In seconds, the timeout for unstable pings.
-constexpr uint32_t PING_TIME_UNSTABLE_NSEC = 5;
+constexpr uint32_t PING_TIME_UNSTABLE_SEC = 1;
 
 // In seconds, the timeout to detect no-signal pings.
-constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 30;
+constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 3;
 
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
@@ -132,7 +132,7 @@ void ConnectionHealth::pingReceived(PingSender *pingSender, uint32_t msec)
 
     pingSender->deleteLater();
 
-    if (msec < PING_TIME_UNSTABLE_NSEC * 1000) {
+    if (msec < PING_TIME_UNSTABLE_SEC * 1000) {
         setStability(Stable);
     } else {
         setStability(Unstable);
