@@ -425,6 +425,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges()
         list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     }
 
+#if 0
     if (SettingsHolder::instance()->captivePortalAlert()) {
         CaptivePortal *captivePortal = MozillaVPN::instance()->captivePortal();
         const QStringList &captivePortalIpv4Addresses = captivePortal->ipv4Addresses();
@@ -439,6 +440,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges()
             }
         }
     }
+#endif
 
     if (SettingsHolder::instance()->localNetworkAccess()) {
         list.append(IPAddressRange("128.0.0.1", 1, IPAddressRange::IPv4));
