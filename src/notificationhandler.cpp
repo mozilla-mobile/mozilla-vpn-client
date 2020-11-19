@@ -8,6 +8,8 @@
 
 #if defined(MVPN_IOS)
 #include "platforms/ios/iosnotificationhandler.h"
+#elif defined(MVPN_ANDROID)
+#include "platforms/android/androidnotificationhandler.h"
 #else
 #include "systemtraynotificationhandler.h"
 #endif
@@ -21,6 +23,8 @@ NotificationHandler *NotificationHandler::create(QObject *parent)
 {
 #if defined(MVPN_IOS)
     return new IOSNotificationHandler(parent);
+#elif defined(MVPN_ANDROID)
+    return new AndroidNotificationHandler(parent);
 #else
     return new SystemTrayNotificationHandler(parent);
 #endif
