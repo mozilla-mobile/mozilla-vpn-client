@@ -46,11 +46,7 @@ AndroidController *s_instance = nullptr;
 
 } // namespace
 
-AndroidController::AndroidController() : m_binder(this)
-{
-    Q_ASSERT(!s_instance);
-    s_instance = this;
-}
+AndroidController::AndroidController() : m_binder(this){}
 AndroidController::~AndroidController()
 {
     Q_ASSERT(s_instance == this);
@@ -59,6 +55,10 @@ AndroidController::~AndroidController()
 
 AndroidController *AndroidController::instance()
 {
+    if(s_instance == nullptr){
+        logger.log() << "Create Android Controller";
+        s_instance = new AndroidController();
+    }
     return s_instance;
 }
 

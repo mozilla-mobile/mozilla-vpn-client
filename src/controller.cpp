@@ -60,7 +60,7 @@ void Controller::initialize()
 #elif defined(MVPN_IOS)
         new MacOSController()
 #elif defined(MVPN_ANDROID)
-        new AndroidController()
+        AndroidController::instance()
 #else
         new DummyController()
 #endif

@@ -13,7 +13,6 @@
 class AndroidController : public ControllerImpl, public QAndroidServiceConnection
 {
 public:
-    AndroidController();
     static AndroidController *instance();
     ~AndroidController();
 
@@ -40,6 +39,7 @@ public:
     void onServiceDisconnected(const QString &name) override;
 
 private:
+    AndroidController();
     Server m_server;
     bool m_enabledStartAtBoot = false;
     bool m_startAtBootWasSet = false;
