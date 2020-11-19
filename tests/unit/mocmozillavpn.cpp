@@ -176,3 +176,5 @@ bool MozillaVPN::startOnBootSupported() const { return false; }
 void MozillaVPN::activate() {}
 
 void MozillaVPN::deactivate() {}
+
+void MozillaVPN::refreshDevices() {}

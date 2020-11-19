@@ -334,4 +334,5 @@ Item {
 
     }
 
+    Component.onCompleted: VPN.refreshDevices()
 }

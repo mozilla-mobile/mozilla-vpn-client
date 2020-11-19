@@ -106,6 +106,7 @@ public:
     Q_INVOKABLE void storeInClipboard(const QString &text);
     Q_INVOKABLE void activate();
     Q_INVOKABLE void deactivate();
+    Q_INVOKABLE void refreshDevices();
 
     // Internal object getters:
     CaptivePortal *captivePortal() { return &m_private->m_captivePortal; }
