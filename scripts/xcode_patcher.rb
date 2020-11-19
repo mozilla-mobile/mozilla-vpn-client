@@ -131,7 +131,7 @@ class XCodeprojPatcher
       config.build_settings['PRODUCT_NAME'] = 'WireGuardNetworkExtension'
 
       # other configs
-      config.build_settings['INFOPLIST_FILE'] ||= '3rdparty/wireguard-apple/WireGuard/WireGuardNetworkExtension/Info.plist'
+      config.build_settings['INFOPLIST_FILE'] ||= 'macos/networkextension/Info.plist'
       config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform + '/networkextension/MozillaVPNNetworkExtension.entitlements'
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
 
