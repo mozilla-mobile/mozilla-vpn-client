@@ -64,7 +64,7 @@ VPNFlickable {
         // TODO: Get pricing from settings?
         //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
         //% "Subscribe for %1/mo"
-        logoTitle: qsTrId("vpn.subscription.title").arg(Number(4.99).toLocaleCurrencyString(Qt.locale(VPNSettings.languageCode)))
+        logoTitle: qsTrId("vpn.subscription.title").arg(VPNLocalizer.localizeSubscriptionCurrencyValue())
         //% "30-day money-back guarantee"
         logoSubtitle: qsTrId("vpn.subscription.moneyBackGuarantee")
         anchors.top: spacer1.bottom
