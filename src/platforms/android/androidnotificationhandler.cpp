@@ -13,5 +13,5 @@ void AndroidNotificationHandler::notify(const QString &title, const QString &mes
     // TODO
     Q_UNUSED(title);
     Q_UNUSED(message);
-    Q_UNUSEC(timerSec);
+    Q_UNUSED(timerSec);
 }
