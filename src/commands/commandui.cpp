@@ -11,6 +11,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
+#include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "signalhandler.h"
@@ -274,6 +275,8 @@ int CommandUI::run(QStringList &tokens)
         SystemTrayHandler systemTrayHandler(qApp);
         systemTrayHandler.show();
 
+        NotificationHandler *notificationHandler = NotificationHandler::create(qApp);
+
         QObject::connect(&vpn,
                          &MozillaVPN::stateChanged,
                          &systemTrayHandler,
@@ -291,8 +294,8 @@ int CommandUI::run(QStringList &tokens)
 
         QObject::connect(vpn.controller(),
                          &Controller::stateChanged,
-                         &systemTrayHandler,
-                         &SystemTrayHandler::showNotification);
+                         notificationHandler,
+                         &NotificationHandler::showNotification);
 
 #ifdef Q_OS_MAC
 #ifndef MVPN_IOS

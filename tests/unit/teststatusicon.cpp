@@ -23,8 +23,8 @@ void TestStatusIcon::basic()
 
     TestHelper::controllerState= Controller::StateOff;
     si.stateChanged();
-    QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-off.svg");
-    QCOMPARE(si.iconString(), ":/ui/resources/logo-off.svg");
+    QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
+    QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 
     TestHelper::controllerState= Controller::StateSwitching;
     si.stateChanged();

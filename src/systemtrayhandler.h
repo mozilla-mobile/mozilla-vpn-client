@@ -17,14 +17,16 @@ class SystemTrayHandler final : public QSystemTrayIcon
     Q_OBJECT
 
 public:
+    static SystemTrayHandler *instance();
+
     explicit SystemTrayHandler(QObject *parent);
+    ~SystemTrayHandler();
 
     void captivePortalNotificationRequested();
 
 public slots:
     void updateIcon(const QString &icon);
 
-    void showNotification();
     void updateContextMenu();
 
 private:
