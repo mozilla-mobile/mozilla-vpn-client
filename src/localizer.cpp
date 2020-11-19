@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "localizer.h"
+#include "constants.h"
 #include "logger.h"
 #include "settingsholder.h"
 
@@ -165,4 +166,11 @@ QVariant Localizer::data(const QModelIndex &index, int role) const
     default:
         return QVariant();
     }
+}
+
+QString Localizer::localizeSubscriptionCurrencyValue() const
+{
+    return QLocale()
+        .toCurrencyString(Constants::SUBSCRIPTION_CURRENCY_VALUE_USD,
+                          QLocale(QLocale::English, QLocale::UnitedStates).currencySymbol());
 }

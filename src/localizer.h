@@ -29,6 +29,8 @@ public:
 
     ~Localizer() = default;
 
+    Q_INVOKABLE QString localizeSubscriptionCurrencyValue() const;
+
     void initialize(const QString &code);
 
     void loadLanguage(const QString &code);
