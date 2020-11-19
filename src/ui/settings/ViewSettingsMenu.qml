@@ -17,12 +17,14 @@ VPNFlickable {
     ListModel {
         id: settingsMenuListModel
 
+        /* TODO - disable captive portal and its notifications
         ListElement {
             settingTitle: qsTrId("vpn.settings.notifications")
             imageLeftSource: "../resources/settings/notifications.svg"
             imageRightSource: "../resources/chevron.svg"
             pushView: "../settings/ViewNotifications.qml"
         }
+        */
 
         ListElement {
             settingTitle: qsTrId("vpn.settings.networking")
