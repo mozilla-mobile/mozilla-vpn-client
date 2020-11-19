@@ -14,11 +14,23 @@
 
 namespace {
 Logger logger(LOG_MAIN, "SystemTrayHandler");
+
+SystemTrayHandler *s_instance = nullptr;
+}
+
+// static
+SystemTrayHandler *SystemTrayHandler::instance()
+{
+    Q_ASSERT(s_instance);
+    return s_instance;
 }
 
 SystemTrayHandler::SystemTrayHandler(QObject *parent)
     : QSystemTrayIcon(parent)
 {
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+
     MozillaVPN *vpn = MozillaVPN::instance();
 
     // Status label
@@ -62,6 +74,12 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
     updateIcon(MozillaVPN::instance()->statusIcon()->iconString());
 
     updateContextMenu();
+}
+
+SystemTrayHandler::~SystemTrayHandler()
+{
+    Q_ASSERT(s_instance == this);
+    s_instance = nullptr;
 }
 
 void SystemTrayHandler::updateContextMenu()
@@ -134,67 +152,6 @@ void SystemTrayHandler::updateContextMenu()
             .arg(vpn->currentServer()->country())
             .arg(vpn->currentServer()->city()));
     m_lastLocationLabel->setEnabled(vpn->controller()->state() == Controller::StateOff);
-}
-
-void SystemTrayHandler::showNotification()
-{
-    logger.log() << "Show notification";
-
-    MozillaVPN *vpn = MozillaVPN::instance();
-    if (vpn->state() != MozillaVPN::StateMain) {
-        return;
-    }
-
-    if (!supportsMessages()) {
-        return;
-    }
-
-    QString title;
-    QString message;
-
-    switch (vpn->controller()->state()) {
-    case Controller::StateOn:
-        //% "VPN Connected"
-        title = qtTrId("vpn.systray.statusConnected.title");
-        //% "Connected to %1, %2"
-        //: Shown as message body in a notification. %1 is the country, %2 is the city.
-        message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
-        break;
-
-    case Controller::StateOff:
-        //% "VPN Disconnected"
-        title = qtTrId("vpn.systray.statusDisconnected.title");
-        //% "Disconnected from to %1, %2"
-        //: Shown as message body in a notification. %1 is the country, %2 is the city.
-        message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
-        break;
-
-    case Controller::StateSwitching:
-        //% "VPN Switched Servers"
-        title = qtTrId("vpn.systray.statusSwitch.title");
-        //% "Switched from %1, %2 to %3, %4"
-        //: Shown as message body in a notification. %1 and %3 are countries, %2 and %4 are cities.
-        message = qtTrId("vpn.systray.statusSwtich.message")
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city())
-                      .arg(vpn->serverCountryModel()->countryName(
-                          vpn->controller()->switchingCountryCode()))
-                      .arg(vpn->controller()->switchingCity());
-        break;
-
-    default:
-        break;
-    }
-
-    Q_ASSERT(title.isEmpty() == message.isEmpty());
-
-    if (!title.isEmpty()) {
-        showMessage(title, message, NoIcon, 2000);
-    }
 }
 
 void SystemTrayHandler::captivePortalNotificationRequested()

@@ -73,6 +73,7 @@ SOURCES += \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
+        notificationhandler.cpp \
         pingsender.cpp \
         platforms/dummy/dummypingsendworker.cpp \
         qmlengineholder.cpp \
@@ -134,6 +135,7 @@ HEADERS += \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
+        notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummypingsendworker.h \
@@ -187,6 +189,7 @@ linux:!android {
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxpingsendworker.cpp \
+            systemtraynotificationhandler.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     HEADERS += \
@@ -195,6 +198,7 @@ linux:!android {
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxpingsendworker.h \
+            systemtraynotificationhandler.h \
             tasks/authenticate/authenticationlistener.h
 
     isEmpty(PREFIX) {
@@ -208,7 +212,7 @@ linux:!android {
     INSTALLS += target
 }
 
-else:android{
+else:android {
     message(Android build)
 
     QMAKE_CXXFLAGS *= -Werror
@@ -225,10 +229,13 @@ else:android{
 
     SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
+                platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp
+
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
+                platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h
 
@@ -288,6 +295,7 @@ else:macos {
             platforms/macos/macosmenubar.cpp \
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
+            systemtraynotificationhandler.cpp \
             tasks/authenticate/authenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
@@ -299,6 +307,7 @@ else:macos {
             platforms/macos/macosmenubar.h \
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
+            systemtraynotificationhandler.h \
             tasks/authenticate/authenticationlistener.h
 
     OBJECTIVE_HEADERS += \
@@ -354,6 +363,7 @@ else:ios {
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosdatamigration.mm \
+            platforms/ios/iosnotificationhandler.mm \
             platforms/ios/iosutils.mm \
             platforms/ios/authenticationlistener.mm \
             platforms/macos/macoscryptosettings.mm \
@@ -368,6 +378,7 @@ else:ios {
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosdatamigration.h \
+            platforms/ios/iosnotificationhandler.h \
             platforms/ios/iosutils.h \
             platforms/ios/authenticationlistener.h \
             platforms/macos/macoscontroller.h
