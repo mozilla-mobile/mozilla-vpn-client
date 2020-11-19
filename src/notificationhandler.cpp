@@ -84,6 +84,6 @@ void NotificationHandler::showNotification()
     Q_ASSERT(title.isEmpty() == message.isEmpty());
 
     if (!title.isEmpty()) {
-        notify(title, message);
+        notify(title, message, 2000);
     }
 }

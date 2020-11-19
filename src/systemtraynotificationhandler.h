@@ -13,7 +13,7 @@ public:
     SystemTrayNotificationHandler(QObject *parent);
 
 protected:
-    void notify(const QString &title, const QString &message) override;
+    void notify(const QString &title, const QString &message, int timerSec) override;
 };
 
 #endif // SYSTEMTRAYNOTIFICATIONHANDLER_H

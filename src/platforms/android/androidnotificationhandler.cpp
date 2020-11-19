@@ -8,9 +8,10 @@ AndroidNotificationHandler::AndroidNotificationHandler(QObject *parent)
     : NotificationHandler(parent)
 {}
 
-void AndroidNotificationHandler::notify(const QString &title, const QString &message)
+void AndroidNotificationHandler::notify(const QString &title, const QString &message, int timerSec)
 {
     // TODO
     Q_UNUSED(title);
     Q_UNUSED(message);
+    Q_UNUSEC(timerSec);
 }
