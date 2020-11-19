@@ -987,12 +987,25 @@ bool MozillaVPN::startOnBootSupported() const
 
 void MozillaVPN::activate()
 {
+    logger.log() << "VPN tunnel activation";
+
     deleteTasks();
     scheduleTask(new TaskControllerAction(TaskControllerAction::eActivate));
 }
 
 void MozillaVPN::deactivate()
 {
+    logger.log() << "VPN tunnel deactivation";
+
     deleteTasks();
     scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
+}
+
+void MozillaVPN::refreshDevices()
+{
+    logger.log() << "Refresh devices";
+
+    if (m_state == StateMain) {
+        scheduleTask(new TaskAccountAndServers());
+    }
 }
