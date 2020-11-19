@@ -41,6 +41,7 @@
 #endif
 
 #include <QApplication>
+#include <QLockFile>
 #include <QWindow>
 
 #ifdef QT_DEBUG
@@ -82,6 +83,17 @@ int CommandUI::run(QStringList &tokens)
         if (hOption.m_set) {
             clp.showHelp(appName, options, false, false);
             return 0;
+        }
+
+        QLockFile lockFile("mozillavpn.lock");
+        lockFile.setStaleLockTime(0);
+        if (!lockFile.tryLock()) {
+            qint64 pid;
+            lockFile.getLockInfo(&pid, nullptr, nullptr);
+            QTextStream out(stderr);
+            out << "Another instance has been found (pid: " << pid << "). Aborting the execution."
+                << Qt::endl;
+            return 1;
         }
 
         logger.log() << "UI starting";
