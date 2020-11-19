@@ -45,6 +45,8 @@ void NotificationHandler::showNotification()
 
     switch (vpn->controller()->state()) {
     case Controller::StateOn:
+        m_connected = true;
+
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
         //% "Connected to %1, %2"
@@ -55,16 +57,22 @@ void NotificationHandler::showNotification()
         break;
 
     case Controller::StateOff:
-        //% "VPN Disconnected"
-        title = qtTrId("vpn.systray.statusDisconnected.title");
-        //% "Disconnected from to %1, %2"
-        //: Shown as message body in a notification. %1 is the country, %2 is the city.
-        message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
+        if (m_connected) {
+            m_connected = false;
+
+            //% "VPN Disconnected"
+            title = qtTrId("vpn.systray.statusDisconnected.title");
+            //% "Disconnected from to %1, %2"
+            //: Shown as message body in a notification. %1 is the country, %2 is the city.
+            message = qtTrId("vpn.systray.statusDisconnected.message")
+                          .arg(vpn->currentServer()->country())
+                          .arg(vpn->currentServer()->city());
+        }
         break;
 
     case Controller::StateSwitching:
+        m_connected = true;
+
         //% "VPN Switched Servers"
         title = qtTrId("vpn.systray.statusSwitch.title");
         //% "Switched from %1, %2 to %3, %4"
@@ -84,6 +92,6 @@ void NotificationHandler::showNotification()
     Q_ASSERT(title.isEmpty() == message.isEmpty());
 
     if (!title.isEmpty()) {
-        notify(title, message, 2000);
+        notify(title, message, 2);
     }
 }

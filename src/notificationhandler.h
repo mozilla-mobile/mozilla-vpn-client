@@ -22,6 +22,10 @@ protected:
     explicit NotificationHandler(QObject *parent);
 
     virtual void notify(const QString &title, const QString &message, int timerSec) = 0;
+
+private:
+    // We want to show a 'disconnected' notification only if we were actually connected.
+    bool m_connected = false;
 };
 
 #endif // NOTIFICATIONHANDLER_H
