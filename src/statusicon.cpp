@@ -18,8 +18,7 @@ constexpr const std::array<const char *, 4> ANIMATED_ICON_STEPS
        ":/ui/resources/logo-animated4.svg"};
 
 constexpr const char *ICON_ON = ":/ui/resources/logo-on.svg";
-constexpr const char *ICON_OFF = ":/ui/resources/logo-off.svg";
-constexpr const char *ICON_GENERIC = ":/ui/resources/logo-tray.svg";
+constexpr const char *ICON_GENERIC = ":/ui/resources/logo-generic.svg";
 
 } // namespace
 
@@ -64,7 +63,7 @@ void StatusIcon::stateChanged()
         break;
 
     case Controller::StateOff:
-        setIcon(ICON_OFF);
+        setIcon(ICON_GENERIC);
         break;
 
     case Controller::StateSwitching:
