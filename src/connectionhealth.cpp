@@ -27,9 +27,9 @@ Logger logger(LOG_NETWORKING, "ConnectionHealth");
 ConnectionHealth::ConnectionHealth()
 {
     connect(&m_pingTimer, &QTimer::timeout, this, &ConnectionHealth::nextPing);
-    connect(&m_noSignalTimer, &QTimer::timeout, this, &ConnectionHealth::noSignalDetected);
 
-    m_pingThread.start();
+    connect(&m_noSignalTimer, &QTimer::timeout, this, &ConnectionHealth::noSignalDetected);
+    m_noSignalTimer.setSingleShot(true);
 }
 
 ConnectionHealth::~ConnectionHealth()
