@@ -6,28 +6,49 @@
 #define IAPHANDLER_H
 
 #include <QObject>
+#include <QInAppStore>
 
-class QInAppStore;
+class QInAppTransaction;
 
 class IAPHandler final : public QObject
 {
     Q_OBJECT
 
 public:
-    IAPHandler(QObject *parent) : QObject(parent) {}
+    static IAPHandler *createInstance();
 
-    void start(bool restore);
+    static IAPHandler* instance();
+
+    bool hasProductsRegistered() const { return m_productsRegistrationState == eRegistered; }
+
+    void registerProducts(const QStringList &products);
+
+    void startSubscription(bool restore);
 
 signals:
-    void completed();
-    void failed();
+    void productsRegistered();
+
+    void subscriptionFailed();
+    void subscriptionCompleted();
 
 private:
+    IAPHandler(QObject *parent);
+    ~IAPHandler();
+
     void purchaseCompleted();
 
 private:
-    QInAppStore* m_appStore = nullptr;
-    bool m_completed = false;
+    QInAppStore m_appStore;
+
+    enum {
+        eNotRegistered,
+        eRegistering,
+        eRegistered,
+    } m_productsRegistrationState = eNotRegistered;
+
+    QString m_productName;
+
+    bool m_started = false;
 };
 
 #endif // IAPHANDLER_H

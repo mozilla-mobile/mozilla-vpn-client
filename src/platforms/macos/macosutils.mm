@@ -35,6 +35,7 @@ void MacOSUtils::enableLoginItem(bool startAtBoot)
 }
 
 namespace {
+
 bool dockClickHandler(id self, SEL cmd, ...)
 {
     Q_UNUSED(self);

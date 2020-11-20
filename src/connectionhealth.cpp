@@ -27,7 +27,9 @@ Logger logger(LOG_NETWORKING, "ConnectionHealth");
 ConnectionHealth::ConnectionHealth()
 {
     connect(&m_pingTimer, &QTimer::timeout, this, &ConnectionHealth::nextPing);
+
     connect(&m_noSignalTimer, &QTimer::timeout, this, &ConnectionHealth::noSignalDetected);
+    m_noSignalTimer.setSingleShot(true);
 
     m_pingThread.start();
 }
@@ -114,7 +116,7 @@ void ConnectionHealth::nextPing()
 
 void ConnectionHealth::pingReceived(PingSender *pingSender, uint32_t msec)
 {
-    logger.log() << "Ping answer reeived in msec:" << msec;
+    logger.log() << "Ping answer received in msec:" << msec;
 
     // If a ping has been received, we have signal.
     m_noSignalTimer.stop();

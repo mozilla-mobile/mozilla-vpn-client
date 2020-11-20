@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "command.h"
+#include "commandlineparser.h"
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -54,9 +55,7 @@ int Command::runCommandLineApp(std::function<int()> &&a_callback)
 {
     std::function<int()> callback = std::move(a_callback);
 
-    constexpr const char *APP_NAME = "mozillavpn";
-    int argc = 1;
-    QCoreApplication app(argc, (char **) &APP_NAME);
+    QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
@@ -72,9 +71,7 @@ int Command::runGuiApp(std::function<int()> &&a_callback)
 {
     std::function<int()> callback = std::move(a_callback);
 
-    constexpr const char *APP_NAME = "mozillavpn";
-    int argc = 1;
-    QApplication app(argc, (char **) &APP_NAME);
+    QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
@@ -95,9 +92,7 @@ int Command::runQmlApp(std::function<int()> &&a_callback)
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    constexpr const char *APP_NAME = "mozillavpn";
-    int argc = 1;
-    QApplication app(argc, (char **) &APP_NAME);
+    QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
     QCoreApplication::setApplicationName("Mozilla VPN");
     QCoreApplication::setApplicationVersion(APP_VERSION);
