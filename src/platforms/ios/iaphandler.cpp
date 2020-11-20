@@ -85,7 +85,7 @@ IAPHandler::IAPHandler(QObject *parent) : QObject(parent)
 
         case QInAppTransaction::PurchaseRestored:
             logger.log() << "Purchase Restored";
-            // TODO!!
+            purchaseCompleted();
             break;
 
         case QInAppTransaction::Unknown:
@@ -128,9 +128,8 @@ void IAPHandler::registerProducts(const QStringList &products)
     logger.log() << "Waiting for the products registration";
 }
 
-void IAPHandler::start(bool restore)
+void IAPHandler::startSubscription(bool restore)
 {
-    Q_UNUSED(restore);
     Q_ASSERT(m_productsRegistrationState == eRegistered);
     Q_ASSERT(m_productName.isEmpty());
 
@@ -140,6 +139,12 @@ void IAPHandler::start(bool restore)
     }
 
     m_started = true;
+
+    if (restore) {
+        logger.log() << "Restore the subscription";
+        m_appStore.restorePurchases();
+        return;
+    }
 
     logger.log() << "Starting the subscription";
 

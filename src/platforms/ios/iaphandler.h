@@ -23,7 +23,7 @@ public:
 
     void registerProducts(const QStringList &products);
 
-    void start(bool restore);
+    void startSubscription(bool restore);
 
 signals:
     void productsRegistered();

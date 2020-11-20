@@ -810,7 +810,7 @@ void MozillaVPN::startIAP(bool restore)
         return;
     }
 
-    iap->start(restore);
+    iap->startSubscription(restore);
 }
 #endif
 
