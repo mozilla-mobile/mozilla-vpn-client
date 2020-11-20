@@ -43,10 +43,11 @@ Row {
     }
     Accessible.focusable: true
     Accessible.role: Accessible.StaticText
-    Accessible.name: markerLabel
-    Accessible.description: markerData
-    focus: true
-    activeFocusOnTab: true
+    //% "%1: %2 %3"
+    Accessible.name: qsTrId("vpn.connectionInfo.accessibleName")
+        .arg(label.text)
+        .arg(value.text)
+        .arg(range.text)
 
     spacing: 12
 
@@ -63,6 +64,8 @@ Row {
         spacing: 6
 
         Text {
+            id: range
+
             font.pixelSize: 10
             height: 16
             text: computeRange()
@@ -71,6 +74,8 @@ Row {
         }
 
         Text {
+            id: label
+
             font.pixelSize: 14
             text: markerLabel
             font.family: Theme.fontBoldFamily
@@ -78,6 +83,8 @@ Row {
         }
 
         Text {
+            id: value
+
             font.pixelSize: 16
             text: computeValue()
             font.family: Theme.fontInterFamily
