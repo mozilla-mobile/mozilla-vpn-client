@@ -40,6 +40,9 @@ public:
                          bool hasCommands,
                          bool compact);
 
+    static int &argc();
+    static char **argv();
+
 private:
     static bool parseOptions(QStringList &tokens, QList<Option *> &options);
     static bool parseOption(const QString &option, bool shortOption, QList<Option *> &options);
