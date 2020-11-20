@@ -4,40 +4,40 @@
 
 import QtQuick 2.5
 import QtCharts 2.0
+import QtQuick.Controls 2.15
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-Item {
-    id: chartWrapper
 
-    anchors.fill: box
-    states: [
-        State {
-            name: "visible"
-            when: chartWrapper.visible
+Popup {
+    id: popup
 
-            StateChangeScript {
-                script: VPNConnectionData.activate(txSeries, rxSeries, axisX, axisY)
-            }
+    height: box.height
+    width: box.width
+    modal: true
+    focus: true
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+    onClosed: VPNConnectionData.deactivate()
+    onOpened: {
+        VPNConnectionData.activate(txSeries, rxSeries, axisX, axisY);
+        VPNCloseEventHandler.addView(chartWrapper);
+        popup.forceActiveFocus()
+    }
 
-        },
-        State {
-            name: "invisible"
-            when: !chartWrapper.visible
+    Accessible.focusable: true
+    Accessible.role: Accessible.Dialog
+    Accessible.name: connectionInfoButton.accessibleName
 
-            StateChangeScript {
-                script: VPNConnectionData.deactivate()
-            }
 
-        }
-    ]
+    contentItem: Item {
+        id: chartWrapper
 
-    Rectangle {
-        anchors.fill: parent
-        height: parent.height
-        width: parent.width
-        color: "#321C64"
-        radius: 8
+        property var rBytes: VPNConnectionData.rxBytes
+        property var tBytes: VPNConnectionData.txBytes
+
+
+        width: box.width
+        height: box.height
         antialiasing: true
 
         ChartView {
@@ -45,24 +45,25 @@ Item {
 
             antialiasing: true
             backgroundColor: "#321C64"
-            width: parent.width
+            width: parent.width + 16
             height: (parent.height / 2) - 32
             legend.visible: false
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: 60
+            anchors.topMargin: 48
             margins.top: 0
             margins.bottom: 0
             margins.left: 0
             margins.right: 0
             animationOptions: ChartView.SeriesAnimations
 
+
             ValueAxis {
                 id: axisX
 
+                tickCount: 1
                 min: 0
                 max: 29
-                tickCount: 5
                 lineVisible: false
                 labelsVisible: false
                 gridVisible: false
@@ -72,6 +73,7 @@ Item {
             ValueAxis {
                 id: axisY
 
+                tickCount: 1
                 min: 10
                 max: 80
                 lineVisible: false
@@ -85,8 +87,6 @@ Item {
 
                 axisX: axisX
                 axisY: axisY
-                useOpenGL: false
-                capStyle: Qt.RoundCap
                 color: "#F68953"
                 width: 2
             }
@@ -96,8 +96,6 @@ Item {
 
                 axisX: axisX
                 axisY: axisY
-                useOpenGL: true
-                capStyle: Qt.RoundCap
                 color: "#EE3389"
                 width: 2
             }
@@ -106,7 +104,7 @@ Item {
 
         VPNBoldLabel {
             anchors.top: parent.top
-            anchors.topMargin: 24
+            anchors.topMargin: Theme.windowMargin
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.horizontalCenter: parent.center
@@ -116,12 +114,16 @@ Item {
             //% "IP: %1"
             //: The current IP address
             text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
+            Accessible.name: text
+            Accessible.role: Accessible.StaticText
+            focus: true
+            activeFocusOnTab: true
         }
 
         Row {
             spacing: 48
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 48
+            anchors.bottomMargin: 32
             anchors.horizontalCenter: parent.horizontalCenter
 
             VPNGraphLegendMarker {
@@ -129,7 +131,7 @@ Item {
                 //: The current download speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.download")
                 rectColor: "#EE3389"
-                markerData: VPNConnectionData.rxBytes
+                markerData: chartWrapper.rBytes
             }
 
             VPNGraphLegendMarker {
@@ -137,7 +139,7 @@ Item {
                 //: The current upload speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.upload")
                 rectColor: "#F68953"
-                markerData: VPNConnectionData.txBytes
+                markerData: chartWrapper.tBytes
             }
 
         }
@@ -145,12 +147,10 @@ Item {
         VPNIconButton {
             id: backButton
 
-            onClicked: chartWrapper.visible = false
+            onClicked: popup.close()
             buttonColorScheme: Theme.iconButtonDarkBackground
             anchors.top: parent.top
             anchors.left: parent.left
-            anchors.topMargin: 8
-            anchors.leftMargin: 8
             //% "Close"
             accessibleName: qsTrId("vpn.connectionInfo.close")
 
@@ -163,17 +163,29 @@ Item {
 
         }
 
+        Connections {
+            function onGoBack(item) {
+                if (item === chartWrapper)
+                    backButton.clicked();
+
+            }
+
+            target: VPNCloseEventHandler
+        }
+
     }
 
-    Component.onCompleted: VPNCloseEventHandler.addView(chartWrapper)
+    background: Rectangle {
+        color: box.color
+        height: box.height
+        width: box.width
+        radius: box.radius
+        antialiasing: true
+    }
 
-    Connections {
-        target: VPNCloseEventHandler
-        function onGoBack(item) {
-            if (item === chartWrapper) {
-                backButton.clicked();
-            }
-        }
+    Overlay.modal: Rectangle {
+        color: Theme.bgColor30
+        opacity: 0.5
     }
 
 }

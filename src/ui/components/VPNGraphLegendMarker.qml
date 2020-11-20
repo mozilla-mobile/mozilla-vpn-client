@@ -41,6 +41,12 @@ Row {
 
         return roundValue(markeData / 8.192e+09);
     }
+    Accessible.focusable: true
+    Accessible.role: Accessible.StaticText
+    Accessible.name: markerLabel
+    Accessible.description: markerData
+    focus: true
+    activeFocusOnTab: true
 
     spacing: 12
 

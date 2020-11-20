@@ -456,7 +456,7 @@ Rectangle {
     VPNIconButton {
         id: connectionInfoButton
 
-        onClicked: connectionInfo.visible = true
+        onClicked: connectionInfo.open()
         buttonColorScheme: Theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
@@ -567,12 +567,6 @@ Rectangle {
 
     VPNConnectionInfo {
         id: connectionInfo
-
-        anchors.fill: parent
-        height: box.height
-        width: box.width
-        visible: false
-        opacity: connectionInfo.visible ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
