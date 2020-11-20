@@ -172,7 +172,7 @@ void LinuxController::getBackendLogs(std::function<void(const QString &)> &&a_ca
 {
     std::function<void(const QString &)> callback = std::move(a_callback);
 
-    QDBusPendingCallWatcher *watcher = m_dbus->logs();
+    QDBusPendingCallWatcher *watcher = m_dbus->getLogs();
     connect(watcher,
             &QDBusPendingCallWatcher::finished,
             new BackendLogsObserver(this, std::move(callback)),

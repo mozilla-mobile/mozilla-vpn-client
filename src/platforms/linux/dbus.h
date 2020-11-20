@@ -34,7 +34,9 @@ public:
 
     QDBusPendingCallWatcher *status();
 
-    QDBusPendingCallWatcher *logs();
+    QDBusPendingCallWatcher *getLogs();
+
+    QDBusPendingCallWatcher *cleanupLogs();
 
 signals:
     void connected();

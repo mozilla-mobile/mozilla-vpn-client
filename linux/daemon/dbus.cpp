@@ -291,9 +291,9 @@ QString DBus::status()
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
-QString DBus::logs()
+QString DBus::getLogs()
 {
-    logger.log() << "Log request";
+    logger.log() << "Get log request";
 
     QString output;
     QTextStream out(&output);
@@ -304,6 +304,13 @@ QString DBus::logs()
     }
 
     return output;
+}
+
+void DBus::cleanupLogs()
+{
+    logger.log() << "Cleanup log request";
+
+    LogHandler::instance()->cleanupLogs();
 }
 
 bool DBus::runWgQuick(WgQuickProcess::Op op,

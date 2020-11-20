@@ -32,7 +32,9 @@ public slots:
 
     QString status();
 
-    QString logs();
+    QString getLogs();
+
+    void cleanupLogs();
 
 private:
     bool runWgQuick(WgQuickProcess::Op op,
