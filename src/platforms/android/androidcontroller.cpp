@@ -72,7 +72,7 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
     JNINativeMethod methods[]{{"startActivityForResult",
                                "(Landroid/content/Intent;)V",
                                reinterpret_cast<void *>(startActivityForResult)}};
-    QAndroidJniObject javaClass("com/mozilla/vpn/VPNService");
+    QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNService");
     QAndroidJniEnvironment env;
     jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
     env->RegisterNatives(objectClass, methods, sizeof(methods) / sizeof(methods[0]));
@@ -80,7 +80,7 @@ void AndroidController::initialize(const Device *device, const Keys *keys)
 
     // Start the VPN Service (if not yet) and Bind to it
     QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(),
-                                          "com.mozilla.vpn.VPNService"),
+                                          "org.mozilla.firefox.vpn.VPNService"),
                            *this,
                            QtAndroid::BindFlag::AutoCreate);
 }

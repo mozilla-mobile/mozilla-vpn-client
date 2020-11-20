@@ -82,7 +82,7 @@ AndroidWebView::AndroidWebView(QQuickItem *parent) : QQuickItem(parent)
         s_methodsInitialized = true;
 
         QAndroidJniEnvironment env;
-        jclass javaClass = env.findClass("com/mozilla/vpn/VPNWebView");
+        jclass javaClass = env.findClass("org/mozilla/firefox/vpn/VPNWebView");
         if (!javaClass) {
             propagateError(ErrorHandler::BackendServiceError);
             return;
@@ -107,7 +107,7 @@ AndroidWebView::AndroidWebView(QQuickItem *parent) : QQuickItem(parent)
     QAndroidJniObject activity = QtAndroid::androidActivity();
     Q_ASSERT(activity.isValid());
 
-    m_object = QAndroidJniObject("com/mozilla/vpn/VPNWebView",
+    m_object = QAndroidJniObject("org/mozilla/firefox/vpn/VPNWebView",
                                  "(Landroid/app/Activity;Ljava/lang/String;)V",
                                  activity.object<jobject>(),
                                  userAgent.object<jstring>());
