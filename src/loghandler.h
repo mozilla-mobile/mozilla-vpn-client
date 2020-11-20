@@ -59,6 +59,8 @@ public:
 
     const QVector<Log> &logs();
 
+    void cleanupLogs();
+
 private:
     LogHandler();
 

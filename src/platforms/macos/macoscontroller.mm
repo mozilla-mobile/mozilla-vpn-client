@@ -211,3 +211,15 @@ void MacOSController::getBackendLogs(std::function<void(const QString &)> &&a_ca
     QByteArray content = file.readAll();
     callback(content);
 }
+
+void MacOSController::cleanupBackendLogs()
+{
+    QString groupId(GROUP_ID);
+    NSURL *groupPath = [[NSFileManager defaultManager]
+        containerURLForSecurityApplicationGroupIdentifier:groupId.toNSString()];
+
+    NSURL *path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
+
+    QFile file(QString::fromNSString([path path]));
+    file.remove();
+}

@@ -27,6 +27,8 @@ public:
 
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
+    void cleanupBackendLogs() override;
+
 private:
     bool m_checkingStatus = false;
 };

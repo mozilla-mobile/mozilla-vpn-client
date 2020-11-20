@@ -65,6 +65,8 @@ public:
 
     void getBackendLogs(std::function<void(const QString &logs)> &&callback);
 
+    void cleanupBackendLogs();
+
     void getStatus(
         std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
             &&callback);

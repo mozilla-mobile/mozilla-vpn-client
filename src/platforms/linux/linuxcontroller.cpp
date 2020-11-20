@@ -178,3 +178,8 @@ void LinuxController::getBackendLogs(std::function<void(const QString &)> &&a_ca
             new BackendLogsObserver(this, std::move(callback)),
             &BackendLogsObserver::completed);
 }
+
+void LinuxController::cleanupBackendLogs()
+{
+    m_dbus->cleanupLogs();
+}

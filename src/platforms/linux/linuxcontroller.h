@@ -29,6 +29,8 @@ public:
 
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
+    void cleanupBackendLogs() override;
+
 private slots:
     void checkStatusCompleted(QDBusPendingCallWatcher *call);
     void initializeCompleted(QDBusPendingCallWatcher *call);

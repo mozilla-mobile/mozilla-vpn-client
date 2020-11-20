@@ -352,7 +352,18 @@ void MozillaVPN::openLink(LinkType linkType)
 
     case LinkUpdate:
         url = NetworkManager::instance()->apiUrl();
-        // TODO
+        url.append("/r/vpn/update/");
+#if defined(MVPN_LINUX)
+        url.append("linux");
+#elif defined(MVPN_MACOS)
+        url.append("macos");
+#elif defined(MVPN_IOS)
+        url.append("ios");
+#elif defined(MVPN_ANDROID)
+        url.append("android");
+#else
+        url.append("dummy");
+#endif
         break;
 
     default:
@@ -860,53 +871,55 @@ bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation location,
 
     logger.log() << "Writing logs into: " << logFile;
 
-    QFile file(logFile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    QFile *file = new QFile(logFile);
+    if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
         logger.log() << "Failed to open the logfile";
+        delete file;
         return false;
     }
 
-    QTextStream out(&file);
+    QTextStream *out = new QTextStream(file);
+    serializeLogs(out, [callback = std::move(callback), logFile, file, out]() {
+        Q_ASSERT(out);
+        Q_ASSERT(file);
+        delete out;
+        delete file;
 
-    out << "Mozilla VPN logs" << Qt::endl << "================" << Qt::endl << Qt::endl;
+        callback(logFile);
+    });
+
+    return true;
+}
+
+void MozillaVPN::serializeLogs(QTextStream *out, std::function<void()> &&a_finalizeCallback)
+{
+    std::function<void()> finalizeCallback = std::move(a_finalizeCallback);
+
+    *out << "Mozilla VPN logs" << Qt::endl << "================" << Qt::endl << Qt::endl;
 
     LogHandler *logHandler = LogHandler::instance();
     for (const LogHandler::Log &log : logHandler->logs()) {
-        logHandler->prettyOutput(out, log);
+        logHandler->prettyOutput(*out, log);
     }
 
-    file.close();
-
     MozillaVPN::instance()->controller()->getBackendLogs(
-        [callback = std::move(callback), logFile](const QString &logs) {
+        [out, finalizeCallback = std::move(finalizeCallback)](const QString &logs) {
             logger.log() << "Logs from the backend service received";
 
-            QFile file(logFile);
-            if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-                logger.log() << "Failed to re-open the logfile";
-                return;
-            }
-
-            QTextStream out(&file);
-
-            out << Qt::endl
-                << Qt::endl
-                << "Mozilla VPN backend logs" << Qt::endl
-                << "========================" << Qt::endl
-                << Qt::endl;
+            *out << Qt::endl
+                 << Qt::endl
+                 << "Mozilla VPN backend logs" << Qt::endl
+                 << "========================" << Qt::endl
+                 << Qt::endl;
 
             if (!logs.isEmpty()) {
-                out << logs;
+                *out << logs;
             } else {
-                out << "No logs from the backend.";
+                *out << "No logs from the backend.";
             }
 
-            file.close();
-
-            callback(logFile);
+            finalizeCallback();
         });
-
-    return true;
 }
 
 void MozillaVPN::viewLogs()
@@ -928,25 +941,34 @@ void MozillaVPN::viewLogs()
     qWarning() << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
 }
 
-QString MozillaVPN::retrieveLogs()
+void MozillaVPN::retrieveLogs()
 {
     logger.log() << "Retrieve logs";
 
-    QString logs;
-    QTextStream out(&logs);
+    QString *buffer = new QString();
+    QTextStream *out = new QTextStream(buffer);
 
-    LogHandler *logHandler = LogHandler::instance();
-    for (const LogHandler::Log &log : logHandler->logs()) {
-        logHandler->prettyOutput(out, log);
-    }
+    serializeLogs(out, [this, buffer, out]() {
+        Q_ASSERT(out);
+        Q_ASSERT(buffer);
 
-    return logs;
+        delete out;
+        emit logsReady(*buffer);
+        delete buffer;
+    });
 }
 
 void MozillaVPN::storeInClipboard(const QString &text)
 {
     logger.log() << "Store in clipboard";
     QApplication::clipboard()->setText(text);
+}
+
+void MozillaVPN::cleanupLogs()
+{
+    logger.log() << "Cleanup logs";
+    LogHandler::instance()->cleanupLogs();
+    MozillaVPN::instance()->controller()->cleanupBackendLogs();
 }
 
 bool MozillaVPN::modelsInitialized() const

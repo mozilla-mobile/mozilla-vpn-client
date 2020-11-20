@@ -164,12 +164,13 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::requestViewLogs() {}
 
-QString MozillaVPN::retrieveLogs()
-{
-    return "LOGS!";
-}
+void MozillaVPN::retrieveLogs() {}
 
 void MozillaVPN::storeInClipboard(const QString &) {}
+
+void MozillaVPN::cleanupLogs() {}
+
+void MozillaVPN::serializeLogs(QTextStream *, std::function<void()> &&) {}
 
 bool MozillaVPN::startOnBootSupported() const { return false; }
 

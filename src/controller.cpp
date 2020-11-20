@@ -364,6 +364,13 @@ void Controller::getBackendLogs(std::function<void(const QString &)> &&a_callbac
     m_impl->getBackendLogs(std::move(callback));
 }
 
+void Controller::cleanupBackendLogs()
+{
+    if (m_impl) {
+        m_impl->cleanupBackendLogs();
+    }
+}
+
 void Controller::getStatus(
     std::function<void(const QString &serverIpv4Gateway, uint64_t txByte, uint64_t rxBytes)>
         &&a_callback)
