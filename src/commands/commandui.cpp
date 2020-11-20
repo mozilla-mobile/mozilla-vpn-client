@@ -42,11 +42,14 @@
 #endif
 
 #include <QApplication>
-#include <QLockFile>
 #include <QWindow>
 
 #ifdef QT_DEBUG
 #include <QLoggingCategory>
+#endif
+
+#ifdef MVPN_LINUX
+#include <QLockFile>
 #endif
 
 namespace {
@@ -86,6 +89,7 @@ int CommandUI::run(QStringList &tokens)
             return 0;
         }
 
+#ifdef MVPN_LINUX
         QLockFile lockFile("mozillavpn.lock");
         lockFile.setStaleLockTime(0);
         if (!lockFile.tryLock()) {
@@ -96,6 +100,7 @@ int CommandUI::run(QStringList &tokens)
                 << Qt::endl;
             return 1;
         }
+#endif
 
         logger.log() << "UI starting";
 
