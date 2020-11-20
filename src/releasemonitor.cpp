@@ -96,37 +96,37 @@ bool ReleaseMonitor::processData(const QByteArray &data)
 
     QJsonObject platformData = platformDataValue.toObject();
 
+    double latestVersion = 0;
+    double minimumVersion = 0;
+    double currentVersion = QString(APP_VERSION).toDouble();
+
     QJsonValue latestValue = platformData.take("latest");
     if (!latestValue.isObject()) {
         logger.log() << "Platform.latest object not available";
-        return false;
-    }
+    } else {
+        QJsonObject latestData = latestValue.toObject();
 
-    QJsonObject latestData = latestValue.toObject();
-
-    QJsonValue latestVersionValue = latestData.take("version");
-    if (!latestVersionValue.isString()) {
-        logger.log() << "Platform.latest.version string not available";
-        return false;
+        QJsonValue latestVersionValue = latestData.take("version");
+        if (!latestVersionValue.isString()) {
+            logger.log() << "Platform.latest.version string not available";
+        } else {
+            latestVersion = latestVersionValue.toString().toDouble();
+        }
     }
 
     QJsonValue minimumValue = platformData.take("minimum");
     if (!minimumValue.isObject()) {
         logger.log() << "Platform.minimum object not available";
-        return false;
+    } else {
+        QJsonObject minimumData = minimumValue.toObject();
+
+        QJsonValue minimumVersionValue = minimumData.take("version");
+        if (!minimumVersionValue.isString()) {
+            logger.log() << "Platform.minimum.version string not available";
+        } else {
+            minimumVersion = minimumVersionValue.toString().toDouble();
+        }
     }
-
-    QJsonObject minimumData = minimumValue.toObject();
-
-    QJsonValue minimumVersionValue = minimumData.take("version");
-    if (!minimumVersionValue.isString()) {
-        logger.log() << "Platform.minimum.version string not available";
-        return false;
-    }
-
-    double latestVersion = latestVersionValue.toString().toDouble();
-    double minimumVersion = minimumVersionValue.toString().toDouble();
-    double currentVersion = QString(APP_VERSION).toDouble();
 
     logger.log() << "Latest version:" << latestVersion;
     logger.log() << "Minimum version:" << minimumVersion;
