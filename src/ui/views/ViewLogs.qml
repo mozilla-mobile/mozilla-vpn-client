@@ -6,7 +6,6 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 
@@ -16,10 +15,14 @@ import "../themes/themes.js" as Theme
 Item {
     id: logs
 
+    width: window.width
+    height: window.height
+    Component.onCompleted: VPNCloseEventHandler.addView(logs)
+
     VPNMenu {
         id: menu
-        isMainView: true
 
+        isMainView: true
         //% "View Logs"
         title: qsTrId("vpn.viewlogs.title")
     }
@@ -27,38 +30,97 @@ Item {
     ScrollView {
         id: logScrollView
 
-        height: parent.height - menu.height - copyLogs.height
-        width: parent.width
+        height: logs.height - menu.height - copyClearWrapper.height
+        width: logs.width
         anchors.top: menu.bottom
+        anchors.horizontalCenter: logs.horizontalCenter
+        contentWidth: width - (Theme.windowMargin * 2)
+        clip: true
+        topInset: Theme.rowHeight
+        bottomInset: Theme.rowHeight * 2
+        leftPadding: Theme.windowMargin
+        rightPadding: Theme.windowMargin
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
         VPNTextBlock {
             id: logText
-
+            y: Theme.windowMargin
+            font.pixelSize: 11
+            lineHeight: 16
             text: VPN.retrieveLogs()
+            width: parent.width
         }
     }
 
-    VPNButton {
-        id: copyLogs
+    Rectangle {
+        id: div
 
         width: parent.width
-        anchors.top: logScrollView.bottom
-
-        //% "Copy"
-        //: Copy into the OS clipboard
-        text: qsTrId("vpn.viewLogs.copy")
-        radius: 4
-        onClicked: VPN.storeInClipboard(logText.text)
+        height: 1
+        color: Theme.divider
+        Layout.alignment: Qt.AlignRight
+        anchors.bottom: copyClearWrapper.top
     }
 
-    Component.onCompleted: VPNCloseEventHandler.addView(logs)
+    Rectangle {
+        id: copyClearWrapper
+
+        color: Theme.bgColor
+        height: Theme.rowHeight * 1.5
+        anchors.bottom: parent.bottom
+        width: logs.width
+
+        RowLayout {
+            spacing: 0
+            height: parent.height
+            width: copyClearWrapper.width
+
+            VPNLogsButton {
+                //% "Copy"
+                buttonText: qsTrId("vpn.logs.copy")
+                iconSource: "../resources/copy.svg"
+                onClicked: {
+                    VPN.storeInClipboard(logText.text);
+                    //% "Copied!"
+                    buttonText = qsTrId("vpn.logs.copied");
+                }
+            }
+
+            Rectangle {
+                Layout.preferredHeight: parent.height
+                Layout.preferredWidth: 1
+                color: Theme.divider
+                Layout.alignment: Qt.AlignRight
+            }
+
+            VPNLogsButton {
+                //% "Clear"
+                buttonText: qsTrId("vpn.logs.clear")
+                iconSource: "../resources/delete.svg"
+            }
+
+        }
+
+        Rectangle {
+            id: divider
+
+            height: 1
+            width: parent.width
+            anchors.bottom: parent.bottom
+            color: "#0C0C0D0A"
+        }
+
+    }
 
     Connections {
-        target: VPNCloseEventHandler
         function onGoBack(item) {
-            if (item === logs) {
+            if (item === logs)
                 mainStackView.pop();
-            }
+
         }
+
+        target: VPNCloseEventHandler
     }
+
 }

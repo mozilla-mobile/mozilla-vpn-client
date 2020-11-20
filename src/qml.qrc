@@ -389,5 +389,7 @@
         <file>ui/components/VPNButtonLoader.qml</file>
         <file>ui/resources/quick-access.svg</file>
         <file>platforms/android/androidauthenticationview.qml</file>
+        <file>ui/components/VPNLogsButton.qml</file>
+        <file>ui/resources/copy.svg</file>
     </qresource>
 </RCC>

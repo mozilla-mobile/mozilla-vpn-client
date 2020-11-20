@@ -16,6 +16,7 @@ const blueDisabled = "#a3c0f3";
 const blueFocusOutline = "#4d0a84ff";
 const blueFocusBorder = "#0a84ff";
 
+const divider = "#0C0C0D0A"
 const green = "#3FE1B0";
 const grey = "#CACACA";
 const greyHovered = "#E6E6E6";
