@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package com.mozilla.vpn
+package org.mozilla.firefox.vpn
 
 import android.R
 import android.app.Notification
@@ -146,7 +146,7 @@ class VPNService : android.net.VpnService() {
         stopForeground(true)
     }
 
-    val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
+    val NOTIFICATION_CHANNEL_ID = "org.mozilla.firefox.vpnNotification"
     val CONNECTED_NOTIFICATION_ID = 1337
 
     /*
@@ -177,7 +177,7 @@ class VPNService : android.net.VpnService() {
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(com.mozilla.vpn.R.drawable.ic_logo_on)
+            .setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_logo_on)
             .setContentTitle("Todo: Connected Title")
             .setContentText("Todo: you're connected")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
