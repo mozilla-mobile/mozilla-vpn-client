@@ -15,6 +15,7 @@ public:
     enum HelpRoles {
         HelpEntryRole = Qt::UserRole + 1,
         HelpIdRole,
+        HelpExternalLinkRole,
     };
 
     HelpModel() = default;
