@@ -32,6 +32,10 @@ Popup {
     contentItem: Item {
         id: chartWrapper
 
+        property var rBytes: VPNConnectionData.rxBytes
+        property var tBytes: VPNConnectionData.txBytes
+
+
         width: box.width
         height: box.height
         antialiasing: true
@@ -53,12 +57,13 @@ Popup {
             margins.right: 0
             animationOptions: ChartView.SeriesAnimations
 
+
             ValueAxis {
                 id: axisX
 
+                tickCount: 1
                 min: 0
                 max: 29
-                tickCount: 5
                 lineVisible: false
                 labelsVisible: false
                 gridVisible: false
@@ -68,6 +73,7 @@ Popup {
             ValueAxis {
                 id: axisY
 
+                tickCount: 1
                 min: 10
                 max: 80
                 lineVisible: false
@@ -125,7 +131,7 @@ Popup {
                 //: The current download speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.download")
                 rectColor: "#EE3389"
-                markerData: VPNConnectionData.rxBytes
+                markerData: chartWrapper.rBytes
             }
 
             VPNGraphLegendMarker {
@@ -133,7 +139,7 @@ Popup {
                 //: The current upload speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.upload")
                 rectColor: "#F68953"
-                markerData: VPNConnectionData.txBytes
+                markerData: chartWrapper.tBytes
             }
 
         }
