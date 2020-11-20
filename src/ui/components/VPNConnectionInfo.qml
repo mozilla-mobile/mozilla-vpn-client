@@ -16,181 +16,170 @@ Popup {
     width: box.width
     modal: true
     focus: true
-    leftInset: 0
-    rightInset: 0
-    padding: 0
-    closePolicy: Popup.CloseOnEscape
-    Component.onCompleted: VPNCloseEventHandler.addView(chartWrapper)
-    onOpened: VPNConnectionData.activate(txSeries, rxSeries, axisX, axisY)
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
     onClosed: VPNConnectionData.deactivate()
-
-    VPNIconButton {
-        id: backButton
-
-        onClicked: popup.close()
-        buttonColorScheme: Theme.iconButtonDarkBackground
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: 8
-        anchors.leftMargin: 8
-        //% "Close"
-        accessibleName: qsTrId("vpn.connectionInfo.close")
-
-        Image {
-            anchors.centerIn: backButton
-            source: "../resources/close-white.svg"
-            sourceSize.height: 16
-            sourceSize.width: 16
-        }
-
+    onOpened: {
+        VPNConnectionData.activate(txSeries, rxSeries, axisX, axisY);
+        VPNCloseEventHandler.addView(chartWrapper);
+        popup.forceActiveFocus()
     }
 
-    Connections {
-        function onGoBack(item) {
-            if (item === chartWrapper)
-                backButton.clicked();
+    Accessible.focusable: true
+    Accessible.role: Accessible.Dialog
+    Accessible.name: connectionInfoButton.accessibleName
 
-        }
 
-        target: VPNCloseEventHandler
-    }
-
-    Item {
+    contentItem: Item {
         id: chartWrapper
 
         width: box.width
         height: box.height
         antialiasing: true
-        smooth: true
-        Component.onCompleted: VPNCloseEventHandler.addView(chartWrapper)
 
-        Rectangle {
-            color: "transparent"
-            anchors.fill: chartWrapper
+        ChartView {
+            id: chart
+
             antialiasing: true
-            smooth: true
+            backgroundColor: "#321C64"
+            width: parent.width + 16
+            height: (parent.height / 2) - 32
+            legend.visible: false
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 48
+            margins.top: 0
+            margins.bottom: 0
+            margins.left: 0
+            margins.right: 0
+            animationOptions: ChartView.SeriesAnimations
 
-            ChartView {
-                id: chart
+            ValueAxis {
+                id: axisX
 
-                antialiasing: true
-                smooth: true
-                width: parent.width
-                height: (parent.height / 2) - 32
-                legend.visible: false
-                anchors.horizontalCenter: parent.horizontalCenter
-                backgroundColor: box.color
-                anchors.top: parent.top
-                anchors.topMargin: 60
-                margins.top: 0
-                margins.bottom: 0
-                margins.left: 0
-                margins.right: 0
-                animationOptions: ChartView.SeriesAnimations
+                min: 0
+                max: 29
+                tickCount: 5
+                lineVisible: false
+                labelsVisible: false
+                gridVisible: false
+                visible: false
+            }
 
-                ValueAxis {
-                    id: axisX
+            ValueAxis {
+                id: axisY
 
-                    min: 0
-                    max: 29
-                    tickCount: 5
-                    lineVisible: false
-                    labelsVisible: false
-                    gridVisible: false
-                    visible: false
-                }
+                min: 10
+                max: 80
+                lineVisible: false
+                labelsVisible: false
+                gridVisible: false
+                visible: false
+            }
 
-                ValueAxis {
-                    id: axisY
+            SplineSeries {
+                id: txSeries
 
-                    min: 10
-                    max: 80
-                    lineVisible: false
-                    labelsVisible: false
-                    gridVisible: false
-                    visible: false
-                }
+                axisX: axisX
+                axisY: axisY
+                color: "#F68953"
+                width: 2
+            }
 
-                SplineSeries {
-                    id: txSeries
+            SplineSeries {
+                id: rxSeries
 
-                    axisX: axisX
-                    axisY: axisY
-                    useOpenGL: true
+                axisX: axisX
+                axisY: axisY
+                color: "#EE3389"
+                width: 2
+            }
 
-                    color: "#F68953"
-                    width: 2
-                }
+        }
 
-                SplineSeries {
-                    id: rxSeries
+        VPNBoldLabel {
+            anchors.top: parent.top
+            anchors.topMargin: Theme.windowMargin
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.horizontalCenter: parent.center
+            anchors.horizontalCenterOffset: 0
+            horizontalAlignment: Text.AlignHCenter
+            color: Theme.white
+            //% "IP: %1"
+            //: The current IP address
+            text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
+            Accessible.name: text
+            Accessible.role: Accessible.StaticText
+            focus: true
+            activeFocusOnTab: true
+        }
 
-                    axisX: axisX
-                    axisY: axisY
-                    useOpenGL: true
-                    color: "#EE3389"
+        Row {
+            spacing: 48
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 32
+            anchors.horizontalCenter: parent.horizontalCenter
 
-                    width: 2
-                }
+            VPNGraphLegendMarker {
+                //% "Download"
+                //: The current download speed. The speed is shown on the next line.
+                markerLabel: qsTrId("vpn.connectionInfo.download")
+                rectColor: "#EE3389"
+                markerData: VPNConnectionData.rxBytes
+            }
+
+            VPNGraphLegendMarker {
+                //% "Upload"
+                //: The current upload speed. The speed is shown on the next line.
+                markerLabel: qsTrId("vpn.connectionInfo.upload")
+                rectColor: "#F68953"
+                markerData: VPNConnectionData.txBytes
+            }
+
+        }
+
+        VPNIconButton {
+            id: backButton
+
+            onClicked: popup.close()
+            buttonColorScheme: Theme.iconButtonDarkBackground
+            anchors.top: parent.top
+            anchors.left: parent.left
+            //% "Close"
+            accessibleName: qsTrId("vpn.connectionInfo.close")
+
+            Image {
+                anchors.centerIn: backButton
+                source: "../resources/close-white.svg"
+                sourceSize.height: 16
+                sourceSize.width: 16
+            }
+
+        }
+
+        Connections {
+            function onGoBack(item) {
+                if (item === chartWrapper)
+                    backButton.clicked();
 
             }
 
-            VPNBoldLabel {
-                anchors.top: parent.top
-                anchors.topMargin: 24
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.horizontalCenter: parent.center
-                anchors.horizontalCenterOffset: 0
-                horizontalAlignment: Text.AlignHCenter
-                color: Theme.white
-                //% "IP: %1"
-                //: The current IP address
-                text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
-                Accessible.name: text
-                Accessible.role: Accessible.StaticText
-                focus: true
-                activeFocusOnTab: true
-            }
-
-            Row {
-                spacing: 48
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 48
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                VPNGraphLegendMarker {
-                    //% "Download"
-                    //: The current download speed. The speed is shown on the next line.
-                    markerLabel: qsTrId("vpn.connectionInfo.download")
-                    rectColor: "#EE3389"
-                    markerData: VPNConnectionData.rxBytes
-                }
-
-                VPNGraphLegendMarker {
-                    //% "Upload"
-                    //: The current upload speed. The speed is shown on the next line.
-                    markerLabel: qsTrId("vpn.connectionInfo.upload")
-                    rectColor: "#F68953"
-                    markerData: VPNConnectionData.txBytes
-                }
-
-            }
-
+            target: VPNCloseEventHandler
         }
 
     }
 
     background: Rectangle {
         color: box.color
-        anchors.fill: parent
+        height: box.height
+        width: box.width
         radius: box.radius
         antialiasing: true
-        smooth: true
     }
 
     Overlay.modal: Rectangle {
-        color: Theme.bgColor80
+        color: Theme.bgColor30
+        opacity: 0.5
     }
 
 }
