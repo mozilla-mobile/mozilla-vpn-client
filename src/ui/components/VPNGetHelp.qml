@@ -32,9 +32,14 @@ Item {
         model: VPNHelpModel
 
         delegate: VPNExternalLinkListItem {
+            property var isMobileViewLogsLink: (window.fullscreenRequired() && id === 0)
             title: name
             accessibleName: name
-            onClicked: VPNHelpModel.open(id)
+            iconSource: isMobileViewLogsLink ? "../resources/chevron.svg" : "../resources/externalLink.svg"
+            backgroundColor: isMobileViewLogsLink ? Theme.iconButtonLightBackground : Theme.clickableRowBlue
+            onClicked: {
+                VPNHelpModel.open(id)
+            }
         }
 
         ScrollBar.vertical: ScrollBar {

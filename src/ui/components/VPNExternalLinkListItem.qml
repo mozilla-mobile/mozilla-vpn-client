@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 // VPNExternalLinkListItem
 VPNClickableRow {
     property alias title: title.text
+    property var iconSource:  "../resources/externalLink.svg"
 
     backgroundColor: Theme.clickableRowBlue
 
@@ -28,7 +29,7 @@ VPNClickableRow {
         }
 
         VPNIcon {
-            source: "../resources/externalLink.svg"
+            source: iconSource
         }
 
     }
