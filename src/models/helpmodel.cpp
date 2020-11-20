@@ -10,11 +10,12 @@ bool s_initialized = false;
 
 struct HelpEntry
 {
-    HelpEntry(const QString &name, bool viewLog, MozillaVPN::LinkType linkType)
-        : m_name(name), m_viewLog(viewLog), m_linkType(linkType)
+    HelpEntry(const QString &name, bool externalLink, bool viewLog, MozillaVPN::LinkType linkType)
+        : m_name(name), m_externalLink(externalLink), m_viewLog(viewLog), m_linkType(linkType)
     {}
 
     QString m_name;
+    bool m_externalLink;
     bool m_viewLog;
     MozillaVPN::LinkType m_linkType;
 };
@@ -30,15 +31,21 @@ void maybeInitialize()
     s_initialized = true;
 
     //% "View log"
-    s_helpEntries.append(HelpEntry(qtTrId("help.viewLog"), true, MozillaVPN::LinkContact));
+    s_helpEntries.append(HelpEntry(qtTrId("help.viewLog"),
+#if defined(MVPN_ANDROID) || defined(MVPN_IOS)
+                                   false,
+#else
+                                   true,
+#endif
+                                   true,
+                                   MozillaVPN::LinkContact));
 
     s_helpEntries.append(
         //% "Help Center"
-        HelpEntry(qtTrId("help.helpCenter"), false, MozillaVPN::LinkHelpSupport));
+        HelpEntry(qtTrId("help.helpCenter"), true, false, MozillaVPN::LinkHelpSupport));
 
     //% "Contact us"
-    s_helpEntries.append(HelpEntry(qtTrId("help.contactUs"), false, MozillaVPN::LinkContact));
-
+    s_helpEntries.append(HelpEntry(qtTrId("help.contactUs"), true, false, MozillaVPN::LinkContact));
 }
 
 } // namespace
@@ -72,6 +79,7 @@ QHash<int, QByteArray> HelpModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[HelpEntryRole] = "name";
     roles[HelpIdRole] = "id";
+    roles[HelpExternalLinkRole] = "externalLink";
     return roles;
 }
 
@@ -95,6 +103,9 @@ QVariant HelpModel::data(const QModelIndex &index, int role) const
 
     case HelpIdRole:
         return QVariant(index.row());
+
+    case HelpExternalLinkRole:
+        return QVariant(s_helpEntries.at(index.row()).m_externalLink);
 
     default:
         return QVariant();

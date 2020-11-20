@@ -32,11 +32,10 @@ Item {
         model: VPNHelpModel
 
         delegate: VPNExternalLinkListItem {
-            property var isMobileViewLogsLink: (window.fullscreenRequired() && id === 0)
             title: name
             accessibleName: name
-            iconSource: isMobileViewLogsLink ? "../resources/chevron.svg" : "../resources/externalLink.svg"
-            backgroundColor: isMobileViewLogsLink ? Theme.iconButtonLightBackground : Theme.clickableRowBlue
+            iconSource: externalLink ? "../resources/externalLink.svg" : "../resources/chevron.svg"
+            backgroundColor: externalLink ? Theme.clickableRowBlue : Theme.iconButtonLightBackground
             onClicked: {
                 VPNHelpModel.open(id)
             }
