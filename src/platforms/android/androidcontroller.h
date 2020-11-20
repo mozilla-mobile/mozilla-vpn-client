@@ -33,6 +33,8 @@ class AndroidController final : public ControllerImpl,
 
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
+  void cleanupBackendLogs() override;
+
   // from QAndroidServiceConnection
   void onServiceConnected(const QString& name,
                           const QAndroidBinder& serviceBinder) override;

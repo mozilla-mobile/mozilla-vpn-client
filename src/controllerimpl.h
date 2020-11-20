@@ -58,6 +58,9 @@ class ControllerImpl : public QObject {
   virtual void getBackendLogs(
       std::function<void(const QString& logs)>&& callback) = 0;
 
+  // Cleanup the backend logs.
+  virtual void cleanupBackendLogs() = 0;
+
  signals:
   // This signal is emitted when the controller is initialized. Note that the
   // VPN tunnel can be already active. In this case, "connected" should be set

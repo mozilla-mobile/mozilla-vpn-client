@@ -14,8 +14,10 @@
     <method name="status">
       <arg name="jsonStatus" type="s" direction="out"/>
     </method>
-    <method name="logs">
+    <method name="getLogs">
       <arg name="logs" type="s" direction="out"/>
+    </method>
+    <method name="cleanupLogs">
     </method>
     <signal name="connected">
     </signal>

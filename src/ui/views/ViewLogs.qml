@@ -48,8 +48,18 @@ Item {
             y: Theme.windowMargin
             font.pixelSize: 11
             lineHeight: 16
-            text: VPN.retrieveLogs()
             width: parent.width
+
+            Connections {
+                target: VPN
+                function onLogsReady(logs) {
+                    logText.text = logs;
+                }
+            }
+
+            Component.onCompleted: {
+                VPN.retrieveLogs();
+            }
         }
     }
 
@@ -98,6 +108,10 @@ Item {
                 //% "Clear"
                 buttonText: qsTrId("vpn.logs.clear")
                 iconSource: "../resources/delete.svg"
+                onClicked: {
+                    VPN.cleanupLogs();
+                    logText.text = "";
+                }
             }
 
         }

@@ -33,6 +33,8 @@ class DummyController final : public ControllerImpl {
 
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
+  void cleanupBackendLogs() override;
+
  private:
   int64_t m_txBytes = 0;
   int64_t m_rxBytes = 0;

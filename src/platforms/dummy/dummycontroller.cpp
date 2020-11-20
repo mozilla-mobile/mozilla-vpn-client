@@ -50,3 +50,5 @@ void DummyController::getBackendLogs(
   std::function<void(const QString&)> callback = std::move(a_callback);
   callback("DummyController is always happy");
 }
+
+void DummyController::cleanupBackendLogs() {}
