@@ -24,6 +24,10 @@ constexpr const char* LOG_IOS = "ios";
 constexpr const char* LOG_LINUX = "linux";
 #endif
 
+#ifdef MVPN_WINDOWS
+constexpr const char *LOG_WINDOWS = "windows";
+#endif
+
 #if __APPLE__
 constexpr const char* LOG_MACOS = "macos";
 #endif
