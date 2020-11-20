@@ -109,6 +109,8 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   path.append("android");
 #elif defined(MVPN_MACOS)
   path.append("macos");
+#elif defined(MVPN_WINDOWS)
+  path.append("windows");
 #else
 #  error Not supported
 #endif

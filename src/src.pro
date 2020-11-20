@@ -84,7 +84,6 @@ SOURCES += \
         releasemonitor.cpp \
         rfc1918.cpp \
         settingsholder.cpp \
-        signalhandler.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
         systemtrayhandler.cpp \
@@ -152,7 +151,6 @@ HEADERS += \
         releasemonitor.h \
         rfc1918.h \
         settingsholder.h \
-        signalhandler.h \
         simplenetworkmanager.h \
         statusicon.h \
         systemtrayhandler.h \
@@ -178,6 +176,12 @@ debug {
     HEADERS += \
             inspector/inspectorconnection.h \
             inspector/inspectorserver.h
+}
+
+# Signal handling for unix platforms
+unix {
+    SOURCES += signalhandler.cpp
+    HEADERS += signalhandler.h
 }
 
 # Platform-specific: Linux
@@ -407,16 +411,35 @@ else:ios {
     QMAKE_BUNDLE_DATA += ios_launch_screen_images
 }
 
+else:win* {
+    message(Windows build)
+
+    #TARGET = MozillaVPN
+
+    QT += networkauth
+
+    DEFINES += MVPN_WINDOWS
+
+    SOURCES += \
+        platforms/dummy/dummycontroller.cpp \
+        platforms/linux/linuxcryptosettings.cpp \
+        platforms/windows/windowspingsendworker.cpp \
+        tasks/authenticate/desktopauthenticationlistener.cpp \
+        systemtraynotificationhandler.cpp
+
+    HEADERS += \
+        platforms/dummy/dummycontroller.h \
+        platforms/windows/windowspingsendworker.h \
+        tasks/authenticate/desktopauthenticationlistener.h \
+        systemtraynotificationhandler.h
+}
+
 # Anything else
 else {
     error(Unsupported platform)
 }
 
 RESOURCES += qml.qrc
-
-CONFIG += qmltypes
-QML_IMPORT_NAME = Mozilla.VPN
-QML_IMPORT_MAJOR_VERSION = 1
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
