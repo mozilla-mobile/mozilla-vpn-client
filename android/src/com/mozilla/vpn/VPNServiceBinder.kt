@@ -29,8 +29,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val deactivate = 2
         const val registerEventListener = 3
         const val requestStatistic = 4
-        const val requestLog = 5
-        const val resumeActivate = 6;
+        const val requestGetLog = 5
+        const val requestCleanupLog = 6
+        const val resumeActivate = 7
     }
 
     /**
@@ -82,6 +83,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 }
                 return true
             }
+
             ACTIONS.resumeActivate -> {
                 // [data] is empty
                 // Activate the current tunnel
@@ -95,34 +97,48 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 }
                 return true;
             }
+
             ACTIONS.deactivate -> {
                 // [data] here is empty
                 this.mService.turnOff()
                 dispatchEvent(EVENTS.disconnected, "")
                 return true
             }
+
             ACTIONS.registerEventListener -> {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.d(tag, "Registered ${mListeners.size} EventListeners")
                 dispatchEvent(EVENTS.init, "")
+                return true
             }
+
             ACTIONS.requestStatistic -> {
                 val statistics = this.mService.getStatistic()
                 val obj = JSONObject()
                 obj.put("totalRX", statistics?.totalRx())
                 obj.put("totalTX", statistics?.totalTx())
                 dispatchEvent(EVENTS.statisticUpdate, obj.toString())
+                return true
             }
-            ACTIONS.requestLog ->{
+
+            ACTIONS.requestGetLog ->{
                 // Grabs all the Logs and dispatch new Log Event
                 val process = Runtime.getRuntime().exec("logcat -d");
                 val bufferedReader = BufferedReader(
                     InputStreamReader(process.inputStream))
                 val allText = bufferedReader.use(BufferedReader::readText)
                 dispatchEvent(EVENTS.backendLogs, allText)
+                return true
 
+            }
+
+            ACTIONS.requestCleanupLog ->{
+                val process = Runtime.getRuntime().exec("logcat -c");
+                val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+                bufferedReader.use(BufferedReader::readText)
+                return true
             }
 
             else -> {

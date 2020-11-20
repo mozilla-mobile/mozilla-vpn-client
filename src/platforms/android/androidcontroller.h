@@ -33,6 +33,8 @@ public:
 
     void getBackendLogs(std::function<void(const QString &)> &&callback) override;
 
+    void cleanupBackendLogs() override;
+
     // from QAndroidServiceConnection
     void onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder) override;
     void onServiceDisconnected(const QString &name) override;
