@@ -39,6 +39,7 @@ Item {
 
             ListElement {
                 image: "../resources/onboarding/onboarding2.svg"
+                //: The + after the number stands for “more than”. If you change the number of countries here, please update ViewSubscriptionNeeded.qml too.
                 //% "Servers in 30+ countries"
                 headline: qsTrId("vpn.onboarding.headline.2")
                 //% "Pick a server in any country you want and hide your location to throw off trackers."

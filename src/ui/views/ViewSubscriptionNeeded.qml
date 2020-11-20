@@ -13,25 +13,6 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
 
-    function getNumServers() {
-        // TODO - dynamically find the number of available servers
-        const numServers = 283;
-        return formatNumberForCallout(numServers);
-    }
-
-    function formatNumberForCallout(num) {
-        if (!num)
-            return ;
-
-        while (num > 0) {
-            if (num % 10 === 0)
-                break;
-
-            num--;
-        }
-        return num;
-    }
-
     width: window.width
     flickContentHeight: footerContent.height + spacer1.height + vpnPanel.height + featureListBackground.height + (Theme.windowMargin * 4)
 
@@ -115,9 +96,9 @@ VPNFlickable {
         }
 
         VPNCallout {
-            //: The + after each variable stands for “more than”.
-            //% "%1+ servers in %2+ countries"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle3").arg(getNumServers()).arg(formatNumberForCallout(VPNServerCountryModel.rowCount()))
+            //: The + after each number stands for “more than”. If you change the number of countries here, please update ViewOnboarding.qml too.
+            //% "360+ servers in 30+ countries"
+            calloutTitle: qsTrId("vpn.subscription.featureTitle3")
             //% "Protect your access to the web."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle3")
             calloutImage: "../resources/onboarding/onboarding3.svg"
