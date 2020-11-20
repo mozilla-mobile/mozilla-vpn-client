@@ -12,12 +12,8 @@ VPNButtonBase {
     id: toggleButton
 
     property var toggleColor: Theme.vpnToggleDisconnected
-    property var describedBy: logoTitle.text
-    property var labelledBy: logoSubtitle.text
     property var toolTipTitle: ""
-
-
-    Accessible.name: VPNController.state === VPNController.StateOn ? describedBy + ". " + toolTipTitle : describedBy + ". " + labelledBy + "."
+    Accessible.name: toolTipTitle
 
     function handleClick() {
         if (VPNController.state !== VPNController.StateOff) {
@@ -136,6 +132,7 @@ VPNButtonBase {
 
             PropertyChanges {
                 target: toggleButton
+                toolTipTitle: qsTrId("vpn.toggle.on")
                 toggleColor: Theme.vpnToggleDisconnected
             }
 
