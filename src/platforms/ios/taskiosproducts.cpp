@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskiosproducts.h"
+#include "iaphandler.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -27,7 +28,7 @@ void TaskIOSProducts::run(MozillaVPN* vpn)
         emit completed();
     });
 
-    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
+    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
         logger.log() << "IOS product request completed" << data;
 
         QJsonDocument json = QJsonDocument::fromJson(data);
@@ -48,6 +49,11 @@ void TaskIOSProducts::run(MozillaVPN* vpn)
         }
 
         SettingsHolder::instance()->setIapProducts(products);
-        emit completed();
+
+        IAPHandler* ipaHandler = IAPHandler::instance();
+        Q_ASSERT(ipaHandler);
+
+        connect(ipaHandler, &IAPHandler::productsRegistered, this, &TaskIOSProducts::completed);
+        ipaHandler->registerProducts(products);
     });
 }

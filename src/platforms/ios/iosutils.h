@@ -12,7 +12,7 @@ class IOSUtils final
 public:
     static QString computerName();
 
-    static QByteArray IAPReceipt();
+    static QString IAPReceipt();
 };
 
 #endif // IOSUTILS_H
