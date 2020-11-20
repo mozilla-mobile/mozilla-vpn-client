@@ -3,8 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosutils.h"
+#include "logger.h"
+
+#include <QDateTime>
+#include <QString>
 
 #import <UIKit/UIKit.h>
+
+namespace {
+Logger logger(LOG_IOS, "IOSUtils");
+}
 
 // static
 QString IOSUtils::computerName()
@@ -14,9 +22,44 @@ QString IOSUtils::computerName()
 }
 
 // static
-QByteArray IOSUtils::IAPReceipt()
+QString IOSUtils::IAPReceipt()
 {
-    NSURL *url = [[NSBundle mainBundle] appStoreReceiptURL];
-    NSData *content = [NSData dataWithContentsOfURL: url];
-    return QByteArray::fromNSData(content);
+    logger.log() << "Retrieving IAP receipt";
+
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+
+    // All the following is for debug only.
+    NSString *path = [receiptURL path];
+    Q_ASSERT(path);
+
+    logger.log() << "Receipt URL:" << QString::fromNSString(path);
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    Q_ASSERT(fileManager);
+
+    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath: path error: NULL];
+    if (fileAttributes) {
+        NSNumber *fileSize = [fileAttributes objectForKey:NSFileSize];
+        if (fileSize) {
+            logger.log() << "File size:" << [fileSize unsignedLongLongValue];
+        }
+
+        NSString *fileOwner = [fileAttributes objectForKey:NSFileOwnerAccountName];
+        if (fileOwner) {
+            logger.log() << "Owner:" << QString::fromNSString(fileOwner);
+        }
+
+        NSDate *fileModDate = [fileAttributes objectForKey:NSFileModificationDate];
+        if (fileModDate) {
+            logger.log() << "Modification date:" << QDateTime::fromNSDate(fileModDate).toString();
+        }
+    }
+
+    if (!receipt) {
+        return QString();
+    }
+
+    NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
+    return QString::fromNSString(encodedReceipt);
 }

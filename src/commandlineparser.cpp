@@ -13,14 +13,39 @@ constexpr const char *CLP_DEFAULT_COMMAND = "ui";
 
 namespace {
 Logger logger(LOG_MAIN, "CommandLineParser");
+
+int s_argc = 0;
+char **s_argv = nullptr;
+}
+
+// static
+int &CommandLineParser::argc()
+{
+    Q_ASSERT(s_argc > 0);
+    return s_argc;
+}
+
+// static
+char **CommandLineParser::argv()
+{
+    Q_ASSERT(s_argv);
+    return s_argv;
 }
 
 int CommandLineParser::parse(int argc, char *argv[])
 {
     Q_ASSERT(argc >= 1);
 
+    s_argc = argc;
+    s_argv = argv;
+
     QStringList tokens;
     for (int i = 0; i < argc; ++i) {
+#ifdef QT_DEBUG
+        if (QString(argv[i]).startsWith("-qmljsdebugger")) {
+            continue;
+        }
+#endif
         tokens.append(QString(argv[i]));
     }
 

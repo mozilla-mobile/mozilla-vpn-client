@@ -67,10 +67,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
         scheduleTask(new TaskAccountAndServers());
 
         scheduleTask(new TaskCaptivePortalLookup());
-
-#ifdef MVPN_IOS
-        scheduleTask(new TaskIOSProducts());
-#endif
     });
 
     connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -121,6 +117,26 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
             &MozillaVPN::stateChanged,
             &m_private->m_connectionDataHolder,
             &ConnectionDataHolder::stateChanged);
+
+#ifdef MVPN_IOS
+    IAPHandler *iap = IAPHandler::createInstance();
+    connect(iap, &IAPHandler::subscriptionCompleted, [this]() {
+        logger.log() << "Subscription completed";
+        completeActivation();
+
+        Q_ASSERT(m_subscriptionActive);
+        m_subscriptionActive = false;
+        emit subscriptionActiveChanged();
+    });
+
+    connect(iap, &IAPHandler::subscriptionFailed, [this] {
+        logger.log() << "Subscription failed";
+
+        Q_ASSERT(m_subscriptionActive);
+        m_subscriptionActive = false;
+        emit subscriptionActiveChanged();
+    });
+#endif
 }
 
 MozillaVPN::~MozillaVPN()
@@ -782,30 +798,19 @@ void MozillaVPN::startIAP(bool restore)
     m_subscriptionActive = true;
     emit subscriptionActiveChanged();
 
-    IAPHandler *iap = new IAPHandler(this);
+    IAPHandler *iap = IAPHandler::instance();
 
-    connect(iap, &IAPHandler::completed, [this, iap]() {
-        logger.log() << "Subscription completed";
-        completeActivation();
+    // If IPA is not ready yet (race condition), let's register the products again.
+    if (!iap->hasProductsRegistered()) {
+        scheduleTask(new TaskIOSProducts());
+        scheduleTask(new TaskFunction([restore](MozillaVPN *vpn) {
+            vpn->startIAP(restore);
+        }));
 
-        Q_ASSERT(m_subscriptionActive);
-        m_subscriptionActive = false;
-        emit subscriptionActiveChanged();
+        return;
+    }
 
-        iap->deleteLater();
-    });
-
-    connect(iap, &IAPHandler::failed, [this, iap] {
-        logger.log() << "Subscription failed";
-
-        Q_ASSERT(m_subscriptionActive);
-        m_subscriptionActive = false;
-        emit subscriptionActiveChanged();
-
-        iap->deleteLater();
-    });
-
-    iap->start(restore);
+    iap->startSubscription(restore);
 }
 #endif
 
@@ -946,10 +951,33 @@ void MozillaVPN::storeInClipboard(const QString &text)
 
 bool MozillaVPN::modelsInitialized() const
 {
-    return m_private->m_user.initialized() && m_private->m_serverCountryModel.initialized()
-           && m_private->m_deviceModel.initialized()
-           && m_private->m_deviceModel.hasDevice(Device::currentDeviceName())
-           && m_private->m_keys.initialized();
+    logger.log() << "Checking model initialization";
+    if (!m_private->m_user.initialized()) {
+        logger.log() << "User model not initialized";
+        return false;
+    }
+
+    if (!m_private->m_serverCountryModel.initialized()) {
+        logger.log() << "Server country model not initialized";
+        return false;
+    }
+
+    if (!m_private->m_deviceModel.initialized()) {
+        logger.log() << "Device model not initialized";
+        return false;
+    }
+
+    if (!m_private->m_deviceModel.hasDevice(Device::currentDeviceName())) {
+        logger.log() << "Current device not registered";
+        return false;
+    }
+
+    if (!m_private->m_keys.initialized()) {
+        logger.log() << "Key model not initialized";
+        return false;
+    }
+
+    return true;
 }
 
 void MozillaVPN::requestSettings()
