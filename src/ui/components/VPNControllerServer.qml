@@ -19,6 +19,7 @@ VPNClickableRow {
 
     accessibleName: titleText + ": " + descriptionText
     rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit
+    Accessible.ignored: rowShouldBeDisabled
     activeFocusOnTab: true
 
 

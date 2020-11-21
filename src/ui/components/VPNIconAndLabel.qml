@@ -27,6 +27,11 @@ RowLayout {
 
         Layout.leftMargin: 14
         Layout.alignment: Qt.AlignVCenter
+        // VPNIconAndLabel is only used inside a VPNClickableRow
+        // which acts as atomic interactive control thus we want
+        // to hide its content (such as VPNIconAndLabel) from
+        // assistive technology.
+        Accessible.ignored: true
     }
 
 }
