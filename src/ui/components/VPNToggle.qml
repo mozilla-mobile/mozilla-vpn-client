@@ -286,7 +286,7 @@ VPNButtonBase {
         anchors.fill: toggle
         hoverEnabled: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff)
         cursorShape: Qt.PointingHandCursor
-        onClicked: clicked()
+        onClicked: handleClick()
     }
 
     VPNToolTip {
