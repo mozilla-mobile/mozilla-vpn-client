@@ -17,7 +17,7 @@ VPNClickableRow {
 
     accessibleName: titleText + " - " + label.text
     activeFocusOnTab: true
-
+    Accessible.ignored: rowShouldBeDisabled
 
     RowLayout {
         anchors.fill: parent
