@@ -9,24 +9,23 @@
 
 #include <QQmlApplicationEngine>
 
-class QmlEngineHolder final : public NetworkManager
-{
-    Q_DISABLE_COPY_MOVE(QmlEngineHolder)
+class QmlEngineHolder final : public NetworkManager {
+  Q_DISABLE_COPY_MOVE(QmlEngineHolder)
 
-public:
-    QmlEngineHolder();
-    ~QmlEngineHolder();
+ public:
+  QmlEngineHolder();
+  ~QmlEngineHolder();
 
-    static QmlEngineHolder *instance();
+  static QmlEngineHolder* instance();
 
-    QQmlApplicationEngine *engine() { return &m_engine; }
+  QQmlApplicationEngine* engine() { return &m_engine; }
 
-    QNetworkAccessManager *networkAccessManager() override;
+  QNetworkAccessManager* networkAccessManager() override;
 
-    void showWindow();
+  void showWindow();
 
-private:
-    QQmlApplicationEngine m_engine;
+ private:
+  QQmlApplicationEngine m_engine;
 };
 
-#endif // QMLENGINEHOLDER_H
+#endif  // QMLENGINEHOLDER_H

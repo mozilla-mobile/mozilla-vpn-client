@@ -7,13 +7,12 @@
 
 #include "command.h"
 
-class CommandServers final : public Command
-{
-public:
-    explicit CommandServers(QObject *parent);
-    ~CommandServers();
+class CommandServers final : public Command {
+ public:
+  explicit CommandServers(QObject* parent);
+  ~CommandServers();
 
-    int run(QStringList &tokens) override;
+  int run(QStringList& tokens) override;
 };
 
-#endif // COMMANDSERVERS_H
+#endif  // COMMANDSERVERS_H

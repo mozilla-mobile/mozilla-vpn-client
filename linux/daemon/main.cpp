@@ -14,38 +14,37 @@ namespace {
 Logger logger(LOG_LINUX, "main");
 }
 
-int main(int argc, char *argv[])
-{
-    qInstallMessageHandler(LogHandler::messageQTHandler);
+int main(int argc, char* argv[]) {
+  qInstallMessageHandler(LogHandler::messageQTHandler);
 
-    QCoreApplication app(argc, argv);
+  QCoreApplication app(argc, argv);
 
-    DBus *dbus = new DBus(&app);
-    DbusAdaptor *adaptor = new DbusAdaptor(dbus);
-    dbus->setAdaptor(adaptor);
+  DBus* dbus = new DBus(&app);
+  DbusAdaptor* adaptor = new DbusAdaptor(dbus);
+  dbus->setAdaptor(adaptor);
 
-    QDBusConnection connection = QDBusConnection::systemBus();
-    logger.log() << "Connecting to DBus...";
+  QDBusConnection connection = QDBusConnection::systemBus();
+  logger.log() << "Connecting to DBus...";
 
-    if (!connection.registerService("org.mozilla.vpn.dbus")
-        || !connection.registerObject("/", dbus)) {
-        logger.log() << "Connection failed - name:" << connection.lastError().name()
-                     << "message:" << connection.lastError().message();
-        app.exit(1);
-        return 1;
-    }
+  if (!connection.registerService("org.mozilla.vpn.dbus") ||
+      !connection.registerObject("/", dbus)) {
+    logger.log() << "Connection failed - name:" << connection.lastError().name()
+                 << "message:" << connection.lastError().message();
+    app.exit(1);
+    return 1;
+  }
 
-    if (!dbus->checkInterface()) {
-        app.exit(1);
-        return 1;
-    }
+  if (!dbus->checkInterface()) {
+    app.exit(1);
+    return 1;
+  }
 
-    SignalHandler sh;
-    QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
-        dbus->deactivate();
-        app.quit();
-    });
+  SignalHandler sh;
+  QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
+    dbus->deactivate();
+    app.quit();
+  });
 
-    logger.log() << "Ready!";
-    return app.exec();
+  logger.log() << "Ready!";
+  return app.exec();
 }

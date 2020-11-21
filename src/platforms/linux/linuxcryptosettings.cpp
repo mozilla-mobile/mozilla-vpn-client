@@ -6,14 +6,12 @@
 
 void CryptoSettings::resetKey() {}
 
-bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE])
-{
-    Q_UNUSED(key);
-    return false;
+bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
+  Q_UNUSED(key);
+  return false;
 }
 
 // static
-CryptoSettings::Version CryptoSettings::getSupportedVersion()
-{
-    return CryptoSettings::NoEncryption;
+CryptoSettings::Version CryptoSettings::getSupportedVersion() {
+  return CryptoSettings::NoEncryption;
 }

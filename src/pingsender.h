@@ -10,29 +10,28 @@
 
 class QThread;
 
-class PingSender final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(PingSender)
+class PingSender final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(PingSender)
 
-public:
-    PingSender(QObject *parent, QThread *thread);
-    ~PingSender();
+ public:
+  PingSender(QObject* parent, QThread* thread);
+  ~PingSender();
 
-    void send(const QString &destination);
+  void send(const QString& destination);
 
-signals:
-    void completed(PingSender *pingSender, qint64 msec);
+ signals:
+  void completed(PingSender* pingSender, qint64 msec);
 
-    // internal only
-    void sendPing(const QString &destination);
+  // internal only
+  void sendPing(const QString& destination);
 
-private slots:
-    void pingFailed();
-    void pingSucceeded();
+ private slots:
+  void pingFailed();
+  void pingSucceeded();
 
-private:
-    QElapsedTimer m_time;
+ private:
+  QElapsedTimer m_time;
 };
 
-#endif // PINGSENDER_H
+#endif  // PINGSENDER_H

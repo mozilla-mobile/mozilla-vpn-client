@@ -33,240 +33,197 @@ class Task;
 class TestTasks;
 #endif
 
-class MozillaVPN final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(MozillaVPN)
+class MozillaVPN final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MozillaVPN)
 
-public:
-    enum State {
-        StateInitialize,
-        StateAuthenticating,
-        StatePostAuthentication,
-        StateMain,
-        StateUpdateRequired,
-        StateSubscriptionNeeded,
-        StateDeviceLimit,
-    };
-    Q_ENUM(State);
+ public:
+  enum State {
+    StateInitialize,
+    StateAuthenticating,
+    StatePostAuthentication,
+    StateMain,
+    StateUpdateRequired,
+    StateSubscriptionNeeded,
+    StateDeviceLimit,
+  };
+  Q_ENUM(State);
 
-    enum AlertType {
-        NoAlert,
-        AuthenticationFailedAlert,
-        ConnectionFailedAlert,
-        LogoutAlert,
-        NoConnectionAlert,
-        BackendServiceErrorAlert,
-    };
-    Q_ENUM(AlertType)
+  enum AlertType {
+    NoAlert,
+    AuthenticationFailedAlert,
+    ConnectionFailedAlert,
+    LogoutAlert,
+    NoConnectionAlert,
+    BackendServiceErrorAlert,
+  };
+  Q_ENUM(AlertType)
 
-    enum LinkType {
-        LinkAccount,
-        LinkContact,
-        LinkFeedback,
-        LinkHelpSupport,
-        LinkTermsOfService,
-        LinkPrivacyPolicy,
-        LinkUpdate,
-    };
-    Q_ENUM(LinkType)
+  enum LinkType {
+    LinkAccount,
+    LinkContact,
+    LinkFeedback,
+    LinkHelpSupport,
+    LinkTermsOfService,
+    LinkPrivacyPolicy,
+    LinkUpdate,
+  };
+  Q_ENUM(LinkType)
 
-private:
-    Q_PROPERTY(State state READ state NOTIFY stateChanged)
-    Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
-    Q_PROPERTY(QString versionString READ versionString CONSTANT)
-    Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY updateRecommendedChanged)
-    Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userAuthenticationChanged)
-    Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
-    Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
-    Q_PROPERTY(bool subscriptionActive READ subscriptionActive NOTIFY subscriptionActiveChanged)
+ private:
+  Q_PROPERTY(State state READ state NOTIFY stateChanged)
+  Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
+  Q_PROPERTY(QString versionString READ versionString CONSTANT)
+  Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
+                 updateRecommendedChanged)
+  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
+                 userAuthenticationChanged)
+  Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
+  Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
+  Q_PROPERTY(bool subscriptionActive READ subscriptionActive NOTIFY
+                 subscriptionActiveChanged)
 
-public:
-    MozillaVPN();
-    ~MozillaVPN();
+ public:
+  MozillaVPN();
+  ~MozillaVPN();
 
-    static MozillaVPN *instance();
+  void deviceRemoved(const QString& deviceName);
 
-    void initialize();
+  void serversFetched(const QByteArray& serverData);
 
-    State state() const;
-    AlertType alert() const { return m_alert; }
+  void accountChecked(const QByteArray& json);
 
-    // Exposed QML methods:
-    Q_INVOKABLE void authenticate();
-    Q_INVOKABLE void cancelAuthentication();
-    Q_INVOKABLE void openLink(LinkType linkType);
-    Q_INVOKABLE void removeDevice(const QString &deviceName);
-    Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
-    Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
-    Q_INVOKABLE void postAuthenticationCompleted();
-    Q_INVOKABLE void subscribe();
-    Q_INVOKABLE void restoreSubscription();
-    Q_INVOKABLE void viewLogs();
-    Q_INVOKABLE QString retrieveLogs();
-    Q_INVOKABLE void storeInClipboard(const QString &text);
-    Q_INVOKABLE void activate();
-    Q_INVOKABLE void deactivate();
-    Q_INVOKABLE void refreshDevices();
+  const QList<Server> getServers() const;
 
-    // Internal object getters:
-    CaptivePortal *captivePortal() { return &m_private->m_captivePortal; }
-    CaptivePortalDetection *captivePortalDetection()
-    {
-        return &m_private->m_captivePortalDetection;
-    }
-    CloseEventHandler *closeEventHandler() { return &m_private->m_closeEventHandler; }
-    ConnectionDataHolder *connectionDataHolder() { return &m_private->m_connectionDataHolder; }
-    ConnectionHealth *connectionHealth() { return &m_private->m_connectionHealth; }
-    Controller *controller() { return &m_private->m_controller; }
-    ServerData *currentServer() { return &m_private->m_serverData; }
-    DeviceModel *deviceModel() { return &m_private->m_deviceModel; }
-    Keys *keys() { return &m_private->m_keys; }
-    HelpModel *helpModel() { return &m_private->m_helpModel; }
-    ServerCountryModel *serverCountryModel() { return &m_private->m_serverCountryModel; }
-    StatusIcon *statusIcon() { return &m_private->m_statusIcon; }
-    User *user() { return &m_private->m_user; }
+  void errorHandle(ErrorHandler::ErrorType error);
 
-    // Called at the end of the authentication flow. We can continue adding the device
-    // if it doesn't exist yet, or we can go to OFF state.
-    void authenticationCompleted(const QByteArray &json, const QString &token);
+  void abortAuthentication();
 
-    void deviceAdded(const QString &deviceName, const QString &publicKey, const QString &privateKey);
+  void changeServer(const QString& countryCode, const QString& city);
 
-    void deviceRemoved(const QString &deviceName);
+  const QString versionString() const { return QString(APP_VERSION); }
 
-    void serversFetched(const QByteArray &serverData);
+  void logout();
 
-    void accountChecked(const QByteArray &json);
+  bool updateRecommended() const { return m_updateRecommended; }
 
-    const QList<Server> getServers() const;
+  void setUpdateRecommended(bool value);
 
-    void errorHandle(ErrorHandler::ErrorType error);
+  bool userAuthenticated() const { return m_userAuthenticated; }
 
-    void abortAuthentication();
+  bool startMinimized() const { return m_startMinimized; }
 
-    void changeServer(const QString &countryCode, const QString &city);
+  bool startOnBootSupported() const;
 
-    const QString versionString() const { return QString(APP_VERSION); }
+  bool subscriptionActive() const { return m_subscriptionActive; }
 
-    void logout();
+  void setStartMinimized(bool startMinimized) {
+    m_startMinimized = startMinimized;
+  }
 
-    bool updateRecommended() const { return m_updateRecommended; }
+  void setToken(const QString& token);
 
-    void setUpdateRecommended(bool value);
+  [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
-    bool userAuthenticated() const { return m_userAuthenticated; }
+  void reset();
 
-    bool startMinimized() const { return m_startMinimized; }
+  bool modelsInitialized() const;
 
-    bool startOnBootSupported() const;
+ private:
+  void setState(State state);
 
-    bool subscriptionActive() const { return m_subscriptionActive; }
+  void maybeStateMain();
 
-    void setStartMinimized(bool startMinimized) { m_startMinimized = startMinimized; }
+  void scheduleTask(Task* task);
+  void maybeRunTask();
+  void deleteTasks();
 
-    void setToken(const QString &token);
+  void setUserAuthenticated(bool state);
 
-    [[nodiscard]] bool setServerList(const QByteArray& serverData);
+  void startSchedulingPeriodicOperations();
 
-    void reset();
+  void stopSchedulingPeriodicOperations();
 
-    bool modelsInitialized() const;
+  void setAlert(AlertType alert);
 
-    void quit();
+  void quit();
 
-private:
-    void setState(State state);
+ private:
+  void setState(State state);
 
-    void maybeStateMain();
-
-    void scheduleTask(Task *task);
-    void maybeRunTask();
-    void deleteTasks();
-
-    void setUserAuthenticated(bool state);
-
-    void startSchedulingPeriodicOperations();
-
-    void stopSchedulingPeriodicOperations();
-
-    void setAlert(AlertType alert);
-
-    bool writeAndShowLogs(QStandardPaths::StandardLocation location);
-
-    bool writeLogs(QStandardPaths::StandardLocation location,
-                   std::function<void(const QString &filename)> &&a_callback);
+  bool writeLogs(QStandardPaths::StandardLocation location,
+                 std::function<void(const QString& filename)>&& a_callback);
 
 #ifdef MVPN_IOS
-    void startIAP(bool restore);
+  void startIAP(bool restore);
 #endif
 
-    void completeActivation();
+  void completeActivation();
 
-public slots:
-    void requestSettings();
-    void requestAbout();
-    void requestViewLogs();
+ public slots:
+  void requestSettings();
+  void requestAbout();
+  void requestViewLogs();
 
-private slots:
-    void taskCompleted();
+ private slots:
+  void taskCompleted();
 
-signals:
-    void stateChanged();
-    void alertChanged();
-    void updateRecommendedChanged();
-    void userAuthenticationChanged();
-    void deviceRemoving(const QString& deviceName);
-    void settingsNeeded();
-    void aboutNeeded();
-    void viewLogsNeeded();
-    void subscriptionActiveChanged();
+ signals:
+  void stateChanged();
+  void alertChanged();
+  void updateRecommendedChanged();
+  void userAuthenticationChanged();
+  void deviceRemoving(const QString& deviceName);
+  void settingsNeeded();
+  void aboutNeeded();
+  void viewLogsNeeded();
+  void subscriptionActiveChanged();
 
-    // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine complains...
-    void loadAndroidAuthenticationView();
+  // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
+  // complains...
+  void loadAndroidAuthenticationView();
 
-private:
-    bool m_initialized = false;
+ private:
+  bool m_initialized = false;
 
-    // Internal objects.
-    struct Private
-    {
-        CaptivePortal m_captivePortal;
-        CaptivePortalDetection m_captivePortalDetection;
-        CloseEventHandler m_closeEventHandler;
-        ConnectionDataHolder m_connectionDataHolder;
-        ConnectionHealth m_connectionHealth;
-        Controller m_controller;
-        DeviceModel m_deviceModel;
-        Keys m_keys;
-        HelpModel m_helpModel;
-        ReleaseMonitor m_releaseMonitor;
-        ServerCountryModel m_serverCountryModel;
-        ServerData m_serverData;
-        StatusIcon m_statusIcon;
-        User m_user;
-    };
+  // Internal objects.
+  struct Private {
+    CaptivePortal m_captivePortal;
+    CaptivePortalDetection m_captivePortalDetection;
+    CloseEventHandler m_closeEventHandler;
+    ConnectionDataHolder m_connectionDataHolder;
+    ConnectionHealth m_connectionHealth;
+    Controller m_controller;
+    DeviceModel m_deviceModel;
+    Keys m_keys;
+    HelpModel m_helpModel;
+    ReleaseMonitor m_releaseMonitor;
+    ServerCountryModel m_serverCountryModel;
+    ServerData m_serverData;
+    StatusIcon m_statusIcon;
+    User m_user;
+  };
 
-    Private *m_private = nullptr;
+  Private* m_private = nullptr;
 
-    // Task handling.
-    Task *m_running_task = nullptr;
-    QList<Task *> m_tasks;
+  // Task handling.
+  Task* m_running_task = nullptr;
+  QList<Task*> m_tasks;
 
-    State m_state = StateInitialize;
-    AlertType m_alert = NoAlert;
+  State m_state = StateInitialize;
+  AlertType m_alert = NoAlert;
 
-    QTimer m_alertTimer;
-    QTimer m_periodicOperationsTimer;
+  QTimer m_alertTimer;
+  QTimer m_periodicOperationsTimer;
 
-    bool m_updateRecommended = false;
-    bool m_userAuthenticated = false;
-    bool m_startMinimized = false;
-    bool m_subscriptionActive = false;
+  bool m_updateRecommended = false;
+  bool m_userAuthenticated = false;
+  bool m_startMinimized = false;
+  bool m_subscriptionActive = false;
 
 #ifdef UNIT_TEST
-   friend class TestTasks;
+  friend class TestTasks;
 #endif
 };
 
-#endif // MOZILLAVPN_H
+#endif  // MOZILLAVPN_H

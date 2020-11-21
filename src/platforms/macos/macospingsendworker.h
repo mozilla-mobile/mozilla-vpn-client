@@ -9,24 +9,23 @@
 
 class QSocketNotifier;
 
-class MacOSPingSendWorker final : public PingSendWorker
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(MacOSPingSendWorker)
+class MacOSPingSendWorker final : public PingSendWorker {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MacOSPingSendWorker)
 
-public:
-    MacOSPingSendWorker();
-    ~MacOSPingSendWorker();
+ public:
+  MacOSPingSendWorker();
+  ~MacOSPingSendWorker();
 
-public slots:
-    void sendPing(const QString &destination) override;
+ public slots:
+  void sendPing(const QString& destination) override;
 
-private:
-    void releaseObjects();
+ private:
+  void releaseObjects();
 
-private:
-    QSocketNotifier *m_socketNotifier = nullptr;
-    int m_socket = 0;
+ private:
+  QSocketNotifier* m_socketNotifier = nullptr;
+  int m_socket = 0;
 };
 
-#endif // MACOSPINGSENDWORKER_H
+#endif  // MACOSPINGSENDWORKER_H

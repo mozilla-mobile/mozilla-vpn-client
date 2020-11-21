@@ -10,40 +10,38 @@
 
 class QQuickItem;
 
-class CloseEventHandler final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(CloseEventHandler)
+class CloseEventHandler final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(CloseEventHandler)
 
-public:
-    CloseEventHandler();
-    ~CloseEventHandler();
+ public:
+  CloseEventHandler();
+  ~CloseEventHandler();
 
-    Q_INVOKABLE bool eventHandled();
-    Q_INVOKABLE void addStackView(const QVariant &stackView);
-    Q_INVOKABLE void addView(const QVariant &view);
+  Q_INVOKABLE bool eventHandled();
+  Q_INVOKABLE void addStackView(const QVariant& stackView);
+  Q_INVOKABLE void addView(const QVariant& view);
 
-signals:
-    void goBack(QQuickItem *item);
+ signals:
+  void goBack(QQuickItem* item);
 
-private slots:
-    void removeItem(QObject *item);
+ private slots:
+  void removeItem(QObject* item);
 
-private:
-    struct Layer
-    {
-        enum Type {
-            eStackView,
-            eView,
-        };
-
-        Layer(QQuickItem *layer, Type type) : m_layer(layer), m_type(type) {}
-
-        QQuickItem *m_layer;
-        Type m_type;
+ private:
+  struct Layer {
+    enum Type {
+      eStackView,
+      eView,
     };
 
-    QList<Layer> m_layers;
+    Layer(QQuickItem* layer, Type type) : m_layer(layer), m_type(type) {}
+
+    QQuickItem* m_layer;
+    Type m_type;
+  };
+
+  QList<Layer> m_layers;
 };
 
-#endif // CLOSEEVENTHANDLER_H
+#endif  // CLOSEEVENTHANDLER_H

@@ -10,22 +10,21 @@
 #include <QObject>
 #include <QPointer>
 
-class TaskAccountAndServers final : public Task
-{
-    Q_DISABLE_COPY_MOVE(TaskAccountAndServers)
+class TaskAccountAndServers final : public Task {
+  Q_DISABLE_COPY_MOVE(TaskAccountAndServers)
 
-public:
-    TaskAccountAndServers();
-    ~TaskAccountAndServers();
+ public:
+  TaskAccountAndServers();
+  ~TaskAccountAndServers();
 
-    void run(MozillaVPN *vpn) override;
+  void run(MozillaVPN* vpn) override;
 
-private:
-    void maybeCompleted();
+ private:
+  void maybeCompleted();
 
-private:
-    bool m_accountCompleted = false;
-    bool m_serversCompleted = false;
+ private:
+  bool m_accountCompleted = false;
+  bool m_serversCompleted = false;
 };
 
-#endif // TASKACCOUNTANDSERVERS_H
+#endif  // TASKACCOUNTANDSERVERS_H

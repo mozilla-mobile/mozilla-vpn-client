@@ -13,82 +13,55 @@
 
 namespace {
 
-bool sortCityCallback(const ServerCity &a, const ServerCity &b)
-{
-    return a.name() < b.name();
+bool sortCityCallback(const ServerCity& a, const ServerCity& b) {
+  return a.name() < b.name();
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
-ServerCountry::ServerCountry()
-{
-    MVPN_COUNT_CTOR(ServerCountry);
+ServerCountry::ServerCountry() { MVPN_COUNT_CTOR(ServerCountry); }
+
+ServerCountry::ServerCountry(const ServerCountry& other) {
+  MVPN_COUNT_CTOR(ServerCountry);
+
+  m_name = other.m_name;
+  m_code = other.m_code;
+  m_cities = other.m_cities;
 }
 
-ServerCountry::ServerCountry(const ServerCountry &other)
-{
-    MVPN_COUNT_CTOR(ServerCountry);
+ServerCountry::~ServerCountry() { MVPN_COUNT_DTOR(ServerCountry); }
 
-    m_name = other.m_name;
-    m_code = other.m_code;
-    m_cities = other.m_cities;
+bool ServerCountry::fromJson(QJsonObject& countryObj) {
+  QJsonValue countryName = countryObj.take("name");
+  if (!countryName.isString()) {
+    return false;
+  }
+
+  QJsonObject cityObject = cityValue.toObject();
+
+  ServerCity serverCity;
+  if (!serverCity.fromJson(cityObject)) {
+    return false;
+  }
+
+  scList.append(serverCity);
 }
 
-ServerCountry::~ServerCountry()
-{
-    MVPN_COUNT_DTOR(ServerCountry);
+m_name = countryName.toString();
+m_code = countryCode.toString();
+m_cities.swap(scList);
+
+std::sort(m_cities.begin(), m_cities.end(), sortCityCallback);
+
+return true;
 }
 
-bool ServerCountry::fromJson(QJsonObject &countryObj)
-{
-    QJsonValue countryName = countryObj.take("name");
-    if (!countryName.isString()) {
-        return false;
+const QList<Server> ServerCountry::getServers(const ServerData& data) const {
+  for (const ServerCity& city : m_cities) {
+    if (city.name() == data.city()) {
+      return city.getServers();
     }
+  }
 
-    QJsonValue countryCode = countryObj.take("code");
-    if (!countryCode.isString()) {
-        return false;
-    }
-
-    QJsonValue cities = countryObj.take("cities");
-    if (!cities.isArray()) {
-        return false;
-    }
-
-    QList<ServerCity> scList;
-    QJsonArray citiesArray = cities.toArray();
-    for (QJsonValue cityValue : citiesArray) {
-        if (!cityValue.isObject()) {
-            return false;
-        }
-
-        QJsonObject cityObject = cityValue.toObject();
-
-        ServerCity serverCity;
-        if (!serverCity.fromJson(cityObject)) {
-            return false;
-        }
-
-        scList.append(serverCity);
-    }
-
-    m_name = countryName.toString();
-    m_code = countryCode.toString();
-    m_cities.swap(scList);
-
-    std::sort(m_cities.begin(), m_cities.end(), sortCityCallback);
-
-    return true;
-}
-
-const QList<Server> ServerCountry::getServers(const ServerData &data) const
-{
-    for (const ServerCity &city : m_cities) {
-        if (city.name() == data.city()) {
-            return city.getServers();
-        }
-    }
-
-    return QList<Server>();
+  return QList<Server>();
 }

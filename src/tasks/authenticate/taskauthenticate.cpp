@@ -12,9 +12,9 @@
 #include "networkrequest.h"
 
 #ifdef MVPN_IOS
-#include "platforms/ios/authenticationlistener.h"
+#  include "platforms/ios/authenticationlistener.h"
 #else
-#include "tasks/authenticate/desktopauthenticationlistener.h"
+#  include "tasks/authenticate/desktopauthenticationlistener.h"
 #endif
 
 #include <QCryptographicHash>
@@ -29,133 +29,129 @@ namespace {
 
 Logger logger(LOG_MAIN, "TaskAuthenticate");
 
-QByteArray generatePkceCodeVerifier()
-{
-    QRandomGenerator *generator = QRandomGenerator::system();
-    Q_ASSERT(generator);
+QByteArray generatePkceCodeVerifier() {
+  QRandomGenerator* generator = QRandomGenerator::system();
+  Q_ASSERT(generator);
 
-    QByteArray pkceCodeVerifier;
-    static QByteArray range("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~");
-    for (uint16_t i = 0; i < 128; ++i) {
-        pkceCodeVerifier.append(range.at(generator->generate() % range.length()));
-    }
+  QByteArray pkceCodeVerifier;
+  static QByteArray range(
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~");
+  for (uint16_t i = 0; i < 128; ++i) {
+    pkceCodeVerifier.append(range.at(generator->generate() % range.length()));
+  }
 
-    return pkceCodeVerifier;
+  return pkceCodeVerifier;
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
-TaskAuthenticate::TaskAuthenticate() : Task("TaskAuthenticate")
-{
-    MVPN_COUNT_CTOR(TaskAuthenticate);
+TaskAuthenticate::TaskAuthenticate() : Task("TaskAuthenticate") {
+  MVPN_COUNT_CTOR(TaskAuthenticate);
 }
 
-TaskAuthenticate::~TaskAuthenticate()
-{
-    MVPN_COUNT_DTOR(TaskAuthenticate);
-}
+TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
-void TaskAuthenticate::run(MozillaVPN *vpn)
-{
-    Q_ASSERT(vpn);
-    logger.log() << "TaskAuthenticate::Run";
+void TaskAuthenticate::run(MozillaVPN* vpn) {
+  Q_ASSERT(vpn);
+  logger.log() << "TaskAuthenticate::Run";
 
-    Q_ASSERT(!m_authenticationListener);
+  Q_ASSERT(!m_authenticationListener);
 
-    QByteArray pkceCodeVerifier = generatePkceCodeVerifier();
-    QByteArray pkceCodeChallenge
-        = QCryptographicHash::hash(pkceCodeVerifier, QCryptographicHash::Sha256).toBase64();
-    Q_ASSERT(pkceCodeChallenge.length() == 44);
+  QByteArray pkceCodeVerifier = generatePkceCodeVerifier();
+  QByteArray pkceCodeChallenge =
+      QCryptographicHash::hash(pkceCodeVerifier, QCryptographicHash::Sha256)
+          .toBase64();
+  Q_ASSERT(pkceCodeChallenge.length() == 44);
 
-    logger.log() << "pkceCodeVerifier:" << pkceCodeVerifier;
-    logger.log() << "pkceCodeChallenge:" << pkceCodeChallenge;
+  logger.log() << "pkceCodeVerifier:" << pkceCodeVerifier;
+  logger.log() << "pkceCodeChallenge:" << pkceCodeChallenge;
 
-    m_authenticationListener = AuthenticationListener::create(this);
+  m_authenticationListener = AuthenticationListener::create(this);
 
-    connect(m_authenticationListener,
-            &AuthenticationListener::completed,
-            [this, vpn, pkceCodeVerifier](const QString &pkceCodeSucces) {
-                logger.log() << "Authentication completed with code:" << pkceCodeSucces;
+  connect(m_authenticationListener, &AuthenticationListener::completed,
+          [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
+            logger.log() << "Authentication completed with code:"
+                         << pkceCodeSucces;
 
-                NetworkRequest *request
-                    = NetworkRequest::createForAuthenticationVerification(this,
-                                                                          pkceCodeSucces,
-                                                                          pkceCodeVerifier);
+            NetworkRequest* request =
+                NetworkRequest::createForAuthenticationVerification(
+                    this, pkceCodeSucces, pkceCodeVerifier);
 
-                connect(request,
-                        &NetworkRequest::requestFailed,
-                        [this, vpn](QNetworkReply::NetworkError error) {
-                            logger.log() << "Failed to complete the authentication" << error;
-                            vpn->errorHandle(ErrorHandler::toErrorType(error));
-                            emit completed();
-                        });
+            connect(request, &NetworkRequest::requestFailed,
+                    [this, vpn](QNetworkReply::NetworkError error) {
+                      logger.log()
+                          << "Failed to complete the authentication" << error;
+                      vpn->errorHandle(ErrorHandler::toErrorType(error));
+                      emit completed();
+                    });
 
-                connect(request,
-                        &NetworkRequest::requestCompleted,
-                        [this, vpn](const QByteArray &data) {
-                            logger.log() << "Authentication completed";
-                            authenticationCompleted(vpn, data);
-                        });
-            });
+            connect(request, &NetworkRequest::requestCompleted,
+                    [this, vpn](const QByteArray& data) {
+                      logger.log() << "Authentication completed";
+                      authenticationCompleted(vpn, data);
+                    });
+          });
 
-    connect(m_authenticationListener,
-            &AuthenticationListener::failed,
-            [this, vpn](const ErrorHandler::ErrorType error) {
-        vpn->errorHandle(error);
-        emit completed();
-    });
+  connect(m_authenticationListener, &AuthenticationListener::failed,
+          [this, vpn](const ErrorHandler::ErrorType error) {
+            vpn->errorHandle(error);
+            emit completed();
+          });
 
-    connect(m_authenticationListener, &AuthenticationListener::abortedByUser, [this, vpn]() {
-        vpn->abortAuthentication();
-        emit completed();
-    });
+  connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
+          [this, vpn]() {
+            vpn->abortAuthentication();
+            emit completed();
+          });
 
-    QString path("/api/v2/vpn/login/");
+  QString path("/api/v2/vpn/login/");
 
 #if defined(MVPN_IOS)
-    path.append("ios");
+  path.append("ios");
 #elif defined(MVPN_LINUX)
-    path.append("linux");
+  path.append("linux");
 #elif defined(MVPN_ANDROID)
-    path.append("android");
+  path.append("android");
 #elif defined(MVPN_MACOS)
-    path.append("macos");
+  path.append("macos");
 #else
-    #error Not supported
+#  error Not supported
 #endif
 
-    QUrl url(NetworkManager::instance()->apiUrl());
-    url.setPath(path);
+  QUrl url(NetworkManager::instance()->apiUrl());
+  url.setPath(path);
 
-    QUrlQuery query;
-    query.addQueryItem("code_challenge", QUrl::toPercentEncoding(pkceCodeChallenge));
-    query.addQueryItem("code_challenge_method", "S256");
+  QUrlQuery query;
+  query.addQueryItem("code_challenge",
+                     QUrl::toPercentEncoding(pkceCodeChallenge));
+  query.addQueryItem("code_challenge_method", "S256");
 
-    m_authenticationListener->start(vpn, url, query);
+  m_authenticationListener->start(vpn, url, query);
 }
 
-void TaskAuthenticate::authenticationCompleted(MozillaVPN *vpn, const QByteArray &data)
-{
-    logger.log() << "Authentication completed with data:" << data;
+void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
+                                               const QByteArray& data) {
+  logger.log() << "Authentication completed with data:" << data;
 
-    QJsonDocument json = QJsonDocument::fromJson(data);
-    Q_ASSERT(!json.isNull());
+  QJsonDocument json = QJsonDocument::fromJson(data);
+  Q_ASSERT(!json.isNull());
 
-    Q_ASSERT(json.isObject());
-    QJsonObject obj = json.object();
+  Q_ASSERT(json.isObject());
+  QJsonObject obj = json.object();
 
-    Q_ASSERT(obj.contains("user"));
-    QJsonValue userObj = obj.take("user");
-    Q_ASSERT(userObj.isObject());
+  Q_ASSERT(obj.contains("user"));
+  QJsonValue userObj = obj.take("user");
+  Q_ASSERT(userObj.isObject());
 
-    Q_ASSERT(obj.contains("token"));
-    QJsonValue tokenValue = obj.take("token");
-    Q_ASSERT(tokenValue.isString());
+  Q_ASSERT(obj.contains("token"));
+  QJsonValue tokenValue = obj.take("token");
+  Q_ASSERT(tokenValue.isString());
 
-    QJsonDocument userDoc;
-    userDoc.setObject(userObj.toObject());
+  QJsonDocument userDoc;
+  userDoc.setObject(userObj.toObject());
 
-    vpn->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact), tokenValue.toString());
+  vpn->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact),
+                               tokenValue.toString());
 
-    emit completed();
+  emit completed();
 }

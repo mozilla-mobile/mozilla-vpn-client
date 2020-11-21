@@ -4,10 +4,9 @@
 
 #include "helper.h"
 
-class TestLocalizer final : public TestHelper
-{
-    Q_OBJECT
+class TestLocalizer final : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void basic();
+ private slots:
+  void basic();
 };

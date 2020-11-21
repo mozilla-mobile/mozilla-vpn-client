@@ -14,53 +14,55 @@
 
 class ServerData;
 
-class ServerCountryModel final : public QAbstractListModel
-{
-    Q_DISABLE_COPY_MOVE(ServerCountryModel)
+class ServerCountryModel final : public QAbstractListModel {
+  Q_DISABLE_COPY_MOVE(ServerCountryModel)
 
-public:
-    enum ServerCountryRoles {
-        NameRole = Qt::UserRole + 1,
-        CodeRole,
-        CitiesRole,
-    };
+ public:
+  enum ServerCountryRoles {
+    NameRole = Qt::UserRole + 1,
+    CodeRole,
+    CitiesRole,
+  };
 
-    ServerCountryModel();
-    ~ServerCountryModel();
+  ServerCountryModel();
+  ~ServerCountryModel();
 
-    [[nodiscard]] bool fromSettings();
+  [[nodiscard]] bool fromSettings();
 
-    [[nodiscard]] bool fromJson(const QByteArray &data);
+  [[nodiscard]] bool fromJson(const QByteArray& data);
 
-    bool initialized() const { return !m_rawJson.isEmpty(); }
+  bool initialized() const { return !m_rawJson.isEmpty(); }
 
-    void pickRandom(ServerData &data) const;
+  void pickRandom(ServerData& data) const;
 
-    bool pickIfExists(const QString &countryCode, const QString &cityCode, ServerData &data) const;
+  bool pickIfExists(const QString& countryCode, const QString& cityCode,
+                    ServerData& data) const;
 
-    bool exists(ServerData &data) const;
+  bool exists(ServerData& data) const;
 
-    const QList<Server> getServers(const ServerData &data) const;
+  const QList<Server> getServers(const ServerData& data) const;
 
-    const QString countryName(const QString &countryCode) const;
+  const QString countryName(const QString& countryCode) const;
 
-    const QList<ServerCountry>& countries() const { return m_countries; }
+  const QList<ServerCountry>& countries() const { return m_countries; }
 
-    // QAbstractListModel methods
+  // QAbstractListModel methods
 
-    QHash<int, QByteArray> roleNames() const override;
+  QHash<int, QByteArray> roleNames() const override;
 
-    int rowCount(const QModelIndex &) const override { return m_countries.length(); }
+  int rowCount(const QModelIndex&) const override {
+    return m_countries.length();
+  }
 
-    QVariant data(const QModelIndex &index, int role) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
 
-private:
-    [[nodiscard]] bool fromJsonInternal(const QByteArray &data);
+ private:
+  [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
 
-private:
-    QByteArray m_rawJson;
+ private:
+  QByteArray m_rawJson;
 
-    QList<ServerCountry> m_countries;
+  QList<ServerCountry> m_countries;
 };
 
-#endif // SERVERCOUNTRYMODEL_H
+#endif  // SERVERCOUNTRYMODEL_H

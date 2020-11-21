@@ -13,57 +13,52 @@ namespace {
 Logger logger(LOG_MACOS, "MacOSManuBar");
 }
 
-MacOSMenuBar::MacOSMenuBar()
-{
-    MVPN_COUNT_CTOR(MacOSMenuBar);
-}
+MacOSMenuBar::MacOSMenuBar() { MVPN_COUNT_CTOR(MacOSMenuBar); }
 
-MacOSMenuBar::~MacOSMenuBar()
-{
-    MVPN_COUNT_DTOR(MacOSMenuBar);
-}
+MacOSMenuBar::~MacOSMenuBar() { MVPN_COUNT_DTOR(MacOSMenuBar); }
 
-void MacOSMenuBar::initialize()
-{
-    logger.log() << "Creating menubar";
+void MacOSMenuBar::initialize() {
+  logger.log() << "Creating menubar";
 
-    MozillaVPN *vpn = MozillaVPN::instance();
+  MozillaVPN* vpn = MozillaVPN::instance();
 
-    QMenuBar *menuBar = new QMenuBar(nullptr);
+  QMenuBar* menuBar = new QMenuBar(nullptr);
 
-    //% "File"
-    QMenu *fileMenu = menuBar->addMenu(qtTrId("menubar.file.title"));
+  //% "File"
+  QMenu* fileMenu = menuBar->addMenu(qtTrId("menubar.file.title"));
 
-    // Do not use qtTrId here!
-    QAction *quit = fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
-    quit->setMenuRole(QAction::QuitRole);
+  // Do not use qtTrId here!
+  QAction* quit =
+      fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+  quit->setMenuRole(QAction::QuitRole);
 
-    // Do not use qtTrId here!
-    m_aboutAction = fileMenu->addAction("about.vpn", vpn, &MozillaVPN::requestAbout);
-    m_aboutAction->setMenuRole(QAction::AboutRole);
-    m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  // Do not use qtTrId here!
+  m_aboutAction =
+      fileMenu->addAction("about.vpn", vpn, &MozillaVPN::requestAbout);
+  m_aboutAction->setMenuRole(QAction::AboutRole);
+  m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
-    // Do not use qtTrId here!
-    m_preferencesAction = fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
-    m_preferencesAction->setMenuRole(QAction::PreferencesRole);
-    m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  // Do not use qtTrId here!
+  m_preferencesAction =
+      fileMenu->addAction("preferences", vpn, &MozillaVPN::requestSettings);
+  m_preferencesAction->setMenuRole(QAction::PreferencesRole);
+  m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
-    //% "Close"
-    QAction *close = fileMenu->addAction(qtTrId("menubar.file.close"),
-                                         vpn->controller(),
-                                         &Controller::quit);
-    close->setShortcut(QKeySequence::Close);
+  //% "Close"
+  QAction* close = fileMenu->addAction(qtTrId("menubar.file.close"),
+                                       vpn->controller(), &Controller::quit);
+  close->setShortcut(QKeySequence::Close);
 
-    //% "Help"
-    QMenu *helpMenu = menuBar->addMenu(qtTrId("menubar.help.title"));
-    vpn->helpModel()->forEach([&](const QString &name, int id) {
-        helpMenu->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
-    });
+  //% "Help"
+  QMenu* helpMenu = menuBar->addMenu(qtTrId("menubar.help.title"));
+  vpn->helpModel()->forEach([&](const QString& name, int id) {
+    helpMenu->addAction(name,
+                        [help = vpn->helpModel(), id]() { help->open(id); });
+  });
 };
 
-void MacOSMenuBar::controllerStateChanged()
-{
-    MozillaVPN *vpn = MozillaVPN::instance();
-    m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
-    m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+void MacOSMenuBar::controllerStateChanged() {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+  m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 }

@@ -7,52 +7,51 @@
 
 #include <QTimer>
 
-void TestTimerSingleShot::basic()
-{
-    {
-        bool called = false;
-        TimerSingleShot::create(nullptr, 0, [&] { called = true; });
+void TestTimerSingleShot::basic() {
+  {
+    bool called = false;
+    TimerSingleShot::create(nullptr, 0, [&] { called = true; });
 
-        QEventLoop loop;
-        QTimer t;
-        connect(&t, &QTimer::timeout, [&] { loop.exit(); });
-        t.start(0);
-        loop.exec();
+    QEventLoop loop;
+    QTimer t;
+    connect(&t, &QTimer::timeout, [&] { loop.exit(); });
+    t.start(0);
+    loop.exec();
 
-        QVERIFY(called);
-    }
+    QVERIFY(called);
+  }
 
-    {
-        QTimer* obj = new QTimer();
+  {
+    QTimer* obj = new QTimer();
 
-        bool called = false;
-        TimerSingleShot::create(obj, 0, [&] { called = true; });
+    bool called = false;
+    TimerSingleShot::create(obj, 0, [&] { called = true; });
 
-        QEventLoop loop;
-        QTimer t;
-        connect(&t, &QTimer::timeout, [&] { loop.exit(); });
-        t.start(0);
-        loop.exec();
+    QEventLoop loop;
+    QTimer t;
+    connect(&t, &QTimer::timeout, [&] { loop.exit(); });
+    t.start(0);
+    loop.exec();
 
-        QVERIFY(called);
-        delete obj;
-    }
+    QVERIFY(called);
+    delete obj;
+  }
 
-    {
-        QTimer* obj = new QTimer();
+  {
+    QTimer* obj = new QTimer();
 
-        bool called = false;
-        TimerSingleShot::create(obj, 0, [&] { called = true; });
-        delete obj;
+    bool called = false;
+    TimerSingleShot::create(obj, 0, [&] { called = true; });
+    delete obj;
 
-        QEventLoop loop;
-        QTimer t;
-        connect(&t, &QTimer::timeout, [&] { loop.exit(); });
-        t.start(0);
-        loop.exec();
+    QEventLoop loop;
+    QTimer t;
+    connect(&t, &QTimer::timeout, [&] { loop.exit(); });
+    t.start(0);
+    loop.exec();
 
-        QVERIFY(!called);
-    }
+    QVERIFY(!called);
+  }
 }
 
 static TestTimerSingleShot s_testTimerSingleShot;

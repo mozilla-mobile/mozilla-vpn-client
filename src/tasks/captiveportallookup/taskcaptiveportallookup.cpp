@@ -13,33 +13,33 @@ namespace {
 Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
 }
 
-TaskCaptivePortalLookup::TaskCaptivePortalLookup() : Task("TaskCaptivePortalLookup")
-{
-    MVPN_COUNT_CTOR(TaskCaptivePortalLookup);
+TaskCaptivePortalLookup::TaskCaptivePortalLookup()
+    : Task("TaskCaptivePortalLookup") {
+  MVPN_COUNT_CTOR(TaskCaptivePortalLookup);
 }
 
-TaskCaptivePortalLookup::~TaskCaptivePortalLookup()
-{
-    MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
+TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
+  MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
 }
 
-void TaskCaptivePortalLookup::run(MozillaVPN *vpn)
-{
-    logger.log() << "Resolving the captive portal detector URL";
+void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
+  logger.log() << "Resolving the captive portal detector URL";
 
-    NetworkRequest *request = NetworkRequest::createForCaptivePortalLookup(this);
-    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        logger.log() << "Failed to obtain captive poral IPs" << error;
-        vpn->errorHandle(ErrorHandler::toErrorType(error));
-        emit completed();
-    });
+  NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
+  connect(request, &NetworkRequest::requestFailed,
+          [this, vpn](QNetworkReply::NetworkError error) {
+            logger.log() << "Failed to obtain captive poral IPs" << error;
+            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            emit completed();
+          });
 
-    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &data) {
-        logger.log() << "Lookup completed";
-        if (vpn->captivePortal()->fromJson(data)) {
-            vpn->captivePortal()->writeSettings();
-        }
+  connect(request, &NetworkRequest::requestCompleted,
+          [this, vpn](const QByteArray& data) {
+            logger.log() << "Lookup completed";
+            if (vpn->captivePortal()->fromJson(data)) {
+              vpn->captivePortal()->writeSettings();
+            }
 
-        emit completed();
-    });
+            emit completed();
+          });
 }

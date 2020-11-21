@@ -7,17 +7,16 @@
 
 #include "pingsendworker.h"
 
-class DummyPingSendWorker final : public PingSendWorker
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(DummyPingSendWorker)
+class DummyPingSendWorker final : public PingSendWorker {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DummyPingSendWorker)
 
-public:
-    DummyPingSendWorker();
-    ~DummyPingSendWorker();
+ public:
+  DummyPingSendWorker();
+  ~DummyPingSendWorker();
 
-public slots:
-    void sendPing(const QString &destination) override;
+ public slots:
+  void sendPing(const QString& destination) override;
 };
 
-#endif // DUMMYPINGSENDWORKER_H
+#endif  // DUMMYPINGSENDWORKER_H

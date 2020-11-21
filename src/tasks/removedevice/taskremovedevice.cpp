@@ -14,37 +14,35 @@ namespace {
 Logger logger(LOG_MAIN, "TaskRemoveDevice");
 }
 
-TaskRemoveDevice::TaskRemoveDevice(const QString &deviceName)
-    : Task("TaskRemoveDevice"), m_deviceName(deviceName)
-{
-    MVPN_COUNT_CTOR(TaskRemoveDevice);
+TaskRemoveDevice::TaskRemoveDevice(const QString& deviceName)
+    : Task("TaskRemoveDevice"), m_deviceName(deviceName) {
+  MVPN_COUNT_CTOR(TaskRemoveDevice);
 }
 
-TaskRemoveDevice::~TaskRemoveDevice()
-{
-    MVPN_COUNT_DTOR(TaskRemoveDevice);
-}
+TaskRemoveDevice::~TaskRemoveDevice() { MVPN_COUNT_DTOR(TaskRemoveDevice); }
 
-void TaskRemoveDevice::run(MozillaVPN *vpn)
-{
-    logger.log() << "Removing the device" << m_deviceName;
+void TaskRemoveDevice::run(MozillaVPN* vpn) {
+  logger.log() << "Removing the device" << m_deviceName;
 
-    const Device *device = vpn->deviceModel()->device(m_deviceName);
-    Q_ASSERT(device);
+  const Device* device = vpn->deviceModel()->device(m_deviceName);
+  Q_ASSERT(device);
 
-    QString publicKey = device->publicKey();
+  QString publicKey = device->publicKey();
 
-    NetworkRequest *request = NetworkRequest::createForDeviceRemoval(this, publicKey);
+  NetworkRequest* request =
+      NetworkRequest::createForDeviceRemoval(this, publicKey);
 
-    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        logger.log() << "Failed to remove the device" << error;
-        vpn->errorHandle(ErrorHandler::toErrorType(error));
-        emit completed();
-    });
+  connect(request, &NetworkRequest::requestFailed,
+          [this, vpn](QNetworkReply::NetworkError error) {
+            logger.log() << "Failed to remove the device" << error;
+            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            emit completed();
+          });
 
-    connect(request, &NetworkRequest::requestCompleted, [this, vpn](const QByteArray &) {
-        logger.log() << "Device removed";
-        vpn->deviceRemoved(m_deviceName);
-        emit completed();
-    });
+  connect(request, &NetworkRequest::requestCompleted,
+          [this, vpn](const QByteArray&) {
+            logger.log() << "Device removed";
+            vpn->deviceRemoved(m_deviceName);
+            emit completed();
+          });
 }

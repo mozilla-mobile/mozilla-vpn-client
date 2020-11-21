@@ -10,36 +10,34 @@ namespace {
 
 Logger logger(LOG_MAIN, "SignalHandler");
 
-SignalHandler *self = nullptr;
+SignalHandler* self = nullptr;
 
-} // namespace
+}  // namespace
 
-SignalHandler::SignalHandler()
-{
-    Q_ASSERT(!self);
-    self = this;
+SignalHandler::SignalHandler() {
+  Q_ASSERT(!self);
+  self = this;
 
-    int quitSignals[] = {SIGQUIT, SIGINT, SIGTERM, SIGHUP};
+  int quitSignals[] = {SIGQUIT, SIGINT, SIGTERM, SIGHUP};
 
-    sigset_t mask;
-    sigemptyset(&mask);
-    for (auto sig : quitSignals) {
-        sigaddset(&mask, sig);
-    }
+  sigset_t mask;
+  sigemptyset(&mask);
+  for (auto sig : quitSignals) {
+    sigaddset(&mask, sig);
+  }
 
-    struct sigaction sa;
-    sa.sa_handler = SignalHandler::saHandler;
-    sa.sa_mask = mask;
-    sa.sa_flags = 0;
+  struct sigaction sa;
+  sa.sa_handler = SignalHandler::saHandler;
+  sa.sa_mask = mask;
+  sa.sa_flags = 0;
 
-    for (auto sig : quitSignals) {
-        sigaction(sig, &sa, nullptr);
-    }
+  for (auto sig : quitSignals) {
+    sigaction(sig, &sa, nullptr);
+  }
 }
 
-void SignalHandler::saHandler(int signal)
-{
-    logger.log() << "Signal" << signal;
-    Q_ASSERT(self);
-    emit self->quitRequested();
+void SignalHandler::saHandler(int signal) {
+  logger.log() << "Signal" << signal;
+  Q_ASSERT(self);
+  emit self->quitRequested();
 }

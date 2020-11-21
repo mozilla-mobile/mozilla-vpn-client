@@ -11,67 +11,65 @@
 
 class QNetworkAccessManager;
 
-class NetworkRequest final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(NetworkRequest)
+class NetworkRequest final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(NetworkRequest)
 
-public:
-    ~NetworkRequest();
+ public:
+  ~NetworkRequest();
 
-    // This object deletes itself at the end of the operation.
+  // This object deletes itself at the end of the operation.
 
-    static NetworkRequest *createForAuthenticationVerification(QObject *parent,
-                                                               const QString &pkceCodeSuccess,
-                                                               const QString &pkceCodeVerifier);
+  static NetworkRequest* createForAuthenticationVerification(
+      QObject* parent, const QString& pkceCodeSuccess,
+      const QString& pkceCodeVerifier);
 
-    static NetworkRequest *createForDeviceCreation(QObject *parent,
-                                                   const QString &deviceName,
-                                                   const QString &pubKey);
+  static NetworkRequest* createForDeviceCreation(QObject* parent,
+                                                 const QString& deviceName,
+                                                 const QString& pubKey);
 
-    static NetworkRequest *createForDeviceRemoval(QObject *parent,
-                                                  const QString &pubKey);
+  static NetworkRequest* createForDeviceRemoval(QObject* parent,
+                                                const QString& pubKey);
 
-    static NetworkRequest *createForServers(QObject *parent);
+  static NetworkRequest* createForServers(QObject* parent);
 
-    static NetworkRequest *createForAccount(QObject *parent);
+  static NetworkRequest* createForAccount(QObject* parent);
 
-    static NetworkRequest *createForVersions(QObject *parent);
+  static NetworkRequest* createForVersions(QObject* parent);
 
-    static NetworkRequest *createForIpInfo(QObject *parent);
+  static NetworkRequest* createForIpInfo(QObject* parent);
 
-    static NetworkRequest *createForCaptivePortalDetection(QObject *parent,
-                                                           const QUrl &url,
-                                                           const QByteArray &host);
+  static NetworkRequest* createForCaptivePortalDetection(
+      QObject* parent, const QUrl& url, const QByteArray& host);
 
-    static NetworkRequest *createForCaptivePortalLookup(QObject *parent);
+  static NetworkRequest* createForCaptivePortalLookup(QObject* parent);
 
 #ifdef MVPN_IOS
-    static NetworkRequest *createForIOSProducts(QObject *parent);
+  static NetworkRequest* createForIOSProducts(QObject* parent);
 
-    static NetworkRequest *createForIOSPurchase(QObject *parent,
-                                                const QString &receipt);
+  static NetworkRequest* createForIOSPurchase(QObject* parent,
+                                              const QString& receipt);
 #endif
 
-private:
-    NetworkRequest(QObject *parent);
+ private:
+  NetworkRequest(QObject* parent);
 
-    void deleteRequest();
-    void getRequest();
-    void postRequest(const QByteArray &body);
+  void deleteRequest();
+  void getRequest();
+  void postRequest(const QByteArray& body);
 
-    void handleReply(QNetworkReply *reply);
+  void handleReply(QNetworkReply* reply);
 
-private slots:
-    void replyFinished();
+ private slots:
+  void replyFinished();
 
-signals:
-    void requestFailed(QNetworkReply::NetworkError error);
-    void requestCompleted(const QByteArray &data);
+ signals:
+  void requestFailed(QNetworkReply::NetworkError error);
+  void requestCompleted(const QByteArray& data);
 
-private:
-    QNetworkRequest m_request;
-    QNetworkReply *m_reply = nullptr;
+ private:
+  QNetworkRequest m_request;
+  QNetworkReply* m_reply = nullptr;
 };
 
-#endif // NETWORKREQUEST_H
+#endif  // NETWORKREQUEST_H

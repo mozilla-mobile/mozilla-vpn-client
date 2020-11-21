@@ -9,15 +9,14 @@
 
 #include <QObject>
 
-class AndroidAuthenticationListener final : public AuthenticationListener
-{
-    Q_DISABLE_COPY_MOVE(AndroidAuthenticationListener)
+class AndroidAuthenticationListener final : public AuthenticationListener {
+  Q_DISABLE_COPY_MOVE(AndroidAuthenticationListener)
 
-public:
-    AndroidAuthenticationListener(QObject *parent);
-    ~AndroidAuthenticationListener();
+ public:
+  AndroidAuthenticationListener(QObject* parent);
+  ~AndroidAuthenticationListener();
 
-    void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query) override;
+  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
 };
 
-#endif // ANDROIDAUTHENTICATIONLISTENER_H
+#endif  // ANDROIDAUTHENTICATIONLISTENER_H

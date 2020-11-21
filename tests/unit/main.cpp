@@ -8,31 +8,26 @@
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
-QVector<QObject *> TestHelper::testList;
+QVector<QObject*> TestHelper::testList;
 
-TestHelper::TestHelper()
-{
-    testList.append(this);
-}
+TestHelper::TestHelper() { testList.append(this); }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
 #ifdef QT_DEBUG
-    LeakDetector leakDetector;
-    Q_UNUSED(leakDetector);
+  LeakDetector leakDetector;
+  Q_UNUSED(leakDetector);
 #endif
 
-    QCoreApplication a(argc, argv);
+  QCoreApplication a(argc, argv);
 
-    int failures = 0;
+  int failures = 0;
 
-    for (QObject *obj : TestHelper::testList) {
-        int result = QTest::qExec(obj);
-        if ( result != 0 )
-        {
-            ++failures;
-        }
+  for (QObject* obj : TestHelper::testList) {
+    int result = QTest::qExec(obj);
+    if (result != 0) {
+      ++failures;
     }
+  }
 
-    return failures;
+  return failures;
 }

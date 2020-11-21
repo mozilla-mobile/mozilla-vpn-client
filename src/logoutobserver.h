@@ -7,20 +7,19 @@
 
 #include <QObject>
 
-class LogoutObserver final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(LogoutObserver)
+class LogoutObserver final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(LogoutObserver)
 
-public:
-    explicit LogoutObserver(QObject *parent);
-    ~LogoutObserver();
+ public:
+  explicit LogoutObserver(QObject* parent);
+  ~LogoutObserver();
 
-signals:
-    void ready();
+ signals:
+  void ready();
 
-private slots:
-    void userAuthenticationChanged();
+ private slots:
+  void userAuthenticationChanged();
 };
 
-#endif // LOGOUTOBSERVER_H
+#endif  // LOGOUTOBSERVER_H

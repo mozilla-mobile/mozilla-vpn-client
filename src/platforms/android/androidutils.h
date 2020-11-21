@@ -8,34 +8,33 @@
 
 class AuthenticationListener;
 
-class AndroidUtils final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(AndroidUtils)
+class AndroidUtils final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(AndroidUtils)
 
-    Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
+  Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
 
-public:
-    static QString GetDeviceName();
+ public:
+  static QString GetDeviceName();
 
-    static AndroidUtils *instance();
+  static AndroidUtils* instance();
 
-    void startAuthentication(AuthenticationListener *listener, const QUrl &url);
+  void startAuthentication(AuthenticationListener* listener, const QUrl& url);
 
-    const QUrl &url() const { return m_url; }
+  const QUrl& url() const { return m_url; }
 
-    Q_INVOKABLE void abortAuthentication();
+  Q_INVOKABLE void abortAuthentication();
 
-    Q_INVOKABLE bool maybeCompleteAuthentication(const QString &url);
+  Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
 
-signals:
-    void urlChanged();
+ signals:
+  void urlChanged();
 
-private:
-    AndroidUtils(QObject *parent);
-    ~AndroidUtils();
+ private:
+  AndroidUtils(QObject* parent);
+  ~AndroidUtils();
 
-private:
-    QUrl m_url;
-    AuthenticationListener *m_listener = nullptr;
+ private:
+  QUrl m_url;
+  AuthenticationListener* m_listener = nullptr;
 };

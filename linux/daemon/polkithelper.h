@@ -7,18 +7,17 @@
 
 #include <QString>
 
-class PolkitHelper final
-{
-public:
-    static PolkitHelper *instance();
+class PolkitHelper final {
+ public:
+  static PolkitHelper* instance();
 
-    bool checkAuthorization(const QString &actionId);
+  bool checkAuthorization(const QString& actionId);
 
-private:
-    PolkitHelper() = default;
-    ~PolkitHelper() = default;
+ private:
+  PolkitHelper() = default;
+  ~PolkitHelper() = default;
 
-    Q_DISABLE_COPY(PolkitHelper)
+  Q_DISABLE_COPY(PolkitHelper)
 };
 
-#endif // POLKITHELPER_H
+#endif  // POLKITHELPER_H

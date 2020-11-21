@@ -14,110 +14,102 @@
 #include <QIcon>
 #include <QTextStream>
 
-QVector<std::function<Command *(QObject *)>> Command::s_commandCreators;
+QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
-Command::Command(QObject *parent, const QString &name, const QString &description)
-    : QObject(parent), m_name(name), m_description(description)
-{
-    MVPN_COUNT_CTOR(Command);
+Command::Command(QObject* parent, const QString& name,
+                 const QString& description)
+    : QObject(parent), m_name(name), m_description(description) {
+  MVPN_COUNT_CTOR(Command);
 }
 
-Command::~Command()
-{
-    MVPN_COUNT_DTOR(Command);
+Command::~Command() { MVPN_COUNT_DTOR(Command); }
+
+bool Command::userAuthenticated() {
+  if (!SettingsHolder::instance()->hasToken()) {
+    QTextStream stream(stdout);
+    stream << "User status: not authenticated" << Qt::endl;
+    return false;
+  }
+
+  return true;
 }
 
-bool Command::userAuthenticated()
-{
-    if (!SettingsHolder::instance()->hasToken()) {
-        QTextStream stream(stdout);
-        stream << "User status: not authenticated" << Qt::endl;
-        return false;
-    }
+bool Command::loadModels() {
+  MozillaVPN* vpn = MozillaVPN::instance();
 
-    return true;
+  if (!vpn->deviceModel()->fromSettings() ||
+      !vpn->serverCountryModel()->fromSettings() ||
+      !vpn->user()->fromSettings() || !vpn->keys()->fromSettings() ||
+      !vpn->currentServer()->fromSettings() || !vpn->modelsInitialized()) {
+    QTextStream stream(stdout);
+    stream << "No cache available" << Qt::endl;
+    return false;
+  }
+
+  if (!vpn->captivePortal()->fromSettings()) {
+    // We do not care about these settings.
+  }
+
+  return true;
 }
 
-bool Command::loadModels()
-{
-    MozillaVPN *vpn = MozillaVPN::instance();
+int Command::runCommandLineApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
 
-    if (!vpn->deviceModel()->fromSettings() || !vpn->serverCountryModel()->fromSettings()
-        || !vpn->user()->fromSettings() || !vpn->keys()->fromSettings()
-        || !vpn->currentServer()->fromSettings() || !vpn->modelsInitialized()) {
-        QTextStream stream(stdout);
-        stream << "No cache available" << Qt::endl;
-        return false;
-    }
+  QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-    if (!vpn->captivePortal()->fromSettings()) {
-        // We do not care about these settings.
-    }
+  QCoreApplication::setApplicationName("Mozilla VPN");
+  QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    return true;
+  SettingsHolder settingsHolder;
+  Localizer localizer;
+  SimpleNetworkManager snm;
+
+  return callback();
 }
 
-int Command::runCommandLineApp(std::function<int()> &&a_callback)
-{
-    std::function<int()> callback = std::move(a_callback);
+int Command::runGuiApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
 
-    QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+  QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-    QCoreApplication::setApplicationName("Mozilla VPN");
-    QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationName("Mozilla VPN");
+  QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    SettingsHolder settingsHolder;
-    Localizer localizer;
-    SimpleNetworkManager snm;
+  SettingsHolder settingsHolder;
+  Localizer localizer;
+  SimpleNetworkManager snm;
 
-    return callback();
+  QIcon icon(":/ui/resources/logo-dock.png");
+  app.setWindowIcon(icon);
+
+  return callback();
 }
 
-int Command::runGuiApp(std::function<int()> &&a_callback)
-{
-    std::function<int()> callback = std::move(a_callback);
+int Command::runQmlApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
 
-    QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QCoreApplication::setApplicationName("Mozilla VPN");
-    QCoreApplication::setApplicationVersion(APP_VERSION);
+  QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-    SettingsHolder settingsHolder;
-    Localizer localizer;
-    SimpleNetworkManager snm;
+  QCoreApplication::setApplicationName("Mozilla VPN");
+  QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    QIcon icon(":/ui/resources/logo-dock.png");
-    app.setWindowIcon(icon);
+  SettingsHolder settingsHolder;
+  Localizer localizer;
 
-    return callback();
-}
+  QIcon icon(":/ui/resources/logo-dock.png");
+  app.setWindowIcon(icon);
 
-int Command::runQmlApp(std::function<int()> &&a_callback)
-{
-    std::function<int()> callback = std::move(a_callback);
-
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-
-    QCoreApplication::setApplicationName("Mozilla VPN");
-    QCoreApplication::setApplicationVersion(APP_VERSION);
-
-    SettingsHolder settingsHolder;
-    Localizer localizer;
-
-    QIcon icon(":/ui/resources/logo-dock.png");
-    app.setWindowIcon(icon);
-
-    return callback();
+  return callback();
 }
 
 // static
-QVector<Command *> Command::commands(QObject *parent)
-{
-    QVector<Command *> list;
-    for (auto i = s_commandCreators.begin(); i != s_commandCreators.end(); ++i) {
-        list.append((*i)(parent));
-    }
-    return list;
+QVector<Command*> Command::commands(QObject* parent) {
+  QVector<Command*> list;
+  for (auto i = s_commandCreators.begin(); i != s_commandCreators.end(); ++i) {
+    list.append((*i)(parent));
+  }
+  return list;
 }

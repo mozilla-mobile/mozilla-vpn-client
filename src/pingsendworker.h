@@ -7,16 +7,15 @@
 
 #include <QObject>
 
-class PingSendWorker : public QObject
-{
-    Q_OBJECT
+class PingSendWorker : public QObject {
+  Q_OBJECT
 
-public slots:
-    virtual void sendPing(const QString &destination) = 0;
+ public slots:
+  virtual void sendPing(const QString& destination) = 0;
 
-signals:
-    void pingSucceeded();
-    void pingFailed();
+ signals:
+  void pingSucceeded();
+  void pingFailed();
 };
 
-#endif // PINGSENDWORKER_H
+#endif  // PINGSENDWORKER_H

@@ -10,44 +10,39 @@
 
 namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
-QmlEngineHolder *s_instance = nullptr;
-} // namespace
+QmlEngineHolder* s_instance = nullptr;
+}  // namespace
 
-QmlEngineHolder::QmlEngineHolder()
-{
-    MVPN_COUNT_CTOR(QmlEngineHolder);
+QmlEngineHolder::QmlEngineHolder() {
+  MVPN_COUNT_CTOR(QmlEngineHolder);
 
-    Q_ASSERT(!s_instance);
-    s_instance = this;
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 }
 
-QmlEngineHolder::~QmlEngineHolder()
-{
-    MVPN_COUNT_DTOR(QmlEngineHolder);
+QmlEngineHolder::~QmlEngineHolder() {
+  MVPN_COUNT_DTOR(QmlEngineHolder);
 
-    Q_ASSERT(s_instance == this);
-    s_instance = nullptr;
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
 // static
-QmlEngineHolder *QmlEngineHolder::instance()
-{
-    Q_ASSERT(s_instance);
-    return s_instance;
+QmlEngineHolder* QmlEngineHolder::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
 }
 
-QNetworkAccessManager *QmlEngineHolder::networkAccessManager()
-{
-    return m_engine.networkAccessManager();
+QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
+  return m_engine.networkAccessManager();
 }
 
-void QmlEngineHolder::showWindow()
-{
-    QObject *rootObject = m_engine.rootObjects().first();
-    QWindow *window = qobject_cast<QWindow *>(rootObject);
-    Q_ASSERT(window);
+void QmlEngineHolder::showWindow() {
+  QObject* rootObject = m_engine.rootObjects().first();
+  QWindow* window = qobject_cast<QWindow*>(rootObject);
+  Q_ASSERT(window);
 
-    window->show();
-    window->raise();
-    window->requestActivate();
+  window->show();
+  window->raise();
+  window->requestActivate();
 }

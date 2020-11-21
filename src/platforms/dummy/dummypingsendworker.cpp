@@ -10,18 +10,15 @@ namespace {
 Logger logger(LOG_NETWORKING, "DummyPingSendWorker");
 }
 
-DummyPingSendWorker::DummyPingSendWorker()
-{
-    MVPN_COUNT_CTOR(DummyPingSendWorker);
+DummyPingSendWorker::DummyPingSendWorker() {
+  MVPN_COUNT_CTOR(DummyPingSendWorker);
 }
 
-DummyPingSendWorker::~DummyPingSendWorker()
-{
-    MVPN_COUNT_DTOR(DummyPingSendWorker);
+DummyPingSendWorker::~DummyPingSendWorker() {
+  MVPN_COUNT_DTOR(DummyPingSendWorker);
 }
 
-void DummyPingSendWorker::sendPing(const QString &destination)
-{
-    logger.log() << "Dummy ping to:" << destination;
-    emit pingSucceeded();
+void DummyPingSendWorker::sendPing(const QString& destination) {
+  logger.log() << "Dummy ping to:" << destination;
+  emit pingSucceeded();
 }

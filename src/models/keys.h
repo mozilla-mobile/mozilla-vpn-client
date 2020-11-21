@@ -8,26 +8,25 @@
 #include <QString>
 #include <QObject>
 
-class Keys final
-{
-    Q_DISABLE_COPY_MOVE(Keys)
+class Keys final {
+  Q_DISABLE_COPY_MOVE(Keys)
 
-public:
-    Keys();
-    ~Keys();
+ public:
+  Keys();
+  ~Keys();
 
-    [[nodiscard]] bool fromSettings();
+  [[nodiscard]] bool fromSettings();
 
-    bool initialized() const { return !m_privateKey.isEmpty(); }
+  bool initialized() const { return !m_privateKey.isEmpty(); }
 
-    void storeKey(const QString &privateKey);
+  void storeKey(const QString& privateKey);
 
-    void forgetKey();
+  void forgetKey();
 
-    const QString &privateKey() const { return m_privateKey; }
+  const QString& privateKey() const { return m_privateKey; }
 
-private:
-    QString m_privateKey;
+ private:
+  QString m_privateKey;
 };
 
-#endif // KEYS_H
+#endif  // KEYS_H

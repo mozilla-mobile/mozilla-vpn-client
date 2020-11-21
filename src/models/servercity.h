@@ -12,26 +12,25 @@
 
 class QJsonObject;
 
-class ServerCity final
-{
-public:
-    ServerCity();
-    ServerCity(const ServerCity &other);
-    ~ServerCity();
+class ServerCity final {
+ public:
+  ServerCity();
+  ServerCity(const ServerCity& other);
+  ~ServerCity();
 
-    [[nodiscard]] bool fromJson(QJsonObject &obj);
+  [[nodiscard]] bool fromJson(QJsonObject& obj);
 
-    const QString &name() const { return m_name; }
+  const QString& name() const { return m_name; }
 
-    const QString &code() const { return m_code; }
+  const QString& code() const { return m_code; }
 
-    const QList<Server> getServers() const { return m_servers; }
+  const QList<Server> getServers() const { return m_servers; }
 
-private:
-    QString m_name;
-    QString m_code;
+ private:
+  QString m_name;
+  QString m_code;
 
-    QList<Server> m_servers;
+  QList<Server> m_servers;
 };
 
-#endif // SERVERCITY_H
+#endif  // SERVERCITY_H

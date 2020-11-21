@@ -10,22 +10,21 @@
 class QByteArray;
 class AuthenticationListener;
 
-class TaskAuthenticate final : public Task
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(TaskAuthenticate)
+class TaskAuthenticate final : public Task {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(TaskAuthenticate)
 
-public:
-    TaskAuthenticate();
-    ~TaskAuthenticate();
+ public:
+  TaskAuthenticate();
+  ~TaskAuthenticate();
 
-    void run(MozillaVPN *vpn) override;
+  void run(MozillaVPN* vpn) override;
 
-private:
-    void authenticationCompleted(MozillaVPN *vpn, const QByteArray &data);
+ private:
+  void authenticationCompleted(MozillaVPN* vpn, const QByteArray& data);
 
-private:
-    AuthenticationListener *m_authenticationListener = nullptr;
+ private:
+  AuthenticationListener* m_authenticationListener = nullptr;
 };
 
-#endif // TASKAUTHENTICATE_H
+#endif  // TASKAUTHENTICATE_H

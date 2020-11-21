@@ -7,13 +7,12 @@
 
 #include "command.h"
 
-class CommandUI final : public Command
-{
-public:
-    explicit CommandUI(QObject *parent);
-    ~CommandUI();
+class CommandUI final : public Command {
+ public:
+  explicit CommandUI(QObject* parent);
+  ~CommandUI();
 
-    int run(QStringList &tokens) override;
+  int run(QStringList& tokens) override;
 };
 
-#endif // COMMANDUI_H
+#endif  // COMMANDUI_H

@@ -12,89 +12,77 @@
 namespace {
 Logger logger(LOG_MAIN, "StatusIcon");
 
-constexpr const std::array<const char *, 4> ANIMATED_ICON_STEPS
-    = {":/ui/resources/logo-animated1.svg",
-       ":/ui/resources/logo-animated2.svg",
-       ":/ui/resources/logo-animated3.svg",
-       ":/ui/resources/logo-animated4.svg"};
+constexpr const std::array<const char*, 4> ANIMATED_ICON_STEPS = {
+    ":/ui/resources/logo-animated1.svg", ":/ui/resources/logo-animated2.svg",
+    ":/ui/resources/logo-animated3.svg", ":/ui/resources/logo-animated4.svg"};
 
-constexpr const char *ICON_ON = ":/ui/resources/logo-on.svg";
-constexpr const char *ICON_GENERIC = ":/ui/resources/logo-generic.svg";
+constexpr const char* ICON_ON = ":/ui/resources/logo-on.svg";
+constexpr const char* ICON_GENERIC = ":/ui/resources/logo-generic.svg";
 
-} // namespace
+}  // namespace
 
-StatusIcon::StatusIcon() : m_icon(ICON_GENERIC)
-{
-    MVPN_COUNT_CTOR(StatusIcon);
+StatusIcon::StatusIcon() : m_icon(ICON_GENERIC) {
+  MVPN_COUNT_CTOR(StatusIcon);
 
-    connect(&m_animatedIconTimer, &QTimer::timeout, this, &StatusIcon::animateIcon);
+  connect(&m_animatedIconTimer, &QTimer::timeout, this,
+          &StatusIcon::animateIcon);
 }
 
-StatusIcon::~StatusIcon()
-{
-    MVPN_COUNT_DTOR(StatusIcon);
+StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
+
+void StatusIcon::activateAnimation() {
+  m_animatedIconIndex = 0;
+  m_animatedIconTimer.start(200);
+  animateIcon();
 }
 
-void StatusIcon::activateAnimation()
-{
+void StatusIcon::animateIcon() {
+  Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
+  setIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]);
+  if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
     m_animatedIconIndex = 0;
-    m_animatedIconTimer.start(200);
-    animateIcon();
+  }
 }
 
-void StatusIcon::animateIcon()
-{
-    Q_ASSERT(m_animatedIconIndex < ANIMATED_ICON_STEPS.size());
-    setIcon(ANIMATED_ICON_STEPS[m_animatedIconIndex++]);
-    if (m_animatedIconIndex == ANIMATED_ICON_STEPS.size()) {
-        m_animatedIconIndex = 0;
-    }
-}
+void StatusIcon::stateChanged() {
+  logger.log() << "Show notification";
 
-void StatusIcon::stateChanged()
-{
-    logger.log() << "Show notification";
+  m_animatedIconTimer.stop();
 
-    m_animatedIconTimer.stop();
+  MozillaVPN* vpn = MozillaVPN::instance();
 
-    MozillaVPN *vpn = MozillaVPN::instance();
+  // If we are in a non-main state, we don't need to show special icons.
+  if (vpn->state() != MozillaVPN::StateMain) {
+    setIcon(ICON_GENERIC);
+    return;
+  }
 
-    // If we are in a non-main state, we don't need to show special icons.
-    if (vpn->state() != MozillaVPN::StateMain) {
-        setIcon(ICON_GENERIC);
-        return;
-    }
-
-    switch (vpn->controller()->state()) {
+  switch (vpn->controller()->state()) {
     case Controller::StateOn:
-        setIcon(ICON_ON);
-        break;
+      setIcon(ICON_ON);
+      break;
 
     case Controller::StateOff:
-        setIcon(ICON_GENERIC);
-        break;
+      setIcon(ICON_GENERIC);
+      break;
 
     case Controller::StateSwitching:
-        [[fallthrough]];
+      [[fallthrough]];
     case Controller::StateConnecting:
-        [[fallthrough]];
+      [[fallthrough]];
     case Controller::StateDisconnecting:
-        activateAnimation();
-        break;
+      activateAnimation();
+      break;
 
     default:
-        setIcon(ICON_GENERIC);
-        break;
-    }
+      setIcon(ICON_GENERIC);
+      break;
+  }
 }
 
-void StatusIcon::setIcon(const QString &icon)
-{
-    m_icon = icon;
-    emit iconChanged(icon);
+void StatusIcon::setIcon(const QString& icon) {
+  m_icon = icon;
+  emit iconChanged(icon);
 }
 
-QUrl StatusIcon::iconUrl() const
-{
-    return QUrl(QString("qrc%1").arg(m_icon));
-}
+QUrl StatusIcon::iconUrl() const { return QUrl(QString("qrc%1").arg(m_icon)); }

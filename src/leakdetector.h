@@ -8,33 +8,34 @@
 #include <QObject>
 
 #ifdef QT_DEBUG
-#define MVPN_COUNT_CTOR(_type) \
-    do { \
-        static_assert(std::is_class<_type>(), "Token '" #_type "' is not a class type."); \
-        LeakDetector::logCtor((void *) this, #_type, sizeof(*this)); \
+#  define MVPN_COUNT_CTOR(_type)                                 \
+    do {                                                         \
+      static_assert(std::is_class<_type>(),                      \
+                    "Token '" #_type "' is not a class type.");  \
+      LeakDetector::logCtor((void*)this, #_type, sizeof(*this)); \
     } while (0)
 
-#define MVPN_COUNT_DTOR(_type) \
-    do { \
-        static_assert(std::is_class<_type>(), "Token '" #_type "' is not a class type."); \
-        LeakDetector::logDtor((void *) this, #_type, sizeof(*this)); \
+#  define MVPN_COUNT_DTOR(_type)                                 \
+    do {                                                         \
+      static_assert(std::is_class<_type>(),                      \
+                    "Token '" #_type "' is not a class type.");  \
+      LeakDetector::logDtor((void*)this, #_type, sizeof(*this)); \
     } while (0)
 
 #else
-#define MVPN_COUNT_CTOR(_type)
-#define MVPN_COUNT_DTOR(_type)
+#  define MVPN_COUNT_CTOR(_type)
+#  define MVPN_COUNT_DTOR(_type)
 #endif
 
-class LeakDetector
-{
-public:
-    LeakDetector();
-    ~LeakDetector();
+class LeakDetector {
+ public:
+  LeakDetector();
+  ~LeakDetector();
 
 #ifdef QT_DEBUG
-  static void logCtor(void *ptr, const char *typeName, uint32_t size);
-  static void logDtor(void *ptr, const char *typeName, uint32_t size);
+  static void logCtor(void* ptr, const char* typeName, uint32_t size);
+  static void logDtor(void* ptr, const char* typeName, uint32_t size);
 #endif
 };
 
-#endif // LEAKDETECTOR_H
+#endif  // LEAKDETECTOR_H

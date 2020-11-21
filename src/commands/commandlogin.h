@@ -7,13 +7,12 @@
 
 #include "command.h"
 
-class CommandLogin final : public Command
-{
-public:
-    explicit CommandLogin(QObject *parent);
-    ~CommandLogin();
+class CommandLogin final : public Command {
+ public:
+  explicit CommandLogin(QObject* parent);
+  ~CommandLogin();
 
-    int run(QStringList &tokens) override;
+  int run(QStringList& tokens) override;
 };
 
-#endif // COMMANDLOGIN_H
+#endif  // COMMANDLOGIN_H

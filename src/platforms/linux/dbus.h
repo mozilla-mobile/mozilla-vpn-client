@@ -16,34 +16,32 @@ class Keys;
 class IPAddressRange;
 class QDBusPendingCallWatcher;
 
-class DBus final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(DBus)
+class DBus final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DBus)
 
-public:
-    DBus(QObject *parent);
-    ~DBus();
+ public:
+  DBus(QObject* parent);
+  ~DBus();
 
-    QDBusPendingCallWatcher *version();
+  QDBusPendingCallWatcher* version();
 
-    QDBusPendingCallWatcher *activate(const Server &server,
-                                      const Device *device,
-                                      const Keys *keys,
-                                      const QList<IPAddressRange> &allowedIPAddressRanges);
+  QDBusPendingCallWatcher* activate(
+      const Server& server, const Device* device, const Keys* keys,
+      const QList<IPAddressRange>& allowedIPAddressRanges);
 
-    QDBusPendingCallWatcher *deactivate();
+  QDBusPendingCallWatcher* deactivate();
 
-    QDBusPendingCallWatcher *status();
+  QDBusPendingCallWatcher* status();
 
-    QDBusPendingCallWatcher *logs();
+  QDBusPendingCallWatcher* logs();
 
-signals:
-    void connected();
-    void disconnected();
+ signals:
+  void connected();
+  void disconnected();
 
-private:
-    OrgMozillaVpnDbusInterface *m_dbus;
+ private:
+  OrgMozillaVpnDbusInterface* m_dbus;
 };
 
-#endif // DBUS_H
+#endif  // DBUS_H

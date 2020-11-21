@@ -6,25 +6,22 @@
 #include "leakdetector.h"
 #include "mozillavpn.h"
 
-LogoutObserver::LogoutObserver(QObject *parent) : QObject(parent)
-{
-    MVPN_COUNT_CTOR(LogoutObserver);
+LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(LogoutObserver);
 
-    MozillaVPN *vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn->userAuthenticated());
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn->userAuthenticated());
 
-    connect(vpn, &MozillaVPN::userAuthenticationChanged, this, &LogoutObserver::userAuthenticationChanged);
+  connect(vpn, &MozillaVPN::userAuthenticationChanged, this,
+          &LogoutObserver::userAuthenticationChanged);
 }
 
-LogoutObserver::~LogoutObserver()
-{
-    MVPN_COUNT_DTOR(LogoutObserver);
-}
+LogoutObserver::~LogoutObserver() { MVPN_COUNT_DTOR(LogoutObserver); }
 
 void LogoutObserver::userAuthenticationChanged() {
-        MozillaVPN *vpn = MozillaVPN::instance();
-        if (!vpn->userAuthenticated()) {
-            emit ready();
-            deleteLater();
-        }
+  MozillaVPN* vpn = MozillaVPN::instance();
+  if (!vpn->userAuthenticated()) {
+    emit ready();
+    deleteLater();
+  }
 }

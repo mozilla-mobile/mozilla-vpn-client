@@ -7,16 +7,15 @@
 
 #include <QObject>
 
-class LinuxDependencies final
-{
-public:
-    static bool checkDependencies();
+class LinuxDependencies final {
+ public:
+  static bool checkDependencies();
 
-private:
-    LinuxDependencies() = default;
-    ~LinuxDependencies() = default;
+ private:
+  LinuxDependencies() = default;
+  ~LinuxDependencies() = default;
 
-    Q_DISABLE_COPY(LinuxDependencies)
+  Q_DISABLE_COPY(LinuxDependencies)
 };
 
-#endif // LINUXDEPENDENCIES_H
+#endif  // LINUXDEPENDENCIES_H

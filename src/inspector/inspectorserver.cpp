@@ -15,30 +15,26 @@ Logger logger(LOG_INSPECTOR, "InspectorServer");
 
 constexpr int INSPECT_PORT = 8765;
 
-InspectorServer::InspectorServer()
-{
-    MVPN_COUNT_CTOR(InspectorServer);
+InspectorServer::InspectorServer() {
+  MVPN_COUNT_CTOR(InspectorServer);
 
-    logger.log() << "Creating the inspector server";
+  logger.log() << "Creating the inspector server";
 
-    if (!listen(QHostAddress::Any, INSPECT_PORT)) {
-        logger.log() << "Failed to listen on port" << INSPECT_PORT;
-        return;
-    }
+  if (!listen(QHostAddress::Any, INSPECT_PORT)) {
+    logger.log() << "Failed to listen on port" << INSPECT_PORT;
+    return;
+  }
 
-    connect(this, &InspectorServer::newConnection, this, &InspectorServer::newConnectionReceived);
+  connect(this, &InspectorServer::newConnection, this,
+          &InspectorServer::newConnectionReceived);
 }
 
-InspectorServer::~InspectorServer()
-{
-    MVPN_COUNT_DTOR(InspectorServer);
-}
+InspectorServer::~InspectorServer() { MVPN_COUNT_DTOR(InspectorServer); }
 
-void InspectorServer::newConnectionReceived()
-{
-    QTcpSocket *child = nextPendingConnection();
-    Q_ASSERT(child);
+void InspectorServer::newConnectionReceived() {
+  QTcpSocket* child = nextPendingConnection();
+  Q_ASSERT(child);
 
-    InspectorConnection *connection = new InspectorConnection(this, child);
-    connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
+  InspectorConnection* connection = new InspectorConnection(this, child);
+  connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
 }

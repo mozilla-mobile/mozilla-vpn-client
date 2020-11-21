@@ -12,48 +12,49 @@ class ServerCountry;
 class ServerCity;
 class Server;
 
-class ServerData final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(ServerData);
+class ServerData final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ServerData);
 
-    Q_PROPERTY(QString countryCode READ countryCode NOTIFY changed)
-    Q_PROPERTY(QString city READ city NOTIFY changed)
+  Q_PROPERTY(QString countryCode READ countryCode NOTIFY changed)
+  Q_PROPERTY(QString city READ city NOTIFY changed)
 
-public:
-    ServerData();
-    ~ServerData();
+ public:
+  ServerData();
+  ~ServerData();
 
-    [[nodiscard]] bool fromSettings();
+  [[nodiscard]] bool fromSettings();
 
-    void writeSettings();
+  void writeSettings();
 
-    void initialize(const ServerCountry &country, const ServerCity &city);
+  void initialize(const ServerCountry& country, const ServerCity& city);
 
-    bool initialized() const { return m_initialized; }
+  bool initialized() const { return m_initialized; }
 
-    const QString &countryCode() const { return m_countryCode; }
+  const QString& countryCode() const { return m_countryCode; }
 
-    const QString &country() const { return m_country; }
+  const QString& country() const { return m_country; }
 
-    const QString &city() const { return m_city; }
+  const QString& city() const { return m_city; }
 
-    void forget() { m_initialized = false; }
+  void forget() { m_initialized = false; }
 
-    void update(const QString &countryCode, const QString &country, const QString &city);
+  void update(const QString& countryCode, const QString& country,
+              const QString& city);
 
-signals:
-    void changed();
+ signals:
+  void changed();
 
-private:
-    void initializeInternal(const QString &countryCode, const QString &country, const QString &city);
+ private:
+  void initializeInternal(const QString& countryCode, const QString& country,
+                          const QString& city);
 
-private:
-    bool m_initialized = false;
+ private:
+  bool m_initialized = false;
 
-    QString m_countryCode;
-    QString m_country;
-    QString m_city;
+  QString m_countryCode;
+  QString m_country;
+  QString m_city;
 };
 
-#endif // SERVERDATA_H
+#endif  // SERVERDATA_H
