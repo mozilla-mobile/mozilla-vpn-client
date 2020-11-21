@@ -12,6 +12,8 @@ import "../themes/themes.js" as Theme
 Rectangle {
     id: box
 
+    readonly property alias connectionInfoVisible: connectionInfo.visible
+
     function formatSingle(value) {
         if (value === 0)
             return "00";
@@ -465,6 +467,7 @@ Rectangle {
         anchors.leftMargin: Theme.windowMargin / 2
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
+        Accessible.ignored: connectionInfoVisible
 
         VPNIcon {
             id: connectionInfoImage
@@ -495,6 +498,7 @@ Rectangle {
         anchors.rightMargin: Theme.windowMargin / 2
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
+        Accessible.ignored: connectionInfoVisible
 
         VPNIcon {
             id: settingsImage
@@ -535,6 +539,7 @@ Rectangle {
         anchors.top: logo.bottom
         anchors.topMargin: 24
         font.pixelSize: 22
+        Accessible.ignored: connectionInfoVisible
     }
 
     VPNInterLabel {
@@ -545,6 +550,7 @@ Rectangle {
         anchors.topMargin: Theme.windowMargin / 2
         lineHeight: Theme.controllerInterLineHeight
         width: box.width - Theme.windowMargin * 3
+        Accessible.ignored: connectionInfoVisible
     }
 
     VPNConnectionStability {
@@ -554,6 +560,7 @@ Rectangle {
         anchors.top: logoTitle.bottom
         anchors.topMargin: Theme.windowMargin / 2
         visible: false
+        Accessible.ignored: connectionInfoVisible
     }
 
     VPNToggle {
@@ -563,6 +570,7 @@ Rectangle {
         anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
+        Accessible.ignored: connectionInfoVisible
     }
 
     VPNConnectionInfo {

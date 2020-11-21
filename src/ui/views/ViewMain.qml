@@ -166,12 +166,14 @@ VPNFlickable {
 
             onClicked: stackview.push("ViewServers.qml")
             y: box.y + box.height + Theme.iconSize
+            rowShouldBeDisabled: box.connectionInfoVisible
         }
 
         VPNControllerDevice {
             anchors.top: serverInfo.bottom
             anchors.topMargin: 8
             onClicked: stackview.push("ViewDevices.qml")
+            rowShouldBeDisabled: box.connectionInfoVisible
         }
 
         Behavior on y {
