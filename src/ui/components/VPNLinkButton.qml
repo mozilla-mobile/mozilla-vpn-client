@@ -7,35 +7,30 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
-RoundButton {
+VPNButtonBase {
     id: root
 
     required property var labelText
     property variant fontName: Theme.fontInterFamily
-    property var uiState:Theme.uiState
+    property var baseColor: Theme.linkButton
     property var linkColor: Theme.blueButton
 
-    signal clicked()
-
     radius: 4
-    focusPolicy: Qt.StrongFocus
+
     onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
     horizontalPadding: Theme.hSpacing
 
-    Keys.onPressed: {
-        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
-            state = uiState.statePressed;
-    }
-
     Keys.onReleased: {
-        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+        if (loaderVisible) {
+            return
+        }
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
             root.clicked();
             state = uiState.stateDefault;
+        }
     }
 
-
     Accessible.name: labelText
-    Accessible.onPressAction: clicked()
 
     Component.onCompleted: state = uiState.stateDefault;
 
@@ -69,14 +64,24 @@ RoundButton {
         }
     ]
 
-    VPNMouseArea {
-
-    }
-
     VPNUIStates {
+        colorScheme: root.baseColor
         itemToFocus: root
+
+        VPNFocusBorder {
+            border.color: root.linkColor.focusBorder
+            opacity: root.activeFocus ? 1 : 0
+        }
     }
 
+    VPNButtonLoader {
+        id: loader
+        state: loaderVisible ? "active" : "inactive"
+    }
+
+    VPNMouseArea {
+        hoverEnabled: loaderVisible === false
+    }
 
     background: Rectangle {
         id: backgroundRect
@@ -96,9 +101,6 @@ RoundButton {
             ColorAnimation {
                 duration: 200
             }
-
         }
-
     }
-
 }
