@@ -69,7 +69,7 @@ VPNButtonBase {
         itemToFocus: root
 
         VPNFocusBorder {
-            border.color: root.linkColor.focusBorder
+            border.color: root.linkColor.defaultColor
             opacity: root.activeFocus ? 1 : 0
         }
     }
