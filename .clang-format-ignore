@@ -1,1 +1,3 @@
 src/hacl-star/.*
+android/modules/wireguard/*
+3rdparty/*
