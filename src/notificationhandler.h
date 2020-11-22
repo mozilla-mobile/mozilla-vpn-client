@@ -7,27 +7,28 @@
 
 #include <QObject>
 
-class NotificationHandler : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(NotificationHandler)
+class NotificationHandler : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(NotificationHandler)
 
-public:
-    static NotificationHandler *create(QObject *parent);
+ public:
+  static NotificationHandler* create(QObject* parent);
 
-    virtual ~NotificationHandler();
+  virtual ~NotificationHandler();
 
-public slots:
-    void showNotification();
+ public slots:
+  void showNotification();
 
-protected:
-    explicit NotificationHandler(QObject *parent);
+ protected:
+  explicit NotificationHandler(QObject* parent);
 
-    virtual void notify(const QString &title, const QString &message, int timerSec) = 0;
+  virtual void notify(const QString& title, const QString& message,
+                      int timerSec) = 0;
 
-private:
-    // We want to show a 'disconnected' notification only if we were actually connected.
-    bool m_connected = false;
+ private:
+  // We want to show a 'disconnected' notification only if we were actually
+  // connected.
+  bool m_connected = false;
 };
 
-#endif // NOTIFICATIONHANDLER_H
+#endif  // NOTIFICATIONHANDLER_H

@@ -8,28 +8,28 @@
 #include <QObject>
 #include <QString>
 
-class IPAddressRange final
-{
+class IPAddressRange final {
+ public:
+  enum IPAddressType {
+    IPv4,
+    IPv6,
+  };
 
-public:
-    enum IPAddressType {
-        IPv4,
-        IPv6,
-    };
+  IPAddressRange(const QString& ipAddress, uint32_t range, IPAddressType type);
+  IPAddressRange(const IPAddressRange& other);
+  ~IPAddressRange();
 
-    IPAddressRange(const QString &ipAddress, uint32_t range, IPAddressType type);
-    IPAddressRange(const IPAddressRange &other);
-    ~IPAddressRange();
+  const QString& ipAddress() const { return m_ipAddress; }
+  uint32_t range() const { return m_range; }
+  IPAddressType type() const { return m_type; }
+  const QString toString() const {
+    return QString("%1/%2").arg(m_ipAddress).arg(m_range);
+  }
 
-    const QString &ipAddress() const { return m_ipAddress; }
-    uint32_t range() const { return m_range; }
-    IPAddressType type() const { return m_type; }
-    const QString toString() const { return QString("%1/%2").arg(m_ipAddress).arg(m_range);}
-
-private:
-    QString m_ipAddress;
-    uint32_t m_range;
-    IPAddressType m_type;
+ private:
+  QString m_ipAddress;
+  uint32_t m_range;
+  IPAddressType m_type;
 };
 
-#endif // IPADDRESSRANGE_H
+#endif  // IPADDRESSRANGE_H

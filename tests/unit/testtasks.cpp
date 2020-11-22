@@ -8,89 +8,83 @@
 #include "../../src/tasks/adddevice/taskadddevice.h"
 #include "../../src/tasks/function/taskfunction.h"
 
-void TestTasks::accountAndServers()
-{
-    // Failure
-    {
-        TestHelper::networkConfig.append(
-            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
-        TestHelper::networkConfig.append(
-            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
+void TestTasks::accountAndServers() {
+  // Failure
+  {
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Failure, QByteArray()));
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Failure, QByteArray()));
 
-        TaskAccountAndServers *task = new TaskAccountAndServers();
-
-        QEventLoop loop;
-        connect(task, &Task::completed, [&]() { loop.exit(); });
-
-        MozillaVPN::instance()->scheduleTask(task);
-        loop.exec();
-    }
-
-    // Success
-    {
-        TestHelper::networkConfig.append(
-            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, QByteArray()));
-        TestHelper::networkConfig.append(
-            TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, QByteArray()));
-
-        TaskAccountAndServers *task = new TaskAccountAndServers();
-
-        QEventLoop loop;
-        connect(task, &Task::completed, [&]() { loop.exit(); });
-
-        MozillaVPN::instance()->scheduleTask(task);
-        loop.exec();
-    }
-}
-
-void TestTasks::addDevice_success()
-{
-    TestHelper::networkConfig.append(
-        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, QByteArray()));
-
-    TaskAddDevice *task = new TaskAddDevice("foobar");
+    TaskAccountAndServers* task = new TaskAccountAndServers();
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
     MozillaVPN::instance()->scheduleTask(task);
     loop.exec();
-}
+  }
 
-void TestTasks::addDevice_failure()
-{
-    TestHelper::networkConfig.append(
-        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
+  // Success
+  {
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Success, QByteArray()));
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Success, QByteArray()));
 
-    TaskAddDevice *task = new TaskAddDevice("foobar");
+    TaskAccountAndServers* task = new TaskAccountAndServers();
 
     QEventLoop loop;
     connect(task, &Task::completed, [&]() { loop.exit(); });
 
     MozillaVPN::instance()->scheduleTask(task);
     loop.exec();
+  }
 }
 
-void TestTasks::authenticate()
-{
-    // TODO
+void TestTasks::addDevice_success() {
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Success, QByteArray()));
+
+  TaskAddDevice* task = new TaskAddDevice("foobar");
+
+  QEventLoop loop;
+  connect(task, &Task::completed, [&]() { loop.exit(); });
+
+  MozillaVPN::instance()->scheduleTask(task);
+  loop.exec();
 }
 
-void TestTasks::function()
-{
-    bool completed = false;
-    TaskFunction *task = new TaskFunction([&](MozillaVPN *vpn) {
-        completed = true;
-        QCOMPARE(vpn, MozillaVPN::instance());
-    });
+void TestTasks::addDevice_failure() {
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    MozillaVPN::instance()->scheduleTask(task);
-    QVERIFY(completed);
+  TaskAddDevice* task = new TaskAddDevice("foobar");
+
+  QEventLoop loop;
+  connect(task, &Task::completed, [&]() { loop.exit(); });
+
+  MozillaVPN::instance()->scheduleTask(task);
+  loop.exec();
 }
 
-void TestTasks::removeDevice()
-{
-    // TODO
+void TestTasks::authenticate() {
+  // TODO
+}
+
+void TestTasks::function() {
+  bool completed = false;
+  TaskFunction* task = new TaskFunction([&](MozillaVPN* vpn) {
+    completed = true;
+    QCOMPARE(vpn, MozillaVPN::instance());
+  });
+
+  MozillaVPN::instance()->scheduleTask(task);
+  QVERIFY(completed);
+}
+
+void TestTasks::removeDevice() {
+  // TODO
 }
 
 static TestTasks s_testTasks;

@@ -7,17 +7,16 @@
 
 #include <QTcpServer>
 
-class InspectorServer final : public QTcpServer
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(InspectorServer)
+class InspectorServer final : public QTcpServer {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(InspectorServer)
 
-public:
-    InspectorServer();
-    ~InspectorServer();
+ public:
+  InspectorServer();
+  ~InspectorServer();
 
-private:
-    void newConnectionReceived();
+ private:
+  void newConnectionReceived();
 };
 
-#endif // INSPECTORSERVER_H
+#endif  // INSPECTORSERVER_H

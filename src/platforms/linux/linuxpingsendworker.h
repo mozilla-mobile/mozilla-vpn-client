@@ -11,24 +11,23 @@
 
 class QSocketNotifier;
 
-class LinuxPingSendWorker final : public PingSendWorker
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(LinuxPingSendWorker)
+class LinuxPingSendWorker final : public PingSendWorker {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(LinuxPingSendWorker)
 
-public:
-    LinuxPingSendWorker();
-    ~LinuxPingSendWorker();
+ public:
+  LinuxPingSendWorker();
+  ~LinuxPingSendWorker();
 
-public slots:
-    void sendPing(const QString &destination) override;
+ public slots:
+  void sendPing(const QString& destination) override;
 
-private:
-    void releaseObjects();
+ private:
+  void releaseObjects();
 
-private:
-    QSocketNotifier *m_socketNotifier = nullptr;
-    int m_socket = 0;
+ private:
+  QSocketNotifier* m_socketNotifier = nullptr;
+  int m_socket = 0;
 };
 
-#endif // LINUXPINGSENDWORKER_H
+#endif  // LINUXPINGSENDWORKER_H

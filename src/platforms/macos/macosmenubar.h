@@ -8,23 +8,22 @@
 #include <QAction>
 #include <QObject>
 
-class MacOSMenuBar final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(MacOSMenuBar)
+class MacOSMenuBar final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MacOSMenuBar)
 
-public:
-    MacOSMenuBar();
-    ~MacOSMenuBar();
+ public:
+  MacOSMenuBar();
+  ~MacOSMenuBar();
 
-    void initialize();
+  void initialize();
 
-public slots:
-    void controllerStateChanged();
+ public slots:
+  void controllerStateChanged();
 
-private:
-    QAction *m_aboutAction = nullptr;
-    QAction *m_preferencesAction = nullptr;
+ private:
+  QAction* m_aboutAction = nullptr;
+  QAction* m_preferencesAction = nullptr;
 };
 
-#endif // MACOSMENUBAR_H
+#endif  // MACOSMENUBAR_H

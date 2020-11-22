@@ -12,62 +12,56 @@ namespace {
 Logger logger(LOG_MODEL, "ServerData");
 }
 
-ServerData::ServerData()
-{
-    MVPN_COUNT_CTOR(ServerData);
+ServerData::ServerData() { MVPN_COUNT_CTOR(ServerData); }
+
+ServerData::~ServerData() { MVPN_COUNT_DTOR(ServerData); }
+
+bool ServerData::fromSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (!settingsHolder->hasCurrentServerCountry() ||
+      !settingsHolder->hasCurrentServerCity() ||
+      !settingsHolder->hasCurrentServerCountryCode()) {
+    return false;
+  }
+
+  initializeInternal(settingsHolder->currentServerCountryCode(),
+                     settingsHolder->currentServerCountry(),
+                     settingsHolder->currentServerCity());
+
+  logger.log() << m_countryCode << m_country << m_city;
+  return true;
 }
 
-ServerData::~ServerData()
-{
-    MVPN_COUNT_DTOR(ServerData);
+void ServerData::writeSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setCurrentServerCountryCode(m_countryCode);
+  settingsHolder->setCurrentServerCountry(m_country);
+  settingsHolder->setCurrentServerCity(m_city);
 }
 
-bool ServerData::fromSettings()
-{
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
+void ServerData::initialize(const ServerCountry& country,
+                            const ServerCity& city) {
+  logger.log() << "Country:" << country.name() << "City:" << city.name();
 
-    if (!settingsHolder->hasCurrentServerCountry() || !settingsHolder->hasCurrentServerCity()
-        || !settingsHolder->hasCurrentServerCountryCode()) {
-        return false;
-    }
-
-    initializeInternal(settingsHolder->currentServerCountryCode(),
-                       settingsHolder->currentServerCountry(),
-                       settingsHolder->currentServerCity());
-
-    logger.log() << m_countryCode << m_country << m_city;
-    return true;
+  initializeInternal(country.code(), country.name(), city.name());
+  emit changed();
 }
 
-void ServerData::writeSettings()
-{
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
-
-    settingsHolder->setCurrentServerCountryCode(m_countryCode);
-    settingsHolder->setCurrentServerCountry(m_country);
-    settingsHolder->setCurrentServerCity(m_city);
+void ServerData::update(const QString& countryCode, const QString& country,
+                        const QString& city) {
+  initializeInternal(countryCode, country, city);
+  emit changed();
 }
 
-void ServerData::initialize(const ServerCountry &country, const ServerCity &city)
-{
-    logger.log() << "Country:" << country.name() << "City:" << city.name();
-
-    initializeInternal(country.code(), country.name(), city.name());
-    emit changed();
-}
-
-void ServerData::update(const QString &countryCode, const QString &country, const QString &city)
-{
-    initializeInternal(countryCode, country, city);
-    emit changed();
-}
-
-void ServerData::initializeInternal(const QString &countryCode, const QString &country, const QString &city)
-{
-    m_initialized = true;
-    m_countryCode = countryCode;
-    m_country = country;
-    m_city = city;
+void ServerData::initializeInternal(const QString& countryCode,
+                                    const QString& country,
+                                    const QString& city) {
+  m_initialized = true;
+  m_countryCode = countryCode;
+  m_country = country;
+  m_city = city;
 }

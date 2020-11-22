@@ -13,27 +13,24 @@ namespace {
 Logger logger({LOG_LINUX, LOG_CONTROLLER}, "BackendLogsObserver");
 }
 
-BackendLogsObserver::BackendLogsObserver(QObject *parent,
-                                         std::function<void(const QString &)> &&callback)
-    : QObject(parent), m_callback(std::move(callback))
-{
-    MVPN_COUNT_CTOR(BackendLogsObserver);
+BackendLogsObserver::BackendLogsObserver(
+    QObject* parent, std::function<void(const QString&)>&& callback)
+    : QObject(parent), m_callback(std::move(callback)) {
+  MVPN_COUNT_CTOR(BackendLogsObserver);
 }
 
-BackendLogsObserver::~BackendLogsObserver()
-{
-    MVPN_COUNT_DTOR(BackendLogsObserver);
+BackendLogsObserver::~BackendLogsObserver() {
+  MVPN_COUNT_DTOR(BackendLogsObserver);
 }
 
-void BackendLogsObserver::completed(QDBusPendingCallWatcher *call)
-{
-    QDBusPendingReply<QString> reply = *call;
-    if (reply.isError()) {
-        logger.log() << "Error received from the DBus service";
-        m_callback("Failed to retrieve logs from the mozillavpn-daemon.");
-        return;
-    }
+void BackendLogsObserver::completed(QDBusPendingCallWatcher* call) {
+  QDBusPendingReply<QString> reply = *call;
+  if (reply.isError()) {
+    logger.log() << "Error received from the DBus service";
+    m_callback("Failed to retrieve logs from the mozillavpn-daemon.");
+    return;
+  }
 
-    QString status = reply.argumentAt<0>();
-    m_callback(status);
+  QString status = reply.argumentAt<0>();
+  m_callback(status);
 }

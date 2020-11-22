@@ -16,87 +16,78 @@ namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortal");
 }
 
-CaptivePortal::CaptivePortal()
-{
-    MVPN_COUNT_CTOR(CaptivePortal);
-}
+CaptivePortal::CaptivePortal() { MVPN_COUNT_CTOR(CaptivePortal); }
 
-CaptivePortal::~CaptivePortal()
-{
-    MVPN_COUNT_DTOR(CaptivePortal);
-}
+CaptivePortal::~CaptivePortal() { MVPN_COUNT_DTOR(CaptivePortal); }
 
-bool CaptivePortal::fromJson(const QByteArray &data)
-{
-    logger.log() << "Captive portal from Json";
+bool CaptivePortal::fromJson(const QByteArray& data) {
+  logger.log() << "Captive portal from Json";
 
-    QJsonDocument json = QJsonDocument::fromJson(data);
-    if (!json.isArray()) {
-        logger.log() << "Invalid JSON array";
+  QJsonDocument json = QJsonDocument::fromJson(data);
+  if (!json.isArray()) {
+    logger.log() << "Invalid JSON array";
+    return false;
+  }
+
+  QStringList ipv4Addresses;
+  QStringList ipv6Addresses;
+
+  QJsonArray array = json.array();
+  for (QJsonValue entry : array) {
+    if (!entry.isObject()) {
+      logger.log() << "Object expected";
+      return false;
+    }
+
+    QJsonObject obj = entry.toObject();
+    QJsonValue address = obj.take("address");
+    if (!address.isString()) {
+      logger.log() << "Address must be a string";
+      return false;
+    }
+
+    QJsonValue family = obj.take("family");
+    if (!family.isDouble()) {
+      logger.log() << "Family must be a number";
+      return false;
+    }
+
+    switch (family.toInt()) {
+      case 4:
+        ipv4Addresses.append(address.toString());
+        break;
+      case 6:
+        ipv6Addresses.append(address.toString());
+        break;
+      default:
+        logger.log() << "Invalid family number" << family.toInt();
         return false;
     }
+  }
 
-    QStringList ipv4Addresses;
-    QStringList ipv6Addresses;
-
-    QJsonArray array = json.array();
-    for (QJsonValue entry : array) {
-        if (!entry.isObject()) {
-            logger.log() << "Object expected";
-            return false;
-        }
-
-        QJsonObject obj = entry.toObject();
-        QJsonValue address = obj.take("address");
-        if (!address.isString()) {
-            logger.log() << "Address must be a string";
-            return false;
-        }
-
-        QJsonValue family = obj.take("family");
-        if (!family.isDouble()) {
-            logger.log() << "Family must be a number";
-            return false;
-        }
-
-        switch (family.toInt()) {
-        case 4:
-            ipv4Addresses.append(address.toString());
-            break;
-        case 6:
-            ipv6Addresses.append(address.toString());
-            break;
-        default:
-            logger.log() << "Invalid family number" << family.toInt();
-            return false;
-        }
-    }
-
-    m_ipv4Addresses = ipv4Addresses;
-    m_ipv6Addresses = ipv6Addresses;
-    return true;
+  m_ipv4Addresses = ipv4Addresses;
+  m_ipv6Addresses = ipv6Addresses;
+  return true;
 }
 
-bool CaptivePortal::fromSettings()
-{
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
+bool CaptivePortal::fromSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-    if (settingsHolder->hasCaptivePortalIpv4Addresses()) {
-        m_ipv4Addresses = settingsHolder->captivePortalIpv4Addresses();
-    }
-    if (settingsHolder->hasCaptivePortalIpv6Addresses()) {
-        m_ipv6Addresses = settingsHolder->captivePortalIpv6Addresses();
-    }
+  if (settingsHolder->hasCaptivePortalIpv4Addresses()) {
+    m_ipv4Addresses = settingsHolder->captivePortalIpv4Addresses();
+  }
+  if (settingsHolder->hasCaptivePortalIpv6Addresses()) {
+    m_ipv6Addresses = settingsHolder->captivePortalIpv6Addresses();
+  }
 
-    return true;
+  return true;
 }
 
-void CaptivePortal::writeSettings()
-{
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
+void CaptivePortal::writeSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-    settingsHolder->setCaptivePortalIpv4Addresses(m_ipv4Addresses);
-    settingsHolder->setCaptivePortalIpv6Addresses(m_ipv6Addresses);
+  settingsHolder->setCaptivePortalIpv4Addresses(m_ipv4Addresses);
+  settingsHolder->setCaptivePortalIpv6Addresses(m_ipv6Addresses);
 }

@@ -4,10 +4,9 @@
 
 #include "helper.h"
 
-class TestTimerSingleShot : public TestHelper
-{
-    Q_OBJECT
+class TestTimerSingleShot : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void basic();
+ private slots:
+  void basic();
 };

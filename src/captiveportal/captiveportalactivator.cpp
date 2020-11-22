@@ -16,50 +16,50 @@ namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalActivator");
 }
 
-CaptivePortalActivator::CaptivePortalActivator(QObject *parent) : QObject(parent)
-{
-    MVPN_COUNT_CTOR(CaptivePortalActivator);
+CaptivePortalActivator::CaptivePortalActivator(QObject* parent)
+    : QObject(parent) {
+  MVPN_COUNT_CTOR(CaptivePortalActivator);
 }
 
-CaptivePortalActivator::~CaptivePortalActivator()
-{
-    MVPN_COUNT_DTOR(CaptivePortalActivator);
+CaptivePortalActivator::~CaptivePortalActivator() {
+  MVPN_COUNT_DTOR(CaptivePortalActivator);
 }
 
-void CaptivePortalActivator::run()
-{
-    logger.log() << "Captive Portal Activator";
-    TimerSingleShot::create(this, CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC, [this]() { checkStatus(); });
+void CaptivePortalActivator::run() {
+  logger.log() << "Captive Portal Activator";
+  TimerSingleShot::create(this, CAPTIVEPORTAL_ACTIVATOR_TIMEOUT_MSEC,
+                          [this]() { checkStatus(); });
 }
 
-void CaptivePortalActivator::checkStatus()
-{
+void CaptivePortalActivator::checkStatus() {
+  // We have changed state.
+  if (MozillaVPN::instance()->controller()->state() !=
+      Controller::StateCaptivePortal) {
+    deleteLater();
+    return;
+  }
+
+  CaptivePortalRequest* request = new CaptivePortalRequest(this);
+  connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
+    logger.log() << "Captive portal detection:" << detected;
+
     // We have changed state.
-    if (MozillaVPN::instance()->controller()->state() != Controller::StateCaptivePortal) {
-        deleteLater();
-        return;
+    if (MozillaVPN::instance()->controller()->state() !=
+        Controller::StateCaptivePortal) {
+      deleteLater();
+      return;
     }
 
-    CaptivePortalRequest *request = new CaptivePortalRequest(this);
-    connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-        logger.log() << "Captive portal detection:" << detected;
+    if (detected) {
+      run();
+      return;
+    }
 
-        // We have changed state.
-        if (MozillaVPN::instance()->controller()->state() != Controller::StateCaptivePortal) {
-            deleteLater();
-            return;
-        }
+    // It seems that the captive-portal is gone. We can reactivate the VPN.
 
-        if (detected) {
-            run();
-            return;
-        }
+    deleteLater();
+    MozillaVPN::instance()->activate();
+  });
 
-        // It seems that the captive-portal is gone. We can reactivate the VPN.
-
-        deleteLater();
-        MozillaVPN::instance()->activate();
-    });
-
-    request->run();
+  request->run();
 }

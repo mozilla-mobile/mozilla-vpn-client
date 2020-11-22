@@ -9,19 +9,18 @@
 
 class QOAuthHttpServerReplyHandler;
 
-class DesktopAuthenticationListener final : public AuthenticationListener
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(DesktopAuthenticationListener)
+class DesktopAuthenticationListener final : public AuthenticationListener {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DesktopAuthenticationListener)
 
-public:
-    explicit DesktopAuthenticationListener(QObject *parent);
-    ~DesktopAuthenticationListener();
+ public:
+  explicit DesktopAuthenticationListener(QObject* parent);
+  ~DesktopAuthenticationListener();
 
-    void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query) override;
+  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
 
-private:
-    QOAuthHttpServerReplyHandler *m_server = nullptr;
+ private:
+  QOAuthHttpServerReplyHandler* m_server = nullptr;
 };
 
-#endif // DESKTOPAUTHENTICATIONLISTENER_H
+#endif  // DESKTOPAUTHENTICATIONLISTENER_H

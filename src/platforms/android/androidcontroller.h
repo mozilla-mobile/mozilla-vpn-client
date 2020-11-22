@@ -10,57 +10,55 @@
 #include <QAndroidBinder>
 #include <QAndroidServiceConnection>
 
-class AndroidController final : public ControllerImpl, public QAndroidServiceConnection
-{
-    Q_DISABLE_COPY_MOVE(AndroidController)
+class AndroidController final : public ControllerImpl,
+                                public QAndroidServiceConnection {
+  Q_DISABLE_COPY_MOVE(AndroidController)
 
-public:
-    AndroidController();
-    static AndroidController *instance();
-    ~AndroidController();
+ public:
+  AndroidController();
+  static AndroidController* instance();
+  ~AndroidController();
 
-    // from ControllerImpl
-    void initialize(const Device *device, const Keys *keys) override;
+  // from ControllerImpl
+  void initialize(const Device* device, const Keys* keys) override;
 
-    void activate(const Server &data,
-                  const Device *device,
-                  const Keys *keys,
-                  const QList<IPAddressRange> &allowedIPAddressRanges,
-                  bool forSwitching) override;
-    void resume_activate();
+  void activate(const Server& data, const Device* device, const Keys* keys,
+                const QList<IPAddressRange>& allowedIPAddressRanges,
+                bool forSwitching) override;
+  void resume_activate();
 
-    void deactivate(bool forSwitching) override;
+  void deactivate(bool forSwitching) override;
 
-    void checkStatus() override;
+  void checkStatus() override;
 
-    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
-    // from QAndroidServiceConnection
-    void onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder) override;
-    void onServiceDisconnected(const QString &name) override;
+  // from QAndroidServiceConnection
+  void onServiceConnected(const QString& name,
+                          const QAndroidBinder& serviceBinder) override;
+  void onServiceDisconnected(const QString& name) override;
 
-private:
-    Server m_server;
-    std::function<void(const QString &)> m_logCallback;
+ private:
+  Server m_server;
+  std::function<void(const QString&)> m_logCallback;
 
-    QAndroidBinder m_serviceBinder;
-    class VPNBinder : public QAndroidBinder
-    {
-    public:
-        VPNBinder(AndroidController *controller) : m_controller(controller) {}
+  QAndroidBinder m_serviceBinder;
+  class VPNBinder : public QAndroidBinder {
+   public:
+    VPNBinder(AndroidController* controller) : m_controller(controller) {}
 
-        bool onTransact(int code,
-                        const QAndroidParcel &data,
-                        const QAndroidParcel &reply,
-                        QAndroidBinder::CallType flags) override;
+    bool onTransact(int code, const QAndroidParcel& data,
+                    const QAndroidParcel& reply,
+                    QAndroidBinder::CallType flags) override;
 
-    private:
-        AndroidController *m_controller = nullptr;
-    };
+   private:
+    AndroidController* m_controller = nullptr;
+  };
 
-    VPNBinder m_binder;
+  VPNBinder m_binder;
 
-    static void startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent);
+  static void startActivityForResult(JNIEnv* env, jobject /*thiz*/,
+                                     jobject intent);
 };
 
-#endif // ANDROIDCONTROLLER_H
+#endif  // ANDROIDCONTROLLER_H

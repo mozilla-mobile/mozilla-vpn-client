@@ -10,63 +10,63 @@
 
 #include "device.h"
 
-class DeviceModel final : public QAbstractListModel
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(DeviceModel)
+class DeviceModel final : public QAbstractListModel {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DeviceModel)
 
-    Q_PROPERTY(int activeDevices READ activeDevices NOTIFY changed)
+  Q_PROPERTY(int activeDevices READ activeDevices NOTIFY changed)
 
-public:
-    DeviceModel();
-    ~DeviceModel();
+ public:
+  DeviceModel();
+  ~DeviceModel();
 
-    enum ServerCountryRoles {
-        NameRole = Qt::UserRole + 1,
-        CurrentOneRole,
-        CreatedAtRole,
-    };
+  enum ServerCountryRoles {
+    NameRole = Qt::UserRole + 1,
+    CurrentOneRole,
+    CreatedAtRole,
+  };
 
-    [[nodiscard]] bool fromJson(const QByteArray& s);
+  [[nodiscard]] bool fromJson(const QByteArray& s);
 
-    [[nodiscard]] bool fromSettings();
+  [[nodiscard]] bool fromSettings();
 
-    bool initialized() const { return !m_rawJson.isEmpty(); }
+  bool initialized() const { return !m_rawJson.isEmpty(); }
 
-    void writeSettings();
+  void writeSettings();
 
-    bool hasDevice(const QString &deviceName) const;
+  bool hasDevice(const QString& deviceName) const;
 
-    void removeDevice(const QString &deviceName);
+  void removeDevice(const QString& deviceName);
 
-    const Device *device(const QString &deviceName) const;
+  const Device* device(const QString& deviceName) const;
 
-    int activeDevices() const { return m_devices.count(); }
+  int activeDevices() const { return m_devices.count(); }
 
-    const QList<Device>& devices() const { return m_devices; }
+  const QList<Device>& devices() const { return m_devices; }
 
-    const Device* currentDevice() const;
+  const Device* currentDevice() const;
 
-    // QAbstractListModel methods
+  // QAbstractListModel methods
 
-    QHash<int, QByteArray> roleNames() const override;
+  QHash<int, QByteArray> roleNames() const override;
 
-    int rowCount(const QModelIndex &) const override;
+  int rowCount(const QModelIndex&) const override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
 
-signals:
-    void changed();
+ signals:
+  void changed();
 
-private:
-    [[nodiscard]] bool fromJsonInternal(const QByteArray &json);
+ private:
+  [[nodiscard]] bool fromJsonInternal(const QByteArray& json);
 
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+  bool removeRows(int row, int count,
+                  const QModelIndex& parent = QModelIndex()) override;
 
-private:
-    QByteArray m_rawJson;
+ private:
+  QByteArray m_rawJson;
 
-    QList<Device> m_devices;
+  QList<Device> m_devices;
 };
 
-#endif // DEVICEMODEL_H
+#endif  // DEVICEMODEL_H

@@ -7,19 +7,18 @@
 
 #include <QObject>
 
-class CaptivePortalActivator final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(CaptivePortalActivator)
+class CaptivePortalActivator final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(CaptivePortalActivator)
 
-public:
-    explicit CaptivePortalActivator(QObject *parent);
-    ~CaptivePortalActivator();
+ public:
+  explicit CaptivePortalActivator(QObject* parent);
+  ~CaptivePortalActivator();
 
-    void run();
+  void run();
 
-private:
-    void checkStatus();
+ private:
+  void checkStatus();
 };
 
-#endif // CAPTIVEPORTALACTIVATOR_H
+#endif  // CAPTIVEPORTALACTIVATOR_H

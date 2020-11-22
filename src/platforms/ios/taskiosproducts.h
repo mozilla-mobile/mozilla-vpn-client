@@ -9,15 +9,14 @@
 
 #include <QObject>
 
-class TaskIOSProducts final : public Task
-{
-   Q_DISABLE_COPY_MOVE(TaskIOSProducts)
+class TaskIOSProducts final : public Task {
+  Q_DISABLE_COPY_MOVE(TaskIOSProducts)
 
-public:
-    TaskIOSProducts();
-    ~TaskIOSProducts();
+ public:
+  TaskIOSProducts();
+  ~TaskIOSProducts();
 
-    void run(MozillaVPN* vpn) override;
+  void run(MozillaVPN* vpn) override;
 };
 
-#endif // TASKIOSPRODUCTS_H
+#endif  // TASKIOSPRODUCTS_H

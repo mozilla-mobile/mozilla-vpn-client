@@ -12,34 +12,32 @@
 #include <QVector>
 #include <QtTest/QtTest>
 
-class TestHelper : public QObject
-{
-    Q_OBJECT
+class TestHelper : public QObject {
+  Q_OBJECT
 
-public:
-    TestHelper();
+ public:
+  TestHelper();
 
-public:
-    struct NetworkConfig
-    {
-        enum NetworkStatus {
-            Success,
-            Failure,
-        };
-        NetworkStatus m_status;
-        QByteArray m_body;
-
-        NetworkConfig(NetworkStatus status, const QByteArray &body) : m_status(status), m_body(body)
-        {}
+ public:
+  struct NetworkConfig {
+    enum NetworkStatus {
+      Success,
+      Failure,
     };
+    NetworkStatus m_status;
+    QByteArray m_body;
 
-    static QVector<NetworkConfig> networkConfig;
+    NetworkConfig(NetworkStatus status, const QByteArray& body)
+        : m_status(status), m_body(body) {}
+  };
 
-    static MozillaVPN::State vpnState;
+  static QVector<NetworkConfig> networkConfig;
 
-    static Controller::State controllerState;
+  static MozillaVPN::State vpnState;
 
-    static QVector<QObject *> testList;
+  static Controller::State controllerState;
+
+  static QVector<QObject*> testList;
 };
 
-#endif // HELPER_H
+#endif  // HELPER_H

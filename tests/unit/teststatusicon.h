@@ -4,10 +4,9 @@
 
 #include "helper.h"
 
-class TestStatusIcon : public TestHelper
-{
-    Q_OBJECT
+class TestStatusIcon : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void basic();
+ private slots:
+  void basic();
 };

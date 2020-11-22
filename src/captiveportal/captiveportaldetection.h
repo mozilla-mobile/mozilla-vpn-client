@@ -8,35 +8,33 @@
 #include <QObject>
 #include <QTimer>
 
-class CaptivePortalDetection final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(CaptivePortalDetection)
+class CaptivePortalDetection final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(CaptivePortalDetection)
 
-public:
-    CaptivePortalDetection();
-    ~CaptivePortalDetection();
+ public:
+  CaptivePortalDetection();
+  ~CaptivePortalDetection();
 
-    void initialize();
+  void initialize();
 
-private:
-    void handleSuccess();
-    void handleFailure();
+ private:
+  void handleSuccess();
+  void handleFailure();
 
-public slots:
-    void controllerStateChanged();
+ public slots:
+  void controllerStateChanged();
 
-    void settingsChanged();
+  void settingsChanged();
 
-    void detectCaptivePortal();
+  void detectCaptivePortal();
 
-signals:
-    void captivePortalDetected();
+ signals:
+  void captivePortalDetected();
 
-private:
-    QTimer m_timer;
-    bool m_active = false;
+ private:
+  QTimer m_timer;
+  bool m_active = false;
 };
 
-#endif // CAPTIVEPORTALDETECTION_H
-
+#endif  // CAPTIVEPORTALDETECTION_H

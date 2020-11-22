@@ -11,21 +11,18 @@ namespace {
 Logger logger(LOG_MACOS, "MacOSStartAtBootWatcher");
 }
 
-MacOSStartAtBootWatcher::MacOSStartAtBootWatcher(bool startAtBoot)
-{
-    MVPN_COUNT_CTOR(MacOSStartAtBootWatcher);
+MacOSStartAtBootWatcher::MacOSStartAtBootWatcher(bool startAtBoot) {
+  MVPN_COUNT_CTOR(MacOSStartAtBootWatcher);
 
-    logger.log() << "StartAtBoot watcher";
-    MacOSUtils::enableLoginItem(startAtBoot);
+  logger.log() << "StartAtBoot watcher";
+  MacOSUtils::enableLoginItem(startAtBoot);
 }
 
-MacOSStartAtBootWatcher::~MacOSStartAtBootWatcher()
-{
-    MVPN_COUNT_DTOR(MacOSStartAtBootWatcher);
+MacOSStartAtBootWatcher::~MacOSStartAtBootWatcher() {
+  MVPN_COUNT_DTOR(MacOSStartAtBootWatcher);
 }
 
-void MacOSStartAtBootWatcher::startAtBootChanged(bool startAtBoot)
-{
-    logger.log() << "StartAtBoot changed:" << startAtBoot;
-    MacOSUtils::enableLoginItem(startAtBoot);
+void MacOSStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
+  logger.log() << "StartAtBoot changed:" << startAtBoot;
+  MacOSUtils::enableLoginItem(startAtBoot);
 }

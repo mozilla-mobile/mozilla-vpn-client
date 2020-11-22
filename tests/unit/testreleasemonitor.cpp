@@ -10,105 +10,104 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-void TestReleaseMonitor::failure()
-{
-    ReleaseMonitor rm;
-    rm.runSoon();
+void TestReleaseMonitor::failure() {
+  ReleaseMonitor rm;
+  rm.runSoon();
 
-    TestHelper::networkConfig.append(
-        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Failure, QByteArray()));
+  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+      TestHelper::NetworkConfig::Failure, QByteArray()));
 
-    QEventLoop loop;
-    connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
-    loop.exec();
+  QEventLoop loop;
+  connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
+  loop.exec();
 }
 
-void TestReleaseMonitor::success_data()
-{
-    QTest::addColumn<QByteArray>("json");
-    QTest::addColumn<bool>("result");
+void TestReleaseMonitor::success_data() {
+  QTest::addColumn<QByteArray>("json");
+  QTest::addColumn<bool>("result");
 
-    QTest::addRow("empty") << QByteArray("") << false;
+  QTest::addRow("empty") << QByteArray("") << false;
 
-    QJsonObject obj;
-    QTest::addRow("empty object") << QJsonDocument(obj).toJson() << false;
+  QJsonObject obj;
+  QTest::addRow("empty object") << QJsonDocument(obj).toJson() << false;
 
-    QJsonValue value(42);
-    obj.insert("linux", value);
-    obj.insert("ios", value);
-    obj.insert("macos", value);
-    obj.insert("dummy", value);
-    QTest::addRow("invalid platform") << QJsonDocument(obj).toJson() << false;
+  QJsonValue value(42);
+  obj.insert("linux", value);
+  obj.insert("ios", value);
+  obj.insert("macos", value);
+  obj.insert("dummy", value);
+  QTest::addRow("invalid platform") << QJsonDocument(obj).toJson() << false;
 
-    QJsonObject platform;
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("empty platform") << QJsonDocument(obj).toJson() << false;
+  QJsonObject platform;
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("empty platform") << QJsonDocument(obj).toJson() << false;
 
-    QJsonObject latest;
-    platform.insert("latest", latest);
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("empty latest") << QJsonDocument(obj).toJson() << false;
+  QJsonObject latest;
+  platform.insert("latest", latest);
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("empty latest") << QJsonDocument(obj).toJson() << false;
 
-    latest.insert("version", 42);
-    platform.insert("latest", latest);
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("invalid latest version") << QJsonDocument(obj).toJson() << false;
+  latest.insert("version", 42);
+  platform.insert("latest", latest);
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("invalid latest version")
+      << QJsonDocument(obj).toJson() << false;
 
-    latest.insert("version", "42");
-    platform.insert("latest", latest);
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("missing minimum") << QJsonDocument(obj).toJson() << false;
+  latest.insert("version", "42");
+  platform.insert("latest", latest);
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("missing minimum") << QJsonDocument(obj).toJson() << false;
 
-    QJsonObject minimum;
-    minimum.insert("version", 42);
-    platform.insert("minimum", minimum);
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("invalid minimum version") << QJsonDocument(obj).toJson() << false;
+  QJsonObject minimum;
+  minimum.insert("version", 42);
+  platform.insert("minimum", minimum);
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("invalid minimum version")
+      << QJsonDocument(obj).toJson() << false;
 
-    minimum.insert("version", "42");
-    platform.insert("minimum", minimum);
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("all good") << QJsonDocument(obj).toJson() << true;
+  minimum.insert("version", "42");
+  platform.insert("minimum", minimum);
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("all good") << QJsonDocument(obj).toJson() << true;
 
-    minimum.insert("version", "9999");
-    platform.insert("minimum", minimum);
-    obj.insert("linux", platform);
-    obj.insert("ios", platform);
-    obj.insert("macos", platform);
-    obj.insert("dummy", platform);
-    QTest::addRow("completed!") << QJsonDocument(obj).toJson() << true;
+  minimum.insert("version", "9999");
+  platform.insert("minimum", minimum);
+  obj.insert("linux", platform);
+  obj.insert("ios", platform);
+  obj.insert("macos", platform);
+  obj.insert("dummy", platform);
+  QTest::addRow("completed!") << QJsonDocument(obj).toJson() << true;
 }
 
-void TestReleaseMonitor::success()
-{
-    ReleaseMonitor rm;
-    rm.runSoon();
+void TestReleaseMonitor::success() {
+  ReleaseMonitor rm;
+  rm.runSoon();
 
-    QFETCH(QByteArray, json);
-    TestHelper::networkConfig.append(
-        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
+  QFETCH(QByteArray, json);
+  TestHelper::networkConfig.append(
+      TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
 
-    QEventLoop loop;
-    connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
-    loop.exec();
+  QEventLoop loop;
+  connect(&rm, &ReleaseMonitor::releaseChecked, [&] { loop.exit(); });
+  loop.exec();
 }
 
 static TestReleaseMonitor s_testReleaseMonitor;

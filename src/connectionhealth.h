@@ -13,56 +13,56 @@
 class Server;
 class PingSender;
 
-class ConnectionHealth final : public QObject
-{
-public:
-    enum ConnectionStability {
-        Stable,
-        Unstable,
-        NoSignal,
-    };
-    Q_ENUM(ConnectionStability)
+class ConnectionHealth final : public QObject {
+ public:
+  enum ConnectionStability {
+    Stable,
+    Unstable,
+    NoSignal,
+  };
+  Q_ENUM(ConnectionStability)
 
-private:
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(ConnectionHealth)
+ private:
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ConnectionHealth)
 
-    Q_PROPERTY(ConnectionStability stability READ stability() NOTIFY stabilityChanged)
+  Q_PROPERTY(ConnectionStability stability READ stability()
+                 NOTIFY stabilityChanged)
 
-public:
-    ConnectionHealth();
-    ~ConnectionHealth();
+ public:
+  ConnectionHealth();
+  ~ConnectionHealth();
 
-    void start(const QString &serverIpv4Gateway);
+  void start(const QString& serverIpv4Gateway);
 
-    void stop();
+  void stop();
 
-    ConnectionStability stability() const { return m_stability; }
+  ConnectionStability stability() const { return m_stability; }
 
-public slots:
-    void connectionStateChanged();
+ public slots:
+  void connectionStateChanged();
 
-signals:
-    void stabilityChanged();
+ signals:
+  void stabilityChanged();
 
-private:
-    void setStability(ConnectionStability stability);
-    void nextPing();
+ private:
+  void setStability(ConnectionStability stability);
+  void nextPing();
 
-    void pingReceived(PingSender *pingSender, qint64 msec);
-    void noSignalDetected();
+  void pingReceived(PingSender* pingSender, qint64 msec);
+  void noSignalDetected();
 
-private:
-    ConnectionStability m_stability = Stable;
+ private:
+  ConnectionStability m_stability = Stable;
 
-    QString m_gateway;
+  QString m_gateway;
 
-    QTimer m_pingTimer;
-    QTimer m_noSignalTimer;
+  QTimer m_pingTimer;
+  QTimer m_noSignalTimer;
 
-    QList<PingSender *> m_pings;
+  QList<PingSender*> m_pings;
 
-    QThread m_pingThread;
+  QThread m_pingThread;
 };
 
-#endif // CONNECTIONHEALTH_H
+#endif  // CONNECTIONHEALTH_H

@@ -16,18 +16,17 @@ namespace {
 Logger logger(LOG_MAIN, "main");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
 #ifdef QT_DEBUG
-    LeakDetector leakDetector;
-    Q_UNUSED(leakDetector);
+  LeakDetector leakDetector;
+  Q_UNUSED(leakDetector);
 #endif
 
-    // Our logging system.
-    qInstallMessageHandler(LogHandler::messageQTHandler);
+  // Our logging system.
+  qInstallMessageHandler(LogHandler::messageQTHandler);
 
-    logger.log() << "MozillaVPN" << APP_VERSION;
+  logger.log() << "MozillaVPN" << APP_VERSION;
 
-    CommandLineParser clp;
-    return clp.parse(argc, argv);
+  CommandLineParser clp;
+  return clp.parse(argc, argv);
 }

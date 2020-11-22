@@ -10,46 +10,47 @@
 
 class QInAppTransaction;
 
-class IAPHandler final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(IAPHandler)
+class IAPHandler final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(IAPHandler)
 
-public:
-    static IAPHandler *createInstance();
+ public:
+  static IAPHandler* createInstance();
 
-    static IAPHandler* instance();
+  static IAPHandler* instance();
 
-    bool hasProductsRegistered() const { return m_productsRegistrationState == eRegistered; }
+  bool hasProductsRegistered() const {
+    return m_productsRegistrationState == eRegistered;
+  }
 
-    void registerProducts(const QStringList &products);
+  void registerProducts(const QStringList& products);
 
-    void startSubscription(bool restore);
+  void startSubscription(bool restore);
 
-signals:
-    void productsRegistered();
+ signals:
+  void productsRegistered();
 
-    void subscriptionFailed();
-    void subscriptionCompleted();
+  void subscriptionFailed();
+  void subscriptionCompleted();
 
-private:
-    IAPHandler(QObject *parent);
-    ~IAPHandler();
+ private:
+  IAPHandler(QObject* parent);
+  ~IAPHandler();
 
-    void purchaseCompleted();
+  void purchaseCompleted();
 
-private:
-    QInAppStore m_appStore;
+ private:
+  QInAppStore m_appStore;
 
-    enum {
-        eNotRegistered,
-        eRegistering,
-        eRegistered,
-    } m_productsRegistrationState = eNotRegistered;
+  enum {
+    eNotRegistered,
+    eRegistering,
+    eRegistered,
+  } m_productsRegistrationState = eNotRegistered;
 
-    QString m_productName;
+  QString m_productName;
 
-    bool m_started = false;
+  bool m_started = false;
 };
 
-#endif // IAPHANDLER_H
+#endif  // IAPHANDLER_H

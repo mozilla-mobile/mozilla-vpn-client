@@ -9,15 +9,14 @@
 
 #include <QObject>
 
-class TaskCaptivePortalLookup final : public Task
-{
-    Q_DISABLE_COPY_MOVE(TaskCaptivePortalLookup)
+class TaskCaptivePortalLookup final : public Task {
+  Q_DISABLE_COPY_MOVE(TaskCaptivePortalLookup)
 
-public:
-    TaskCaptivePortalLookup();
-    ~TaskCaptivePortalLookup();
+ public:
+  TaskCaptivePortalLookup();
+  ~TaskCaptivePortalLookup();
 
-    void run(MozillaVPN *vpn) override;
+  void run(MozillaVPN* vpn) override;
 };
 
-#endif // TASKCAPTIVEPORTALLOOKUP_H
+#endif  // TASKCAPTIVEPORTALLOOKUP_H

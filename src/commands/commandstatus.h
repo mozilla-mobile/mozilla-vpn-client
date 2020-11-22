@@ -7,13 +7,12 @@
 
 #include "command.h"
 
-class CommandStatus final : public Command
-{
-public:
-    explicit CommandStatus(QObject *parent);
-    ~CommandStatus();
+class CommandStatus final : public Command {
+ public:
+  explicit CommandStatus(QObject* parent);
+  ~CommandStatus();
 
-    int run(QStringList &tokens) override;
+  int run(QStringList& tokens) override;
 };
 
-#endif // COMMANDSTATUS_H
+#endif  // COMMANDSTATUS_H

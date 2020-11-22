@@ -10,88 +10,85 @@
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandDeactivate::CommandDeactivate(QObject *parent)
-    : Command(parent, "deactivate", "Deactivate the VPN tunnel")
-{
-    MVPN_COUNT_CTOR(CommandDeactivate);
+CommandDeactivate::CommandDeactivate(QObject* parent)
+    : Command(parent, "deactivate", "Deactivate the VPN tunnel") {
+  MVPN_COUNT_CTOR(CommandDeactivate);
 }
 
-CommandDeactivate::~CommandDeactivate()
-{
-    MVPN_COUNT_DTOR(CommandDeactivate);
-}
+CommandDeactivate::~CommandDeactivate() { MVPN_COUNT_DTOR(CommandDeactivate); }
 
-int CommandDeactivate::run(QStringList &tokens)
-{
-    Q_ASSERT(!tokens.isEmpty());
-    return runCommandLineApp([&]() {
-        if (tokens.length() > 1) {
-            QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
-        }
+int CommandDeactivate::run(QStringList& tokens) {
+  Q_ASSERT(!tokens.isEmpty());
+  return runCommandLineApp([&]() {
+    if (tokens.length() > 1) {
+      QList<CommandLineParser::Option*> options;
+      return CommandLineParser::unknownOption(this, tokens[1], tokens[0],
+                                              options, false);
+    }
 
-        if (!userAuthenticated()) {
-            return 1;
-        }
+    if (!userAuthenticated()) {
+      return 1;
+    }
 
-        MozillaVPN vpn;
-        if (!loadModels()) {
-            return 1;
-        }
+    MozillaVPN vpn;
+    if (!loadModels()) {
+      return 1;
+    }
 
-        Controller controller;
+    Controller controller;
 
-        QEventLoop loop;
-        QObject::connect(&controller, &Controller::stateChanged, [&] {
-            if (controller.state() == Controller::StateOff
-                || controller.state() == Controller::StateOn) {
-                loop.exit();
-            }
-        });
-        controller.initialize();
-        loop.exec();
-        controller.disconnect();
-
-        // If we are connecting right now, we want to wait untile the operation is completed.
-        if (controller.state() != Controller::StateOff
-            && controller.state() != Controller::StateOn) {
-            QObject::connect(&controller, &Controller::stateChanged, [&] {
-                if (controller.state() == Controller::StateOff
-                    || controller.state() == Controller::StateOn) {
-                    loop.exit();
-                }
-            });
-            loop.exec();
-            controller.disconnect();
-        }
-
-        if (controller.state() == Controller::StateOff) {
-            QTextStream stream(stdout);
-            stream << "The VPN tunnel is already inactive" << Qt::endl;
-            return 0;
-        }
-
-        QObject::connect(&controller, &Controller::stateChanged, [&] {
-            if (controller.state() == Controller::StateOff
-                || controller.state() == Controller::StateOn) {
-                loop.exit();
-            }
-        });
-
-        controller.deactivate();
-        loop.exec();
-        controller.disconnect();
-
-        if (controller.state() == Controller::StateOff) {
-            QTextStream stream(stdout);
-            stream << "The VPN tunnel is now inactive" << Qt::endl;
-            return 0;
-        }
-
-        QTextStream stream(stdout);
-        stream << "The VPN tunnel deactivation failed" << Qt::endl;
-        return 1;
+    QEventLoop loop;
+    QObject::connect(&controller, &Controller::stateChanged, [&] {
+      if (controller.state() == Controller::StateOff ||
+          controller.state() == Controller::StateOn) {
+        loop.exit();
+      }
     });
+    controller.initialize();
+    loop.exec();
+    controller.disconnect();
+
+    // If we are connecting right now, we want to wait untile the operation is
+    // completed.
+    if (controller.state() != Controller::StateOff &&
+        controller.state() != Controller::StateOn) {
+      QObject::connect(&controller, &Controller::stateChanged, [&] {
+        if (controller.state() == Controller::StateOff ||
+            controller.state() == Controller::StateOn) {
+          loop.exit();
+        }
+      });
+      loop.exec();
+      controller.disconnect();
+    }
+
+    if (controller.state() == Controller::StateOff) {
+      QTextStream stream(stdout);
+      stream << "The VPN tunnel is already inactive" << Qt::endl;
+      return 0;
+    }
+
+    QObject::connect(&controller, &Controller::stateChanged, [&] {
+      if (controller.state() == Controller::StateOff ||
+          controller.state() == Controller::StateOn) {
+        loop.exit();
+      }
+    });
+
+    controller.deactivate();
+    loop.exec();
+    controller.disconnect();
+
+    if (controller.state() == Controller::StateOff) {
+      QTextStream stream(stdout);
+      stream << "The VPN tunnel is now inactive" << Qt::endl;
+      return 0;
+    }
+
+    QTextStream stream(stdout);
+    stream << "The VPN tunnel deactivation failed" << Qt::endl;
+    return 1;
+  });
 }
 
 static Command::RegistrationProxy<CommandDeactivate> s_commandDeactivate;

@@ -15,65 +15,61 @@ namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 }
 
-CaptivePortalDetection::CaptivePortalDetection()
-{
-    MVPN_COUNT_CTOR(CaptivePortalDetection);
+CaptivePortalDetection::CaptivePortalDetection() {
+  MVPN_COUNT_CTOR(CaptivePortalDetection);
 
-    connect(&m_timer, &QTimer::timeout, this, &CaptivePortalDetection::detectCaptivePortal);
+  connect(&m_timer, &QTimer::timeout, this,
+          &CaptivePortalDetection::detectCaptivePortal);
 }
 
-CaptivePortalDetection::~CaptivePortalDetection()
-{
-    MVPN_COUNT_DTOR(CaptivePortalDetection);
+CaptivePortalDetection::~CaptivePortalDetection() {
+  MVPN_COUNT_DTOR(CaptivePortalDetection);
 }
 
-void CaptivePortalDetection::initialize()
-{
-    m_active = SettingsHolder::instance()->captivePortalAlert();
+void CaptivePortalDetection::initialize() {
+  m_active = SettingsHolder::instance()->captivePortalAlert();
 }
 
-void CaptivePortalDetection::controllerStateChanged()
-{
-    logger.log() << "Controller state changed";
+void CaptivePortalDetection::controllerStateChanged() {
+  logger.log() << "Controller state changed";
 
-    if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-        m_timer.start(Constants::CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC);
-        detectCaptivePortal();
-    } else {
-        m_timer.stop();
+  if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
+    m_timer.start(Constants::CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC);
+    detectCaptivePortal();
+  } else {
+    m_timer.stop();
+  }
+}
+
+void CaptivePortalDetection::settingsChanged() {
+  logger.log() << "Settings has changed";
+  m_active = SettingsHolder::instance()->captivePortalAlert();
+}
+
+void CaptivePortalDetection::detectCaptivePortal() {
+  logger.log() << "Detecting captive portal - status:" << m_active;
+
+  if (!m_active) {
+    return;
+  }
+
+  CaptivePortalRequest* request = new CaptivePortalRequest(this);
+  connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
+    logger.log() << "Captive portal request completed - detected:" << detected;
+
+    if (!m_active ||
+        MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+      logger.log() << "Disabled in the meantime.";
+      return;
     }
-}
 
-void CaptivePortalDetection::settingsChanged()
-{
-    logger.log() << "Settings has changed";
-    m_active = SettingsHolder::instance()->captivePortalAlert();
-}
-
-void CaptivePortalDetection::detectCaptivePortal()
-{
-    logger.log() << "Detecting captive portal - status:" << m_active;
-
-    if (!m_active) {
-        return;
+    // Comment this out to see the captive portal view each time.
+    if (!detected) {
+      return;
     }
 
-    CaptivePortalRequest *request = new CaptivePortalRequest(this);
-    connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-        logger.log() << "Captive portal request completed - detected:" << detected;
+    emit captivePortalDetected();
+  });
 
-        if (!m_active || MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
-            logger.log() << "Disabled in the meantime.";
-            return;
-        }
-
-        // Comment this out to see the captive portal view each time.
-        if (!detected) {
-            return;
-        }
-
-        emit captivePortalDetected();
-    });
-
-    request->run();
+  request->run();
 }

@@ -8,39 +8,33 @@
 #include <QObject>
 #include <QTemporaryDir>
 
-constexpr const char *WG_INTERFACE = "moz0";
+constexpr const char* WG_INTERFACE = "moz0";
 
-class WgQuickProcess final : public QObject
-{
-    Q_OBJECT
-public:
-    enum Op {
-        Up,
-        Down,
-    };
+class WgQuickProcess final : public QObject {
+  Q_OBJECT
+ public:
+  enum Op {
+    Up,
+    Down,
+  };
 
-    explicit WgQuickProcess(Op op);
+  explicit WgQuickProcess(Op op);
 
-    void run(const QString &privateKey,
-             const QString &deviceIpv4Address,
-             const QString &deviceIpv6Address,
-             const QString &serverIpv4Gateway,
-             const QString &serverIpv6Gateway,
-             const QString &serverPublicKey,
-             const QString &serverIpv4AddrIn,
-             const QString &serverIpv6AddrIn,
-             const QString &allowedIPAddressRanges,
-             int serverPort,
-             bool ipv6Enabled);
+  void run(const QString& privateKey, const QString& deviceIpv4Address,
+           const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
+           const QString& serverIpv6Gateway, const QString& serverPublicKey,
+           const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
+           const QString& allowedIPAddressRanges, int serverPort,
+           bool ipv6Enabled);
 
-signals:
-    void failed();
-    void succeeded();
+ signals:
+  void failed();
+  void succeeded();
 
-private:
-    Op m_op;
+ private:
+  Op m_op;
 
-    QTemporaryDir m_tmpDir;
+  QTemporaryDir m_tmpDir;
 };
 
-#endif // WGQUICKPROCESS_H
+#endif  // WGQUICKPROCESS_H

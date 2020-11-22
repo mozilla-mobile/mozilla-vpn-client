@@ -11,44 +11,43 @@
 
 class QJsonObject;
 
-class Server final
-{
-public:
-    Server();
-    Server(const Server &other);
-    ~Server();
+class Server final {
+ public:
+  Server();
+  Server(const Server& other);
+  ~Server();
 
-    [[nodiscard]] bool fromJson(QJsonObject &obj);
+  [[nodiscard]] bool fromJson(QJsonObject& obj);
 
-    static const Server &weightChooser(const QList<Server> &servers);
+  static const Server& weightChooser(const QList<Server>& servers);
 
-    bool initialized() const { return !m_hostname.isEmpty(); }
+  bool initialized() const { return !m_hostname.isEmpty(); }
 
-    const QString &hostname() const { return m_hostname; }
+  const QString& hostname() const { return m_hostname; }
 
-    const QString& ipv4AddrIn() const { return m_ipv4AddrIn; }
+  const QString& ipv4AddrIn() const { return m_ipv4AddrIn; }
 
-    const QString& ipv4Gateway() const { return m_ipv4Gateway; }
+  const QString& ipv4Gateway() const { return m_ipv4Gateway; }
 
-    const QString& ipv6AddrIn() const { return m_ipv6AddrIn; }
+  const QString& ipv6AddrIn() const { return m_ipv6AddrIn; }
 
-    const QString& ipv6Gateway() const { return m_ipv6Gateway; }
+  const QString& ipv6Gateway() const { return m_ipv6Gateway; }
 
-    const QString& publicKey() const { return m_publicKey; }
+  const QString& publicKey() const { return m_publicKey; }
 
-    uint32_t weight() const { return m_weight; }
+  uint32_t weight() const { return m_weight; }
 
-    uint32_t choosePort() const;
+  uint32_t choosePort() const;
 
-private:
-    QString m_hostname;
-    QString m_ipv4AddrIn;
-    QString m_ipv4Gateway;
-    QString m_ipv6AddrIn;
-    QString m_ipv6Gateway;
-    QList<QPair<uint32_t, uint32_t>> m_portRanges;
-    QString m_publicKey;
-    uint32_t m_weight = 0;
+ private:
+  QString m_hostname;
+  QString m_ipv4AddrIn;
+  QString m_ipv4Gateway;
+  QString m_ipv6AddrIn;
+  QString m_ipv6Gateway;
+  QList<QPair<uint32_t, uint32_t>> m_portRanges;
+  QString m_publicKey;
+  uint32_t m_weight = 0;
 };
 
-#endif // SERVER_H
+#endif  // SERVER_H

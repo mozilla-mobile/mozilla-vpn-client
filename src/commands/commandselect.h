@@ -9,16 +9,15 @@
 
 class ServerData;
 
-class CommandSelect final : public Command
-{
-public:
-    explicit CommandSelect(QObject *parent);
-    ~CommandSelect();
+class CommandSelect final : public Command {
+ public:
+  explicit CommandSelect(QObject* parent);
+  ~CommandSelect();
 
-    int run(QStringList &tokens) override;
+  int run(QStringList& tokens) override;
 
-private:
-    bool pickServer(const QString &hostname, ServerData &serverData);
+ private:
+  bool pickServer(const QString& hostname, ServerData& serverData);
 };
 
-#endif // COMMANDSELECT_H
+#endif  // COMMANDSELECT_H

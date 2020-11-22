@@ -14,52 +14,49 @@
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandLogin::CommandLogin(QObject *parent)
-    : Command(parent, "login", "Starts the authentication flow.")
-{
-    MVPN_COUNT_CTOR(CommandLogin);
+CommandLogin::CommandLogin(QObject* parent)
+    : Command(parent, "login", "Starts the authentication flow.") {
+  MVPN_COUNT_CTOR(CommandLogin);
 }
 
-CommandLogin::~CommandLogin()
-{
-    MVPN_COUNT_DTOR(CommandLogin);
-}
+CommandLogin::~CommandLogin() { MVPN_COUNT_DTOR(CommandLogin); }
 
-int CommandLogin::run(QStringList &tokens)
-{
-    Q_ASSERT(!tokens.isEmpty());
-    return runGuiApp([&]() {
-        if (tokens.length() > 1) {
-            QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
-        }
+int CommandLogin::run(QStringList& tokens) {
+  Q_ASSERT(!tokens.isEmpty());
+  return runGuiApp([&]() {
+    if (tokens.length() > 1) {
+      QList<CommandLineParser::Option*> options;
+      return CommandLineParser::unknownOption(this, tokens[1], tokens[0],
+                                              options, false);
+    }
 
-        if (SettingsHolder::instance()->hasToken()) {
-            QTextStream stream(stdout);
-            stream << "User status: already authenticated" << Qt::endl;
-            return 1;
-        }
+    if (SettingsHolder::instance()->hasToken()) {
+      QTextStream stream(stdout);
+      stream << "User status: already authenticated" << Qt::endl;
+      return 1;
+    }
 
-        MozillaVPN vpn;
-        vpn.authenticate();
+    MozillaVPN vpn;
+    vpn.authenticate();
 
-        QEventLoop loop;
-        QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
-            if (vpn.state() == MozillaVPN::StatePostAuthentication || vpn.state() == MozillaVPN::StateMain) {
-                loop.exit();
-            }
-        });
-        loop.exec();
-
-        QString deviceName = Device::currentDeviceName();
-        if (!vpn.deviceModel()->hasDevice(deviceName)) {
-            QTextStream stream(stdout);
-            stream << "Device limit reached" << Qt::endl;
-            return 1;
-        }
-
-        return 0;
+    QEventLoop loop;
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
+      if (vpn.state() == MozillaVPN::StatePostAuthentication ||
+          vpn.state() == MozillaVPN::StateMain) {
+        loop.exit();
+      }
     });
+    loop.exec();
+
+    QString deviceName = Device::currentDeviceName();
+    if (!vpn.deviceModel()->hasDevice(deviceName)) {
+      QTextStream stream(stdout);
+      stream << "Device limit reached" << Qt::endl;
+      return 1;
+    }
+
+    return 0;
+  });
 }
 
 static Command::RegistrationProxy<CommandLogin> s_commandLogin;

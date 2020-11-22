@@ -8,15 +8,15 @@
 #include "pingsendworker.h"
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-#include "platforms/linux/linuxpingsendworker.h"
+#  include "platforms/linux/linuxpingsendworker.h"
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-#include "platforms/macos/macospingsendworker.h"
+#  include "platforms/macos/macospingsendworker.h"
 #else
-#include "platforms/dummy/dummypingsendworker.h"
+#  include "platforms/dummy/dummypingsendworker.h"
 #endif
 
 #ifdef QT_DEBUG
-#include "platforms/dummy/dummypingsendworker.h"
+#  include "platforms/dummy/dummypingsendworker.h"
 #endif
 
 #include <QThread>
@@ -25,49 +25,43 @@ namespace {
 Logger logger(LOG_NETWORKING, "PingSender");
 }
 
-PingSender::PingSender(QObject *parent, QThread *thread) : QObject(parent)
-{
-    MVPN_COUNT_CTOR(PingSender);
+PingSender::PingSender(QObject* parent, QThread* thread) : QObject(parent) {
+  MVPN_COUNT_CTOR(PingSender);
 
-    m_time.start();
+  m_time.start();
 
-    PingSendWorker *worker =
+  PingSendWorker* worker =
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-        new LinuxPingSendWorker();
+      new LinuxPingSendWorker();
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-        new MacOSPingSendWorker();
+      new MacOSPingSendWorker();
 #else
-        new DummyPingSendWorker();
+      new DummyPingSendWorker();
 #endif
 
-    worker->moveToThread(thread);
+  worker->moveToThread(thread);
 
-    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(this, &PingSender::sendPing, worker, &PingSendWorker::sendPing);
-    connect(this, &QObject::destroyed, worker, &QObject::deleteLater);
-    connect(worker, &PingSendWorker::pingFailed, this, &PingSender::pingFailed);
-    connect(worker, &PingSendWorker::pingSucceeded, this, &PingSender::pingSucceeded);
+  connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+  connect(this, &PingSender::sendPing, worker, &PingSendWorker::sendPing);
+  connect(this, &QObject::destroyed, worker, &QObject::deleteLater);
+  connect(worker, &PingSendWorker::pingFailed, this, &PingSender::pingFailed);
+  connect(worker, &PingSendWorker::pingSucceeded, this,
+          &PingSender::pingSucceeded);
 }
 
-PingSender::~PingSender()
-{
-    MVPN_COUNT_DTOR(PingSender);
+PingSender::~PingSender() { MVPN_COUNT_DTOR(PingSender); }
+
+void PingSender::send(const QString& destination) {
+  logger.log() << "PingSender send to" << destination;
+  emit sendPing(destination);
 }
 
-void PingSender::send(const QString &destination)
-{
-    logger.log() << "PingSender send to" << destination;
-    emit sendPing(destination);
+void PingSender::pingFailed() {
+  logger.log() << "PingSender - Ping Failed";
+  emit completed(this, m_time.elapsed());
 }
 
-void PingSender::pingFailed()
-{
-    logger.log() << "PingSender - Ping Failed";
-    emit completed(this, m_time.elapsed());
-}
-
-void PingSender::pingSucceeded()
-{
-    logger.log() << "PingSender - Ping Succeded";
-    emit completed(this, m_time.elapsed());
+void PingSender::pingSucceeded() {
+  logger.log() << "PingSender - Ping Succeded";
+  emit completed(this, m_time.elapsed());
 }

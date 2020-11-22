@@ -42,164 +42,151 @@ const int EVENT_BACKEND_LOGS = 4;
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
-AndroidController *s_instance = nullptr;
+AndroidController* s_instance = nullptr;
 
-} // namespace
+}  // namespace
 
-AndroidController::AndroidController() : m_binder(this)
-{
-    MVPN_COUNT_CTOR(AndroidController);
+AndroidController::AndroidController() : m_binder(this) {
+  MVPN_COUNT_CTOR(AndroidController);
 
-    Q_ASSERT(!s_instance);
-    s_instance = this;
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 }
-AndroidController::~AndroidController()
-{
-    MVPN_COUNT_DTOR(AndroidController);
+AndroidController::~AndroidController() {
+  MVPN_COUNT_DTOR(AndroidController);
 
-    Q_ASSERT(s_instance == this);
-    s_instance = nullptr;
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
-AndroidController *AndroidController::instance()
-{
-    return s_instance;
+AndroidController* AndroidController::instance() { return s_instance; }
+
+void AndroidController::initialize(const Device* device, const Keys* keys) {
+  logger.log() << "Initializing";
+
+  Q_UNUSED(device);
+  Q_UNUSED(keys);
+
+  // Hook in the native implementation for startActivityForResult into the JNI
+  JNINativeMethod methods[]{{"startActivityForResult",
+                             "(Landroid/content/Intent;)V",
+                             reinterpret_cast<void*>(startActivityForResult)}};
+  QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNService");
+  QAndroidJniEnvironment env;
+  jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
+  env->RegisterNatives(objectClass, methods,
+                       sizeof(methods) / sizeof(methods[0]));
+  env->DeleteLocalRef(objectClass);
+
+  // Start the VPN Service (if not yet) and Bind to it
+  QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(),
+                                        "org.mozilla.firefox.vpn.VPNService"),
+                         *this, QtAndroid::BindFlag::AutoCreate);
 }
 
-void AndroidController::initialize(const Device *device, const Keys *keys)
-{
-    logger.log() << "Initializing";
+void AndroidController::activate(
+    const Server& server, const Device* device, const Keys* keys,
+    const QList<IPAddressRange>& allowedIPAddressRanges, bool forSwitching) {
+  logger.log() << "Activation";
 
-    Q_UNUSED(device);
-    Q_UNUSED(keys);
+  m_server = server;
 
-    // Hook in the native implementation for startActivityForResult into the JNI
-    JNINativeMethod methods[]{{"startActivityForResult",
-                               "(Landroid/content/Intent;)V",
-                               reinterpret_cast<void *>(startActivityForResult)}};
-    QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNService");
-    QAndroidJniEnvironment env;
-    jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
-    env->RegisterNatives(objectClass, methods, sizeof(methods) / sizeof(methods[0]));
-    env->DeleteLocalRef(objectClass);
+  // Serialise arguments for the VPNService
+  QJsonObject jDevice;
+  jDevice["publicKey"] = device->publicKey();
+  jDevice["name"] = device->name();
+  jDevice["createdAt"] = device->createdAt().toMSecsSinceEpoch();
+  jDevice["ipv4Address"] = device->ipv4Address();
+  jDevice["ipv6Address"] = device->ipv6Address();
 
-    // Start the VPN Service (if not yet) and Bind to it
-    QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(),
-                                          "org.mozilla.firefox.vpn.VPNService"),
-                           *this,
-                           QtAndroid::BindFlag::AutoCreate);
-}
+  QJsonObject jKeys;
+  jKeys["privateKey"] = keys->privateKey();
 
-void AndroidController::activate(const Server &server,
-                                 const Device *device,
-                                 const Keys *keys,
-                                 const QList<IPAddressRange> &allowedIPAddressRanges,
-                                 bool forSwitching)
-{
-    logger.log() << "Activation";
+  QJsonObject jServer;
+  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
+  jServer["ipv4Gateway"] = server.ipv4Gateway();
+  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
+  jServer["ipv6Gateway"] = server.ipv6Gateway();
+  jServer["publicKey"] = server.publicKey();
+  jServer["port"] = (int)server.choosePort();
 
-    m_server = server;
+  QJsonArray allowedIPs;
+  foreach (auto item, allowedIPAddressRanges) {
+    QJsonValue val;
+    val = item.toString();
+    allowedIPs.append(val);
+  }
 
-    // Serialise arguments for the VPNService
-    QJsonObject jDevice;
-    jDevice["publicKey"] = device->publicKey();
-    jDevice["name"] = device->name();
-    jDevice["createdAt"] = device->createdAt().toMSecsSinceEpoch();
-    jDevice["ipv4Address"] = device->ipv4Address();
-    jDevice["ipv6Address"] = device->ipv6Address();
+  QJsonObject args;
+  args["device"] = jDevice;
+  args["keys"] = jKeys;
+  args["server"] = jServer;
+  args["forSwitching"] = forSwitching;
+  args["allowedIPs"] = allowedIPs;
 
-    QJsonObject jKeys;
-    jKeys["privateKey"] = keys->privateKey();
-
-    QJsonObject jServer;
-    jServer["ipv4AddrIn"] = server.ipv4AddrIn();
-    jServer["ipv4Gateway"] = server.ipv4Gateway();
-    jServer["ipv6AddrIn"] = server.ipv6AddrIn();
-    jServer["ipv6Gateway"] = server.ipv6Gateway();
-    jServer["publicKey"] = server.publicKey();
-    jServer["port"] = (int) server.choosePort();
-
-    QJsonArray allowedIPs;
-    foreach (auto item, allowedIPAddressRanges) {
-        QJsonValue val;
-        val = item.toString();
-        allowedIPs.append(val);
-    }
-
-    QJsonObject args;
-    args["device"] = jDevice;
-    args["keys"] = jKeys;
-    args["server"] = jServer;
-    args["forSwitching"] = forSwitching;
-    args["allowedIPs"] = allowedIPs;
-
-    QJsonDocument doc(args);
-    QAndroidParcel sendData;
-    sendData.writeData(doc.toJson());
-    m_serviceBinder.transact(ACTION_ACTIVATE, sendData, nullptr);
+  QJsonDocument doc(args);
+  QAndroidParcel sendData;
+  sendData.writeData(doc.toJson());
+  m_serviceBinder.transact(ACTION_ACTIVATE, sendData, nullptr);
 }
 // Activates the tunnel that is currently set
 // in the VPN Service
-void AndroidController::resume_activate()
-{
-    QAndroidParcel nullData;
-    m_serviceBinder.transact(ACTION_RESUME_ACTIVATE, nullData, nullptr);
+void AndroidController::resume_activate() {
+  QAndroidParcel nullData;
+  m_serviceBinder.transact(ACTION_RESUME_ACTIVATE, nullData, nullptr);
 }
 
-void AndroidController::deactivate(bool forSwitching)
-{
-    if(forSwitching){
-        // Just show that we're disconnected
-        // we're doing the actual disconnect once
-        // the vpn-service has the new server ready in Action->Activate
-        emit disconnected();
-        logger.log() << "deactivation skipped for Switching";
-        return;
-    }
-    logger.log() << "deactivation";
+void AndroidController::deactivate(bool forSwitching) {
+  if (forSwitching) {
+    // Just show that we're disconnected
+    // we're doing the actual disconnect once
+    // the vpn-service has the new server ready in Action->Activate
+    emit disconnected();
+    logger.log() << "deactivation skipped for Switching";
+    return;
+  }
+  logger.log() << "deactivation";
 
-    Q_UNUSED(forSwitching);
-    QAndroidParcel nullData;
-    m_serviceBinder.transact(ACTION_DEACTIVATE, nullData, nullptr);
+  Q_UNUSED(forSwitching);
+  QAndroidParcel nullData;
+  m_serviceBinder.transact(ACTION_DEACTIVATE, nullData, nullptr);
 }
 
-void AndroidController::checkStatus()
-{
-    logger.log() << "check status";
+void AndroidController::checkStatus() {
+  logger.log() << "check status";
 
-    QAndroidParcel nullParcel;
-    m_serviceBinder.transact(ACTION_REQUEST_STATISTIC, nullParcel, nullptr);
+  QAndroidParcel nullParcel;
+  m_serviceBinder.transact(ACTION_REQUEST_STATISTIC, nullParcel, nullptr);
 }
 
-void AndroidController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
-{
-    logger.log() << "get logs";
+void AndroidController::getBackendLogs(
+    std::function<void(const QString&)>&& a_callback) {
+  logger.log() << "get logs";
 
-    m_logCallback = std::move(a_callback);
-    QAndroidParcel nullData, replyData;
-    m_serviceBinder.transact(ACTION_REQUEST_LOG, nullData, &replyData);
+  m_logCallback = std::move(a_callback);
+  QAndroidParcel nullData, replyData;
+  m_serviceBinder.transact(ACTION_REQUEST_LOG, nullData, &replyData);
 }
 
-void AndroidController::onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder)
-{
-    logger.log() << "Server connected";
+void AndroidController::onServiceConnected(
+    const QString& name, const QAndroidBinder& serviceBinder) {
+  logger.log() << "Server connected";
 
-    Q_UNUSED(name);
+  Q_UNUSED(name);
 
-    m_serviceBinder = serviceBinder;
+  m_serviceBinder = serviceBinder;
 
-    // Send the Service our Binder to recive incoming Events
-    QAndroidParcel binderParcel;
-    binderParcel.writeBinder(m_binder);
-    m_serviceBinder.transact(ACTION_REGISTERLISTENER, binderParcel, nullptr);
+  // Send the Service our Binder to recive incoming Events
+  QAndroidParcel binderParcel;
+  binderParcel.writeBinder(m_binder);
+  m_serviceBinder.transact(ACTION_REGISTERLISTENER, binderParcel, nullptr);
 }
 
-void AndroidController::onServiceDisconnected(const QString &name)
-{
-    logger.log() << "Server disconnected";
+void AndroidController::onServiceDisconnected(const QString& name) {
+  logger.log() << "Server disconnected";
 
-    Q_UNUSED(name);
-    // TODO: Maybe restart? Or crash?
+  Q_UNUSED(name);
+  // TODO: Maybe restart? Or crash?
 }
 
 /**
@@ -211,53 +198,52 @@ void AndroidController::onServiceDisconnected(const QString &name)
  * @return Returns true is the code was a valid Event Code
  */
 bool AndroidController::VPNBinder::onTransact(int code,
-                                              const QAndroidParcel &data,
-                                              const QAndroidParcel &reply,
-                                              QAndroidBinder::CallType flags)
-{
-    Q_UNUSED(data);
-    Q_UNUSED(reply);
-    Q_UNUSED(flags);
+                                              const QAndroidParcel& data,
+                                              const QAndroidParcel& reply,
+                                              QAndroidBinder::CallType flags) {
+  Q_UNUSED(data);
+  Q_UNUSED(reply);
+  Q_UNUSED(flags);
 
-    QJsonDocument doc;
-    QString logs;
-    switch (code) {
+  QJsonDocument doc;
+  QString logs;
+  switch (code) {
     case EVENT_INIT:
-        logger.log() << "Transact: init";
-        emit m_controller->initialized(true, false, QDateTime());
-        break;
+      logger.log() << "Transact: init";
+      emit m_controller->initialized(true, false, QDateTime());
+      break;
     case EVENT_CONNECTED:
-        logger.log() << "Transact: connected";
-        emit m_controller->connected();
-        break;
+      logger.log() << "Transact: connected";
+      emit m_controller->connected();
+      break;
     case EVENT_DISCONNECTED:
-        logger.log() << "Transact: disconnected";
-        emit m_controller->disconnected();
-        break;
+      logger.log() << "Transact: disconnected";
+      emit m_controller->disconnected();
+      break;
     case EVENT_STATISTIC_UPDATE:
-        logger.log() << "Transact:: update";
+      logger.log() << "Transact:: update";
 
-        // Data is here a JSON String
-        doc = QJsonDocument::fromJson(data.readData());
-        emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
-                                         doc.object()["totalTX"].toInt(),
-                                         doc.object()["totalRX"].toInt());
-        break;
+      // Data is here a JSON String
+      doc = QJsonDocument::fromJson(data.readData());
+      emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
+                                       doc.object()["totalTX"].toInt(),
+                                       doc.object()["totalRX"].toInt());
+      break;
     case EVENT_BACKEND_LOGS:
-        logger.log() << "Transact: backend logs";
+      logger.log() << "Transact: backend logs";
 
-        // Note: 106 means UTF-8 encoding
-        logs = QTextCodec::codecForMib(106)->toUnicode(data.readData());
-        if (m_controller->m_logCallback) {
-            m_controller->m_logCallback(logs);
-        }
-        break;
+      // Note: 106 means UTF-8 encoding
+      logs = QTextCodec::codecForMib(106)->toUnicode(data.readData());
+      if (m_controller->m_logCallback) {
+        m_controller->m_logCallback(logs);
+      }
+      break;
     default:
-        logger.log() << "Transact: Invalid!";
-        break;
-    }
+      logger.log() << "Transact: Invalid!";
+      break;
+  }
 
-    return true;
+  return true;
 }
 
 const int ACTIVITY_RESULT_OK = 0xffffffff;
@@ -266,31 +252,36 @@ const int ACTIVITY_RESULT_OK = 0xffffffff;
  * @param env
  * @param intent
  */
-void AndroidController::startActivityForResult(JNIEnv *env, jobject /*thiz*/, jobject intent)
-{
-    logger.log() << "start activity";
-    Q_UNUSED(env);
-    QtAndroid::startActivity(
-        intent, 1337, [](int receiverRequestCode, int resultCode, const QAndroidJniObject &data) {
-            // Currently this function just used in VPNService.kt::checkPersmissions.
-            // So the result we're getting is if the User gave us the Vpn.bind permission.
-            // In case of NO we should abort.
-            Q_UNUSED(receiverRequestCode);
-            Q_UNUSED(data);
+void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
+                                               jobject intent) {
+  logger.log() << "start activity";
+  Q_UNUSED(env);
+  QtAndroid::startActivity(intent, 1337,
+                           [](int receiverRequestCode, int resultCode,
+                              const QAndroidJniObject& data) {
+                             // Currently this function just used in
+                             // VPNService.kt::checkPersmissions. So the result
+                             // we're getting is if the User gave us the
+                             // Vpn.bind permission. In case of NO we should
+                             // abort.
+                             Q_UNUSED(receiverRequestCode);
+                             Q_UNUSED(data);
 
-            AndroidController *controller = AndroidController::instance();
-            if (!controller) {
-                return;
-            }
+                             AndroidController* controller =
+                                 AndroidController::instance();
+                             if (!controller) {
+                               return;
+                             }
 
-            if (resultCode == ACTIVITY_RESULT_OK) {
-                logger.log() << "VPN PROMPT RESULT - Accepted";
-                controller->resume_activate();
-                return;
-            }
-            // If the request got rejected abort the current connection.
-            logger.log() << "VPN PROMPT RESULT - Rejected";
-            emit controller->disconnected();
-        });
-    return;
+                             if (resultCode == ACTIVITY_RESULT_OK) {
+                               logger.log() << "VPN PROMPT RESULT - Accepted";
+                               controller->resume_activate();
+                               return;
+                             }
+                             // If the request got rejected abort the current
+                             // connection.
+                             logger.log() << "VPN PROMPT RESULT - Rejected";
+                             emit controller->disconnected();
+                           });
+  return;
 }

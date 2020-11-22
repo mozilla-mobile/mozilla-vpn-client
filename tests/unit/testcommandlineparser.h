@@ -4,11 +4,10 @@
 
 #include "helper.h"
 
-class TestCommandLineParser : public TestHelper
-{
-    Q_OBJECT
+class TestCommandLineParser : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void basic_data();
-    void basic();
+ private slots:
+  void basic_data();
+  void basic();
 };

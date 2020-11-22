@@ -13,48 +13,50 @@
 
 class QWindow;
 
-class AndroidWebView : public QQuickItem
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(AndroidWebView)
+class AndroidWebView : public QQuickItem {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(AndroidWebView)
 
-    Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
-    QML_ELEMENT
+  Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
+  QML_ELEMENT
 
-public:
-    AndroidWebView(QQuickItem *parent = 0);
-    virtual ~AndroidWebView();
+ public:
+  AndroidWebView(QQuickItem* parent = 0);
+  virtual ~AndroidWebView();
 
-    QUrl url() const;
-    void setUrl(const QUrl &url);
+  QUrl url() const;
+  void setUrl(const QUrl& url);
 
-protected:
-    void componentComplete() override;
-    void updatePolish() override;
-    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+ protected:
+  void componentComplete() override;
+  void updatePolish() override;
+  void geometryChanged(const QRectF& newGeometry,
+                       const QRectF& oldGeometry) override;
 
-signals:
-    void urlChanged();
-    void pageStarted(const QString &url);
-    void failure();
+ signals:
+  void urlChanged();
+  void pageStarted(const QString& url);
+  void failure();
 
-private slots:
-    void onWindowChanged(QQuickWindow *window);
-    void onVisibleChanged();
-    void invalidateSceneGraph();
+ private slots:
+  void onWindowChanged(QQuickWindow* window);
+  void onVisibleChanged();
+  void invalidateSceneGraph();
 
-private:
-    static void onPageStarted(JNIEnv *env, jobject thiz, jstring url, jobject icon);
-    static void onError(JNIEnv *env, jobject thiz, jint errorCode, jstring description, jstring url);
-    static void dispatchToMainThread(std::function<void()> callback);
+ private:
+  static void onPageStarted(JNIEnv* env, jobject thiz, jstring url,
+                            jobject icon);
+  static void onError(JNIEnv* env, jobject thiz, jint errorCode,
+                      jstring description, jstring url);
+  static void dispatchToMainThread(std::function<void()> callback);
 
-    void propagateError(ErrorHandler::ErrorType error);
+  void propagateError(ErrorHandler::ErrorType error);
 
-private:
-    QWindow *m_window = nullptr;
+ private:
+  QWindow* m_window = nullptr;
 
-    QAndroidJniObject m_object;
-    QAndroidJniObject m_webView;
+  QAndroidJniObject m_object;
+  QAndroidJniObject m_webView;
 };
 
-#endif // ANDROIDWEBVIEW_H
+#endif  // ANDROIDWEBVIEW_H

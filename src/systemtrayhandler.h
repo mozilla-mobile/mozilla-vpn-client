@@ -12,32 +12,31 @@
 class MozillaVPN;
 class QAction;
 
-class SystemTrayHandler final : public QSystemTrayIcon
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(SystemTrayHandler)
+class SystemTrayHandler final : public QSystemTrayIcon {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(SystemTrayHandler)
 
-public:
-    static SystemTrayHandler *instance();
+ public:
+  static SystemTrayHandler* instance();
 
-    explicit SystemTrayHandler(QObject *parent);
-    ~SystemTrayHandler();
+  explicit SystemTrayHandler(QObject* parent);
+  ~SystemTrayHandler();
 
-    void captivePortalNotificationRequested();
+  void captivePortalNotificationRequested();
 
-public slots:
-    void updateIcon(const QString &icon);
+ public slots:
+  void updateIcon(const QString& icon);
 
-    void updateContextMenu();
+  void updateContextMenu();
 
-private:
-    QMenu m_menu;
+ private:
+  QMenu m_menu;
 
-    QAction *m_statusLabel = nullptr;
-    QAction *m_lastLocationLabel = nullptr;
-    QAction *m_disconnectAction = nullptr;
-    QAction *m_separator = nullptr;
-    QAction *m_preferencesAction = nullptr;
+  QAction* m_statusLabel = nullptr;
+  QAction* m_lastLocationLabel = nullptr;
+  QAction* m_disconnectAction = nullptr;
+  QAction* m_separator = nullptr;
+  QAction* m_preferencesAction = nullptr;
 };
 
-#endif // SYSTEMTRAYHANDLER_H
+#endif  // SYSTEMTRAYHANDLER_H

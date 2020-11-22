@@ -7,19 +7,18 @@
 
 #include <QNetworkReply>
 
-class ErrorHandler final
-{
-public:
-    enum ErrorType {
-        NoError,
-        ConnectionFailureError,
-        NoConnectionError,
-        AuthenticationError,
-        BackendServiceError,
-        IgnoredError,
-    };
+class ErrorHandler final {
+ public:
+  enum ErrorType {
+    NoError,
+    ConnectionFailureError,
+    NoConnectionError,
+    AuthenticationError,
+    BackendServiceError,
+    IgnoredError,
+  };
 
-    static ErrorType toErrorType(QNetworkReply::NetworkError error);
+  static ErrorType toErrorType(QNetworkReply::NetworkError error);
 };
 
-#endif // ERRORHANDLER_H
+#endif  // ERRORHANDLER_H

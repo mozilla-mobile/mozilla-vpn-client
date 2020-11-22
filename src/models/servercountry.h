@@ -14,28 +14,27 @@ class ServerData;
 class QJsonObject;
 class QStringList;
 
-class ServerCountry final
-{
-public:
-    ServerCountry();
-    ServerCountry(const ServerCountry &other);
-    ~ServerCountry();
+class ServerCountry final {
+ public:
+  ServerCountry();
+  ServerCountry(const ServerCountry& other);
+  ~ServerCountry();
 
-    [[nodiscard]] bool fromJson(QJsonObject &obj);
+  [[nodiscard]] bool fromJson(QJsonObject& obj);
 
-    const QString &name() const { return m_name; }
+  const QString& name() const { return m_name; }
 
-    const QString &code() const { return m_code; }
+  const QString& code() const { return m_code; }
 
-    const QList<ServerCity> &cities() const { return m_cities; }
+  const QList<ServerCity>& cities() const { return m_cities; }
 
-    const QList<Server> getServers(const ServerData &data) const;
+  const QList<Server> getServers(const ServerData& data) const;
 
-private:
-    QString m_name;
-    QString m_code;
+ private:
+  QString m_name;
+  QString m_code;
 
-    QList<ServerCity> m_cities;
+  QList<ServerCity> m_cities;
 };
 
-#endif // SERVERCOUNTRY_H
+#endif  // SERVERCOUNTRY_H

@@ -6,35 +6,22 @@
 #include "leakdetector.h"
 #include "settingsholder.h"
 
-Keys::Keys()
-{
-    MVPN_COUNT_CTOR(Keys);
+Keys::Keys() { MVPN_COUNT_CTOR(Keys); }
+
+Keys::~Keys() { MVPN_COUNT_DTOR(Keys); }
+
+bool Keys::fromSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (!settingsHolder->hasPrivateKey()) {
+    return false;
+  }
+
+  m_privateKey = settingsHolder->privateKey();
+  return true;
 }
 
-Keys::~Keys()
-{
-    MVPN_COUNT_DTOR(Keys);
-}
+void Keys::storeKey(const QString& privateKey) { m_privateKey = privateKey; }
 
-bool Keys::fromSettings()
-{
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
-
-    if (!settingsHolder->hasPrivateKey()) {
-        return false;
-    }
-
-    m_privateKey = settingsHolder->privateKey();
-    return true;
-}
-
-void Keys::storeKey(const QString &privateKey)
-{
-    m_privateKey = privateKey;
-}
-
-void Keys::forgetKey()
-{
-    m_privateKey.clear();
-}
+void Keys::forgetKey() { m_privateKey.clear(); }

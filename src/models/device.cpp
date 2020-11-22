@@ -10,112 +10,102 @@
 #include <QJsonValue>
 
 #ifdef QT_DEBUG
-#include <QRandomGenerator>
+#  include <QRandomGenerator>
 #endif
 
 #ifdef MVPN_IOS
-#include "platforms/ios/iosutils.h"
+#  include "platforms/ios/iosutils.h"
 #elif MVPN_MACOS
-#include "platforms/macos/macosutils.h"
+#  include "platforms/macos/macosutils.h"
 #elif MVPN_ANDROID
-#include "platforms/android/androidutils.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 // static
-QString Device::currentDeviceName()
-{
-    QString deviceName =
+QString Device::currentDeviceName() {
+  QString deviceName =
 
 #ifdef MVPN_IOS
-	IOSUtils::computerName();
+      IOSUtils::computerName();
 #elif MVPN_MACOS
-        // MacOS has a funny way to rename the hostname based on the network status.
-        MacOSUtils::computerName();
+      // MacOS has a funny way to rename the hostname based on the network
+      // status.
+      MacOSUtils::computerName();
 #elif MVPN_ANDROID
-    AndroidUtils::GetDeviceName();
+      AndroidUtils::GetDeviceName();
 #else
-        QSysInfo::machineHostName() + " " + QSysInfo::productType() + " "
-        + QSysInfo::productVersion();
+      QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
+      QSysInfo::productVersion();
 #endif
 
-    /*  If we want to generate a new device name at each execution, comment out this block:
-#ifdef QT_DEBUG
-    static quint32 uniqueId = 0;
-    if (uniqueId == 0) {
-        uniqueId = QRandomGenerator::global()->generate();
-    }
+  /*  If we want to generate a new device name at each execution, comment out
+this block: #ifdef QT_DEBUG static quint32 uniqueId = 0; if (uniqueId == 0) {
+      uniqueId = QRandomGenerator::global()->generate();
+  }
 
-    deviceName = QString("%1 %2").arg(deviceName).arg(uniqueId);
+  deviceName = QString("%1 %2").arg(deviceName).arg(uniqueId);
 #endif
-    */
+  */
 
-    return deviceName;
+  return deviceName;
 }
 
-Device::Device()
-{
-    MVPN_COUNT_CTOR(Device);
+Device::Device() { MVPN_COUNT_CTOR(Device); }
+
+Device::Device(const Device& other) {
+  MVPN_COUNT_CTOR(Device);
+
+  m_deviceName = other.m_deviceName;
+  m_createdAt = other.m_createdAt;
+  m_publicKey = other.m_publicKey;
+  m_ipv4Address = other.m_ipv4Address;
+  m_ipv6Address = other.m_ipv6Address;
 }
 
-Device::Device(const Device &other)
-{
-    MVPN_COUNT_CTOR(Device);
+Device::~Device() { MVPN_COUNT_DTOR(Device); }
 
-    m_deviceName = other.m_deviceName;
-    m_createdAt = other.m_createdAt;
-    m_publicKey = other.m_publicKey;
-    m_ipv4Address = other.m_ipv4Address;
-    m_ipv6Address = other.m_ipv6Address;
-}
+bool Device::fromJson(const QJsonValue& json) {
+  if (!json.isObject()) {
+    return false;
+  }
 
-Device::~Device()
-{
-    MVPN_COUNT_DTOR(Device);
-}
+  QJsonObject obj = json.toObject();
 
-bool Device::fromJson(const QJsonValue &json)
-{
-    if (!json.isObject()) {
-        return false;
-    }
+  QJsonValue name = obj.take("name");
+  if (!name.isString()) {
+    return false;
+  }
 
-    QJsonObject obj = json.toObject();
+  QJsonValue pubKey = obj.take("pubkey");
+  if (!pubKey.isString()) {
+    return false;
+  }
 
-    QJsonValue name = obj.take("name");
-    if (!name.isString()) {
-        return false;
-    }
+  QJsonValue createdAt = obj.take("created_at");
+  if (!createdAt.isString()) {
+    return false;
+  }
 
-    QJsonValue pubKey = obj.take("pubkey");
-    if (!pubKey.isString()) {
-        return false;
-    }
+  QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
+  if (!date.isValid()) {
+    return false;
+  }
 
-    QJsonValue createdAt = obj.take("created_at");
-    if (!createdAt.isString()) {
-        return false;
-    }
+  QJsonValue ipv4Address = obj.take("ipv4_address");
+  if (!ipv4Address.isString()) {
+    return false;
+  }
 
-    QDateTime date = QDateTime::fromString(createdAt.toString(), Qt::ISODate);
-    if (!date.isValid()) {
-        return false;
-    }
+  QJsonValue ipv6Address = obj.take("ipv6_address");
+  if (!ipv6Address.isString()) {
+    return false;
+  }
 
-    QJsonValue ipv4Address = obj.take("ipv4_address");
-    if (!ipv4Address.isString()) {
-        return false;
-    }
+  m_deviceName = name.toString();
+  m_createdAt = date;
+  m_publicKey = pubKey.toString();
+  m_ipv4Address = ipv4Address.toString();
+  m_ipv6Address = ipv6Address.toString();
 
-    QJsonValue ipv6Address = obj.take("ipv6_address");
-    if (!ipv6Address.isString()) {
-        return false;
-    }
-
-    m_deviceName = name.toString();
-    m_createdAt = date;
-    m_publicKey = pubKey.toString();
-    m_ipv4Address = ipv4Address.toString();
-    m_ipv6Address = ipv6Address.toString();
-
-    return true;
+  return true;
 }
