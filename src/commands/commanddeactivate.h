@@ -7,10 +7,11 @@
 
 #include "command.h"
 
-class CommandDeactivate : public Command
+class CommandDeactivate final : public Command
 {
 public:
-    CommandDeactivate();
+    explicit CommandDeactivate(QObject *parent);
+    ~CommandDeactivate();
 
     int run(QStringList &tokens) override;
 };

@@ -10,7 +10,8 @@
 class CommandServers final : public Command
 {
 public:
-    CommandServers();
+    explicit CommandServers(QObject *parent);
+    ~CommandServers();
 
     int run(QStringList &tokens) override;
 };

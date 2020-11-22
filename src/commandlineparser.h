@@ -9,8 +9,9 @@
 #include <QString>
 #include <QStringList>
 
-class CommandLineParser final
+class CommandLineParser final : QObject
 {
+    Q_OBJECT
     Q_DISABLE_COPY_MOVE(CommandLineParser)
 
 public:
@@ -34,14 +35,16 @@ public:
 
     [[nodiscard]] int parse(QStringList &tokens, QList<Option *> &options, bool hasCommands);
 
-    [[nodiscard]] static int unknownOption(const QString &option,
+    [[nodiscard]] static int unknownOption(QObject *parent,
+                                           const QString &option,
                                            const QString &app,
                                            QList<Option *> &options,
                                            bool hasCommands);
 
     static Option helpOption();
 
-    static void showHelp(const QString &app,
+    static void showHelp(QObject *parent,
+                         const QString &app,
                          const QList<Option *> &options,
                          bool hasCommands,
                          bool compact);

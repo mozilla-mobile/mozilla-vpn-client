@@ -4,6 +4,7 @@
 
 #include "commandstatus.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
@@ -12,7 +13,16 @@
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandStatus::CommandStatus() : Command("status", "Show the current VPN status.") {}
+CommandStatus::CommandStatus(QObject *parent)
+    : Command(parent, "status", "Show the current VPN status.")
+{
+    MVPN_COUNT_CTOR(CommandStatus);
+}
+
+CommandStatus::~CommandStatus()
+{
+    MVPN_COUNT_DTOR(CommandStatus);
+}
 
 int CommandStatus::run(QStringList &tokens)
 {
@@ -34,11 +44,11 @@ int CommandStatus::run(QStringList &tokens)
 
         if (!tokens.isEmpty()) {
             QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
         }
 
         if (hOption.m_set) {
-            clp.showHelp(appName, options, false, false);
+            clp.showHelp(this, appName, options, false, false);
             return 0;
         }
 

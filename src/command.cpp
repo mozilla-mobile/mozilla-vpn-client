@@ -4,6 +4,7 @@
 
 #include "command.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -13,13 +14,18 @@
 #include <QIcon>
 #include <QTextStream>
 
-QVector<std::function<Command *()>> Command::s_commandCreators;
+QVector<std::function<Command *(QObject *)>> Command::s_commandCreators;
 
-Command::Command(const QString &name, const QString &description)
-    : m_name(name), m_description(description)
-{}
+Command::Command(QObject *parent, const QString &name, const QString &description)
+    : QObject(parent), m_name(name), m_description(description)
+{
+    MVPN_COUNT_CTOR(Command);
+}
 
-Command::~Command() = default;
+Command::~Command()
+{
+    MVPN_COUNT_DTOR(Command);
+}
 
 bool Command::userAuthenticated()
 {
@@ -107,11 +113,11 @@ int Command::runQmlApp(std::function<int()> &&a_callback)
 }
 
 // static
-QVector<Command *> Command::commands()
+QVector<Command *> Command::commands(QObject *parent)
 {
     QVector<Command *> list;
     for (auto i = s_commandCreators.begin(); i != s_commandCreators.end(); ++i) {
-        list.append((*i)());
+        list.append((*i)(parent));
     }
     return list;
 }

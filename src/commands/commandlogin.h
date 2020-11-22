@@ -7,10 +7,11 @@
 
 #include "command.h"
 
-class CommandLogin : public Command
+class CommandLogin final : public Command
 {
 public:
-    CommandLogin();
+    explicit CommandLogin(QObject *parent);
+    ~CommandLogin();
 
     int run(QStringList &tokens) override;
 };

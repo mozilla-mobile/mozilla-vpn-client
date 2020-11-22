@@ -7,10 +7,11 @@
 
 #include "command.h"
 
-class CommandLogout : public Command
+class CommandLogout final : public Command
 {
 public:
-    CommandLogout();
+    explicit CommandLogout(QObject *parent);
+    ~CommandLogout();
 
     int run(QStringList &tokens) override;
 };
