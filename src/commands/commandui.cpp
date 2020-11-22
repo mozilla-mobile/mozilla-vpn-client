@@ -7,6 +7,7 @@
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "fontloader.h"
+#include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -56,7 +57,15 @@ namespace {
 Logger logger(LOG_MAIN, "CommandUI");
 }
 
-CommandUI::CommandUI() : Command("ui", "Start the UI.") {}
+CommandUI::CommandUI(QObject *parent) : Command(parent, "ui", "Start the UI.")
+{
+    MVPN_COUNT_CTOR(CommandUI);
+}
+
+CommandUI::~CommandUI()
+{
+    MVPN_COUNT_DTOR(CommandUI);
+}
 
 int CommandUI::run(QStringList &tokens)
 {
@@ -81,11 +90,11 @@ int CommandUI::run(QStringList &tokens)
         }
 
         if (!tokens.isEmpty()) {
-            return clp.unknownOption(appName, tokens[0], options, false);
+            return clp.unknownOption(this, appName, tokens[0], options, false);
         }
 
         if (hOption.m_set) {
-            clp.showHelp(appName, options, false, false);
+            clp.showHelp(this, appName, options, false, false);
             return 0;
         }
 

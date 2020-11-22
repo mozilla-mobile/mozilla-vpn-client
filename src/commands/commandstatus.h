@@ -10,7 +10,8 @@
 class CommandStatus final : public Command
 {
 public:
-    CommandStatus();
+    explicit CommandStatus(QObject *parent);
+    ~CommandStatus();
 
     int run(QStringList &tokens) override;
 };

@@ -4,12 +4,22 @@
 
 #include "commanddeactivate.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "mozillavpn.h"
 
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandDeactivate::CommandDeactivate() : Command("deactivate", "Deactivate the VPN tunnel") {}
+CommandDeactivate::CommandDeactivate(QObject *parent)
+    : Command(parent, "deactivate", "Deactivate the VPN tunnel")
+{
+    MVPN_COUNT_CTOR(CommandDeactivate);
+}
+
+CommandDeactivate::~CommandDeactivate()
+{
+    MVPN_COUNT_DTOR(CommandDeactivate);
+}
 
 int CommandDeactivate::run(QStringList &tokens)
 {
@@ -17,7 +27,7 @@ int CommandDeactivate::run(QStringList &tokens)
     return runCommandLineApp([&]() {
         if (tokens.length() > 1) {
             QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
         }
 
         if (!userAuthenticated()) {

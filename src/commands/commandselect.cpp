@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandselect.h"
+#include "leakdetector.h"
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -10,7 +11,15 @@
 
 #include <QTextStream>
 
-CommandSelect::CommandSelect() : Command("select", "Select a server.") {}
+CommandSelect::CommandSelect(QObject *parent) : Command(parent, "select", "Select a server.")
+{
+    MVPN_COUNT_CTOR(CommandSelect);
+}
+
+CommandSelect::~CommandSelect()
+{
+    MVPN_COUNT_DTOR(CommandSelect);
+}
 
 int CommandSelect::run(QStringList &tokens)
 {

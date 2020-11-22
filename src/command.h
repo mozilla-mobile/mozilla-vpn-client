@@ -6,16 +6,19 @@
 #define COMMAND_H
 
 #include <functional>
+#include <QObject>
 #include <QScopedPointer>
 #include <QStringList>
 #include <QVector>
 
-class Command
+class Command : public QObject
 {
-public:
-    static QVector<Command*> commands();
+    Q_OBJECT
 
-    Command(const QString &name, const QString &description);
+public:
+    static QVector<Command*> commands(QObject *parent);
+
+    Command(QObject *parent, const QString &name, const QString &description);
     virtual ~Command();
 
     virtual int run(QStringList &tokens) = 0;
@@ -40,7 +43,7 @@ private:
     QString m_description;
 
 protected:
-    static QVector<std::function<Command*()>> s_commandCreators;
+    static QVector<std::function<Command*(QObject *)>> s_commandCreators;
 
 public:
     template<class T>
@@ -52,9 +55,9 @@ public:
         }
 
         static Command*
-        create()
+        create(QObject *parent)
         {
-            return new T();
+            return new T(parent);
         }
     };
 };

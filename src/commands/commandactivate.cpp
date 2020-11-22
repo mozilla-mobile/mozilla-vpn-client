@@ -4,12 +4,22 @@
 
 #include "commandactivate.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "mozillavpn.h"
 
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandActivate::CommandActivate() : Command("activate", "Activate the VPN tunnel") {}
+CommandActivate::CommandActivate(QObject *parent)
+    : Command(parent, "activate", "Activate the VPN tunnel")
+{
+    MVPN_COUNT_CTOR(CommandActivate);
+}
+
+CommandActivate::~CommandActivate()
+{
+    MVPN_COUNT_DTOR(CommandActivate);
+}
 
 int CommandActivate::run(QStringList &tokens)
 {
@@ -17,7 +27,7 @@ int CommandActivate::run(QStringList &tokens)
     return runCommandLineApp([&]() {
         if (tokens.length() > 1) {
             QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
         }
 
         if (!userAuthenticated()) {

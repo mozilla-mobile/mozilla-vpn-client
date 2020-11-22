@@ -10,7 +10,8 @@
 class CommandUI final : public Command
 {
 public:
-    CommandUI();
+    explicit CommandUI(QObject *parent);
+    ~CommandUI();
 
     int run(QStringList &tokens) override;
 };

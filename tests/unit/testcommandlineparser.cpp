@@ -12,7 +12,7 @@ bool s_executed = false;
 class CommandDummy final : public Command
 {
 public:
-    CommandDummy() : Command("ui", "dummy dummy") {}
+    explicit CommandDummy(QObject *parent) : Command(parent, "ui", "dummy dummy") {}
 
     int run(QStringList &tokens) override
     {
@@ -24,7 +24,8 @@ public:
     }
 };
 
-CommandDummy s_commandDummy;
+Command::RegistrationProxy<CommandDummy> s_commandDummy;
+
 } // namespace
 
 void TestCommandLineParser::basic_data()

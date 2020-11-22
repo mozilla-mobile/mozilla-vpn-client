@@ -4,13 +4,23 @@
 
 #include "commandservers.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "mozillavpn.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandServers::CommandServers() : Command("servers", "Show the list of servers.") {}
+CommandServers::CommandServers(QObject *parent)
+    : Command(parent, "servers", "Show the list of servers.")
+{
+    MVPN_COUNT_CTOR(CommandServers);
+}
+
+CommandServers::~CommandServers()
+{
+    MVPN_COUNT_DTOR(CommandServers);
+}
 
 int CommandServers::run(QStringList &tokens)
 {
@@ -33,11 +43,11 @@ int CommandServers::run(QStringList &tokens)
         }
 
         if (!tokens.isEmpty()) {
-            return clp.unknownOption(appName, tokens[0], options, false);
+            return clp.unknownOption(this, appName, tokens[0], options, false);
         }
 
         if (hOption.m_set) {
-            clp.showHelp(appName, options, false, false);
+            clp.showHelp(this, appName, options, false, false);
             return 0;
         }
 

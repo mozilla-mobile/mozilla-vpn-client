@@ -9,10 +9,11 @@
 
 class ServerData;
 
-class CommandSelect : public Command
+class CommandSelect final : public Command
 {
 public:
-    CommandSelect();
+    explicit CommandSelect(QObject *parent);
+    ~CommandSelect();
 
     int run(QStringList &tokens) override;
 

@@ -4,6 +4,7 @@
 
 #include "commandlogin.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "localizer.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
@@ -13,7 +14,16 @@
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandLogin::CommandLogin() : Command("login", "Starts the authentication flow.") {}
+CommandLogin::CommandLogin(QObject *parent)
+    : Command(parent, "login", "Starts the authentication flow.")
+{
+    MVPN_COUNT_CTOR(CommandLogin);
+}
+
+CommandLogin::~CommandLogin()
+{
+    MVPN_COUNT_DTOR(CommandLogin);
+}
 
 int CommandLogin::run(QStringList &tokens)
 {
@@ -21,7 +31,7 @@ int CommandLogin::run(QStringList &tokens)
     return runGuiApp([&]() {
         if (tokens.length() > 1) {
             QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
         }
 
         if (SettingsHolder::instance()->hasToken()) {

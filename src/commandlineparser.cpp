@@ -73,7 +73,7 @@ int CommandLineParser::parse(int argc, char *argv[])
     }
 
     if (hOption.m_set) {
-        showHelp(argv[0], options, true, false);
+        showHelp(this, argv[0], options, true, false);
         return 0;
     }
 
@@ -87,7 +87,7 @@ int CommandLineParser::parse(int argc, char *argv[])
         tokens.append(CLP_DEFAULT_COMMAND);
     }
 
-    QVector<Command*> commands = Command::commands();
+    QVector<Command *> commands = Command::commands(this);
     for (Command *command : commands) {
         if (command->name() == tokens[0]) {
             tokens[0] = QString("%1 %2").arg(argv[0]).arg(tokens[0]);
@@ -109,7 +109,7 @@ int CommandLineParser::parse(QStringList &tokens, QList<Option *> &options, bool
 
     if (!parseOptions(tokens, options)) {
         Q_ASSERT(!tokens.isEmpty());
-        return unknownOption(tokens[0], app, options, hasCommands);
+        return unknownOption(this, tokens[0], app, options, hasCommands);
     }
 
     return 0;
@@ -164,19 +164,21 @@ bool CommandLineParser::parseOption(const QString &option,
 }
 
 //static
-int CommandLineParser::unknownOption(const QString &option,
+int CommandLineParser::unknownOption(QObject *parent,
+                                     const QString &option,
                                      const QString &app,
                                      QList<Option *> &options,
                                      bool hasCommands)
 {
     QTextStream stream(stderr);
     stream << "unknown option: " << option << Qt::endl;
-    showHelp(app, options, hasCommands, true);
+    showHelp(parent, app, options, hasCommands, true);
     return 1;
 }
 
 // static
-void CommandLineParser::showHelp(const QString &app,
+void CommandLineParser::showHelp(QObject *parent,
+                                 const QString &app,
                                  const QList<Option *> &options,
                                  bool hasCommands,
                                  bool compact)
@@ -220,7 +222,7 @@ void CommandLineParser::showHelp(const QString &app,
     stream << Qt::endl;
     stream << "List of commands:" << Qt::endl;
 
-    QVector<Command*> commands = Command::commands();
+    QVector<Command *> commands = Command::commands(parent);
     for (Command *command : commands) {
         stream << "  " << command->name() << " ";
 

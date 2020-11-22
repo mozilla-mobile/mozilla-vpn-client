@@ -4,6 +4,7 @@
 
 #include "commandlogout.h"
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "localizer.h"
 #include "models/device.h"
 #include "mozillavpn.h"
@@ -12,7 +13,16 @@
 #include <QEventLoop>
 #include <QTextStream>
 
-CommandLogout::CommandLogout() : Command("logout", "Logout the current user.") {}
+CommandLogout::CommandLogout(QObject *parent)
+    : Command(parent, "logout", "Logout the current user.")
+{
+    MVPN_COUNT_CTOR(CommandLogout);
+}
+
+CommandLogout::~CommandLogout()
+{
+    MVPN_COUNT_DTOR(CommandLogout);
+}
 
 int CommandLogout::run(QStringList &tokens)
 {
@@ -20,7 +30,7 @@ int CommandLogout::run(QStringList &tokens)
     return runCommandLineApp([&]() {
         if (tokens.length() > 1) {
             QList<CommandLineParser::Option *> options;
-            return CommandLineParser::unknownOption(tokens[1], tokens[0], options, false);
+            return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options, false);
         }
 
         if (!userAuthenticated()) {
