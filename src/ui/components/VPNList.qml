@@ -15,6 +15,7 @@ ListView {
     Accessible.name: listName
     activeFocusOnTab: true
     interactive: false // disable scrolling on list since the entire window is scrollable
+    boundsBehavior: Flickable.StopAtBounds
     highlightFollowsCurrentItem: true
     Keys.onDownPressed: list.incrementCurrentIndex()
     Keys.onUpPressed: list.decrementCurrentIndex()
