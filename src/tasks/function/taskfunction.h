@@ -10,18 +10,17 @@
 #include <functional>
 #include <QObject>
 
-class TaskFunction final : public Task
-{
-    Q_DISABLE_COPY_MOVE(TaskFunction)
+class TaskFunction final : public Task {
+  Q_DISABLE_COPY_MOVE(TaskFunction)
 
-public:
-    TaskFunction(std::function<void(MozillaVPN *)> &&callback);
-    ~TaskFunction();
+ public:
+  TaskFunction(std::function<void(MozillaVPN*)>&& callback);
+  ~TaskFunction();
 
-    void run(MozillaVPN *vpn) override;
+  void run(MozillaVPN* vpn) override;
 
-private:
-    std::function<void(MozillaVPN *)> m_callback;
+ private:
+  std::function<void(MozillaVPN*)> m_callback;
 };
 
-#endif // TASKFUNCTION_H
+#endif  // TASKFUNCTION_H

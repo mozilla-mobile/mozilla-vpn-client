@@ -10,20 +10,20 @@
 
 class QDBusPendingCallWatcher;
 
-class BackendLogsObserver final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(BackendLogsObserver)
+class BackendLogsObserver final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(BackendLogsObserver)
 
-public:
-    BackendLogsObserver(QObject *parent, std::function<void(const QString &)> &&callback);
-    ~BackendLogsObserver();
+ public:
+  BackendLogsObserver(QObject* parent,
+                      std::function<void(const QString&)>&& callback);
+  ~BackendLogsObserver();
 
-public slots:
-    void completed(QDBusPendingCallWatcher *call);
+ public slots:
+  void completed(QDBusPendingCallWatcher* call);
 
-private:
-    std::function<void(const QString &)> m_callback;
+ private:
+  std::function<void(const QString&)> m_callback;
 };
 
-#endif // BACKENDLOGSOBSERVER_H
+#endif  // BACKENDLOGSOBSERVER_H

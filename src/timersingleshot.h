@@ -10,10 +10,10 @@
 
 // Like QTimer::singleShot but with a parent object.
 
-class TimerSingleShot
-{
-public:
-    static void create(QObject *parent, uint32_t timer, std::function<void()> &&callback);
+class TimerSingleShot {
+ public:
+  static void create(QObject* parent, uint32_t timer,
+                     std::function<void()>&& callback);
 };
 
-#endif // TIMERSINGLESHOT_H
+#endif  // TIMERSINGLESHOT_H

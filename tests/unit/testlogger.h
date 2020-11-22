@@ -4,12 +4,11 @@
 
 #include "helper.h"
 
-class TestLogger final : public TestHelper
-{
-    Q_OBJECT
+class TestLogger final : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void logger();
+ private slots:
+  void logger();
 
-    void logHandler();
+  void logHandler();
 };

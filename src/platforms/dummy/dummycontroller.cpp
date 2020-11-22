@@ -13,51 +13,40 @@ namespace {
 Logger logger(LOG_CONTROLLER, "DummyController");
 }
 
-DummyController::DummyController()
-{
-    MVPN_COUNT_CTOR(DummyController);
+DummyController::DummyController() { MVPN_COUNT_CTOR(DummyController); }
+
+DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
+
+void DummyController::activate(
+    const Server& server, const Device* device, const Keys* keys,
+    const QList<IPAddressRange>& allowedIPAddressRanges, bool forSwitching) {
+  Q_UNUSED(device);
+  Q_UNUSED(keys);
+  Q_UNUSED(allowedIPAddressRanges);
+  Q_UNUSED(forSwitching);
+
+  logger.log() << "DummyController activated" << server.hostname();
+
+  emit connected();
 }
 
-DummyController::~DummyController()
-{
-    MVPN_COUNT_DTOR(DummyController);
+void DummyController::deactivate(bool forSwitching) {
+  Q_UNUSED(forSwitching);
+
+  logger.log() << "DummyController deactivated";
+
+  emit disconnected();
 }
 
-void DummyController::activate(const Server &server,
-                               const Device *device,
-                               const Keys *keys,
-                               const QList<IPAddressRange> &allowedIPAddressRanges,
-                               bool forSwitching)
-{
-    Q_UNUSED(device);
-    Q_UNUSED(keys);
-    Q_UNUSED(allowedIPAddressRanges);
-    Q_UNUSED(forSwitching);
+void DummyController::checkStatus() {
+  m_txBytes += QRandomGenerator::global()->generate() % 100000;
+  m_rxBytes += QRandomGenerator::global()->generate() % 100000;
 
-    logger.log() << "DummyController activated" << server.hostname();
-
-    emit connected();
+  emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
 }
 
-void DummyController::deactivate(bool forSwitching)
-{
-    Q_UNUSED(forSwitching);
-
-    logger.log() << "DummyController deactivated";
-
-    emit disconnected();
-}
-
-void DummyController::checkStatus()
-{
-    m_txBytes += QRandomGenerator::global()->generate() % 100000;
-    m_rxBytes += QRandomGenerator::global()->generate() % 100000;
-
-    emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
-}
-
-void DummyController::getBackendLogs(std::function<void(const QString &)> &&a_callback)
-{
-    std::function<void(const QString &)> callback = std::move(a_callback);
-    callback("DummyController is always happy");
+void DummyController::getBackendLogs(
+    std::function<void(const QString&)>&& a_callback) {
+  std::function<void(const QString&)> callback = std::move(a_callback);
+  callback("DummyController is always happy");
 }

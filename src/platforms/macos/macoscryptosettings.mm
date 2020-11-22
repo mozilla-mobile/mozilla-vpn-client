@@ -18,122 +18,119 @@ Logger logger({LOG_MACOS, LOG_MAIN}, "MacOSCryptoSettings");
 bool initialized = false;
 QByteArray key;
 
-} // anonymous
+}  // anonymous
 
 // static
-void CryptoSettings::resetKey()
-{
-    logger.log() << "Reset the key in the keychain";
+void CryptoSettings::resetKey() {
+  logger.log() << "Reset the key in the keychain";
 
-    NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
+  NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
-    NSString *appId = [[NSBundle mainBundle] bundleIdentifier];
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
 
+  NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
+
+  [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+  [query setObject:service forKey:(id)kSecAttrGeneric];
+  [query setObject:service forKey:(id)kSecAttrAccount];
+  [query setObject:appId forKey:(id)kSecAttrService];
+
+  SecItemDelete((CFDictionaryRef)query);
+
+  [query release];
+
+  initialized = false;
+}
+
+// static
+bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
+#if defined(MVPN_IOS) || defined(MVPN_MACOS_INTEGRATION)
+  if (!initialized) {
+    initialized = true;
+
+    logger.log() << "Retriving the key from the keychain";
+
+    NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
+
+    NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
-    [query setObject:(id) kSecClassGenericPassword forKey:(id) kSecClass];
+    [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
     [query setObject:service forKey:(id)kSecAttrGeneric];
     [query setObject:service forKey:(id)kSecAttrAccount];
-    [query setObject:appId forKey:(id) kSecAttrService];
+    [query setObject:appId forKey:(id)kSecAttrService];
 
-    SecItemDelete((CFDictionaryRef) query);
+    [query setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnData];
+    [query setObject:(id)kSecMatchLimitOne forKey:(id)kSecMatchLimit];
 
+    NSData* keyData = NULL;
+    OSStatus status = SecItemCopyMatching((CFDictionaryRef)query, (CFTypeRef*)(void*)&keyData);
     [query release];
 
-    initialized = false;
-}
+    if (status == noErr) {
+      key = QByteArray::fromNSData(keyData);
 
-// static
-bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE])
-{
-#if defined(MVPN_IOS) || defined(MVPN_MACOS_INTEGRATION)
-    if (!initialized) {
-        initialized = true;
-
-        logger.log() << "Retriving the key from the keychain";
-
-        NSData *service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
-
-        NSString *appId = [[NSBundle mainBundle] bundleIdentifier];
-        NSMutableDictionary *query = [[NSMutableDictionary alloc] init];
-
-        [query setObject:(id) kSecClassGenericPassword forKey:(id) kSecClass];
-        [query setObject:service forKey:(id)kSecAttrGeneric];
-        [query setObject:service forKey:(id)kSecAttrAccount];
-        [query setObject:appId forKey:(id) kSecAttrService];
-
-        [query setObject:(id) kCFBooleanTrue forKey:(id) kSecReturnData];
-        [query setObject:(id) kSecMatchLimitOne forKey:(id) kSecMatchLimit];
-
-        NSData *keyData = NULL;
-        OSStatus status = SecItemCopyMatching((CFDictionaryRef)query, (CFTypeRef*)(void*)&keyData);
-        [query release];
-
-        if (status == noErr) {
-            key = QByteArray::fromNSData(keyData);
-
-            logger.log() << "Key found with length:" << key.length();
-            if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-                memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-                return true;
-            }
-        }
-
-        logger.log() << "Key not found. Let's create it. Error:" << status;
-        key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-        QRandomGenerator* rg = QRandomGenerator::system();
-        for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-            key[i] = rg->generate() & 0xFF;
-        }
-
-        query = [[NSMutableDictionary alloc] init];
-
-        [query setObject:(id) kSecClassGenericPassword forKey:(id) kSecClass];
-        [query setObject:service forKey:(id)kSecAttrGeneric];
-        [query setObject:service forKey:(id)kSecAttrAccount];
-        [query setObject:appId forKey:(id) kSecAttrService];
-
-        SecItemDelete((CFDictionaryRef) query);
-
-        keyData = key.toNSData();
-        [query setObject:keyData forKey:(id) kSecValueData];
-
-        status = SecItemAdd((CFDictionaryRef) query, NULL);
-
-        if (status != noErr) {
-            logger.log() << "Failed to store the key. Error:" << status;
-            key = QByteArray();
-        }
-
-        [query release];
-    }
-
-    if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+      logger.log() << "Key found with length:" << key.length();
+      if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
         memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
         return true;
+      }
     }
 
-    logger.log() << "Invalid key";
+    logger.log() << "Key not found. Let's create it. Error:" << status;
+    key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
+    QRandomGenerator* rg = QRandomGenerator::system();
+    for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
+      key[i] = rg->generate() & 0xFF;
+    }
+
+    query = [[NSMutableDictionary alloc] init];
+
+    [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+    [query setObject:service forKey:(id)kSecAttrGeneric];
+    [query setObject:service forKey:(id)kSecAttrAccount];
+    [query setObject:appId forKey:(id)kSecAttrService];
+
+    SecItemDelete((CFDictionaryRef)query);
+
+    keyData = key.toNSData();
+    [query setObject:keyData forKey:(id)kSecValueData];
+
+    status = SecItemAdd((CFDictionaryRef)query, NULL);
+
+    if (status != noErr) {
+      logger.log() << "Failed to store the key. Error:" << status;
+      key = QByteArray();
+    }
+
+    [query release];
+  }
+
+  if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+    memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
+    return true;
+  }
+
+  logger.log() << "Invalid key";
 #else
-    Q_UNUSED(output);
+  Q_UNUSED(output);
 #endif
 
-    return false;
+  return false;
 }
 
 // static
-CryptoSettings::Version CryptoSettings::getSupportedVersion()
-{
-    logger.log() << "Get supported settings method";
+CryptoSettings::Version CryptoSettings::getSupportedVersion() {
+  logger.log() << "Get supported settings method";
 
 #if defined(MVPN_IOS) || defined(MVPN_MACOS_INTEGRATION)
-    uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
-    if (getKey(key)) {
-        logger.log() << "Encryption supported!";
-        return CryptoSettings::EncryptionChachaPolyV1;
-    }
+  uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
+  if (getKey(key)) {
+    logger.log() << "Encryption supported!";
+    return CryptoSettings::EncryptionChachaPolyV1;
+  }
 #endif
 
-    logger.log() << "No encryption";
-    return CryptoSettings::NoEncryption;
+  logger.log() << "No encryption";
+  return CryptoSettings::NoEncryption;
 }

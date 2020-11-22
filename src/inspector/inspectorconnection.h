@@ -11,25 +11,24 @@
 class QTcpSocket;
 class QQuickItem;
 
-class InspectorConnection final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(InspectorConnection)
+class InspectorConnection final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(InspectorConnection)
 
-public:
-    InspectorConnection(QObject *parent, QTcpSocket *connection);
-    ~InspectorConnection();
+ public:
+  InspectorConnection(QObject* parent, QTcpSocket* connection);
+  ~InspectorConnection();
 
-private slots:
-    void readData();
-    void parseCommand(const QString &command);
-    void tooManyArguments(int arguments);
-    QQuickItem *findObject(const QString &name);
+ private slots:
+  void readData();
+  void parseCommand(const QString& command);
+  void tooManyArguments(int arguments);
+  QQuickItem* findObject(const QString& name);
 
-private:
-    QTcpSocket *m_connection;
+ private:
+  QTcpSocket* m_connection;
 
-    QByteArray m_buffer;
+  QByteArray m_buffer;
 };
 
-#endif // INSPECTORCONNECTION_H
+#endif  // INSPECTORCONNECTION_H

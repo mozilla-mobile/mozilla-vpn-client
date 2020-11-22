@@ -9,19 +9,19 @@
 
 #include <QObject>
 
-class IOSNotificationHandler final : public NotificationHandler
-{
-    Q_DISABLE_COPY_MOVE(IOSNotificationHandler)
+class IOSNotificationHandler final : public NotificationHandler {
+  Q_DISABLE_COPY_MOVE(IOSNotificationHandler)
 
-public:
-    IOSNotificationHandler(QObject *parent);
-    ~IOSNotificationHandler();
+ public:
+  IOSNotificationHandler(QObject* parent);
+  ~IOSNotificationHandler();
 
-protected:
-    void notify(const QString &title, const QString &message, int timerSec) override;
+ protected:
+  void notify(const QString& title, const QString& message,
+              int timerSec) override;
 
-private:
-    void *m_delegate;
+ private:
+  void* m_delegate;
 };
 
-#endif // IOSNOTIFICATIONHANDLER_H
+#endif  // IOSNOTIFICATIONHANDLER_H

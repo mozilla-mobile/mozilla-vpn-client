@@ -7,12 +7,11 @@
 
 #include <QString>
 
-class IOSUtils final
-{
-public:
-    static QString computerName();
+class IOSUtils final {
+ public:
+  static QString computerName();
 
-    static QString IAPReceipt();
+  static QString IAPReceipt();
 };
 
-#endif // IOSUTILS_H
+#endif  // IOSUTILS_H

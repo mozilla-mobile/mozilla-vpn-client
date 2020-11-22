@@ -12,69 +12,69 @@
 
 class QTextStream;
 
-class LogHandler final
-{
-public:
-    struct Log
-    {
-        Log() = default;
+class LogHandler final {
+ public:
+  struct Log {
+    Log() = default;
 
-        Log(const QStringList &modules,
-            const QString &className,
-            const QString &message)
-            : m_dateTime(QDateTime::currentDateTime()), m_modules(modules),
-              m_className(className), m_message(message), m_fromQT(false)
-        {}
+    Log(const QStringList& modules, const QString& className,
+        const QString& message)
+        : m_dateTime(QDateTime::currentDateTime()),
+          m_modules(modules),
+          m_className(className),
+          m_message(message),
+          m_fromQT(false) {}
 
-        Log(QtMsgType type,
-            const QString &file,
-            const QString &function,
-            uint32_t line,
-            const QString &message)
-            : m_dateTime(QDateTime::currentDateTime()), m_file(file), m_function(function),
-              m_message(message), m_type(type), m_line(line), m_fromQT(true)
-        {}
+    Log(QtMsgType type, const QString& file, const QString& function,
+        uint32_t line, const QString& message)
+        : m_dateTime(QDateTime::currentDateTime()),
+          m_file(file),
+          m_function(function),
+          m_message(message),
+          m_type(type),
+          m_line(line),
+          m_fromQT(true) {}
 
-        QDateTime m_dateTime;
-        QString m_file;
-        QString m_function;
-        QStringList m_modules;
-        QString m_className;
-        QString m_message;
-        QtMsgType m_type = QtMsgType::QtDebugMsg;
-        int32_t m_line = -1;
-        bool m_fromQT = false;
-    };
-
-    static LogHandler *instance();
-
-    static void messageQTHandler(QtMsgType type,
-                                 const QMessageLogContext &context,
-                                 const QString &message);
-
-    static void messageHandler(const QStringList &modules, const QString& className,
-                            const QString &message);
-
-    static void prettyOutput(QTextStream &out, const LogHandler::Log &log);
-
-    const QVector<Log> &logs();
-
-private:
-    LogHandler();
-
-    static LogHandler *maybeCreate();
-
-    void addLog(const Log &log);
-
-    bool matchModule(const Log &log, const QMutexLocker &proofOfLock) const;
-
-    QMutex m_mutex;
-
-    // Protected by mutex.
+    QDateTime m_dateTime;
+    QString m_file;
+    QString m_function;
     QStringList m_modules;
+    QString m_className;
+    QString m_message;
+    QtMsgType m_type = QtMsgType::QtDebugMsg;
+    int32_t m_line = -1;
+    bool m_fromQT = false;
+  };
 
-    // Protected by mutex.
-    QVector<Log> m_logs;
+  static LogHandler* instance();
+
+  static void messageQTHandler(QtMsgType type,
+                               const QMessageLogContext& context,
+                               const QString& message);
+
+  static void messageHandler(const QStringList& modules,
+                             const QString& className, const QString& message);
+
+  static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
+
+  const QVector<Log>& logs();
+
+ private:
+  LogHandler();
+
+  static LogHandler* maybeCreate();
+
+  void addLog(const Log& log);
+
+  bool matchModule(const Log& log, const QMutexLocker& proofOfLock) const;
+
+  QMutex m_mutex;
+
+  // Protected by mutex.
+  QStringList m_modules;
+
+  // Protected by mutex.
+  QVector<Log> m_logs;
 };
 
-#endif // LOGHANDLER_H
+#endif  // LOGHANDLER_H

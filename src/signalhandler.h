@@ -7,18 +7,17 @@
 
 #include <QObject>
 
-class SignalHandler final : public QObject
-{
-    Q_OBJECT
+class SignalHandler final : public QObject {
+  Q_OBJECT
 
-public:
-    SignalHandler();
+ public:
+  SignalHandler();
 
-private:
-    static void saHandler(int signal);
+ private:
+  static void saHandler(int signal);
 
-signals:
-    void quitRequested();
+ signals:
+  void quitRequested();
 };
 
-#endif // SIGNALHANDLER_H
+#endif  // SIGNALHANDLER_H

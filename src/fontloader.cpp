@@ -13,13 +13,12 @@ Logger logger(LOG_MAIN, "FontLoader");
 }
 
 // static
-void FontLoader::loadFonts()
-{
-    QDir dir(":/ui/resources/fonts");
-    QStringList files = dir.entryList();
-    for (const QString &file : files) {
-        logger.log() << "Loading font:" << file;
-        int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + file);
-        logger.log() << "Result:" << id;
-    }
+void FontLoader::loadFonts() {
+  QDir dir(":/ui/resources/fonts");
+  QStringList files = dir.entryList();
+  for (const QString& file : files) {
+    logger.log() << "Loading font:" << file;
+    int id = QFontDatabase::addApplicationFont(":/ui/resources/fonts/" + file);
+    logger.log() << "Result:" << id;
+  }
 }

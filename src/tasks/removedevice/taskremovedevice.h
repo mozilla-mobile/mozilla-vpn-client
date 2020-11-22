@@ -9,18 +9,17 @@
 
 #include <QObject>
 
-class TaskRemoveDevice final : public Task
-{
-    Q_DISABLE_COPY_MOVE(TaskRemoveDevice)
+class TaskRemoveDevice final : public Task {
+  Q_DISABLE_COPY_MOVE(TaskRemoveDevice)
 
-public:
-    explicit TaskRemoveDevice(const QString &deviceName);
-    ~TaskRemoveDevice();
+ public:
+  explicit TaskRemoveDevice(const QString& deviceName);
+  ~TaskRemoveDevice();
 
-    void run(MozillaVPN *vpn) override;
+  void run(MozillaVPN* vpn) override;
 
-private:
-    QString m_deviceName;
+ private:
+  QString m_deviceName;
 };
 
-#endif // TASKREMOVEDEVICE_H
+#endif  // TASKREMOVEDEVICE_H

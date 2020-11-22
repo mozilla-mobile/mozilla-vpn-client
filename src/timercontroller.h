@@ -14,48 +14,45 @@ constexpr uint32_t TIME_ACTIVATION = 1000;
 constexpr uint32_t TIME_DEACTIVATION = 1500;
 constexpr uint32_t TIME_SWITCHING = 2000;
 
-class TimerController final : public ControllerImpl
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(TimerController)
+class TimerController final : public ControllerImpl {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(TimerController)
 
-public:
-    TimerController(ControllerImpl *impl);
-    ~TimerController();
+ public:
+  TimerController(ControllerImpl* impl);
+  ~TimerController();
 
-    void initialize(const Device *device, const Keys *keys) override;
+  void initialize(const Device* device, const Keys* keys) override;
 
-    void activate(const Server &server,
-                  const Device *device,
-                  const Keys *keys,
-                  const QList<IPAddressRange> &allowedIPAddressRanges,
-                  bool forSwitching) override;
+  void activate(const Server& server, const Device* device, const Keys* keys,
+                const QList<IPAddressRange>& allowedIPAddressRanges,
+                bool forSwitching) override;
 
-    void deactivate(bool forSwitching) override;
+  void deactivate(bool forSwitching) override;
 
-    void checkStatus() override;
+  void checkStatus() override;
 
-    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
-private slots:
-    void timeout();
+ private slots:
+  void timeout();
 
-private:
-    void maybeDone(bool isConnected);
+ private:
+  void maybeDone(bool isConnected);
 
-private:
-    ControllerImpl *m_impl;
-    QTimer m_timer;
+ private:
+  ControllerImpl* m_impl;
+  QTimer m_timer;
 
-    enum State {
-        None,
-        Connecting,
-        Connected,
-        Disconnecting,
-        Disconnected,
-    };
+  enum State {
+    None,
+    Connecting,
+    Connected,
+    Disconnecting,
+    Disconnected,
+  };
 
-    State m_state = None;
+  State m_state = None;
 };
 
-#endif // TIMERCONTROLLER_H
+#endif  // TIMERCONTROLLER_H

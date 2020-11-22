@@ -18,113 +18,107 @@
 #include <QtAndroid>
 
 namespace {
-AndroidUtils *s_instance = nullptr;
+AndroidUtils* s_instance = nullptr;
 Logger logger(LOG_ANDROID, "AndroidUtils");
-} // namespace
+}  // namespace
 
 // static
-QString AndroidUtils::GetDeviceName()
-{
-    QAndroidJniEnvironment env;
-    jclass BUILD = env->FindClass("android/os/Build");
-    jfieldID model = env->GetStaticFieldID(BUILD, "MODEL", "Ljava/lang/String;");
-    jstring value = (jstring) env->GetStaticObjectField(BUILD, model);
-    if (!value) {
-        return QString("Android Device");
-    }
-    const char *buffer = env->GetStringUTFChars(value, nullptr);
-    if (!buffer) {
-        return QString("Android Device");
-    }
-    QString res = QString(buffer);
-    env->ReleaseStringUTFChars(value, buffer);
-    return res;
+QString AndroidUtils::GetDeviceName() {
+  QAndroidJniEnvironment env;
+  jclass BUILD = env->FindClass("android/os/Build");
+  jfieldID model = env->GetStaticFieldID(BUILD, "MODEL", "Ljava/lang/String;");
+  jstring value = (jstring)env->GetStaticObjectField(BUILD, model);
+  if (!value) {
+    return QString("Android Device");
+  }
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    return QString("Android Device");
+  }
+  QString res = QString(buffer);
+  env->ReleaseStringUTFChars(value, buffer);
+  return res;
 };
 
 // static
-AndroidUtils *AndroidUtils::instance()
-{
-    if (!s_instance) {
-        Q_ASSERT(qApp);
-        s_instance = new AndroidUtils(qApp);
-    }
+AndroidUtils* AndroidUtils::instance() {
+  if (!s_instance) {
+    Q_ASSERT(qApp);
+    s_instance = new AndroidUtils(qApp);
+  }
 
-    return s_instance;
+  return s_instance;
 }
 
-AndroidUtils::AndroidUtils(QObject *parent) : QObject(parent)
-{
-    MVPN_COUNT_CTOR(AndroidUtils);
+AndroidUtils::AndroidUtils(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(AndroidUtils);
 
-    Q_ASSERT(!s_instance);
-    s_instance = this;
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 }
 
-AndroidUtils::~AndroidUtils()
-{
-    MVPN_COUNT_DTOR(AndroidUtils);
+AndroidUtils::~AndroidUtils() {
+  MVPN_COUNT_DTOR(AndroidUtils);
 
-    Q_ASSERT(s_instance == this);
-    s_instance = nullptr;
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
-void AndroidUtils::startAuthentication(AuthenticationListener *listener, const QUrl &url)
-{
-    logger.log() << "Open the authentication view";
+void AndroidUtils::startAuthentication(AuthenticationListener* listener,
+                                       const QUrl& url) {
+  logger.log() << "Open the authentication view";
 
-    Q_ASSERT(!m_listener);
-    m_listener = listener;
+  Q_ASSERT(!m_listener);
+  m_listener = listener;
 
-    connect(listener, &QObject::destroyed, [this]() { m_listener = nullptr; });
+  connect(listener, &QObject::destroyed, [this]() { m_listener = nullptr; });
 
-    m_url = url;
-    emit urlChanged();
+  m_url = url;
+  emit urlChanged();
 
-    emit MozillaVPN::instance()->loadAndroidAuthenticationView();
+  emit MozillaVPN::instance()->loadAndroidAuthenticationView();
 }
 
-bool AndroidUtils::maybeCompleteAuthentication(const QString &url)
-{
-    logger.log() << "Maybe complete authentication - url:" << url;
+bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
+  logger.log() << "Maybe complete authentication - url:" << url;
 
-    Q_ASSERT(m_listener);
+  Q_ASSERT(m_listener);
 
-    logger.log() << "AndroidWebView is about to load" << url;
+  logger.log() << "AndroidWebView is about to load" << url;
 
-    const QString &apiUrl = NetworkManager::instance()->apiUrl();
-    if (!url.startsWith(apiUrl)) {
-        return false;
-    }
-
-    QUrl loadingUrl(url);
-    if (loadingUrl.path() == "/vpn/client/login/success") {
-        QUrlQuery query(loadingUrl.query());
-        if (!query.hasQueryItem("code")) {
-            emit m_listener->failed(ErrorHandler::BackendServiceError);
-            m_listener = nullptr;
-            return true;
-        }
-
-        QString code = query.queryItemValue("code");
-        emit m_listener->completed(code);
-        m_listener = nullptr;
-        return true;
-    }
-
-    if (loadingUrl.path() == "/vpn/client/login/error") {
-        emit m_listener->failed(ErrorHandler::AuthenticationError);
-        m_listener = nullptr;
-        return true;
-    }
-
+  const QString& apiUrl = NetworkManager::instance()->apiUrl();
+  if (!url.startsWith(apiUrl)) {
     return false;
+  }
+
+  QUrl loadingUrl(url);
+  if (loadingUrl.path() == "/vpn/client/login/success") {
+    QUrlQuery query(loadingUrl.query());
+    if (!query.hasQueryItem("code")) {
+      emit m_listener->failed(ErrorHandler::BackendServiceError);
+      m_listener = nullptr;
+      return true;
+    }
+
+    QString code = query.queryItemValue("code");
+    emit m_listener->completed(code);
+    m_listener = nullptr;
+    return true;
+  }
+
+  if (loadingUrl.path() == "/vpn/client/login/error") {
+    emit m_listener->failed(ErrorHandler::AuthenticationError);
+    m_listener = nullptr;
+    return true;
+  }
+
+  return false;
 }
 
-void AndroidUtils::abortAuthentication()
-{
-    logger.log() << "Aborting authentication";
+void AndroidUtils::abortAuthentication() {
+  logger.log() << "Aborting authentication";
 
-    Q_ASSERT(m_listener);
-    emit m_listener->abortedByUser();
-    m_listener = nullptr;
+  Q_ASSERT(m_listener);
+  emit m_listener->abortedByUser();
+  m_listener = nullptr;
 }

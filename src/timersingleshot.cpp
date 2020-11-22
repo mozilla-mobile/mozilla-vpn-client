@@ -7,17 +7,17 @@
 #include <QTimer>
 
 // static
-void TimerSingleShot::create(QObject *parent, uint32_t timer, std::function<void()> &&a_callback)
-{
-    std::function<void()> callback = std::move(a_callback);
+void TimerSingleShot::create(QObject* parent, uint32_t timer,
+                             std::function<void()>&& a_callback) {
+  std::function<void()> callback = std::move(a_callback);
 
-    QTimer *t = new QTimer(parent);
+  QTimer* t = new QTimer(parent);
 
-    QObject::connect(t, &QTimer::timeout, [t, callback = std::move(callback)]() {
-        t->deleteLater();
-        callback();
-    });
+  QObject::connect(t, &QTimer::timeout, [t, callback = std::move(callback)]() {
+    t->deleteLater();
+    callback();
+  });
 
-    t->setSingleShot(true);
-    t->start(timer);
+  t->setSingleShot(true);
+  t->start(timer);
 }

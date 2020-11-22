@@ -9,30 +9,27 @@
 
 #include <QObject>
 
-class MacOSController final : public ControllerImpl
-{
-    Q_DISABLE_COPY_MOVE(MacOSController)
+class MacOSController final : public ControllerImpl {
+  Q_DISABLE_COPY_MOVE(MacOSController)
 
-public:
-    MacOSController();
-    ~MacOSController();
+ public:
+  MacOSController();
+  ~MacOSController();
 
-    void initialize(const Device *device, const Keys *keys) override;
+  void initialize(const Device* device, const Keys* keys) override;
 
-    void activate(const Server &data,
-                  const Device *device,
-                  const Keys *keys,
-                  const QList<IPAddressRange> &allowedIPAddressRanges,
-                  bool forSwitching) override;
+  void activate(const Server& data, const Device* device, const Keys* keys,
+                const QList<IPAddressRange>& allowedIPAddressRanges,
+                bool forSwitching) override;
 
-    void deactivate(bool forSwitching) override;
+  void deactivate(bool forSwitching) override;
 
-    void checkStatus() override;
+  void checkStatus() override;
 
-    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
-private:
-    bool m_checkingStatus = false;
+ private:
+  bool m_checkingStatus = false;
 };
 
-#endif // MACOSCONTROLLER_H
+#endif  // MACOSCONTROLLER_H

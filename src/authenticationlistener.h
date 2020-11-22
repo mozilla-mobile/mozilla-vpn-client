@@ -13,26 +13,25 @@ class MozillaVPN;
 class QUrl;
 class QUrlQuery;
 
-class AuthenticationListener : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(AuthenticationListener)
+class AuthenticationListener : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(AuthenticationListener)
 
-public:
-    static AuthenticationListener *create(QObject *parent);
+ public:
+  static AuthenticationListener* create(QObject* parent);
 
-    virtual void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query) = 0;
+  virtual void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) = 0;
 
-signals:
-    void completed(const QString &code);
+ signals:
+  void completed(const QString& code);
 
-    void failed(ErrorHandler::ErrorType error);
+  void failed(ErrorHandler::ErrorType error);
 
-    void abortedByUser();
+  void abortedByUser();
 
-protected:
-    explicit AuthenticationListener(QObject *parent);
-    virtual ~AuthenticationListener();
+ protected:
+  explicit AuthenticationListener(QObject* parent);
+  virtual ~AuthenticationListener();
 };
 
-#endif // AUTHENTICATIONLISTENER_H
+#endif  // AUTHENTICATIONLISTENER_H

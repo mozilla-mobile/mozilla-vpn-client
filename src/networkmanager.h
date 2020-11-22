@@ -9,25 +9,24 @@
 
 class QNetworkAccessManager;
 
-class NetworkManager : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(NetworkManager)
+class NetworkManager : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(NetworkManager)
 
-public:
-    NetworkManager();
-    virtual ~NetworkManager();
+ public:
+  NetworkManager();
+  virtual ~NetworkManager();
 
-    static NetworkManager *instance();
+  static NetworkManager* instance();
 
-    static QByteArray userAgent();
+  static QByteArray userAgent();
 
-    const QString &apiUrl() const { return m_apiUrl; }
+  const QString& apiUrl() const { return m_apiUrl; }
 
-    virtual QNetworkAccessManager *networkAccessManager() = 0;
+  virtual QNetworkAccessManager* networkAccessManager() = 0;
 
-private:
-    QString m_apiUrl;
+ private:
+  QString m_apiUrl;
 };
 
-#endif // NETWORKMANAGER_H
+#endif  // NETWORKMANAGER_H

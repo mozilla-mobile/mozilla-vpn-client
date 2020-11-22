@@ -8,31 +8,30 @@
 #include <QObject>
 #include <QTimer>
 
-class ReleaseMonitor final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(ReleaseMonitor)
+class ReleaseMonitor final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ReleaseMonitor)
 
-public:
-    ReleaseMonitor();
-    ~ReleaseMonitor();
+ public:
+  ReleaseMonitor();
+  ~ReleaseMonitor();
 
-    void runSoon();
+  void runSoon();
 
-signals:
-    // for testing
-    void releaseChecked();
+ signals:
+  // for testing
+  void releaseChecked();
 
-private slots:
-    void runInternal();
+ private slots:
+  void runInternal();
 
-private:
-    void schedule();
+ private:
+  void schedule();
 
-    [[nodiscard]] bool processData(const QByteArray &data);
+  [[nodiscard]] bool processData(const QByteArray& data);
 
-private:
-    QTimer m_timer;
+ private:
+  QTimer m_timer;
 };
 
-#endif // RELEASEMONITOR_H
+#endif  // RELEASEMONITOR_H

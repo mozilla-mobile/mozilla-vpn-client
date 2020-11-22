@@ -5,19 +5,14 @@
 #include "taskfunction.h"
 #include "leakdetector.h"
 
-TaskFunction::TaskFunction(std::function<void(MozillaVPN *)> &&callback)
-    : Task("TaskFunction"), m_callback(std::move(callback))
-{
-    MVPN_COUNT_CTOR(TaskFunction);
+TaskFunction::TaskFunction(std::function<void(MozillaVPN*)>&& callback)
+    : Task("TaskFunction"), m_callback(std::move(callback)) {
+  MVPN_COUNT_CTOR(TaskFunction);
 }
 
-TaskFunction::~TaskFunction()
-{
-    MVPN_COUNT_DTOR(TaskFunction);
-}
+TaskFunction::~TaskFunction() { MVPN_COUNT_DTOR(TaskFunction); }
 
-void TaskFunction::run(MozillaVPN *vpn)
-{
-    m_callback(vpn);
-    emit completed();
+void TaskFunction::run(MozillaVPN* vpn) {
+  m_callback(vpn);
+  emit completed();
 }

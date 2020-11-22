@@ -4,13 +4,12 @@
 
 #include "helper.h"
 
-class TestReleaseMonitor final : public TestHelper
-{
-    Q_OBJECT
+class TestReleaseMonitor final : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void failure();
+ private slots:
+  void failure();
 
-    void success_data();
-    void success();
+  void success_data();
+  void success();
 };

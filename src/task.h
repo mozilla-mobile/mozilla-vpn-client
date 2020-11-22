@@ -9,23 +9,22 @@
 
 class MozillaVPN;
 
-class Task : public QObject
-{
-    Q_OBJECT
+class Task : public QObject {
+  Q_OBJECT
 
-public:
-    explicit Task(const QString &name) : m_name(name) {}
-    virtual ~Task() = default;
+ public:
+  explicit Task(const QString& name) : m_name(name) {}
+  virtual ~Task() = default;
 
-    const QString &name() const { return m_name; }
+  const QString& name() const { return m_name; }
 
-    virtual void run(MozillaVPN *vpn) = 0;
+  virtual void run(MozillaVPN* vpn) = 0;
 
-signals:
-    void completed();
+ signals:
+  void completed();
 
-private:
-    QString m_name;
+ private:
+  QString m_name;
 };
 
-#endif // TASK_H
+#endif  // TASK_H

@@ -7,28 +7,26 @@
 #include "../../src/loghandler.h"
 #include "helper.h"
 
-void TestLogger::logger()
-{
-    Logger l("test", "class");
-    l.log() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
-            << QStringList{"A", "B"} << Qt::endl;
+void TestLogger::logger() {
+  Logger l("test", "class");
+  l.log() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
+          << QStringList{"A", "B"} << Qt::endl;
 
-    Logger l2(QStringList{"a", "b"}, "class");
-    l2.log() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
-             << QStringList{"A", "B"} << Qt::endl;
+  Logger l2(QStringList{"a", "b"}, "class");
+  l2.log() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
+           << QStringList{"A", "B"} << Qt::endl;
 }
 
-void TestLogger::logHandler()
-{
-    LogHandler* lh = LogHandler::instance();
-    qInstallMessageHandler(LogHandler::messageQTHandler);
+void TestLogger::logHandler() {
+  LogHandler* lh = LogHandler::instance();
+  qInstallMessageHandler(LogHandler::messageQTHandler);
 
-    qDebug() << "WOW debug!";
-    qInfo() << "WOW info!";
-    qWarning() << "WOW warning!";
-    qCritical() << "WOW critical!";
+  qDebug() << "WOW debug!";
+  qInfo() << "WOW info!";
+  qWarning() << "WOW warning!";
+  qCritical() << "WOW critical!";
 
-    QVERIFY(lh->logs().count() > 0);
+  QVERIFY(lh->logs().count() > 0);
 }
 
 static TestLogger s_testLogger;

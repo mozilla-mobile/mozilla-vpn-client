@@ -4,19 +4,18 @@
 
 #include "helper.h"
 
-class TestTasks final : public TestHelper
-{
-    Q_OBJECT
+class TestTasks final : public TestHelper {
+  Q_OBJECT
 
-private slots:
-    void accountAndServers();
+ private slots:
+  void accountAndServers();
 
-    void addDevice_success();
-    void addDevice_failure();
+  void addDevice_success();
+  void addDevice_failure();
 
-    void authenticate();
+  void authenticate();
 
-    void function();
+  void function();
 
-    void removeDevice();
+  void removeDevice();
 };

@@ -15,51 +15,49 @@ Logger logger(LOG_IOS, "IOSUtils");
 }
 
 // static
-QString IOSUtils::computerName()
-{
-    NSString *name = [[UIDevice currentDevice] name];
-    return QString::fromNSString(name);
+QString IOSUtils::computerName() {
+  NSString* name = [[UIDevice currentDevice] name];
+  return QString::fromNSString(name);
 }
 
 // static
-QString IOSUtils::IAPReceipt()
-{
-    logger.log() << "Retrieving IAP receipt";
+QString IOSUtils::IAPReceipt() {
+  logger.log() << "Retrieving IAP receipt";
 
-    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-    NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+  NSURL* receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+  NSData* receipt = [NSData dataWithContentsOfURL:receiptURL];
 
-    // All the following is for debug only.
-    NSString *path = [receiptURL path];
-    Q_ASSERT(path);
+  // All the following is for debug only.
+  NSString* path = [receiptURL path];
+  Q_ASSERT(path);
 
-    logger.log() << "Receipt URL:" << QString::fromNSString(path);
+  logger.log() << "Receipt URL:" << QString::fromNSString(path);
 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    Q_ASSERT(fileManager);
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  Q_ASSERT(fileManager);
 
-    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath: path error: NULL];
-    if (fileAttributes) {
-        NSNumber *fileSize = [fileAttributes objectForKey:NSFileSize];
-        if (fileSize) {
-            logger.log() << "File size:" << [fileSize unsignedLongLongValue];
-        }
-
-        NSString *fileOwner = [fileAttributes objectForKey:NSFileOwnerAccountName];
-        if (fileOwner) {
-            logger.log() << "Owner:" << QString::fromNSString(fileOwner);
-        }
-
-        NSDate *fileModDate = [fileAttributes objectForKey:NSFileModificationDate];
-        if (fileModDate) {
-            logger.log() << "Modification date:" << QDateTime::fromNSDate(fileModDate).toString();
-        }
+  NSDictionary* fileAttributes = [fileManager attributesOfItemAtPath:path error:NULL];
+  if (fileAttributes) {
+    NSNumber* fileSize = [fileAttributes objectForKey:NSFileSize];
+    if (fileSize) {
+      logger.log() << "File size:" << [fileSize unsignedLongLongValue];
     }
 
-    if (!receipt) {
-        return QString();
+    NSString* fileOwner = [fileAttributes objectForKey:NSFileOwnerAccountName];
+    if (fileOwner) {
+      logger.log() << "Owner:" << QString::fromNSString(fileOwner);
     }
 
-    NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
-    return QString::fromNSString(encodedReceipt);
+    NSDate* fileModDate = [fileAttributes objectForKey:NSFileModificationDate];
+    if (fileModDate) {
+      logger.log() << "Modification date:" << QDateTime::fromNSDate(fileModDate).toString();
+    }
+  }
+
+  if (!receipt) {
+    return QString();
+  }
+
+  NSString* encodedReceipt = [receipt base64EncodedStringWithOptions:0];
+  return QString::fromNSString(encodedReceipt);
 }

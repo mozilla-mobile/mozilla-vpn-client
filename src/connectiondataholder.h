@@ -14,83 +14,80 @@
 namespace QtCharts {
 class QSplineSeries;
 class QValueAxis;
-}
+}  // namespace QtCharts
 
 #ifdef UNIT_TEST
 class TestConnectionDataHolder;
 #endif
 
-class ConnectionDataHolder final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(ConnectionDataHolder)
+class ConnectionDataHolder final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ConnectionDataHolder)
 
-    Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
-    Q_PROPERTY(quint64 txBytes READ txBytes NOTIFY bytesChanged)
-    Q_PROPERTY(quint64 rxBytes READ rxBytes NOTIFY bytesChanged)
+  Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
+  Q_PROPERTY(quint64 txBytes READ txBytes NOTIFY bytesChanged)
+  Q_PROPERTY(quint64 rxBytes READ rxBytes NOTIFY bytesChanged)
 
-public:
-    ConnectionDataHolder();
-    ~ConnectionDataHolder();
+ public:
+  ConnectionDataHolder();
+  ~ConnectionDataHolder();
 
-    void enable();
-    void disable();
+  void enable();
+  void disable();
 
-    Q_INVOKABLE void activate(const QVariant &txSeries,
-                              const QVariant &rxSeries,
-                              const QVariant &axisX,
-                              const QVariant &axisY);
+  Q_INVOKABLE void activate(const QVariant& txSeries, const QVariant& rxSeries,
+                            const QVariant& axisX, const QVariant& axisY);
 
-    const QString &ipAddress() const { return m_ipAddress; }
+  const QString& ipAddress() const { return m_ipAddress; }
 
-    void reset();
+  void reset();
 
-    quint64 txBytes() const;
-    quint64 rxBytes() const;
+  quint64 txBytes() const;
+  quint64 rxBytes() const;
 
-private:
-    void add(uint64_t txBytes, uint64_t rxBytes);
+ private:
+  void add(uint64_t txBytes, uint64_t rxBytes);
 
-    void computeAxes();
-    void updateIpAddress();
+  void computeAxes();
+  void updateIpAddress();
 
-    // Boolean because we have just first and second index in the vector.
-    quint64 bytes(bool index) const;
+  // Boolean because we have just first and second index in the vector.
+  quint64 bytes(bool index) const;
 
-public slots:
-    Q_INVOKABLE void deactivate();
+ public slots:
+  Q_INVOKABLE void deactivate();
 
-    void stateChanged();
+  void stateChanged();
 
-signals:
-    // for testing.
-    void ipAddressChecked();
+ signals:
+  // for testing.
+  void ipAddressChecked();
 
-    void ipAddressChanged();
-    void bytesChanged();
+  void ipAddressChanged();
+  void bytesChanged();
 
-private:
-    QtCharts::QSplineSeries *m_txSeries = nullptr;
-    QtCharts::QSplineSeries *m_rxSeries = nullptr;
-    QtCharts::QValueAxis *m_axisX = nullptr;
-    QtCharts::QValueAxis *m_axisY = nullptr;
+ private:
+  QtCharts::QSplineSeries* m_txSeries = nullptr;
+  QtCharts::QSplineSeries* m_rxSeries = nullptr;
+  QtCharts::QValueAxis* m_axisX = nullptr;
+  QtCharts::QValueAxis* m_axisY = nullptr;
 
-    QVector<QPair<uint64_t, uint64_t>> m_data;
+  QVector<QPair<uint64_t, uint64_t>> m_data;
 
-    bool m_initialized = false;
-    uint64_t m_txBytes = 0;
-    uint64_t m_rxBytes = 0;
-    uint64_t m_maxBytes = 0;
+  bool m_initialized = false;
+  uint64_t m_txBytes = 0;
+  uint64_t m_rxBytes = 0;
+  uint64_t m_maxBytes = 0;
 
-    bool m_updatingIpAddress = false;
+  bool m_updatingIpAddress = false;
 
-    QString m_ipAddress;
-    QTimer m_ipAddressTimer;
-    QTimer m_checkStatusTimer;
+  QString m_ipAddress;
+  QTimer m_ipAddressTimer;
+  QTimer m_checkStatusTimer;
 
 #ifdef UNIT_TEST
-    friend class TestConnectionDataHolder;
+  friend class TestConnectionDataHolder;
 #endif
 };
 
-#endif // CONNECTIONDATAHOLDER_H
+#endif  // CONNECTIONDATAHOLDER_H

@@ -17,194 +17,178 @@ namespace {
 Logger logger(LOG_MODEL, "DeviceModel");
 }
 
-DeviceModel::DeviceModel()
-{
-    MVPN_COUNT_CTOR(DeviceModel);
-}
+DeviceModel::DeviceModel() { MVPN_COUNT_CTOR(DeviceModel); }
 
-DeviceModel::~DeviceModel()
-{
-    MVPN_COUNT_DTOR(DeviceModel);
-}
+DeviceModel::~DeviceModel() { MVPN_COUNT_DTOR(DeviceModel); }
 
-bool DeviceModel::fromJson(const QByteArray &s)
-{
-    logger.log() << "DeviceModel from json";
+bool DeviceModel::fromJson(const QByteArray& s) {
+  logger.log() << "DeviceModel from json";
 
-    if (!s.isEmpty() && m_rawJson == s) {
-        logger.log() << "Nothing has changed";
-        return true;
-    }
-
-    if (!fromJsonInternal(s)) {
-        return false;
-    }
-
-    m_rawJson = s;
+  if (!s.isEmpty() && m_rawJson == s) {
+    logger.log() << "Nothing has changed";
     return true;
+  }
+
+  if (!fromJsonInternal(s)) {
+    return false;
+  }
+
+  m_rawJson = s;
+  return true;
 }
 
-bool DeviceModel::fromSettings()
-{
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
-    Q_ASSERT(settingsHolder);
+bool DeviceModel::fromSettings() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-    logger.log() << "Reading the device list from settings";
+  logger.log() << "Reading the device list from settings";
 
-    if (!settingsHolder->hasDevices()) {
-        return false;
-    }
+  if (!settingsHolder->hasDevices()) {
+    return false;
+  }
 
-    const QByteArray &json = settingsHolder->devices();
-    if (!fromJsonInternal(json)) {
-        return false;
-    }
+  const QByteArray& json = settingsHolder->devices();
+  if (!fromJsonInternal(json)) {
+    return false;
+  }
 
-    m_rawJson = json;
-    return true;
+  m_rawJson = json;
+  return true;
 }
 
 namespace {
 
-bool sortCallback(const Device &a, const Device &b)
-{
-    if (a.name() == Device::currentDeviceName()) {
-        return true;
-    }
-
-    if (b.name() == Device::currentDeviceName()) {
-        return false;
-    }
-
-    return a.createdAt() > b.createdAt();
-}
-
-} // anonymous namespace
-
-bool DeviceModel::fromJsonInternal(const QByteArray &json) {
-    beginResetModel();
-
-    m_rawJson = "";
-    m_devices.clear();
-
-    QJsonDocument doc = QJsonDocument::fromJson(json);
-    if (!doc.isObject()) {
-        return false;
-    }
-
-    QJsonObject obj = doc.object();
-
-    if (!obj.contains("devices")) {
-        return false;
-    }
-
-    QJsonValue devices = obj.take("devices");
-    if (!devices.isArray()) {
-        return false;
-    }
-
-    QJsonArray devicesArray = devices.toArray();
-    for (QJsonValue deviceValue : devicesArray) {
-        Device device;
-        if (!device.fromJson(deviceValue)) {
-            return false;
-        }
-        m_devices.append(device);
-    }
-
-    std::sort(m_devices.begin(), m_devices.end(), sortCallback);
-
-    endResetModel();
-    emit changed();
-
+bool sortCallback(const Device& a, const Device& b) {
+  if (a.name() == Device::currentDeviceName()) {
     return true;
+  }
+
+  if (b.name() == Device::currentDeviceName()) {
+    return false;
+  }
+
+  return a.createdAt() > b.createdAt();
 }
 
-void DeviceModel::writeSettings()
-{
-    SettingsHolder::instance()->setDevices(m_rawJson);
-}
+}  // anonymous namespace
 
-QHash<int, QByteArray> DeviceModel::roleNames() const
-{
-    QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[CurrentOneRole] = "currentOne";
-    roles[CreatedAtRole] = "createdAt";
-    return roles;
-}
+bool DeviceModel::fromJsonInternal(const QByteArray& json) {
+  beginResetModel();
 
-int DeviceModel::rowCount(const QModelIndex &) const
-{
-    return m_devices.count();
-}
+  m_rawJson = "";
+  m_devices.clear();
 
-QVariant DeviceModel::data(const QModelIndex &index, int role) const
-{
-    if (!index.isValid()) {
-        return QVariant();
+  QJsonDocument doc = QJsonDocument::fromJson(json);
+  if (!doc.isObject()) {
+    return false;
+  }
+
+  QJsonObject obj = doc.object();
+
+  if (!obj.contains("devices")) {
+    return false;
+  }
+
+  QJsonValue devices = obj.take("devices");
+  if (!devices.isArray()) {
+    return false;
+  }
+
+  QJsonArray devicesArray = devices.toArray();
+  for (QJsonValue deviceValue : devicesArray) {
+    Device device;
+    if (!device.fromJson(deviceValue)) {
+      return false;
     }
+    m_devices.append(device);
+  }
 
-    switch (role) {
+  std::sort(m_devices.begin(), m_devices.end(), sortCallback);
+
+  endResetModel();
+  emit changed();
+
+  return true;
+}
+
+void DeviceModel::writeSettings() {
+  SettingsHolder::instance()->setDevices(m_rawJson);
+}
+
+QHash<int, QByteArray> DeviceModel::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[NameRole] = "name";
+  roles[CurrentOneRole] = "currentOne";
+  roles[CreatedAtRole] = "createdAt";
+  return roles;
+}
+
+int DeviceModel::rowCount(const QModelIndex&) const {
+  return m_devices.count();
+}
+
+QVariant DeviceModel::data(const QModelIndex& index, int role) const {
+  if (!index.isValid()) {
+    return QVariant();
+  }
+
+  switch (role) {
     case NameRole:
-        return QVariant(m_devices.at(index.row()).name());
+      return QVariant(m_devices.at(index.row()).name());
 
     case CurrentOneRole:
-        return QVariant(m_devices.at(index.row()).name() == Device::currentDeviceName());
+      return QVariant(m_devices.at(index.row()).name() ==
+                      Device::currentDeviceName());
 
     case CreatedAtRole:
-        return QVariant(m_devices.at(index.row()).createdAt());
+      return QVariant(m_devices.at(index.row()).createdAt());
 
     default:
-        return QVariant();
-    }
+      return QVariant();
+  }
 }
 
-bool DeviceModel::hasDevice(const QString &deviceName) const
-{
-    for (const Device &device : m_devices) {
-        if (device.isDevice(deviceName)) {
-            return true;
-        }
+bool DeviceModel::hasDevice(const QString& deviceName) const {
+  for (const Device& device : m_devices) {
+    if (device.isDevice(deviceName)) {
+      return true;
     }
+  }
 
-    return false;
+  return false;
 }
 
-const Device *DeviceModel::device(const QString &deviceName) const
-{
-    for (const Device &device : m_devices) {
-        if (device.isDevice(deviceName)) {
-            return &device;
-        }
+const Device* DeviceModel::device(const QString& deviceName) const {
+  for (const Device& device : m_devices) {
+    if (device.isDevice(deviceName)) {
+      return &device;
     }
+  }
 
-    return nullptr;
+  return nullptr;
 }
 
-void DeviceModel::removeDevice(const QString &deviceName)
-{
-    for (int i = 0; i < m_devices.length(); ++i) {
-        if (m_devices.at(i).isDevice(deviceName)) {
-            removeRow(i);
-            emit changed();
-            return;
-        }
+void DeviceModel::removeDevice(const QString& deviceName) {
+  for (int i = 0; i < m_devices.length(); ++i) {
+    if (m_devices.at(i).isDevice(deviceName)) {
+      removeRow(i);
+      emit changed();
+      return;
     }
+  }
 }
 
-bool DeviceModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-    Q_ASSERT(count == 1);
-    Q_UNUSED(parent);
+bool DeviceModel::removeRows(int row, int count, const QModelIndex& parent) {
+  Q_ASSERT(count == 1);
+  Q_UNUSED(parent);
 
-    beginRemoveRows(parent, row, row);
-    m_devices.removeAt(row);
-    endRemoveRows();
+  beginRemoveRows(parent, row, row);
+  m_devices.removeAt(row);
+  endRemoveRows();
 
-    return true;
+  return true;
 }
 
 const Device* DeviceModel::currentDevice() const {
-    return device(Device::currentDeviceName());
+  return device(Device::currentDeviceName());
 }

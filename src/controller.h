@@ -19,112 +19,115 @@ class ControllerImpl;
 class MozillaVPN;
 class IPAddressRange;
 
-class Controller final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(Controller)
+class Controller final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(Controller)
 
-public:
-    enum State {
-        StateInitializing,
-        StateOff,
-        StateConnecting,
-        StateOn,
-        StateDisconnecting,
-        StateSwitching,
-        StateCaptivePortal,
-    };
-    Q_ENUM(State)
+ public:
+  enum State {
+    StateInitializing,
+    StateOff,
+    StateConnecting,
+    StateOn,
+    StateDisconnecting,
+    StateSwitching,
+    StateCaptivePortal,
+  };
+  Q_ENUM(State)
 
-private:
-    Q_PROPERTY(State state READ state NOTIFY stateChanged)
-    Q_PROPERTY(int time READ time NOTIFY timeChanged)
-    Q_PROPERTY(QString currentCity READ currentCity NOTIFY stateChanged)
-    Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
+ private:
+  Q_PROPERTY(State state READ state NOTIFY stateChanged)
+  Q_PROPERTY(int time READ time NOTIFY timeChanged)
+  Q_PROPERTY(QString currentCity READ currentCity NOTIFY stateChanged)
+  Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
 
-public:
-    Controller();
-    ~Controller();
+ public:
+  Controller();
+  ~Controller();
 
-    void initialize();
+  void initialize();
 
-    State state() const;
+  State state() const;
 
-    Q_INVOKABLE void changeServer(const QString &countryCode, const QString &city);
+  Q_INVOKABLE void changeServer(const QString& countryCode,
+                                const QString& city);
 
-    Q_INVOKABLE void logout();
+  Q_INVOKABLE void logout();
 
-    int time() const;
+  int time() const;
 
-    const QString &currentCity() const { return m_currentCity; }
+  const QString& currentCity() const { return m_currentCity; }
 
-    const QString &switchingCountryCode() const { return m_switchingCountryCode; }
+  const QString& switchingCountryCode() const { return m_switchingCountryCode; }
 
-    const QString &switchingCity() const { return m_switchingCity; }
+  const QString& switchingCity() const { return m_switchingCity; }
 
-    void updateRequired();
+  void updateRequired();
 
-    void getBackendLogs(std::function<void(const QString &logs)> &&callback);
+  void getBackendLogs(std::function<void(const QString& logs)>&& callback);
 
-    void getStatus(
-        std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>
-            &&callback);
+  void getStatus(
+      std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+                         uint64_t rxBytes)>&& callback);
 
-public slots:
-    void activate();
+ public slots:
+  void activate();
 
-    void deactivate();
+  void deactivate();
 
-    Q_INVOKABLE void quit();
+  Q_INVOKABLE void quit();
 
-    void captivePortalDetected();
+  void captivePortalDetected();
 
-private slots:
-    void connected();
-    void disconnected();
-    void timerTimeout();
-    void implInitialized(bool status, bool connected, const QDateTime &connectionDate);
-    void statusUpdated(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes);
+ private slots:
+  void connected();
+  void disconnected();
+  void timerTimeout();
+  void implInitialized(bool status, bool connected,
+                       const QDateTime& connectionDate);
+  void statusUpdated(const QString& serverIpv4Gateway, uint64_t txBytes,
+                     uint64_t rxBytes);
 
-signals:
-    void stateChanged();
-    void timeChanged();
-    void readyToQuit();
-    void readyToUpdate();
+ signals:
+  void stateChanged();
+  void timeChanged();
+  void readyToQuit();
+  void readyToUpdate();
 
-private:
-    void setState(State state);
+ private:
+  void setState(State state);
 
-    bool processNextStep();
+  bool processNextStep();
 
-    QList<IPAddressRange> getAllowedIPAddressRanges();
+  QList<IPAddressRange> getAllowedIPAddressRanges();
 
-private:
-    State m_state = StateInitializing;
+ private:
+  State m_state = StateInitializing;
 
-    QTimer m_timer;
+  QTimer m_timer;
 
-    QDateTime m_connectionDate;
+  QDateTime m_connectionDate;
 
-    QScopedPointer<ControllerImpl> m_impl;
+  QScopedPointer<ControllerImpl> m_impl;
 
-    QString m_currentCity;
+  QString m_currentCity;
 
-    QString m_switchingCountryCode;
-    QString m_switchingCity;
+  QString m_switchingCountryCode;
+  QString m_switchingCity;
 
-    enum NextStep {
-        None,
-        Quit,
-        Update,
-        Disconnect,
-        WaitForCaptivePortal,
-    };
+  enum NextStep {
+    None,
+    Quit,
+    Update,
+    Disconnect,
+    WaitForCaptivePortal,
+  };
 
-    NextStep m_nextStep = None;
+  NextStep m_nextStep = None;
 
-    QList<std::function<void(const QString &serverIpv4Gateway, uint64_t txBytes, uint64_t rxBytes)>>
-        m_getStatusCallbacks;
+  QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+                           uint64_t rxBytes)>>
+      m_getStatusCallbacks;
 };
 
-#endif // CONTROLLER_H
+#endif  // CONTROLLER_H

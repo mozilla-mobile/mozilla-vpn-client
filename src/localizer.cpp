@@ -15,167 +15,155 @@
 
 namespace {
 Logger logger(LOG_MAIN, "Localizer");
-Localizer *s_instance = nullptr;
-} // namespace
+Localizer* s_instance = nullptr;
+}  // namespace
 
 // static
-Localizer *Localizer::instance()
-{
-    Q_ASSERT(s_instance);
-    return s_instance;
+Localizer* Localizer::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
 }
 
-Localizer::Localizer()
-{
-    MVPN_COUNT_CTOR(Localizer);
+Localizer::Localizer() {
+  MVPN_COUNT_CTOR(Localizer);
 
-    Q_ASSERT(!s_instance);
-    s_instance = this;
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 
-    initialize(SettingsHolder::instance()->languageCode());
+  initialize(SettingsHolder::instance()->languageCode());
 }
 
-Localizer::~Localizer()
-{
-    MVPN_COUNT_DTOR(Localizer);
+Localizer::~Localizer() {
+  MVPN_COUNT_DTOR(Localizer);
 
-    Q_ASSERT(s_instance = this);
-    s_instance = nullptr;
+  Q_ASSERT(s_instance = this);
+  s_instance = nullptr;
 }
 
-void Localizer::initialize(const QString &code)
-{
-    QLocale locale = QLocale::system();
-    QString systemCode = locale.bcp47Name();
+void Localizer::initialize(const QString& code) {
+  QLocale locale = QLocale::system();
+  QString systemCode = locale.bcp47Name();
 
-    m_code = code;
-    if (code.isEmpty()) {
-        m_code = systemCode;
+  m_code = code;
+  if (code.isEmpty()) {
+    m_code = systemCode;
+  }
+
+  loadLanguage(m_code);
+
+  QCoreApplication::installTranslator(&m_translator);
+  QDir dir(":/i18n");
+  QStringList files = dir.entryList();
+  for (const QString& file : files) {
+    if (!file.endsWith(".qm")) {
+      continue;
     }
 
-    loadLanguage(m_code);
+    QStringList parts = file.split(".");
+    Q_ASSERT(parts.length() == 2);
 
-    QCoreApplication::installTranslator(&m_translator);
-    QDir dir(":/i18n");
-    QStringList files = dir.entryList();
-    for (const QString &file : files) {
-        if (!file.endsWith(".qm")) {
-            continue;
-        }
+    parts = parts[0].split("_");
+    Q_ASSERT(parts.length() == 2);
 
-        QStringList parts = file.split(".");
-        Q_ASSERT(parts.length() == 2);
-
-        parts = parts[0].split("_");
-        Q_ASSERT(parts.length() == 2);
-
-        QString code = parts.at(1);
-        if (code != systemCode) {
-            m_languages.append(code);
-        }
+    QString code = parts.at(1);
+    if (code != systemCode) {
+      m_languages.append(code);
     }
+  }
 }
 
-void Localizer::loadLanguage(const QString &code)
-{
-    logger.log() << "Loading language:" << code;
-    if (loadLanguageInternal(code)) {
-        return;
-    }
+void Localizer::loadLanguage(const QString& code) {
+  logger.log() << "Loading language:" << code;
+  if (loadLanguageInternal(code)) {
+    return;
+  }
 
-    logger.log() << "Loading default language (fallback)";
-    if (loadLanguageInternal("")) {
-        return;
-    }
+  logger.log() << "Loading default language (fallback)";
+  if (loadLanguageInternal("")) {
+    return;
+  }
 
-    logger.log() << "Loading 'en' language(fallback 2)";
-    loadLanguageInternal("en");
+  logger.log() << "Loading 'en' language(fallback 2)";
+  loadLanguageInternal("en");
 }
 
-bool Localizer::loadLanguageInternal(const QString &code)
-{
-    QLocale locale = QLocale(code);
-    if (code.isEmpty()) {
-        locale = QLocale::system();
-    }
+bool Localizer::loadLanguageInternal(const QString& code) {
+  QLocale locale = QLocale(code);
+  if (code.isEmpty()) {
+    locale = QLocale::system();
+  }
 
-    QLocale::setDefault(locale);
+  QLocale::setDefault(locale);
 
-    if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-        logger.log() << "Loading the locale failed."
-                     << "code";
-        return false;
-    }
+  if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
+    logger.log() << "Loading the locale failed."
+                 << "code";
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-QString Localizer::languageName(const QString &code) const
-{
-    QLocale locale(code);
-    if (code.isEmpty()) {
-        locale = QLocale::system();
-    }
+QString Localizer::languageName(const QString& code) const {
+  QLocale locale(code);
+  if (code.isEmpty()) {
+    locale = QLocale::system();
+  }
 
-    if (locale.language() == QLocale::C) {
-        return "English (US)";
-    }
+  if (locale.language() == QLocale::C) {
+    return "English (US)";
+  }
 
-    return QLocale::languageToString(locale.language());
+  return QLocale::languageToString(locale.language());
 }
 
-QString Localizer::localizedLanguageName(const QString &code) const
-{
-    QLocale locale(code);
-    if (code.isEmpty()) {
-        locale = QLocale::system();
-    }
+QString Localizer::localizedLanguageName(const QString& code) const {
+  QLocale locale(code);
+  if (code.isEmpty()) {
+    locale = QLocale::system();
+  }
 
-    if (locale.language() == QLocale::C) {
-        return "English (US)";
-    }
+  if (locale.language() == QLocale::C) {
+    return "English (US)";
+  }
 
-    return locale.nativeLanguageName();
+  return locale.nativeLanguageName();
 }
 
-QHash<int, QByteArray> Localizer::roleNames() const
-{
-    QHash<int, QByteArray> roles;
-    roles[LanguageRole] = "language";
-    roles[LocalizedLanguageRole] = "localizedLanguage";
-    roles[CodeRole] = "code";
-    return roles;
+QHash<int, QByteArray> Localizer::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[LanguageRole] = "language";
+  roles[LocalizedLanguageRole] = "localizedLanguage";
+  roles[CodeRole] = "code";
+  return roles;
 }
 
-int Localizer::rowCount(const QModelIndex &) const
-{
-    return m_languages.count();
+int Localizer::rowCount(const QModelIndex&) const {
+  return m_languages.count();
 }
 
-QVariant Localizer::data(const QModelIndex &index, int role) const
-{
-    if (!index.isValid()) {
-        return QVariant();
-    }
+QVariant Localizer::data(const QModelIndex& index, int role) const {
+  if (!index.isValid()) {
+    return QVariant();
+  }
 
-    switch (role) {
+  switch (role) {
     case LanguageRole:
-        return QVariant(languageName(m_languages.at(index.row())));
+      return QVariant(languageName(m_languages.at(index.row())));
 
     case LocalizedLanguageRole:
-        return QVariant(localizedLanguageName(m_languages.at(index.row())));
+      return QVariant(localizedLanguageName(m_languages.at(index.row())));
 
     case CodeRole:
-        return QVariant(m_languages.at(index.row()));
+      return QVariant(m_languages.at(index.row()));
 
     default:
-        return QVariant();
-    }
+      return QVariant();
+  }
 }
 
-QString Localizer::localizeSubscriptionCurrencyValue() const
-{
-    return QLocale()
-        .toCurrencyString(Constants::SUBSCRIPTION_CURRENCY_VALUE_USD,
-                          QLocale(QLocale::English, QLocale::UnitedStates).currencySymbol());
+QString Localizer::localizeSubscriptionCurrencyValue() const {
+  return QLocale().toCurrencyString(
+      Constants::SUBSCRIPTION_CURRENCY_VALUE_USD,
+      QLocale(QLocale::English, QLocale::UnitedStates).currencySymbol());
 }

@@ -9,116 +9,107 @@
 namespace {
 bool s_initialized = false;
 
-struct HelpEntry
-{
-    HelpEntry(const QString &name, bool externalLink, bool viewLog, MozillaVPN::LinkType linkType)
-        : m_name(name), m_externalLink(externalLink), m_viewLog(viewLog), m_linkType(linkType)
-    {}
+struct HelpEntry {
+  HelpEntry(const QString& name, bool externalLink, bool viewLog,
+            MozillaVPN::LinkType linkType)
+      : m_name(name),
+        m_externalLink(externalLink),
+        m_viewLog(viewLog),
+        m_linkType(linkType) {}
 
-    QString m_name;
-    bool m_externalLink;
-    bool m_viewLog;
-    MozillaVPN::LinkType m_linkType;
+  QString m_name;
+  bool m_externalLink;
+  bool m_viewLog;
+  MozillaVPN::LinkType m_linkType;
 };
 
 static QList<HelpEntry> s_helpEntries;
 
-void maybeInitialize()
-{
-    if (s_initialized) {
-        return;
-    }
+void maybeInitialize() {
+  if (s_initialized) {
+    return;
+  }
 
-    s_initialized = true;
+  s_initialized = true;
 
-    //% "View log"
-    s_helpEntries.append(HelpEntry(qtTrId("help.viewLog"),
+  //% "View log"
+  s_helpEntries.append(HelpEntry(qtTrId("help.viewLog"),
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
-                                   false,
+                                 false,
 #else
-                                   true,
+                                 true,
 #endif
-                                   true,
-                                   MozillaVPN::LinkContact));
+                                 true, MozillaVPN::LinkContact));
 
-    s_helpEntries.append(
-        //% "Help Center"
-        HelpEntry(qtTrId("help.helpCenter"), true, false, MozillaVPN::LinkHelpSupport));
+  s_helpEntries.append(
+      //% "Help Center"
+      HelpEntry(qtTrId("help.helpCenter"), true, false,
+                MozillaVPN::LinkHelpSupport));
 
-    //% "Contact us"
-    s_helpEntries.append(HelpEntry(qtTrId("help.contactUs"), true, false, MozillaVPN::LinkContact));
+  //% "Contact us"
+  s_helpEntries.append(HelpEntry(qtTrId("help.contactUs"), true, false,
+                                 MozillaVPN::LinkContact));
 }
 
-} // namespace
+}  // namespace
 
-HelpModel::HelpModel()
-{
-    MVPN_COUNT_CTOR(HelpModel);
+HelpModel::HelpModel() { MVPN_COUNT_CTOR(HelpModel); }
+
+HelpModel::~HelpModel() { MVPN_COUNT_DTOR(HelpModel); }
+
+void HelpModel::open(int id) {
+  Q_ASSERT(s_initialized);
+  Q_ASSERT(id >= 0 && id < s_helpEntries.length());
+
+  const HelpEntry& entry = s_helpEntries.at(id);
+  if (entry.m_viewLog) {
+    emit MozillaVPN::instance()->requestViewLogs();
+    return;
+  }
+
+  MozillaVPN::instance()->openLink(entry.m_linkType);
 }
 
-HelpModel::~HelpModel()
-{
-    MVPN_COUNT_DTOR(HelpModel);
+void HelpModel::forEach(std::function<void(const QString&, int)>&& a_callback) {
+  maybeInitialize();
+
+  std::function<void(const QString&, int)> callback = std::move(a_callback);
+  for (int i = 0; i < s_helpEntries.length(); ++i) {
+    callback(s_helpEntries.at(i).m_name, i);
+  }
 }
 
-void HelpModel::open(int id)
-{
-    Q_ASSERT(s_initialized);
-    Q_ASSERT(id >= 0 && id < s_helpEntries.length());
-
-    const HelpEntry &entry = s_helpEntries.at(id);
-    if (entry.m_viewLog) {
-        emit MozillaVPN::instance()->requestViewLogs();
-        return;
-    }
-
-    MozillaVPN::instance()->openLink(entry.m_linkType);
+QHash<int, QByteArray> HelpModel::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[HelpEntryRole] = "name";
+  roles[HelpIdRole] = "id";
+  roles[HelpExternalLinkRole] = "externalLink";
+  return roles;
 }
 
-void HelpModel::forEach(std::function<void(const QString &, int)> &&a_callback)
-{
-    maybeInitialize();
-
-    std::function<void(const QString &, int)> callback = std::move(a_callback);
-    for (int i = 0; i < s_helpEntries.length(); ++i) {
-        callback(s_helpEntries.at(i).m_name, i);
-    }
+int HelpModel::rowCount(const QModelIndex&) const {
+  maybeInitialize();
+  return s_helpEntries.length();
 }
 
-QHash<int, QByteArray> HelpModel::roleNames() const
-{
-    QHash<int, QByteArray> roles;
-    roles[HelpEntryRole] = "name";
-    roles[HelpIdRole] = "id";
-    roles[HelpExternalLinkRole] = "externalLink";
-    return roles;
-}
+QVariant HelpModel::data(const QModelIndex& index, int role) const {
+  maybeInitialize();
 
-int HelpModel::rowCount(const QModelIndex &) const
-{
-    maybeInitialize();
-    return s_helpEntries.length();
-}
+  if (!index.isValid() || index.row() >= s_helpEntries.length()) {
+    return QVariant();
+  }
 
-QVariant HelpModel::data(const QModelIndex &index, int role) const
-{
-    maybeInitialize();
-
-    if (!index.isValid() || index.row() >= s_helpEntries.length()) {
-        return QVariant();
-    }
-
-    switch (role) {
+  switch (role) {
     case HelpEntryRole:
-        return QVariant(s_helpEntries.at(index.row()).m_name);
+      return QVariant(s_helpEntries.at(index.row()).m_name);
 
     case HelpIdRole:
-        return QVariant(index.row());
+      return QVariant(index.row());
 
     case HelpExternalLinkRole:
-        return QVariant(s_helpEntries.at(index.row()).m_externalLink);
+      return QVariant(s_helpEntries.at(index.row()).m_externalLink);
 
     default:
-        return QVariant();
-    }
+      return QVariant();
+  }
 }

@@ -8,14 +8,13 @@
 #include <QObject>
 #include <QString>
 
-class MacOSUtils final
-{
-public:
-    static QString computerName();
+class MacOSUtils final {
+ public:
+  static QString computerName();
 
-    static void enableLoginItem(bool startAtBoot);
+  static void enableLoginItem(bool startAtBoot);
 
-    static void setDockClickHandler();
+  static void setDockClickHandler();
 };
 
-#endif // MACOSUTILS_H
+#endif  // MACOSUTILS_H

@@ -19,52 +19,50 @@ namespace {
 Logger logger(LOG_IAP, "TaskIOSProducts");
 }
 
-TaskIOSProducts::TaskIOSProducts() : Task("TaskIOSProducts")
-{
-    MVPN_COUNT_CTOR(TaskIOSProducts);
+TaskIOSProducts::TaskIOSProducts() : Task("TaskIOSProducts") {
+  MVPN_COUNT_CTOR(TaskIOSProducts);
 }
 
-TaskIOSProducts::~TaskIOSProducts()
-{
-    MVPN_COUNT_DTOR(TaskIOSProducts);
-}
+TaskIOSProducts::~TaskIOSProducts() { MVPN_COUNT_DTOR(TaskIOSProducts); }
 
-void TaskIOSProducts::run(MozillaVPN* vpn)
-{
-    NetworkRequest *request = NetworkRequest::createForIOSProducts(this);
+void TaskIOSProducts::run(MozillaVPN* vpn) {
+  NetworkRequest* request = NetworkRequest::createForIOSProducts(this);
 
-    connect(request, &NetworkRequest::requestFailed, [this, vpn](QNetworkReply::NetworkError error) {
-        logger.log() << "IOS product request failed" << error;
-        vpn->errorHandle(ErrorHandler::toErrorType(error));
-        emit completed();
-    });
+  connect(request, &NetworkRequest::requestFailed,
+          [this, vpn](QNetworkReply::NetworkError error) {
+            logger.log() << "IOS product request failed" << error;
+            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            emit completed();
+          });
 
-    connect(request, &NetworkRequest::requestCompleted, [this](const QByteArray &data) {
-        logger.log() << "IOS product request completed" << data;
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray& data) {
+            logger.log() << "IOS product request completed" << data;
 
-        QJsonDocument json = QJsonDocument::fromJson(data);
-        Q_ASSERT(json.isObject());
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            Q_ASSERT(json.isObject());
 
-        QJsonObject obj = json.object();
-        Q_ASSERT(obj.contains("products"));
+            QJsonObject obj = json.object();
+            Q_ASSERT(obj.contains("products"));
 
-        QJsonValue productsValue = obj.take("products");
-        Q_ASSERT(productsValue.isArray());
+            QJsonValue productsValue = obj.take("products");
+            Q_ASSERT(productsValue.isArray());
 
-        QJsonArray productsArray = productsValue.toArray();
+            QJsonArray productsArray = productsValue.toArray();
 
-        QStringList products;
-        for (QJsonValue product : productsArray) {
-            Q_ASSERT(product.isString());
-            products.append(product.toString());
-        }
+            QStringList products;
+            for (QJsonValue product : productsArray) {
+              Q_ASSERT(product.isString());
+              products.append(product.toString());
+            }
 
-        SettingsHolder::instance()->setIapProducts(products);
+            SettingsHolder::instance()->setIapProducts(products);
 
-        IAPHandler* ipaHandler = IAPHandler::instance();
-        Q_ASSERT(ipaHandler);
+            IAPHandler* ipaHandler = IAPHandler::instance();
+            Q_ASSERT(ipaHandler);
 
-        connect(ipaHandler, &IAPHandler::productsRegistered, this, &TaskIOSProducts::completed);
-        ipaHandler->registerProducts(products);
-    });
+            connect(ipaHandler, &IAPHandler::productsRegistered, this,
+                    &TaskIOSProducts::completed);
+            ipaHandler->registerProducts(products);
+          });
 }

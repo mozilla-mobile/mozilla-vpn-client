@@ -9,13 +9,13 @@ namespace Constants {
 constexpr double SUBSCRIPTION_CURRENCY_VALUE_USD = 4.99;
 
 #if defined(UNIT_TEST)
-#define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \
+#  define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \
     constexpr type what = testingValue;
 #elif defined(QT_DEBUG)
-#define CONSTEXPR(type, what, releaseValue, debugValue, tstingValue) \
+#  define CONSTEXPR(type, what, releaseValue, debugValue, tstingValue) \
     constexpr type what = debugValue;
 #else
-#define CONSTEXPR(type, what, releaseValue, debugValue, tstingValue) \
+#  define CONSTEXPR(type, what, releaseValue, debugValue, tstingValue) \
     constexpr type what = releaseValue;
 #endif
 
@@ -37,4 +37,4 @@ CONSTEXPR(uint32_t, SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC, 3600000, 4000, 0)
 // how often we check the captive portal when the VPN is on.
 CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
 
-}; // namespace Constants
+};  // namespace Constants

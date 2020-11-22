@@ -9,37 +9,33 @@
 
 #include <QObject>
 
-class DummyController final : public ControllerImpl
-{
-    Q_DISABLE_COPY_MOVE(DummyController)
+class DummyController final : public ControllerImpl {
+  Q_DISABLE_COPY_MOVE(DummyController)
 
-public:
-    DummyController();
-    ~DummyController();
+ public:
+  DummyController();
+  ~DummyController();
 
-    void initialize(const Device *device, const Keys *keys) override
-    {
-        Q_UNUSED(device);
-        Q_UNUSED(keys);
+  void initialize(const Device* device, const Keys* keys) override {
+    Q_UNUSED(device);
+    Q_UNUSED(keys);
 
-        emit initialized(true, false, QDateTime());
-    }
+    emit initialized(true, false, QDateTime());
+  }
 
-    void activate(const Server &data,
-                  const Device *device,
-                  const Keys *keys,
-                  const QList<IPAddressRange> &allowedIPAddressRanges,
-                  bool forSwitching) override;
+  void activate(const Server& data, const Device* device, const Keys* keys,
+                const QList<IPAddressRange>& allowedIPAddressRanges,
+                bool forSwitching) override;
 
-    void deactivate(bool forSwitching) override;
+  void deactivate(bool forSwitching) override;
 
-    void checkStatus() override;
+  void checkStatus() override;
 
-    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
-private:
-    int64_t m_txBytes = 0;
-    int64_t m_rxBytes = 0;
+ private:
+  int64_t m_txBytes = 0;
+  int64_t m_rxBytes = 0;
 };
 
-#endif // DUMMYCONTROLLER_H
+#endif  // DUMMYCONTROLLER_H

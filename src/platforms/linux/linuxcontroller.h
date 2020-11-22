@@ -12,35 +12,32 @@
 class DBus;
 class QDBusPendingCallWatcher;
 
-class LinuxController final : public ControllerImpl
-{
-    Q_DISABLE_COPY_MOVE(LinuxController)
+class LinuxController final : public ControllerImpl {
+  Q_DISABLE_COPY_MOVE(LinuxController)
 
-public:
-    LinuxController();
-    ~LinuxController();
+ public:
+  LinuxController();
+  ~LinuxController();
 
-    void initialize(const Device *device, const Keys *keys) override;
+  void initialize(const Device* device, const Keys* keys) override;
 
-    void activate(const Server &server,
-                  const Device *device,
-                  const Keys *keys,
-                  const QList<IPAddressRange> &allowedIPAddressRanges,
-                  bool forSwitching) override;
+  void activate(const Server& server, const Device* device, const Keys* keys,
+                const QList<IPAddressRange>& allowedIPAddressRanges,
+                bool forSwitching) override;
 
-    void deactivate(bool forSwitching) override;
+  void deactivate(bool forSwitching) override;
 
-    void checkStatus() override;
+  void checkStatus() override;
 
-    void getBackendLogs(std::function<void(const QString &)> &&callback) override;
+  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
-private slots:
-    void checkStatusCompleted(QDBusPendingCallWatcher *call);
-    void initializeCompleted(QDBusPendingCallWatcher *call);
-    void operationCompleted(QDBusPendingCallWatcher *call);
+ private slots:
+  void checkStatusCompleted(QDBusPendingCallWatcher* call);
+  void initializeCompleted(QDBusPendingCallWatcher* call);
+  void operationCompleted(QDBusPendingCallWatcher* call);
 
-private:
-    DBus *m_dbus = nullptr;
+ private:
+  DBus* m_dbus = nullptr;
 };
 
-#endif // LINUXCONTROLLER_H
+#endif  // LINUXCONTROLLER_H

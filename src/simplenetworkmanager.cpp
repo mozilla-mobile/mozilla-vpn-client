@@ -7,21 +7,18 @@
 
 #include <QNetworkAccessManager>
 
-SimpleNetworkManager::SimpleNetworkManager()
-{
-    MVPN_COUNT_CTOR(SimpleNetworkManager);
+SimpleNetworkManager::SimpleNetworkManager() {
+  MVPN_COUNT_CTOR(SimpleNetworkManager);
 }
 
-SimpleNetworkManager::~SimpleNetworkManager()
-{
-    MVPN_COUNT_DTOR(SimpleNetworkManager);
+SimpleNetworkManager::~SimpleNetworkManager() {
+  MVPN_COUNT_DTOR(SimpleNetworkManager);
 }
 
-QNetworkAccessManager *SimpleNetworkManager::networkAccessManager()
-{
-    if (!m_networkManager) {
-        m_networkManager = new QNetworkAccessManager(this);
-    }
+QNetworkAccessManager* SimpleNetworkManager::networkAccessManager() {
+  if (!m_networkManager) {
+    m_networkManager = new QNetworkAccessManager(this);
+  }
 
-    return m_networkManager;
+  return m_networkManager;
 }

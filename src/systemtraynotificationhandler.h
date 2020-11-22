@@ -7,14 +7,14 @@
 
 #include "notificationhandler.h"
 
-class SystemTrayNotificationHandler final : public NotificationHandler
-{
-public:
-    SystemTrayNotificationHandler(QObject *parent);
-    ~SystemTrayNotificationHandler();
+class SystemTrayNotificationHandler final : public NotificationHandler {
+ public:
+  SystemTrayNotificationHandler(QObject* parent);
+  ~SystemTrayNotificationHandler();
 
-protected:
-    void notify(const QString &title, const QString &message, int timerSec) override;
+ protected:
+  void notify(const QString& title, const QString& message,
+              int timerSec) override;
 };
 
-#endif // SYSTEMTRAYNOTIFICATIONHANDLER_H
+#endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H

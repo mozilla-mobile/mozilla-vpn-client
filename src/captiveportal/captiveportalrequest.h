@@ -8,27 +8,26 @@
 #include <QObject>
 #include <QUrl>
 
-class CaptivePortalRequest final : public QObject
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(CaptivePortalRequest)
+class CaptivePortalRequest final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(CaptivePortalRequest)
 
-public:
-    explicit CaptivePortalRequest(QObject *parent);
-    ~CaptivePortalRequest();
+ public:
+  explicit CaptivePortalRequest(QObject* parent);
+  ~CaptivePortalRequest();
 
-    void run();
+  void run();
 
-signals:
-    void completed(bool detected);
+ signals:
+  void completed(bool detected);
 
-private:
-    void createRequest(const QUrl &url);
-    void maybeComplete();
+ private:
+  void createRequest(const QUrl& url);
+  void maybeComplete();
 
-private:
-    uint32_t m_pendingRequests = 0;
-    bool m_completed = false;
+ private:
+  uint32_t m_pendingRequests = 0;
+  bool m_completed = false;
 };
 
-#endif // CAPTIVEPORTALREQUEST_H
+#endif  // CAPTIVEPORTALREQUEST_H

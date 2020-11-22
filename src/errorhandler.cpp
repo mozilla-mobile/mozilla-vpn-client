@@ -5,85 +5,85 @@
 #include "errorhandler.h"
 
 // static
-ErrorHandler::ErrorType ErrorHandler::toErrorType(QNetworkReply::NetworkError error)
-{
-    switch (error) {
+ErrorHandler::ErrorType ErrorHandler::toErrorType(
+    QNetworkReply::NetworkError error) {
+  switch (error) {
     case QNetworkReply::ConnectionRefusedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::RemoteHostClosedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::SslHandshakeFailedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::TemporaryNetworkFailureError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::NetworkSessionFailedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::TooManyRedirectsError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::InsecureRedirectError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProxyConnectionRefusedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProxyConnectionClosedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProxyNotFoundError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProxyTimeoutError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProxyAuthenticationRequiredError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ServiceUnavailableError:
-        return ConnectionFailureError;
+      return ConnectionFailureError;
 
     case QNetworkReply::HostNotFoundError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::TimeoutError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::UnknownNetworkError:
-        // On mac, this means: no internet
-        // On Android check if 
-        // openSSL is missing.
-        return NoConnectionError;
+      // On mac, this means: no internet
+      // On Android check if
+      // openSSL is missing.
+      return NoConnectionError;
 
     case QNetworkReply::OperationCanceledError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::BackgroundRequestNotAllowedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ContentAccessDenied:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ContentNotFoundError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ContentReSendError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ContentConflictError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ContentGoneError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::InternalServerError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::OperationNotImplementedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProtocolUnknownError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProtocolInvalidOperationError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::UnknownProxyError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::UnknownContentError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::ProtocolFailure:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::UnknownServerError:
-        return IgnoredError;
+      return IgnoredError;
 
     case QNetworkReply::ContentOperationNotPermittedError:
-        [[fallthrough]];
+      [[fallthrough]];
     case QNetworkReply::AuthenticationRequiredError:
-        return AuthenticationError;
+      return AuthenticationError;
 
     case QNetworkReply::NoError:
-        return NoError;
-    }
+      return NoError;
+  }
 
-    return IgnoredError;
+  return IgnoredError;
 }

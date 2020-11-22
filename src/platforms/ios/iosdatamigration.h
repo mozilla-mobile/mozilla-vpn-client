@@ -7,10 +7,9 @@
 
 #include <QString>
 
-class IOSDataMigration final
-{
-public:
-    static void migrate();
+class IOSDataMigration final {
+ public:
+  static void migrate();
 };
 
-#endif // IOSDATAMIGRATION_H
+#endif  // IOSDATAMIGRATION_H
