@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dbus.h"
+#include "../../src/leakdetector.h"
 #include "../../src/logger.h"
 #include "../../src/loghandler.h"
 #include "dbus_adaptor.h"
@@ -28,7 +29,9 @@ namespace {
 Logger logger(LOG_LINUX, "DBus");
 }
 
-DBus::DBus(QObject* parent) : QObject(parent) {}
+DBus::DBus(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(DBus); }
+
+DBus::~DBus() { MVPN_COUNT_DTOR(DBus); }
 
 void DBus::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);

@@ -12,6 +12,8 @@ constexpr const char* WG_INTERFACE = "moz0";
 
 class WgQuickProcess final : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(WgQuickProcess)
+
  public:
   enum Op {
     Up,
@@ -19,6 +21,7 @@ class WgQuickProcess final : public QObject {
   };
 
   explicit WgQuickProcess(Op op);
+  ~WgQuickProcess();
 
   void run(const QString& privateKey, const QString& deviceIpv4Address,
            const QString& deviceIpv6Address, const QString& serverIpv4Gateway,

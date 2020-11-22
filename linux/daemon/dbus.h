@@ -13,10 +13,12 @@ class DbusAdaptor;
 
 class DBus final : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DBus)
   Q_CLASSINFO("D-Bus Interface", "org.mozilla.vpn.dbus")
 
  public:
   DBus(QObject* parent);
+  ~DBus();
 
   void setAdaptor(DbusAdaptor* adaptor);
 
