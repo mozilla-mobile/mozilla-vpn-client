@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wgquickprocess.h"
+#include "../../src/leakdetector.h"
 #include "../../src/logger.h"
 
 #include <QCoreApplication>
@@ -14,7 +15,11 @@ namespace {
 Logger logger(LOG_LINUX, "WgQuickProcess");
 }
 
-WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {}
+WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {
+  MVPN_COUNT_CTOR(WgQuickProcess);
+}
+
+WgQuickProcess::~WgQuickProcess() { MVPN_COUNT_DTOR(WgQuickProcess); }
 
 void WgQuickProcess::run(
     const QString& privateKey, const QString& deviceIpv4Address,
