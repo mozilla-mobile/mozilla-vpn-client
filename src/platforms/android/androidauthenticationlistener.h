@@ -5,7 +5,7 @@
 #ifndef ANDROIDAUTHENTICATIONLISTENER_H
 #define ANDROIDAUTHENTICATIONLISTENER_H
 
-#include "tasks/authenticate/authenticationlistener.h"
+#include "authenticationlistener.h"
 
 #include <QObject>
 

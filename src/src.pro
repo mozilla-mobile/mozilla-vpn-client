@@ -29,6 +29,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
+        authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
@@ -96,6 +97,7 @@ SOURCES += \
         timersingleshot.cpp
 
 HEADERS += \
+        authenticationlistener.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportalactivator.h \
         captiveportal/captiveportaldetection.h \
@@ -194,7 +196,7 @@ linux:!android {
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/authenticationlistener.cpp
+            tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
             platforms/linux/backendlogsobserver.h \
@@ -203,7 +205,7 @@ linux:!android {
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxpingsendworker.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/authenticationlistener.h
+            tasks/authenticate/desktopauthenticationlistener.h
 
     isEmpty(PREFIX) {
         PREFIX=/usr
@@ -245,11 +247,9 @@ else:android {
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsendworker.cpp \
-               tasks/authenticate/authenticationlistener.cpp \
                platforms/linux/linuxcryptosettings.cpp
 
-    HEADERS += platforms/linux/linuxpingsendworker.h \
-               tasks/authenticate/authenticationlistener.h
+    HEADERS += platforms/linux/linuxpingsendworker.h
 
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
@@ -300,7 +300,7 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/authenticationlistener.cpp
+            tasks/authenticate/desktopauthenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
@@ -312,7 +312,7 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/authenticationlistener.h
+            tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
             platforms/macos/macosutils.h
