@@ -5,19 +5,21 @@
 #ifndef IPADDRESSRANGE_H
 #define IPADDRESSRANGE_H
 
+#include <QObject>
 #include <QString>
 
-class IPAddressRange
+class IPAddressRange final
 {
+
 public:
     enum IPAddressType {
         IPv4,
         IPv6,
     };
 
-    IPAddressRange(const QString &ipAddress, uint32_t range, IPAddressType type)
-        : m_ipAddress(ipAddress), m_range(range), m_type(type)
-    {}
+    IPAddressRange(const QString &ipAddress, uint32_t range, IPAddressType type);
+    IPAddressRange(const IPAddressRange &other);
+    ~IPAddressRange();
 
     const QString &ipAddress() const { return m_ipAddress; }
     uint32_t range() const { return m_range; }

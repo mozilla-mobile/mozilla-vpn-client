@@ -13,9 +13,11 @@ class AuthenticationListener;
 class TaskAuthenticate final : public Task
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(TaskAuthenticate)
 
 public:
-    TaskAuthenticate() : Task("TaskAuthenticate") {}
+    TaskAuthenticate();
+    ~TaskAuthenticate();
 
     void run(MozillaVPN *vpn) override;
 

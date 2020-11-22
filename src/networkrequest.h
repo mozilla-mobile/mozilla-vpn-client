@@ -14,9 +14,10 @@ class QNetworkAccessManager;
 class NetworkRequest final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(NetworkRequest)
 
 public:
-    ~NetworkRequest() = default;
+    ~NetworkRequest();
 
     // This object deletes itself at the end of the operation.
 

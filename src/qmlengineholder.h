@@ -11,6 +11,8 @@
 
 class QmlEngineHolder final : public NetworkManager
 {
+    Q_DISABLE_COPY_MOVE(QmlEngineHolder)
+
 public:
     QmlEngineHolder();
     ~QmlEngineHolder();

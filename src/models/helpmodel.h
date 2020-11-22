@@ -10,6 +10,7 @@
 class HelpModel final : public QAbstractListModel
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(HelpModel)
 
 public:
     enum HelpRoles {
@@ -18,7 +19,8 @@ public:
         HelpExternalLinkRole,
     };
 
-    HelpModel() = default;
+    HelpModel();
+    ~HelpModel();
 
     Q_INVOKABLE void open(int id);
 

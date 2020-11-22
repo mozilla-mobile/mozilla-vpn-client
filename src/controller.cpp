@@ -7,6 +7,7 @@
 #include "captiveportal/captiveportalactivator.h"
 #include "controllerimpl.h"
 #include "ipaddressrange.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
@@ -34,10 +35,15 @@ Logger logger(LOG_CONTROLLER, "Controller");
 
 Controller::Controller()
 {
+    MVPN_COUNT_CTOR(Controller);
+
     connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
 }
 
-Controller::~Controller() = default;
+Controller::~Controller()
+{
+    MVPN_COUNT_DTOR(Controller);
+}
 
 Controller::State Controller::state() const
 {

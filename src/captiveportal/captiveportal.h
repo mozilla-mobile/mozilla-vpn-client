@@ -5,6 +5,7 @@
 #ifndef CAPTIVEPORTAL_H
 #define CAPTIVEPORTAL_H
 
+#include <QObject>
 #include <QStringList>
 
 constexpr int32_t CAPTIVEPORTAL_LOOKUPTIMER = 5000;
@@ -17,7 +18,12 @@ constexpr const char *CAPTIVEPORTAL_REQUEST_CONTENT = "success";
 
 class CaptivePortal final
 {
+    Q_DISABLE_COPY_MOVE(CaptivePortal)
+
 public:
+    CaptivePortal();
+    ~CaptivePortal();
+
     [[nodiscard]] bool fromJson(const QByteArray &json);
 
     [[nodiscard]] bool fromSettings();

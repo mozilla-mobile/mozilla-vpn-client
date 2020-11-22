@@ -7,10 +7,15 @@
 
 #include "task.h"
 
-class TaskCaptivePortalLookup : public Task
+#include <QObject>
+
+class TaskCaptivePortalLookup final : public Task
 {
+    Q_DISABLE_COPY_MOVE(TaskCaptivePortalLookup)
+
 public:
-    TaskCaptivePortalLookup() : Task("TaskCaptivePortalLookup") {}
+    TaskCaptivePortalLookup();
+    ~TaskCaptivePortalLookup();
 
     void run(MozillaVPN *vpn) override;
 };

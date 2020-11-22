@@ -7,9 +7,16 @@
 
 #include "networkmanager.h"
 
-class SimpleNetworkManager : public NetworkManager
+#include <QObject>
+
+class SimpleNetworkManager final : public NetworkManager
 {
+    Q_DISABLE_COPY_MOVE(SimpleNetworkManager)
+
 public:
+    SimpleNetworkManager();
+    ~SimpleNetworkManager();
+
     QNetworkAccessManager *networkAccessManager() override;
 
 private:

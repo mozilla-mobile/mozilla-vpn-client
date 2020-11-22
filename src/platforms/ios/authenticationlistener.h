@@ -17,9 +17,12 @@ class QUrlQuery;
 class AuthenticationListener final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(AuthenticationListener)
 
 public:
     static AuthenticationListener *create(QObject *parent);
+
+    ~AuthenticationListener();
 
     void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query);
 

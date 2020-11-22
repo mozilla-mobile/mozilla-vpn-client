@@ -7,13 +7,18 @@
 
 #include "controllerimpl.h"
 
+#include <QObject>
+
 class DBus;
 class QDBusPendingCallWatcher;
 
 class LinuxController final : public ControllerImpl
 {
+    Q_DISABLE_COPY_MOVE(LinuxController)
+
 public:
     LinuxController();
+    ~LinuxController();
 
     void initialize(const Device *device, const Keys *keys) override;
 

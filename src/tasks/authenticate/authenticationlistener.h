@@ -17,6 +17,7 @@ class QUrlQuery;
 class AuthenticationListener : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(AuthenticationListener)
 
 public:
     static AuthenticationListener *create(QObject *parent);
@@ -32,7 +33,7 @@ signals:
 
 protected:
     explicit AuthenticationListener(QObject *parent);
-    virtual ~AuthenticationListener() = default;
+    virtual ~AuthenticationListener();
 
 private:
     QOAuthHttpServerReplyHandler *m_server = nullptr;

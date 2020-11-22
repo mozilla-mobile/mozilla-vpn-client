@@ -11,6 +11,7 @@
 class SettingsHolder final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(SettingsHolder)
 
     Q_PROPERTY(bool ipv6Enabled READ ipv6Enabled WRITE setIpv6Enabled NOTIFY ipv6EnabledChanged)
     Q_PROPERTY(bool localNetworkAccess READ localNetworkAccess WRITE setLocalNetworkAccess NOTIFY

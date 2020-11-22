@@ -15,11 +15,15 @@ class Server;
 class ServerData final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(ServerData);
 
     Q_PROPERTY(QString countryCode READ countryCode NOTIFY changed)
     Q_PROPERTY(QString city READ city NOTIFY changed)
 
 public:
+    ServerData();
+    ~ServerData();
+
     [[nodiscard]] bool fromSettings();
 
     void writeSettings();

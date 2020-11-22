@@ -7,12 +7,14 @@
 
 #include <QObject>
 
-class CaptivePortalActivator : public QObject
+class CaptivePortalActivator final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(CaptivePortalActivator)
 
 public:
     explicit CaptivePortalActivator(QObject *parent);
+    ~CaptivePortalActivator();
 
     void run();
 

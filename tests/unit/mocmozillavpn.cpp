@@ -46,8 +46,8 @@ void MozillaVPN::openLink(LinkType)
 
 void MozillaVPN::scheduleTask(Task *task)
 {
-    task->run(this);
     connect(task, &Task::completed, task, &Task::deleteLater);
+    task->run(this);
 }
 
 void MozillaVPN::maybeRunTask()
@@ -178,3 +178,5 @@ void MozillaVPN::activate() {}
 void MozillaVPN::deactivate() {}
 
 void MozillaVPN::refreshDevices() {}
+
+void MozillaVPN::quit() {}

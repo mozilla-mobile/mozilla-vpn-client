@@ -4,6 +4,7 @@
 
 #include "taskremovedevice.h"
 #include "errorhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
@@ -15,7 +16,14 @@ Logger logger(LOG_MAIN, "TaskRemoveDevice");
 
 TaskRemoveDevice::TaskRemoveDevice(const QString &deviceName)
     : Task("TaskRemoveDevice"), m_deviceName(deviceName)
-{}
+{
+    MVPN_COUNT_CTOR(TaskRemoveDevice);
+}
+
+TaskRemoveDevice::~TaskRemoveDevice()
+{
+    MVPN_COUNT_DTOR(TaskRemoveDevice);
+}
 
 void TaskRemoveDevice::run(MozillaVPN *vpn)
 {

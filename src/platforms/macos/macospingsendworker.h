@@ -12,6 +12,11 @@ class QSocketNotifier;
 class MacOSPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(MacOSPingSendWorker)
+
+public:
+    MacOSPingSendWorker();
+    ~MacOSPingSendWorker();
 
 public slots:
     void sendPing(const QString &destination) override;

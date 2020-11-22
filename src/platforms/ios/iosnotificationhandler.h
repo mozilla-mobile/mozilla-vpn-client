@@ -7,10 +7,15 @@
 
 #include "notificationhandler.h"
 
+#include <QObject>
+
 class IOSNotificationHandler final : public NotificationHandler
 {
+    Q_DISABLE_COPY_MOVE(IOSNotificationHandler)
+
 public:
     IOSNotificationHandler(QObject *parent);
+    ~IOSNotificationHandler();
 
 protected:
     void notify(const QString &title, const QString &message, int timerSec) override;

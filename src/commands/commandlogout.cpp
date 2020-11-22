@@ -51,4 +51,4 @@ int CommandLogout::run(QStringList &tokens)
     });
 }
 
-static CommandLogout s_commandLogout;
+static Command::RegistrationProxy<CommandLogout> s_commandLogout;

@@ -4,6 +4,7 @@
 
 #include "taskauthenticate.h"
 #include "errorhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
@@ -43,6 +44,16 @@ QByteArray generatePkceCodeVerifier()
 }
 
 } // anonymous namespace
+
+TaskAuthenticate::TaskAuthenticate() : Task("TaskAuthenticate")
+{
+    MVPN_COUNT_CTOR(TaskAuthenticate);
+}
+
+TaskAuthenticate::~TaskAuthenticate()
+{
+    MVPN_COUNT_DTOR(TaskAuthenticate);
+}
 
 void TaskAuthenticate::run(MozillaVPN *vpn)
 {

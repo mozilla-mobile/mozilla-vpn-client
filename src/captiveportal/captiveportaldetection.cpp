@@ -6,6 +6,7 @@
 #include "captiveportal.h"
 #include "captiveportalrequest.h"
 #include "constants.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -16,7 +17,14 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 
 CaptivePortalDetection::CaptivePortalDetection()
 {
+    MVPN_COUNT_CTOR(CaptivePortalDetection);
+
     connect(&m_timer, &QTimer::timeout, this, &CaptivePortalDetection::detectCaptivePortal);
+}
+
+CaptivePortalDetection::~CaptivePortalDetection()
+{
+    MVPN_COUNT_DTOR(CaptivePortalDetection);
 }
 
 void CaptivePortalDetection::initialize()

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "notificationhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -32,7 +33,12 @@ NotificationHandler *NotificationHandler::create(QObject *parent)
 
 NotificationHandler::NotificationHandler(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(NotificationHandler);
+}
 
+NotificationHandler::~NotificationHandler()
+{
+    MVPN_COUNT_DTOR(NotificationHandler);
 }
 
 void NotificationHandler::showNotification()

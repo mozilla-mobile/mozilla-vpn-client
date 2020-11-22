@@ -76,6 +76,7 @@ bool checkDaemonVersion()
        QCoreApplication::processEvents();
     }
 
+    delete dbus;
     return value;
 }
 

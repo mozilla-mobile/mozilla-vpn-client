@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosmenubar.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -12,7 +13,16 @@ namespace {
 Logger logger(LOG_MACOS, "MacOSManuBar");
 }
 
-// static
+MacOSMenuBar::MacOSMenuBar()
+{
+    MVPN_COUNT_CTOR(MacOSMenuBar);
+}
+
+MacOSMenuBar::~MacOSMenuBar()
+{
+    MVPN_COUNT_DTOR(MacOSMenuBar);
+}
+
 void MacOSMenuBar::initialize()
 {
     logger.log() << "Creating menubar";

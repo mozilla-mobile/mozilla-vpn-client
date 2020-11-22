@@ -4,6 +4,7 @@
 
 #include "localizer.h"
 #include "constants.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
 
@@ -18,25 +19,29 @@ Localizer *s_instance = nullptr;
 } // namespace
 
 // static
-void Localizer::createInstance(SettingsHolder *settingsHolder)
-{
-    Q_ASSERT(settingsHolder);
-
-    logger.log() << "Creating the localizer singleton";
-
-    Q_ASSERT(!s_instance);
-    s_instance = new Localizer(settingsHolder->parent());
-    s_instance->initialize(settingsHolder->languageCode());
-}
-
-// static
 Localizer *Localizer::instance()
 {
     Q_ASSERT(s_instance);
     return s_instance;
 }
 
-Localizer::Localizer(QObject *parent) : QAbstractListModel(parent) {}
+Localizer::Localizer()
+{
+    MVPN_COUNT_CTOR(Localizer);
+
+    Q_ASSERT(!s_instance);
+    s_instance = this;
+
+    initialize(SettingsHolder::instance()->languageCode());
+}
+
+Localizer::~Localizer()
+{
+    MVPN_COUNT_DTOR(Localizer);
+
+    Q_ASSERT(s_instance = this);
+    s_instance = nullptr;
+}
 
 void Localizer::initialize(const QString &code)
 {

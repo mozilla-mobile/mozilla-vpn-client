@@ -10,6 +10,11 @@
 class DummyPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(DummyPingSendWorker)
+
+public:
+    DummyPingSendWorker();
+    ~DummyPingSendWorker();
 
 public slots:
     void sendPing(const QString &destination) override;

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlineparser.h"
+#include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -17,6 +18,11 @@ Logger logger(LOG_MAIN, "main");
 
 int main(int argc, char *argv[])
 {
+#ifdef QT_DEBUG
+    LeakDetector leakDetector;
+    Q_UNUSED(leakDetector);
+#endif
+
     // Our logging system.
     qInstallMessageHandler(LogHandler::messageQTHandler);
 

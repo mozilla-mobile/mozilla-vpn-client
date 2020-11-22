@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "pingsender.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "pingsendworker.h"
 
@@ -26,6 +27,8 @@ Logger logger(LOG_NETWORKING, "PingSender");
 
 PingSender::PingSender(QObject *parent, QThread *thread) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(PingSender);
+
     m_time.start();
 
     PingSendWorker *worker =
@@ -44,6 +47,11 @@ PingSender::PingSender(QObject *parent, QThread *thread) : QObject(parent)
     connect(this, &QObject::destroyed, worker, &QObject::deleteLater);
     connect(worker, &PingSendWorker::pingFailed, this, &PingSender::pingFailed);
     connect(worker, &PingSendWorker::pingSucceeded, this, &PingSender::pingSucceeded);
+}
+
+PingSender::~PingSender()
+{
+    MVPN_COUNT_DTOR(PingSender);
 }
 
 void PingSender::send(const QString &destination)

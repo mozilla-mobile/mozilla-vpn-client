@@ -62,4 +62,4 @@ bool CommandSelect::pickServer(const QString &hostname, ServerData &serverData)
     return false;
 }
 
-static CommandSelect s_commandSelect;
+static Command::RegistrationProxy<CommandSelect> s_commandSelect;

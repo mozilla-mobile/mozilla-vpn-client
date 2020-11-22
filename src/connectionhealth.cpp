@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
@@ -26,6 +27,8 @@ Logger logger(LOG_NETWORKING, "ConnectionHealth");
 
 ConnectionHealth::ConnectionHealth()
 {
+    MVPN_COUNT_CTOR(ConnectionHealth);
+
     connect(&m_pingTimer, &QTimer::timeout, this, &ConnectionHealth::nextPing);
 
     connect(&m_noSignalTimer, &QTimer::timeout, this, &ConnectionHealth::noSignalDetected);
@@ -36,6 +39,8 @@ ConnectionHealth::ConnectionHealth()
 
 ConnectionHealth::~ConnectionHealth()
 {
+    MVPN_COUNT_DTOR(ConnectionHealth);
+
     m_pingThread.quit();
     m_pingThread.wait();
 }
@@ -114,7 +119,7 @@ void ConnectionHealth::nextPing()
     }
 }
 
-void ConnectionHealth::pingReceived(PingSender *pingSender, uint32_t msec)
+void ConnectionHealth::pingReceived(PingSender *pingSender, qint64 msec)
 {
     logger.log() << "Ping answer received in msec:" << msec;
 

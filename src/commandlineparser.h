@@ -5,12 +5,18 @@
 #ifndef COMMANDLINEPARSER_H
 #define COMMANDLINEPARSER_H
 
+#include <QObject>
 #include <QString>
 #include <QStringList>
 
 class CommandLineParser final
 {
+    Q_DISABLE_COPY_MOVE(CommandLineParser)
+
 public:
+    CommandLineParser();
+    ~CommandLineParser();
+
     struct Option
     {
         Option(const char *a_short, const char *a_long, const char *description)

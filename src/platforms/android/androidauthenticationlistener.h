@@ -7,10 +7,15 @@
 
 #include "tasks/authenticate/authenticationlistener.h"
 
+#include <QObject>
+
 class AndroidAuthenticationListener final : public AuthenticationListener
 {
+    Q_DISABLE_COPY_MOVE(AndroidAuthenticationListener)
+
 public:
     AndroidAuthenticationListener(QObject *parent);
+    ~AndroidAuthenticationListener();
 
     void start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query) override;
 };

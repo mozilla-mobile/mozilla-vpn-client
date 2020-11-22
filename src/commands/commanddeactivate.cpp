@@ -84,4 +84,4 @@ int CommandDeactivate::run(QStringList &tokens)
     });
 }
 
-static CommandDeactivate s_commandDeactivte;
+static Command::RegistrationProxy<CommandDeactivate> s_commandDeactivate;

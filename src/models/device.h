@@ -13,6 +13,10 @@ class QJsonValue;
 class Device final
 {
 public:
+    Device();
+    Device(const Device &other);
+    ~Device();
+
     static QString currentDeviceName();
 
     [[nodiscard]] bool fromJson(const QJsonValue &json);

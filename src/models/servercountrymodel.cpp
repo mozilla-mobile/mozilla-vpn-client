@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountrymodel.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "servercountry.h"
 #include "serverdata.h"
@@ -15,6 +16,16 @@
 
 namespace {
 Logger logger(LOG_MODEL, "ServerCountryModel");
+}
+
+ServerCountryModel::ServerCountryModel()
+{
+    MVPN_COUNT_CTOR(ServerCountryModel);
+}
+
+ServerCountryModel::~ServerCountryModel()
+{
+    MVPN_COUNT_DTOR(ServerCountryModel);
 }
 
 bool ServerCountryModel::fromSettings()

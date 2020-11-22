@@ -10,9 +10,11 @@
 class MacOSStartAtBootWatcher final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(MacOSStartAtBootWatcher)
 
 public:
     explicit MacOSStartAtBootWatcher(bool startAtBoot);
+    ~MacOSStartAtBootWatcher();
 
 public slots:
     void startAtBootChanged(bool value);

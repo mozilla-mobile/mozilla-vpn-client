@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "../../src/leakdetector.h"
 #include "../../src/timersingleshot.h"
 #include "helper.h"
 #include "networkrequest.h"
@@ -10,6 +11,8 @@ namespace {};
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(NetworkRequest);
+
     Q_ASSERT(!TestHelper::networkConfig.isEmpty());
     TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
 
@@ -22,6 +25,11 @@ NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
             emit requestCompleted(nc.m_body);
         }
     });
+}
+
+NetworkRequest::~NetworkRequest()
+{
+    MVPN_COUNT_DTOR(NetworkRequest);
 }
 
 // static

@@ -11,9 +11,11 @@
 class ReleaseMonitor final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(ReleaseMonitor)
 
 public:
     ReleaseMonitor();
+    ~ReleaseMonitor();
 
     void runSoon();
 

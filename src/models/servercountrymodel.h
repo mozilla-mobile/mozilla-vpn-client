@@ -16,6 +16,8 @@ class ServerData;
 
 class ServerCountryModel final : public QAbstractListModel
 {
+    Q_DISABLE_COPY_MOVE(ServerCountryModel)
+
 public:
     enum ServerCountryRoles {
         NameRole = Qt::UserRole + 1,
@@ -23,7 +25,8 @@ public:
         CitiesRole,
     };
 
-    ServerCountryModel() = default;
+    ServerCountryModel();
+    ~ServerCountryModel();
 
     [[nodiscard]] bool fromSettings();
 

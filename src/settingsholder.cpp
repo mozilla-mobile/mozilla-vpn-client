@@ -4,6 +4,7 @@
 
 #include "settingsholder.h"
 #include "cryptosettings.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QSettings>
@@ -68,6 +69,8 @@ SettingsHolder::SettingsHolder()
       m_settings("mozilla_testing", "vpn")
 #endif
 {
+    MVPN_COUNT_CTOR(SettingsHolder);
+
     logger.log() << "Creating SettingsHolder instance";
 
     Q_ASSERT(!s_instance);
@@ -76,6 +79,8 @@ SettingsHolder::SettingsHolder()
 
 SettingsHolder::~SettingsHolder()
 {
+    MVPN_COUNT_DTOR(SettingsHolder);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 

@@ -15,6 +15,10 @@ class QJsonObject;
 class ServerCity final
 {
 public:
+    ServerCity();
+    ServerCity(const ServerCity &other);
+    ~ServerCity();
+
     [[nodiscard]] bool fromJson(QJsonObject &obj);
 
     const QString &name() const { return m_name; }

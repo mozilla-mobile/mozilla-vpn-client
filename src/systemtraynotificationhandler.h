@@ -11,6 +11,7 @@ class SystemTrayNotificationHandler final : public NotificationHandler
 {
 public:
     SystemTrayNotificationHandler(QObject *parent);
+    ~SystemTrayNotificationHandler();
 
 protected:
     void notify(const QString &title, const QString &message, int timerSec) override;

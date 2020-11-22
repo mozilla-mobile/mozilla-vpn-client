@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macospingsendworker.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QSocketNotifier>
@@ -64,6 +65,16 @@ u_short in_cksum(u_short *addr, int len)
 }
 
 }; // namespace
+
+MacOSPingSendWorker::MacOSPingSendWorker()
+{
+    MVPN_COUNT_CTOR(MacOSPingSendWorker);
+}
+
+MacOSPingSendWorker::~MacOSPingSendWorker()
+{
+    MVPN_COUNT_DTOR(MacOSPingSendWorker);
+}
 
 void MacOSPingSendWorker::sendPing(const QString &destination)
 {

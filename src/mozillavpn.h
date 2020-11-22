@@ -36,6 +36,7 @@ class TestTasks;
 class MozillaVPN final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(MozillaVPN)
 
 public:
     enum State {
@@ -171,6 +172,8 @@ public:
     void reset();
 
     bool modelsInitialized() const;
+
+    void quit();
 
 private:
     void setState(State state);

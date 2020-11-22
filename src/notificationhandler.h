@@ -10,10 +10,12 @@
 class NotificationHandler : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(NotificationHandler)
+
 public:
     static NotificationHandler *create(QObject *parent);
 
-    virtual ~NotificationHandler() = default;
+    virtual ~NotificationHandler();
 
 public slots:
     void showNotification();

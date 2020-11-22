@@ -3,10 +3,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercity.h"
+#include "leakdetector.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+
+ServerCity::ServerCity()
+{
+    MVPN_COUNT_CTOR(ServerCity);
+}
+
+ServerCity::ServerCity(const ServerCity &other)
+{
+    MVPN_COUNT_CTOR(ServerCity);
+    m_name = other.m_name;
+    m_code = other.m_code;
+    m_servers = other.m_servers;
+}
+
+ServerCity::~ServerCity()
+{
+    MVPN_COUNT_DTOR(ServerCity);
+}
 
 bool ServerCity::fromJson(QJsonObject &obj)
 {

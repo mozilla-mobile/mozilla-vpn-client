@@ -82,4 +82,4 @@ int CommandActivate::run(QStringList &tokens)
     });
 }
 
-static CommandActivate s_commandActivate;
+static Command::RegistrationProxy<CommandActivate> s_commandActivate;

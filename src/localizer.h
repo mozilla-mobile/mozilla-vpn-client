@@ -13,6 +13,8 @@ class SettingsHolder;
 class Localizer final : public QAbstractListModel
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(Localizer)
+
     Q_PROPERTY(QString systemLanguage READ systemLanguage CONSTANT)
     Q_PROPERTY(QString systemLocalizedLanguage READ systemLocalizedLanguage CONSTANT)
 
@@ -23,11 +25,10 @@ public:
         CodeRole,
     };
 
-    static void createInstance(SettingsHolder *settingsHolder);
-
     static Localizer *instance();
 
-    ~Localizer() = default;
+    Localizer();
+    ~Localizer();
 
     Q_INVOKABLE QString localizeSubscriptionCurrencyValue() const;
 
@@ -48,8 +49,6 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    Localizer(QObject *parent);
-
     QString languageName(const QString &code) const;
     QString localizedLanguageName(const QString &code) const;
 

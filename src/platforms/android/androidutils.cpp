@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidutils.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "platforms/android/androidauthenticationlistener.h"
@@ -53,12 +54,16 @@ AndroidUtils *AndroidUtils::instance()
 
 AndroidUtils::AndroidUtils(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(AndroidUtils);
+
     Q_ASSERT(!s_instance);
     s_instance = this;
 }
 
 AndroidUtils::~AndroidUtils()
 {
+    MVPN_COUNT_DTOR(AndroidUtils);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }

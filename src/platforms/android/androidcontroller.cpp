@@ -4,6 +4,7 @@
 
 #include "androidcontroller.h"
 #include "ipaddressrange.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
@@ -47,11 +48,15 @@ AndroidController *s_instance = nullptr;
 
 AndroidController::AndroidController() : m_binder(this)
 {
+    MVPN_COUNT_CTOR(AndroidController);
+
     Q_ASSERT(!s_instance);
     s_instance = this;
 }
 AndroidController::~AndroidController()
 {
+    MVPN_COUNT_DTOR(AndroidController);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "user.h"
+#include "leakdetector.h"
 #include "settingsholder.h"
 
 #include <QJsonDocument>
@@ -10,6 +11,16 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+
+User::User()
+{
+    MVPN_COUNT_CTOR(User);
+}
+
+User::~User()
+{
+    MVPN_COUNT_DTOR(User);
+}
 
 bool User::fromJson(const QByteArray &json)
 {

@@ -4,6 +4,7 @@
 
 #include "dbus.h"
 #include "ipaddressrange.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
@@ -24,6 +25,8 @@ Logger logger(LOG_LINUX, "DBus");
 
 DBus::DBus(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(DBus);
+
     m_dbus = new OrgMozillaVpnDbusInterface(DBUS_SERVICE,
                                             DBUS_PATH,
                                             QDBusConnection::systemBus(),
@@ -31,6 +34,11 @@ DBus::DBus(QObject *parent) : QObject(parent)
 
     connect(m_dbus, &OrgMozillaVpnDbusInterface::connected, this, &DBus::connected);
     connect(m_dbus, &OrgMozillaVpnDbusInterface::disconnected, this, &DBus::disconnected);
+}
+
+DBus::~DBus()
+{
+    MVPN_COUNT_DTOR(DBus);
 }
 
 QDBusPendingCallWatcher *DBus::version()

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummycontroller.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
 
@@ -10,6 +11,16 @@
 
 namespace {
 Logger logger(LOG_CONTROLLER, "DummyController");
+}
+
+DummyController::DummyController()
+{
+    MVPN_COUNT_CTOR(DummyController);
+}
+
+DummyController::~DummyController()
+{
+    MVPN_COUNT_DTOR(DummyController);
 }
 
 void DummyController::activate(const Server &server,

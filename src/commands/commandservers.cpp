@@ -84,4 +84,4 @@ int CommandServers::run(QStringList &tokens)
     });
 }
 
-static CommandServers s_commandServers;
+static Command::RegistrationProxy<CommandServers> s_commandServers;

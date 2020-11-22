@@ -6,6 +6,7 @@
 #include "backendlogsobserver.h"
 #include "dbus.h"
 #include "errorhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
@@ -25,9 +26,16 @@ Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxController");
 
 LinuxController::LinuxController()
 {
+    MVPN_COUNT_CTOR(LinuxController);
+
     m_dbus = new DBus(this);
     connect(m_dbus, &DBus::connected, this, &LinuxController::connected);
     connect(m_dbus, &DBus::disconnected, this, &LinuxController::disconnected);
+}
+
+LinuxController::~LinuxController()
+{
+    MVPN_COUNT_DTOR(LinuxController);
 }
 
 void LinuxController::initialize(const Device *device, const Keys *keys)

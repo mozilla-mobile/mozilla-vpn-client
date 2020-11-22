@@ -5,22 +5,20 @@
 #ifndef TASKFUNCTION_H
 #define TASKFUNCTION_H
 
-#include <functional>
-
 #include "task.h"
+
+#include <functional>
+#include <QObject>
 
 class TaskFunction final : public Task
 {
-public:
-    TaskFunction(std::function<void(MozillaVPN *)> &&callback)
-        : Task("TaskFunction"), m_callback(std::move(callback))
-    {}
+    Q_DISABLE_COPY_MOVE(TaskFunction)
 
-    void run(MozillaVPN *vpn) override
-    {
-        m_callback(vpn);
-        emit completed();
-    }
+public:
+    TaskFunction(std::function<void(MozillaVPN *)> &&callback);
+    ~TaskFunction();
+
+    void run(MozillaVPN *vpn) override;
 
 private:
     std::function<void(MozillaVPN *)> m_callback;

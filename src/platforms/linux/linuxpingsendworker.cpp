@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxpingsendworker.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QSocketNotifier>
@@ -16,6 +17,16 @@
 
 namespace {
 Logger logger({LOG_LINUX, LOG_NETWORKING}, "LinuxPingSendWorker");
+}
+
+LinuxPingSendWorker::LinuxPingSendWorker()
+{
+    MVPN_COUNT_CTOR(LinuxPingSendWorker);
+}
+
+LinuxPingSendWorker::~LinuxPingSendWorker()
+{
+    MVPN_COUNT_DTOR(LinuxPingSendWorker);
 }
 
 void LinuxPingSendWorker::sendPing(const QString &destination)

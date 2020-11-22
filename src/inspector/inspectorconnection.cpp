@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "inspectorconnection.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
@@ -19,6 +20,8 @@ Logger logger(LOG_INSPECTOR, "InspectorConnection");
 InspectorConnection::InspectorConnection(QObject *parent, QTcpSocket *connection)
     : QObject(parent), m_connection(connection)
 {
+    MVPN_COUNT_CTOR(InspectorConnection);
+
     logger.log() << "New connection received";
 
     Q_ASSERT(m_connection);
@@ -27,6 +30,7 @@ InspectorConnection::InspectorConnection(QObject *parent, QTcpSocket *connection
 
 InspectorConnection::~InspectorConnection()
 {
+    MVPN_COUNT_DTOR(InspectorConnection);
     logger.log() << "Connection released";
 }
 

@@ -4,6 +4,7 @@
 
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
@@ -24,9 +25,17 @@ Logger logger(LOG_NETWORKING, "NetworkRequest");
 
 NetworkRequest::NetworkRequest(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(NetworkRequest);
+
     logger.log() << "Network request created";
+
     m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
     m_request.setTransferTimeout(REQUEST_TIMEOUT_MSEC);
+}
+
+NetworkRequest::~NetworkRequest()
+{
+    MVPN_COUNT_DTOR(NetworkRequest);
 }
 
 // static

@@ -15,6 +15,7 @@ class QAction;
 class SystemTrayHandler final : public QSystemTrayIcon
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(SystemTrayHandler)
 
 public:
     static SystemTrayHandler *instance();
