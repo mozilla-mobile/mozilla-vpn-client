@@ -4,6 +4,7 @@
 
 #include "androidwebview.h"
 #include "errorhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
@@ -72,6 +73,8 @@ void AndroidWebView::onError(
 
 AndroidWebView::AndroidWebView(QQuickItem *parent) : QQuickItem(parent)
 {
+    MVPN_COUNT_CTOR(AndroidWebView);
+
     logger.log() << "AndroidWebView created";
 
     // We do not support multiple android webviews. No needs for now.
@@ -131,6 +134,8 @@ AndroidWebView::AndroidWebView(QQuickItem *parent) : QQuickItem(parent)
 
 AndroidWebView::~AndroidWebView()
 {
+    MVPN_COUNT_DTOR(AndroidWebView);
+
     logger.log() << "AndroidWebView destroyed";
 
     Q_ASSERT(s_instance == this);

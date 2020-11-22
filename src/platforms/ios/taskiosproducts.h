@@ -7,10 +7,15 @@
 
 #include "task.h"
 
+#include <QObject>
+
 class TaskIOSProducts final : public Task
 {
+   Q_DISABLE_COPY_MOVE(TaskIOSProducts)
+
 public:
-    TaskIOSProducts() : Task("TaskIOSProducts") {}
+    TaskIOSProducts();
+    ~TaskIOSProducts();
 
     void run(MozillaVPN* vpn) override;
 };

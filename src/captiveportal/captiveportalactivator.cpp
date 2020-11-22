@@ -4,6 +4,7 @@
 
 #include "captiveportalactivator.h"
 #include "captiveportalrequest.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "timersingleshot.h"
@@ -15,7 +16,15 @@ namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalActivator");
 }
 
-CaptivePortalActivator::CaptivePortalActivator(QObject *parent) : QObject(parent) {}
+CaptivePortalActivator::CaptivePortalActivator(QObject *parent) : QObject(parent)
+{
+    MVPN_COUNT_CTOR(CaptivePortalActivator);
+}
+
+CaptivePortalActivator::~CaptivePortalActivator()
+{
+    MVPN_COUNT_DTOR(CaptivePortalActivator);
+}
 
 void CaptivePortalActivator::run()
 {

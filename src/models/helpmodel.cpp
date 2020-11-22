@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "helpmodel.h"
+#include "leakdetector.h"
 #include "mozillavpn.h"
 
 namespace {
@@ -49,6 +50,16 @@ void maybeInitialize()
 }
 
 } // namespace
+
+HelpModel::HelpModel()
+{
+    MVPN_COUNT_CTOR(HelpModel);
+}
+
+HelpModel::~HelpModel()
+{
+    MVPN_COUNT_DTOR(HelpModel);
+}
 
 void HelpModel::open(int id)
 {

@@ -55,6 +55,8 @@ SOURCES += \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        ipaddressrange.cpp \
+        leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
         loghandler.cpp \
@@ -88,6 +90,7 @@ SOURCES += \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
+        tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         timersingleshot.cpp
@@ -118,6 +121,7 @@ HEADERS += \
         errorhandler.h \
         fontloader.h \
         ipaddressrange.h \
+        leakdetector.h \
         localizer.h \
         logger.h \
         loghandler.h \

@@ -10,11 +10,15 @@
 
 class QQuickItem;
 
-class CloseEventHandler : public QObject
+class CloseEventHandler final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(CloseEventHandler)
 
 public:
+    CloseEventHandler();
+    ~CloseEventHandler();
+
     Q_INVOKABLE bool eventHandled();
     Q_INVOKABLE void addStackView(const QVariant &stackView);
     Q_INVOKABLE void addView(const QVariant &view);

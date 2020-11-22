@@ -8,12 +8,14 @@
 #include <QObject>
 #include <QUrl>
 
-class CaptivePortalRequest : public QObject
+class CaptivePortalRequest final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(CaptivePortalRequest)
 
 public:
     explicit CaptivePortalRequest(QObject *parent);
+    ~CaptivePortalRequest();
 
     void run();
 

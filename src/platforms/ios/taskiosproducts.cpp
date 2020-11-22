@@ -4,6 +4,7 @@
 
 #include "taskiosproducts.h"
 #include "iaphandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -16,8 +17,18 @@
 
 namespace {
 Logger logger(LOG_IAP, "TaskIOSProducts");
-
 }
+
+TaskIOSProducts::TaskIOSProducts() : Task("TaskIOSProducts")
+{
+    MVPN_COUNT_CTOR(TaskIOSProducts);
+}
+
+TaskIOSProducts::~TaskIOSProducts()
+{
+    MVPN_COUNT_DTOR(TaskIOSProducts);
+}
+
 void TaskIOSProducts::run(MozillaVPN* vpn)
 {
     NetworkRequest *request = NetworkRequest::createForIOSProducts(this);

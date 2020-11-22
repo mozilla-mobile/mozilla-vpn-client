@@ -8,11 +8,15 @@
 #include <QAction>
 #include <QObject>
 
-class MacOSMenuBar : public QObject
+class MacOSMenuBar final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(MacOSMenuBar)
 
 public:
+    MacOSMenuBar();
+    ~MacOSMenuBar();
+
     void initialize();
 
 public slots:

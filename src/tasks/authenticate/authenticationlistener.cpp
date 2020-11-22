@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationlistener.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #ifdef MVPN_ANDROID
@@ -51,6 +52,8 @@ AuthenticationListener *AuthenticationListener::create(QObject *parent)
 
 AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(AuthenticationListener);
+
     m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
     connect(m_server,
             &QAbstractOAuthReplyHandler::callbackReceived,
@@ -67,6 +70,11 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
 
                 emit completed(code);
             });
+}
+
+AuthenticationListener::~AuthenticationListener()
+{
+    MVPN_COUNT_DTOR(AuthenticationListener);
 }
 
 void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)

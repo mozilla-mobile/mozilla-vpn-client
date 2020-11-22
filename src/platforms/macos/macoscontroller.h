@@ -7,8 +7,12 @@
 
 #include "controllerimpl.h"
 
+#include <QObject>
+
 class MacOSController final : public ControllerImpl
 {
+    Q_DISABLE_COPY_MOVE(MacOSController)
+
 public:
     MacOSController();
     ~MacOSController();

@@ -17,6 +17,10 @@ class QStringList;
 class ServerCountry final
 {
 public:
+    ServerCountry();
+    ServerCountry(const ServerCountry &other);
+    ~ServerCountry();
+
     [[nodiscard]] bool fromJson(QJsonObject &obj);
 
     const QString &name() const { return m_name; }

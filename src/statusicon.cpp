@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "statusicon.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -24,7 +25,14 @@ constexpr const char *ICON_GENERIC = ":/ui/resources/logo-generic.svg";
 
 StatusIcon::StatusIcon() : m_icon(ICON_GENERIC)
 {
+    MVPN_COUNT_CTOR(StatusIcon);
+
     connect(&m_animatedIconTimer, &QTimer::timeout, this, &StatusIcon::animateIcon);
+}
+
+StatusIcon::~StatusIcon()
+{
+    MVPN_COUNT_DTOR(StatusIcon);
 }
 
 void StatusIcon::activateAnimation()

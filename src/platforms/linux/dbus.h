@@ -19,9 +19,11 @@ class QDBusPendingCallWatcher;
 class DBus final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(DBus)
 
 public:
     DBus(QObject *parent);
+    ~DBus();
 
     QDBusPendingCallWatcher *version();
 

@@ -104,4 +104,4 @@ int CommandStatus::run(QStringList &tokens)
     });
 }
 
-static CommandStatus s_commandStatus;
+static Command::RegistrationProxy<CommandStatus> s_commandStatus;

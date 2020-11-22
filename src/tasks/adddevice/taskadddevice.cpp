@@ -5,6 +5,7 @@
 #include "taskadddevice.h"
 #include "curve25519.h"
 #include "errorhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -34,7 +35,14 @@ QByteArray generatePrivateKey()
 
 TaskAddDevice::TaskAddDevice(const QString &deviceName)
     : Task("TaskAddDevice"), m_deviceName(deviceName)
-{}
+{
+    MVPN_COUNT_CTOR(TaskAddDevice);
+}
+
+TaskAddDevice::~TaskAddDevice()
+{
+    MVPN_COUNT_DTOR(TaskAddDevice);
+}
 
 void TaskAddDevice::run(MozillaVPN *vpn)
 {

@@ -7,11 +7,18 @@
 
 #include "pingsendworker.h"
 
+#include <QObject>
+
 class QSocketNotifier;
 
 class LinuxPingSendWorker final : public PingSendWorker
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(LinuxPingSendWorker)
+
+public:
+    LinuxPingSendWorker();
+    ~LinuxPingSendWorker();
 
 public slots:
     void sendPing(const QString &destination) override;

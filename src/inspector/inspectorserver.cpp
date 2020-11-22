@@ -4,6 +4,7 @@
 
 #include "inspectorserver.h"
 #include "inspectorconnection.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QTcpSocket>
@@ -16,6 +17,8 @@ constexpr int INSPECT_PORT = 8765;
 
 InspectorServer::InspectorServer()
 {
+    MVPN_COUNT_CTOR(InspectorServer);
+
     logger.log() << "Creating the inspector server";
 
     if (!listen(QHostAddress::Any, INSPECT_PORT)) {
@@ -24,6 +27,11 @@ InspectorServer::InspectorServer()
     }
 
     connect(this, &InspectorServer::newConnection, this, &InspectorServer::newConnectionReceived);
+}
+
+InspectorServer::~InspectorServer()
+{
+    MVPN_COUNT_DTOR(InspectorServer);
 }
 
 void InspectorServer::newConnectionReceived()

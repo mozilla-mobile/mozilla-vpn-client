@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationlistener.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
@@ -56,7 +57,15 @@ AuthenticationListener *AuthenticationListener::create(QObject *parent)
     return new AuthenticationListener(parent);
 }
 
-AuthenticationListener::AuthenticationListener(QObject *parent): QObject(parent) {}
+AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent)
+{
+    MVPN_COUNT_CTOR(AuthenticationListener);
+}
+
+AuthenticationListener::~AuthenticationListener()
+{
+    MVPN_COUNT_DTOR(AuthenticationListener);
+}
 
 void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
 {

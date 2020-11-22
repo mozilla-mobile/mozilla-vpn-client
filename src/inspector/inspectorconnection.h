@@ -11,9 +11,10 @@
 class QTcpSocket;
 class QQuickItem;
 
-class InspectorConnection : public QObject
+class InspectorConnection final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(InspectorConnection)
 
 public:
     InspectorConnection(QObject *parent, QTcpSocket *connection);

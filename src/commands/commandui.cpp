@@ -259,8 +259,8 @@ int CommandUI::run(QStringList &tokens)
 
         QObject::connect(vpn.controller(),
                          &Controller::readyToQuit,
-                         qApp,
-                         QCoreApplication::quit,
+                         &vpn,
+                         &MozillaVPN::quit,
                          Qt::QueuedConnection);
 
         // Here is the main QML file.
@@ -343,4 +343,4 @@ int CommandUI::run(QStringList &tokens)
     });
 }
 
-static CommandUI s_commandUI;
+static Command::RegistrationProxy<CommandUI> s_commandUI;

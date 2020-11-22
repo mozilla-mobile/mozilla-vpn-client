@@ -7,11 +7,14 @@
 
 #include <QObject>
 
-class LogoutObserver : public QObject
+class LogoutObserver final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(LogoutObserver)
+
 public:
     explicit LogoutObserver(QObject *parent);
+    ~LogoutObserver();
 
 signals:
     void ready();

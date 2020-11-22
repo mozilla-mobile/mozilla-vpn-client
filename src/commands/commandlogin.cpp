@@ -52,4 +52,4 @@ int CommandLogin::run(QStringList &tokens)
     });
 }
 
-static CommandLogin s_commandLogin;
+static Command::RegistrationProxy<CommandLogin> s_commandLogin;

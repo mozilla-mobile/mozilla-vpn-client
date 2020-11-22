@@ -4,12 +4,23 @@
 
 #include "taskcaptiveportallookup.h"
 #include "captiveportal/captiveportal.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
 Logger logger(LOG_NETWORKING, "TaskCaptivePortalLookup");
+}
+
+TaskCaptivePortalLookup::TaskCaptivePortalLookup() : Task("TaskCaptivePortalLookup")
+{
+    MVPN_COUNT_CTOR(TaskCaptivePortalLookup);
+}
+
+TaskCaptivePortalLookup::~TaskCaptivePortalLookup()
+{
+    MVPN_COUNT_DTOR(TaskCaptivePortalLookup);
 }
 
 void TaskCaptivePortalLookup::run(MozillaVPN *vpn)

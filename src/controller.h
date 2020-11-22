@@ -22,6 +22,7 @@ class IPAddressRange;
 class Controller final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(Controller)
 
 public:
     enum State {

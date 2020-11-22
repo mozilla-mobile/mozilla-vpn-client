@@ -7,6 +7,7 @@
 
 #include "controllerimpl.h"
 
+#include <QObject>
 #include <QTimer>
 
 constexpr uint32_t TIME_ACTIVATION = 1000;
@@ -16,9 +17,11 @@ constexpr uint32_t TIME_SWITCHING = 2000;
 class TimerController final : public ControllerImpl
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(TimerController)
 
 public:
     TimerController(ControllerImpl *impl);
+    ~TimerController();
 
     void initialize(const Device *device, const Keys *keys) override;
 

@@ -5,8 +5,9 @@
 #include "macoscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "device.h"
-#include "keys.h"
 #include "ipaddressrange.h"
+#include "keys.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "server.h"
@@ -26,11 +27,14 @@ MacOSControllerImpl *impl = nullptr;
 
 MacOSController::MacOSController()
 {
+    MVPN_COUNT_CTOR(MacOSController);
     Q_ASSERT(!impl);
 }
 
 MacOSController::~MacOSController()
 {
+    MVPN_COUNT_DTOR(MacOSController);
+
     if (impl) {
         [impl dealloc];
         impl = nullptr;

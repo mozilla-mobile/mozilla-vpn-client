@@ -3,12 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "closeeventhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QQuickItem>
 
 namespace {
 Logger logger(LOG_MAIN, "CloseEventHandler");
+}
+
+CloseEventHandler::CloseEventHandler()
+{
+    MVPN_COUNT_CTOR(CloseEventHandler);
+}
+
+CloseEventHandler::~CloseEventHandler()
+{
+    MVPN_COUNT_DTOR(CloseEventHandler);
 }
 
 bool CloseEventHandler::eventHandled()

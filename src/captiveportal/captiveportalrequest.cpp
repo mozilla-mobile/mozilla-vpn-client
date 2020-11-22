@@ -4,6 +4,7 @@
 
 #include "captiveportalrequest.h"
 #include "captiveportal.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
@@ -14,6 +15,12 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
 
 CaptivePortalRequest::CaptivePortalRequest(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(CaptivePortalRequest);
+}
+
+CaptivePortalRequest::~CaptivePortalRequest()
+{
+    MVPN_COUNT_DTOR(CaptivePortalRequest);
 }
 
 void CaptivePortalRequest::run()

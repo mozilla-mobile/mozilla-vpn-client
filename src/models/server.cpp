@@ -3,11 +3,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "server.h"
+#include "leakdetector.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRandomGenerator>
+
+Server::Server()
+{
+    MVPN_COUNT_CTOR(Server);
+}
+
+Server::Server(const Server &other)
+{
+    MVPN_COUNT_CTOR(Server);
+
+    m_hostname = other.m_hostname;
+    m_ipv4AddrIn = other.m_ipv4AddrIn;
+    m_ipv4Gateway = other.m_ipv4Gateway;
+    m_ipv6AddrIn = other.m_ipv6AddrIn;
+    m_ipv6Gateway = other.m_ipv6Gateway;
+    m_portRanges = other.m_portRanges;
+    m_publicKey = other.m_publicKey;
+    m_weight = other.m_weight;
+}
+
+Server::~Server()
+{
+    MVPN_COUNT_DTOR(Server);
+}
 
 bool Server::fromJson(QJsonObject &obj)
 {

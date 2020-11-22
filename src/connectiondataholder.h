@@ -23,12 +23,15 @@ class TestConnectionDataHolder;
 class ConnectionDataHolder final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(ConnectionDataHolder)
+
     Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
     Q_PROPERTY(quint64 txBytes READ txBytes NOTIFY bytesChanged)
     Q_PROPERTY(quint64 rxBytes READ rxBytes NOTIFY bytesChanged)
 
 public:
     ConnectionDataHolder();
+    ~ConnectionDataHolder();
 
     void enable();
     void disable();

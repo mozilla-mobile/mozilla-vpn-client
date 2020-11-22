@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iaphandler.h"
-#include "logger.h"
 #include "iosutils.h"
+#include "leakdetector.h"
+#include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -36,6 +37,8 @@ IAPHandler *IAPHandler::instance()
 
 IAPHandler::IAPHandler(QObject *parent) : QObject(parent)
 {
+    MVPN_COUNT_CTOR(IAPHandler);
+
     Q_ASSERT(!s_instance);
     s_instance = this;
 
@@ -102,6 +105,8 @@ IAPHandler::IAPHandler(QObject *parent) : QObject(parent)
 
 IAPHandler::~IAPHandler()
 {
+    MVPN_COUNT_DTOR(IAPHandler);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }

@@ -14,6 +14,7 @@ class QJsonObject;
 class User final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(User)
 
     Q_PROPERTY(QString avatar READ avatar NOTIFY changed)
     Q_PROPERTY(QString displayName READ displayName NOTIFY changed)
@@ -21,6 +22,9 @@ class User final : public QObject
     Q_PROPERTY(int maxDevices READ maxDevices NOTIFY changed)
 
 public:
+    User();
+    ~User();
+
     [[nodiscard]] bool fromJson(const QByteArray &json);
 
     [[nodiscard]] bool fromSettings();

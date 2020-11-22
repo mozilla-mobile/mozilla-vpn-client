@@ -13,10 +13,13 @@
 class StatusIcon final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(StatusIcon)
+
     Q_PROPERTY(QUrl iconUrl READ iconUrl NOTIFY iconChanged)
 
 public:
     StatusIcon();
+    ~StatusIcon();
 
     QUrl iconUrl() const;
 

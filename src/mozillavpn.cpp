@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
@@ -56,6 +57,8 @@ MozillaVPN *MozillaVPN::instance()
 
 MozillaVPN::MozillaVPN() : m_private(new Private())
 {
+    MVPN_COUNT_CTOR(MozillaVPN);
+
     logger.log() << "Creating MozillaVPN singleton";
 
     Q_ASSERT(!s_instance);
@@ -141,6 +144,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private())
 
 MozillaVPN::~MozillaVPN()
 {
+    MVPN_COUNT_DTOR(MozillaVPN);
+
     logger.log() << "Deleting MozillaVPN singleton";
 
     Q_ASSERT(s_instance == this);
@@ -1036,4 +1041,11 @@ void MozillaVPN::refreshDevices()
     if (m_state == StateMain) {
         scheduleTask(new TaskAccountAndServers());
     }
+}
+
+void MozillaVPN::quit()
+{
+    logger.log() << "quit";
+    deleteTasks();
+    qApp->quit();
 }

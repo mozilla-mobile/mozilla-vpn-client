@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtrayhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
@@ -28,6 +29,8 @@ SystemTrayHandler *SystemTrayHandler::instance()
 SystemTrayHandler::SystemTrayHandler(QObject *parent)
     : QSystemTrayIcon(parent)
 {
+    MVPN_COUNT_CTOR(SystemTrayHandler);
+
     Q_ASSERT(!s_instance);
     s_instance = this;
 
@@ -78,6 +81,8 @@ SystemTrayHandler::SystemTrayHandler(QObject *parent)
 
 SystemTrayHandler::~SystemTrayHandler()
 {
+    MVPN_COUNT_DTOR(SystemTrayHandler);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }

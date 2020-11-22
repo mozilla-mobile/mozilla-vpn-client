@@ -5,6 +5,7 @@
 #include "commandlineparser.h"
 #include "command.h"
 #include "commands/commandui.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -30,6 +31,16 @@ char **CommandLineParser::argv()
 {
     Q_ASSERT(s_argv);
     return s_argv;
+}
+
+CommandLineParser::CommandLineParser()
+{
+    MVPN_COUNT_CTOR(CommandLineParser);
+}
+
+CommandLineParser::~CommandLineParser()
+{
+    MVPN_COUNT_DTOR(CommandLineParser);
 }
 
 int CommandLineParser::parse(int argc, char *argv[])
@@ -76,7 +87,8 @@ int CommandLineParser::parse(int argc, char *argv[])
         tokens.append(CLP_DEFAULT_COMMAND);
     }
 
-    for (Command *command : Command::s_commands) {
+    QVector<Command*> commands = Command::commands();
+    for (Command *command : commands) {
         if (command->name() == tokens[0]) {
             tokens[0] = QString("%1 %2").arg(argv[0]).arg(tokens[0]);
             return command->run(tokens);
@@ -208,7 +220,8 @@ void CommandLineParser::showHelp(const QString &app,
     stream << Qt::endl;
     stream << "List of commands:" << Qt::endl;
 
-    for (Command *command : Command::s_commands) {
+    QVector<Command*> commands = Command::commands();
+    for (Command *command : commands) {
         stream << "  " << command->name() << " ";
 
         for (int i = command->name().length(); i < 20; ++i) {

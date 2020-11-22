@@ -13,6 +13,7 @@ class QInAppTransaction;
 class IAPHandler final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(IAPHandler)
 
 public:
     static IAPHandler *createInstance();

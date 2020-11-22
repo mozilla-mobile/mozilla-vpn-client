@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkmanager.h"
+#include "leakdetector.h"
 
 // TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
 constexpr const char *API_URL_PROD = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
@@ -17,6 +18,8 @@ NetworkManager *s_instance = nullptr;
 
 NetworkManager::NetworkManager()
 {
+    MVPN_COUNT_CTOR(NetworkManager);
+
     Q_ASSERT(!s_instance);
     s_instance = this;
 
@@ -29,6 +32,8 @@ NetworkManager::NetworkManager()
 
 NetworkManager::~NetworkManager()
 {
+    MVPN_COUNT_DTOR(NetworkManager);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }

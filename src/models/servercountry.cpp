@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "servercountry.h"
+#include "leakdetector.h"
 #include "serverdata.h"
 
 #include <QJsonArray>
@@ -18,6 +19,25 @@ bool sortCityCallback(const ServerCity &a, const ServerCity &b)
 }
 
 } // anonymous namespace
+
+ServerCountry::ServerCountry()
+{
+    MVPN_COUNT_CTOR(ServerCountry);
+}
+
+ServerCountry::ServerCountry(const ServerCountry &other)
+{
+    MVPN_COUNT_CTOR(ServerCountry);
+
+    m_name = other.m_name;
+    m_code = other.m_code;
+    m_cities = other.m_cities;
+}
+
+ServerCountry::~ServerCountry()
+{
+    MVPN_COUNT_DTOR(ServerCountry);
+}
 
 bool ServerCountry::fromJson(QJsonObject &countryObj)
 {

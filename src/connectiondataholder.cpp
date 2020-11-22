@@ -4,6 +4,7 @@
 
 #include "connectiondataholder.h"
 #include "constants.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -22,6 +23,8 @@ Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 //: This refers to the current IP address, i.e. "IP: Unknown".
 ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectionInfo.unknown"))
 {
+    MVPN_COUNT_CTOR(ConnectionDataHolder);
+
     connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
     connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
         MozillaVPN::instance()->controller()->getStatus(
@@ -31,6 +34,11 @@ ConnectionDataHolder::ConnectionDataHolder() : m_ipAddress(qtTrId("vpn.connectio
                 }
             });
     });
+}
+
+ConnectionDataHolder::~ConnectionDataHolder()
+{
+    MVPN_COUNT_DTOR(ConnectionDataHolder);
 }
 
 void ConnectionDataHolder::enable()

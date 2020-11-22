@@ -3,10 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummypingsendworker.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 namespace {
 Logger logger(LOG_NETWORKING, "DummyPingSendWorker");
+}
+
+DummyPingSendWorker::DummyPingSendWorker()
+{
+    MVPN_COUNT_CTOR(DummyPingSendWorker);
+}
+
+DummyPingSendWorker::~DummyPingSendWorker()
+{
+    MVPN_COUNT_DTOR(DummyPingSendWorker);
 }
 
 void DummyPingSendWorker::sendPing(const QString &destination)

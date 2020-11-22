@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "timercontroller.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 namespace {
@@ -11,6 +12,8 @@ Logger logger(LOG_CONTROLLER, "TimerController");
 
 TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
 {
+    MVPN_COUNT_CTOR(TimerController);
+
     Q_ASSERT(m_impl);
     m_impl->setParent(this);
 
@@ -26,6 +29,11 @@ TimerController::TimerController(ControllerImpl *impl) : m_impl(impl)
 
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &TimerController::timeout);
+}
+
+TimerController::~TimerController()
+{
+    MVPN_COUNT_DTOR(TimerController);
 }
 
 void TimerController::initialize(const Device *device, const Keys *keys)

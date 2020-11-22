@@ -30,6 +30,7 @@ HEADERS += \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
     ../../src/ipaddressrange.h \
+    ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
@@ -77,6 +78,7 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
+    ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
@@ -97,6 +99,7 @@ SOURCES += \
     ../../src/statusicon.cpp \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
+    ../../src/tasks/function/taskfunction.cpp \
     ../../src/timersingleshot.cpp \
     main.cpp \
     moccontroller.cpp \

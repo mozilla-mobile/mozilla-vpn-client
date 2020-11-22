@@ -10,8 +10,10 @@
 #include <QAndroidBinder>
 #include <QAndroidServiceConnection>
 
-class AndroidController : public ControllerImpl, public QAndroidServiceConnection
+class AndroidController final : public ControllerImpl, public QAndroidServiceConnection
 {
+    Q_DISABLE_COPY_MOVE(AndroidController)
+
 public:
     AndroidController();
     static AndroidController *instance();

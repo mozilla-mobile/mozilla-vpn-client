@@ -3,12 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "serverdata.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "servercountrymodel.h"
 #include "settingsholder.h"
 
 namespace {
 Logger logger(LOG_MODEL, "ServerData");
+}
+
+ServerData::ServerData()
+{
+    MVPN_COUNT_CTOR(ServerData);
+}
+
+ServerData::~ServerData()
+{
+    MVPN_COUNT_DTOR(ServerData);
 }
 
 bool ServerData::fromSettings()

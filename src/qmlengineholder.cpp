@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "qmlengineholder.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QWindow>
@@ -14,12 +15,16 @@ QmlEngineHolder *s_instance = nullptr;
 
 QmlEngineHolder::QmlEngineHolder()
 {
+    MVPN_COUNT_CTOR(QmlEngineHolder);
+
     Q_ASSERT(!s_instance);
     s_instance = this;
 }
 
 QmlEngineHolder::~QmlEngineHolder()
 {
+    MVPN_COUNT_DTOR(QmlEngineHolder);
+
     Q_ASSERT(s_instance == this);
     s_instance = nullptr;
 }

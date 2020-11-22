@@ -4,6 +4,7 @@
 
 #include "taskaccountandservers.h"
 #include "errorhandler.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
@@ -11,6 +12,16 @@
 
 namespace {
 Logger logger(LOG_MAIN, "TaskAccountAndServers");
+}
+
+TaskAccountAndServers::TaskAccountAndServers() : Task("TaskAccountAndServers")
+{
+    MVPN_COUNT_CTOR(TaskAccountAndServers);
+}
+
+TaskAccountAndServers::~TaskAccountAndServers()
+{
+    MVPN_COUNT_DTOR(TaskAccountAndServers);
 }
 
 void TaskAccountAndServers::run(MozillaVPN *vpn)

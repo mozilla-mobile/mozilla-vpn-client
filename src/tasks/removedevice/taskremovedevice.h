@@ -7,10 +7,15 @@
 
 #include "task.h"
 
+#include <QObject>
+
 class TaskRemoveDevice final : public Task
 {
+    Q_DISABLE_COPY_MOVE(TaskRemoveDevice)
+
 public:
     explicit TaskRemoveDevice(const QString &deviceName);
+    ~TaskRemoveDevice();
 
     void run(MozillaVPN *vpn) override;
 

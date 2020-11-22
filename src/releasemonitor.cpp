@@ -4,6 +4,7 @@
 
 #include "releasemonitor.h"
 #include "constants.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
@@ -19,8 +20,15 @@ Logger logger(LOG_MAIN, "ReleaseMonitor");
 
 ReleaseMonitor::ReleaseMonitor()
 {
+    MVPN_COUNT_CTOR(ReleaseMonitor);
+
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &ReleaseMonitor::runInternal);
+}
+
+ReleaseMonitor::~ReleaseMonitor()
+{
+    MVPN_COUNT_DTOR(ReleaseMonitor);
 }
 
 void ReleaseMonitor::runSoon()

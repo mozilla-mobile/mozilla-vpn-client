@@ -16,6 +16,8 @@ class QWindow;
 class AndroidWebView : public QQuickItem
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(AndroidWebView)
+
     Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged)
     QML_ELEMENT
 

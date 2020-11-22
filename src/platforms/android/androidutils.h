@@ -11,6 +11,7 @@ class AuthenticationListener;
 class AndroidUtils final : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(AndroidUtils)
 
     Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
 

@@ -7,12 +7,15 @@
 
 #include "task.h"
 
+#include <QObject>
 #include <QTimer>
 
 // The purpose of this task is to block any other task when activating/deactivating the VPN.
 // It doesn't relay on the Controller state, but just wait a bit: 1 second is enough.
-class TaskControllerAction : public Task
+class TaskControllerAction final : public Task
 {
+    Q_DISABLE_COPY_MOVE(TaskControllerAction)
+
 public:
     enum TaskAction {
         eActivate,
@@ -20,6 +23,7 @@ public:
     };
 
     explicit TaskControllerAction(TaskAction action);
+    ~TaskControllerAction();
 
     void run(MozillaVPN *vpn) override;
 

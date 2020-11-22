@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "device.h"
+#include "leakdetector.h"
 
 #include <QDateTime>
 #include <QJsonObject>
@@ -20,6 +21,7 @@
 #include "platforms/android/androidutils.h"
 #endif
 
+// static
 QString Device::currentDeviceName()
 {
     QString deviceName =
@@ -48,6 +50,27 @@ QString Device::currentDeviceName()
     */
 
     return deviceName;
+}
+
+Device::Device()
+{
+    MVPN_COUNT_CTOR(Device);
+}
+
+Device::Device(const Device &other)
+{
+    MVPN_COUNT_CTOR(Device);
+
+    m_deviceName = other.m_deviceName;
+    m_createdAt = other.m_createdAt;
+    m_publicKey = other.m_publicKey;
+    m_ipv4Address = other.m_ipv4Address;
+    m_ipv6Address = other.m_ipv6Address;
+}
+
+Device::~Device()
+{
+    MVPN_COUNT_DTOR(Device);
 }
 
 bool Device::fromJson(const QJsonValue &json)

@@ -13,13 +13,13 @@
 #include <QIcon>
 #include <QTextStream>
 
-QVector<Command *> Command::s_commands;
+QVector<std::function<Command *()>> Command::s_commandCreators;
 
 Command::Command(const QString &name, const QString &description)
     : m_name(name), m_description(description)
-{
-    s_commands.append(this);
-}
+{}
+
+Command::~Command() = default;
 
 bool Command::userAuthenticated()
 {
@@ -61,7 +61,7 @@ int Command::runCommandLineApp(std::function<int()> &&a_callback)
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
     SettingsHolder settingsHolder;
-    Localizer::createInstance(&settingsHolder);
+    Localizer localizer;
     SimpleNetworkManager snm;
 
     return callback();
@@ -77,7 +77,7 @@ int Command::runGuiApp(std::function<int()> &&a_callback)
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
     SettingsHolder settingsHolder;
-    Localizer::createInstance(&settingsHolder);
+    Localizer localizer;
     SimpleNetworkManager snm;
 
     QIcon icon(":/ui/resources/logo-dock.png");
@@ -98,10 +98,20 @@ int Command::runQmlApp(std::function<int()> &&a_callback)
     QCoreApplication::setApplicationVersion(APP_VERSION);
 
     SettingsHolder settingsHolder;
-    Localizer::createInstance(&settingsHolder);
+    Localizer localizer;
 
     QIcon icon(":/ui/resources/logo-dock.png");
     app.setWindowIcon(icon);
 
     return callback();
+}
+
+// static
+QVector<Command *> Command::commands()
+{
+    QVector<Command *> list;
+    for (auto i = s_commandCreators.begin(); i != s_commandCreators.end(); ++i) {
+        list.append((*i)());
+    }
+    return list;
 }

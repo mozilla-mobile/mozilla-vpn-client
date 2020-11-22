@@ -7,9 +7,16 @@
 
 #include "controllerimpl.h"
 
+#include <QObject>
+
 class DummyController final : public ControllerImpl
 {
+    Q_DISABLE_COPY_MOVE(DummyController)
+
 public:
+    DummyController();
+    ~DummyController();
+
     void initialize(const Device *device, const Keys *keys) override
     {
         Q_UNUSED(device);

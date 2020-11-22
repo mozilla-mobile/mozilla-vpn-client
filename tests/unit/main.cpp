@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "../../src/leakdetector.h"
 #include "helper.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
@@ -16,6 +17,11 @@ TestHelper::TestHelper()
 
 int main(int argc, char *argv[])
 {
+#ifdef QT_DEBUG
+    LeakDetector leakDetector;
+    Q_UNUSED(leakDetector);
+#endif
+
     QCoreApplication a(argc, argv);
 
     int failures = 0;

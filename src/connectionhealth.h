@@ -25,6 +25,7 @@ public:
 
 private:
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(ConnectionHealth)
 
     Q_PROPERTY(ConnectionStability stability READ stability() NOTIFY stabilityChanged)
 
@@ -48,7 +49,7 @@ private:
     void setStability(ConnectionStability stability);
     void nextPing();
 
-    void pingReceived(PingSender *pingSender, uint32_t msec);
+    void pingReceived(PingSender *pingSender, qint64 msec);
     void noSignalDetected();
 
 private:

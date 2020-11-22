@@ -6,10 +6,16 @@
 #define KEYS_H
 
 #include <QString>
+#include <QObject>
 
 class Keys final
 {
+    Q_DISABLE_COPY_MOVE(Keys)
+
 public:
+    Keys();
+    ~Keys();
+
     [[nodiscard]] bool fromSettings();
 
     bool initialized() const { return !m_privateKey.isEmpty(); }

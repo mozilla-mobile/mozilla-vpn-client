@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskcontrolleraction.h"
+#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 
@@ -13,10 +14,17 @@ Logger logger(QStringList{LOG_MAIN, LOG_CONTROLLER}, "TaskControllerAction");
 TaskControllerAction::TaskControllerAction(TaskControllerAction::TaskAction action)
     : Task("TaskControllerAction"), m_action(action)
 {
+    MVPN_COUNT_CTOR(TaskControllerAction);
+
     logger.log() << "TaskControllerAction created for"
                  << (action == eActivate ? "activation" : "deactivation");
 
     connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::completed);
+}
+
+TaskControllerAction::~TaskControllerAction()
+{
+    MVPN_COUNT_DTOR(TaskControllerAction);
 }
 
 void TaskControllerAction::run(MozillaVPN *vpn)

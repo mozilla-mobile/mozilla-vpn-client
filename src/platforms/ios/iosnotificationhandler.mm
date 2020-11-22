@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosnotificationhandler.h"
+#include "leakdetector.h"
 
 #import <UserNotifications/UserNotifications.h>
 #import <Foundation/Foundation.h>
@@ -41,6 +42,8 @@
 
 IOSNotificationHandler::IOSNotificationHandler(QObject *parent) : NotificationHandler(parent)
 {
+    MVPN_COUNT_CTOR(IOSNotificationHandler);
+
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error)
     {
@@ -50,6 +53,11 @@ IOSNotificationHandler::IOSNotificationHandler(QObject *parent) : NotificationHa
             m_delegate = [[IOSNotificationDelegate alloc] initWithObject:this];
         }
     }];
+}
+
+IOSNotificationHandler::~IOSNotificationHandler()
+{
+    MVPN_COUNT_DTOR(IOSNotificationHandler);
 }
 
 void IOSNotificationHandler::notify(const QString &title, const QString &message, int timerSec)

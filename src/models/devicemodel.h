@@ -13,9 +13,14 @@
 class DeviceModel final : public QAbstractListModel
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(DeviceModel)
+
     Q_PROPERTY(int activeDevices READ activeDevices NOTIFY changed)
 
 public:
+    DeviceModel();
+    ~DeviceModel();
+
     enum ServerCountryRoles {
         NameRole = Qt::UserRole + 1,
         CurrentOneRole,
