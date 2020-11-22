@@ -14,7 +14,7 @@
 #ifdef MVPN_IOS
 #include "platforms/ios/authenticationlistener.h"
 #else
-#include "tasks/authenticate/authenticationlistener.h"
+#include "tasks/authenticate/desktopauthenticationlistener.h"
 #endif
 
 #include <QCryptographicHash>

@@ -2,13 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "authenticationlistener.h"
+#include "desktopauthenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
-
-#ifdef MVPN_ANDROID
-#include "platforms/android/androidauthenticationlistener.h"
-#endif
 
 #include <limits>
 #include <QDesktopServices>
@@ -18,7 +14,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "AuthenticationListener");
+Logger logger(LOG_MAIN, "DesktopAuthenticationListener");
 
 int choosePort(QVector<quint16> triedPorts)
 {
@@ -40,25 +36,16 @@ int choosePort(QVector<quint16> triedPorts)
 
 } // anonymous namespace
 
-// static
-AuthenticationListener *AuthenticationListener::create(QObject *parent)
+DesktopAuthenticationListener::DesktopAuthenticationListener(QObject *parent)
+    : AuthenticationListener(parent)
 {
-#ifdef MVPN_ANDROID
-    return new AndroidAuthenticationListener(parent);
-#else
-    return new AuthenticationListener(parent);
-#endif
-}
-
-AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent)
-{
-    MVPN_COUNT_CTOR(AuthenticationListener);
+    MVPN_COUNT_CTOR(DesktopAuthenticationListener);
 
     m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
     connect(m_server,
             &QAbstractOAuthReplyHandler::callbackReceived,
             [this](const QVariantMap &values) {
-                logger.log() << "AuthenticationListener data received";
+                logger.log() << "DesktopAuthenticationListener data received";
 
                 // Unknown connection.
                 if (!values.contains("code")) {
@@ -72,14 +59,14 @@ AuthenticationListener::AuthenticationListener(QObject *parent) : QObject(parent
             });
 }
 
-AuthenticationListener::~AuthenticationListener()
+DesktopAuthenticationListener::~DesktopAuthenticationListener()
 {
-    MVPN_COUNT_DTOR(AuthenticationListener);
+    MVPN_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
-void AuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
+void DesktopAuthenticationListener::start(MozillaVPN *vpn, QUrl &url, QUrlQuery &query)
 {
-    logger.log() << "AuthenticationListener initialize";
+    logger.log() << "DesktopAuthenticationListener initialize";
     Q_UNUSED(vpn);
 
     if (!m_server->isListening()) {
