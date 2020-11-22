@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQml.Models 2.2
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
@@ -20,6 +21,13 @@ Item {
         id: radioButtonGroup
     }
 
+    DelegateModel {
+        id: delegateModel
+
+        model: VPNServerCountryModel
+        delegate: VPNServerCountry {}
+    }
+
     VPNList {
         id: serverList
 
@@ -28,7 +36,6 @@ Item {
         anchors.top: menu.bottom
         spacing: Theme.listSpacing
         clip: true
-        model: VPNServerCountryModel
         listName: menu.title
         interactive: true
         onActiveFocusChanged: {
@@ -43,8 +50,22 @@ Item {
             width: serverList.width
             color: "transparent"
         }
+        model: delegateModel
 
-        delegate: VPNServerCountry {}
+        Component.onCompleted: {
+            const getCurrentServerIndex = () => {
+                for (var x = 0; x < serverList.count; x++) {
+                    if (delegateModel.items.get(x).model.code === VPNCurrentServer.countryCode) {
+                        return x;
+                    }
+                }
+            };
+            serverList.currentIndex = getCurrentServerIndex();
+            serverList.currentItem.cityListVisible = true;
+            serverList.currentItem.forceActiveFocus();
+            serverList.positionViewAtIndex(serverList.currentIndex, ListView.Center);
+
+        }
 
         ScrollBar.vertical: ScrollBar {
             Accessible.ignored: true
