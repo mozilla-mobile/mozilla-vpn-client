@@ -7,12 +7,12 @@
 
 void TestStatusIcon::basic() {
   StatusIcon si;
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-tray.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-tray.svg");
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 
   si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-tray.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-tray.svg");
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 
   TestHelper::vpnState = MozillaVPN::StateMain;
   TestHelper::controllerState = Controller::StateOn;
@@ -32,8 +32,8 @@ void TestStatusIcon::basic() {
 
   TestHelper::controllerState = Controller::StateCaptivePortal;
   si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-tray.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-tray.svg");
+  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
+  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 }
 
 static TestStatusIcon s_testStatusIcon;
