@@ -594,7 +594,9 @@ void MozillaVPN::logout() {
 
   deleteTasks();
 
+#ifdef MVPN_IOS
   IAPHandler::instance()->stopSubscription();
+#endif
 
   // update-required state is the only one we want to keep when logging out.
   if (m_state != StateUpdateRequired) {
