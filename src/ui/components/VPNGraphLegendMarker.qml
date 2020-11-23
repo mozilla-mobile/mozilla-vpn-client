@@ -44,6 +44,9 @@ Row {
     Accessible.focusable: true
     Accessible.role: Accessible.StaticText
     //% "%1: %2 %3"
+    //: Used as accessibility description for the connection info:
+    //: %1 is the localized label for “Upload” or “Download”, %2 is the speed
+    //: value, %3 is the localized unit. Example: “Upload: 10 Mbps”.
     Accessible.name: qsTrId("vpn.connectionInfo.accessibleName")
         .arg(label.text)
         .arg(value.text)
