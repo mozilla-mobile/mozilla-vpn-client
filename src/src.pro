@@ -39,6 +39,7 @@ SOURCES += \
         commandlineparser.cpp \
         commands/commandactivate.cpp \
         commands/commanddeactivate.cpp \
+        commands/commanddevice.cpp \
         commands/commandlogin.cpp \
         commands/commandlogout.cpp \
         commands/commandselect.cpp \
@@ -107,6 +108,7 @@ HEADERS += \
         commandlineparser.h \
         commands/commandactivate.h \
         commands/commanddeactivate.h \
+        commands/commanddevice.h \
         commands/commandlogin.h \
         commands/commandlogout.h \
         commands/commandselect.h \
