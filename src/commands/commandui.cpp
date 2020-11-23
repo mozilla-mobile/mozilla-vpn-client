@@ -43,7 +43,6 @@
 #endif
 
 #include <QApplication>
-#include <QWindow>
 
 #ifdef QT_DEBUG
 #  include <QLoggingCategory>

@@ -37,12 +37,23 @@ QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
   return m_engine.networkAccessManager();
 }
 
-void QmlEngineHolder::showWindow() {
+QWindow* QmlEngineHolder::window() const {
   QObject* rootObject = m_engine.rootObjects().first();
-  QWindow* window = qobject_cast<QWindow*>(rootObject);
-  Q_ASSERT(window);
+  return qobject_cast<QWindow*>(rootObject);
+}
 
-  window->show();
-  window->raise();
-  window->requestActivate();
+void QmlEngineHolder::showWindow() {
+  QWindow* w = window();
+  Q_ASSERT(w);
+
+  w->show();
+  w->raise();
+  w->requestActivate();
+}
+
+void QmlEngineHolder::hideWindow() {
+  QWindow* w = window();
+  Q_ASSERT(w);
+
+  w->hide();
 }

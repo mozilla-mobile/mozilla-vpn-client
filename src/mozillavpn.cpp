@@ -38,7 +38,6 @@
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
-#include <QWindow>
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
