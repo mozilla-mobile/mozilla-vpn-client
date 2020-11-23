@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskauthenticate.h"
+#include "authenticationlistener.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -10,12 +11,6 @@
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "networkrequest.h"
-
-#ifdef MVPN_IOS
-#  include "platforms/ios/authenticationlistener.h"
-#else
-#  include "tasks/authenticate/desktopauthenticationlistener.h"
-#endif
 
 #include <QCryptographicHash>
 #include <QJSValue>
