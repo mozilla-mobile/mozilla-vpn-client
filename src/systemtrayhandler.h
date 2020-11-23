@@ -30,6 +30,9 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   void updateContextMenu();
 
  private:
+  void showHideWindow();
+
+ private:
   QMenu m_menu;
 
   QAction* m_statusLabel = nullptr;
@@ -37,6 +40,7 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   QAction* m_disconnectAction = nullptr;
   QAction* m_separator = nullptr;
   QAction* m_preferencesAction = nullptr;
+  QAction* m_showHideLabel = nullptr;
 };
 
 #endif  // SYSTEMTRAYHANDLER_H
