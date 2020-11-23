@@ -11,6 +11,7 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 Item {
+    id: root
     VPNMenu {
         id: menu
 
@@ -38,13 +39,8 @@ Item {
         clip: true
         listName: menu.title
         interactive: true
-        onActiveFocusChanged: {
-            if (activeFocus) {
-                currentItem.forceActiveFocus();
-            }
-        }
-        onCurrentIndexChanged: currentItem.forceActiveFocus()
 
+        onCurrentIndexChanged: currentItem.forceActiveFocus()
         header: Rectangle {
             height: 16
             width: serverList.width
