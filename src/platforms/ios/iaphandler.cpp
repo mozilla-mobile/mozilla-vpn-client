@@ -158,6 +158,8 @@ void IAPHandler::startSubscription(bool restore) {
   product->purchase();
 }
 
+void IAPHandler::stopSubscription() { m_started = false; }
+
 void IAPHandler::purchaseCompleted() {
   logger.log() << "Purchase completed";
 

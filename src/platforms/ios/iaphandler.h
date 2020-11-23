@@ -27,6 +27,8 @@ class IAPHandler final : public QObject {
 
   void startSubscription(bool restore);
 
+  void stopSubscription();
+
  signals:
   void productsRegistered();
 
