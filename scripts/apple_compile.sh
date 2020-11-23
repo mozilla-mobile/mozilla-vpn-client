@@ -15,7 +15,9 @@ print N ""
 
 if [ "$1" != "macos" ] && [ "$1" != "ios" ]; then
   print G "Usage:"
-  print N "\t$0 <macos|ios>"
+  print N "\t$0 <macos|ios> [release|debug]"
+  print N ""
+  print N "By default, if 'debug' is used, the project is compiled in release mode."
   print N ""
   print G "Config variables:"
   print N "\tQT_MACOS_BIN=</path/of/the/qt/bin/folder/for/macos>"
@@ -67,6 +69,12 @@ IOS_FLAGS="
   MVPN_IOS=1
 "
 
+MODE= "CONFIG+=debug CONFIG-=release"
+if [ "$2" = "debug" ]; then
+  print G "Debug mode"
+  MODE= "CONFIG-=debug CONFIG+=release"
+fi
+
 if [ "$1" = "macos" ]; then
   PLATFORM=$MACOS_FLAGS
 elif [ "$1" = "ios" ]; then
@@ -78,11 +86,8 @@ fi
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$FULLVERSION \
-  CONFIG-=debug \
-  CONFIG+=release \
   -spec macx-xcode \
-  CONFIG-=debug \
-  CONFIG+=release \
+  $MODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"
 
