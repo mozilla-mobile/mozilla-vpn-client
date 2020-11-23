@@ -375,10 +375,10 @@ else:ios {
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/iosdatamigration.mm \
             platforms/ios/iosnotificationhandler.mm \
             platforms/ios/iosutils.mm \
-            platforms/ios/authenticationlistener.mm \
             platforms/macos/macoscryptosettings.mm \
             platforms/macos/macosglue.mm \
             platforms/macos/macoscontroller.mm
@@ -390,10 +390,10 @@ else:ios {
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \
+            platforms/ios/iosauthenticationlistener.h \
             platforms/ios/iosdatamigration.h \
             platforms/ios/iosnotificationhandler.h \
             platforms/ios/iosutils.h \
-            platforms/ios/authenticationlistener.h \
             platforms/macos/macoscontroller.h
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist

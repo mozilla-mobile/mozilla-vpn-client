@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "authenticationlistener.h"
+#include "iosauthenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -21,7 +21,7 @@
 
 namespace {
 
-Logger logger({LOG_IOS, LOG_MAIN}, "AuthenticationListener");
+Logger logger({LOG_IOS, LOG_MAIN}, "IOSAuthenticationListener");
 
 ASWebAuthenticationSession* session = nullptr;
 
@@ -51,21 +51,19 @@ ASWebAuthenticationSession* session = nullptr;
 @end
 #endif
 
-// static
-AuthenticationListener* AuthenticationListener::create(QObject* parent) {
-  return new AuthenticationListener(parent);
+IOSAuthenticationListener::IOSAuthenticationListener(QObject* parent)
+    : AuthenticationListener(parent) {
+  MVPN_COUNT_CTOR(IOSAuthenticationListener);
 }
 
-AuthenticationListener::AuthenticationListener(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(AuthenticationListener);
+IOSAuthenticationListener::~IOSAuthenticationListener() {
+  MVPN_COUNT_DTOR(IOSAuthenticationListener);
 }
 
-AuthenticationListener::~AuthenticationListener() { MVPN_COUNT_DTOR(AuthenticationListener); }
-
-void AuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) {
+void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) {
   Q_UNUSED(vpn);
 
-  logger.log() << "AuthenticationListener initialize";
+  logger.log() << "IOSAuthenticationListener initialize";
 
   query.addQueryItem("platform", "ios");
 

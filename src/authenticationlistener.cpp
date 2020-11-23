@@ -6,8 +6,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID)
 #  include "platforms/android/androidauthenticationlistener.h"
+#elif defined(MVPN_IOS)
+#  include "platforms/ios/iosauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
 #endif
@@ -18,8 +20,10 @@ Logger logger(LOG_MAIN, "AuthenticationListener");
 
 // static
 AuthenticationListener* AuthenticationListener::create(QObject* parent) {
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID)
   return new AndroidAuthenticationListener(parent);
+#elif defined(MVPN_IOS)
+  return new IOSAuthenticationListener(parent);
 #else
   return new DesktopAuthenticationListener(parent);
 #endif
