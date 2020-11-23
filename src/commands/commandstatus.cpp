@@ -91,15 +91,13 @@ int CommandStatus::run(QStringList& tokens) {
     const QList<Device>& devices = dm->devices();
     for (int i = 0; i < devices.length(); ++i) {
       const Device& device = devices.at(i);
-      stream << "Device " << i << " name: " << device.name() << Qt::endl;
-      stream << "Device " << i
-             << " creation time: " << device.createdAt().toString() << Qt::endl;
-      stream << "Device " << i << " public key: " << device.publicKey()
+      stream << "Device " << (i + 1) << Qt::endl;
+      stream << " - name: " << device.name() << Qt::endl;
+      stream << " - creation time: " << device.createdAt().toString()
              << Qt::endl;
-      stream << "Device " << i << " ipv4 address: " << device.ipv4Address()
-             << Qt::endl;
-      stream << "Device " << i << " ipv6 address: " << device.ipv6Address()
-             << Qt::endl;
+      stream << " - public key: " << device.publicKey() << Qt::endl;
+      stream << " - ipv4 address: " << device.ipv4Address() << Qt::endl;
+      stream << " - ipv6 address: " << device.ipv6Address() << Qt::endl;
     }
 
     ServerData* sd = vpn.currentServer();
