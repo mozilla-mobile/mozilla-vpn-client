@@ -29,10 +29,6 @@ Rectangle {
         anchors.fill: alertBox
         radius: Theme.cornerRadius
         onClicked: {
-            // TODO Try again
-            // TODO Try again
-            // TODO Restore
-
             switch (alertType) {
             case ("update"):
                 stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
@@ -43,6 +39,7 @@ Rectangle {
             case ("connection-failed"):
             case ("no-connection"):
             case ("background-service"):
+            case ("subscription-failed"):
             default:
                 VPN.hideAlert();
             }

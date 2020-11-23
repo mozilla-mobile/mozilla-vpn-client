@@ -15,6 +15,7 @@ class ErrorHandler final {
     NoConnectionError,
     AuthenticationError,
     BackendServiceError,
+    SubscriptionFailureError,
     IgnoredError,
   };
 
