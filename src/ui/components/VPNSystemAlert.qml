@@ -96,6 +96,20 @@ VPNAlert {
 
         },
         State {
+            name: VPN.SubscriptionFailureAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "subscription-failed"
+                //% "Subscription failed"
+                alertText: qsTrId("vpn.alert.subscriptionFailureError")
+                alertLinkText: qsTrId("vpn.alert.tryAgain")
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
             name: VPN.LogoutAlert
 
             PropertyChanges {

@@ -127,6 +127,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     Q_ASSERT(m_subscriptionActive);
     m_subscriptionActive = false;
     emit subscriptionActiveChanged();
+
+    errorHandle(ErrorHandler::SubscriptionFailureError);
   });
 #endif
 }
@@ -666,6 +668,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
     case ErrorHandler::BackendServiceError:
       alert = BackendServiceErrorAlert;
+      break;
+
+    case ErrorHandler::SubscriptionFailureError:
+      alert = SubscriptionFailureAlert;
       break;
 
     default:
