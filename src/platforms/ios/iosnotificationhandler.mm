@@ -67,7 +67,6 @@ void IOSNotificationHandler::notify(const QString& title, const QString& message
   content.title = title.toNSString();
   content.body = message.toNSString();
   content.sound = [UNNotificationSound defaultSound];
-  content.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
 
   UNTimeIntervalNotificationTrigger* trigger =
       [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:timerSec repeats:NO];
