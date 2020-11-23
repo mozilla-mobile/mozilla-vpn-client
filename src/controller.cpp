@@ -11,6 +11,7 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "rfc1918.h"
 #include "settingsholder.h"
 #include "timercontroller.h"
 #include "timersingleshot.h"
@@ -443,10 +444,10 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges() {
 #endif
 
   if (SettingsHolder::instance()->localNetworkAccess()) {
-    list.append(IPAddressRange("128.0.0.1", 1, IPAddressRange::IPv4));
+    list.append(RFC1918::ipv4());
 
     if (ipv6Enabled) {
-      list.append(IPAddressRange("8000::", 1, IPAddressRange::IPv6));
+      list.append(RFC1918::ipv6());
     }
   }
 
