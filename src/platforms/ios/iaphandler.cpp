@@ -135,7 +135,7 @@ void IAPHandler::registerProducts(const QStringList& products) {
 
 void IAPHandler::startSubscription(bool restore) {
   Q_ASSERT(m_productsRegistrationState == eRegistered);
-  Q_ASSERT(m_productName.isEmpty());
+  Q_ASSERT(!m_productName.isEmpty());
 
   if (m_started) {
     logger.log() << "No multiple IAP!";
