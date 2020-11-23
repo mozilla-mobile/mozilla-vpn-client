@@ -12,6 +12,7 @@
 #include <array>
 #include <QIcon>
 #include <QMenu>
+#include <QWindow>
 
 namespace {
 Logger logger(LOG_MAIN, "SystemTrayHandler");
@@ -48,9 +49,8 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   m_separator = m_menu.addSeparator();
 
-  //% "Show Mozilla VPN"
-  m_menu.addAction(qtTrId("systray.show"), QmlEngineHolder::instance(),
-                   &QmlEngineHolder::showWindow);
+  m_showHideLabel =
+      m_menu.addAction("", this, &SystemTrayHandler::showHideWindow);
 
   m_menu.addSeparator();
 
@@ -72,6 +72,9 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   setContextMenu(&m_menu);
 
   updateIcon(MozillaVPN::instance()->statusIcon()->iconString());
+
+  connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
+          &SystemTrayHandler::updateContextMenu);
 
   updateContextMenu();
 }
@@ -154,6 +157,14 @@ void SystemTrayHandler::updateContextMenu() {
           .arg(vpn->currentServer()->city()));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
+
+  if (QmlEngineHolder::instance()->window()->isVisible()) {
+    //% "Hide Mozilla VPN"
+    m_showHideLabel->setText(qtTrId("systray.hide"));
+  } else {
+    //% "Show Mozilla VPN"
+    m_showHideLabel->setText(qtTrId("systray.show"));
+  }
 }
 
 void SystemTrayHandler::captivePortalNotificationRequested() {
@@ -169,4 +180,13 @@ void SystemTrayHandler::updateIcon(const QString& icon) {
   QIcon trayIconMask(icon);
   trayIconMask.setIsMask(true);
   setIcon(trayIconMask);
+}
+
+void SystemTrayHandler::showHideWindow() {
+  QmlEngineHolder* engine = QmlEngineHolder::instance();
+  if (engine->window()->isVisible()) {
+    engine->hideWindow();
+  } else {
+    engine->showWindow();
+  }
 }

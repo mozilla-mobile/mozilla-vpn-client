@@ -9,6 +9,8 @@
 
 #include <QQmlApplicationEngine>
 
+class QWindow;
+
 class QmlEngineHolder final : public NetworkManager {
   Q_DISABLE_COPY_MOVE(QmlEngineHolder)
 
@@ -22,7 +24,9 @@ class QmlEngineHolder final : public NetworkManager {
 
   QNetworkAccessManager* networkAccessManager() override;
 
+  QWindow* window() const;
   void showWindow();
+  void hideWindow();
 
  private:
   QQmlApplicationEngine m_engine;
