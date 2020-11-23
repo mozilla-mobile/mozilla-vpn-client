@@ -82,6 +82,7 @@ SOURCES += \
         platforms/dummy/dummypingsendworker.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
+        rfc1918.cpp \
         settingsholder.cpp \
         signalhandler.cpp \
         simplenetworkmanager.cpp \
@@ -149,6 +150,7 @@ HEADERS += \
         platforms/dummy/dummypingsendworker.h \
         qmlengineholder.h \
         releasemonitor.h \
+        rfc1918.h \
         settingsholder.h \
         signalhandler.h \
         simplenetworkmanager.h \
