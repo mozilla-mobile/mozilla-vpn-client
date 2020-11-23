@@ -27,11 +27,16 @@ MacOSControllerImpl* impl = nullptr;
 
 MacOSController::MacOSController() {
   MVPN_COUNT_CTOR(MacOSController);
+
+  logger.log() << "created";
+
   Q_ASSERT(!impl);
 }
 
 MacOSController::~MacOSController() {
   MVPN_COUNT_DTOR(MacOSController);
+
+  logger.log() << "deallocated";
 
   if (impl) {
     [impl dealloc];
