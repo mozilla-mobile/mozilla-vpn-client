@@ -53,16 +53,17 @@ Item {
         model: delegateModel
 
         Component.onCompleted: {
-            const getCurrentServerIndex = () => {
-                for (var x = 0; x < serverList.count; x++) {
-                    if (delegateModel.items.get(x).model.code === VPNCurrentServer.countryCode) {
-                        return x;
-                    }
-                }
-            };
-            serverList.currentIndex = getCurrentServerIndex();
-            serverList.currentItem.cityListVisible = true;
-            serverList.currentItem.forceActiveFocus();
+            if (VPNController.state === VPNController.StateSwitching) {
+                return;
+            }
+
+            serverList.currentIndex = (() => {
+               for (let idx = 0; idx < serverList.count; idx++) {
+                   if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
+                       return idx;
+                   }
+               }
+            })();
             serverList.positionViewAtIndex(serverList.currentIndex, ListView.Center);
 
         }
