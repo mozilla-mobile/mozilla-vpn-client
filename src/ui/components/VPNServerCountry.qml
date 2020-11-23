@@ -13,7 +13,7 @@ import "../themes/themes.js" as Theme
 VPNClickableRow {
     id: serverCountry
 
-    property var cityListVisible: false
+    property var cityListVisible: (code === VPNCurrentServer.countryCode)
     readonly property bool isActive: cityList.activeFocus
 
     // During transition, when expanding the row or scrolling,
