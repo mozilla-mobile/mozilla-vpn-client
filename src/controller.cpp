@@ -51,6 +51,11 @@ void Controller::initialize() {
     setState(StateInitializing);
   }
 
+  // Let's delete the previous controller before creating a new one.
+  if (m_impl) {
+    m_impl.reset(nullptr);
+  }
+
   m_impl.reset(new TimerController(
 #if defined(MVPN_LINUX)
       new LinuxController()
