@@ -134,3 +134,5 @@ void TimerController::getBackendLogs(
   std::function<void(const QString&)> callback = std::move(a_callback);
   m_impl->getBackendLogs(std::move(callback));
 }
+
+void TimerController::cleanupBackendLogs() { m_impl->cleanupBackendLogs(); }

@@ -33,7 +33,9 @@ class DBus final : public QObject {
 
   QString status();
 
-  QString logs();
+  QString getLogs();
+
+  void cleanupLogs();
 
  private:
   bool runWgQuick(

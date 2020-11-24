@@ -59,6 +59,8 @@ class LogHandler final {
 
   const QVector<Log>& logs();
 
+  void cleanupLogs();
+
  private:
   LogHandler();
 
