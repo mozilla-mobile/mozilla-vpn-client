@@ -15,7 +15,7 @@ Item {
 
     property var isModalDialogOpened: removePopup.visible
 
-    height: window.height
+    height: window.safeContentHeight
     width: window.width
 
     VPNMenu {
