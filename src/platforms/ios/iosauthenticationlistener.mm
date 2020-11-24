@@ -72,7 +72,11 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
 
   url.setQuery(query);
 
-  Q_ASSERT(!session);
+  if (session) {
+    [session dealloc];
+    session = nullptr;
+  }
+
   session = [[ASWebAuthenticationSession alloc]
             initWithURL:url.toNSURL()
       callbackURLScheme:@"mozilla-vpn"
