@@ -414,7 +414,7 @@ else:ios {
 else:win* {
     message(Windows build)
 
-    #TARGET = MozillaVPN
+    TARGET = MozillaVPN
 
     QT += networkauth
 
@@ -423,12 +423,14 @@ else:win* {
     SOURCES += \
         platforms/dummy/dummycontroller.cpp \
         platforms/windows/windowscryptosettings.cpp \
+        platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowspingsendworker.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp
 
     HEADERS += \
         platforms/dummy/dummycontroller.h \
+        platforms/windows/windowsdatamigration.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         systemtraynotificationhandler.h
