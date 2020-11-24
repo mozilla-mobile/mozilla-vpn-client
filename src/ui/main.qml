@@ -11,13 +11,15 @@ import "./components"
 Window {
     id: window
 
+    property var safeContentHeight: Qt.platform.os === "ios" ? window.height - iosSafeArea.height : window.height
+
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
 
-    flags: if (Qt.platform.os === "ios") Qt.MaximizeUsingFullscreenGeometryHint
+    flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
     width: fullscreenRequired() ? maximumWidth : 360
@@ -52,7 +54,7 @@ Window {
 
     }
     Rectangle {
-        id: iosSafeArea
+        id: iosSafeAreaTopMargin
 
         color: "transparent"
         height: 40
@@ -65,8 +67,8 @@ Window {
 
         initialItem: mainView
         width: parent.width
-        anchors.top: Qt.platform.os === "ios" ? iosSafeArea.bottom : parent.top
-        height: Qt.platform.os === "ios" ? window.height - iosSafeArea.height : window.height
+        anchors.top: Qt.platform.os === "ios" ? iosSafeAreaTopMargin.bottom : parent.top
+        height: safeContentHeight
     }
 
     Component {
