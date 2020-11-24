@@ -422,7 +422,7 @@ else:win* {
 
     SOURCES += \
         platforms/dummy/dummycontroller.cpp \
-        platforms/linux/linuxcryptosettings.cpp \
+        platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowspingsendworker.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp
