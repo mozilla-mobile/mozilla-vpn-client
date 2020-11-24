@@ -16,7 +16,7 @@ Item {
     property real panelWidth: window.width
 
     width: window.width
-    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.horizontalCenter: window.horizontalCenter
 
     SwipeView {
         id: swipeView
