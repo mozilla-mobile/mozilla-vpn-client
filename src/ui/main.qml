@@ -17,6 +17,8 @@ Window {
                 Qt.platform.os === "tvos";
     }
 
+    flags: if (Qt.platform.os === "ios") Qt.MaximizeUsingFullscreenGeometryHint
+
     visible: true
     width: fullscreenRequired() ? maximumWidth : 360
     height: fullscreenRequired() ? maximumHeight : 454
@@ -49,12 +51,22 @@ Window {
             this.showMinimized();
 
     }
+    Rectangle {
+        id: iosSafeArea
+
+        color: "transparent"
+        height: 40
+        width: window.width
+        visible: Qt.platform.os === "ios"
+    }
 
     VPNStackView {
         id: mainStackView
 
         initialItem: mainView
-        anchors.fill: parent
+        width: parent.width
+        anchors.top: Qt.platform.os === "ios" ? iosSafeArea.bottom : parent.top
+        height: Qt.platform.os === "ios" ? window.height - iosSafeArea.height : window.height
     }
 
     Component {
