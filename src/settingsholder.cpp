@@ -47,6 +47,11 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
 #endif
 
+#ifdef MVPN_WINDOWS
+constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
+    "nativeWindowsDataMigrated";
+#endif
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 
@@ -199,6 +204,12 @@ GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
 #ifdef MVPN_IOS
 GETSET(bool, toBool, SETTINGS_NATIVEIOSDATAMIGRATED, hasNativeIOSDataMigrated,
        nativeIOSDataMigrated, setNativeIOSDataMigrated)
+#endif
+
+#ifdef MVPN_WINDOWS
+GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
+       hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
+       setNativeWindowsDataMigrated)
 #endif
 
 #undef GETSET
