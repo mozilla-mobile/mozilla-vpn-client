@@ -47,6 +47,7 @@ VPNFlickable {
             id: localNetwork
 
             property bool isVPNOff: (VPNController.state === VPNController.StateOff)
+            visible: VPN.localNetworkAccessSupported
 
             //% "Local network access"
             labelText: qsTrId("vpn.settings.lanAccess")
