@@ -11,6 +11,8 @@
 #include <wincrypt.h>
 #include <wincred.h>
 
+#define CRED_KEY L"Mozilla VPN"
+
 namespace {
 Logger logger(LOG_WINDOWS, "CryptoSettings");
 
@@ -18,7 +20,14 @@ bool s_initialized = false;
 QByteArray s_key;
 }  // namespace
 
-void CryptoSettings::resetKey() {}
+void CryptoSettings::resetKey() {
+  logger.log() << "Reset the key in the keychain";
+
+  if (s_initialized) {
+    CredDeleteW(CRED_KEY, CRED_TYPE_GENERIC, 0);
+    s_initialized = false;
+  }
+}
 
 bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
   if (!s_initialized) {
@@ -28,8 +37,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     {
       PCREDENTIALW cred;
-      if (CredReadW( L"Mozilla VPN", CRED_TYPE_GENERIC, 0,
-                    &cred)) {
+      if (CredReadW(CRED_KEY, CRED_TYPE_GENERIC, 0, &cred)) {
         s_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
         logger.log() << "Key found with length:" << s_key.length();
@@ -56,9 +64,9 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       CREDENTIALW cred;
       memset(&cred, 0, sizeof(cred));
 
-      cred.Comment = const_cast<wchar_t*>(L"Mozilla VPN");
+      cred.Comment = const_cast<wchar_t*>(CRED_KEY);
       cred.Type = CRED_TYPE_GENERIC;
-      cred.TargetName = const_cast<wchar_t*>(L"Mozilla VPN");
+      cred.TargetName = const_cast<wchar_t*>(CRED_KEY);
       cred.CredentialBlobSize = s_key.length();
       cred.CredentialBlob = (LPBYTE)s_key.constData();
       cred.Persist = CRED_PERSIST_ENTERPRISE;
@@ -68,9 +76,15 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
         return false;
       }
     }
+  }
 
+  if (s_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+    memcpy(key, s_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
     return true;
   }
+
+  logger.log() << "Invalid key";
+  return false;
 }
 
 // static
