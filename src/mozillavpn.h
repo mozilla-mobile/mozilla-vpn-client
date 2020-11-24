@@ -83,6 +83,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
   Q_PROPERTY(bool subscriptionActive READ subscriptionActive NOTIFY
                  subscriptionActiveChanged)
+  Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
+                 CONSTANT)
 
  public:
   MozillaVPN();
@@ -188,6 +190,8 @@ class MozillaVPN final : public QObject {
   bool modelsInitialized() const;
 
   void quit();
+
+  bool localNetworkAccessSupported() const;
 
  private:
   void setState(State state);
