@@ -13,12 +13,10 @@
 #  include "platforms/macos/macospingsendworker.h"
 #elif defined(MVPN_WINDOWS)
 #  include "platforms/windows/windowspingsendworker.h"
+#elif defined(QT_DEBUG)
+#  include "platforms/dummy/dummypingsendworker.h"
 #else
-#  include "platforms/dummy/dummypingsendworker.h"
-#endif
-
-#ifdef QT_DEBUG
-#  include "platforms/dummy/dummypingsendworker.h"
+#  error "Unsupported platform"
 #endif
 
 #include <QThread>
