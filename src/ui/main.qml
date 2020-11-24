@@ -11,7 +11,7 @@ import "./components"
 Window {
     id: window
 
-    property var safeContentHeight: Qt.platform.os === "ios" ? window.height - iosSafeArea.height : window.height
+    property var safeContentHeight: Qt.platform.os === "ios" ? window.height - iosSafeAreaTopMargin.height : window.height
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
