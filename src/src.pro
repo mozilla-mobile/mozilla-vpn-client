@@ -391,6 +391,12 @@ else:ios {
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
     QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images.xcassets
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
+
+    app_launch_screen.files = $$files($$PWD/../ios/app/MozillaVPNLaunchScreen.storyboard)
+    QMAKE_BUNDLE_DATA += app_launch_screen
+
+    ios_launch_screen_images.files = $$files($$PWD/../ios/app/launch.png)
+    QMAKE_BUNDLE_DATA += ios_launch_screen_images
 }
 
 # Anything else
