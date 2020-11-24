@@ -30,8 +30,9 @@ const int ACTION_ACTIVATE = 1;
 const int ACTION_DEACTIVATE = 2;
 const int ACTION_REGISTERLISTENER = 3;
 const int ACTION_REQUEST_STATISTIC = 4;
-const int ACTION_REQUEST_LOG = 5;
-const int ACTION_RESUME_ACTIVATE = 6;
+const int ACTION_REQUEST_GET_LOG = 5;
+const int ACTION_REQUEST_CLEANUP_LOG = 6;
+const int ACTION_RESUME_ACTIVATE = 7;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -165,7 +166,14 @@ void AndroidController::getBackendLogs(
 
   m_logCallback = std::move(a_callback);
   QAndroidParcel nullData, replyData;
-  m_serviceBinder.transact(ACTION_REQUEST_LOG, nullData, &replyData);
+  m_serviceBinder.transact(ACTION_REQUEST_GET_LOG, nullData, &replyData);
+}
+
+void AndroidController::cleanupBackendLogs() {
+  logger.log() << "cleanup logs";
+
+  QAndroidParcel nullParcel;
+  m_serviceBinder.transact(ACTION_REQUEST_CLEANUP_LOG, nullParcel, nullptr);
 }
 
 void AndroidController::onServiceConnected(

@@ -106,7 +106,8 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void subscribe();
   Q_INVOKABLE void restoreSubscription();
   Q_INVOKABLE void viewLogs();
-  Q_INVOKABLE QString retrieveLogs();
+  Q_INVOKABLE void retrieveLogs();
+  Q_INVOKABLE void cleanupLogs();
   Q_INVOKABLE void storeInClipboard(const QString& text);
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
@@ -210,6 +211,9 @@ class MozillaVPN final : public QObject {
   bool writeLogs(QStandardPaths::StandardLocation location,
                  std::function<void(const QString& filename)>&& a_callback);
 
+  void serializeLogs(QTextStream* out,
+                     std::function<void()>&& finalizeCallback);
+
 #ifdef MVPN_IOS
   void startIAP(bool restore);
 #endif
@@ -238,6 +242,8 @@ class MozillaVPN final : public QObject {
   // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
   // complains...
   void loadAndroidAuthenticationView();
+
+  void logsReady(const QString& logs);
 
  private:
   bool m_initialized = false;

@@ -170,3 +170,8 @@ const QVector<LogHandler::Log>& LogHandler::logs() {
   QMutexLocker lock(&m_mutex);
   return m_logs;
 }
+
+void LogHandler::cleanupLogs() {
+  QMutexLocker lock(&m_mutex);
+  m_logs.clear();
+}

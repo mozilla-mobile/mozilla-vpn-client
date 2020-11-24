@@ -34,7 +34,9 @@ class DBus final : public QObject {
 
   QDBusPendingCallWatcher* status();
 
-  QDBusPendingCallWatcher* logs();
+  QDBusPendingCallWatcher* getLogs();
+
+  QDBusPendingCallWatcher* cleanupLogs();
 
  signals:
   void connected();
