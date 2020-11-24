@@ -1030,3 +1030,18 @@ void MozillaVPN::quit() {
   deleteTasks();
   qApp->quit();
 }
+
+bool MozillaVPN::localNetworkAccessSupported() const {
+#if defined(MVPN_LINUX)
+  // TODO: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/295
+  return false;
+#endif
+
+#if defined(MVPN_MACOS) || defined(MPVN_IOS)
+  // managed by the OS automatically. No need to expose this feature.
+  return false;
+#endif
+
+  // All the rest (android, windows) is OK.
+  return true;
+}

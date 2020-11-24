@@ -454,7 +454,8 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges() {
     }
 #endif
 
-  if (SettingsHolder::instance()->localNetworkAccess()) {
+  if (MozillaVPN::instance()->localNetworkAccessSupported() &&
+      SettingsHolder::instance()->localNetworkAccess()) {
     list.append(RFC1918::ipv4());
 
     if (ipv6Enabled) {
