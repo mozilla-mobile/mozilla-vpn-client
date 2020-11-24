@@ -79,7 +79,6 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
-        platforms/dummy/dummypingsendworker.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -146,7 +145,6 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
-        platforms/dummy/dummypingsendworker.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
@@ -171,11 +169,13 @@ debug {
 
     SOURCES += \
             inspector/inspectorconnection.cpp \
-            inspector/inspectorserver.cpp
+            inspector/inspectorserver.cpp \
+            platforms/dummy/dummypingsendworker.cpp
 
     HEADERS += \
             inspector/inspectorconnection.h \
-            inspector/inspectorserver.h
+            inspector/inspectorserver.h \
+            platforms/dummy/dummypingsendworker.h
 }
 
 # Signal handling for unix platforms
