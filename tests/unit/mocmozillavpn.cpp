@@ -121,3 +121,5 @@ void MozillaVPN::deactivate() {}
 void MozillaVPN::refreshDevices() {}
 
 void MozillaVPN::quit() {}
+
+bool MozillaVPN::localNetworkAccessSupported() const { return false; }
