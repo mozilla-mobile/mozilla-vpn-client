@@ -11,11 +11,15 @@ import "./components"
 Window {
     id: window
 
+    property var safeContentHeight: Qt.platform.os === "ios" ? window.height - iosSafeAreaTopMargin.height : window.height
+
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
+
+    flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
     width: fullscreenRequired() ? maximumWidth : 360
@@ -49,12 +53,22 @@ Window {
             this.showMinimized();
 
     }
+    Rectangle {
+        id: iosSafeAreaTopMargin
+
+        color: "transparent"
+        height: 40
+        width: window.width
+        visible: Qt.platform.os === "ios"
+    }
 
     VPNStackView {
         id: mainStackView
 
         initialItem: mainView
-        anchors.fill: parent
+        width: parent.width
+        anchors.top: Qt.platform.os === "ios" ? iosSafeAreaTopMargin.bottom : parent.top
+        height: safeContentHeight
     }
 
     Component {

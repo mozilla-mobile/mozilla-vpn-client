@@ -36,7 +36,7 @@ VPNFlickable {
         id: spacer1
 
         width: parent.width
-        height: (Math.max(window.height * .08, Theme.windowMargin * 2))
+        height: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
     }
 
     VPNPanel {
@@ -117,7 +117,7 @@ VPNFlickable {
     Item {
         id: spacer2
         anchors.top: featureListBackground.bottom
-        height: Math.max(Theme.windowMargin * 2, (window.height - flickContentHeight))
+        height: Math.max(Theme.windowMargin * 2, (window.safeContentHeight - flickContentHeight))
         width: vpnFlickable.width
     }
 

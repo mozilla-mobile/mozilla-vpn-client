@@ -11,7 +11,7 @@ Flickable {
     id: vpnFlickable
 
     property var flickContentHeight
-    property var windowHeightExceedsContentHeight: (window.height > flickContentHeight)
+    property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight)
 
     function ensureVisible(item) {
         if (windowHeightExceedsContentHeight) {
@@ -27,7 +27,7 @@ Flickable {
         }
     }
 
-    contentHeight: Math.max(window.height, flickContentHeight)
+    contentHeight: Math.max(window.safeContentHeight, flickContentHeight)
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
     Component.onCompleted: {

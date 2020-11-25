@@ -8,5 +8,5 @@ import "../themes/themes.js" as Theme
 VPNLinkButton {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: Math.min(window.height * .08, 60)
+    anchors.bottomMargin: Math.min(window.safeContentHeight * .08, 60)
 }
