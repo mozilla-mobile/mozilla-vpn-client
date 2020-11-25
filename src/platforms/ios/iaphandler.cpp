@@ -153,7 +153,11 @@ void IAPHandler::startSubscription(bool restore) {
   logger.log() << "Starting the subscription";
 
   QInAppProduct* product = m_appStore.registeredProduct(m_productName);
-  Q_ASSERT(product);
+  if (!product) {
+    // The registration failed, for unknown reasons.
+    emit subscriptionFailed();
+    return;
+  }
 
   product->purchase();
 }
