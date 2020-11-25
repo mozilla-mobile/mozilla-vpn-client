@@ -45,6 +45,7 @@ class MozillaVPN final : public QObject {
     StateMain,
     StateUpdateRequired,
     StateSubscriptionNeeded,
+    StateSubscriptionValidation,
     StateDeviceLimit,
   };
   Q_ENUM(State);
@@ -220,6 +221,9 @@ class MozillaVPN final : public QObject {
 
 #ifdef MVPN_IOS
   void startIAP(bool restore);
+  void subscriptionCompleted();
+  void subscriptionValidated();
+  void subscriptionFailed();
 #endif
 
   void completeActivation();

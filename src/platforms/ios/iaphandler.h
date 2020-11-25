@@ -34,6 +34,7 @@ class IAPHandler final : public QObject {
 
   void subscriptionFailed();
   void subscriptionCompleted();
+  void subscriptionValidated();
 
  private:
   IAPHandler(QObject* parent);

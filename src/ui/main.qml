@@ -132,6 +132,15 @@ Window {
 
                 },
                 State {
+                    name: VPN.StateSubscriptionValidation
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionValidation.qml"
+                    }
+
+                },
+                State {
                     name: VPN.StateDeviceLimit
 
                     PropertyChanges {

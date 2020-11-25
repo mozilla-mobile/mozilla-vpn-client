@@ -167,6 +167,9 @@ void IAPHandler::stopSubscription() { m_started = false; }
 void IAPHandler::purchaseCompleted() {
   logger.log() << "Purchase completed";
 
+  // The subscription is completed. Now we have to validate it.
+  emit subscriptionCompleted();
+
   QString receipt = IOSUtils::IAPReceipt();
   if (receipt.isEmpty()) {
     logger.log() << "Empty receipt found";
@@ -187,6 +190,6 @@ void IAPHandler::purchaseCompleted() {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray&) {
             logger.log() << "Purchase request completed";
-            emit subscriptionCompleted();
+            emit subscriptionValidated();
           });
 }
