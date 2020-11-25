@@ -112,24 +112,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
 #ifdef MVPN_IOS
   IAPHandler* iap = IAPHandler::createInstance();
-  connect(iap, &IAPHandler::subscriptionCompleted, [this]() {
-    logger.log() << "Subscription completed";
-    completeActivation();
-
-    Q_ASSERT(m_subscriptionActive);
-    m_subscriptionActive = false;
-    emit subscriptionActiveChanged();
-  });
-
-  connect(iap, &IAPHandler::subscriptionFailed, [this] {
-    logger.log() << "Subscription failed";
-
-    Q_ASSERT(m_subscriptionActive);
-    m_subscriptionActive = false;
-    emit subscriptionActiveChanged();
-
-    errorHandle(ErrorHandler::SubscriptionFailureError);
-  });
+  connect(iap, &IAPHandler::subscriptionCompleted, this,
+          &MozillaVPN::subscriptionCompleted);
+  connect(iap, &IAPHandler::subscriptionFailed, this,
+          &MozillaVPN::subscriptionFailed);
+  connect(iap, &IAPHandler::subscriptionValidated, this,
+          &MozillaVPN::subscriptionValidated);
 #endif
 }
 
@@ -1045,3 +1033,32 @@ bool MozillaVPN::localNetworkAccessSupported() const {
   // All the rest (android, windows) is OK.
   return true;
 }
+
+#ifdef MVPN_IOS
+void MozillaVPN::subscriptionCompleted() {
+  logger.log() << "Subscription completed";
+  setState(StateSubscriptionValidation);
+}
+
+void MozillaVPN::subscriptionValidated() {
+  logger.log() << "Subscription validated";
+  completeActivation();
+
+  Q_ASSERT(m_subscriptionActive);
+  m_subscriptionActive = false;
+  emit subscriptionActiveChanged();
+}
+
+void MozillaVPN::subscriptionFailed() {
+  logger.log() << "Subscription failed";
+
+  // Let's go back to the subscription needed.
+  setState(StateSubscriptionNeeded);
+
+  Q_ASSERT(m_subscriptionActive);
+  m_subscriptionActive = false;
+  emit subscriptionActiveChanged();
+
+  errorHandle(ErrorHandler::SubscriptionFailureError);
+}
+#endif
