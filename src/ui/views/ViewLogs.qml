@@ -16,7 +16,7 @@ Item {
     id: logs
 
     width: window.width
-    height: window.height
+    height: window.safeContentHeight
     Component.onCompleted: VPNCloseEventHandler.addView(logs)
 
     VPNMenu {
