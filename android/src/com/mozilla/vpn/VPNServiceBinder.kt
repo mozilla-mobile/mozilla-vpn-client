@@ -9,6 +9,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.Parcel
 import android.util.Log
+import com.mozilla.vpn.NotificationUtil
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import java.lang.Exception
@@ -34,6 +35,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestCleanupLog = 6
         const val resumeActivate = 7
         const val enableStartOnBoot =8;
+        const val setNotificationText = 9;
+        const val setFallBackNotification = 10;
     }
 
     /**
@@ -160,6 +163,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.requestCleanupLog ->{
                 Runtime.getRuntime().exec("logcat -c");
                 return true
+            }
+            ACTIONS.setNotificationText ->{
+                NotificationUtil.update(data);
+                return true;
+            }
+            ACTIONS.setFallBackNotification->{
+                NotificationUtil.saveFallBackMessage(data,mService);
+                return true;
             }
 
             else -> {

@@ -4,20 +4,23 @@
 
 #include "platforms/android/androidnotificationhandler.h"
 #include "leakdetector.h"
+#include "logger.h"
+#include "androidcontroller.h"
+
+namespace {
+Logger logger(LOG_ANDROID, "AndroidNotificationHandler");
+}
 
 AndroidNotificationHandler::AndroidNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
   MVPN_COUNT_CTOR(AndroidNotificationHandler);
 }
-
 AndroidNotificationHandler::~AndroidNotificationHandler() {
   MVPN_COUNT_DTOR(AndroidNotificationHandler);
 }
 
 void AndroidNotificationHandler::notify(const QString& title,
                                         const QString& message, int timerSec) {
-  // TODO
-  Q_UNUSED(title);
-  Q_UNUSED(message);
-  Q_UNUSED(timerSec);
+  logger.log() << "Send notification - " << message;
+  AndroidController::instance()->setNotificationText(title, message, timerSec);
 }
