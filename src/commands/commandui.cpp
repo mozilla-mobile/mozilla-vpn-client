@@ -15,7 +15,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "signalhandler.h"
 #include "systemtrayhandler.h"
 
 #ifdef MVPN_LINUX
@@ -40,6 +39,10 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
+#endif
+
+#ifndef MVPN_WINDOWS
+#include "signalhandler.h"
 #endif
 
 #include <QApplication>
@@ -119,10 +122,12 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#ifndef MVPN_WINDOWS
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
                      [&]() { MozillaVPN::instance()->controller()->quit(); });
+#endif
 
     // Font loader
     FontLoader::loadFonts();

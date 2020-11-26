@@ -73,6 +73,11 @@ class SettingsHolder final : public QObject {
          setNativeIOSDataMigrated)
 #endif
 
+#ifdef MVPN_WINDOWS
+  GETSET(bool, hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
+         setNativeWindowsDataMigrated)
+#endif
+
 #undef GETSET
 
  signals:

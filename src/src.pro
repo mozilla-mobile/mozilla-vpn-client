@@ -79,12 +79,10 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
-        platforms/dummy/dummypingsendworker.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
         settingsholder.cpp \
-        signalhandler.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
         systemtrayhandler.cpp \
@@ -147,12 +145,10 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
-        platforms/dummy/dummypingsendworker.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
         settingsholder.h \
-        signalhandler.h \
         simplenetworkmanager.h \
         statusicon.h \
         systemtrayhandler.h \
@@ -173,11 +169,19 @@ debug {
 
     SOURCES += \
             inspector/inspectorconnection.cpp \
-            inspector/inspectorserver.cpp
+            inspector/inspectorserver.cpp \
+            platforms/dummy/dummypingsendworker.cpp
 
     HEADERS += \
             inspector/inspectorconnection.h \
-            inspector/inspectorserver.h
+            inspector/inspectorserver.h \
+            platforms/dummy/dummypingsendworker.h
+}
+
+# Signal handling for unix platforms
+unix {
+    SOURCES += signalhandler.cpp
+    HEADERS += signalhandler.h
 }
 
 # Platform-specific: Linux
@@ -407,16 +411,37 @@ else:ios {
     QMAKE_BUNDLE_DATA += ios_launch_screen_images
 }
 
+else:win* {
+    message(Windows build)
+
+    TARGET = MozillaVPN
+
+    QT += networkauth
+
+    DEFINES += MVPN_WINDOWS
+
+    SOURCES += \
+        platforms/dummy/dummycontroller.cpp \
+        platforms/windows/windowscryptosettings.cpp \
+        platforms/windows/windowsdatamigration.cpp \
+        platforms/windows/windowspingsendworker.cpp \
+        tasks/authenticate/desktopauthenticationlistener.cpp \
+        systemtraynotificationhandler.cpp
+
+    HEADERS += \
+        platforms/dummy/dummycontroller.h \
+        platforms/windows/windowsdatamigration.h \
+        platforms/windows/windowspingsendworker.h \
+        tasks/authenticate/desktopauthenticationlistener.h \
+        systemtraynotificationhandler.h
+}
+
 # Anything else
 else {
     error(Unsupported platform)
 }
 
 RESOURCES += qml.qrc
-
-CONFIG += qmltypes
-QML_IMPORT_NAME = Mozilla.VPN
-QML_IMPORT_MAJOR_VERSION = 1
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =

@@ -27,6 +27,10 @@
 #  include "platforms/ios/taskiosproducts.h"
 #endif
 
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowsdatamigration.h"
+#endif
+
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
@@ -149,6 +153,13 @@ void MozillaVPN::initialize() {
   if (!SettingsHolder::instance()->hasNativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
     SettingsHolder::instance()->setNativeIOSDataMigrated(true);
+  }
+#endif
+
+#ifdef MVPN_WINDOWS
+  if (!SettingsHolder::instance()->hasNativeWindowsDataMigrated()) {
+    WindowsDataMigration::migrate();
+    SettingsHolder::instance()->setNativeWindowsDataMigrated(true);
   }
 #endif
 
