@@ -33,6 +33,10 @@ class AndroidController final : public ControllerImpl,
 
   void enableStartAtBoot(bool enabled);
 
+  void setNotificationText(const QString& title, const QString& message,
+                           int timerSec);
+  void setFallbackConnectedNotification();
+
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
   void cleanupBackendLogs() override;
@@ -45,7 +49,7 @@ class AndroidController final : public ControllerImpl,
  private:
   Server m_server;
   bool m_serviceConnected = false;
-  std::function<void(const QString &)> m_logCallback;
+  std::function<void(const QString&)> m_logCallback;
 
   QAndroidBinder m_serviceBinder;
   class VPNBinder : public QAndroidBinder {

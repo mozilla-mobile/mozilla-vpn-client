@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.mozilla.vpn.NotificationUtil
 import com.wireguard.android.backend.Statistics
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.android.backend.VpnServiceBackend
@@ -27,10 +28,6 @@ class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     var tunnel: Tunnel? = null
     private var mBinder: VPNServiceBinder? = null
-    val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
-    val CONNECTED_NOTIFICATION_ID = 1337
-    private val mNotificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
-
     /**
      * EntryPoint for the Service, gets Called when AndroidController.cpp
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
@@ -83,7 +80,6 @@ class VPNService : android.net.VpnService() {
         }
         this.tunnel?.let {
             // If we now managed to get a tunnel, turn on!
-            startSticky()
             turnOn()
         }
         return Service.START_NOT_STICKY
@@ -162,7 +158,8 @@ class VPNService : android.net.VpnService() {
 
     fun turnOn(): Boolean {
         val tunnel = this.tunnel ?: return false
-        this.startSticky()
+        // Upgrade us into a Foreground Service, by showing a Notification
+        NotificationUtil.show(this);
 
         tunnel.tunnelHandle?.let {
             this.protect(it)
@@ -173,10 +170,6 @@ class VPNService : android.net.VpnService() {
         if (fileDescriptor != null) {
             Log.v(tag, "Got file Descriptor for VPN - Try to up")
             backend.tunnelUp(tunnel, fileDescriptor, config.toWgUserspaceString())
-            mNotificationBuilder
-                .setContentTitle("Todo: Connected")
-                .setContentText("Todo: Safe and Secure")
-            startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
             return true
         }
         Log.e(tag, "Failed to get a File Descriptor for VPN")
@@ -186,46 +179,11 @@ class VPNService : android.net.VpnService() {
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
         this.tunnel?.let { backend.tunnelDown(it) }
-        stopForeground(true)
+        stopForeground(false)
         this.tunnel = null;
     }
 
-    /*
-    * Creates a Sticky Notification for this
-    * Service and Calls startForeground to 
-    * make sure we cant get closed as long
-    * as we're connecting
-     */
-    fun startSticky() {
-        // For Android 8+ We need to Register a Notification Channel
-        val notificationManager: NotificationManager =
-            this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "vpn"
-            val descriptionText = "  "
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            notificationManager.createNotificationChannel(channel)
-        }
-        // Create the Intent that Should be Fired if the User Clicks the notification
-        val mainActivityName = "org.qtproject.qt5.android.bindings.QtActivity";
-        val activity = Class.forName(mainActivityName);
-        val intent = Intent(this, activity)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-
-        mNotificationBuilder
-            .setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_logo_on)
-            .setContentTitle("Todo: Connecting")
-            .setContentText("Todo: ...")
-            .setOnlyAlertOnce(true)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-        startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
-    }
 
     fun isUp(): Boolean {
         return tunnel?.isUp() ?: return false
@@ -239,7 +197,7 @@ class VPNService : android.net.VpnService() {
     external fun startActivityForResult(i: Intent)
 
 }
-
 fun Tunnel.isUp(): Boolean {
     return this.state == Tunnel.State.Up
 }
+
