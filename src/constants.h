@@ -37,4 +37,7 @@ CONSTEXPR(uint32_t, SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC, 3600000, 4000, 0)
 // how often we check the captive portal when the VPN is on.
 CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
 
+// How fast the animated icon should move
+CONSTEXPR(uint32_t, STATUSICON_ANIMATION_MSEC, 200, 200, 0)
+
 };  // namespace Constants

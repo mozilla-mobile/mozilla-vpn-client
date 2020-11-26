@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "testmodels.h"
+#include "../../src/ipaddressrange.h"
 #include "../../src/models/device.h"
 #include "../../src/models/devicemodel.h"
 #include "../../src/models/keys.h"
@@ -1094,6 +1095,23 @@ void TestModels::userFromSettings() {
   QCOMPARE(user.email(), "email");
   QCOMPARE(user.maxDevices(), 123);
   QCOMPARE(user.subscriptionNeeded(), true);
+}
+
+// IPAddressRange
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::ipAddressRangeBasic() {
+  IPAddressRange a("ip", (uint32_t)123, IPAddressRange::IPv4);
+  QCOMPARE(a.ipAddress(), "ip");
+  QCOMPARE(a.range(), (uint32_t)123);
+  QCOMPARE(a.type(), IPAddressRange::IPv4);
+  QCOMPARE(a.toString(), "ip/123");
+
+  IPAddressRange b(a);
+  QCOMPARE(b.ipAddress(), "ip");
+  QCOMPARE(b.range(), (uint32_t)123);
+  QCOMPARE(b.type(), IPAddressRange::IPv4);
+  QCOMPARE(b.toString(), "ip/123");
 }
 
 static TestModels s_testModels;

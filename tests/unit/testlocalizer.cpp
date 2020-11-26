@@ -10,6 +10,7 @@
 void TestLocalizer::basic() {
   SettingsHolder settings;
   Localizer l;
+  QCOMPARE(Localizer::instance(), &l);
 
   l.initialize("");
   l.initialize("uk");
