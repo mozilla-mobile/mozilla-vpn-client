@@ -37,8 +37,11 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidwebview.h"
+#include "platforms/android/androidutils.h"
+#include "platforms/android/androidwebview.h"
+
+#include "platforms/android/androidstartatbootwatcher.h"
+#include "platforms/android/androidutils.h"
 #endif
 
 #ifndef MVPN_WINDOWS
@@ -146,6 +149,16 @@ int CommandUI::run(QStringList& tokens) {
 
     MacOSUtils::setDockClickHandler();
 #endif
+
+
+#ifdef MVPN_ANDROID
+        AndroidStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
+        QObject::connect(SettingsHolder::instance(),
+                         &SettingsHolder::startAtBootChanged,
+                         &startAtBootWatcher,
+                         &AndroidStartAtBootWatcher::startAtBootChanged);
+#endif
+
 
 #ifdef MVPN_LINUX
     // Dependencies - so far, only for linux.

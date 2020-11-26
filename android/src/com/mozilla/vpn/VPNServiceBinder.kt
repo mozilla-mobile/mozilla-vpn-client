@@ -4,6 +4,7 @@
 
 package org.mozilla.firefox.vpn
 
+import android.content.Context
 import android.os.Binder
 import android.os.IBinder
 import android.os.Parcel
@@ -32,6 +33,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestGetLog = 5
         const val requestCleanupLog = 6
         const val resumeActivate = 7
+        const val enableStartOnBoot =8;
     }
 
     /**
@@ -52,6 +54,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     // [data] is here a json containing the wireguard conf
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
+                    // Store the config in case the service gets
+                    // asked boot vpn from the OS
+                    val prefs = mService.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+                    prefs.edit()
+                        .putString("lastConf",json)
+                        .apply()
+
+                    Log.v(tag,"Stored new Tunnel config in Service")
                     val config = buildConfigFromJSON(json)
 
                     var forSwitching = false;
@@ -110,7 +120,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.d(tag, "Registered ${mListeners.size} EventListeners")
-                dispatchEvent(EVENTS.init, "")
+                if(mService.isUp()){
+                    dispatchEvent(EVENTS.init, "connected")
+                }else{
+                    dispatchEvent(EVENTS.init, "disconnected")
+                }
                 return true
             }
 
@@ -132,6 +146,15 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 dispatchEvent(EVENTS.backendLogs, allText)
                 return true
 
+            }
+            ACTIONS.enableStartOnBoot ->{
+                // Sets the Start on boot pref data is here a QVariant Byte
+                val startOnBootEnabled = data.readByte().equals(true) // there is no byte.toBool?
+                Log.v(tag,"Set ServicePref Start on boot to -> $startOnBootEnabled")
+                val prefs = mService.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+                prefs.edit()
+                    .putBoolean("startOnBoot",startOnBootEnabled)
+                    .apply()
             }
 
             ACTIONS.requestCleanupLog ->{
@@ -179,7 +202,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * Create a Wireguard [Config]  from a [json] string -
      * The [json] will be created in AndroidController.cpp
      */
-    private fun buildConfigFromJSON(json: String?): Config {
+    fun buildConfigFromJSON(json: String?): Config {
         val confBuilder = Config.Builder()
         if (json == null) {
             return confBuilder.build()
