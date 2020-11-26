@@ -42,4 +42,6 @@ class TestModels final : public TestHelper {
   void userFromJson_data();
   void userFromJson();
   void userFromSettings();
+
+  void ipAddressRangeBasic();
 };

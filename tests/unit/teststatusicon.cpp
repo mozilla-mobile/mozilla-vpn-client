@@ -5,6 +5,8 @@
 #include "teststatusicon.h"
 #include "../../src/statusicon.h"
 
+#include <QEventLoop>
+
 void TestStatusIcon::basic() {
   StatusIcon si;
   QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
@@ -26,9 +28,27 @@ void TestStatusIcon::basic() {
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 
   TestHelper::controllerState = Controller::StateSwitching;
+
+  int i = 0;
+  QEventLoop loop;
+  connect(&si, &StatusIcon::iconChanged, [&]() {
+    if (i > 10) {
+      si.disconnect();
+      loop.exit();
+      return;
+    }
+
+    QCOMPARE(si.iconUrl().toString(),
+             QString("qrc:/ui/resources/logo-animated%1.svg").arg((i % 4) + 1));
+    QCOMPARE(si.iconString(),
+             QString(":/ui/resources/logo-animated%1.svg").arg((i % 4) + 1));
+    ++i;
+  });
+
   si.stateChanged();
   QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-animated1.svg");
   QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.svg");
+  loop.exec();
 
   TestHelper::controllerState = Controller::StateCaptivePortal;
   si.stateChanged();

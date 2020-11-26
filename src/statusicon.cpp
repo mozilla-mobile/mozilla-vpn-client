@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "statusicon.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -41,7 +42,7 @@ StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
 
 void StatusIcon::activateAnimation() {
   m_animatedIconIndex = 0;
-  m_animatedIconTimer.start(200);
+  m_animatedIconTimer.start(Constants::STATUSICON_ANIMATION_MSEC);
   animateIcon();
 }
 
