@@ -11,12 +11,12 @@
 #  include "platforms/linux/linuxpingsendworker.h"
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
 #  include "platforms/macos/macospingsendworker.h"
+#elif defined(MVPN_WINDOWS)
+#  include "platforms/windows/windowspingsendworker.h"
+#elif defined(QT_DEBUG)
+#  include "platforms/dummy/dummypingsendworker.h"
 #else
-#  include "platforms/dummy/dummypingsendworker.h"
-#endif
-
-#ifdef QT_DEBUG
-#  include "platforms/dummy/dummypingsendworker.h"
+#  error "Unsupported platform"
 #endif
 
 #include <QThread>
@@ -35,6 +35,8 @@ PingSender::PingSender(QObject* parent, QThread* thread) : QObject(parent) {
       new LinuxPingSendWorker();
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
       new MacOSPingSendWorker();
+#elif defined(MVPN_WINDOWS)
+      new WindowsPingSendWorker();
 #else
       new DummyPingSendWorker();
 #endif
