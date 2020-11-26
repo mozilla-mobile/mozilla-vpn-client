@@ -397,5 +397,6 @@
         <file>platforms/android/androidauthenticationview.qml</file>
         <file>ui/components/VPNLogsButton.qml</file>
         <file>ui/resources/copy.svg</file>
+        <file>ui/components/VPNLoader.qml</file>
     </qresource>
 </RCC>
