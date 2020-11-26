@@ -126,7 +126,7 @@ NETEXT_ID_IOS = <>
 To build a Release style build (ready for signing), use:
 ```
 cd MozillaVPN.xcodeproj
-xcodebuild -scheme Mozilla -workspace project.xcworkspace -configuration Release clean build CODE_SIGNING_ALLOWED=NO
+xcodebuild -scheme MozillaVPN -workspace project.xcworkspace -configuration Release clean build CODE_SIGNING_ALLOWED=NO
 ```
 
 The built up will show up in `Release/Mozilla VPN.app` (relative to the root of the repo).
