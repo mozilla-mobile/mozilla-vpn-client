@@ -20,9 +20,9 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
-    static bool canEnableStartOnBoot();
+  static bool canEnableStartOnBoot();
 
-    static AndroidUtils* instance();
+  static AndroidUtils* instance();
 
   void startAuthentication(AuthenticationListener* listener, const QUrl& url);
 
@@ -44,4 +44,4 @@ class AndroidUtils final : public QObject {
   AuthenticationListener* m_listener = nullptr;
 };
 
-#endif // ANDROIDUTILS_H
+#endif  // ANDROIDUTILS_H

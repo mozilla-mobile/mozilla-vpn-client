@@ -16,15 +16,13 @@ namespace {
 Logger logger(LOG_ANDROID, "AndroidStartAtBootWatcher");
 }
 
-AndroidStartAtBootWatcher::AndroidStartAtBootWatcher(bool startAtBoot)
-{
-    startAtBootChanged(startAtBoot);
+AndroidStartAtBootWatcher::AndroidStartAtBootWatcher(bool startAtBoot) {
+  startAtBootChanged(startAtBoot);
 }
 
-void AndroidStartAtBootWatcher::startAtBootChanged(bool startAtBoot)
-{
-    logger.log() << "StartAtBoot changed:" << startAtBoot;
-    if(AndroidController::instance() != nullptr){
-        AndroidController::instance()->enableStartAtBoot(startAtBoot);
-    }
+void AndroidStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
+  logger.log() << "StartAtBoot changed:" << startAtBoot;
+  if (AndroidController::instance() != nullptr) {
+    AndroidController::instance()->enableStartAtBoot(startAtBoot);
+  }
 }
