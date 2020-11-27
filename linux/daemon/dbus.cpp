@@ -286,10 +286,7 @@ QString DBus::getLogs() {
   QString output;
   QTextStream out(&output);
 
-  LogHandler* logHandler = LogHandler::instance();
-  for (const LogHandler::Log& log : logHandler->logs()) {
-    logHandler->prettyOutput(out, log);
-  }
+  LogHandler::writeLogs(out);
 
   return output;
 }

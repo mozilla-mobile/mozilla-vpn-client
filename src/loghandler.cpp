@@ -3,11 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "loghandler.h"
+#include "logger.h"
 
 #include <QDate>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QMessageLogContext>
 #include <QMutexLocker>
 #include <QProcessEnvironment>
+#include <QStandardPaths>
 #include <QString>
 #include <QTextStream>
 
@@ -15,11 +20,12 @@
 #  include <android/log.h>
 #endif
 
-constexpr int LOG_MAX = 10000;
+constexpr qint64 LOG_MAX_FILE_SIZE = 1048576;
+constexpr const char* LOG_FILENAME = "mozillavpn.txt";
 
 namespace {
 QMutex s_mutex;
-LogHandler* sLogHandler;
+LogHandler* s_instance = nullptr;
 }
 
 // static
@@ -47,10 +53,20 @@ void LogHandler::messageHandler(const QStringList& modules,
 
 // static
 LogHandler* LogHandler::maybeCreate(const QMutexLocker& proofOfLock) {
-  if (!sLogHandler) {
-    sLogHandler = new LogHandler(proofOfLock);
+  if (!s_instance) {
+    QStringList modules;
+    QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+    if (pe.contains("MOZVPN_LOG")) {
+      QStringList parts = pe.value("MOZVPN_LOG").split(",");
+      for (const QString& part : parts) {
+        modules.append(part.trimmed());
+      }
+    }
+
+    s_instance = new LogHandler(modules, proofOfLock);
   }
-  return sLogHandler;
+
+  return s_instance;
 }
 
 // static
@@ -111,14 +127,26 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << Qt::endl;
 }
 
-LogHandler::LogHandler(const QMutexLocker& proofOfLock) {
+LogHandler::LogHandler(const QStringList& modules,
+                       const QMutexLocker& proofOfLock)
+    : m_modules(modules) {
   Q_UNUSED(proofOfLock);
 
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains("MOZVPN_LOG")) {
-    QStringList parts = pe.value("MOZVPN_LOG").split(",");
-    for (const QString& part : parts) {
-      m_modules.append(part.trimmed());
+  QString location =
+      QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  if (!location.isEmpty()) {
+    QDir appDataLocation(location);
+    if (!QFileInfo::exists(location)) {
+      QDir tmp(location);
+      tmp.cdUp();
+      if (tmp.exists()) {
+        tmp.mkdir(appDataLocation.dirName());
+      }
+    }
+
+    if (QFileInfo::exists(location)) {
+      m_logFileName = appDataLocation.filePath(LOG_FILENAME);
+      openLogFile(proofOfLock);
     }
   }
 }
@@ -128,16 +156,14 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
     return;
   }
 
-  m_logs.append(log);
-
-  while (m_logs.count() >= LOG_MAX) {
-    m_logs.removeAt(0);
+  if (m_output) {
+    prettyOutput(*m_output, log);
   }
 
 #ifdef MVPN_ANDROID
   QByteArray buffer;
   QTextStream out(&buffer);
-  prettyOutput(out, m_logs.last());
+  prettyOutput(out, log);
 
   const char* str = buffer.constData();
   if (str) {
@@ -145,7 +171,7 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
   }
 #else
   QTextStream out(stderr);
-  prettyOutput(out, m_logs.last());
+  prettyOutput(out, log);
 #endif
 }
 
@@ -172,12 +198,78 @@ bool LogHandler::matchModule(const Log& log,
   return false;
 }
 
-const QVector<LogHandler::Log>& LogHandler::logs() {
+// static
+void LogHandler::writeLogs(QTextStream& out) {
   QMutexLocker lock(&s_mutex);
-  return m_logs;
+
+  if (!s_instance || s_instance->m_logFileName.isEmpty()) {
+    return;
+  }
+
+  s_instance->closeLogFile(lock);
+
+  {
+    QFile file(s_instance->m_logFileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      return;
+    }
+
+    out << file.readAll();
+  }
+
+  s_instance->openLogFile(lock);
 }
 
+// static
 void LogHandler::cleanupLogs() {
   QMutexLocker lock(&s_mutex);
-  m_logs.clear();
+
+  if (!s_instance || s_instance->m_logFileName.isEmpty()) {
+    return;
+  }
+
+  s_instance->closeLogFile(lock);
+
+  {
+    QFile file(s_instance->m_logFileName);
+    file.remove();
+  }
+
+  s_instance->openLogFile(lock);
+}
+
+void LogHandler::openLogFile(const QMutexLocker& proofOfLock) {
+  Q_UNUSED(proofOfLock);
+  Q_ASSERT(!m_logFile);
+  Q_ASSERT(!m_output);
+
+  m_logFile = new QFile(m_logFileName);
+  if (m_logFile->size() > LOG_MAX_FILE_SIZE) {
+    m_logFile->remove();
+  }
+
+  if (!m_logFile->open(QIODevice::WriteOnly | QIODevice::Append |
+                       QIODevice::Text)) {
+    delete m_logFile;
+    m_logFile = nullptr;
+    return;
+  }
+
+  m_output = new QTextStream(m_logFile);
+
+  addLog(Log(QStringList{LOG_MAIN}, "LogHandler",
+             QString("Log file: %1").arg(m_logFileName)),
+         proofOfLock);
+}
+
+void LogHandler::closeLogFile(const QMutexLocker& proofOfLock) {
+  Q_UNUSED(proofOfLock);
+
+  if (m_logFile) {
+    delete m_output;
+    m_output = nullptr;
+
+    delete m_logFile;
+    m_logFile = nullptr;
+  }
 }
