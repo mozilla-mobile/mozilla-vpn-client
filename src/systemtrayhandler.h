@@ -24,6 +24,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
 
   void captivePortalNotificationRequested();
 
+  void retranslate();
+
  public slots:
   void updateIcon(const QString& icon);
 
@@ -41,6 +43,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   QAction* m_separator = nullptr;
   QAction* m_preferencesAction = nullptr;
   QAction* m_showHideLabel = nullptr;
+  QAction* m_quitAction = nullptr;
+  QMenu* m_helpMenu = nullptr;
 };
 
 #endif  // SYSTEMTRAYHANDLER_H

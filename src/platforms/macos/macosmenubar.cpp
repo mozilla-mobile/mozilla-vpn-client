@@ -11,11 +11,28 @@
 
 namespace {
 Logger logger(LOG_MACOS, "MacOSManuBar");
+MacOSMenuBar* s_instance = nullptr;
 }
 
-MacOSMenuBar::MacOSMenuBar() { MVPN_COUNT_CTOR(MacOSMenuBar); }
+MacOSMenuBar::MacOSMenuBar() {
+  MVPN_COUNT_CTOR(MacOSMenuBar);
 
-MacOSMenuBar::~MacOSMenuBar() { MVPN_COUNT_DTOR(MacOSMenuBar); }
+  Q_ASSERT(!s_instance);
+  s_instance = this;
+}
+
+MacOSMenuBar::~MacOSMenuBar() {
+  MVPN_COUNT_DTOR(MacOSMenuBar);
+
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
+}
+
+// static
+MacOSMenuBar* MacOSMenuBar::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
 
 void MacOSMenuBar::initialize() {
   logger.log() << "Creating menubar";
@@ -44,21 +61,35 @@ void MacOSMenuBar::initialize() {
   m_preferencesAction->setMenuRole(QAction::PreferencesRole);
   m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
-  //% "Close"
-  QAction* close = fileMenu->addAction(qtTrId("menubar.file.close"),
-                                       vpn->controller(), &Controller::quit);
-  close->setShortcut(QKeySequence::Close);
+  m_closeAction = fileMenu->addAction("", vpn->controller(), &Controller::quit);
+  m_closeAction->setShortcut(QKeySequence::Close);
 
-  //% "Help"
-  QMenu* helpMenu = menuBar->addMenu(qtTrId("menubar.help.title"));
-  vpn->helpModel()->forEach([&](const QString& name, int id) {
-    helpMenu->addAction(name,
-                        [help = vpn->helpModel(), id]() { help->open(id); });
-  });
+  m_helpMenu = menuBar->addMenu("");
+
+  retranslate();
 };
 
 void MacOSMenuBar::controllerStateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
   m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
   m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
+}
+
+void MacOSMenuBar::retranslate() {
+  logger.log() << "Retranslate";
+
+  //% "Close"
+  m_closeAction->setText(qtTrId("menubar.file.close"));
+
+  //% "Help"
+  m_helpMenu->setTitle(qtTrId("menubar.help.title"));
+  for (QAction* action : m_helpMenu->actions()) {
+    m_helpMenu->removeAction(action);
+  }
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  vpn->helpModel()->forEach([&](const char* nameId, int id) {
+    m_helpMenu->addAction(qtTrId(nameId),
+                          [help = vpn->helpModel(), id]() { help->open(id); });
+  });
 }

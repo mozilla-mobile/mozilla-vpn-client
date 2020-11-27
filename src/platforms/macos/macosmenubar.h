@@ -16,7 +16,11 @@ class MacOSMenuBar final : public QObject {
   MacOSMenuBar();
   ~MacOSMenuBar();
 
+  static MacOSMenuBar* instance();
+
   void initialize();
+
+  void retranslate();
 
  public slots:
   void controllerStateChanged();
@@ -24,6 +28,8 @@ class MacOSMenuBar final : public QObject {
  private:
   QAction* m_aboutAction = nullptr;
   QAction* m_preferencesAction = nullptr;
+  QAction* m_closeAction = nullptr;
+  QMenu* m_helpMenu = nullptr;
 };
 
 #endif  // MACOSMENUBAR_H

@@ -269,14 +269,6 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
-    QObject::connect(
-        SettingsHolder::instance(), &SettingsHolder::languageCodeChanged,
-        [](const QString& languageCode) {
-          logger.log() << "Storing the languageCode:" << languageCode;
-          Localizer::instance()->loadLanguage(languageCode);
-          QmlEngineHolder::instance()->engine()->retranslate();
-        });
-
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
@@ -321,6 +313,7 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
+
 #  endif
 #endif
 
@@ -332,6 +325,21 @@ int CommandUI::run(QStringList& tokens) {
                      [systemTrayHandler = &systemTrayHandler]() {
                        systemTrayHandler->captivePortalNotificationRequested();
                      });
+
+    QObject::connect(
+        SettingsHolder::instance(), &SettingsHolder::languageCodeChanged,
+        [](const QString& languageCode) {
+          logger.log() << "Storing the languageCode:" << languageCode;
+          Localizer::instance()->loadLanguage(languageCode);
+          QmlEngineHolder::instance()->engine()->retranslate();
+          SystemTrayHandler::instance()->retranslate();
+
+#ifdef Q_OS_MAC
+#  ifndef MVPN_IOS
+          MacOSMenuBar::instance()->retranslate();
+#  endif
+#endif
+        });
 
 #ifdef QT_DEBUG
     InspectorServer inspectServer;
