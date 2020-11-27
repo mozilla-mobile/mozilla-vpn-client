@@ -6,6 +6,8 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Layouts 1.15
+import QtQml 2.15
+
 import Mozilla.VPN 1.0
 
 Rectangle {
@@ -88,7 +90,13 @@ Rectangle {
 
             if (drawingRing3)
                 updateRing3();
+        }
 
+        Timer {
+            interval: 20
+            running: animatedRingsWrapper.startAnimation
+            repeat: true
+            onTriggered: animatedRings.animateRings()
         }
 
         function drawRing(ctx, ringRadius, borderWidth) {
@@ -140,8 +148,6 @@ Rectangle {
 
             if (drawingRing3)
                 drawRing(ctx, ring3Radius, ring3BorderWidth);
-
-            animatedRings.requestAnimationFrame(animateRings);
         }
 
         Component.onCompleted: {
