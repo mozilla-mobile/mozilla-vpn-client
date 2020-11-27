@@ -26,7 +26,21 @@ void TestLogger::logHandler() {
   qWarning() << "WOW warning!";
   qCritical() << "WOW critical!";
 
-  QVERIFY(lh->logs().count() > 0);
+  {
+    QString buffer;
+    QTextStream out(&buffer);
+    lh->writeLogs(out);
+    QVERIFY(!buffer.isEmpty());
+  }
+
+  lh->cleanupLogs();
+
+  {
+    QString buffer;
+    QTextStream out(&buffer);
+    lh->writeLogs(out);
+    QVERIFY(buffer.isEmpty());
+  }
 }
 
 static TestLogger s_testLogger;

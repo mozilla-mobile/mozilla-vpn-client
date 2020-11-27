@@ -871,10 +871,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
        << "================" << Qt::endl
        << Qt::endl;
 
-  LogHandler* logHandler = LogHandler::instance();
-  for (const LogHandler::Log& log : logHandler->logs()) {
-    logHandler->prettyOutput(*out, log);
-  }
+  LogHandler::writeLogs(*out);
 
   MozillaVPN::instance()->controller()->getBackendLogs(
       [out,

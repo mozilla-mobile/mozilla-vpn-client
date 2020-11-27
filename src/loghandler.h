@@ -6,10 +6,11 @@
 #define LOGHANDLER_H
 
 #include <QDateTime>
-#include <QMutex>
 #include <QObject>
 #include <QVector>
 
+class QFile;
+class QMutexLocker;
 class QTextStream;
 
 class LogHandler final {
@@ -57,12 +58,12 @@ class LogHandler final {
 
   static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
 
-  const QVector<Log>& logs();
+  static void writeLogs(QTextStream& out);
 
-  void cleanupLogs();
+  static void cleanupLogs();
 
  private:
-  LogHandler(const QMutexLocker& proofOfLock);
+  LogHandler(const QStringList& modules, const QMutexLocker& proofOfLock);
 
   static LogHandler* maybeCreate(const QMutexLocker& proofOfLock);
 
@@ -70,11 +71,15 @@ class LogHandler final {
 
   bool matchModule(const Log& log, const QMutexLocker& proofOfLock) const;
 
-  // Protected by mutex.
-  QStringList m_modules;
+  void openLogFile(const QMutexLocker& proofOfLock);
 
-  // Protected by mutex.
-  QVector<Log> m_logs;
+  void closeLogFile(const QMutexLocker& proofOfLock);
+
+  const QStringList m_modules;
+
+  QString m_logFileName;
+  QFile* m_logFile = nullptr;
+  QTextStream* m_output = nullptr;
 };
 
 #endif  // LOGHANDLER_H
