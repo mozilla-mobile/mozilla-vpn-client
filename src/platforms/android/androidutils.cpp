@@ -40,6 +40,14 @@ QString AndroidUtils::GetDeviceName() {
   return res;
 };
 
+// Static
+bool AndroidUtils::canEnableStartOnBoot()
+{
+  // On Nougat(v24) Always On VPN was introduced
+  // and starting VPN on boot forbidden.
+  return QtAndroid::androidSdkVersion() < 24;
+};
+
 // static
 AndroidUtils* AndroidUtils::instance() {
   if (!s_instance) {

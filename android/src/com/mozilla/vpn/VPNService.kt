@@ -4,18 +4,16 @@
 
 package org.mozilla.firefox.vpn
 
-import android.R
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.wireguard.android.backend.Statistics
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.android.backend.VpnServiceBackend
@@ -24,10 +22,14 @@ import com.wireguard.config.Config
 import com.wireguard.crypto.Key
 import com.wireguard.crypto.KeyFormatException
 
+
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     var tunnel: Tunnel? = null
     private var mBinder: VPNServiceBinder? = null
+    val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
+    val CONNECTED_NOTIFICATION_ID = 1337
+    private val mNotificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
 
     /**
      * EntryPoint for the Service, gets Called when AndroidController.cpp
@@ -51,13 +53,47 @@ class VPNService : android.net.VpnService() {
 
     /**
      * Might be the entryPoint if the Service gets Started via an
-     * Service Intent (Settings or vice versa)
+     * Service Intent: Might be from Always-On-Vpn from Settings
+     * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (mBinder == null) {
             mBinder = VPNServiceBinder(this)
         }
-        return super.onStartCommand(intent, flags, startId)
+
+        intent?.let {
+            if (intent.getBooleanExtra("startOnBoot", false)) {
+                Log.v(tag, "Starting VPN because 'start on boot is enabled'")
+            } else {
+                Log.v(tag, "Starting VPN because 'always on vpn' is enabled")
+            }
+        }
+
+        if (this.tunnel == null) {
+            // We don't have tunnel to turn on - Try to create one with last config the service got
+            val prefs = getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+            val lastConfString = prefs.getString("lastConf", "")
+            if (lastConfString.isNullOrEmpty()) {
+                // We have nothing to connect to -> Exit
+                Log.e(tag, "VPN service was triggered without defining a Server or having a tunnel")
+                return Service.START_NOT_STICKY
+            }
+            val tunnelConfig = mBinder?.buildConfigFromJSON(lastConfString)
+            createTunnel(tunnelConfig);
+        }
+        this.tunnel?.let {
+            // If we now managed to get a tunnel, turn on!
+            startSticky()
+            turnOn()
+        }
+        return Service.START_NOT_STICKY
+    }
+
+    // Invoked when the application is revoked.
+    // At this moment, the VPN interface is already deactivated by the system.
+    override fun onRevoke() {
+        this.turnOff();
+        super.onRevoke()
     }
 
     fun getStatistic(): Statistics? {
@@ -98,7 +134,10 @@ class VPNService : android.net.VpnService() {
         return stats
     }
 
-    fun createTunnel(conf: Config) {
+    fun createTunnel(conf: Config?) {
+        if (conf == null) {
+            return;
+        }
         this.tunnel = Tunnel("myCoolTunnel", conf)
     }
 
@@ -123,6 +162,7 @@ class VPNService : android.net.VpnService() {
 
     fun turnOn(): Boolean {
         val tunnel = this.tunnel ?: return false
+        this.startSticky()
 
         tunnel.tunnelHandle?.let {
             this.protect(it)
@@ -133,7 +173,10 @@ class VPNService : android.net.VpnService() {
         if (fileDescriptor != null) {
             Log.v(tag, "Got file Descriptor for VPN - Try to up")
             backend.tunnelUp(tunnel, fileDescriptor, config.toWgUserspaceString())
-            this.startSticky()
+            mNotificationBuilder
+                .setContentTitle("Todo: Connected")
+                .setContentText("Todo: Safe and Secure")
+            startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
             return true
         }
         Log.e(tag, "Failed to get a File Descriptor for VPN")
@@ -144,16 +187,14 @@ class VPNService : android.net.VpnService() {
         Log.v(tag, "Try to disable tunnel")
         this.tunnel?.let { backend.tunnelDown(it) }
         stopForeground(true)
+        this.tunnel = null;
     }
-
-    val NOTIFICATION_CHANNEL_ID = "org.mozilla.firefox.vpnNotification"
-    val CONNECTED_NOTIFICATION_ID = 1337
 
     /*
     * Creates a Sticky Notification for this
     * Service and Calls startForeground to 
     * make sure we cant get closed as long
-    * as we're connected
+    * as we're connecting
      */
     fun startSticky() {
         // For Android 8+ We need to Register a Notification Channel
@@ -176,13 +217,18 @@ class VPNService : android.net.VpnService() {
         val intent = Intent(this, activity)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
-        val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        mNotificationBuilder
             .setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_logo_on)
-            .setContentTitle("Todo: Connected Title")
-            .setContentText("Todo: you're connected")
+            .setContentTitle("Todo: Connecting")
+            .setContentText("Todo: ...")
+            .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-        startForeground(CONNECTED_NOTIFICATION_ID, builder.build())
+        startForeground(CONNECTED_NOTIFICATION_ID, mNotificationBuilder.build())
+    }
+
+    fun isUp(): Boolean {
+        return tunnel?.isUp() ?: return false
     }
 
     /**
@@ -191,4 +237,9 @@ class VPNService : android.net.VpnService() {
      * Actually Implemented in src/platforms/android/AndroidJNIUtils.cpp
      */
     external fun startActivityForResult(i: Intent)
+
+}
+
+fun Tunnel.isUp(): Boolean {
+    return this.state == Tunnel.State.Up
 }
