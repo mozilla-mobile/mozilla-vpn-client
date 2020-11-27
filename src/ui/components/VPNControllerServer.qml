@@ -18,7 +18,6 @@ VPNClickableRow {
     property var descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.city)
 
     accessibleName: titleText + ": " + descriptionText
-    rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit
     Accessible.ignored: rowShouldBeDisabled
     activeFocusOnTab: true
 
