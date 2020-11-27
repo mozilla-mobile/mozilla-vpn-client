@@ -95,8 +95,8 @@ android {
 
     defaultConfig {
         resConfig "en"
-        minSdkVersion = qtMinSdkVersion
-        targetSdkVersion = qtTargetSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 28
     }
     compileOptions {
                    sourceCompatibility 1.8

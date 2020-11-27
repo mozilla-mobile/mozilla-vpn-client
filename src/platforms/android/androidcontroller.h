@@ -31,6 +31,12 @@ class AndroidController final : public ControllerImpl,
 
   void checkStatus() override;
 
+  void enableStartAtBoot(bool enabled);
+
+  void setNotificationText(const QString& title, const QString& message,
+                           int timerSec);
+  void setFallbackConnectedNotification();
+
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
   void cleanupBackendLogs() override;
@@ -42,6 +48,7 @@ class AndroidController final : public ControllerImpl,
 
  private:
   Server m_server;
+  bool m_serviceConnected = false;
   std::function<void(const QString&)> m_logCallback;
 
   QAndroidBinder m_serviceBinder;
@@ -52,6 +59,8 @@ class AndroidController final : public ControllerImpl,
     bool onTransact(int code, const QAndroidParcel& data,
                     const QAndroidParcel& reply,
                     QAndroidBinder::CallType flags) override;
+
+    QString readUTF8Parcel(QAndroidParcel data);
 
    private:
     AndroidController* m_controller = nullptr;

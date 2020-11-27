@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#ifndef ANDROIDUTILS_H
+#define ANDROIDUTILS_H
+
 #include <QObject>
 #include <QString>
 #include <QUrl>
@@ -16,6 +19,8 @@ class AndroidUtils final : public QObject {
 
  public:
   static QString GetDeviceName();
+
+  static bool canEnableStartOnBoot();
 
   static AndroidUtils* instance();
 
@@ -38,3 +43,5 @@ class AndroidUtils final : public QObject {
   QUrl m_url;
   AuthenticationListener* m_listener = nullptr;
 };
+
+#endif  // ANDROIDUTILS_H
