@@ -9,6 +9,7 @@
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "settingsholder.h"
 
 #include <QAndroidBinder>
 #include <QAndroidIntent>
@@ -33,6 +34,9 @@ const int ACTION_REQUEST_STATISTIC = 4;
 const int ACTION_REQUEST_GET_LOG = 5;
 const int ACTION_REQUEST_CLEANUP_LOG = 6;
 const int ACTION_RESUME_ACTIVATE = 7;
+const int ACTION_ENABLE_START_ON_BOOT = 8;
+const int ACTION_SET_NOTIFICATION_TEXT = 9;
+const int ACTION_SET_NOTIFICATION_FALLBACK = 10;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -83,6 +87,48 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(),
                                         "org.mozilla.firefox.vpn.VPNService"),
                          *this, QtAndroid::BindFlag::AutoCreate);
+}
+
+void AndroidController::enableStartAtBoot(bool enabled) {
+  if (!m_serviceConnected) {
+    return;
+  }
+  QAndroidParcel data;
+  data.writeVariant(enabled);
+  m_serviceBinder.transact(ACTION_ENABLE_START_ON_BOOT, data, nullptr);
+}
+
+/*
+ * Sets the current notification text that is shown
+ */
+void AndroidController::setNotificationText(const QString& title,
+                                            const QString& message,
+                                            int timerSec) {
+  QJsonObject args;
+  args["title"] = title;
+  args["message"] = message;
+  args["sec"] = timerSec;
+  QJsonDocument doc(args);
+  QAndroidParcel data;
+  data.writeData(doc.toJson());
+  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_TEXT, data, nullptr);
+}
+
+/*
+ * Sets fallback Notification text that should be shown in case the VPN
+ * switches into the Connected state without the app open
+ * e.g via always-on vpn
+ */
+void AndroidController::setFallbackConnectedNotification() {
+  QJsonObject args;
+  args["title"] = qtTrId("vpn.main.productName");
+  //% "Is running in the Background"
+  //: Refers to the app - which is in the Background
+  args["message"] = qtTrId("vpn.android.notification.isRunning");
+  QJsonDocument doc(args);
+  QAndroidParcel data;
+  data.writeData(doc.toJson());
+  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
 }
 
 void AndroidController::activate(
@@ -188,11 +234,15 @@ void AndroidController::onServiceConnected(
   QAndroidParcel binderParcel;
   binderParcel.writeBinder(m_binder);
   m_serviceBinder.transact(ACTION_REGISTERLISTENER, binderParcel, nullptr);
+
+  // Sync the StartAtBoot Pref as it might have been changed
+  // while the controler was not connected
+  enableStartAtBoot(SettingsHolder::instance()->startAtBoot());
 }
 
 void AndroidController::onServiceDisconnected(const QString& name) {
   logger.log() << "Server disconnected";
-
+  m_serviceConnected = false;
   Q_UNUSED(name);
   // TODO: Maybe restart? Or crash?
 }
@@ -214,11 +264,19 @@ bool AndroidController::VPNBinder::onTransact(int code,
   Q_UNUSED(flags);
 
   QJsonDocument doc;
-  QString logs;
+  QString buffer;
   switch (code) {
     case EVENT_INIT:
       logger.log() << "Transact: init";
-      emit m_controller->initialized(true, false, QDateTime());
+      buffer = readUTF8Parcel(data);
+      if (buffer == "connected") {
+        emit m_controller->initialized(true, true, QDateTime());
+      } else {
+        emit m_controller->initialized(true, false, QDateTime());
+      }
+      // Pass a localised version of the Fallback string for the Notification
+      m_controller->setFallbackConnectedNotification();
+
       break;
     case EVENT_CONNECTED:
       logger.log() << "Transact: connected";
@@ -240,10 +298,9 @@ bool AndroidController::VPNBinder::onTransact(int code,
     case EVENT_BACKEND_LOGS:
       logger.log() << "Transact: backend logs";
 
-      // Note: 106 means UTF-8 encoding
-      logs = QTextCodec::codecForMib(106)->toUnicode(data.readData());
+      buffer = readUTF8Parcel(data);
       if (m_controller->m_logCallback) {
-        m_controller->m_logCallback(logs);
+        m_controller->m_logCallback(buffer);
       }
       break;
     default:
@@ -252,6 +309,11 @@ bool AndroidController::VPNBinder::onTransact(int code,
   }
 
   return true;
+}
+
+QString AndroidController::VPNBinder::readUTF8Parcel(QAndroidParcel data) {
+  // 106 is the Code for UTF-8
+  return QTextCodec::codecForMib(106)->toUnicode(data.readData());
 }
 
 const int ACTIVITY_RESULT_OK = 0xffffffff;
