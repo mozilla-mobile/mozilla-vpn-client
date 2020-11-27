@@ -246,12 +246,12 @@ quint64 ConnectionDataHolder::txBytes() const { return bytes(0); }
 quint64 ConnectionDataHolder::rxBytes() const { return bytes(1); }
 
 quint64 ConnectionDataHolder::bytes(bool index) const {
-  uint64_t value = 0;
-  for (const QPair<uint64_t, uint64_t>& pair : m_data) {
-    value = std::max(value, (!index ? pair.first : pair.second));
+  if (m_data.isEmpty()) {
+    return 0;
   }
 
-  return value;
+  const QPair<uint64_t, uint64_t>& pair = m_data.last();
+  return !index ? pair.first : pair.second;
 }
 
 void ConnectionDataHolder::stateChanged() {
