@@ -13,7 +13,7 @@ import "../themes/themes.js" as Theme
 VPNClickableRow {
     id: serverCountry
 
-    property var cityListVisible: false
+    property var cityListVisible: (code === VPNCurrentServer.countryCode)
     readonly property bool isActive: cityList.activeFocus
 
     // During transition, when expanding the row or scrolling,
@@ -69,37 +69,38 @@ VPNClickableRow {
         }
     }
     Keys.onDownPressed: {
-        if (!cityListVisible) {
-            event.accepted = false;
-            return;
-        }
+        if (!cityListVisible)
+            return event.accepted = false;
 
-        if (cityList.activeFocus) {
-            event.accepted = false;
-        } else {
-            cityList.forceActiveFocus();
-        }
+        if (cityList.activeFocus)
+            return event.accepted = false;
+
+        cityList.forceActiveFocus();
     }
     Keys.onUpPressed: {
-        if (!serverCountry.activeFocus) {
-            serverCountry.forceActiveFocus();
-        } else if (serverList.currentIndex > 0) {
+        if (!serverCountry.activeFocus)
+            return serverCountry.forceActiveFocus();
+
+        if (serverList.currentIndex > 0) {
             serverList.decrementCurrentIndex();
-            if (serverList.currentItem.cityListVisible && !serverList.currentItem.isActive) {
+
+            if (serverList.currentItem.cityListVisible && !serverList.currentItem.isActive)
                 serverList.currentItem.activate();
-            }
         }
     }
-    Keys.onRightPressed: {
-        if (!cityListVisible) {
-            serverCountry.clicked();
-        }
+
+    Keys.onTabPressed: {
+        if (index < serverList.count - 1)
+            return serverList.incrementCurrentIndex();
+        return root.forceActiveFocus();
     }
-    Keys.onLeftPressed: {
-        if (cityListVisible) {
-            serverCountry.clicked();
-        }
+    Keys.onBacktabPressed: {
+        if (index > 0)
+            return serverList.decrementCurrentIndex();
+        return root.forceActiveFocus();
     }
+    Keys.onRightPressed: if (!cityListVisible) serverCountry.clicked()
+    Keys.onLeftPressed: if (cityListVisible) serverCountry.clicked()
 
     function activate() {
         cityList.forceActiveFocus();
@@ -166,20 +167,15 @@ VPNClickableRow {
         activeFocusOnTab: serverCountry.ListView.isCurrentItem
         highlightFollowsCurrentItem: true
         Keys.onDownPressed: {
-            if (cityList.currentIndex === cityList.count - 1) {
-                event.accepted = false;
-                return;
-            }
+            if (cityList.currentIndex === cityList.count - 1)
+                return event.accepted = false;
 
-            cityList.incrementCurrentIndex()
+            return cityList.incrementCurrentIndex();
         }
         Keys.onUpPressed: {
-            if (cityList.currentIndex === 0) {
-                event.accepted = false;
-                return;
-            }
-
-            cityList.decrementCurrentIndex()
+            if (cityList.currentIndex === 0)
+                return event.accepted = false;
+            return cityList.decrementCurrentIndex();
         }
 
         delegate: VPNRadioDelegate {
