@@ -181,9 +181,11 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
 
-### Other platforms
+### Windows
 
-We are working on Windows.
+We use a statically-compiled QT5.15 version to deploy the app. There are many tutorials about to know how to compile QT5 on windows, but to make this task easier for everyone, there is a batch script to execute into a visual-studio x86 context: `$ scripts\qt5_compile.bat`
+
+There is also a script to compile the application: `scripts\windows_compile.bat`
 
 ## Bug report
 
