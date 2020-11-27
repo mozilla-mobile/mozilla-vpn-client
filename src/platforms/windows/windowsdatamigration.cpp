@@ -48,7 +48,8 @@ void migrateServersFile(const QString& fileName) {
     return;
   }
 
-  MozillaVPN::instance()->setServerList(file.readAll());
+  bool ok = MozillaVPN::instance()->setServerList(file.readAll());
+  Q_UNUSED(ok);
 }
 
 void migrateFxaFile(const QString& fileName) {
