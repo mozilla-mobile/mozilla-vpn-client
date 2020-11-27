@@ -35,6 +35,8 @@ const int ACTION_REQUEST_GET_LOG = 5;
 const int ACTION_REQUEST_CLEANUP_LOG = 6;
 const int ACTION_RESUME_ACTIVATE = 7;
 const int ACTION_ENABLE_START_ON_BOOT = 8;
+const int ACTION_SET_NOTIFICATION_TEXT = 9;
+const int ACTION_SET_NOTIFICATION_FALLBACK = 10;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -95,6 +97,40 @@ void AndroidController::enableStartAtBoot(bool enabled) {
   data.writeVariant(enabled);
   m_serviceBinder.transact(ACTION_ENABLE_START_ON_BOOT, data, nullptr);
 }
+
+/*
+ * Sets the current notification text that is shown
+ */
+void AndroidController::setNotificationText(const QString& title,
+                                            const QString& message,
+                                            int timerSec) {
+  QJsonObject args;
+  args["title"] = title;
+  args["message"] = message;
+  args["sec"] = timerSec;
+  QJsonDocument doc(args);
+  QAndroidParcel data;
+  data.writeData(doc.toJson());
+  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_TEXT, data, nullptr);
+}
+
+/*
+ * Sets fallback Notification text that should be shown in case the VPN
+ * switches into the Connected state without the app open
+ * e.g via always-on vpn
+ */
+void AndroidController::setFallbackConnectedNotification() {
+  QJsonObject args;
+  args["title"] = qtTrId("vpn.main.productName");
+  //% "Is running in the Background"
+  //: Refers to the app - which is in the Background
+  args["message"] = qtTrId("vpn.android.notification.isRunning");
+  QJsonDocument doc(args);
+  QAndroidParcel data;
+  data.writeData(doc.toJson());
+  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
+}
+
 void AndroidController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges, bool forSwitching) {
@@ -238,6 +274,8 @@ bool AndroidController::VPNBinder::onTransact(int code,
       } else {
         emit m_controller->initialized(true, false, QDateTime());
       }
+      // Pass a localised version of the Fallback string for the Notification
+      m_controller->setFallbackConnectedNotification();
 
       break;
     case EVENT_CONNECTED:
