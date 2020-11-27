@@ -62,15 +62,13 @@ class LogHandler final {
   void cleanupLogs();
 
  private:
-  LogHandler();
+  LogHandler(const QMutexLocker& proofOfLock);
 
-  static LogHandler* maybeCreate();
+  static LogHandler* maybeCreate(const QMutexLocker& proofOfLock);
 
-  void addLog(const Log& log);
+  void addLog(const Log& log, const QMutexLocker& proofOfLock);
 
   bool matchModule(const Log& log, const QMutexLocker& proofOfLock) const;
-
-  QMutex m_mutex;
 
   // Protected by mutex.
   QStringList m_modules;

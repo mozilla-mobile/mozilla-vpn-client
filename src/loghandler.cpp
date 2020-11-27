@@ -18,31 +18,37 @@
 constexpr int LOG_MAX = 10000;
 
 namespace {
+QMutex s_mutex;
 LogHandler* sLogHandler;
 }
 
 // static
-LogHandler* LogHandler::instance() { return maybeCreate(); }
+LogHandler* LogHandler::instance() {
+  QMutexLocker lock(&s_mutex);
+  return maybeCreate(lock);
+}
 
 // static
 void LogHandler::messageQTHandler(QtMsgType type,
                                   const QMessageLogContext& context,
                                   const QString& message) {
-  maybeCreate()->addLog(
-      Log(type, context.file, context.function, context.line, message));
+  QMutexLocker lock(&s_mutex);
+  maybeCreate(lock)->addLog(
+      Log(type, context.file, context.function, context.line, message), lock);
 }
 
 // static
 void LogHandler::messageHandler(const QStringList& modules,
                                 const QString& className,
                                 const QString& message) {
-  maybeCreate()->addLog(Log(modules, className, message));
+  QMutexLocker lock(&s_mutex);
+  maybeCreate(lock)->addLog(Log(modules, className, message), lock);
 }
 
 // static
-LogHandler* LogHandler::maybeCreate() {
+LogHandler* LogHandler::maybeCreate(const QMutexLocker& proofOfLock) {
   if (!sLogHandler) {
-    sLogHandler = new LogHandler();
+    sLogHandler = new LogHandler(proofOfLock);
   }
   return sLogHandler;
 }
@@ -105,7 +111,9 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << Qt::endl;
 }
 
-LogHandler::LogHandler() {
+LogHandler::LogHandler(const QMutexLocker& proofOfLock) {
+  Q_UNUSED(proofOfLock);
+
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (pe.contains("MOZVPN_LOG")) {
     QStringList parts = pe.value("MOZVPN_LOG").split(",");
@@ -115,10 +123,8 @@ LogHandler::LogHandler() {
   }
 }
 
-void LogHandler::addLog(const Log& log) {
-  QMutexLocker lock(&m_mutex);
-
-  if (!matchModule(log, lock)) {
+void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
+  if (!matchModule(log, proofOfLock)) {
     return;
   }
 
@@ -167,11 +173,11 @@ bool LogHandler::matchModule(const Log& log,
 }
 
 const QVector<LogHandler::Log>& LogHandler::logs() {
-  QMutexLocker lock(&m_mutex);
+  QMutexLocker lock(&s_mutex);
   return m_logs;
 }
 
 void LogHandler::cleanupLogs() {
-  QMutexLocker lock(&m_mutex);
+  QMutexLocker lock(&s_mutex);
   m_logs.clear();
 }
