@@ -10,6 +10,7 @@ MouseArea {
 
     property var targetEl: parent
     property var uiState: Theme.uiState
+    property var onMouseAreaClicked: function() { parent.clicked() }
 
     function changeState(stateName) {
         if (mouseArea.hoverEnabled)
@@ -26,7 +27,7 @@ MouseArea {
     onReleased: {
         if (hoverEnabled) {
             changeState(uiState.stateDefault);
-            parent.clicked();
+            onMouseAreaClicked();
         }
     }
 }
