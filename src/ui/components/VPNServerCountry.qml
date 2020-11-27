@@ -25,7 +25,10 @@ VPNClickableRow {
     anchors.right: parent ? parent.right : undefined
     state: cityListVisible ? "list-visible" : "list-hidden"
     width: ListView.view.width
-    onClicked: cityListVisible = !cityListVisible
+
+    Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
+    handleMouseClick: function() { cityListVisible = !cityListVisible; }
+    handleKeyClick: function() { cityListVisible = !cityListVisible; }
 
     accessibleName: name
 

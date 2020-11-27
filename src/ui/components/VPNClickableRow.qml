@@ -17,6 +17,7 @@ VPNButtonBase {
     property var accessibleName
     property var backgroundColor: Theme.iconButtonLightBackground
 
+    property var handleMouseClick: function() { mainRow.clicked(); }
     visualStateItem: rowVisualStates
 
     height: Theme.rowHeight
@@ -59,8 +60,10 @@ VPNButtonBase {
     }
 
     VPNMouseArea {
+        anchors.fill: rowVisualStates
         hoverEnabled: !rowShouldBeDisabled
         targetEl: rowVisualStates
+        onMouseAreaClicked: handleMouseClick
     }
 
 }
