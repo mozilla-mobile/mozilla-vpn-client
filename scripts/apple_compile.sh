@@ -69,10 +69,10 @@ IOS_FLAGS="
   MVPN_IOS=1
 "
 
-MODE="CONFIG+=debug CONFIG-=release"
+MODE="CONFIG-=debug CONFIG+=release"
 if [ "$2" = "debug" ]; then
   print G "Debug mode"
-  MODE="CONFIG-=debug CONFIG+=release"
+  MODE="CONFIG+=debug CONFIG-=release"
 fi
 
 if [ "$1" = "macos" ]; then
