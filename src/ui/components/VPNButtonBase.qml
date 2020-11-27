@@ -13,6 +13,7 @@ RoundButton {
     property var visualStateItem: root
     property var uiState: Theme.uiState
     property var loaderVisible: false
+    property var handleKeyClick: function() { clicked() }
 
     focusPolicy: Qt.StrongFocus
     Keys.onPressed: {
@@ -32,11 +33,11 @@ RoundButton {
             visualStateItem.state = uiState.stateDefault;
         }
         if (event.key === Qt.Key_Return)
-            clicked();
+            handleKeyClick();
     }
 
     Accessible.role: Accessible.Button
-    Accessible.onPressAction: clicked()
+    Accessible.onPressAction: handleKeyClick()
     Accessible.focusable: true
 
     onActiveFocusChanged: {
