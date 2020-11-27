@@ -149,7 +149,7 @@ void Controller::activate() {
   const Device* device = vpn->deviceModel()->currentDevice();
 
   const QList<IPAddressRange> allowedIPAddressRanges =
-      getAllowedIPAddressRanges();
+      getAllowedIPAddressRanges(server);
 
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
@@ -426,17 +426,10 @@ void Controller::captivePortalDetected() {
   deactivate();
 }
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges() {
+QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const Server& server) {
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
   QList<IPAddressRange> list;
-
-  list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
-
-  if (ipv6Enabled) {
-    list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-  }
-
 #if 0
     if (SettingsHolder::instance()->captivePortalAlert()) {
         CaptivePortal *captivePortal = MozillaVPN::instance()->captivePortal();
@@ -456,10 +449,20 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges() {
 
   if (MozillaVPN::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
+    // In case of lan enabled, whitelist all non LAN ip's
     list.append(RFC1918::ipv4());
-
     if (ipv6Enabled) {
       list.append(RFC1918::ipv6());
+    }
+    // Whitelist the servers gateway -
+    // otherwise we can't ping it for connectionhealth
+    list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+
+  } else {
+    // Add catchall-range in case LAN is disabled
+    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+    if (ipv6Enabled) {
+      list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     }
   }
 
