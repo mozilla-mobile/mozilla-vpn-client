@@ -23,7 +23,7 @@ class HelpModel final : public QAbstractListModel {
 
   Q_INVOKABLE void open(int id);
 
-  void forEach(std::function<void(const QString& name, int id)>&& callback);
+  void forEach(std::function<void(const char* nameId, int id)>&& callback);
 
   // QAbstractListModel methods
 

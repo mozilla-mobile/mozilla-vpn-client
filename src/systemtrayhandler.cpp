@@ -43,9 +43,8 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
       m_menu.addAction("", vpn->controller(), &Controller::activate);
   m_lastLocationLabel->setEnabled(false);
 
-  //% "Disconnect"
-  m_disconnectAction = m_menu.addAction(
-      qtTrId("systray.disconnect"), vpn->controller(), &Controller::deactivate);
+  m_disconnectAction =
+      m_menu.addAction("", vpn->controller(), &Controller::deactivate);
 
   m_separator = m_menu.addSeparator();
 
@@ -54,21 +53,13 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   m_menu.addSeparator();
 
-  //% "Help"
-  QMenu* help = m_menu.addMenu(qtTrId("systray.help"));
-  vpn->helpModel()->forEach([&](const QString& name, int id) {
-    help->addAction(name, [help = vpn->helpModel(), id]() { help->open(id); });
-  });
+  m_helpMenu = m_menu.addMenu("");
 
-  //% "Preferences…"
-  m_preferencesAction = m_menu.addAction(qtTrId("systray.preferences"), vpn,
-                                         &MozillaVPN::requestSettings);
+  m_preferencesAction = m_menu.addAction("", vpn, &MozillaVPN::requestSettings);
 
   m_menu.addSeparator();
 
-  //% "Quit Mozilla VPN"
-  m_menu.addAction(qtTrId("systray.quit"), vpn->controller(),
-                   &Controller::quit);
+  m_quitAction = m_menu.addAction("", vpn->controller(), &Controller::quit);
   setContextMenu(&m_menu);
 
   updateIcon(MozillaVPN::instance()->statusIcon()->iconString());
@@ -76,7 +67,7 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayHandler::updateContextMenu);
 
-  updateContextMenu();
+  retranslate();
 }
 
 SystemTrayHandler::~SystemTrayHandler() {
@@ -189,4 +180,31 @@ void SystemTrayHandler::showHideWindow() {
   } else {
     engine->showWindow();
   }
+}
+
+void SystemTrayHandler::retranslate() {
+  logger.log() << "Retranslate";
+
+  //% "Disconnect"
+  m_disconnectAction->setText(qtTrId("systray.disconnect"));
+
+  //% "Help"
+  m_helpMenu->setTitle(qtTrId("systray.help"));
+  for (QAction* action : m_helpMenu->actions()) {
+    m_helpMenu->removeAction(action);
+  }
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  vpn->helpModel()->forEach([&](const char* nameId, int id) {
+    m_helpMenu->addAction(qtTrId(nameId),
+                          [help = vpn->helpModel(), id]() { help->open(id); });
+  });
+
+  //% "Preferences…"
+  m_preferencesAction->setText(qtTrId("systray.preferences"));
+
+  //% "Quit Mozilla VPN"
+  m_quitAction->setText(qtTrId("systray.quit"));
+
+  updateContextMenu();
 }
