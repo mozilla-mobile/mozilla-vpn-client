@@ -164,6 +164,7 @@ HEADERS += \
         timersingleshot.h
 
 debug {
+    message(Adding the inspector)
     QT+= testlib
     CONFIG += no_testcase_installs
 
@@ -417,6 +418,7 @@ else:win* {
     TARGET = MozillaVPN
 
     QT += networkauth
+    QT += svg
 
     DEFINES += MVPN_WINDOWS
 
