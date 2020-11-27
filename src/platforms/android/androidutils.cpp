@@ -43,8 +43,9 @@ QString AndroidUtils::GetDeviceName() {
 // Static
 bool AndroidUtils::canEnableStartOnBoot()
 {
-    jboolean res = QAndroidJniObject::callStaticMethod<jboolean>("com/mozilla/vpn/BootReceiver", "canEnableVPNOnBoot");
-    return bool(res);
+  // On Nougat(v24) Always On VPN was introduced
+  // and starting VPN on boot forbidden.
+  return QtAndroid::androidSdkVersion() < 24;
 };
 
 // static

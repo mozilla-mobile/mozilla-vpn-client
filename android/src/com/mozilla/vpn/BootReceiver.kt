@@ -37,7 +37,7 @@ class BootReceiver : BroadcastReceiver() {
          * Devices higher then that should refer to the Always On VPN option in settings
          */
         fun canEnableVPNOnBoot(): Boolean {
-            return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
         }
     }
 }
