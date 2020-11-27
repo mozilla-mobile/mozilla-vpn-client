@@ -183,7 +183,19 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 
 ### Windows
 
-We use a statically-compiled QT5.15 version to deploy the app. There are many tutorials about to know how to compile QT5 on windows, but to make this task easier for everyone, there is a batch script to execute into a visual-studio x86 context: `$ scripts\qt5_compile.bat`
+We use a statically-compiled QT5.15 version to deploy the app. There are many
+tutorials about to how to compile QT5 on windows, but to make this task
+easier for everyone, there is a batch script to execute into a visual-studio
+x86 context: `$ scripts\qt5_compile.bat`
+
+The dependencies are:
+1. perl: http://strawberryperl.com/
+2. nasm: https://www.nasm.us/
+3. python3: https://www.python.org/downloads/windows/
+4. visual studio 2019: https://visualstudio.microsoft.com/vs/
+
+Openssl can be obtained from here: https://www.openssl.org/source/
+Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
 
