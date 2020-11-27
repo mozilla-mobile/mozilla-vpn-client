@@ -49,19 +49,20 @@ Item {
         model: delegateModel
 
         Component.onCompleted: {
-            if (VPNController.state === VPNController.StateSwitching) {
-                return;
+            for (let idx = 0; idx < serverList.count; idx++) {
+                if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
+                    serverList.currentIndex = idx;
+                    serverList.positionViewAtIndex(idx, ListView.Center);
+
+                    const citiesList = delegateModel.items.get(idx).model.cities;
+                    const selectedCityIndex = citiesList.indexOf(VPNCurrentServer.city);
+                    if (citiesList.length >= 2) {
+                        const delegateSpacing = Theme.rowHeight * 2
+                        serverList.contentY += delegateSpacing + (selectedCityIndex * delegateSpacing);
+                    }
+                    return;
+                }
             }
-
-            serverList.currentIndex = (() => {
-               for (let idx = 0; idx < serverList.count; idx++) {
-                   if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
-                       return idx;
-                   }
-               }
-            })();
-            serverList.positionViewAtIndex(serverList.currentIndex, ListView.Center);
-
         }
 
         ScrollBar.vertical: ScrollBar {
