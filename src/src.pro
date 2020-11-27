@@ -246,13 +246,14 @@ else:android {
                 platforms/android/androidcontroller.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
-                platforms/android/androidwebview.cpp
-
+                platforms/android/androidwebview.cpp \
+                platforms/android/androidstartatbootwatcher.cpp
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
-                platforms/android/androidwebview.h
+                platforms/android/androidwebview.h \
+                platforms/android/androidstartatbootwatcher.h
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsendworker.cpp \
