@@ -18,14 +18,12 @@ constexpr const std::array<const char*, 4> ANIMATED_ICON_STEPS = {
     ":/ui/resources/logo-animated1.png", ":/ui/resources/logo-animated2.png",
     ":/ui/resources/logo-animated3.png", ":/ui/resources/logo-animated4.png"};
 
-constexpr const char* ICON_ON = ":/ui/resources/logo-on.png";
 constexpr const char* ICON_GENERIC = ":/ui/resources/logo-generic.png";
 #else
 constexpr const std::array<const char*, 4> ANIMATED_ICON_STEPS = {
     ":/ui/resources/logo-animated1.svg", ":/ui/resources/logo-animated2.svg",
     ":/ui/resources/logo-animated3.svg", ":/ui/resources/logo-animated4.svg"};
 
-constexpr const char* ICON_ON = ":/ui/resources/logo-on.svg";
 constexpr const char* ICON_GENERIC = ":/ui/resources/logo-generic.svg";
 #endif
 
@@ -69,7 +67,7 @@ void StatusIcon::stateChanged() {
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      setIcon(ICON_ON);
+      setIcon(ICON_GENERIC);
       break;
 
     case Controller::StateOff:
