@@ -60,6 +60,8 @@ Item {
             width: parent.width - defaultMargin * 2
             activeFocusOnTab: true
             //% "%1 %2"
+            //: This string is read by accessibility tools.
+            //: %1 is the language name, %2 is the localized language name.
             accessibleName: qsTrId("vpn.settings.languageAccessibleName")
                 .arg(VPNLocalizer.systemLanguage)
                 .arg(VPNLocalizer.systemLocalizedLanguage)
