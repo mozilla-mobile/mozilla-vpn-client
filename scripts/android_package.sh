@@ -88,12 +88,17 @@ if [ "$2" = "release" ]; then
   printn Y "Use release config"
   $1/android/bin/qmake -spec android-clang \
     CONFIG+=qtquickcompiler \
+    CONFIG-=debug \
+    CONFIG-=debug_and_release \
+    CONFIG+=release \
     ANDROID_ABIS="armeabi-v7a x86 arm64-v8a" \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
   $1/android/bin/qmake -spec android-clang \
     CONFIG+=debug \
+    CONFIG-=debug_and_release \
+    CONFIG-=release \
     CONFIG+=qml_debug \
     ANDROID_ABIS="armeabi-v7a" \
     ..//mozillavpn.pro || die "Qmake failed"
