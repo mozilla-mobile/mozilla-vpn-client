@@ -106,6 +106,8 @@ VPNFlickable {
 
         VPNCallout {
             //% "Connect up to %1 devices"
+            //: %1 is the number of devices.
+            //: Note: there is currently no support for proper plurals
             calloutTitle: qsTrId("vpn.subscription.featureTitle4").arg(VPNUser.maxDevices)
             //% "We won’t restrict your bandwidth."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle4")

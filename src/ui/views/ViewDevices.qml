@@ -199,6 +199,8 @@ Item {
                             }
 
                             //% "Added %1 days ago"
+                            //: %1 is the number of days.
+                            //: Note: there is currently no support for proper plurals
                             return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
                         }
 
