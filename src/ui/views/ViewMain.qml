@@ -77,12 +77,13 @@ VPNFlickable {
         Row {
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 8
+            spacing: 6
 
             VPNIcon {
                 source: VPNStatusIcon.iconUrl
                 sourceSize.height: 18
                 sourceSize.width: 18
+                antialiasing: true
             }
 
             VPNBoldLabel {
