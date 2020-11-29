@@ -6,14 +6,42 @@
 
 . $(dirname $0)/commons.sh
 
+POSITIONAL=()
+JOBS=8
+
+helpFunction() {
+  print G "Usage:"
+  print N "\t$0 <QT_source_folder> <destination_folder> [-j jobs] [anything else will be use as argument for the QT configure script]"
+  print N ""
+  exit 0
+}
+
 print N "This script compiles Qt5 statically"
 print N ""
 
-if [ "$1" = "" ] || [ "$2" = "" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-  print G "Usage:"
-  print N "\t$0 <QT_source_folder> <destination_folder> [anything else will be use as argument for the QT configure script]"
-  print N ""
-  exit 0
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -j | --jobs)
+    JOBS="$2"
+    shift
+    shift
+    ;;
+  -h | --help)
+    helpFunction
+    ;;
+  *)
+    POSITIONAL+=("$1")
+    shift
+    ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [[ $# -lt 2 ]]; then
+  helpFunction
 fi
 
 [ -d "$1" ] || die "Unable to find the QT source folder."
@@ -26,7 +54,7 @@ PREFIX=$1
 shift
 
 printn Y "Cleaning the folder... "
-make distclean -j8 &>/dev/null;
+make distclean -j $JOBS &>/dev/null;
 print G "done."
 
 LINUX="
@@ -88,9 +116,9 @@ print Y "Wait..."
   $PLATFORM || die "Configuration error."
 
 print Y "Compiling..."
-make -j8 || die "Make failed"
+make -j $JOBS || die "Make failed"
 
 print Y "Installing..."
-make -j8 install || die "Make install failed"
+make -j $JOBS install || die "Make install failed"
 
 print G "All done!"
