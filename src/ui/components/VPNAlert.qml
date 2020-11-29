@@ -18,7 +18,7 @@ Rectangle {
     color: "transparent"
     height: Math.max(40, (labelWrapper.height + Theme.windowMargin))
     width: parent.width - Theme.windowMargin
-    y: parent.height - 48
+    y: window.fullscreenRequired() ? parent.height - 80 : parent.height - 48
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.margins: Theme.windowMargin / 2
     radius: Theme.cornerRadius
