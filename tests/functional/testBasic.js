@@ -22,6 +22,8 @@ describe('Initial view and onboarding', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
+    assert(await vpn.getLastUrl() == '');
+
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
     assert(await vpn.getElementProperty('getStarted', 'visible') == 'true');
@@ -34,6 +36,25 @@ describe('Initial view and onboarding', function() {
 
     await vpn.waitForElement('getHelpBack');
     await vpn.waitForElementProperty('getHelpBack', 'visible', 'true');
+  });
+
+  it('Open some links', async () => {
+    await vpn.waitForElement('getHelpBackList');
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+
+    await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.endsWith('/r/vpn/support');
+    });
+
+    await vpn.clickOnElement('getHelpBackList/getHelpBackList-2');
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.endsWith('/r/vpn/contact');
+    });
   });
 
   it('Go back to the main view', async() => {

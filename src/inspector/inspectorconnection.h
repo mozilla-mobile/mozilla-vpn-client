@@ -8,8 +8,9 @@
 #include <QByteArray>
 #include <QObject>
 
-class QTcpSocket;
+class QUrl;
 class QQuickItem;
+class QTcpSocket;
 
 class InspectorConnection final : public QObject {
   Q_OBJECT
@@ -18,6 +19,8 @@ class InspectorConnection final : public QObject {
  public:
   InspectorConnection(QObject* parent, QTcpSocket* connection);
   ~InspectorConnection();
+
+  static void setLastUrl(const QUrl& url);
 
  private slots:
   void readData();

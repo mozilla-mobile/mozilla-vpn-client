@@ -35,6 +35,10 @@
 #  include "platforms/windows/windowsdatamigration.h"
 #endif
 
+#ifdef QT_DEBUG
+#  include "inspector/inspectorconnection.h"
+#endif
+
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
@@ -363,6 +367,10 @@ void MozillaVPN::openLink(LinkType linkType) {
   }
 
   QDesktopServices::openUrl(url);
+
+#ifdef QT_DEBUG
+  InspectorConnection::setLastUrl(url);
+#endif
 }
 
 void MozillaVPN::scheduleTask(Task* task) {

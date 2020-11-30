@@ -17,17 +17,12 @@ module.exports = {
       this._resolveWaitRead('');
     });
 
-    for (let i = 0; i < 10; ++i) {
-      const connected = await new Promise(resolve => {
+    this.waitForCondition(async () => {
+      return await new Promise(resolve => {
         client.connect(8765, 'localhost', () => resolve(true));
         client.on('error', () => resolve(false));
       });
-      if (connected) return;
-
-      await this.wait();
-    }
-
-    throw new Error('Connection failed');
+    });
   },
 
   disconnect() {
@@ -53,11 +48,9 @@ module.exports = {
   },
 
   async waitForElement(id) {
-    for (let i = 0; i < 10; ++i) {
-      if (await this.hasElement(id)) return;
-      await this.wait();
-    }
-    throw new Error('Timeout for element property');
+    return this.waitForCondition(async () => {
+      return await this.hasElement(id);
+    });
   },
 
   async clickOnElement(id) {
@@ -76,12 +69,24 @@ module.exports = {
 
   async waitForElementProperty(id, property, value) {
     assert(await this.hasElement(id), 'Property checks must be done on existing elements');
-    for (let i = 0; i < 10; ++i) {
+    return this.waitForCondition(async () => {
       const real = await this.getElementProperty(id, property);
-      if (real == value) return;
+      return real == value;
+    });
+  },
+
+  async getLastUrl() {
+    const buffer = await this._writeCommand('lasturl');
+    if (buffer[0] != '-' || buffer[buffer.length - 1] != '-') return null;
+    return buffer.substring(1, buffer.length - 1);
+  },
+
+  async waitForCondition(condition) {
+    for (let i = 0; i < 10; ++i) {
+      if (await condition()) return;
       await this.wait();
     }
-    throw new Error('Timeout for element property');
+    throw new Error('Timeout for waitForCondition');
   },
 
   wait() {
