@@ -136,7 +136,7 @@ void MacOSPingSendWorker::sendPing(const QString& destination) {
             iov.iov_base = packet;
             iov.iov_len = IP_MAXPACKET;
 
-            int rc = recvmsg(socket, &msg, 0);
+            ssize_t rc = recvmsg(socket, &msg, 0);
             if (rc <= 0) {
               logger.log() << "Recvmsg failed";
               emit pingFailed();
