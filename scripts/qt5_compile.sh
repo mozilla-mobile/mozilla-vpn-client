@@ -11,7 +11,7 @@ JOBS=8
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <QT_source_folder> <destination_folder> [-j jobs] [anything else will be use as argument for the QT configure script]"
+  print N "\t$0 <QT_source_folder> <destination_folder> [-j|--jobs <jobs>] [anything else will be use as argument for the QT configure script]"
   print N ""
   exit 0
 }

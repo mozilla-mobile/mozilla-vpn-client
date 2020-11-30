@@ -10,20 +10,49 @@ if [ -f .env ]; then
   . .env
 fi
 
-print N "This script compiles MozillaVPN for MacOS/iOS"
-print N ""
+RELEASE=1
+OS=
 
-if [ "$1" != "macos" ] && [ "$1" != "ios" ]; then
+helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios> [release|debug]"
+  print N "\t$0 <macos|ios> [-d|--debug]"
   print N ""
-  print N "By default, if 'debug' is used, the project is compiled in release mode."
+  print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
   print G "Config variables:"
   print N "\tQT_MACOS_BIN=</path/of/the/qt/bin/folder/for/macos>"
   print N "\tQT_IOS_BIN=</path/of/the/qt/bin/folder/for/ios>"
   print N ""
   exit 0
+}
+
+print N "This script compiles MozillaVPN for MacOS/iOS"
+print N ""
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -d | --debug)
+    RELEASE=
+    shift
+    ;;
+  -h | --help)
+    helpFunction
+    ;;
+  *)
+    if [[ "$OS" ]]; then
+      helpFunction
+    fi
+
+    OS=$1
+    shift
+    ;;
+  esac
+done
+
+if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]]; then
+  helpFunction
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
@@ -31,9 +60,9 @@ if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
 fi
 
 QMAKE=qmake
-if [ "$1" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
+if [ "$OS" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
   QMAKE=$QT_MACOS_BIN/qmake
-elif [ "$1" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
+elif [ "$OS" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
   QMAKE=$QT_IOS_BIN/qmake
 fi
 
@@ -69,15 +98,20 @@ IOS_FLAGS="
   MVPN_IOS=1
 "
 
-MODE="CONFIG-=debug CONFIG+=release"
-if [ "$2" = "debug" ]; then
-  print G "Debug mode"
-  MODE="CONFIG+=debug CONFIG-=release"
+printn Y "Mode: "
+if [[ "$RELEASE" ]]; then
+  print G "release"
+  MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release"
+else
+  print G "debug"
+  MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release"
 fi
 
-if [ "$1" = "macos" ]; then
+printn Y "OS: "
+print G "$OS"
+if [ "$OS" = "macos" ]; then
   PLATFORM=$MACOS_FLAGS
-elif [ "$1" = "ios" ]; then
+elif [ "$OS" = "ios" ]; then
   PLATFORM=$IOS_FLAGS
 else
   die "Why we are here?"
@@ -92,7 +126,7 @@ $QMAKE \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$1" || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OS" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Opening in XCode..."
