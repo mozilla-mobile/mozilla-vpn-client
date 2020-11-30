@@ -6,19 +6,36 @@
 
 . $(dirname $0)/commons.sh
 
+JOBS=8
+
 if [ -f .env ]; then
   . .env
 fi
 
+helpFunction() {
+  print G "Usage:"
+  print N "\t$0 [-j|--jobs <jobs>]"
+  print N ""
+  exit 0
+}
+
 print N "This script compiles MozillaVPN for Linux"
 print N ""
 
-if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-  print G "Usage:"
-  print N "\t$0"
-  print N ""
-  exit 0
-fi
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -j | --jobs)
+    JOBS="$2"
+    shift
+    shift
+    ;;
+  *)
+    helpFunction
+    ;;
+  esac
+done
 
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
@@ -49,7 +66,7 @@ qmake\
   PREFIX=$PWD/.tmp/usr || die "Compilation failed"
 
 print Y "Compiling..."
-make -j8
+make -j $JOBS
 print G "Compilation completed!"
 
 print Y "Installation..."
