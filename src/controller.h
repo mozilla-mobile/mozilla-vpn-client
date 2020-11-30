@@ -101,7 +101,7 @@ class Controller final : public QObject {
 
   bool processNextStep();
 
-  QList<IPAddressRange> getAllowedIPAddressRanges();
+  QList<IPAddressRange> getAllowedIPAddressRanges(const Server& server);
 
  private:
   State m_state = StateInitializing;
