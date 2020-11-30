@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 
 #include <QCoreApplication>
 #include <QInAppStore>
@@ -83,14 +84,25 @@ IAPHandler::IAPHandler(QObject* parent) : QObject(parent) {
                 break;
 
               case QInAppTransaction::PurchaseApproved:
-                logger.log() << "Purchase approved";
-                purchaseCompleted();
-                break;
+                [[fallthrough]];
+              case QInAppTransaction::PurchaseRestored: {
+                logger.log() << "Purchase approved or restored";
 
-              case QInAppTransaction::PurchaseRestored:
-                logger.log() << "Purchase Restored";
+                SettingsHolder* settingsHolder = SettingsHolder::instance();
+                if (settingsHolder->hasSubscriptionTransaction(
+                        transaction->orderId())) {
+                  logger.log() << "This transaction is already expired. Let's "
+                                  "ignore it.";
+                  transaction->finalize();
+                  return;
+                }
+
+                settingsHolder->addSubscriptionTransaction(
+                    transaction->orderId());
+
                 purchaseCompleted();
                 break;
+              }
 
               case QInAppTransaction::Unknown:
               default:

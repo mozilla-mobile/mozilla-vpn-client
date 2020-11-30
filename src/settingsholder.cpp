@@ -45,6 +45,8 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
+constexpr const char* SETTINGS_SUBSCRIPTIONTRANSACTIONS =
+    "subscriptionTransactions";
 #endif
 
 #ifdef MVPN_WINDOWS
@@ -204,6 +206,25 @@ GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
 #ifdef MVPN_IOS
 GETSET(bool, toBool, SETTINGS_NATIVEIOSDATAMIGRATED, hasNativeIOSDataMigrated,
        nativeIOSDataMigrated, setNativeIOSDataMigrated)
+GETSET(QStringList, toStringList, SETTINGS_SUBSCRIPTIONTRANSACTIONS,
+       hasSubscriptionTransactions, subscriptionTransactions,
+       setSubscriptionTransactions)
+
+bool SettingsHolder::hasSubscriptionTransaction(
+    const QString& transactionId) const {
+  return hasSubscriptionTransactions() &&
+         subscriptionTransactions().contains(transactionId);
+}
+
+void SettingsHolder::addSubscriptionTransaction(const QString& transactionId) {
+  QStringList transactions;
+  if (hasSubscriptionTransactions()) {
+    transactions = subscriptionTransactions();
+  }
+
+  transactions.append(transactionId);
+  setSubscriptionTransactions(transactions);
+}
 #endif
 
 #ifdef MVPN_WINDOWS

@@ -71,6 +71,11 @@ class SettingsHolder final : public QObject {
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
          setNativeIOSDataMigrated)
+  GETSET(QStringList, hasSubscriptionTransactions, subscriptionTransactions,
+         setSubscriptionTransactions);
+
+  bool hasSubscriptionTransaction(const QString& transactionId) const;
+  void addSubscriptionTransaction(const QString& transactionId);
 #endif
 
 #ifdef MVPN_WINDOWS
