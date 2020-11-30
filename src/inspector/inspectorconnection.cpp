@@ -15,6 +15,7 @@
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorConnection");
+QUrl s_lastUrl;
 }
 
 InspectorConnection::InspectorConnection(QObject* parent,
@@ -151,6 +152,17 @@ void InspectorConnection::parseCommand(const QString& command) {
     return;
   }
 
+  if (parts[0].trimmed() == "lasturl") {
+    if (parts.length() != 1) {
+      tooManyArguments(0);
+      return;
+    }
+
+    m_connection->write(
+        QString("-%1-\n").arg(s_lastUrl.toString()).toLocal8Bit());
+    return;
+  }
+
   m_connection->write("invalid command\n");
 }
 
@@ -161,17 +173,47 @@ void InspectorConnection::tooManyArguments(int arguments) {
 }
 
 QQuickItem* InspectorConnection::findObject(const QString& name) {
+  QStringList parts = name.split("/");
+  Q_ASSERT(!parts.isEmpty());
+
+  QQuickItem* parent = nullptr;
   QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
   for (QObject* rootObject : engine->rootObjects()) {
     if (!rootObject) {
       continue;
     }
 
-    QQuickItem* obj = rootObject->findChild<QQuickItem*>(name);
-    if (obj) {
-      return obj;
+    parent = rootObject->findChild<QQuickItem*>(parts[0]);
+    if (parent) {
+      break;
     }
   }
 
-  return nullptr;
+  if (!parent || parts.length() == 1) {
+    return parent;
+  }
+
+  for (int i = 1; i < parts.length(); ++i) {
+    QQuickItem* contentItem =
+        parent->property("contentItem").value<QQuickItem*>();
+    QList<QQuickItem*> contentItemChildren = contentItem->childItems();
+
+    bool found = false;
+    for (QQuickItem* item : contentItemChildren) {
+      if (item->objectName() == parts[i]) {
+        parent = item;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      return nullptr;
+    }
+  }
+
+  return parent;
 }
+
+// static
+void InspectorConnection::setLastUrl(const QUrl& url) { s_lastUrl = url; }

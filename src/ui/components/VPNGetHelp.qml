@@ -22,6 +22,7 @@ Item {
     }
 
     VPNList {
+        objectName: "getHelpBackList"
         height: parent.height - menu.height
         width: parent.width
         anchors.top: menu.bottom
@@ -32,6 +33,7 @@ Item {
         model: VPNHelpModel
 
         delegate: VPNExternalLinkListItem {
+            objectName: "getHelpBackList-" + id
             title: name
             accessibleName: name
             iconSource: externalLink ? "../resources/externalLink.svg" : "../resources/chevron.svg"

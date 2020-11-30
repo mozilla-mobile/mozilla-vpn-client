@@ -6,6 +6,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#ifdef QT_DEBUG
+#  include "inspector/inspectorconnection.h"
+#endif
+
 #include <limits>
 #include <QDesktopServices>
 #include <QOAuthHttpServerReplyHandler>
@@ -86,4 +90,8 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
 
   url.setQuery(query);
   QDesktopServices::openUrl(url.toString());
+
+#ifdef QT_DEBUG
+  InspectorConnection::setLastUrl(url);
+#endif
 }
