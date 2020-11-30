@@ -9,31 +9,73 @@ if [ -f .env ]; then
   . .env
 fi
 
+JOBS=8
+QTPATH=
+RELEASE=1
+
+helpFunction() {
+  print G "Usage:"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>]"
+  print N ""
+  print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
+  print N ""
+  exit 0
+}
 
 print N "This script compiles MozillaVPN for Android"
 print N ""
 
-if [ "$1" = "--help" ] || [ "$1" = "" ]; then
-  print G "Usage:"
-  print N "\t$0 <path to QT> <debug|release>"
-  print N ""
-  exit 0
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -j | --jobs)
+    JOBS="$2"
+    shift
+    shift
+    ;;
+  -d | --debug)
+    RELEASE=
+    shift
+    ;;
+  -h | --help)
+    helpFunction
+    ;;
+  *)
+    if [[ "$QTPATH" ]]; then
+      helpFunction
+    fi
+
+    QTPATH="$1"
+    shift
+    ;;
+  esac
+done
+
+
+if ! [[ "$QTPATH" ]]; then
+  helpFunction
 fi
-if [ "$2" = "" ]; then
-  print N "No Mode Set, defaulting to -> DEBUG "
+
+printn Y "Mode: "
+if [[ "$RELEASE" ]]; then
+  print G "release"
+else
+  print G "debug"
 fi
+
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
-if ! [ -d "$1/android/bin/" ]; then
+if ! [ -d "$QTPATH/android/bin/" ]; then
   die "QTAndroid SDK was not found in the provided QT path"
 fi
 print Y "Checking Enviroment"
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
   die "This script must be executed at the root of the repository."
 fi
-if ! [ -d "$1/android/bin/" ]; then
+if ! [ -d "$QTPATH/android/bin/" ]; then
   die "QTAndroid SDK was not found in the provided QT path"
 fi
 if [ -z "${JAVA_HOME}" ]; then
@@ -46,7 +88,7 @@ if [ -z "${ANDROID_SDK_ROOT}" ]; then
   die "Could not find 'ANDROID_SDK_ROOT' in env"
 fi
 
-$1/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
+$QTPATH/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 
 printn Y "Cleaning the folder... "
@@ -67,26 +109,26 @@ print Y "Configuring the android build"
 
 cd .tmp/
 
-if [ "$2" = "release" ]; then
+if [[ "$RELEASE" ]]; then
   # On release builds only QT requires these *_metatypes.json
   # The files are actually all the same, but named by _ABI_ (they only differ for plattforms e.g android/ and ios/ )
   # But sometimes the resolver seems to miss the current abi and defaults to the "none" abi
   # This one was missing on my machine, let's create a "none" version in case the resolver might fail too
   printn Y "Patch qt meta data"
-  cp $1/android/lib/metatypes/qt5quick_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5quick_metatypes.json
-  cp $1/android/lib/metatypes/qt5charts_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5charts_metatypes.json
-  cp $1/android/lib/metatypes/qt5svg_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5svg_metatypes.json
-  cp $1/android/lib/metatypes/qt5widgets_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5widgets_metatypes.json
-  cp $1/android/lib/metatypes/qt5gui_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5gui_metatypes.json
-  cp $1/android/lib/metatypes/qt5qmlmodels_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5qmlmodels_metatypes.json
-  cp $1/android/lib/metatypes/qt5qml_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5qml_metatypes.json
-  cp $1/android/lib/metatypes/qt5networkauth_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5networkauth_metatypes.json
-  cp $1/android/lib/metatypes/qt5network_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5network_xmetatypes.json
-  cp $1/android/lib/metatypes/qt5test_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5test_metatypes.json
-  cp $1/android/lib/metatypes/qt5androidextras_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5androidextras_metatypes.json
-  cp $1/android/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $1/android/lib/metatypes/qt5core_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5quick_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5quick_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5charts_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5charts_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5svg_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5svg_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5widgets_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5widgets_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5gui_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5gui_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5qmlmodels_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5qmlmodels_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5qml_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5qml_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5networkauth_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5networkauth_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5network_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5network_xmetatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5test_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5test_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5androidextras_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5androidextras_metatypes.json
+  cp $QTPATH/android/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5core_metatypes.json
   printn Y "Use release config"
-  $1/android/bin/qmake -spec android-clang \
+  $QTPATH/android/bin/qmake -spec android-clang \
     CONFIG+=qtquickcompiler \
     CONFIG-=debug \
     CONFIG-=debug_and_release \
@@ -95,7 +137,7 @@ if [ "$2" = "release" ]; then
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
-  $1/android/bin/qmake -spec android-clang \
+  $QTPATH/android/bin/qmake -spec android-clang \
     CONFIG+=debug \
     CONFIG-=debug_and_release \
     CONFIG-=release \
@@ -105,7 +147,7 @@ else
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
-make -j16 sub-src-apk_install_target || die "Compile of QT project failed"
+make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
 
 print Y "Bundleing APK"
 cd src/
