@@ -75,6 +75,7 @@ Item {
 
     VPNFooterLink {
         id: footerLink
+        objectName: "cancelFooterLink"
 
         visible: footerLinkIsVisible
         //% "Cancel and try again"
