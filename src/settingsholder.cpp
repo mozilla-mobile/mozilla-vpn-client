@@ -49,6 +49,11 @@ constexpr const char* SETTINGS_SUBSCRIPTIONTRANSACTIONS =
     "subscriptionTransactions";
 #endif
 
+#ifdef MVPN_ANDROID
+constexpr const char* SETTINGS_NATIVEANDROIDSDATAMIGRATED =
+    "nativeAndroidDataMigrated";
+#endif
+
 #ifdef MVPN_WINDOWS
 constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
@@ -202,6 +207,12 @@ GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
 GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        hasPostAuthenticationShown, postAuthenticationShown,
        setPostAuthenticationShown);
+
+#ifdef MVPN_ANDROID
+GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
+       hasNativeAndroidDataMigrated, nativeAndroidDataMigrated,
+       setNativeAndroidDataMigrated);
+#endif
 
 #ifdef MVPN_IOS
 GETSET(bool, toBool, SETTINGS_NATIVEIOSDATAMIGRATED, hasNativeIOSDataMigrated,
