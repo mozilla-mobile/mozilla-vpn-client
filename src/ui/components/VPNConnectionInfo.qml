@@ -24,9 +24,14 @@ Popup {
         popup.forceActiveFocus()
     }
 
-    Accessible.focusable: true
-    Accessible.role: Accessible.Dialog
-    Accessible.name: connectionInfoButton.accessibleName
+    // TODO: We can not use Accessible type on Popup because it does not inherit
+    // from an Item. The code below generates the following warning:
+    // "...Accessible must be attached to an Item..."
+    // See https://github.com/mozilla-mobile/mozilla-vpn-client/issues/322 for
+    // more details.
+    // Accessible.focusable: true
+    // Accessible.role: Accessible.Dialog
+    // Accessible.name: connectionInfoButton.accessibleName
 
 
     contentItem: Item {
