@@ -51,6 +51,7 @@ dependencies {
     implementation project(':crypto')
     implementation project(':config')
     implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'com.android.installreferrer:installreferrer:1.1'
 }
 
 android {

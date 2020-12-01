@@ -8,12 +8,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.util.Log;
+
+import com.android.installreferrer.api.InstallReferrerClient;
+import com.android.installreferrer.api.InstallReferrerStateListener;
+import com.android.installreferrer.api.ReferrerDetails;
+
 import java.lang.Runnable;
 import java.lang.String;
 import java.util.concurrent.Semaphore;
@@ -24,6 +30,7 @@ public class VPNWebView
 
     private final Activity m_activity;
     private WebView m_webView = null;
+    private InstallReferrerClient m_referrer;
 
     private native void nativeOnPageStarted(String url, Bitmap icon);
     private native void nativeOnError(int errorCode, String description, String url);
@@ -63,6 +70,8 @@ public class VPNWebView
         Log.v(TAG, "created - userAgent: " + userAgent);
 
         m_activity = activity;
+
+        m_referrer = InstallReferrerClient.newBuilder(activity).build();
         final Semaphore sem = new Semaphore(0);
         m_activity.runOnUiThread(new Runnable() {
             @Override
@@ -96,10 +105,35 @@ public class VPNWebView
     {
         Log.v(TAG, "load url: " + url);
 
-        nativeOnPageStarted(url, null);
-        m_activity.runOnUiThread(new Runnable() {
+        // Try to Get a Referrer and then Load the URL with it
+        m_referrer.startConnection(new InstallReferrerStateListener() {
             @Override
-            public void run() { m_webView.loadUrl(url); }
+            public void onInstallReferrerSetupFinished(int responseCode) {
+                String referrerValue ="";
+                if( responseCode == InstallReferrerClient.InstallReferrerResponse.OK){
+                    try {
+                        ReferrerDetails response =  m_referrer.getInstallReferrer();
+                        referrerValue = "&" + response.getInstallReferrer();
+                        Log.v(TAG, "Recived - referrer: " + referrerString);
+
+                    } catch (RemoteException e) {
+                        Log.v(TAG, "Failed - referrer - " + e.toString());
+                    }
+                }else{
+                    Log.v(TAG, "Failed - referrer not available ");
+                }
+                m_referrer.endConnection();
+
+                // We now have a referrer - Load the URI
+                final String refUrl = url+referrerValue;
+                nativeOnPageStarted(refUrl, null);
+                m_activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() { m_webView.loadUrl(refUrl); }
+                });
+            }
+            @Override
+            public void onInstallReferrerServiceDisconnected() {}
         });
     }
 
