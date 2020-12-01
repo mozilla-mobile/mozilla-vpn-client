@@ -19,9 +19,6 @@ RowLayout {
     property bool showDivider: true
 
     signal clicked()
-
-    Layout.fillWidth: true
-    Layout.topMargin: 18
     spacing: 0
 
     VPNCheckBox {
