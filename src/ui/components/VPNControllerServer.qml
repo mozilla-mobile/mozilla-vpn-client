@@ -29,6 +29,8 @@ VPNClickableRow {
         spacing: 0
 
         VPNIconAndLabel {
+            id: selectLocation
+
             icon: "../resources/connection.svg"
             title: titleText
             Accessible.ignored: true
@@ -39,6 +41,8 @@ VPNClickableRow {
         }
 
         Image {
+            id: flag
+
             Layout.preferredWidth: 16
             Layout.preferredHeight: 16
             Layout.rightMargin: 8
@@ -47,9 +51,13 @@ VPNClickableRow {
         }
 
         VPNLightLabel {
+            id: serverLocation
+
             text: VPNCurrentServer.city
             Layout.rightMargin: 8
             Accessible.ignored: true
+            Layout.maximumWidth: parent.width - selectLocation.width - flag.width - flag.Layout.rightMargin - (Theme.windowMargin * 2.5)
+            elide: Text.ElideRight
         }
 
         VPNChevron {
