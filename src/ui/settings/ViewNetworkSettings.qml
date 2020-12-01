@@ -12,9 +12,7 @@ import "../themes/themes.js" as Theme
 
 VPNFlickable {
     id: vpnFlickable
-
-    flickContentHeight: columnLayout.height + menu.height
-    width: window.width
+    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
     VPNMenu {
         id: menu
@@ -24,44 +22,45 @@ VPNFlickable {
         isSettingsView: true
     }
 
-    ColumnLayout {
-        id: columnLayout
+    VPNCheckBoxRow {
+        id: ipv6
+
         anchors.top: menu.bottom
-        width: vpnFlickable.width - Theme.windowMargin
-        spacing: 0
+        anchors.topMargin: Theme.windowMargin
+        width: parent.width - Theme.windowMargin
 
-        VPNCheckBoxRow {
-            property bool isVPNOff: (VPNController.state === VPNController.StateOff)
+        //% "IPv6"
+        labelText: qsTrId("vpn.settings.ipv6")
+        //% "Push the internet forward with the latest version of the Internet Protocol"
+        subLabelText: qsTrId("vpn.settings.ipv6.description")
+        isChecked: (VPNSettings.ipv6Enabled)
+        isEnabled: vpnFlickable.vpnIsOff
+        showDivider: vpnFlickable.vpnIsOff
+        onClicked: VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
 
-            //% "IPv6"
-            labelText: qsTrId("vpn.settings.ipv6")
-            //% "Push the internet forward with the latest version of the Internet Protocol"
-            subLabelText: qsTrId("vpn.settings.ipv6.description")
-            isChecked: (VPNSettings.ipv6Enabled)
-            isEnabled: isVPNOff
-            showDivider: isVPNOff
-            onClicked: VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
-        }
+    }
 
-        VPNCheckBoxRow {
-            id: localNetwork
+    VPNCheckBoxRow {
+        id: localNetwork
 
-            property bool isVPNOff: (VPNController.state === VPNController.StateOff)
-            visible: VPN.localNetworkAccessSupported
+        anchors.top: ipv6.bottom
+        anchors.topMargin: Theme.windowMargin
+        width: parent.width - Theme.windowMargin
+        visible: VPN.localNetworkAccessSupported
 
-            //% "Local network access"
-            labelText: qsTrId("vpn.settings.lanAccess")
-            //% "Access printers, streaming sticks and all other devices on your local network"
-            subLabelText: qsTrId("vpn.settings.lanAccess.description")
-            isChecked: (VPNSettings.localNetworkAccess)
-            isEnabled: isVPNOff
-            showDivider: isVPNOff
-            onClicked: VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
-        }
+        //% "Local network access"
+        labelText: qsTrId("vpn.settings.lanAccess")
+        //% "Access printers, streaming sticks and all other devices on your local network"
+        subLabelText: qsTrId("vpn.settings.lanAccess.description")
+        isChecked: (VPNSettings.localNetworkAccess)
+        isEnabled: vpnFlickable.vpnIsOff
+        showDivider: vpnFlickable.vpnIsOff
+        onClicked: VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
+    }
 
-        VPNCheckBoxAlert {
-        }
-
+    VPNCheckBoxAlert {
+        anchors.top: localNetwork.visible ? localNetwork.bottom : ipv6.bottom
+        visible: !vpnFlickable.vpnIsOff
     }
 
 }
