@@ -57,7 +57,7 @@ bool DBus::checkInterface() {
 
 QString DBus::version() {
   logger.log() << "Version request";
-  return APP_VERSION;
+  return PROTOCOL_VERSION;
 }
 
 bool DBus::activate(const QString& jsonConfig) {
