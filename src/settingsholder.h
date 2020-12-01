@@ -83,6 +83,11 @@ class SettingsHolder final : public QObject {
          setNativeWindowsDataMigrated)
 #endif
 
+#ifdef MVPN_ANDROID
+  GETSET(bool, hasNativeAndroidDataMigrated, nativeAndroidDataMigrated,
+         setNativeAndroidDataMigrated)
+#endif
+
 #undef GETSET
 
  signals:
