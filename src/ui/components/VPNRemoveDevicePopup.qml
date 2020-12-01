@@ -23,8 +23,13 @@ Popup {
     anchors.centerIn: parent
     closePolicy: Popup.CloseOnEscape
 
-    Accessible.role: Accessible.Dialog
-    Accessible.name: popupTitle.text
+    // TODO: We can not use Accessible type on Popup because it does not inherit
+    // from an Item. The code below generates the following warning:
+    // "...Accessible must be attached to an Item..."
+    // See https://github.com/mozilla-mobile/mozilla-vpn-client/issues/322 for
+    // more details.
+    // Accessible.role: Accessible.Dialog
+    // Accessible.name: popupTitle.text
 
     onClosed: {
         // When closing the dialog, put the focus back on the
