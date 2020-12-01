@@ -65,55 +65,54 @@ IAPHandler::IAPHandler(QObject* parent) : QObject(parent) {
             emit productsRegistered();
           });
 
-  connect(&m_appStore, &QInAppStore::transactionReady,
-          [this](QInAppTransaction* transaction) {
-            logger.log() << "Transaction ready - status:"
-                         << transaction->status();
+  connect(
+      &m_appStore, &QInAppStore::transactionReady,
+      [this](QInAppTransaction* transaction) {
+        logger.log() << "Transaction ready - status:" << transaction->status();
 
-            if (!m_started) {
-              // What should we do about this transaction?
+        if (!m_started) {
+          // What should we do about this transaction?
+          transaction->finalize();
+          return;
+        }
+
+        switch (transaction->status()) {
+          case QInAppTransaction::PurchaseFailed:
+            logger.log() << "Purchase Failed" << transaction->errorString()
+                         << "Reason:" << transaction->failureReason();
+            emit subscriptionFailed();
+            break;
+
+          case QInAppTransaction::PurchaseApproved:
+            [[fallthrough]];
+          case QInAppTransaction::PurchaseRestored: {
+            logger.log() << "Purchase approved or restored";
+
+            SettingsHolder* settingsHolder = SettingsHolder::instance();
+            if (settingsHolder->hasSubscriptionTransaction(
+                    transaction->orderId())) {
+              logger.log() << "This transaction is already expired. Let's "
+                              "ignore it.";
               transaction->finalize();
               return;
             }
 
-            switch (transaction->status()) {
-              case QInAppTransaction::PurchaseFailed:
-                logger.log() << "Purchase Failed" << transaction->errorString()
-                             << "Reason:" << transaction->failureReason();
-                emit subscriptionFailed();
-                break;
+            settingsHolder->addSubscriptionTransaction(transaction->orderId());
 
-              case QInAppTransaction::PurchaseApproved:
-                [[fallthrough]];
-              case QInAppTransaction::PurchaseRestored: {
-                logger.log() << "Purchase approved or restored";
+            purchaseCompleted();
+            break;
+          }
 
-                SettingsHolder* settingsHolder = SettingsHolder::instance();
-                if (settingsHolder->hasSubscriptionTransaction(
-                        transaction->orderId())) {
-                  logger.log() << "This transaction is already expired. Let's "
-                                  "ignore it.";
-                  transaction->finalize();
-                  return;
-                }
+          case QInAppTransaction::Unknown:
+          default:
+            logger.log() << "unexpected transaction state";
+            emit subscriptionFailed();
+            break;
+        }
 
-                settingsHolder->addSubscriptionTransaction(
-                    transaction->orderId());
-
-                purchaseCompleted();
-                break;
-              }
-
-              case QInAppTransaction::Unknown:
-              default:
-                logger.log() << "unexpected transaction state";
-                emit subscriptionFailed();
-                break;
-            }
-
-            m_started = false;
-            transaction->finalize();
-          });
+        m_started = false;
+        transaction->finalize();
+      });
 }
 
 IAPHandler::~IAPHandler() {

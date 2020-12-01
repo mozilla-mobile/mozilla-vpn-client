@@ -26,35 +26,36 @@ WindowsPingSendWorker::~WindowsPingSendWorker() {
   MVPN_COUNT_DTOR(WindowsPingSendWorker);
 }
 
-void WindowsPingSendWorker::sendPing(const QString &destination)
-{
-    logger.log() << "WindowsPingSendWorker - start" << destination;
+void WindowsPingSendWorker::sendPing(const QString& destination) {
+  logger.log() << "WindowsPingSendWorker - start" << destination;
 
-    IN_ADDR ip{};
-    if (InetPtonA(AF_INET, destination.toLocal8Bit(), &ip) != 1) {
-        emit pingFailed();
-        return;
-    }
+  IN_ADDR ip{};
+  if (InetPtonA(AF_INET, destination.toLocal8Bit(), &ip) != 1) {
+    emit pingFailed();
+    return;
+  }
 
-    HANDLE icmpHandle = IcmpCreateFile();
-    if (icmpHandle == INVALID_HANDLE_VALUE) {
-        emit pingFailed();
-        return;
-    }
+  HANDLE icmpHandle = IcmpCreateFile();
+  if (icmpHandle == INVALID_HANDLE_VALUE) {
+    emit pingFailed();
+    return;
+  }
 
-    constexpr WORD payloadSize = 1;
-    unsigned char payload[payloadSize]{ 42 };
+  constexpr WORD payloadSize = 1;
+  unsigned char payload[payloadSize]{42};
 
-    constexpr DWORD replyBufferSize = sizeof(ICMP_ECHO_REPLY) + payloadSize + 8;
-    unsigned char replyBuffer[replyBufferSize]{};
+  constexpr DWORD replyBufferSize = sizeof(ICMP_ECHO_REPLY) + payloadSize + 8;
+  unsigned char replyBuffer[replyBufferSize]{};
 
-    DWORD replyCount = IcmpSendEcho(icmpHandle, ip.S_un.S_addr, payload, payloadSize, nullptr, replyBuffer, replyBufferSize, 10000);
-    IcmpCloseHandle(icmpHandle);
+  DWORD replyCount =
+      IcmpSendEcho(icmpHandle, ip.S_un.S_addr, payload, payloadSize, nullptr,
+                   replyBuffer, replyBufferSize, 10000);
+  IcmpCloseHandle(icmpHandle);
 
-    if (replyCount == 0) {
-        emit pingFailed();
-        return;
-    }
+  if (replyCount == 0) {
+    emit pingFailed();
+    return;
+  }
 
-    emit pingSucceeded();
+  emit pingSucceeded();
 }

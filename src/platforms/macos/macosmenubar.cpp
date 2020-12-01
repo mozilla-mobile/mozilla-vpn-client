@@ -12,7 +12,7 @@
 namespace {
 Logger logger(LOG_MACOS, "MacOSManuBar");
 MacOSMenuBar* s_instance = nullptr;
-}
+}  // namespace
 
 MacOSMenuBar::MacOSMenuBar() {
   MVPN_COUNT_CTOR(MacOSMenuBar);

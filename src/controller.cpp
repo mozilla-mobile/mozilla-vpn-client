@@ -426,7 +426,8 @@ void Controller::captivePortalDetected() {
   deactivate();
 }
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const Server& server) {
+QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
+    const Server& server) {
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
   QList<IPAddressRange> list;

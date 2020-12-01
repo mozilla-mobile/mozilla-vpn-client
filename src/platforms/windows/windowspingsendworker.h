@@ -19,4 +19,4 @@ class WindowsPingSendWorker final : public PingSendWorker {
   void sendPing(const QString& destination) override;
 };
 
-#endif // WINDOWSPINGSENDWORKER_H
+#endif  // WINDOWSPINGSENDWORKER_H

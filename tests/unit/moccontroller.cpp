@@ -41,7 +41,8 @@ void Controller::statusUpdated(const QString&, uint64_t, uint64_t) {}
 
 void Controller::captivePortalDetected() {}
 
-QList<IPAddressRange> Controller::getAllowedIPAddressRanges(const Server& server) {
+QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
+    const Server& server) {
   Q_UNUSED(server);
   return QList<IPAddressRange>();
 }

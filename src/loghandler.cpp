@@ -26,7 +26,7 @@ constexpr const char* LOG_FILENAME = "mozillavpn.txt";
 namespace {
 QMutex s_mutex;
 LogHandler* s_instance = nullptr;
-}
+}  // namespace
 
 // static
 LogHandler* LogHandler::instance() {

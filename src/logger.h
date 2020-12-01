@@ -25,7 +25,7 @@ constexpr const char* LOG_LINUX = "linux";
 #endif
 
 #ifdef MVPN_WINDOWS
-constexpr const char *LOG_WINDOWS = "windows";
+constexpr const char* LOG_WINDOWS = "windows";
 #endif
 
 #if __APPLE__

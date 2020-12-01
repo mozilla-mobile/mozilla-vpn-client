@@ -52,7 +52,6 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       }
     }
 
-
     logger.log() << "Key not found. Let's create it.";
     s_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
     QRandomGenerator* rg = QRandomGenerator::system();

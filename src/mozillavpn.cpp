@@ -28,7 +28,7 @@
 #endif
 
 #ifdef MVPN_ANDROID
-#include "platforms/android/androidutils.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_WINDOWS
