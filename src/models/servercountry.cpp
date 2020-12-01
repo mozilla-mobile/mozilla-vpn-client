@@ -23,10 +23,17 @@ ServerCountry::ServerCountry() { MVPN_COUNT_CTOR(ServerCountry); }
 
 ServerCountry::ServerCountry(const ServerCountry& other) {
   MVPN_COUNT_CTOR(ServerCountry);
+  *this = other;
+}
+
+ServerCountry& ServerCountry::operator=(const ServerCountry& other) {
+  if (this == &other) return *this;
 
   m_name = other.m_name;
   m_code = other.m_code;
   m_cities = other.m_cities;
+
+  return *this;
 }
 
 ServerCountry::~ServerCountry() { MVPN_COUNT_DTOR(ServerCountry); }

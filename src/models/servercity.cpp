@@ -13,9 +13,17 @@ ServerCity::ServerCity() { MVPN_COUNT_CTOR(ServerCity); }
 
 ServerCity::ServerCity(const ServerCity& other) {
   MVPN_COUNT_CTOR(ServerCity);
+  *this = other;
+}
+
+ServerCity& ServerCity::operator=(const ServerCity& other) {
+  if (this == &other) return *this;
+
   m_name = other.m_name;
   m_code = other.m_code;
   m_servers = other.m_servers;
+
+  return *this;
 }
 
 ServerCity::~ServerCity() { MVPN_COUNT_DTOR(ServerCity); }

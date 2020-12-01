@@ -14,6 +14,7 @@ class Device final {
  public:
   Device();
   Device(const Device& other);
+  Device& operator=(const Device& other);
   ~Device();
 
   static QString currentDeviceName();

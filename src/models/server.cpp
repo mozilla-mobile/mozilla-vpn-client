@@ -14,6 +14,11 @@ Server::Server() { MVPN_COUNT_CTOR(Server); }
 
 Server::Server(const Server& other) {
   MVPN_COUNT_CTOR(Server);
+  *this = other;
+}
+
+Server& Server::operator=(const Server& other) {
+  if (this == &other) return *this;
 
   m_hostname = other.m_hostname;
   m_ipv4AddrIn = other.m_ipv4AddrIn;
@@ -23,6 +28,8 @@ Server::Server(const Server& other) {
   m_portRanges = other.m_portRanges;
   m_publicKey = other.m_publicKey;
   m_weight = other.m_weight;
+
+  return *this;
 }
 
 Server::~Server() { MVPN_COUNT_DTOR(Server); }

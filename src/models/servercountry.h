@@ -18,6 +18,7 @@ class ServerCountry final {
  public:
   ServerCountry();
   ServerCountry(const ServerCountry& other);
+  ServerCountry& operator=(const ServerCountry& other);
   ~ServerCountry();
 
   [[nodiscard]] bool fromJson(QJsonObject& obj);

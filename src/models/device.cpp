@@ -54,12 +54,19 @@ Device::Device() { MVPN_COUNT_CTOR(Device); }
 
 Device::Device(const Device& other) {
   MVPN_COUNT_CTOR(Device);
+  *this = other;
+}
+
+Device& Device::operator=(const Device& other) {
+  if (this == &other) return *this;
 
   m_deviceName = other.m_deviceName;
   m_createdAt = other.m_createdAt;
   m_publicKey = other.m_publicKey;
   m_ipv4Address = other.m_ipv4Address;
   m_ipv6Address = other.m_ipv6Address;
+
+  return *this;
 }
 
 Device::~Device() { MVPN_COUNT_DTOR(Device); }
