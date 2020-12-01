@@ -41,7 +41,7 @@ RowLayout {
 
         //% "VPN must be off to edit network settings"
         //: Associated to a group of settings that require the VPN to be disconnected to change
-        text: qsTrId("vpn.turnOffAlert.vpnMustBeOn")
+        text: qsTrId("vpn.turnOffAlert.vpnMustBeOff")
         color: Theme.red
         Layout.fillWidth: true
     }
