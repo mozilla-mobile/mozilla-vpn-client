@@ -39,7 +39,9 @@ void TestLogger::logHandler() {
     QString buffer;
     QTextStream out(&buffer);
     lh->writeLogs(out);
-    QVERIFY(buffer.isEmpty());
+    // The buffer is not empty because, resetting the logs we create a new log
+    // entry.
+    QVERIFY(!buffer.isEmpty());
   }
 }
 
