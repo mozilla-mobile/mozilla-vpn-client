@@ -13,7 +13,7 @@
 #  include "platforms/macos/macospingsendworker.h"
 #elif defined(MVPN_WINDOWS)
 #  include "platforms/windows/windowspingsendworker.h"
-#elif defined(QT_DEBUG)
+#elif defined(MVPN_DUMMY)
 #  include "platforms/dummy/dummypingsendworker.h"
 #else
 #  error "Unsupported platform"

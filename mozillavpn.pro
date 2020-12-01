@@ -5,7 +5,7 @@
 !versionAtLeast(QT_VERSION, 5.15.0) {
     message("Cannot use Qt $${QT_VERSION}")
     
-    !android{
+    !android {
         error("Use Qt 5.15 or newer")
     }
 }
@@ -14,6 +14,6 @@ TEMPLATE = subdirs
 SUBDIRS += src
 SUBDIRS += tests/unit
 
-linux:!android {
+linux:!android:!DUMMY {
     SUBDIRS += linux
 }
