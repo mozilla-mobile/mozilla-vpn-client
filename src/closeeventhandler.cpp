@@ -58,7 +58,8 @@ bool CloseEventHandler::eventHandled() {
   return false;
 #elif defined(MVPN_IOS)
   return false;
-#elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
+    defined(MVPN_DUMMY)
   logger.log() << "We should not be here! Why "
                   "CloseEventHandler::eventHandled() is called on desktop?!?";
   return true;

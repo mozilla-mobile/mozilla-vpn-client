@@ -170,13 +170,11 @@ debug {
 
     SOURCES += \
             inspector/inspectorconnection.cpp \
-            inspector/inspectorserver.cpp \
-            platforms/dummy/dummypingsendworker.cpp
+            inspector/inspectorserver.cpp
 
     HEADERS += \
             inspector/inspectorconnection.h \
-            inspector/inspectorserver.h \
-            platforms/dummy/dummypingsendworker.h
+            inspector/inspectorserver.h
 }
 
 # Signal handling for unix platforms
@@ -185,8 +183,33 @@ unix {
     HEADERS += signalhandler.h
 }
 
+DUMMY {
+    message(Dummy build)
+
+    QMAKE_CXXFLAGS *= -Werror
+
+    TARGET = mozillavpn
+    QT += networkauth
+    QT += svg
+
+    DEFINES += MVPN_DUMMY
+
+    SOURCES += \
+            platforms/dummy/dummycontroller.cpp \
+            platforms/dummy/dummycryptosettings.cpp \
+            platforms/dummy/dummypingsendworker.cpp \
+            systemtraynotificationhandler.cpp \
+            tasks/authenticate/desktopauthenticationlistener.cpp
+
+    HEADERS += \
+            platforms/dummy/dummycontroller.h \
+            platforms/dummy/dummypingsendworker.h \
+            systemtraynotificationhandler.h \
+            tasks/authenticate/desktopauthenticationlistener.h
+}
+
 # Platform-specific: Linux
-linux:!android {
+else:linux:!android {
     message(Linux build)
 
     QMAKE_CXXFLAGS *= -Werror

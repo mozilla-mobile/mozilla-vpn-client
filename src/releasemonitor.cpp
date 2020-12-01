@@ -82,7 +82,7 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
       "android"
 #elif defined(MVPN_WINDOWS)
       "windows"
-#elif defined(UNIT_TEST)
+#elif defined(UNIT_TEST) || defined(MVPN_DUMMY)
       "dummy"
 #else
 #  error "Unsupported platform"
