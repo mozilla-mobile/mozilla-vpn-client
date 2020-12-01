@@ -1,4 +1,4 @@
-name: Check for l10n issues
+name: Linters (clang, l10n) 
 on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
@@ -29,3 +29,9 @@ jobs:
           export PATH=/opt/qt515/bin:$PATH
           lupdate -version
           python .github/l10n/check_l10n_issues.py
+      - name: Check for issues with clang-format
+        uses: DoozyX/clang-format-lint-action@v0.11
+        with:
+          source: '.'
+          clangFormatVersion: 11
+          style: file
