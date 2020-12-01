@@ -196,6 +196,7 @@ linux:!android {
     QT += svg
 
     DEFINES += MVPN_LINUX
+    DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
 
     SOURCES += \
             platforms/linux/backendlogsobserver.cpp \

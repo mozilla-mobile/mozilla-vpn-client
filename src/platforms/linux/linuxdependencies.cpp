@@ -63,10 +63,10 @@ bool checkDaemonVersion() {
         }
 
         QString version = reply.argumentAt<0>();
-        *value = version == APP_VERSION;
+        *value = version == PROTOCOL_VERSION;
 
         logger.log() << "DBus message received - daemon version:" << version
-                     << " - current version:" << APP_VERSION;
+                     << " - current version:" << PROTOCOL_VERSION;
       });
 
   while (!completed) {
