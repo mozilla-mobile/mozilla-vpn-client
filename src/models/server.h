@@ -15,6 +15,7 @@ class Server final {
  public:
   Server();
   Server(const Server& other);
+  Server& operator=(const Server& other);
   ~Server();
 
   [[nodiscard]] bool fromJson(QJsonObject& obj);

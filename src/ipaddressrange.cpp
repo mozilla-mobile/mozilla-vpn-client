@@ -13,10 +13,17 @@ IPAddressRange::IPAddressRange(const QString& ipAddress, uint32_t range,
 
 IPAddressRange::IPAddressRange(const IPAddressRange& other) {
   MVPN_COUNT_CTOR(IPAddressRange);
+  *this = other;
+}
+
+IPAddressRange& IPAddressRange::operator=(const IPAddressRange& other) {
+  if (this == &other) return *this;
 
   m_ipAddress = other.m_ipAddress;
   m_range = other.m_range;
   m_type = other.m_type;
+
+  return *this;
 }
 
 IPAddressRange::~IPAddressRange() { MVPN_COUNT_DTOR(IPAddressRange); }
