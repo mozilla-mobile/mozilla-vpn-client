@@ -116,8 +116,6 @@ Popup {
             text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
             Accessible.name: text
             Accessible.role: Accessible.StaticText
-            focus: true
-            activeFocusOnTab: true
         }
 
         Row {

@@ -551,6 +551,8 @@ Rectangle {
         lineHeight: Theme.controllerInterLineHeight
         width: box.width - Theme.windowMargin * 3
         Accessible.ignored: connectionInfoVisible
+        Accessible.name: logoSubtitle.text
+        Accessible.role: Accessible.StaticText
     }
 
     VPNConnectionStability {
