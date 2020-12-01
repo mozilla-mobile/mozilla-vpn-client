@@ -34,6 +34,9 @@
 #ifdef MVPN_WINDOWS
 #  include "platforms/windows/windowsdatamigration.h"
 #endif
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androiddatamigration.h"
+#endif
 
 #include <QApplication>
 #include <QClipboard>
@@ -164,6 +167,13 @@ void MozillaVPN::initialize() {
   if (!SettingsHolder::instance()->hasNativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
     SettingsHolder::instance()->setNativeWindowsDataMigrated(true);
+  }
+#endif
+
+#ifdef MVPN_ANDROID
+  if (!SettingsHolder::instance()->hasNativeAndroidDataMigrated()) {
+    AndroidDataMigration::migrate();
+    SettingsHolder::instance()->setNativeAndroidDataMigrated(true);
   }
 #endif
 

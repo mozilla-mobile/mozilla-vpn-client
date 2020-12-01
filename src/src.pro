@@ -237,6 +237,7 @@ else:android {
     QT += svg
     QT += androidextras
     QT += qml
+    QT += xml
 
     DEFINES += MVPN_ANDROID
 
@@ -247,13 +248,17 @@ else:android {
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
-                platforms/android/androidstartatbootwatcher.cpp
+                platforms/android/androidstartatbootwatcher.cpp \
+                platforms/android/androiddatamigration.cpp \
+                platforms/android/androidsharedprefs.cpp
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \
-                platforms/android/androidstartatbootwatcher.h
+                platforms/android/androidstartatbootwatcher.h\
+                platforms/android/androiddatamigration.h\
+                platforms/android/androidsharedprefs.h
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsendworker.cpp \
