@@ -16,7 +16,7 @@
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorConnection");
 QUrl s_lastUrl;
-}
+}  // namespace
 
 InspectorConnection::InspectorConnection(QObject* parent,
                                          QTcpSocket* connection)

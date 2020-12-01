@@ -5,16 +5,14 @@
 #ifndef ANDROIDSTARTATBOOTWATCHER_H
 #define ANDROIDSTARTATBOOTWATCHER_H
 
-
 #include <QObject>
 
-class AndroidStartAtBootWatcher final : public QObject
-{
-public:
-    AndroidStartAtBootWatcher(bool startAtBoot);
+class AndroidStartAtBootWatcher final : public QObject {
+ public:
+  AndroidStartAtBootWatcher(bool startAtBoot);
 
-public slots:
-    void startAtBootChanged(bool value);
+ public slots:
+  void startAtBootChanged(bool value);
 };
 
-#endif // ANDROIDSTARTATBOOTWATCHER_H
+#endif  // ANDROIDSTARTATBOOTWATCHER_H
