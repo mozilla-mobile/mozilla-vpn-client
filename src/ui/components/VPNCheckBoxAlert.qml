@@ -39,7 +39,7 @@ RowLayout {
     VPNTextBlock {
         id: message
 
-        //% "VPN must be off to edit these settings"
+        //% "VPN must be off to edit network settings"
         //: Associated to a group of settings that require the VPN to be disconnected to change
         text: qsTrId("vpn.turnOffAlert.vpnMustBeOn")
         color: Theme.red
