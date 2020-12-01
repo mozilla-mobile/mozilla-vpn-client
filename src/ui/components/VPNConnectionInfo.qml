@@ -55,7 +55,7 @@ Popup {
             margins.bottom: 0
             margins.left: 0
             margins.right: 0
-            animationOptions: ChartView.SeriesAnimations
+            animationOptions: ChartView.NoAnimation
 
 
             ValueAxis {
