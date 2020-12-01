@@ -79,7 +79,7 @@ Item {
 
         visible: footerLinkIsVisible
         //% "Cancel"
-        labelText: qsTrId("vpn.authenticating.cancelAndRetry")
+        labelText: qsTrId("vpn.authenticating.cancel")
         onClicked: VPN.cancelAuthentication()
     }
 
