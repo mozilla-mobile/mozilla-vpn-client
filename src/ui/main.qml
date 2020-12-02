@@ -11,7 +11,7 @@ import "./components"
 Window {
     id: window
 
-    property var safeContentHeight: Qt.platform.os === "ios" ? window.height - iosSafeAreaTopMargin.height : window.height
+    property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -57,9 +57,29 @@ Window {
         id: iosSafeAreaTopMargin
 
         color: "transparent"
-        height: 40
+        height: marginHeightByDevice()
         width: window.width
-        visible: Qt.platform.os === "ios"
+
+        function marginHeightByDevice() {
+            if (Qt.platform.os !== "ios") {
+                return 0;
+            }
+            switch(window.height * Screen.devicePixelRatio) {
+            case 1624: // iPhone_XR (Qt Provided Physical Resolution)
+            case 1792: // iPhone_XR
+
+            case 2436: // iPhone_X_XS
+            case 2688: // iPhone_XS_MAX
+
+            case 2532: // iPhone_12_Pro
+            case 2778: // iPhone_12_Pro_Max
+            case 2340: // iPhone_12_mini
+                return 30;
+            default:
+                return 20;
+            }
+
+        }
     }
 
     VPNStackView {
@@ -67,7 +87,7 @@ Window {
 
         initialItem: mainView
         width: parent.width
-        anchors.top: Qt.platform.os === "ios" ? iosSafeAreaTopMargin.bottom : parent.top
+        anchors.top: iosSafeAreaTopMargin.bottom
         height: safeContentHeight
     }
 
