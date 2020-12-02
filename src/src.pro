@@ -29,6 +29,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
+        apppermission.cpp \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
@@ -97,6 +98,7 @@ SOURCES += \
         timersingleshot.cpp
 
 HEADERS += \
+        apppermission.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportalactivator.h \
