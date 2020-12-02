@@ -17,6 +17,8 @@
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
+#include "apppermission.h"
+
 #ifdef MVPN_LINUX
 #  include "platforms/linux/linuxdependencies.h"
 #endif
@@ -236,6 +238,13 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Localizer::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNAppPermissions",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AppPermission::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

@@ -42,6 +42,13 @@ VPNFlickable {
                     pushView: "../settings/ViewLanguage.qml",
                 });
             }
+        ListElement {
+            //% "App Permissions" 
+            settingTitle: qsTrId("vpn.settings.appPermissions")
+            imageLeftSource: "../resources/settings/networkSettings.svg"
+            imageRightSource: "../resources/chevron.svg"
+            pushView: "../settings/ViewAppPermissions.qml"
+        }
 
             append({
                 settingTitle: qsTrId("vpn.settings.aboutUs"),

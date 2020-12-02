@@ -14,6 +14,7 @@ constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
 constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = false;
 constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = false;
 constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
+constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = true;
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
@@ -42,6 +43,8 @@ constexpr const char* SETTINGS_CAPTIVEPORTALIPV6ADDRESSES =
     "captivePortal/ipv6Addresses";
 constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
     "postAuthenticationShown";
+constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
+constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -157,6 +160,10 @@ GETSETDEFAULT(SETTINGS_STARTATBOOT_DEFAULT, bool, toBool, SETTINGS_STARTATBOOT,
 GETSETDEFAULT(QString(), QString, toString, SETTINGS_LANGUAGECODE,
               hasLanguageCode, languageCode, setLanguageCode,
               languageCodeChanged)
+GETSETDEFAULT(SETTINGS_PROTECTSELECTEDAPPS_DEFAULT, bool, toBool,
+              SETTINGS_PROTECTSELECTEDAPPS, hasProtectSelectedApps,
+              protectSelectedApps, setProtectSelectedApps,
+              protectSelectedAppsChanged)
 
 #undef GETSETDEFAULT
 
@@ -208,6 +215,8 @@ GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        hasPostAuthenticationShown, postAuthenticationShown,
        setPostAuthenticationShown);
 
+GETSET(QStringList, toStringList, SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps,
+       vpnDisabledApps, setVpnDisabledApps)
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
        hasNativeAndroidDataMigrated, nativeAndroidDataMigrated,
