@@ -66,7 +66,7 @@ VPNFlickable {
 
     VPNList {
         id: applist
-        visible: VPNSettings.protectSelectedApps
+        visible: VPNSettings.protectSelectedApps && VPNAppPermissions.listReady
 
         anchors.top: applistLabel.bottom
         anchors.topMargin: 16
@@ -94,7 +94,54 @@ VPNFlickable {
 
         }
     }
+
+    Image {
+        id: spinner
+        visible: VPNSettings.protectSelectedApps && !VPNAppPermissions.listReady
+        anchors.top: applistLabel.bottom
+        anchors.topMargin: 32
+        anchors.horizontalCenter: parent.horizontalCenter
+        sourceSize.height: 80
+        fillMode: Image.PreserveAspectFit
+        source: "../resources/spinner.svg"
+
+        ParallelAnimation {
+            id: startSpinning
+
+            running: true
+
+            PropertyAnimation {
+                target: spinner
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 300
+            }
+
+            PropertyAnimation {
+                target: spinner
+                property: "scale"
+                from: 0.7
+                to: 1
+                duration: 300
+            }
+
+            PropertyAnimation {
+                target: spinner
+                property: "rotation"
+                from: 0
+                to: 360
+                duration: 8000
+                loops: Animation.Infinite
+            }
+
+        }
+
+    }
 }
+
+
+
 
 /*##^##
 Designer {
