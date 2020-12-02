@@ -99,6 +99,7 @@ SOURCES += \
 
 HEADERS += \
         apppermission.h \
+        applistprovider.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportalactivator.h \
@@ -353,6 +354,7 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
+            platforms/dummy/dummyapplistprovider.cpp\
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
@@ -365,6 +367,7 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
+            platforms/dummy/dummyapplistprovider.h\
             tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
