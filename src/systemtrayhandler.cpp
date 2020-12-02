@@ -93,6 +93,14 @@ void SystemTrayHandler::updateContextMenu() {
 
   m_separator->setVisible(isStateMain);
 
+  if (QmlEngineHolder::instance()->window()->isVisible()) {
+    //% "Hide Mozilla VPN"
+    m_showHideLabel->setText(qtTrId("systray.hide"));
+  } else {
+    //% "Show Mozilla VPN"
+    m_showHideLabel->setText(qtTrId("systray.show"));
+  }
+
   // If we are in a non-main state, we don't need to show notifications.
   if (!isStateMain) {
     return;
@@ -148,14 +156,6 @@ void SystemTrayHandler::updateContextMenu() {
           .arg(vpn->currentServer()->city()));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
-
-  if (QmlEngineHolder::instance()->window()->isVisible()) {
-    //% "Hide Mozilla VPN"
-    m_showHideLabel->setText(qtTrId("systray.hide"));
-  } else {
-    //% "Show Mozilla VPN"
-    m_showHideLabel->setText(qtTrId("systray.show"));
-  }
 }
 
 void SystemTrayHandler::captivePortalNotificationRequested() {
