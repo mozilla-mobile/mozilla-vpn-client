@@ -19,4 +19,6 @@ Text {
     lineHeightMode: Text.FixedHeight
     lineHeight: 32
     Layout.alignment: Qt.AlignHCenter
+    Accessible.role: Accessible.StaticText
+    Accessible.name: text
 }
