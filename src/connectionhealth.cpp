@@ -62,6 +62,8 @@ void ConnectionHealth::stop() {
     pingSender->deleteLater();
   }
   m_pings.clear();
+
+  setStability(Stable);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
