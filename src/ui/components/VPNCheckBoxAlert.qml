@@ -11,9 +11,11 @@ RowLayout {
     id: turnVPNOffAlert
 
     visible: (VPNController.state !== VPNController.StateOff)
-    Layout.topMargin: 12
-    Layout.leftMargin: 56
-    Layout.rightMargin: Theme.windowMargin
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.topMargin: 12
+    anchors.leftMargin: 56
+    anchors.rightMargin: Theme.windowMargin
     spacing: 0
 
     Rectangle {
@@ -36,14 +38,10 @@ RowLayout {
 
     VPNTextBlock {
         id: message
-        //% "VPN must be off before enabling"
-        //: Associated to a setting that requires the VPN to be disconnected to change state
-        readonly property var textAlertEnabled: qsTrId("vpn.turnOffAlert.enabling")
-        //% "VPN must be off before disabling"
-        //: Associated to a setting that requires the VPN to be disconnected to change state
-        readonly property var textAlertDisabled: qsTrId("vpn.turnOffAlert.disabling")
 
-        text: VPNSettings.localNetwork ? textAlertEnabled : textAlertDisabled
+        //% "VPN must be off to edit network settings"
+        //: Associated to a group of settings that require the VPN to be disconnected to change
+        text: qsTrId("vpn.turnOffAlert.vpnMustBeOff")
         color: Theme.red
         Layout.fillWidth: true
     }
