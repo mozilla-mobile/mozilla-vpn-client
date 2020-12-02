@@ -540,6 +540,7 @@ Rectangle {
         anchors.topMargin: 24
         font.pixelSize: 22
         Accessible.ignored: connectionInfoVisible
+        Accessible.description: logoSubtitle.text
     }
 
     VPNInterLabel {
@@ -550,7 +551,7 @@ Rectangle {
         anchors.topMargin: Theme.windowMargin / 2
         lineHeight: Theme.controllerInterLineHeight
         width: box.width - Theme.windowMargin * 3
-        Accessible.ignored: connectionInfoVisible
+        Accessible.ignored: true
     }
 
     VPNConnectionStability {
