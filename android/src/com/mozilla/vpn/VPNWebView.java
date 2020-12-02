@@ -114,7 +114,7 @@ public class VPNWebView
                     try {
                         ReferrerDetails response =  m_referrer.getInstallReferrer();
                         referrerValue = "&" + response.getInstallReferrer();
-                        Log.v(TAG, "Recived - referrer: " + referrerString);
+                        Log.v(TAG, "Recived - referrer: " + referrerValue);
 
                     } catch (RemoteException e) {
                         Log.v(TAG, "Failed - referrer - " + e.toString());
@@ -125,7 +125,7 @@ public class VPNWebView
                 m_referrer.endConnection();
 
                 // We now have a referrer - Load the URI
-                final String refUrl = url+referrerValue;
+                final String refUrl = url + referrerValue;
                 nativeOnPageStarted(refUrl, null);
                 m_activity.runOnUiThread(new Runnable() {
                     @Override
