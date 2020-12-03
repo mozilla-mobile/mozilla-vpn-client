@@ -41,5 +41,3 @@ QByteArray NetworkManager::userAgent() {
 
   return userAgent;
 }
-
-QString NetworkManager::apiUrl() const { return Constants::API_URL; }
