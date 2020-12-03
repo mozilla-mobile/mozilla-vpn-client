@@ -80,28 +80,19 @@ VPNFlickable {
         spacing: Theme.vSpacing
 
         VPNCallout {
-            //% "No activity logs"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle1")
-            //% "We’re Mozilla. We’re on your side."
-            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
+            // "Device level encryption" - String defined in ViewOnboarding.qml
+            calloutTitle: qsTrId("vpn.onboarding.headline.1")
+            //% "We encrypt your entire device."
+            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle2")
             calloutImage: "../resources/onboarding/onboarding1.svg"
         }
 
         VPNCallout {
-            //% "No one can track you"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle2")
-            //% "We encrypt your entire device."
-            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle2")
-            calloutImage: "../resources/onboarding/onboarding2.svg"
-        }
-
-        VPNCallout {
-            //: The + after each number stands for “more than”. If you change the number of countries here, please update ViewOnboarding.qml too.
-            //% "360+ servers in 30+ countries"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle3")
+            // Servers in 30+ countries - String defined in ViewOnboarding.qml
+            calloutTitle: qsTrId("vpn.onboarding.headline.2")
             //% "Protect your access to the web."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle3")
-            calloutImage: "../resources/onboarding/onboarding3.svg"
+            calloutImage: "../resources/onboarding/onboarding2.svg"
         }
 
         VPNCallout {
@@ -111,6 +102,14 @@ VPNFlickable {
             calloutTitle: qsTrId("vpn.subscription.featureTitle4").arg(VPNUser.maxDevices)
             //% "We won’t restrict your bandwidth."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle4")
+            calloutImage: "../resources/onboarding/onboarding3.svg"
+        }
+
+        VPNCallout {
+            //% "No activity logs"
+            calloutTitle: qsTrId("vpn.subscription.featureTitle1")
+            //% "We’re Mozilla. We’re on your side."
+            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
             calloutImage: "../resources/onboarding/onboarding4.svg"
         }
 
