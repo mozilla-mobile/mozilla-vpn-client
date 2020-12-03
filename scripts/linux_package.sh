@@ -99,6 +99,19 @@ mkdir -p .tmp/usr/share/doc/mozillavpn || die "Failed to create dir .tmp/usr/sha
 cp linux/extra/copyright .tmp/usr/share/doc/mozillavpn || die "Failed to copy the copyright file"
 print G "done."
 
+printn Y "Generating icons... "
+ICON=src/ui/resources/logo-dock-beta.png
+if [[ "$PROD" ]]; then
+  ICON=src/ui/resources/logo-dock.png
+fi
+
+[[ -f $ICON ]] || die "The icon $ICON doesn't exist."
+
+for i in 16x16 32x32 48x48 64x64 128x128; do
+  mkdir -p .tmp/usr/share/icons/hicolor/$i/apps || die "Failed to create the dir .tmp/usr/share/icons/hicolor/$i/apps"
+  convert $ICON -geometry "$i" .tmp/usr/share/icons/hicolor/$i/apps/mozillavpn.png || die "Failed to convert the icon to geometry $i"
+done
+
 printn Y "Calculating the package size... "
 SIZE=$(du -s .tmp | cut -d\t -f1)
 print G $SIZE
