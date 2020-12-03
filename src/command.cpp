@@ -14,6 +14,12 @@
 #include <QIcon>
 #include <QTextStream>
 
+#ifdef MVPN_PRODUCTION_MODE
+constexpr const char* logoUrl = ":/ui/resources/logo-dock.png";
+#else
+constexpr const char* logoUrl = ":/ui/resources/logo-dock-beta.png";
+#endif
+
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
 Command::Command(QObject* parent, const QString& name,
@@ -80,7 +86,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   Localizer localizer;
   SimpleNetworkManager snm;
 
-  QIcon icon(":/ui/resources/logo-dock.png");
+  QIcon icon(logoUrl);
   app.setWindowIcon(icon);
 
   return callback();
@@ -99,7 +105,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
   Localizer localizer;
 
-  QIcon icon(":/ui/resources/logo-dock.png");
+  QIcon icon(logoUrl);
   app.setWindowIcon(icon);
 
   return callback();

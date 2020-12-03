@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>ui/resources/logo-dock.png</file>
+        <file>ui/resources/logo-dock-beta.png</file>
     </qresource>
 </RCC>
