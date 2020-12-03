@@ -350,7 +350,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       url.append("/r/vpn/terms");
       break;
 
-    case LinkPrivacyPolicy:
+    case LinkPrivacyNotice:
       url = Constants::API_URL;
       url.append("/r/vpn/privacy");
       break;
