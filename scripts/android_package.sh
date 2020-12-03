@@ -145,7 +145,7 @@ if [[ "$RELEASE" ]]; then
   cp $QTPATH/android/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5core_metatypes.json
   printn Y "Use release config"
   $QTPATH/android/bin/qmake -spec android-clang \
-    VERSION=$FULLVERSION \
+    VERSION=$SHORTVERSION \
     CONFIG+=qtquickcompiler \
     CONFIG-=debug \
     CONFIG-=debug_and_release \
@@ -156,7 +156,7 @@ if [[ "$RELEASE" ]]; then
 else
   printn Y "Use debug config \n"
   $QTPATH/android/bin/qmake -spec android-clang \
-    VERSION=$FULLVERSION \
+    VERSION=$SHORTVERSION \
     CONFIG+=debug \
     CONFIG-=debug_and_release \
     CONFIG-=release \
