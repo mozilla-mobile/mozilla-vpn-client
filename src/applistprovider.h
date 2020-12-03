@@ -16,7 +16,7 @@ class AppListProvider : public QObject
     Q_DISABLE_COPY_MOVE(AppListProvider)
 
    public:
-    AppListProvider() = default;
+    AppListProvider(QObject* parent) : QObject(parent){};
 
     virtual ~AppListProvider() = default;
 

@@ -6,14 +6,15 @@
 #define DUMMYAPPLISTPROVIDER_H
 
 #include "applistprovider.h"
+#include <QObject>
 
 class DummyAppListProvider : public AppListProvider
 {
     Q_OBJECT
 public:
-    DummyAppListProvider();
-    ~DummyAppListProvider();
-    void getApplicationList() override;
+ DummyAppListProvider(QObject* parent);
+ ~DummyAppListProvider();
+ void getApplicationList() override;
 };
 
 #endif // DUMMYAPPLISTPROVIDER_H
