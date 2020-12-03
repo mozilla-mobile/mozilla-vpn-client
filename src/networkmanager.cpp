@@ -3,14 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkmanager.h"
+#include "constants.h"
 #include "leakdetector.h"
-
-#ifdef MVPN_PRODUCTION_MODE
-constexpr const char* API_URL = "https://fpn.firefox.com";
-#else
-constexpr const char* API_URL =
-    "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-#endif
 
 namespace {
 NetworkManager* s_instance = nullptr;
@@ -48,4 +42,4 @@ QByteArray NetworkManager::userAgent() {
   return userAgent;
 }
 
-QString NetworkManager::apiUrl() const { return API_URL; }
+QString NetworkManager::apiUrl() const { return Constants::API_URL; }
