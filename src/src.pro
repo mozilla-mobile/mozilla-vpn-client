@@ -80,7 +80,9 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
+        platforms/android/androidapplistprovider.cpp \
         platforms/dummy/dummyappimageprovider.cpp \
+        platforms/dummy/dummyapplistprovider.cpp\
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -149,7 +151,7 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
-        platforms/dummy/dummyappimageprovider.h \
+        platforms/android/androidapplistprovider.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
@@ -166,6 +168,8 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
+        platforms/dummy/dummyappimageprovider.h \
+        platforms/dummy/dummyapplistprovider.h \
         timersingleshot.h
 
 debug {
@@ -356,7 +360,6 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            platforms/dummy/dummyapplistprovider.cpp\
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
@@ -369,7 +372,6 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            platforms/dummy/dummyapplistprovider.h\
             tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
@@ -520,3 +522,5 @@ else{
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+
+ANDROID_ABIS = x86

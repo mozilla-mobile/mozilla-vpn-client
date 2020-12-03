@@ -11,11 +11,8 @@
 #include <QVector>
 #include "settingsholder.h"
 
-#ifdef MVPN_ANDROID
 #  include "platforms/dummy/dummyapplistprovider.h"
-#else
-#  include "platforms/dummy/dummyapplistprovider.h"
-#endif
+#include "platforms/android/androidapplistprovider.h"
 
 namespace {
 Logger logger(LOG_MAIN, "AppPermission");
@@ -27,12 +24,7 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  m_listprovider =
-#ifdef MVPN_ANDROID
-      new DummyAppListProvider();
-#else
-      new DummyAppListProvider();
-#endif
+  m_listprovider = new AndroidAppListProvider(this);
 
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);

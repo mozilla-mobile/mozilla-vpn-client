@@ -5,8 +5,8 @@
 #include "dummyapplistprovider.h"
 #include "leakdetector.h"
 
-DummyAppListProvider::DummyAppListProvider()
-{
+DummyAppListProvider::DummyAppListProvider(QObject* parent)
+    : AppListProvider(parent) {
   MVPN_COUNT_CTOR(DummyAppListProvider);
 }
 
