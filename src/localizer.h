@@ -17,6 +17,7 @@ class Localizer final : public QAbstractListModel {
   Q_PROPERTY(QString systemLanguage READ systemLanguage CONSTANT)
   Q_PROPERTY(
       QString systemLocalizedLanguage READ systemLocalizedLanguage CONSTANT)
+  Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
 
  public:
   enum ServerCountryRoles {
@@ -39,6 +40,8 @@ class Localizer final : public QAbstractListModel {
   QString systemLanguage() const { return languageName(""); }
 
   QString systemLocalizedLanguage() const { return localizedLanguageName(""); }
+
+  bool hasLanguages() const { return !m_languages.isEmpty(); }
 
   // QAbstractListModel methods
 
