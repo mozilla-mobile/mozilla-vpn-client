@@ -117,8 +117,9 @@ print Y "Importing translation files..."
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Computing the version... "
-VERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ).$(date +"%Y%m%d%H%M")
-print G $VERSION
+SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
+print G "$SHORTVERSION - $FULLVERSION"
 
 print Y "Configuring the android build"
 
@@ -144,6 +145,7 @@ if [[ "$RELEASE" ]]; then
   cp $QTPATH/android/lib/metatypes/qt5core_armeabi-v7a_metatypes.json $QTPATH/android/lib/metatypes/qt5core_metatypes.json
   printn Y "Use release config"
   $QTPATH/android/bin/qmake -spec android-clang \
+    VERSION=$FULLVERSION \
     CONFIG+=qtquickcompiler \
     CONFIG-=debug \
     CONFIG-=debug_and_release \
@@ -154,6 +156,7 @@ if [[ "$RELEASE" ]]; then
 else
   printn Y "Use debug config \n"
   $QTPATH/android/bin/qmake -spec android-clang \
+    VERSION=$FULLVERSION \
     CONFIG+=debug \
     CONFIG-=debug_and_release \
     CONFIG-=release \
