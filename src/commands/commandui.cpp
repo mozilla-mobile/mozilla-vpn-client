@@ -21,11 +21,13 @@
 
 #ifdef MVPN_LINUX
 #  include "platforms/linux/linuxdependencies.h"
+#  include "platforms/dummy/dummyappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
+#  include "platforms/dummy/dummyappimageprovider.h"
 #endif
 
 #ifdef Q_OS_MAC
@@ -44,6 +46,7 @@
 
 #  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
+#  include "platforms/dummy/dummyappimageprovider.h"
 #endif
 
 #ifndef MVPN_WINDOWS
@@ -170,6 +173,15 @@ int CommandUI::run(QStringList& tokens) {
       return 1;
     }
 #endif
+
+    // Register an Image Provider that will resolve "image://app/{id}" for qml
+    QQuickImageProvider* provider =
+#ifdef MVPN_ANDROID
+        new DummyAppImageProvider(qApp);
+#else
+        new DummyAppImageProvider(qApp);
+#endif
+    engine->addImageProvider(QString("app"), provider);
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {

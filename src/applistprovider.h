@@ -6,15 +6,16 @@
 #ifndef APPLISTPROVIDER_H
 #define APPLISTPROVIDER_H
 
-#include "controller.h"
 #include <QMap>
 #include <QObject>
+#include <QQuickImageProvider>
 
 class AppListProvider : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(AppListProvider)
 
-public:
+   public:
     AppListProvider() = default;
 
     virtual ~AppListProvider() = default;

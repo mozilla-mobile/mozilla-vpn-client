@@ -3,14 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "dummyapplistprovider.h"
+#include "leakdetector.h"
 
 DummyAppListProvider::DummyAppListProvider()
 {
-
+  MVPN_COUNT_CTOR(DummyAppListProvider);
 }
 
 DummyAppListProvider::~DummyAppListProvider(){
-
+  MVPN_COUNT_DTOR(DummyAppListProvider);
 }
 
 void DummyAppListProvider::getApplicationList(){

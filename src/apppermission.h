@@ -9,46 +9,43 @@
 #include <QAbstractListModel>
 #include "applistprovider.h"
 
-class AppPermission : public QAbstractListModel
-{
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(AppPermission)
-    Q_PROPERTY(bool listReady READ listReady NOTIFY readyChanged)
+class AppPermission final : public QAbstractListModel {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(AppPermission)
 
-public:
-    ~AppPermission();
+ public:
+  ~AppPermission();
 
-    enum AppPermissionRoles {
-       AppNameRole,
-       AppIdRole,
-       AppEnabledRole,
-     };
+  enum AppPermissionRoles {
+    AppNameRole,
+    AppIdRole,
+    AppEnabledRole,
+  };
 
+  static AppPermission* instance();
+  // Enables/Disabled the Given App ID for the vpn
+  Q_INVOKABLE void flip(const QString& appID);
+  // Is called from QML if the List is opened
+  Q_INVOKABLE void requestApplist();
 
-    static AppPermission* instance();
-    // Enables/Disabled the Given App ID for the vpn
-    Q_INVOKABLE void flip(QString appID);
-    bool listReady() const { return m_ready; }
+  // QAbstractListModel methods
 
-    // QAbstractListModel methods
+  QHash<int, QByteArray> roleNames() const override;
 
-    QHash<int, QByteArray> roleNames() const override;
+  int rowCount(const QModelIndex&) const override;
 
-    int rowCount(const QModelIndex&) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
+ signals:
+  void readyChanged();
+ private slots:
+  void receiveAppList(const QMap<QString, QString>& applist);
 
-    QVariant data(const QModelIndex& index, int role) const override;
-signals:
-    void readyChanged();
-private slots:
- void reciveAppList(QMap<QString,QString> applist);
-
-private:
-     AppPermission();
-     AppListProvider* m_listprovider;
-     QMap<QString,QString> m_applist;
-     bool m_ready =false;
-signals:
-
+ private:
+  AppPermission(QObject* parent);
+  AppListProvider* m_listprovider = nullptr;
+  QStringList m_disabledAppList;
+  QMap<QString, QString> m_applist;
+ signals:
 };
 
 #endif // APPPERMISSION_H
