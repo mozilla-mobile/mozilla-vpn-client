@@ -61,8 +61,9 @@ print Y "Importing translation files..."
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Computing the version... "
-VERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ).$(date +"%Y%m%d%H%M")
-print G $VERSION
+SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+print G "$SHORTVERSION - $FULLVERSION"
 
 PRODMODE=
 printn Y "Production mode: "
@@ -75,7 +76,7 @@ fi
 
 print Y "Configuring the build (qmake)..."
 qmake\
-  VERSION=$VERSION \
+  VERSION=$SHORTVERSION \
   CONFIG+=static \
   QTPLUGIN+=qsvg \
   QTPLUGIN.imageformats+=png \
@@ -122,10 +123,10 @@ find .tmp -type f | grep -v DEBIAN | while read FILE; do echo $(md5sum $FILE | c
 print G "done."
 
 printn Y "Generating the control file... "
-cat linux/extra/control | sed "s/VERSION/$VERSION/" | sed "s/SIZE/$SIZE/" > .tmp/DEBIAN/control
+cat linux/extra/control | sed "s/VERSION/$SHORTVERSION/" | sed "s/SIZE/$SIZE/" > .tmp/DEBIAN/control
 print G "done."
 
 print Y "Generating the debian/ubuntu package..."
-fakeroot dpkg-deb -b .tmp mozillavpn-$VERSION.deb || die "Failed to run fakeroot + dpkg-deb"
+fakeroot dpkg-deb -b .tmp mozillavpn-$SHORTVERSION.deb || die "Failed to run fakeroot + dpkg-deb"
 
 print G "All done!"
