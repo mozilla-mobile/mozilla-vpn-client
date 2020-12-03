@@ -391,8 +391,13 @@ else:macos {
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
     QMAKE_INFO_PLIST=../macos/app/Info.plist
-    QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
+
+    production {
+        QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
+    } else {
+        QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images-beta.xcassets
+    }
 }
 
 # Platform-specific: IOS
@@ -442,8 +447,13 @@ else:ios {
             platforms/macos/macoscontroller.h
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
-    QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images.xcassets
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
+
+    production {
+        QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images.xcassets
+    } else {
+        QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images-beta.xcassets
+    }
 
     app_launch_screen.files = $$files($$PWD/../ios/app/MozillaVPNLaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_screen
