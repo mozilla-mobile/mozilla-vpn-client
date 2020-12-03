@@ -4,6 +4,7 @@
 
 #include "command.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "mozillavpn.h"
@@ -13,12 +14,6 @@
 #include <QApplication>
 #include <QIcon>
 #include <QTextStream>
-
-#ifdef MVPN_PRODUCTION_MODE
-constexpr const char* logoUrl = ":/ui/resources/logo-dock.png";
-#else
-constexpr const char* logoUrl = ":/ui/resources/logo-dock-beta.png";
-#endif
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
@@ -86,7 +81,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   Localizer localizer;
   SimpleNetworkManager snm;
 
-  QIcon icon(logoUrl);
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
@@ -105,7 +100,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
   Localizer localizer;
 
-  QIcon icon(logoUrl);
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
