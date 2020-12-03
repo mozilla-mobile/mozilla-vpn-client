@@ -21,8 +21,6 @@ class NetworkManager : public QObject {
 
   static QByteArray userAgent();
 
-  QString apiUrl() const;
-
   virtual QNetworkAccessManager* networkAccessManager() = 0;
 };
 

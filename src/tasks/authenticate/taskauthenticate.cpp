@@ -4,12 +4,12 @@
 
 #include "taskauthenticate.h"
 #include "authenticationlistener.h"
+#include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "networkmanager.h"
 #include "networkrequest.h"
 
 #include <QCryptographicHash>
@@ -118,7 +118,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 #  error Not supported
 #endif
 
-  QUrl url(NetworkManager::instance()->apiUrl());
+  QUrl url(Constants::API_URL);
   url.setPath(path);
 
   QUrlQuery query;
