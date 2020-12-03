@@ -183,6 +183,10 @@ unix {
     HEADERS += signalhandler.h
 }
 
+production {
+    DEFINES += MVPN_PRODUCTION_MODE
+}
+
 DUMMY {
     message(Dummy build)
 
