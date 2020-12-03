@@ -129,20 +129,82 @@ VPNFlickable {
         anchors.top: spacer2.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: Math.min(vpnFlickable.width, Theme.maxHorizontalContentWidth)
-        spacing: Theme.windowMargin * 1.25
+        spacing: 0
 
         VPNButton {
+            id: subscribeNow
+
             //% "Subscribe now"
             text: qsTrId("vpn.updates.subscribeNow")
+            Layout.alignment: Qt.AlignHCenter
             loaderVisible: VPN.subscriptionActive
             onClicked: VPN.subscribe()
+        }
+
+        Rectangle { // vertical spacer
+            color: "transparent"
+            Layout.preferredHeight: Theme.windowMargin
+            Layout.fillWidth: true
+        }
+
+        GridLayout {
+            id: grid
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            columnSpacing: 0
+            columns: (termsOfService.width > subscribeNow.width / 2 || privacyNotice.width > subscribeNow.width / 2) ? 1 : 3
+
+            VPNGreyLink {
+                id: termsOfService
+
+                // Terms of Service - string definted in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.tos")
+                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
+                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
+                onClicked: VPN.openLink(VPN.LinkTermsOfService)
+            }
+
+            Rectangle {
+                id: centerDivider
+
+                width: 4
+                height: 4
+                radius: 2
+                Layout.alignment: Qt.AlignHCenter
+                color: Theme.greyLink.defaultColor
+                visible: (grid.columns > 1)
+                opacity: .8
+            }
+
+            VPNGreyLink {
+                id: privacyNotice
+
+                // Privacy Notice - string defined in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.privacyNotice")
+                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
+                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
+            }
+        }
+
+        Rectangle { // vertical spacer
+            color: "transparent"
+            Layout.preferredHeight: Theme.windowMargin * 1.5
+            Layout.fillWidth: true
         }
 
         VPNLinkButton {
             //% "Restore purchases"
             labelText: qsTrId("vpn.main.restorePurchases")
             Layout.alignment: Qt.AlignHCenter
+            Layout.preferredHeight: Theme.rowHeight
             onClicked: VPN.restoreSubscription()
+        }
+
+        Rectangle { // vertical spacer
+            color: "transparent"
+            Layout.preferredHeight: Theme.windowMargin * .5
+            Layout.fillWidth: true
         }
 
         VPNSignOut {

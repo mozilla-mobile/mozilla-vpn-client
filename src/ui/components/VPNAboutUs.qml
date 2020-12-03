@@ -23,9 +23,9 @@ Item {
         }
 
         ListElement {
-            //% "Privacy Policy"
-            linkTitle: qsTrId("vpn.aboutUs.privacyPolicy")
-            openUrl: VPN.LinkPrivacyPolicy
+            //% "Privacy Notice"
+            linkTitle: qsTrId("vpn.aboutUs.privacyNotice")
+            openUrl: VPN.LinkPrivacyNotice
         }
 
     }
