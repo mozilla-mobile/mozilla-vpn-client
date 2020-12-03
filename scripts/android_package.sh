@@ -114,7 +114,7 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
-python3 scripts/importLanguages.py || die "Failed to import languages"
+python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Computing the version... "
 VERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ).$(date +"%Y%m%d%H%M")

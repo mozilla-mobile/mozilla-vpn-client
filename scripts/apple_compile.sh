@@ -87,7 +87,7 @@ rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
 print Y "Importing translation files..."
-python3 scripts/importLanguages.py || die "Failed to import"
+python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Extract the project version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )

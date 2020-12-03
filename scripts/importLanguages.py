@@ -4,9 +4,16 @@
 
 import xml.etree.ElementTree as ET
 import os
+import sys
 
 THRESHOLD = 0.70  # 70% Target Completeness for import
 FILES = []
+
+PROD = False
+PROD_LANGS = [ "en" ]
+
+if len(sys.argv) > 1 and (sys.argv[1] == "-p" or sys.argv[1] == "--prod"):
+   PROD = True
 
 # Step 1
 # Go through the i18n repo, check each xliff file and take
@@ -18,6 +25,9 @@ for locale in os.listdir('i18n'):
         continue
     # Skip hidden folders
     if locale.startswith('.'):
+        continue
+
+    if PROD and not(locale in PROD_LANGS):
         continue
 
     filePath = os.path.join('i18n', locale, 'mozillavpn.xliff')
