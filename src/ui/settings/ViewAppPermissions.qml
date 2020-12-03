@@ -17,7 +17,6 @@ VPNFlickable {
 
     VPNMenu {
         id: menu
-        //% "Network settings"
         title: qsTrId("vpn.settings.appPermissions")
         isSettingsView: true
     }
