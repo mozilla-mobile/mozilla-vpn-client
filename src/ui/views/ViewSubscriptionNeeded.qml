@@ -36,7 +36,7 @@ VPNFlickable {
         id: spacer1
 
         width: parent.width
-        height: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
+        height: (Math.max(window.safeContentHeight * .04, Theme.windowMargin * 2))
     }
 
     VPNPanel {
