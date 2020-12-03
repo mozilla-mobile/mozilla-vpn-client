@@ -12,12 +12,14 @@ fi
 JOBS=8
 QTPATH=
 RELEASE=1
+PROD=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>]"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-p|--prod]"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
+  print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
   print N ""
   exit 0
 }
@@ -36,6 +38,10 @@ while [[ $# -gt 0 ]]; do
     ;;
   -d | --debug)
     RELEASE=
+    shift
+    ;;
+  -p | --prod)
+    PROD=1
     shift
     ;;
   -h | --help)
@@ -62,6 +68,15 @@ if [[ "$RELEASE" ]]; then
   print G "release"
 else
   print G "debug"
+fi
+
+PRODMODE=
+printn Y "Production mode: "
+if [[ "$PROD" ]]; then
+  print G yes
+  PRODMODE="CONFIG+=production"
+else
+  print G no
 fi
 
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
@@ -99,7 +114,7 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
-python3 scripts/importLanguages.py || die "Failed to import languages"
+python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Computing the version... "
 VERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ).$(date +"%Y%m%d%H%M")
@@ -133,6 +148,7 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
+    $PRODMODE \
     ANDROID_ABIS="armeabi-v7a x86 arm64-v8a" \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
@@ -142,6 +158,7 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
+    $PRODMODE \
     ANDROID_ABIS="armeabi-v7a" \
     ..//mozillavpn.pro || die "Qmake failed"
 fi

@@ -4,6 +4,7 @@
 
 #include "command.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "mozillavpn.h"
@@ -80,7 +81,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   Localizer localizer;
   SimpleNetworkManager snm;
 
-  QIcon icon(":/ui/resources/logo-dock.png");
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
@@ -99,7 +100,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
   Localizer localizer;
 
-  QIcon icon(":/ui/resources/logo-dock.png");
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
