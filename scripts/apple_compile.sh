@@ -12,12 +12,14 @@ fi
 
 RELEASE=1
 OS=
+PROD=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios> [-d|--debug]"
+  print N "\t$0 <macos|ios> [-d|--debug] [-p|--prod]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
+  print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
   print N ""
   print G "Config variables:"
   print N "\tQT_MACOS_BIN=</path/of/the/qt/bin/folder/for/macos>"
@@ -35,6 +37,10 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -d | --debug)
     RELEASE=
+    shift
+    ;;
+  -p | --prod)
+    PROD=1
     shift
     ;;
   -h | --help)
@@ -117,11 +123,21 @@ else
   die "Why we are here?"
 fi
 
+PRODMODE=
+printn Y "Production mode: "
+if [[ "$PROD" ]]; then
+  print G yes
+  PRODMODE="CONFIG+=production"
+else
+  print G no
+fi
+
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$FULLVERSION \
   -spec macx-xcode \
   $MODE \
+  $PRODMODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"
 

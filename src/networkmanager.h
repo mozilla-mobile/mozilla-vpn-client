@@ -21,12 +21,9 @@ class NetworkManager : public QObject {
 
   static QByteArray userAgent();
 
-  const QString& apiUrl() const { return m_apiUrl; }
+  QString apiUrl() const;
 
   virtual QNetworkAccessManager* networkAccessManager() = 0;
-
- private:
-  QString m_apiUrl;
 };
 
 #endif  // NETWORKMANAGER_H

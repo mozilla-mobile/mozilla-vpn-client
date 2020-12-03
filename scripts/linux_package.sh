@@ -7,6 +7,7 @@
 . $(dirname $0)/commons.sh
 
 JOBS=8
+PROD=
 
 if [ -f .env ]; then
   . .env
@@ -14,7 +15,9 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-j|--jobs <jobs>]"
+  print N "\t$0 [-j|--jobs <jobs>] [-p|--prod]"
+  print N ""
+  print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
   print N ""
   exit 0
 }
@@ -29,6 +32,10 @@ while [[ $# -gt 0 ]]; do
   -j | --jobs)
     JOBS="$2"
     shift
+    shift
+    ;;
+  -p | --prod)
+    PROD=1
     shift
     ;;
   *)
@@ -57,12 +64,22 @@ printn Y "Computing the version... "
 VERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ).$(date +"%Y%m%d%H%M")
 print G $VERSION
 
+PRODMODE=
+printn Y "Production mode: "
+if [[ "$PROD" ]]; then
+  print G yes
+  PRODMODE="CONFIG+=production"
+else
+  print G no
+fi
+
 print Y "Configuring the build (qmake)..."
 qmake\
   VERSION=$VERSION \
   CONFIG+=static \
   QTPLUGIN+=qsvg \
   QTPLUGIN.imageformats+=png \
+  $PRODMODE \
   PREFIX=$PWD/.tmp/usr || die "Compilation failed"
 
 print Y "Compiling..."

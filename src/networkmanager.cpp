@@ -5,12 +5,10 @@
 #include "networkmanager.h"
 #include "leakdetector.h"
 
-// TODO: constexpr const char *API_URL_PROD = "https://fpn.firefox.com";
-constexpr const char* API_URL_PROD =
-    "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
-
-#ifdef QT_DEBUG
-constexpr const char* API_URL_DEBUG =
+#ifdef MVPN_PRODUCTION_MODE
+constexpr const char* API_URL = "https://fpn.firefox.com";
+#else
+constexpr const char* API_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 #endif
 
@@ -23,12 +21,6 @@ NetworkManager::NetworkManager() {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
-
-  // API URL depends on the type of build.
-  m_apiUrl = API_URL_PROD;
-#ifdef QT_DEBUG
-  m_apiUrl = API_URL_DEBUG;
-#endif
 }
 
 NetworkManager::~NetworkManager() {
@@ -55,3 +47,5 @@ QByteArray NetworkManager::userAgent() {
 
   return userAgent;
 }
+
+QString NetworkManager::apiUrl() const { return API_URL; }
