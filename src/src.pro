@@ -183,8 +183,16 @@ unix {
     HEADERS += signalhandler.h
 }
 
+RESOURCES += qml.qrc
+
+QML_IMPORT_PATH =
+QML_DESIGNER_IMPORT_PATH =
+
 production {
     DEFINES += MVPN_PRODUCTION_MODE
+    RESOURCES += logo_prod.qrc
+} else {
+    RESOURCES += logo_beta.qrc
 }
 
 DUMMY {
@@ -474,12 +482,6 @@ else:win* {
 else {
     error(Unsupported platform)
 }
-
-RESOURCES += qml.qrc
-
-QML_IMPORT_PATH =
-QML_DESIGNER_IMPORT_PATH =
-
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)

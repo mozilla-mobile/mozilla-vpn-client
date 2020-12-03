@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/resources/logo-dock.png</file>
+    </qresource>
+</RCC>
