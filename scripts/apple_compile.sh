@@ -91,7 +91,7 @@ python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || d
 
 printn Y "Extract the project version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
+FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION"
 
 MACOS_FLAGS="
@@ -134,7 +134,7 @@ fi
 
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
-  VERSION=$FULLVERSION \
+  VERSION=$SHORTVERSION \
   -spec macx-xcode \
   $MODE \
   $PRODMODE \
