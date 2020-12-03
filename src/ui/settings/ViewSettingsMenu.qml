@@ -17,49 +17,53 @@ VPNFlickable {
     ListModel {
         id: settingsMenuListModel
 
-        /* TODO - disable captive portal and its notifications
-        ListElement {
-            settingTitle: qsTrId("vpn.settings.notifications")
-            imageLeftSource: "../resources/settings/notifications.svg"
-            imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewNotifications.qml"
-        }
-        */
+        Component.onCompleted: {
+            /* TODO - disable captive portal and its notifications
+            append({
+                settingTitle: qsTrId("vpn.settings.notifications")
+                imageLeftSource: "../resources/settings/notifications.svg"
+                imageRightSource: "../resources/chevron.svg"
+                pushView: "../settings/ViewNotifications.qml"
+            });
+            */
 
-        ListElement {
-            settingTitle: qsTrId("vpn.settings.networking")
-            imageLeftSource: "../resources/settings/networkSettings.svg"
-            imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewNetworkSettings.qml"
-        }
+            append({
+                settingTitle: qsTrId("vpn.settings.networking"),
+                imageLeftSource: "../resources/settings/networkSettings.svg",
+                imageRightSource: "../resources/chevron.svg",
+                pushView: "../settings/ViewNetworkSettings.qml",
+            });
 
-        ListElement {
-            settingTitle: qsTrId("vpn.settings.language")
-            imageLeftSource: "../resources/settings/language.svg"
-            imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewLanguage.qml"
-        }
+            if (VPNLocalizer.hasLanguages) {
+                append({
+                    settingTitle: qsTrId("vpn.settings.language"),
+                    imageLeftSource: "../resources/settings/language.svg",
+                    imageRightSource: "../resources/chevron.svg",
+                    pushView: "../settings/ViewLanguage.qml",
+                });
+            }
 
-        ListElement {
-            settingTitle: qsTrId("vpn.settings.aboutUs")
-            imageLeftSource: "../resources/settings/aboutUs.svg"
-            imageRightSource: "../resources/chevron.svg"
-            pushAboutUs: true
-        }
+            append({
+                settingTitle: qsTrId("vpn.settings.aboutUs"),
+                imageLeftSource: "../resources/settings/aboutUs.svg",
+                imageRightSource: "../resources/chevron.svg",
+                pushAboutUs: true,
+            });
 
-        ListElement {
-            settingTitle: qsTrId("vpn.main.getHelp")
-            imageLeftSource: "../resources/settings/getHelp.svg"
-            imageRightSource: "../resources/chevron.svg"
-            pushGetHelp: true
-        }
+            append({
+                settingTitle: qsTrId("vpn.main.getHelp"),
+                imageLeftSource: "../resources/settings/getHelp.svg",
+                imageRightSource: "../resources/chevron.svg",
+                pushGetHelp: true,
+            });
 
-        ListElement {
-            //% "Give feedback"
-            settingTitle: qsTrId("vpn.settings.giveFeedback")
-            imageLeftSource: "../resources/settings/feedback.svg"
-            imageRightSource: "../resources/externalLink.svg"
-            openUrl: VPN.LinkFeedback
+            append({
+                //% "Give feedback",
+                settingTitle: qsTrId("vpn.settings.giveFeedback"),
+                imageLeftSource: "../resources/settings/feedback.svg",
+                imageRightSource: "../resources/externalLink.svg",
+                openUrl: VPN.LinkFeedback,
+            });
         }
 
     }
