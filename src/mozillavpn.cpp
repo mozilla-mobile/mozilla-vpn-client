@@ -326,37 +326,37 @@ void MozillaVPN::openLink(LinkType linkType) {
 
   switch (linkType) {
     case LinkAccount:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/account");
       break;
 
     case LinkContact:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/contact");
       break;
 
     case LinkFeedback:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/client/feedback");
       break;
 
     case LinkHelpSupport:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/support");
       break;
 
     case LinkTermsOfService:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/terms");
       break;
 
     case LinkPrivacyPolicy:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/privacy");
       break;
 
     case LinkUpdate:
-      url = NetworkManager::instance()->apiUrl();
+      url = Constants::API_URL;
       url.append("/r/vpn/update/");
 #if defined(MVPN_LINUX)
       url.append("linux");

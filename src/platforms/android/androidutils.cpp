@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidutils.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -93,7 +94,7 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
 
   logger.log() << "AndroidWebView is about to load" << url;
 
-  const QString& apiUrl = NetworkManager::instance()->apiUrl();
+  QString apiUrl = Constants::API_URL;
   if (!url.startsWith(apiUrl)) {
     return false;
   }

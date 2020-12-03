@@ -40,4 +40,19 @@ CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
 // How fast the animated icon should move
 CONSTEXPR(uint32_t, STATUSICON_ANIMATION_MSEC, 200, 200, 0)
 
+#undef CONSTEXPR
+
+#ifdef MVPN_PRODUCTION_MODE
+#  define PRODBETAEXPR(type, what, prod, beta) constexpr type what = prod;
+#else
+#  define PRODBETAEXPR(type, what, prod, beta) constexpr type what = beta;
+#endif
+
+PRODBETAEXPR(const char*, API_URL, "https://fpn.firefox.com",
+             "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net")
+PRODBETAEXPR(const char*, LOGO_URL, ":/ui/resources/logo-dock.png",
+             ":/ui/resources/logo-dock-beta.png")
+
+#undef PRODBETAEXPR
+
 };  // namespace Constants
