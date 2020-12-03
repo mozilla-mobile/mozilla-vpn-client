@@ -1057,7 +1057,7 @@ bool MozillaVPN::localNetworkAccessSupported() const {
   return false;
 #endif
 
-#if defined(MVPN_MACOS) || defined(MPVN_IOS)
+#if defined(MVPN_MACOS) || defined(MVPN_IOS)
   // managed by the OS automatically. No need to expose this feature.
   return false;
 #endif
