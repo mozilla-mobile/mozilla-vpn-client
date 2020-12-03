@@ -15,6 +15,10 @@ VPNFlickable {
     readonly property int defaultMargin: 18
      property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
+    Component.onCompleted: {
+       VPNAppPermissions.requestApplist();
+    }
+
     VPNMenu {
         id: menu
         title: qsTrId("vpn.settings.appPermissions")
@@ -65,7 +69,7 @@ VPNFlickable {
 
     VPNList {
         id: applist
-        visible: VPNSettings.protectSelectedApps && VPNAppPermissions.listReady
+        visible: VPNSettings.protectSelectedApps && count > 0
 
         anchors.top: applistLabel.bottom
         anchors.topMargin: 16
@@ -77,6 +81,7 @@ VPNFlickable {
         spacing: 26
         listName: applistLabel.text
         model: VPNAppPermissions
+
 
         delegate: VPNCheckBoxRow {
             labelText: appName
@@ -91,12 +96,18 @@ VPNFlickable {
             anchors.left: parent.left
             anchors.topMargin: Theme.windowMargin
 
+            Image {
+                source: "image://app/"+appID
+                width: 10
+                height: 10
+            }
+
         }
     }
 
     Image {
         id: spinner
-        visible: VPNSettings.protectSelectedApps && !VPNAppPermissions.listReady
+        visible: VPNSettings.protectSelectedApps && applist.count == 0
         anchors.top: applistLabel.bottom
         anchors.topMargin: 32
         anchors.horizontalCenter: parent.horizontalCenter
@@ -137,6 +148,7 @@ VPNFlickable {
         }
 
     }
+
 }
 
 

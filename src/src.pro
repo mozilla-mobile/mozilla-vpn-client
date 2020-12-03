@@ -80,6 +80,7 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
+        platforms/dummy/dummyappimageprovider.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -148,6 +149,7 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
+        platforms/dummy/dummyappimageprovider.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \

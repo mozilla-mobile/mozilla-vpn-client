@@ -3,46 +3,53 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "apppermission.h"
-#include "logger.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
 #include "applistprovider.h"
+#include "logger.h"
+#include "leakdetector.h"
+#include "mozillavpn.h"
+#include <QApplication>
 #include <QVector>
+#include "settingsholder.h"
 
-// TODO :: #ifdef
-#include "platforms/dummy/dummyapplistprovider.h"
-// #endif
-
+#ifdef MVPN_ANDROID
+#  include "platforms/dummy/dummyapplistprovider.h"
+#else
+#  include "platforms/dummy/dummyapplistprovider.h"
+#endif
 
 namespace {
 Logger logger(LOG_MAIN, "AppPermission");
 AppPermission* s_instance = nullptr;
 }
 
-AppPermission::AppPermission()
-{
- //   MVPN_COUNT_CTOR(AppPermission);
-    Q_ASSERT(!s_instance);
-    s_instance = this;
-    // Todo: ifdef for plattforms
-    m_listprovider = new DummyAppListProvider();
-    // #endif
-    connect(m_listprovider, &AppListProvider::newAppList, this,
-            &AppPermission::reciveAppList);
+AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
+  MVPN_COUNT_CTOR(AppPermission);
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 
-    m_listprovider->getApplicationList();
+  m_listprovider =
+#ifdef MVPN_ANDROID
+      new DummyAppListProvider();
+#else
+      new DummyAppListProvider();
+#endif
 
+  connect(m_listprovider, &AppListProvider::newAppList, this,
+          &AppPermission::receiveAppList);
+
+  if (SettingsHolder::instance()->hasVpnDisabledApps()) {
+    m_disabledAppList = SettingsHolder::instance()->vpnDisabledApps();
+  }
 }
 AppPermission::~AppPermission(){
- //   MVPN_COUNT_DTOR(AppPermission);
-
-    Q_ASSERT(s_instance = this);
-    s_instance = nullptr;
+  MVPN_COUNT_DTOR(AppPermission);
+  Q_ASSERT(s_instance = this);
+  s_instance = nullptr;
 }
 
 AppPermission* AppPermission::instance(){
     if(s_instance== nullptr){
-        new AppPermission();
+      new AppPermission(qApp);
     }
     Q_ASSERT(s_instance);
     return s_instance;
@@ -83,30 +90,37 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
     }
 }
 
-Q_INVOKABLE void  AppPermission::flip(QString appID){
-    beginResetModel();
-    QStringList list;
-    if(SettingsHolder::instance()->hasVpnDisabledApps()){
-        list = SettingsHolder::instance()->vpnDisabledApps();
-    }
-    if(list.contains(appID)){
-        logger.log() << "Enabled --" << appID << " for VPN";
-        list.removeAll(appID);
-    }else{
-        logger.log() << "Disabled --" << appID << " for VPN";
-        list.append(appID);
-    }
-    SettingsHolder::instance()->setVpnDisabledApps(list);
-   endResetModel(); // Todo:: not use Reset Model - toooo slow.
+Q_INVOKABLE void AppPermission::flip(const QString& appID) {
+  beginResetModel();
+  if (m_disabledAppList.contains(appID)) {
+    logger.log() << "Enabled --" << appID << " for VPN";
+    m_disabledAppList.removeAll(appID);
+  } else {
+    logger.log() << "Disabled --" << appID << " for VPN";
+    m_disabledAppList.append(appID);
+  }
+  SettingsHolder::instance()->setVpnDisabledApps(m_disabledAppList);
+  endResetModel();  // Todo:: not use Reset Model - toooo slow.
+}
+Q_INVOKABLE void AppPermission::requestApplist() {
+  logger.log() << "Request new AppList";
+  m_listprovider->getApplicationList();
 }
 
-void AppPermission::reciveAppList(QMap<QString,QString> applist){
-    if(!m_ready){
-        m_ready = true;
-        emit readyChanged();
+void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
+  if (!m_applist.isEmpty()) {
+    // Check the Disabled-List
+    auto keys = applist.keys();
+    foreach (QString blockedAppID, m_disabledAppList) {
+      if (!keys.contains(blockedAppID)) {
+        logger.log() << "Removed obsolete appid" << blockedAppID;
+        m_disabledAppList.removeAll(blockedAppID);
+      }
     }
-     beginResetModel();
-     logger.log() << "Recived new Applist -- Entrys: " << applist.size();
-     m_applist = applist;
-     endResetModel();
+    SettingsHolder::instance()->setVpnDisabledApps(m_disabledAppList);
+  }
+  beginResetModel();
+  logger.log() << "Recived new Applist -- Entrys: " << applist.size();
+  m_applist = applist;
+  endResetModel();
 }
