@@ -58,7 +58,7 @@ VPNFlickable {
             });
 
             append({
-                //% "Give feedback",
+                //% "Give feedback"
                 settingTitle: qsTrId("vpn.settings.giveFeedback"),
                 imageLeftSource: "../resources/settings/feedback.svg",
                 imageRightSource: "../resources/externalLink.svg",
