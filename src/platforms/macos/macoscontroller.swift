@@ -6,6 +6,7 @@ import Foundation
 import NetworkExtension
 
 let vpnName = "Mozilla VPN"
+var vpnBundleID = "";
 
 @objc class VPNIPAddressRange : NSObject {
     public var address: NSString = ""
@@ -32,12 +33,15 @@ public class MacOSControllerImpl : NSObject {
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
-    @objc init(privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
+    @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
         super.init()
 
         assert(privateKey.count == TunnelConfiguration.keyLength)
 
         Logger.configureGlobal(tagged: "APP", withFilePath: "")
+
+        vpnBundleID = bundleID;
+        precondition(!vpnBundleID.isEmpty)
 
         stateChangeCallback = callback
         self.privateKey = privateKey
@@ -58,7 +62,10 @@ public class MacOSControllerImpl : NSObject {
                 return
             }
 
-            let tunnel = managers?.first { $0.localizedDescription == vpnName }
+            let nsManagers = managers ?? []
+            Logger.global?.log(message: "We have received \(nsManagers.count) managers.")
+
+            let tunnel = nsManagers.first(where: MacOSControllerImpl.isOurManager(_:))
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = NETunnelProviderManager()
@@ -110,6 +117,29 @@ public class MacOSControllerImpl : NSObject {
         stateChangeCallback?(session.status == .connected)
     }
 
+    private static func isOurManager(_ manager: NETunnelProviderManager) -> Bool {
+        guard
+            let proto = manager.protocolConfiguration,
+            let tunnelProto = proto as? NETunnelProviderProtocol
+        else {
+            Logger.global?.log(message: "Ignoring manager because the proto is invalid.")
+            return false
+        }
+
+        if (tunnelProto.providerBundleIdentifier == nil) {
+            Logger.global?.log(message: "Ignoring manager because the bundle identifier is null.")
+            return false
+        }
+
+        if (tunnelProto.providerBundleIdentifier != vpnBundleID) {
+            Logger.global?.log(message: "Ignoring manager because the bundle identifier doesn't match.")
+            return false;
+        }
+
+        Logger.global?.log(message: "Found the manager with the correct bundle identifier: \(tunnelProto.providerBundleIdentifier!)")
+        return true
+    }
+
     @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, forSwitching: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
@@ -158,7 +188,10 @@ public class MacOSControllerImpl : NSObject {
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
-        tunnel!.protocolConfiguration = NETunnelProviderProtocol(tunnelConfiguration: config)
+        let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
+        proto!.providerBundleIdentifier = vpnBundleID
+
+        tunnel!.protocolConfiguration = proto
         tunnel!.localizedDescription = vpnName
         tunnel!.isEnabled = true
 

@@ -46,6 +46,7 @@ MacOSController::~MacOSController() {
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(!impl);
+  Q_UNUSED(device);
 
   logger.log() << "Initializing Swift Controller";
 
@@ -56,7 +57,8 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 
   QByteArray key = QByteArray::fromBase64(keys->privateKey().toLocal8Bit());
 
-  impl = [[MacOSControllerImpl alloc] initWithPrivateKey:key.toNSData()
+  impl = [[MacOSControllerImpl alloc] initWithBundleID:@VPN_NE_BUNDLEID
+      privateKey:key.toNSData()
       deviceIpv4Address:device->ipv4Address().toNSString()
       deviceIpv6Address:device->ipv6Address().toNSString()
       closure:^(ConnectionState state, NSDate* date) {
