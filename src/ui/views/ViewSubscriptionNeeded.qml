@@ -36,7 +36,7 @@ VPNFlickable {
         id: spacer1
 
         width: parent.width
-        height: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
+        height: (Math.max(window.safeContentHeight * .04, Theme.windowMargin * 2))
     }
 
     VPNPanel {
@@ -80,28 +80,19 @@ VPNFlickable {
         spacing: Theme.vSpacing
 
         VPNCallout {
-            //% "No activity logs"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle1")
-            //% "We’re Mozilla. We’re on your side."
-            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
+            // "Device level encryption" - String defined in ViewOnboarding.qml
+            calloutTitle: qsTrId("vpn.onboarding.headline.1")
+            //% "We encrypt your entire device."
+            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle2")
             calloutImage: "../resources/onboarding/onboarding1.svg"
         }
 
         VPNCallout {
-            //% "No one can track you"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle2")
-            //% "We encrypt your entire device."
-            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle2")
-            calloutImage: "../resources/onboarding/onboarding2.svg"
-        }
-
-        VPNCallout {
-            //: The + after each number stands for “more than”. If you change the number of countries here, please update ViewOnboarding.qml too.
-            //% "360+ servers in 30+ countries"
-            calloutTitle: qsTrId("vpn.subscription.featureTitle3")
+            // Servers in 30+ countries - String defined in ViewOnboarding.qml
+            calloutTitle: qsTrId("vpn.onboarding.headline.2")
             //% "Protect your access to the web."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle3")
-            calloutImage: "../resources/onboarding/onboarding3.svg"
+            calloutImage: "../resources/onboarding/onboarding2.svg"
         }
 
         VPNCallout {
@@ -111,6 +102,14 @@ VPNFlickable {
             calloutTitle: qsTrId("vpn.subscription.featureTitle4").arg(VPNUser.maxDevices)
             //% "We won’t restrict your bandwidth."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle4")
+            calloutImage: "../resources/onboarding/onboarding3.svg"
+        }
+
+        VPNCallout {
+            //% "No activity logs"
+            calloutTitle: qsTrId("vpn.subscription.featureTitle1")
+            //% "We’re Mozilla. We’re on your side."
+            calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
             calloutImage: "../resources/onboarding/onboarding4.svg"
         }
 
@@ -130,20 +129,82 @@ VPNFlickable {
         anchors.top: spacer2.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: Math.min(vpnFlickable.width, Theme.maxHorizontalContentWidth)
-        spacing: Theme.windowMargin * 1.25
+        spacing: 0
 
         VPNButton {
+            id: subscribeNow
+
             //% "Subscribe now"
             text: qsTrId("vpn.updates.subscribeNow")
+            Layout.alignment: Qt.AlignHCenter
             loaderVisible: VPN.subscriptionActive
             onClicked: VPN.subscribe()
+        }
+
+        Rectangle { // vertical spacer
+            color: "transparent"
+            Layout.preferredHeight: Theme.windowMargin
+            Layout.fillWidth: true
+        }
+
+        GridLayout {
+            id: grid
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            columnSpacing: 0
+            columns: (termsOfService.width > subscribeNow.width / 2 || privacyNotice.width > subscribeNow.width / 2) ? 1 : 3
+
+            VPNGreyLink {
+                id: termsOfService
+
+                // Terms of Service - string definted in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.tos")
+                Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
+                textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
+                onClicked: VPN.openLink(VPN.LinkTermsOfService)
+            }
+
+            Rectangle {
+                id: centerDivider
+
+                width: 4
+                height: 4
+                radius: 2
+                Layout.alignment: Qt.AlignHCenter
+                color: Theme.greyLink.defaultColor
+                visible: (grid.columns > 1)
+                opacity: .8
+            }
+
+            VPNGreyLink {
+                id: privacyNotice
+
+                // Privacy Notice - string defined in VPNAboutUs.qml
+                labelText: qsTrId("vpn.aboutUs.privacyNotice")
+                onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
+                textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
+                Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
+            }
+        }
+
+        Rectangle { // vertical spacer
+            color: "transparent"
+            Layout.preferredHeight: Theme.windowMargin * 1.5
+            Layout.fillWidth: true
         }
 
         VPNLinkButton {
             //% "Restore purchases"
             labelText: qsTrId("vpn.main.restorePurchases")
             Layout.alignment: Qt.AlignHCenter
+            Layout.preferredHeight: Theme.rowHeight
             onClicked: VPN.restoreSubscription()
+        }
+
+        Rectangle { // vertical spacer
+            color: "transparent"
+            Layout.preferredHeight: Theme.windowMargin * .5
+            Layout.fillWidth: true
         }
 
         VPNSignOut {

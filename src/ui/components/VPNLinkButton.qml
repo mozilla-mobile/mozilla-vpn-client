@@ -14,11 +14,15 @@ VPNButtonBase {
     property variant fontName: Theme.fontInterFamily
     property var baseColor: Theme.linkButton
     property var linkColor: Theme.blueButton
+    property var fontSize: Theme.fontSize
+    property var textAlignment: Text.AlignHCenter
+    property var buttonPadding: Theme.hSpacing
+
 
     radius: 4
 
     onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
-    horizontalPadding: Theme.hSpacing
+    horizontalPadding: buttonPadding
 
     Keys.onReleased: {
         if (loaderVisible) {
@@ -92,9 +96,9 @@ VPNButtonBase {
         id: label
 
         text: labelText
-        horizontalAlignment: Text.AlignHCenter
+        horizontalAlignment: textAlignment
         verticalAlignment: Text.AlignVCenter
-        font.pixelSize: Theme.fontSize
+        font.pixelSize: fontSize
         font.family: fontName
 
         Behavior on color {
