@@ -110,7 +110,6 @@ const redButton = {
     "focusBorder": redPressed,
 };
 
-
 const removeDeviceBtn = {
     "defaultColor": bgColorTransparent,
     "buttonHovered": "#FFDFE7",
@@ -150,5 +149,13 @@ const uiState = {
     "statePressed": "state-pressed",
     "stateFocused": "state-focused",
     "stateLoading": "state-loading",
+};
+
+const greyLink = {
+    "defaultColor": "#B30C0C0D",
+    "buttonHovered": "#CC0C0C0D",
+    "buttonPressed": "#FF0C0C0D",
+    "focusOutline": "#FF0C0C0D",
+    "focusBorder": "#000000"
 };
 

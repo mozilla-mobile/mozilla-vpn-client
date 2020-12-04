@@ -67,7 +67,7 @@ class MozillaVPN final : public QObject {
     LinkFeedback,
     LinkHelpSupport,
     LinkTermsOfService,
-    LinkPrivacyPolicy,
+    LinkPrivacyNotice,
     LinkUpdate,
   };
   Q_ENUM(LinkType)
