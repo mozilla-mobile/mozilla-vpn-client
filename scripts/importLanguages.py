@@ -1,5 +1,8 @@
 #! /usr/bin/env python3
-# Note: this wont work on python 2.7
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 # This script must be executed at the root of the repository.
 
 import xml.etree.ElementTree as ET
@@ -10,10 +13,10 @@ THRESHOLD = 0.70  # 70% Target Completeness for import
 FILES = []
 
 PROD = False
-PROD_LANGS = [ "en" ]
+PROD_LANGS = ["en"]
 
 if len(sys.argv) > 1 and (sys.argv[1] == "-p" or sys.argv[1] == "--prod"):
-   PROD = True
+    PROD = True
 
 # Step 1
 # Go through the i18n repo, check each xliff file and take
@@ -54,11 +57,11 @@ for locale in os.listdir('i18n'):
         'xliff': filePath
     })
 
-if len(FILES) == 0 or len([x for x in FILES if x['ts'] == os.path.join('translations', f'mozillavpn_en.ts')]) == 0:
+if len(FILES) == 0 or len([x for x in FILES if x['ts'] == os.path.join('translations', 'mozillavpn_en.ts')]) == 0:
     print('No fallback language (en) was imported')
-    os.system(f'lupdate src -no-obsolete -ts translations/mozillavpn_en.ts')
+    os.system('lupdate src -no-obsolete -ts translations/mozillavpn_en.ts')
     FILES.append({
-        'ts': os.path.join('translations', f'mozillavpn_en.ts')
+        'ts': os.path.join('translations', 'mozillavpn_en.ts')
     })
 
 # Step 2
@@ -73,7 +76,7 @@ print('Updated translations.pri')
 
 # Step 3
 # Generate new ts files
-os.system(f'lupdate src/src.pro')
+os.system('lupdate src/src.pro')
 
 # Step 4
 # Now import done translations into the files
