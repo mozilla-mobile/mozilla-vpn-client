@@ -28,8 +28,13 @@ QString MacOSUtils::computerName() {
 // static
 void MacOSUtils::enableLoginItem(bool startAtBoot) {
   logger.log() << "Enabling login-item";
-  Boolean ok = SMLoginItemSetEnabled(CFSTR("org.mozilla.macos.FirefoxVPN.login-item"),
-                                     startAtBoot ? YES : NO);
+
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  NSString* loginItemAppId =
+      QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
+  CFStringRef cfs = (__bridge CFStringRef)loginItemAppId;
+
+  Boolean ok = SMLoginItemSetEnabled(cfs, startAtBoot ? YES : NO);
   logger.log() << "Result: " << ok;
 }
 
