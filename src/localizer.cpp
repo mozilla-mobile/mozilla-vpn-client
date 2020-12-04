@@ -42,11 +42,11 @@ Localizer::~Localizer() {
 
 void Localizer::initialize(const QString& code) {
   QLocale locale = QLocale::system();
-  QString systemCode = locale.bcp47Name();
+  QLocale::Language systemLanguage = locale.language();
 
   m_code = code;
   if (code.isEmpty()) {
-    m_code = systemCode;
+    m_code = locale.bcp47Name();
   }
 
   loadLanguage(m_code);
@@ -66,7 +66,9 @@ void Localizer::initialize(const QString& code) {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts.at(1);
-    if (code != systemCode) {
+
+    QLocale locale(code);
+    if (locale.language() != systemLanguage) {
       m_languages.append(code);
     }
   }
