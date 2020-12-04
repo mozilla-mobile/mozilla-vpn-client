@@ -226,7 +226,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 201);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
