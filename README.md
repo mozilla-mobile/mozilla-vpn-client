@@ -19,9 +19,14 @@ following dependencies:
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
 
-#### Building qt5
+#### QT5
 
-Qt5 can be installed in a number of ways. To build statically on Ubuntu, follow these steps:
+Qt5 can be installed in a number of ways:
+- download a binary package or the installer from the official QT website: https://www.qt.io/download
+- use a linux package manager
+- compile Qt5 (dinamically or statically).
+
+To build QT5 statically on Ubuntu/Debian, go to the root directory of this project and follow these steps:
 
 ```
 curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
@@ -51,7 +56,7 @@ To build next to source:
 ```
 mkdir build
 qmake PREFIX=$(pwd)/build
-make -jN  # N cores
+make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 make install
 ```
 
@@ -59,7 +64,7 @@ To build in /usr:
 
 ```
 qmake PREFIX=/usr
-make -jN  # N cores
+make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install  # Must use sudo to install in /usr
 ```
 
