@@ -4,8 +4,16 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.UserHandle;
 import android.os.UserManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +41,15 @@ public class PackageManagerHelper {
       }
     }
     return output.toString();
+  }
+
+  private static Drawable getAppIcon(Context ctx, String id) {
+    try {
+      return ctx.getPackageManager().getApplicationIcon(id);
+    } catch (PackageManager.NameNotFoundException e) {
+      e.printStackTrace();
+    }
+    return new ColorDrawable(Color.TRANSPARENT);
   }
 
   private static boolean isSystemPackage(PackageInfo pkgInfo) {

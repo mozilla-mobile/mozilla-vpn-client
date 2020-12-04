@@ -20,6 +20,10 @@ void DummyAppListProvider::getApplicationList(){
     appList["com.example.two"] = "Example App 2";
     appList["org.example.one"] = "Example App 3";
     appList["org.example.two"] = "Example App 4";
+    appList["com.example.a"] = "Example App 5";
+    appList["com.example.b"] = "Example App 6";
+    appList["org.example.c"] = "Example App 7";
+    appList["org.example.d"] = "Example App 8";
     emit newAppList(appList);
 }
 

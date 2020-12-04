@@ -19,10 +19,11 @@ DummyAppImageProvider::~DummyAppImageProvider() {
   MVPN_COUNT_DTOR(DummyAppImageProvider);
 }
 
+// Returns an example image for any provided APPID (a red square)
 QPixmap DummyAppImageProvider::requestPixmap(const QString& id, QSize* size,
                                              const QSize& requestedSize) {
   logger.log() << "Request Image for " << id;
-  int width = 100;
+  int width = 50;
   int height = 50;
 
   if (size) *size = QSize(width, height);
