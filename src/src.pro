@@ -80,7 +80,6 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
-        platforms/android/androidapplistprovider.cpp \
         platforms/dummy/dummyappimageprovider.cpp \
         platforms/dummy/dummyapplistprovider.cpp\
         qmlengineholder.cpp \
@@ -151,7 +150,6 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
-        platforms/android/androidapplistprovider.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
@@ -283,6 +281,7 @@ else:android {
     QT += androidextras
     QT += qml
     QT += xml
+    LIBS += \-ljnigraphics\
 
     DEFINES += MVPN_ANDROID
 
@@ -295,6 +294,8 @@ else:android {
                 platforms/android/androidwebview.cpp \
                 platforms/android/androidstartatbootwatcher.cpp \
                 platforms/android/androiddatamigration.cpp \
+                platforms/android/androidappimageprovider.cpp \
+                platforms/android/androidapplistprovider.cpp \
                 platforms/android/androidsharedprefs.cpp
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
@@ -303,6 +304,8 @@ else:android {
                 platforms/android/androidwebview.h \
                 platforms/android/androidstartatbootwatcher.h\
                 platforms/android/androiddatamigration.h\
+                platforms/android/androidappimageprovider.h \
+                platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h
 
     # Usable Linux Imports
@@ -522,5 +525,3 @@ else{
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
-
-ANDROID_ABIS = x86

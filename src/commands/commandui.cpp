@@ -43,7 +43,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
-
+#  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/dummy/dummyappimageprovider.h"
@@ -177,7 +177,7 @@ int CommandUI::run(QStringList& tokens) {
     // Register an Image Provider that will resolve "image://app/{id}" for qml
     QQuickImageProvider* provider =
 #ifdef MVPN_ANDROID
-        new DummyAppImageProvider(qApp);
+        new AndroidAppImageProvider(qApp);
 #else
         new DummyAppImageProvider(qApp);
 #endif
