@@ -57,6 +57,7 @@ void ConnectionHealth::stop() {
   logger.log() << "ConnectionHealth deactivated";
 
   m_pingTimer.stop();
+  m_noSignalTimer.stop();
 
   for (PingSender* pingSender : m_pings) {
     pingSender->deleteLater();
