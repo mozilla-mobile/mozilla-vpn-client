@@ -53,14 +53,30 @@ void NotificationHandler::showNotification() {
     case Controller::StateOn:
       m_connected = true;
 
-      //% "VPN Connected"
-      title = qtTrId("vpn.systray.statusConnected.title");
-      //% "Connected to %1, %2"
-      //: Shown as message body in a notification. %1 is the country, %2 is the
-      //: city.
-      message = qtTrId("vpn.systray.statusConnected.message")
-                    .arg(vpn->currentServer()->country())
-                    .arg(vpn->currentServer()->city());
+      if (m_switching) {
+        m_switching = false;
+
+        //% "VPN Switched Servers"
+        title = qtTrId("vpn.systray.statusSwitch.title");
+        //% "Switched from %1, %2 to %3, %4"
+        //: Shown as message body in a notification. %1 and %3 are countries, %2
+        //: and %4 are cities.
+        message = qtTrId("vpn.systray.statusSwtich.message")
+                      .arg(m_switchingServerCountry)
+                      .arg(m_switchingServerCity)
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city())
+                      .arg(vpn->controller()->switchingCity());
+      } else {
+        //% "VPN Connected"
+        title = qtTrId("vpn.systray.statusConnected.title");
+        //% "Connected to %1, %2"
+        //: Shown as message body in a notification. %1 is the country, %2 is
+        //the : city.
+        message = qtTrId("vpn.systray.statusConnected.message")
+                      .arg(vpn->currentServer()->country())
+                      .arg(vpn->currentServer()->city());
+      }
       break;
 
     case Controller::StateOff:
@@ -81,17 +97,9 @@ void NotificationHandler::showNotification() {
     case Controller::StateSwitching:
       m_connected = true;
 
-      //% "VPN Switched Servers"
-      title = qtTrId("vpn.systray.statusSwitch.title");
-      //% "Switched from %1, %2 to %3, %4"
-      //: Shown as message body in a notification. %1 and %3 are countries, %2
-      //: and %4 are cities.
-      message = qtTrId("vpn.systray.statusSwtich.message")
-                    .arg(vpn->currentServer()->country())
-                    .arg(vpn->currentServer()->city())
-                    .arg(vpn->serverCountryModel()->countryName(
-                        vpn->controller()->switchingCountryCode()))
-                    .arg(vpn->controller()->switchingCity());
+      m_switching = true;
+      m_switchingServerCountry = vpn->currentServer()->country();
+      m_switchingServerCity = vpn->currentServer()->city();
       break;
 
     default:
