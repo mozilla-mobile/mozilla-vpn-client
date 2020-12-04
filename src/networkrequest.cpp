@@ -256,8 +256,9 @@ void NetworkRequest::replyFinished() {
   logger.log() << "Network reply received";
 
   if (m_reply->error() != QNetworkReply::NoError) {
-    logger.log() << "Network error: " << m_reply->error()
-                 << "body: " << m_reply->readAll();
+    logger.log() << "Network error:" << m_reply->error()
+                 << "status code:" << statusCode()
+                 << "- body:" << m_reply->readAll();
     emit requestFailed(m_reply->error());
     return;
   }
@@ -294,4 +295,17 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::replyFinished);
   connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
+}
+
+int NetworkRequest::statusCode() const {
+  Q_ASSERT(m_reply);
+  Q_ASSERT(m_reply->isFinished());
+
+  QVariant statusCode =
+      m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+  if (!statusCode.isValid()) {
+    return 0;
+  }
+
+  return statusCode.toInt();
 }

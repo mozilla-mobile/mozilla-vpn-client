@@ -60,6 +60,8 @@ class NetworkRequest final : public QObject {
 
   void handleReply(QNetworkReply* reply);
 
+  int statusCode() const;
+
  private slots:
   void replyFinished();
 
