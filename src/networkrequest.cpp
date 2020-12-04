@@ -24,7 +24,8 @@ namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
 }
 
-NetworkRequest::NetworkRequest(QObject* parent) : QObject(parent) {
+NetworkRequest::NetworkRequest(QObject* parent, int status)
+    : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
 
   logger.log() << "Network request created";
@@ -41,7 +42,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     const QString& pkceCodeVerifier) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
@@ -65,7 +66,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
     QObject* parent, const QString& deviceName, const QString& pubKey) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 201);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -93,7 +94,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
                                                        const QString& pubKey) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 204);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -114,7 +115,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -131,7 +132,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/versions");
@@ -144,7 +145,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
 NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -161,7 +162,7 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
 NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -179,7 +180,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
     QObject* parent, const QUrl& url, const QByteArray& host) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
@@ -189,7 +190,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -207,7 +208,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
 
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
@@ -225,7 +226,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent);
+  NetworkRequest* r = new NetworkRequest(parent, 200);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
@@ -253,12 +254,21 @@ void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
 
-  logger.log() << "Network reply received";
+  int status = statusCode();
+
+  logger.log() << "Network reply received - status:" << status
+               << "- expected:" << m_status;
 
   if (m_reply->error() != QNetworkReply::NoError) {
     logger.log() << "Network error:" << m_reply->error()
-                 << "status code:" << statusCode()
-                 << "- body:" << m_reply->readAll();
+                 << "status code:" << status << "- body:" << m_reply->readAll();
+    emit requestFailed(m_reply->error());
+    return;
+  }
+
+  if (m_status && status != m_status) {
+    logger.log() << "Status code unexpected - status code:" << status
+                 << "- expected:" << m_status;
     emit requestFailed(m_reply->error());
     return;
   }

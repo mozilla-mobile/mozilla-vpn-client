@@ -52,7 +52,7 @@ class NetworkRequest final : public QObject {
 #endif
 
  private:
-  NetworkRequest(QObject* parent);
+  NetworkRequest(QObject* parent, int status);
 
   void deleteRequest();
   void getRequest();
@@ -72,6 +72,7 @@ class NetworkRequest final : public QObject {
  private:
   QNetworkRequest m_request;
   QNetworkReply* m_reply = nullptr;
+  int m_status = 0;
 };
 
 #endif  // NETWORKREQUEST_H

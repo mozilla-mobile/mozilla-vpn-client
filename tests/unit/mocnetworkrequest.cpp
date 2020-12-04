@@ -9,7 +9,8 @@
 
 namespace {};
 
-NetworkRequest::NetworkRequest(QObject* parent) : QObject(parent) {
+NetworkRequest::NetworkRequest(QObject* parent, int status)
+    : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
 
   Q_ASSERT(!TestHelper::networkConfig.isEmpty());
@@ -31,55 +32,55 @@ NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     QObject* parent, const QString&, const QString&) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
                                                         const QString&,
                                                         const QString&) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 // static
 NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
                                                        const QString&) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
     QObject* parent, const QUrl&, const QByteArray&) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString&) {
-  return new NetworkRequest(parent);
+  return new NetworkRequest(parent, 1234);
 }
 #endif
 
