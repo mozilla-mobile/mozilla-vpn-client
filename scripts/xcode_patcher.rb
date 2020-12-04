@@ -70,6 +70,7 @@ class XCodeprojPatcher
 
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         'GROUP_ID=\"' + groupId + '\"',
+        "VPN_NE_BUNDLEID=\\\"" + (platform == 'macos' ? configHash['NETEXT_ID_MACOS'] : configHash['NETEXT_ID_IOS']) + "\\\"",
       ]
 
       if config.name == 'Release'
