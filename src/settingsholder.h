@@ -75,7 +75,7 @@ class SettingsHolder final : public QObject {
          setSubscriptionTransactions);
 
   bool hasSubscriptionTransaction(const QString& transactionId) const;
-  void addSubscriptionTransaction(const QString& transactionId);
+  void addSubscriptionTransactions(const QStringList& transactionIds);
 #endif
 
 #ifdef MVPN_WINDOWS

@@ -408,7 +408,6 @@ else:ios {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
     QT += gui-private
-    QT += purchasing
 
     # For the authentication
     LIBS += -framework AuthenticationServices
@@ -416,16 +415,17 @@ else:ios {
     # For notifications
     LIBS += -framework UIKit
     LIBS += -framework Foundation
+    LIBS += -framework StoreKit
     LIBS += -framework UserNotifications
 
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/ios/iaphandler.cpp \
             platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsendworker.cpp
 
     OBJECTIVE_SOURCES += \
+            platforms/ios/iaphandler.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/iosdatamigration.mm \
             platforms/ios/iosnotificationhandler.mm \
@@ -435,11 +435,11 @@ else:ios {
             platforms/macos/macoscontroller.mm
 
     HEADERS += \
-            platforms/ios/iaphandler.h \
             platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsendworker.h
 
     OBJECTIVE_HEADERS += \
+            platforms/ios/iaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/iosdatamigration.h \
             platforms/ios/iosnotificationhandler.h \
