@@ -6,9 +6,6 @@
 #define IAPHANDLER_H
 
 #include <QObject>
-#include <QInAppStore>
-
-class QInAppTransaction;
 
 class IAPHandler final : public QObject {
   Q_OBJECT
@@ -29,10 +26,17 @@ class IAPHandler final : public QObject {
 
   void stopSubscription();
 
+  // Called by the delegate
+
+  void unknownProductRegistered(const QString& identifier);
+  void productRegistered(void* product);
+  void processCompletedTransactions(const QStringList& ids);
+
  signals:
   void productsRegistered();
 
   void subscriptionFailed();
+  void subscriptionCanceled();
   void subscriptionCompleted();
   void subscriptionValidated();
 
@@ -40,11 +44,7 @@ class IAPHandler final : public QObject {
   IAPHandler(QObject* parent);
   ~IAPHandler();
 
-  void purchaseCompleted();
-
  private:
-  QInAppStore m_appStore;
-
   enum {
     eNotRegistered,
     eRegistering,
@@ -53,7 +53,13 @@ class IAPHandler final : public QObject {
 
   QString m_productName;
 
-  bool m_started = false;
+  enum State {
+    eActive,
+    eInactive,
+  } m_subscriptionState = eInactive;
+
+  void* m_delegate = nullptr;
+  void* m_product = nullptr;
 };
 
 #endif  // IAPHANDLER_H

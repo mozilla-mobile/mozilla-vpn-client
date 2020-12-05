@@ -227,13 +227,14 @@ bool SettingsHolder::hasSubscriptionTransaction(
          subscriptionTransactions().contains(transactionId);
 }
 
-void SettingsHolder::addSubscriptionTransaction(const QString& transactionId) {
+void SettingsHolder::addSubscriptionTransactions(
+    const QStringList& transactionIds) {
   QStringList transactions;
   if (hasSubscriptionTransactions()) {
     transactions = subscriptionTransactions();
   }
 
-  transactions.append(transactionId);
+  transactions.append(transactionIds);
   setSubscriptionTransactions(transactions);
 }
 #endif

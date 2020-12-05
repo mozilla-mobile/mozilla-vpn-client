@@ -21,7 +21,7 @@ class IOSNotificationHandler final : public NotificationHandler {
               int timerSec) override;
 
  private:
-  void* m_delegate;
+  void* m_delegate = nullptr;
 };
 
 #endif  // IOSNOTIFICATIONHANDLER_H

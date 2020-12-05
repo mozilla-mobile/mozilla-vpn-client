@@ -133,6 +133,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &MozillaVPN::subscriptionFailed);
   connect(iap, &IAPHandler::subscriptionValidated, this,
           &MozillaVPN::subscriptionValidated);
+  connect(iap, &IAPHandler::subscriptionCanceled, this,
+          &MozillaVPN::subscriptionCanceled);
 #endif
 }
 
@@ -1068,11 +1070,20 @@ bool MozillaVPN::localNetworkAccessSupported() const {
 
 #ifdef MVPN_IOS
 void MozillaVPN::subscriptionCompleted() {
+  if (m_state != StateSubscriptionNeeded) {
+    logger.log() << "Random subscription completion received. Let's ignore it.";
+    return;
+  }
   logger.log() << "Subscription completed";
   setState(StateSubscriptionValidation);
 }
 
 void MozillaVPN::subscriptionValidated() {
+  if (m_state != StateSubscriptionValidation) {
+    logger.log() << "Random subscription validation received. Let's ignore it.";
+    return;
+  }
+
   logger.log() << "Subscription validated";
   completeActivation();
 
@@ -1082,6 +1093,12 @@ void MozillaVPN::subscriptionValidated() {
 }
 
 void MozillaVPN::subscriptionFailed() {
+  if (m_state != StateSubscriptionNeeded &&
+      m_state != StateSubscriptionValidation) {
+    logger.log() << "Random subscription failure received. Let's ignore it.";
+    return;
+  }
+
   logger.log() << "Subscription failed";
 
   // Let's go back to the subscription needed.
@@ -1092,5 +1109,23 @@ void MozillaVPN::subscriptionFailed() {
   emit subscriptionActiveChanged();
 
   errorHandle(ErrorHandler::SubscriptionFailureError);
+}
+
+void MozillaVPN::subscriptionCanceled() {
+  if (m_state != StateSubscriptionNeeded &&
+      m_state != StateSubscriptionValidation) {
+    logger.log()
+        << "Random subscription cancelation received. Let's ignore it.";
+    return;
+  }
+
+  logger.log() << "Subscription canceled";
+
+  // Let's go back to the subscription needed.
+  setState(StateSubscriptionNeeded);
+
+  Q_ASSERT(m_subscriptionActive);
+  m_subscriptionActive = false;
+  emit subscriptionActiveChanged();
 }
 #endif
