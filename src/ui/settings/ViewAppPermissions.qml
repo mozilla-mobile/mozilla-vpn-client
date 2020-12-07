@@ -15,7 +15,7 @@ VPNFlickable {
     readonly property int defaultMargin: 18
      property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
-    flickContentHeight: menu.height+enableAppList.height+applistLabel.height+applist.contentHeight+vpnOnAlert.height + defaultMargin
+    flickContentHeight: menu.height+enableAppList.height+applistLabel.height+applist.contentHeight+vpnOnAlert.height+defaultMargin+Theme.windowMargin+applistLabel.anchors.topMargin+applist.anchors.topMargin
 
     Component.onCompleted: {
        VPNAppPermissions.requestApplist();
@@ -99,15 +99,6 @@ VPNFlickable {
             anchors.topMargin: Theme.windowMargin
 
             iconURL: "image://app/"+appID
-
-//            Image {
-//                source: "image://app/"+appID
-//                width: 10
-//                height: 10
-//                asynchronous: true
-//                fillMode:  Image.PreserveAspectFit
-//            }
-
         }
     }
 

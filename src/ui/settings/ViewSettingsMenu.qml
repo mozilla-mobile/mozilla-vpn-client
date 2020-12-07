@@ -139,6 +139,24 @@ VPNFlickable {
         visible: VPN.startOnBootSupported
     }
 
+    VPNClickableRow {
+        id: appPermissionsRow
+        //% "App Permissions"
+        anchors.top: VPN.startOnBootSupported ? startAtBootCheckBox.bottom : manageAccountButton.bottom
+        anchors.topMargin: Theme.vSpacing
+        visible: VPN.protectSelectedAppsSupported
+        accessibleName: qsTrId("vpn.settings.appPermissions")
+        onClicked: {
+                return settingsStackView.push("../settings/ViewAppPermissions.qml");
+        }
+        VPNSettingsItem {
+            setting: qsTrId("vpn.settings.appPermissions")
+            imageLeftSrc: "../resources/settings/apps.svg"
+            imageRightSrc: "../resources/chevron.svg"
+        }
+
+    }
+
     Component {
         id: getHelpComponent
 
@@ -161,7 +179,15 @@ VPNFlickable {
 
         height: parent.height - y
         width: parent.width
-        y: Theme.vSpacing + (VPN.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
+        y:{
+            if(VPN.protectSelectedAppsSupported){
+                return appPermissionsRow.y + Theme.rowHeight+5;
+            }
+            if(VPN.startOnBootSupported){
+                return startAtBootCheckBox.y + startAtBootCheckBox.height + Theme.vSpacing;
+            }
+            return manageAccountButton.y + manageAccountButton.height + Theme.vSpacing;
+        }
         spacing: Theme.listSpacing
         //% "Settings"
         listName: qsTrId("vpn.main.settings")
