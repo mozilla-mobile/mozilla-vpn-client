@@ -74,7 +74,7 @@ Window {
             case 2532: // iPhone_12_Pro
             case 2778: // iPhone_12_Pro_Max
             case 2340: // iPhone_12_mini
-                return 30;
+                return 34;
             default:
                 return 20;
             }

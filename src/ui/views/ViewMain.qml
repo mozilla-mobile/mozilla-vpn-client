@@ -68,7 +68,7 @@ VPNFlickable {
     Item {
         id: mobileHeader
 
-        height: 40
+        height: Theme.rowHeight * 1.5
         width: parent.width
         anchors.top: parent.top
         anchors.topMargin: Theme.windowMargin / 2
@@ -81,8 +81,8 @@ VPNFlickable {
 
             VPNIcon {
                 source: VPNStatusIcon.iconUrl
-                sourceSize.height: 18
-                sourceSize.width: 18
+                sourceSize.height: 20
+                sourceSize.width: 20
                 antialiasing: true
             }
 
