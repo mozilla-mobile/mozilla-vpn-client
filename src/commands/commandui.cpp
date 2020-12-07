@@ -48,6 +48,10 @@
 #  include "signalhandler.h"
 #endif
 
+#ifdef MVPN_IOS
+#  include "platforms/ios/iaphandler.h"
+#endif
+
 #include <QApplication>
 
 #ifdef QT_DEBUG
@@ -278,6 +282,15 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
+#endif
+
+#ifdef MVPN_IOS
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = IAPHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
 #endif
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,

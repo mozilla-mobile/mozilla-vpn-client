@@ -163,9 +163,3 @@ QVariant Localizer::data(const QModelIndex& index, int role) const {
       return QVariant();
   }
 }
-
-QString Localizer::localizeSubscriptionCurrencyValue() const {
-  return QLocale().toCurrencyString(
-      Constants::SUBSCRIPTION_CURRENCY_VALUE_USD,
-      QLocale(QLocale::English, QLocale::UnitedStates).currencySymbol());
-}

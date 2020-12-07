@@ -104,8 +104,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
-  Q_INVOKABLE void subscribe();
-  Q_INVOKABLE void restoreSubscription();
   Q_INVOKABLE void viewLogs();
   Q_INVOKABLE void retrieveLogs();
   Q_INVOKABLE void cleanupLogs();
@@ -216,7 +214,7 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
 #ifdef MVPN_IOS
-  void startIAP(bool restore);
+  void subscriptionStarted(bool restore);
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();

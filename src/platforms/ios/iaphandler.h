@@ -11,10 +11,15 @@ class IAPHandler final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IAPHandler)
 
+  Q_PROPERTY(QString priceValue READ priceValue NOTIFY priceValueChanged)
+
  public:
   static IAPHandler* createInstance();
 
   static IAPHandler* instance();
+
+  Q_INVOKABLE void subscribe();
+  Q_INVOKABLE void restoreSubscription();
 
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
@@ -26,6 +31,8 @@ class IAPHandler final : public QObject {
 
   void stopSubscription();
 
+  const QString& priceValue() const { return m_priceValue; }
+
   // Called by the delegate
 
   void unknownProductRegistered(const QString& identifier);
@@ -35,9 +42,12 @@ class IAPHandler final : public QObject {
  signals:
   void productsRegistered();
 
+  void subscriptionStarted(bool restore);
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
+
+  void priceValueChanged();
 
  private:
   IAPHandler(QObject* parent);
@@ -51,6 +61,7 @@ class IAPHandler final : public QObject {
   } m_productsRegistrationState = eNotRegistered;
 
   QString m_productName;
+  QString m_priceValue;
 
   enum State {
     eActive,

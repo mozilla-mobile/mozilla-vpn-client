@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iaphandler.h"
+#include "constants.h"
 #include "iosutils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -173,7 +174,8 @@ IAPHandler* IAPHandler::instance() {
   return s_instance;
 }
 
-IAPHandler::IAPHandler(QObject* parent) : QObject(parent) {
+IAPHandler::IAPHandler(QObject* parent)
+    : QObject(parent), m_priceValue(Constants::SUBSCRIPTION_CURRENCY_VALUE_USD) {
   MVPN_COUNT_CTOR(IAPHandler);
 
   Q_ASSERT(!s_instance);
@@ -287,9 +289,11 @@ void IAPHandler::productRegistered(void* a_product) {
   [numberFormatter setLocale:product.priceLocale];
 
   NSString* price = [numberFormatter stringFromNumber:product.price];
-  logger.log() << "Price:" << QString::fromNSString(price);
+  m_priceValue = QString::fromNSString(price);
+  logger.log() << "Price:" << m_priceValue;
   [numberFormatter release];
 
+  emit priceValueChanged();
   emit productsRegistered();
 }
 
@@ -316,4 +320,14 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
     SettingsHolder::instance()->addSubscriptionTransactions(ids);
     emit subscriptionCompleted();
   });
+}
+
+void IAPHandler::subscribe() {
+  logger.log() << "Subscription required";
+  emit subscriptionStarted(false /* restore */);
+}
+
+void IAPHandler::restoreSubscription() {
+  logger.log() << "Restore subscription";
+  emit subscriptionStarted(true /* restore */);
 }
