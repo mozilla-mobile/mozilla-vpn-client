@@ -50,7 +50,7 @@ CONSTEXPR(uint32_t, STATUSICON_ANIMATION_MSEC, 200, 200, 0)
 #  define PRODBETAEXPR(type, what, prod, beta) constexpr type what = beta;
 #endif
 
-PRODBETAEXPR(const char*, API_URL, "https://fpn.firefox.com",
+PRODBETAEXPR(const char*, API_URL, "https://vpn.mozilla.org",
              "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net")
 PRODBETAEXPR(const char*, LOGO_URL, ":/ui/resources/logo-dock.png",
              ":/ui/resources/logo-dock-beta.png")
