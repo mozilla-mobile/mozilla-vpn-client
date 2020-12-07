@@ -130,14 +130,16 @@ IAPHandler* s_instance = nullptr;
     emit m_handler->subscriptionFailed();
   } else if (completedTransactionIds.isEmpty()) {
     Q_ASSERT(completedTransactions);
-
     logger.log() << "Subscription completed - but all the transactions are known";
     emit m_handler->subscriptionFailed();
-  } else {
+  } else if (MozillaVPN::instance()->userAuthenticated()) {
     Q_ASSERT(completedTransactions);
-
     logger.log() << "Subscription completed. Let's start the validation";
     m_handler->processCompletedTransactions(completedTransactionIds);
+  } else {
+    Q_ASSERT(completedTransactions);
+    logger.log() << "Subscription completed - but the user is not authenticated yet";
+    emit m_handler->subscriptionFailed();
   }
 
   for (SKPaymentTransaction* transaction in transactions) {
@@ -292,7 +294,7 @@ void IAPHandler::productRegistered(void* a_product) {
 }
 
 void IAPHandler::processCompletedTransactions(const QStringList& ids) {
-  logger.log() << "process completed transactions.";
+  logger.log() << "process completed transactions";
 
   QString receipt = IOSUtils::IAPReceipt();
   if (receipt.isEmpty()) {
