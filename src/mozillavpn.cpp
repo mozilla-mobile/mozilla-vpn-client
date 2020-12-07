@@ -1063,29 +1063,35 @@ void MozillaVPN::subscriptionCompleted() {
 }
 
 void MozillaVPN::subscriptionFailed() {
+  subscriptionFailedInternal(false /* canceled by user */);
+}
+
+void MozillaVPN::subscriptionCanceled() {
+  subscriptionFailedInternal(true /* canceled by user */);
+}
+
+void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   if (m_state != StateSubscriptionValidation) {
     logger.log() << "Random subscription failure received. Let's ignore it.";
     return;
   }
 
-  logger.log() << "Subscription failed";
+  logger.log() << "Subscription failed or canceled";
 
   // Let's go back to the subscription needed.
   setState(StateSubscriptionNeeded);
 
-  errorHandle(ErrorHandler::SubscriptionFailureError);
-}
-
-void MozillaVPN::subscriptionCanceled() {
-  if (m_state != StateSubscriptionValidation) {
-    logger.log()
-        << "Random subscription cancelation received. Let's ignore it.";
-    return;
+  if (!canceledByUser) {
+    errorHandle(ErrorHandler::SubscriptionFailureError);
   }
 
-  logger.log() << "Subscription canceled";
-
-  // Let's go back to the subscription needed without errors.
-  setState(StateSubscriptionNeeded);
+  scheduleTask(new TaskAccountAndServers());
+  scheduleTask(new TaskFunction([this](MozillaVPN*) {
+    if (!m_private->m_user.subscriptionNeeded() &&
+        m_state == StateSubscriptionNeeded) {
+      maybeStateMain();
+      return;
+    }
+  }));
 }
 #endif

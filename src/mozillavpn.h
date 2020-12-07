@@ -218,6 +218,7 @@ class MozillaVPN final : public QObject {
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
+  void subscriptionFailedInternal(bool canceledByUser);
 #endif
 
   void completeActivation();
