@@ -176,7 +176,7 @@ void AndroidController::activate(
   args["server"] = jServer;
   args["forSwitching"] = forSwitching;
   args["allowedIPs"] = allowedIPs;
-  args["excludedApps"] = disallowedApps;
+  args["excludedApps"] = excludedApps;
 
   QJsonDocument doc(args);
   QAndroidParcel sendData;

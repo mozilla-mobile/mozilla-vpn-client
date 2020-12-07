@@ -350,6 +350,7 @@
         <file>ui/resources/settings/getHelp.svg</file>
         <file>ui/resources/settings/feedback.svg</file>
         <file>ui/resources/settings/language.svg</file>
+        <file>ui/resources/settings/apps.svg</file>
         <file>ui/resources/settings/aboutUs.svg</file>
         <file>ui/resources/settings/notifications.svg</file>
         <file>ui/resources/settings/networkSettings.svg</file>

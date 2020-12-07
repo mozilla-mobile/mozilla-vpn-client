@@ -987,6 +987,13 @@ bool MozillaVPN::startOnBootSupported() const {
   return false;
 #endif
 }
+bool MozillaVPN::protectSelectedAppsSupported() const {
+#if defined(MVPN_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
 
 void MozillaVPN::activate() {
   logger.log() << "VPN tunnel activation";

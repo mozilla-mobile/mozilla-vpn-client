@@ -90,7 +90,6 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
 }
 
 Q_INVOKABLE void AppPermission::flip(const QString& appID) {
-  beginResetModel();
   if (m_disabledAppList.contains(appID)) {
     logger.log() << "Enabled --" << appID << " for VPN";
     m_disabledAppList.removeAll(appID);
@@ -99,7 +98,9 @@ Q_INVOKABLE void AppPermission::flip(const QString& appID) {
     m_disabledAppList.append(appID);
   }
   SettingsHolder::instance()->setVpnDisabledApps(m_disabledAppList);
-  endResetModel();  // Todo:: not use Reset Model - toooo slow.
+
+  int index = m_applist.keys().indexOf(appID);
+  dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 Q_INVOKABLE void AppPermission::requestApplist() {
   logger.log() << "Request new AppList";
