@@ -20,7 +20,7 @@
 #  include <android/log.h>
 #endif
 
-constexpr qint64 LOG_MAX_FILE_SIZE = 1048576;
+constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
 constexpr const char* LOG_FILENAME = "mozillavpn.txt";
 
 namespace {
