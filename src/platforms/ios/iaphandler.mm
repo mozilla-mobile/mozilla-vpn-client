@@ -77,7 +77,20 @@ IAPHandler* s_instance = nullptr;
         [[fallthrough]];
       case SKPaymentTransactionStatePurchased: {
         QString identifier = QString::fromNSString(transaction.transactionIdentifier);
-        logger.log() << "transaction restored or purchased - identifier: " << identifier;
+        QDateTime date = QDateTime::fromNSDate(transaction.transactionDate);
+        logger.log() << "transaction restored or purchased - identifier: " << identifier
+                     << "- date:" << date.toString();
+
+        if (transaction.transactionState == SKPaymentTransactionStateRestored) {
+          SKPaymentTransaction* originalTransaction = transaction.originalTransaction;
+          if (originalTransaction) {
+            QString originalIdentifier =
+                QString::fromNSString(originalTransaction.transactionIdentifier);
+            QDateTime originalDate = QDateTime::fromNSDate(originalTransaction.transactionDate);
+            logger.log() << "original transaction identifier: " << originalIdentifier
+                         << "- date:" << originalDate.toString();
+          }
+        }
 
         completedTransactions = true;
 
@@ -123,9 +136,7 @@ IAPHandler* s_instance = nullptr;
   } else {
     Q_ASSERT(completedTransactions);
 
-    logger.log() << "Subscription completed";
-    emit m_handler->subscriptionCompleted();
-
+    logger.log() << "Subscription completed. Let's start the validation";
     m_handler->processCompletedTransactions(completedTransactionIds);
   }
 
@@ -301,6 +312,6 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
     logger.log() << "Purchase request completed";
     SettingsHolder::instance()->addSubscriptionTransactions(ids);
-    emit subscriptionValidated();
+    emit subscriptionCompleted();
   });
 }

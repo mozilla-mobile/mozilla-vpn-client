@@ -82,8 +82,6 @@ class MozillaVPN final : public QObject {
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
-  Q_PROPERTY(bool subscriptionActive READ subscriptionActive NOTIFY
-                 subscriptionActiveChanged)
   Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
                  CONSTANT)
 
@@ -176,8 +174,6 @@ class MozillaVPN final : public QObject {
 
   bool startOnBootSupported() const;
 
-  bool subscriptionActive() const { return m_subscriptionActive; }
-
   void setStartMinimized(bool startMinimized) {
     m_startMinimized = startMinimized;
   }
@@ -222,7 +218,6 @@ class MozillaVPN final : public QObject {
 #ifdef MVPN_IOS
   void startIAP(bool restore);
   void subscriptionCompleted();
-  void subscriptionValidated();
   void subscriptionFailed();
   void subscriptionCanceled();
 #endif
@@ -246,7 +241,6 @@ class MozillaVPN final : public QObject {
   void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();
-  void subscriptionActiveChanged();
 
   // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
   // complains...
@@ -290,7 +284,6 @@ class MozillaVPN final : public QObject {
   bool m_updateRecommended = false;
   bool m_userAuthenticated = false;
   bool m_startMinimized = false;
-  bool m_subscriptionActive = false;
 
 #ifdef UNIT_TEST
   friend class TestTasks;
