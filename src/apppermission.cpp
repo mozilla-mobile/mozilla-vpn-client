@@ -11,9 +11,10 @@
 #include <QVector>
 #include "settingsholder.h"
 
-#  include "platforms/dummy/dummyapplistprovider.h"
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidapplistprovider.h"
+#else
+#  include "platforms/dummy/dummyapplistprovider.h"
 #endif
 
 namespace {

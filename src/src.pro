@@ -80,7 +80,6 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
-        platforms/dummy/dummyappimageprovider.cpp \
         platforms/dummy/dummyapplistprovider.cpp\
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -166,7 +165,6 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
-        platforms/dummy/dummyappimageprovider.h \
         platforms/dummy/dummyapplistprovider.h \
         timersingleshot.h
 
