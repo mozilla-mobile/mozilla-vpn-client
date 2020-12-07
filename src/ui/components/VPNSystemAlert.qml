@@ -14,7 +14,6 @@ VPNAlert {
     states: [
         // TODO - Needed alerts:
         // BackgroundServiceRestored
-        // Unable to remove device. Try again
 
         State {
             name: VPN.NoAlert
