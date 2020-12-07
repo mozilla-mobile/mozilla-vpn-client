@@ -137,7 +137,7 @@ VPNFlickable {
             //% "Subscribe now"
             text: qsTrId("vpn.updates.subscribeNow")
             Layout.alignment: Qt.AlignHCenter
-            loaderVisible: VPN.subscriptionActive
+            loaderVisible: false
             onClicked: VPN.subscribe()
         }
 
