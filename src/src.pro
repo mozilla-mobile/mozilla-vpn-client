@@ -269,7 +269,6 @@ else:linux:!android {
     target.path = $${PREFIX}/bin
     INSTALLS += target
 }
-
 else:android {
     message(Android build)
 
@@ -328,7 +327,6 @@ else:android {
     MOC_DIR =
     RCC_DIR =
     UI_DIR =
-    ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 
     DISTFILES += \
         ../android/AndroidManifest.xml \
@@ -521,7 +519,7 @@ else{
     PRE_TARGETDEPS += ts
 }
 
-
+ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
