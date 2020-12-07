@@ -45,7 +45,7 @@ VPNFlickable {
         // TODO: Get pricing from settings?
         //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
         //% "Subscribe for %1/mo"
-        logoTitle: qsTrId("vpn.subscription.title").arg(VPNLocalizer.localizeSubscriptionCurrencyValue())
+        logoTitle: qsTrId("vpn.subscription.title").arg(VPNIAP.priceValue)
         //% "30-day money-back guarantee"
         logoSubtitle: qsTrId("vpn.subscription.moneyBackGuarantee")
         anchors.top: spacer1.bottom
@@ -138,7 +138,7 @@ VPNFlickable {
             text: qsTrId("vpn.updates.subscribeNow")
             Layout.alignment: Qt.AlignHCenter
             loaderVisible: false
-            onClicked: VPN.subscribe()
+            onClicked: VPNIAP.subscribe()
         }
 
         Rectangle { // vertical spacer
@@ -198,7 +198,7 @@ VPNFlickable {
             labelText: qsTrId("vpn.main.restorePurchases")
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.rowHeight
-            onClicked: VPN.restoreSubscription()
+            onClicked: VPNIAP.restoreSubscription()
         }
 
         Rectangle { // vertical spacer

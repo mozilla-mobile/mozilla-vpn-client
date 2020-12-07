@@ -6,7 +6,9 @@
 
 namespace Constants {
 
-constexpr double SUBSCRIPTION_CURRENCY_VALUE_USD = 4.99;
+// This value is the fallback in case apple is slower than the user. This
+// should never happen.
+constexpr const char* SUBSCRIPTION_CURRENCY_VALUE_USD = "4.99$";
 
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \

@@ -31,8 +31,6 @@ class Localizer final : public QAbstractListModel {
   Localizer();
   ~Localizer();
 
-  Q_INVOKABLE QString localizeSubscriptionCurrencyValue() const;
-
   void initialize(const QString& code);
 
   void loadLanguage(const QString& code);

@@ -127,12 +127,14 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
 #ifdef MVPN_IOS
   IAPHandler* iap = IAPHandler::createInstance();
-  connect(iap, &IAPHandler::subscriptionCompleted, this,
-          &MozillaVPN::subscriptionCompleted);
+  connect(iap, &IAPHandler::subscriptionStarted, this,
+          &MozillaVPN::subscriptionStarted);
   connect(iap, &IAPHandler::subscriptionFailed, this,
           &MozillaVPN::subscriptionFailed);
   connect(iap, &IAPHandler::subscriptionCanceled, this,
           &MozillaVPN::subscriptionCanceled);
+  connect(iap, &IAPHandler::subscriptionCompleted, this,
+          &MozillaVPN::subscriptionCompleted);
 #endif
 }
 
@@ -782,42 +784,6 @@ void MozillaVPN::stopSchedulingPeriodicOperations() {
   m_periodicOperationsTimer.stop();
 }
 
-void MozillaVPN::subscribe() {
-  logger.log() << "Subscription required";
-
-#ifdef MVPN_IOS
-  startIAP(false /* restore */);
-#endif
-}
-
-void MozillaVPN::restoreSubscription() {
-  logger.log() << "Restore subscription";
-
-#ifdef MVPN_IOS
-  startIAP(true /* restore */);
-#endif
-}
-
-#ifdef MVPN_IOS
-void MozillaVPN::startIAP(bool restore) {
-  setState(StateSubscriptionValidation);
-
-  IAPHandler* iap = IAPHandler::instance();
-
-  // If IPA is not ready yet (race condition), let's register the products
-  // again.
-  if (!iap->hasProductsRegistered()) {
-    scheduleTask(new TaskIOSProducts());
-    scheduleTask(new TaskFunction(
-        [restore](MozillaVPN* vpn) { vpn->startIAP(restore); }));
-
-    return;
-  }
-
-  iap->startSubscription(restore);
-}
-#endif
-
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogs(location, [](const QString& filename) {
     logger.log() << "Opening the logFile somehow:" << filename;
@@ -1066,6 +1032,26 @@ bool MozillaVPN::localNetworkAccessSupported() const {
 }
 
 #ifdef MVPN_IOS
+void MozillaVPN::subscriptionStarted(bool restore) {
+  logger.log() << "Subscription started";
+
+  setState(StateSubscriptionValidation);
+
+  IAPHandler* iap = IAPHandler::instance();
+
+  // If IPA is not ready yet (race condition), let's register the products
+  // again.
+  if (!iap->hasProductsRegistered()) {
+    scheduleTask(new TaskIOSProducts());
+    scheduleTask(new TaskFunction(
+        [restore](MozillaVPN* vpn) { vpn->subscriptionStarted(restore); }));
+
+    return;
+  }
+
+  iap->startSubscription(restore);
+}
+
 void MozillaVPN::subscriptionCompleted() {
   if (m_state != StateSubscriptionValidation) {
     logger.log() << "Random subscription completion received. Let's ignore it.";
