@@ -241,10 +241,17 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
         val privateKey = obj.getJSONObject("keys").getString("privateKey")
         val jDevice = obj.getJSONObject("device")
+
         val ifaceBuilder = Interface.Builder()
         ifaceBuilder.parsePrivateKey(privateKey)
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
+        
+        val jExcludedApplication = obj.getJSONArray("excludedApps");
+        (0 until jExcludedApplication.length()).toList().forEach {
+            val appName = jExcludedApplication.get(it).toString();
+            ifaceBuilder.excludeApplication(appName);
+        }
         confBuilder.setInterface(ifaceBuilder.build())
         return confBuilder.build()
     }

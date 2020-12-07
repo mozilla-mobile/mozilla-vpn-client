@@ -133,7 +133,8 @@ void AndroidController::setFallbackConnectedNotification() {
 
 void AndroidController::activate(
     const Server& server, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges, bool forSwitching) {
+    const QList<IPAddressRange>& allowedIPAddressRanges,
+    const QList<QString>& vpnDisabledApps, bool forSwitching) {
   logger.log() << "Activation";
 
   m_server = server;
@@ -164,12 +165,18 @@ void AndroidController::activate(
     allowedIPs.append(val);
   }
 
+  QJsonArray excludedApps;
+  foreach (auto appID, vpnDisabledApps) {
+    excludedApps.append(QJsonValue(appID));
+  }
+
   QJsonObject args;
   args["device"] = jDevice;
   args["keys"] = jKeys;
   args["server"] = jServer;
   args["forSwitching"] = forSwitching;
   args["allowedIPs"] = allowedIPs;
+  args["excludedApps"] = disallowedApps;
 
   QJsonDocument doc(args);
   QAndroidParcel sendData;
