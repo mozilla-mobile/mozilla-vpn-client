@@ -110,4 +110,104 @@ void TestReleaseMonitor::success() {
   loop.exec();
 }
 
+void TestReleaseMonitor::compareVersions_data() {
+  QTest::addColumn<QString>("a");
+  QTest::addColumn<QString>("b");
+  QTest::addColumn<int>("result");
+
+  QTest::addRow("empty a") << ""
+                           << "123" << 1;
+  QTest::addRow("empty b") << "123"
+                           << "" << -1;
+  QTest::addRow("empty all") << ""
+                             << "" << 0;
+
+  QTest::addRow("equal 1") << "0.1"
+                           << "0.1" << 0;
+  QTest::addRow("equal 2") << "0.1.2"
+                           << "0.1.2" << 0;
+  QTest::addRow("equal 3") << "0.1.2.3"
+                           << "0.1.2.3" << 0;
+  QTest::addRow("equal 4") << "0"
+                           << "0" << 0;
+  QTest::addRow("equal 5") << "123"
+                           << "123" << 0;
+  QTest::addRow("euqal 6") << "0.1.2.123"
+                           << "0.1.2.456" << 0;
+
+  QTest::addRow("a wins 1") << "0"
+                            << "123" << -1;
+  QTest::addRow("a wins 2") << "0.1"
+                            << "123" << -1;
+  QTest::addRow("a wins 3") << "0.1.2"
+                            << "123" << -1;
+  QTest::addRow("a wins 4") << "0.1.2.3"
+                            << "123" << -1;
+  QTest::addRow("a wins 5") << "0.1.2.3.4"
+                            << "123" << -1;
+  QTest::addRow("a wins 6") << "1.2.3.4"
+                            << "123" << -1;
+  QTest::addRow("a wins 7") << "0"
+                            << "1" << -1;
+  QTest::addRow("a wins 8") << "0"
+                            << "0.1" << -1;
+  QTest::addRow("a wins 9") << "0"
+                            << "0.1.2" << -1;
+  QTest::addRow("a wins A") << "0"
+                            << "0.1.2.3" << -1;
+  QTest::addRow("a wins B") << "0.1"
+                            << "1" << -1;
+  QTest::addRow("a wins C") << "0.1"
+                            << "0.2" << -1;
+  QTest::addRow("a wins D") << "0.1"
+                            << "0.1.2" << -1;
+  QTest::addRow("a wins E") << "0.1.2"
+                            << "1" << -1;
+  QTest::addRow("a wins F") << "0.1.2"
+                            << "0.2" << -1;
+  QTest::addRow("a wins 10") << "0.1.2"
+                             << "0.1.3" << -1;
+
+  QTest::addRow("b wins 1") << "123"
+                            << "0" << 1;
+  QTest::addRow("b wins 2") << "123"
+                            << "0.1" << 1;
+  QTest::addRow("b wins 3") << "123"
+                            << "0.1.2" << 1;
+  QTest::addRow("b wins 4") << "123"
+                            << "0.1.2.3" << 1;
+  QTest::addRow("b wins 5") << "123"
+                            << "0.1.2.3.4" << 1;
+  QTest::addRow("b wins 6") << "123"
+                            << "1.2.3.4" << 1;
+  QTest::addRow("b wins 7") << "1"
+                            << "0" << 1;
+  QTest::addRow("b wins 8") << "0.1"
+                            << "0" << 1;
+  QTest::addRow("b wins 9") << "0.1.2"
+                            << "0" << 1;
+  QTest::addRow("b wins A") << "0.1.2.3"
+                            << "0" << 1;
+  QTest::addRow("b wins B") << "1"
+                            << "0.1" << 1;
+  QTest::addRow("b wins C") << "0.2"
+                            << "0.1" << 1;
+  QTest::addRow("b wins D") << "0.1.2"
+                            << "0.1" << 1;
+  QTest::addRow("b wins E") << "1"
+                            << "0.1.2" << 1;
+  QTest::addRow("b wins F") << "0.2"
+                            << "0.1.2" << 1;
+  QTest::addRow("b wins 10") << "0.1.3"
+                             << "0.1.2" << 1;
+}
+
+void TestReleaseMonitor::compareVersions() {
+  QFETCH(QString, a);
+  QFETCH(QString, b);
+  QFETCH(int, result);
+
+  QCOMPARE(ReleaseMonitor::compareVersions(a, b), result);
+}
+
 static TestReleaseMonitor s_testReleaseMonitor;
