@@ -132,6 +132,23 @@ void TestModels::deviceFromJson() {
 
   QFETCH(QString, ipv6Address);
   QCOMPARE(device.ipv6Address(), ipv6Address);
+
+  Device deviceB(device);
+  QCOMPARE(deviceB.name(), device.name());
+  QCOMPARE(deviceB.createdAt(), device.createdAt());
+  QCOMPARE(deviceB.publicKey(), device.publicKey());
+  QCOMPARE(deviceB.ipv4Address(), device.ipv4Address());
+  QCOMPARE(deviceB.ipv6Address(), device.ipv6Address());
+
+  Device deviceC;
+  deviceC = device;
+  QCOMPARE(deviceC.name(), device.name());
+  QCOMPARE(deviceC.createdAt(), device.createdAt());
+  QCOMPARE(deviceC.publicKey(), device.publicKey());
+  QCOMPARE(deviceC.ipv4Address(), device.ipv4Address());
+  QCOMPARE(deviceC.ipv6Address(), device.ipv6Address());
+
+  device = device;
 }
 
 // DeviceModel
@@ -497,6 +514,29 @@ void TestModels::serverFromJson() {
   } else {
     QVERIFY(ports.contains(s.choosePort()));
   }
+
+  Server sB(s);
+  QCOMPARE(sB.initialized(), s.initialized());
+  QCOMPARE(sB.hostname(), s.hostname());
+  QCOMPARE(sB.ipv4AddrIn(), s.ipv4AddrIn());
+  QCOMPARE(sB.ipv4Gateway(), s.ipv4Gateway());
+  QCOMPARE(sB.ipv6AddrIn(), s.ipv6AddrIn());
+  QCOMPARE(sB.ipv6Gateway(), s.ipv6Gateway());
+  QCOMPARE(sB.publicKey(), s.publicKey());
+  QCOMPARE(sB.weight(), s.weight());
+
+  Server sC;
+  sC = s;
+  QCOMPARE(sC.initialized(), s.initialized());
+  QCOMPARE(sC.hostname(), s.hostname());
+  QCOMPARE(sC.ipv4AddrIn(), s.ipv4AddrIn());
+  QCOMPARE(sC.ipv4Gateway(), s.ipv4Gateway());
+  QCOMPARE(sC.ipv6AddrIn(), s.ipv6AddrIn());
+  QCOMPARE(sC.ipv6Gateway(), s.ipv6Gateway());
+  QCOMPARE(sC.publicKey(), s.publicKey());
+  QCOMPARE(sC.weight(), s.weight());
+
+  s = s;
 }
 
 void TestModels::serverWeightChooser() {
@@ -588,6 +628,17 @@ void TestModels::serverCityFromJson() {
 
   QFETCH(int, servers);
   QCOMPARE(sc.getServers().length(), servers);
+
+  ServerCity scB(sc);
+  QCOMPARE(scB.name(), sc.name());
+  QCOMPARE(scB.code(), sc.code());
+
+  ServerCity scC;
+  scC = sc;
+  QCOMPARE(scC.name(), sc.name());
+  QCOMPARE(scC.code(), sc.code());
+
+  sc = sc;
 }
 
 // ServerCountry
@@ -646,6 +697,17 @@ void TestModels::serverCountryFromJson() {
 
   QFETCH(int, cities);
   QCOMPARE(sc.cities().length(), cities);
+
+  ServerCountry scB(sc);
+  QCOMPARE(scB.name(), sc.name());
+  QCOMPARE(scB.code(), sc.code());
+
+  ServerCountry scC;
+  scC = sc;
+  QCOMPARE(scC.name(), sc.name());
+  QCOMPARE(scC.code(), sc.code());
+
+  sc = sc;
 }
 
 // ServerCountryModel
@@ -1108,10 +1170,19 @@ void TestModels::ipAddressRangeBasic() {
   QCOMPARE(a.toString(), "ip/123");
 
   IPAddressRange b(a);
-  QCOMPARE(b.ipAddress(), "ip");
-  QCOMPARE(b.range(), (uint32_t)123);
-  QCOMPARE(b.type(), IPAddressRange::IPv4);
-  QCOMPARE(b.toString(), "ip/123");
+  QCOMPARE(b.ipAddress(), a.ipAddress());
+  QCOMPARE(b.range(), a.range());
+  QCOMPARE(b.type(), a.type());
+  QCOMPARE(b.toString(), a.toString());
+
+  IPAddressRange c(a);
+  c = a;
+  QCOMPARE(c.ipAddress(), a.ipAddress());
+  QCOMPARE(c.range(), a.range());
+  QCOMPARE(c.type(), a.type());
+  QCOMPARE(c.toString(), a.toString());
+
+  a = a;
 }
 
 static TestModels s_testModels;
