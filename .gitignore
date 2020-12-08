@@ -33,11 +33,12 @@ android/build
 android/local.properties
 xcode.xconfig
 .gradle/
-android/build
+
 *.ts
 tests/unit/tests
 build
 Debug/
+!android/src/debug/
 Debug-iphone*
 Release/
 Release-iphone*
