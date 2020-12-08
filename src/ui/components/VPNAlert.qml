@@ -18,7 +18,7 @@ Rectangle {
     color: "transparent"
     height: Math.max(40, (labelWrapper.height + Theme.windowMargin))
     width: parent.width - Theme.windowMargin
-    y: window.fullscreenRequired() ? parent.height - 80 : parent.height - 48
+    y: fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.margins: Theme.windowMargin / 2
     radius: Theme.cornerRadius
