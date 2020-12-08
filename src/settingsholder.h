@@ -22,8 +22,6 @@ class SettingsHolder final : public QObject {
                  setCaptivePortalAlert NOTIFY captivePortalAlertChanged)
   Q_PROPERTY(bool startAtBoot READ startAtBoot WRITE setStartAtBoot NOTIFY
                  startAtBootChanged)
-  Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY
-                 languageCodeChanged)
 
  public:
   SettingsHolder();
@@ -96,7 +94,6 @@ class SettingsHolder final : public QObject {
   void unsecuredNetworkAlertChanged(bool value);
   void captivePortalAlertChanged(bool value);
   void startAtBootChanged(bool value);
-  void languageCodeChanged(const QString& languageCode);
 
  private:
   explicit SettingsHolder(QObject* parent);

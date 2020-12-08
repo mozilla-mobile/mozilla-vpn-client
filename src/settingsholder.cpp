@@ -154,9 +154,6 @@ GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT, bool, toBool,
               captivePortalAlertChanged)
 GETSETDEFAULT(SETTINGS_STARTATBOOT_DEFAULT, bool, toBool, SETTINGS_STARTATBOOT,
               hasStartAtBoot, startAtBoot, setStartAtBoot, startAtBootChanged)
-GETSETDEFAULT(QString(), QString, toString, SETTINGS_LANGUAGECODE,
-              hasLanguageCode, languageCode, setLanguageCode,
-              languageCodeChanged)
 
 #undef GETSETDEFAULT
 
@@ -207,6 +204,8 @@ GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
 GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        hasPostAuthenticationShown, postAuthenticationShown,
        setPostAuthenticationShown);
+GETSET(QString, toString, SETTINGS_LANGUAGECODE, hasLanguageCode, languageCode,
+       setLanguageCode);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
