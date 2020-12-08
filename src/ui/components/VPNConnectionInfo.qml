@@ -14,6 +14,9 @@ Popup {
 
     height: box.height
     width: box.width
+    padding: 0
+    leftInset: 0
+    rightInset: 0
     modal: true
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
@@ -40,7 +43,6 @@ Popup {
         property var rBytes: VPNConnectionData.rxBytes
         property var tBytes: VPNConnectionData.txBytes
 
-
         width: box.width
         height: box.height
         antialiasing: true
@@ -50,12 +52,13 @@ Popup {
 
             antialiasing: true
             backgroundColor: "#321C64"
-            width: parent.width + 16
-            height: (parent.height / 2) - 32
+            width: chartWrapper.width
+            height: (chartWrapper.height / 2) - 32
             legend.visible: false
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
+            anchors.horizontalCenter: chartWrapper.horizontalCenter
+            anchors.top: chartWrapper.top
             anchors.topMargin: 48
+            anchors.left: chartWrapper.left
             margins.top: 0
             margins.bottom: 0
             margins.left: 0
@@ -109,7 +112,7 @@ Popup {
 
         VPNBoldLabel {
             anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
+            anchors.topMargin: Theme.windowMargin * 1.5
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.horizontalCenter: parent.center
@@ -154,6 +157,8 @@ Popup {
             buttonColorScheme: Theme.iconButtonDarkBackground
             anchors.top: parent.top
             anchors.left: parent.left
+            anchors.topMargin: Theme.windowMargin / 2
+            anchors.leftMargin: Theme.windowMargin / 2
             //% "Close"
             accessibleName: qsTrId("vpn.connectionInfo.close")
 
