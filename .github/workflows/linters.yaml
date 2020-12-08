@@ -1,4 +1,4 @@
-name: Linters (clang, l10n) 
+name: Linters (clang, l10n)
 on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
@@ -11,7 +11,7 @@ jobs:
       - name: Install Linux packages
         run: |
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.0-focal -y
+          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt update
           sudo apt install git qt515tools -y
       - name: Clone repository
