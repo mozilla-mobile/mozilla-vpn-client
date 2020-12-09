@@ -249,6 +249,7 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAppPermissions",
         [](QQmlEngine*, QJSEngine*) -> QObject* {

@@ -80,7 +80,7 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
-        platforms/dummy/dummyapplistprovider.cpp\
+        platforms/dummy/dummyapplistprovider.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -149,6 +149,7 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
+        platforms/dummy/dummyapplistprovider.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
@@ -165,7 +166,6 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
-        platforms/dummy/dummyapplistprovider.h \
         timersingleshot.h
 
 debug {
