@@ -43,6 +43,17 @@ VPNFlickable {
                 });
             }
 
+            if(VPN.protectSelectedAppsSupported){
+                append( {
+                    //% "App Permissions"
+                    settingTitle: qsTrId("vpn.settings.appPermissions"),
+                    imageLeftSource: "../resources/settings/apps.svg",
+                    imageRightSource: "../resources/chevron.svg",
+                    pushView: "../settings/ViewAppPermissions.qml"
+                });
+            }
+
+
             append({
                 settingTitle: qsTrId("vpn.settings.aboutUs"),
                 imageLeftSource: "../resources/settings/aboutUs.svg",

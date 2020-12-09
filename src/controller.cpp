@@ -151,9 +151,14 @@ void Controller::activate() {
   const QList<IPAddressRange> allowedIPAddressRanges =
       getAllowedIPAddressRanges(server);
 
+  QList<QString> vpnDisabledApps;
+  if (SettingsHolder::instance()->protectSelectedApps()) {
+    vpnDisabledApps = SettingsHolder::instance()->vpnDisabledApps();
+  }
+
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   m_state == StateSwitching);
+                   vpnDisabledApps, m_state == StateSwitching);
 }
 
 void Controller::deactivate() {
