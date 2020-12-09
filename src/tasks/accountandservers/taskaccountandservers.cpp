@@ -30,7 +30,7 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForAccount(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error) {
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.log() << "Account request failed" << error;
               vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_accountCompleted = true;
@@ -51,7 +51,7 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
     NetworkRequest* request = NetworkRequest::createForServers(this);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error) {
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.log() << "Failed to retrieve servers";
               vpn->errorHandle(ErrorHandler::toErrorType(error));
               m_serversCompleted = true;

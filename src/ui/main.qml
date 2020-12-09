@@ -161,6 +161,15 @@ Window {
 
                 },
                 State {
+                    name: VPN.StateSubscriptionBlocked
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionBlocked.qml"
+                    }
+
+                },
+                State {
                     name: VPN.StateDeviceLimit
 
                     PropertyChanges {

@@ -12,6 +12,9 @@
 #include "settingsholder.h"
 
 #include <QCoreApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
@@ -309,11 +312,34 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
 
   NetworkRequest* request = NetworkRequest::createForIOSPurchase(this, receipt);
 
-  connect(request, &NetworkRequest::requestFailed, [this](QNetworkReply::NetworkError error) {
-    logger.log() << "Purchase request failed" << error;
-    MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
-    emit subscriptionFailed();
-  });
+  connect(request, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+            logger.log() << "Purchase request failed" << error;
+
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (!json.isObject()) {
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              emit subscriptionFailed();
+              return;
+            }
+
+            QJsonObject obj = json.object();
+            QJsonValue errorValue = obj.take("errno");
+            if (!errorValue.isDouble()) {
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              emit subscriptionFailed();
+              return;
+            }
+
+            int errorNumber = errorValue.toInt();
+            if (errorNumber != 142) {
+              MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+              emit subscriptionFailed();
+              return;
+            }
+
+            emit alreadySubscribed();
+          });
 
   connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
     logger.log() << "Purchase request completed";
