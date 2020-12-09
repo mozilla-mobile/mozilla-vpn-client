@@ -131,7 +131,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
                                                const QByteArray& data) {
-  logger.log() << "Authentication completed with data:" << data;
+  logger.log() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   Q_ASSERT(!json.isNull());
@@ -142,6 +142,9 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
   Q_ASSERT(obj.contains("user"));
   QJsonValue userObj = obj.take("user");
   Q_ASSERT(userObj.isObject());
+  logger.log()
+      << "User data:"
+      << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
 
   Q_ASSERT(obj.contains("token"));
   QJsonValue tokenValue = obj.take("token");
