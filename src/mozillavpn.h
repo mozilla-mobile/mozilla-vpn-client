@@ -84,8 +84,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
   Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
                  CONSTANT)
-  Q_PROPERTY(bool subscriptionActive READ subscriptionActive NOTIFY
-                 subscriptionActiveChanged)
   Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
                  CONSTANT)
 
@@ -177,8 +175,6 @@ class MozillaVPN final : public QObject {
   bool startOnBootSupported() const;
 
   bool protectSelectedAppsSupported() const;
-
-  bool subscriptionActive() const { return m_subscriptionActive; }
 
   void setStartMinimized(bool startMinimized) {
     m_startMinimized = startMinimized;
