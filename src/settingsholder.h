@@ -73,6 +73,10 @@ class SettingsHolder final : public QObject {
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
 
+  bool hasVpnDisabledApp(const QString& appID);
+  void removeVpnDisabledApp(const QString& appID);
+  void addVpnDisabledApp(const QString& appID);
+
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
          setNativeIOSDataMigrated)
