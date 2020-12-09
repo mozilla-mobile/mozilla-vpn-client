@@ -42,13 +42,17 @@ VPNFlickable {
                     pushView: "../settings/ViewLanguage.qml",
                 });
             }
-        ListElement {
-            //% "App Permissions" 
-            settingTitle: qsTrId("vpn.settings.appPermissions")
-            imageLeftSource: "../resources/settings/networkSettings.svg"
-            imageRightSource: "../resources/chevron.svg"
-            pushView: "../settings/ViewAppPermissions.qml"
-        }
+
+            if(VPN.protectSelectedAppsSupported){
+                append( {
+                    //% "App Permissions"
+                    settingTitle: qsTrId("vpn.settings.appPermissions"),
+                    imageLeftSource: "../resources/settings/apps.svg",
+                    imageRightSource: "../resources/chevron.svg",
+                    pushView: "../settings/ViewAppPermissions.qml"
+                });
+            }
+
 
             append({
                 settingTitle: qsTrId("vpn.settings.aboutUs"),
@@ -139,24 +143,6 @@ VPNFlickable {
         visible: VPN.startOnBootSupported
     }
 
-    VPNClickableRow {
-        id: appPermissionsRow
-        //% "App Permissions"
-        anchors.top: VPN.startOnBootSupported ? startAtBootCheckBox.bottom : manageAccountButton.bottom
-        anchors.topMargin: Theme.vSpacing
-        visible: VPN.protectSelectedAppsSupported
-        accessibleName: qsTrId("vpn.settings.appPermissions")
-        onClicked: {
-                return settingsStackView.push("../settings/ViewAppPermissions.qml");
-        }
-        VPNSettingsItem {
-            setting: qsTrId("vpn.settings.appPermissions")
-            imageLeftSrc: "../resources/settings/apps.svg"
-            imageRightSrc: "../resources/chevron.svg"
-        }
-
-    }
-
     Component {
         id: getHelpComponent
 
@@ -179,15 +165,7 @@ VPNFlickable {
 
         height: parent.height - y
         width: parent.width
-        y:{
-            if(VPN.protectSelectedAppsSupported){
-                return appPermissionsRow.y + Theme.rowHeight+5;
-            }
-            if(VPN.startOnBootSupported){
-                return startAtBootCheckBox.y + startAtBootCheckBox.height + Theme.vSpacing;
-            }
-            return manageAccountButton.y + manageAccountButton.height + Theme.vSpacing;
-        }
+        y: Theme.vSpacing + (VPN.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
         spacing: Theme.listSpacing
         //% "Settings"
         listName: qsTrId("vpn.main.settings")

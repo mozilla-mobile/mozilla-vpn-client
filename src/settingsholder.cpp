@@ -269,6 +269,7 @@ void SettingsHolder::removeVpnDisabledApp(const QString& appID) {
     applist = vpnDisabledApps();
   }
   applist.removeAll(appID);
+  setVpnDisabledApps(applist);
 }
 void SettingsHolder::addVpnDisabledApp(const QString& appID) {
   QStringList applist;
@@ -276,4 +277,5 @@ void SettingsHolder::addVpnDisabledApp(const QString& appID) {
     applist = vpnDisabledApps();
   }
   applist.append(appID);
+  setVpnDisabledApps(applist);
 }
