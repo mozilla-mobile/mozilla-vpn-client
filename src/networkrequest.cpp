@@ -259,21 +259,22 @@ void NetworkRequest::replyFinished() {
   logger.log() << "Network reply received - status:" << status
                << "- expected:" << m_status;
 
+  QByteArray data = m_reply->readAll();
+
   if (m_reply->error() != QNetworkReply::NoError) {
     logger.log() << "Network error:" << m_reply->error()
-                 << "status code:" << status << "- body:" << m_reply->readAll();
-    emit requestFailed(m_reply->error());
+                 << "status code:" << status << "- body:" << data;
+    emit requestFailed(m_reply->error(), data);
     return;
   }
 
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    emit requestFailed(m_reply->error());
+    emit requestFailed(m_reply->error(), data);
     return;
   }
 
-  QByteArray data = m_reply->readAll();
   emit requestCompleted(data);
 }
 

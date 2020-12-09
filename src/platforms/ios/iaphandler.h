@@ -46,6 +46,7 @@ class IAPHandler final : public QObject {
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
+  void alreadySubscribed();
 
   void priceValueChanged();
 

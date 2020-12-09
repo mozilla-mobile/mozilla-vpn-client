@@ -46,6 +46,7 @@ class MozillaVPN final : public QObject {
     StateUpdateRequired,
     StateSubscriptionNeeded,
     StateSubscriptionValidation,
+    StateSubscriptionBlocked,
     StateDeviceLimit,
   };
   Q_ENUM(State);
@@ -69,6 +70,7 @@ class MozillaVPN final : public QObject {
     LinkTermsOfService,
     LinkPrivacyNotice,
     LinkUpdate,
+    LinkSubscriptionBlocked,
   };
   Q_ENUM(LinkType)
 
@@ -219,6 +221,7 @@ class MozillaVPN final : public QObject {
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionFailedInternal(bool canceledByUser);
+  void alreadySubscribed();
 #endif
 
   void completeActivation();

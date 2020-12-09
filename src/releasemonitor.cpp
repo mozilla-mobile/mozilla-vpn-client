@@ -38,7 +38,7 @@ void ReleaseMonitor::runInternal() {
   NetworkRequest* request = NetworkRequest::createForVersions(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Versions request failed" << error;
             emit releaseChecked();
             schedule();
