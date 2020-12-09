@@ -8,13 +8,12 @@
 #include "applistprovider.h"
 #include <QObject>
 
-class DummyAppListProvider : public AppListProvider
-{
-    Q_OBJECT
-public:
- DummyAppListProvider(QObject* parent);
- ~DummyAppListProvider();
- void getApplicationList() override;
+class DummyAppListProvider : public AppListProvider {
+  Q_OBJECT
+ public:
+  DummyAppListProvider(QObject* parent);
+  ~DummyAppListProvider();
+  void getApplicationList() override;
 };
 
-#endif // DUMMYAPPLISTPROVIDER_H
+#endif  // DUMMYAPPLISTPROVIDER_H

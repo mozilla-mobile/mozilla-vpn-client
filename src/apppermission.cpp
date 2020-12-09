@@ -20,7 +20,7 @@
 namespace {
 Logger logger(LOG_MAIN, "AppPermission");
 AppPermission* s_instance = nullptr;
-}
+}  // namespace
 
 AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(AppPermission);
@@ -37,53 +37,50 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
 }
-AppPermission::~AppPermission(){
+AppPermission::~AppPermission() {
   MVPN_COUNT_DTOR(AppPermission);
   Q_ASSERT(s_instance = this);
   s_instance = nullptr;
 }
 
-AppPermission* AppPermission::instance(){
-    if(s_instance== nullptr){
-      new AppPermission(qApp);
-    }
-    Q_ASSERT(s_instance);
-    return s_instance;
+AppPermission* AppPermission::instance() {
+  if (s_instance == nullptr) {
+    new AppPermission(qApp);
+  }
+  Q_ASSERT(s_instance);
+  return s_instance;
 }
 
 QHash<int, QByteArray> AppPermission::roleNames() const {
-      QHash<int, QByteArray> roles;
-      roles[AppNameRole] ="appName";
-      roles[AppIdRole] ="appID";
-      roles[AppEnabledRole] ="appIsEnabled";
-      return roles;
-
+  QHash<int, QByteArray> roles;
+  roles[AppNameRole] = "appName";
+  roles[AppIdRole] = "appID";
+  roles[AppEnabledRole] = "appIsEnabled";
+  return roles;
 }
 int AppPermission::rowCount(const QModelIndex&) const {
-    return m_applist.size();
-
+  return m_applist.size();
 }
 QVariant AppPermission::data(const QModelIndex& index, int role) const {
-    if (!index.isValid()) {
-      return QVariant();
-    }
-    QString appID = m_applist.keys().at(index.row());
+  if (!index.isValid()) {
+    return QVariant();
+  }
+  QString appID = m_applist.keys().at(index.row());
 
-
-    switch(role){
+  switch (role) {
     case AppNameRole:
-        return m_applist[appID];
+      return m_applist[appID];
     case AppIdRole:
-        return QVariant(appID);
+      return QVariant(appID);
     case AppEnabledRole:
-        if(!SettingsHolder::instance()->hasVpnDisabledApps()){
-            // All are enabled then
-            return true;
-        }
-        return !SettingsHolder::instance()->vpnDisabledApps().contains(appID);
-     default:
-       return QVariant();
-    }
+      if (!SettingsHolder::instance()->hasVpnDisabledApps()) {
+        // All are enabled then
+        return true;
+      }
+      return !SettingsHolder::instance()->vpnDisabledApps().contains(appID);
+    default:
+      return QVariant();
+  }
 }
 
 Q_INVOKABLE void AppPermission::flip(const QString& appID) {

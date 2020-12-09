@@ -47,4 +47,4 @@ class AppPermission final : public QAbstractListModel {
  signals:
 };
 
-#endif // APPPERMISSION_H
+#endif  // APPPERMISSION_H
