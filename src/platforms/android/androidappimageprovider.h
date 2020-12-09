@@ -9,7 +9,8 @@
 #include <QQuickImageProvider>
 #include <QAndroidJniObject>
 
-class AndroidAppImageProvider : public QQuickImageProvider, public QObject {
+class AndroidAppImageProvider final : public QQuickImageProvider,
+                                      public QObject {
  public:
   AndroidAppImageProvider(QObject* parent);
   ~AndroidAppImageProvider();

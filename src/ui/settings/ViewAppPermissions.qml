@@ -75,7 +75,7 @@ VPNFlickable {
 
         anchors.top: applistLabel.bottom
         anchors.topMargin: 16
-        anchors.left: parent.left
+        anchors.left: vpnFlickable.left
         anchors.leftMargin: defaultMargin
         anchors.rightMargin: defaultMargin
         width: parent.width - defaultMargin * 2
@@ -147,12 +147,3 @@ VPNFlickable {
     }
 
 }
-
-
-
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/

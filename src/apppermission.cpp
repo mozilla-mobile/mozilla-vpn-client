@@ -36,10 +36,6 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
 
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
-
-  if (SettingsHolder::instance()->hasVpnDisabledApps()) {
-    m_disabledAppList = SettingsHolder::instance()->vpnDisabledApps();
-  }
 }
 AppPermission::~AppPermission(){
   MVPN_COUNT_DTOR(AppPermission);
@@ -91,14 +87,14 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
 }
 
 Q_INVOKABLE void AppPermission::flip(const QString& appID) {
-  if (m_disabledAppList.contains(appID)) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->hasVpnDisabledApp(appID)) {
     logger.log() << "Enabled --" << appID << " for VPN";
-    m_disabledAppList.removeAll(appID);
+    settingsHolder->removeVpnDisabledApp(appID);
   } else {
     logger.log() << "Disabled --" << appID << " for VPN";
-    m_disabledAppList.append(appID);
+    settingsHolder->addVpnDisabledApp(appID);
   }
-  SettingsHolder::instance()->setVpnDisabledApps(m_disabledAppList);
 
   int index = m_applist.keys().indexOf(appID);
   dataChanged(createIndex(index, 0), createIndex(index, 0));
@@ -112,13 +108,13 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   if (!m_applist.isEmpty()) {
     // Check the Disabled-List
     auto keys = applist.keys();
-    foreach (QString blockedAppID, m_disabledAppList) {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    foreach (QString blockedAppID, settingsHolder->vpnDisabledApps()) {
       if (!keys.contains(blockedAppID)) {
         logger.log() << "Removed obsolete appid" << blockedAppID;
-        m_disabledAppList.removeAll(blockedAppID);
+        settingsHolder->removeVpnDisabledApp(blockedAppID);
       }
     }
-    SettingsHolder::instance()->setVpnDisabledApps(m_disabledAppList);
   }
   beginResetModel();
   logger.log() << "Recived new Applist -- Entrys: " << applist.size();

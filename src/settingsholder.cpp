@@ -255,3 +255,25 @@ GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
 #endif
 
 #undef GETSET
+
+bool SettingsHolder::hasVpnDisabledApp(const QString& appID) {
+  QStringList applist;
+  if (hasVpnDisabledApps()) {
+    applist = vpnDisabledApps();
+  }
+  return applist.contains(appID);
+}
+void SettingsHolder::removeVpnDisabledApp(const QString& appID) {
+  QStringList applist;
+  if (hasVpnDisabledApps()) {
+    applist = vpnDisabledApps();
+  }
+  applist.removeAll(appID);
+}
+void SettingsHolder::addVpnDisabledApp(const QString& appID) {
+  QStringList applist;
+  if (hasVpnDisabledApps()) {
+    applist = vpnDisabledApps();
+  }
+  applist.append(appID);
+}

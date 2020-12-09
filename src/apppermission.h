@@ -43,7 +43,6 @@ class AppPermission final : public QAbstractListModel {
  private:
   AppPermission(QObject* parent);
   AppListProvider* m_listprovider = nullptr;
-  QStringList m_disabledAppList;
   QMap<QString, QString> m_applist;
  signals:
 };
