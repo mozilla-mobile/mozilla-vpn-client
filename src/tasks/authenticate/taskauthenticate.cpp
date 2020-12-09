@@ -63,30 +63,29 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
   m_authenticationListener = AuthenticationListener::create(this);
 
-  connect(m_authenticationListener, &AuthenticationListener::completed,
-          [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
-            logger.log() << "Authentication completed with code:"
-                         << pkceCodeSucces;
+  connect(
+      m_authenticationListener, &AuthenticationListener::completed,
+      [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
+        logger.log() << "Authentication completed with code:" << pkceCodeSucces;
 
-            NetworkRequest* request =
-                NetworkRequest::createForAuthenticationVerification(
-                    this, pkceCodeSucces, pkceCodeVerifier);
+        NetworkRequest* request =
+            NetworkRequest::createForAuthenticationVerification(
+                this, pkceCodeSucces, pkceCodeVerifier);
 
-            connect(request, &NetworkRequest::requestFailed,
-                    [this, vpn](QNetworkReply::NetworkError error,
-                                const QByteArray&) {
-                      logger.log()
-                          << "Failed to complete the authentication" << error;
-                      vpn->errorHandle(ErrorHandler::toErrorType(error));
-                      emit completed();
-                    });
+        connect(
+            request, &NetworkRequest::requestFailed,
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+              logger.log() << "Failed to complete the authentication" << error;
+              vpn->errorHandle(ErrorHandler::toErrorType(error));
+              emit completed();
+            });
 
-            connect(request, &NetworkRequest::requestCompleted,
-                    [this, vpn](const QByteArray& data) {
-                      logger.log() << "Authentication completed";
-                      authenticationCompleted(vpn, data);
-                    });
-          });
+        connect(request, &NetworkRequest::requestCompleted,
+                [this, vpn](const QByteArray& data) {
+                  logger.log() << "Authentication completed";
+                  authenticationCompleted(vpn, data);
+                });
+      });
 
   connect(m_authenticationListener, &AuthenticationListener::failed,
           [this, vpn](const ErrorHandler::ErrorType error) {
