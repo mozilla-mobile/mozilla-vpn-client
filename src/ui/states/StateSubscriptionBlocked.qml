@@ -3,78 +3,135 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-
 VPNFlickable {
     id: vpnFlickable
 
-    width: window.width
-    flickContentHeight: footerContent.height + spacer1.height + vpnPanel.height + featureListBackground.height + (Theme.windowMargin * 4)
-
-    Item {
-        id: spacer1
-
-        width: parent.width
-        height: (Math.max(window.safeContentHeight * .04, Theme.windowMargin * 2))
-    }
-
-    VPNPanel {
-        id: vpnPanel
-
-        //% "Error confirming subscription…"
-        logoTitle: qsTrId("vpn.subscriptionBlocked.title").arg(VPNIAP.priceValue)
-        //% "Another Firefox Account has already subscribed using this Apple ID\nVisit our help center below to learn more about how to manage your subscriptions"
-        logoSubtitle: qsTrId("vpn.subscriptionBlocked.subtitle")
-        anchors.top: spacer1.bottom
-        logo: "../resources/logo.svg"
-        logoSize: 48
+    Component.onCompleted: {
+        flickContentHeight = vpnFlickable.childrenRect.height;
     }
 
     ColumnLayout {
-        id: footerContent
+        width: vpnFlickable.width
+        anchors.fill: parent
+        anchors.topMargin: vpnFlickable.height * 0.08
 
-        anchors.top: vpnPanel.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(vpnFlickable.width, Theme.maxHorizontalContentWidth)
-        spacing: 0
+        VPNHeadline {
+            id: headline
 
-        VPNButton {
-            id: getHelp
-
-            //% "Get Help"
-            text: qsTrId("vpn.subscriptionBlocked.getHelp")
-            Layout.alignment: Qt.AlignHCenter
-            loaderVisible: false
-            onClicked: VPN.openLink(VPN.LinkSubscriptionBlocked)
+            //% "Error confirming subscription…"
+            text: qsTrId("vpn.subscriptionBlocked.title")
+            Layout.preferredHeight: paintedHeight
+            Layout.preferredWidth: Math.max(Theme.maxTextWidth, vpnFlickable.width * 0.85)
         }
 
-        Rectangle { // vertical spacer
-            color: "transparent"
-            Layout.preferredHeight: Theme.windowMargin * 1.5
+
+        Item {
+            id: wrapper
+
+            Layout.preferredHeight: parent.height - headline.paintedHeight - footerItems.childrenRect.height
             Layout.fillWidth: true
-        }
+            Item {
+                id: floatingContentWrapper
 
-        VPNSignOut {
-            anchors.bottom: undefined
-            anchors.bottomMargin: undefined
-            anchors.horizontalCenter: undefined
-            Layout.alignment: Qt.AlignHCenter
-            onClicked: {
-                VPNController.logout();
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.left: parent.left
+                height: childrenRect.height
+
+                Rectangle {
+                    id: warningIconWrapper
+
+                    height: 48
+                    width: 48
+                    color: Theme.red
+                    radius: height / 2
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Image {
+                        source: "../resources/warning-white.svg"
+                        antialiasing: true
+                        sourceSize.height: 20
+                        sourceSize.width: 20
+                        anchors.centerIn: parent
+                    }
+
+                }
+
+                VPNTextBlock {
+                    id: copyBlock1
+
+                    anchors.top: warningIconWrapper.bottom
+                    anchors.topMargin: Theme.windowMargin * 2
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    width: Theme.maxTextWidth
+                    font.pixelSize: Theme.fontSize
+                    lineHeight: 22
+                    //% "Another Firefox Account has already subscribed using this Apple ID."
+                    text:qsTrId("vpn.subscriptionBlocked.anotherFxaSubscribed")
+                }
+
+                VPNTextBlock {
+                    id: copyBlock2
+
+                    anchors.top: copyBlock1.bottom
+                    anchors.topMargin: Theme.windowMargin * 1.5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    width: Theme.maxTextWidth
+                    font.pixelSize: Theme.fontSize
+                    lineHeight: 22
+                    //% "Visit our help center to learn more about managing your subscriptions."
+                    text: qsTrId("vpn.subscriptionBlocked.visitHelpCenter")
+                }
+
+                Rectangle {
+                    height: Theme.rowHeight * 2
+                    width: parent.width
+                    color: "transparent"
+                    anchors.top: copyBlock2.bottom
+                }
+
             }
+
         }
 
-        Rectangle {
+        Item {
+            id: footerItems
+            Layout.preferredHeight: childrenRect.height
             Layout.fillWidth: true
-            Layout.preferredHeight: Theme.windowMargin * 2
-            color: "transparent"
+            Layout.alignment: Qt.AlignBottom
+
+            VPNButton {
+                //% "Get Help"
+                text: qsTrId("vpn.subscriptionBlocked.getHelp")
+                anchors.bottom: spacer.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                loaderVisible: false
+                onClicked: VPN.openLink(VPN.LinkSubscriptionBlocked)
+            }
+
+            Rectangle {
+                id: spacer
+                anchors.bottom: signOff.top
+                height: Theme.windowMargin
+            }
+
+            VPNSignOut {
+                id: signOff
+
+                height: Theme.rowHeight
+                onClicked: {
+                    VPNController.logout();
+                }
+            }
+
         }
-
     }
-
 }
