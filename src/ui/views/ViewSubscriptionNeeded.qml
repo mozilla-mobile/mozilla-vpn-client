@@ -42,7 +42,6 @@ VPNFlickable {
     VPNPanel {
         id: vpnPanel
 
-        // TODO: Get pricing from settings?
         //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
         //% "Subscribe for %1/mo"
         logoTitle: qsTrId("vpn.subscription.title").arg(VPNIAP.priceValue)
