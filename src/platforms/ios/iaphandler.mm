@@ -332,7 +332,7 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
             }
 
             int errorNumber = errorValue.toInt();
-            if (errorNumber != 142) {
+            if (errorNumber != 145) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();
               return;

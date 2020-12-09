@@ -66,11 +66,9 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
   logger.log() << "IOSAuthenticationListener initialize";
 
   query.addQueryItem("platform", "ios");
-
-  // If we want to force the IAP settings:
-  // query.addQueryItem("iap", "true");
-
   url.setQuery(query);
+
+  logger.log() << "Authentication URL:" << url.toString();
 
   if (session) {
     [session dealloc];
