@@ -29,6 +29,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
+        apppermission.cpp \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
@@ -79,6 +80,7 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
+        platforms/dummy/dummyapplistprovider.cpp\
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -97,6 +99,8 @@ SOURCES += \
         timersingleshot.cpp
 
 HEADERS += \
+        apppermission.h \
+        applistprovider.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportalactivator.h \
@@ -161,6 +165,7 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
+        platforms/dummy/dummyapplistprovider.h \
         timersingleshot.h
 
 debug {
@@ -262,7 +267,6 @@ else:linux:!android {
     target.path = $${PREFIX}/bin
     INSTALLS += target
 }
-
 else:android {
     message(Android build)
 
@@ -274,6 +278,7 @@ else:android {
     QT += androidextras
     QT += qml
     QT += xml
+    LIBS += \-ljnigraphics\
 
     DEFINES += MVPN_ANDROID
 
@@ -286,6 +291,8 @@ else:android {
                 platforms/android/androidwebview.cpp \
                 platforms/android/androidstartatbootwatcher.cpp \
                 platforms/android/androiddatamigration.cpp \
+                platforms/android/androidappimageprovider.cpp \
+                platforms/android/androidapplistprovider.cpp \
                 platforms/android/androidsharedprefs.cpp
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
@@ -294,6 +301,8 @@ else:android {
                 platforms/android/androidwebview.h \
                 platforms/android/androidstartatbootwatcher.h\
                 platforms/android/androiddatamigration.h\
+                platforms/android/androidappimageprovider.h \
+                platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h
 
     # Usable Linux Imports
@@ -316,7 +325,6 @@ else:android {
     MOC_DIR =
     RCC_DIR =
     UI_DIR =
-    ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 
     DISTFILES += \
         ../android/AndroidManifest.xml \
@@ -509,7 +517,7 @@ else{
     PRE_TARGETDEPS += ts
 }
 
-
+ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations

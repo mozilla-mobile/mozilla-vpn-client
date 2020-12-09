@@ -24,6 +24,8 @@ class SettingsHolder final : public QObject {
                  startAtBootChanged)
   Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY
                  languageCodeChanged)
+  Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
+                 setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
 
  public:
   SettingsHolder();
@@ -67,6 +69,13 @@ class SettingsHolder final : public QObject {
          setCaptivePortalIpv6Addresses)
   GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown,
          setPostAuthenticationShown);
+  GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
+         setProtectSelectedApps)
+  GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+
+  bool hasVpnDisabledApp(const QString& appID);
+  void removeVpnDisabledApp(const QString& appID);
+  void addVpnDisabledApp(const QString& appID);
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
@@ -97,6 +106,7 @@ class SettingsHolder final : public QObject {
   void captivePortalAlertChanged(bool value);
   void startAtBootChanged(bool value);
   void languageCodeChanged(const QString& languageCode);
+  void protectSelectedAppsChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

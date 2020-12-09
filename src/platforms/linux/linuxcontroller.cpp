@@ -67,8 +67,10 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 
 void LinuxController::activate(
     const Server& server, const Device* device, const Keys* keys,
-    const QList<IPAddressRange>& allowedIPAddressRanges, bool forSwitching) {
+    const QList<IPAddressRange>& allowedIPAddressRanges,
+    const QList<QString>& vpnDisabledApps, bool forSwitching) {
   Q_UNUSED(forSwitching);
+  Q_UNUSED(vpnDisabledApps);
 
   logger.log() << "LinuxController activated";
   connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges),
