@@ -24,7 +24,7 @@ VPNFlickable {
             id: headline
 
             //% "Error confirming subscription…"
-            text: qsTrId("vpn.subscription.subscriptionValidationError")
+            text: qsTrId("vpn.subscriptionBlocked.title")
             Layout.preferredHeight: paintedHeight
             Layout.preferredWidth: Math.max(Theme.maxTextWidth, vpnFlickable.width * 0.85)
         }
@@ -74,7 +74,7 @@ VPNFlickable {
                     font.pixelSize: Theme.fontSize
                     lineHeight: 22
                     //% "Another Firefox Account has already subscribed using this Apple ID."
-                    text:qsTrId("vpn.subscription.anotherFxaSubscribed")
+                    text:qsTrId("vpn.subscriptionBlocked.anotherFxaSubscribed")
                 }
 
                 VPNTextBlock {
@@ -88,7 +88,7 @@ VPNFlickable {
                     font.pixelSize: Theme.fontSize
                     lineHeight: 22
                     //% "Visit our help center to learn more about managing your subscriptions."
-                    text: qsTrId("vpn.subscription.visitHelpCenter")
+                    text: qsTrId("vpn.subscriptionBlocked.visitHelpCenter")
                 }
 
                 Rectangle {
