@@ -48,6 +48,12 @@ Item {
         }
         model: delegateModel
 
+        footer: Rectangle {
+            height: fullscreenRequired() ? Theme.rowHeight * 4 : Theme.rowHeight * 2
+            color: "transparent"
+            width: serverList.width
+        }
+
         Component.onCompleted: {
             for (let idx = 0; idx < serverList.count; idx++) {
                 if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
