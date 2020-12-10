@@ -154,7 +154,7 @@ class MozillaVPN final : public QObject {
 
   void accountChecked(const QByteArray& json);
 
-  const QList<Server> getServers() const;
+  const QList<Server> servers() const;
 
   void errorHandle(ErrorHandler::ErrorType error);
 

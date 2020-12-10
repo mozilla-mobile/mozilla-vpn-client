@@ -62,12 +62,22 @@ void migrateFxaFile(const QString& fileName) {
 }
 
 void migrateWireguardFile(const QString& fileName) {
+  MozillaVPN* vpn = MozillaVPN::instance();
+
   QSettings settings(fileName, QSettings::IniFormat);
 
   QString privateKey = settings.value("Interface/PrivateKey").toString();
   if (!privateKey.isEmpty()) {
-    MozillaVPN::instance()->deviceAdded(Device::currentDeviceName(), QString(),
-                                        privateKey);
+    vpn->deviceAdded(Device::currentDeviceName(), QString(), privateKey);
+  }
+
+  QString endpoint =
+      settings.value("Peer/Endpoint").toString().split(":").at(0);
+  if (!endpoint.isEmpty()) {
+    ServerData serverData;
+    if (vpn->serverCountryModel()->pickByIPv4Address(endpoint, serverData)) {
+      serverData.writeSettings();
+    }
   }
 }
 
@@ -124,6 +134,4 @@ void WindowsDataMigration::migrate() {
     migrateWireguardFile(wireguardFile);
     break;
   }
-
-  // TODO: default server?
 }

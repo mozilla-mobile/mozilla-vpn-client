@@ -744,8 +744,8 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
-const QList<Server> MozillaVPN::getServers() const {
-  return m_private->m_serverCountryModel.getServers(m_private->m_serverData);
+const QList<Server> MozillaVPN::servers() const {
+  return m_private->m_serverCountryModel.servers(m_private->m_serverData);
 }
 
 void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {

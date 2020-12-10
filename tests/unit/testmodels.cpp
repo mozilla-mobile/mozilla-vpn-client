@@ -554,7 +554,7 @@ void TestModels::serverCityBasic() {
   ServerCity sc;
   QCOMPARE(sc.name(), "");
   QCOMPARE(sc.code(), "");
-  QVERIFY(sc.getServers().isEmpty());
+  QVERIFY(sc.servers().isEmpty());
 }
 
 void TestModels::serverCityFromJson_data() {
@@ -574,7 +574,7 @@ void TestModels::serverCityFromJson_data() {
   QTest::addRow("code") << obj << false;
 
   obj.insert("servers", "servers");
-  QTest::addRow("servers invalid") << obj << false;
+  QTest::addRow("servers invalid 1") << obj << false;
 
   QJsonArray servers;
   obj.insert("servers", servers);
@@ -583,12 +583,12 @@ void TestModels::serverCityFromJson_data() {
 
   servers.append(42);
   obj.insert("servers", servers);
-  QTest::addRow("servers invalid") << obj << false;
+  QTest::addRow("servers invalid 2") << obj << false;
 
   QJsonObject server;
   servers.replace(0, server);
   obj.insert("servers", servers);
-  QTest::addRow("servers invalid") << obj << false;
+  QTest::addRow("servers invalid 3") << obj << false;
 
   server.insert("hostname", "hostname");
   server.insert("ipv4_addr_in", "ipv4AddrIn");
@@ -603,8 +603,8 @@ void TestModels::serverCityFromJson_data() {
 
   servers.replace(0, server);
   obj.insert("servers", servers);
-  QTest::addRow("servers invalid") << obj << true << "name"
-                                   << "code" << 1;
+  QTest::addRow("servers ok") << obj << true << "name"
+                              << "code" << 1;
 }
 
 void TestModels::serverCityFromJson() {
@@ -616,7 +616,7 @@ void TestModels::serverCityFromJson() {
   if (!result) {
     QCOMPARE(sc.name(), "");
     QCOMPARE(sc.code(), "");
-    QVERIFY(sc.getServers().isEmpty());
+    QVERIFY(sc.servers().isEmpty());
     return;
   }
 
@@ -627,7 +627,7 @@ void TestModels::serverCityFromJson() {
   QCOMPARE(sc.code(), code);
 
   QFETCH(int, servers);
-  QCOMPARE(sc.getServers().length(), servers);
+  QCOMPARE(sc.servers().length(), servers);
 
   ServerCity scB(sc);
   QCOMPARE(scB.name(), sc.name());
@@ -796,10 +796,10 @@ void TestModels::serverCountryModelFromJson_data() {
   d.insert("cities", cities);
   countries.append(d);
   obj.insert("countries", countries);
-  QTest::addRow("good but empty cities")
-      << QJsonDocument(obj).toJson() << true << 2
-      << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(QStringList{"serverCityName"});
+  QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 2
+                        << QVariant("serverCountryName")
+                        << QVariant("serverCountryCode")
+                        << QVariant(QStringList{"serverCityName"});
 }
 
 void TestModels::serverCountryModelFromJson() {
@@ -882,6 +882,77 @@ void TestModels::serverCountryModelFromJson() {
       QCOMPARE(m.countryName(code.toString()), name.toString());
       QCOMPARE(m.countryName("invalid"), QString());
     }
+  }
+}
+
+void TestModels::serverCountryModelPick() {
+  QJsonObject server;
+  server.insert("hostname", "hostname");
+  server.insert("ipv4_addr_in", "ipv4AddrIn");
+  server.insert("ipv4_gateway", "ipv4Gateway");
+  server.insert("ipv6_addr_in", "ipv6AddrIn");
+  server.insert("ipv6_gateway", "ipv6Gateway");
+  server.insert("public_key", "publicKey");
+  server.insert("weight", 1234);
+  server.insert("port_ranges", QJsonArray());
+
+  QJsonArray servers;
+  servers.append(server);
+
+  QJsonObject city;
+  city.insert("code", "serverCityCode");
+  city.insert("name", "serverCityName");
+  city.insert("servers", servers);
+
+  QJsonArray cities;
+  cities.append(city);
+
+  QJsonObject country;
+  country.insert("name", "serverCountryName");
+  country.insert("code", "serverCountryCode");
+  country.insert("cities", cities);
+
+  QJsonArray countries;
+  countries.append(country);
+
+  QJsonObject obj;
+  obj.insert("countries", countries);
+
+  QByteArray json = QJsonDocument(obj).toJson();
+
+  ServerCountryModel m;
+  QCOMPARE(m.fromJson(json), true);
+
+  {
+    ServerData sd;
+    QCOMPARE(m.pickIfExists("serverCountryCode", "serverCityCode", sd), true);
+    QCOMPARE(sd.countryCode(), "serverCountryCode");
+    QCOMPARE(sd.country(), "serverCountryName");
+    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(m.exists(sd), true);
+
+    QCOMPARE(m.pickIfExists("serverCountryCode2", "serverCityCode", sd), false);
+    QCOMPARE(m.pickIfExists("serverCountryCode", "serverCityCode2", sd), false);
+  }
+
+  {
+    ServerData sd;
+    m.pickRandom(sd);
+    QCOMPARE(sd.countryCode(), "serverCountryCode");
+    QCOMPARE(sd.country(), "serverCountryName");
+    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(m.exists(sd), true);
+  }
+
+  {
+    ServerData sd;
+    QCOMPARE(m.pickByIPv4Address("ipv4AddrIn", sd), true);
+    QCOMPARE(sd.countryCode(), "serverCountryCode");
+    QCOMPARE(sd.country(), "serverCountryName");
+    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(m.exists(sd), true);
+
+    QCOMPARE(m.pickByIPv4Address("ipv4AddrIn2", sd), false);
   }
 }
 

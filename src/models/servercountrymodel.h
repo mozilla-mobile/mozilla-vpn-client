@@ -38,9 +38,12 @@ class ServerCountryModel final : public QAbstractListModel {
   bool pickIfExists(const QString& countryCode, const QString& cityCode,
                     ServerData& data) const;
 
+  // For windows data migration.
+  bool pickByIPv4Address(const QString& ipv4Address, ServerData& data) const;
+
   bool exists(ServerData& data) const;
 
-  const QList<Server> getServers(const ServerData& data) const;
+  const QList<Server> servers(const ServerData& data) const;
 
   const QString countryName(const QString& countryCode) const;
 

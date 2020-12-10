@@ -72,7 +72,7 @@ int CommandServers::run(QStringList& tokens) {
       for (const ServerCity& city : country.cities()) {
         stream << "  - City: " << city.name() << " (" << city.code() << ")"
                << Qt::endl;
-        for (const Server& server : city.getServers()) {
+        for (const Server& server : city.servers()) {
           stream << "    - Server: " << server.hostname() << Qt::endl;
 
           if (verboseOption.m_set) {

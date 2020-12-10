@@ -29,7 +29,7 @@ class ServerCountry final {
 
   const QList<ServerCity>& cities() const { return m_cities; }
 
-  const QList<Server> getServers(const ServerData& data) const;
+  const QList<Server> servers(const ServerData& data) const;
 
  private:
   QString m_name;
