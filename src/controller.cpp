@@ -152,8 +152,11 @@ void Controller::activate() {
       getAllowedIPAddressRanges(server);
 
   QList<QString> vpnDisabledApps;
-  if (SettingsHolder::instance()->protectSelectedApps()) {
-    vpnDisabledApps = SettingsHolder::instance()->vpnDisabledApps();
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->protectSelectedApps() &&
+      settingsHolder->hasVpnDisabledApps()) {
+    vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
   Q_ASSERT(m_impl);
