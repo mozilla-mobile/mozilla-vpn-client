@@ -85,7 +85,7 @@ void NotificationHandler::showNotification() {
 
         //% "VPN Disconnected"
         title = qtTrId("vpn.systray.statusDisconnected.title");
-        //% "Disconnected from to %1, %2"
+        //% "Disconnected from %1, %2"
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")
