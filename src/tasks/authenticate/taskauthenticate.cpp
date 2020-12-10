@@ -58,9 +58,6 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
           .toBase64();
   Q_ASSERT(pkceCodeChallenge.length() == 44);
 
-  logger.log() << "pkceCodeVerifier:" << pkceCodeVerifier;
-  logger.log() << "pkceCodeChallenge:" << pkceCodeChallenge;
-
   m_authenticationListener = AuthenticationListener::create(this);
 
   connect(
