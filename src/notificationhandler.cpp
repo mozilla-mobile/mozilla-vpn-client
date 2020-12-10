@@ -65,8 +65,7 @@ void NotificationHandler::showNotification() {
                       .arg(m_switchingServerCountry)
                       .arg(m_switchingServerCity)
                       .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city())
-                      .arg(vpn->controller()->switchingCity());
+                      .arg(vpn->currentServer()->city());
       } else {
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
