@@ -35,9 +35,9 @@ VPNFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    // TODO Should we hide the alert after "Not now" is clicked ?
-                    // Can it be accessed again?
-                    alertBox.visible = true;
+                    // Let's hide the alert.
+                    VPN.hideUpdateRecommendedAlert();
+
                     stackview.pop(StackView.Immediate);
                 }
             }
