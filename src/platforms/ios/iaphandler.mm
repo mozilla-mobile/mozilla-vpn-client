@@ -25,7 +25,8 @@ Logger logger(LOG_IAP, "IAPHandler");
 IAPHandler* s_instance = nullptr;
 }  // namespace
 
-@interface IAPHandlerDelegate : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
+@interface IAPHandlerDelegate
+    : NSObject <SKRequestDelegate, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
   IAPHandler* m_handler;
 }
 @end
@@ -161,6 +162,19 @@ IAPHandler* s_instance = nullptr;
   }
 }
 
+- (void)requestDidFinish:(SKRequest*)request {
+  logger.log() << "Recept refreshed correctly";
+  m_handler->stopSubscription();
+  m_handler->processCompletedTransactions(QStringList());
+}
+
+- (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
+  logger.log() << "Failed to refresh the receipt"
+               << QString::fromNSString(error.localizedDescription);
+  m_handler->stopSubscription();
+  emit m_handler->subscriptionFailed();
+}
+
 @end
 
 // static
@@ -252,7 +266,10 @@ void IAPHandler::startSubscription(bool restore) {
 
   if (restore) {
     logger.log() << "Restore the subscription";
-    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+    SKReceiptRefreshRequest* refresh =
+        [[SKReceiptRefreshRequest alloc] initWithReceiptProperties:nil];
+    refresh.delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
+    [refresh start];
     return;
   }
 
