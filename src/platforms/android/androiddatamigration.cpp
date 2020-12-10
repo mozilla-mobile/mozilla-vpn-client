@@ -22,8 +22,11 @@
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidDataMigration");
+#ifdef QT_DEBUG
+const QString MIGRATION_FILE = "org.mozilla.firefox.vpn.debug_preferences.xml";
+#else
 const QString MIGRATION_FILE = "org.mozilla.firefox.vpn.preferences.xml";
-
+#endif
 void importDeviceInfo() {
   QVariant prefValue =
       AndroidSharedPrefs::GetValue(MIGRATION_FILE, "pref_current_device");
