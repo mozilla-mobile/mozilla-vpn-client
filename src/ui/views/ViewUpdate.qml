@@ -195,7 +195,6 @@ VPNFlickable {
             anchors.horizontalCenter: undefined
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
-                mainStackView.pop(StackView.Immediate);
                 VPNController.logout();
             }
         }
