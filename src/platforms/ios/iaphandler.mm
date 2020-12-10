@@ -48,10 +48,12 @@ IAPHandler* s_instance = nullptr;
 
   if ([products count] != 1) {
     NSString* identifier = [response.invalidProductIdentifiers firstObject];
-    m_handler->unknownProductRegistered(QString::fromNSString(identifier));
+    QMetaObject::invokeMethod(m_handler, "unknownProductRegistered", Qt::QueuedConnection,
+                              Q_ARG(QString, QString::fromNSString(identifier)));
   } else {
     SKProduct* product = [[products firstObject] retain];
-    m_handler->productRegistered(product);
+    QMetaObject::invokeMethod(m_handler, "productRegistered", Qt::QueuedConnection,
+                              Q_ARG(void*, product));
   }
 
   [request release];
@@ -125,26 +127,27 @@ IAPHandler* s_instance = nullptr;
     return;
   }
 
-  m_handler->stopSubscription();
+  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
 
   if (canceledTransactions) {
     logger.log() << "Subscription canceled";
-    emit m_handler->subscriptionCanceled();
+    QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (failedTransactions) {
     logger.log() << "Subscription failed";
-    emit m_handler->subscriptionFailed();
+    QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (completedTransactionIds.isEmpty()) {
     Q_ASSERT(completedTransactions);
     logger.log() << "Subscription completed - but all the transactions are known";
-    emit m_handler->subscriptionFailed();
+    QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (MozillaVPN::instance()->userAuthenticated()) {
     Q_ASSERT(completedTransactions);
     logger.log() << "Subscription completed. Let's start the validation";
-    m_handler->processCompletedTransactions(completedTransactionIds);
+    QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
+                              Q_ARG(QStringList, completedTransactionIds));
   } else {
     Q_ASSERT(completedTransactions);
     logger.log() << "Subscription completed - but the user is not authenticated yet";
-    emit m_handler->subscriptionFailed();
+    QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   }
 
   for (SKPaymentTransaction* transaction in transactions) {
@@ -164,15 +167,16 @@ IAPHandler* s_instance = nullptr;
 
 - (void)requestDidFinish:(SKRequest*)request {
   logger.log() << "Recept refreshed correctly";
-  m_handler->stopSubscription();
-  m_handler->processCompletedTransactions(QStringList());
+  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
+  QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
+                            Q_ARG(QStringList, QStringList()));
 }
 
 - (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
   logger.log() << "Failed to refresh the receipt"
                << QString::fromNSString(error.localizedDescription);
-  m_handler->stopSubscription();
-  emit m_handler->subscriptionFailed();
+  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
+  QMetaObject::invokeMethod(m_handler, "subscriptionFailed", Qt::QueuedConnection);
 }
 
 @end
