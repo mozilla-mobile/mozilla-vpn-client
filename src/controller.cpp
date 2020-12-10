@@ -140,7 +140,7 @@ void Controller::activate() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->getServers();
+  QList<Server> servers = vpn->servers();
   Q_ASSERT(!servers.isEmpty());
 
   Server server = Server::weightChooser(servers);

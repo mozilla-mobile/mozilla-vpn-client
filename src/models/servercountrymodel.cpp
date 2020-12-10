@@ -180,6 +180,24 @@ void ServerCountryModel::pickRandom(ServerData& data) const {
   data.initialize(country, city);
 }
 
+bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
+                                           ServerData& data) const {
+  logger.log() << "Choosing a server with addres:" << ipv4Address;
+
+  for (const ServerCountry& country : m_countries) {
+    for (const ServerCity& city : country.cities()) {
+      for (const Server& server : city.servers()) {
+        if (server.ipv4AddrIn() == ipv4Address) {
+          data.initialize(country, city);
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 bool ServerCountryModel::exists(ServerData& data) const {
   logger.log() << "Check if the server is still valid.";
   Q_ASSERT(data.initialized());
@@ -199,11 +217,10 @@ bool ServerCountryModel::exists(ServerData& data) const {
   return false;
 }
 
-const QList<Server> ServerCountryModel::getServers(
-    const ServerData& data) const {
+const QList<Server> ServerCountryModel::servers(const ServerData& data) const {
   for (const ServerCountry& country : m_countries) {
     if (country.code() == data.countryCode()) {
-      return country.getServers(data);
+      return country.servers(data);
     }
   }
 
