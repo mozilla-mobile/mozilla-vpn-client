@@ -139,9 +139,12 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
   Q_ASSERT(obj.contains("user"));
   QJsonValue userObj = obj.take("user");
   Q_ASSERT(userObj.isObject());
+
+#ifdef QT_DEBUG
   logger.log()
       << "User data:"
       << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
+#endif
 
   Q_ASSERT(obj.contains("token"));
   QJsonValue tokenValue = obj.take("token");

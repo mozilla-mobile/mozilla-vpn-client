@@ -106,7 +106,10 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 
   QUrl u(url);
   r->m_request.setUrl(QUrl(url));
+
+#ifdef QT_DEBUG
   logger.log() << "Network starting" << r->m_request.url().toString();
+#endif
 
   r->deleteRequest();
   return r;

@@ -45,8 +45,10 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
   QByteArray privateKey = generatePrivateKey();
   QByteArray publicKey = Curve25519::generatePublicKey(privateKey);
 
+#ifdef QT_DEBUG
   logger.log() << "Private key: " << privateKey;
   logger.log() << "Public key: " << publicKey;
+#endif
 
   NetworkRequest* request =
       NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey);
