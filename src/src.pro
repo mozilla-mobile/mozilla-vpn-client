@@ -266,6 +266,10 @@ else:linux:!android {
 
     target.path = $${PREFIX}/bin
     INSTALLS += target
+
+    extraFiles.path = $${PREFIX}/share/applications
+    extraFiles.files = ../linux/extra/*
+    INSTALLS += extraFiles
 }
 else:android {
     message(Android build)
