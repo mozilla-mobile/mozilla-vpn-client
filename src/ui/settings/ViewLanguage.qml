@@ -25,47 +25,43 @@ Item {
         id: radioButtonGroup
     }
 
-    VPNFlickable {
-        id: wrapper
+    VPNList {
+        id: languageList
+
         anchors.top: menu.bottom
-        anchors.topMargin: 20
-        width: parent.width
+        anchors.left: parent.left
+        anchors.leftMargin: defaultMargin
+        anchors.rightMargin: defaultMargin
+        width: parent.width - defaultMargin * 2
         height: parent.height - menu.height
-        contentWidth: parent.width
-        flickContentHeight: wrapper.childrenRect.height
+        spacing: 26
+        listName: menu.title
+        interactive: languageList.childrenRect.height > height
+        model: VPNLocalizer
 
-        VPNList {
-            id: languageList
+        header: Rectangle {
+            height: defaultMargin
+            color: "transparent"
+            width: parent.width
+        }
 
+        delegate: VPNRadioDelegate {
+            radioButtonLabelText: localizedLanguage
+            checked: VPNLocalizer.code === code
+            onClicked: VPNLocalizer.code = code
+
+            width: languageList.width
             anchors.left: parent.left
-            anchors.leftMargin: defaultMargin
-            anchors.rightMargin: defaultMargin
-            width: parent.width - defaultMargin * 2
-            height: parent.height
-            spacing: 26
-            listName: menu.title
+            anchors.topMargin: Theme.windowMargin
+            //% "%1 %2"
+            //: This string is read by accessibility tools.
+            //: %1 is the language name, %2 is the localized language name.
+            accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                .arg(language)
+                .arg(localizedLanguage)
 
-            model: VPNLocalizer
-
-            delegate: VPNRadioDelegate {
-                radioButtonLabelText: localizedLanguage
-                checked: VPNLocalizer.code === code
-                onClicked: VPNLocalizer.code = code
-
-                width: languageList.width
-                anchors.left: parent.left
-                anchors.topMargin: Theme.windowMargin
-                //% "%1 %2"
-                //: This string is read by accessibility tools.
-                //: %1 is the language name, %2 is the localized language name.
-                accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                    .arg(language)
-                    .arg(localizedLanguage)
-
-                VPNRadioSublabel {
-                    text: language
-                }
-
+            VPNRadioSublabel {
+                text: language
             }
 
         }
