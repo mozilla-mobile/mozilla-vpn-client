@@ -14,7 +14,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>]"
+  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-k|--key <sign_key_id>]"
   print N ""
   print N "By default, the ppa is: mozbaku/mozillavpn"
   print N ""
@@ -35,6 +35,11 @@ while [[ $# -gt 0 ]]; do
     ;;
   -p | --ppa)
     PPA="$2"
+    shift
+    shift
+    ;;
+  -k | --key)
+    KEY="--sign-key=$2"
     shift
     shift
     ;;
@@ -70,7 +75,7 @@ cp -r linux/debian . || die "Failed"
 print G "done."
 
 print Y "Configuring the debian package..."
-dpkg-buildpackage -rfakeroot -b || die "Failed"
+dpkg-buildpackage -rfakeroot -b $KEY || die "Failed"
 
 print Y "Upload the changes to the ppa..."
 cd .. || die "Failed"
