@@ -49,7 +49,7 @@ Item {
         model: delegateModel
 
         footer: Rectangle {
-            height: fullscreenRequired() ? Theme.rowHeight * 4 : Theme.rowHeight * 2
+            height: fullscreenRequired() ? Theme.rowHeight * 3: Theme.rowHeight * 2
             color: "transparent"
             width: serverList.width
         }
