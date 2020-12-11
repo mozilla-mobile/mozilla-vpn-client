@@ -107,6 +107,7 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void languageCodeChanged(const QString& languageCode);
   void protectSelectedAppsChanged(bool value);
+  void vpnDisabledAppsChanged(const QStringList& apps);
 
  private:
   explicit SettingsHolder(QObject* parent);
