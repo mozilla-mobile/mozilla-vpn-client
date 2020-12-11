@@ -1,0 +1,14 @@
+Source: mozillavpn
+Section: net
+Priority: optional
+Maintainer: Andrea Marchesini <baku@mozilla.com>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.4.1
+Homepage: https://vpn.mozilla.org/
+Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
+
+Package: mozillavpn
+Architecture: any
+Depends: libpolkit-gobject-1-0 (>=0.105-20ubuntu0.18.04.5), wireguard (>=1.0.20200513-1~18.04.2), wireguard-tools (>=1.0.20200513-1~18.04.2), libicu66 (>=66.1-2ubuntu2), libxcb-xinerama0 (>=1.14-2), resolvconf (>=1.82), qt515base (>=5.15.2-1basyskom4), qt515charts-no-lgpl (>=5.15.2-1basyskom1), qt515declarative (>= 5.15.2-1basyskom1), qt515graphicaleffects (>= 5.15.2-1basyskom1), qt515networkauth-no-lgpl (>= 5.15.2-1basyskom1), qt515quickcontrols2 (>=5.15.2-1basyskom1), qt515svg (>=5.15.2-1basyskom1)
+Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
+ Read more on https://vpn.mozilla.org
