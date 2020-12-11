@@ -7,6 +7,7 @@
 . $(dirname $0)/commons.sh
 
 BRANCH=
+PPA=mozbaku/mozillavpn
 
 if [ -f .env ]; then
   . .env
@@ -74,8 +75,11 @@ printn Y "Copying the debian folder in the root of the repo..."
 cp -r linux/debian . || die "Failed"
 print G "done."
 
+printn Y "Archiving the code..."
+tar cvfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
+
 print Y "Configuring the debian package..."
-dpkg-buildpackage -rfakeroot -b $KEY || die "Failed"
+debuild -S || die "Failed"
 
 print Y "Upload the changes to the ppa..."
 cd .. || die "Failed"
