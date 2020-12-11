@@ -6,6 +6,7 @@
 #define ANDROIDAUTHENTICATIONLISTENER_H
 
 #include "authenticationlistener.h"
+#include "tasks/authenticate/desktopauthenticationlistener.h"
 
 #include <QObject>
 
@@ -17,6 +18,9 @@ class AndroidAuthenticationListener final : public AuthenticationListener {
   ~AndroidAuthenticationListener();
 
   void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+
+ private:
+  DesktopAuthenticationListener* m_legacyAuth;
 };
 
 #endif  // ANDROIDAUTHENTICATIONLISTENER_H

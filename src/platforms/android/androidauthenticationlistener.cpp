@@ -8,6 +8,11 @@
 #include "mozillavpn.h"
 #include "platforms/android/androidutils.h"
 
+#include <QAndroidJniObject>
+#include <QtAndroid>
+#include <jni.h>
+#include "tasks/authenticate/desktopauthenticationlistener.h"
+
 namespace {
 Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
 }
@@ -15,8 +20,7 @@ Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
 AndroidAuthenticationListener::AndroidAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
   MVPN_COUNT_CTOR(AndroidAuthenticationListener);
-
-  logger.log() << "Android authentication listener";
+  logger.log() << "Android authentication litener";
 }
 
 AndroidAuthenticationListener::~AndroidAuthenticationListener() {
@@ -31,5 +35,21 @@ void AndroidAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
 
   url.setQuery(query);
 
-  AndroidUtils::instance()->startAuthentication(this, url);
+  QAndroidJniObject activity = QtAndroid::androidActivity();
+  jboolean supported = QAndroidJniObject::callStaticMethod<jboolean>(
+      "com/mozilla/vpn/PackageManagerHelper", "isWebViewSupported",
+      "(Landroid/content/Context;)Z", activity.object());
+  if (supported) {
+    AndroidUtils::instance()->startAuthentication(this, url);
+    return;
+  }
+  m_legacyAuth = new DesktopAuthenticationListener(this);
+  m_legacyAuth->start(vpn, url, query);
+
+  connect(m_legacyAuth, &AuthenticationListener::completed,
+          [this](const QString& code) { emit this->completed(code); });
+  connect(m_legacyAuth, &AuthenticationListener::failed,
+          [this](const ErrorHandler::ErrorType error) {
+            emit this->failed(error);
+          });
 }
