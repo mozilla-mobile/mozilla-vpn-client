@@ -267,10 +267,36 @@ else:linux:!android {
     target.path = $${PREFIX}/bin
     INSTALLS += target
 
-    extraFiles.path = $${PREFIX}/share/applications
-    extraFiles.files = ../linux/extra/*
-    INSTALLS += extraFiles
+    desktopFile.path = /usr/share/applications
+    desktopFile.files = ../linux/extra/MozillaVPN.desktop
+    INSTALLS += desktopFile
+
+    autostartFile.path = /etc/xdg/autostart
+    autostartFile.files = ../linux/extra/MozillaVPN-startup.desktop
+    INSTALLS += autostartFile
+
+    icon16x16.path = /usr/share/icons/hicolor/16x16/apps
+    icon16x16.files = ../linux/extra/icons/16x16/mozillavpn.png
+    INSTALLS += icon16x16
+
+    icon32x32.path = /usr/share/icons/hicolor/32x32/apps
+    icon32x32.files = ../linux/extra/icons/32x32/mozillavpn.png
+    INSTALLS += icon32x32
+
+    icon48x48.path = /usr/share/icons/hicolor/48x48/apps
+    icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
+    INSTALLS += icon48x48
+
+    icon64x64.path = /usr/share/icons/hicolor/64x64/apps
+    icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
+    INSTALLS += icon64x64
+
+    icon128x128.path = /usr/share/icons/hicolor/128x128/apps
+    icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
+    INSTALLS += icon128x128
 }
+
+# Platform-specific: android
 else:android {
     message(Android build)
 
