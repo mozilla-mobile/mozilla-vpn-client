@@ -25,99 +25,43 @@ Item {
         id: radioButtonGroup
     }
 
-    VPNFlickable {
-        id: wrapper
+    VPNList {
+        id: languageList
+
         anchors.top: menu.bottom
-        anchors.topMargin: 20
-        width: parent.width
+        anchors.left: parent.left
+        anchors.leftMargin: defaultMargin
+        anchors.rightMargin: defaultMargin
+        width: parent.width - defaultMargin * 2
         height: parent.height - menu.height
-        contentWidth: parent.width
-        flickContentHeight: wrapper.childrenRect.height
+        spacing: 26
+        listName: menu.title
+        interactive: languageList.childrenRect.height > height
+        model: VPNLocalizer
 
-        VPNBoldLabel {
-            id: systemLabel
-
-            anchors.left: parent.left
-            anchors.leftMargin: Theme.windowMargin
+        header: Rectangle {
+            height: defaultMargin
+            color: "transparent"
             width: parent.width
-            //% "System"
-            //: Language of the system.
-            text: qsTrId("vpn.settings.system")
-            Accessible.role: Accessible.Heading
         }
 
-        VPNRadioDelegate {
-            id: systemLanguage
+        delegate: VPNRadioDelegate {
+            radioButtonLabelText: localizedLanguage
+            checked: VPNLocalizer.code === code
+            onClicked: VPNLocalizer.code = code
 
-            radioButtonLabelText: VPNLocalizer.systemLocalizedLanguage
-            checked: VPNSettings.languageCode === ""
-            onClicked: VPNSettings.languageCode = ""
-            anchors.top: systemLabel.bottom
-            anchors.topMargin: 16
+            width: languageList.width
             anchors.left: parent.left
-            anchors.leftMargin: defaultMargin
-            anchors.rightMargin: defaultMargin
-            width: parent.width - defaultMargin * 2
-            activeFocusOnTab: true
+            anchors.topMargin: Theme.windowMargin
             //% "%1 %2"
             //: This string is read by accessibility tools.
             //: %1 is the language name, %2 is the localized language name.
             accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                .arg(VPNLocalizer.systemLanguage)
-                .arg(VPNLocalizer.systemLocalizedLanguage)
-
+                .arg(language)
+                .arg(localizedLanguage)
 
             VPNRadioSublabel {
-                text: VPNLocalizer.systemLanguage
-            }
-
-        }
-
-        VPNBoldLabel {
-            id: additionalLabel
-
-            anchors.top: systemLanguage.bottom
-            anchors.topMargin: 28
-            anchors.left: parent.left
-            anchors.leftMargin: Theme.windowMargin
-            width: parent.width
-            //% "Additional"
-            //: Header for the additional languages in settings
-            text: qsTrId("vpn.settings.additional")
-            Accessible.role: Accessible.Heading
-        }
-
-        VPNList {
-            id: additionalLanguageList
-
-            anchors.top: additionalLabel.bottom
-            anchors.topMargin: 16
-            anchors.left: parent.left
-            anchors.leftMargin: defaultMargin
-            anchors.rightMargin: defaultMargin
-            width: parent.width - defaultMargin * 2
-            height: contentItem.childrenRect.height + 40
-            spacing: 26
-            listName: additionalLabel.text
-            model: VPNLocalizer
-
-            delegate: VPNRadioDelegate {
-                radioButtonLabelText: localizedLanguage
-                checked: VPNSettings.languageCode === code
-                onClicked: VPNSettings.languageCode = code
-
-                width: additionalLanguageList.width
-                anchors.left: parent.left
-                anchors.topMargin: Theme.windowMargin
-                //% "%1 %2"
-                accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                    .arg(language)
-                    .arg(localizedLanguage)
-
-                VPNRadioSublabel {
-                    text: language
-                }
-
+                text: language
             }
 
         }
