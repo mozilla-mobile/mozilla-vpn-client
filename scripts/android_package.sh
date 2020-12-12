@@ -169,9 +169,23 @@ fi
 print Y "Compiling apk_install_target in .tmp/"
 make -j $JOBS sub-src-apk_install_target || die "Compile of QT project failed"
 
-print Y "Bundleing APK"
+# We need to run the debug bundle step in any case
+# as this is the only make target that generates the gradle 
+# project, that we can then use to generate a "real" release build
+print Y "Bundleing (debug) APK"
 cd src/
 make apk || die "Compile of QT project failed"
 print G "All done!"
+print N "Your debug .APK is Located in .tmp/src/android-build/mozillavpn.apk"
 
-print N "Your .APK is Located in .tmp/src/android-build/mozillavpn.apk"
+# If we wanted a release build we now need to 
+# also compile the java/kotlin code in release mode
+if [[ "$RELEASE" ]]; then
+  print Y "Generating Release APK..."
+  cd android-build
+  ./gradlew compileReleaseSources
+  ./gradlew assemble
+
+  print G "Done 🎉"
+  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-release-unsigned.apk"
+fi

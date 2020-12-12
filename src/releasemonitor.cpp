@@ -38,7 +38,7 @@ void ReleaseMonitor::runInternal() {
   NetworkRequest* request = NetworkRequest::createForVersions(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Versions request failed" << error;
             emit releaseChecked();
             schedule();
@@ -102,9 +102,9 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
 
   QJsonObject platformData = platformDataValue.toObject();
 
-  double latestVersion = 0;
-  double minimumVersion = 0;
-  double currentVersion = QString(APP_VERSION).toDouble();
+  QString latestVersion;
+  QString minimumVersion;
+  QString currentVersion(APP_VERSION);
 
   QJsonValue latestValue = platformData.take("latest");
   if (!latestValue.isObject()) {
@@ -116,7 +116,7 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
     if (!latestVersionValue.isString()) {
       logger.log() << "Platform.latest.version string not available";
     } else {
-      latestVersion = latestVersionValue.toString().toDouble();
+      latestVersion = latestVersionValue.toString();
     }
   }
 
@@ -130,7 +130,7 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
     if (!minimumVersionValue.isString()) {
       logger.log() << "Platform.minimum.version string not available";
     } else {
-      minimumVersion = minimumVersionValue.toString().toDouble();
+      minimumVersion = minimumVersionValue.toString();
     }
   }
 
@@ -138,14 +138,49 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
   logger.log() << "Minimum version:" << minimumVersion;
   logger.log() << "Current version:" << currentVersion;
 
-  if (currentVersion < minimumVersion) {
+  if (compareVersions(currentVersion, minimumVersion) == -1) {
     logger.log() << "ReleaseMonitor - update required";
     MozillaVPN::instance()->setUpdateRecommended(false);
     MozillaVPN::instance()->controller()->updateRequired();
     return true;
   }
 
-  logger.log() << "Update recommended: " << (currentVersion < latestVersion);
-  MozillaVPN::instance()->setUpdateRecommended(currentVersion < latestVersion);
+  bool recommended = compareVersions(currentVersion, latestVersion) == -1;
+  logger.log() << "Update recommended: " << recommended;
+  MozillaVPN::instance()->setUpdateRecommended(recommended);
   return true;
+}
+
+// static
+int ReleaseMonitor::compareVersions(const QString& a, const QString& b) {
+  if (a == b) {
+    return 0;
+  }
+
+  if (a.isEmpty()) {
+    return 1;
+  }
+
+  if (b.isEmpty()) {
+    return -1;
+  }
+
+  QList<uint32_t> aParts;
+  for (const QString& part : a.split(".")) aParts.append(part.toInt());
+
+  while (aParts.length() < 3) aParts.append(0);
+
+  QList<uint32_t> bParts;
+  for (const QString& part : b.split(".")) bParts.append(part.toInt());
+
+  while (bParts.length() < 3) bParts.append(0);
+
+  // Major version number.
+  for (uint32_t i = 0; i < 3; ++i) {
+    if (aParts[i] != bParts[i]) {
+      return aParts[i] < bParts[i] ? -1 : 1;
+    }
+  }
+
+  return 0;
 }

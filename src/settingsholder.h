@@ -22,6 +22,8 @@ class SettingsHolder final : public QObject {
                  setCaptivePortalAlert NOTIFY captivePortalAlertChanged)
   Q_PROPERTY(bool startAtBoot READ startAtBoot WRITE setStartAtBoot NOTIFY
                  startAtBootChanged)
+  Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
+                 setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
 
  public:
   SettingsHolder();
@@ -53,7 +55,7 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasUserSubscriptionNeeded, userSubscriptionNeeded,
          setUserSubscriptionNeeded)
   GETSET(QString, hasCurrentServerCountryCode, currentServerCountryCode,
-         setCurrentServerCountryCode)
+           setCurrentServerCountryCode)
   GETSET(QString, hasCurrentServerCountry, currentServerCountry,
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
@@ -65,6 +67,13 @@ class SettingsHolder final : public QObject {
          setCaptivePortalIpv6Addresses)
   GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown,
          setPostAuthenticationShown);
+  GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
+         setProtectSelectedApps)
+  GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+
+  bool hasVpnDisabledApp(const QString& appID);
+  void removeVpnDisabledApp(const QString& appID);
+  void addVpnDisabledApp(const QString& appID);
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
@@ -94,6 +103,8 @@ class SettingsHolder final : public QObject {
   void unsecuredNetworkAlertChanged(bool value);
   void captivePortalAlertChanged(bool value);
   void startAtBootChanged(bool value);
+  void protectSelectedAppsChanged(bool value);
+  void vpnDisabledAppsChanged(const QStringList& apps);
 
  private:
   explicit SettingsHolder(QObject* parent);

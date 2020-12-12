@@ -12,4 +12,7 @@ class TestReleaseMonitor final : public TestHelper {
 
   void success_data();
   void success();
+
+  void compareVersions_data();
+  void compareVersions();
 };

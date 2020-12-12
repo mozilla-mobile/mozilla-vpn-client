@@ -29,15 +29,7 @@ class IAPHandler final : public QObject {
 
   void startSubscription(bool restore);
 
-  void stopSubscription();
-
   const QString& priceValue() const { return m_priceValue; }
-
-  // Called by the delegate
-
-  void unknownProductRegistered(const QString& identifier);
-  void productRegistered(void* product);
-  void processCompletedTransactions(const QStringList& ids);
 
  signals:
   void productsRegistered();
@@ -46,8 +38,17 @@ class IAPHandler final : public QObject {
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
+  void alreadySubscribed();
 
   void priceValueChanged();
+
+ public slots:
+  void stopSubscription();
+
+  // Called by the delegate
+  void unknownProductRegistered(const QString& identifier);
+  void productRegistered(void* product);
+  void processCompletedTransactions(const QStringList& ids);
 
  private:
   IAPHandler(QObject* parent);

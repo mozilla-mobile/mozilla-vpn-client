@@ -65,8 +65,7 @@ void NotificationHandler::showNotification() {
                       .arg(m_switchingServerCountry)
                       .arg(m_switchingServerCity)
                       .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city())
-                      .arg(vpn->controller()->switchingCity());
+                      .arg(vpn->currentServer()->city());
       } else {
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
@@ -85,7 +84,7 @@ void NotificationHandler::showNotification() {
 
         //% "VPN Disconnected"
         title = qtTrId("vpn.systray.statusDisconnected.title");
-        //% "Disconnected from to %1, %2"
+        //% "Disconnected from %1, %2"
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")

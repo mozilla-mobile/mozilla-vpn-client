@@ -66,7 +66,7 @@ class NetworkRequest final : public QObject {
   void replyFinished();
 
  signals:
-  void requestFailed(QNetworkReply::NetworkError error);
+  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
   void requestCompleted(const QByteArray& data);
 
  private:

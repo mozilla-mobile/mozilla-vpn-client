@@ -140,7 +140,7 @@ void Controller::activate() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->getServers();
+  QList<Server> servers = vpn->servers();
   Q_ASSERT(!servers.isEmpty());
 
   Server server = Server::weightChooser(servers);
@@ -151,9 +151,17 @@ void Controller::activate() {
   const QList<IPAddressRange> allowedIPAddressRanges =
       getAllowedIPAddressRanges(server);
 
+  QList<QString> vpnDisabledApps;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->protectSelectedApps() &&
+      settingsHolder->hasVpnDisabledApps()) {
+    vpnDisabledApps = settingsHolder->vpnDisabledApps();
+  }
+
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   m_state == StateSwitching);
+                   vpnDisabledApps, m_state == StateSwitching);
 }
 
 void Controller::deactivate() {

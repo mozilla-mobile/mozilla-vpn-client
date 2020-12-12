@@ -208,7 +208,7 @@ void ConnectionDataHolder::updateIpAddress() {
 
   NetworkRequest* request = NetworkRequest::createForIpInfo(this);
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "IP address request failed" << error;
 
             ErrorHandler::ErrorType errorType =

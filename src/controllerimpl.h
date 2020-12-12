@@ -42,6 +42,7 @@ class ControllerImpl : public QObject {
   virtual void activate(const Server& server, const Device* device,
                         const Keys* keys,
                         const QList<IPAddressRange>& allowedIPAddressRanges,
+                        const QList<QString>& vpnDisabledApps,
                         bool forSwitching) = 0;
 
   // This method terminates the VPN tunnel. The VPN client is in

@@ -17,13 +17,17 @@
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
+#include "apppermission.h"
+
 #ifdef MVPN_LINUX
 #  include "platforms/linux/linuxdependencies.h"
+
 #endif
 
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
+
 #endif
 
 #ifdef Q_OS_MAC
@@ -39,7 +43,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
-
+#  include "platforms/android/androidappimageprovider.h"
 #  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
 #endif
@@ -169,6 +173,12 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
 
+#ifdef MVPN_ANDROID
+    // Register an Image Provider that will resolve "image://app/{id}" for qml
+    QQuickImageProvider* provider = new AndroidAppImageProvider(qApp);
+    engine->addImageProvider(QString("app"), provider);
+#endif
+
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
@@ -236,6 +246,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Localizer::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNAppPermissions",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AppPermission::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

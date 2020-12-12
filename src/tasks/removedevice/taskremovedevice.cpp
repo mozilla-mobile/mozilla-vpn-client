@@ -33,7 +33,7 @@ void TaskRemoveDevice::run(MozillaVPN* vpn) {
       NetworkRequest::createForDeviceRemoval(this, publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error) {
+          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Failed to remove the device" << error;
             vpn->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();

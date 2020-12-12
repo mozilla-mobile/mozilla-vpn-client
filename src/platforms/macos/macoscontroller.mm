@@ -96,9 +96,12 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 
 void MacOSController::activate(const Server& server, const Device* device, const Keys* keys,
                                const QList<IPAddressRange>& allowedIPAddressRanges,
-                               bool forSwitching) {
+                               const QList<QString>& vpnDisabledApps, bool forSwitching) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
+
+  // This feature is not supported on macos/ios yet.
+  Q_ASSERT(vpnDisabledApps.isEmpty());
 
   logger.log() << "MacOSController activating" << server.hostname();
 
