@@ -22,8 +22,6 @@ class SettingsHolder final : public QObject {
                  setCaptivePortalAlert NOTIFY captivePortalAlertChanged)
   Q_PROPERTY(bool startAtBoot READ startAtBoot WRITE setStartAtBoot NOTIFY
                  startAtBootChanged)
-  Q_PROPERTY(QString languageCode READ languageCode WRITE setLanguageCode NOTIFY
-                 languageCodeChanged)
   Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
 
@@ -57,7 +55,7 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasUserSubscriptionNeeded, userSubscriptionNeeded,
          setUserSubscriptionNeeded)
   GETSET(QString, hasCurrentServerCountryCode, currentServerCountryCode,
-         setCurrentServerCountryCode)
+           setCurrentServerCountryCode)
   GETSET(QString, hasCurrentServerCountry, currentServerCountry,
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
@@ -105,7 +103,6 @@ class SettingsHolder final : public QObject {
   void unsecuredNetworkAlertChanged(bool value);
   void captivePortalAlertChanged(bool value);
   void startAtBootChanged(bool value);
-  void languageCodeChanged(const QString& languageCode);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
 

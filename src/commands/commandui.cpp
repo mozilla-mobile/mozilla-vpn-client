@@ -368,20 +368,17 @@ int CommandUI::run(QStringList& tokens) {
                        systemTrayHandler->captivePortalNotificationRequested();
                      });
 
-    QObject::connect(
-        SettingsHolder::instance(), &SettingsHolder::languageCodeChanged,
-        [](const QString& languageCode) {
-          logger.log() << "Storing the languageCode:" << languageCode;
-          Localizer::instance()->loadLanguage(languageCode);
-          QmlEngineHolder::instance()->engine()->retranslate();
-          SystemTrayHandler::instance()->retranslate();
+    QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
+      logger.log() << "Retranslating";
+      QmlEngineHolder::instance()->engine()->retranslate();
+      SystemTrayHandler::instance()->retranslate();
 
 #ifdef Q_OS_MAC
 #  ifndef MVPN_IOS
-          MacOSMenuBar::instance()->retranslate();
+      MacOSMenuBar::instance()->retranslate();
 #  endif
 #endif
-        });
+    });
 
 #ifdef QT_DEBUG
     InspectorServer inspectServer;
