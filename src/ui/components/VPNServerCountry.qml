@@ -29,6 +29,13 @@ VPNClickableRow {
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
     handleMouseClick: function() { cityListVisible = !cityListVisible; }
     handleKeyClick: function() { cityListVisible = !cityListVisible; }
+    clip: true
+
+    Behavior on y {
+        PropertyAnimation {
+            duration: 200
+        }
+    }
 
     accessibleName: name
 
@@ -68,7 +75,7 @@ VPNClickableRow {
     Behavior on height {
         NumberAnimation {
             easing.type: Easing.InSine
-            duration: 200
+            duration: 260
         }
     }
     Keys.onDownPressed: {
@@ -159,7 +166,7 @@ VPNClickableRow {
         Behavior on opacity {
             NumberAnimation {
                 easing.type: Easing.InSine
-                duration: 200
+                duration: 300
             }
         }
         Accessible.role: Accessible.List
