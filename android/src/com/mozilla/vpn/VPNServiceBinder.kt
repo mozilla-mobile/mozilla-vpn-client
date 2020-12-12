@@ -246,7 +246,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         ifaceBuilder.parsePrivateKey(privateKey)
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
-        
+        ifaceBuilder.addDnsServer(InetNetwork.parse(jServer.getString("ipv4Gateway")).address)
         val jExcludedApplication = obj.getJSONArray("excludedApps");
         (0 until jExcludedApplication.length()).toList().forEach {
             val appName = jExcludedApplication.get(it).toString();
