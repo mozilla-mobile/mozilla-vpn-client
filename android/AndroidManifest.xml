@@ -21,13 +21,14 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:name="org.qtproject.qt5.android.bindings.QtApplication"
         android:label="Mozilla VPN"
         android:extractNativeLibs="true"
+        android:theme="@style/AppTheme"
         android:icon="@mipmap/vpnicon">
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.qtproject.qt5.android.bindings.QtActivity"
             android:label="Mozilla VPN"
             android:screenOrientation="unspecified"
-            android:theme="@style/splashScreenTheme"
+            android:theme="@style/AppTheme.Splash"
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop">
             <intent-filter>
@@ -74,7 +75,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
                  are done populating your window with content. -->
             <!-- meta-data android:name="android.app.splash_screen_drawable_portrait" android:resource="@drawable/logo_portrait" / -->
             <!-- meta-data android:name="android.app.splash_screen_drawable_landscape" android:resource="@drawable/logo_landscape" / -->
-            <!-- meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/logo"/ -->
+            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splash_background"/>
             <!-- meta-data android:name="android.app.splash_screen_sticky" android:value="true"/ -->
             <!-- Splash screen -->
             <!-- Background running -->

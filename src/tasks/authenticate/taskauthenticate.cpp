@@ -58,34 +58,31 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
           .toBase64();
   Q_ASSERT(pkceCodeChallenge.length() == 44);
 
-  logger.log() << "pkceCodeVerifier:" << pkceCodeVerifier;
-  logger.log() << "pkceCodeChallenge:" << pkceCodeChallenge;
-
   m_authenticationListener = AuthenticationListener::create(this);
 
-  connect(m_authenticationListener, &AuthenticationListener::completed,
-          [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
-            logger.log() << "Authentication completed with code:"
-                         << pkceCodeSucces;
+  connect(
+      m_authenticationListener, &AuthenticationListener::completed,
+      [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
+        logger.log() << "Authentication completed with code:" << pkceCodeSucces;
 
-            NetworkRequest* request =
-                NetworkRequest::createForAuthenticationVerification(
-                    this, pkceCodeSucces, pkceCodeVerifier);
+        NetworkRequest* request =
+            NetworkRequest::createForAuthenticationVerification(
+                this, pkceCodeSucces, pkceCodeVerifier);
 
-            connect(request, &NetworkRequest::requestFailed,
-                    [this, vpn](QNetworkReply::NetworkError error) {
-                      logger.log()
-                          << "Failed to complete the authentication" << error;
-                      vpn->errorHandle(ErrorHandler::toErrorType(error));
-                      emit completed();
-                    });
+        connect(
+            request, &NetworkRequest::requestFailed,
+            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+              logger.log() << "Failed to complete the authentication" << error;
+              vpn->errorHandle(ErrorHandler::toErrorType(error));
+              emit completed();
+            });
 
-            connect(request, &NetworkRequest::requestCompleted,
-                    [this, vpn](const QByteArray& data) {
-                      logger.log() << "Authentication completed";
-                      authenticationCompleted(vpn, data);
-                    });
-          });
+        connect(request, &NetworkRequest::requestCompleted,
+                [this, vpn](const QByteArray& data) {
+                  logger.log() << "Authentication completed";
+                  authenticationCompleted(vpn, data);
+                });
+      });
 
   connect(m_authenticationListener, &AuthenticationListener::failed,
           [this, vpn](const ErrorHandler::ErrorType error) {
@@ -131,7 +128,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
                                                const QByteArray& data) {
-  logger.log() << "Authentication completed with data:" << data;
+  logger.log() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   Q_ASSERT(!json.isNull());
@@ -142,6 +139,12 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
   Q_ASSERT(obj.contains("user"));
   QJsonValue userObj = obj.take("user");
   Q_ASSERT(userObj.isObject());
+
+#ifdef QT_DEBUG
+  logger.log()
+      << "User data:"
+      << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
+#endif
 
   Q_ASSERT(obj.contains("token"));
   QJsonValue tokenValue = obj.take("token");

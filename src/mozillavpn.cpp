@@ -135,6 +135,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &MozillaVPN::subscriptionCanceled);
   connect(iap, &IAPHandler::subscriptionCompleted, this,
           &MozillaVPN::subscriptionCompleted);
+  connect(iap, &IAPHandler::alreadySubscribed, this,
+          &MozillaVPN::alreadySubscribed);
 #endif
 }
 
@@ -371,6 +373,11 @@ void MozillaVPN::openLink(LinkType linkType) {
 #else
       url.append("dummy");
 #endif
+      break;
+
+    case LinkSubscriptionBlocked:
+      url = Constants::API_URL;
+      url.append("/r/vpn/subscriptionBlocked");
       break;
 
     default:
@@ -737,8 +744,8 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
-const QList<Server> MozillaVPN::getServers() const {
-  return m_private->m_serverCountryModel.getServers(m_private->m_serverData);
+const QList<Server> MozillaVPN::servers() const {
+  return m_private->m_serverCountryModel.servers(m_private->m_serverData);
 }
 
 void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
@@ -987,6 +994,13 @@ bool MozillaVPN::startOnBootSupported() const {
   return false;
 #endif
 }
+bool MozillaVPN::protectSelectedAppsSupported() const {
+#if defined(MVPN_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
 
 void MozillaVPN::activate() {
   logger.log() << "VPN tunnel activation";
@@ -1093,5 +1107,15 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
       return;
     }
   }));
+}
+
+void MozillaVPN::alreadySubscribed() {
+  if (m_state != StateSubscriptionValidation) {
+    logger.log()
+        << "Random already-subscribed notification received. Let's ignore it.";
+    return;
+  }
+
+  setState(StateSubscriptionBlocked);
 }
 #endif

@@ -46,6 +46,7 @@ class MozillaVPN final : public QObject {
     StateUpdateRequired,
     StateSubscriptionNeeded,
     StateSubscriptionValidation,
+    StateSubscriptionBlocked,
     StateDeviceLimit,
   };
   Q_ENUM(State);
@@ -69,6 +70,7 @@ class MozillaVPN final : public QObject {
     LinkTermsOfService,
     LinkPrivacyNotice,
     LinkUpdate,
+    LinkSubscriptionBlocked,
   };
   Q_ENUM(LinkType)
 
@@ -82,6 +84,8 @@ class MozillaVPN final : public QObject {
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
+  Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
+                 CONSTANT)
   Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
                  CONSTANT)
 
@@ -150,7 +154,7 @@ class MozillaVPN final : public QObject {
 
   void accountChecked(const QByteArray& json);
 
-  const QList<Server> getServers() const;
+  const QList<Server> servers() const;
 
   void errorHandle(ErrorHandler::ErrorType error);
 
@@ -171,6 +175,8 @@ class MozillaVPN final : public QObject {
   bool startMinimized() const { return m_startMinimized; }
 
   bool startOnBootSupported() const;
+
+  bool protectSelectedAppsSupported() const;
 
   void setStartMinimized(bool startMinimized) {
     m_startMinimized = startMinimized;
@@ -219,6 +225,7 @@ class MozillaVPN final : public QObject {
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionFailedInternal(bool canceledByUser);
+  void alreadySubscribed();
 #endif
 
   void completeActivation();

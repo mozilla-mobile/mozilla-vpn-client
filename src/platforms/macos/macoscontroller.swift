@@ -30,6 +30,8 @@ public class MacOSControllerImpl : NSObject {
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
     private var switchingServer: Bool = false
+    private var switchingServerConfig: TunnelConfiguration? = nil
+    private var switchingServerFailureCallback: (() -> Void)? = nil
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
@@ -111,6 +113,13 @@ public class MacOSControllerImpl : NSObject {
 
         // No notifications when switching server
         if (switchingServer) {
+            if (switchingServerConfig == nil || switchingServerFailureCallback == nil) {
+                Logger.global?.log(message: "Internal error! No switching-server data found")
+            } else {
+                configureTunnel(config: switchingServerConfig!, failureCallback: switchingServerFailureCallback!)
+                switchingServerConfig = nil
+                switchingServerFailureCallback = nil
+            }
             return
         }
 
@@ -143,11 +152,6 @@ public class MacOSControllerImpl : NSObject {
     @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, forSwitching: Bool, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
-
-        if (forSwitching) {
-            switchingServer = true
-            (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
-        }
 
         // Let's remove the previous config if it exists.
         (tunnel!.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
@@ -188,6 +192,18 @@ public class MacOSControllerImpl : NSObject {
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
+        if (forSwitching) {
+            switchingServer = true
+            switchingServerConfig = config
+            switchingServerFailureCallback = failureCallback
+            (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+            return;
+        }
+
+        self.configureTunnel(config: config, failureCallback: failureCallback)
+    }
+
+    func configureTunnel(config: TunnelConfiguration, failureCallback: @escaping () -> Void) {
         let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
         proto!.providerBundleIdentifier = vpnBundleID
 

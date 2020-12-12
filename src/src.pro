@@ -29,6 +29,7 @@ RCC_DIR = .rcc
 UI_DIR = .ui
 
 SOURCES += \
+        apppermission.cpp \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportalactivator.cpp \
@@ -79,6 +80,7 @@ SOURCES += \
         networkrequest.cpp \
         notificationhandler.cpp \
         pingsender.cpp \
+        platforms/dummy/dummyapplistprovider.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -97,6 +99,8 @@ SOURCES += \
         timersingleshot.cpp
 
 HEADERS += \
+        apppermission.h \
+        applistprovider.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportalactivator.h \
@@ -145,6 +149,7 @@ HEADERS += \
         notificationhandler.h \
         pingsender.h \
         pingsendworker.h \
+        platforms/dummy/dummyapplistprovider.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
@@ -261,8 +266,37 @@ else:linux:!android {
 
     target.path = $${PREFIX}/bin
     INSTALLS += target
+
+    desktopFile.path = /usr/share/applications
+    desktopFile.files = ../linux/extra/MozillaVPN.desktop
+    INSTALLS += desktopFile
+
+    autostartFile.path = /etc/xdg/autostart
+    autostartFile.files = ../linux/extra/MozillaVPN-startup.desktop
+    INSTALLS += autostartFile
+
+    icon16x16.path = /usr/share/icons/hicolor/16x16/apps
+    icon16x16.files = ../linux/extra/icons/16x16/mozillavpn.png
+    INSTALLS += icon16x16
+
+    icon32x32.path = /usr/share/icons/hicolor/32x32/apps
+    icon32x32.files = ../linux/extra/icons/32x32/mozillavpn.png
+    INSTALLS += icon32x32
+
+    icon48x48.path = /usr/share/icons/hicolor/48x48/apps
+    icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
+    INSTALLS += icon48x48
+
+    icon64x64.path = /usr/share/icons/hicolor/64x64/apps
+    icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
+    INSTALLS += icon64x64
+
+    icon128x128.path = /usr/share/icons/hicolor/128x128/apps
+    icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
+    INSTALLS += icon128x128
 }
 
+# Platform-specific: android
 else:android {
     message(Android build)
 
@@ -274,6 +308,7 @@ else:android {
     QT += androidextras
     QT += qml
     QT += xml
+    LIBS += \-ljnigraphics\
 
     DEFINES += MVPN_ANDROID
 
@@ -286,6 +321,8 @@ else:android {
                 platforms/android/androidwebview.cpp \
                 platforms/android/androidstartatbootwatcher.cpp \
                 platforms/android/androiddatamigration.cpp \
+                platforms/android/androidappimageprovider.cpp \
+                platforms/android/androidapplistprovider.cpp \
                 platforms/android/androidsharedprefs.cpp
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
@@ -294,6 +331,8 @@ else:android {
                 platforms/android/androidwebview.h \
                 platforms/android/androidstartatbootwatcher.h\
                 platforms/android/androiddatamigration.h\
+                platforms/android/androidappimageprovider.h \
+                platforms/android/androidapplistprovider.h \
                 platforms/android/androidsharedprefs.h
 
     # Usable Linux Imports
@@ -316,7 +355,6 @@ else:android {
     MOC_DIR =
     RCC_DIR =
     UI_DIR =
-    ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 
     DISTFILES += \
         ../android/AndroidManifest.xml \
@@ -509,7 +547,7 @@ else{
     PRE_TARGETDEPS += ts
 }
 
-
+ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations

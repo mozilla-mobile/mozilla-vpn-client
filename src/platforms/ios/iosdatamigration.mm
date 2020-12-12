@@ -122,7 +122,9 @@ void migrateKeychainData() {
   }
 
   QByteArray data = QByteArray::fromNSData(dataNS);
+#ifdef QT_DEBUG
   logger.log() << "Credentials:" << data;
+#endif
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {

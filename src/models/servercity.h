@@ -25,7 +25,7 @@ class ServerCity final {
 
   const QString& code() const { return m_code; }
 
-  const QList<Server> getServers() const { return m_servers; }
+  const QList<Server> servers() const { return m_servers; }
 
  private:
   QString m_name;

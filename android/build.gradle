@@ -94,6 +94,17 @@ android {
         noCompress 'rcc'
     }
 
+    buildTypes {
+        release {
+            // That would enable treeshaking and remove java code that is just called from qt
+            minifyEnabled false
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
+    }
+
     defaultConfig {
         resConfig "en"
         minSdkVersion 21

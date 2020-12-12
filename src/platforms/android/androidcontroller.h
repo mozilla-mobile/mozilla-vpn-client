@@ -24,6 +24,7 @@ class AndroidController final : public ControllerImpl,
 
   void activate(const Server& data, const Device* device, const Keys* keys,
                 const QList<IPAddressRange>& allowedIPAddressRanges,
+                const QList<QString>& vpnDisabledApps,
                 bool forSwitching) override;
   void resume_activate();
 

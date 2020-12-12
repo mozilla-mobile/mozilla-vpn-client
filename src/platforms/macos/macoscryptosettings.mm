@@ -48,7 +48,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
   if (!initialized) {
     initialized = true;
 
-    logger.log() << "Retriving the key from the keychain";
+    logger.log() << "Retrieving the key from the keychain";
 
     NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 

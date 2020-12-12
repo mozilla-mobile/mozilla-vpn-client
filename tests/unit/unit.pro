@@ -62,6 +62,7 @@ HEADERS += \
     testlocalizer.h \
     testlogger.h \
     testmodels.h \
+    testnetworkmanager.h \
     testreleasemonitor.h \
     teststatusicon.h \
     testtasks.h \
@@ -111,6 +112,7 @@ SOURCES += \
     testlocalizer.cpp \
     testlogger.cpp \
     testmodels.cpp \
+    testnetworkmanager.cpp \
     testreleasemonitor.cpp \
     teststatusicon.cpp \
     testtasks.cpp \
