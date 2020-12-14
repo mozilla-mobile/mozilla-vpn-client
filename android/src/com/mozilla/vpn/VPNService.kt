@@ -15,10 +15,8 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.mozilla.vpn.NotificationUtil
-import com.wireguard.android.backend.Statistics
-import com.wireguard.android.backend.Tunnel
-import com.wireguard.android.backend.VpnServiceBackend
-import com.wireguard.android.backend.applyConfig
+import com.mozilla.vpn.VPNTunnel
+import com.wireguard.android.backend.*
 import com.wireguard.config.Config
 import com.wireguard.crypto.Key
 import com.wireguard.crypto.KeyFormatException
@@ -26,8 +24,11 @@ import com.wireguard.crypto.KeyFormatException
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
-    var tunnel: Tunnel? = null
     private var mBinder: VPNServiceBinder? = null
+    private val mBackend = GoBackend(this);
+    private val mTunnel = VPNTunnel("mvpn1");
+    private var mConfig:Config? = null;
+
     /**
      * EntryPoint for the Service, gets Called when AndroidController.cpp
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
@@ -40,13 +41,6 @@ class VPNService : android.net.VpnService() {
         return mBinder
     }
 
-    private val backend: VpnServiceBackend = VpnServiceBackend(
-        object : VpnServiceBackend.VpnServiceDelegate {
-            override fun protect(socket: Int): Boolean {
-                return this@VPNService.protect(socket)
-            }
-        }
-    )
 
     /**
      * Might be the entryPoint if the Service gets Started via an
@@ -66,7 +60,7 @@ class VPNService : android.net.VpnService() {
             }
         }
 
-        if (this.tunnel == null) {
+        if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
             val prefs = getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
             val lastConfString = prefs.getString("lastConf", "")
@@ -75,13 +69,9 @@ class VPNService : android.net.VpnService() {
                 Log.e(tag, "VPN service was triggered without defining a Server or having a tunnel")
                 return Service.START_NOT_STICKY
             }
-            val tunnelConfig = mBinder?.buildConfigFromJSON(lastConfString)
-            createTunnel(tunnelConfig);
+            this.mConfig = mBinder?.buildConfigFromJSON(lastConfString)
         }
-        this.tunnel?.let {
-            // If we now managed to get a tunnel, turn on!
-            turnOn()
-        }
+        turnOn(this.mConfig)
         return Service.START_NOT_STICKY
     }
 
@@ -92,50 +82,16 @@ class VPNService : android.net.VpnService() {
         super.onRevoke()
     }
 
-    fun getStatistic(): Statistics? {
-        val stats = Statistics()
-        val config = tunnel?.let { backend.getConfig(it) } ?: return null
-        var key: Key? = null
-        var rx: Long = 0
-        var tx: Long = 0
-        for (line in config.split("\\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-            if (line.startsWith("public_key=")) {
-                key?.let { stats.add(it, rx, tx) }
-                rx = 0
-                tx = 0
-                key = try {
-                    Key.fromHex(line.substring(11))
-                } catch (ignored: KeyFormatException) {
-                    null
-                }
-            } else if (line.startsWith("rx_bytes=")) {
-                if (key == null)
-                    continue
-                rx = try {
-                    java.lang.Long.parseLong(line.substring(9))
-                } catch (ignored: NumberFormatException) {
-                    0
-                }
-            } else if (line.startsWith("tx_bytes=")) {
-                if (key == null)
-                    continue
-                tx = try {
-                    java.lang.Long.parseLong(line.substring(9))
-                } catch (ignored: NumberFormatException) {
-                    0
-                }
-            }
-        }
-        key?.let { stats.add(it, rx, tx) }
-        return stats
+    var statistic: Statistics? = null
+        get(){
+        return mBackend.getStatistics(this.mTunnel);
     }
+    var state: Tunnel.State? = null
+        get(){
+            return mBackend.getState(this.mTunnel);
+        }
 
-    fun createTunnel(conf: Config?) {
-        if (conf == null) {
-            return;
-        }
-        this.tunnel = Tunnel("myCoolTunnel", conf)
-    }
+
 
     /*
     * Checks if the VPN Permission is given. 
@@ -156,37 +112,25 @@ class VPNService : android.net.VpnService() {
         return false;
     }
 
-    fun turnOn(): Boolean {
-        val tunnel = this.tunnel ?: return false
+    fun turnOn(newConf:Config?): Boolean {
+        if(newConf == null && mConfig == null){
+            Log.e(tag, "Tried to start VPN with null config - abort");
+            return false;
+        }
+        if(newConf != null){
+            mConfig = newConf;
+        }
+
         // Upgrade us into a Foreground Service, by showing a Notification
         NotificationUtil.show(this);
-
-        tunnel.tunnelHandle?.let {
-            this.protect(it)
-        }
-        val config = tunnel.config
-        val fileDescriptor = Builder().applyConfig(config).establish()
-
-        if (fileDescriptor != null) {
-            Log.v(tag, "Got file Descriptor for VPN - Try to up")
-            backend.tunnelUp(tunnel, fileDescriptor, config.toWgUserspaceString())
-            return true
-        }
-        Log.e(tag, "Failed to get a File Descriptor for VPN")
-        return false
+        val tunnelState = mBackend.setState(mTunnel,Tunnel.State.UP,mConfig);
+        return tunnelState == Tunnel.State.UP;
     }
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        this.tunnel?.let { backend.tunnelDown(it) }
+        mBackend.setState(mTunnel,Tunnel.State.DOWN, null)
         stopForeground(false)
-        this.tunnel = null;
-    }
-
-
-
-    fun isUp(): Boolean {
-        return tunnel?.isUp() ?: return false
     }
 
     /**
@@ -197,7 +141,3 @@ class VPNService : android.net.VpnService() {
     external fun startActivityForResult(i: Intent)
 
 }
-fun Tunnel.isUp(): Boolean {
-    return this.state == Tunnel.State.Up
-}
-
