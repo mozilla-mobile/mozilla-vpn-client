@@ -4,28 +4,15 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
-#include "localizer.h"
-#include "logger.h"
-#include "loghandler.h"
-#include "settingsholder.h"
 
 #include <QApplication>
 #include <QIcon>
-
-namespace {
-Logger logger(LOG_MAIN, "main");
-}
 
 int main(int argc, char* argv[]) {
 #ifdef QT_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
-
-  // Our logging system.
-  qInstallMessageHandler(LogHandler::messageQTHandler);
-
-  logger.log() << "MozillaVPN" << APP_VERSION;
 
   CommandLineParser clp;
   return clp.parse(argc, argv);

@@ -3,26 +3,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wgquickprocess.h"
-#include "../../src/leakdetector.h"
 #include "../../src/logger.h"
 
 #include <QCoreApplication>
+#include <QTemporaryDir>
 #include <QProcess>
 
-constexpr const char* WG_QUICK = "wg-quick";
-
 namespace {
-Logger logger(LOG_LINUX, "WgQuickProcess");
+Logger logger(
+#if defined(MVPN_LINUX)
+    LOG_LINUX
+#elif defined(MVPN_MACOS_DAEMON)
+    LOG_MACOS
+#endif
+    ,
+    "WgQuickProcess");
+
+QString scriptPath() {
+#if defined(MVPN_LINUX)
+  return "wg-quick";
+#elif defined(MVPN_MACOS_DAEMON)
+  QDir appPath(QCoreApplication::applicationDirPath());
+  appPath.cdUp();
+  appPath.cd("Resources");
+  appPath.cd("utils");
+  return appPath.filePath("helper.sh");
+#else
+#  error Unsupported platform
+#endif
 }
 
-WgQuickProcess::WgQuickProcess(WgQuickProcess::Op op) : m_op(op) {
-  MVPN_COUNT_CTOR(WgQuickProcess);
-}
+}  // namespace
 
-WgQuickProcess::~WgQuickProcess() { MVPN_COUNT_DTOR(WgQuickProcess); }
-
-void WgQuickProcess::run(
-    const QString& privateKey, const QString& deviceIpv4Address,
+// static
+bool WgQuickProcess::run(
+    Daemon::Op op, const QString& privateKey, const QString& deviceIpv4Address,
     const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
     const QString& serverIpv6Gateway, const QString& serverPublicKey,
     const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
@@ -66,64 +81,50 @@ void WgQuickProcess::run(
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
-  if (!m_tmpDir.isValid()) {
+  QTemporaryDir tmpDir;
+  if (!tmpDir.isValid()) {
     qWarning("Cannot create a temporary directory");
-    emit failed();
-    return;
+    return false;
   }
 
-  QDir dir(m_tmpDir.path());
+  QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
   if (!file.open(QIODevice::ReadWrite)) {
     qWarning("Unable to create a file in the temporary folder");
-    emit failed();
-    return;
+    return false;
   }
 
   qint64 written = file.write(content);
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
-    emit failed();
-    return;
+    return false;
   }
 
   file.close();
 
   QStringList arguments;
-  arguments.append(m_op == Up ? "up" : "down");
+  arguments.append(op == Daemon::Up ? "up" : "down");
   arguments.append(file.fileName());
 
-  QProcess* wgQuickProcess = new QProcess(this);
+  QString app = scriptPath();
+  logger.log() << "Start:" << app << " - arguments:" << arguments;
 
-  connect(wgQuickProcess, &QProcess::errorOccurred,
-          [this](QProcess::ProcessError error) {
-            logger.log() << "Error occurred" << error;
-            deleteLater();
-            emit failed();
-          });
+  QProcess wgQuickProcess;
+  wgQuickProcess.start(app, arguments);
 
-  connect(
-      wgQuickProcess,
-      QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-      [this, wgQuickProcess](int exitCode, QProcess::ExitStatus exitStatus) {
-        logger.log() << "Execution finished" << exitCode;
+  if (!wgQuickProcess.waitForFinished(-1)) {
+    logger.log() << "Error occurred:" << wgQuickProcess.errorString();
+    return false;
+  }
 
-        logger.log() << "wg-quick stdout:" << Qt::endl
-                     << qUtf8Printable(wgQuickProcess->readAllStandardOutput())
-                     << Qt::endl;
-        logger.log() << "wg-quick stderr:" << Qt::endl
-                     << qUtf8Printable(wgQuickProcess->readAllStandardError())
-                     << Qt::endl;
+  logger.log() << "Execution finished" << wgQuickProcess.exitCode();
 
-        deleteLater();
+  logger.log() << "wg-quick stdout:" << Qt::endl
+               << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
+               << Qt::endl;
+  logger.log() << "wg-quick stderr:" << Qt::endl
+               << qUtf8Printable(wgQuickProcess.readAllStandardError())
+               << Qt::endl;
 
-        if (exitStatus != QProcess::NormalExit || exitCode != 0) {
-          emit failed();
-          return;
-        }
-
-        emit succeeded();
-      });
-
-  wgQuickProcess->start(WG_QUICK, arguments);
+  return wgQuickProcess.exitCode() == 0;
 }

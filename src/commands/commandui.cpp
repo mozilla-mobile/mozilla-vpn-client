@@ -137,7 +137,7 @@ int CommandUI::run(QStringList& tokens) {
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
-                     [&]() { MozillaVPN::instance()->controller()->quit(); });
+                     []() { MozillaVPN::instance()->controller()->quit(); });
 #endif
 
     // Font loader

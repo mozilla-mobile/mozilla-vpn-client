@@ -9,19 +9,26 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, configHash)
+  def run(file, shortVersion, fullVersion, platform, selfHosted, configHash)
     open_project file
     open_target_main
+
+    die 'Invalid selfHosted + ios' if selfHosted and platform != 'macos'
 
     group = @project.main_group.new_group('Configuration')
     @configFile = group.new_file('xcode.xconfig')
 
-    setup_target_main shortVersion, fullVersion, platform, configHash
-    setup_target_extension shortVersion, fullVersion, platform, configHash
-
+    setup_target_main shortVersion, fullVersion, platform, selfHosted, configHash
     setup_target_loginitem shortVersion, fullVersion, configHash if platform == "macos"
 
-    setup_target_go
+    if not selfHosted
+      setup_target_extension shortVersion, fullVersion, platform, configHash
+      setup_target_gobridge
+    else
+      setup_target_wireguardgo
+      setup_target_wireguardtools
+      setup_target_wireguardhelper
+    end
 
     @project.save
   end
@@ -38,7 +45,7 @@ class XCodeprojPatcher
     die 'Unable to open MozillaVPN target'
   end
 
-  def setup_target_main(shortVersion, fullVersion, platform, configHash)
+  def setup_target_main(shortVersion, fullVersion, platform, selfHosted, configHash)
     @target_main.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
 
@@ -56,7 +63,8 @@ class XCodeprojPatcher
 
       # other config
       config.build_settings['INFOPLIST_FILE'] ||= platform + '/app/Info.plist'
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform +'/app/MozillaVPN.entitlements'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform +'/app/selfHosted.entitlements' if selfHosted
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform +'/app/main.entitlements' if not selfHosted
       config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
       config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
       config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
@@ -78,43 +86,45 @@ class XCodeprojPatcher
       end
     end
 
-    # WireGuard group
-    group = @project.main_group.new_group('WireGuard')
+    if not selfHosted
+      # WireGuard group
+      group = @project.main_group.new_group('WireGuard')
 
-    [
-      'macos/gobridge/wireguard-go-version.h',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Keychain.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/NETunnelProviderProtocol+Extension.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/Endpoint.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/String+ArrayConversion.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/Model/DNSServer.swift',
-      '3rdparty/wireguard-apple/WireGuard/WireGuard/LocalizationHelper.swift',
-      '3rdparty/wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
-    ].each { |filename|
-      file = group.new_file(filename)
-      @target_main.add_file_references([file])
-    }
+      [
+        'macos/gobridge/wireguard-go-version.h',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Keychain.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/Data+KeyEncoding.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/IPAddressRange.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/InterfaceConfiguration.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/NETunnelProviderProtocol+Extension.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/TunnelConfiguration+WgQuickConfig.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/Endpoint.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/String+ArrayConversion.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/PeerConfiguration.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/Model/DNSServer.swift',
+        '3rdparty/wireguard-apple/WireGuard/WireGuard/LocalizationHelper.swift',
+        '3rdparty/wireguard-apple/WireGuard/Shared/FileManager+Extension.swift',
+      ].each { |filename|
+        file = group.new_file(filename)
+        @target_main.add_file_references([file])
+      }
 
-    # @target_main + swift integration
-    group = @project.main_group.new_group('SwiftIntegration')
+      # @target_main + swift integration
+      group = @project.main_group.new_group('SwiftIntegration')
 
-    [
-      'src/platforms/macos/macoscontroller.swift',
-      'src/platforms/macos/macoslogger.swift',
-    ].each { |filename|
-      file = group.new_file(filename)
-      @target_main.add_file_references([file])
-    }
+      [
+        'src/platforms/macos/networkextension/macoscontroller.swift',
+        'src/platforms/macos/networkextension/macoslogger.swift',
+      ].each { |filename|
+        file = group.new_file(filename)
+        @target_main.add_file_references([file])
+      }
+    end
   end
 
   def setup_target_extension(shortVersion, fullVersion, platform, configHash)
-    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', :osx)
+    @target_extension = @project.new_target(:app_extension, 'WireGuardNetworkExtension', platform == 'macos' ? :osx : :ios)
 
     @target_extension.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
@@ -197,13 +207,12 @@ class XCodeprojPatcher
       file = group.new_file(filename)
       @target_extension.add_file_references([file])
     }
-
     # @target_extension + swift integration
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
-      'src/platforms/macos/macosglue.mm',
-      'src/platforms/macos/macoslogger.swift',
+      'src/platforms/macos/networkextension/macosglue.mm',
+      'src/platforms/macos/networkextension/macoslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)
       @target_extension.add_file_references([file])
@@ -242,19 +251,107 @@ class XCodeprojPatcher
     appex_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
-  def setup_target_go
-    target_go = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
+  def setup_target_gobridge
+    target_gobridge = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
 
-    target_go.build_working_directory = '3rdparty/wireguard-apple/wireguard-go-bridge'
-    target_go.build_tool_path = 'make'
-    target_go.pass_build_settings_in_environment = '1'
-    target_go.build_arguments_string = '$(ACTION)'
-    target_go.name = 'WireGuardGoBridge'
-    target_go.product_name = 'WireGuardGoBridge'
+    target_gobridge.build_working_directory = 'macos/gobridge'
+    target_gobridge.build_tool_path = 'make'
+    target_gobridge.pass_build_settings_in_environment = '1'
+    target_gobridge.build_arguments_string = '$(ACTION)'
+    target_gobridge.name = 'WireGuardGoBridge'
+    target_gobridge.product_name = 'WireGuardGoBridge'
 
-    @project.targets << target_go
+    @project.targets << target_gobridge
+    @target_extension.add_dependency target_gobridge
+  end
 
-    @target_extension.add_dependency target_go
+  def setup_target_wireguardhelper
+    copy_wireguardHelper = @target_main.new_copy_files_build_phase
+    copy_wireguardHelper.name = 'Copy wireguard helper'
+    copy_wireguardHelper.symbol_dst_subfolder_spec = :wrapper
+    copy_wireguardHelper.dst_path = 'Contents/Resources/utils'
+
+    group = @project.main_group.new_group('WireGuardHelper')
+    file = group.new_file 'macos/daemon/helper.sh'
+
+    wireguardHelper_file = copy_wireguardHelper.add_file_reference file
+    wireguardHelper_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
+  end
+
+  def setup_target_wireguardtools
+    target_wireguardtools = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
+
+    target_wireguardtools.build_working_directory = '3rdparty/wireguard-tools/src'
+    target_wireguardtools.build_tool_path = 'make'
+    target_wireguardtools.pass_build_settings_in_environment = '1'
+    target_wireguardtools.build_arguments_string = '$(ACTION)'
+    target_wireguardtools.name = 'WireGuardTools'
+    target_wireguardtools.product_name = 'WireGuardTools'
+
+    @project.targets << target_wireguardtools
+
+    # This fails: @target_main.add_dependency target_wireguardtools
+    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
+    container_proxy.container_portal = @project.root_object.uuid
+    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
+    container_proxy.remote_global_id_string = target_wireguardtools.uuid
+    container_proxy.remote_info = target_wireguardtools.name
+
+    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
+    dependency.name = target_wireguardtools.name
+    dependency.target = @target_main
+    dependency.target_proxy = container_proxy
+
+    @target_main.dependencies << dependency
+
+    copy_wireguardTools = @target_main.new_copy_files_build_phase
+    copy_wireguardTools.name = 'Copy wireguard-tools'
+    copy_wireguardTools.symbol_dst_subfolder_spec = :wrapper
+    copy_wireguardTools.dst_path = 'Contents/Resources/utils'
+
+    group = @project.main_group.new_group('WireGuardTools')
+    file = group.new_file '3rdparty/wireguard-tools/src/wg'
+
+    wireguardTools_file = copy_wireguardTools.add_file_reference file
+    wireguardTools_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
+  end
+
+  def setup_target_wireguardgo
+    target_wireguardgo = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
+
+    target_wireguardgo.build_working_directory = '3rdparty/wireguard-go'
+    target_wireguardgo.build_tool_path = 'make'
+    target_wireguardgo.pass_build_settings_in_environment = '1'
+    target_wireguardgo.build_arguments_string = '$(ACTION)'
+    target_wireguardgo.name = 'WireGuardGo'
+    target_wireguardgo.product_name = 'WireGuardGo'
+
+    @project.targets << target_wireguardgo
+
+    # This fails: @target_main.add_dependency target_wireguardgo
+    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
+    container_proxy.container_portal = @project.root_object.uuid
+    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
+    container_proxy.remote_global_id_string = target_wireguardgo.uuid
+    container_proxy.remote_info = target_wireguardgo.name
+
+    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
+    dependency.name = target_wireguardgo.name
+    dependency.target = @target_main
+    dependency.target_proxy = container_proxy
+
+    @target_main.dependencies << dependency
+
+    copy_wireguardGo = @target_main.new_copy_files_build_phase
+    copy_wireguardGo.name = 'Copy wireguard-go'
+    copy_wireguardGo.symbol_dst_subfolder_spec = :wrapper
+    copy_wireguardGo.dst_path = 'Contents/Resources/utils'
+
+    group = @project.main_group.new_group('WireGuardGo')
+    file = group.new_file '3rdparty/wireguard-go/wireguard-go'
+
+    wireguardGo_file = copy_wireguardGo.add_file_reference file
+    wireguardGo_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
   def setup_target_loginitem(shortVersion, fullVersion, configHash)
@@ -346,7 +443,8 @@ configFile.each { |line|
 
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
+selfHosted = true if ARGV[4] == "1"
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, config
+r.run ARGV[0], ARGV[1], ARGV[2], platform, selfHosted, config
 exit 0

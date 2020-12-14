@@ -5,13 +5,11 @@
 #ifndef DBUS_H
 #define DBUS_H
 
-#include "wgquickprocess.h"
-
-#include <QObject>
+#include "../../src/daemon.h"
 
 class DbusAdaptor;
 
-class DBus final : public QObject {
+class DBus final : public Daemon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DBus)
   Q_CLASSINFO("D-Bus Interface", "org.mozilla.vpn.dbus")
@@ -24,43 +22,20 @@ class DBus final : public QObject {
 
   bool checkInterface();
 
+  using Daemon::activate;
+
  public slots:
-  QString version();
-
   bool activate(const QString& jsonConfig);
+  bool deactivate(bool emitSignals = true) override;
 
-  bool deactivate(bool serverSwitching = false);
-
+  QString version();
   QString status();
 
-  QString getLogs();
-
-  void cleanupLogs();
-
- private:
-  bool runWgQuick(
-      WgQuickProcess::Op op, const QString& privateKey,
-      const QString& deviceIpv4Address, const QString& deviceIpv6Address,
-      const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
-      const QString& serverPublicKey, const QString& serverIpv4AddrIn,
-      const QString& serverIpv6AddrIn, const QString& allowedIPAddressRange,
-      int serverPort, bool ipv6Enabled);
+ protected:
+  bool run(Op op, const Config& config) override;
 
  private:
   DbusAdaptor* m_adaptor = nullptr;
-
-  bool m_connected = false;
-  QString m_lastPrivateKey;
-  QString m_lastDeviceIpv4Address;
-  QString m_lastDeviceIpv6Address;
-  QString m_lastServerIpv4Gateway;
-  QString m_lastServerIpv6Gateway;
-  QString m_lastServerPublicKey;
-  QString m_lastServerIpv4AddrIn;
-  QString m_lastServerIpv6AddrIn;
-  int m_lastServerPort = 0;
-  bool m_lastIpv6Enabled = false;
-  QString m_lastAllowedIPAddressRanges;
 };
 
 #endif  // DBUS_H

@@ -7,6 +7,8 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "localizer.h"
+#include "logger.h"
+#include "loghandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
@@ -14,6 +16,10 @@
 #include <QApplication>
 #include <QIcon>
 #include <QTextStream>
+
+namespace {
+Logger logger(LOG_MAIN, "Command");
+}
 
 QVector<std::function<Command*(QObject*)>> Command::s_commandCreators;
 
@@ -57,6 +63,10 @@ bool Command::loadModels() {
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
+  // Our logging system.
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+  logger.log() << "MozillaVPN" << APP_VERSION;
+
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
@@ -71,6 +81,10 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
 int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
+
+  // Our logging system.
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+  logger.log() << "MozillaVPN" << APP_VERSION;
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -89,6 +103,10 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
+
+  // Our logging system.
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+  logger.log() << "MozillaVPN" << APP_VERSION;
 
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
