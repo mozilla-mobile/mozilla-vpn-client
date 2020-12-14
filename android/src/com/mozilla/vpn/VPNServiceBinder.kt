@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.os.Parcel
 import android.util.Log
 import com.mozilla.vpn.NotificationUtil
+import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import java.lang.Exception
@@ -78,14 +79,13 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                         this.mService.turnOff();
                     }
 
-                    this.mService.createTunnel(config)
                     if(!mService.checkPermissions()){
                         // The Permission Promt was already
                         // send, in case it's accepted we will 
                         // recive ACTIONS.resumeActivate
                         return true;
                     }
-                    if (this.mService.turnOn()) {
+                    if (this.mService.turnOn(config)) {
                         dispatchEvent(EVENTS.connected, "")
                     } else {
                         dispatchEvent(EVENTS.disconnected, "")
@@ -103,7 +103,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 if(!mService.checkPermissions()){
                     return true;
                 }
-                if (this.mService.turnOn()) {
+                if (this.mService.turnOn(null)) {
                     dispatchEvent(EVENTS.connected, "")
                 } else {
                     dispatchEvent(EVENTS.disconnected, "")
@@ -123,7 +123,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.d(tag, "Registered ${mListeners.size} EventListeners")
-                if(mService.isUp()){
+                if(mService.state == Tunnel.State.UP){
                     dispatchEvent(EVENTS.init, "connected")
                 }else{
                     dispatchEvent(EVENTS.init, "disconnected")
@@ -132,7 +132,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             }
 
             ACTIONS.requestStatistic -> {
-                val statistics = this.mService.getStatistic()
+                val statistics = this.mService.statistic
                 val obj = JSONObject()
                 obj.put("totalRX", statistics?.totalRx())
                 obj.put("totalTX", statistics?.totalTx())
