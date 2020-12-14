@@ -97,7 +97,7 @@ cp linux/extra/MozillaVPN.desktop .tmp/usr/share/applications || die "Failed to 
 mkdir -p .tmp/etc/xdg/autostart || die "Failed to create dir .tmp/etc/xdg/autostart"
 cp linux/extra/MozillaVPN-startup.desktop .tmp/etc/xdg/autostart || die "Failed to copy the desktop file"
 mkdir -p .tmp/usr/share/doc/mozillavpn || die "Failed to create dir .tmp/usr/share/doc/mozillavpn"
-cp linux/extra/copyright .tmp/usr/share/doc/mozillavpn || die "Failed to copy the copyright file"
+cp linux/debian/copyright .tmp/usr/share/doc/mozillavpn || die "Failed to copy the copyright file"
 print G "done."
 
 printn Y "Generating icons... "
@@ -123,7 +123,7 @@ find .tmp -type f | grep -v DEBIAN | while read FILE; do echo $(md5sum $FILE | c
 print G "done."
 
 printn Y "Generating the control file... "
-cat linux/extra/control | sed "s/VERSION/$SHORTVERSION/" | sed "s/SIZE/$SIZE/" > .tmp/DEBIAN/control
+cat linux/debian/control | sed "s/VERSION/$SHORTVERSION/" | sed "s/SIZE/$SIZE/" > .tmp/DEBIAN/control
 print G "done."
 
 print Y "Generating the debian/ubuntu package..."
