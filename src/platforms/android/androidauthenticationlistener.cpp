@@ -7,11 +7,11 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "platforms/android/androidutils.h"
+#include "tasks/authenticate/desktopauthenticationlistener.h"
 
 #include <QAndroidJniObject>
 #include <QtAndroid>
 #include <jni.h>
-#include "tasks/authenticate/desktopauthenticationlistener.h"
 
 namespace {
 Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
@@ -20,7 +20,7 @@ Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
 AndroidAuthenticationListener::AndroidAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
   MVPN_COUNT_CTOR(AndroidAuthenticationListener);
-  logger.log() << "Android authentication litener";
+  logger.log() << "Android authentication listener";
 }
 
 AndroidAuthenticationListener::~AndroidAuthenticationListener() {
@@ -43,13 +43,12 @@ void AndroidAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
     AndroidUtils::instance()->startAuthentication(this, url);
     return;
   }
-  m_legacyAuth = new DesktopAuthenticationListener(this);
-  m_legacyAuth->start(vpn, url, query);
+  DesktopAuthenticationListener* legacyAuth;
+  legacyAuth = new DesktopAuthenticationListener(this);
+  legacyAuth->start(vpn, url, query);
 
-  connect(m_legacyAuth, &AuthenticationListener::completed,
-          [this](const QString& code) { emit this->completed(code); });
-  connect(m_legacyAuth, &AuthenticationListener::failed,
-          [this](const ErrorHandler::ErrorType error) {
-            emit this->failed(error);
-          });
+  connect(legacyAuth, &AuthenticationListener::completed, this,
+          &AndroidAuthenticationListener::completed);
+  connect(legacyAuth, &AuthenticationListener::failed, this,
+          &AndroidAuthenticationListener::failed);
 }
