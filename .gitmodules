@@ -2,10 +2,6 @@
 	path = i18n
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
 	branch= master
-[submodule "android/modules/wireguard"]
-	path = android/modules/wireguard
-	url = https://github.com/mozilla-mobile/guardian-vpn-android.git
-	branch = roger/wg_moz_module
 [submodule "3rdparty/wireguard-tools"]
 	path = 3rdparty/wireguard-tools
 	url = https://github.com/WireGuard/wireguard-tools
