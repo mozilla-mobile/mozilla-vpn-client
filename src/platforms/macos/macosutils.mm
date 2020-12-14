@@ -10,6 +10,7 @@
 #include <objc/message.h>
 #include <objc/objc.h>
 
+#include <QFile>
 #include <QMenuBar>
 
 #import <Cocoa/Cocoa.h>

@@ -6,6 +6,7 @@
 #include "../../src/leakdetector.h"
 #include "../../src/logger.h"
 #include "../../src/loghandler.h"
+#include "../../src/wgquickprocess.h"
 #include "dbus_adaptor.h"
 #include "polkithelper.h"
 
@@ -23,13 +24,11 @@ extern "C" {
 }
 #endif
 
-constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
-
 namespace {
 Logger logger(LOG_LINUX, "DBus");
 }
 
-DBus::DBus(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(DBus); }
+DBus::DBus(QObject* parent) : Daemon(parent) { MVPN_COUNT_CTOR(DBus); }
 
 DBus::~DBus() { MVPN_COUNT_DTOR(DBus); }
 
@@ -77,176 +76,18 @@ bool DBus::activate(const QString& jsonConfig) {
 
   QJsonObject obj = json.object();
 
-#define GETVALUESTR(name, where)                                \
-  if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isString()) {                                    \
-      logger.log() << name << " is not a string";               \
-      return false;                                             \
-    }                                                           \
-    where = value.toString();                                   \
-  }
-
-  GETVALUESTR("privateKey", m_lastPrivateKey);
-  GETVALUESTR("deviceIpv4Address", m_lastDeviceIpv4Address);
-  GETVALUESTR("deviceIpv6Address", m_lastDeviceIpv6Address);
-  GETVALUESTR("serverIpv4Gateway", m_lastServerIpv4Gateway);
-  GETVALUESTR("serverIpv6Gateway", m_lastServerIpv6Gateway);
-  GETVALUESTR("serverPublicKey", m_lastServerPublicKey);
-  GETVALUESTR("serverIpv4AddrIn", m_lastServerIpv4AddrIn);
-  GETVALUESTR("serverIpv6AddrIn", m_lastServerIpv6AddrIn);
-
-#undef GETVALUESTR
-
-#define GETVALUEINT(name, where)                                \
-  if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isDouble()) {                                    \
-      logger.log() << name << " is not a number";               \
-      return false;                                             \
-    }                                                           \
-    where = value.toInt();                                      \
-  }
-
-  GETVALUEINT("serverPort", m_lastServerPort);
-
-#undef GETVALUEINT
-
-#define GETVALUEBOOL(name, where)                               \
-  if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isBool()) {                                      \
-      logger.log() << name << " is not a boolean";              \
-      return false;                                             \
-    }                                                           \
-    where = value.toBool();                                     \
-  }
-
-  GETVALUEBOOL("ipv6Enabled", m_lastIpv6Enabled);
-
-#undef GETVALUEBOOL
-
-  if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
-    logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                 << "missing in the jsonconfig input";
+  Config config;
+  if (!parseConfig(obj, config)) {
+    logger.log() << "Invalid configuration";
     return false;
   }
-  {
-    QJsonValue value = obj.value(JSON_ALLOWEDIPADDRESSRANGES);
-    if (!value.isArray()) {
-      logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
-      return false;
-    }
 
-    QJsonArray array = value.toArray();
-    QStringList allowedIPAddressRanges;
-    for (QJsonValue i : array) {
-      if (!i.isObject()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "must contain only objects";
-        return false;
-      }
-
-      QJsonObject ipObj = i.toObject();
-
-      QJsonValue address = ipObj.value("address");
-      if (!address.isString()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "objects must have a string address";
-        return false;
-      }
-
-      QJsonValue range = ipObj.value("range");
-      if (!range.isDouble()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "object must have a numberic range";
-        return false;
-      }
-
-      QJsonValue isIpv6 = ipObj.value("isIpv6");
-      if (!isIpv6.isBool()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "object must have a boolean isIpv6";
-        return false;
-      }
-
-      if (isIpv6.toBool() && !m_lastIpv6Enabled) {
-        continue;
-      }
-
-      allowedIPAddressRanges.append(
-          QString("%1/%2").arg(address.toString()).arg(range.toInt(0)));
-    }
-    m_lastAllowedIPAddressRanges = allowedIPAddressRanges.join(", ");
-  }
-
-  if (m_connected) {
-    if (!deactivate(true)) {
-      return false;
-    }
-
-    Q_ASSERT(!m_connected);
-  }
-
-  m_connected = true;
-
-  bool status = runWgQuick(
-      WgQuickProcess::Up, m_lastPrivateKey, m_lastDeviceIpv4Address,
-      m_lastDeviceIpv6Address, m_lastServerIpv4Gateway, m_lastServerIpv6Gateway,
-      m_lastServerPublicKey, m_lastServerIpv4AddrIn, m_lastServerIpv6AddrIn,
-      m_lastAllowedIPAddressRanges, m_lastServerPort, m_lastIpv6Enabled);
-
-  logger.log() << "Status:" << status;
-
-  if (status) {
-    emit m_adaptor->connected();
-  }
-
-  return status;
+  return Daemon::activate(config);
 }
 
-bool DBus::deactivate(bool serverSwitching) {
+bool DBus::deactivate(bool emitSignals) {
   logger.log() << "Deactivate";
-
-  if (!m_connected) {
-    logger.log() << "Already disconnected";
-    return true;
-  }
-
-  if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.deactivate")) {
-    logger.log() << "Polkit rejected";
-    return false;
-  }
-
-  m_connected = false;
-
-  bool status = runWgQuick(
-      WgQuickProcess::Down, m_lastPrivateKey, m_lastDeviceIpv4Address,
-      m_lastDeviceIpv6Address, m_lastServerIpv4Gateway, m_lastServerIpv6Gateway,
-      m_lastServerPublicKey, m_lastServerIpv4AddrIn, m_lastServerIpv6AddrIn,
-      m_lastAllowedIPAddressRanges, m_lastServerPort, m_lastIpv6Enabled);
-
-  logger.log() << "Status:" << status;
-
-  // No notification for server switching.
-  if (!serverSwitching && status) {
-    emit m_adaptor->disconnected();
-  }
-
-  return status;
+  return Daemon::deactivate(emitSignals);
 }
 
 QString DBus::status() {
@@ -273,57 +114,20 @@ QString DBus::status() {
   wg_free_device(device);
 
   json.insert("status", QJsonValue(true));
-  json.insert("serverIpv4Gateway", QJsonValue(m_lastServerIpv4Gateway));
+  json.insert("serverIpv4Gateway",
+              QJsonValue(m_lastConfig.m_serverIpv4Gateway));
   json.insert("txBytes", QJsonValue(double(txBytes)));
   json.insert("rxBytes", QJsonValue(double(rxBytes)));
 
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
-QString DBus::getLogs() {
-  logger.log() << "Get log request";
-
-  QString output;
-  QTextStream out(&output);
-
-  LogHandler::writeLogs(out);
-
-  return output;
-}
-
-void DBus::cleanupLogs() {
-  logger.log() << "Cleanup log request";
-
-  LogHandler::instance()->cleanupLogs();
-}
-
-bool DBus::runWgQuick(
-    WgQuickProcess::Op op, const QString& privateKey,
-    const QString& deviceIpv4Address, const QString& deviceIpv6Address,
-    const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
-    const QString& serverPublicKey, const QString& serverIpv4AddrIn,
-    const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-    int serverPort, bool ipv6Enabled) {
-  WgQuickProcess* wgQuick = new WgQuickProcess(op);
-
-  wgQuick->run(privateKey, deviceIpv4Address, deviceIpv6Address,
-               serverIpv4Gateway, serverIpv6Gateway, serverPublicKey,
-               serverIpv4AddrIn, serverIpv6AddrIn, allowedIPAddressRanges,
-               serverPort, ipv6Enabled);
-
-  enum Result {
-    Pending,
-    Success,
-    Fail,
-  };
-
-  Result result = Pending;
-  connect(wgQuick, &WgQuickProcess::failed, [&] { result = Fail; });
-  connect(wgQuick, &WgQuickProcess::succeeded, [&] { result = Success; });
-
-  while (result == Pending) {
-    QCoreApplication::processEvents();
-  }
-
-  return result == Success;
+bool DBus::run(Op op, const Config& config) {
+  return WgQuickProcess::run(
+      op, config.m_privateKey, config.m_deviceIpv4Address,
+      config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
+      config.m_serverIpv6Gateway, config.m_serverPublicKey,
+      config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
+      config.m_allowedIPAddressRanges.join(", "), config.m_serverPort,
+      config.m_ipv6Enabled);
 }

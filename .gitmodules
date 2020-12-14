@@ -14,3 +14,7 @@
 	path = 3rdparty/openSSL
 	url = https://github.com/KDAB/android_openssl
         ignore=all
+[submodule "3rdparty/wireguard-go"]
+	path = 3rdparty/wireguard-go
+	url = https://git.zx2c4.com/wireguard-go
+        ignore=all

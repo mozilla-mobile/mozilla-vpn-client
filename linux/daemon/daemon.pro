@@ -20,24 +20,26 @@ DEFINES += MVPN_LINUX
 
 SOURCES += \
         ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
+        ../../src/daemon.cpp \
         ../../src/leakdetector.cpp \
         ../../src/logger.cpp \
         ../../src/loghandler.cpp \
         ../../src/signalhandler.cpp \
+        ../../src/wgquickprocess.cpp \
         dbus.cpp \
         main.cpp \
-        polkithelper.cpp \
-        wgquickprocess.cpp
+        polkithelper.cpp
 
 HEADERS += \
         ../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
+        ../../src/daemon.h \
         ../../src/leakdetector.h \
         ../../src/logger.h \
         ../../src/loghandler.h \
         ../../src/signalhandler.h \
+        ../../src/wgquickprocess.h \
         dbus.h \
-        polkithelper.h \
-        wgquickprocess.h
+        polkithelper.h
 
 isEmpty(PREFIX) {
     PREFIX=/usr
