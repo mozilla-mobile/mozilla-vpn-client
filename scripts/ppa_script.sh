@@ -8,6 +8,8 @@
 
 BRANCH=
 PPA=mozbaku/mozillavpn
+VERSION=1
+RELEASE=focal
 
 if [ -f .env ]; then
   . .env
@@ -15,9 +17,11 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-k|--key <sign_key_id>]"
+  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-k|--key <sign_key_id>] [-r|--release <release>] [-v|--version <id>]"
   print N ""
   print N "By default, the ppa is: mozbaku/mozillavpn"
+  print N "By default, the release is 'focal'"
+  print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
   print N ""
   exit 0
 }
@@ -41,6 +45,16 @@ while [[ $# -gt 0 ]]; do
     ;;
   -k | --key)
     KEY="--sign-key=$2"
+    shift
+    shift
+    ;;
+  -r | --release)
+    RELEASE="$2"
+    shift
+    shift
+    ;;
+  -v | --version)
+    VERSION="$2"
     shift
     shift
     ;;
@@ -71,14 +85,20 @@ git submodule update --remote --depth 1 i18n || die "Failed"
 git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
 print G "done."
 
-printn Y "Copying the debian folder in the root of the repo..."
-cp -r linux/debian . || die "Failed"
+printn Y "Moving the debian template folder in the root of the repo..."
+mv linux/debian .. || die "Failed"
 print G "done."
 
-printn Y "Archiving the code..."
+printn Y "Archiving the source code..."
 tar cvfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
 
-print Y "Configuring the debian package..."
+print Y "Configuring the debian package for $RELEASE..."
+rm -rf debian || die "Failed"
+cp -r ../debian . || die "Failed"
+mv debian/changelog.template debian/changelog || die "Failed"
+sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
+sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
+sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
 debuild -S || die "Failed"
 
 print Y "Upload the changes to the ppa..."
