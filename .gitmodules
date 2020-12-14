@@ -8,10 +8,10 @@
 	branch = roger/wg_moz_module
 [submodule "3rdparty/wireguard-tools"]
 	path = 3rdparty/wireguard-tools
-	url = https://git.zx2c4.com/wireguard-tools
+	url = https://github.com/WireGuard/wireguard-tools
 [submodule "3rdparty/wireguard-apple"]
 	path = 3rdparty/wireguard-apple
-	url = https://git.zx2c4.com/wireguard-apple
+	url = https://github.com/WireGuard/wireguard-apple
 [submodule "3rdparty/openSSL"]
 	path = 3rdparty/openSSL
 	url = https://github.com/KDAB/android_openssl
