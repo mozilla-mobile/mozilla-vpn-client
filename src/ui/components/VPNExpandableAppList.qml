@@ -23,33 +23,19 @@ VPNClickableRow {
     handleMouseClick: function() { listVisible = !listVisible; }
     handleKeyClick: function() { listVisible = !listVisible; }
     clip: true
-
-
-    Behavior on y {
-        PropertyAnimation {
-            duration: 200
-        }
-    }
-
     accessibleName: name
-
+    height: appRowHeader.height + listVisible? applist.contentHeight : 0
     states: [
         State {
             name: "list-hidden"
-
-            PropertyChanges {
-                target: appRow
-                height: appRow.height
-            }
-
-            PropertyChanges {
-                target: applist
-                opacity: 0
-            }
             PropertyChanges {
                 target: toggleArrow
                 rotation: -90
 
+            }
+            PropertyChanges {
+                target: appRow
+                height: appRowHeader.height
             }
 
         },
@@ -57,18 +43,13 @@ VPNClickableRow {
             name: "list-visible"
 
             PropertyChanges {
-                target: appRow
-                height: appRow.height +applist.height
-            }
-
-            PropertyChanges {
-                target: applist
-                opacity: 1
-            }
-            PropertyChanges {
                 target: toggleArrow
                 rotation: 0
 
+            }
+            PropertyChanges {
+                target: appRow
+                height: appRowHeader.height + applist.contentHeight
             }
 
         }
@@ -114,13 +95,12 @@ VPNClickableRow {
         anchors.top: appRowHeader.bottom
         anchors.topMargin: 16
         anchors.left: vpnFlickable.left
-        width: parent.width
-        height: contentItem.childrenRect.height + 40
+        width: appRow
+        height: contentItem.childrenRect.height
         spacing: 26
         listName: header
 
-        visible: count > 0
-
+        visible: listVisible
 
         delegate: VPNCheckBoxRow {
             labelText: appName
@@ -133,7 +113,7 @@ VPNClickableRow {
             width: applist.width
             anchors.left: applist.left
             anchors.topMargin: defaultMargin
-            leftMargin: 18
+            leftMargin:12.5
             iconURL: "image://app/"+appID
         }
     }

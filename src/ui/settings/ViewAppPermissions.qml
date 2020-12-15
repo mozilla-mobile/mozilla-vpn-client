@@ -13,9 +13,9 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
     readonly property int defaultMargin: 18
-     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
-    flickContentHeight: 800
+    flickContentHeight: menu.height+enableAppList.height+((!vpnFlickable.vpnIsOff)? vpnOnAlert.height:0) + enabledList.height + disabledList.height
 
     Component.onCompleted: {
        VPNAppPermissions.requestApplist();
@@ -59,6 +59,7 @@ VPNFlickable {
         anchors.leftMargin: 5
         anchors.rightMargin: 5
         width: vpnFlickable.width - 5 *2
+        visible: VPNSettings.protectSelectedApps
 
         //% "Unprotected"
         header: qsTrId("vpn.settings.unprotected")
@@ -73,7 +74,13 @@ VPNFlickable {
         anchors.leftMargin: 5
         anchors.rightMargin: 5
         width: vpnFlickable.width - 5 *2
+        visible: VPNSettings.protectSelectedApps
 
+        Behavior on y {
+            PropertyAnimation {
+                duration: 200
+            }
+        }
         //% "Protected"
         header: qsTrId("vpn.settings.protected")
         //% "These apps will use the VPN"
