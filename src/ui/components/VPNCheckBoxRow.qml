@@ -18,6 +18,7 @@ RowLayout {
     property bool isEnabled: true
     property bool showDivider: true
     property var iconURL: ""
+    property var leftMargin: 18
 
     signal clicked()
     spacing: 0
@@ -25,7 +26,7 @@ RowLayout {
     VPNCheckBox {
         id: checkBox
 
-        Layout.leftMargin: 18
+        Layout.leftMargin: leftMargin
         onClicked: checkBoxRow.clicked()
         checked: isChecked
         enabled: isEnabled
