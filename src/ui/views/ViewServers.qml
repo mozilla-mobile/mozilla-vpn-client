@@ -54,6 +54,14 @@ Item {
             width: serverList.width
         }
 
+        NumberAnimation {
+            id: scrollList
+            target: serverList
+            property: "contentY"
+            to: 0 //Dummy value - will be set up when this animation is called.
+            duration: 300
+        }
+
         Component.onCompleted: {
             for (let idx = 0; idx < serverList.count; idx++) {
                 if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
