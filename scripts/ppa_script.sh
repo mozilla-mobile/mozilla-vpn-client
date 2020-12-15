@@ -29,6 +29,9 @@ helpFunction() {
 print N "This script compiles MozillaVPN and creates a debian/ubuntu package"
 print N ""
 
+EXTRA_DEBUILD_OPTS=""
+DO_UPLOAD=1
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -58,6 +61,14 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  -ns | --no-sign)
+    EXTRA_DEBUILD_OPTS="--no-sign"
+    shift
+    ;;
+  -nu | --no-upload)
+    DO_UPLOAD=0
+    shift
+    ;;
   *)
     helpFunction
     ;;
@@ -73,7 +84,7 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print N "Checking out the code from the git repository..."
-git clone --depth 1 https://github.com/bakulf/mozilla-vpn-client .tmp/mozillavpn-$SHORTVERSION $BRANCH || die "Failed"
+git clone --depth 1 https://github.com/mozilla-mobile/mozilla-vpn-client .tmp/mozillavpn-$SHORTVERSION $BRANCH || die "Failed"
 
 printn Y "Changing directory..."
 cd .tmp/mozillavpn-$SHORTVERSION || die "Failed"
@@ -99,10 +110,12 @@ mv debian/changelog.template debian/changelog || die "Failed"
 sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
 sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
-debuild -S || die "Failed"
+debuild -S $EXTRA_DEBUILD_OPTS || die "Failed"
 
-print Y "Upload the changes to the ppa..."
-cd .. || die "Failed"
-dput ppa:$PPA mozillavpn*.changes || die "Failed"
+if [[ "$DO_UPLOAD" == "1" ]]; then
+    print Y "Upload the changes to the ppa..."
+    cd .. || die "Failed"
+    dput ppa:$PPA mozillavpn*.changes || die "Failed"
+fi
 
-print G "All done!"
+print G "All done."
