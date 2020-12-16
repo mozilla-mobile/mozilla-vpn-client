@@ -20,8 +20,9 @@ VPNClickableRow {
     property var onAction: ()=>{}
     property var isEnabled: true
 
-    state: listVisible ? "list-visible" : "list-hidden"
 
+    state: (listVisible && isEnabled) ? "list-visible" : "list-hidden"
+    opacity: isEnabled ? 1 : 0.5
 
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
     handleMouseClick: function() { listVisible = !listVisible; }
@@ -89,7 +90,7 @@ VPNClickableRow {
                 }
 
                 VPNTextBlock{
-                    visible: !listVisible || applist.count == 0
+                    visible: !listVisible || applist.count == 0 || !isEnabled
                     text: " (%0)".arg(applist.count)
                 }
             }
@@ -117,7 +118,7 @@ VPNClickableRow {
         anchors.top: appRowHeader.bottom
         anchors.topMargin: count > 0 ? 16 : 0
         anchors.left: appRowHeader.left
-        width: appRow
+        width: appRow.width
         height: contentItem.childrenRect.height
         spacing: 26
         listName: header
