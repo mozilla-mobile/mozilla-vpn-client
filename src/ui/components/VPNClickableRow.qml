@@ -18,7 +18,8 @@ VPNButtonBase {
     property var backgroundColor: Theme.iconButtonLightBackground
 
     property var handleMouseClick: function() { mainRow.clicked(); }
-    visualStateItem: rowVisualStates
+    property var visualStateItem: rowVisualStates
+    property var canGrowVertical: false
 
     height: Theme.rowHeight
     anchors.left: parent.left
@@ -43,7 +44,7 @@ VPNButtonBase {
         id: rowVisualStates
 
         width: mainRow.width
-        height: Theme.rowHeight
+        height: canGrowVertical? mainRow.height : Theme.rowHeight
         anchors.top: mainRow.top
         radius: Theme.cornerRadius
         border.width: Theme.focusBorderWidth

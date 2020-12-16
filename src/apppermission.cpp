@@ -121,6 +121,15 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   endResetModel();
 }
 
+Q_INVOKABLE void AppPermission::protectAll() {
+  SettingsHolder::instance()->setVpnDisabledApps(QStringList());
+  dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+};
+Q_INVOKABLE void AppPermission::unprotectAll() {
+  SettingsHolder::instance()->setVpnDisabledApps(m_applist.keys());
+  dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+};
+
 bool AppPermission::FilteredAppList::filterAcceptsRow(
     int source_row, const QModelIndex& source_parent) const {
   auto index = this->sourceModel()->index(source_row, 0, source_parent);
