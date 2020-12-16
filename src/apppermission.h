@@ -32,6 +32,11 @@ class AppPermission final : public QAbstractListModel {
   // Is called from QML if the List is opened
   Q_INVOKABLE void requestApplist();
 
+  // Add all Apps to the Disabled App List
+  Q_INVOKABLE void protectAll();
+  // Remove all Apps from the Disabled App List
+  Q_INVOKABLE void unprotectAll();
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
