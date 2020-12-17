@@ -5,7 +5,7 @@
 import "../components"
 
 VPNLoader {
-    //% "Confirming subscription…"
-    headlineText: qsTrId("vpn.subscription.waitForValidation")
+    //% "Please wait…"
+    headlineText: qsTrId("vpn.subscription.pleaseWait")
     footerLinkIsVisible: false
 }
