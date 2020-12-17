@@ -21,7 +21,7 @@ class ServerCountry final {
   ServerCountry& operator=(const ServerCountry& other);
   ~ServerCountry();
 
-  [[nodiscard]] bool fromJson(QJsonObject& obj);
+  [[nodiscard]] bool fromJson(const QJsonObject& obj);
 
   const QString& name() const { return m_name; }
 

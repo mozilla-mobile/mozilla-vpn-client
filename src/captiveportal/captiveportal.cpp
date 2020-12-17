@@ -40,13 +40,13 @@ bool CaptivePortal::fromJson(const QByteArray& data) {
     }
 
     QJsonObject obj = entry.toObject();
-    QJsonValue address = obj.take("address");
+    QJsonValue address = obj.value("address");
     if (!address.isString()) {
       logger.log() << "Address must be a string";
       return false;
     }
 
-    QJsonValue family = obj.take("family");
+    QJsonValue family = obj.value("family");
     if (!family.isDouble()) {
       logger.log() << "Family must be a number";
       return false;

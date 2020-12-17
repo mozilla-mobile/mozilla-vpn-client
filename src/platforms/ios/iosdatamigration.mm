@@ -82,13 +82,13 @@ void migrateUserDefaultData() {
     }
 
     QJsonObject obj = doc.object();
-    QJsonValue code = obj.take("flagCode");
+    QJsonValue code = obj.value("flagCode");
     if (!code.isString()) {
       logger.log() << "SelectedCity code should be a string";
       return;
     }
 
-    QJsonValue name = obj.take("code");
+    QJsonValue name = obj.value("code");
     if (!name.isString()) {
       logger.log() << "SelectedCity name should be a string";
       return;
@@ -133,26 +133,26 @@ void migrateKeychainData() {
   }
 
   QJsonObject obj = json.object();
-  QJsonValue deviceKeyValue = obj.take("deviceKeys");
+  QJsonValue deviceKeyValue = obj.value("deviceKeys");
   if (!deviceKeyValue.isObject()) {
     logger.log() << "JSON object should have a deviceKeys object";
     return;
   }
 
   QJsonObject deviceKeyObj = deviceKeyValue.toObject();
-  QJsonValue publicKey = deviceKeyObj.take("publicKey");
+  QJsonValue publicKey = deviceKeyObj.value("publicKey");
   if (!publicKey.isString()) {
     logger.log() << "JSON deviceKey object should contain a publicKey value as string";
     return;
   }
 
-  QJsonValue privateKey = deviceKeyObj.take("privateKey");
+  QJsonValue privateKey = deviceKeyObj.value("privateKey");
   if (!privateKey.isString()) {
     logger.log() << "JSON deviceKey object should contain a privateKey value as string";
     return;
   }
 
-  QJsonValue token = obj.take("verificationToken");
+  QJsonValue token = obj.value("verificationToken");
   if (!token.isString()) {
     logger.log() << "JSON object should contain a verificationToken value s string";
     return;

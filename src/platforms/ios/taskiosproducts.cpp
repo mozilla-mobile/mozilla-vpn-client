@@ -45,7 +45,7 @@ void TaskIOSProducts::run(MozillaVPN* vpn) {
             QJsonObject obj = json.object();
             Q_ASSERT(obj.contains("products"));
 
-            QJsonValue productsValue = obj.take("products");
+            QJsonValue productsValue = obj.value("products");
             Q_ASSERT(productsValue.isArray());
 
             QJsonArray productsArray = productsValue.toArray();

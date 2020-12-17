@@ -38,18 +38,18 @@ ServerCountry& ServerCountry::operator=(const ServerCountry& other) {
 
 ServerCountry::~ServerCountry() { MVPN_COUNT_DTOR(ServerCountry); }
 
-bool ServerCountry::fromJson(QJsonObject& countryObj) {
-  QJsonValue countryName = countryObj.take("name");
+bool ServerCountry::fromJson(const QJsonObject& countryObj) {
+  QJsonValue countryName = countryObj.value("name");
   if (!countryName.isString()) {
     return false;
   }
 
-  QJsonValue countryCode = countryObj.take("code");
+  QJsonValue countryCode = countryObj.value("code");
   if (!countryCode.isString()) {
     return false;
   }
 
-  QJsonValue cities = countryObj.take("cities");
+  QJsonValue cities = countryObj.value("cities");
   if (!cities.isArray()) {
     return false;
   }

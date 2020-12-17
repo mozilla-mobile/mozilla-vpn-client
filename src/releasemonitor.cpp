@@ -94,7 +94,7 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
     return false;
   }
 
-  QJsonValue platformDataValue = obj.take(platformKey);
+  QJsonValue platformDataValue = obj.value(platformKey);
   if (!platformDataValue.isObject()) {
     logger.log() << "Platform object not available";
     return false;
@@ -106,13 +106,13 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
   QString minimumVersion;
   QString currentVersion(APP_VERSION);
 
-  QJsonValue latestValue = platformData.take("latest");
+  QJsonValue latestValue = platformData.value("latest");
   if (!latestValue.isObject()) {
     logger.log() << "Platform.latest object not available";
   } else {
     QJsonObject latestData = latestValue.toObject();
 
-    QJsonValue latestVersionValue = latestData.take("version");
+    QJsonValue latestVersionValue = latestData.value("version");
     if (!latestVersionValue.isString()) {
       logger.log() << "Platform.latest.version string not available";
     } else {
@@ -120,13 +120,13 @@ bool ReleaseMonitor::processData(const QByteArray& data) {
     }
   }
 
-  QJsonValue minimumValue = platformData.take("minimum");
+  QJsonValue minimumValue = platformData.value("minimum");
   if (!minimumValue.isObject()) {
     logger.log() << "Platform.minimum object not available";
   } else {
     QJsonObject minimumData = minimumValue.toObject();
 
-    QJsonValue minimumVersionValue = minimumData.take("version");
+    QJsonValue minimumVersionValue = minimumData.value("version");
     if (!minimumVersionValue.isString()) {
       logger.log() << "Platform.minimum.version string not available";
     } else {

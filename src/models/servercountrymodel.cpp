@@ -82,7 +82,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
 
   QJsonObject obj = doc.object();
 
-  QJsonValue countries = obj.take("countries");
+  QJsonValue countries = obj.value("countries");
   if (!countries.isArray()) {
     return false;
   }

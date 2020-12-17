@@ -27,27 +27,27 @@ bool User::fromJson(const QByteArray& json) {
 
   QJsonObject obj = doc.object();
 
-  QJsonValue avatar = obj.take("avatar");
+  QJsonValue avatar = obj.value("avatar");
   if (!avatar.isString()) {
     return false;
   }
 
-  QJsonValue displayName = obj.take("display_name");
+  QJsonValue displayName = obj.value("display_name");
   if (!displayName.isString()) {
     return false;
   }
 
-  QJsonValue email = obj.take("email");
+  QJsonValue email = obj.value("email");
   if (!email.isString()) {
     return false;
   }
 
-  QJsonValue maxDevices = obj.take("max_devices");
+  QJsonValue maxDevices = obj.value("max_devices");
   if (!maxDevices.isDouble()) {
     return false;
   }
 
-  QJsonValue subscriptions = obj.take("subscriptions");
+  QJsonValue subscriptions = obj.value("subscriptions");
   if (!subscriptions.isObject()) {
     return false;
   }
@@ -55,13 +55,13 @@ bool User::fromJson(const QByteArray& json) {
   bool subscriptionNeeded = true;
   QJsonObject subscriptionsObj = subscriptions.toObject();
   if (subscriptionsObj.contains("vpn")) {
-    QJsonValue subVpn = subscriptionsObj.take("vpn");
+    QJsonValue subVpn = subscriptionsObj.value("vpn");
     if (!subVpn.isObject()) {
       return false;
     }
 
     QJsonObject subVpnObj = subVpn.toObject();
-    QJsonValue active = subVpnObj.take("active");
+    QJsonValue active = subVpnObj.value("active");
     if (!active.isBool()) {
       return false;
     }
