@@ -28,18 +28,18 @@ ServerCity& ServerCity::operator=(const ServerCity& other) {
 
 ServerCity::~ServerCity() { MVPN_COUNT_DTOR(ServerCity); }
 
-bool ServerCity::fromJson(QJsonObject& obj) {
-  QJsonValue name = obj.take("name");
+bool ServerCity::fromJson(const QJsonObject& obj) {
+  QJsonValue name = obj.value("name");
   if (!name.isString()) {
     return false;
   }
 
-  QJsonValue code = obj.take("code");
+  QJsonValue code = obj.value("code");
   if (!code.isString()) {
     return false;
   }
 
-  QJsonValue serversValue = obj.take("servers");
+  QJsonValue serversValue = obj.value("servers");
   if (!serversValue.isArray()) {
     return false;
   }

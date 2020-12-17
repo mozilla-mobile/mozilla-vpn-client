@@ -34,44 +34,44 @@ Server& Server::operator=(const Server& other) {
 
 Server::~Server() { MVPN_COUNT_DTOR(Server); }
 
-bool Server::fromJson(QJsonObject& obj) {
+bool Server::fromJson(const QJsonObject& obj) {
   // Reset.
   m_hostname = "";
 
-  QJsonValue hostname = obj.take("hostname");
+  QJsonValue hostname = obj.value("hostname");
   if (!hostname.isString()) {
     return false;
   }
 
-  QJsonValue ipv4AddrIn = obj.take("ipv4_addr_in");
+  QJsonValue ipv4AddrIn = obj.value("ipv4_addr_in");
   if (!ipv4AddrIn.isString()) {
     return false;
   }
 
-  QJsonValue ipv4Gateway = obj.take("ipv4_gateway");
+  QJsonValue ipv4Gateway = obj.value("ipv4_gateway");
   if (!ipv4Gateway.isString()) {
     return false;
   }
 
-  QJsonValue ipv6AddrIn = obj.take("ipv6_addr_in");
+  QJsonValue ipv6AddrIn = obj.value("ipv6_addr_in");
   // If this object comes from the IOS migration, the ipv6_addr_in is missing.
 
-  QJsonValue ipv6Gateway = obj.take("ipv6_gateway");
+  QJsonValue ipv6Gateway = obj.value("ipv6_gateway");
   if (!ipv6Gateway.isString()) {
     return false;
   }
 
-  QJsonValue publicKey = obj.take("public_key");
+  QJsonValue publicKey = obj.value("public_key");
   if (!publicKey.isString()) {
     return false;
   }
 
-  QJsonValue weight = obj.take("weight");
+  QJsonValue weight = obj.value("weight");
   if (!weight.isDouble()) {
     return false;
   }
 
-  QJsonValue portRanges = obj.take("port_ranges");
+  QJsonValue portRanges = obj.value("port_ranges");
   if (!portRanges.isArray()) {
     return false;
   }

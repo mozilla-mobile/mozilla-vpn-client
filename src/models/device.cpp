@@ -78,17 +78,17 @@ bool Device::fromJson(const QJsonValue& json) {
 
   QJsonObject obj = json.toObject();
 
-  QJsonValue name = obj.take("name");
+  QJsonValue name = obj.value("name");
   if (!name.isString()) {
     return false;
   }
 
-  QJsonValue pubKey = obj.take("pubkey");
+  QJsonValue pubKey = obj.value("pubkey");
   if (!pubKey.isString()) {
     return false;
   }
 
-  QJsonValue createdAt = obj.take("created_at");
+  QJsonValue createdAt = obj.value("created_at");
   if (!createdAt.isString()) {
     return false;
   }
@@ -98,12 +98,12 @@ bool Device::fromJson(const QJsonValue& json) {
     return false;
   }
 
-  QJsonValue ipv4Address = obj.take("ipv4_address");
+  QJsonValue ipv4Address = obj.value("ipv4_address");
   if (!ipv4Address.isString()) {
     return false;
   }
 
-  QJsonValue ipv6Address = obj.take("ipv6_address");
+  QJsonValue ipv6Address = obj.value("ipv6_address");
   if (!ipv6Address.isString()) {
     return false;
   }

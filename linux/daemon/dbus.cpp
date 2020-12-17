@@ -83,7 +83,7 @@ bool DBus::activate(const QString& jsonConfig) {
     return false;                                               \
   }                                                             \
   {                                                             \
-    QJsonValue value = obj.take(name);                          \
+    QJsonValue value = obj.value(name);                         \
     if (!value.isString()) {                                    \
       logger.log() << name << " is not a string";               \
       return false;                                             \
@@ -108,7 +108,7 @@ bool DBus::activate(const QString& jsonConfig) {
     return false;                                               \
   }                                                             \
   {                                                             \
-    QJsonValue value = obj.take(name);                          \
+    QJsonValue value = obj.value(name);                         \
     if (!value.isDouble()) {                                    \
       logger.log() << name << " is not a number";               \
       return false;                                             \
@@ -126,7 +126,7 @@ bool DBus::activate(const QString& jsonConfig) {
     return false;                                               \
   }                                                             \
   {                                                             \
-    QJsonValue value = obj.take(name);                          \
+    QJsonValue value = obj.value(name);                         \
     if (!value.isBool()) {                                      \
       logger.log() << name << " is not a boolean";              \
       return false;                                             \
@@ -144,7 +144,7 @@ bool DBus::activate(const QString& jsonConfig) {
     return false;
   }
   {
-    QJsonValue value = obj.take(JSON_ALLOWEDIPADDRESSRANGES);
+    QJsonValue value = obj.value(JSON_ALLOWEDIPADDRESSRANGES);
     if (!value.isArray()) {
       logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
       return false;
@@ -161,21 +161,21 @@ bool DBus::activate(const QString& jsonConfig) {
 
       QJsonObject ipObj = i.toObject();
 
-      QJsonValue address = ipObj.take("address");
+      QJsonValue address = ipObj.value("address");
       if (!address.isString()) {
         logger.log() << JSON_ALLOWEDIPADDRESSRANGES
                      << "objects must have a string address";
         return false;
       }
 
-      QJsonValue range = ipObj.take("range");
+      QJsonValue range = ipObj.value("range");
       if (!range.isDouble()) {
         logger.log() << JSON_ALLOWEDIPADDRESSRANGES
                      << "object must have a numberic range";
         return false;
       }
 
-      QJsonValue isIpv6 = ipObj.take("isIpv6");
+      QJsonValue isIpv6 = ipObj.value("isIpv6");
       if (!isIpv6.isBool()) {
         logger.log() << JSON_ALLOWEDIPADDRESSRANGES
                      << "object must have a boolean isIpv6";

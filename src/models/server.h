@@ -18,7 +18,7 @@ class Server final {
   Server& operator=(const Server& other);
   ~Server();
 
-  [[nodiscard]] bool fromJson(QJsonObject& obj);
+  [[nodiscard]] bool fromJson(const QJsonObject& obj);
 
   static const Server& weightChooser(const QList<Server>& servers);
 

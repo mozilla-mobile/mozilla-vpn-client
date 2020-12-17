@@ -89,7 +89,7 @@ bool DeviceModel::fromJsonInternal(const QByteArray& json) {
     return false;
   }
 
-  QJsonValue devices = obj.take("devices");
+  QJsonValue devices = obj.value("devices");
   if (!devices.isArray()) {
     return false;
   }

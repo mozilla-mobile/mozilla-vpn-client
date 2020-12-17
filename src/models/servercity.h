@@ -19,7 +19,7 @@ class ServerCity final {
   ServerCity& operator=(const ServerCity& other);
   ~ServerCity();
 
-  [[nodiscard]] bool fromJson(QJsonObject& obj);
+  [[nodiscard]] bool fromJson(const QJsonObject& obj);
 
   const QString& name() const { return m_name; }
 

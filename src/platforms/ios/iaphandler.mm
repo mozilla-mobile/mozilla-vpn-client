@@ -345,7 +345,7 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
             }
 
             QJsonObject obj = json.object();
-            QJsonValue errorValue = obj.take("errno");
+            QJsonValue errorValue = obj.value("errno");
             if (!errorValue.isDouble()) {
               MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
               emit subscriptionFailed();

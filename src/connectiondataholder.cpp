@@ -229,7 +229,7 @@ void ConnectionDataHolder::updateIpAddress() {
             if (json.isObject()) {
               QJsonObject obj = json.object();
 
-              QJsonValue value = obj.take("ip");
+              QJsonValue value = obj.value("ip");
               if (value.isString()) {
                 m_ipAddress = value.toString();
                 emit ipAddressChanged();

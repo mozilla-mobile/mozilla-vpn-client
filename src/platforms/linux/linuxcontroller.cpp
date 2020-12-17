@@ -59,7 +59,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 
   QJsonObject obj = json.object();
   Q_ASSERT(obj.contains("status"));
-  QJsonValue statusValue = obj.take("status");
+  QJsonValue statusValue = obj.value("status");
   Q_ASSERT(statusValue.isBool());
 
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
@@ -135,7 +135,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
 
   QJsonObject obj = json.object();
   Q_ASSERT(obj.contains("status"));
-  QJsonValue statusValue = obj.take("status");
+  QJsonValue statusValue = obj.value("status");
   Q_ASSERT(statusValue.isBool());
 
   if (!statusValue.toBool()) {
@@ -144,15 +144,15 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   }
 
   Q_ASSERT(obj.contains("serverIpv4Gateway"));
-  QJsonValue serverIpv4Gateway = obj.take("serverIpv4Gateway");
+  QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
   Q_ASSERT(serverIpv4Gateway.isString());
 
   Q_ASSERT(obj.contains("txBytes"));
-  QJsonValue txBytes = obj.take("txBytes");
+  QJsonValue txBytes = obj.value("txBytes");
   Q_ASSERT(txBytes.isDouble());
 
   Q_ASSERT(obj.contains("rxBytes"));
-  QJsonValue rxBytes = obj.take("rxBytes");
+  QJsonValue rxBytes = obj.value("rxBytes");
   Q_ASSERT(rxBytes.isDouble());
 
   emit statusUpdated(serverIpv4Gateway.toString(), txBytes.toDouble(),
