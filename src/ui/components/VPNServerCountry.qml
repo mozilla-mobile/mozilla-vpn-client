@@ -26,9 +26,20 @@ VPNClickableRow {
     state: cityListVisible ? "list-visible" : "list-hidden"
     width: ListView.view.width
 
+    function openCityList() {
+        cityListVisible = !cityListVisible;
+        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y;
+        const listScrollPosition = serverList.contentY
+        if (itemDistanceFromWindowTop + cityList.height < serverList.height || !cityListVisible) {
+            return;
+        }
+        scrollList.to = (cityList.height > serverList.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + (Theme.windowMargin / 2);
+        scrollList.start();
+    }
+
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
-    handleMouseClick: function() { cityListVisible = !cityListVisible; }
-    handleKeyClick: function() { cityListVisible = !cityListVisible; }
+    handleMouseClick: openCityList
+    handleKeyClick: openCityList
     clip: true
 
     Behavior on y {
