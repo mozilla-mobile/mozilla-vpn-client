@@ -13,15 +13,15 @@ fi
 RELEASE=1
 OS=
 PROD=
-SELFHOSTED=
+SELFHOSTED=1
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios> [-d|--debug] [-p|--prod] [-s|--selfhosted]"
+  print N "\t$0 <macos|ios> [-d|--debug] [-p|--prod] [-n|--networkextension]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
-  print N "A self-hosted build, for macOS, compiles the network extension as a system one"
+  print N "Use -n or --networkextension to force the network-extension component for MacOS too."
   print N ""
   print G "Config variables:"
   print N "\tQT_MACOS_BIN=</path/of/the/qt/bin/folder/for/macos>"
@@ -45,8 +45,8 @@ while [[ $# -gt 0 ]]; do
     PROD=1
     shift
     ;;
-  -s | --selfhosted)
-    SELFHOSTED=1
+  -n | --networkextension)
+    SELFHOSTED=
     shift
     ;;
   -h | --help)
@@ -67,8 +67,9 @@ if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]]; then
   helpFunction
 fi
 
-if [[ "$OS" == "ios" ]] && [[ "$SELFHOSTED" ]]; then
-  die "Selfhosted builds are macos only"
+# No self-hosted mode for IOS
+if [[ "$OS" == "ios" ]]; then
+  SELFHOSTED=
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
