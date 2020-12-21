@@ -104,11 +104,22 @@ VPNFlickable {
         alertType: "update"
         alertColor: Theme.blueButton
         visible: state === "recommended"
+        onVisibleChanged: if (visible) showAlert.start();
         //% "New version is available."
         alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
         alertLinkText: qsTrId("vpn.updates.updateNow")
         width: parent.width - (Theme.windowMargin * 2)
+
+        PropertyAnimation {
+            id: showAlert
+
+            target: alertBox
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 200
+        }
 
         SequentialAnimation {
             id: closeAlert
