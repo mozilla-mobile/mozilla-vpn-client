@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "macoscontroller.h"
+#include "ioscontroller.h"
 #include "Mozilla_VPN-Swift.h"
 #include "device.h"
 #include "ipaddressrange.h"
@@ -18,23 +18,23 @@
 
 namespace {
 
-Logger logger({LOG_MACOS, LOG_CONTROLLER}, "MacOSController");
+Logger logger({LOG_IOS, LOG_CONTROLLER}, "IOSController");
 
 // Our Swift singleton.
-MacOSControllerImpl* impl = nullptr;
+IOSControllerImpl* impl = nullptr;
 
 }  // namespace
 
-MacOSController::MacOSController() {
-  MVPN_COUNT_CTOR(MacOSController);
+IOSController::IOSController() {
+  MVPN_COUNT_CTOR(IOSController);
 
   logger.log() << "created";
 
   Q_ASSERT(!impl);
 }
 
-MacOSController::~MacOSController() {
-  MVPN_COUNT_DTOR(MacOSController);
+IOSController::~IOSController() {
+  MVPN_COUNT_DTOR(IOSController);
 
   logger.log() << "deallocated";
 
@@ -44,7 +44,7 @@ MacOSController::~MacOSController() {
   }
 }
 
-void MacOSController::initialize(const Device* device, const Keys* keys) {
+void IOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(!impl);
   Q_UNUSED(device);
 
@@ -57,7 +57,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 
   QByteArray key = QByteArray::fromBase64(keys->privateKey().toLocal8Bit());
 
-  impl = [[MacOSControllerImpl alloc] initWithBundleID:@VPN_NE_BUNDLEID
+  impl = [[IOSControllerImpl alloc] initWithBundleID:@VPN_NE_BUNDLEID
       privateKey:key.toNSData()
       deviceIpv4Address:device->ipv4Address().toNSString()
       deviceIpv6Address:device->ipv6Address().toNSString()
@@ -94,16 +94,16 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void MacOSController::activate(const Server& server, const Device* device, const Keys* keys,
-                               const QList<IPAddressRange>& allowedIPAddressRanges,
-                               const QList<QString>& vpnDisabledApps, bool forSwitching) {
+void IOSController::activate(const Server& server, const Device* device, const Keys* keys,
+                             const QList<IPAddressRange>& allowedIPAddressRanges,
+                             const QList<QString>& vpnDisabledApps, bool forSwitching) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
   // This feature is not supported on macos/ios yet.
   Q_ASSERT(vpnDisabledApps.isEmpty());
 
-  logger.log() << "MacOSController activating" << server.hostname();
+  logger.log() << "IOSController activating" << server.hostname();
 
   if (!impl) {
     logger.log() << "Controller not correctly initialized";
@@ -130,13 +130,13 @@ void MacOSController::activate(const Server& server, const Device* device, const
                          ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
                         forSwitching:forSwitching
                      failureCallback:^() {
-                       logger.log() << "MacOSSWiftController - connection failed";
+                       logger.log() << "IOSSWiftController - connection failed";
                        emit disconnected();
                      }];
 }
 
-void MacOSController::deactivate(bool forSwitching) {
-  logger.log() << "MacOSController deactivated";
+void IOSController::deactivate(bool forSwitching) {
+  logger.log() << "IOSController deactivated";
 
   if (forSwitching) {
     logger.log() << "We do not need to disable the VPN for switching.";
@@ -153,7 +153,7 @@ void MacOSController::deactivate(bool forSwitching) {
   [impl disconnect];
 }
 
-void MacOSController::checkStatus() {
+void IOSController::checkStatus() {
   logger.log() << "Checking status";
 
   if (m_checkingStatus) {
@@ -199,7 +199,7 @@ void MacOSController::checkStatus() {
   }];
 }
 
-void MacOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
+void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
   std::function<void(const QString&)> callback = std::move(a_callback);
 
   QString groupId(GROUP_ID);
@@ -218,7 +218,7 @@ void MacOSController::getBackendLogs(std::function<void(const QString&)>&& a_cal
   callback(content);
 }
 
-void MacOSController::cleanupBackendLogs() {
+void IOSController::cleanupBackendLogs() {
   QString groupId(GROUP_ID);
   NSURL* groupPath = [[NSFileManager defaultManager]
       containerURLForSecurityApplicationGroupIdentifier:groupId.toNSString()];
