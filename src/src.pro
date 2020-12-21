@@ -430,7 +430,7 @@ else:macos {
                    platforms/macos/daemon/macosdaemonserver.h \
                    platforms/macos/daemon/macosdaemonconnection.h
     } else {
-        message(Wireguard integration)
+        message(Network extension mode)
 
         DEFINES += MVPN_MACOS_INTEGRATION
 
