@@ -2,19 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef MACOSCONTROLLER_H
-#define MACOSCONTROLLER_H
+#ifndef IOSCONTROLLER_H
+#define IOSCONTROLLER_H
 
 #include "controllerimpl.h"
 
 #include <QObject>
 
-class MacOSController final : public ControllerImpl {
-  Q_DISABLE_COPY_MOVE(MacOSController)
+class IOSController final : public ControllerImpl {
+  Q_DISABLE_COPY_MOVE(IOSController)
 
  public:
-  MacOSController();
-  ~MacOSController();
+  IOSController();
+  ~IOSController();
 
   void initialize(const Device* device, const Keys* keys) override;
 
@@ -35,4 +35,4 @@ class MacOSController final : public ControllerImpl {
   bool m_checkingStatus = false;
 };
 
-#endif  // MACOSCONTROLLER_H
+#endif  // IOSCONTROLLER_H

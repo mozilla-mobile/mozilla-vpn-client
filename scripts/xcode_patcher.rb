@@ -9,19 +9,19 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, selfHosted, configHash)
+  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash)
     open_project file
     open_target_main
 
-    die 'Invalid selfHosted + ios' if selfHosted and platform != 'macos'
+    die 'IOS requires networkExtension mode' if not networkExtension and platform == 'ios'
 
     group = @project.main_group.new_group('Configuration')
     @configFile = group.new_file('xcode.xconfig')
 
-    setup_target_main shortVersion, fullVersion, platform, selfHosted, configHash
+    setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash
     setup_target_loginitem shortVersion, fullVersion, configHash if platform == "macos"
 
-    if not selfHosted
+    if networkExtension
       setup_target_extension shortVersion, fullVersion, platform, configHash
       setup_target_gobridge
     else
@@ -45,7 +45,7 @@ class XCodeprojPatcher
     die 'Unable to open MozillaVPN target'
   end
 
-  def setup_target_main(shortVersion, fullVersion, platform, selfHosted, configHash)
+  def setup_target_main(shortVersion, fullVersion, platform, networkExtension, configHash)
     @target_main.build_configurations.each do |config|
       config.base_configuration_reference = @configFile
 
@@ -63,8 +63,14 @@ class XCodeprojPatcher
 
       # other config
       config.build_settings['INFOPLIST_FILE'] ||= platform + '/app/Info.plist'
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform +'/app/selfHosted.entitlements' if selfHosted
-      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= platform +'/app/main.entitlements' if not selfHosted
+      if platform == 'ios'
+        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
+      elsif networkExtension
+        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/networkExtension.entitlements'
+      else
+        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/daemon.entitlements'
+      end
+
       config.build_settings['CODE_SIGN_IDENTITY'] ||= 'Apple Development'
       config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
       config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
@@ -86,7 +92,7 @@ class XCodeprojPatcher
       end
     end
 
-    if not selfHosted
+    if networkExtension
       # WireGuard group
       group = @project.main_group.new_group('WireGuard')
 
@@ -114,8 +120,8 @@ class XCodeprojPatcher
       group = @project.main_group.new_group('SwiftIntegration')
 
       [
-        'src/platforms/macos/networkextension/macoscontroller.swift',
-        'src/platforms/macos/networkextension/macoslogger.swift',
+        'src/platforms/ios/ioscontroller.swift',
+        'src/platforms/ios/ioslogger.swift',
       ].each { |filename|
         file = group.new_file(filename)
         @target_main.add_file_references([file])
@@ -174,8 +180,8 @@ class XCodeprojPatcher
       end
 
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
-        # This is needed to compile the macosglue without Qt.
-        'MACOS_EXTENSION=1',
+        # This is needed to compile the iosglue without Qt.
+        'NETWORK_EXTENSION=1',
         'GROUP_ID=\"' + groupId + '\"',
       ]
 
@@ -211,8 +217,8 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
-      'src/platforms/macos/networkextension/macosglue.mm',
-      'src/platforms/macos/networkextension/macoslogger.swift',
+      'src/platforms/ios/iosglue.mm',
+      'src/platforms/ios/ioslogger.swift',
     ].each { |filename|
       file = group.new_file(filename)
       @target_extension.add_file_references([file])
@@ -443,8 +449,8 @@ configFile.each { |line|
 
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
-selfHosted = true if ARGV[4] == "1"
+networkExtension = true if ARGV[4] == "1"
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, selfHosted, config
+r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config
 exit 0

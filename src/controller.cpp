@@ -19,11 +19,9 @@
 #if defined(MVPN_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
 #elif defined(MVPN_MACOS_DAEMON)
-#  include "platforms/macos/daemon/macoscontroller.h"
-#elif defined(MVPN_MACOS_INTEGRATION)
-#  include "platforms/macos/networkextension/macoscontroller.h"
-#elif defined(MVPN_IOS)
-#  include "platforms/macos/networkextension/macoscontroller.h"
+#  include "platforms/macos/macoscontroller.h"
+#elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
+#  include "platforms/ios/ioscontroller.h"
 #elif defined(MVPN_ANDROID)
 #  include "platforms/android/androidcontroller.h"
 #else
@@ -61,10 +59,10 @@ void Controller::initialize() {
   m_impl.reset(new TimerController(
 #if defined(MVPN_LINUX)
       new LinuxController()
-#elif defined(MVPN_MACOS_INTEGRATION) or defined(MVPN_MACOS_DAEMON)
+#elif defined(MVPN_MACOS_DAEMON)
       new MacOSController()
-#elif defined(MVPN_IOS)
-      new MacOSController()
+#elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
+      new IOSController()
 #elif defined(MVPN_ANDROID)
       new AndroidController()
 #else

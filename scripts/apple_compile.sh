@@ -13,7 +13,7 @@ fi
 RELEASE=1
 OS=
 PROD=
-SELFHOSTED=1
+NETWORKEXTENSION=
 
 helpFunction() {
   print G "Usage:"
@@ -46,7 +46,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   -n | --networkextension)
-    SELFHOSTED=
+    NETWORKEXTENSION=1
     shift
     ;;
   -h | --help)
@@ -67,9 +67,9 @@ if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]]; then
   helpFunction
 fi
 
-# No self-hosted mode for IOS
 if [[ "$OS" == "ios" ]]; then
-  SELFHOSTED=
+  # Network-extension is the default for IOS
+  NETWORKEXTENSION=1
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
@@ -139,13 +139,13 @@ else
   print G no
 fi
 
-SELFHOSTEDMODE=
-printn Y "Self-hosted mode: "
-if [[ "$SELFHOSTED" ]]; then
-  print G yes
-  SELFHOSTEDMODE="CONFIG+=selfhosted"
+VPNMODE=
+printn Y "VPN mode: "
+if [[ "$NETWORKEXTENSION" ]]; then
+  print G network-extension
+  VPNMODE="CONFIG+=networkextension"
 else
-  print G no
+  print G daemon
 fi
 
 print Y "Creating the xcode project via qmake..."
@@ -154,12 +154,12 @@ $QMAKE \
   -spec macx-xcode \
   $MODE \
   $PRODMODE \
-  $SELFHOSTEDMODE \
+  $VPNMODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OS" "$SELFHOSTED" || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OS" "$NETWORKEXTENSION" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Opening in XCode..."

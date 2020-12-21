@@ -17,7 +17,6 @@ constexpr const char* LOG_INSPECTOR = "inspector";
 
 #ifdef MVPN_IOS
 constexpr const char* LOG_IAP = "iap";
-constexpr const char* LOG_IOS = "ios";
 #endif
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
@@ -30,6 +29,10 @@ constexpr const char* LOG_WINDOWS = "windows";
 
 #if __APPLE__
 constexpr const char* LOG_MACOS = "macos";
+
+#  ifdef MVPN_MACOS_NETWORKEXTENSION
+constexpr const char* LOG_IOS = "ios";
+#  endif
 #endif
 
 #ifdef MVPN_ANDROID
