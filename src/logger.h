@@ -29,10 +29,7 @@ constexpr const char* LOG_WINDOWS = "windows";
 
 #if __APPLE__
 constexpr const char* LOG_MACOS = "macos";
-
-#  ifdef MVPN_MACOS_NETWORKEXTENSION
 constexpr const char* LOG_IOS = "ios";
-#  endif
 #endif
 
 #ifdef MVPN_ANDROID
