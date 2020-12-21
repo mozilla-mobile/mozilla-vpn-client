@@ -16,5 +16,5 @@
         ignore=all
 [submodule "3rdparty/wireguard-go"]
 	path = 3rdparty/wireguard-go
-	url = https://git.zx2c4.com/wireguard-go
+	url = https://github.com/WireGuard/wireguard-go
         ignore=all
