@@ -44,7 +44,7 @@ void CryptoSettings::resetKey() {
 
 // static
 bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
-#if defined(MVPN_IOS) || defined(MVPN_MACOS_INTEGRATION)
+#if defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION) || defined(MVPN_MACOS_DAEMON)
   if (!initialized) {
     initialized = true;
 
@@ -123,7 +123,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
   logger.log() << "Get supported settings method";
 
-#if defined(MVPN_IOS) || defined(MVPN_MACOS_INTEGRATION)
+#if defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION) || defined(MVPN_MACOS_DAEMON)
   uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
   if (getKey(key)) {
     logger.log() << "Encryption supported!";
