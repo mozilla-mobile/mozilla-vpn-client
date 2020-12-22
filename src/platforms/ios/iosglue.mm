@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef MACOS_EXTENSION
+#ifndef NETWORK_EXTENSION
 #  include "logger.h"
 #else
 #  import <Foundation/Foundation.h>
@@ -170,14 +170,14 @@ EXPORT bool key_from_hex(uint8_t key[WG_KEY_LEN], const char* hex) {
 // Logging functions
 // -----------------
 
-#ifndef MACOS_EXTENSION
+#ifndef NETWORK_EXTENSION
 namespace {
-Logger logger(LOG_MACOS, "MacOSGlue");
+Logger logger(LOG_IOS, "IOSSGlue");
 }
 #endif
 
 EXPORT void write_msg_to_log(const char* tag, const char* msg) {
-#ifndef MACOS_EXTENSION
+#ifndef NETWORK_EXTENSION
   logger.log() << "Swift log - tag:" << tag << "msg: " << msg;
 #else
   os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);

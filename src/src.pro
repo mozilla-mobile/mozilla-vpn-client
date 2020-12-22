@@ -410,7 +410,22 @@ else:macos {
 
         SOURCES += platforms/dummy/dummycontroller.cpp
         HEADERS += platforms/dummy/dummycontroller.h
-    } else:selfhosted {
+    } else:networkextension {
+        message(Network extension mode)
+
+        DEFINES += MVPN_MACOS_NETWORKEXTENSION
+
+        INCLUDEPATH += \
+                    ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
+                    ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
+
+        OBJECTIVE_SOURCES += \
+                platforms/ios/ioscontroller.mm \
+                platforms/ios/iosglue.mm
+
+        OBJECTIVE_HEADERS += \
+                platforms/ios/iosscontroller.h
+    } else {
         message(Daemon mode)
 
         DEFINES += MVPN_MACOS_DAEMON
@@ -418,32 +433,17 @@ else:macos {
         SOURCES += \
                    daemon.cpp \
                    wgquickprocess.cpp \
-                   platforms/macos/daemon/macoscontroller.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp \
-                   platforms/macos/daemon/macosdaemonconnection.cpp
+                   platforms/macos/daemon/macosdaemonconnection.cpp \
+                   platforms/macos/macoscontroller.cpp
         HEADERS += \
                    daemon.h \
                    wgquickprocess.h \
-                   platforms/macos/daemon/macoscontroller.h \
                    platforms/macos/daemon/macosdaemon.h \
                    platforms/macos/daemon/macosdaemonserver.h \
-                   platforms/macos/daemon/macosdaemonconnection.h
-    } else {
-        message(Wireguard integration)
-
-        DEFINES += MVPN_MACOS_INTEGRATION
-
-        INCLUDEPATH += \
-                    ../3rdparty/Wireguard-apple/WireGuard/WireGuard/Crypto \
-                    ../3rdparty/wireguard-apple/WireGuard/Shared/Model \
-
-        OBJECTIVE_SOURCES += \
-                platforms/macos/networkextension/macosglue.mm \
-                platforms/macos/networkextension/macoscontroller.mm
-
-        OBJECTIVE_HEADERS += \
-                platforms/macos/networkextension/macoscontroller.h
+                   platforms/macos/daemon/macosdaemonconnection.h \
+                   platforms/macos/macoscontroller.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
@@ -484,12 +484,12 @@ else:ios {
     OBJECTIVE_SOURCES += \
             platforms/ios/iaphandler.mm \
             platforms/ios/iosauthenticationlistener.mm \
+            platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
+            platforms/ios/iosglue.mm \
             platforms/ios/iosnotificationhandler.mm \
             platforms/ios/iosutils.mm \
-            platforms/macos/macoscryptosettings.mm \
-            platforms/macos/networkextension/macosglue.mm \
-            platforms/macos/networkextension/macoscontroller.mm
+            platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
             platforms/ios/taskiosproducts.h \
@@ -498,10 +498,10 @@ else:ios {
     OBJECTIVE_HEADERS += \
             platforms/ios/iaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
+            platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
             platforms/ios/iosnotificationhandler.h \
-            platforms/ios/iosutils.h \
-            platforms/macos/networkextension/macoscontroller.h
+            platforms/ios/iosutils.h
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"

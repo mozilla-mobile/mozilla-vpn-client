@@ -22,7 +22,7 @@ var vpnBundleID = "";
     }
 }
 
-public class MacOSControllerImpl : NSObject {
+public class IOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
     private var stateChangeCallback: ((Bool) -> Void?)? = nil
@@ -67,7 +67,7 @@ public class MacOSControllerImpl : NSObject {
             let nsManagers = managers ?? []
             Logger.global?.log(message: "We have received \(nsManagers.count) managers.")
 
-            let tunnel = nsManagers.first(where: MacOSControllerImpl.isOurManager(_:))
+            let tunnel = nsManagers.first(where: IOSControllerImpl.isOurManager(_:))
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = NETunnelProviderManager()
