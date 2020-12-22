@@ -11,21 +11,33 @@ Row {
     property var markerData
 
     function computeRange() {
-        if (markerData < 1.28e+05) {
-            //% "Kbps"
-            //: Kilobits per Secound
-            return qsTrId("vpn.connectionInfo.kbps");
+        if (markerData < 1024) {
+            //% "B/s"
+            //: Kilobytes per second
+            return qsTrId("vpn.connectionInfo.Bps");
         }
 
-        if (markerData < 1.28e+08) {
-            //% "Mbps"
-            //: Megabits per Second
-            return qsTrId("vpn.connectioInfo.mbps");
+        if (markerData < 1048576 /* 1024^2 */) {
+            //% "kB/s"
+            //: Kilobytes per second
+            return qsTrId("vpn.connectionInfo.kBps");
         }
 
-        //% "Gbps"
-        //: Gigabits per Second
-        return qsTrId("vpn.connectionInfo.gbps");
+        if (markerData < 1073741824 /* 1024^3 */) {
+            //% "mB/s"
+            //: Metabytes per second
+            return qsTrId("vpn.connectioInfo.mBps");
+        }
+
+        if (markerData < 1099511627776 /* 1024^4 */) {
+            //% "gB/s"
+            //: Gigabytes per second
+            return qsTrId("vpn.connectioInfo.gBps");
+        }
+
+        //% "tB/s"
+        //: Terabytes per second
+        return qsTrId("vpn.connectionInfo.tBps");
     }
 
     function roundValue(value) {
@@ -33,13 +45,19 @@ Row {
     }
 
     function computeValue() {
-        if (markerData < 128000)
-            return roundValue(markerData / 8192);
+        if (markerData < 1024)
+            return roundValue(markerData);
 
-        if (markerData < 1.28e+08)
-            return roundValue(markerData / 8.192e+06);
+        if (markerData < 1048576 /* 1024^2 */)
+            return roundValue(markerData / 1024);
 
-        return roundValue(markeData / 8.192e+09);
+        if (markerData < 1073741824 /* 1024^3 */)
+            return roundValue(markerData / 1048576 /* 1024^2 */);
+
+        if (markerData < 1099511627776 /* 1024^4 */)
+            return roundValue(markerData / 1073741824 /* 1024^3 */);
+
+        return roundValue(markerData / 1099511627776 /* 1024^4 */);
     }
     Accessible.focusable: true
     Accessible.role: Accessible.StaticText
