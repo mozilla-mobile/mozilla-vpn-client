@@ -13,7 +13,7 @@ Row {
     function computeRange() {
         if (markerData < 1024) {
             //% "B/s"
-            //: Kilobytes per second
+            //: Bytes per second
             return qsTrId("vpn.connectionInfo.Bps");
         }
 
@@ -25,7 +25,7 @@ Row {
 
         if (markerData < 1073741824 /* 1024^3 */) {
             //% "mB/s"
-            //: Metabytes per second
+            //: Megabytes per second
             return qsTrId("vpn.connectioInfo.mBps");
         }
 
