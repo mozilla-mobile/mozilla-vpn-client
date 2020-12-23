@@ -55,7 +55,7 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasUserSubscriptionNeeded, userSubscriptionNeeded,
          setUserSubscriptionNeeded)
   GETSET(QString, hasCurrentServerCountryCode, currentServerCountryCode,
-           setCurrentServerCountryCode)
+         setCurrentServerCountryCode)
   GETSET(QString, hasCurrentServerCountry, currentServerCountry,
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
