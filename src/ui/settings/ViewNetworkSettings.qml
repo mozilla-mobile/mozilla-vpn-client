@@ -61,6 +61,10 @@ VPNFlickable {
     VPNCheckBoxAlert {
         anchors.top: localNetwork.visible ? localNetwork.bottom : ipv6.bottom
         visible: !vpnFlickable.vpnIsOff
+
+        //% "VPN must be off to edit network settings"
+        //: Associated to a group of settings that require the VPN to be disconnected to change
+        errorMessage: qsTrId("vpn.turnOffAlert.vpnMustBeOff")
     }
 
 }

@@ -6,12 +6,16 @@
 #define APPPERMISSION_H
 
 #include <QObject>
+#include <QSortFilterProxyModel>
 #include <QAbstractListModel>
 #include "applistprovider.h"
 
 class AppPermission final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppPermission)
+
+  Q_PROPERTY(QSortFilterProxyModel* enabledApps MEMBER m_enabledList CONSTANT)
+  Q_PROPERTY(QSortFilterProxyModel* disabledApps MEMBER m_disabledlist CONSTANT)
 
  public:
   ~AppPermission();
@@ -27,6 +31,11 @@ class AppPermission final : public QAbstractListModel {
   Q_INVOKABLE void flip(const QString& appID);
   // Is called from QML if the List is opened
   Q_INVOKABLE void requestApplist();
+
+  // Add all Apps to the Disabled App List
+  Q_INVOKABLE void protectAll();
+  // Remove all Apps from the Disabled App List
+  Q_INVOKABLE void unprotectAll();
 
   // QAbstractListModel methods
 
@@ -44,7 +53,20 @@ class AppPermission final : public QAbstractListModel {
   AppPermission(QObject* parent);
   AppListProvider* m_listprovider = nullptr;
   QMap<QString, QString> m_applist;
- signals:
+
+  // Sublist of AppPermission, can either include all Enabled or Disabled apps
+  class FilteredAppList : public QSortFilterProxyModel {
+   public:
+    bool mEnabledAppsOnly;
+    FilteredAppList(AppPermission* parent, bool enabledAppsOnly)
+        : QSortFilterProxyModel(parent), mEnabledAppsOnly(enabledAppsOnly) {
+      this->setSourceModel(parent);
+    };
+    bool filterAcceptsRow(int source_row,
+                          const QModelIndex& source_parent) const override;
+  };
+  QSortFilterProxyModel* m_enabledList;
+  QSortFilterProxyModel* m_disabledlist;
 };
 
 #endif  // APPPERMISSION_H
