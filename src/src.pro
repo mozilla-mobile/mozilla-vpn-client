@@ -355,7 +355,9 @@ else:android {
                 platforms/android/androiddatamigration.cpp \
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
-                platforms/android/androidsharedprefs.cpp
+                platforms/android/androidsharedprefs.cpp \
+                tasks/authenticate/desktopauthenticationlistener.cpp
+
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
@@ -365,7 +367,8 @@ else:android {
                 platforms/android/androiddatamigration.h\
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
-                platforms/android/androidsharedprefs.h
+                platforms/android/androidsharedprefs.h \
+                tasks/authenticate/desktopauthenticationlistener.h
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsendworker.cpp \

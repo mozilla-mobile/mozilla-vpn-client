@@ -6,7 +6,6 @@
 #define ANDROIDAUTHENTICATIONLISTENER_H
 
 #include "authenticationlistener.h"
-
 #include <QObject>
 
 class AndroidAuthenticationListener final : public AuthenticationListener {
