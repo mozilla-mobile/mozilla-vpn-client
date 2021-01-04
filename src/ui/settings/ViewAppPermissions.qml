@@ -13,9 +13,9 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
     readonly property int defaultMargin: 18
-     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+    property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
-    flickContentHeight: menu.height+enableAppList.height+applistLabel.height+applist.contentHeight+vpnOnAlert.height+defaultMargin+Theme.windowMargin+applistLabel.anchors.topMargin+applist.anchors.topMargin
+    flickContentHeight: menu.height + enableAppList.height + enableAppList.anchors.topMargin + (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (disabledList.visible? (disabledList.height+disabledList.anchors.topMargin):0)+(enabledList.visible? (enabledList.height + enabledList.anchors.topMargin):0)+20
 
     Component.onCompleted: {
        VPNAppPermissions.requestApplist();
@@ -40,7 +40,7 @@ VPNFlickable {
         subLabelText: qsTrId("vpn.settings.protectSelectedApps.description")
         isChecked: (VPNSettings.protectSelectedApps)
         isEnabled: vpnFlickable.vpnIsOff
-        showDivider: false
+        showDivider: true
         onClicked: VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
 
     }
@@ -49,101 +49,85 @@ VPNFlickable {
         id: vpnOnAlert
         anchors.top: enableAppList.bottom
         visible: !vpnFlickable.vpnIsOff
+
+        //% "VPN must be off to edit App Permissions"
+        //: Associated to a group of settings that require the VPN to be disconnected to change
+        errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
     }
 
 
+    RowLayout {
+        id: allAppsProtectedHint
+        anchors.top: enableAppList.bottom
+        anchors.left: enableAppList.left
+        anchors.leftMargin: 15
+        anchors.topMargin: 15
+        visible: !VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
+        Rectangle {
+            color: "transparent"
+            Layout.preferredHeight: infoMessage.lineHeight
+            Layout.maximumHeight: infoMessage.lineHeight
+            Layout.preferredWidth: 14
+            Layout.rightMargin: 18
+            Layout.leftMargin: 4
+            Layout.alignment: Qt.AlignTop
+            VPNIcon {
+                id: warningIcon
 
-    VPNBoldLabel {
-        id: applistLabel
+                source: "../resources/connection-info.svg"
+                sourceSize.height: 14
+                sourceSize.width: 14
+                Layout.alignment: Qt.AlignVCenter
+            }
+        }
+
+        VPNTextBlock {
+            id: infoMessage
+            //% "VPN protects all apps by default"
+            text: qsTrId("vpn.settings.protectSelectedApps.allAppsProtected")
+            Layout.fillWidth: true
+        }
+
+    }
+
+    VPNExpandableAppList{
+        id: disabledList
+        anchors.topMargin: 20
+        anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : enableAppList.bottom
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        width: vpnFlickable.width - 5 *2
         visible: VPNSettings.protectSelectedApps
+        isEnabled: vpnIsOff
 
-        anchors.top: vpnFlickable.vpnIsOff? enableAppList.bottom : vpnOnAlert.bottom
-        anchors.topMargin: 28
-        anchors.left: parent.left
-        anchors.leftMargin: Theme.windowMargin
-        width: parent.width
-        //% "Installed Applications"
-        //: Header for the installed Applications
-        text: qsTrId("vpn.settings.installedApps")
-        Accessible.role: Accessible.Heading
+        //% "Unprotected"
+        header: qsTrId("vpn.settings.unprotected")
+        //% "These apps will not use the VPN"
+        description: qsTrId("vpn.settings.unprotected.description")
+        listModel: VPNAppPermissions.disabledApps
+        onAction: ()=>{VPNAppPermissions.protectAll()}
+        //% "Protect All"
+        actionText: qsTrId("vpn.settings.protectall")
     }
 
 
-    VPNList {
-        id: applist
-        visible: VPNSettings.protectSelectedApps && count > 0
+    VPNExpandableAppList{
+        id: enabledList
+        anchors.topMargin: 20
+        anchors.top: disabledList.bottom
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        width: vpnFlickable.width - 5 *2
+        visible: VPNSettings.protectSelectedApps
+        isEnabled: vpnIsOff
 
-        anchors.top: applistLabel.bottom
-        anchors.topMargin: 16
-        anchors.left: vpnFlickable.left
-        anchors.leftMargin: defaultMargin
-        anchors.rightMargin: defaultMargin
-        width: parent.width - defaultMargin * 2
-        height: contentItem.childrenRect.height + 40
-        spacing: 26
-        listName: applistLabel.text
-        model: VPNAppPermissions
-
-
-        delegate: VPNCheckBoxRow {
-            labelText: appName
-            subLabelText: appID
-            isChecked: appIsEnabled
-            isEnabled: vpnFlickable.vpnIsOff
-            showDivider:false
-            onClicked: VPNAppPermissions.flip(appID)
-            visible: true
-
-            width: applist.width
-            anchors.left: parent.left
-            anchors.topMargin: Theme.windowMargin
-
-            iconURL: "image://app/"+appID
-        }
+        //% "Protected"
+        header: qsTrId("vpn.settings.protected")
+        //% "These apps will use the VPN"
+        description: qsTrId("vpn.settings.protected.description")
+        listModel: VPNAppPermissions.enabledApps
+        onAction: ()=>{VPNAppPermissions.unprotectAll()}
+        //% "Unprotect All"
+        actionText: qsTrId("vpn.settings.unprotectall")
     }
-
-    Image {
-        id: spinner
-        visible: VPNSettings.protectSelectedApps && applist.count == 0
-        anchors.top: applistLabel.bottom
-        anchors.topMargin: 32
-        anchors.horizontalCenter: parent.horizontalCenter
-        sourceSize.height: 80
-        fillMode: Image.PreserveAspectFit
-        source: "../resources/spinner.svg"
-
-        ParallelAnimation {
-            id: startSpinning
-
-            running: true
-
-            PropertyAnimation {
-                target: spinner
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 300
-            }
-
-            PropertyAnimation {
-                target: spinner
-                property: "scale"
-                from: 0.7
-                to: 1
-                duration: 300
-            }
-
-            PropertyAnimation {
-                target: spinner
-                property: "rotation"
-                from: 0
-                to: 360
-                duration: 8000
-                loops: Animation.Infinite
-            }
-
-        }
-
-    }
-
 }
