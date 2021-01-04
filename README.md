@@ -81,11 +81,11 @@ If you have built in `build` directory, open two terminals
 
 ```
 cd build/bin
-sudo ./mozillavpn-daemon
+sudo ./mozillavpn linuxdaemon &
 ./mozillavpn
 ```
 
-mozillavpn-daemon needs privileged access and so if you do not run as root, you will get an authentication prompt every time you try to reconnect the vpn.
+mozillavpn linuxdaemon needs privileged access and so if you do not run as root, you will get an authentication prompt every time you try to reconnect the vpn.
 
 
 ### MacOS
