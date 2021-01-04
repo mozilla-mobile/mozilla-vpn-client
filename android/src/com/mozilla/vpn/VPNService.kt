@@ -20,6 +20,7 @@ import com.wireguard.android.backend.*
 import com.wireguard.config.Config
 import com.wireguard.crypto.Key
 import com.wireguard.crypto.KeyFormatException
+import com.wireguard.android.backend.GoBackend
 
 
 class VPNService : android.net.VpnService() {
@@ -36,6 +37,7 @@ class VPNService : android.net.VpnService() {
     override fun onBind(intent: Intent?): IBinder? {
         if (mBinder == null) {
             mBinder = VPNServiceBinder(this)
+            this.startService(Intent(this, GoBackend.VpnService::class.java))
         }
         Log.v(tag, "Got Bind request")
         return mBinder
@@ -50,6 +52,7 @@ class VPNService : android.net.VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (mBinder == null) {
             mBinder = VPNServiceBinder(this)
+            this.startService(Intent(this, GoBackend.VpnService::class.java))
         }
 
         intent?.let {
@@ -123,7 +126,12 @@ class VPNService : android.net.VpnService() {
 
         // Upgrade us into a Foreground Service, by showing a Notification
         NotificationUtil.show(this);
-        val tunnelState = mBackend.setState(mTunnel,Tunnel.State.UP,mConfig);
+        var tunnelState = Tunnel.State.DOWN
+        try {
+            tunnelState = mBackend.setState(mTunnel, Tunnel.State.UP, mConfig);
+        } catch (e: Exception){
+            e.message?.let { Log.e(tag, it) }
+        }
         return tunnelState == Tunnel.State.UP;
     }
 
