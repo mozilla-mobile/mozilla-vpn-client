@@ -4,7 +4,7 @@
 
 #include "linuxcontroller.h"
 #include "backendlogsobserver.h"
-#include "dbus.h"
+#include "dbusclient.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -27,9 +27,10 @@ Logger logger({LOG_LINUX, LOG_CONTROLLER}, "LinuxController");
 LinuxController::LinuxController() {
   MVPN_COUNT_CTOR(LinuxController);
 
-  m_dbus = new DBus(this);
-  connect(m_dbus, &DBus::connected, this, &LinuxController::connected);
-  connect(m_dbus, &DBus::disconnected, this, &LinuxController::disconnected);
+  m_dbus = new DBusClient(this);
+  connect(m_dbus, &DBusClient::connected, this, &LinuxController::connected);
+  connect(m_dbus, &DBusClient::disconnected, this,
+          &LinuxController::disconnected);
 }
 
 LinuxController::~LinuxController() { MVPN_COUNT_DTOR(LinuxController); }

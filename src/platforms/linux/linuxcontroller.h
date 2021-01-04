@@ -9,7 +9,7 @@
 
 #include <QObject>
 
-class DBus;
+class DBusClient;
 class QDBusPendingCallWatcher;
 
 class LinuxController final : public ControllerImpl {
@@ -40,7 +40,7 @@ class LinuxController final : public ControllerImpl {
   void operationCompleted(QDBusPendingCallWatcher* call);
 
  private:
-  DBus* m_dbus = nullptr;
+  DBusClient* m_dbus = nullptr;
 };
 
 #endif  // LINUXCONTROLLER_H
