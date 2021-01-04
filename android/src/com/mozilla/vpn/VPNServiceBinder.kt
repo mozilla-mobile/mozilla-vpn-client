@@ -23,6 +23,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
     private val mService = service
     private val tag = "VPNServiceBinder"
     private val mListeners = mutableListOf<IBinder>()
+    private var mResumeConfig: Config? = null
 
     /**
      * The codes this Binder does accept in [onTransact]
@@ -80,6 +81,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     }
 
                     if(!mService.checkPermissions()){
+                        mResumeConfig = config
                         // The Permission Promt was already
                         // send, in case it's accepted we will 
                         // recive ACTIONS.resumeActivate
@@ -103,7 +105,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 if(!mService.checkPermissions()){
                     return true;
                 }
-                if (this.mService.turnOn(null)) {
+                if (this.mService.turnOn(mResumeConfig)) {
                     dispatchEvent(EVENTS.connected, "")
                 } else {
                     dispatchEvent(EVENTS.disconnected, "")
