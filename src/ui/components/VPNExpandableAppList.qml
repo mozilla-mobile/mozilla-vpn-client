@@ -8,6 +8,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtGraphicalEffects 1.15
 import Mozilla.VPN 1.0
+import "../themes/themes.js" as Theme
 
 VPNClickableRow {
     id: appRow
@@ -21,7 +22,7 @@ VPNClickableRow {
     property var isEnabled: true
 
 
-    state: (listVisible && isEnabled) ? "list-visible" : "list-hidden"
+    state: (listVisible && isEnabled && applist.count > 0) ? "list-visible" : "list-hidden"
     opacity: isEnabled ? 1 : 0.5
 
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
@@ -67,10 +68,15 @@ VPNClickableRow {
         anchors.left: parent.left
         width: appRow.width
         spacing: 0
-        VPNServerListToggle {
+
+        VPNIcon {
             id: toggleArrow
-            Layout.leftMargin: 15 - enabledAppRow.anchors.leftMargin
+            Layout.leftMargin: 15 - appRow.anchors.leftMargin
             Layout.rightMargin: 15
+            source: "../resources/arrow-toggle.svg"
+            transformOrigin: Image.Center
+            smooth: true
+            opacity: applist.count > 0 ?1:0;
         }
         ColumnLayout {
             Layout.alignment: Qt.AlignLeft
@@ -133,8 +139,8 @@ VPNClickableRow {
             showDivider:false
             onClicked: VPNAppPermissions.flip(appID)
             visible: true
-            width: applist.width
-            anchors.left: applist.left
+            width: applist.width - leftMargin
+            anchors.left: parent.left
             anchors.topMargin: defaultMargin
             leftMargin:12.5
             iconURL: "image://app/"+appID
