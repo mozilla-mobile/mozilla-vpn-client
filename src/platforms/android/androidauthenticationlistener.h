@@ -16,7 +16,6 @@ class AndroidAuthenticationListener final : public AuthenticationListener {
   ~AndroidAuthenticationListener();
 
   void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
-
 };
 
 #endif  // ANDROIDAUTHENTICATIONLISTENER_H
