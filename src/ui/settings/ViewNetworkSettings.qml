@@ -36,8 +36,11 @@ VPNFlickable {
         isChecked: (VPNSettings.ipv6Enabled)
         isEnabled: vpnFlickable.vpnIsOff
         showDivider: vpnFlickable.vpnIsOff
-        onClicked: VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
-
+        onClicked: {
+            if (vpnFlickable.vpnIsOff) {
+                VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
+            }
+       }
     }
 
     VPNCheckBoxRow {
@@ -55,7 +58,11 @@ VPNFlickable {
         isChecked: (VPNSettings.localNetworkAccess)
         isEnabled: vpnFlickable.vpnIsOff
         showDivider: vpnFlickable.vpnIsOff
-        onClicked: VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
+        onClicked: {
+            if (vpnFlickable.vpnIsOff) {
+                VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
+            }
+       }
     }
 
     VPNCheckBoxAlert {
