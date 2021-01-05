@@ -41,8 +41,11 @@ VPNFlickable {
         isChecked: (VPNSettings.protectSelectedApps)
         isEnabled: vpnFlickable.vpnIsOff
         showDivider: true
-        onClicked: VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
-
+        onClicked: {
+            if (vpnFlickable.vpnIsOff) {
+                VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
+            }
+        }
     }
 
     VPNCheckBoxAlert {
