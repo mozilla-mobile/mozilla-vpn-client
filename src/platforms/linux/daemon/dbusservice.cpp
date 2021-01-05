@@ -124,6 +124,11 @@ QString DBusService::status() {
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
+QString DBusService::getLogs() {
+  logger.log() << "Log request";
+  return Daemon::logs();
+}
+
 bool DBusService::run(Op op, const Config& config) {
   return WgQuickProcess::run(
       op, config.m_privateKey, config.m_deviceIpv4Address,
