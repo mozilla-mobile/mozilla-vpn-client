@@ -32,7 +32,8 @@ To build QT5 statically on Ubuntu/Debian, go to the root directory of this proje
 curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
 tar xvf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
-sudo apt install sudo clang build-dep qt5-default libxcb-xinerama0-dev
+sudo apt build-dep qt5-default
+sudo apt install libxcb-xinerama0-dev
 bash scripts/qt5_compile.sh qt qt
 ```
 
@@ -80,11 +81,11 @@ If you have built in `build` directory, open two terminals
 
 ```
 cd build/bin
-sudo ./mozillavpn-daemon
+sudo ./mozillavpn linuxdaemon &
 ./mozillavpn
 ```
 
-mozillavpn-daemon needs privileged access and so if you do not run as root, you will get an authentication prompt every time you try to reconnect the vpn.
+mozillavpn linuxdaemon needs privileged access and so if you do not run as root, you will get an authentication prompt every time you try to reconnect the vpn.
 
 
 ### MacOS

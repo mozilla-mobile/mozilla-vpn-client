@@ -2,21 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DBUS_H
-#define DBUS_H
+#ifndef DBUSSERVICE_H
+#define DBUSSERVICE_H
 
 #include "../../src/daemon.h"
 
 class DbusAdaptor;
 
-class DBus final : public Daemon {
+class DBusService final : public Daemon {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(DBus)
+  Q_DISABLE_COPY_MOVE(DBusService)
   Q_CLASSINFO("D-Bus Interface", "org.mozilla.vpn.dbus")
 
  public:
-  DBus(QObject* parent);
-  ~DBus();
+  DBusService(QObject* parent);
+  ~DBusService();
 
   void setAdaptor(DbusAdaptor* adaptor);
 
@@ -38,4 +38,4 @@ class DBus final : public Daemon {
   DbusAdaptor* m_adaptor = nullptr;
 };
 
-#endif  // DBUS_H
+#endif  // DBUSSERVICE_H

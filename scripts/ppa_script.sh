@@ -7,9 +7,10 @@
 . $(dirname $0)/commons.sh
 
 BRANCH=
-PPA=mozbaku/mozillavpn
+PPA=mozbaku/mozillavpn-focal
 VERSION=1
 RELEASE=focal
+STAGE=
 
 if [ -f .env ]; then
   . .env
@@ -17,7 +18,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-k|--key <sign_key_id>] [-r|--release <release>] [-v|--version <id>]"
+  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-k|--key <sign_key_id>] [-r|--release <release>] [-v|--version <id>] [-s|--stage]"
   print N ""
   print N "By default, the ppa is: mozbaku/mozillavpn"
   print N "By default, the release is 'focal'"
@@ -44,6 +45,10 @@ while [[ $# -gt 0 ]]; do
   -p | --ppa)
     PPA="$2"
     shift
+    shift
+    ;;
+  -s | --stage)
+    STAGE=1
     shift
     ;;
   -k | --key)
@@ -96,6 +101,9 @@ git submodule update --remote --depth 1 i18n || die "Failed"
 git submodule update --remote --depth 1 3rdparty/wireguard-tools || die "Failed"
 print G "done."
 
+print Y "Importing translation files..."
+python3 scripts/importLanguages.py $([[ "$STAGE" ]] && echo "" || echo "-p") || die "Failed to import languages"
+
 printn Y "Moving the debian template folder in the root of the repo..."
 mv linux/debian .. || die "Failed"
 print G "done."
@@ -106,6 +114,17 @@ tar cvfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
 print Y "Configuring the debian package for $RELEASE..."
 rm -rf debian || die "Failed"
 cp -r ../debian . || die "Failed"
+
+if [[ "$STAGE" ]]; then
+  print Y "Staging env configured"
+  mv debian/rules.stage debian/rules || die "Failed"
+  rm debian/rules.prod || die "Failed"
+else
+  print Y "Production env configured"
+  mv debian/rules.prod debian/rules || die "Failed"
+  rm debian/rules.stage || die "Failed"
+fi
+
 mv debian/changelog.template debian/changelog || die "Failed"
 sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"

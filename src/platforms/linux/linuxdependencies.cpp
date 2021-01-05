@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "linuxdependencies.h"
-#include "dbus.h"
+#include "dbusclient.h"
 #include "logger.h"
 
 #include <QDir>
@@ -45,7 +45,7 @@ bool findInPath(const char* what) {
 bool checkDaemonVersion() {
   logger.log() << "Check Daemon Version";
 
-  DBus* dbus = new DBus(nullptr);
+  DBusClient* dbus = new DBusClient(nullptr);
   QDBusPendingCallWatcher* watcher = dbus->version();
 
   bool completed = false;
@@ -93,7 +93,7 @@ bool LinuxDependencies::checkDependencies() {
   }
 
   if (!checkDaemonVersion()) {
-    showAlert("mozillavpn-daemon needs to be updated or restarted.");
+    showAlert("mozillavpn linuxdaemon needs to be updated or restarted.");
     return false;
   }
 

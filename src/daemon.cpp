@@ -22,9 +22,7 @@ Logger logger(LOG_MAIN, "Daemon");
 
 Daemon::Daemon(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(Daemon); }
 
-Daemon::~Daemon() {
-  MVPN_COUNT_DTOR(Daemon);
-}
+Daemon::~Daemon() { MVPN_COUNT_DTOR(Daemon); }
 
 bool Daemon::activate(const Config& config) {
   m_lastConfig = config;
