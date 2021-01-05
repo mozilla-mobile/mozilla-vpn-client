@@ -30,6 +30,7 @@ class DBusService final : public Daemon {
 
   QString version();
   QString status();
+  QString getLogs();
 
  protected:
   bool run(Op op, const Config& config) override;
