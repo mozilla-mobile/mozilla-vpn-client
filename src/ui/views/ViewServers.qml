@@ -68,12 +68,20 @@ Item {
                     serverList.currentIndex = idx;
                     serverList.positionViewAtIndex(idx, ListView.Center);
 
-                    const citiesList = delegateModel.items.get(idx).model.cities;
-                    const selectedCityIndex = citiesList.indexOf(VPNCurrentServer.city);
-                    if (citiesList.length >= 2) {
-                        const delegateSpacing = Theme.rowHeight * 2
-                        serverList.contentY += delegateSpacing + (selectedCityIndex * delegateSpacing);
-                    }
+                    const currentCountryDistanceFromTop = (serverList.currentItem.mapToItem(null, 0, 0).y);
+                    const listVerticalCenter = serverList.height / 2
+
+                    const citySublist = delegateModel.items.get(idx).model.cities;
+                    const currentCityIdx = citySublist.indexOf(VPNCurrentServer.city);
+                    const cityItemHeight = Theme.rowHeight;
+
+                    let currentCityDistanceFromSublistTop = (currentCityIdx * (cityItemHeight + Theme.listSpacing));
+
+                    if (currentCountryDistanceFromTop + currentCityDistanceFromSublistTop < listVerticalCenter)
+                        return;
+
+                    currentCityDistanceFromSublistTop += (currentCountryDistanceFromTop - listVerticalCenter + Theme.cityListTopMargin);
+                    serverList.contentY += currentCityDistanceFromSublistTop;
                     return;
                 }
             }

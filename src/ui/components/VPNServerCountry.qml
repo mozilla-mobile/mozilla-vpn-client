@@ -171,7 +171,7 @@ VPNClickableRow {
         width: serverCountry.width - anchors.leftMargin
         height: contentItem.childrenRect.height
         anchors.top: serverCountryRow.bottom
-        anchors.topMargin: 18
+        anchors.topMargin: Theme.cityListTopMargin
         anchors.left: serverCountry.left
         anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 6
         Behavior on opacity {
