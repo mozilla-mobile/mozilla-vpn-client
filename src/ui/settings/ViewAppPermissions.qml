@@ -101,12 +101,16 @@ VPNFlickable {
         isEnabled: vpnIsOff
 
         //% "Unprotected"
+        //: Header for the list of apps not protected by VPN
         header: qsTrId("vpn.settings.unprotected")
         //% "These apps will not use the VPN"
+        //: Description for the list of apps not protected by VPN
         description: qsTrId("vpn.settings.unprotected.description")
         listModel: VPNAppPermissions.disabledApps
         onAction: ()=>{VPNAppPermissions.protectAll()}
         //% "Protect All"
+        //: Label for the button to add protection to all apps
+        //: currently unprotected.
         actionText: qsTrId("vpn.settings.protectall")
     }
 
@@ -122,12 +126,16 @@ VPNFlickable {
         isEnabled: vpnIsOff
 
         //% "Protected"
+        //: Header for the list of apps protected by VPN
         header: qsTrId("vpn.settings.protected")
         //% "These apps will use the VPN"
+        //: Description for the list of apps protected by VPN
         description: qsTrId("vpn.settings.protected.description")
         listModel: VPNAppPermissions.enabledApps
         onAction: ()=>{VPNAppPermissions.unprotectAll()}
         //% "Unprotect All"
+        //: Label for the button to remove protection from all apps
+        //: currently protected.
         actionText: qsTrId("vpn.settings.unprotectall")
     }
 }
