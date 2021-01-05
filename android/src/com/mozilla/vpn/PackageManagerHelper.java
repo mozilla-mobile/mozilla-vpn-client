@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 // Gets used by /platforms/android/androidAppListProvider.cpp
 public class PackageManagerHelper {
@@ -136,10 +137,17 @@ public class PackageManagerHelper {
     Log.d(TAG, "Checking Chrome Based Browser: " + pi.packageName);
     Log.d(TAG, "version name: " + pi.versionName);
     Log.d(TAG, "version code: " + pi.versionCode);
-    String versionCode = pi.versionName.split(" ")[0];
-    int version = Integer.parseInt(versionCode);
-    return version >= MIN_CHROME_VERSION;
+    try {
+      String versionCode = pi.versionName.split(Pattern.quote(" "))[0];
+      String majorVersion = versionCode.split(Pattern.quote("."))[0];
+      int version = Integer.parseInt(majorVersion);
+      return version >= MIN_CHROME_VERSION;
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to check Chrome Version Code " + pi.versionName);
+      return false;
+    }
   }
+
   private static boolean isNotAncientBrowser(PackageInfo pi) {
     // Not a google chrome - So the version name is worthless
     // Lets just make sure the WebView
