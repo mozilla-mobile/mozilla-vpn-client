@@ -26,6 +26,8 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(AppPermission);
   Q_ASSERT(!s_instance);
   s_instance = this;
+  m_enabledList = new FilteredAppList(this, true);
+  m_disabledlist = new FilteredAppList(this, false);
 
   m_listprovider =
 #ifdef MVPN_ANDROID
@@ -117,4 +119,23 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   logger.log() << "Recived new Applist -- Entrys: " << applist.size();
   m_applist = applist;
   endResetModel();
+}
+
+Q_INVOKABLE void AppPermission::protectAll() {
+  SettingsHolder::instance()->setVpnDisabledApps(QStringList());
+  dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+};
+Q_INVOKABLE void AppPermission::unprotectAll() {
+  SettingsHolder::instance()->setVpnDisabledApps(m_applist.keys());
+  dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+};
+
+bool AppPermission::FilteredAppList::filterAcceptsRow(
+    int source_row, const QModelIndex& source_parent) const {
+  auto index = this->sourceModel()->index(source_row, 0, source_parent);
+  if (!index.isValid()) {
+    return false;
+  }
+  auto valueRole = index.data(AppEnabledRole);
+  return valueRole.toBool() == mEnabledAppsOnly;
 }

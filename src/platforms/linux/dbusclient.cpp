@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "dbus.h"
+#include "dbusclient.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -20,24 +20,24 @@ constexpr const char* DBUS_SERVICE = "org.mozilla.vpn.dbus";
 constexpr const char* DBUS_PATH = "/";
 
 namespace {
-Logger logger(LOG_LINUX, "DBus");
+Logger logger(LOG_LINUX, "DBusClient");
 }
 
-DBus::DBus(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(DBus);
+DBusClient::DBusClient(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(DBusClient);
 
   m_dbus = new OrgMozillaVpnDbusInterface(DBUS_SERVICE, DBUS_PATH,
                                           QDBusConnection::systemBus(), this);
 
   connect(m_dbus, &OrgMozillaVpnDbusInterface::connected, this,
-          &DBus::connected);
+          &DBusClient::connected);
   connect(m_dbus, &OrgMozillaVpnDbusInterface::disconnected, this,
-          &DBus::disconnected);
+          &DBusClient::disconnected);
 }
 
-DBus::~DBus() { MVPN_COUNT_DTOR(DBus); }
+DBusClient::~DBusClient() { MVPN_COUNT_DTOR(DBusClient); }
 
-QDBusPendingCallWatcher* DBus::version() {
+QDBusPendingCallWatcher* DBusClient::version() {
   logger.log() << "Version via DBus";
   QDBusPendingReply<QString> reply = m_dbus->version();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
@@ -46,7 +46,7 @@ QDBusPendingCallWatcher* DBus::version() {
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBus::activate(
+QDBusPendingCallWatcher* DBusClient::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges) {
   QJsonObject json;
@@ -81,7 +81,7 @@ QDBusPendingCallWatcher* DBus::activate(
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBus::deactivate() {
+QDBusPendingCallWatcher* DBusClient::deactivate() {
   logger.log() << "Deactivate via DBus";
   QDBusPendingReply<bool> reply = m_dbus->deactivate();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
@@ -90,7 +90,7 @@ QDBusPendingCallWatcher* DBus::deactivate() {
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBus::status() {
+QDBusPendingCallWatcher* DBusClient::status() {
   logger.log() << "Status via DBus";
   QDBusPendingReply<QString> reply = m_dbus->status();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
@@ -99,7 +99,7 @@ QDBusPendingCallWatcher* DBus::status() {
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBus::getLogs() {
+QDBusPendingCallWatcher* DBusClient::getLogs() {
   logger.log() << "Get logs via DBus";
   QDBusPendingReply<QString> reply = m_dbus->getLogs();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
@@ -108,7 +108,7 @@ QDBusPendingCallWatcher* DBus::getLogs() {
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBus::cleanupLogs() {
+QDBusPendingCallWatcher* DBusClient::cleanupLogs() {
   logger.log() << "Cleanup logs via DBus";
   QDBusPendingReply<QString> reply = m_dbus->cleanupLogs();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);

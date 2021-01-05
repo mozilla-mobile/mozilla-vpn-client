@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "dbus.h"
-#include "../../src/leakdetector.h"
-#include "../../src/logger.h"
-#include "../../src/loghandler.h"
-#include "../../src/wgquickprocess.h"
+#include "dbusservice.h"
 #include "dbus_adaptor.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "loghandler.h"
 #include "polkithelper.h"
+#include "wgquickprocess.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -25,19 +25,21 @@ extern "C" {
 #endif
 
 namespace {
-Logger logger(LOG_LINUX, "DBus");
+Logger logger(LOG_LINUX, "DBusService");
 }
 
-DBus::DBus(QObject* parent) : Daemon(parent) { MVPN_COUNT_CTOR(DBus); }
+DBusService::DBusService(QObject* parent) : Daemon(parent) {
+  MVPN_COUNT_CTOR(DBusService);
+}
 
-DBus::~DBus() { MVPN_COUNT_DTOR(DBus); }
+DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-void DBus::setAdaptor(DbusAdaptor* adaptor) {
+void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);
   m_adaptor = adaptor;
 }
 
-bool DBus::checkInterface() {
+bool DBusService::checkInterface() {
   logger.log() << "Checking interface";
 
   wg_device* device = nullptr;
@@ -54,12 +56,12 @@ bool DBus::checkInterface() {
   return true;
 }
 
-QString DBus::version() {
+QString DBusService::version() {
   logger.log() << "Version request";
   return PROTOCOL_VERSION;
 }
 
-bool DBus::activate(const QString& jsonConfig) {
+bool DBusService::activate(const QString& jsonConfig) {
   logger.log() << "Activate";
 
   if (!PolkitHelper::instance()->checkAuthorization(
@@ -85,12 +87,12 @@ bool DBus::activate(const QString& jsonConfig) {
   return Daemon::activate(config);
 }
 
-bool DBus::deactivate(bool emitSignals) {
+bool DBusService::deactivate(bool emitSignals) {
   logger.log() << "Deactivate";
   return Daemon::deactivate(emitSignals);
 }
 
-QString DBus::status() {
+QString DBusService::status() {
   logger.log() << "Status request";
 
   QJsonObject json;
@@ -122,7 +124,7 @@ QString DBus::status() {
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
-bool DBus::run(Op op, const Config& config) {
+bool DBusService::run(Op op, const Config& config) {
   return WgQuickProcess::run(
       op, config.m_privateKey, config.m_deviceIpv4Address,
       config.m_deviceIpv6Address, config.m_serverIpv4Gateway,

@@ -6,8 +6,11 @@ package org.mozilla.firefox.vpn;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings;
@@ -22,6 +25,7 @@ import com.android.installreferrer.api.ReferrerDetails;
 
 import java.lang.Runnable;
 import java.lang.String;
+import java.util.Date;
 import java.util.concurrent.Semaphore;
 
 public class VPNWebView
@@ -78,6 +82,8 @@ public class VPNWebView
             public void run() {
                 m_webView = new WebView(m_activity);
                 WebSettings webSettings = m_webView.getSettings();
+
+                Log.e(TAG, "UA" + webSettings.getUserAgentString());
 
                 webSettings.setAllowFileAccess(false);
                 webSettings.setDatabaseEnabled(true);

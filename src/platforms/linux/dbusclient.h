@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DBUS_H
-#define DBUS_H
+#ifndef DBUSCLIENT_H
+#define DBUSCLIENT_H
 
 #include "dbus_interface.h"
 
@@ -16,13 +16,13 @@ class Keys;
 class IPAddressRange;
 class QDBusPendingCallWatcher;
 
-class DBus final : public QObject {
+class DBusClient final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(DBus)
+  Q_DISABLE_COPY_MOVE(DBusClient)
 
  public:
-  DBus(QObject* parent);
-  ~DBus();
+  DBusClient(QObject* parent);
+  ~DBusClient();
 
   QDBusPendingCallWatcher* version();
 
@@ -46,4 +46,4 @@ class DBus final : public QObject {
   OrgMozillaVpnDbusInterface* m_dbus;
 };
 
-#endif  // DBUS_H
+#endif  // DBUSCLIENT_H

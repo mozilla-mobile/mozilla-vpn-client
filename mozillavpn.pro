@@ -13,7 +13,3 @@
 TEMPLATE = subdirs
 SUBDIRS += src
 SUBDIRS += tests/unit
-
-linux:!android:!DUMMY {
-    SUBDIRS += linux
-}

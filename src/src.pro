@@ -234,13 +234,14 @@ else:linux:!android {
     TARGET = mozillavpn
     QT += networkauth
     QT += svg
+    QT += dbus
 
     DEFINES += MVPN_LINUX
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
 
     SOURCES += \
             platforms/linux/backendlogsobserver.cpp \
-            platforms/linux/dbus.cpp \
+            platforms/linux/dbusclient.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
@@ -250,19 +251,35 @@ else:linux:!android {
 
     HEADERS += \
             platforms/linux/backendlogsobserver.h \
-            platforms/linux/dbus.h \
+            platforms/linux/dbusclient.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxpingsendworker.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
+    # The daemon source code:
+    SOURCES += \
+            ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
+            daemon.cpp \
+            platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/linuxdaemon.cpp \
+            platforms/linux/daemon/polkithelper.cpp \
+            wgquickprocess.cpp
+
+    HEADERS += \
+            ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
+            daemon.h \
+            platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/polkithelper.h \
+            wgquickprocess.h
+
     isEmpty(PREFIX) {
         PREFIX=/usr
     }
 
-    QT += dbus
-    DBUS_INTERFACES = ../linux/daemon/org.mozilla.vpn.dbus.xml
+    DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
+    DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
     target.path = $${PREFIX}/bin
     INSTALLS += target
@@ -294,6 +311,21 @@ else:linux:!android {
     icon128x128.path = /usr/share/icons/hicolor/128x128/apps
     icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
     INSTALLS += icon128x128
+
+    polkit_actions.files = platforms/linux/daemon/org.mozilla.vpn.policy
+    polkit_actions.path = $${PREFIX}/share/polkit-1/actions
+    INSTALLS += polkit_actions
+
+    dbus_conf.files = platforms/linux/daemon/org.mozilla.vpn.conf
+    dbus_conf.path = $${PREFIX}/share/dbus-1/system.d/
+    INSTALLS += dbus_conf
+
+    dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
+    dbus_service.path = $${PREFIX}/share/dbus-1/system-services
+    INSTALLS += dbus_service
+
+    CONFIG += link_pkgconfig
+    PKGCONFIG += polkit-gobject-1
 }
 
 # Platform-specific: android
@@ -323,7 +355,9 @@ else:android {
                 platforms/android/androiddatamigration.cpp \
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
-                platforms/android/androidsharedprefs.cpp
+                platforms/android/androidsharedprefs.cpp \
+                tasks/authenticate/desktopauthenticationlistener.cpp
+
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
@@ -333,7 +367,8 @@ else:android {
                 platforms/android/androiddatamigration.h\
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
-                platforms/android/androidsharedprefs.h
+                platforms/android/androidsharedprefs.h \
+                tasks/authenticate/desktopauthenticationlistener.h
 
     # Usable Linux Imports
     SOURCES += platforms/linux/linuxpingsendworker.cpp \

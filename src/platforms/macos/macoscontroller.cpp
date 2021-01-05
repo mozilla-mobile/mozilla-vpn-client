@@ -128,9 +128,9 @@ void MacOSController::deactivate(bool forSwitching) {
     return;
   }
 
-    QJsonObject json;
-    json.insert("type", "deactivate");
-    write(json);
+  QJsonObject json;
+  json.insert("type", "deactivate");
+  write(json);
 }
 
 void MacOSController::checkStatus() {

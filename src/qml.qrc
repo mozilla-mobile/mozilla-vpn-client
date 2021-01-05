@@ -401,5 +401,6 @@
         <file>ui/resources/copy.svg</file>
         <file>ui/components/VPNLoader.qml</file>
         <file>ui/components/VPNGreyLink.qml</file>
+        <file>ui/components/VPNExpandableAppList.qml</file>
     </qresource>
 </RCC>

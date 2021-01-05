@@ -4,6 +4,7 @@
 
 package com.mozilla.vpn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -16,8 +17,11 @@ import android.graphics.ColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.util.Log;
+import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,10 +31,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 // Gets used by /platforms/android/androidAppListProvider.cpp
 public class PackageManagerHelper {
+  final static String TAG = "PackageManagerHelper";
+  final static int MIN_CHROME_VERSION = 65;
+  final static List<String> CHROME_BROWSERS = Arrays.asList(
+      new String[] {"com.google.android.webview", "com.android.webview", "com.google.chrome"});
+
   private static String getAllAppNames(Context ctx) {
     JSONObject output = new JSONObject();
     PackageManager pm = ctx.getPackageManager();
@@ -85,5 +96,58 @@ public class PackageManagerHelper {
       browsers.add(browserID);
     }
     return browsers;
+  }
+
+  // Gets called in AndroidAuthenticationListener;
+  public static boolean isWebViewSupported(Context ctx) {
+    Log.v(TAG, "Checking if installed Webview is compatible with FxA");
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      // The default Webview is able do to FXA
+      return true;
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      PackageInfo pi = WebView.getCurrentWebViewPackage();
+      if (CHROME_BROWSERS.contains(pi.packageName)) {
+        return isSupportedChromeBrowser(pi);
+      }
+      return isNotAncientBrowser(pi);
+    }
+
+    // Before O the webview is hardcoded, but we dont know which package it is.
+    // Check if com.google.android.webview is installed
+    PackageManager pm = ctx.getPackageManager();
+    try {
+      PackageInfo pi = pm.getPackageInfo("com.google.android.webview", 0);
+      return isSupportedChromeBrowser(pi);
+    } catch (PackageManager.NameNotFoundException e) {
+    }
+    // Otherwise check com.android.webview
+    try {
+      PackageInfo pi = pm.getPackageInfo("com.android.webview", 0);
+      return isSupportedChromeBrowser(pi);
+    } catch (PackageManager.NameNotFoundException e) {
+    }
+    Log.e(TAG, "Android System WebView is not found");
+    // Giving up :(
+    return false;
+  }
+
+  private static boolean isSupportedChromeBrowser(PackageInfo pi) {
+    Log.d(TAG, "Checking Chrome Based Browser: " + pi.packageName);
+    Log.d(TAG, "version name: " + pi.versionName);
+    Log.d(TAG, "version code: " + pi.versionCode);
+    String versionCode = pi.versionName.split(" ")[0];
+    int version = Integer.parseInt(versionCode);
+    return version >= MIN_CHROME_VERSION;
+  }
+  private static boolean isNotAncientBrowser(PackageInfo pi) {
+    // Not a google chrome - So the version name is worthless
+    // Lets just make sure the WebView
+    // used is not ancient ==> Was updated in at least the last 365 days
+    Log.d(TAG, "Checking Chrome Based Browser: " + pi.packageName);
+    Log.d(TAG, "version name: " + pi.versionName);
+    Log.d(TAG, "version code: " + pi.versionCode);
+    double oneYearInMillis = 31536000000L;
+    return pi.lastUpdateTime > (System.currentTimeMillis() - oneYearInMillis);
   }
 }
