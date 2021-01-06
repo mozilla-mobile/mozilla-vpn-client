@@ -90,11 +90,8 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 }
 
 void AndroidController::enableStartAtBoot(bool enabled) {
-  if (!m_serviceConnected) {
-    return;
-  }
   QAndroidParcel data;
-  data.writeVariant(enabled);
+  data.writeData(QByteArray(1, enabled));
   m_serviceBinder.transact(ACTION_ENABLE_START_ON_BOOT, data, nullptr);
 }
 
