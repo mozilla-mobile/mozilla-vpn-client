@@ -153,8 +153,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
             }
             ACTIONS.enableStartOnBoot ->{
-                // Sets the Start on boot pref data is here a QVariant Byte
-                val buffer = data.createByteArray() // there is no byte.toBool?
+                // Sets the Start on boot pref data is here a Byte Array with length 1
+                // and the byte is a boolean
+                val buffer = data.createByteArray()
                 if(buffer == null){return true;}
                 val startOnBootEnabled = buffer.get(0) != 0.toByte();
                 val prefs = mService.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
