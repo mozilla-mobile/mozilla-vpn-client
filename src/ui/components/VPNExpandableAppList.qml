@@ -10,140 +10,118 @@ import QtGraphicalEffects 1.15
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-VPNClickableRow {
-    id: appRow
+ColumnLayout{
+    id: appListContainer
 
-    property var listVisible : true
     property var listModel: undefined
     property var header: ""
     property var description: ""
     property var actionText: ""
     property var onAction: ()=>{}
     property var isEnabled: true
-
-
-    state: (listVisible && isEnabled && applist.count > 0) ? "list-visible" : "list-hidden"
+    property var isListVisible : true && applist.count > 0
     opacity: isEnabled ? 1 : 0.5
+    property var isActionEnabled: isEnabled && applist.count > 0
+    height: appRowHeader.height + (isListVisible  ? applist.height + defaultMargin : 0)
 
-    Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
-    handleMouseClick: function() { listVisible = !listVisible; }
-    handleKeyClick: function() { listVisible = !listVisible; }
-    clip: true
-    canGrowVertical: true
-    accessibleName: name
-    states: [
-        State {
-            name: "list-hidden"
-            PropertyChanges {
-                target: toggleArrow
-                rotation: -90
-
-            }
-            PropertyChanges {
-                target: appRow
-                height: appRowHeader.height
-            }
-
-        },
-        State {
-            name: "list-visible"
-
-            PropertyChanges {
-                target: toggleArrow
-                rotation: 0
-
-            }
-            PropertyChanges {
-                target: appRow
-                height: appRowHeader.height +applist.contentHeight + applist.anchors.topMargin
-            }
-
-        }
-    ]
+    VPNClickableRow {
+        id: appRow
+        Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
+        handleMouseClick: function() { isListVisible = !isListVisible && applist.count > 0; }
+        handleKeyClick: function() { isListVisible = !isListVisible && applist.count > 0; }
+        clip: true
+        canGrowVertical: true
+        accessibleName: name
+        width: parent.width
+        height: appRowHeader.height
+        Layout.preferredHeight: appRowHeader.height
 
 
-    RowLayout {
-        id: appRowHeader
-        anchors.top: parent.top
-        anchors.left: parent.left
-        width: appRow.width
-        spacing: 0
-
-        VPNIcon {
-            id: toggleArrow
-            Layout.leftMargin: 15 - appRow.anchors.leftMargin
-            Layout.rightMargin: 15
-            source: "../resources/arrow-toggle.svg"
-            transformOrigin: Image.Center
-            smooth: true
-            opacity: applist.count > 0 ?1:0;
-        }
-        ColumnLayout {
-            Layout.alignment: Qt.AlignLeft
-            Layout.fillWidth: true
+        RowLayout {
+            id: appRowHeader
+            width: appListContainer.width
             spacing: 0
 
-            RowLayout {
+            VPNIcon {
+                id: toggleArrow
+                Layout.leftMargin: defaultMargin / 2
+                Layout.rightMargin: defaultMargin - 5
+                source: "../resources/arrow-toggle.svg"
+                transformOrigin: Image.Center
+                smooth: true
+                opacity: applist.count > 0 ?1:0;
+                rotation: isListVisible ? 0 :-90
+            }
+            ColumnLayout {
                 Layout.alignment: Qt.AlignLeft
                 Layout.fillWidth: true
+                spacing: 0
 
-                VPNInterLabel {
-                    id: label
-                    text: header
-                    Accessible.role: Accessible.Heading
-                    color: Theme.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
+                RowLayout {
+                    Layout.alignment: Qt.AlignLeft
+                    Layout.fillWidth: true
+
+                    VPNInterLabel {
+                        id: label
+                        text: header
+                        Accessible.role: Accessible.Heading
+                        color: Theme.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    VPNTextBlock{
+                        visible: !isListVisible || !isEnabled
+                        text: " (%0)".arg(applist.count)
+                    }
                 }
 
-                VPNTextBlock{
-                    visible: !listVisible || applist.count == 0 || !isEnabled
-                    text: " (%0)".arg(applist.count)
+                VPNTextBlock {
+                    id: enabledAppSubtext
+                    text: description // "These apps will (not) use vpn.."
+                    Layout.fillWidth: true
                 }
             }
-
-            VPNTextBlock {
-                id: enabledAppSubtext
-                text: description
-                Layout.fillWidth: true
+            VPNLinkButton{
+                Layout.alignment: Qt.AlignRight
+                // (Un)protect-All Button
+                labelText: actionText
+                onClicked: {
+                    onAction();
+                    isListVisible=false
+                }
+                enabled: isActionEnabled
+                opacity: isActionEnabled ? 1 : 0
             }
-        }
-        VPNLinkButton{
-            Layout.alignment: Qt.AlignRight
-            // (Un)protect-All Button
-            labelText: actionText
-            onClicked: {onAction()}
-            enabled: isEnabled
-            opacity: isEnabled ? 1: 0.5
         }
     }
 
     VPNList {
         id: applist
         model: listModel
-
-        anchors.top: appRowHeader.bottom
-        anchors.topMargin: count > 0 ? 16 : 0
-        anchors.left: appRowHeader.left
-        width: appRow.width
+        width: appListContainer.width
         height: contentItem.childrenRect.height
         spacing: 26
         listName: header
 
-        visible: listVisible && count > 0
+        Layout.preferredHeight: height
+        Layout.topMargin: defaultMargin
+
+        visible: isListVisible
 
         delegate: VPNCheckBoxRow {
             labelText: appName
             subLabelText: appID
             isChecked: appIsEnabled
-            isEnabled: appRow.isEnabled
+            isEnabled: appListContainer.isEnabled
             showDivider:false
             onClicked: VPNAppPermissions.flip(appID)
             visible: true
             width: applist.width - leftMargin
             anchors.left: parent.left
             anchors.topMargin: defaultMargin
-            leftMargin:12.5
+            leftMargin:defaultMargin
             iconURL: "image://app/"+appID
+            subLabelWrapMode: Text.NoWrap
         }
     }
 }
