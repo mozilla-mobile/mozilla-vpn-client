@@ -153,12 +153,14 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
             }
             ACTIONS.enableStartOnBoot ->{
-                // Sets the Start on boot pref data is here a QVariant Byte
-                val startOnBootEnabled = data.readByte().equals(true) // there is no byte.toBool?
-                Log.v(tag,"Set ServicePref Start on boot to -> $startOnBootEnabled")
+                // Sets the Start on boot pref data is here a Byte Array with length 1
+                // and the byte is a boolean
+                val buffer = data.createByteArray()
+                if(buffer == null){return true;}
+                val startOnBootEnabled = buffer.get(0) != 0.toByte();
                 val prefs = mService.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
                 prefs.edit()
-                    .putBoolean("startOnBoot",startOnBootEnabled)
+                    .putBoolean("startOnBoot", startOnBootEnabled )
                     .apply()
             }
 
@@ -190,7 +192,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * To register an Eventhandler use [onTransact] with
      * [ACTIONS.registerEventListener]
      */
-    private fun dispatchEvent(code: Int, payload: String) {
+    fun dispatchEvent(code: Int, payload: String) {
         mListeners.forEach {
            if (it.isBinderAlive) {
                val data = Parcel.obtain()

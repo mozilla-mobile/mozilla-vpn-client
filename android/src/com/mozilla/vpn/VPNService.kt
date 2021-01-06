@@ -74,7 +74,15 @@ class VPNService : android.net.VpnService() {
             }
             this.mConfig = mBinder?.buildConfigFromJSON(lastConfString)
         }
-        turnOn(this.mConfig)
+        val connected = turnOn(this.mConfig)
+        // Try to send a status update to QT
+        mBinder?.let { 
+            if(connected){
+                it.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
+            }else{
+                it.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
+            }
+        }
         return Service.START_NOT_STICKY
     }
 

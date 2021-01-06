@@ -10,17 +10,24 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import org.mozilla.firefox.vpn.VPNService
+import com.wireguard.android.backend.GoBackend
 
 class BootReceiver : BroadcastReceiver() {
+    private val TAG = "BootReceiver"
     override fun onReceive(context: Context, arg1: Intent) {
         if(!canEnableVPNOnBoot()){
+            Log.i(TAG, "This device does not support start on boot - exit");
             return;
         }
         val prefs = context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
         val startOnBoot =  prefs.getBoolean("startOnBoot",false)
         if(!startOnBoot){
+            Log.i(TAG, "This device did not enable start on boot - exit");
             return;
         }
+        Log.i(TAG, "This device did enable start on boot - try to start");
+        // Queue Backend start Before the VPN Service to give it's ready when the VPN wants to start
+        context.startService(Intent(context, GoBackend.VpnService::class.java))
         val intent = Intent(context, VPNService::class.java)
         intent.putExtra("startOnBoot",true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -28,7 +35,7 @@ class BootReceiver : BroadcastReceiver() {
         } else {
             context.startService(intent)
         }
-        Log.i("BootReceiver", "Started Service")
+        Log.i(TAG, "Started Service")
     }
 
     companion object{
