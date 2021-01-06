@@ -41,6 +41,7 @@ const fontSizeSmallest = 11;
 const fontWeightBold = 600;
 const iconSize = 16;
 const labelLineHeight = 22;
+const cityListTopMargin = 18;
 const controllerInterLineHeight = 18;
 const hSpacing = 20;
 const vSpacing = 24;
