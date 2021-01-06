@@ -188,6 +188,63 @@ Rectangle {
 
         },
         State {
+            name: VPNController.StateConfirming
+
+            PropertyChanges {
+                target: box
+                color: "#321C64"
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "Confirming"
+                text: qsTrId("vpn.controller.confirming") + " …"
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                text: VPNController.connectionRetry > 0 ?
+                        //: This string shows the number of connection tries.
+                        //% "Retry %1"
+                        qsTrId("vpn.controller.confirmingRetry").arg(VPNController.connectionRetry) :
+                        qsTrId("vpn.controller.activating")
+                color: "#FFFFFF"
+                opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: settingsImage
+                source: "../resources/settings-white.svg"
+            }
+
+            PropertyChanges {
+                target: settingsButton
+                buttonColorScheme: Theme.iconButtonDarkBackground
+            }
+
+            PropertyChanges {
+                target: connectionInfoButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionInfo
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRingsWrapper
+                visible: false
+            }
+
+        },
+        State {
             name: VPNController.StateOn
 
             PropertyChanges {

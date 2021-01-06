@@ -122,6 +122,8 @@ void SystemTrayHandler::updateContextMenu() {
     case Controller::StateSwitching:
       [[fallthrough]];
     case Controller::StateConnecting:
+      [[fallthrough]];
+    case Controller::StateConfirming:
       //% "Connecting to:"
       statusLabel = qtTrId("vpn.systray.status.connectingTo");
       break;

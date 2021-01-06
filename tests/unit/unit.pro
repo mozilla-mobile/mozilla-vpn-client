@@ -25,6 +25,7 @@ HEADERS += \
     ../../src/captiveportal/captiveportal.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
+    ../../src/connectioncheck.h \
     ../../src/connectiondataholder.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
@@ -72,6 +73,7 @@ SOURCES += \
     ../../src/captiveportal/captiveportal.cpp \
     ../../src/command.cpp \
     ../../src/commandlineparser.cpp \
+    ../../src/connectioncheck.cpp \
     ../../src/connectiondataholder.cpp \
     ../../src/curve25519.cpp \
     ../../src/errorhandler.cpp \

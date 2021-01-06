@@ -25,6 +25,13 @@ DropShadow {
             }
         },
         State {
+            name: VPNController.StateConfirming
+            PropertyChanges {
+                target: dropShadow
+                opacity: .3
+            }
+        },
+        State {
             name: VPNController.StateOn
             PropertyChanges {
                 target: dropShadow

@@ -80,6 +80,8 @@ void StatusIcon::stateChanged() {
       [[fallthrough]];
     case Controller::StateConnecting:
       [[fallthrough]];
+    case Controller::StateConfirming:
+      [[fallthrough]];
     case Controller::StateDisconnecting:
       activateAnimation();
       break;

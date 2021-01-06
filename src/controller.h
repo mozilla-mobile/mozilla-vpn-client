@@ -6,6 +6,7 @@
 #define CONTROLLER_H
 
 #include "models/server.h"
+#include "connectioncheck.h"
 
 #include <QDateTime>
 #include <QList>
@@ -28,6 +29,7 @@ class Controller final : public QObject {
     StateInitializing,
     StateOff,
     StateConnecting,
+    StateConfirming,
     StateOn,
     StateDisconnecting,
     StateSwitching,
@@ -40,6 +42,8 @@ class Controller final : public QObject {
   Q_PROPERTY(int time READ time NOTIFY timeChanged)
   Q_PROPERTY(QString currentCity READ currentCity NOTIFY stateChanged)
   Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
+  Q_PROPERTY(
+      int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
 
  public:
   Controller();
@@ -72,6 +76,8 @@ class Controller final : public QObject {
       std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
                          uint64_t rxBytes)>&& callback);
 
+  int connectionRetry() const { return m_connectionRetry; }
+
  public slots:
   void activate();
 
@@ -90,11 +96,15 @@ class Controller final : public QObject {
   void statusUpdated(const QString& serverIpv4Gateway, uint64_t txBytes,
                      uint64_t rxBytes);
 
+  void connectionConfirmed();
+  void connectionFailed();
+
  signals:
   void stateChanged();
   void timeChanged();
   void readyToQuit();
   void readyToUpdate();
+  void connectionRetryChanged();
 
  private:
   void setState(State state);
@@ -102,6 +112,10 @@ class Controller final : public QObject {
   bool processNextStep();
 
   QList<IPAddressRange> getAllowedIPAddressRanges(const Server& server);
+
+  void activateInternal();
+
+  void resetConnectionCheck();
 
  private:
   State m_state = StateInitializing;
@@ -126,6 +140,10 @@ class Controller final : public QObject {
   };
 
   NextStep m_nextStep = None;
+
+  ConnectionCheck m_connectionCheck;
+  int m_connectionRetry = 0;
+  bool m_expectDisconnection = false;
 
   QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
                            uint64_t rxBytes)>>
