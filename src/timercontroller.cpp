@@ -39,7 +39,10 @@ void TimerController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, bool forSwitching) {
-  Q_ASSERT(m_state == None);
+  if (m_state != None) {
+    return;
+  }
+
   m_state = Connecting;
 
   if (!forSwitching) {
@@ -52,7 +55,10 @@ void TimerController::activate(
 }
 
 void TimerController::deactivate(bool forSwitching) {
-  Q_ASSERT(m_state == None);
+  if (m_state != None) {
+    return;
+  }
+
   m_state = Disconnecting;
 
   m_timer.stop();

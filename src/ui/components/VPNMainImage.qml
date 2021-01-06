@@ -37,6 +37,26 @@ Rectangle {
 
         },
         State {
+            name: VPNController.StateConfirming
+
+            PropertyChanges {
+                target: logo
+                opacity: 0.6
+                showVPNOnIcon: true
+            }
+
+            PropertyChanges {
+                target: insetCircle
+                color: "#3FE1B0"
+            }
+
+            PropertyChanges {
+                target: insetIcon
+                source: "../resources/shield-on.svg"
+            }
+
+        },
+        State {
             name: VPNController.StateDisconnecting
 
             PropertyChanges {
@@ -154,6 +174,14 @@ Rectangle {
     transitions: [
         Transition {
             to: VPNController.StateConnecting
+
+            ScriptAction {
+                script: insetCirclePulse.start()
+            }
+
+        },
+        Transition {
+            to: VPNController.StateConfirming
 
             ScriptAction {
                 script: insetCirclePulse.start()

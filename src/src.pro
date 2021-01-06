@@ -47,6 +47,7 @@ SOURCES += \
         commands/commandservers.cpp \
         commands/commandstatus.cpp \
         commands/commandui.cpp \
+        connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
         controller.cpp \
@@ -119,6 +120,7 @@ HEADERS += \
         commands/commandservers.h \
         commands/commandstatus.h \
         commands/commandui.h \
+        connectioncheck.h \
         connectiondataholder.h \
         connectionhealth.h \
         constants.h \
@@ -345,6 +347,8 @@ else:android {
     LIBS += \-ljnigraphics\
 
     DEFINES += MVPN_ANDROID
+
+    ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 
     INCLUDEPATH += platforms/android
 
@@ -603,7 +607,6 @@ else{
     PRE_TARGETDEPS += ts
 }
 
-ANDROID_ABIS = x86 armeabi-v7a arm64-v8a
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
