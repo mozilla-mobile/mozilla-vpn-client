@@ -40,6 +40,22 @@ import java.util.regex.Pattern;
 public class PackageManagerHelper {
   final static String TAG = "PackageManagerHelper";
   final static int MIN_CHROME_VERSION = 65;
+
+  // These system apps will not be hidden to the user (if installed):
+  final static List<String> SYSTEM_ALLOWLIST = Arrays.asList(new String[] {
+      "com.android.vending", // Google Play Store
+      "com.google.android.apps.chromecast.app", // Google Home
+      "com.google.android.apps.maps", // Google Maps
+      "com.google.android.apps.walletnfcrel", // Google Pay
+      "com.google.android.calendar", // Gcal
+      "com.google.android.gm", // Gmail
+      "com.google.android.music", // Gmusic
+      "com.google.android.videos", // Play video
+      "com.google.android.youtube", // Youtube
+      "com.google.android.projection.gearhead", // Android Auto
+      "com.google.android.apps.magazines", // Google news
+      "com.google.android.GoogleCamera" // Google Camera
+  });
   final static List<String> CHROME_BROWSERS = Arrays.asList(
       new String[] {"com.google.android.webview", "com.android.webview", "com.google.chrome"});
 
@@ -51,7 +67,9 @@ public class PackageManagerHelper {
     for (int i = 0; i < packs.size(); i++) {
       PackageInfo p = packs.get(i);
       // Do not add ourselves and System Apps to the list, unless it might be a browser
-      if ((!isSystemPackage(p) || browsers.contains(p.packageName)) && !isSelf(p)) {
+      if ((!isSystemPackage(p) || browsers.contains(p.packageName)
+              || SYSTEM_ALLOWLIST.contains(p.packageName))
+          && !isSelf(p)) {
         String appid = p.packageName;
         String appName = p.applicationInfo.loadLabel(pm).toString();
         try {
