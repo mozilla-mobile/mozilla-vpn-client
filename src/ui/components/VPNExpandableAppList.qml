@@ -22,7 +22,6 @@ ColumnLayout{
     property var isListVisible : true && applist.count > 0
     opacity: isEnabled ? 1 : 0.5
     property var isActionEnabled: isEnabled && applist.count > 0
-    height: appRowHeader.height + (isListVisible  ? applist.height + defaultMargin : 0)
 
     VPNClickableRow {
         id: appRow
@@ -32,14 +31,15 @@ ColumnLayout{
         clip: true
         canGrowVertical: true
         accessibleName: name
-        width: parent.width
+        Layout.preferredWidth: parent.width - Theme.windowMargin
         height: appRowHeader.height
-        Layout.preferredHeight: appRowHeader.height
+        Layout.preferredHeight: Theme.rowHeight * 1.5
 
 
         RowLayout {
             id: appRowHeader
-            width: appListContainer.width
+            width: parent.width
+            anchors.centerIn: parent
             spacing: 0
 
             VPNIcon {
@@ -98,12 +98,11 @@ ColumnLayout{
     VPNList {
         id: applist
         model: listModel
-        width: appListContainer.width
-        height: contentItem.childrenRect.height
+        Layout.fillWidth: true
         spacing: 26
         listName: header
 
-        Layout.preferredHeight: height
+        Layout.preferredHeight: contentItem.childrenRect.height
         Layout.topMargin: defaultMargin
 
         visible: isListVisible
@@ -116,7 +115,7 @@ ColumnLayout{
             showDivider:false
             onClicked: VPNAppPermissions.flip(appID)
             visible: true
-            width: applist.width - leftMargin
+            width: parent.width
             anchors.left: parent.left
             anchors.topMargin: defaultMargin
             leftMargin:defaultMargin
