@@ -108,8 +108,8 @@ android {
         resConfig "en"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 2000
-        versionName "2.0"
+        versionCode 2010
+        versionName "2.0.1"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
