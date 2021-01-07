@@ -79,9 +79,9 @@ void MacOSController::daemonConnected() {
 void MacOSController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, bool forSwitching) {
+    const QList<QString>& vpnDisabledApps, Reason reason) {
   Q_UNUSED(vpnDisabledApps);
-  Q_UNUSED(forSwitching);
+  Q_UNUSED(reason);
 
   if (m_state != eReady) {
     emit disconnected();
@@ -114,7 +114,7 @@ void MacOSController::activate(
   write(json);
 }
 
-void MacOSController::deactivate(bool forSwitching) {
+void MacOSController::deactivate(Reason reason) {
   logger.log() << "Deactivating";
 
   if (m_state != eReady) {
@@ -122,8 +122,8 @@ void MacOSController::deactivate(bool forSwitching) {
     return;
   }
 
-  // No disconnect if for server-switching.
-  if (forSwitching) {
+  // No disconnect if for server-switching or connection checks.
+  if (reason != ReasonNone) {
     emit disconnected();
     return;
   }

@@ -36,7 +36,20 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 
 namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
+
+ControllerImpl::Reason stateToReason(Controller::State state) {
+  if (state == Controller::StateSwitching) {
+    return ControllerImpl::ReasonSwitching;
+  }
+
+  if (state == Controller::StateConfirming) {
+    return ControllerImpl::ReasonConfirming;
+  }
+
+  return ControllerImpl::ReasonNone;
 }
+
+}  // namespace
 
 Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
@@ -177,7 +190,7 @@ void Controller::activateInternal() {
 
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, m_state == StateSwitching);
+                   vpnDisabledApps, stateToReason(m_state));
 }
 
 void Controller::deactivate() {
@@ -197,7 +210,7 @@ void Controller::deactivate() {
   resetConnectionCheck();
 
   Q_ASSERT(m_impl);
-  m_impl->deactivate(m_state == StateSwitching);
+  m_impl->deactivate(stateToReason(m_state));
 }
 
 void Controller::connected() {
@@ -265,7 +278,7 @@ void Controller::connectionFailed() {
   m_expectDisconnection = true;
 
   Q_ASSERT(m_impl);
-  m_impl->deactivate(false);
+  m_impl->deactivate(ControllerImpl::ReasonConfirming);
 }
 
 void Controller::disconnected() {

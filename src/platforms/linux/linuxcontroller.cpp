@@ -69,8 +69,8 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 void LinuxController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, bool forSwitching) {
-  Q_UNUSED(forSwitching);
+    const QList<QString>& vpnDisabledApps, Reason reason) {
+  Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
   logger.log() << "LinuxController activated";
@@ -79,11 +79,12 @@ void LinuxController::activate(
           &LinuxController::operationCompleted);
 }
 
-void LinuxController::deactivate(bool forSwitching) {
+void LinuxController::deactivate(Reason reason) {
   logger.log() << "LinuxController deactivated";
 
-  if (forSwitching) {
-    logger.log() << "No disconnect for quick server switching";
+  if (reason != ReasonNone) {
+    logger.log()
+        << "No disconnect for quick server switching or connection checks";
     emit disconnected();
     return;
   }

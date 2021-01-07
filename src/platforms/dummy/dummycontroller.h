@@ -25,10 +25,9 @@ class DummyController final : public ControllerImpl {
 
   void activate(const Server& data, const Device* device, const Keys* keys,
                 const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps,
-                bool forSwitching) override;
+                const QList<QString>& vpnDisabledApps, Reason reason) override;
 
-  void deactivate(bool forSwitching) override;
+  void deactivate(Reason reason) override;
 
   void checkStatus() override;
 

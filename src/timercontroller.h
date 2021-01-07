@@ -13,6 +13,7 @@
 constexpr uint32_t TIME_ACTIVATION = 1000;
 constexpr uint32_t TIME_DEACTIVATION = 1500;
 constexpr uint32_t TIME_SWITCHING = 2000;
+constexpr uint32_t TIME_CONFIRMING = 0;
 
 class TimerController final : public ControllerImpl {
   Q_OBJECT
@@ -26,10 +27,9 @@ class TimerController final : public ControllerImpl {
 
   void activate(const Server& server, const Device* device, const Keys* keys,
                 const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps,
-                bool forSwitching) override;
+                const QList<QString>& vpnDisabledApps, Reason reason) override;
 
-  void deactivate(bool forSwitching) override;
+  void deactivate(Reason reason) override;
 
   void checkStatus() override;
 

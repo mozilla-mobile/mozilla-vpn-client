@@ -149,7 +149,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, forSwitching: Bool, failureCallback: @escaping () -> Void) {
+    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, reason: Int, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -192,7 +192,7 @@ public class IOSControllerImpl : NSObject {
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
-        if (forSwitching) {
+        if (reason != 0) {
             switchingServer = true
             switchingServerConfig = config
             switchingServerFailureCallback = failureCallback

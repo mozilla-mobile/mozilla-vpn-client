@@ -96,7 +96,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 
 void IOSController::activate(const Server& server, const Device* device, const Keys* keys,
                              const QList<IPAddressRange>& allowedIPAddressRanges,
-                             const QList<QString>& vpnDisabledApps, bool forSwitching) {
+                             const QList<QString>& vpnDisabledApps, Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
@@ -128,18 +128,18 @@ void IOSController::activate(const Server& server, const Device* device, const K
                           serverPort:server.choosePort()
               allowedIPAddressRanges:allowedIPAddressRangesNS
                          ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
-                        forSwitching:forSwitching
+                              reason:reason
                      failureCallback:^() {
                        logger.log() << "IOSSWiftController - connection failed";
                        emit disconnected();
                      }];
 }
 
-void IOSController::deactivate(bool forSwitching) {
+void IOSController::deactivate(Reason reason) {
   logger.log() << "IOSController deactivated";
 
-  if (forSwitching) {
-    logger.log() << "We do not need to disable the VPN for switching.";
+  if (reason != ReasonNone) {
+    logger.log() << "We do not need to disable the VPN for switching or connection check.";
     emit disconnected();
     return;
   }

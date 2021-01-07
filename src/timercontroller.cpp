@@ -38,23 +38,23 @@ void TimerController::initialize(const Device* device, const Keys* keys) {
 void TimerController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, bool forSwitching) {
+    const QList<QString>& vpnDisabledApps, Reason reason) {
   if (m_state != None) {
     return;
   }
 
   m_state = Connecting;
 
-  if (!forSwitching) {
+  if (reason != ReasonSwitching) {
     m_timer.stop();
     m_timer.start(TIME_ACTIVATION);
   }
 
   m_impl->activate(server, device, keys, allowedIPAddressRanges,
-                   vpnDisabledApps, forSwitching);
+                   vpnDisabledApps, reason);
 }
 
-void TimerController::deactivate(bool forSwitching) {
+void TimerController::deactivate(Reason reason) {
   if (m_state != None) {
     return;
   }
@@ -62,9 +62,20 @@ void TimerController::deactivate(bool forSwitching) {
   m_state = Disconnecting;
 
   m_timer.stop();
-  m_timer.start(forSwitching ? TIME_SWITCHING : TIME_DEACTIVATION);
 
-  m_impl->deactivate(forSwitching);
+  switch (reason) {
+    case ReasonSwitching:
+      m_timer.start(TIME_SWITCHING);
+      break;
+    case ReasonConfirming:
+      m_timer.start(0);
+      break;
+    default:
+      Q_ASSERT(reason == ReasonNone);
+      m_timer.start(TIME_DEACTIVATION);
+  }
+
+  m_impl->deactivate(reason);
 }
 
 void TimerController::timeout() {
