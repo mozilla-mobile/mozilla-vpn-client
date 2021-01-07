@@ -54,7 +54,10 @@ public class PackageManagerHelper {
       "com.google.android.youtube", // Youtube
       "com.google.android.projection.gearhead", // Android Auto
       "com.google.android.apps.magazines", // Google news
-      "com.google.android.GoogleCamera" // Google Camera
+      "com.google.android.GoogleCamera", // Google Camera
+      "com.android.hotwordenrollment.xgoogle", // Google Assistant
+      "com.android.hotwordenrollment.okgoogle", // Google Assistant
+      "com.google.android.gms.location.history", // Google Loaction History
   });
   final static List<String> CHROME_BROWSERS = Arrays.asList(
       new String[] {"com.google.android.webview", "com.android.webview", "com.google.chrome"});
