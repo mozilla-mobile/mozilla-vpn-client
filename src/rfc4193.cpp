@@ -4,7 +4,6 @@
 
 #include "rfc4193.h"
 
-
 // static
 QList<IPAddressRange> RFC4193::ipv6() {
   // Allow all IP's except fc00::/7
