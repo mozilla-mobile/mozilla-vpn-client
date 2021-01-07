@@ -197,18 +197,16 @@ Rectangle {
 
             PropertyChanges {
                 target: logoTitle
-                //% "Confirming"
-                text: qsTrId("vpn.controller.confirming") + " …"
+                text: qsTrId("vpn.controller.connecting") + " …"
                 color: "#FFFFFF"
             }
 
             PropertyChanges {
                 target: logoSubtitle
-                text: VPNController.connectionRetry > 0 ?
-                        //: This string shows the number of connection tries.
-                        //% "Retry %1"
-                        qsTrId("vpn.controller.confirmingRetry").arg(VPNController.connectionRetry) :
-                        qsTrId("vpn.controller.activating")
+                text: VPNController.connectionRetry > 1 ?
+                          //% "Attempting to confirm connection"
+                          qsTrId("vpn.controller.attemptingToConfirm") :
+                          qsTrId("vpn.controller.activating")
                 color: "#FFFFFF"
                 opacity: 0.8
             }
