@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 VPNButtonBase {
     id: toggleButton
 
+    property var connectionRetryOverX: VPNController.connectionRetry > 1
     property var toggleColor: Theme.vpnToggleDisconnected
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
@@ -32,6 +33,7 @@ VPNButtonBase {
     width: 60
     radius: 16
     hoverEnabled: false
+
     states: [
         State {
             name: VPNController.StateInitializing
@@ -81,6 +83,29 @@ VPNButtonBase {
                 target: cursor
                 anchors.leftMargin: 32
                 color: "#998DB2"
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: "#387E8A"
+                border.color: Theme.ink
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                //% "Turn VPN off"
+                toolTipTitle: qsTrId("vpn.toggle.off")
+                toggleColor: Theme.vpnToggleConnected
+            }
+
+        },
+        State {
+            name: VPNController.StateConfirming
+
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 32
+                color: connectionRetryOverX ? "#FFFFFF" : "#998DB2"
             }
 
             PropertyChanges {
@@ -255,6 +280,12 @@ VPNButtonBase {
 
     }
 
+    function toggleClickable() {
+        return VPNController.state === VPNController.StateOn ||
+               VPNController.state === VPNController.StateOff ||
+               (VPNController.state === VPNController.StateConfirming && connectionRetryOverX);
+    }
+
     // Toggle background color changes on hover and press
     VPNUIStates {
         itemToFocus: toggleButton
@@ -263,8 +294,15 @@ VPNButtonBase {
         radius: height / 2
         setMargins: -7
         showFocusRings: false
-        opacity: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff) ? 1 : 0
+        opacity: toggleClickable() ? 1 : 0
         z: 1
+
+        Behavior on opacity {
+            PropertyAnimation {
+                property: "opacity"
+                duration: 100
+            }
+        }
     }
 
     Rectangle {
@@ -284,7 +322,7 @@ VPNButtonBase {
 
         targetEl: toggle
         anchors.fill: toggle
-        hoverEnabled: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOff)
+        hoverEnabled: toggleClickable()
         cursorShape: Qt.PointingHandCursor
     }
 

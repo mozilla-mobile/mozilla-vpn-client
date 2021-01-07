@@ -69,12 +69,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     Log.v(tag,"Stored new Tunnel config in Service")
                     val config = buildConfigFromJSON(json)
 
-                    var forSwitching = false;
+                    var reason = 0;
                     json?.let {
                         val obj = JSONObject(it)
-                        forSwitching = obj.getBoolean("forSwitching")
+                        reason = obj.getInt("reason")
                     }
-                    if(forSwitching){
+                    if(reason != 0){
                         // In case the activation is for switching purposes
                         // We never turned the vpn off so far.
                         this.mService.turnOff();
