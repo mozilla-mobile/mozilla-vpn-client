@@ -178,7 +178,9 @@ VPNFlickable {
 
             onClicked: stackview.push("ViewServers.qml")
             y: box.y + box.height + Theme.iconSize
-            rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit || VPNController.state === VPNController.StateSwitching || box.connectionInfoVisible
+            rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit ||
+                                 (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) ||
+                                 box.connectionInfoVisible
         }
 
         VPNControllerDevice {

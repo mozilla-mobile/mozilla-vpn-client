@@ -20,6 +20,10 @@
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
 
+// Connection check URL
+constexpr const char* CONNECTION_CHECK_URL =
+    "https://am.i.mullvad.net/connected";
+
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
 }
@@ -201,6 +205,16 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/dns/detectportal");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForConnectionCheck(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+
+  QUrl url(CONNECTION_CHECK_URL);
   r->m_request.setUrl(url);
 
   r->getRequest();

@@ -73,6 +73,10 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return new NetworkRequest(parent, 1234);
 }
 
+NetworkRequest* NetworkRequest::createForConnectionCheck(QObject* parent) {
+  return new NetworkRequest(parent, 1234);
+}
+
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   return new NetworkRequest(parent, 1234);

@@ -17,6 +17,8 @@ void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
 void Controller::activate() {}
 
+void Controller::activateInternal() {}
+
 void Controller::deactivate() {}
 
 void Controller::connected() {}
@@ -63,3 +65,7 @@ void Controller::getStatus(
 }
 
 void Controller::quit() {}
+
+void Controller::connectionConfirmed() {}
+
+void Controller::connectionFailed() {}

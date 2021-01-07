@@ -131,7 +131,7 @@ void AndroidController::setFallbackConnectedNotification() {
 void AndroidController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, bool forSwitching) {
+    const QList<QString>& vpnDisabledApps, Reason reason) {
   logger.log() << "Activation";
 
   m_server = server;
@@ -171,7 +171,7 @@ void AndroidController::activate(
   args["device"] = jDevice;
   args["keys"] = jKeys;
   args["server"] = jServer;
-  args["forSwitching"] = forSwitching;
+  args["reason"] = (int)reason;
   args["allowedIPs"] = allowedIPs;
   args["excludedApps"] = excludedApps;
 
@@ -187,8 +187,10 @@ void AndroidController::resume_activate() {
   m_serviceBinder.transact(ACTION_RESUME_ACTIVATE, nullData, nullptr);
 }
 
-void AndroidController::deactivate(bool forSwitching) {
-  if (forSwitching) {
+void AndroidController::deactivate(Reason reason) {
+  logger.log() << "deactivation";
+
+  if (reason != ReasonNone) {
     // Just show that we're disconnected
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate
@@ -196,9 +198,7 @@ void AndroidController::deactivate(bool forSwitching) {
     logger.log() << "deactivation skipped for Switching";
     return;
   }
-  logger.log() << "deactivation";
 
-  Q_UNUSED(forSwitching);
   QAndroidParcel nullData;
   m_serviceBinder.transact(ACTION_DEACTIVATE, nullData, nullptr);
 }

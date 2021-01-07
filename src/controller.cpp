@@ -31,14 +31,35 @@
 
 constexpr const uint32_t TIMER_MSEC = 1000;
 
+// X connection retries.
+constexpr const int CONNECTION_MAX_RETRY = 9;
+
 namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
+
+ControllerImpl::Reason stateToReason(Controller::State state) {
+  if (state == Controller::StateSwitching) {
+    return ControllerImpl::ReasonSwitching;
+  }
+
+  if (state == Controller::StateConfirming) {
+    return ControllerImpl::ReasonConfirming;
+  }
+
+  return ControllerImpl::ReasonNone;
 }
+
+}  // namespace
 
 Controller::Controller() {
   MVPN_COUNT_CTOR(Controller);
 
   connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
+
+  connect(&m_connectionCheck, &ConnectionCheck::success, this,
+          &Controller::connectionConfirmed);
+  connect(&m_connectionCheck, &ConnectionCheck::failure, this,
+          &Controller::connectionFailed);
 }
 
 Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
@@ -135,6 +156,13 @@ void Controller::activate() {
   }
 
   m_timer.stop();
+  resetConnectionCheck();
+
+  activateInternal();
+}
+
+void Controller::activateInternal() {
+  logger.log() << "Activation internal";
 
   m_connectionDate = QDateTime::currentDateTime();
 
@@ -162,27 +190,27 @@ void Controller::activate() {
 
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, m_state == StateSwitching);
+                   vpnDisabledApps, stateToReason(m_state));
 }
 
 void Controller::deactivate() {
   logger.log() << "Deactivation" << m_state;
 
-  if (m_state != StateOn && m_state != StateSwitching) {
+  if (m_state != StateOn && m_state != StateSwitching &&
+      m_state != StateConfirming) {
     logger.log() << "Already disconnected";
     return;
   }
 
-  Q_ASSERT(m_state == StateOn || m_state == StateSwitching);
-
-  if (m_state == StateOn) {
+  if (m_state == StateOn || m_state == StateConfirming) {
     setState(StateDisconnecting);
   }
 
   m_timer.stop();
+  resetConnectionCheck();
 
   Q_ASSERT(m_impl);
-  m_impl->deactivate(m_state == StateSwitching);
+  m_impl->deactivate(stateToReason(m_state));
 }
 
 void Controller::connected() {
@@ -190,7 +218,8 @@ void Controller::connected() {
 
   // This is an unexpected connection. Let's use the Connecting state to animate
   // the UI.
-  if (m_state != StateConnecting && m_state != StateSwitching) {
+  if (m_state != StateConnecting && m_state != StateSwitching &&
+      m_state != StateConfirming) {
     setState(StateConnecting);
 
     m_connectionDate = QDateTime::currentDateTime();
@@ -203,6 +232,22 @@ void Controller::connected() {
     return;
   }
 
+  setState(StateConfirming);
+
+  m_connectionCheck.start();
+}
+
+void Controller::connectionConfirmed() {
+  logger.log() << "Connection confirmed";
+
+  if (m_state != StateConfirming) {
+    logger.log() << "Invalid confirmation received";
+    return;
+  }
+
+  m_connectionRetry = 0;
+  emit connectionRetryChanged();
+
   setState(StateOn);
   emit timeChanged();
 
@@ -214,10 +259,45 @@ void Controller::connected() {
   m_timer.start(TIMER_MSEC);
 }
 
+void Controller::connectionFailed() {
+  logger.log() << "Connection failed!";
+
+  if (m_state != StateConfirming) {
+    logger.log() << "Invalid confirmation received";
+    return;
+  }
+
+  if (m_connectionRetry >= CONNECTION_MAX_RETRY) {
+    deactivate();
+    return;
+  }
+
+  ++m_connectionRetry;
+  emit connectionRetryChanged();
+
+  m_expectDisconnection = true;
+
+  Q_ASSERT(m_impl);
+  m_impl->deactivate(ControllerImpl::ReasonConfirming);
+}
+
 void Controller::disconnected() {
   logger.log() << "Disconnected from state:" << m_state;
 
+  if (m_expectDisconnection) {
+    Q_ASSERT(m_state == StateConfirming);
+    Q_ASSERT(m_connectionRetry > 0);
+
+    m_expectDisconnection = false;
+
+    // We are retrying the connection. Let's ignore this disconnect signal and
+    // let's retrigger the connection.
+    activateInternal();
+    return;
+  }
+
   m_timer.stop();
+  resetConnectionCheck();
 
   // This is an unexpected disconnection. Let's use the Disconnecting state to
   // animate the UI.
@@ -271,6 +351,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   }
 
   m_timer.stop();
+  resetConnectionCheck();
 
   logger.log() << "Switching to a different server";
 
@@ -360,8 +441,11 @@ bool Controller::processNextStep() {
 
 void Controller::setState(State state) {
   logger.log() << "Setting state:" << state;
-  m_state = state;
-  emit stateChanged();
+
+  if (m_state != state) {
+    m_state = state;
+    emit stateChanged();
+  }
 }
 
 int Controller::time() const {
@@ -477,4 +561,13 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   return list;
+}
+
+void Controller::resetConnectionCheck() {
+  m_expectDisconnection = false;
+
+  m_connectionCheck.stop();
+
+  m_connectionRetry = 0;
+  emit connectionRetryChanged();
 }

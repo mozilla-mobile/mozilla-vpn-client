@@ -33,6 +33,28 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "../resources/shield-on.svg"
+                opacity: 1
+            }
+
+        },
+        State {
+            name: VPNController.StateConfirming
+
+            PropertyChanges {
+                target: logo
+                opacity: 0.6
+                showVPNOnIcon: true
+            }
+
+            PropertyChanges {
+                target: insetCircle
+                color: "#3FE1B0"
+            }
+
+            PropertyChanges {
+                target: insetIcon
+                source: "../resources/shield-on.svg"
+                opacity: 1
             }
 
         },
@@ -53,6 +75,7 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "../resources/shield-off.svg"
+                opacity: 1
             }
 
         },
@@ -67,12 +90,7 @@ Rectangle {
 
             PropertyChanges {
                 target: insetCircle
-                color: "#FF4F5E"
-            }
-
-            PropertyChanges {
-                target: insetIcon
-                source: "../resources/switching.svg"
+                color: "#3FE1B0"
             }
 
         },
@@ -87,6 +105,7 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "../resources/shield-off.svg"
+                opacity: 1
             }
 
         },
@@ -106,6 +125,7 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "../resources/shield-on.svg"
+                opacity: 1
             }
 
         },
@@ -126,6 +146,7 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "../resources/shield-off.svg"
+                opacity: 1
             }
 
         },
@@ -147,6 +168,7 @@ Rectangle {
             PropertyChanges {
                 target: insetIcon
                 source: "../resources/shield-off.svg"
+                opacity: 1
             }
 
         }
@@ -154,44 +176,70 @@ Rectangle {
     transitions: [
         Transition {
             to: VPNController.StateConnecting
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: logo
+                    property: "opacity"
+                    duration: 200
+                }
 
-            ScriptAction {
-                script: insetCirclePulse.start()
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "scale"
+                    to: 0.9
+                    duration: 200
+                    easing.type: Easing.Linear
+                }
+            }
+
+        },
+        Transition {
+            to: VPNController.StateConfirming
+            ParallelAnimation {
+
+                PropertyAnimation {
+                    target: insetIcon
+                    property: "opacity"
+                    duration: 100
+                }
             }
 
         },
         Transition {
             to: VPNController.StateDisconnecting
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: logo
+                    property: "opacity"
+                    duration: 200
+                }
 
-            ScriptAction {
-                script: insetCirclePulse.start()
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "scale"
+                    to: 0.9
+                    duration: 150
+                    easing.type: Easing.Linear
+                }
             }
 
         },
         Transition {
             to: VPNController.StateOff
 
-            PropertyAnimation {
-                target: logo
-                property: "opacity"
-                duration: 200
-            }
-
-        },
-        Transition {
-            to: VPNController.StateOn
-
             ParallelAnimation {
-                PropertyAction {
-                    target: insetIcon
-                    property: "rotation"
-                    value: 0
-                }
-
                 PropertyAnimation {
                     target: logo
                     property: "opacity"
-                    duration: 200
+                    duration: 100
+                }
+
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "scale"
+                    to: 1
+                    duration: 100
+                    easing.type: Easing.InOutBounce
                 }
 
             }
@@ -199,8 +247,15 @@ Rectangle {
         },
         Transition {
             to: VPNController.StateSwitching
-
             ParallelAnimation {
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "scale"
+                    to: 0.9
+                    duration: 200
+                    easing.type: Easing.Linear
+                }
+
                 PropertyAnimation {
                     target: logo
                     property: "opacity"
@@ -209,14 +264,39 @@ Rectangle {
 
                 PropertyAnimation {
                     target: insetIcon
-                    property: "rotation"
-                    to: 360
-                    loops: Animation.Infinite
-                    duration: 8000
+                    property: "opacity"
+                    to: 0
+                    duration: 50
                 }
-
             }
-
+        },
+        Transition {
+            to: VPNController.StateOn
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: insetIcon
+                    property: "opacity"
+                    to: 1
+                    duration: 200
+                }
+                PropertyAnimation {
+                    target: logo
+                    property: "opacity"
+                    duration: 300
+                }
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "color"
+                    duration: 100
+                }
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "scale"
+                    to: 1
+                    duration: 150
+                    easing.type: Easing.InOutBounce
+                }
+            }
         }
     ]
 
@@ -230,7 +310,6 @@ Rectangle {
         radius: 16
         x: 43
         y: 5
-        scale: 1
         antialiasing: true
         smooth: true
 
@@ -241,28 +320,26 @@ Rectangle {
             sourceSize.width: 32
             anchors.centerIn: insetCircle
             opacity: 1
-            rotation: 0
-
-            Behavior on source {
-                SequentialAnimation {
-                    PropertyAnimation {
-                        property: "opacity"
-                        to: 0
-                        duration: 150
-                    }
-
-                    PropertyAnimation {
-                        property: "opacity"
-                        to: 1
-                        duration: 150
-                    }
-
-                }
-
-            }
-
         }
 
+        Image {
+            id: switchingIcon
+            anchors.centerIn: insetCircle
+            sourceSize.height: 32
+            sourceSize.width: 32
+            source: "../resources/switching.svg"
+            opacity: VPNController.state === VPNController.StateSwitching ? 1 : 0
+
+             PropertyAnimation {
+                 target: switchingIcon
+                 property: "rotation"
+                 from: 0
+                 to: 360
+                 loops: Animation.Infinite
+                 duration: 8000
+                 running: true
+             }
+        }
     }
 
     Canvas {
@@ -298,45 +375,6 @@ Rectangle {
             context.clip("evenodd");
             context.fill("evenodd");
         }
-    }
-
-    ParallelAnimation {
-        id: insetCirclePulse
-
-        PropertyAnimation {
-            target: insetCircle
-            property: "color"
-            duration: 300
-        }
-
-        PropertyAnimation {
-            target: logo
-            property: "opacity"
-            duration: 200
-        }
-
-        SequentialAnimation {
-            PropertyAnimation {
-                target: insetCircle
-                property: "scale"
-                from: 1
-                to: 0.85
-                duration: 150
-                easing.type: Easing.Linear
-            }
-
-            PropertyAnimation {
-                target: insetCircle
-                property: "scale"
-                from: 0.85
-                to: 1
-                duration: 150
-                easing.amplitude: 2
-                easing.type: Easing.InOutBounce
-            }
-
-        }
-
     }
 
 }
