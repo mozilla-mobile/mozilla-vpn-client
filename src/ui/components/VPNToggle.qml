@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 VPNButtonBase {
     id: toggleButton
 
+    property var connectionRetryOverX: VPNController.connectionRetry > 4
     property var toggleColor: Theme.vpnToggleDisconnected
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
@@ -104,7 +105,7 @@ VPNButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: "#998DB2"
+                color: connectionRetryOverX ? "#FFFFFF" : "#998DB2"
             }
 
             PropertyChanges {
@@ -282,7 +283,7 @@ VPNButtonBase {
     function toggleClickable() {
         return VPNController.state === VPNController.StateOn ||
                VPNController.state === VPNController.StateOff ||
-               VPNController.state === VPNController.StateConfirming;
+               (VPNController.state === VPNController.StateConfirming && connectionRetryOverX);
     }
 
     // Toggle background color changes on hover and press
@@ -295,6 +296,13 @@ VPNButtonBase {
         showFocusRings: false
         opacity: toggleClickable() ? 1 : 0
         z: 1
+
+        Behavior on opacity {
+            PropertyAnimation {
+                property: "opacity"
+                duration: 100
+            }
+        }
     }
 
     Rectangle {
