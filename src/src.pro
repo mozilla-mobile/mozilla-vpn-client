@@ -84,6 +84,7 @@ SOURCES += \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
+        rfc4193.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -153,6 +154,7 @@ HEADERS += \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
+        rfc4193.h \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
