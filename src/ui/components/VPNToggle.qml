@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 VPNButtonBase {
     id: toggleButton
 
-    property var connectionRetryOverX: VPNController.connectionRetry > 4
+    property var connectionRetryOverX: VPNController.connectionRetry > 1
     property var toggleColor: Theme.vpnToggleDisconnected
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
