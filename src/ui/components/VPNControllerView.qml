@@ -399,7 +399,7 @@ Rectangle {
                 target: animatedRingsWrapper
                 visible: true
                 opacity: 1
-                startAnimation: true
+                startAnimation: false
             }
 
         },
