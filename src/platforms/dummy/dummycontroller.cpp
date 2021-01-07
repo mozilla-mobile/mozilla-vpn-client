@@ -20,11 +20,11 @@ DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 void DummyController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, bool forSwitching) {
+    const QList<QString>& vpnDisabledApps, Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
   Q_UNUSED(allowedIPAddressRanges);
-  Q_UNUSED(forSwitching);
+  Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
   logger.log() << "DummyController activated" << server.hostname();
@@ -32,8 +32,8 @@ void DummyController::activate(
   emit connected();
 }
 
-void DummyController::deactivate(bool forSwitching) {
-  Q_UNUSED(forSwitching);
+void DummyController::deactivate(Reason reason) {
+  Q_UNUSED(reason);
 
   logger.log() << "DummyController deactivated";
 
