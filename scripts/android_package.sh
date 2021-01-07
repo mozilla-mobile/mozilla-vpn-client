@@ -185,7 +185,9 @@ if [[ "$RELEASE" ]]; then
   cd android-build
   ./gradlew compileReleaseSources
   ./gradlew assemble
+  ./gradlew bundleRelease
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-release-unsigned.apk"
+  print G "Your Release AAB is under .tmp/src/android-build/build/outputs/bundle/release/android-build-release.aab"
 fi
