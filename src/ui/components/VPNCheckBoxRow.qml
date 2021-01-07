@@ -19,6 +19,7 @@ RowLayout {
     property bool showDivider: true
     property var iconURL: ""
     property var leftMargin: 18
+    property var subLabelWrapMode: Text.WrapAnywhere
 
     signal clicked()
     spacing: 0
@@ -65,6 +66,7 @@ RowLayout {
             Layout.fillWidth: true
             text: subLabelText
             visible: !!subLabelText.length
+            wrapMode: subLabelWrapMode
         }
 
         Rectangle {
