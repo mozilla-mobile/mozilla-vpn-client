@@ -12,6 +12,7 @@
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "rfc1918.h"
+#include "rfc4193.h"
 #include "settingsholder.h"
 #include "timercontroller.h"
 #include "timersingleshot.h"
@@ -461,7 +462,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     // In case of lan enabled, whitelist all non LAN ip's
     list.append(RFC1918::ipv4());
     if (ipv6Enabled) {
-      list.append(RFC1918::ipv6());
+      list.append(RFC4193::ipv6());
     }
     // Whitelist the servers gateway -
     // otherwise we can't ping it for connectionhealth
