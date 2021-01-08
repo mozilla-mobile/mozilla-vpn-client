@@ -510,7 +510,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   logger.log() << "Device added" << deviceName;
 
   SettingsHolder::instance()->setPrivateKey(privateKey);
-  m_private->m_keys.storeKey(privateKey);
+  m_private->m_keys.storeKeys(privateKey, publicKey);
 }
 
 void MozillaVPN::deviceRemoved(const QString& deviceName) {
@@ -658,7 +658,7 @@ void MozillaVPN::reset() {
   deleteTasks();
 
   SettingsHolder::instance()->clear();
-  m_private->m_keys.forgetKey();
+  m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
   setUserAuthenticated(false);
