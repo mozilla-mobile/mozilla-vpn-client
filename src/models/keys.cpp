@@ -3,9 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "keys.h"
+#include "devicemodel.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 
 Keys::Keys() { MVPN_COUNT_CTOR(Keys); }
 
@@ -21,13 +26,41 @@ bool Keys::fromSettings() {
 
   // Quick migration to retrieve the public key from the current device.
   if (!settingsHolder->hasPublicKey()) {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    const Device* device = vpn->deviceModel()->currentDevice();
-    if (!device) {
+    if (!settingsHolder->hasDevices()) {
       return false;
     }
 
-    settingsHolder->setPublicKey(device->publicKey());
+    const QByteArray& json = settingsHolder->devices();
+    QJsonDocument doc = QJsonDocument::fromJson(json);
+    if (!doc.isObject()) {
+      return false;
+    }
+
+    QJsonObject obj = doc.object();
+
+    if (!obj.contains("devices")) {
+      return false;
+    }
+
+    QJsonValue devices = obj.value("devices");
+    if (!devices.isArray()) {
+      return false;
+    }
+
+    QJsonArray devicesArray = devices.toArray();
+    for (QJsonValue deviceValue : devicesArray) {
+      Device device;
+      if (!device.fromJson(deviceValue)) {
+        return false;
+      }
+
+      if (!device.isDevice(Device::currentDeviceName())) {
+        continue;
+      }
+
+      settingsHolder->setPublicKey(device.publicKey());
+      break;
+    }
   }
 
   m_privateKey = settingsHolder->privateKey();

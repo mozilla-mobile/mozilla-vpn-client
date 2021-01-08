@@ -104,7 +104,7 @@ void Controller::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  const Device* device = vpn->deviceModel()->currentDevice();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   m_impl->initialize(device, vpn->keys());
 }
 
@@ -175,7 +175,7 @@ void Controller::activateInternal() {
   Server server = Server::weightChooser(servers);
   Q_ASSERT(server.initialized());
 
-  const Device* device = vpn->deviceModel()->currentDevice();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
   const QList<IPAddressRange> allowedIPAddressRanges =
       getAllowedIPAddressRanges(server);

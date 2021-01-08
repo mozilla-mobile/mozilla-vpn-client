@@ -56,10 +56,8 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    const Device* cd = dm->currentDevice();
-
     const Device& device = devices.at(id - 1);
-    if (cd && device.name() == cd->name()) {
+    if (device.isCurrentDevice(vpn.keys())) {
       QTextStream stream(stdout);
       stream
           << "Removing the current device is not allowed. Use 'logout' instead."
@@ -67,7 +65,7 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    TaskRemoveDevice* task = new TaskRemoveDevice(device.name());
+    TaskRemoveDevice* task = new TaskRemoveDevice(device.publicKey());
     task->run(&vpn);
 
     QEventLoop loop;

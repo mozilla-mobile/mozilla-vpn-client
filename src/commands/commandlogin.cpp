@@ -48,8 +48,7 @@ int CommandLogin::run(QStringList& tokens) {
     });
     loop.exec();
 
-    QString deviceName = Device::currentDeviceName();
-    if (!vpn.deviceModel()->hasDevice(deviceName)) {
+    if (!vpn.deviceModel()->hasCurrentDevice(vpn.keys())) {
       QTextStream stream(stdout);
       stream << "Device limit reached" << Qt::endl;
       return 1;
