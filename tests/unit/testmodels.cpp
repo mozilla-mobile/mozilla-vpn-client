@@ -349,13 +349,15 @@ void TestModels::keysBasic() {
   QVERIFY(!k.initialized());
   QCOMPARE(k.privateKey(), "");
 
-  k.storeKey("test");
+  k.storeKeys("private", "public");
   QVERIFY(k.initialized());
-  QCOMPARE(k.privateKey(), "test");
+  QCOMPARE(k.privateKey(), "private");
+  QCOMPARE(k.publicKey(), "public");
 
-  k.forgetKey();
+  k.forgetKeys();
   QVERIFY(!k.initialized());
   QCOMPARE(k.privateKey(), "");
+  QCOMPARE(k.publicKey(), "");
 
   {
     SettingsHolder settingsHolder;
@@ -363,6 +365,9 @@ void TestModels::keysBasic() {
     QCOMPARE(k.fromSettings(), false);
 
     SettingsHolder::instance()->setPrivateKey("WOW");
+    QCOMPARE(k.fromSettings(), false);
+
+    SettingsHolder::instance()->setPublicKey("WOW2");
     QCOMPARE(k.fromSettings(), true);
   }
 }

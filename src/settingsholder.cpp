@@ -26,6 +26,7 @@ constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
 constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
+constexpr const char* SETTINGS_PUBLICKEY = "publicKey";
 constexpr const char* SETTINGS_USER_AVATAR = "user/avatar";
 constexpr const char* SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char* SETTINGS_USER_EMAIL = "user/email";
@@ -182,6 +183,8 @@ GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
 GETSET(QString, toString, SETTINGS_TOKEN, hasToken, token, setToken)
 GETSET(QString, toString, SETTINGS_PRIVATEKEY, hasPrivateKey, privateKey,
        setPrivateKey)
+GETSET(QString, toString, SETTINGS_PUBLICKEY, hasPublicKey, publicKey,
+       setPublicKey)
 GETSET(QByteArray, toByteArray, SETTINGS_SERVERS, hasServers, servers,
        setServers)
 GETSET(QString, toString, SETTINGS_USER_AVATAR, hasUserAvatar, userAvatar,

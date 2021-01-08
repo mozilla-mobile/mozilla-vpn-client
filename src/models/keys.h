@@ -17,16 +17,21 @@ class Keys final {
 
   [[nodiscard]] bool fromSettings();
 
-  bool initialized() const { return !m_privateKey.isEmpty(); }
+  bool initialized() const {
+    return !m_privateKey.isEmpty() && !m_publicKey.isEmpty();
+  }
 
-  void storeKey(const QString& privateKey);
+  void storeKeys(const QString& privateKey, const QString& publicKey);
 
-  void forgetKey();
+  void forgetKeys();
 
   const QString& privateKey() const { return m_privateKey; }
 
+  const QString& publicKey() const { return m_publicKey; }
+
  private:
   QString m_privateKey;
+  QString m_publicKey;
 };
 
 #endif  // KEYS_H

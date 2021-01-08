@@ -47,6 +47,7 @@ class SettingsHolder final : public QObject {
   GETSET(QString, hasLanguageCode, languageCode, setLanguageCode)
   GETSET(QString, hasToken, token, setToken)
   GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
+  GETSET(QString, hasPublicKey, publicKey, setPublicKey)
   GETSET(QByteArray, hasServers, servers, setServers)
   GETSET(QString, hasUserAvatar, userAvatar, setUserAvatar)
   GETSET(QString, hasUserDisplayName, userDisplayName, setUserDisplayName)
