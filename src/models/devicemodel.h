@@ -10,6 +10,8 @@
 
 #include "device.h"
 
+class Keys;
+
 class DeviceModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DeviceModel)
@@ -26,9 +28,9 @@ class DeviceModel final : public QAbstractListModel {
     CreatedAtRole,
   };
 
-  [[nodiscard]] bool fromJson(const QByteArray& s);
+  [[nodiscard]] bool fromJson(const Keys* keys, const QByteArray& s);
 
-  [[nodiscard]] bool fromSettings();
+  [[nodiscard]] bool fromSettings(const Keys* keys);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
@@ -44,7 +46,9 @@ class DeviceModel final : public QAbstractListModel {
 
   const QList<Device>& devices() const { return m_devices; }
 
-  const Device* currentDevice() const;
+  const Device* currentDevice(const Keys* keys) const;
+
+  bool hasCurrentDevice(const Keys* keys) const;
 
   // QAbstractListModel methods
 
@@ -58,7 +62,7 @@ class DeviceModel final : public QAbstractListModel {
   void changed();
 
  private:
-  [[nodiscard]] bool fromJsonInternal(const QByteArray& json);
+  [[nodiscard]] bool fromJsonInternal(const Keys* keys, const QByteArray& json);
 
   bool removeRows(int row, int count,
                   const QModelIndex& parent = QModelIndex()) override;

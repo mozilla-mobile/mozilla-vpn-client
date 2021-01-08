@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QList>
 
+class Keys;
 class QJsonValue;
 
 class Device final {
@@ -34,6 +35,8 @@ class Device final {
   const QString& ipv4Address() const { return m_ipv4Address; }
 
   const QString& ipv6Address() const { return m_ipv6Address; }
+
+  bool isCurrentDevice(const Keys* keys) const;
 
  private:
   QString m_deviceName;

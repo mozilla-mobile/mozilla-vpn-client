@@ -66,7 +66,7 @@ void migrateWireguardFile(const QString& fileName) {
 
   QSettings settings(fileName, QSettings::IniFormat);
 
-  const Device* device = vpn->deviceModel()->currentDevice();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (device) {
     QString privateKey = settings.value("Interface/PrivateKey").toString();
     if (!privateKey.isEmpty()) {
