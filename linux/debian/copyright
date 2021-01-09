@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: mozillavpn 
-Upstream-Contact: baku@mozilla.com
+Upstream-Contact: vpn@mozilla.com
 Source: https://vpn.mozilla.org
 
 Files: *
