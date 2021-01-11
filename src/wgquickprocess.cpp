@@ -44,6 +44,20 @@ bool WgQuickProcess::run(
     const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled) {
   Q_UNUSED(serverIpv6AddrIn);
 
+#define VALIDATE(x) \
+  if (x.contains("\n")) return false;
+
+  VALIDATE(privateKey);
+  VALIDATE(deviceIpv4Address);
+  VALIDATE(deviceIpv6Address);
+  VALIDATE(serverIpv4Gateway);
+  VALIDATE(serverIpv6Gateway);
+  VALIDATE(serverPublicKey);
+  VALIDATE(serverIpv4AddrIn);
+  VALIDATE(serverIpv6AddrIn);
+  VALIDATE(allowedIPAddressRanges);
+#undef VALIDATE
+
   QByteArray content;
   content.append("[Interface]\nPrivateKey = ");
   content.append(privateKey.toUtf8());
