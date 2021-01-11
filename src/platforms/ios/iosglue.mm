@@ -14,7 +14,7 @@
 #  import <os/log.h>
 #endif
 
-#define MAX_LOG_FILE_SIZE 1048576
+#define MAX_LOG_FILE_SIZE 204800
 
 // Key base64/hex functions
 // ------------------------
