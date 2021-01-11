@@ -12,12 +12,12 @@
 namespace {
 Logger logger(
 #if defined(MVPN_LINUX)
-    LOG_LINUX
+  LOG_LINUX
 #elif defined(MVPN_MACOS_DAEMON)
-    LOG_MACOS
+  LOG_MACOS
 #endif
-    ,
-    "WgQuickProcess");
+  ,
+  "WgQuickProcess");
 
 QString scriptPath() {
 #if defined(MVPN_LINUX)
@@ -31,21 +31,31 @@ QString scriptPath() {
 #else
 #  error Unsupported platform
 #endif
+
 }
 
 }  // namespace
 
-// static
-bool WgQuickProcess::run(
-    Daemon::Op op, const QString& privateKey, const QString& deviceIpv4Address,
+
+QString FAIL = "FAIL";
+
+
+// Write wg conf file
+QString writeWgConfigFile(QTemporaryDir& tmpDir,
+    const QString& privateKey, const QString& deviceIpv4Address,
     const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
     const QString& serverIpv6Gateway, const QString& serverPublicKey,
     const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
     const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled) {
+
   Q_UNUSED(serverIpv6AddrIn);
 
+  // TODO: Not sure what to do with the boolean fails now. 
+  //       What's a normal pattern for handling this kind of scenario?
+  //       I'm guessing it's not what I've done.
+
 #define VALIDATE(x) \
-  if (x.contains("\n")) return false;
+  if (x.contains("\n")) return FAIL;
 
   VALIDATE(privateKey);
   VALIDATE(deviceIpv4Address);
@@ -56,7 +66,9 @@ bool WgQuickProcess::run(
   VALIDATE(serverIpv4AddrIn);
   VALIDATE(serverIpv6AddrIn);
   VALIDATE(allowedIPAddressRanges);
+
 #undef VALIDATE
+
 
   QByteArray content;
   content.append("[Interface]\nPrivateKey = ");
@@ -95,30 +107,54 @@ bool WgQuickProcess::run(
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
-  QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
     qWarning("Cannot create a temporary directory");
-    return false;
+    //return false;
+    return FAIL;
   }
-
   QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
+
   if (!file.open(QIODevice::ReadWrite)) {
     qWarning("Unable to create a file in the temporary folder");
-    return false;
+    //return false;
+    return FAIL;
   }
 
   qint64 written = file.write(content);
+
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
-    return false;
+    //return false;
+    return FAIL;
   }
 
   file.close();
+  return file.fileName();
+}
+
+// static
+bool WgQuickProcess::run(
+    Daemon::Op op, const QString& privateKey, const QString& deviceIpv4Address,
+    const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
+    const QString& serverIpv6Gateway, const QString& serverPublicKey,
+    const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
+    const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled) {
+  
+
+  QTemporaryDir tmpDir;
+
+  QString confFile = writeWgConfigFile(tmpDir, privateKey, deviceIpv4Address, deviceIpv6Address,
+    serverIpv4Gateway, serverIpv6Gateway, serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn, 
+    allowedIPAddressRanges, serverPort, ipv6Enabled);
+
+  if (confFile == FAIL) {
+    return false;
+  }
 
   QStringList arguments;
   arguments.append(op == Daemon::Up ? "up" : "down");
-  arguments.append(file.fileName());
+  arguments.append(confFile);
 
   QString app = scriptPath();
   logger.log() << "Start:" << app << " - arguments:" << arguments;
