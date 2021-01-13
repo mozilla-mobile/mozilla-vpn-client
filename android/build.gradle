@@ -108,8 +108,8 @@ android {
         resConfig "en"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 2020
-        versionName "2.0.2"
+        versionCode System.getenv("VERSIONCODE").toInteger()
+        versionName System.getenv("SHORTVERSION")
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
