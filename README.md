@@ -45,10 +45,8 @@ Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
 ```
 git submodule init
-git submodule update --remote
+git submodule update
 ```
-
-This may result in submodule updates that need to be checked in
 
 #### Build
 
