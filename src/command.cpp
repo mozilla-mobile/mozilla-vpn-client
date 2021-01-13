@@ -44,10 +44,17 @@ bool Command::userAuthenticated() {
 bool Command::loadModels() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (!vpn->deviceModel()->fromSettings() ||
+  // First the keys!
+  if (!vpn->keys()->fromSettings()) {
+    QTextStream stream(stdout);
+    stream << "No cache available" << Qt::endl;
+    return false;
+  }
+
+  if (!vpn->deviceModel()->fromSettings(vpn->keys()) ||
       !vpn->serverCountryModel()->fromSettings() ||
-      !vpn->user()->fromSettings() || !vpn->keys()->fromSettings() ||
-      !vpn->currentServer()->fromSettings() || !vpn->modelsInitialized()) {
+      !vpn->user()->fromSettings() || !vpn->currentServer()->fromSettings() ||
+      !vpn->modelsInitialized()) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;

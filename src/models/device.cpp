@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "device.h"
+#include "keys.h"
 #include "leakdetector.h"
 
 #include <QDateTime>
@@ -115,4 +116,9 @@ bool Device::fromJson(const QJsonValue& json) {
   m_ipv6Address = ipv6Address.toString();
 
   return true;
+}
+
+bool Device::isCurrentDevice(const Keys* keys) const {
+  Q_ASSERT(keys);
+  return m_publicKey == keys->publicKey();
 }

@@ -3,8 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "keys.h"
+#include "devicemodel.h"
 #include "leakdetector.h"
 #include "settingsholder.h"
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 
 Keys::Keys() { MVPN_COUNT_CTOR(Keys); }
 
@@ -18,10 +24,56 @@ bool Keys::fromSettings() {
     return false;
   }
 
+  // Quick migration to retrieve the public key from the current device.
+  if (!settingsHolder->hasPublicKey()) {
+    if (!settingsHolder->hasDevices()) {
+      return false;
+    }
+
+    const QByteArray& json = settingsHolder->devices();
+    QJsonDocument doc = QJsonDocument::fromJson(json);
+    if (!doc.isObject()) {
+      return false;
+    }
+
+    QJsonObject obj = doc.object();
+
+    if (!obj.contains("devices")) {
+      return false;
+    }
+
+    QJsonValue devices = obj.value("devices");
+    if (!devices.isArray()) {
+      return false;
+    }
+
+    QJsonArray devicesArray = devices.toArray();
+    for (QJsonValue deviceValue : devicesArray) {
+      Device device;
+      if (!device.fromJson(deviceValue)) {
+        return false;
+      }
+
+      if (!device.isDevice(Device::currentDeviceName())) {
+        continue;
+      }
+
+      settingsHolder->setPublicKey(device.publicKey());
+      break;
+    }
+  }
+
   m_privateKey = settingsHolder->privateKey();
+  m_publicKey = settingsHolder->publicKey();
   return true;
 }
 
-void Keys::storeKey(const QString& privateKey) { m_privateKey = privateKey; }
+void Keys::storeKeys(const QString& privateKey, const QString& publicKey) {
+  m_privateKey = privateKey;
+  m_publicKey = publicKey;
+}
 
-void Keys::forgetKey() { m_privateKey.clear(); }
+void Keys::forgetKeys() {
+  m_privateKey.clear();
+  m_publicKey.clear();
+}

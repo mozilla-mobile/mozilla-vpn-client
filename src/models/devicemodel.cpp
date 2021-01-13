@@ -5,6 +5,7 @@
 #include "devicemodel.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QJsonArray>
@@ -21,7 +22,7 @@ DeviceModel::DeviceModel() { MVPN_COUNT_CTOR(DeviceModel); }
 
 DeviceModel::~DeviceModel() { MVPN_COUNT_DTOR(DeviceModel); }
 
-bool DeviceModel::fromJson(const QByteArray& s) {
+bool DeviceModel::fromJson(const Keys* keys, const QByteArray& s) {
   logger.log() << "DeviceModel from json";
 
   if (!s.isEmpty() && m_rawJson == s) {
@@ -29,7 +30,7 @@ bool DeviceModel::fromJson(const QByteArray& s) {
     return true;
   }
 
-  if (!fromJsonInternal(s)) {
+  if (!fromJsonInternal(keys, s)) {
     return false;
   }
 
@@ -37,7 +38,7 @@ bool DeviceModel::fromJson(const QByteArray& s) {
   return true;
 }
 
-bool DeviceModel::fromSettings() {
+bool DeviceModel::fromSettings(const Keys* keys) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -48,7 +49,7 @@ bool DeviceModel::fromSettings() {
   }
 
   const QByteArray& json = settingsHolder->devices();
-  if (!fromJsonInternal(json)) {
+  if (!fromJsonInternal(keys, json)) {
     return false;
   }
 
@@ -58,12 +59,12 @@ bool DeviceModel::fromSettings() {
 
 namespace {
 
-bool sortCallback(const Device& a, const Device& b) {
-  if (a.name() == Device::currentDeviceName()) {
+bool sortCallback(const Device& a, const Device& b, const Keys* keys) {
+  if (a.isCurrentDevice(keys)) {
     return true;
   }
 
-  if (b.name() == Device::currentDeviceName()) {
+  if (b.isCurrentDevice(keys)) {
     return false;
   }
 
@@ -72,7 +73,7 @@ bool sortCallback(const Device& a, const Device& b) {
 
 }  // anonymous namespace
 
-bool DeviceModel::fromJsonInternal(const QByteArray& json) {
+bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
   beginResetModel();
 
   m_rawJson = "";
@@ -103,7 +104,9 @@ bool DeviceModel::fromJsonInternal(const QByteArray& json) {
     m_devices.append(device);
   }
 
-  std::sort(m_devices.begin(), m_devices.end(), sortCallback);
+  std::sort(m_devices.begin(), m_devices.end(),
+            std::bind(sortCallback, std::placeholders::_1,
+                      std::placeholders::_2, keys));
 
   endResetModel();
   emit changed();
@@ -137,8 +140,8 @@ QVariant DeviceModel::data(const QModelIndex& index, int role) const {
       return QVariant(m_devices.at(index.row()).name());
 
     case CurrentOneRole:
-      return QVariant(m_devices.at(index.row()).name() ==
-                      Device::currentDeviceName());
+      return QVariant(m_devices.at(index.row())
+                          .isCurrentDevice(MozillaVPN::instance()->keys()));
 
     case CreatedAtRole:
       return QVariant(m_devices.at(index.row()).createdAt());
@@ -189,6 +192,16 @@ bool DeviceModel::removeRows(int row, int count, const QModelIndex& parent) {
   return true;
 }
 
-const Device* DeviceModel::currentDevice() const {
-  return device(Device::currentDeviceName());
+const Device* DeviceModel::currentDevice(const Keys* keys) const {
+  for (const Device& device : m_devices) {
+    if (device.isCurrentDevice(keys)) {
+      return &device;
+    }
+  }
+
+  return nullptr;
+}
+
+bool DeviceModel::hasCurrentDevice(const Keys* keys) const {
+  return currentDevice(keys) != nullptr;
 }
