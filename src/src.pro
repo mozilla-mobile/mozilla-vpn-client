@@ -319,17 +319,21 @@ else:linux:!android {
     icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
     INSTALLS += icon128x128
 
-    polkit_actions.files = platforms/linux/daemon/org.mozilla.vpn.policy
     polkit_actions.path = $${USRPATH}/share/polkit-1/actions
+    polkit_actions.files = platforms/linux/daemon/org.mozilla.vpn.policy
     INSTALLS += polkit_actions
 
-    dbus_conf.files = platforms/linux/daemon/org.mozilla.vpn.conf
     dbus_conf.path = $${USRPATH}/share/dbus-1/system.d/
+    dbus_conf.files = platforms/linux/daemon/org.mozilla.vpn.conf
     INSTALLS += dbus_conf
 
-    dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
+    dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
     INSTALLS += dbus_service
+
+    wg_helper.path = $${USRPATH}/share/
+    wg_helper.files = platforms/linux/daemon/mozillavpn_wghelper.sh
+    INSTALLS += wg_helper
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
