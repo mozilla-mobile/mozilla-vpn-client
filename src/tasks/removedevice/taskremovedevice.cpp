@@ -14,23 +14,18 @@ namespace {
 Logger logger(LOG_MAIN, "TaskRemoveDevice");
 }
 
-TaskRemoveDevice::TaskRemoveDevice(const QString& deviceName)
-    : Task("TaskRemoveDevice"), m_deviceName(deviceName) {
+TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
+    : Task("TaskRemoveDevice"), m_publicKey(publicKey) {
   MVPN_COUNT_CTOR(TaskRemoveDevice);
 }
 
 TaskRemoveDevice::~TaskRemoveDevice() { MVPN_COUNT_DTOR(TaskRemoveDevice); }
 
 void TaskRemoveDevice::run(MozillaVPN* vpn) {
-  logger.log() << "Removing the device" << m_deviceName;
-
-  const Device* device = vpn->deviceModel()->device(m_deviceName);
-  Q_ASSERT(device);
-
-  QString publicKey = device->publicKey();
+  logger.log() << "Removing the device with public key" << m_publicKey;
 
   NetworkRequest* request =
-      NetworkRequest::createForDeviceRemoval(this, publicKey);
+      NetworkRequest::createForDeviceRemoval(this, m_publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -42,7 +37,7 @@ void TaskRemoveDevice::run(MozillaVPN* vpn) {
   connect(request, &NetworkRequest::requestCompleted,
           [this, vpn](const QByteArray&) {
             logger.log() << "Device removed";
-            vpn->deviceRemoved(m_deviceName);
+            vpn->deviceRemoved(m_publicKey);
             emit completed();
           });
 }

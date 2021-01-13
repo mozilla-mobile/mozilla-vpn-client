@@ -83,7 +83,7 @@ int CommandStatus::run(QStringList& tokens) {
     Q_ASSERT(dm);
     stream << "Active devices: " << dm->activeDevices() << Qt::endl;
 
-    const Device* cd = dm->currentDevice();
+    const Device* cd = dm->currentDevice(vpn.keys());
     if (cd) {
       stream << "Current devices:" << cd->name() << Qt::endl;
     }

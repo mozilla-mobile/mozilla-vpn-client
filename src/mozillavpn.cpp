@@ -199,26 +199,26 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  if (!m_private->m_keys.fromSettings()) {
+    logger.log() << "No keys found";
+    settingsHolder->clear();
+    return;
+  }
+
   if (!m_private->m_serverCountryModel.fromSettings()) {
     logger.log() << "No server list found";
     settingsHolder->clear();
     return;
   }
 
-  if (!m_private->m_deviceModel.fromSettings()) {
+  if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.log() << "No devices found";
     settingsHolder->clear();
     return;
   }
 
-  if (!m_private->m_deviceModel.hasDevice(Device::currentDeviceName())) {
+  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     logger.log() << "The current device has not been found";
-    settingsHolder->clear();
-    return;
-  }
-
-  if (!m_private->m_keys.fromSettings()) {
-    logger.log() << "No keys found";
     settingsHolder->clear();
     return;
   }
@@ -286,8 +286,7 @@ void MozillaVPN::maybeStateMain() {
   }
 #endif
 
-  QString deviceName = Device::currentDeviceName();
-  if (!m_private->m_deviceModel.hasDevice(deviceName)) {
+  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
     setState(StateDeviceLimit);
@@ -441,7 +440,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
     return;
   }
 
-  if (!m_private->m_deviceModel.fromJson(json)) {
+  if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.log() << "Failed to parse the DeviceModel JSON data";
     errorHandle(ErrorHandler::BackendServiceError);
     return;
@@ -467,9 +466,8 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 void MozillaVPN::completeActivation() {
   int deviceCount = m_private->m_deviceModel.activeDevices();
 
-  QString deviceName = Device::currentDeviceName();
-  if (m_private->m_deviceModel.hasDevice(deviceName)) {
-    scheduleTask(new TaskRemoveDevice(deviceName));
+  if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
     --deviceCount;
   }
 
@@ -479,7 +477,7 @@ void MozillaVPN::completeActivation() {
   }
 
   // Here we add the current device.
-  scheduleTask(new TaskAddDevice(deviceName));
+  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
 
   // Let's fetch the account and the servers.
   scheduleTask(new TaskAccountAndServers());
@@ -510,7 +508,8 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   logger.log() << "Device added" << deviceName;
 
   SettingsHolder::instance()->setPrivateKey(privateKey);
-  m_private->m_keys.storeKey(privateKey);
+  SettingsHolder::instance()->setPublicKey(publicKey);
+  m_private->m_keys.storeKeys(privateKey, publicKey);
 }
 
 void MozillaVPN::deviceRemoved(const QString& deviceName) {
@@ -552,8 +551,9 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
   // Let's inform the UI about what is going to happen.
   emit deviceRemoving(deviceName);
 
-  if (m_private->m_deviceModel.hasDevice(deviceName)) {
-    scheduleTask(new TaskRemoveDevice(deviceName));
+  const Device* device = m_private->m_deviceModel.device(deviceName);
+  if (device) {
+    scheduleTask(new TaskRemoveDevice(device->publicKey()));
   }
 
   if (m_state != StateDeviceLimit) {
@@ -561,7 +561,7 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
   }
 
   // Let's recover from the device-limit mode.
-  Q_ASSERT(!m_private->m_deviceModel.hasDevice(Device::currentDeviceName()));
+  Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   // Here we add the current device.
   scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
@@ -596,7 +596,7 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
     return;
   }
 
-  if (!m_private->m_deviceModel.fromJson(json)) {
+  if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.log() << "Failed to parse the DeviceModel JSON data";
     // We don't need to communicate it to the user. Let's ignore it.
     return;
@@ -644,9 +644,8 @@ void MozillaVPN::logout() {
     setState(StateInitialize);
   }
 
-  QString deviceName = Device::currentDeviceName();
-  if (m_private->m_deviceModel.hasDevice(deviceName)) {
-    scheduleTask(new TaskRemoveDevice(deviceName));
+  if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
   }
 
   scheduleTask(new TaskFunction([](MozillaVPN* vpn) { vpn->reset(); }));
@@ -658,7 +657,7 @@ void MozillaVPN::reset() {
   deleteTasks();
 
   SettingsHolder::instance()->clear();
-  m_private->m_keys.forgetKey();
+  m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
   setUserAuthenticated(false);
@@ -951,7 +950,7 @@ bool MozillaVPN::modelsInitialized() const {
     return false;
   }
 
-  if (!m_private->m_deviceModel.hasDevice(Device::currentDeviceName())) {
+  if (!m_private->m_deviceModel.hasCurrentDevice(&m_private->m_keys)) {
     logger.log() << "Current device not registered";
     return false;
   }
