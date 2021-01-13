@@ -45,28 +45,23 @@ Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
 ```
 git submodule init
-git submodule update --remote
+git submodule update
 ```
-
-This may result in submodule updates that need to be checked in
 
 #### Build
 
 To build next to source:
 
 ```
-mkdir build
-qmake PREFIX=$(pwd)/build
+qmake
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
-make install
+sudo make install
 ```
 
-To build in /usr:
+If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
 ```
-qmake PREFIX=/usr
-make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
-sudo make install  # Must use sudo to install in /usr
+qmake USRPATH=/usr ETCPATH=/etc
 ```
 
 #### Run
@@ -77,12 +72,11 @@ If you have built into /usr, simply run
 mozillavpn
 ```
 
-If you have built in `build` directory, open two terminals
+Alternatively, you can use two terminals to run the daemon manually and seperately e.g.
 
 ```
-cd build/bin
-sudo ./mozillavpn linuxdaemon &
-./mozillavpn
+sudo mozillavpn linuxdaemon
+mozillavpn
 ```
 
 mozillavpn linuxdaemon needs privileged access and so if you do not run as root, you will get an authentication prompt every time you try to reconnect the vpn.

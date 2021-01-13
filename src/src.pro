@@ -278,54 +278,57 @@ else:linux:!android {
             platforms/linux/daemon/polkithelper.h \
             wgquickprocess.h
 
-    isEmpty(PREFIX) {
-        PREFIX=/usr
+    isEmpty(USRPATH) {
+        USRPATH=/usr
+    }
+    isEmpty(ETCPATH) {
+        ETCPATH=/etc
     }
 
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
-    target.path = $${PREFIX}/bin
+    target.path = $${USRPATH}/bin
     INSTALLS += target
 
-    desktopFile.path = /usr/share/applications
+    desktopFile.path = $${USRPATH}/share/applications
     desktopFile.files = ../linux/extra/MozillaVPN.desktop
     INSTALLS += desktopFile
 
-    autostartFile.path = /etc/xdg/autostart
+    autostartFile.path = $${ETCPATH}/xdg/autostart
     autostartFile.files = ../linux/extra/MozillaVPN-startup.desktop
     INSTALLS += autostartFile
 
-    icon16x16.path = /usr/share/icons/hicolor/16x16/apps
+    icon16x16.path = $${USRPATH}/share/icons/hicolor/16x16/apps
     icon16x16.files = ../linux/extra/icons/16x16/mozillavpn.png
     INSTALLS += icon16x16
 
-    icon32x32.path = /usr/share/icons/hicolor/32x32/apps
+    icon32x32.path = $${USRPATH}/share/icons/hicolor/32x32/apps
     icon32x32.files = ../linux/extra/icons/32x32/mozillavpn.png
     INSTALLS += icon32x32
 
-    icon48x48.path = /usr/share/icons/hicolor/48x48/apps
+    icon48x48.path = $${USRPATH}/share/icons/hicolor/48x48/apps
     icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
     INSTALLS += icon48x48
 
-    icon64x64.path = /usr/share/icons/hicolor/64x64/apps
+    icon64x64.path = $${USRPATH}/share/icons/hicolor/64x64/apps
     icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
     INSTALLS += icon64x64
 
-    icon128x128.path = /usr/share/icons/hicolor/128x128/apps
+    icon128x128.path = $${USRPATH}/share/icons/hicolor/128x128/apps
     icon128x128.files = ../linux/extra/icons/128x128/mozillavpn.png
     INSTALLS += icon128x128
 
     polkit_actions.files = platforms/linux/daemon/org.mozilla.vpn.policy
-    polkit_actions.path = $${PREFIX}/share/polkit-1/actions
+    polkit_actions.path = $${USRPATH}/share/polkit-1/actions
     INSTALLS += polkit_actions
 
     dbus_conf.files = platforms/linux/daemon/org.mozilla.vpn.conf
-    dbus_conf.path = $${PREFIX}/share/dbus-1/system.d/
+    dbus_conf.path = $${USRPATH}/share/dbus-1/system.d/
     INSTALLS += dbus_conf
 
     dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
-    dbus_service.path = $${PREFIX}/share/dbus-1/system-services
+    dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
     CONFIG += link_pkgconfig
