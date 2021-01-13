@@ -402,5 +402,6 @@
         <file>ui/components/VPNLoader.qml</file>
         <file>ui/components/VPNGreyLink.qml</file>
         <file>ui/components/VPNExpandableAppList.qml</file>
+        <file>platforms/linux/daemon/linux.bash</file>
     </qresource>
 </RCC>

@@ -13,6 +13,7 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFile>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -130,11 +131,68 @@ QString DBusService::getLogs() {
 }
 
 bool DBusService::run(Op op, const Config& config) {
-  return WgQuickProcess::run(
-      op, config.m_privateKey, config.m_deviceIpv4Address,
-      config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
-      config.m_serverIpv6Gateway, config.m_serverPublicKey,
-      config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-      config.m_allowedIPAddressRanges.join(", "), config.m_serverPort,
-      config.m_ipv6Enabled);
+
+  // Make the config file
+
+  QTemporaryDir tmpDir;
+
+  QString confFile = WgQuickProcess::writeWgConfigFile(
+    tmpDir,
+    config.m_privateKey, config.m_deviceIpv4Address,
+    config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
+    config.m_serverIpv6Gateway, config.m_serverPublicKey,
+    config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
+    config.m_allowedIPAddressRanges.join(", "), config.m_serverPort,
+    config.m_ipv6Enabled);
+
+  if (confFile == WgQuickProcess::FAIL) {
+    return false;
+  }
+
+  // Make our copy of the bash script
+
+  // Read in bash file and write to tmp so can execute it.
+  // TODO: This seems cumbersome, but I didn't know a better way to do it
+
+  QFile infile(":/platforms/linux/daemon/linux.bash");
+  if (!infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return false;
+  }
+  QByteArray linuxBash = infile.readAll();
+
+  QDir dir(tmpDir.path());
+  QFile outfile(dir.filePath(QString("linux.bash")));
+  if (!outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    return false;
+  }  
+  logger.log() << "Writing linux bash script to: " << outfile.fileName();
+  outfile.write(linuxBash);
+
+  // Run it
+
+  QStringList arguments;
+  arguments.append(outfile.fileName());
+  arguments.append(op == Daemon::Up ? "up" : "down");
+  arguments.append(confFile);
+
+  logger.log() << "Start our copy of wg-quick script with arguments:" << arguments;
+
+  QProcess p;
+  p.start("/bin/bash", arguments);
+ 
+  if (!p.waitForFinished(-1)) {
+    logger.log() << "Error occurred:" << p.errorString();
+    return false;
+  }
+
+  logger.log() << "Execution finished" << p.exitCode();
+
+  logger.log() << "wg-quick stdout:" << Qt::endl
+               << qUtf8Printable(p.readAllStandardOutput())
+               << Qt::endl;
+  logger.log() << "wg-quick stderr:" << Qt::endl
+               << qUtf8Printable(p.readAllStandardError())
+               << Qt::endl;
+
+  return p.exitCode() == 0;
 }

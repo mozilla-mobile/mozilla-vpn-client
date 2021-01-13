@@ -20,28 +20,19 @@ Logger logger(
   "WgQuickProcess");
 
 QString scriptPath() {
-#if defined(MVPN_LINUX)
-  return "wg-quick";
-#elif defined(MVPN_MACOS_DAEMON)
   QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
   appPath.cd("Resources");
   appPath.cd("utils");
   return appPath.filePath("helper.sh");
-#else
-#  error Unsupported platform
-#endif
-
 }
 
 }  // namespace
 
-
-QString FAIL = "FAIL";
-
+QString const WgQuickProcess::FAIL = "FAIL";
 
 // Write wg conf file
-QString writeWgConfigFile(QTemporaryDir& tmpDir,
+QString WgQuickProcess::writeWgConfigFile(QTemporaryDir& tmpDir,
     const QString& privateKey, const QString& deviceIpv4Address,
     const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
     const QString& serverIpv6Gateway, const QString& serverPublicKey,
@@ -55,7 +46,7 @@ QString writeWgConfigFile(QTemporaryDir& tmpDir,
   //       I'm guessing it's not what I've done.
 
 #define VALIDATE(x) \
-  if (x.contains("\n")) return FAIL;
+  if (x.contains("\n")) return WgQuickProcess::FAIL;
 
   VALIDATE(privateKey);
   VALIDATE(deviceIpv4Address);
@@ -110,7 +101,7 @@ QString writeWgConfigFile(QTemporaryDir& tmpDir,
   if (!tmpDir.isValid()) {
     qWarning("Cannot create a temporary directory");
     //return false;
-    return FAIL;
+    return WgQuickProcess::FAIL;
   }
   QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
@@ -118,7 +109,7 @@ QString writeWgConfigFile(QTemporaryDir& tmpDir,
   if (!file.open(QIODevice::ReadWrite)) {
     qWarning("Unable to create a file in the temporary folder");
     //return false;
-    return FAIL;
+    return WgQuickProcess::FAIL;
   }
 
   qint64 written = file.write(content);
@@ -126,7 +117,7 @@ QString writeWgConfigFile(QTemporaryDir& tmpDir,
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
     //return false;
-    return FAIL;
+    return WgQuickProcess::FAIL;
   }
 
   file.close();
