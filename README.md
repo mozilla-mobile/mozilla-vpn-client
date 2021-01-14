@@ -2,9 +2,13 @@
 
 See: https://vpn.mozilla.org
 
-## Dependencies
+## Dev instructions
 
-MozillaVPN requires Qt5 (5.15 or higher)
+After checking out the code:
+
+* Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
+* Build the source (See below)
+* Run the tests `./scripts/test_coverage.sh` or `./scripts/test_function.sh`
 
 ## How to build from the source code
 
