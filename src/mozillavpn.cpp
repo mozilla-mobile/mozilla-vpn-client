@@ -466,8 +466,11 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 void MozillaVPN::completeActivation() {
   int deviceCount = m_private->m_deviceModel.activeDevices();
 
-  if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
+  // If we already have a device with the same name, let's remove it.
+  const Device* currentDevice =
+      m_private->m_deviceModel.device(Device::currentDeviceName());
+  if (currentDevice) {
+    scheduleTask(new TaskRemoveDevice(currentDevice->publicKey()));
     --deviceCount;
   }
 
