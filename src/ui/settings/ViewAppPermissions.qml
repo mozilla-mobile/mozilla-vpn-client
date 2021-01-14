@@ -65,6 +65,7 @@ VPNFlickable {
         anchors.left: enableAppList.left
         anchors.leftMargin: 15
         anchors.topMargin: 15
+        width: parent.width - anchors.leftMargin - anchors.rightMargin
         visible: !VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
         Rectangle {
             color: "transparent"
