@@ -74,10 +74,18 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                         val obj = JSONObject(it)
                         reason = obj.getInt("reason")
                     }
-                    if(reason != 0){
+                    if(reason == 1){
                         // In case the activation is for switching purposes
                         // We never turned the vpn off so far.
+                        Log.v(tag,"Turning VPN Off to Switch to another server")
                         this.mService.turnOff();
+                    } else if(reason == 2){
+                        // In case this is for confirmation - check the tunnel and reconnect if down
+                        if(mService.state == Tunnel.State.UP){
+                            // In case we're connected we're done here.
+                            dispatchEvent(EVENTS.connected, "")
+                            return true;
+                        }
                     }
 
                     if(!mService.checkPermissions()){
