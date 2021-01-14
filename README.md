@@ -206,3 +206,9 @@ There is also a script to compile the application: `scripts\windows_compile.bat`
 ## Bug report
 
 Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
+
+## Status
+
+![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Unit%20Test%20Coverage/badge.svg)
+![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Linters%20(clang,%20l10n)/badge.svg)
+![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Android/badge.svg)
