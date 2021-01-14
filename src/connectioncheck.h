@@ -30,11 +30,14 @@ class ConnectionCheck final : public QObject {
 
  private:
   void timeout();
+  void maybeTryAgain();
 
  private:
   QTimer m_timer;
 
   NetworkRequest* m_networkRequest = nullptr;
+
+  uint32_t m_step = 0;
 };
 
 #endif  // CONNECTIONCHECK_H
