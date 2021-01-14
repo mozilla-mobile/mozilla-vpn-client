@@ -64,6 +64,6 @@ void PingSender::pingFailed() {
 }
 
 void PingSender::pingSucceeded() {
-  logger.log() << "PingSender - Ping Succeded";
+  logger.log() << "PingSender - Ping Succeeded";
   emit completed(this, m_time.elapsed());
 }

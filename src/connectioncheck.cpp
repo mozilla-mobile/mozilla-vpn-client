@@ -42,7 +42,7 @@ void ConnectionCheck::start() {
 
   connect(m_networkRequest, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Connection succeded. Data:" << data;
+            logger.log() << "Connection succeeded. Data:" << data;
             m_networkRequest = nullptr;
             m_timer.stop();
             emit success();
