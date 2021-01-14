@@ -13,6 +13,7 @@ JOBS=8
 QTPATH=
 RELEASE=1
 PROD=
+export SPLITAPK=0
 
 helpFunction() {
   print G "Usage:"
@@ -180,12 +181,11 @@ print N "Your debug .APK is Located in .tmp/src/android-build/mozillavpn.apk"
 # also compile the java/kotlin code in release mode
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
+  export SPLITAPK=1
   cd android-build
   ./gradlew compileReleaseSources
   ./gradlew assemble
-  ./gradlew bundleRelease
 
   print G "Done 🎉"
-  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-release-unsigned.apk"
-  print G "Your Release AAB is under .tmp/src/android-build/build/outputs/bundle/release/android-build-release.aab"
+  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-universal-release-unsigned.apk"
 fi
