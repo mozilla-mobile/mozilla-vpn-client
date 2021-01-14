@@ -7,28 +7,36 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../themes/themes.js" as Theme
 
-RowLayout {
-    property var setting
+VPNClickableRow {
+    property var settingTitle
     property var imageLeftSrc
     property var imageRightSrc
+    accessibleName: settingTitle
 
-    anchors.fill: parent
-    anchors.leftMargin: 8
-    anchors.rightMargin: 8
+    anchors.left: undefined
+    anchors.right: undefined
+    Layout.fillWidth: true
+    Layout.preferredHeight: Theme.rowHeight
 
-    VPNIconAndLabel {
-        icon: imageLeftSrc
-        title: setting
+    RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
+
+        VPNIconAndLabel {
+            icon: imageLeftSrc
+            title: settingTitle
+        }
+
+        Item {
+            Layout.fillWidth: true
+        }
+
+        VPNIcon {
+            id: imageRight
+
+            source: imageRightSrc
+        }
+
     }
-
-    Item {
-        Layout.fillWidth: true
-    }
-
-    VPNIcon {
-        id: imageRight
-
-        source: imageRightSrc
-    }
-
 }
