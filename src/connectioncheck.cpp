@@ -7,7 +7,19 @@
 #include "logger.h"
 #include "networkrequest.h"
 
-constexpr const uint32_t CONNECTION_CHECK_TIMEOUT_MSEC = 10000;
+struct Step {
+  uint32_t m_msec;
+};
+
+// We try with 3 requests with different timeout intervals. Each value here is
+// in msecs.
+Step s_steps[] = {
+    {2000},
+    {3000},
+    {5000},
+    // Sentinel
+    {0},
+};
 
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionCheck");
@@ -37,7 +49,7 @@ void ConnectionCheck::start() {
             logger.log() << "Failed to check the connection" << error;
             m_networkRequest = nullptr;
             m_timer.stop();
-            emit failure();
+            maybeTryAgain();
           });
 
   connect(m_networkRequest, &NetworkRequest::requestCompleted,
@@ -48,7 +60,7 @@ void ConnectionCheck::start() {
             emit success();
           });
 
-  m_timer.start(CONNECTION_CHECK_TIMEOUT_MSEC);
+  m_timer.start(s_steps[m_step].m_msec);
 }
 
 void ConnectionCheck::stop() {
@@ -70,4 +82,18 @@ void ConnectionCheck::timeout() {
   m_networkRequest = nullptr;
 
   emit failure();
+}
+
+void ConnectionCheck::maybeTryAgain() {
+  logger.log() << "Current retry is:" << m_step;
+  ++m_step;
+
+  if (s_steps[m_step].m_msec == 0) {
+    logger.log() << "No extra try. Let's fail.";
+    emit failure();
+    return;
+  }
+
+  logger.log() << "Let's try again with" << s_steps[m_step].m_msec << "msecs";
+  start();
 }
