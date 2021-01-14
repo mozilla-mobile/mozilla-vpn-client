@@ -9,7 +9,7 @@ import "../themes/themes.js" as Theme
 ListView {
     id: list
 
-    required property var listName
+    property var listName
 
     Accessible.role: Accessible.List
     Accessible.name: listName
