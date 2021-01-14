@@ -57,7 +57,7 @@ git submodule update
 To build next to source:
 
 ```
-qmake
+qmake CONFIG+=production
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
@@ -65,7 +65,7 @@ sudo make install
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
 ```
-qmake USRPATH=/usr ETCPATH=/etc
+qmake USRPATH=/usr ETCPATH=/etc CONFIG+=production
 ```
 
 #### Run
