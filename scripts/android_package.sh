@@ -117,10 +117,10 @@ print Y "Importing translation files..."
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Computing the version... "
-SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
+export VERSIONCODE=$(echo $SHORTVERSION| tr -d .)"0"
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
-print G "$SHORTVERSION - $FULLVERSION"
-
+print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
 
 cd .tmp/
@@ -151,7 +151,6 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug_and_release \
     CONFIG+=release \
     $PRODMODE \
-    ANDROID_ABIS="armeabi-v7a x86 arm64-v8a" \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
@@ -162,7 +161,6 @@ else
     CONFIG-=release \
     CONFIG+=qml_debug \
     $PRODMODE \
-    ANDROID_ABIS="armeabi-v7a" \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 
