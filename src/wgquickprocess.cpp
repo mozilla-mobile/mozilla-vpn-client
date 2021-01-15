@@ -111,22 +111,19 @@ QString WgQuickProcess::writeWgConfigFile(
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
-  if (!tmpDir.isValid()) {
-    qWarning("Cannot create a temporary directory");
-  }
   QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
 
   if (!file.open(QIODevice::ReadWrite)) {
     qWarning("Unable to create a file in the temporary folder");
-    return "";
+    return QString();
   }
 
   qint64 written = file.write(content);
 
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
-    return "";
+    return QString();
   }
 
   return file.fileName();
@@ -148,11 +145,14 @@ bool WgQuickProcess::run(
   }
 
   QTemporaryDir tmpDir;
+  if (!tmpDir.isValid()) {
+    qWarning("Cannot create a temporary directory");
+    return false;
+  }
   QString confFile = writeWgConfigFile(
       tmpDir, privateKey, deviceIpv4Address, deviceIpv6Address,
       serverIpv4Gateway, serverIpv6Gateway, serverPublicKey, serverIpv4AddrIn,
       serverIpv6AddrIn, allowedIPAddressRanges, serverPort, ipv6Enabled);
-
   if (confFile.isEmpty()) {
     return false;
   }
