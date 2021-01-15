@@ -4,7 +4,7 @@
 # Copyright (C) 2015-2020 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 #
 
-echo "Running forked copy of wg-quick script."
+echo "Running mozillavpn forked copy of wg-quick script."
 
 set -e -o pipefail
 shopt -s extglob

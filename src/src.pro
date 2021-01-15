@@ -331,8 +331,8 @@ else:linux:!android {
     dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
     INSTALLS += dbus_service
 
-    wg_helper.path = $${USRPATH}/share/
-    wg_helper.files = platforms/linux/daemon/mozillavpn_wghelper.sh
+    wg_helper.path = $${USRPATH}/share/mozillavpn
+    wg_helper.files = platforms/linux/daemon/wghelper.sh
     INSTALLS += wg_helper
 
     CONFIG += link_pkgconfig

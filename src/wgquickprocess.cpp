@@ -24,7 +24,8 @@ QString scriptPath() {
 #if defined(MVPN_LINUX)
   appPath.cdUp();
   appPath.cd("share");
-  return appPath.filePath("mozillavpn_wghelper.sh");
+  appPath.cd("mozillavpn");
+  return appPath.filePath("wghelper.sh");
   ;
 #elif defined(MVPN_MACOS_DAEMON)
   appPath.cdUp();
