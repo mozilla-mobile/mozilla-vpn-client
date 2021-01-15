@@ -46,6 +46,7 @@ CheckBox {
     // TODO
     // Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
+    Accessible.onToggleAction: clicked()
     Accessible.focusable: true
     states: [
         State {
