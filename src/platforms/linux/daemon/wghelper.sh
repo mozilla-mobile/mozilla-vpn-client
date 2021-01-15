@@ -16,7 +16,6 @@ export PATH="${SELF%/*}:$PATH"
 WG_CONFIG=""
 INTERFACE=""
 ADDRESSES=( )
-MTU=""
 DNS=( )
 DNS_SEARCH=( )
 TABLE=""
@@ -53,7 +52,6 @@ parse_options() {
 		if [[ $interface_section -eq 1 ]]; then
 			case "$key" in
 			Address) ADDRESSES+=( ${value//,/ } ); continue ;;
-			MTU) MTU="$value"; continue ;;
 			DNS) for v in ${value//,/ }; do
 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
 			done; continue ;;
@@ -103,22 +101,8 @@ add_addr() {
 }
 
 set_mtu_up() {
-	local mtu=0 endpoint output
-	if [[ -n $MTU ]]; then
-		cmd ip link set mtu "$MTU" up dev "$INTERFACE"
-		return
-	fi
-	while read -r _ endpoint; do
-		[[ $endpoint =~ ^\[?([a-z0-9:.]+)\]?:[0-9]+$ ]] || continue
-		output="$(ip route get "${BASH_REMATCH[1]}" || true)"
-		[[ ( $output =~ mtu\ ([0-9]+) || ( $output =~ dev\ ([^ ]+) && $(ip link show dev "${BASH_REMATCH[1]}") =~ mtu\ ([0-9]+) ) ) && ${BASH_REMATCH[1]} -gt $mtu ]] && mtu="${BASH_REMATCH[1]}"
-	done < <(wg show "$INTERFACE" endpoints)
-	if [[ $mtu -eq 0 ]]; then
-		read -r output < <(ip route show default || true) || true
-		[[ ( $output =~ mtu\ ([0-9]+) || ( $output =~ dev\ ([^ ]+) && $(ip link show dev "${BASH_REMATCH[1]}") =~ mtu\ ([0-9]+) ) ) && ${BASH_REMATCH[1]} -gt $mtu ]] && mtu="${BASH_REMATCH[1]}"
-	fi
-	[[ $mtu -gt 0 ]] || mtu=1500
-	cmd ip link set mtu $(( mtu - 80 )) up dev "$INTERFACE"
+	# Using default MTU of 1420
+	cmd ip link set mtu 1420 up dev "$INTERFACE"
 }
 
 resolvconf_iface_prefix() {
@@ -244,7 +228,6 @@ cmd_usage() {
 	  - Address: may be specified one or more times and contains one or more
 	    IP addresses (with an optional CIDR mask) to be set for the interface.
 	  - DNS: an optional DNS server to use while the device is up.
-	  - MTU: an optional MTU for the interface; if unspecified, auto-calculated.
 	  - Table: an optional routing table to which routes will be added; if
 	    unspecified or \`auto', the default table is used. If \`off', no routes
 	    are added.
