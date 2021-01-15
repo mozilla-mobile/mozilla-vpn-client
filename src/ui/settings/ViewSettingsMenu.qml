@@ -14,6 +14,8 @@ VPNFlickable {
 
     width: window.width
     flickContentHeight: settingsList.y + (settingsList.count * 56) + signOutLink.height + signOutLink.anchors.bottomMargin
+    hideScollBarOnStackTransition: true
+
     ListModel {
         id: settingsMenuListModel
 
