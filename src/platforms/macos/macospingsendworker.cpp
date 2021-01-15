@@ -125,8 +125,6 @@ void MacOSPingSendWorker::sendPing(const QString& destination) {
           int socket
 #endif
           ) {
-            Q_UNUSED(type);
-
             struct msghdr msg;
             bzero(&msg, sizeof(msg));
 
