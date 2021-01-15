@@ -8,6 +8,7 @@
 #include "daemon.h"
 
 #include <QObject>
+class QTemporaryDir;
 
 constexpr const char* WG_INTERFACE = "moz0";
 
