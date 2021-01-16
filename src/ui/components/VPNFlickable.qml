@@ -12,6 +12,7 @@ Flickable {
 
     property var flickContentHeight
     property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight)
+    property bool hideScollBarOnStackTransition: false
 
     function ensureVisible(item) {
         if (windowHeightExceedsContentHeight) {
@@ -49,6 +50,12 @@ Flickable {
     ScrollBar.vertical: ScrollBar {
         policy: windowHeightExceedsContentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
         Accessible.ignored: true
+        opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
+            }
+        }
     }
 
 }
