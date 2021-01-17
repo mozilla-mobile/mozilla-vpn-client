@@ -11,7 +11,6 @@ PPA=mozbaku/mozillavpn-focal
 VERSION=1
 RELEASE=focal
 STAGE=
-QT=515
 
 if [ -f .env ]; then
   . .env
@@ -19,7 +18,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-r|--release <release>] [-v|--version <id>] [-s|--stage] [-ns|--no-sign] [-o|--orig <origURL>] [--qt <515 or 514>]"
+  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-r|--release <release>] [-v|--version <id>] [-s|--stage] [-ns|--no-sign] [-o|--orig <origURL>]"
   print N ""
   print N "By default, the ppa is: mozbaku/mozillavpn"
   print N "By default, the release is 'focal'"
@@ -62,11 +61,6 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  --qt)
-    QT="$2"
-    shift
-    shift
-    ;;
   -o | --orig)
     ORIGURL="$2"
     EXTRA_DEBUILD_OPTS="$EXTRA_DEBUILD_OPTS -sd"
@@ -87,7 +81,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[ "$QT" != "515" ] && [ "$QT" != "514" ] && die "We support QT 515 and 514 only"
+[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "groovy" ] && [ "$RELEASE" != "bionic" ] && die "We support RELEASE focal, groovy and bionic only"
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
@@ -140,19 +134,19 @@ fi
 print Y "Configuring the debian package for $RELEASE..."
 cp -r ../../linux/debian .  || die "Failed"
 
-mv debian/control.qt$QT debian/control || die "Failed"
+mv debian/control.$RELEASE debian/control || die "Failed"
 
 if [[ "$STAGE" ]]; then
   print Y "Staging env configured"
-  mv debian/rules.stage.qt$QT debian/rules || die "Failed"
+  mv debian/rules.stage.$RELEASE debian/rules || die "Failed"
 else
   print Y "Production env configured"
-  mv debian/rules.prod.qt$QT debian/rules || die "Failed"
+  mv debian/rules.prod.$RELEASE debian/rules || die "Failed"
 fi
 
-rm debian/control.qt* || die "Failed"
-rm debian/rules.stage.qt* || die "Failed"
-rm debian/rules.prod.qt* || die "Failed"
+rm debian/control.* || die "Failed"
+rm debian/rules.stage* || die "Failed"
+rm debian/rules.prod* || die "Failed"
 
 mv debian/changelog.template debian/changelog || die "Failed"
 sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" debian/changelog || die "Failed"
