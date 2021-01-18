@@ -44,7 +44,12 @@ error() {
 }
 
 die() {
-  error "$1"
+  if [[ "$1" ]]; then
+    error "$1"
+  else
+    error Failed
+  fi
+
   exit 1
 }
 
