@@ -127,7 +127,7 @@ else
   print G "done."
 
   printn Y "Archiving the source code... "
-  tar cvfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
+  tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
   print G "done."
 fi
 
