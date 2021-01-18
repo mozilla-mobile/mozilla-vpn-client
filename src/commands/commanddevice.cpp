@@ -24,8 +24,8 @@ int CommandDevice::run(QStringList& tokens) {
       QTextStream stream(stdout);
       stream << "usage: " << tokens[0] << " <device_id>" << Qt::endl;
       stream << Qt::endl;
-      stream << "The list of <device_id> can be obtained using: '" << tokens[0]
-             << " status'" << Qt::endl;
+      stream << "The list of <device_id> can be obtained using: 'status'"
+             << Qt::endl;
       return 1;
     }
 
@@ -50,7 +50,7 @@ int CommandDevice::run(QStringList& tokens) {
     Q_ASSERT(dm);
 
     const QList<Device>& devices = dm->devices();
-    if (id == 0 || id >= devices.length()) {
+    if (id == 0 || id > devices.length()) {
       QTextStream stream(stdout);
       stream << tokens[1] << " is not a valid ID." << Qt::endl;
       return 1;
