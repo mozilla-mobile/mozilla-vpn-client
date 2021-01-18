@@ -35,7 +35,10 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
   logger.log() << "Network request created";
 
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
-  m_request.setTransferTimeout(REQUEST_TIMEOUT_MSEC);
+  m_timer.setSingleShot(true);
+
+  connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
+  connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
@@ -271,6 +274,13 @@ void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
 
+  if (m_timeout) {
+    Q_ASSERT(!m_timer.isActive());
+    return;
+  }
+
+  m_timer.stop();
+
   int status = statusCode();
 
   logger.log() << "Network reply received - status:" << status
@@ -295,22 +305,36 @@ void NetworkRequest::replyFinished() {
   emit requestCompleted(data);
 }
 
+void NetworkRequest::timeout() {
+  Q_ASSERT(m_reply);
+  Q_ASSERT(!m_reply->isFinished());
+
+  m_timeout = true;
+  m_reply->abort();
+
+  logger.log() << "Network request timeout";
+  emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
+}
+
 void NetworkRequest::getRequest() {
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->get(m_request));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::deleteRequest() {
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->sendCustomRequest(m_request, "DELETE"));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::postRequest(const QByteArray& body) {
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->post(m_request, body));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::handleReply(QNetworkReply* reply) {
