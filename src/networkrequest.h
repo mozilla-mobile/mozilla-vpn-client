@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
+#include <QTimer>
 
 class QNetworkAccessManager;
 
@@ -66,6 +67,7 @@ class NetworkRequest final : public QObject {
 
  private slots:
   void replyFinished();
+  void timeout();
 
  signals:
   void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
@@ -73,8 +75,11 @@ class NetworkRequest final : public QObject {
 
  private:
   QNetworkRequest m_request;
+  QTimer m_timer;
+
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
+  bool m_timeout = false;
 };
 
 #endif  // NETWORKREQUEST_H
