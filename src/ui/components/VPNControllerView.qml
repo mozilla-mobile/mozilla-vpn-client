@@ -499,6 +499,7 @@ Rectangle {
 
     VPNAnimatedRings {
         id: animatedRingsWrapper
+        isCurrentyVisible: stackview.depth === 1
     }
 
     VPNMainImage {
