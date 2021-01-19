@@ -119,7 +119,7 @@ python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || d
 
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
-export VERSIONCODE=$(echo $SHORTVERSION| tr -d .)"0"
+export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
