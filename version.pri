@@ -5,6 +5,6 @@
 # Please make sure to only use single digets for the sub-versions The numbers
 # are concatenated for the android version code so e.g 2.0.2 becomes version
 # Code 2020
-!defined(VERSION, var):VERSION = 2.0.2
+!defined(VERSION, var):VERSION = 2.0.3
 
 DBUS_PROTOCOL_VERSION = 1
