@@ -15,6 +15,29 @@ Rectangle {
 
     property var yCenter: logo.y + 40 - 1
     property bool startAnimation: false
+    property bool isCurrentyVisible: true
+    property bool canRender:true
+
+    property var animationPuffer: 0
+    onIsCurrentyVisibleChanged: {
+        // In case we got Visible, start a delay-timer
+        // so that we switch canRender to true after 300ms.
+        // - Otherwise this animation will require Draw-Cycles
+        // that might be needed for the pan-navigation-animation.
+        if(isCurrentyVisible){
+            canRenderTimer.start();
+            return;
+        }
+        canRender=false;
+    }
+
+    Timer {
+        interval: 300
+        id: canRenderTimer
+        running: false
+        repeat: false
+        onTriggered: { canRender = true;}
+    }
 
     onStartAnimationChanged: animatedRings.requestPaint()
     anchors.fill: box
@@ -84,6 +107,9 @@ Rectangle {
         }
 
         function animateRings() {
+            if(!canRender){
+                return;
+            }
             updateRing1();
             if (drawingRing2)
                 updateRing2();
@@ -127,6 +153,10 @@ Rectangle {
         renderStrategy: Canvas.Threaded
         contextType: "2d"
         onPaint: {
+            // Dont paint if not needed
+            if(!canRender){
+                return
+            }
             let ctx = getContext("2d");
             ctx.reset();
             if (!animatedRingsWrapper.startAnimation) {
