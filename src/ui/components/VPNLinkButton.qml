@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import "../themes/themes.js" as Theme
 
 VPNButtonBase {
     id: root
 
-    required property var labelText
+    property var labelText
     property variant fontName: Theme.fontInterFamily
     property var baseColor: Theme.linkButton
     property var linkColor: Theme.blueButton

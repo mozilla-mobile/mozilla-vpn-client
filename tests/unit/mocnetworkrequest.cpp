@@ -89,3 +89,5 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
 #endif
 
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
+
+void NetworkRequest::timeout() {}

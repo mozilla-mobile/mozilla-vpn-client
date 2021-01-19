@@ -1,0 +1,171 @@
+name: MacOS
+
+on:
+  push:
+    branches:
+     - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  macos-staging:
+    runs-on: macos-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/bakulf/qt_static_macos
+          cd qt_static_macos
+          cat x* > qt_static.tar.gz
+          tar xf qt_static.tar.gz
+          cd ..
+
+      - name: Retrieving wireguard-go version
+        shell: bash
+        run: |
+          (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          python3 scripts/importLanguages.py
+
+      - name: Configuring the build
+        shell: bash
+        run: |
+          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+
+          SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+          FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+          echo "$SHORTVERSION - $FULLVERSION"
+
+          echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
+          echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
+          echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
+          echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
+          echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
+          echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
+          echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
+          echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+
+          qmake \
+            QTPLUGINS+=qsvg \
+            CONFIG-=static \
+            CONFIG+=release \
+            CONFIG-=debug \
+            CONFIG-=debug_and_release \
+            VERSION=$SHORTVERSION \
+            -spec macx-xcode \
+            MVPN_MACOS=1 \
+            src/src.pro
+
+          ruby scripts/xcode_patcher.rb \
+            "MozillaVPN.xcodeproj" \
+            "$SHORTVERSION" \
+            "$FULLVERSION" \
+            macos
+
+      - name: Compiling
+        shell: bash
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+
+      - name: Upload app
+        uses: actions/upload-artifact@v1
+        with:
+            name: staging
+            path: "/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla VPN.app"
+
+  macos-production:
+    runs-on: macos-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/bakulf/qt_static_macos
+          cd qt_static_macos
+          cat x* > qt_static.tar.gz
+          tar xf qt_static.tar.gz
+          cd ..
+
+      - name: Retrieving wireguard-go version
+        shell: bash
+        run: |
+          (cd macos/gobridge && go list -m golang.zx2c4.com/wireguard | sed -n 's/.*v\([0-9.]*\).*/#define WIREGUARD_GO_VERSION "\1"/p') > macos/gobridge/wireguard-go-version.h
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          python3 scripts/importLanguages.py -p
+
+      - name: Configuring the build
+        shell: bash
+        run: |
+          export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+
+          SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+          FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+          echo "$SHORTVERSION - $FULLVERSION"
+
+          echo "DEVELOPMENT_TEAM = 43AQ936H96" >> xcode.xconfig
+          echo "GROUP_ID_MACOS = group.org.mozilla.macos.Guardian" >> xcode.xconfig
+          echo "APP_ID_MACOS = org.mozilla.macos.FirefoxVPN" >> xcode.xconfig
+          echo "NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension" >> xcode.xconfig
+          echo "LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login" >> xcode.xconfig
+          echo "GROUP_ID_IOS = group.org.mozilla.ios.Guardian" >> xcode.xconfig
+          echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
+          echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
+
+          qmake \
+            QTPLUGINS+=qsvg \
+            CONFIG-=static \
+            CONFIG+=release \
+            CONFIG-=debug \
+            CONFIG-=debug_and_release \
+            CONFIG+=production \
+            VERSION=$SHORTVERSION \
+            -spec macx-xcode \
+            MVPN_MACOS=1 \
+            src/src.pro
+
+          ruby scripts/xcode_patcher.rb \
+            "MozillaVPN.xcodeproj" \
+            "$SHORTVERSION" \
+            "$FULLVERSION" \
+            macos
+
+      - name: Compiling
+        shell: bash
+        run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
+
+      - name: Upload app
+        uses: actions/upload-artifact@v1
+        with:
+            name: production
+            path: "/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla VPN.app"
