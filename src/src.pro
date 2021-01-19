@@ -237,7 +237,6 @@ else:linux:!android {
 
     TARGET = mozillavpn
     QT += networkauth
-    QT += svg
     QT += dbus
 
     DEFINES += MVPN_LINUX
