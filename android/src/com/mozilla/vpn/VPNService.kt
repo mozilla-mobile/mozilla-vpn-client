@@ -25,9 +25,9 @@ import com.wireguard.android.backend.GoBackend
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
-    private var mBinder: VPNServiceBinder? = null
+    private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
     private val mBackend = GoBackend(this);
-    private val mTunnel = VPNTunnel("mvpn1");
+    private val mTunnel = VPNTunnel("mvpn1", mBinder);
     private var mConfig:Config? = null;
 
     /**
@@ -35,10 +35,6 @@ class VPNService : android.net.VpnService() {
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
-        if (mBinder == null) {
-            mBinder = VPNServiceBinder(this)
-            this.startService(Intent(this, GoBackend.VpnService::class.java))
-        }
         Log.v(tag, "Got Bind request")
         return mBinder
     }
@@ -50,11 +46,6 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (mBinder == null) {
-            mBinder = VPNServiceBinder(this)
-            this.startService(Intent(this, GoBackend.VpnService::class.java))
-        }
-
         intent?.let {
             if (intent.getBooleanExtra("startOnBoot", false)) {
                 Log.v(tag, "Starting VPN because 'start on boot is enabled'")
@@ -72,17 +63,9 @@ class VPNService : android.net.VpnService() {
                 Log.e(tag, "VPN service was triggered without defining a Server or having a tunnel")
                 return Service.START_NOT_STICKY
             }
-            this.mConfig = mBinder?.buildConfigFromJSON(lastConfString)
+            this.mConfig = mBinder.buildConfigFromJSON(lastConfString)
         }
-        val connected = turnOn(this.mConfig)
-        // Try to send a status update to QT
-        mBinder?.let { 
-            if(connected){
-                it.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
-            }else{
-                it.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
-            }
-        }
+        turnOn(this.mConfig)
         return Service.START_NOT_STICKY
     }
 
@@ -101,8 +84,6 @@ class VPNService : android.net.VpnService() {
         get(){
             return mBackend.getState(this.mTunnel);
         }
-
-
 
     /*
     * Checks if the VPN Permission is given. 
@@ -123,10 +104,9 @@ class VPNService : android.net.VpnService() {
         return false;
     }
 
-    fun turnOn(newConf:Config?): Boolean {
+    fun turnOn(newConf:Config?) {
         if(newConf == null && mConfig == null){
             Log.e(tag, "Tried to start VPN with null config - abort");
-            return false;
         }
         if(newConf != null){
             mConfig = newConf;
@@ -134,13 +114,11 @@ class VPNService : android.net.VpnService() {
 
         // Upgrade us into a Foreground Service, by showing a Notification
         NotificationUtil.show(this);
-        var tunnelState = Tunnel.State.DOWN
-        try {
-            tunnelState = mBackend.setState(mTunnel, Tunnel.State.UP, mConfig);
-        } catch (e: Exception){
-            e.message?.let { Log.e(tag, it) }
-        }
-        return tunnelState == Tunnel.State.UP;
+        // wgBackend will "DOWN" the tunnel before connecting,
+        // we don't need the onchange event to be passed to the controller.
+        // so set the current expected state to be down.
+        mTunnel.mState = Tunnel.State.DOWN;
+        mBackend.setState(mTunnel, Tunnel.State.UP, mConfig);
     }
 
     fun turnOff() {
