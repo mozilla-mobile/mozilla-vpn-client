@@ -5,21 +5,17 @@
 package com.mozilla.vpn
 
 import com.wireguard.android.backend.Tunnel
-import org.mozilla.firefox.vpn.VPNService
+
 class VPNTunnel: Tunnel{
     val mName:String;
-    val mService:VPNService;
-
-    constructor(name:String, s: VPNService ){
+    constructor(name:String){
         this.mName = name;
-        this.mService =s;
     }
 
     override fun getName(): String {
         return mName;
     }
     override fun onStateChange(newState: Tunnel.State) {
-        mService.onTunnelStateChange(newState);
         return;
     }
 }

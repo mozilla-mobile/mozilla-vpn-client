@@ -27,7 +27,7 @@ class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder? = null
     private val mBackend = GoBackend(this);
-    private val mTunnel = VPNTunnel("mvpn1", this);
+    private val mTunnel = VPNTunnel("mvpn1");
     private var mConfig:Config? = null;
 
     /**
@@ -102,15 +102,6 @@ class VPNService : android.net.VpnService() {
             return mBackend.getState(this.mTunnel);
         }
 
-    fun onTunnelStateChange(s : Tunnel.State){
-        mBinder?.let { 
-            if(s == Tunnel.State.UP){
-                it.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
-            }else{
-                it.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
-            }
-        }
-    }
 
 
     /*
