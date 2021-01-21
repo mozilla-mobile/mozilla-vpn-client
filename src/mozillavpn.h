@@ -66,6 +66,7 @@ class MozillaVPN final : public QObject {
     LinkAccount,
     LinkContact,
     LinkFeedback,
+    LinkLicense,
     LinkHelpSupport,
     LinkTermsOfService,
     LinkPrivacyNotice,
