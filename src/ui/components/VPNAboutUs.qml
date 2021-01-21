@@ -27,6 +27,11 @@ Item {
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice")
             openUrl: VPN.LinkPrivacyNotice
         }
+        ListElement {
+            //% "License"
+            linkTitle: qsTrId("vpn.aboutUs.license")
+            openUrl: VPN.LinkLicense
+        }
 
     }
 

@@ -347,6 +347,10 @@ void MozillaVPN::openLink(LinkType linkType) {
       url = Constants::API_URL;
       url.append("/r/vpn/support");
       break;
+    
+    case LinkLicense:
+      url = "https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/README.md";
+      break;
 
     case LinkTermsOfService:
       url = Constants::API_URL;
