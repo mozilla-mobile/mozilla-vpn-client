@@ -8,17 +8,21 @@
 #include "networkrequest.h"
 
 struct Step {
+  bool m_wait;
   uint32_t m_msec;
 };
 
 // We try with 3 requests with different timeout intervals. Each value here is
 // in msecs.
 Step s_steps[] = {
-    {2000},
-    {3000},
-    {5000},
+    {true, 500},
+    {false, 2000},
+    {true, 1000},
+    {false, 3000},
+    {true, 2000},
+    {false, 5000},
     // Sentinel
-    {0},
+    {true, 0},
 };
 
 namespace {
@@ -37,28 +41,37 @@ ConnectionCheck::~ConnectionCheck() { MVPN_COUNT_DTOR(ConnectionCheck); }
 
 void ConnectionCheck::start() {
   logger.log() << "Starting a connection check";
+  m_step = 0;
+  startInternal();
+}
+
+void ConnectionCheck::startInternal() {
+  logger.log() << "Starting a connection check - step:" << m_step;
 
   if (m_networkRequest) {
     delete m_networkRequest;
+    m_networkRequest = nullptr;
   }
 
-  m_networkRequest = NetworkRequest::createForConnectionCheck(this);
+  if (!s_steps[m_step].m_wait) {
+    m_networkRequest = NetworkRequest::createForConnectionCheck(this);
 
-  connect(m_networkRequest, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Failed to check the connection" << error;
-            m_networkRequest = nullptr;
-            m_timer.stop();
-            maybeTryAgain();
-          });
+    connect(m_networkRequest, &NetworkRequest::requestFailed,
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
+              logger.log() << "Failed to check the connection" << error;
+              m_networkRequest = nullptr;
+              m_timer.stop();
+              maybeTryAgain();
+            });
 
-  connect(m_networkRequest, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
-            logger.log() << "Connection succeeded. Data:" << data;
-            m_networkRequest = nullptr;
-            m_timer.stop();
-            emit success();
-          });
+    connect(m_networkRequest, &NetworkRequest::requestCompleted,
+            [this](const QByteArray& data) {
+              logger.log() << "Connection succeeded. Data:" << data;
+              m_networkRequest = nullptr;
+              m_timer.stop();
+              emit success();
+            });
+  }
 
   m_timer.start(s_steps[m_step].m_msec);
 }
@@ -77,11 +90,12 @@ void ConnectionCheck::stop() {
 void ConnectionCheck::timeout() {
   logger.log() << "Request timeout";
 
-  Q_ASSERT(m_networkRequest);
-  delete m_networkRequest;
-  m_networkRequest = nullptr;
+  if (m_networkRequest) {
+    delete m_networkRequest;
+    m_networkRequest = nullptr;
+  }
 
-  emit failure();
+  maybeTryAgain();
 }
 
 void ConnectionCheck::maybeTryAgain() {
@@ -95,5 +109,5 @@ void ConnectionCheck::maybeTryAgain() {
   }
 
   logger.log() << "Let's try again with" << s_steps[m_step].m_msec << "msecs";
-  start();
+  startInternal();
 }
