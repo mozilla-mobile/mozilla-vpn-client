@@ -29,6 +29,7 @@ class ConnectionCheck final : public QObject {
   void failure();
 
  private:
+  void startInternal();
   void timeout();
   void maybeTryAgain();
 
