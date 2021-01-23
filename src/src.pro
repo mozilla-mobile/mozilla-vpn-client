@@ -80,6 +80,7 @@ SOURCES += \
         networkmanager.cpp \
         networkrequest.cpp \
         notificationhandler.cpp \
+        pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         qmlengineholder.cpp \
@@ -150,6 +151,7 @@ HEADERS += \
         networkmanager.h \
         networkrequest.h \
         notificationhandler.h \
+        pinghelper.h \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \

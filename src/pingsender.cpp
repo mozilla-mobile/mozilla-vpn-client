@@ -13,7 +13,7 @@
 #  include "platforms/macos/macospingsendworker.h"
 #elif defined(MVPN_WINDOWS)
 #  include "platforms/windows/windowspingsendworker.h"
-#elif defined(MVPN_DUMMY)
+#elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
 #  include "platforms/dummy/dummypingsendworker.h"
 #else
 #  error "Unsupported platform"
