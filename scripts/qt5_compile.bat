@@ -5,6 +5,10 @@
 @ECHO off
 SETLOCAL
 
+IF EXIST env.bat (
+  CALL env.bat
+)
+
 IF "%selfWrapped%" == "" (
   :: This is necessary so that we can use "EXIT" to terminate the batch file,
   :: and all subroutines, but not the original cmd.exe
@@ -40,7 +44,7 @@ CALL :CheckCommand cl
 ECHO Compiling openssl...
 cd %1
 
-perl Configure VC-WIN64A no-shared --prefix=c:\MozillaVPNBuild
+perl Configure VC-WIN64A --release --prefix=c:\MozillaVPNBuild --openssldir=c:\MozillaVPNBuild\SSL
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure OpenSSL.
   EXIT 1

@@ -5,6 +5,10 @@
 @ECHO off
 SETLOCAL
 
+IF EXIST env.bat (
+  CALL env.bat
+)
+
 IF "%selfWrapped%" == "" (
   :: This is necessary so that we can use "EXIT" to terminate the batch file,
   :: and all subroutines, but not the original cmd.exe
@@ -18,10 +22,6 @@ ECHO This script MozillaVPN for windows
 IF NOT EXIST src (
   ECHO THis doesn't seem to be the root of the MozillaVPN repository.
   EXIT 1
-)
-
-IF EXIST c:\MozillaVPNBuild (
-  SET PATH="%PATH%;c:\MozillaVPNBuild\bin"
 )
 
 ECHO Checking required commands...
@@ -41,6 +41,9 @@ IF NOT EXIST MozillaVPN.vcxproj (
   echo The VC project doesn't exist. Why?
   EXIT 1
 )
+
+ECHO Compiling the tunnel.dll...
+CALL windows\tunnel\build.cmd
 
 ECHO Cleaning up the project...
 MSBuild -t:Clean -p:Configuration=Release MozillaVPN.vcxproj
