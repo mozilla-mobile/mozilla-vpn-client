@@ -115,7 +115,9 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.log() << "MozillaVPN" << APP_VERSION;
 
+#if defined(MVPN_MACOS) || defined(MVPN_IOS)
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
