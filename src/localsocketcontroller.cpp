@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "macoscontroller.h"
+#include "localsocketcontroller.h"
 #include "errorhandler.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
@@ -22,25 +22,29 @@
 #include <QStandardPaths>
 
 namespace {
-Logger logger({LOG_MACOS, LOG_CONTROLLER}, "MacOSController");
+Logger logger(LOG_CONTROLLER, "LocalSocketController");
 }
 
-MacOSController::MacOSController() {
-  MVPN_COUNT_CTOR(MacOSController);
+LocalSocketController::LocalSocketController() {
+  MVPN_COUNT_CTOR(LocalSocketController);
 
   m_socket = new QLocalSocket(this);
   connect(m_socket, &QLocalSocket::connected, this,
-          &MacOSController::daemonConnected);
+          &LocalSocketController::daemonConnected);
   connect(m_socket, &QLocalSocket::disconnected, this,
-          &MacOSController::disconnected);
+          &LocalSocketController::disconnected);
   connect(m_socket, &QLocalSocket::errorOccurred, this,
-          &MacOSController::errorOccurred);
-  connect(m_socket, &QLocalSocket::readyRead, this, &MacOSController::readData);
+          &LocalSocketController::errorOccurred);
+  connect(m_socket, &QLocalSocket::readyRead, this,
+          &LocalSocketController::readData);
 }
 
-MacOSController::~MacOSController() { MVPN_COUNT_DTOR(MacOSController); }
+LocalSocketController::~LocalSocketController() {
+  MVPN_COUNT_DTOR(LocalSocketController);
+}
 
-void MacOSController::errorOccurred(QLocalSocket::LocalSocketError error) {
+void LocalSocketController::errorOccurred(
+    QLocalSocket::LocalSocketError error) {
   logger.log() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
@@ -52,7 +56,7 @@ void MacOSController::errorOccurred(QLocalSocket::LocalSocketError error) {
   emit disconnected();
 }
 
-void MacOSController::initialize(const Device* device, const Keys* keys) {
+void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   logger.log() << "Initializing";
 
   Q_UNUSED(device);
@@ -61,22 +65,26 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(m_state == eUnknown);
   m_state = eInitializing;
 
+#ifdef MVPN_WINDOWS
+  QString path = "\\\\.\\pipe\\mozillavpn";
+#else
   QString path = "/var/run/mozillavpn/daemon.socket";
   if (!QFileInfo::exists(path)) {
     path = "/tmp/mozillavpn.socket";
   }
+#endif
 
   logger.log() << "Connecting to:" << path;
   m_socket->connectToServer(path);
 }
 
-void MacOSController::daemonConnected() {
+void LocalSocketController::daemonConnected() {
   logger.log() << "Daemon connected";
   Q_ASSERT(m_state == eInitializing);
   checkStatus();
 }
 
-void MacOSController::activate(
+void LocalSocketController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, Reason reason) {
@@ -114,7 +122,7 @@ void MacOSController::activate(
   write(json);
 }
 
-void MacOSController::deactivate(Reason reason) {
+void LocalSocketController::deactivate(Reason reason) {
   logger.log() << "Deactivating";
 
   if (m_state != eReady) {
@@ -133,7 +141,7 @@ void MacOSController::deactivate(Reason reason) {
   write(json);
 }
 
-void MacOSController::checkStatus() {
+void LocalSocketController::checkStatus() {
   logger.log() << "Check status";
 
   if (m_state == eReady || m_state == eInitializing) {
@@ -145,7 +153,7 @@ void MacOSController::checkStatus() {
   }
 }
 
-void MacOSController::getBackendLogs(
+void LocalSocketController::getBackendLogs(
     std::function<void(const QString&)>&& a_callback) {
   logger.log() << "Backend logs";
 
@@ -167,7 +175,7 @@ void MacOSController::getBackendLogs(
   write(json);
 }
 
-void MacOSController::cleanupBackendLogs() {
+void LocalSocketController::cleanupBackendLogs() {
   logger.log() << "Cleanup logs";
 
   if (m_logCallback) {
@@ -184,7 +192,7 @@ void MacOSController::cleanupBackendLogs() {
   write(json);
 }
 
-void MacOSController::readData() {
+void LocalSocketController::readData() {
   logger.log() << "Reading";
 
   Q_ASSERT(m_socket);
@@ -212,7 +220,7 @@ void MacOSController::readData() {
   }
 }
 
-void MacOSController::parseCommand(const QByteArray& command) {
+void LocalSocketController::parseCommand(const QByteArray& command) {
   logger.log() << "Parse command:" << command;
 
   QJsonDocument json = QJsonDocument::fromJson(command);
@@ -313,7 +321,7 @@ void MacOSController::parseCommand(const QByteArray& command) {
   logger.log() << "Invalid command received:" << command;
 }
 
-void MacOSController::write(const QJsonObject& json) {
+void LocalSocketController::write(const QJsonObject& json) {
   Q_ASSERT(m_socket);
   m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
   m_socket->write("\n");

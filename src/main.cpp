@@ -5,9 +5,6 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 
-#include <QApplication>
-#include <QIcon>
-
 int main(int argc, char* argv[]) {
 #ifdef QT_DEBUG
   LeakDetector leakDetector;
