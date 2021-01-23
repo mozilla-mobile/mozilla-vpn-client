@@ -477,18 +477,18 @@ else:macos {
 
         SOURCES += \
                    daemon.cpp \
+                   localsocketcontroller.cpp \
                    wgquickprocess.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp \
-                   platforms/macos/daemon/macosdaemonconnection.cpp \
-                   platforms/macos/macoscontroller.cpp
+                   platforms/macos/daemon/macosdaemonconnection.cpp
         HEADERS += \
                    daemon.h \
+                   localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
                    platforms/macos/daemon/macosdaemonserver.h \
-                   platforms/macos/daemon/macosdaemonconnection.h \
-                   platforms/macos/macoscontroller.h
+                   platforms/macos/daemon/macosdaemonconnection.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
@@ -572,22 +572,37 @@ else:win* {
     QT += networkauth
     QT += svg
 
+    CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
 
     SOURCES += \
-        platforms/dummy/dummycontroller.cpp \
+        daemon.cpp \
+        localsocketcontroller.cpp \
+        platforms/windows/daemon/windowscommons.cpp \
+        platforms/windows/daemon/windowsdaemon.cpp \
+        platforms/windows/daemon/windowsdaemonconnection.cpp \
+        platforms/windows/daemon/windowsdaemonserver.cpp \
+        platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowspingsendworker.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
-        systemtraynotificationhandler.cpp
+        systemtraynotificationhandler.cpp \
+        wgquickprocess.cpp
 
     HEADERS += \
-        platforms/dummy/dummycontroller.h \
+        daemon.h \
+        localsocketcontroller.h \
+        platforms/windows/daemon/windowscommons.h \
+        platforms/windows/daemon/windowsdaemon.h \
+        platforms/windows/daemon/windowsdaemonconnection.h \
+        platforms/windows/daemon/windowsdaemonserver.h \
+        platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
-        systemtraynotificationhandler.h
+        systemtraynotificationhandler.h \
+        wgquickprocess.h
 }
 
 # Anything else
