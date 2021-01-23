@@ -22,6 +22,14 @@ class WgQuickProcess final {
       const QString& serverPublicKey, const QString& serverIpv4AddrIn,
       const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
       int serverPort, bool ipv6Enabled);
+
+  static bool createConfigFile(
+      const QString& configFile, const QString& privateKey,
+      const QString& deviceIpv4Address, const QString& deviceIpv6Address,
+      const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
+      const QString& serverPublicKey, const QString& serverIpv4AddrIn,
+      const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
+      int serverPort, bool ipv6Enabled);
 };
 
 #endif  // WGQUICKPROCESS_H
