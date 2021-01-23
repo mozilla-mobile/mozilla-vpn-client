@@ -234,6 +234,7 @@ void Controller::connected() {
 
   setState(StateConfirming);
 
+  // Now, let's wait for a ping sent and received from ConnectionHealth.
   m_connectionCheck.start();
 }
 
@@ -479,7 +480,7 @@ void Controller::getStatus(
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
-  if (m_state != StateOn) {
+  if (m_state != StateOn && m_state != StateConfirming) {
     callback(QString(), 0, 0);
     return;
   }
@@ -511,7 +512,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 void Controller::captivePortalDetected() {
   logger.log() << "Captive portal detected in state:" << m_state;
 
-  if (m_state != StateOn) {
+  if (m_state != StateOn && m_state != StateConfirming) {
     return;
   }
 

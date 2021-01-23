@@ -47,6 +47,10 @@ HEADERS += \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
+    ../../src/pinghelper.h \
+    ../../src/pingsender.h \
+    ../../src/pingsendworker.h \
+    ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
     ../../src/settingsholder.h \
@@ -96,6 +100,9 @@ SOURCES += \
     ../../src/models/serverdata.cpp \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
+    ../../src/pinghelper.cpp \
+    ../../src/pingsender.cpp \
+    ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
     ../../src/settingsholder.cpp \

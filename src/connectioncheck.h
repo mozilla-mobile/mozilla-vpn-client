@@ -5,12 +5,9 @@
 #ifndef CONNECTIONCHECK_H
 #define CONNECTIONCHECK_H
 
-#include <QObject>
-#include <QTimer>
+#include "pinghelper.h"
 
-class NetworkRequest;
-
-// A simple class that does 1 network request with X seconds of timeout.
+// A simple class that uses pings to check the network status.
 // It's used to check if the VPN connection succeeds.
 
 class ConnectionCheck final : public QObject {
@@ -24,21 +21,20 @@ class ConnectionCheck final : public QObject {
   void start();
   void stop();
 
+ public slots:
+  void pingSentAndReceived(qint64 msec);
+
  signals:
   void success();
   void failure();
 
  private:
-  void startInternal();
   void timeout();
-  void maybeTryAgain();
 
  private:
   QTimer m_timer;
 
-  NetworkRequest* m_networkRequest = nullptr;
-
-  uint32_t m_step = 0;
+  PingHelper m_pingHelper;
 };
 
 #endif  // CONNECTIONCHECK_H
