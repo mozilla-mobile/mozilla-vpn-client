@@ -75,7 +75,6 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 24
             Layout.fillWidth: true
-            wrapMode: Text.WordWrap
         }
 
         VPNSubtitle {
@@ -84,13 +83,6 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 12
             Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-            onLineLaidOut: {
-                if (text.indexOf(" ") > 0)
-                    return;
-                if (line.implicitWidth > panel.width)
-                    wrapMode = Text.WrapAnywhere
-            }
         }
 
     }

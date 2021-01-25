@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    wrapMode: Text.WordWrap
+    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     width: Theme.maxTextWidth
     color: Theme.fontColorDark
     font.family: Theme.fontFamily
