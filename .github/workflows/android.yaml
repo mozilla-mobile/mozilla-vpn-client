@@ -105,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
             name: production-release
-            path: .tmp/src/android-build/build/outputs/apk/release/android-build-universal-release-unsigned.apk
+            path: .tmp/src/android-build/build/outputs/apk/release/
 
   android-staging-debug:
     runs-on: ubuntu-20.04
