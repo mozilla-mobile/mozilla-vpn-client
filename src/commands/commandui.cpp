@@ -52,6 +52,10 @@
 #  include "signalhandler.h"
 #endif
 
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowsstartatbootwatcher.h"
+#endif
+
 #ifdef MVPN_IOS
 #  include "platforms/ios/iaphandler.h"
 #endif
@@ -156,6 +160,14 @@ int CommandUI::run(QStringList& tokens) {
                      &MacOSStartAtBootWatcher::startAtBootChanged);
 
     MacOSUtils::setDockClickHandler();
+#endif
+
+
+#ifdef MVPN_WINDOWS
+    WindowsStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
+    QObject::connect(SettingsHolder::instance(),
+                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
+                     &WindowsStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #ifdef MVPN_ANDROID
