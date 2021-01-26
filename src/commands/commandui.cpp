@@ -66,10 +66,6 @@
 #  include <QLoggingCategory>
 #endif
 
-#ifdef MVPN_LINUX
-#  include <QLockFile>
-#endif
-
 namespace {
 Logger logger(LOG_MAIN, "CommandUI");
 }
@@ -109,19 +105,6 @@ int CommandUI::run(QStringList& tokens) {
       clp.showHelp(this, appName, options, false, false);
       return 0;
     }
-
-#ifdef MVPN_LINUX
-    QLockFile lockFile("mozillavpn.lock");
-    lockFile.setStaleLockTime(0);
-    if (!lockFile.tryLock()) {
-      qint64 pid;
-      lockFile.getLockInfo(&pid, nullptr, nullptr);
-      QTextStream out(stderr);
-      out << "Another instance has been found (pid: " << pid
-          << "). Aborting the execution." << Qt::endl;
-      return 1;
-    }
-#endif
 
     logger.log() << "UI starting";
 
