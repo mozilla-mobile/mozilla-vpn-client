@@ -38,7 +38,6 @@ Flickable {
     NumberAnimation on contentY {
         id: ensureVisAnimation
 
-        to: 0 //Dummy value - will be set up when this animation is called.
         duration: 300
         easing.type: Easing.OutQuad
     }
