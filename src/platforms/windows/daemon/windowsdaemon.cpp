@@ -170,10 +170,12 @@ void WindowsDaemon::status(QLocalSocket* socket) {
     return;
   }
 
+  LPTSTR tunnelName = (LPTSTR)TEXT(TUNNEL_NAMED_PIPE);
+
   uint32_t tries = 0;
   while (tries < 30) {
-    pipe = CreateFile(TEXT(TUNNEL_NAMED_PIPE), GENERIC_READ | GENERIC_WRITE, 0,
-                      nullptr, OPEN_EXISTING, 0, nullptr);
+    pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                      OPEN_EXISTING, 0, nullptr);
 
     if (pipe != INVALID_HANDLE_VALUE) {
       break;
@@ -186,7 +188,7 @@ void WindowsDaemon::status(QLocalSocket* socket) {
 
     logger.log() << "Pipes are busy. Let's wait";
 
-    if (!WaitNamedPipe(TEXT(TUNNEL_NAMED_PIPE), 1000)) {
+    if (!WaitNamedPipe(tunnelName, 1000)) {
       WindowsCommons::windowsLog("Failed to wait for named pipes");
       return;
     }
@@ -223,6 +225,10 @@ void WindowsDaemon::status(QLocalSocket* socket) {
   uint64_t txBytes = 0;
   uint64_t rxBytes = 0;
 
+  int steps = 0;
+  constexpr const int TxFound = 0x01;
+  constexpr const int RxFound = 0x02;
+
   for (const QByteArray& line : data.split('\n')) {
     if (!line.contains('=')) {
       continue;
@@ -231,12 +237,14 @@ void WindowsDaemon::status(QLocalSocket* socket) {
     QList<QByteArray> parts = line.split('=');
     if (parts[0] == "tx_bytes") {
       txBytes = parts[1].toLongLong();
-      continue;
+      steps |= TxFound;
+    } else if (parts[0] == "rx_bytes") {
+      rxBytes = parts[1].toLongLong();
+      steps |= RxFound;
     }
 
-    if (parts[0] == "rx_bytes") {
-      rxBytes = parts[1].toLongLong();
-      continue;
+    if (steps >= (TxFound & RxFound)) {
+      break;
     }
   }
 

@@ -33,7 +33,6 @@ WindowsDaemonTunnel::~WindowsDaemonTunnel() {
 
 int WindowsDaemonTunnel::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  QString appName = tokens[0];
 
   logger.log() << "Tunnel daemon service is starting";
 
@@ -46,7 +45,8 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     logger.log() << "Expected 1 parameter only: the config file.";
     return 1;
   }
-
+  // This process will be used by the wireguard tunnel. No need to call
+  // FreeLibrary.
   HMODULE tunnelLib = LoadLibrary(TEXT("tunnel.dll"));
   if (!tunnelLib) {
     WindowsCommons::windowsLog("Failed to load tunnel.dll");

@@ -119,7 +119,7 @@ HEADERS += \
         commands/commandlogout.h \
         commands/commandselect.h \
         commands/commandservers.h \
-        commands/commandstatus.h \
+        commands/commandstatus.h \windows
         commands/commandui.h \
         connectioncheck.h \
         connectiondataholder.h \
