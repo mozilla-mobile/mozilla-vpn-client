@@ -22,75 +22,55 @@ Item {
         id: radioButtonGroup
     }
 
-    DelegateModel {
-        id: delegateModel
 
-        model: VPNServerCountryModel
-        delegate: VPNServerCountry {}
-    }
-
-    VPNList {
-        id: serverList
-
+    VPNFlickable {
+        id: vpnFlickable
+        flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
         height: parent.height - menu.height
-        width: parent.width
         anchors.top: menu.bottom
-        spacing: Theme.listSpacing
-        clip: true
-        listName: menu.title
-        interactive: true
+        width: parent.width
 
-        onCurrentIndexChanged: currentItem.forceActiveFocus()
-        header: Rectangle {
-            height: 16
-            width: serverList.width
-            color: "transparent"
-        }
-        model: delegateModel
+        NumberAnimation on contentY {
+            id: scrollAnimation
 
-        footer: Rectangle {
-            height: fullscreenRequired() ? Theme.rowHeight * 3: Theme.rowHeight * 2
-            color: "transparent"
-            width: serverList.width
-        }
-
-        NumberAnimation {
-            id: scrollList
-            target: serverList
-            property: "contentY"
-            to: 0 //Dummy value - will be set up when this animation is called.
             duration: 300
+            easing.type: Easing.OutQuad
         }
 
-        Component.onCompleted: {
-            for (let idx = 0; idx < serverList.count; idx++) {
-                if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
-                    serverList.currentIndex = idx;
-                    serverList.positionViewAtIndex(idx, ListView.Center);
-
-                    const currentCountryDistanceFromTop = (serverList.currentItem.mapToItem(null, 0, 0).y);
-                    const listVerticalCenter = serverList.height / 2
-
-                    const citySublist = delegateModel.items.get(idx).model.cities;
-                    const currentCityIdx = citySublist.indexOf(VPNCurrentServer.city);
-                    const cityItemHeight = Theme.rowHeight;
-
-                    let currentCityDistanceFromSublistTop = (currentCityIdx * (cityItemHeight + Theme.listSpacing));
-
-                    if (currentCountryDistanceFromTop + currentCityDistanceFromSublistTop < listVerticalCenter)
-                        return;
-
-                    currentCityDistanceFromSublistTop += (currentCountryDistanceFromTop - listVerticalCenter + Theme.cityListTopMargin);
-                    serverList.contentY += currentCityDistanceFromSublistTop;
-                    return;
+        Column {
+            spacing: 14
+            id: serverList
+            width: parent.width
+            Component.onCompleted: {
+                for (let i = 0; i < repeater.count; i++) {
+                    if (repeater.itemAt(i).cityListVisible) {
+                        // If city is within above the center line, don't do anything
+                        // If the list is not long enough to scroll the current city to the center, scroll to end.
+                        const currentCityIndex = repeater.itemAt(i).currentCityIndex;
+                        vpnFlickable.contentY = repeater.itemAt(i).y - (vpnFlickable.height / 2) + Theme.rowHeight * 2 + (54 * currentCityIndex)
+                    }
                 }
             }
-        }
 
-        ScrollBar.vertical: ScrollBar {
-            Accessible.ignored: true
-        }
+            function scrollDelegateIntoView(item) {
+                if (window.height > repeater.count * 40) {
+                    return;
+                }
+                const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                const ext = item.height + yPosition;
+                if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + height) {
+                    let destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + item.height, vpnFlickable.contentHeight - vpnFlickable.height));
+                    scrollAnimation.to = destinationY;
+                    scrollAnimation.start();
+                }
+            }
 
+            Repeater {
+                id: repeater
+                model: VPNServerCountryModel
+                delegate: VPNServerCountry{}
+            }
+        }
     }
 
 }
