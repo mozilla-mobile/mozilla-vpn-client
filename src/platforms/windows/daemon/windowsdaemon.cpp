@@ -196,8 +196,8 @@ void WindowsDaemon::status(QLocalSocket* socket) {
     ++tries;
   }
 
-  DWORD mode = PIPE_READMODE_MESSAGE;
-  if (SetNamedPipeHandleState(pipe, &mode, nullptr, nullptr)) {
+  DWORD mode = PIPE_READMODE_BYTE;
+  if (!SetNamedPipeHandleState(pipe, &mode, nullptr, nullptr)) {
     WindowsCommons::windowsLog("Failed to set the read-mode on pipe");
     return;
   }
