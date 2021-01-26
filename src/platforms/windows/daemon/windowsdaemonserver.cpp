@@ -113,6 +113,17 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   connect(&stopEventTimer, &QTimer::timeout, [&]() {
     if (WaitForSingleObject(s_serviceStopEvent, 0) == WAIT_OBJECT_0) {
       logger.log() << "Stop event message received";
+
+      s_serviceStatus.dwControlsAccepted = 0;
+      s_serviceStatus.dwCurrentState = SERVICE_STOPPED;
+      s_serviceStatus.dwWin32ExitCode = GetLastError();
+      s_serviceStatus.dwCheckPoint = 1;
+
+      if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
+        logger.log() << "SetServiceStatus failed";
+      }
+      CloseHandle(s_serviceStopEvent);
+
       qApp->exit();
     }
   });
@@ -136,11 +147,7 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
 
   ZeroMemory(&s_serviceStatus, sizeof(s_serviceStatus));
   s_serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-  s_serviceStatus.dwControlsAccepted = 0;
   s_serviceStatus.dwCurrentState = SERVICE_START_PENDING;
-  s_serviceStatus.dwWin32ExitCode = 0;
-  s_serviceStatus.dwServiceSpecificExitCode = 0;
-  s_serviceStatus.dwCheckPoint = 0;
 
   if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
     logger.log() << "SetServiceStatus failed";
