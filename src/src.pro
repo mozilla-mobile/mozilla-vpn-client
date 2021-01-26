@@ -586,6 +586,7 @@ else:win* {
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowspingsendworker.cpp \
+        platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
         wgquickprocess.cpp
@@ -601,6 +602,7 @@ else:win* {
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
+        platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
         wgquickprocess.h
 }
