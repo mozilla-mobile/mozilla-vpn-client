@@ -70,7 +70,7 @@ Item {
             property VPNIconButton focusedIconButton: null
 
             height: count * 80
-            width: parent.width - Theme.windowMargin
+            width: parent.width
             anchors.top: maxDevicesReached.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             interactive: false
@@ -92,14 +92,19 @@ Item {
             listName: menu.title
             Accessible.ignored: root.isModalDialogOpened
 
+            highlightFollowsCurrentItem: false
             highlight: Rectangle {
                 color: Theme.greyHovered
-                anchors.fill: deviceList.currentItem ? deviceList.currentItem : undefined
-                anchors.topMargin: deviceList.currentItem ? -10 : undefined
-                anchors.bottomMargin: deviceList.currentItem ? -10 : undefined
-                anchors.leftMargin: deviceList.currentItem ? -8 : undefined
-                anchors.rightMargin: deviceList.currentItem ? -8 : undefined
+                width: deviceList.width
+                height: deviceList.currentItem ? deviceList.currentItem.height + 20 : 0
+                y: deviceList.currentItem ? deviceList.currentItem.y - 10 : 0
                 opacity: deviceList.currentItem && deviceList.currentItem.activeFocus ? 1 : 0
+
+                Behavior on y {
+                    PropertyAnimation {
+                        duration: 10
+                    }
+                }
             }
 
             removeDisplaced: Transition {
@@ -133,7 +138,8 @@ Item {
                 Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
                 Accessible.role: Accessible.ListItem
                 Accessible.ignored: root.isModalDialogOpened
-                width: deviceList.width
+                width: deviceList.width - Theme.windowMargin
+                anchors.horizontalCenter: parent.horizontalCenter
 
                 Connections {
                     function onDeviceRemoving(devName) {
