@@ -28,6 +28,20 @@ bool Daemon::activate(const Config& config) {
   m_lastConfig = config;
 
   if (m_connected) {
+    if (supportServerSwitching(config)) {
+      logger.log() << "Already connected. Server switching supported.";
+      if (!switchServer(config)) {
+        return false;
+      }
+
+      emit connected();
+      return true;
+    }
+
+    logger.log() << "Already connected. Server switching not supported.";
+  }
+
+  if (m_connected) {
     if (!deactivate(false)) {
       return false;
     }
@@ -124,7 +138,6 @@ bool Daemon::parseConfig(const QJsonObject& obj, Config& config) {
     }
 
     QJsonArray array = value.toArray();
-    QStringList allowedIPAddressRanges;
     for (QJsonValue i : array) {
       if (!i.isObject()) {
         logger.log() << JSON_ALLOWEDIPADDRESSRANGES
@@ -159,10 +172,10 @@ bool Daemon::parseConfig(const QJsonObject& obj, Config& config) {
         continue;
       }
 
-      allowedIPAddressRanges.append(
-          QString("%1/%2").arg(address.toString()).arg(range.toInt(0)));
+      config.m_allowedIPAddressRanges.append(IPAddressRange(
+          address.toString(), range.toInt(),
+          isIpv6.toBool() ? IPAddressRange::IPv6 : IPAddressRange::IPv4));
     }
-    config.m_allowedIPAddressRanges = allowedIPAddressRanges;
   }
 
   return true;
@@ -202,3 +215,9 @@ QString Daemon::logs() {
 }
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
+
+bool Daemon::switchServer(const Config& config) {
+  Q_UNUSED(config);
+  qFatal("Have you forgotten to implement switchServer?");
+  return false;
+}
