@@ -151,7 +151,7 @@ VPNFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
             columnSpacing: 0
-            columns: (termsOfService.width > subscribeNow.width / 2 || privacyNotice.width > subscribeNow.width / 2) ? 1 : 3
+            Component.onCompleted: columns = (termsOfService.width > subscribeNow.width / 2 || privacyNotice.width > subscribeNow.width / 2) ? 1 : 3;
 
             VPNGreyLink {
                 id: termsOfService
