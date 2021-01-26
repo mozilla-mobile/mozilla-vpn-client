@@ -126,11 +126,15 @@ void MacOSDaemon::logs(QLocalSocket* socket) {
 }
 
 bool MacOSDaemon::run(Daemon::Op op, const Config& config) {
+  QStringList addresses;
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    addresses.append(ip.toString());
+  }
+
   return WgQuickProcess::run(
       op, config.m_privateKey, config.m_deviceIpv4Address,
       config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
       config.m_serverIpv6Gateway, config.m_serverPublicKey,
       config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-      config.m_allowedIPAddressRanges.join(", "), config.m_serverPort,
-      config.m_ipv6Enabled);
+      addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
 }

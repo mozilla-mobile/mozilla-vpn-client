@@ -5,7 +5,7 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-#include <QObject>
+#include "ipaddressrange.h"
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -27,7 +27,7 @@ class Daemon : public QObject {
     QString m_serverIpv6AddrIn;
     int m_serverPort = 0;
     bool m_ipv6Enabled = false;
-    QStringList m_allowedIPAddressRanges;
+    QList<IPAddressRange> m_allowedIPAddressRanges;
   };
 
   explicit Daemon(QObject* parent);
@@ -47,6 +47,13 @@ class Daemon : public QObject {
 
  protected:
   virtual bool run(Op op, const Config& config) = 0;
+
+  virtual bool supportServerSwitching(const Config& config) const {
+    Q_UNUSED(config);
+    return false;
+  }
+
+  virtual bool switchServer(const Config& config);
 
  protected:
   bool m_connected = false;

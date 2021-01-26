@@ -35,6 +35,10 @@ class DBusService final : public Daemon {
  protected:
   bool run(Op op, const Config& config) override;
 
+  bool supportServerSwitching(const Config& config) const override;
+
+  bool switchServer(const Config& config) override;
+
  private:
   DbusAdaptor* m_adaptor = nullptr;
 };
