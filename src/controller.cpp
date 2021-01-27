@@ -62,7 +62,10 @@ Controller::Controller() {
           &Controller::connectionFailed);
 }
 
-Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
+Controller::~Controller() {
+  MVPN_COUNT_DTOR(Controller);
+  m_impl.reset(nullptr);
+}
 
 Controller::State Controller::state() const { return m_state; }
 

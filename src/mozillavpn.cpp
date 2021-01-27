@@ -721,6 +721,12 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
     case ErrorHandler::BackendServiceError:
       alert = BackendServiceErrorAlert;
+      if (m_userAuthenticated) {
+        deleteTasks();
+        // Deletes the controller-impl,Resets the status
+        // and spins up a new controller-impl
+        m_private->m_controller.initialize();
+      }
       break;
 
     case ErrorHandler::SubscriptionFailureError:
