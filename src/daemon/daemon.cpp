@@ -17,12 +17,37 @@
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 
 namespace {
+
 Logger logger(LOG_MAIN, "Daemon");
+
+Daemon* s_daemon = nullptr;
+
 }  // namespace
 
-Daemon::Daemon(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(Daemon); }
+Daemon::Daemon(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(Daemon); 
 
-Daemon::~Daemon() { MVPN_COUNT_DTOR(Daemon); }
+  logger.log() << "Daemon created";
+
+  Q_ASSERT(s_daemon == nullptr);
+  s_daemon = this;
+}
+
+Daemon::~Daemon() {
+  MVPN_COUNT_DTOR(Daemon);
+
+  logger.log() << "Daemon released";
+
+  Q_ASSERT(s_daemon == this);
+  s_daemon = nullptr;
+}
+
+// static
+Daemon* Daemon::instance() {
+  Q_ASSERT(s_daemon);
+  return s_daemon;
+}
+
 
 bool Daemon::activate(const Config& config) {
   m_lastConfig = config;

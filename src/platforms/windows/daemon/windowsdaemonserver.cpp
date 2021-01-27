@@ -4,17 +4,14 @@
 
 #include "windowsdaemonserver.h"
 #include "commandlineparser.h"
+#include "daemon/daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "windowsdaemon.h"
-#include "windowsdaemonconnection.h"
-#include "mozillavpn.h"
 
 #include <QCoreApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QLocalServer>
-#include <QLocalSocket>
+#include <QThread>
+#include <QTimer>
 
 #include <Windows.h>
 #include <winsvc.h>
@@ -76,38 +73,13 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   ServiceThread* st = new ServiceThread();
   st->start();
 
-  QLocalServer server;
-  server.setSocketOptions(QLocalServer::WorldAccessOption);
+  WindowsDaemon daemon;
 
-  QString path = "\\\\.\\pipe\\mozillavpn";
-  logger.log() << "Server path:" << path;
-
-  if (QFileInfo::exists(path)) {
-    QFile::remove(path);
-  }
-
-  if (!server.listen(path)) {
-    logger.log() << "Failed to listen the daemon path";
+  DaemonLocalServer server(qApp);
+  if (!server.initialize()) {
+    logger.log() << "Failed to initialize the server";
     return 1;
   }
-
-  connect(&server, &QLocalServer::newConnection, [&] {
-    logger.log() << "New connection received";
-
-    if (!server.hasPendingConnections()) {
-      return;
-    }
-
-    QLocalSocket* socket = server.nextPendingConnection();
-    Q_ASSERT(socket);
-
-    WindowsDaemonConnection* connection =
-        new WindowsDaemonConnection(&server, socket);
-    connect(socket, &QLocalSocket::disconnected, connection,
-            &WindowsDaemonConnection::deleteLater);
-  });
-
-  WindowsDaemon daemon;
 
   QTimer stopEventTimer;
   connect(&stopEventTimer, &QTimer::timeout, [&]() {

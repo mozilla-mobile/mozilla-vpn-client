@@ -5,7 +5,7 @@
 #ifndef WGQUICKPROCESS_H
 #define WGQUICKPROCESS_H
 
-#include "daemon.h"
+#include "daemon/daemon.h"
 
 #include <QObject>
 

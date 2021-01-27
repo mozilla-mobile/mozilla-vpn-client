@@ -266,7 +266,7 @@ else:linux:!android {
     # The daemon source code:
     SOURCES += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
-            daemon.cpp \
+            daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
@@ -274,7 +274,7 @@ else:linux:!android {
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
-            daemon.h \
+            daemon/daemon.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/polkithelper.h \
             wgquickprocess.h
@@ -476,14 +476,14 @@ else:macos {
         DEFINES += MVPN_MACOS_DAEMON
 
         SOURCES += \
-                   daemon.cpp \
+                   daemon/daemon.cpp \
                    localsocketcontroller.cpp \
                    wgquickprocess.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp \
                    platforms/macos/daemon/macosdaemonconnection.cpp
         HEADERS += \
-                   daemon.h \
+                   daemon/daemon.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
@@ -582,11 +582,12 @@ else:win* {
     }
 
     SOURCES += \
-        daemon.cpp \
+        daemon/daemon.cpp \
+        daemon/daemonlocalserver.cpp \
+        daemon/daemonlocalserverconnection.cpp \
         localsocketcontroller.cpp \
         platforms/windows/daemon/windowscommons.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
-        platforms/windows/daemon/windowsdaemonconnection.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/windowscryptosettings.cpp \
@@ -598,11 +599,12 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
-        daemon.h \
+        daemon/daemon.h \
+        daemon/daemonlocalserver.h \
+        daemon/daemonlocalserverconnection.h \
         localsocketcontroller.h \
         platforms/windows/daemon/windowscommons.h \
         platforms/windows/daemon/windowsdaemon.h \
-        platforms/windows/daemon/windowsdaemonconnection.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/windowsdatamigration.h \
