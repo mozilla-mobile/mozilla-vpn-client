@@ -25,6 +25,7 @@ Item {
 
     VPNFlickable {
         id: vpnFlickable
+
         flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
         height: parent.height - menu.height
         anchors.top: menu.bottom
@@ -38,35 +39,42 @@ Item {
         }
 
         Column {
-            spacing: 14
             id: serverList
+
+            spacing: 14
             width: parent.width
             Component.onCompleted: {
-                for (let i = 0; i < repeater.count; i++) {
-                    const countryItem = repeater.itemAt(i);
-                    const serverListYCenter = vpnFlickable.height / 2;
-                    const currentCityIndex = countryItem.currentCityIndex;
-                    const currentCityYPosition = countryItem.y + Theme.rowHeight * 2 + (54 * currentCityIndex) - serverListYCenter;
 
-                    if (countryItem.cityListVisible) {
-                        if (serverListYCenter > currentCityYPosition) {
-                            // current city y position is above the list vertical center
-                            return;
-                        }
+                // Scroll vpnFlickable so that the current server city is
+                // vertically centered in the view
 
-                        vpnFlickable.contentY = currentCityYPosition;
+                const serverListYCenter = vpnFlickable.height / 2;
+
+                for (let idx = 0; idx < repeater.count; idx++) {
+                    const countryItem = repeater.itemAt(idx);
+                    const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                    if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
+                        continue;
                     }
+
+                    const currentCityYPosition = countryItem.y + (Theme.rowHeight * 2) + (54 * countryItem.currentCityIndex) - serverListYCenter;
+                    const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
+
+                    vpnFlickable.contentY = destinationY;
+                    return;
                 }
             }
 
             function scrollDelegateIntoView(item) {
-                if (window.height > repeater.count * 40) {
+                if (window.height > vpnFlickable.contentHeight) {
                     return;
                 }
                 const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                const ext = item.height + yPosition;
-                if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + height) {
-                    let destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + item.height, vpnFlickable.contentHeight - vpnFlickable.height));
+                const approximateDelegateHeight = 60;
+                const ext = approximateDelegateHeight + yPosition;
+
+                if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
+                    const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
                     scrollAnimation.to = destinationY;
                     scrollAnimation.start();
                 }
