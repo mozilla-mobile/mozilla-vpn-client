@@ -33,10 +33,15 @@ class Daemon : public QObject {
   explicit Daemon(QObject* parent);
   ~Daemon();
 
+  static Daemon* instance();
+
   static bool parseConfig(const QJsonObject& obj, Config& config);
 
   virtual bool activate(const Config& config);
   virtual bool deactivate(bool emitSignals = true);
+
+  // Explose a JSON object with the daemon status.
+  virtual QByteArray status() = 0;
 
   QString logs();
   void cleanLogs();

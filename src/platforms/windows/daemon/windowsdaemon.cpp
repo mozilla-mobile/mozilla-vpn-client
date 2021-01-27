@@ -26,8 +26,8 @@
   "PN"
 
 namespace {
+
 Logger logger(LOG_WINDOWS, "WindowsDaemon");
-WindowsDaemon* s_daemon = nullptr;
 
 bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
   int tries = 0;
@@ -157,11 +157,6 @@ HANDLE createPipe() {
 
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   MVPN_COUNT_CTOR(WindowsDaemon);
-
-  logger.log() << "Daemon created";
-
-  Q_ASSERT(s_daemon == nullptr);
-  s_daemon = this;
 }
 
 WindowsDaemon::~WindowsDaemon() {
@@ -172,15 +167,6 @@ WindowsDaemon::~WindowsDaemon() {
   m_state = Inactive;
 
   stopAndDeleteTunnelService();
-
-  Q_ASSERT(s_daemon == this);
-  s_daemon = nullptr;
-}
-
-// static
-WindowsDaemon* WindowsDaemon::instance() {
-  Q_ASSERT(s_daemon);
-  return s_daemon;
 }
 
 bool WindowsDaemon::activate(const Config& config) {
@@ -192,7 +178,7 @@ bool WindowsDaemon::activate(const Config& config) {
   return true;
 }
 
-void WindowsDaemon::status(QLocalSocket* socket) {
+QByteArray WindowsDaemon::status() {
   logger.log() << "Status request";
   Q_ASSERT(socket);
 
@@ -203,16 +189,13 @@ void WindowsDaemon::status(QLocalSocket* socket) {
   HANDLE pipe = createPipe();
 
   auto guard = qScopeGuard([&] {
-    socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-    socket->write("\n");
-
     if (pipe != INVALID_HANDLE_VALUE) {
       CloseHandle(pipe);
     }
   });
 
   if (pipe == INVALID_HANDLE_VALUE || !m_connected) {
-    return;
+    return QJsonDocument(obj).toJson(QJsonDocument::Compact);
   }
 
   QByteArray message = "get=1\n\n";
@@ -221,7 +204,7 @@ void WindowsDaemon::status(QLocalSocket* socket) {
   if (!WriteFile(pipe, message.constData(), message.length(), &written,
                  nullptr)) {
     WindowsCommons::windowsLog("Failed to write into the pipe");
-    return;
+    return QJsonDocument(obj).toJson(QJsonDocument::Compact);
   }
 
   QByteArray data;
@@ -256,13 +239,10 @@ void WindowsDaemon::status(QLocalSocket* socket) {
       steps |= RxFound;
     }
 
-    if (steps >= (TxFound & RxFound)) {
+    if (steps >= (TxFound | RxFound)) {
       break;
     }
   }
-
-  guard.dismiss();
-  CloseHandle(pipe);
 
   obj.insert("status", true);
   obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
@@ -270,20 +250,7 @@ void WindowsDaemon::status(QLocalSocket* socket) {
   obj.insert("txBytes", QJsonValue(double(txBytes)));
   obj.insert("rxBytes", QJsonValue(double(rxBytes)));
 
-  socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-  socket->write("\n");
-}
-
-void WindowsDaemon::logs(QLocalSocket* socket) {
-  logger.log() << "Log request";
-
-  Q_ASSERT(socket);
-
-  QJsonObject obj;
-  obj.insert("type", "logs");
-  obj.insert("logs", Daemon::logs().replace("\n", "|"));
-  socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-  socket->write("\n");
+  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
 bool WindowsDaemon::registerTunnelService(const QString& configFile) {
