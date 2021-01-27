@@ -19,7 +19,7 @@ RowLayout {
     property bool showDivider: true
     property var iconURL: ""
     property var leftMargin: 18
-    property var subLabelWrapMode: Text.WrapAnywhere
+    property var subLabelWrapMode: Text.WorldWrap
 
     signal clicked()
     spacing: 0
