@@ -13,10 +13,7 @@ VPNClickableRow {
     id: serverCountry
 
     property bool cityListVisible: (code === VPNCurrentServer.countryCode)
-    readonly property bool isActive: cityList.activeFocus
     property var currentCityIndex
-    state: cityListVisible ? "list-visible" : "list-hidden"
-    width: parent.width
 
     function openCityList() {
         cityListVisible = !cityListVisible;
@@ -26,7 +23,7 @@ VPNClickableRow {
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + (Theme.windowMargin / 2);
+        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
         scrollAnimation.start();
     }
 
@@ -39,10 +36,14 @@ VPNClickableRow {
     onActiveFocusChanged: parent.scrollDelegateIntoView(serverCountry)
 
     accessibleName: name
+    Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : menu.forceActiveFocus()
+    Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+    Keys.onBacktabPressed: menu.forceActiveFocus()
 
+    state: cityListVisible
     states: [
         State {
-            name: "list-hidden"
+            when: !cityListVisible
 
             PropertyChanges {
                 target: serverCountry
@@ -56,7 +57,7 @@ VPNClickableRow {
 
         },
         State {
-            name: "list-visible"
+            when: cityListVisible
 
             PropertyChanges {
                 target: serverCountry
@@ -78,10 +79,6 @@ VPNClickableRow {
             easing.type: Easing.InSine
             duration: 260
         }
-    }
-
-    function activate() {
-        cityList.forceActiveFocus();
     }
 
     RowLayout {
@@ -118,33 +115,41 @@ VPNClickableRow {
     }
 
     Column {
-
         id: cityList
-        property var citySubList: "citySubList"
+
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 22
         anchors.left: serverCountry.left
         anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 6
-        opacity: 0
         width: serverCountry.width - anchors.leftMargin
 
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 300
+            }
+        }
+
         Repeater {
+            id: citiesRepeater
             model: cities
             delegate: VPNRadioDelegate {
                 id: del
 
                 activeFocusOnTab: cityListVisible
                 onActiveFocusChanged: if (focus) serverList.scrollDelegateIntoView(del)
-                property var isCurrentCity: modelData
+
+                Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
+                Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
+
                 radioButtonLabelText: modelData
                 accessibleName: modelData
                 onClicked: {
                     VPNController.changeServer(code, modelData);
                     stackview.pop();
                 }
-                height: 54 // changes
+                height: 54
                 checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
-                isHoverable: serverCountry.cityListVisible
+                isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {
                     if (checked) {
