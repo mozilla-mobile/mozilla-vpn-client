@@ -305,6 +305,11 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     return;
   }
 
+  if (type == "backendFailure") {
+    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+    return;
+  }
+
   if (type == "logs") {
     // We don't care if we are not waiting for logs.
     if (!m_logCallback) {
