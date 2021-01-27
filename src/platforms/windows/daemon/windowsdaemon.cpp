@@ -19,7 +19,6 @@
 
 #include <Windows.h>
 
-#define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
 #define TUNNEL_NAMED_PIPE                                                      \
   "\\\\."                                                                      \
   "\\pipe\\ProtectedPrefix\\Administrators\\WireGuard\\FirefoxPrivateNetworkV" \
@@ -199,6 +198,9 @@ QString exitCodeToFailure(DWORD exitCode) {
 
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   MVPN_COUNT_CTOR(WindowsDaemon);
+
+  connect(&m_tunnelMonitor, &WindowsTunnelMonitor::backendFailure, this,
+          &WindowsDaemon::monitorBackendFailure);
 }
 
 WindowsDaemon::~WindowsDaemon() {
@@ -400,6 +402,7 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
 
   if (op == Daemon::Down) {
     stopAndDeleteTunnelService();
+    m_tunnelMonitor.stop();
     m_state = Inactive;
     return true;
   }
@@ -439,6 +442,7 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
 
   logger.log() << "Registration completed";
 
+  m_tunnelMonitor.start();
   m_state = Active;
   return true;
 }
@@ -509,4 +513,15 @@ bool WindowsDaemon::switchServer(const Config& config) {
   logger.log() << "DATA:" << data;
   guard.dismiss();
   return true;
+}
+
+void WindowsDaemon::monitorBackendFailure() {
+  logger.log() << "Tunnel service is down";
+
+  m_tunnelMonitor.stop();
+
+  emit backendFailure();
+  deactivate();
+
+  m_state = Inactive;
 }

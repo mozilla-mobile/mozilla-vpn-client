@@ -8,6 +8,8 @@
 #include "command.h"
 
 class WindowsDaemonServer final : public Command {
+  Q_DISABLE_COPY_MOVE(WindowsDaemonServer)
+
  public:
   explicit WindowsDaemonServer(QObject* parent);
   ~WindowsDaemonServer();
