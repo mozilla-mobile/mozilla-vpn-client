@@ -40,6 +40,21 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
+NetworkRequest* NetworkRequest::createForUrl(QObject* parent,
+                                             const QString& url) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     QObject* parent, const QString& pkceCodeSuccess,
     const QString& pkceCodeVerifier) {
@@ -288,7 +303,7 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
-  emit requestCompleted(data);
+  emit requestCompleted(m_reply, data);
 }
 
 void NetworkRequest::timeout() {

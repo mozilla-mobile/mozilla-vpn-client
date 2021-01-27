@@ -61,6 +61,9 @@ HEADERS += \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/timersingleshot.h \
+    ../../src/update/balrog.h \
+    ../../src/update/updater.h \
+    ../../src/update/versionapi.h \
     helper.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
@@ -112,6 +115,9 @@ SOURCES += \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/timersingleshot.cpp \
+    ../../src/update/balrog.cpp \
+    ../../src/update/updater.cpp \
+    ../../src/update/versionapi.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \

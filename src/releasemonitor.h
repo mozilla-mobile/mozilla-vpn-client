@@ -18,25 +18,16 @@ class ReleaseMonitor final : public QObject {
 
   void runSoon();
 
-  // compare 2 version strings and return:
-  // - -1 if the first one is lower than the second one or if the second one is
-  // empty.
-  // - 0 if they are equal
-  // - 1 if the first one is greater than the second one or if the first one is
-  // empty.
-  static int compareVersions(const QString& a, const QString& b);
-
  signals:
   // for testing
   void releaseChecked();
 
- private slots:
-  void runInternal();
-
  private:
   void schedule();
+  void runInternal();
 
-  [[nodiscard]] bool processData(const QByteArray& data);
+  void updateRequired();
+  void updateRecommended();
 
  private:
   QTimer m_timer;

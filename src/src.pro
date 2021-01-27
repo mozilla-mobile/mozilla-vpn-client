@@ -99,7 +99,10 @@ SOURCES += \
         tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
-        timersingleshot.cpp
+        timersingleshot.cpp \
+        update/balrog.cpp \
+        update/updater.cpp \
+        update/versionapi.cpp
 
 HEADERS += \
         apppermission.h \
@@ -172,7 +175,10 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
-        timersingleshot.h
+        timersingleshot.h \
+        update/balrog.h \
+        update/updater.h \
+        update/versionapi.h
 
 debug {
     message(Adding the inspector)

@@ -1,0 +1,37 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "updater.h"
+#include "leakdetector.h"
+#include "logger.h"
+
+#ifdef MVPN_WINDOWS
+#else
+#  include "balrog.h"
+#  include "versionapi.h"
+#endif
+
+namespace {
+Logger logger(LOG_NETWORKING, "Updater");
+}
+
+// static
+Updater* Updater::create(QObject* parent) {
+  return
+#ifdef MVPN_WINDOWS
+#else
+      new Balrog(parent);
+  // new VersionApi(parent);
+#endif
+}
+
+Updater::Updater(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(Updater);
+  logger.log() << "Updater created";
+}
+
+Updater::~Updater() {
+  MVPN_COUNT_DTOR(Updater);
+  logger.log() << "Updater released";
+}
