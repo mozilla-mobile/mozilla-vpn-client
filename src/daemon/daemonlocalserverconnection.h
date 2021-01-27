@@ -23,6 +23,7 @@ class DaemonLocalServerConnection final : public QObject {
 
   void connected();
   void disconnected();
+  void backendFailure();
 
   void write(const QJsonObject& obj);
 

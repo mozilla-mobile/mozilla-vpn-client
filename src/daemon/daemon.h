@@ -49,6 +49,7 @@ class Daemon : public QObject {
  signals:
   void connected();
   void disconnected();
+  void backendFailure();
 
  protected:
   virtual bool run(Op op, const Config& config) = 0;

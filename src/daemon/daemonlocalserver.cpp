@@ -18,9 +18,7 @@ DaemonLocalServer::DaemonLocalServer(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(DaemonLocalServer);
 }
 
-DaemonLocalServer::~DaemonLocalServer() {
-  MVPN_COUNT_DTOR(DaemonLocalServer);
-}
+DaemonLocalServer::~DaemonLocalServer() { MVPN_COUNT_DTOR(DaemonLocalServer); }
 
 bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);
