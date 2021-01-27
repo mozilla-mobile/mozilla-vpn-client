@@ -401,8 +401,8 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
   }
 
   if (op == Daemon::Down) {
-    stopAndDeleteTunnelService();
     m_tunnelMonitor.stop();
+    stopAndDeleteTunnelService();
     m_state = Inactive;
     return true;
   }
