@@ -575,6 +575,12 @@ else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
 
+    production {
+        RC_ICONS = ui/resources/logo.ico
+    } else {
+        RC_ICONS = ui/resources/logo-beta.ico
+    }
+
     SOURCES += \
         daemon.cpp \
         localsocketcontroller.cpp \
