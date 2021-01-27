@@ -213,15 +213,6 @@ WindowsDaemon::~WindowsDaemon() {
   stopAndDeleteTunnelService();
 }
 
-bool WindowsDaemon::activate(const Config& config) {
-  if (!Daemon::activate(config)) {
-    return false;
-  }
-
-  m_connectionDate = QDateTime::currentDateTime();
-  return true;
-}
-
 QByteArray WindowsDaemon::getStatus() {
   logger.log() << "Status request";
 
