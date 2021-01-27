@@ -49,3 +49,14 @@ macos/gobridge/wireguard-go-version.h
 .idea/
 .vscode/
 MozillaVPN.xcodeproj/
+MozillaVPN.vcxproj*
+
+#Windows 
+.deps
+tunnel.dll
+tunnel.h
+*.wixobj
+MozillaVPN.exe
+MozillaVPN.exp
+MozillaVPN.lib
+MozillaVPN_resource.rc

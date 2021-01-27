@@ -391,11 +391,6 @@ Rectangle {
             PropertyChanges {
                 target: animatedRingsWrapper
                 visible: false
-            }
-
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: true
                 opacity: 1
                 startAnimation: false
             }
