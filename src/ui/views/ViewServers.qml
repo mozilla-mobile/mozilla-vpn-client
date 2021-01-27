@@ -43,11 +43,18 @@ Item {
             width: parent.width
             Component.onCompleted: {
                 for (let i = 0; i < repeater.count; i++) {
-                    if (repeater.itemAt(i).cityListVisible) {
-                        // If city is within above the center line, don't do anything
-                        // If the list is not long enough to scroll the current city to the center, scroll to end.
-                        const currentCityIndex = repeater.itemAt(i).currentCityIndex;
-                        vpnFlickable.contentY = repeater.itemAt(i).y - (vpnFlickable.height / 2) + Theme.rowHeight * 2 + (54 * currentCityIndex)
+                    const countryItem = repeater.itemAt(i);
+                    const serverListYCenter = vpnFlickable.height / 2;
+                    const currentCityIndex = countryItem.currentCityIndex;
+                    const currentCityYPosition = countryItem.y + Theme.rowHeight * 2 + (54 * currentCityIndex) - serverListYCenter;
+
+                    if (countryItem.cityListVisible) {
+                        if (serverListYCenter > currentCityYPosition) {
+                            // current city y position is above the list vertical center
+                            return;
+                        }
+
+                        vpnFlickable.contentY = currentCityYPosition;
                     }
                 }
             }
