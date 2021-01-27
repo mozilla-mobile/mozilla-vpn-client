@@ -16,6 +16,7 @@ Item {
         id: menu
 
         title: qsTrId("vpn.servers.selectLocation")
+        onActiveFocusChanged: if (focus) forceFocus = true
     }
 
     ButtonGroup {
