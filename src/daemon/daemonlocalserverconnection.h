@@ -2,19 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WINDOWSDAEMONCONNECTION_H
-#define WINDOWSDAEMONCONNECTION_H
+#ifndef DAEMONLOCALSERVERCONNECTION_H
+#define DAEMONLOCALSERVERCONNECTION_H
 
 #include <QObject>
 
 class QLocalSocket;
 
-class WindowsDaemonConnection final : public QObject {
-  Q_DISABLE_COPY_MOVE(WindowsDaemonConnection)
+class DaemonLocalServerConnection final : public QObject {
+  Q_DISABLE_COPY_MOVE(DaemonLocalServerConnection)
 
  public:
-  WindowsDaemonConnection(QObject* parent, QLocalSocket* socket);
-  ~WindowsDaemonConnection();
+  DaemonLocalServerConnection(QObject* parent, QLocalSocket* socket);
+  ~DaemonLocalServerConnection();
 
  private:
   void readData();
@@ -32,4 +32,4 @@ class WindowsDaemonConnection final : public QObject {
   QByteArray m_buffer;
 };
 
-#endif  // WINDOWSDAEMONCONNECTION_H
+#endif  // DAEMONLOCALSERVERCONNECTION_H

@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "windowsdaemonconnection.h"
+#include "daemonlocalserverconnection.h"
+#include "daemon.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "windowsdaemon.h"
 
 #include <QLocalSocket>
 #include <QJsonDocument>
@@ -13,13 +13,13 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsDaemonConnection");
+Logger logger(LOG_MAIN, "DaemonLocalServerConnection");
 }
 
-WindowsDaemonConnection::WindowsDaemonConnection(QObject* parent,
+DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
                                                  QLocalSocket* socket)
     : QObject(parent) {
-  MVPN_COUNT_CTOR(WindowsDaemonConnection);
+  MVPN_COUNT_CTOR(DaemonLocalServerConnection);
 
   logger.log() << "Connection created";
 
@@ -27,22 +27,22 @@ WindowsDaemonConnection::WindowsDaemonConnection(QObject* parent,
   m_socket = socket;
 
   connect(m_socket, &QLocalSocket::readyRead, this,
-          &WindowsDaemonConnection::readData);
+          &DaemonLocalServerConnection::readData);
 
-  WindowsDaemon* daemon = WindowsDaemon::instance();
-  connect(daemon, &WindowsDaemon::connected, this,
-          &WindowsDaemonConnection::connected);
-  connect(daemon, &WindowsDaemon::disconnected, this,
-          &WindowsDaemonConnection::disconnected);
+  Daemon* daemon = Daemon::instance();
+  connect(daemon, &Daemon::connected, this,
+          &DaemonLocalServerConnection::connected);
+  connect(daemon, &Daemon::disconnected, this,
+          &DaemonLocalServerConnection::disconnected);
 }
 
-WindowsDaemonConnection::~WindowsDaemonConnection() {
-  MVPN_COUNT_DTOR(WindowsDaemonConnection);
+DaemonLocalServerConnection::~DaemonLocalServerConnection() {
+  MVPN_COUNT_DTOR(DaemonLocalServerConnection);
 
   logger.log() << "Connection released";
 }
 
-void WindowsDaemonConnection::readData() {
+void DaemonLocalServerConnection::readData() {
   logger.log() << "Read Data";
 
   Q_ASSERT(m_socket);
@@ -69,7 +69,7 @@ void WindowsDaemonConnection::readData() {
   }
 }
 
-void WindowsDaemonConnection::parseCommand(const QByteArray& data) {
+void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   logger.log() << "Command received:" << data;
 
   QJsonDocument json = QJsonDocument::fromJson(data);
@@ -88,13 +88,13 @@ void WindowsDaemonConnection::parseCommand(const QByteArray& data) {
   QString type = typeValue.toString();
   if (type == "activate") {
     Daemon::Config config;
-    if (!WindowsDaemon::parseConfig(obj, config)) {
+    if (!Daemon::parseConfig(obj, config)) {
       logger.log() << "Invalid configuration";
       emit disconnected();
       return;
     }
 
-    if (!WindowsDaemon::instance()->activate(config)) {
+    if (!Daemon::instance()->activate(config)) {
       logger.log() << "Failed to activate the interface";
       emit disconnected();
     }
@@ -102,41 +102,46 @@ void WindowsDaemonConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "deactivate") {
-    WindowsDaemon::instance()->deactivate();
+    Daemon::instance()->deactivate();
     return;
   }
 
   if (type == "status") {
-    WindowsDaemon::instance()->status(m_socket);
+   m_socket->write(Daemon::instance()->status());
+    m_socket->write("\n");
     return;
   }
 
   if (type == "logs") {
-    WindowsDaemon::instance()->logs(m_socket);
+    QJsonObject obj;
+    obj.insert("type", "logs");
+    obj.insert("logs", Daemon::instance()->logs().replace("\n", "|"));
+    m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    m_socket->write("\n");
     return;
   }
 
   if (type == "cleanlogs") {
-    WindowsDaemon::instance()->cleanLogs();
+    Daemon::instance()->cleanLogs();
     return;
   }
 
   logger.log() << "Invalid command:" << type;
 }
 
-void WindowsDaemonConnection::connected() {
+void DaemonLocalServerConnection::connected() {
   QJsonObject obj;
   obj.insert("type", "connected");
   write(obj);
 }
 
-void WindowsDaemonConnection::disconnected() {
+void DaemonLocalServerConnection::disconnected() {
   QJsonObject obj;
   obj.insert("type", "disconnected");
   write(obj);
 }
 
-void WindowsDaemonConnection::write(const QJsonObject& obj) {
+void DaemonLocalServerConnection::write(const QJsonObject& obj) {
   m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
 }

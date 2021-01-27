@@ -5,24 +5,18 @@
 #ifndef WINDOWSDAEMON_H
 #define WINDOWSDAEMON_H
 
-#include "daemon.h"
+#include "daemon/daemon.h"
 
 #include <QDateTime>
-
-class QLocalSocket;
-class QJsonObject;
 
 class WindowsDaemon final : public Daemon {
  public:
   WindowsDaemon();
   ~WindowsDaemon();
 
-  static WindowsDaemon* instance();
-
   bool activate(const Config& config) override;
 
-  void status(QLocalSocket* socket);
-  void logs(QLocalSocket* socket);
+  QByteArray status() override;
 
  private:
   bool run(Op op, const Config& config) override;
