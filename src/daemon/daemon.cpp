@@ -58,6 +58,7 @@ bool Daemon::activate(const Config& config) {
         return false;
       }
 
+      m_connectionDate = QDateTime::currentDateTime();
       emit connected();
       return true;
     }
@@ -73,17 +74,16 @@ bool Daemon::activate(const Config& config) {
     Q_ASSERT(!m_connected);
   }
 
-  m_connected = true;
+  m_connected = run(Up, m_lastConfig);
+  m_connectionDate = QDateTime::currentDateTime();
 
-  bool status = run(Up, m_lastConfig);
+  logger.log() << "Status:" << m_connected;
 
-  logger.log() << "Status:" << status;
-
-  if (status) {
+  if (m_connected) {
     emit connected();
   }
 
-  return status;
+  return m_connected;
 }
 
 // static

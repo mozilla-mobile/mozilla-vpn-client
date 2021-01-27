@@ -34,7 +34,7 @@ void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray& data) {
+          [this, vpn](QNetworkReply*, const QByteArray& data) {
             logger.log() << "Lookup completed";
             if (vpn->captivePortal()->fromJson(data)) {
               vpn->captivePortal()->writeSettings();
