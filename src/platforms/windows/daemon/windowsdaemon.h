@@ -6,10 +6,15 @@
 #define WINDOWSDAEMON_H
 
 #include "daemon/daemon.h"
+#include "windowstunnelmonitor.h"
 
 #include <QDateTime>
 
+#define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
+
 class WindowsDaemon final : public Daemon {
+  Q_DISABLE_COPY_MOVE(WindowsDaemon)
+
  public:
   WindowsDaemon();
   ~WindowsDaemon();
@@ -28,6 +33,9 @@ class WindowsDaemon final : public Daemon {
   bool registerTunnelService(const QString& configFile);
 
  private:
+  void monitorBackendFailure();
+
+ private:
   QDateTime m_connectionDate;
 
   enum State {
@@ -36,6 +44,8 @@ class WindowsDaemon final : public Daemon {
   };
 
   State m_state = Inactive;
+
+  WindowsTunnelMonitor m_tunnelMonitor;
 };
 
 #endif  // WINDOWSDAEMON_H
