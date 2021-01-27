@@ -27,6 +27,10 @@ class WindowsDaemon final : public Daemon {
  private:
   bool run(Op op, const Config& config) override;
 
+  bool supportServerSwitching(const Config& config) const override;
+
+  bool switchServer(const Config& config) override;
+
   bool registerTunnelService(const QString& configFile);
 
  private:

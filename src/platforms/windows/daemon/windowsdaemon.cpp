@@ -108,6 +108,51 @@ bool stopAndDeleteTunnelService() {
   return true;
 }
 
+HANDLE createPipe() {
+  HANDLE pipe = INVALID_HANDLE_VALUE;
+
+  auto guard = qScopeGuard([&] {
+    if (pipe != INVALID_HANDLE_VALUE) {
+      CloseHandle(pipe);
+    }
+  });
+
+  LPTSTR tunnelName = (LPTSTR)TEXT(TUNNEL_NAMED_PIPE);
+
+  uint32_t tries = 0;
+  while (tries < 30) {
+    pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                      OPEN_EXISTING, 0, nullptr);
+
+    if (pipe != INVALID_HANDLE_VALUE) {
+      break;
+    }
+
+    if (GetLastError() != ERROR_PIPE_BUSY) {
+      WindowsCommons::windowsLog("Failed to create a named pipe");
+      return INVALID_HANDLE_VALUE;
+    }
+
+    logger.log() << "Pipes are busy. Let's wait";
+
+    if (!WaitNamedPipe(tunnelName, 1000)) {
+      WindowsCommons::windowsLog("Failed to wait for named pipes");
+      return INVALID_HANDLE_VALUE;
+    }
+
+    ++tries;
+  }
+
+  DWORD mode = PIPE_READMODE_BYTE;
+  if (!SetNamedPipeHandleState(pipe, &mode, nullptr, nullptr)) {
+    WindowsCommons::windowsLog("Failed to set the read-mode on pipe");
+    return INVALID_HANDLE_VALUE;
+  }
+
+  guard.dismiss();
+  return pipe;
+}
+
 }  // namespace
 
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
@@ -155,7 +200,7 @@ void WindowsDaemon::status(QLocalSocket* socket) {
   obj.insert("type", "status");
   obj.insert("connected", m_connected);
 
-  HANDLE pipe = INVALID_HANDLE_VALUE;
+  HANDLE pipe = createPipe();
 
   auto guard = qScopeGuard([&] {
     socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
@@ -166,39 +211,7 @@ void WindowsDaemon::status(QLocalSocket* socket) {
     }
   });
 
-  if (!m_connected) {
-    return;
-  }
-
-  LPTSTR tunnelName = (LPTSTR)TEXT(TUNNEL_NAMED_PIPE);
-
-  uint32_t tries = 0;
-  while (tries < 30) {
-    pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                      OPEN_EXISTING, 0, nullptr);
-
-    if (pipe != INVALID_HANDLE_VALUE) {
-      break;
-    }
-
-    if (GetLastError() != ERROR_PIPE_BUSY) {
-      WindowsCommons::windowsLog("Failed to create a named pipe");
-      return;
-    }
-
-    logger.log() << "Pipes are busy. Let's wait";
-
-    if (!WaitNamedPipe(tunnelName, 1000)) {
-      WindowsCommons::windowsLog("Failed to wait for named pipes");
-      return;
-    }
-
-    ++tries;
-  }
-
-  DWORD mode = PIPE_READMODE_BYTE;
-  if (!SetNamedPipeHandleState(pipe, &mode, nullptr, nullptr)) {
-    WindowsCommons::windowsLog("Failed to set the read-mode on pipe");
+  if (pipe == INVALID_HANDLE_VALUE || !m_connected) {
     return;
   }
 
@@ -249,6 +262,7 @@ void WindowsDaemon::status(QLocalSocket* socket) {
   }
 
   guard.dismiss();
+  CloseHandle(pipe);
 
   obj.insert("status", true);
   obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
@@ -390,13 +404,17 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
     return false;
   }
 
+  QStringList addresses;
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    addresses.append(ip.toString());
+  }
+
   if (!WgQuickProcess::createConfigFile(
           tunnelFile, config.m_privateKey, config.m_deviceIpv4Address,
           config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
           config.m_serverIpv6Gateway, config.m_serverPublicKey,
           config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-          config.m_allowedIPAddressRanges.join(", "), config.m_serverPort,
-          config.m_ipv6Enabled)) {
+          addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled)) {
     logger.log() << "Failed to create a config file";
     return false;
   }
@@ -409,5 +427,73 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
   logger.log() << "Registration completed";
 
   m_state = Active;
+  return true;
+}
+
+bool WindowsDaemon::supportServerSwitching(const Config& config) const {
+  return m_lastConfig.m_privateKey == config.m_privateKey &&
+         m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
+         m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
+         m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
+         m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+}
+
+bool WindowsDaemon::switchServer(const Config& config) {
+  logger.log() << "Switching server";
+
+  Q_ASSERT(m_connected);
+
+  HANDLE pipe = createPipe();
+
+  auto guard = qScopeGuard([&] {
+    if (pipe != INVALID_HANDLE_VALUE) {
+      CloseHandle(pipe);
+    }
+  });
+
+  if (pipe == INVALID_HANDLE_VALUE) {
+    return false;
+  }
+
+  QByteArray message;
+  {
+    QTextStream out(&message);
+    out << "set=1\n";
+    out << "replace_peers=true\n";
+
+    QByteArray publicKey =
+        QByteArray::fromBase64(config.m_serverPublicKey.toLocal8Bit()).toHex();
+    out << "public_key=" << publicKey << "\n";
+
+    out << "endpoint=" << config.m_serverIpv4AddrIn << ":"
+        << config.m_serverPort << "\n";
+
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      out << "allowed_ip=" << ip.toString() << "\n";
+    }
+
+    out << "\n";
+  }
+
+  DWORD written;
+  if (!WriteFile(pipe, message.constData(), message.length(), &written,
+                 nullptr)) {
+    WindowsCommons::windowsLog("Failed to write into the pipe");
+    return false;
+  }
+
+  QByteArray data;
+  while (true) {
+    char buffer[512];
+    DWORD read = 0;
+    if (!ReadFile(pipe, buffer, sizeof(buffer), &read, nullptr)) {
+      break;
+    }
+
+    data.append(buffer, read);
+  }
+
+  logger.log() << "DATA:" << data;
+  guard.dismiss();
   return true;
 }
