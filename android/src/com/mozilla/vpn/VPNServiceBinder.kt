@@ -22,7 +22,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private val mListeners = mutableListOf<IBinder>()
+    private var mListener: IBinder? = null;
     private var mResumeConfig: Config? = null
 
     /**
@@ -123,8 +123,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.registerEventListener -> {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
-                mListeners.add(binder)
-                Log.d(tag, "Registered ${mListeners.size} EventListeners")
+                mListener = binder;
+                Log.d(tag, "Registered a new EventListeners")
                 if(mService.state == Tunnel.State.UP){
                     dispatchEvent(EVENTS.init, "connected")
                 }else{
@@ -193,12 +193,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String) {
-        mListeners.forEach {
-           if (it.isBinderAlive) {
-               val data = Parcel.obtain()
-               data.writeByteArray(payload.toByteArray(charset("UTF-8")))
-               it.transact(code, data, Parcel.obtain(), 0)
-           }
+        mListener?.let {
+            if (it.isBinderAlive) {
+                val data = Parcel.obtain()
+                data.writeByteArray(payload.toByteArray(charset("UTF-8")))
+                it.transact(code, data, Parcel.obtain(), 0)
+            }
         }
     }
 

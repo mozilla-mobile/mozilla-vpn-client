@@ -48,14 +48,14 @@ class AndroidController final : public ControllerImpl,
 
  private:
   Server m_server;
-  bool m_serviceConnected = false;
+  bool m_initialized = false;
   std::function<void(const QString&)> m_logCallback;
 
   QAndroidBinder m_serviceBinder;
   class VPNBinder : public QAndroidBinder {
    public:
     VPNBinder(AndroidController* controller) : m_controller(controller) {}
-
+    ~VPNBinder(){};
     bool onTransact(int code, const QAndroidParcel& data,
                     const QAndroidParcel& reply,
                     QAndroidBinder::CallType flags) override;

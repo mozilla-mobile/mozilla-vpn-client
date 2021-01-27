@@ -6,6 +6,8 @@
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "errorhandler.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
@@ -68,7 +70,7 @@ AndroidController* AndroidController::instance() { return s_instance; }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.log() << "Initializing";
-
+  m_initialized = false;
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
@@ -133,7 +135,6 @@ void AndroidController::activate(
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, Reason reason) {
   logger.log() << "Activation";
-
   m_server = server;
 
   // Serialise arguments for the VPNService
@@ -228,7 +229,7 @@ void AndroidController::cleanupBackendLogs() {
 
 void AndroidController::onServiceConnected(
     const QString& name, const QAndroidBinder& serviceBinder) {
-  logger.log() << "Server connected";
+  logger.log() << "VPN-Service connected";
 
   Q_UNUSED(name);
 
@@ -245,10 +246,9 @@ void AndroidController::onServiceConnected(
 }
 
 void AndroidController::onServiceDisconnected(const QString& name) {
-  logger.log() << "Server disconnected";
-  m_serviceConnected = false;
   Q_UNUSED(name);
-  // TODO: Maybe restart? Or crash?
+  logger.log() << "Service disconnected";
+  MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
 }
 
 /**
@@ -266,12 +266,13 @@ bool AndroidController::VPNBinder::onTransact(int code,
   Q_UNUSED(data);
   Q_UNUSED(reply);
   Q_UNUSED(flags);
-
   QJsonDocument doc;
   QString buffer;
   switch (code) {
     case EVENT_INIT:
       logger.log() << "Transact: init";
+      Q_ASSERT(!m_controller->m_initialized);
+      m_controller->m_initialized = true;
       buffer = readUTF8Parcel(data);
       if (buffer == "connected") {
         emit m_controller->initialized(true, true, QDateTime());
