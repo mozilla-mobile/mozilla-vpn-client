@@ -130,8 +130,8 @@ void LocalSocketController::deactivate(Reason reason) {
     return;
   }
 
-  // No disconnect if for server-switching or connection checks.
-  if (reason != ReasonNone) {
+  if (reason == ReasonSwitching) {
+    logger.log() << "No disconnect for quick server switching";
     emit disconnected();
     return;
   }
