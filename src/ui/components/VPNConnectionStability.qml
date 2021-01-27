@@ -24,6 +24,11 @@ RowLayout {
                 opacity: 0
             }
 
+            PropertyChanges {
+                target: logoSubtitle
+                visible: true
+            }
+
         },
         State {
             name: VPNConnectionHealth.Unstable
@@ -34,6 +39,11 @@ RowLayout {
                 visible: true
             }
 
+            PropertyChanges {
+                target: logoSubtitle
+                visible: false
+            }
+
         },
         State {
             name: VPNConnectionHealth.NoSignal
@@ -42,6 +52,11 @@ RowLayout {
                 target: stability
                 opacity: 1
                 visible: true
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                visible: false
             }
 
         }

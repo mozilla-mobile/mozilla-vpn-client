@@ -262,7 +262,6 @@ Rectangle {
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
                 text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
-                visible: VPNConnectionHealth.stability === VPNConnectionHealth.Stable
                 color: "#FFFFFF"
                 opacity: 0.8
             }
