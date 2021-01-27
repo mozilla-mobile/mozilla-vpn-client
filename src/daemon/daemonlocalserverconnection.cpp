@@ -17,7 +17,7 @@ Logger logger(LOG_MAIN, "DaemonLocalServerConnection");
 }
 
 DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
-                                                 QLocalSocket* socket)
+                                                         QLocalSocket* socket)
     : QObject(parent) {
   MVPN_COUNT_CTOR(DaemonLocalServerConnection);
 
@@ -34,6 +34,8 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
           &DaemonLocalServerConnection::connected);
   connect(daemon, &Daemon::disconnected, this,
           &DaemonLocalServerConnection::disconnected);
+  connect(daemon, &Daemon::backendFailure, this,
+          &DaemonLocalServerConnection::backendFailure);
 }
 
 DaemonLocalServerConnection::~DaemonLocalServerConnection() {
@@ -107,7 +109,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "status") {
-   m_socket->write(Daemon::instance()->status());
+    m_socket->write(Daemon::instance()->status());
     m_socket->write("\n");
     return;
   }
@@ -138,6 +140,12 @@ void DaemonLocalServerConnection::connected() {
 void DaemonLocalServerConnection::disconnected() {
   QJsonObject obj;
   obj.insert("type", "disconnected");
+  write(obj);
+}
+
+void DaemonLocalServerConnection::backendFailure() {
+  QJsonObject obj;
+  obj.insert("type", "backendFailure");
   write(obj);
 }
 

@@ -25,7 +25,7 @@ Daemon* s_daemon = nullptr;
 }  // namespace
 
 Daemon::Daemon(QObject* parent) : QObject(parent) {
-  MVPN_COUNT_CTOR(Daemon); 
+  MVPN_COUNT_CTOR(Daemon);
 
   logger.log() << "Daemon created";
 
@@ -47,7 +47,6 @@ Daemon* Daemon::instance() {
   Q_ASSERT(s_daemon);
   return s_daemon;
 }
-
 
 bool Daemon::activate(const Config& config) {
   m_lastConfig = config;

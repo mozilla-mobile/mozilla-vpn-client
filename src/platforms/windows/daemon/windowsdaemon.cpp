@@ -153,6 +153,48 @@ HANDLE createPipe() {
   return pipe;
 }
 
+QString exitCodeToFailure(DWORD exitCode) {
+  // The order of this error code is taken from wireguard.
+  switch (exitCode) {
+    case 0:
+      return "No error";
+    case 1:
+      return "Error when opening the ringlogger log file";
+    case 2:
+      return "Error while loading the WireGuard configuration file from "
+             "path.";
+    case 3:
+      return "Error while creating a WinTun device.";
+    case 4:
+      return "Error while listening on a named pipe.";
+    case 5:
+      return "Error while resolving DNS hostname endpoints.";
+    case 6:
+      return "Error while manipulating firewall rules.";
+    case 7:
+      return "Error while setting the device configuration.";
+    case 8:
+      return "Error while binding sockets to default routes.";
+    case 9:
+      return "Unable to set interface addresses, routes, dns, and/or "
+             "interface settings.";
+    case 10:
+      return "Error while determining current executable path.";
+    case 11:
+      return "Error while opening the NUL file.";
+    case 12:
+      return "Error while attempting to track tunnels.";
+    case 13:
+      return "Error while attempting to enumerate current sessions.";
+    case 14:
+      return "Error while dropping privileges.";
+    case 15:
+      return "Windows internal error.";
+    default:
+      return "Unknown error";
+  }
+}
+
 }  // namespace
 
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
@@ -180,7 +222,6 @@ bool WindowsDaemon::activate(const Config& config) {
 
 QByteArray WindowsDaemon::status() {
   logger.log() << "Status request";
-  Q_ASSERT(socket);
 
   QJsonObject obj;
   obj.insert("type", "status");
@@ -329,6 +370,7 @@ bool WindowsDaemon::registerTunnelService(const QString& configFile) {
   }
 
   if (waitForServiceStatus(service, SERVICE_RUNNING)) {
+    logger.log() << "The tunnel service is up and running";
     return true;
   }
 
@@ -340,7 +382,11 @@ bool WindowsDaemon::registerTunnelService(const QString& configFile) {
     return false;
   }
 
-  // TODO expose the status.dwWin32ExitCode
+  logger.log() << "The tunnel service exits with status code:"
+               << status.dwWin32ExitCode << "-"
+               << exitCodeToFailure(status.dwWin32ExitCode);
+
+  emit backendFailure();
   return false;
 }
 
