@@ -38,11 +38,20 @@ Item {
             easing.type: Easing.OutQuad
         }
 
+        Rectangle {
+            id: verticalSpacer
+
+            height: Theme.windowMargin / 2
+            width: parent.width
+            color: "transparent"
+        }
+
         Column {
             id: serverList
 
             spacing: 14
             width: parent.width
+            anchors.top: verticalSpacer.bottom
             Component.onCompleted: {
 
                 // Scroll vpnFlickable so that the current server city is
