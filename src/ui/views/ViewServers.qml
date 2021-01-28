@@ -19,83 +19,91 @@ Item {
         onActiveFocusChanged: if (focus) forceFocus = true
     }
 
-    ButtonGroup {
-        id: radioButtonGroup
-    }
+    FocusScope {
+        id: focusScope
 
+        property var lastFocusedItemIdx
 
-    VPNFlickable {
-        id: vpnFlickable
-
-        flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
         height: parent.height - menu.height
         anchors.top: menu.bottom
         width: parent.width
+        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
 
-        NumberAnimation on contentY {
-            id: scrollAnimation
-
-            duration: 300
-            easing.type: Easing.OutQuad
+        ButtonGroup {
+            id: radioButtonGroup
         }
 
-        Rectangle {
-            id: verticalSpacer
 
-            height: Theme.windowMargin / 2
-            width: parent.width
-            color: "transparent"
-        }
+        VPNFlickable {
+            id: vpnFlickable
 
-        Column {
-            id: serverList
+            flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
+            anchors.fill: parent
 
-            spacing: 14
-            width: parent.width
-            anchors.top: verticalSpacer.bottom
-            Component.onCompleted: {
+            NumberAnimation on contentY {
+                id: scrollAnimation
 
-                // Scroll vpnFlickable so that the current server city is
-                // vertically centered in the view
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
 
-                const serverListYCenter = vpnFlickable.height / 2;
+            Rectangle {
+                id: verticalSpacer
 
-                for (let idx = 0; idx < repeater.count; idx++) {
-                    const countryItem = repeater.itemAt(idx);
-                    const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                    if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
-                        continue;
+                height: Theme.windowMargin / 2
+                width: parent.width
+                color: "transparent"
+            }
+
+            Column {
+                id: serverList
+
+                spacing: 14
+                width: parent.width
+                anchors.top: verticalSpacer.bottom
+                Component.onCompleted: {
+
+                    // Scroll vpnFlickable so that the current server city is
+                    // vertically centered in the view
+
+                    const serverListYCenter = vpnFlickable.height / 2;
+
+                    for (let idx = 0; idx < repeater.count; idx++) {
+                        const countryItem = repeater.itemAt(idx);
+                        const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                        if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
+                            continue;
+                        }
+
+                        const currentCityYPosition = countryItem.y + (Theme.rowHeight * 2) + (54 * countryItem.currentCityIndex) - serverListYCenter;
+                        const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
+
+                        vpnFlickable.contentY = destinationY;
+                        return;
                     }
-
-                    const currentCityYPosition = countryItem.y + (Theme.rowHeight * 2) + (54 * countryItem.currentCityIndex) - serverListYCenter;
-                    const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
-
-                    vpnFlickable.contentY = destinationY;
-                    return;
                 }
-            }
 
-            function scrollDelegateIntoView(item) {
-                if (window.height > vpnFlickable.contentHeight) {
-                    return;
+                function scrollDelegateIntoView(item) {
+                    if (window.height > vpnFlickable.contentHeight) {
+                        return;
+                    }
+                    const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                    const approximateDelegateHeight = 60;
+                    const ext = approximateDelegateHeight + yPosition;
+
+                    if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
+                        const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
+                        scrollAnimation.to = destinationY;
+                        scrollAnimation.start();
+                    }
                 }
-                const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                const approximateDelegateHeight = 60;
-                const ext = approximateDelegateHeight + yPosition;
 
-                if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
-                    const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
-                    scrollAnimation.to = destinationY;
-                    scrollAnimation.start();
+                Repeater {
+                    id: repeater
+                    model: VPNServerCountryModel
+                    delegate: VPNServerCountry{}
                 }
-            }
-
-            Repeater {
-                id: repeater
-                model: VPNServerCountryModel
-                delegate: VPNServerCountry{}
             }
         }
     }
-
 }
