@@ -36,7 +36,7 @@ VPNClickableRow {
     onActiveFocusChanged: parent.scrollDelegateIntoView(serverCountry)
 
     accessibleName: name
-    Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : menu.forceActiveFocus()
+    Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
     Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
         focusScope.lastFocusedItemIdx = index;

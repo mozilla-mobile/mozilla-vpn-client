@@ -43,7 +43,7 @@ Item {
             NumberAnimation on contentY {
                 id: scrollAnimation
 
-                duration: 300
+                duration: 200
                 easing.type: Easing.OutQuad
             }
 
