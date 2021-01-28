@@ -30,6 +30,9 @@ CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
+ECHO Importing languages...
+python scripts\importLanguages.py
+
 ECHO Creating the project...
 qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
 IF %ERRORLEVEL% NEQ 0 (
