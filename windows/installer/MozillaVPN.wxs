@@ -81,6 +81,7 @@
 					<Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
 				</File>
 				<File Source="../tunnel/$(var.Platform)/tunnel.dll" />
+				<File Source="../balrog/$(var.Platform)/balrog.dll" />
 				<File Source="../../libcrypto-1_1-x64.dll" />
 				<File Source="../../libssl-1_1-x64.dll" />
 				<File Source="../../libEGL.dll" />

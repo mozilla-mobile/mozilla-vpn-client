@@ -100,7 +100,6 @@ SOURCES += \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
-        update/balrog.cpp \
         update/updater.cpp \
         update/versionapi.cpp
 
@@ -176,7 +175,6 @@ HEADERS += \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
         timersingleshot.h \
-        update/balrog.h \
         update/updater.h \
         update/versionapi.h
 
@@ -340,7 +338,6 @@ else:linux:!android {
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
-    PKGCONFIG += openssl
 }
 
 # Platform-specific: android
@@ -606,6 +603,7 @@ else:win* {
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
+        update/balrog.cpp \
         wgquickprocess.cpp
 
     HEADERS += \
@@ -623,6 +621,7 @@ else:win* {
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
+        update/balrog.h \
         wgquickprocess.h
 }
 

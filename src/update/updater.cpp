@@ -7,7 +7,7 @@
 #include "leakdetector.h"
 #include "versionapi.h"
 
-#ifdef MVPN_LINUX
+#ifdef MVPN_WINDOWS
 #  include "balrog.h"
 #endif
 
@@ -21,7 +21,7 @@ Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
     return new VersionApi(parent);
   }
 
-#ifdef MVPN_LINUX
+#ifdef MVPN_WINDOWS
   return new Balrog(parent);
 #endif
 

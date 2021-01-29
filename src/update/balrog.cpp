@@ -10,17 +10,18 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QMessageAuthenticationCode>
+#include <QProcess>
 #include <QScopeGuard>
 #include <QSslCertificate>
 #include <QSslKey>
 #include <QTemporaryDir>
 
-#include <openssl/bio.h>
-#include <openssl/ec.h>
-#include <openssl/err.h>
-#include <openssl/ossl_typ.h>
-#include <openssl/pem.h>
+#ifdef MVPN_WINDOWS
+#  include "windows.h"
+#  include "platforms/windows/daemon/windowscommons.h"
+#else
+#  error Platform not supported yet
+#endif
 
 constexpr const char* BALROG_URL =
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json";
@@ -35,7 +36,12 @@ constexpr const char* BALROG_CERT_SUBJECT_CN =
 
 namespace {
 Logger logger(LOG_NETWORKING, "Balrog");
+
+void balrogLogger(int level, const char* msg) {
+  Q_UNUSED(level);
+  logger.log() << "BalrogGo:" << msg;
 }
+}  // namespace
 
 Balrog::Balrog(QObject* parent) : Updater(parent) {
   MVPN_COUNT_CTOR(Balrog);
@@ -56,7 +62,7 @@ QString Balrog::userAgent() {
 
 void Balrog::start() {
   QString url =
-      QString(BALROG_URL).arg(/* TODO APP_VERSION */ "1").arg(userAgent());
+      QString(BALROG_URL).arg(APP_VERSION).arg(userAgent());
   logger.log() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForUrl(this, url);
@@ -76,55 +82,6 @@ void Balrog::start() {
               deleteLater();
             }
           });
-}
-
-bool Balrog::processData(const QByteArray& data) {
-  QJsonDocument json = QJsonDocument::fromJson(data);
-  if (!json.isObject()) {
-    logger.log() << "A valid JSON object expected";
-    return false;
-  }
-
-  QJsonObject obj = json.object();
-
-  QString url = obj.value("url").toString();
-  if (url.isEmpty()) {
-    logger.log() << "Invalid URL in the JSON document";
-    return false;
-  }
-
-  QString hashFunction = obj.value("hashFunction").toString();
-  if (hashFunction.isEmpty()) {
-    logger.log() << "No hashFunction item";
-    return false;
-  }
-
-  QString hashValue = obj.value("hashValue").toString();
-  if (hashValue.isEmpty()) {
-    logger.log() << "No hashValue item";
-    return false;
-  }
-
-  NetworkRequest* request = NetworkRequest::createForUrl(this, url);
-
-  connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
-            deleteLater();
-          });
-
-  connect(request, &NetworkRequest::requestCompleted,
-          [this, hashValue, hashFunction, url](QNetworkReply*,
-                                               const QByteArray& data) {
-            logger.log() << "Request completed";
-
-            if (!computeHash(url, data, hashValue, hashFunction)) {
-              logger.log() << "Ignore failure.";
-              deleteLater();
-            }
-          });
-
-  return true;
 }
 
 bool Balrog::fetchSignature(QNetworkReply* reply,
@@ -169,13 +126,6 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
     return false;
   }
 
-  signatureBlob =
-      QByteArray::fromBase64(signatureBlob, QByteArray::Base64UrlEncoding);
-  if (signatureBlob.isEmpty()) {
-    logger.log() << "Invalid p256ecdsa/p384ecdsa entry";
-    return false;
-  }
-
   logger.log() << "Fetching URL:" << x5u;
 
   NetworkRequest* request = NetworkRequest::createForUrl(this, x5u);
@@ -203,7 +153,6 @@ bool Balrog::checkSignature(const QByteArray& signature,
                             QCryptographicHash::Algorithm algorithm,
                             const QByteArray& data) {
   logger.log() << "Checking the signature";
-
   QList<QSslCertificate> list;
   QByteArray cert;
   for (const QByteArray line : signature.split('\n')) {
@@ -284,94 +233,120 @@ bool Balrog::validateSignature(const QByteArray& publicKey,
                                const QByteArray& data,
                                QCryptographicHash::Algorithm algorithm,
                                const QByteArray& signature) {
-  BIO* bio = nullptr;
-  EC_KEY* key = nullptr;
-  ECDSA_SIG* sig = nullptr;
+  // The algortihm is detected by the length of the signature
+  Q_UNUSED(algorithm);
+  typedef struct {
+    const char* p;
+    size_t n;
+  } gostring_t;
 
-  auto cleanup = qScopeGuard([&] {
-    if (bio) BIO_free(bio);
-    if (key) EC_KEY_free(key);
-    if (sig) ECDSA_SIG_free(sig);
-  });
+  typedef void (*logFunc)(int level, const char* msg);
+  typedef bool WireGuardTunnelService(gostring_t settings);
+  typedef void BalrogSetLogger(logFunc func);
+  typedef unsigned char BalrogValidateSignature(
+      gostring_t publicKey, gostring_t signature, gostring_t data);
 
-  bio = BIO_new(BIO_s_mem());
-  if (!bio) {
-    logger.log() << "Failed to create a BIO object";
+  static HMODULE balrogDll = nullptr;
+  static BalrogSetLogger* balrogSetLogger = nullptr;
+  static BalrogValidateSignature* balrogValidateSignature = nullptr;
+
+  if (!balrogDll) {
+    // This process will be used by the wireguard tunnel. No need to call
+    // FreeLibrary.
+    balrogDll = LoadLibrary(TEXT("balrog.dll"));
+    if (!balrogDll) {
+      WindowsCommons::windowsLog("Failed to load tunnel.dll");
+      return false;
+    }
+  }
+
+  if (!balrogSetLogger) {
+    balrogSetLogger =
+        (BalrogSetLogger*)GetProcAddress(balrogDll, "balrogSetLogger");
+    if (!balrogSetLogger) {
+      WindowsCommons::windowsLog("Failed to get balrogSetLogger function");
+      return false;
+    }
+
+    balrogSetLogger(balrogLogger);
+  }
+
+  if (!balrogValidateSignature) {
+    balrogValidateSignature = (BalrogValidateSignature*)GetProcAddress(
+        balrogDll, "balrogValidateSignature");
+    if (!balrogValidateSignature) {
+      WindowsCommons::windowsLog(
+          "Failed to get balrogValidateSignature function");
+      return false;
+    }
+  }
+
+  QByteArray publicKeyCopy = publicKey;
+  gostring_t publicKeyGo{publicKeyCopy.constData(),
+                         (size_t)publicKeyCopy.length()};
+
+  QByteArray signatureCopy = signature;
+  gostring_t signatureGo{signatureCopy.constData(),
+                         (size_t)signatureCopy.length()};
+
+  QByteArray dataCopy = data;
+  gostring_t dataGo{dataCopy.constData(), (size_t)dataCopy.length()};
+
+  unsigned char verify =
+      balrogValidateSignature(publicKeyGo, signatureGo, dataGo);
+  if (!verify) {
+    logger.log() << "Verification failed";
     return false;
   }
 
-  if (BIO_write(bio, publicKey.constData(), publicKey.length()) !=
-      publicKey.length()) {
-    logger.log() << "Failed to write the public key";
+  return true;
+}
+
+bool Balrog::processData(const QByteArray& data) {
+  QJsonDocument json = QJsonDocument::fromJson(data);
+  if (!json.isObject()) {
+    logger.log() << "A valid JSON object expected";
     return false;
   }
 
-  int nid = 0;
-  switch (algorithm) {
-    case QCryptographicHash::Sha384:
-      nid = NID_secp384r1;
-      break;
-    case QCryptographicHash::Sha256:
-      nid = NID_X9_62_prime256v1;
-      break;
-    case QCryptographicHash::Sha512:
-      nid = NID_secp521r1;
-      break;
-    default:
-      qFatal("Invalid hash");
-  }
+  QJsonObject obj = json.object();
 
-  key = EC_KEY_new_by_curve_name(nid);
-  if (!key) {
-    logger.log() << "Failed to create the key object";
+  QString url = obj.value("url").toString();
+  if (url.isEmpty()) {
+    logger.log() << "Invalid URL in the JSON document";
     return false;
   }
 
-  if (!PEM_read_bio_EC_PUBKEY(bio, &key, nullptr, nullptr)) {
-    logger.log() << "Failed to create the key";
+  QString hashFunction = obj.value("hashFunction").toString();
+  if (hashFunction.isEmpty()) {
+    logger.log() << "No hashFunction item";
     return false;
   }
 
-  if (!EC_KEY_check_key(key)) {
-    logger.log() << "Invalid key";
+  QString hashValue = obj.value("hashValue").toString();
+  if (hashValue.isEmpty()) {
+    logger.log() << "No hashValue item";
     return false;
   }
 
-  const unsigned char* signaturePtr =
-      (const unsigned char*)signature.constData();
+  NetworkRequest* request = NetworkRequest::createForUrl(this, url);
 
-  BIGNUM* sig_r = BN_new();
-  BIGNUM* sig_s = BN_new();
+  connect(request, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.log() << "Request failed" << error;
+            deleteLater();
+          });
 
-  uint32_t rs_size = signature.length() / 2;
+  connect(request, &NetworkRequest::requestCompleted,
+          [this, hashValue, hashFunction, url](QNetworkReply*,
+                                               const QByteArray& data) {
+            logger.log() << "Request completed";
 
-  if (!BN_bin2bn(&signaturePtr[0], rs_size, sig_r)) {
-    logger.log() << "Failed to set the R value";
-    return false;
-  }
-
-  if (!BN_bin2bn(&signaturePtr[rs_size], rs_size, sig_s)) {
-    logger.log() << "Failed to set the R value";
-    return false;
-  }
-
-  logger.log() << "R:" << BN_bn2hex(sig_r);
-  logger.log() << "S:" << BN_bn2hex(sig_s);
-
-  sig = ECDSA_SIG_new();
-  ECDSA_SIG_set0(sig, sig_r, sig_s);
-
-  QByteArray digest;
-  digest.append("Content-Signature:");
-  digest.append("\0");
-  digest.append(data);
-
-  if (ECDSA_do_verify((const unsigned char*)digest.constData(), digest.length(),
-                      sig, key) == 0) {
-    logger.log() << "Verification error:"
-                 << ERR_error_string(ERR_get_error(), nullptr);
-    return /* TODO: false */ true;
-  }
+            if (!computeHash(url, data, hashValue, hashFunction)) {
+              logger.log() << "Ignore failure.";
+              deleteLater();
+            }
+          });
 
   return true;
 }
@@ -438,7 +413,19 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
 bool Balrog::install(const QString& filePath) {
   logger.log() << "Install the pacakge:" << filePath;
-  // TODO
-  deleteLater();
+
+  QStringList arguments;
+  arguments << "/qb!-"
+            << "REBOOT=ReallySuppress"
+            << "/i" << filePath;
+
+  QProcess *process = new QProcess(this);
+  process->start("msiexec.exe", arguments);
+  connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+          [this](int exitCode, QProcess::ExitStatus) {
+            logger.log() << "Installation completed - exitCode:" << exitCode;
+            deleteLater();
+          });
+
   return true;
 }
