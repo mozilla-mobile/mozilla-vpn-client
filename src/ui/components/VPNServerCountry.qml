@@ -126,6 +126,11 @@ VPNClickableRow {
         anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 6
         width: serverCountry.width - anchors.leftMargin
 
+        Accessible.role: Accessible.List
+        //% “Cities”
+        //: The title for the list of cities.
+        Accessible.name: qsTrId("cities")
+
         Behavior on opacity {
             PropertyAnimation {
                 duration: 300

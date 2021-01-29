@@ -28,6 +28,8 @@ Item {
         anchors.top: menu.bottom
         width: parent.width
         onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        Accessible.name: menu.title
+        Accessible.role: Accessible.List
 
         ButtonGroup {
             id: radioButtonGroup
