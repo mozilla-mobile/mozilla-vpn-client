@@ -18,7 +18,6 @@ INTERFACE=""
 ADDRESSES=( )
 DNS=( )
 DNS_SEARCH=( )
-TABLE=""
 CONFIG_FILE=""
 PROGRAM="${0##*/}"
 ARGS=( "$@" )
@@ -55,7 +54,6 @@ parse_options() {
 			DNS) for v in ${value//,/ }; do
 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
 			done; continue ;;
-			Table) TABLE="$value"; continue ;;
 			esac
 		fi
 		WG_CONFIG+="$line"$'\n'
@@ -77,7 +75,7 @@ del_if() {
 	local table
 	[[ $HAVE_SET_DNS -eq 0 ]] || unset_dns
 	[[ $HAVE_SET_FIREWALL -eq 0 ]] || remove_firewall
-	if [[ -z $TABLE || $TABLE == auto ]] && get_fwmark table && [[ $(wg show "$INTERFACE" allowed-ips) =~ /0(\ |$'\n'|$) ]]; then
+	if get_fwmark table && [[ $(wg show "$INTERFACE" allowed-ips) =~ /0(\ |$'\n'|$) ]]; then
 		while [[ $(ip -4 rule show 2>/dev/null) == *"lookup $table"* ]]; do
 			cmd ip -4 rule delete table $table
 		done
@@ -126,20 +124,6 @@ set_dns() {
 unset_dns() {
 	[[ ${#DNS[@]} -gt 0 ]] || return 0
 	cmd resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
-}
-
-add_route() {
-	local proto=-4
-	[[ $1 == *:* ]] && proto=-6
-	[[ $TABLE != off ]] || return 0
-
-	if [[ -n $TABLE && $TABLE != auto ]]; then
-		cmd ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
-	elif [[ $1 == */0 ]]; then
-		add_default "$1"
-	else
-		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || cmd ip $proto route add "$1" dev "$INTERFACE"
-	fi
 }
 
 get_fwmark() {
@@ -215,27 +199,6 @@ set_config() {
 	cmd wg setconf "$INTERFACE" <(echo "$WG_CONFIG")
 }
 
-cmd_usage() {
-	cat >&2 <<-_EOF
-	Usage: $PROGRAM [ up | down ] [ CONFIG_FILE | INTERFACE ]
-
-	  CONFIG_FILE is a configuration file, whose filename is the interface name
-	  followed by \`.conf'. Otherwise, INTERFACE is an interface name, with
-	  configuration found at /etc/wireguard/INTERFACE.conf. It is to be readable
-	  by wg(8)'s \`setconf' sub-command, with the exception of the following additions
-	  to the [Interface] section, which are handled by $PROGRAM:
-
-	  - Address: may be specified one or more times and contains one or more
-	    IP addresses (with an optional CIDR mask) to be set for the interface.
-	  - DNS: an optional DNS server to use while the device is up.
-	  - Table: an optional routing table to which routes will be added; if
-	    unspecified or \`auto', the default table is used. If \`off', no routes
-	    are added.
-
-	See wg-quick(8) for more info and examples.
-	_EOF
-}
-
 cmd_up() {
 	local i
 	[[ -z $(ip link show dev "$INTERFACE" 2>/dev/null) ]] || die "\`$INTERFACE' already exists"
@@ -248,7 +211,7 @@ cmd_up() {
 	set_mtu_up
 	set_dns
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do
-		add_route "$i"
+		add_default "$i"
 	done
 	trap - INT TERM EXIT
 }
@@ -260,18 +223,14 @@ cmd_down() {
 	remove_firewall || true
 }
 
-# ~~ function override insertion point ~~
 
-if [[ $# -eq 1 && ( $1 == --help || $1 == -h || $1 == help ) ]]; then
-	cmd_usage
-elif [[ $# -eq 2 && $1 == up ]]; then
+if [[ $# -eq 2 && $1 == up ]]; then
 	parse_options "$2"
 	cmd_up
 elif [[ $# -eq 2 && $1 == down ]]; then
 	parse_options "$2"
 	cmd_down
 else
-	cmd_usage
 	exit 1
 fi
 
