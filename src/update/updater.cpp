@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "updater.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "leakdetector.h"
+#include "versionapi.h"
 
-#ifdef MVPN_WINDOWS
-#else
+#ifdef MVPN_LINUX
 #  include "balrog.h"
-#  include "versionapi.h"
 #endif
 
 namespace {
@@ -17,13 +16,17 @@ Logger logger(LOG_NETWORKING, "Updater");
 }
 
 // static
-Updater* Updater::create(QObject* parent) {
-  return
-#ifdef MVPN_WINDOWS
-#else
-      new Balrog(parent);
-  // new VersionApi(parent);
+Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
+  if (!downloadAndInstall) {
+    return new VersionApi(parent);
+  }
+
+#ifdef MVPN_LINUX
+  return new Balrog(parent);
 #endif
+
+  logger.log() << "No download and install supported for this platform.";
+  return nullptr;
 }
 
 Updater::Updater(QObject* parent) : QObject(parent) {

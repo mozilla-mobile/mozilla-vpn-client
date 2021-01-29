@@ -12,7 +12,7 @@ class Updater : public QObject {
   Q_DISABLE_COPY_MOVE(Updater)
 
  public:
-  static Updater* create(QObject* parent);
+  static Updater* create(QObject* parent, bool downloadAndInstall);
 
   Updater(QObject* parent);
   virtual ~Updater();

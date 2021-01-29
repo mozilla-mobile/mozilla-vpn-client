@@ -340,6 +340,7 @@ else:linux:!android {
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
+    PKGCONFIG += openssl
 }
 
 # Platform-specific: android

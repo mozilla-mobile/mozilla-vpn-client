@@ -30,12 +30,12 @@ void VersionApi::start() {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Versions request failed" << error;
+            logger.log() << "Request failed" << error;
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](QNetworkReply*, const QByteArray& data) {
-            logger.log() << "Account request completed";
+            logger.log() << "Request completed";
 
             if (!processData(data)) {
               logger.log() << "Ignore failure.";

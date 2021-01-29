@@ -31,7 +31,7 @@ void ReleaseMonitor::runSoon() {
 void ReleaseMonitor::runInternal() {
   logger.log() << "ReleaseMonitor started";
 
-  Updater* updater = Updater::create(this);
+  Updater* updater = Updater::create(this, false);
   Q_ASSERT(updater);
 
   updater->start();
