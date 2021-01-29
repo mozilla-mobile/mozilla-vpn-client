@@ -54,6 +54,8 @@ class NetworkRequest final : public QObject {
                                               const QString& receipt);
 #endif
 
+  void disableTimeout();
+
  private:
   NetworkRequest(QObject* parent, int status);
 

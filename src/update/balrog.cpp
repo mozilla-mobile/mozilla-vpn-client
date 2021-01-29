@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "balrog.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -22,9 +23,6 @@
 #else
 #  error Platform not supported yet
 #endif
-
-constexpr const char* BALROG_URL =
-    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json";
 
 constexpr const char* BALROG_WINDOWS_UA64 = "WINNT_x86_64";
 constexpr const char* BALROG_WINDOWS_UA32 = "WINNT_x86_32";
@@ -62,7 +60,7 @@ QString Balrog::userAgent() {
 
 void Balrog::start() {
   QString url =
-      QString(BALROG_URL).arg(APP_VERSION).arg(userAgent());
+      QString(Constants::BALROG_URL).arg(APP_VERSION).arg(userAgent());
   logger.log() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForUrl(this, url);
@@ -330,6 +328,9 @@ bool Balrog::processData(const QByteArray& data) {
   }
 
   NetworkRequest* request = NetworkRequest::createForUrl(this, url);
+
+  // No timeout for this request.
+  request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

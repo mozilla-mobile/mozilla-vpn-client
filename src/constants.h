@@ -54,6 +54,11 @@ PRODBETAEXPR(const char*, API_URL, "https://vpn.mozilla.org",
              "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net")
 PRODBETAEXPR(const char*, LOGO_URL, ":/ui/resources/logo-dock.png",
              ":/ui/resources/logo-dock-beta.png")
+PRODBETAEXPR(
+    const char*, BALROG_URL,
+    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
+    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
+    "update.json");
 
 #undef PRODBETAEXPR
 
