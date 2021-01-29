@@ -10,6 +10,10 @@
 #include <functional>
 #include <QLocalSocket>
 
+#ifdef MVPN_WINDOWS
+    #include "platforms/windows/windowsservicemanager.h"
+#endif
+
 class QJsonObject;
 
 class LocalSocketController final : public ControllerImpl {
@@ -41,6 +45,9 @@ class LocalSocketController final : public ControllerImpl {
 
   void write(const QJsonObject& json);
 
+ public slots:
+    void deamonReady();
+
  private:
   enum {
     eUnknown,
@@ -54,6 +61,10 @@ class LocalSocketController final : public ControllerImpl {
   QByteArray m_buffer;
 
   std::function<void(const QString&)> m_logCallback = nullptr;
+
+#ifdef MVPN_WINDOWS
+  WindowsServiceManager m_serviceManager;
+#endif
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H
