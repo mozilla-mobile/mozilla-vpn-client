@@ -12,28 +12,19 @@ import "../themes/themes.js" as Theme
 VPNClickableRow {
     id: serverCountry
 
-    property var cityListVisible: (code === VPNCurrentServer.countryCode)
-    readonly property bool isActive: cityList.activeFocus
-
-    // During transition, when expanding the row or scrolling,
-    // delegate parent might be null and thus trying to access
-    // parent.left[right] triggers a warning. We can temporarily
-    // set the values to undefined as they are going to be
-    // overridden once the delegate parent is set again.
-    anchors.left: parent ? parent.left : undefined
-    anchors.right: parent ? parent.right : undefined
-    state: cityListVisible ? "list-visible" : "list-hidden"
-    width: ListView.view.width
+    property bool cityListVisible: (code === VPNCurrentServer.countryCode)
+    property var currentCityIndex
 
     function openCityList() {
         cityListVisible = !cityListVisible;
         const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y;
-        const listScrollPosition = serverList.contentY
-        if (itemDistanceFromWindowTop + cityList.height < serverList.height || !cityListVisible) {
+        const listScrollPosition = vpnFlickable.contentY
+
+        if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        scrollList.to = (cityList.height > serverList.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + (Theme.windowMargin / 2);
-        scrollList.start();
+        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
+        scrollAnimation.start();
     }
 
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
@@ -41,17 +32,21 @@ VPNClickableRow {
     handleKeyClick: openCityList
     clip: true
 
-    Behavior on y {
-        PropertyAnimation {
-            duration: 200
-        }
-    }
+    activeFocusOnTab: true
+    onActiveFocusChanged: parent.scrollDelegateIntoView(serverCountry)
 
     accessibleName: name
+    Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
+    Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+    Keys.onBacktabPressed: {
+        focusScope.lastFocusedItemIdx = index;
+        menu.forceActiveFocus();
+    }
 
+    state: cityListVisible
     states: [
         State {
-            name: "list-hidden"
+            when: !cityListVisible
 
             PropertyChanges {
                 target: serverCountry
@@ -65,7 +60,7 @@ VPNClickableRow {
 
         },
         State {
-            name: "list-visible"
+            when: cityListVisible
 
             PropertyChanges {
                 target: serverCountry
@@ -87,43 +82,6 @@ VPNClickableRow {
             easing.type: Easing.InSine
             duration: 260
         }
-    }
-    Keys.onDownPressed: {
-        if (!cityListVisible)
-            return event.accepted = false;
-
-        if (cityList.activeFocus)
-            return event.accepted = false;
-
-        cityList.forceActiveFocus();
-    }
-    Keys.onUpPressed: {
-        if (!serverCountry.activeFocus)
-            return serverCountry.forceActiveFocus();
-
-        if (serverList.currentIndex > 0) {
-            serverList.decrementCurrentIndex();
-
-            if (serverList.currentItem.cityListVisible && !serverList.currentItem.isActive)
-                serverList.currentItem.activate();
-        }
-    }
-
-    Keys.onTabPressed: {
-        if (index < serverList.count - 1)
-            return serverList.incrementCurrentIndex();
-        return root.forceActiveFocus();
-    }
-    Keys.onBacktabPressed: {
-        if (index > 0)
-            return serverList.decrementCurrentIndex();
-        return root.forceActiveFocus();
-    }
-    Keys.onRightPressed: if (!cityListVisible) serverCountry.clicked()
-    Keys.onLeftPressed: if (cityListVisible) serverCountry.clicked()
-
-    function activate() {
-        cityList.forceActiveFocus();
     }
 
     RowLayout {
@@ -159,60 +117,56 @@ VPNClickableRow {
 
     }
 
-    ListView {
+    Column {
         id: cityList
 
-        interactive: false
-        opacity: 0
-        enabled: opacity > 0
-        model: cities
-        spacing: Theme.listSpacing
-        width: serverCountry.width - anchors.leftMargin
-        height: contentItem.childrenRect.height
         anchors.top: serverCountryRow.bottom
-        anchors.topMargin: Theme.cityListTopMargin
+        anchors.topMargin: 22
         anchors.left: serverCountry.left
         anchors.leftMargin: Theme.hSpacing + Theme.vSpacing + 6
-        Behavior on opacity {
-            NumberAnimation {
-                easing.type: Easing.InSine
-                duration: 300
-            }
-        }
+        width: serverCountry.width - anchors.leftMargin
+
         Accessible.role: Accessible.List
         //% "Cities"
         //: The title for the list of cities.
         Accessible.name: qsTrId("cities")
-        // Only allow focus within the current item in the list.
-        activeFocusOnTab: serverCountry.ListView.isCurrentItem
-        highlightFollowsCurrentItem: true
-        Keys.onDownPressed: {
-            if (cityList.currentIndex === cityList.count - 1)
-                return event.accepted = false;
 
-            return cityList.incrementCurrentIndex();
-        }
-        Keys.onUpPressed: {
-            if (cityList.currentIndex === 0)
-                return event.accepted = false;
-            return cityList.decrementCurrentIndex();
-        }
-
-        delegate: VPNRadioDelegate {
-            radioButtonLabelText: modelData
-            accessibleName: modelData
-            onClicked: {
-                VPNController.changeServer(code, modelData);
-                stackview.pop();
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 300
             }
-            checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
-            isHoverable: cityList.enabled
         }
 
-        footer: Rectangle {
-            height: 16
-            width: serverList.width
-            color: "transparent"
+        Repeater {
+            id: citiesRepeater
+            model: cities
+            delegate: VPNRadioDelegate {
+                id: del
+
+                activeFocusOnTab: cityListVisible
+                onActiveFocusChanged: if (focus) serverList.scrollDelegateIntoView(del)
+
+                Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
+                Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
+
+                radioButtonLabelText: modelData
+                accessibleName: modelData
+                onClicked: {
+                    VPNController.changeServer(code, modelData);
+                    stackview.pop();
+                }
+                height: 54
+                checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
+                isHoverable: cityListVisible
+                enabled: cityListVisible
+                Component.onCompleted: {
+                    if (checked) {
+                        currentCityIndex = index
+                    }
+                }
+
+            }
+
         }
 
     }
