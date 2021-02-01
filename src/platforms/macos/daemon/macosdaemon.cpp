@@ -55,9 +55,8 @@ bool MacOSDaemon::activate(const Config& config) {
   return true;
 }
 
-void MacOSDaemon::status(QLocalSocket* socket) {
+QByteArray MacOSDaemon::getStatus() {
   logger.log() << "Status request";
-  Q_ASSERT(socket);
 
   QJsonObject obj;
   obj.insert("type", "status");
@@ -109,20 +108,7 @@ void MacOSDaemon::status(QLocalSocket* socket) {
     obj.insert("rxBytes", QJsonValue(double(rxBytes)));
   }
 
-  socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-  socket->write("\n");
-}
-
-void MacOSDaemon::logs(QLocalSocket* socket) {
-  logger.log() << "Log request";
-
-  Q_ASSERT(socket);
-
-  QJsonObject obj;
-  obj.insert("type", "logs");
-  obj.insert("logs", Daemon::logs().replace("\n", "|"));
-  socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-  socket->write("\n");
+  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
 bool MacOSDaemon::run(Daemon::Op op, const Config& config) {
