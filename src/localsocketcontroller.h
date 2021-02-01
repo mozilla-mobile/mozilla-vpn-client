@@ -37,6 +37,9 @@ class LocalSocketController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  public slots:
+    void deamonReady();
+
  private:
   void daemonConnected();
   void errorOccurred(QLocalSocket::LocalSocketError socketError);
@@ -45,8 +48,9 @@ class LocalSocketController final : public ControllerImpl {
 
   void write(const QJsonObject& json);
 
- public slots:
-    void deamonReady();
+  #ifdef MVPN_WINDOWS
+    WindowsServiceManager m_serviceManager;
+  #endif
 
  private:
   enum {
@@ -61,10 +65,6 @@ class LocalSocketController final : public ControllerImpl {
   QByteArray m_buffer;
 
   std::function<void(const QString&)> m_logCallback = nullptr;
-
-#ifdef MVPN_WINDOWS
-  WindowsServiceManager m_serviceManager;
-#endif
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

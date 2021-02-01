@@ -477,18 +477,20 @@ else:macos {
 
         SOURCES += \
                    daemon/daemon.cpp \
+                   daemon/daemonlocalserver.cpp \
+                   daemon/daemonlocalserverconnection.cpp \
                    localsocketcontroller.cpp \
                    wgquickprocess.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
-                   platforms/macos/daemon/macosdaemonserver.cpp \
-                   platforms/macos/daemon/macosdaemonconnection.cpp
+                   platforms/macos/daemon/macosdaemonserver.cpp
         HEADERS += \
                    daemon/daemon.h \
+                   daemon/daemonlocalserver.h \
+                   daemon/daemonlocalserverconnection.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
-                   platforms/macos/daemon/macosdaemonserver.h \
-                   platforms/macos/daemon/macosdaemonconnection.h
+                   platforms/macos/daemon/macosdaemonserver.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14

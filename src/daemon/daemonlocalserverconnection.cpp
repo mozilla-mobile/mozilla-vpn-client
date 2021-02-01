@@ -109,7 +109,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "status") {
-    m_socket->write(Daemon::instance()->status());
+    m_socket->write(Daemon::instance()->getStatus());
     m_socket->write("\n");
     return;
   }

@@ -96,9 +96,8 @@
 					Arguments="windowsdaemon"
 					ErrorControl="normal"
 					Vital="yes">
-					 <util:PermissionEx User="Users" ServiceQueryStatus="yes"
-                       ServiceStart="yes" ServiceStop="yes" ServiceUserDefinedControl="yes" />
-					</ServiceInstall>
+					 <util:PermissionEx User="Users" ServiceQueryStatus="yes"  ServiceStart="yes" ServiceStop="yes" ServiceUserDefinedControl="yes"/>
+				</ServiceInstall>
 
 				<util:ServiceConfig
 					ServiceName="MozillaVPNBroker"

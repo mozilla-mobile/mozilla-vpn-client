@@ -41,7 +41,7 @@ class Daemon : public QObject {
   virtual bool deactivate(bool emitSignals = true);
 
   // Explose a JSON object with the daemon status.
-  virtual QByteArray status() = 0;
+  virtual QByteArray getStatus() = 0;
 
   QString logs();
   void cleanLogs();

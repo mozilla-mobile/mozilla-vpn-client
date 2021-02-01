@@ -69,32 +69,16 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     Log.v(tag,"Stored new Tunnel config in Service")
                     val config = buildConfigFromJSON(json)
 
-                    var reason = 0;
-                    json?.let {
-                        val obj = JSONObject(it)
-                        reason = obj.getInt("reason")
-                    }
-                    if(reason != 0){
-                        // In case the activation is for switching purposes
-                        // We never turned the vpn off so far.
-                        this.mService.turnOff();
-                    }
-
                     if(!mService.checkPermissions()){
                         mResumeConfig = config
-                        // The Permission Promt was already
+                        // The Permission prompt was already
                         // send, in case it's accepted we will 
                         // recive ACTIONS.resumeActivate
                         return true;
                     }
-                    if (this.mService.turnOn(config)) {
-                        dispatchEvent(EVENTS.connected, "")
-                    } else {
-                        dispatchEvent(EVENTS.disconnected, "")
-                    }
+                    this.mService.turnOn(config)
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
-                    dispatchEvent(EVENTS.disconnected, "")
                 }
                 return true
             }
@@ -105,10 +89,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 if(!mService.checkPermissions()){
                     return true;
                 }
-                if (this.mService.turnOn(mResumeConfig)) {
-                    dispatchEvent(EVENTS.connected, "")
-                } else {
-                    dispatchEvent(EVENTS.disconnected, "")
+                try{
+                    this.mService.turnOn(mResumeConfig)
+                }
+                catch (e: Exception) {
+                    Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                 }
                 return true;
             }
@@ -116,7 +101,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.deactivate -> {
                 // [data] here is empty
                 this.mService.turnOff()
-                dispatchEvent(EVENTS.disconnected, "")
                 return true
             }
 

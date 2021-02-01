@@ -16,6 +16,7 @@
 #ifdef MVPN_WINDOWS
     #include "platforms/windows/windowsservicemanager.h"
 #endif
+
 #include <QDir>
 #include <QFileInfo>
 #include <QJsonArray>
@@ -40,14 +41,12 @@ LocalSocketController::LocalSocketController() {
           &LocalSocketController::errorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this,
           &LocalSocketController::readData);
-  connect(m_socket, &QLocalSocket::readyRead, this,
-          &LocalSocketController::readData);
 
- #ifdef MVPN_WINDOWS
+  #ifdef MVPN_WINDOWS
   connect(&m_serviceManager,
           &WindowsServiceManager::serviceStarted, this,
           &LocalSocketController::deamonReady);
- #endif
+  #endif
 }
 
 LocalSocketController::~LocalSocketController() {
@@ -56,6 +55,7 @@ LocalSocketController::~LocalSocketController() {
 
 void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
+  logger.log() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
     emit initialized(false, false, QDateTime());
@@ -76,13 +76,14 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   m_state = eInitializing;
 
 #ifdef MVPN_WINDOWS
+  QString path = "\\\\.\\pipe\\mozillavpn";
   if(!m_serviceManager.isRunning()){
     logger.log() << "Deamon is not running, wait until deamon is ready";
     // We will retry once the deamon is ready
     m_serviceManager.startService();
     return;
   }
-  QString path = "\\\\.\\pipe\\mozillavpn";
+
 #else
   QString path = "/var/run/mozillavpn/daemon.socket";
   if (!QFileInfo::exists(path)) {
@@ -92,12 +93,6 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
 
   logger.log() << "Connecting to:" << path;
   m_socket->connectToServer(path);
-}
-
-void LocalSocketController::deamonReady() {
-  logger.log() << "Daemon is Ready - continue init";
-  Q_ASSERT(m_state == eInitializing);
-  initialize(nullptr,nullptr);
 }
 
 void LocalSocketController::daemonConnected() {
@@ -352,4 +347,10 @@ void LocalSocketController::write(const QJsonObject& json) {
   Q_ASSERT(m_socket);
   m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
+}
+
+void LocalSocketController::deamonReady() {
+  logger.log() << "Daemon is Ready - continue init";
+  Q_ASSERT(m_state == eInitializing);
+  initialize(nullptr,nullptr);
 }

@@ -7,8 +7,18 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
+
+#ifdef MVPN_MACOS
+#  include <sys/stat.h>
+#  include <sys/types.h>
+#  include <unistd.h>
+
+constexpr const char* TMP_PATH = "/tmp/mozillavpn.socket";
+constexpr const char* VAR_PATH = "/var/run/mozillavpn/daemon.socket";
+#endif
 
 namespace {
 Logger logger(LOG_MAIN, "DaemonLocalServer");
@@ -23,7 +33,7 @@ DaemonLocalServer::~DaemonLocalServer() { MVPN_COUNT_DTOR(DaemonLocalServer); }
 bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);
 
-  QString path = "\\\\.\\pipe\\mozillavpn";
+  QString path = daemonPath();
   logger.log() << "Server path:" << path;
 
   if (QFileInfo::exists(path)) {
@@ -52,4 +62,36 @@ bool DaemonLocalServer::initialize() {
   });
 
   return true;
+}
+
+QString DaemonLocalServer::daemonPath() const {
+#if defined(MVPN_WINDOWS)
+  return "\\\\.\\pipe\\mozillavpn";
+#elif defined(MVPN_MACOS)
+  QDir dir("/var/run");
+  if (!dir.exists()) {
+    logger.log() << "/var/run doesn't exist. Fallback /tmp.";
+    return TMP_PATH;
+  }
+
+  if (dir.exists("mozillavpn")) {
+    logger.log() << "/var/run/mozillavpn seems to be usable";
+    return VAR_PATH;
+  }
+
+  if (!dir.mkdir("mozillavpn")) {
+    logger.log() << "Failed to create /var/run/mozillavpn";
+    return TMP_PATH;
+  }
+
+  if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
+    logger.log()
+        << "Failed to set the right permissions to /var/run/mozillavpn";
+    return TMP_PATH;
+  }
+
+  return VAR_PATH;
+#else
+#  error Unsupported platform
+#endif
 }
