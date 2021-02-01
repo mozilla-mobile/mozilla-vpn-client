@@ -386,13 +386,12 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   QString fileName = url.right(url.length() - pos - 1);
   logger.log() << "Filename:" << fileName;
 
-  QTemporaryDir tmpDir;
-  if (!tmpDir.isValid()) {
+  if (!m_tmpDir.isValid()) {
     logger.log() << "Cannot create a temporary directory";
     return false;
   }
 
-  QDir dir(tmpDir.path());
+  QDir dir(m_tmpDir.path());
   QString tmpFile = dir.filePath(fileName);
 
   QFile file(tmpFile);
@@ -420,12 +419,23 @@ bool Balrog::install(const QString& filePath) {
             << "REBOOT=ReallySuppress"
             << "/i" << filePath;
 
-  QProcess *process = new QProcess(this);
+  QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
-  connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-          [this](int exitCode, QProcess::ExitStatus) {
+  connect(process,
+          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+          [this, process](int exitCode, QProcess::ExitStatus) {
             logger.log() << "Installation completed - exitCode:" << exitCode;
-            deleteLater();
+
+            logger.log() << "Stdout:" << Qt::endl
+                         << qUtf8Printable(process->readAllStandardOutput())
+                         << Qt::endl;
+            logger.log() << "Stderr:" << Qt::endl
+                         << qUtf8Printable(process->readAllStandardError())
+                         << Qt::endl;
+
+            // We leak the object because the installer will restart the
+            // app and we need to keep the temporary folder alive during the
+            // whole process.
           });
 
   return true;

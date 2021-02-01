@@ -8,6 +8,7 @@
 #include "updater.h"
 
 #include <QCryptographicHash>
+#include <QTemporaryDir>
 
 class QNetworkReply;
 
@@ -36,6 +37,9 @@ class Balrog final : public Updater {
                    const QString& hashValue, const QString& hashFunction);
   bool saveFileAndInstall(const QString& url, const QByteArray& data);
   bool install(const QString& filePath);
+
+ private:
+  QTemporaryDir m_tmpDir;
 };
 
 #endif  // BALROG_H
