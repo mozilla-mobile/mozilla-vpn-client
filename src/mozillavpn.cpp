@@ -95,8 +95,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_private->m_controller, &Controller::readyToUpdate,
           [this]() { setState(StateUpdateRequired); });
 
-  connect(&m_private->m_controller, &Controller::stateChanged,
-          this, &MozillaVPN::controllerStateChanged);
+  connect(&m_private->m_controller, &Controller::stateChanged, this,
+          &MozillaVPN::controllerStateChanged);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_statusIcon, &StatusIcon::stateChanged);
@@ -1018,7 +1018,7 @@ void MozillaVPN::requestViewLogs() {
 }
 
 bool MozillaVPN::startOnBootSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) 
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   return true;
 #elif defined(MVPN_ANDROID)
   return AndroidUtils::canEnableStartOnBoot();
@@ -1157,7 +1157,8 @@ void MozillaVPN::update() {
 
   setUpdating(true);
 
-  if (m_private->m_controller.state() != Controller::StateOff && m_private->m_controller.state() != Controller::StateInitializing) {
+  if (m_private->m_controller.state() != Controller::StateOff &&
+      m_private->m_controller.state() != Controller::StateInitializing) {
     deactivate();
     return;
   }

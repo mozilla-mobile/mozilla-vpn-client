@@ -363,6 +363,4 @@ int NetworkRequest::statusCode() const {
   return statusCode.toInt();
 }
 
-void NetworkRequest::disableTimeout() {
-  m_timer.stop();
-}
+void NetworkRequest::disableTimeout() { m_timer.stop(); }

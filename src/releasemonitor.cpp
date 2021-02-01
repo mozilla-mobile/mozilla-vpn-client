@@ -79,7 +79,7 @@ void ReleaseMonitor::update() {
 
   // The updater, in download mode, is not destroyed. So, if this happens,
   // probably something went wrong.
-  connect(updater, &QObject::destroyed, [this] {
+  connect(updater, &QObject::destroyed, [] {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
 

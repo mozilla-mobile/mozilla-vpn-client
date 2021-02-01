@@ -12,7 +12,6 @@
 #include <QLockFile>
 #include <QMessageBox>
 
-
 constexpr const char* WG_QUICK = "wg-quick";
 
 namespace {
