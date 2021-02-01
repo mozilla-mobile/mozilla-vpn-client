@@ -98,7 +98,9 @@ bool DBusService::deactivate(bool emitSignals) {
   return Daemon::deactivate(emitSignals);
 }
 
-QString DBusService::status() {
+QString DBusService::status() { return QString(getStatus()); }
+
+QByteArray DBusService::getStatus() {
   logger.log() << "Status request";
 
   QJsonObject json;
