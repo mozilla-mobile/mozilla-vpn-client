@@ -79,6 +79,8 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
           }
           case ConnectionStateDisconnected:
+            // Just in case we are connecting, let's call disconnect.
+            [impl disconnect];
             emit initialized(true, false, QDateTime());
             return;
         }
