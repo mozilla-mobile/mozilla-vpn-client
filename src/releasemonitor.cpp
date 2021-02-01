@@ -61,3 +61,31 @@ void ReleaseMonitor::updateRecommended() {
   logger.log() << "Update recommended";
   MozillaVPN::instance()->setUpdateRecommended(true);
 }
+
+void ReleaseMonitor::update() {
+  logger.log() << "Update";
+
+  Updater* updater = Updater::create(this, true);
+  if (!updater) {
+    logger.log() << "No updater supported for this platform. Fallback";
+
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+
+    vpn->openLink(MozillaVPN::LinkUpdate);
+    vpn->setUpdating(false);
+    return;
+  }
+
+  // The updater, in download mode, is not destroyed. So, if this happens,
+  // probably something went wrong.
+  connect(updater, &QObject::destroyed, [this] {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
+
+    vpn->setUpdating(false);
+    vpn->errorHandle(ErrorHandler::BackendServiceError);
+  });
+
+  updater->start();
+}

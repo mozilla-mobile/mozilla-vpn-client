@@ -96,6 +96,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           [this]() { setState(StateUpdateRequired); });
 
   connect(&m_private->m_controller, &Controller::stateChanged,
+          this, &MozillaVPN::controllerStateChanged);
+
+  connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_statusIcon, &StatusIcon::stateChanged);
 
   connect(this, &MozillaVPN::stateChanged, &m_private->m_statusIcon,
@@ -1148,3 +1151,29 @@ void MozillaVPN::alreadySubscribed() {
   setState(StateSubscriptionBlocked);
 }
 #endif
+
+void MozillaVPN::update() {
+  logger.log() << "Update";
+
+  setUpdating(true);
+
+  if (m_private->m_controller.state() != Controller::StateOff && m_private->m_controller.state() != Controller::StateInitializing) {
+    deactivate();
+    return;
+  }
+
+  m_private->m_releaseMonitor.update();
+}
+
+void MozillaVPN::setUpdating(bool updating) {
+  m_updating = updating;
+  emit updatingChanged();
+}
+
+void MozillaVPN::controllerStateChanged() {
+  logger.log() << "Controller state changed";
+
+  if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
+    update();
+  }
+}

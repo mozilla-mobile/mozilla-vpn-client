@@ -18,6 +18,8 @@ class ReleaseMonitor final : public QObject {
 
   void runSoon();
 
+  void update();
+
  signals:
   // for testing
   void releaseChecked();
