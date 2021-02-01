@@ -94,8 +94,8 @@ QByteArray MacOSDaemon::getStatus() {
         QStringList parts = line.split("\t");
 
         if (parts.length() == 4) {
-          txBytes = parts[2].toLongLong();
-          rxBytes = parts[3].toLongLong();
+          rxBytes = parts[2].toLongLong();
+          txBytes = parts[3].toLongLong();
         }
       }
     }
