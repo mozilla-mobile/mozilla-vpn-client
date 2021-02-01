@@ -21,8 +21,7 @@ class MacOSDaemon final : public Daemon {
 
   bool activate(const Config& config) override;
 
-  void status(QLocalSocket* socket);
-  void logs(QLocalSocket* socket);
+  QByteArray getStatus() override;
 
  protected:
   bool run(Op op, const Config& config) override;

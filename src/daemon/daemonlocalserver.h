@@ -17,6 +17,9 @@ class DaemonLocalServer final : public QObject {
   bool initialize();
 
  private:
+  QString daemonPath() const;
+
+ private:
   QLocalServer m_server;
 };
 
