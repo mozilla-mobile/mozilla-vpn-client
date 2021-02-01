@@ -5,7 +5,7 @@
 #ifndef DBUSSERVICE_H
 #define DBUSSERVICE_H
 
-#include "../../src/daemon.h"
+#include "daemon/daemon.h"
 
 class DbusAdaptor;
 
@@ -26,10 +26,11 @@ class DBusService final : public Daemon {
 
  public slots:
   bool activate(const QString& jsonConfig);
+
   bool deactivate(bool emitSignals = true) override;
+  QString status();
 
   QString version();
-  QString status();
   QString getLogs();
 
  protected:
@@ -38,6 +39,8 @@ class DBusService final : public Daemon {
   bool supportServerSwitching(const Config& config) const override;
 
   bool switchServer(const Config& config) override;
+
+  QByteArray getStatus() override;
 
  private:
   DbusAdaptor* m_adaptor = nullptr;
