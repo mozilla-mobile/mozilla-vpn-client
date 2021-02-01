@@ -21,7 +21,7 @@ class WindowsDaemon final : public Daemon {
 
   bool activate(const Config& config) override;
 
-  QByteArray status() override;
+  QByteArray getStatus() override;
 
  private:
   bool run(Op op, const Config& config) override;

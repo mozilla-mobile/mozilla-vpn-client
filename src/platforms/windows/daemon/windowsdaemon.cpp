@@ -222,7 +222,7 @@ bool WindowsDaemon::activate(const Config& config) {
   return true;
 }
 
-QByteArray WindowsDaemon::status() {
+QByteArray WindowsDaemon::getStatus() {
   logger.log() << "Status request";
 
   QJsonObject obj;
