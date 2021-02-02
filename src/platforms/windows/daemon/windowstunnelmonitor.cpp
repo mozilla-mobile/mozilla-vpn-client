@@ -5,8 +5,8 @@
 #include "windowstunnelmonitor.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/windows/windowscommons.h"
 #include "windowsdaemon.h"
-#include "windowscommons.h"
 
 #include <QScopeGuard>
 
