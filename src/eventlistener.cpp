@@ -2,28 +2,40 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "windowseventlistener.h"
+#include "eventlistener.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "platforms/windows/windowscommons.h"
 #include "qmlengineholder.h"
 
 #include <QLocalSocket>
 
-#include <Windows.h>
+#if defined(MVPN_WINDOWS)
+#  include "platforms/windows/windowscommons.h"
+#  include <windows.h>
 
 constexpr const char* UI_PIPE = "\\\\.\\pipe\\mozillavpn.ui";
+#elif defined(MVPN_LINUX)
+#  include <QFileInfo>
+
+constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
+#endif
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsEventListener");
+Logger logger(LOG_MAIN, "EventListener");
 }
 
-WindowsEventListener::WindowsEventListener() {
-  logger.log() << "Windows event listener created";
+EventListener::EventListener() {
+  logger.log() << " event listener created";
 
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
 
   logger.log() << "Server path:" << UI_PIPE;
+
+#ifdef MVPN_LINUX
+  if (QFileInfo::exists(UI_PIPE)) {
+    QFile::remove(UI_PIPE);
+  }
+#endif
 
   if (!m_server.listen(UI_PIPE)) {
     logger.log() << "Failed to listen the daemon path";
@@ -57,13 +69,22 @@ WindowsEventListener::WindowsEventListener() {
   });
 }
 
-WindowsEventListener::~WindowsEventListener() {
-  logger.log() << "Windows event listener released";
+EventListener::~EventListener() {
+  logger.log() << " event listener released";
+
+  m_server.close();
+
+#ifdef MVPN_LINUX
+  if (QFileInfo::exists(UI_PIPE)) {
+    QFile::remove(UI_PIPE);
+  }
+#endif
 }
 
-bool WindowsEventListener::checkOtherInstances() {
+bool EventListener::checkOtherInstances() {
   logger.log() << "Checking other instances";
 
+#ifdef MVPN_WINDOWS
   // Let's check if there is a window with the right name.
   QString windowTitle = qtTrId("vpn.main.productName");
   HWND window = FindWindow(nullptr, (const wchar_t*)windowTitle.utf16());
@@ -71,6 +92,12 @@ bool WindowsEventListener::checkOtherInstances() {
     WindowsCommons::windowsLog("No other instances found");
     return true;
   }
+#else
+  if (!QFileInfo::exists(UI_PIPE)) {
+    logger.log() << "No other instances found - no unix socket";
+    return true;
+  }
+#endif
 
   logger.log() << "Try to communicate with the existing instance";
 

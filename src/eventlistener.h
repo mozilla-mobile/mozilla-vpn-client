@@ -2,19 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WINDOWSEVENTLISTENER_H
-#define WINDOWSEVENTLISTENER_H
+#ifndef EVENTLISTENER_H
+#define EVENTLISTENER_H
 
 #include <QObject>
 #include <QLocalServer>
 
-class WindowsEventListener final : public QObject {
+class EventListener final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(WindowsEventListener)
+  Q_DISABLE_COPY_MOVE(EventListener)
 
  public:
-  WindowsEventListener();
-  ~WindowsEventListener();
+  EventListener();
+  ~EventListener();
 
   static bool checkOtherInstances();
 
@@ -22,4 +22,4 @@ class WindowsEventListener final : public QObject {
   QLocalServer m_server;
 };
 
-#endif  // WINDOWSEVENTLISTENER_H
+#endif  // EVENTLISTENER_H
