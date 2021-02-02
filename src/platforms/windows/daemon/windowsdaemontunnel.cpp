@@ -6,7 +6,7 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "windowscommons.h"
+#include "platforms/windows/windowscommons.h"
 
 #include <QCoreApplication>
 
