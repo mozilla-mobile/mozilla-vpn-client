@@ -83,6 +83,7 @@ void importServerList() {
     logger.log() << "Failed to read pref_servers - exiting";
     return;
   }
+
   // We're having here {latestUpdateTime: <int>, servers: [<server>] }
   // Server:
   /* {
@@ -99,52 +100,96 @@ void importServerList() {
          }
    */
 
-  // transform this to {countries: [{name,code,city:[
-  // {name,code,servers:[server]} ]} ]}
   QJsonDocument serverListDoc =
       QJsonDocument::fromJson(prefValue.toByteArray());
   QJsonArray serverList = serverListDoc.object()["servers"].toArray();
-
-  QJsonObject out;
-  QJsonArray countriesArr;
-
-  // Cluster servers by country
-  QMap<QString, QList<QJsonObject>> serversInCountry;
-  foreach (auto server, serverList) {
-    auto countryCode =
-        server.toObject()["country"].toObject()["code"].toString();
-    serversInCountry[countryCode].append(server.toObject());
+  if (serverList.isEmpty()) {
+    return;
   }
 
-  foreach (auto countryCode, serversInCountry.keys()) {
-    auto serversInSameCountry = serversInCountry[countryCode];
+  struct City {
+    QString m_name;
+    QString m_code;
+    QJsonArray m_servers;
+  };
+
+  struct Country {
+    QString m_name;
+    QString m_code;
+    QMap<QString, City> m_cities;
+  };
+
+  QMap<QString, Country> countries;
+
+  for (const QJsonValue& serverValue : serverList) {
+    QJsonObject server = serverValue.toObject();
+    QJsonObject countryObj = server["country"].toObject();
+    QJsonObject cityObj = server["city"].toObject();
+    QJsonObject serverObj = server["server"].toObject();
+
+    QString countryCode = countryObj["code"].toString();
+    if (countryCode.isEmpty()) return;
+
+    if (!countries.contains(countryCode)) {
+      QString countryName = countryObj["name"].toString();
+      if (countryName.isEmpty()) return;
+
+      countries.insert(countryCode, Country{countryName, countryCode,
+                                            QMap<QString, City>()});
+    }
+
+    Country& country = countries[countryCode];
+
+    QString cityCode = cityObj["code"].toString();
+    if (cityCode.isEmpty()) return;
+
+    if (!country.m_cities.contains(cityCode)) {
+      QString cityName = cityObj["name"].toString();
+      if (cityName.isEmpty()) return;
+
+      country.m_cities.insert(cityCode, City{cityName, cityCode, QJsonArray()});
+    }
+
+    City& city = country.m_cities[cityCode];
+
+    city.m_servers.append(serverObj);
+  }
+
+  // transform this to {countries: [{name,code,cities:[
+  // {name,code,servers:[server]} ]} ]}
+
+  QJsonArray countryArray;
+  QMapIterator<QString, Country> countryIterator(countries);
+  while (countryIterator.hasNext()) {
+    countryIterator.next();
+
+    const Country& country = countryIterator.value();
+
+    QJsonArray citiesArray;
+
+    QMapIterator<QString, City> cityIterator(country.m_cities);
+    while (cityIterator.hasNext()) {
+      cityIterator.next();
+
+      const City& city = cityIterator.value();
+
+      QJsonObject cityObj;
+      cityObj.insert("name", city.m_name);
+      cityObj.insert("code", city.m_code);
+      cityObj.insert("servers", city.m_servers);
+      citiesArray.append(cityObj);
+    }
 
     QJsonObject countryObj;
-    countryObj["name"] = serverList.first()["country"].toObject()["name"];
-    countryObj["code"] = countryCode;
-
-    QJsonArray citiesArr;
-    // Cluster servers by city
-    QMap<QString, QList<QJsonObject>> serversInCity;
-    foreach (auto server, serversInSameCountry) {
-      auto cityCode = server["city"].toObject()["code"].toString();
-      serversInCity[cityCode].append(server);
-    }
-    foreach (auto cityCode, serversInCity.keys()) {
-      auto serversInSameCity = serversInCity[cityCode];
-      QJsonObject cityObj;
-      cityObj["code"] = cityCode;
-      cityObj["name"] = serversInSameCity.first()["city"].toObject()["name"];
-      QJsonArray serversArray;
-      foreach (auto s, serversInSameCity) { serversArray.append(s["server"]); }
-      cityObj["servers"] = serversArray;
-      citiesArr.append(cityObj);
-    }
-
-    countryObj["cities"] = citiesArr;
-    countriesArr.append(countryObj);
+    countryObj.insert("name", country.m_name);
+    countryObj.insert("code", country.m_code);
+    countryObj.insert("cities", citiesArray);
+    countryArray.append(countryObj);
   }
-  out["countries"] = countriesArr;
+
+  QJsonObject out;
+  out.insert("countries", countryArray);
+
   QJsonDocument outDoc(out);
   logger.log() << "Import JSON \n" << QString(outDoc.toJson());
 
@@ -153,6 +198,7 @@ void importServerList() {
     logger.log() << "pref_servers value was rejected";
     return;
   }
+
   logger.log() << "pref_servers value was imported";
 }
 
