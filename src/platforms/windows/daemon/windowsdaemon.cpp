@@ -5,8 +5,8 @@
 #include "windowsdaemon.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/windows/windowscommons.h"
 #include "wgquickprocess.h"
-#include "windowscommons.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>

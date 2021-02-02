@@ -21,13 +21,11 @@
 
 #ifdef MVPN_LINUX
 #  include "platforms/linux/linuxdependencies.h"
-
 #endif
 
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
-
 #endif
 
 #ifdef Q_OS_MAC
@@ -53,6 +51,7 @@
 #endif
 
 #ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowseventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
@@ -146,8 +145,17 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WINDOWS
+    // If there is another instance, the execution terminates here.
+    if (!WindowsEventListener::checkOtherInstances()) {
+      return 1;
+    }
+
+    // This class receives communications from other instances.
+    WindowsEventListener eventListener;
+
     WindowsStartAtBootWatcher startAtBootWatcher(
         SettingsHolder::instance()->startAtBoot());
+
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
