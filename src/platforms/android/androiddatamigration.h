@@ -11,6 +11,20 @@
 class AndroidDataMigration final {
  public:
   static void migrate();
+
+  // For unit-tests and internals
+
+  static void importDeviceInfoInternal(const QByteArray& json,
+                                       QString& privateKey, QString& publicKey,
+                                       QString& name);
+  static QByteArray importUserInfoInternal(const QByteArray& json);
+  static QByteArray importServerListInternal(const QByteArray& json);
+
+ private:
+  static void importDeviceInfo();
+  static void importUserInfo();
+  static void importLoginToken();
+  static void importServerList();
 };
 
 #endif  // ANDROIDDATAMIGRATION_H
