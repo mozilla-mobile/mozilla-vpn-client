@@ -6,6 +6,7 @@ QT += testlib
 QT += charts
 QT += network
 QT += qml
+QT += xml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -50,6 +51,8 @@ HEADERS += \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsendworker.h \
+    ../../src/platforms/android/androiddatamigration.h \
+    ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
@@ -62,6 +65,7 @@ HEADERS += \
     ../../src/tasks/function/taskfunction.h \
     ../../src/timersingleshot.h \
     helper.h \
+    testandroidmigration.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testlocalizer.h \
@@ -102,6 +106,8 @@ SOURCES += \
     ../../src/networkmanager.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsender.cpp \
+    ../../src/platforms/android/androiddatamigration.cpp \
+    ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
@@ -116,6 +122,7 @@ SOURCES += \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testandroidmigration.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testlocalizer.cpp \

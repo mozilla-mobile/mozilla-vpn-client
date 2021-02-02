@@ -32,7 +32,7 @@ constexpr const char* LOG_MACOS = "macos";
 constexpr const char* LOG_IOS = "ios";
 #endif
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID) || defined(UNIT_TEST)
 constexpr const char* LOG_ANDROID = "android";
 #endif
 
