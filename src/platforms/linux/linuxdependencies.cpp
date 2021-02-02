@@ -9,7 +9,6 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QLockFile>
 #include <QMessageBox>
 
 
@@ -79,18 +78,6 @@ bool checkDaemonVersion() {
   return value;
 }
 
-qint64 checkLockFile() {
-  QLockFile lockFile("mozillavpn.lock");
-  lockFile.setStaleLockTime(0);
-
-  qint64 pid;
-  if (!lockFile.tryLock() && lockFile.getLockInfo(&pid, nullptr, nullptr)) {
-    return pid;
-  }
-
-  return -1;
-}
-
 }  // namespace
 
 // static
@@ -108,18 +95,6 @@ bool LinuxDependencies::checkDependencies() {
 
   if (!checkDaemonVersion()) {
     showAlert("mozillavpn linuxdaemon needs to be updated or restarted.");
-    return false;
-  }
-
-  qint64 pid = checkLockFile();
-  if (pid != -1) {
-    QString msg;
-    {
-      QTextStream out(&msg);
-      out << "Another instance has been found (pid: " << pid
-          << "). Aborting the execution." << Qt::endl;
-    }
-    showAlert(msg);
     return false;
   }
 
