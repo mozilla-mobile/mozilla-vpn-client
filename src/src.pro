@@ -245,6 +245,7 @@ else:linux:!android {
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
 
     SOURCES += \
+            eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
             platforms/linux/linuxcontroller.cpp \
@@ -255,6 +256,7 @@ else:linux:!android {
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
+            eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
             platforms/linux/linuxcontroller.h \
@@ -587,6 +589,7 @@ else:win* {
         daemon/daemon.cpp \
         daemon/daemonlocalserver.cpp \
         daemon/daemonlocalserverconnection.cpp \
+        eventlistener.cpp \
         localsocketcontroller.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
@@ -595,7 +598,6 @@ else:win* {
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
-        platforms/windows/windowseventlistener.cpp \
         platforms/windows/windowspingsendworker.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
@@ -606,6 +608,7 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
@@ -613,7 +616,6 @@ else:win* {
         platforms/windows/daemon/windowstunnelmonitor.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
-        platforms/windows/windowseventlistener.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \

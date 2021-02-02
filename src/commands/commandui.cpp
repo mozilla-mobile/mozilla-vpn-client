@@ -20,6 +20,7 @@
 #include "apppermission.h"
 
 #ifdef MVPN_LINUX
+#  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
 #endif
 
@@ -51,7 +52,7 @@
 #endif
 
 #ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowseventlistener.h"
+#  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
@@ -119,6 +120,16 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+    // If there is another instance, the execution terminates here.
+    if (!EventListener::checkOtherInstances()) {
+      return 0;
+    }
+
+    // This class receives communications from other instances.
+    EventListener eventListener;
+#endif
+
 #ifndef MVPN_WINDOWS
     // Signal handling for a proper shutdown.
     SignalHandler sh;
@@ -145,14 +156,6 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WINDOWS
-    // If there is another instance, the execution terminates here.
-    if (!WindowsEventListener::checkOtherInstances()) {
-      return 1;
-    }
-
-    // This class receives communications from other instances.
-    WindowsEventListener eventListener;
-
     WindowsStartAtBootWatcher startAtBootWatcher(
         SettingsHolder::instance()->startAtBoot());
 
