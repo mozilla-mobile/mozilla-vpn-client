@@ -21,6 +21,6 @@ void SystemTrayNotificationHandler::notify(const QString& title,
                                            int timerSec) {
   QIcon icon(Constants::LOGO_URL);
 
-  SystemTrayHandler::instance()->showMessage(
-      title, message, icon, timerSec * 1000);
+  SystemTrayHandler::instance()->showMessage(title, message, icon,
+                                             timerSec * 1000);
 }

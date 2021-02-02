@@ -25,10 +25,14 @@ WindowsStartAtBootWatcher::~WindowsStartAtBootWatcher() {
 
 void WindowsStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
   logger.log() << "StartAtBoot changed:" << startAtBoot;
-  QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
-  if(startAtBoot){
-     settings.setValue("Mozilla_VPN", QDir::toNativeSeparators(QCoreApplication::applicationFilePath()));
-  }else{
+  QSettings settings(
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+      QSettings::NativeFormat);
+  if (startAtBoot) {
+    settings.setValue(
+        "Mozilla_VPN",
+        QDir::toNativeSeparators(QCoreApplication::applicationFilePath()));
+  } else {
     settings.remove("Mozilla_VPN");
   }
   settings.sync();
