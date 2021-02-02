@@ -21,20 +21,39 @@ import com.wireguard.config.Config
 import com.wireguard.crypto.Key
 import com.wireguard.crypto.KeyFormatException
 import com.wireguard.android.backend.GoBackend
+import java.lang.Exception
 
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    private val mBackend = GoBackend(this);
+    private var mBackend:GoBackend? = null;
     private val mTunnel = VPNTunnel("mvpn1", mBinder);
     private var mConfig:Config? = null;
+
+
+    override fun onCreate() {
+        super.onCreate()
+        mBackend = GoBackend(this);
+    }
+
+    override fun onDestroy() {
+        Log.e(tag, "OH NO DESTROY")
+        super.onDestroy()
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.e(tag,"UNBINDING")
+        return super.onUnbind(intent)
+    }
+
 
     /**
      * EntryPoint for the Service, gets Called when AndroidController.cpp
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
+        NotificationUtil.show(this);
         Log.v(tag, "Got Bind request")
         return mBinder
     }
@@ -46,7 +65,13 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        this.startService(Intent(this, GoBackend.VpnService::class.java))
+        NotificationUtil.show(this);
         intent?.let {
+            if(intent.getBooleanExtra("startOnly",false)){
+                Log.i(tag, "Start only!")
+                return super.onStartCommand(intent, flags, startId);
+            }
             if (intent.getBooleanExtra("startOnBoot", false)) {
                 Log.v(tag, "Starting VPN because 'start on boot is enabled'")
             } else {
@@ -61,12 +86,12 @@ class VPNService : android.net.VpnService() {
             if (lastConfString.isNullOrEmpty()) {
                 // We have nothing to connect to -> Exit
                 Log.e(tag, "VPN service was triggered without defining a Server or having a tunnel")
-                return Service.START_NOT_STICKY
+                return super.onStartCommand(intent, flags, startId);
             }
             this.mConfig = mBinder.buildConfigFromJSON(lastConfString)
         }
         turnOn(this.mConfig)
-        return Service.START_NOT_STICKY
+        return super.onStartCommand(intent, flags, startId);
     }
 
     // Invoked when the application is revoked.
@@ -78,11 +103,11 @@ class VPNService : android.net.VpnService() {
 
     var statistic: Statistics? = null
         get(){
-        return mBackend.getStatistics(this.mTunnel);
+        return mBackend?.getStatistics(this.mTunnel);
     }
     var state: Tunnel.State? = null
         get(){
-            return mBackend.getState(this.mTunnel);
+            return mBackend?.getState(this.mTunnel);
         }
 
     /*
@@ -105,6 +130,7 @@ class VPNService : android.net.VpnService() {
     }
 
     fun turnOn(newConf:Config?) {
+        this.startService(Intent(this, GoBackend.VpnService::class.java))
         if(newConf == null && mConfig == null){
             Log.e(tag, "Tried to start VPN with null config - abort");
         }
@@ -112,18 +138,20 @@ class VPNService : android.net.VpnService() {
             mConfig = newConf;
         }
 
-        // Upgrade us into a Foreground Service, by showing a Notification
-        NotificationUtil.show(this);
         // wgBackend will "DOWN" the tunnel before connecting,
         // we don't need the onchange event to be passed to the controller.
         // so set the current expected state to be down.
         mTunnel.mState = Tunnel.State.DOWN;
-        mBackend.setState(mTunnel, Tunnel.State.UP, mConfig);
+       try {
+           mBackend?.setState(mTunnel, Tunnel.State.UP, mConfig);
+       }catch(e:Exception){
+            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected,"")
+       }
     }
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        mBackend.setState(mTunnel,Tunnel.State.DOWN, null)
+        mBackend?.setState(mTunnel,Tunnel.State.DOWN, null);
         stopForeground(false)
     }
 
@@ -134,4 +162,15 @@ class VPNService : android.net.VpnService() {
      */
     external fun startActivityForResult(i: Intent)
 
+
+    companion object{
+        @JvmStatic
+        fun startService(c : Context){
+            c.applicationContext.startService(Intent(c.applicationContext,VPNService::class.java).apply {
+                putExtra("startOnly",true)
+            })
+
+
+        }
+    }
 }

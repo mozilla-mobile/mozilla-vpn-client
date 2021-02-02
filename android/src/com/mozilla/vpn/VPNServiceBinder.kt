@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn
-
+import kotlinx.coroutines.*
 import android.content.Context
 import android.os.Binder
 import android.os.IBinder
@@ -22,7 +22,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private val mListeners = mutableListOf<IBinder>()
+    private var mListener: IBinder?= null
     private var mResumeConfig: Config? = null
 
     /**
@@ -78,6 +78,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     }
                     this.mService.turnOn(config)
                 } catch (e: Exception) {
+
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                 }
                 return true
@@ -107,8 +108,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.registerEventListener -> {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
-                mListeners.add(binder)
-                Log.d(tag, "Registered ${mListeners.size} EventListeners")
+                mListener = binder
                 if(mService.state == Tunnel.State.UP){
                     dispatchEvent(EVENTS.init, "connected")
                 }else{
@@ -177,12 +177,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String) {
-        mListeners.forEach {
-           if (it.isBinderAlive) {
-               val data = Parcel.obtain()
-               data.writeByteArray(payload.toByteArray(charset("UTF-8")))
-               it.transact(code, data, Parcel.obtain(), 0)
-           }
+        mListener?.let{
+            if (it.isBinderAlive) {
+                val data = Parcel.obtain()
+                data.writeByteArray(payload.toByteArray(charset("UTF-8")))
+                it.transact(code, data, Parcel.obtain(), 0)
+            }
         }
     }
 

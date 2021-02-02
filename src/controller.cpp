@@ -114,7 +114,7 @@ void Controller::implInitialized(bool status, bool a_connected,
                << "connected:" << a_connected
                << "connectionDate:" << connectionDate.toString();
 
-  Q_ASSERT(m_state == StateInitializing);
+  // Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
     MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
