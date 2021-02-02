@@ -34,6 +34,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
  private:
   void showHideWindow();
 
+  void maybeActivated(QSystemTrayIcon::ActivationReason reason);
+
  private:
   QMenu m_menu;
 
