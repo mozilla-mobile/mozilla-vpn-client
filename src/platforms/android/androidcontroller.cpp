@@ -83,10 +83,17 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
                        sizeof(methods) / sizeof(methods[0]));
   env->DeleteLocalRef(objectClass);
 
+  auto appContext = QtAndroid::androidActivity().callObjectMethod(
+      "getApplicationContext", "()Landroid/content/Context;");
+
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/VPNService", "startService",
+      "(Landroid/content/Context;)V", appContext.object());
+
   // Start the VPN Service (if not yet) and Bind to it
-  QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(),
-                                        "org.mozilla.firefox.vpn.VPNService"),
-                         *this, QtAndroid::BindFlag::AutoCreate);
+  QtAndroid::bindService(
+      QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
+      *this, QtAndroid::BindFlag::AutoCreate);
 }
 
 void AndroidController::enableStartAtBoot(bool enabled) {
