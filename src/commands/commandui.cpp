@@ -145,9 +145,9 @@ int CommandUI::run(QStringList& tokens) {
     MacOSUtils::setDockClickHandler();
 #endif
 
-
 #ifdef MVPN_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
+    WindowsStartAtBootWatcher startAtBootWatcher(
+        SettingsHolder::instance()->startAtBoot());
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
