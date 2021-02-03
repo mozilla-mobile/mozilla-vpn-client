@@ -155,14 +155,16 @@ add_default() {
 	ip $proto rule add not fwmark $table table $table
 	ip $proto rule add table main suppress_prefixlength 0
 
-	local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n'
-	while read -r line; do
-		[[ $line =~ .*inet6?\ ([0-9a-f:.]+)/[0-9]+.* ]] || continue
-		printf -v restore '%s-I PREROUTING ! -i %s -d %s -m addrtype ! --src-type LOCAL -j DROP %s\n' "$restore" "$INTERFACE" "${BASH_REMATCH[1]}" "$marker"
-	done < <(ip -o $proto addr show dev "$INTERFACE" 2>/dev/null)
-	printf -v restore '%sCOMMIT\n*mangle\n-I POSTROUTING -m mark --mark %d -p udp -j CONNMARK --save-mark %s\n-I PREROUTING -p udp -j CONNMARK --restore-mark %s\nCOMMIT\n' "$restore" $table "$marker" "$marker"
-	[[ $proto == -4 ]] && sysctl -q net.ipv4.conf.all.src_valid_mark=1
-	echo -n "$restore" | $iptables-restore -n
+    # Things work without this, but it looks important
+    
+	# local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n'
+	# while read -r line; do
+	# 	[[ $line =~ .*inet6?\ ([0-9a-f:.]+)/[0-9]+.* ]] || continue
+	# 	printf -v restore '%s-I PREROUTING ! -i %s -d %s -m addrtype ! --src-type LOCAL -j DROP %s\n' "$restore" "$INTERFACE" "${BASH_REMATCH[1]}" "$marker"
+	# done < <(ip -o $proto addr show dev "$INTERFACE" 2>/dev/null)
+	# printf -v restore '%sCOMMIT\n*mangle\n-I POSTROUTING -m mark --mark %d -p udp -j CONNMARK --save-mark %s\n-I PREROUTING -p udp -j CONNMARK --restore-mark %s\nCOMMIT\n' "$restore" $table "$marker" "$marker"
+	# [[ $proto == -4 ]] && sysctl -q net.ipv4.conf.all.src_valid_mark=1
+	# echo -n "$restore" | $iptables-restore -n
 	HAVE_SET_FIREWALL=1
 	return 0
 }
