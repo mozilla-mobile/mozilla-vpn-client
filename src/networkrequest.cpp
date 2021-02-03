@@ -30,7 +30,10 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 
   logger.log() << "Network request created";
 
+#ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
+#endif
+
   m_timer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
