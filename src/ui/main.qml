@@ -195,7 +195,8 @@ Window {
         function onViewLogsNeeded() {
             if (Qt.platform.os !== "android" &&
                     Qt.platform.os !== "ios" &&
-                    Qt.platform.os !== "tvos") {
+                    Qt.platform.os !== "tvos" &&
+                    Qt.platform.os !== "wasm")  {
                 VPN.viewLogs();
             } else {
                 mainStackView.push("views/ViewLogs.qml");

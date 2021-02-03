@@ -34,10 +34,14 @@ NetworkManager* NetworkManager::instance() {
 QByteArray NetworkManager::userAgent() {
   QByteArray userAgent;
   userAgent.append("MozillaVPN/" APP_VERSION " (");
+#ifdef MVPN_WASM
+  userAgent.append("WASM");
+#else
   userAgent.append(QSysInfo::productType().toLocal8Bit());
   userAgent.append(" ");
   userAgent.append(QSysInfo::productVersion().toLocal8Bit());
   userAgent.append(")");
+#endif
 
   return userAgent;
 }

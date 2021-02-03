@@ -386,7 +386,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
     });
 
-#ifdef QT_DEBUG
+#if defined(QT_DEBUG) && !defined(MVPN_WASM)
     InspectorServer inspectServer;
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
                      &InspectorServer::close);
