@@ -14,6 +14,15 @@
 namespace {
 Logger logger(LOG_NETWORKING, "WASM NetworkRequest");
 
+// A simple class to make QNetworkReply CTOR public
+class NetworkReply : public QNetworkReply {
+ public:
+  NetworkReply() : QNetworkReply(nullptr) {}
+
+  qint64 readData(char*, qint64) override { return -1; }
+  void abort() override {}
+};
+
 void createDummyRequest(NetworkRequest* r, const QString& resource) {
   TimerSingleShot::create(r, 200, [r, resource] {
     QByteArray data;
@@ -29,9 +38,11 @@ void createDummyRequest(NetworkRequest* r, const QString& resource) {
       file.close();
     }
 
-    emit r->requestCompleted(data.replace(
-        "%%PUBLICKEY%%",
-        MozillaVPN::instance()->keys()->publicKey().toLocal8Bit()));
+    NetworkReply nr;
+    emit r->requestCompleted(
+        &nr, data.replace(
+                 "%%PUBLICKEY%%",
+                 MozillaVPN::instance()->keys()->publicKey().toLocal8Bit()));
   });
 }
 

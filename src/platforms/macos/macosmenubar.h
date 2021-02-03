@@ -5,8 +5,11 @@
 #ifndef MACOSMENUBAR_H
 #define MACOSMENUBAR_H
 
-#include <QAction>
 #include <QObject>
+
+class QAction;
+class QMenu;
+class QMenuBar;
 
 class MacOSMenuBar final : public QObject {
   Q_OBJECT
@@ -22,10 +25,14 @@ class MacOSMenuBar final : public QObject {
 
   void retranslate();
 
+  QMenuBar* menuBar() const { return m_menuBar; }
+
  public slots:
   void controllerStateChanged();
 
  private:
+  QMenuBar* m_menuBar = nullptr;
+
   QAction* m_aboutAction = nullptr;
   QAction* m_preferencesAction = nullptr;
   QAction* m_closeAction = nullptr;
