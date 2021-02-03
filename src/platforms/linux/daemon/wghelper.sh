@@ -19,7 +19,6 @@ ADDRESSES=( )
 DNS=( )
 CONFIG_FILE=""
 PROGRAM="${0##*/}"
-ARGS=( "$@" )
 
 cmd() {
 	echo "[#] $*" >&2
