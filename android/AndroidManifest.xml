@@ -28,6 +28,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.qtproject.qt5.android.bindings.QtActivity"
+            android:process=":QtOnlyProcess"
             android:label="Mozilla VPN"
             android:screenOrientation="unspecified"
             android:theme="@style/AppTheme.Splash"
@@ -100,13 +101,16 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             <meta-data android:name="android.app.extract_android_style" android:value="default" />
             <!-- extract android style -->
         </activity>
-        <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
+        <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices-->
         <service android:name=".VPNService"
-            android:process=":ServiceProcess"
             android:permission="android.permission.BIND_VPN_SERVICE">
             <intent-filter>
                 <action android:name="android.net.VpnService"/>
             </intent-filter>
+        </service>
+        <service android:name=".VPNPermissionHelper"
+            android:process=":QtOnlyProcess"
+            android:permission="android.permission.BIND_VPN_SERVICE">
         </service>
         <receiver android:name=".BootReceiver">
             <intent-filter>

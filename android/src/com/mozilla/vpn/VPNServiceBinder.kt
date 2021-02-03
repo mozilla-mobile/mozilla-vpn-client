@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn
-import kotlinx.coroutines.*
 import android.content.Context
 import android.os.Binder
 import android.os.IBinder
@@ -78,7 +77,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     }
                     this.mService.turnOn(config)
                 } catch (e: Exception) {
-
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                 }
                 return true
@@ -87,9 +85,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.resumeActivate -> {
                 // [data] is empty
                 // Activate the current tunnel
-                if(!mService.checkPermissions()){
-                    return true;
-                }
                 try{
                     this.mService.turnOn(mResumeConfig)
                 }
@@ -109,11 +104,10 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
                 mListener = binder
-                if(mService.state == Tunnel.State.UP){
-                    dispatchEvent(EVENTS.init, "connected")
-                }else{
-                    dispatchEvent(EVENTS.init, "disconnected")
-                }
+                val obj = JSONObject()
+                obj.put("connected",  mService.state == Tunnel.State.UP)
+                obj.put("time",  mService.connectionTime)
+                dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
 
