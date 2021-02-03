@@ -27,6 +27,7 @@
 #include <QStandardPaths>
 #include <QTimer>
 
+class QTextStream;
 class Task;
 
 #ifdef UNIT_TEST
