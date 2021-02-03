@@ -35,6 +35,8 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
+  setToolTip(qtTrId("vpn.main.productName"));
+
   // Status label
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
