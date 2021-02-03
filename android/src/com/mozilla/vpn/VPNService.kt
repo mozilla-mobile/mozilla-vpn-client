@@ -27,23 +27,16 @@ import java.lang.Exception
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    private var mBackend:GoBackend? = null;
+    private val mBackend = GoBackend(this);
     private val mTunnel = VPNTunnel("mvpn1", mBinder);
     private var mConfig:Config? = null;
 
-
-    override fun onCreate() {
-        super.onCreate()
-        mBackend = GoBackend(this);
-    }
-
-    override fun onDestroy() {
-        Log.e(tag, "OH NO DESTROY")
-        super.onDestroy()
-    }
-
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.e(tag,"UNBINDING")
+        if(state == Tunnel.State.DOWN){
+            // If the Qt Client got closed while we were not connected
+            // we do not need to stay as a foreground service.
+            stopForeground(true);
+        }
         return super.onUnbind(intent)
     }
 
@@ -66,7 +59,6 @@ class VPNService : android.net.VpnService() {
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         this.startService(Intent(this, GoBackend.VpnService::class.java))
-        NotificationUtil.show(this);
         intent?.let {
             if(intent.getBooleanExtra("startOnly",false)){
                 Log.i(tag, "Start only!")
@@ -78,6 +70,8 @@ class VPNService : android.net.VpnService() {
                 Log.v(tag, "Starting VPN because 'always on vpn' is enabled")
             }
         }
+        // Go foreground if we need to connect
+        NotificationUtil.show(this);
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
@@ -103,11 +97,15 @@ class VPNService : android.net.VpnService() {
 
     var statistic: Statistics? = null
         get(){
-        return mBackend?.getStatistics(this.mTunnel);
+        return mBackend.getStatistics(this.mTunnel);
     }
     var state: Tunnel.State? = null
         get(){
-            return mBackend?.getState(this.mTunnel);
+            return mBackend.getState(this.mTunnel);
+        }
+    var connectionTime: Long = 0
+        get(){
+            return mTunnel.mConnectionTime
         }
 
     /*
@@ -125,11 +123,16 @@ class VPNService : android.net.VpnService() {
             return true;
         }
         Log.e(tag, "Requesting VPN Permission")
-        this.startActivityForResult(intent)
         return false;
     }
 
     fun turnOn(newConf:Config?) {
+        if(!checkPermissions()){
+            Log.e(tag,"turn on was called without no permissions present!");
+            mTunnel.abort();
+            return;
+        }
+        NotificationUtil.show(this) // Go foreground
         this.startService(Intent(this, GoBackend.VpnService::class.java))
         if(newConf == null && mConfig == null){
             Log.e(tag, "Tried to start VPN with null config - abort");
@@ -143,24 +146,17 @@ class VPNService : android.net.VpnService() {
         // so set the current expected state to be down.
         mTunnel.mState = Tunnel.State.DOWN;
        try {
-           mBackend?.setState(mTunnel, Tunnel.State.UP, mConfig);
+            mBackend.setState(mTunnel, Tunnel.State.UP, mConfig);
        }catch(e:Exception){
-            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected,"")
+            mTunnel.abort();
        }
     }
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        mBackend?.setState(mTunnel,Tunnel.State.DOWN, null);
+        mBackend.setState(mTunnel,Tunnel.State.DOWN, null);
         stopForeground(false)
     }
-
-    /**
-     * Fetches the Global QTAndroidActivity and calls startActivityForResult with the given intent
-     * Is used to request the VPN-Permission, if not given.
-     * Actually Implemented in src/platforms/android/AndroidJNIUtils.cpp
-     */
-    external fun startActivityForResult(i: Intent)
 
 
     companion object{
@@ -169,8 +165,6 @@ class VPNService : android.net.VpnService() {
             c.applicationContext.startService(Intent(c.applicationContext,VPNService::class.java).apply {
                 putExtra("startOnly",true)
             })
-
-
         }
     }
 }

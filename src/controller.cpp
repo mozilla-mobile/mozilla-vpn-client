@@ -114,7 +114,7 @@ void Controller::implInitialized(bool status, bool a_connected,
                << "connected:" << a_connected
                << "connectionDate:" << connectionDate.toString();
 
-  // Q_ASSERT(m_state == StateInitializing);
+  Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
     MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
@@ -131,8 +131,9 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    connected();
     m_connectionDate = connectionDate;
+    emit timeChanged();
+    m_timer.start(TIMER_MSEC);
     return;
   }
 
