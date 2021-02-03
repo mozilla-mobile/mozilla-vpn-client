@@ -18,7 +18,6 @@ INTERFACE=""
 ADDRESSES=( )
 DNS=( )
 CONFIG_FILE=""
-PROGRAM="${0##*/}"
 
 cmd() {
 	echo "[#] $*" >&2
@@ -26,7 +25,7 @@ cmd() {
 }
 
 die() {
-	echo "$PROGRAM: $*" >&2
+	echo "MozillaVPN WGQuick Fatal Error: $*" >&2
 	exit 1
 }
 
