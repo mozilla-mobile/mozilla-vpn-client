@@ -646,15 +646,19 @@ else:wasm {
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
             platforms/dummy/dummypingsendworker.cpp \
-            systemtraynotificationhandler.cpp \
+            platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
-            platforms/wasm/wasmnetworkrequest.cpp
+            platforms/wasm/wasmnetworkrequest.cpp \
+            platforms/wasm/wasmwindowcontroller.cpp \
+            systemtraynotificationhandler.cpp
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
             platforms/dummy/dummypingsendworker.h \
-            systemtraynotificationhandler.h \
-            platforms/wasm/wasmauthenticationlistener.h
+            platforms/macos/macosmenubar.h \
+            platforms/wasm/wasmauthenticationlistener.h \
+            platforms/wasm/wasmwindowcontroller.h \
+            systemtraynotificationhandler.h
 
     SOURCES -= networkrequest.cpp
     RESOURCES += platforms/wasm/networkrequests.qrc

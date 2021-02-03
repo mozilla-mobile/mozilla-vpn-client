@@ -27,7 +27,7 @@ constexpr const char* LOG_LINUX = "linux";
 constexpr const char* LOG_WINDOWS = "windows";
 #endif
 
-#if __APPLE__
+#if __APPLE__ || defined(MVPN_WASM)
 constexpr const char* LOG_MACOS = "macos";
 constexpr const char* LOG_IOS = "ios";
 #endif

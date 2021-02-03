@@ -60,6 +60,10 @@
 #  include "platforms/ios/iaphandler.h"
 #endif
 
+#ifdef MVPN_WASM
+#  include "platforms/wasm/wasmwindowcontroller.h"
+#endif
+
 #include <QApplication>
 
 #ifdef QT_DEBUG
@@ -390,6 +394,10 @@ int CommandUI::run(QStringList& tokens) {
     InspectorServer inspectServer;
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
                      &InspectorServer::close);
+#endif
+
+#ifdef MVPN_WASM
+    WasmWindowController wasmWindowController;
 #endif
 
     // Let's go.
