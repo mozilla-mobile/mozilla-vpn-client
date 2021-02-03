@@ -19,11 +19,6 @@ ADDRESSES=( )
 DNS=( )
 CONFIG_FILE=""
 
-cmd() {
-	echo "[#] $*" >&2
-	"$@"
-}
-
 die() {
 	echo "MozillaVPN WGQuick Fatal Error: $*" >&2
 	exit 1
@@ -60,11 +55,11 @@ parse_options() {
 
 add_if() {
 	local ret
-	if ! cmd ip link add "$INTERFACE" type wireguard; then
+	if ! ip link add "$INTERFACE" type wireguard; then
 		ret=$?
 		[[ -e /sys/module/wireguard ]] || ! command -v "${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" >/dev/null && exit $ret
 		echo "[!] Missing WireGuard kernel module. Falling back to slow userspace implementation." >&2
-		cmd "${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" "$INTERFACE"
+		"${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" "$INTERFACE"
 	fi
 }
 
@@ -74,30 +69,30 @@ del_if() {
 	[[ $HAVE_SET_FIREWALL -eq 0 ]] || remove_firewall
 	if get_fwmark table && [[ $(wg show "$INTERFACE" allowed-ips) =~ /0(\ |$'\n'|$) ]]; then
 		while [[ $(ip -4 rule show 2>/dev/null) == *"lookup $table"* ]]; do
-			cmd ip -4 rule delete table $table
+			ip -4 rule delete table $table
 		done
 		while [[ $(ip -4 rule show 2>/dev/null) == *"from all lookup main suppress_prefixlength 0"* ]]; do
-			cmd ip -4 rule delete table main suppress_prefixlength 0
+			ip -4 rule delete table main suppress_prefixlength 0
 		done
 		while [[ $(ip -6 rule show 2>/dev/null) == *"lookup $table"* ]]; do
-			cmd ip -6 rule delete table $table
+			ip -6 rule delete table $table
 		done
 		while [[ $(ip -6 rule show 2>/dev/null) == *"from all lookup main suppress_prefixlength 0"* ]]; do
-			cmd ip -6 rule delete table main suppress_prefixlength 0
+			ip -6 rule delete table main suppress_prefixlength 0
 		done
 	fi
-	cmd ip link delete dev "$INTERFACE"
+	ip link delete dev "$INTERFACE"
 }
 
 add_addr() {
 	local proto=-4
 	[[ $1 == *:* ]] && proto=-6
-	cmd ip $proto address add "$1" dev "$INTERFACE"
+	ip $proto address add "$1" dev "$INTERFACE"
 }
 
 set_mtu_up() {
 	# Using default MTU of 1420
-	cmd ip link set mtu 1420 up dev "$INTERFACE"
+	ip link set mtu 1420 up dev "$INTERFACE"
 }
 
 resolvconf_iface_prefix() {
@@ -115,12 +110,12 @@ set_dns() {
 	# resolvconf command which adds nameserver rows for each dns entry to /etc/resolv.conf
 	# (maybe amongst other things)
 	{ printf 'nameserver %s\n' "${DNS[@]}" 
-	} | cmd resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
+	} | resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
 	HAVE_SET_DNS=1
 }
 
 unset_dns() {
-	cmd resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
+	resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
 }
 
 get_fwmark() {
@@ -132,25 +127,16 @@ get_fwmark() {
 }
 
 remove_firewall() {
-	if type -p nft >/dev/null; then
-		local table nftcmd
-		while read -r table; do
-			[[ $table == *" wg-quick-$INTERFACE" ]] && printf -v nftcmd '%sdelete %s\n' "$nftcmd" "$table"
-		done < <(nft list tables 2>/dev/null)
-		[[ -z $nftcmd ]] || cmd nft -f <(echo -n "$nftcmd")
-	fi
-	if type -p iptables >/dev/null; then
-		local line iptables found restore
-		for iptables in iptables ip6tables; do
-			restore="" found=0
-			while read -r line; do
-				[[ $line == "*"* || $line == COMMIT || $line == "-A "*"-m comment --comment \"wg-quick(8) rule for $INTERFACE\""* ]] || continue
-				[[ $line == "-A"* ]] && found=1
-				printf -v restore '%s%s\n' "$restore" "${line/#-A/-D}"
-			done < <($iptables-save 2>/dev/null)
-			[[ $found -ne 1 ]] || echo -n "$restore" | cmd $iptables-restore -n
-		done
-	fi
+	local line iptables found restore
+	for iptables in iptables ip6tables; do
+		restore="" found=0
+		while read -r line; do
+			[[ $line == "*"* || $line == COMMIT || $line == "-A "*"-m comment --comment \"wg-quick(8) rule for $INTERFACE\""* ]] || continue
+			[[ $line == "-A"* ]] && found=1
+			printf -v restore '%s%s\n' "$restore" "${line/#-A/-D}"
+		done < <($iptables-save 2>/dev/null)
+		[[ $found -ne 1 ]] || echo -n "$restore" | $iptables-restore -n
+	done
 }
 
 HAVE_SET_FIREWALL=0
@@ -161,39 +147,28 @@ add_default() {
 		while [[ -n $(ip -4 route show table $table 2>/dev/null) || -n $(ip -6 route show table $table 2>/dev/null) ]]; do
 			((table++))
 		done
-		cmd wg set "$INTERFACE" fwmark $table
+		wg set "$INTERFACE" fwmark $table
 	fi
 	local proto=-4 iptables=iptables pf=ip
 	[[ $1 == *:* ]] && proto=-6 iptables=ip6tables pf=ip6
-	cmd ip $proto route add "$1" dev "$INTERFACE" table $table
-	cmd ip $proto rule add not fwmark $table table $table
-	cmd ip $proto rule add table main suppress_prefixlength 0
+	ip $proto route add "$1" dev "$INTERFACE" table $table
+	ip $proto rule add not fwmark $table table $table
+	ip $proto rule add table main suppress_prefixlength 0
 
-	local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n' nftable="wg-quick-$INTERFACE" nftcmd 
-	printf -v nftcmd '%sadd table %s %s\n' "$nftcmd" "$pf" "$nftable"
-	printf -v nftcmd '%sadd chain %s %s preraw { type filter hook prerouting priority -300; }\n' "$nftcmd" "$pf" "$nftable"
-	printf -v nftcmd '%sadd chain %s %s premangle { type filter hook prerouting priority -150; }\n' "$nftcmd" "$pf" "$nftable"
-	printf -v nftcmd '%sadd chain %s %s postmangle { type filter hook postrouting priority -150; }\n' "$nftcmd" "$pf" "$nftable"
+	local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n'
 	while read -r line; do
 		[[ $line =~ .*inet6?\ ([0-9a-f:.]+)/[0-9]+.* ]] || continue
 		printf -v restore '%s-I PREROUTING ! -i %s -d %s -m addrtype ! --src-type LOCAL -j DROP %s\n' "$restore" "$INTERFACE" "${BASH_REMATCH[1]}" "$marker"
-		printf -v nftcmd '%sadd rule %s %s preraw iifname != "%s" %s daddr %s fib saddr type != local drop\n' "$nftcmd" "$pf" "$nftable" "$INTERFACE" "$pf" "${BASH_REMATCH[1]}"
 	done < <(ip -o $proto addr show dev "$INTERFACE" 2>/dev/null)
 	printf -v restore '%sCOMMIT\n*mangle\n-I POSTROUTING -m mark --mark %d -p udp -j CONNMARK --save-mark %s\n-I PREROUTING -p udp -j CONNMARK --restore-mark %s\nCOMMIT\n' "$restore" $table "$marker" "$marker"
-	printf -v nftcmd '%sadd rule %s %s postmangle meta l4proto udp mark %d ct mark set mark \n' "$nftcmd" "$pf" "$nftable" $table
-	printf -v nftcmd '%sadd rule %s %s premangle meta l4proto udp meta mark set ct mark \n' "$nftcmd" "$pf" "$nftable"
-	[[ $proto == -4 ]] && cmd sysctl -q net.ipv4.conf.all.src_valid_mark=1
-	if type -p nft >/dev/null; then
-		cmd nft -f <(echo -n "$nftcmd")
-	else
-		echo -n "$restore" | cmd $iptables-restore -n
-	fi
+	[[ $proto == -4 ]] && sysctl -q net.ipv4.conf.all.src_valid_mark=1
+	echo -n "$restore" | $iptables-restore -n
 	HAVE_SET_FIREWALL=1
 	return 0
 }
 
 set_config() {
-	cmd wg setconf "$INTERFACE" <(echo "$WG_CONFIG")
+	wg setconf "$INTERFACE" <(echo "$WG_CONFIG")
 }
 
 cmd_up() {
