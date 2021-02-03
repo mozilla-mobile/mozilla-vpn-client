@@ -207,6 +207,8 @@ cmd_up() {
 	done
 	set_mtu_up
 	set_dns
+	# Get the allowed ips from wg show (added to peer using set_conf always 0.0.0.0/0 ::/0)
+	# Then process them with add_default
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do
 		add_default "$i"
 	done
