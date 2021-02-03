@@ -17,7 +17,6 @@ WG_CONFIG=""
 INTERFACE=""
 ADDRESSES=( )
 DNS=( )
-DNS_SEARCH=( )
 CONFIG_FILE=""
 PROGRAM="${0##*/}"
 ARGS=( "$@" )
@@ -52,7 +51,7 @@ parse_options() {
 			case "$key" in
 			Address) ADDRESSES+=( ${value//,/ } ); continue ;;
 			DNS) for v in ${value//,/ }; do
-				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v ) || DNS_SEARCH+=( $v )
+				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v )
 			done; continue ;;
 			esac
 		fi
@@ -114,15 +113,15 @@ resolvconf_iface_prefix() {
 
 HAVE_SET_DNS=0
 set_dns() {
-	[[ ${#DNS[@]} -gt 0 ]] || return 0
-	{ printf 'nameserver %s\n' "${DNS[@]}"
-	  [[ ${#DNS_SEARCH[@]} -eq 0 ]] || printf 'search %s\n' "${DNS_SEARCH[*]}"
+	# Iterate through values of DNS array and pipe "nameserver" string to 
+	# resolvconf command which adds nameserver rows for each dns entry to /etc/resolv.conf
+	# (maybe amongst other things)
+	{ printf 'nameserver %s\n' "${DNS[@]}" 
 	} | cmd resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
 	HAVE_SET_DNS=1
 }
 
 unset_dns() {
-	[[ ${#DNS[@]} -gt 0 ]] || return 0
 	cmd resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
 }
 
