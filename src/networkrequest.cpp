@@ -284,7 +284,7 @@ void NetworkRequest::replyFinished() {
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    emit requestFailed(m_reply->error(), data);
+    emit requestFailed(ErrorHandler::ConnectionFailureError, data);
     return;
   }
 
