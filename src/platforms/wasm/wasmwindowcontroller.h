@@ -8,6 +8,8 @@
 #include <QMainWindow>
 #include <QObject>
 
+class QLabel;
+
 class WasmWindowController final : public QObject {
   Q_DISABLE_COPY_MOVE(WasmWindowController)
 
@@ -15,11 +17,17 @@ class WasmWindowController final : public QObject {
   WasmWindowController();
   ~WasmWindowController();
 
+  static WasmWindowController* instance();
+
+  void notification(const QString& title, const QString& message);
+
  private:
   void iconChanged(const QString& icon);
 
  private:
   QMainWindow m_window;
+  QLabel* m_notificationTitle = nullptr;
+  QLabel* m_notificationMessage = nullptr;
 };
 
 #endif  // WASMWINDOWCONTROLLER_H
