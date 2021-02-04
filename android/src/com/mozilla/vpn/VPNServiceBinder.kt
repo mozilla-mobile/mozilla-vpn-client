@@ -21,7 +21,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private var mListener: IBinder?= null
+    private var mListener: IBinder? = null
     private var mResumeConfig: Config? = null
 
     /**
@@ -87,7 +87,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.resumeActivate -> {
                 // [data] is empty
                 // Activate the current tunnel
-                try{
+                try {
                     this.mService.turnOn(mResumeConfig)
                 } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
@@ -106,8 +106,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListener = binder
                 val obj = JSONObject()
-                obj.put("connected",  mService.state == Tunnel.State.UP)
-                obj.put("time",  mService.connectionTime)
+                obj.put("connected", mService.state == Tunnel.State.UP)
+                obj.put("time", mService.connectionTime)
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
@@ -174,7 +174,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String) {
-        mListener?.let{
+        mListener?.let {
             if (it.isBinderAlive) {
                 val data = Parcel.obtain()
                 data.writeByteArray(payload.toByteArray(charset("UTF-8")))
