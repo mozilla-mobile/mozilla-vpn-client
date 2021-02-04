@@ -16,6 +16,13 @@ class WgQuickProcess final {
   Q_DISABLE_COPY_MOVE(WgQuickProcess)
 
  public:
+  static bool run(
+      Daemon::Op op, const QString& privateKey,
+      const QString& deviceIpv4Address, const QString& deviceIpv6Address,
+      const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
+      const QString& serverPublicKey, const QString& serverIpv4AddrIn,
+      const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
+      int serverPort, bool ipv6Enabled);
   static bool validateWgArgs(
       const QString& privateKey, const QString& deviceIpv4Address,
       const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
@@ -24,13 +31,6 @@ class WgQuickProcess final {
       const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled);
   static QString writeWgConfigFile(
       QTemporaryDir& tmpDir, const QString& privateKey,
-      const QString& deviceIpv4Address, const QString& deviceIpv6Address,
-      const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
-      const QString& serverPublicKey, const QString& serverIpv4AddrIn,
-      const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-      int serverPort, bool ipv6Enabled);
-  static bool run(
-      Daemon::Op op, const QString& privateKey,
       const QString& deviceIpv4Address, const QString& deviceIpv6Address,
       const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
       const QString& serverPublicKey, const QString& serverIpv4AddrIn,
