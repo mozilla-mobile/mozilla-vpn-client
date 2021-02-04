@@ -5,26 +5,25 @@
 package com.mozilla.vpn
 
 import com.wireguard.android.backend.Tunnel
-import org.mozilla.firefox.vpn.VPNService
 import org.mozilla.firefox.vpn.VPNServiceBinder
 
 class VPNTunnel : Tunnel {
-    val mName: String;
-    val mBinder: VPNServiceBinder;
-    var mState = Tunnel.State.DOWN;
+    val mName: String
+    val mBinder: VPNServiceBinder
+    var mState = Tunnel.State.DOWN
 
     constructor(name: String, m: VPNServiceBinder) {
-        this.mName = name;
-        this.mBinder = m;
+        this.mName = name
+        this.mBinder = m
     }
 
     override fun getName(): String {
-        return mName;
+        return mName
     }
 
     override fun onStateChange(newState: Tunnel.State) {
         if (mState != newState) {
-            mState = newState;
+            mState = newState
             if (mState == Tunnel.State.UP) {
                 mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
             } else {

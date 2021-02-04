@@ -4,31 +4,23 @@
 
 package org.mozilla.firefox.vpn
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import com.mozilla.vpn.NotificationUtil
 import com.mozilla.vpn.VPNTunnel
 import com.wireguard.android.backend.*
-import com.wireguard.config.Config
-import com.wireguard.crypto.Key
-import com.wireguard.crypto.KeyFormatException
 import com.wireguard.android.backend.GoBackend
-
+import com.wireguard.config.Config
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    private val mBackend = GoBackend(this);
-    private val mTunnel = VPNTunnel("mvpn1", mBinder);
-    private var mConfig:Config? = null;
+    private val mBackend = GoBackend(this)
+    private val mTunnel = VPNTunnel("mvpn1", mBinder)
+    private var mConfig: Config? = null
 
     /**
      * EntryPoint for the Service, gets Called when AndroidController.cpp
@@ -38,7 +30,6 @@ class VPNService : android.net.VpnService() {
         Log.v(tag, "Got Bind request")
         return mBinder
     }
-
 
     /**
      * Might be the entryPoint if the Service gets Started via an
@@ -56,7 +47,7 @@ class VPNService : android.net.VpnService() {
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
-            val prefs = getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+            val prefs = getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
             val lastConfString = prefs.getString("lastConf", "")
             if (lastConfString.isNullOrEmpty()) {
                 // We have nothing to connect to -> Exit
@@ -72,17 +63,17 @@ class VPNService : android.net.VpnService() {
     // Invoked when the application is revoked.
     // At this moment, the VPN interface is already deactivated by the system.
     override fun onRevoke() {
-        this.turnOff();
+        this.turnOff()
         super.onRevoke()
     }
 
     var statistic: Statistics? = null
-        get(){
-        return mBackend.getStatistics(this.mTunnel);
-    }
+        get() {
+            return mBackend.getStatistics(this.mTunnel)
+        }
     var state: Tunnel.State? = null
-        get(){
-            return mBackend.getState(this.mTunnel);
+        get() {
+            return mBackend.getState(this.mTunnel)
         }
 
     /*
@@ -97,33 +88,33 @@ class VPNService : android.net.VpnService() {
         val intent = prepare(this)
         if (intent == null) {
             Log.e(tag, "VPN Permission Already Present")
-            return true;
+            return true
         }
         Log.e(tag, "Requesting VPN Permission")
         this.startActivityForResult(intent)
-        return false;
+        return false
     }
 
-    fun turnOn(newConf:Config?) {
-        if(newConf == null && mConfig == null){
-            Log.e(tag, "Tried to start VPN with null config - abort");
+    fun turnOn(newConf: Config?) {
+        if (newConf == null && mConfig == null) {
+            Log.e(tag, "Tried to start VPN with null config - abort")
         }
-        if(newConf != null){
-            mConfig = newConf;
+        if (newConf != null) {
+            mConfig = newConf
         }
 
         // Upgrade us into a Foreground Service, by showing a Notification
-        NotificationUtil.show(this);
+        NotificationUtil.show(this)
         // wgBackend will "DOWN" the tunnel before connecting,
         // we don't need the onchange event to be passed to the controller.
         // so set the current expected state to be down.
-        mTunnel.mState = Tunnel.State.DOWN;
-        mBackend.setState(mTunnel, Tunnel.State.UP, mConfig);
+        mTunnel.mState = Tunnel.State.DOWN
+        mBackend.setState(mTunnel, Tunnel.State.UP, mConfig)
     }
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        mBackend.setState(mTunnel,Tunnel.State.DOWN, null)
+        mBackend.setState(mTunnel, Tunnel.State.DOWN, null)
         stopForeground(false)
     }
 
@@ -133,5 +124,4 @@ class VPNService : android.net.VpnService() {
      * Actually Implemented in src/platforms/android/AndroidJNIUtils.cpp
      */
     external fun startActivityForResult(i: Intent)
-
 }

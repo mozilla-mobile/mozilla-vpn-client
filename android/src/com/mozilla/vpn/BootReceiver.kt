@@ -9,27 +9,26 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import org.mozilla.firefox.vpn.VPNService
 import com.wireguard.android.backend.GoBackend
 
 class BootReceiver : BroadcastReceiver() {
     private val TAG = "BootReceiver"
     override fun onReceive(context: Context, arg1: Intent) {
-        if(!canEnableVPNOnBoot()){
-            Log.i(TAG, "This device does not support start on boot - exit");
-            return;
+        if (!canEnableVPNOnBoot()) {
+            Log.i(TAG, "This device does not support start on boot - exit")
+            return
         }
-        val prefs = context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
-        val startOnBoot =  prefs.getBoolean("startOnBoot",false)
-        if(!startOnBoot){
-            Log.i(TAG, "This device did not enable start on boot - exit");
-            return;
+        val prefs = context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+        val startOnBoot = prefs.getBoolean("startOnBoot", false)
+        if (!startOnBoot) {
+            Log.i(TAG, "This device did not enable start on boot - exit")
+            return
         }
-        Log.i(TAG, "This device did enable start on boot - try to start");
+        Log.i(TAG, "This device did enable start on boot - try to start")
         // Queue Backend start Before the VPN Service to give it's ready when the VPN wants to start
         context.startService(Intent(context, GoBackend.VpnService::class.java))
         val intent = Intent(context, VPNService::class.java)
-        intent.putExtra("startOnBoot",true)
+        intent.putExtra("startOnBoot", true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)
         } else {
@@ -38,7 +37,7 @@ class BootReceiver : BroadcastReceiver() {
         Log.i(TAG, "Started Service")
     }
 
-    companion object{
+    companion object {
         /**
          * Only devices below N allow us to enable the VPN after the OnBootIntent
          * Devices higher then that should refer to the Always On VPN option in settings
