@@ -379,7 +379,8 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
             emit alreadySubscribed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
+  connect(request, &NetworkRequest::requestCompleted,
+          [this, ids](QNetworkReply*, const QByteArray&) {
     logger.log() << "Purchase request completed";
     SettingsHolder::instance()->addSubscriptionTransactions(ids);
 

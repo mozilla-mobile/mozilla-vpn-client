@@ -46,15 +46,6 @@ MacOSDaemon* MacOSDaemon::instance() {
   return s_daemon;
 }
 
-bool MacOSDaemon::activate(const Config& config) {
-  if (!Daemon::activate(config)) {
-    return false;
-  }
-
-  m_connectionDate = QDateTime::currentDateTime();
-  return true;
-}
-
 QByteArray MacOSDaemon::getStatus() {
   logger.log() << "Status request";
 

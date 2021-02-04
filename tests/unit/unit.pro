@@ -64,6 +64,8 @@ HEADERS += \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/timersingleshot.h \
+    ../../src/update/updater.h \
+    ../../src/update/versionapi.h \
     helper.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -118,6 +120,8 @@ SOURCES += \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/timersingleshot.cpp \
+    ../../src/update/updater.cpp \
+    ../../src/update/versionapi.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \

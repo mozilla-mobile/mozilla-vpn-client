@@ -99,7 +99,9 @@ SOURCES += \
         tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
-        timersingleshot.cpp
+        timersingleshot.cpp \
+        update/updater.cpp \
+        update/versionapi.cpp
 
 HEADERS += \
         apppermission.h \
@@ -172,7 +174,9 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
-        timersingleshot.h
+        timersingleshot.h \
+        update/updater.h \
+        update/versionapi.h
 
 debug {
     message(Adding the inspector)
@@ -436,7 +440,8 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/desktopauthenticationlistener.cpp
+            tasks/authenticate/desktopauthenticationlistener.cpp \
+            update/balrog.cpp \
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
@@ -447,7 +452,8 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/desktopauthenticationlistener.h
+            tasks/authenticate/desktopauthenticationlistener.h \
+            update/balrog.h \
 
     OBJECTIVE_HEADERS += \
             platforms/macos/macosutils.h
@@ -602,6 +608,7 @@ else:win* {
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
+        update/balrog.cpp \
         wgquickprocess.cpp
 
     HEADERS += \
@@ -620,6 +627,7 @@ else:win* {
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
+        update/balrog.h \
         wgquickprocess.h
 }
 

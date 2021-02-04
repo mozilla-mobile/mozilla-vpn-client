@@ -7,6 +7,8 @@
 
 #include "ipaddressrange.h"
 
+#include <QDateTime>
+
 class Daemon : public QObject {
   Q_OBJECT
 
@@ -63,6 +65,8 @@ class Daemon : public QObject {
 
  protected:
   bool m_connected = false;
+
+  QDateTime m_connectionDate;
 
   Config m_lastConfig;
 };
