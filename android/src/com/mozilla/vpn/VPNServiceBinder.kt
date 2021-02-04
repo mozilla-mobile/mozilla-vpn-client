@@ -12,16 +12,16 @@ import com.mozilla.vpn.NotificationUtil
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
-import java.lang.Exception
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.Exception
+import org.json.JSONObject
 
 class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private var mListener: IBinder?= null
+    private var mListener: IBinder? = null
     private var mResumeConfig: Config? = null
 
     /**
@@ -35,9 +35,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestGetLog = 5
         const val requestCleanupLog = 6
         const val resumeActivate = 7
-        const val enableStartOnBoot =8;
-        const val setNotificationText = 9;
-        const val setFallBackNotification = 10;
+        const val enableStartOnBoot = 8
+        const val setNotificationText = 9
+        const val setFallBackNotification = 10
     }
 
     /**
@@ -60,20 +60,22 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     val json = buffer?.let { String(it) }
                     // Store the config in case the service gets
                     // asked boot vpn from the OS
-                    val prefs = mService.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+                    val prefs = mService.getSharedPreferences(
+                        "com.mozilla.vpn.prefrences", Context.MODE_PRIVATE
+                    )
                     prefs.edit()
-                        .putString("lastConf",json)
+                        .putString("lastConf", json)
                         .apply()
 
-                    Log.v(tag,"Stored new Tunnel config in Service")
+                    Log.v(tag, "Stored new Tunnel config in Service")
                     val config = buildConfigFromJSON(json)
 
-                    if(!mService.checkPermissions()){
+                    if (!mService.checkPermissions()) {
                         mResumeConfig = config
                         // The Permission prompt was already
                         // send, in case it's accepted we will 
                         // recive ACTIONS.resumeActivate
-                        return true;
+                        return true
                     }
                     this.mService.turnOn(config)
                 } catch (e: Exception) {
@@ -85,13 +87,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.resumeActivate -> {
                 // [data] is empty
                 // Activate the current tunnel
-                try{
+                try {
                     this.mService.turnOn(mResumeConfig)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     Log.e(tag, "An Error occurred while enabling the VPN: ${e.localizedMessage}")
                 }
-                return true;
+                return true
             }
 
             ACTIONS.deactivate -> {
@@ -105,8 +106,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListener = binder
                 val obj = JSONObject()
-                obj.put("connected",  mService.state == Tunnel.State.UP)
-                obj.put("time",  mService.connectionTime)
+                obj.put("connected", mService.state == Tunnel.State.UP)
+                obj.put("time", mService.connectionTime)
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
@@ -120,39 +121,41 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
 
-            ACTIONS.requestGetLog ->{
+            ACTIONS.requestGetLog -> {
                 // Grabs all the Logs and dispatch new Log Event
-                val process = Runtime.getRuntime().exec("logcat -d");
+                val process = Runtime.getRuntime().exec("logcat -d")
                 val bufferedReader = BufferedReader(
-                    InputStreamReader(process.inputStream))
+                    InputStreamReader(process.inputStream)
+                )
                 val allText = bufferedReader.use(BufferedReader::readText)
                 dispatchEvent(EVENTS.backendLogs, allText)
                 return true
-
             }
-            ACTIONS.enableStartOnBoot ->{
+            ACTIONS.enableStartOnBoot -> {
                 // Sets the Start on boot pref data is here a Byte Array with length 1
                 // and the byte is a boolean
                 val buffer = data.createByteArray()
-                if(buffer == null){return true;}
-                val startOnBootEnabled = buffer.get(0) != 0.toByte();
-                val prefs = mService.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+                if (buffer == null) { return true; }
+                val startOnBootEnabled = buffer.get(0) != 0.toByte()
+                val prefs = mService.getSharedPreferences(
+                    "com.mozilla.vpn.prefrences", Context.MODE_PRIVATE
+                )
                 prefs.edit()
-                    .putBoolean("startOnBoot", startOnBootEnabled )
+                    .putBoolean("startOnBoot", startOnBootEnabled)
                     .apply()
             }
 
-            ACTIONS.requestCleanupLog ->{
-                Runtime.getRuntime().exec("logcat -c");
+            ACTIONS.requestCleanupLog -> {
+                Runtime.getRuntime().exec("logcat -c")
                 return true
             }
-            ACTIONS.setNotificationText ->{
-                NotificationUtil.update(data);
-                return true;
+            ACTIONS.setNotificationText -> {
+                NotificationUtil.update(data)
+                return true
             }
-            ACTIONS.setFallBackNotification->{
-                NotificationUtil.saveFallBackMessage(data,mService);
-                return true;
+            ACTIONS.setFallBackNotification -> {
+                NotificationUtil.saveFallBackMessage(data, mService)
+                return true
             }
 
             else -> {
@@ -171,7 +174,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String) {
-        mListener?.let{
+        mListener?.let {
             if (it.isBinderAlive) {
                 val data = Parcel.obtain()
                 data.writeByteArray(payload.toByteArray(charset("UTF-8")))
@@ -184,7 +187,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      *  The codes we Are Using in case of [dispatchEvent]
      */
     object EVENTS {
-        const val init= 0
+        const val init = 0
         const val connected = 1
         const val disconnected = 2
         const val statisticUpdate = 3
@@ -229,10 +232,10 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
         ifaceBuilder.addDnsServer(InetNetwork.parse(jServer.getString("ipv4Gateway")).address)
-        val jExcludedApplication = obj.getJSONArray("excludedApps");
+        val jExcludedApplication = obj.getJSONArray("excludedApps")
         (0 until jExcludedApplication.length()).toList().forEach {
-            val appName = jExcludedApplication.get(it).toString();
-            ifaceBuilder.excludeApplication(appName);
+            val appName = jExcludedApplication.get(it).toString()
+            ifaceBuilder.excludeApplication(appName)
         }
         confBuilder.setInterface(ifaceBuilder.build())
         return confBuilder.build()

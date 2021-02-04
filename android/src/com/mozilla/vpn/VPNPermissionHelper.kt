@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
 package org.mozilla.firefox.vpn
 
 import android.content.Context
@@ -14,21 +13,20 @@ class VPNPermissionHelper : android.net.VpnService() {
      * is present and prompting if not.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val intent = prepare(this.applicationContext);
-        if(intent != null){
+        val intent = prepare(this.applicationContext)
+        if (intent != null) {
             startActivityForResult(intent)
         }
-        return START_NOT_STICKY;
+        return START_NOT_STICKY
     }
 
-    companion object{
+    companion object {
         @JvmStatic
-        fun startService(c : Context) {
-            val appC = c.applicationContext;
-            appC.startService(Intent(appC,VPNPermissionHelper::class.java))
+        fun startService(c: Context) {
+            val appC = c.applicationContext
+            appC.startService(Intent(appC, VPNPermissionHelper::class.java))
         }
     }
-
 
     /**
      * Fetches the Global QTAndroidActivity and calls startActivityForResult with the given intent
