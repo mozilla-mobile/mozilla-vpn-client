@@ -91,7 +91,7 @@ WasmWindowController::WasmWindowController() {
   // stratch
   layout->addWidget(new QWidget(), 1);
 
-  m_window.show();
+  m_window.showFullScreen();
 }
 
 WasmWindowController::~WasmWindowController() {
