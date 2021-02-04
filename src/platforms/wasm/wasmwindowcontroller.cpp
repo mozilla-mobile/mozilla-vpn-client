@@ -46,8 +46,8 @@ WasmWindowController::WasmWindowController() {
     QLabel* label = new QLabel("System tray menu:");
     layout->addWidget(label);
 
-    QMenuBar* menuBar = new QMenuBar();
-    layout->addWidget(menuBar);
+    m_systemTrayMenuBar = new QMenuBar();
+    layout->addWidget(m_systemTrayMenuBar);
 
     StatusIcon* statusIcon = MozillaVPN::instance()->statusIcon();
     connect(statusIcon, &StatusIcon::iconChanged, this,
@@ -55,7 +55,7 @@ WasmWindowController::WasmWindowController() {
     iconChanged(statusIcon->iconString());
 
     QMenu* menu = SystemTrayHandler::instance()->contextMenu();
-    menuBar->addMenu(menu);
+    m_systemTrayMenuBar->addMenu(menu);
   }
 
   // MacOS Menu bar
@@ -63,9 +63,9 @@ WasmWindowController::WasmWindowController() {
     QLabel* label = new QLabel("MacOS menu:");
     layout->addWidget(label);
 
-    MacOSMenuBar* menu = new MacOSMenuBar();
-    menu->initialize();
-    layout->addWidget(menu->menuBar());
+    m_macOSMenuBar = new MacOSMenuBar();
+    m_macOSMenuBar->initialize();
+    layout->addWidget(m_macOSMenuBar->menuBar());
   }
 
   // Notification title
@@ -120,4 +120,11 @@ void WasmWindowController::notification(const QString& title,
 
   m_notificationTitle->setText(title);
   m_notificationMessage->setText(message);
+}
+
+void WasmWindowController::retranslate() {
+  QMenu* menu = SystemTrayHandler::instance()->contextMenu();
+  m_systemTrayMenuBar->addMenu(menu);
+
+  m_macOSMenuBar->retranslate();
 }

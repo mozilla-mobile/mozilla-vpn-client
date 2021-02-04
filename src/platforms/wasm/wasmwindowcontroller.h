@@ -8,7 +8,9 @@
 #include <QMainWindow>
 #include <QObject>
 
+class MacOSMenuBar;
 class QLabel;
+class QMenuBar;
 
 class WasmWindowController final : public QObject {
   Q_DISABLE_COPY_MOVE(WasmWindowController)
@@ -21,6 +23,8 @@ class WasmWindowController final : public QObject {
 
   void notification(const QString& title, const QString& message);
 
+  void retranslate();
+
  private:
   void iconChanged(const QString& icon);
 
@@ -28,6 +32,8 @@ class WasmWindowController final : public QObject {
   QMainWindow m_window;
   QLabel* m_notificationTitle = nullptr;
   QLabel* m_notificationMessage = nullptr;
+  QMenuBar* m_systemTrayMenuBar = nullptr;
+  MacOSMenuBar* m_macOSMenuBar = nullptr;
 };
 
 #endif  // WASMWINDOWCONTROLLER_H
