@@ -26,7 +26,8 @@ QString scriptPath() {
 #if defined(MVPN_LINUX)
   appPath.cdUp();
   appPath.cd("share");
-  return appPath.filePath("mozillavpn_wghelper.sh");
+  appPath.cd("mozillavpn");
+  return appPath.filePath("wghelper.sh");
   ;
 #elif defined(MVPN_MACOS_DAEMON)
   appPath.cdUp();
@@ -115,16 +116,16 @@ QString WgQuickProcess::writeWgConfigFile(
   QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
 
-  if (!file.open(QIODevice::ReadWrite)) {
+  if (!file.open(QIODevice::WriteOnly)) {
     qWarning("Unable to create a file in the temporary folder");
-    return "";
+    return QString();
   }
 
   qint64 written = file.write(content);
 
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
-    return "";
+    return QString();
   }
 
   return file.fileName();
@@ -152,11 +153,11 @@ bool WgQuickProcess::run(
     qWarning("Cannot create a temporary directory");
     return false;
   }
-  QString confFile = writeWgConfigFile(
+  QString configFile = writeWgConfigFile(
       tmpDir, privateKey, deviceIpv4Address, deviceIpv6Address,
       serverIpv4Gateway, serverIpv6Gateway, serverPublicKey, serverIpv4AddrIn,
       serverIpv6AddrIn, allowedIPAddressRanges, serverPort, ipv6Enabled);
-  if (confFile.isEmpty()) {
+  if (configFile.isEmpty()) {
     logger.log() << "Failed to create the config file";
     return false;
   }
@@ -164,7 +165,7 @@ bool WgQuickProcess::run(
   // Run
   QStringList arguments;
   arguments.append(op == Daemon::Up ? "up" : "down");
-  arguments.append(confFile);
+  arguments.append(configFile);
 
   QString app = scriptPath();
   logger.log() << "Start:" << app << " - arguments:" << arguments;
