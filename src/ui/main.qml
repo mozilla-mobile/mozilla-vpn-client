@@ -19,6 +19,8 @@ Window {
                 Qt.platform.os === "tvos";
     }
 
+    screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
+
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
@@ -195,7 +197,8 @@ Window {
         function onViewLogsNeeded() {
             if (Qt.platform.os !== "android" &&
                     Qt.platform.os !== "ios" &&
-                    Qt.platform.os !== "tvos") {
+                    Qt.platform.os !== "tvos" &&
+                    Qt.platform.os !== "wasm")  {
                 VPN.viewLogs();
             } else {
                 mainStackView.push("views/ViewLogs.qml");

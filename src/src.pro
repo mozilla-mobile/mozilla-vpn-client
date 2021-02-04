@@ -631,6 +631,39 @@ else:win* {
         wgquickprocess.h
 }
 
+else:wasm {
+    message(WASM \\o/)
+    DEFINES += MVPN_DUMMY
+    DEFINES += MVPN_WASM
+
+    QMAKE_CXXFLAGS *= -Werror
+
+    TARGET = mozillavpn
+    QT += networkauth
+    QT += svg
+
+    SOURCES += \
+            platforms/dummy/dummycontroller.cpp \
+            platforms/dummy/dummycryptosettings.cpp \
+            platforms/dummy/dummypingsendworker.cpp \
+            platforms/macos/macosmenubar.cpp \
+            platforms/wasm/wasmauthenticationlistener.cpp \
+            platforms/wasm/wasmnetworkrequest.cpp \
+            platforms/wasm/wasmwindowcontroller.cpp \
+            systemtraynotificationhandler.cpp
+
+    HEADERS += \
+            platforms/dummy/dummycontroller.h \
+            platforms/dummy/dummypingsendworker.h \
+            platforms/macos/macosmenubar.h \
+            platforms/wasm/wasmauthenticationlistener.h \
+            platforms/wasm/wasmwindowcontroller.h \
+            systemtraynotificationhandler.h
+
+    SOURCES -= networkrequest.cpp
+    RESOURCES += platforms/wasm/networkrequests.qrc
+}
+
 # Anything else
 else {
     error(Unsupported platform)

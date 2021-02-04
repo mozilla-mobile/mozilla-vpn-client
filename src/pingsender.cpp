@@ -41,7 +41,10 @@ PingSender::PingSender(QObject* parent, QThread* thread) : QObject(parent) {
       new DummyPingSendWorker();
 #endif
 
+  // No multi-thread supports for wasm builds.
+#ifndef MVPN_WASM
   worker->moveToThread(thread);
+#endif
 
   connect(thread, &QThread::finished, worker, &QObject::deleteLater);
   connect(this, &PingSender::sendPing, worker, &PingSendWorker::sendPing);
