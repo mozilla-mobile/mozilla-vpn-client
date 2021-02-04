@@ -6,7 +6,7 @@
 
 . $(dirname $0)/commons.sh
 
-print N "This script runs functiona tests"
+print N "This script runs the functional tests"
 print N ""
 
 if [ "$1" == "" ] || ! [ -f "$1" ]; then

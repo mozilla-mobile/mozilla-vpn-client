@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import "../themes/themes.js" as Theme
 
 Flickable {
@@ -12,6 +12,7 @@ Flickable {
 
     property var flickContentHeight
     property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight)
+    property bool hideScollBarOnStackTransition: false
 
     function ensureVisible(item) {
         if (windowHeightExceedsContentHeight) {
@@ -37,7 +38,6 @@ Flickable {
     NumberAnimation on contentY {
         id: ensureVisAnimation
 
-        to: 0 //Dummy value - will be set up when this animation is called.
         duration: 300
         easing.type: Easing.OutQuad
     }
@@ -49,6 +49,12 @@ Flickable {
     ScrollBar.vertical: ScrollBar {
         policy: windowHeightExceedsContentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
         Accessible.ignored: true
+        opacity: hideScollBarOnStackTransition && (vpnFlickable.StackView.status !== StackView.Active) ? 0 : 1
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
+            }
+        }
     }
 
 }

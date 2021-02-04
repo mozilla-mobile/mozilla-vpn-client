@@ -2,19 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef MACOSDAEMONCONNECTION_H
-#define MACOSDAEMONCONNECTION_H
+#ifndef DAEMONLOCALSERVERCONNECTION_H
+#define DAEMONLOCALSERVERCONNECTION_H
 
 #include <QObject>
 
 class QLocalSocket;
 
-class MacOSDaemonConnection final : public QObject {
-  Q_DISABLE_COPY_MOVE(MacOSDaemonConnection)
+class DaemonLocalServerConnection final : public QObject {
+  Q_DISABLE_COPY_MOVE(DaemonLocalServerConnection)
 
  public:
-  MacOSDaemonConnection(QObject* parent, QLocalSocket* socket);
-  ~MacOSDaemonConnection();
+  DaemonLocalServerConnection(QObject* parent, QLocalSocket* socket);
+  ~DaemonLocalServerConnection();
 
  private:
   void readData();
@@ -23,6 +23,7 @@ class MacOSDaemonConnection final : public QObject {
 
   void connected();
   void disconnected();
+  void backendFailure();
 
   void write(const QJsonObject& obj);
 
@@ -32,4 +33,4 @@ class MacOSDaemonConnection final : public QObject {
   QByteArray m_buffer;
 };
 
-#endif  // MACOSDAEMONCONNECTION_H
+#endif  // DAEMONLOCALSERVERCONNECTION_H

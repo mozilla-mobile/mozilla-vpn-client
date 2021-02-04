@@ -10,6 +10,8 @@
 #  include "platforms/android/androidauthenticationlistener.h"
 #elif defined(MVPN_IOS)
 #  include "platforms/ios/iosauthenticationlistener.h"
+#elif defined(MVPN_WASM)
+#  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
 #endif
@@ -24,6 +26,8 @@ AuthenticationListener* AuthenticationListener::create(QObject* parent) {
   return new AndroidAuthenticationListener(parent);
 #elif defined(MVPN_IOS)
   return new IOSAuthenticationListener(parent);
+#elif defined(MVPN_WASM)
+  return new WasmAuthenticationListener(parent);
 #else
   return new DesktopAuthenticationListener(parent);
 #endif

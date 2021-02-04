@@ -7,6 +7,8 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
+#include <QAction>
+#include <QMenu>
 #include <QMenuBar>
 
 namespace {
@@ -39,10 +41,10 @@ void MacOSMenuBar::initialize() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  QMenuBar* menuBar = new QMenuBar(nullptr);
+  m_menuBar = new QMenuBar(nullptr);
 
   //% "File"
-  QMenu* fileMenu = menuBar->addMenu(qtTrId("menubar.file.title"));
+  QMenu* fileMenu = m_menuBar->addMenu(qtTrId("menubar.file.title"));
 
   // Do not use qtTrId here!
   QAction* quit =
@@ -64,7 +66,7 @@ void MacOSMenuBar::initialize() {
   m_closeAction = fileMenu->addAction("", vpn->controller(), &Controller::quit);
   m_closeAction->setShortcut(QKeySequence::Close);
 
-  m_helpMenu = menuBar->addMenu("");
+  m_helpMenu = m_menuBar->addMenu("");
 
   retranslate();
 };

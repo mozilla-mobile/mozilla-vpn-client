@@ -36,7 +36,7 @@ void TaskIOSProducts::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
+          [this](QNetworkReply*, const QByteArray& data) {
             logger.log() << "IOS product request completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);

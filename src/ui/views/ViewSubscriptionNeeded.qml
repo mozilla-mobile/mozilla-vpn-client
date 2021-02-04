@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
@@ -151,7 +151,7 @@ VPNFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
             columnSpacing: 0
-            columns: (termsOfService.width > subscribeNow.width / 2 || privacyNotice.width > subscribeNow.width / 2) ? 1 : 3
+            Component.onCompleted: columns = (termsOfService.width > subscribeNow.width / 2 || privacyNotice.width > subscribeNow.width / 2) ? 1 : 3;
 
             VPNGreyLink {
                 id: termsOfService

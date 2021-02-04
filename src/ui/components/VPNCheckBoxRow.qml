@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtGraphicalEffects 1.15
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
+import QtGraphicalEffects 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
@@ -19,7 +19,7 @@ RowLayout {
     property bool showDivider: true
     property var iconURL: ""
     property var leftMargin: 18
-    property var subLabelWrapMode: Text.WrapAnywhere
+    property var subLabelWrapMode: Text.WordWrap
 
     signal clicked()
     spacing: 0

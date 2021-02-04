@@ -5,7 +5,9 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-#include <QObject>
+#include "ipaddressrange.h"
+
+#include <QDateTime>
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -27,16 +29,21 @@ class Daemon : public QObject {
     QString m_serverIpv6AddrIn;
     int m_serverPort = 0;
     bool m_ipv6Enabled = false;
-    QStringList m_allowedIPAddressRanges;
+    QList<IPAddressRange> m_allowedIPAddressRanges;
   };
 
   explicit Daemon(QObject* parent);
   ~Daemon();
 
+  static Daemon* instance();
+
   static bool parseConfig(const QJsonObject& obj, Config& config);
 
   virtual bool activate(const Config& config);
   virtual bool deactivate(bool emitSignals = true);
+
+  // Explose a JSON object with the daemon status.
+  virtual QByteArray getStatus() = 0;
 
   QString logs();
   void cleanLogs();
@@ -44,12 +51,22 @@ class Daemon : public QObject {
  signals:
   void connected();
   void disconnected();
+  void backendFailure();
 
  protected:
   virtual bool run(Op op, const Config& config) = 0;
 
+  virtual bool supportServerSwitching(const Config& config) const {
+    Q_UNUSED(config);
+    return false;
+  }
+
+  virtual bool switchServer(const Config& config);
+
  protected:
   bool m_connected = false;
+
+  QDateTime m_connectionDate;
 
   Config m_lastConfig;
 };

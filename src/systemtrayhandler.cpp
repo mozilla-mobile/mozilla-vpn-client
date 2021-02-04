@@ -35,6 +35,8 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
+  setToolTip(qtTrId("vpn.main.productName"));
+
   // Status label
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
@@ -66,6 +68,9 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayHandler::updateContextMenu);
+
+  connect(this, &QSystemTrayIcon::activated, this,
+          &SystemTrayHandler::maybeActivated);
 
   retranslate();
 }
@@ -209,4 +214,18 @@ void SystemTrayHandler::retranslate() {
   m_quitAction->setText(qtTrId("systray.quit"));
 
   updateContextMenu();
+}
+
+void SystemTrayHandler::maybeActivated(
+    QSystemTrayIcon::ActivationReason reason) {
+  logger.log() << "Activated";
+
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+  if (reason == QSystemTrayIcon::DoubleClick) {
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
+  }
+#else
+  Q_UNUSED(reason);
+#endif
 }

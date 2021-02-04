@@ -118,9 +118,13 @@ void MacOSPingSendWorker::sendPing(const QString& destination) {
 
   m_socketNotifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
   connect(m_socketNotifier, &QSocketNotifier::activated,
-          [this](QSocketDescriptor socket, QSocketNotifier::Type type) {
-            Q_UNUSED(type);
-
+          [this](
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+              QSocketDescriptor socket, QSocketNotifier::Type
+#else
+          int socket
+#endif
+          ) {
             struct msghdr msg;
             bzero(&msg, sizeof(msg));
 
