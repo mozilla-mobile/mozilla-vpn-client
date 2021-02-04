@@ -1,0 +1,157 @@
+name: Android
+
+on:
+  push:
+    branches:
+     - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  android-production-debug:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          host: 'linux'
+          version: '5.15.2'
+          target: 'android'
+          install-deps: 'true'
+          modules: 'qtcharts qtnetworkauth'
+
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r20b
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          python3 scripts/importLanguages.py -p
+
+      - name: Compilation
+        run: |
+          export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -p -d
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+            name: production-debug
+            path: .tmp/src/android-build/mozillavpn.apk
+
+  android-production-release:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          host: 'linux'
+          version: '5.15.2'
+          target: 'android'
+          install-deps: 'true'
+          modules: 'qtcharts qtnetworkauth'
+
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r20b
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          python3 scripts/importLanguages.py -p
+
+      - name: Compilation
+        run: |
+          export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -p
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+            name: production-release
+            path: .tmp/src/android-build/build/outputs/apk/release/
+
+  android-staging-debug:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          host: 'linux'
+          version: '5.15.2'
+          target: 'android'
+          install-deps: 'true'
+          modules: 'qtcharts qtnetworkauth'
+
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r20b
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          python3 scripts/importLanguages.py
+
+      - name: Compilation
+        run: |
+          export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+          bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 -d
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+            name: staging-debug
+            path: .tmp/src/android-build/mozillavpn.apk

@@ -35,7 +35,7 @@ void TaskRemoveDevice::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn](const QByteArray&) {
+          [this, vpn](QNetworkReply*, const QByteArray&) {
             logger.log() << "Device removed";
             vpn->deviceRemoved(m_publicKey);
             emit completed();

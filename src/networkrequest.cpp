@@ -20,10 +20,6 @@
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
 
-// Connection check URL
-constexpr const char* CONNECTION_CHECK_URL =
-    "https://am.i.mullvad.net/connected";
-
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
 }
@@ -34,11 +30,32 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 
   logger.log() << "Network request created";
 
+#ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
-  m_request.setTransferTimeout(REQUEST_TIMEOUT_MSEC);
+#endif
+
+  m_timer.setSingleShot(true);
+
+  connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
+  connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+
+// static
+NetworkRequest* NetworkRequest::createForUrl(QObject* parent,
+                                             const QString& url) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
 
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(
@@ -211,16 +228,6 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForConnectionCheck(QObject* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QUrl url(CONNECTION_CHECK_URL);
-  r->m_request.setUrl(url);
-
-  r->getRequest();
-  return r;
-}
-
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
@@ -271,6 +278,13 @@ void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
 
+  if (m_timeout) {
+    Q_ASSERT(!m_timer.isActive());
+    return;
+  }
+
+  m_timer.stop();
+
   int status = statusCode();
 
   logger.log() << "Network reply received - status:" << status
@@ -288,29 +302,43 @@ void NetworkRequest::replyFinished() {
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    emit requestFailed(m_reply->error(), data);
+    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }
 
-  emit requestCompleted(data);
+  emit requestCompleted(m_reply, data);
+}
+
+void NetworkRequest::timeout() {
+  Q_ASSERT(m_reply);
+  Q_ASSERT(!m_reply->isFinished());
+
+  m_timeout = true;
+  m_reply->abort();
+
+  logger.log() << "Network request timeout";
+  emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
 void NetworkRequest::getRequest() {
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->get(m_request));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::deleteRequest() {
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->sendCustomRequest(m_request, "DELETE"));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::postRequest(const QByteArray& body) {
   QNetworkAccessManager* manager =
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->post(m_request, body));
+  m_timer.start(REQUEST_TIMEOUT_MSEC);
 }
 
 void NetworkRequest::handleReply(QNetworkReply* reply) {
@@ -337,3 +365,5 @@ int NetworkRequest::statusCode() const {
 
   return statusCode.toInt();
 }
+
+void NetworkRequest::disableTimeout() { m_timer.stop(); }

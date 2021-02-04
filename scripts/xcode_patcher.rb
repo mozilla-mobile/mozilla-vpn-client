@@ -30,6 +30,8 @@ class XCodeprojPatcher
       setup_target_wireguardhelper
     end
 
+    setup_target_balrog if platform == 'macos'
+
     @project.save
   end
 
@@ -269,6 +271,39 @@ class XCodeprojPatcher
 
     @project.targets << target_gobridge
     @target_extension.add_dependency target_gobridge
+  end
+
+  def setup_target_balrog
+    target_balrog = legacy_target = @project.new(Xcodeproj::Project::PBXLegacyTarget)
+
+    target_balrog.build_working_directory = 'balrog'
+    target_balrog.build_tool_path = 'make'
+    target_balrog.pass_build_settings_in_environment = '1'
+    target_balrog.build_arguments_string = '$(ACTION)'
+    target_balrog.name = 'WireGuardBalrog'
+    target_balrog.product_name = 'WireGuardBalrog'
+
+    @project.targets << target_balrog
+
+    frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+    frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+
+    framework_ref = frameworks_group.new_file('balrog/balrog.a')
+    frameworks_build_phase.add_file_reference(framework_ref)
+
+    # This fails: @target_main.add_dependency target_balrog
+    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
+    container_proxy.container_portal = @project.root_object.uuid
+    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
+    container_proxy.remote_global_id_string = target_balrog.uuid
+    container_proxy.remote_info = target_balrog.name
+
+    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
+    dependency.name = target_balrog.name
+    dependency.target = @target_main
+    dependency.target_proxy = container_proxy
+
+    @target_main.dependencies << dependency
   end
 
   def setup_target_wireguardhelper

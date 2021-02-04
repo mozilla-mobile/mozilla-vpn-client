@@ -17,15 +17,54 @@
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 
 namespace {
+
 Logger logger(LOG_MAIN, "Daemon");
+
+Daemon* s_daemon = nullptr;
+
 }  // namespace
 
-Daemon::Daemon(QObject* parent) : QObject(parent) { MVPN_COUNT_CTOR(Daemon); }
+Daemon::Daemon(QObject* parent) : QObject(parent) {
+  MVPN_COUNT_CTOR(Daemon);
 
-Daemon::~Daemon() { MVPN_COUNT_DTOR(Daemon); }
+  logger.log() << "Daemon created";
+
+  Q_ASSERT(s_daemon == nullptr);
+  s_daemon = this;
+}
+
+Daemon::~Daemon() {
+  MVPN_COUNT_DTOR(Daemon);
+
+  logger.log() << "Daemon released";
+
+  Q_ASSERT(s_daemon == this);
+  s_daemon = nullptr;
+}
+
+// static
+Daemon* Daemon::instance() {
+  Q_ASSERT(s_daemon);
+  return s_daemon;
+}
 
 bool Daemon::activate(const Config& config) {
   m_lastConfig = config;
+
+  if (m_connected) {
+    if (supportServerSwitching(config)) {
+      logger.log() << "Already connected. Server switching supported.";
+      if (!switchServer(config)) {
+        return false;
+      }
+
+      m_connectionDate = QDateTime::currentDateTime();
+      emit connected();
+      return true;
+    }
+
+    logger.log() << "Already connected. Server switching not supported.";
+  }
 
   if (m_connected) {
     if (!deactivate(false)) {
@@ -35,17 +74,16 @@ bool Daemon::activate(const Config& config) {
     Q_ASSERT(!m_connected);
   }
 
-  m_connected = true;
+  m_connected = run(Up, m_lastConfig);
+  m_connectionDate = QDateTime::currentDateTime();
 
-  bool status = run(Up, m_lastConfig);
+  logger.log() << "Status:" << m_connected;
 
-  logger.log() << "Status:" << status;
-
-  if (status) {
+  if (m_connected) {
     emit connected();
   }
 
-  return status;
+  return m_connected;
 }
 
 // static
@@ -124,7 +162,6 @@ bool Daemon::parseConfig(const QJsonObject& obj, Config& config) {
     }
 
     QJsonArray array = value.toArray();
-    QStringList allowedIPAddressRanges;
     for (QJsonValue i : array) {
       if (!i.isObject()) {
         logger.log() << JSON_ALLOWEDIPADDRESSRANGES
@@ -159,10 +196,10 @@ bool Daemon::parseConfig(const QJsonObject& obj, Config& config) {
         continue;
       }
 
-      allowedIPAddressRanges.append(
-          QString("%1/%2").arg(address.toString()).arg(range.toInt(0)));
+      config.m_allowedIPAddressRanges.append(IPAddressRange(
+          address.toString(), range.toInt(),
+          isIpv6.toBool() ? IPAddressRange::IPv6 : IPAddressRange::IPv4));
     }
-    config.m_allowedIPAddressRanges = allowedIPAddressRanges;
   }
 
   return true;
@@ -202,3 +239,9 @@ QString Daemon::logs() {
 }
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
+
+bool Daemon::switchServer(const Config& config) {
+  Q_UNUSED(config);
+  qFatal("Have you forgotten to implement switchServer?");
+  return false;
+}

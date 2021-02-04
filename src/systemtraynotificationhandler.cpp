@@ -5,6 +5,7 @@
 #include "systemtraynotificationhandler.h"
 #include "leakdetector.h"
 #include "systemtrayhandler.h"
+#include "constants.h"
 
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
     : NotificationHandler(parent) {
@@ -18,6 +19,8 @@ SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
 void SystemTrayNotificationHandler::notify(const QString& title,
                                            const QString& message,
                                            int timerSec) {
-  SystemTrayHandler::instance()->showMessage(
-      title, message, SystemTrayHandler::NoIcon, timerSec * 1000);
+  QIcon icon(Constants::LOGO_URL);
+
+  SystemTrayHandler::instance()->showMessage(title, message, icon,
+                                             timerSec * 1000);
 }

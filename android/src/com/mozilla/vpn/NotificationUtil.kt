@@ -13,13 +13,12 @@ import android.os.Build
 import android.os.Parcel
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.wireguard.config.Peer
 import org.json.JSONObject
 import org.mozilla.firefox.vpn.VPNService
 
 object NotificationUtil {
-    var sCurrentContext: Context? = null;
-    private var sNotificationBuilder: NotificationCompat.Builder? = null;
+    var sCurrentContext: Context? = null
+    private var sNotificationBuilder: NotificationCompat.Builder? = null
 
     const val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
     const val CONNECTED_NOTIFICATION_ID = 1337
@@ -35,15 +34,14 @@ object NotificationUtil {
         val json = buffer?.let { String(it) }
         val content = JSONObject(json)
 
-        update(content.getString("title"), content.getString("message"));
+        update(content.getString("title"), content.getString("message"))
     }
-
 
     /**
      * Updates the current shown notification
      */
     fun update(heading: String, message: String) {
-        if (sCurrentContext == null) return;
+        if (sCurrentContext == null) return
         val notificationManager: NotificationManager =
             sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -65,7 +63,7 @@ object NotificationUtil {
         val content = JSONObject(json)
 
         val prefs =
-            context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+            context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
         prefs.edit()
             .putString("fallbackNotificationHeader", content.getString("title"))
             .putString("fallbackNotificationMessage", content.getString("message"))
@@ -78,8 +76,8 @@ object NotificationUtil {
     * Shows the notification in the given {context}
     */
     fun show(service: VPNService) {
-        sNotificationBuilder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL_ID);
-        sCurrentContext = service;
+        sNotificationBuilder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL_ID)
+        sCurrentContext = service
         val notificationManager: NotificationManager =
             sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         // From Oreo on we need to have a "notification channel" to post to.
@@ -96,15 +94,14 @@ object NotificationUtil {
         // In case we do not have gotten a message to show from the Frontend
         // try to populate the notification with a translated Fallback message
         val prefs =
-            service.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE);
+            service.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
         val message =
-            "" + prefs.getString("fallbackNotificationMessage", "Running in the Background");
-        val header = "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN");
-
+            "" + prefs.getString("fallbackNotificationMessage", "Running in the Background")
+        val header = "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")
 
         // Create the Intent that Should be Fired if the User Clicks the notification
-        val mainActivityName = "org.qtproject.qt5.android.bindings.QtActivity";
-        val activity = Class.forName(mainActivityName);
+        val mainActivityName = "org.qtproject.qt5.android.bindings.QtActivity"
+        val activity = Class.forName(mainActivityName)
         val intent = Intent(service, activity)
         val pendingIntent = PendingIntent.getActivity(service, 0, intent, 0)
         // Build our notification

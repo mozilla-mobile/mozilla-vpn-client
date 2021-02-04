@@ -222,7 +222,7 @@ void ConnectionDataHolder::updateIpAddress() {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
+          [this](QNetworkReply*, const QByteArray& data) {
             logger.log() << "IP address request completed";
 
             QJsonDocument json = QJsonDocument::fromJson(data);

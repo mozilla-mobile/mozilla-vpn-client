@@ -5,13 +5,7 @@
 #ifndef CONNECTIONHEALTH_H
 #define CONNECTIONHEALTH_H
 
-#include <QList>
-#include <QObject>
-#include <QThread>
-#include <QTimer>
-
-class Server;
-class PingSender;
+#include "pinghelper.h"
 
 class ConnectionHealth final : public QObject {
  public:
@@ -33,10 +27,6 @@ class ConnectionHealth final : public QObject {
   ConnectionHealth();
   ~ConnectionHealth();
 
-  void start(const QString& serverIpv4Gateway);
-
-  void stop();
-
   ConnectionStability stability() const { return m_stability; }
 
  public slots:
@@ -46,23 +36,20 @@ class ConnectionHealth final : public QObject {
   void stabilityChanged();
 
  private:
-  void setStability(ConnectionStability stability);
-  void nextPing();
+  void stop();
 
-  void pingReceived(PingSender* pingSender, qint64 msec);
+  void pingSentAndReceived(qint64 msec);
+
+  void setStability(ConnectionStability stability);
+
   void noSignalDetected();
 
  private:
   ConnectionStability m_stability = Stable;
 
-  QString m_gateway;
-
-  QTimer m_pingTimer;
   QTimer m_noSignalTimer;
 
-  QList<PingSender*> m_pings;
-
-  QThread m_pingThread;
+  PingHelper m_pingHelper;
 };
 
 #endif  // CONNECTIONHEALTH_H

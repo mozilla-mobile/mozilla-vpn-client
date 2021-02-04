@@ -4,6 +4,7 @@
 
 #include "testreleasemonitor.h"
 #include "../../src/releasemonitor.h"
+#include "../../src/update/versionapi.h"
 #include "helper.h"
 
 #include <QJsonArray>
@@ -207,7 +208,7 @@ void TestReleaseMonitor::compareVersions() {
   QFETCH(QString, b);
   QFETCH(int, result);
 
-  QCOMPARE(ReleaseMonitor::compareVersions(a, b), result);
+  QCOMPARE(VersionApi::compareVersions(a, b), result);
 }
 
 static TestReleaseMonitor s_testReleaseMonitor;

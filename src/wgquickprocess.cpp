@@ -15,6 +15,8 @@ Logger logger(
     LOG_LINUX
 #elif defined(MVPN_MACOS_DAEMON)
     LOG_MACOS
+#elif defined(MVPN_WINDOWS)
+    LOG_WINDOWS
 #endif
     ,
     "WgQuickProcess");
@@ -24,21 +26,20 @@ QString scriptPath() {
 #if defined(MVPN_LINUX)
   appPath.cdUp();
   appPath.cd("share");
-  appPath.cd("mozillavpn");
-  return appPath.filePath("wghelper.sh");
+  return appPath.filePath("mozillavpn_wghelper.sh");
   ;
 #elif defined(MVPN_MACOS_DAEMON)
   appPath.cdUp();
   appPath.cd("Resources");
   appPath.cd("utils");
   return appPath.filePath("helper.sh");
-#else
-#  error Unsupported platform
 #endif
+  return QString();
 }
 
 }  // namespace
 
+// static
 bool WgQuickProcess::validateWgArgs(
     const QString& privateKey, const QString& deviceIpv4Address,
     const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
@@ -116,14 +117,14 @@ QString WgQuickProcess::writeWgConfigFile(
 
   if (!file.open(QIODevice::ReadWrite)) {
     qWarning("Unable to create a file in the temporary folder");
-    return QString();
+    return "";
   }
 
   qint64 written = file.write(content);
 
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
-    return QString();
+    return "";
   }
 
   return file.fileName();
@@ -136,6 +137,7 @@ bool WgQuickProcess::run(
     const QString& serverIpv6Gateway, const QString& serverPublicKey,
     const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
     const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled) {
+  // Validate
   if (!validateWgArgs(privateKey, deviceIpv4Address, deviceIpv6Address,
                       serverIpv4Gateway, serverIpv6Gateway, serverPublicKey,
                       serverIpv4AddrIn, serverIpv6AddrIn,
@@ -144,6 +146,7 @@ bool WgQuickProcess::run(
     return false;
   }
 
+  // Make config file
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
     qWarning("Cannot create a temporary directory");
@@ -154,9 +157,11 @@ bool WgQuickProcess::run(
       serverIpv4Gateway, serverIpv6Gateway, serverPublicKey, serverIpv4AddrIn,
       serverIpv6AddrIn, allowedIPAddressRanges, serverPort, ipv6Enabled);
   if (confFile.isEmpty()) {
+    logger.log() << "Failed to create the config file";
     return false;
   }
 
+  // Run
   QStringList arguments;
   arguments.append(op == Daemon::Up ? "up" : "down");
   arguments.append(confFile);

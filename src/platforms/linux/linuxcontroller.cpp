@@ -82,9 +82,8 @@ void LinuxController::activate(
 void LinuxController::deactivate(Reason reason) {
   logger.log() << "LinuxController deactivated";
 
-  if (reason != ReasonNone) {
-    logger.log()
-        << "No disconnect for quick server switching or connection checks";
+  if (reason == ReasonSwitching) {
+    logger.log() << "No disconnect for quick server switching";
     emit disconnected();
     return;
   }

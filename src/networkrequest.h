@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
+#include <QTimer>
 
 class QNetworkAccessManager;
 
@@ -19,6 +20,8 @@ class NetworkRequest final : public QObject {
   ~NetworkRequest();
 
   // This object deletes itself at the end of the operation.
+
+  static NetworkRequest* createForUrl(QObject* parent, const QString& url);
 
   static NetworkRequest* createForAuthenticationVerification(
       QObject* parent, const QString& pkceCodeSuccess,
@@ -44,14 +47,14 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForCaptivePortalLookup(QObject* parent);
 
-  static NetworkRequest* createForConnectionCheck(QObject* parent);
-
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);
 
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
 #endif
+
+  void disableTimeout();
 
  private:
   NetworkRequest(QObject* parent, int status);
@@ -66,15 +69,19 @@ class NetworkRequest final : public QObject {
 
  private slots:
   void replyFinished();
+  void timeout();
 
  signals:
   void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
-  void requestCompleted(const QByteArray& data);
+  void requestCompleted(QNetworkReply*, const QByteArray& data);
 
  private:
   QNetworkRequest m_request;
+  QTimer m_timer;
+
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
+  bool m_timeout = false;
 };
 
 #endif  // NETWORKREQUEST_H

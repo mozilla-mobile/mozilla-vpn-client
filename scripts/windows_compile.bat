@@ -5,6 +5,10 @@
 @ECHO off
 SETLOCAL
 
+IF EXIST env.bat (
+  CALL env.bat
+)
+
 IF "%selfWrapped%" == "" (
   :: This is necessary so that we can use "EXIT" to terminate the batch file,
   :: and all subroutines, but not the original cmd.exe
@@ -20,15 +24,14 @@ IF NOT EXIST src (
   EXIT 1
 )
 
-IF EXIST c:\MozillaVPNBuild (
-  SET PATH="%PATH%;c:\MozillaVPNBuild\bin"
-)
-
 ECHO Checking required commands...
 CALL :CheckCommand python
 CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
+
+ECHO Importing languages...
+python scripts\importLanguages.py
 
 ECHO Creating the project...
 qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
@@ -42,6 +45,13 @@ IF NOT EXIST MozillaVPN.vcxproj (
   EXIT 1
 )
 
+ECHO Compiling the tunnel.dll...
+CALL windows\tunnel\build.cmd
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
+  EXIT 1
+)
+
 ECHO Cleaning up the project...
 MSBuild -t:Clean -p:Configuration=Release MozillaVPN.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
@@ -52,6 +62,13 @@ IF %ERRORLEVEL% NEQ 0 (
 MSBuild -t:Build -p:Configuration=Release MozillaVPN.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to build the project
+  EXIT 1
+)
+
+ECHO Creating the installer...
+CALL windows\installer\build.cmd
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
   EXIT 1
 )
 

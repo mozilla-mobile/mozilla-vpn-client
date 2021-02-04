@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 import Mozilla.VPN 1.0
 import "../components"
@@ -16,81 +16,96 @@ Item {
         id: menu
 
         title: qsTrId("vpn.servers.selectLocation")
+        onActiveFocusChanged: if (focus) forceFocus = true
     }
 
-    ButtonGroup {
-        id: radioButtonGroup
-    }
+    FocusScope {
+        id: focusScope
 
-    DelegateModel {
-        id: delegateModel
-
-        model: VPNServerCountryModel
-        delegate: VPNServerCountry {}
-    }
-
-    VPNList {
-        id: serverList
+        property var lastFocusedItemIdx
 
         height: parent.height - menu.height
-        width: parent.width
         anchors.top: menu.bottom
-        spacing: Theme.listSpacing
-        clip: true
-        listName: menu.title
-        interactive: true
+        width: parent.width
+        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        Accessible.name: menu.title
+        Accessible.role: Accessible.List
 
-        onCurrentIndexChanged: currentItem.forceActiveFocus()
-        header: Rectangle {
-            height: 16
-            width: serverList.width
-            color: "transparent"
-        }
-        model: delegateModel
-
-        footer: Rectangle {
-            height: fullscreenRequired() ? Theme.rowHeight * 3: Theme.rowHeight * 2
-            color: "transparent"
-            width: serverList.width
+        ButtonGroup {
+            id: radioButtonGroup
         }
 
-        NumberAnimation {
-            id: scrollList
-            target: serverList
-            property: "contentY"
-            to: 0 //Dummy value - will be set up when this animation is called.
-            duration: 300
-        }
 
-        Component.onCompleted: {
-            for (let idx = 0; idx < serverList.count; idx++) {
-                if (delegateModel.items.get(idx).model.code === VPNCurrentServer.countryCode) {
-                    serverList.currentIndex = idx;
-                    serverList.positionViewAtIndex(idx, ListView.Center);
+        VPNFlickable {
+            id: vpnFlickable
 
-                    const currentCountryDistanceFromTop = (serverList.currentItem.mapToItem(null, 0, 0).y);
-                    const listVerticalCenter = serverList.height / 2
+            flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
+            anchors.fill: parent
 
-                    const citySublist = delegateModel.items.get(idx).model.cities;
-                    const currentCityIdx = citySublist.indexOf(VPNCurrentServer.city);
-                    const cityItemHeight = Theme.rowHeight;
+            NumberAnimation on contentY {
+                id: scrollAnimation
 
-                    let currentCityDistanceFromSublistTop = (currentCityIdx * (cityItemHeight + Theme.listSpacing));
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
 
-                    if (currentCountryDistanceFromTop + currentCityDistanceFromSublistTop < listVerticalCenter)
+            Rectangle {
+                id: verticalSpacer
+
+                height: Theme.windowMargin / 2
+                width: parent.width
+                color: "transparent"
+            }
+
+            Column {
+                id: serverList
+
+                spacing: 14
+                width: parent.width
+                anchors.top: verticalSpacer.bottom
+                Component.onCompleted: {
+
+                    // Scroll vpnFlickable so that the current server city is
+                    // vertically centered in the view
+
+                    const serverListYCenter = vpnFlickable.height / 2;
+
+                    for (let idx = 0; idx < repeater.count; idx++) {
+                        const countryItem = repeater.itemAt(idx);
+                        const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                        if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
+                            continue;
+                        }
+
+                        const currentCityYPosition = countryItem.y + (Theme.rowHeight * 2) + (54 * countryItem.currentCityIndex) - serverListYCenter;
+                        const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
+
+                        vpnFlickable.contentY = destinationY;
                         return;
+                    }
+                }
 
-                    currentCityDistanceFromSublistTop += (currentCountryDistanceFromTop - listVerticalCenter + Theme.cityListTopMargin);
-                    serverList.contentY += currentCityDistanceFromSublistTop;
-                    return;
+                function scrollDelegateIntoView(item) {
+                    if (window.height > vpnFlickable.contentHeight) {
+                        return;
+                    }
+                    const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                    const approximateDelegateHeight = 60;
+                    const ext = approximateDelegateHeight + yPosition;
+
+                    if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
+                        const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
+                        scrollAnimation.to = destinationY;
+                        scrollAnimation.start();
+                    }
+                }
+
+                Repeater {
+                    id: repeater
+                    model: VPNServerCountryModel
+                    delegate: VPNServerCountry{}
                 }
             }
         }
-
-        ScrollBar.vertical: ScrollBar {
-            Accessible.ignored: true
-        }
-
     }
-
 }

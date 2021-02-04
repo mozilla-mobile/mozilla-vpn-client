@@ -121,3 +121,13 @@ void MozillaVPN::refreshDevices() {}
 void MozillaVPN::quit() {}
 
 bool MozillaVPN::localNetworkAccessSupported() const { return false; }
+
+void MozillaVPN::update() {}
+
+void MozillaVPN::setUpdating(bool) {}
+
+MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
+  return DeviceNotFound;
+}
+
+void MozillaVPN::controllerStateChanged() {}

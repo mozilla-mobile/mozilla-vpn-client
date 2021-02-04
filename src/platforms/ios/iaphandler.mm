@@ -127,17 +127,18 @@ IAPHandler* s_instance = nullptr;
     return;
   }
 
-  QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
-
   if (canceledTransactions) {
     logger.log() << "Subscription canceled";
+    QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (failedTransactions) {
     logger.log() << "Subscription failed";
+    QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (completedTransactionIds.isEmpty()) {
     Q_ASSERT(completedTransactions);
     logger.log() << "Subscription completed - but all the transactions are known";
+    QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (MozillaVPN::instance()->userAuthenticated()) {
     Q_ASSERT(completedTransactions);
@@ -147,6 +148,7 @@ IAPHandler* s_instance = nullptr;
   } else {
     Q_ASSERT(completedTransactions);
     logger.log() << "Subscription completed - but the user is not authenticated yet";
+    QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   }
 
@@ -166,7 +168,7 @@ IAPHandler* s_instance = nullptr;
 }
 
 - (void)requestDidFinish:(SKRequest*)request {
-  logger.log() << "Recept refreshed correctly";
+  logger.log() << "Receipt refreshed correctly";
   QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
   QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,
                             Q_ARG(QStringList, QStringList()));
@@ -283,7 +285,10 @@ void IAPHandler::startSubscription(bool restore) {
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-void IAPHandler::stopSubscription() { m_subscriptionState = eInactive; }
+void IAPHandler::stopSubscription() {
+  logger.log() << "Stop subscription";
+  m_subscriptionState = eInactive;
+}
 
 void IAPHandler::unknownProductRegistered(const QString& identifier) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
@@ -324,6 +329,11 @@ void IAPHandler::productRegistered(void* a_product) {
 void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   logger.log() << "process completed transactions";
 
+  if (m_subscriptionState != eActive) {
+    logger.log() << "Random transaction to be completed. Let's ignore it";
+    return;
+  }
+
   QString receipt = IOSUtils::IAPReceipt();
   if (receipt.isEmpty()) {
     logger.log() << "Empty receipt found";
@@ -336,6 +346,13 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.log() << "Purchase request failed" << error;
+
+            if (m_subscriptionState != eActive) {
+              logger.log() << "We have been canceled in the meantime";
+              return;
+            }
+
+            stopSubscription();
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (!json.isObject()) {
@@ -362,11 +379,19 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
             emit alreadySubscribed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
-    logger.log() << "Purchase request completed";
-    SettingsHolder::instance()->addSubscriptionTransactions(ids);
-    emit subscriptionCompleted();
-  });
+  connect(request, &NetworkRequest::requestCompleted,
+          [this, ids](QNetworkReply*, const QByteArray&) {
+            logger.log() << "Purchase request completed";
+            SettingsHolder::instance()->addSubscriptionTransactions(ids);
+
+            if (m_subscriptionState != eActive) {
+              logger.log() << "We have been canceled in the meantime";
+              return;
+            }
+
+            stopSubscription();
+            emit subscriptionCompleted();
+          });
 }
 
 void IAPHandler::subscribe() {

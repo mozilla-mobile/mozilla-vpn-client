@@ -9,7 +9,7 @@
 export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm
 REPORT_FILE=/tmp/report.html
 
-print N "This script runs tests and show the coverage"
+print N "This script runs the unit tests and shows the test coverage."
 print N ""
 
 if ! [ -d "src" ] || ! [ -d "tests" ]; then

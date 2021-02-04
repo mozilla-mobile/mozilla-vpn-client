@@ -2,9 +2,13 @@
 
 See: https://vpn.mozilla.org
 
-## Dependencies
+## Dev instructions
 
-MozillaVPN requires Qt5 (5.15 or higher)
+After checking out the code:
+
+* Install the git pre-commit hook (`./scripts/git-pre-commit-format install`)
+* Build the source (See below)
+* Run the tests `./scripts/test_coverage.sh` or `./scripts/test_function.sh`
 
 ## How to build from the source code
 
@@ -53,7 +57,7 @@ git submodule update
 To build next to source:
 
 ```
-qmake
+qmake CONFIG+=production
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
@@ -61,7 +65,7 @@ sudo make install
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
 ```
-qmake USRPATH=/usr ETCPATH=/etc
+qmake USRPATH=/usr ETCPATH=/etc CONFIG+=production
 ```
 
 #### Run
@@ -202,3 +206,10 @@ There is also a script to compile the application: `scripts\windows_compile.bat`
 ## Bug report
 
 Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
+
+## Status
+
+![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Unit%20Test%20Coverage/badge.svg)
+![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Linters%20(clang,%20l10n)/badge.svg)
+![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Android/badge.svg)
+![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/MacOS/badge.svg)
