@@ -5,9 +5,9 @@
 #include "connectioncheck.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "networkrequest.h"
+#include "mozillavpn.h"
 
-constexpr const uint32_t CONNECTION_CHECK_TIMEOUT_MSEC = 10000;
+constexpr uint32_t CONNECTION_CHECK_TIMEOUT_MSEC = 10000;
 
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionCheck");
@@ -17,6 +17,8 @@ ConnectionCheck::ConnectionCheck() {
   MVPN_COUNT_CTOR(ConnectionCheck);
 
   connect(&m_timer, &QTimer::timeout, this, &ConnectionCheck::timeout);
+  connect(&m_pingHelper, &PingHelper::pingSentAndReceived, this,
+          &ConnectionCheck::pingSentAndReceived);
 
   m_timer.setSingleShot(true);
 }
@@ -26,48 +28,39 @@ ConnectionCheck::~ConnectionCheck() { MVPN_COUNT_DTOR(ConnectionCheck); }
 void ConnectionCheck::start() {
   logger.log() << "Starting a connection check";
 
-  if (m_networkRequest) {
-    delete m_networkRequest;
-  }
+  MozillaVPN::instance()->controller()->getStatus(
+      [this](const QString& serverIpv4Gateway, uint64_t txBytes,
+             uint64_t rxBytes) {
+        Q_UNUSED(txBytes);
+        Q_UNUSED(rxBytes);
 
-  m_networkRequest = NetworkRequest::createForConnectionCheck(this);
+        stop();
 
-  connect(m_networkRequest, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Failed to check the connection" << error;
-            m_networkRequest = nullptr;
-            m_timer.stop();
-            emit failure();
-          });
-
-  connect(m_networkRequest, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
-            logger.log() << "Connection succeded. Data:" << data;
-            m_networkRequest = nullptr;
-            m_timer.stop();
-            emit success();
-          });
-
-  m_timer.start(CONNECTION_CHECK_TIMEOUT_MSEC);
+        if (!serverIpv4Gateway.isEmpty()) {
+          m_timer.start(CONNECTION_CHECK_TIMEOUT_MSEC);
+          m_pingHelper.start(serverIpv4Gateway);
+        }
+      });
 }
 
 void ConnectionCheck::stop() {
   logger.log() << "Stopping a connection check";
-
-  if (m_networkRequest) {
-    delete m_networkRequest;
-    m_networkRequest = nullptr;
-  }
-
   m_timer.stop();
+  m_pingHelper.stop();
 }
 
 void ConnectionCheck::timeout() {
   logger.log() << "Request timeout";
-
-  Q_ASSERT(m_networkRequest);
-  delete m_networkRequest;
-  m_networkRequest = nullptr;
-
   emit failure();
+}
+
+void ConnectionCheck::pingSentAndReceived(qint64 msec) {
+  Q_UNUSED(msec);
+
+  logger.log() << "Ping sent and received";
+
+  if (m_timer.isActive()) {
+    stop();
+    emit success();
+  }
 }

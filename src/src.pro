@@ -80,6 +80,7 @@ SOURCES += \
         networkmanager.cpp \
         networkrequest.cpp \
         notificationhandler.cpp \
+        pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         qmlengineholder.cpp \
@@ -98,7 +99,9 @@ SOURCES += \
         tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
-        timersingleshot.cpp
+        timersingleshot.cpp \
+        update/updater.cpp \
+        update/versionapi.cpp
 
 HEADERS += \
         apppermission.h \
@@ -150,6 +153,7 @@ HEADERS += \
         networkmanager.h \
         networkrequest.h \
         notificationhandler.h \
+        pinghelper.h \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
@@ -170,7 +174,9 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
-        timersingleshot.h
+        timersingleshot.h \
+        update/updater.h \
+        update/versionapi.h
 
 debug {
     message(Adding the inspector)
@@ -237,13 +243,13 @@ else:linux:!android {
 
     TARGET = mozillavpn
     QT += networkauth
-    QT += svg
     QT += dbus
 
     DEFINES += MVPN_LINUX
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
 
     SOURCES += \
+            eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
             platforms/linux/linuxcontroller.cpp \
@@ -254,6 +260,7 @@ else:linux:!android {
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
+            eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
             platforms/linux/linuxcontroller.h \
@@ -265,7 +272,7 @@ else:linux:!android {
     # The daemon source code:
     SOURCES += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
-            daemon.cpp \
+            daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
@@ -274,7 +281,7 @@ else:linux:!android {
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
-            daemon.h \
+            daemon/daemon.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wghelper.h \
@@ -439,7 +446,8 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/desktopauthenticationlistener.cpp
+            tasks/authenticate/desktopauthenticationlistener.cpp \
+            update/balrog.cpp \
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
@@ -450,7 +458,8 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/desktopauthenticationlistener.h
+            tasks/authenticate/desktopauthenticationlistener.h \
+            update/balrog.h \
 
     OBJECTIVE_HEADERS += \
             platforms/macos/macosutils.h
@@ -481,19 +490,21 @@ else:macos {
         DEFINES += MVPN_MACOS_DAEMON
 
         SOURCES += \
-                   daemon.cpp \
+                   daemon/daemon.cpp \
+                   daemon/daemonlocalserver.cpp \
+                   daemon/daemonlocalserverconnection.cpp \
+                   localsocketcontroller.cpp \
                    wgquickprocess.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
-                   platforms/macos/daemon/macosdaemonserver.cpp \
-                   platforms/macos/daemon/macosdaemonconnection.cpp \
-                   platforms/macos/macoscontroller.cpp
+                   platforms/macos/daemon/macosdaemonserver.cpp
         HEADERS += \
-                   daemon.h \
+                   daemon/daemon.h \
+                   daemon/daemonlocalserver.h \
+                   daemon/daemonlocalserverconnection.h \
+                   localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
-                   platforms/macos/daemon/macosdaemonserver.h \
-                   platforms/macos/daemon/macosdaemonconnection.h \
-                   platforms/macos/macoscontroller.h
+                   platforms/macos/daemon/macosdaemonserver.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
@@ -577,22 +588,87 @@ else:win* {
     QT += networkauth
     QT += svg
 
+    CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
 
+    production {
+        RC_ICONS = ui/resources/logo.ico
+    } else {
+        RC_ICONS = ui/resources/logo-beta.ico
+    }
+
     SOURCES += \
-        platforms/dummy/dummycontroller.cpp \
+        daemon/daemon.cpp \
+        daemon/daemonlocalserver.cpp \
+        daemon/daemonlocalserverconnection.cpp \
+        eventlistener.cpp \
+        localsocketcontroller.cpp \
+        platforms/windows/daemon/windowsdaemon.cpp \
+        platforms/windows/daemon/windowsdaemonserver.cpp \
+        platforms/windows/daemon/windowsdaemontunnel.cpp \
+        platforms/windows/daemon/windowstunnelmonitor.cpp \
+        platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowspingsendworker.cpp \
+        platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
-        systemtraynotificationhandler.cpp
+        systemtraynotificationhandler.cpp \
+        update/balrog.cpp \
+        wgquickprocess.cpp
 
     HEADERS += \
-        platforms/dummy/dummycontroller.h \
+        daemon/daemon.h \
+        daemon/daemonlocalserver.h \
+        daemon/daemonlocalserverconnection.h \
+        eventlistener.h \
+        localsocketcontroller.h \
+        platforms/windows/daemon/windowsdaemon.h \
+        platforms/windows/daemon/windowsdaemonserver.h \
+        platforms/windows/daemon/windowsdaemontunnel.h \
+        platforms/windows/daemon/windowstunnelmonitor.h \
+        platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
-        systemtraynotificationhandler.h
+        platforms/windows/windowsstartatbootwatcher.h \
+        systemtraynotificationhandler.h \
+        update/balrog.h \
+        wgquickprocess.h
+}
+
+else:wasm {
+    message(WASM \\o/)
+    DEFINES += MVPN_DUMMY
+    DEFINES += MVPN_WASM
+
+    QMAKE_CXXFLAGS *= -Werror
+
+    TARGET = mozillavpn
+    QT += networkauth
+    QT += svg
+
+    SOURCES += \
+            platforms/dummy/dummycontroller.cpp \
+            platforms/dummy/dummycryptosettings.cpp \
+            platforms/dummy/dummypingsendworker.cpp \
+            platforms/macos/macosmenubar.cpp \
+            platforms/wasm/wasmauthenticationlistener.cpp \
+            platforms/wasm/wasmnetworkrequest.cpp \
+            platforms/wasm/wasmnotificationhandler.cpp \
+            platforms/wasm/wasmwindowcontroller.cpp
+
+    HEADERS += \
+            platforms/dummy/dummycontroller.h \
+            platforms/dummy/dummypingsendworker.h \
+            platforms/macos/macosmenubar.h \
+            platforms/wasm/wasmauthenticationlistener.h \
+            platforms/wasm/wasmnotificationhandler.h \
+            platforms/wasm/wasmwindowcontroller.h \
+            systemtraynotificationhandler.h
+
+    SOURCES -= networkrequest.cpp
+    RESOURCES += platforms/wasm/networkrequests.qrc
 }
 
 # Anything else

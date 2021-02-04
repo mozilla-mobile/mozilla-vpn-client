@@ -38,7 +38,7 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, vpn](const QByteArray& data) {
+            [this, vpn](QNetworkReply*, const QByteArray& data) {
               logger.log() << "Account request completed";
               vpn->accountChecked(data);
               m_accountCompleted = true;
@@ -59,7 +59,7 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this, vpn](const QByteArray& data) {
+            [this, vpn](QNetworkReply*, const QByteArray& data) {
               logger.log() << "Servers obtained";
               vpn->serversFetched(data);
               m_serversCompleted = true;

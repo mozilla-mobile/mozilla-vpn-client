@@ -45,6 +45,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.core:core-ktx:1.1.0'
@@ -70,6 +71,10 @@ android {
     compileSdkVersion androidCompileSdkVersion.toInteger()
 
     buildToolsVersion '28.0.3'
+
+    dexOptions {
+       javaMaxHeapSize "3g"
+    }
 
     sourceSets {
         main {
@@ -108,12 +113,45 @@ android {
         resConfig "en"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 2020
-        versionName "2.0.2"
+        versionCode  System.getenv("VERSIONCODE").toInteger()
+        versionName  System.getenv("SHORTVERSION")
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
         coreLibraryDesugaringEnabled = true
     }
+    splits {
+                // Configures multiple APKs based on ABI.
+                abi {
+                    if(System.getenv("SPLITAPK")== "1" ){
+                        enable true
+                        // Resets the list of ABIs that Gradle should create APKs for to none.
+                        reset()
+
+                        // Specifies a list of ABIs that Gradle should create APKs for.
+                        include "x86", "armeabi-v7a", "arm64-v8a", "x86_64"
+                        // Also generate one universal apk that contains all abi's
+                        universalApk true
+                    }else{
+                        enable false
+                    }
+                }
+            }
+
 }
+
+import com.android.build.OutputFile
+// Map for the version code that gives each ABI a value.
+ext.abiCodes = ['armeabi-v7a':1,"arm64-v8a":2, x86:3, x86_64:4]
+android.applicationVariants.all { variant ->
+  // Assigns a different version code for each output APK
+  // other than the universal APK.
+  variant.outputs.each { output ->
+    def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
+    if (baseAbiVersionCode != null) {
+      output.versionCodeOverride =
+              baseAbiVersionCode + variant.versionCode
+    }
+  }
+} 

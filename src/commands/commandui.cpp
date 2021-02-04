@@ -20,14 +20,13 @@
 #include "apppermission.h"
 
 #ifdef MVPN_LINUX
+#  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-
 #endif
 
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
-
 #endif
 
 #ifdef Q_OS_MAC
@@ -52,18 +51,23 @@
 #  include "signalhandler.h"
 #endif
 
+#ifdef MVPN_WINDOWS
+#  include "eventlistener.h"
+#  include "platforms/windows/windowsstartatbootwatcher.h"
+#endif
+
 #ifdef MVPN_IOS
 #  include "platforms/ios/iaphandler.h"
+#endif
+
+#ifdef MVPN_WASM
+#  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
 #include <QApplication>
 
 #ifdef QT_DEBUG
 #  include <QLoggingCategory>
-#endif
-
-#ifdef MVPN_LINUX
-#  include <QLockFile>
 #endif
 
 namespace {
@@ -106,19 +110,6 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-#ifdef MVPN_LINUX
-    QLockFile lockFile("mozillavpn.lock");
-    lockFile.setStaleLockTime(0);
-    if (!lockFile.tryLock()) {
-      qint64 pid;
-      lockFile.getLockInfo(&pid, nullptr, nullptr);
-      QTextStream out(stderr);
-      out << "Another instance has been found (pid: " << pid
-          << "). Aborting the execution." << Qt::endl;
-      return 1;
-    }
-#endif
-
     logger.log() << "UI starting";
 
     if (startAtBootOption.m_set) {
@@ -132,6 +123,16 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
+
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+    // If there is another instance, the execution terminates here.
+    if (!EventListener::checkOtherInstances()) {
+      return 0;
+    }
+
+    // This class receives communications from other instances.
+    EventListener eventListener;
+#endif
 
 #ifndef MVPN_WINDOWS
     // Signal handling for a proper shutdown.
@@ -156,6 +157,15 @@ int CommandUI::run(QStringList& tokens) {
                      &MacOSStartAtBootWatcher::startAtBootChanged);
 
     MacOSUtils::setDockClickHandler();
+#endif
+
+#ifdef MVPN_WINDOWS
+    WindowsStartAtBootWatcher startAtBootWatcher(
+        SettingsHolder::instance()->startAtBoot());
+
+    QObject::connect(SettingsHolder::instance(),
+                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
+                     &WindowsStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #ifdef MVPN_ANDROID
@@ -378,12 +388,20 @@ int CommandUI::run(QStringList& tokens) {
       MacOSMenuBar::instance()->retranslate();
 #  endif
 #endif
+
+#ifdef MVPN_WASM
+      WasmWindowController::instance()->retranslate();
+#endif
     });
 
-#ifdef QT_DEBUG
+#if defined(QT_DEBUG) && !defined(MVPN_WASM)
     InspectorServer inspectServer;
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
                      &InspectorServer::close);
+#endif
+
+#ifdef MVPN_WASM
+    WasmWindowController wasmWindowController;
 #endif
 
     // Let's go.

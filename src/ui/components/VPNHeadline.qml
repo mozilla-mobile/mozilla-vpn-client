@@ -3,15 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtGraphicalEffects 1.15
-import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.14
+import QtQuick.Layouts 1.14
 import "../themes/themes.js" as Theme
 
 //VPNHeadline
 Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    wrapMode: Text.WordWrap
+    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     width: Theme.maxTextWidth
     color: Theme.fontColorDark
     font.family: Theme.fontFamily

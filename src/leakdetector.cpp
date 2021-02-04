@@ -9,9 +9,9 @@
 #include <QObject>
 #include <QTextStream>
 
+#ifdef QT_DEBUG
 static QMutex s_leakDetector;
 
-#ifdef QT_DEBUG
 QHash<QString, QHash<void*, uint32_t>> s_leaks;
 #endif
 

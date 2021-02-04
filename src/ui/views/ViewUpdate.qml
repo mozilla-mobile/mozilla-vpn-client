@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
@@ -63,8 +63,6 @@ VPNFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    // TODO - should anything happen here besides opening
-                    // the user account website?
                     VPN.openLink(VPN.LinkAccount);
                 }
             }
@@ -171,8 +169,9 @@ VPNFlickable {
             id: updateBtn
 
             text: qsTrId("vpn.updates.updateNow")
+            loaderVisible: VPN.updating
             radius: 4
-            onClicked: VPN.openLink(VPN.LinkUpdate)
+            onClicked: VPN.update()
         }
 
         VPNLinkButton {

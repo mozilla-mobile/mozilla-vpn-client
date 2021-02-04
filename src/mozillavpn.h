@@ -27,6 +27,7 @@
 #include <QStandardPaths>
 #include <QTimer>
 
+class QTextStream;
 class Task;
 
 #ifdef UNIT_TEST
@@ -66,6 +67,7 @@ class MozillaVPN final : public QObject {
     LinkAccount,
     LinkContact,
     LinkFeedback,
+    LinkLicense,
     LinkHelpSupport,
     LinkTermsOfService,
     LinkPrivacyNotice,
@@ -88,6 +90,7 @@ class MozillaVPN final : public QObject {
                  CONSTANT)
   Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
                  CONSTANT)
+  Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
 
  public:
   MozillaVPN();
@@ -115,6 +118,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
   Q_INVOKABLE void refreshDevices();
+  Q_INVOKABLE void update();
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -194,6 +198,9 @@ class MozillaVPN final : public QObject {
 
   bool localNetworkAccessSupported() const;
 
+  bool updating() const { return m_updating; }
+  void setUpdating(bool updating);
+
  private:
   void setState(State state);
 
@@ -230,6 +237,16 @@ class MozillaVPN final : public QObject {
 
   void completeActivation();
 
+  enum RemovalDeviceOption {
+    DeviceNotFound,
+    DeviceStillValid,
+    DeviceRemoved,
+  };
+
+  RemovalDeviceOption maybeRemoveCurrentDevice();
+
+  void controllerStateChanged();
+
  public slots:
   void requestSettings();
   void requestAbout();
@@ -247,6 +264,7 @@ class MozillaVPN final : public QObject {
   void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();
+  void updatingChanged();
 
   // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
   // complains...
@@ -290,6 +308,7 @@ class MozillaVPN final : public QObject {
   bool m_updateRecommended = false;
   bool m_userAuthenticated = false;
   bool m_startMinimized = false;
+  bool m_updating = false;
 
 #ifdef UNIT_TEST
   friend class TestTasks;

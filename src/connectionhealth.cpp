@@ -7,13 +7,6 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "pingsender.h"
-
-// Any X seconds, a new ping.
-constexpr uint32_t PING_TIMOUT_SEC = 2;
-
-// How many concurrent pings
-constexpr int PINGS_MAX = 10;
 
 // In seconds, the timeout for unstable pings.
 constexpr uint32_t PING_TIME_UNSTABLE_SEC = 1;
@@ -28,41 +21,21 @@ Logger logger(LOG_NETWORKING, "ConnectionHealth");
 ConnectionHealth::ConnectionHealth() {
   MVPN_COUNT_CTOR(ConnectionHealth);
 
-  connect(&m_pingTimer, &QTimer::timeout, this, &ConnectionHealth::nextPing);
-
   connect(&m_noSignalTimer, &QTimer::timeout, this,
           &ConnectionHealth::noSignalDetected);
   m_noSignalTimer.setSingleShot(true);
 
-  m_pingThread.start();
+  connect(&m_pingHelper, &PingHelper::pingSentAndReceived, this,
+          &ConnectionHealth::pingSentAndReceived);
 }
 
-ConnectionHealth::~ConnectionHealth() {
-  MVPN_COUNT_DTOR(ConnectionHealth);
-
-  m_pingThread.quit();
-  m_pingThread.wait();
-}
-
-void ConnectionHealth::start(const QString& serverIpv4Gateway) {
-  logger.log() << "ConnectionHealth activated for server:" << serverIpv4Gateway;
-
-  setStability(Stable);
-
-  m_gateway = serverIpv4Gateway;
-  m_pingTimer.start(PING_TIMOUT_SEC * 1000);
-}
+ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
 
 void ConnectionHealth::stop() {
   logger.log() << "ConnectionHealth deactivated";
 
-  m_pingTimer.stop();
+  m_pingHelper.stop();
   m_noSignalTimer.stop();
-
-  for (PingSender* pingSender : m_pings) {
-    pingSender->deleteLater();
-  }
-  m_pings.clear();
 
   setStability(Stable);
 }
@@ -92,50 +65,22 @@ void ConnectionHealth::connectionStateChanged() {
         Q_UNUSED(txBytes);
         Q_UNUSED(rxBytes);
 
-        if (!serverIpv4Gateway.isEmpty()) {
-          stop();
-          start(serverIpv4Gateway);
+        stop();
+
+        if (!serverIpv4Gateway.isEmpty() &&
+            MozillaVPN::instance()->controller()->state() ==
+                Controller::StateOn) {
+          m_pingHelper.start(serverIpv4Gateway);
+          m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
         }
       });
 }
 
-void ConnectionHealth::nextPing() {
-  logger.log() << "Sending a new ping. Total:" << m_pings.length();
-
-  if (!m_noSignalTimer.isActive()) {
-    m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
-  }
-
-  PingSender* pingSender = new PingSender(this, &m_pingThread);
-  connect(pingSender, &PingSender::completed, this,
-          &ConnectionHealth::pingReceived);
-  m_pings.append(pingSender);
-  pingSender->send(m_gateway);
-
-  while (m_pings.length() > PINGS_MAX) {
-    m_pings.at(0)->deleteLater();
-    m_pings.removeAt(0);
-  }
-}
-
-void ConnectionHealth::pingReceived(PingSender* pingSender, qint64 msec) {
+void ConnectionHealth::pingSentAndReceived(qint64 msec) {
   logger.log() << "Ping answer received in msec:" << msec;
 
-  // If a ping has been received, we have signal.
-  m_noSignalTimer.stop();
-
-  QMutableListIterator<PingSender*> i(m_pings);
-  while (i.hasNext()) {
-    PingSender* thisPingSender = i.next();
-    if (thisPingSender != pingSender) {
-      continue;
-    }
-
-    i.remove();
-    break;
-  }
-
-  pingSender->deleteLater();
+  // If a ping has been received, we have signal. Restart the timer.
+  m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
 
   if (msec < PING_TIME_UNSTABLE_SEC * 1000) {
     setStability(Stable);

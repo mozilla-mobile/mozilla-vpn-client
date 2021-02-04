@@ -13,6 +13,7 @@ JOBS=8
 QTPATH=
 RELEASE=1
 PROD=
+export SPLITAPK=0
 
 helpFunction() {
   print G "Usage:"
@@ -117,10 +118,10 @@ print Y "Importing translation files..."
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Computing the version... "
-SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
+export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
-print G "$SHORTVERSION - $FULLVERSION"
-
+print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
 
 cd .tmp/
@@ -151,7 +152,6 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug_and_release \
     CONFIG+=release \
     $PRODMODE \
-    ANDROID_ABIS="armeabi-v7a x86 arm64-v8a" \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
@@ -162,7 +162,6 @@ else
     CONFIG-=release \
     CONFIG+=qml_debug \
     $PRODMODE \
-    ANDROID_ABIS="armeabi-v7a" \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 
@@ -182,12 +181,11 @@ print N "Your debug .APK is Located in .tmp/src/android-build/mozillavpn.apk"
 # also compile the java/kotlin code in release mode
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
+  export SPLITAPK=1
   cd android-build
   ./gradlew compileReleaseSources
   ./gradlew assemble
-  ./gradlew bundleRelease
 
   print G "Done 🎉"
-  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-release-unsigned.apk"
-  print G "Your Release AAB is under .tmp/src/android-build/build/outputs/bundle/release/android-build-release.aab"
+  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/android-build-universal-release-unsigned.apk"
 fi

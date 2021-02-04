@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "macosdaemonconnection.h"
+#include "daemonlocalserverconnection.h"
+#include "daemon.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "macosdaemon.h"
 
 #include <QLocalSocket>
 #include <QJsonDocument>
@@ -13,13 +13,13 @@
 #include <QJsonValue>
 
 namespace {
-Logger logger(LOG_MACOS, "MacOSDaemonConnection");
+Logger logger(LOG_MAIN, "DaemonLocalServerConnection");
 }
 
-MacOSDaemonConnection::MacOSDaemonConnection(QObject* parent,
-                                             QLocalSocket* socket)
+DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
+                                                         QLocalSocket* socket)
     : QObject(parent) {
-  MVPN_COUNT_CTOR(MacOSDaemonConnection);
+  MVPN_COUNT_CTOR(DaemonLocalServerConnection);
 
   logger.log() << "Connection created";
 
@@ -27,22 +27,24 @@ MacOSDaemonConnection::MacOSDaemonConnection(QObject* parent,
   m_socket = socket;
 
   connect(m_socket, &QLocalSocket::readyRead, this,
-          &MacOSDaemonConnection::readData);
+          &DaemonLocalServerConnection::readData);
 
-  MacOSDaemon* daemon = MacOSDaemon::instance();
-  connect(daemon, &MacOSDaemon::connected, this,
-          &MacOSDaemonConnection::connected);
-  connect(daemon, &MacOSDaemon::disconnected, this,
-          &MacOSDaemonConnection::disconnected);
+  Daemon* daemon = Daemon::instance();
+  connect(daemon, &Daemon::connected, this,
+          &DaemonLocalServerConnection::connected);
+  connect(daemon, &Daemon::disconnected, this,
+          &DaemonLocalServerConnection::disconnected);
+  connect(daemon, &Daemon::backendFailure, this,
+          &DaemonLocalServerConnection::backendFailure);
 }
 
-MacOSDaemonConnection::~MacOSDaemonConnection() {
-  MVPN_COUNT_DTOR(MacOSDaemonConnection);
+DaemonLocalServerConnection::~DaemonLocalServerConnection() {
+  MVPN_COUNT_DTOR(DaemonLocalServerConnection);
 
   logger.log() << "Connection released";
 }
 
-void MacOSDaemonConnection::readData() {
+void DaemonLocalServerConnection::readData() {
   logger.log() << "Read Data";
 
   Q_ASSERT(m_socket);
@@ -69,7 +71,7 @@ void MacOSDaemonConnection::readData() {
   }
 }
 
-void MacOSDaemonConnection::parseCommand(const QByteArray& data) {
+void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   logger.log() << "Command received:" << data;
 
   QJsonDocument json = QJsonDocument::fromJson(data);
@@ -88,13 +90,13 @@ void MacOSDaemonConnection::parseCommand(const QByteArray& data) {
   QString type = typeValue.toString();
   if (type == "activate") {
     Daemon::Config config;
-    if (!MacOSDaemon::parseConfig(obj, config)) {
+    if (!Daemon::parseConfig(obj, config)) {
       logger.log() << "Invalid configuration";
       emit disconnected();
       return;
     }
 
-    if (!MacOSDaemon::instance()->activate(config)) {
+    if (!Daemon::instance()->activate(config)) {
       logger.log() << "Failed to activate the interface";
       emit disconnected();
     }
@@ -102,41 +104,52 @@ void MacOSDaemonConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "deactivate") {
-    MacOSDaemon::instance()->deactivate();
+    Daemon::instance()->deactivate();
     return;
   }
 
   if (type == "status") {
-    MacOSDaemon::instance()->status(m_socket);
+    m_socket->write(Daemon::instance()->getStatus());
+    m_socket->write("\n");
     return;
   }
 
   if (type == "logs") {
-    MacOSDaemon::instance()->logs(m_socket);
+    QJsonObject obj;
+    obj.insert("type", "logs");
+    obj.insert("logs", Daemon::instance()->logs().replace("\n", "|"));
+    m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    m_socket->write("\n");
     return;
   }
 
   if (type == "cleanlogs") {
-    MacOSDaemon::instance()->cleanLogs();
+    Daemon::instance()->cleanLogs();
     return;
   }
 
   logger.log() << "Invalid command:" << type;
 }
 
-void MacOSDaemonConnection::connected() {
+void DaemonLocalServerConnection::connected() {
   QJsonObject obj;
   obj.insert("type", "connected");
   write(obj);
 }
 
-void MacOSDaemonConnection::disconnected() {
+void DaemonLocalServerConnection::disconnected() {
   QJsonObject obj;
   obj.insert("type", "disconnected");
   write(obj);
 }
 
-void MacOSDaemonConnection::write(const QJsonObject& obj) {
+void DaemonLocalServerConnection::backendFailure() {
+  QJsonObject obj;
+  obj.insert("type", "backendFailure");
+  write(obj);
+}
+
+void DaemonLocalServerConnection::write(const QJsonObject& obj) {
   m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
 }

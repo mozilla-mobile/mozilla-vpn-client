@@ -71,7 +71,7 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
+          [this](QNetworkReply*, const QByteArray& data) {
             logger.log() << "Captive portal request completed:" << data;
 
             --m_pendingRequests;

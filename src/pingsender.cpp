@@ -13,7 +13,7 @@
 #  include "platforms/macos/macospingsendworker.h"
 #elif defined(MVPN_WINDOWS)
 #  include "platforms/windows/windowspingsendworker.h"
-#elif defined(MVPN_DUMMY)
+#elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
 #  include "platforms/dummy/dummypingsendworker.h"
 #else
 #  error "Unsupported platform"
@@ -41,7 +41,10 @@ PingSender::PingSender(QObject* parent, QThread* thread) : QObject(parent) {
       new DummyPingSendWorker();
 #endif
 
+  // No multi-thread supports for wasm builds.
+#ifndef MVPN_WASM
   worker->moveToThread(thread);
+#endif
 
   connect(thread, &QThread::finished, worker, &QObject::deleteLater);
   connect(this, &PingSender::sendPing, worker, &PingSendWorker::sendPing);
@@ -64,6 +67,6 @@ void PingSender::pingFailed() {
 }
 
 void PingSender::pingSucceeded() {
-  logger.log() << "PingSender - Ping Succeded";
+  logger.log() << "PingSender - Ping Succeeded";
   emit completed(this, m_time.elapsed());
 }

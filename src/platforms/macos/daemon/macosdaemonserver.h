@@ -7,22 +7,12 @@
 
 #include "command.h"
 
-class QLocalServer;
-
 class MacOSDaemonServer final : public Command {
  public:
   explicit MacOSDaemonServer(QObject* parent);
   ~MacOSDaemonServer();
 
   int run(QStringList& tokens) override;
-
- private:
-  void newConnection();
-
-  QString daemonPath() const;
-
- private:
-  QLocalServer* m_server = nullptr;
 };
 
 #endif  // MACOSDAEMONSERVER_H

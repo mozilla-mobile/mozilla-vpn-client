@@ -34,6 +34,8 @@ QString Device::currentDeviceName() {
       MacOSUtils::computerName();
 #elif MVPN_ANDROID
       AndroidUtils::GetDeviceName();
+#elif MVPN_WASM
+      "WASM";
 #else
       QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
       QSysInfo::productVersion();

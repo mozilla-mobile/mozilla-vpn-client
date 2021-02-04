@@ -19,8 +19,8 @@
 
 #if defined(MVPN_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MVPN_MACOS_DAEMON)
-#  include "platforms/macos/macoscontroller.h"
+#elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
+#  include "localsocketcontroller.h"
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MVPN_ANDROID)
@@ -81,8 +81,8 @@ void Controller::initialize() {
   m_impl.reset(new TimerController(
 #if defined(MVPN_LINUX)
       new LinuxController()
-#elif defined(MVPN_MACOS_DAEMON)
-      new MacOSController()
+#elif defined(MVPN_MACOS_DAEMON) || defined(MVPN_WINDOWS)
+      new LocalSocketController()
 #elif defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION)
       new IOSController()
 #elif defined(MVPN_ANDROID)
@@ -131,8 +131,9 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    connected();
     m_connectionDate = connectionDate;
+    emit timeChanged();
+    m_timer.start(TIMER_MSEC);
     return;
   }
 
@@ -234,6 +235,7 @@ void Controller::connected() {
 
   setState(StateConfirming);
 
+  // Now, let's wait for a ping sent and received from ConnectionHealth.
   m_connectionCheck.start();
 }
 
@@ -479,7 +481,7 @@ void Controller::getStatus(
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
-  if (m_state != StateOn) {
+  if (m_state != StateOn && m_state != StateConfirming) {
     callback(QString(), 0, 0);
     return;
   }
@@ -511,7 +513,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 void Controller::captivePortalDetected() {
   logger.log() << "Captive portal detected in state:" << m_state;
 
-  if (m_state != StateOn) {
+  if (m_state != StateOn && m_state != StateConfirming) {
     return;
   }
 
