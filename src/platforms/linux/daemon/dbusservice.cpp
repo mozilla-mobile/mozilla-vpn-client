@@ -140,6 +140,12 @@ QString DBusService::getLogs() {
 }
 
 bool DBusService::run(Op op, const Config& config) {
+  if (op == Up) {
+    if (wg_helper.interface_exists()) {
+      qWarning("Interface %s already exists.", WG_INTERFACE);
+      return false;
+    }
+  }
   logger.log() << "Interface exists:" << wg_helper.interface_exists();
   logger.log() << "Wireguard devices:"
                << wg_helper.current_wireguard_devices().join(", ");
