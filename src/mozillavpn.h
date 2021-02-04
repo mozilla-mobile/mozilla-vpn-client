@@ -80,6 +80,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(AlertType alert READ alert NOTIFY alertChanged)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
+  Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(bool updateRecommended READ updateRecommended NOTIFY
                  updateRecommendedChanged)
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
@@ -167,6 +168,8 @@ class MozillaVPN final : public QObject {
   void changeServer(const QString& countryCode, const QString& city);
 
   const QString versionString() const { return QString(APP_VERSION); }
+
+  const QString buildNumber() const { return QString(BUILD_ID); }
 
   void logout();
 
