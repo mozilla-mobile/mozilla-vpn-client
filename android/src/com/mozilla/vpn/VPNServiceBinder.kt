@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn
-
 import android.content.Context
 import android.os.Binder
 import android.os.IBinder
@@ -22,7 +21,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
-    private val mListeners = mutableListOf<IBinder>()
+    private var mListener: IBinder?= null
     private var mResumeConfig: Config? = null
 
     /**
@@ -86,9 +85,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.resumeActivate -> {
                 // [data] is empty
                 // Activate the current tunnel
-                if(!mService.checkPermissions()){
-                    return true;
-                }
                 try{
                     this.mService.turnOn(mResumeConfig)
                 }
@@ -107,13 +103,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             ACTIONS.registerEventListener -> {
                 // [data] contains the Binder that we need to dispatch the Events
                 val binder = data.readStrongBinder()
-                mListeners.add(binder)
-                Log.d(tag, "Registered ${mListeners.size} EventListeners")
-                if(mService.state == Tunnel.State.UP){
-                    dispatchEvent(EVENTS.init, "connected")
-                }else{
-                    dispatchEvent(EVENTS.init, "disconnected")
-                }
+                mListener = binder
+                val obj = JSONObject()
+                obj.put("connected",  mService.state == Tunnel.State.UP)
+                obj.put("time",  mService.connectionTime)
+                dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
 
@@ -177,12 +171,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String) {
-        mListeners.forEach {
-           if (it.isBinderAlive) {
-               val data = Parcel.obtain()
-               data.writeByteArray(payload.toByteArray(charset("UTF-8")))
-               it.transact(code, data, Parcel.obtain(), 0)
-           }
+        mListener?.let{
+            if (it.isBinderAlive) {
+                val data = Parcel.obtain()
+                data.writeByteArray(payload.toByteArray(charset("UTF-8")))
+                it.transact(code, data, Parcel.obtain(), 0)
+            }
         }
     }
 
