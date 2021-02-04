@@ -11,6 +11,8 @@
 #  include "platforms/ios/iosnotificationhandler.h"
 #elif defined(MVPN_ANDROID)
 #  include "platforms/android/androidnotificationhandler.h"
+#elif defined(MVPN_WASM)
+#  include "platforms/wasm/wasmnotificationhandler.h"
 #else
 #  include "systemtraynotificationhandler.h"
 #endif
@@ -25,6 +27,8 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
   return new IOSNotificationHandler(parent);
 #elif defined(MVPN_ANDROID)
   return new AndroidNotificationHandler(parent);
+#elif defined(MVPN_WASM)
+  return new WasmNotificationHandler(parent);
 #else
   return new SystemTrayNotificationHandler(parent);
 #endif

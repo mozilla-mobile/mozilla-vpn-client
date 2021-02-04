@@ -18,11 +18,15 @@
 #include <QWindow>
 
 namespace {
-Logger logger(LOG_MAIN, "WasWindowController");
+Logger logger(LOG_MAIN, "WasmWindowController");
+
+WasmWindowController* s_instance = nullptr;
 }
 
 WasmWindowController::WasmWindowController() {
   MVPN_COUNT_CTOR(WasmWindowController);
+  Q_ASSERT(s_instance == nullptr);
+  s_instance = this;
 
   QList<QScreen*> screens = qApp->screens();
   if (screens.length() < 2) {
@@ -64,6 +68,26 @@ WasmWindowController::WasmWindowController() {
     layout->addWidget(menu->menuBar());
   }
 
+  // Notification title
+  {
+    QLabel* label = new QLabel("Last notification Title:");
+    layout->addWidget(label);
+
+    m_notificationTitle = new QLabel();
+    m_notificationTitle->setStyleSheet("font-weight: bold");
+    layout->addWidget(m_notificationTitle);
+  }
+
+  // Notification message
+  {
+    QLabel* label = new QLabel("Last notification Message:");
+    layout->addWidget(label);
+
+    m_notificationMessage = new QLabel();
+    m_notificationMessage->setStyleSheet("font-weight: bold");
+    layout->addWidget(m_notificationMessage);
+  }
+
   // stratch
   layout->addWidget(new QWidget(), 1);
 
@@ -72,6 +96,14 @@ WasmWindowController::WasmWindowController() {
 
 WasmWindowController::~WasmWindowController() {
   MVPN_COUNT_DTOR(WasmWindowController);
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
+}
+
+// static
+WasmWindowController* WasmWindowController::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
 }
 
 void WasmWindowController::iconChanged(const QString& icon) {
@@ -80,4 +112,12 @@ void WasmWindowController::iconChanged(const QString& icon) {
 
   QMenu* menu = SystemTrayHandler::instance()->contextMenu();
   menu->setIcon(menuIcon);
+}
+
+void WasmWindowController::notification(const QString& title,
+                                        const QString& message) {
+  logger.log() << "Notification received";
+
+  m_notificationTitle->setText(title);
+  m_notificationMessage->setText(message);
 }
