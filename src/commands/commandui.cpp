@@ -388,6 +388,10 @@ int CommandUI::run(QStringList& tokens) {
       MacOSMenuBar::instance()->retranslate();
 #  endif
 #endif
+
+#ifdef MVPN_WASM
+      WasmWindowController::instance()->retranslate();
+#endif
     });
 
 #if defined(QT_DEBUG) && !defined(MVPN_WASM)
