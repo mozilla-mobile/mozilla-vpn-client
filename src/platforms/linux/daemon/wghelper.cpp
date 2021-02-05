@@ -50,3 +50,13 @@ QStringList WireguardHelper::current_wireguard_devices() {
   }
   return wg_devices;
 }
+
+bool WireguardHelper::add_if() {
+  int return_code = wg_add_device(WG_INTERFACE);
+  if (return_code != 0) {
+    qWarning("Adding interface `%s` failed with return code: %d", WG_INTERFACE,
+             return_code);
+    return false;
+  }
+  return true;
+}

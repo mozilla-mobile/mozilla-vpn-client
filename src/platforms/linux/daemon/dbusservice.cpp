@@ -140,15 +140,21 @@ QString DBusService::getLogs() {
 }
 
 bool DBusService::run(Op op, const Config& config) {
+  // WG Up commands
   if (op == Up) {
-    // We could call checkInterface instead of this check - probably actually
-    // better
+    // We could call checkInterface instead of this check.
     if (wg_helper.interface_exists()) {
       qWarning("Interface `%s` already exists.", WG_INTERFACE);
       // ToDo - do we want to try and do clean-up here?
       return false;
     }
+    // add_if
+    if (!wg_helper.add_if()) {
+      return false;
+    }
   }
+
+  // WG Down commands
   if (op == Down) {
     if (!wg_helper.interface_exists()) {
       qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
