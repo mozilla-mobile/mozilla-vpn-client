@@ -347,6 +347,9 @@ else:android {
     message(Android build)
 
     QMAKE_CXXFLAGS *= -Werror
+    # Android Deploy-to-Qt strips the info anyway
+    # but we want to create an extra bundle with the info :)
+    CONFIG += force_debug_info
 
     TARGET = mozillavpn
     QT += networkauth
