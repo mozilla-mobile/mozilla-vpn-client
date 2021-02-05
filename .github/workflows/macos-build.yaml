@@ -84,10 +84,10 @@ jobs:
         run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
       - name: Upload app
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
             name: staging
-            path: "/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla VPN.app"
+            path: "/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla VPN*"
 
   macos-production:
     runs-on: macos-latest
@@ -165,7 +165,7 @@ jobs:
         run: xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project MozillaVPN.xcodeproj
 
       - name: Upload app
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
             name: production
-            path: "/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla VPN.app"
+            path: "/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/Release/Mozilla VPN*"
