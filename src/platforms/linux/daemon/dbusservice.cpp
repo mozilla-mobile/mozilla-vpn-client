@@ -149,8 +149,8 @@ bool DBusService::run(Op op, const Config& config) {
       addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
 }
 
-static inline bool parseEndpoint(struct sockaddr* endpoint,
-                                 const QString& address, int port) {
+static inline bool endpointStringToSockaddr(const QString& address, int port,
+                                            struct sockaddr* endpoint) {
   QString portString = QString::number(port);
 
   struct addrinfo hints;
@@ -236,8 +236,8 @@ bool DBusService::switchServer(const Config& config) {
   device->first_peer = device->last_peer = peer;
   device->flags = WGDEVICE_REPLACE_PEERS;
 
-  if (!parseEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
-                     config.m_serverPort)) {
+  if (!endpointStringToSockaddr(config.m_serverIpv4AddrIn, config.m_serverPort,
+                                &peer->endpoint.addr)) {
     return false;
   }
 
