@@ -107,6 +107,28 @@ jobs:
             name: production-release
             path: .tmp/src/android-build/build/outputs/apk/release/
 
+      - name: Upload Debug Symbols(arm64-v8a)
+        uses: actions/upload-artifact@v1
+        with:
+            name: production-release debug-sym(arm64-v8a)
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a                        
+      - name: Upload Debug Symbols
+        uses: actions/upload-artifact@v1
+        with:
+            name: production-release debug-sym(armeabi-v7a)
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/armeabi-v7a                       
+      - name: Upload Debug Symbols
+        uses: actions/upload-artifact@v1
+        with:
+            name: production-release debug-sym(x86)
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86                       
+      - name: Upload Debug Symbols
+        uses: actions/upload-artifact@v1
+        with:
+            name: production-release debug-sym(x86_64)
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86_64                     
+
+
   android-staging-debug:
     runs-on: ubuntu-20.04
 
