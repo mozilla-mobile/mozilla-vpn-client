@@ -28,7 +28,6 @@ QString scriptPath() {
   appPath.cd("share");
   appPath.cd("mozillavpn");
   return appPath.filePath("wghelper.sh");
-  ;
 #elif defined(MVPN_MACOS_DAEMON)
   appPath.cdUp();
   appPath.cd("Resources");
