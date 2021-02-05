@@ -62,3 +62,8 @@ MozillaVPN.exe
 MozillaVPN.exp
 MozillaVPN.lib
 MozillaVPN_resource.rc
+
+# WASM
+mozillavpn.js
+mozillavpn.wasm
+qtloader.js

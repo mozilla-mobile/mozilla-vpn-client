@@ -1,0 +1,46 @@
+name: WebAssembly
+
+on:
+  push:
+    branches:
+     - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  wasm:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          python3 -m aqt install --outputdir /opt 5.15.0 linux desktop wasm_32 -m qtcharts
+
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 1.39.8
+
+      - name: Compiling
+        shell: bash
+        run: |
+          ./scripts/wasm_compile.sh /opt/5.15.0/wasm_32/bin
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: WebAssembly Build
+            path: wasm
