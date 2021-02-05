@@ -142,13 +142,18 @@ QString DBusService::getLogs() {
 bool DBusService::run(Op op, const Config& config) {
   if (op == Up) {
     if (wg_helper.interface_exists()) {
-      qWarning("Interface %s already exists.", WG_INTERFACE);
+      qWarning("Interface `%s` already exists.", WG_INTERFACE);
+      // ToDo - do we want to try and do clean-up here?
       return false;
     }
   }
-  logger.log() << "Interface exists:" << wg_helper.interface_exists();
-  logger.log() << "Wireguard devices:"
-               << wg_helper.current_wireguard_devices().join(", ");
+  if (op == Down) {
+    if (!wg_helper.interface_exists()) {
+      qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
+               WG_INTERFACE);
+      return false;
+    }
+  }
 
   QStringList addresses;
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
