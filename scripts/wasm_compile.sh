@@ -48,6 +48,9 @@ fi
 QMAKE=$WASM_QT_PATH/qmake
 [ -f "$QMAKE" ] || die "Unable to find qmake at the path $QMAKE"
 
+printn Y "Setting PATH var... "
+export PATH=$PATH:$WASM_QT_PATH
+print G "done."
 
 printn Y "Checking emscripten... "
 em++ --version &>/dev/null || die "em++ not found. Have you forgotten to load emsdk_env.sh?"
