@@ -49,11 +49,21 @@ Daemon* Daemon::instance() {
 }
 
 bool Daemon::activate(const Config& config) {
-  m_lastConfig = config;
+  // There are 3 possible scenarios in which this method is called:
+  //
+  // 1. the VPN is off: the method tries to enable the VPN.
+  // 2. the VPN is on and the platform doesn't support the server-switching:
+  //    this method calls deactivate() and then it continues as 1.
+  // 3. the VPN is on and the platform supports the server-switching: this
+  //    method calls switchServer().
+  //
+  // At the end, if the activation succeds, the `connected` signal is emitted.
 
   if (m_connected) {
     if (supportServerSwitching(config)) {
       logger.log() << "Already connected. Server switching supported.";
+
+      m_lastConfig = config;
       if (!switchServer(config)) {
         return false;
       }
@@ -64,22 +74,21 @@ bool Daemon::activate(const Config& config) {
     }
 
     logger.log() << "Already connected. Server switching not supported.";
-  }
-
-  if (m_connected) {
     if (!deactivate(false)) {
       return false;
     }
 
     Q_ASSERT(!m_connected);
+    return activate(config);
   }
 
+  m_lastConfig = config;
   m_connected = run(Up, m_lastConfig);
-  m_connectionDate = QDateTime::currentDateTime();
 
-  logger.log() << "Status:" << m_connected;
+  logger.log() << "Connection status:" << m_connected;
 
   if (m_connected) {
+    m_connectionDate = QDateTime::currentDateTime();
     emit connected();
   }
 
