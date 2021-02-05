@@ -141,6 +141,8 @@ QString DBusService::getLogs() {
 
 bool DBusService::run(Op op, const Config& config) {
   if (op == Up) {
+    // We could call checkInterface instead of this check - probably actually
+    // better
     if (wg_helper.interface_exists()) {
       qWarning("Interface `%s` already exists.", WG_INTERFACE);
       // ToDo - do we want to try and do clean-up here?
