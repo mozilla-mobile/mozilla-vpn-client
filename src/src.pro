@@ -639,7 +639,6 @@ else:wasm {
     QMAKE_CXXFLAGS *= -Werror
 
     TARGET = mozillavpn
-    QT += networkauth
     QT += svg
 
     SOURCES += \
