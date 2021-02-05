@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Mozilla VPN - WebAssembly Viewer</title>
+    <link href="http://fonts.cdnfonts.com/css/metropolis-2" rel="stylesheet">
+    <link rel="stylesheet" href="main.css"> 
+    <link rel="icon" type="image/png" href="favicon.ico">
+  </head>
+  <body onload="init()" class="wasm-loading">
+    <header>
+      <img src="img/MozillaVPN-logo.svg" alt="Mozilla VPN logo" class="Mozilla-VPN-logo logo" />
+      <h1>Mozilla VPN - <span class="web-viewer">WebAssembly Viewer</span></h1>
+    </header>
+    <main class="container">
+      <div class="row">
+        <div class="col-sm qml-content">
+          <p class="loading-error-message">Trouble loading content</p>
+          <img src="img/loader.svg" class="loader" alt="loading icon" />
+          <div class="canvas-bg">
+            <canvas id="qmlcanvas" oncontextmenu="event.preventDefault()" contenteditable="false"></canvas>
+          </div>
+        </div>
+        <div class="col-sm controller-content">
+            <div class="rel control-bg">
+              <p class="loading-error-message">Trouble loading content</p>
+              <img src="img/loader.svg" class="loader" alt="loading icon" />
+              <canvas id="controlcanvas" oncontextmenu="event.preventDefault()" contenteditable="false"></canvas>
+            </div>
+          </div>
+      </div>
+
+      <div id="qtstatus"></div>
+
+    </main>
+    <footer>
+      <a class="icon-link" href="https://www.github.com/mozilla-mobile/mozilla-vpn-client" target="_blank" rel="noopener noreferrer">
+        Mozilla
+        <img src="img/Mozilla-logo.svg" class="Mozilla-logo logo" alt="Mozilla logo" />
+      </a>
+      <a class="icon-link" href="https://www.github.com/mozilla-mobile/mozilla-vpn-client" target="_blank" rel="noopener noreferrer">
+        GitHub
+        <img src="img/GitHub-logo.svg" class="GitHub-logo logo" alt="GitHub logo" />
+      </a>
+    </footer>
+    <script type='text/javascript'>
+        function init() {
+          const qmlcanvas = document.querySelector('#qmlcanvas');
+          const controlcanvas = document.querySelector('#controlcanvas');
+          const status = document.querySelector('#qtstatus');
+          const bodyClassList = document.body.classList;
+
+          const qtLoader = QtLoader({
+              canvasElements : [controlcanvas, qmlcanvas],
+              showLoader: function(loaderStatus) {
+                  status.textContent = loaderStatus + "...";
+              },
+              showError: function(errorText) {
+                  bodyClassList.remove("wasm-loading");
+                  status.textContent = errorText;
+                  bodyClassList.add("wasm-loading-error");
+              },
+              showExit: function() {
+                  status.textContent = "Application exit";
+                  if (qtLoader.exitCode !== undefined)
+                      status.textContent += " with code " + qtLoader.exitCode;
+                  if (qtLoader.exitText !== undefined)
+                      status.textContent += " (" + qtLoader.exitText + ")";
+              },
+              showCanvas: function() {
+                  bodyClassList.remove("wasm-loading");
+                  bodyClassList.add("wasm-loaded");
+                  status.textContent = '';
+              },
+          });
+          qtLoader.loadEmscriptenModule("mozillavpn");
+      }
+    </script>
+    <script type="text/javascript" src="qtloader.js"></script>
+  </body>
+</html>
+
