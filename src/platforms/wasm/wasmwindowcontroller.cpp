@@ -21,7 +21,7 @@ namespace {
 Logger logger(LOG_MAIN, "WasmWindowController");
 
 WasmWindowController* s_instance = nullptr;
-}
+}  // namespace
 
 WasmWindowController::WasmWindowController() {
   MVPN_COUNT_CTOR(WasmWindowController);
