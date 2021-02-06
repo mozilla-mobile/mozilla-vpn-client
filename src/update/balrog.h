@@ -8,9 +8,8 @@
 #include "updater.h"
 
 #include <QCryptographicHash>
+#include <QNetworkReply>
 #include <QTemporaryDir>
-
-class QNetworkReply;
 
 class Balrog final : public Updater {
   Q_DISABLE_COPY_MOVE(Balrog)
@@ -37,6 +36,7 @@ class Balrog final : public Updater {
                    const QString& hashValue, const QString& hashFunction);
   bool saveFileAndInstall(const QString& url, const QByteArray& data);
   bool install(const QString& filePath);
+  void propagateError(QNetworkReply* reply, QNetworkReply::NetworkError error);
 
  private:
   QTemporaryDir m_tmpDir;
