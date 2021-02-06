@@ -72,7 +72,8 @@ class NetworkRequest final : public QObject {
   void timeout();
 
  signals:
-  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void requestFailed(QNetworkReply* reply, QNetworkReply::NetworkError error,
+                     const QByteArray& data);
   void requestCompleted(QNetworkReply*, const QByteArray& data);
 
  private:

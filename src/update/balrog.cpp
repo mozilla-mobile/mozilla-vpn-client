@@ -99,7 +99,8 @@ void Balrog::start() {
   NetworkRequest* request = NetworkRequest::createForUrl(this, url);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply*, QNetworkReply::NetworkError error,
+                 const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
@@ -162,7 +163,8 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
   NetworkRequest* request = NetworkRequest::createForUrl(this, x5u);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply*, QNetworkReply::NetworkError error,
+                 const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
@@ -371,7 +373,8 @@ bool Balrog::processData(const QByteArray& data) {
   request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply*, QNetworkReply::NetworkError error,
+                 const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
