@@ -109,6 +109,20 @@ VPNAlert {
 
         },
         State {
+            name: VPN.GeoIpRestrictionAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "geoip-restriction"
+                //% "Operation not available where you are located"
+                alertText: qsTrId("vpn.alert.getIPRestrictionError")
+                alertLinkText: ""
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
             name: VPN.LogoutAlert
 
             PropertyChanges {
