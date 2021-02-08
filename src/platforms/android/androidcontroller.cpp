@@ -126,9 +126,9 @@ void AndroidController::setNotificationText(const QString& title,
 void AndroidController::setFallbackConnectedNotification() {
   QJsonObject args;
   args["title"] = qtTrId("vpn.main.productName");
-  //% "Is running in the Background"
-  //: Refers to the app - which is in the Background
-  args["message"] = qtTrId("vpn.android.notification.isRunning");
+  //% "Ready for you to connect"
+  //: Refers to the app - which is currently running the background and waiting
+  args["message"] = qtTrId("vpn.android.notification.isIDLE");
   QJsonDocument doc(args);
   QAndroidParcel data;
   data.writeData(doc.toJson());
