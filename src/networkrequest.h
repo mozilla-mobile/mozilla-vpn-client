@@ -64,6 +64,7 @@ class NetworkRequest final : public QObject {
   void postRequest(const QByteArray& body);
 
   void handleReply(QNetworkReply* reply);
+  void handleHeaderReceived();
 
   int statusCode() const;
 
@@ -72,6 +73,7 @@ class NetworkRequest final : public QObject {
   void timeout();
 
  signals:
+  void requestHeaderReceived(QNetworkReply* reply);
   void requestFailed(QNetworkReply* reply, QNetworkReply::NetworkError error,
                      const QByteArray& data);
   void requestCompleted(QNetworkReply*, const QByteArray& data);
@@ -82,7 +84,7 @@ class NetworkRequest final : public QObject {
 
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
-  bool m_timeout = false;
+  bool m_completed = false;
 };
 
 #endif  // NETWORKREQUEST_H
