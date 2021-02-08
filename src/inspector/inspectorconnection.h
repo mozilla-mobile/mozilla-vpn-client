@@ -21,6 +21,7 @@ class InspectorConnection final : public QObject {
   ~InspectorConnection();
 
   static void setLastUrl(const QUrl& url);
+  static QString stealAppVersion();
 
  private slots:
   void textMessageReceived(const QString& message);

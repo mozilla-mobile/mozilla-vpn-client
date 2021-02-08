@@ -16,6 +16,7 @@
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorConnection");
 QUrl s_lastUrl;
+QString s_updateVersion;
 }  // namespace
 
 InspectorConnection::InspectorConnection(QObject* parent,
@@ -151,6 +152,19 @@ void InspectorConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
+  if (parts[0].trimmed() == "force_update_check") {
+    if (parts.length() != 2) {
+      tooManyArguments(1);
+      return;
+    }
+
+    s_updateVersion = parts[1];
+    MozillaVPN::instance()->releaseMonitor()->runSoon();
+
+    m_connection->sendTextMessage("ok");
+    return;
+  }
+
   m_connection->sendTextMessage("invalid command");
 }
 
@@ -204,3 +218,14 @@ QQuickItem* InspectorConnection::findObject(const QString& name) {
 
 // static
 void InspectorConnection::setLastUrl(const QUrl& url) { s_lastUrl = url; }
+
+// static
+QString InspectorConnection::stealAppVersion() {
+  if (s_updateVersion.isEmpty()) {
+    return APP_VERSION;
+  }
+
+  QString version = s_updateVersion;
+  s_updateVersion = "";
+  return version;
+}

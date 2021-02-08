@@ -53,6 +53,7 @@
     commands.set("property", { func: cmd_property, desc: "Returns a property value of an object" });
     commands.set("click", { func: cmd_click, desc: "Simulate a click on an object" });
     commands.set("lasturl", { func: cmd_lasturl, desc: "Returns the last opened URL" });
+    commands.set("triggerUpdate", { func: cmd_triggerUpdate, desc: "Triggers an update forcing a particular version" });
 
     function parseCommand(input) {
       input = input.trim();
@@ -108,6 +109,15 @@
 
     function cmd_lasturl(parts) {
       ws.send("lasturl");
+    }
+
+    function cmd_triggerUpdate(parts) {
+      if (parts.length != 2) {
+        t("Usage: triggerUpdate <version>");
+        t("Example: triggerUpdate 1.0");
+        return;
+      }
+      ws.send("force_update_check " + parts[1]);
     }
 
     run();

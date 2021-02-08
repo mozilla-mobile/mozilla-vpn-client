@@ -139,6 +139,7 @@ class MozillaVPN final : public QObject {
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   Keys* keys() { return &m_private->m_keys; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
+  ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
     return &m_private->m_serverCountryModel;
   }
