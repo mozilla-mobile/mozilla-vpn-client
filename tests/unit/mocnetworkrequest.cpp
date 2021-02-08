@@ -44,8 +44,9 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
-NetworkRequest* NetworkRequest::createForUrl(QObject* parent, const QString&) {
-  return new NetworkRequest(parent, 1234);
+NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent, const QString&,
+                                                int status) {
+  return new NetworkRequest(parent, status);
 }
 
 // static
