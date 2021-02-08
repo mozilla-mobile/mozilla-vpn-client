@@ -21,7 +21,8 @@ class NetworkRequest final : public QObject {
 
   // This object deletes itself at the end of the operation.
 
-  static NetworkRequest* createForUrl(QObject* parent, const QString& url);
+  static NetworkRequest* createForGetUrl(QObject* parent, const QString& url,
+                                         int status = 0);
 
   static NetworkRequest* createForAuthenticationVerification(
       QObject* parent, const QString& pkceCodeSuccess,

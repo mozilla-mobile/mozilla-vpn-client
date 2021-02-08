@@ -43,11 +43,12 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
-NetworkRequest* NetworkRequest::createForUrl(QObject* parent,
-                                             const QString& url) {
+NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
+                                                const QString& url,
+                                                int status) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, status);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
