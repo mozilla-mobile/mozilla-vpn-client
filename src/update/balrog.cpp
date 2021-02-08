@@ -343,11 +343,50 @@ bool Balrog::processData(const QByteArray& data) {
     bool required = obj.value("required").toBool();
     if (required) {
       emit updateRequired();
-    } else {
-      emit updateRecommended();
+      deleteLater();
+      return true;
     }
 
-    deleteLater();
+    // Let's see if we can fetch the content.
+    QString url = obj.value("url").toString();
+    if (url.isEmpty()) {
+      logger.log() << "Invalid URL in the JSON document";
+      return false;
+    }
+
+    NetworkRequest* request = NetworkRequest::createForUrl(this, url);
+
+    connect(request, &NetworkRequest::requestFailed,
+            [this](QNetworkReply* reply, QNetworkReply::NetworkError error,
+                   const QByteArray&) {
+              logger.log() << "Request failed" << error;
+              deleteLater();
+            });
+
+    connect(request, &NetworkRequest::requestCompleted,
+            [this](QNetworkReply* reply) {
+              Q_ASSERT(reply);
+              logger.log() << "Request header received";
+
+              // We want to proceed only if the status code is 200. The request
+              // will be aborted, but the signal emitted.
+              int statusCode =
+                  reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+              if (statusCode.isValid() && statusCode.toInt() == 200) {
+                emit updateRecommended();
+              }
+
+              logger.log() << "Abort request for status code"
+                           << statusCode.toInt();
+              reply.abort();
+            });
+
+    connect(request, &NetworkRequest::requestCompleted,
+            [this](QNetworkReply* reply, const QByteArray&) {
+              logger.log() << "Request completed";
+              deleteLater();
+            });
+
     return true;
   }
 

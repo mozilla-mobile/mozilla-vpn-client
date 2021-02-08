@@ -278,7 +278,7 @@ void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
 
-  if (m_timeout) {
+  if (m_completed) {
     Q_ASSERT(!m_timer.isActive());
     return;
   }
@@ -299,21 +299,37 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
+  emit requestCompleted(m_reply, data);
+}
+
+void NetworkRequest::handleHeaderReceived() {
+  Q_ASSERT(m_reply);
+
+  logger.log() << "Network header received";
+
+  int status = statusCode();
+
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    emit requestFailed(m_reply, QNetworkReply::ConnectionRefusedError, data);
+    m_timer.stop();
+
+    m_completed = true;
+    m_reply->abort();
+
+    emit requestFailed(m_reply, QNetworkReply::ConnectionRefusedError,
+                       QByteArray());
     return;
   }
 
-  emit requestCompleted(m_reply, data);
+  emit requestHeaderReceived(m_reply);
 }
 
 void NetworkRequest::timeout() {
   Q_ASSERT(m_reply);
   Q_ASSERT(!m_reply->isFinished());
 
-  m_timeout = true;
+  m_completed = true;
   m_reply->abort();
 
   logger.log() << "Network request timeout";
@@ -350,12 +366,13 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
 
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::replyFinished);
+  connect(m_reply, &QNetworkReply::metaDataChanged, this,
+          &NetworkRequest::handleHeaderReceived);
   connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
 }
 
 int NetworkRequest::statusCode() const {
   Q_ASSERT(m_reply);
-  Q_ASSERT(m_reply->isFinished());
 
   QVariant statusCode =
       m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
