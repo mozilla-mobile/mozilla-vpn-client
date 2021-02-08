@@ -6,7 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#ifdef QT_DEBUG
+#ifdef MVPN_INSPECTOR
 #  include "inspector/inspectorconnection.h"
 #endif
 
@@ -91,7 +91,7 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   url.setQuery(query);
   QDesktopServices::openUrl(url.toString());
 
-#ifdef QT_DEBUG
+#ifdef MVPN_INSPECTOR
   InspectorConnection::setLastUrl(url);
 #endif
 }

@@ -67,10 +67,11 @@ void balrogLogger(int level, const char* msg) {
 }
 
 QString appVersion() {
-#ifndef QT_DEBUG
+#ifdef MVPN_INSPECTOR
+  return InspectorConnection::stealAppVersion();
+#else
   return APP_VERSION;
 #endif
-  return InspectorConnection::stealAppVersion();
 }
 
 }  // namespace
