@@ -84,7 +84,10 @@ void ReleaseMonitor::update() {
     Q_ASSERT(vpn);
 
     vpn->setUpdating(false);
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+
+    if (vpn->alert() == MozillaVPN::NoAlert) {
+      vpn->errorHandle(ErrorHandler::BackendServiceError);
+    }
   });
 
   updater->start();
