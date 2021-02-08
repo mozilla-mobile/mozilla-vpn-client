@@ -12,9 +12,6 @@ VPNAlert {
     visible: false
     state: VPN.alert
     states: [
-        // TODO - Needed alerts:
-        // BackgroundServiceRestored
-
         State {
             name: VPN.NoAlert
 
