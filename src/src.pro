@@ -204,9 +204,11 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 production {
+    message(Production build)
     DEFINES += MVPN_PRODUCTION_MODE
     RESOURCES += logo_prod.qrc
 } else {
+    message(Staging build)
     RESOURCES += logo_beta.qrc
 }
 
