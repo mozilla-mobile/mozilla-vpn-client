@@ -180,6 +180,8 @@ HEADERS += \
 
 debug {
     message(Adding the inspector)
+
+    QT+= websockets
     QT+= testlib
     CONFIG += no_testcase_installs
 

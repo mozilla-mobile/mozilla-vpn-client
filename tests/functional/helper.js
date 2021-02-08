@@ -3,30 +3,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const net = require('net');
-const client = new net.Socket();
+const websocket = require('websocket').w3cwebsocket;
+var client;
 
 module.exports = {
   async connect() {
-    client.on('data', (data) => {
-      assert(this._waitRead, 'No waiting callback?');
-      this._resolveWaitRead(String.fromCharCode.apply(String, data).trim());
-    });
-
-    client.on('close', () => {
-      this._resolveWaitRead('');
-    });
-
-    this.waitForCondition(async () => {
+    await this.waitForCondition(async () => {
       return await new Promise(resolve => {
-        client.connect(8765, 'localhost', () => resolve(true));
-        client.on('error', () => resolve(false));
+        client = new websocket('ws://localhost:8765/', '');
+
+        client.onopen = () => resolve(true);
+        client.onclose = () => this._resolveWaitRead('');
+        client.onerror = () => resolve(false);
+
+        client.onmessage = data => {
+          assert(this._waitRead, 'No waiting callback?');
+          this._resolveWaitRead(data.data.trim());
+        }
       });
     });
   },
 
   disconnect() {
-    client.destroy();
+    client.close();
   },
 
   async reset() {
@@ -98,7 +97,7 @@ module.exports = {
   _writeCommand(command) {
     return new Promise(resolve => {
       this._waitRead = resolve;
-      client.write(`${command}\n`);
+      client.send(`${command}`);
     });
   },
 

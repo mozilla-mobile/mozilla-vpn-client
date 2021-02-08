@@ -5,9 +5,9 @@
 #ifndef INSPECTORSERVER_H
 #define INSPECTORSERVER_H
 
-#include <QTcpServer>
+#include <QWebSocketServer>
 
-class InspectorServer final : public QTcpServer {
+class InspectorServer final : public QWebSocketServer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(InspectorServer)
 
