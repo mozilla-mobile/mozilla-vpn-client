@@ -178,10 +178,14 @@ HEADERS += \
         update/updater.h \
         update/versionapi.h
 
-debug {
-    message(Adding the inspector)
+inspector {
+    message(Enabling the inspector)
+
+    QT+= websockets
     QT+= testlib
     CONFIG += no_testcase_installs
+
+    DEFINES += MVPN_INSPECTOR
 
     SOURCES += \
             inspector/inspectorconnection.cpp \

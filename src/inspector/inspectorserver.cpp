@@ -7,7 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#include <QTcpSocket>
+#include <QWebSocket>
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorServer");
@@ -15,7 +15,8 @@ Logger logger(LOG_INSPECTOR, "InspectorServer");
 
 constexpr int INSPECT_PORT = 8765;
 
-InspectorServer::InspectorServer() {
+InspectorServer::InspectorServer()
+    : QWebSocketServer("", QWebSocketServer::NonSecureMode) {
   MVPN_COUNT_CTOR(InspectorServer);
 
   logger.log() << "Creating the inspector server";
@@ -32,9 +33,9 @@ InspectorServer::InspectorServer() {
 InspectorServer::~InspectorServer() { MVPN_COUNT_DTOR(InspectorServer); }
 
 void InspectorServer::newConnectionReceived() {
-  QTcpSocket* child = nextPendingConnection();
+  QWebSocket* child = nextPendingConnection();
   Q_ASSERT(child);
 
   InspectorConnection* connection = new InspectorConnection(this, child);
-  connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
+  connect(child, &QWebSocket::disconnected, connection, &QObject::deleteLater);
 }
