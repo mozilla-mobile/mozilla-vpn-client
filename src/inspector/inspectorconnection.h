@@ -10,26 +10,29 @@
 
 class QUrl;
 class QQuickItem;
-class QTcpSocket;
+class QWebSocket;
 
 class InspectorConnection final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(InspectorConnection)
 
  public:
-  InspectorConnection(QObject* parent, QTcpSocket* connection);
+  InspectorConnection(QObject* parent, QWebSocket* connection);
   ~InspectorConnection();
 
   static void setLastUrl(const QUrl& url);
+  static QString stealAppVersion();
 
  private slots:
-  void readData();
-  void parseCommand(const QString& command);
+  void textMessageReceived(const QString& message);
+  void binaryMessageReceived(const QByteArray& message);
+
+  void parseCommand(const QByteArray& command);
   void tooManyArguments(int arguments);
   QQuickItem* findObject(const QString& name);
 
  private:
-  QTcpSocket* m_connection;
+  QWebSocket* m_connection;
 
   QByteArray m_buffer;
 };

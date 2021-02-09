@@ -10,24 +10,27 @@
 
 #include <QQuickItem>
 #include <QQuickWindow>
-#include <QTcpSocket>
+#include <QWebSocket>
 #include <QTest>
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorConnection");
 QUrl s_lastUrl;
+QString s_updateVersion;
 }  // namespace
 
 InspectorConnection::InspectorConnection(QObject* parent,
-                                         QTcpSocket* connection)
+                                         QWebSocket* connection)
     : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(InspectorConnection);
 
   logger.log() << "New connection received";
 
   Q_ASSERT(m_connection);
-  connect(m_connection, &QTcpSocket::readyRead, this,
-          &InspectorConnection::readData);
+  connect(m_connection, &QWebSocket::textMessageReceived, this,
+          &InspectorConnection::textMessageReceived);
+  connect(m_connection, &QWebSocket::binaryMessageReceived, this,
+          &InspectorConnection::binaryMessageReceived);
 }
 
 InspectorConnection::~InspectorConnection() {
@@ -35,37 +38,24 @@ InspectorConnection::~InspectorConnection() {
   logger.log() << "Connection released";
 }
 
-void InspectorConnection::readData() {
-  Q_ASSERT(m_connection);
-  QByteArray input = m_connection->readAll();
-  m_buffer.append(input);
-
-  while (true) {
-    int pos = m_buffer.indexOf("\n");
-    if (pos == -1) {
-      break;
-    }
-
-    QByteArray line = m_buffer.left(pos);
-    m_buffer.remove(0, pos + 1);
-
-    QString command(line);
-    command = command.trimmed();
-
-    if (command.isEmpty()) {
-      continue;
-    }
-
-    parseCommand(command);
-  }
+void InspectorConnection::textMessageReceived(const QString& message) {
+  logger.log() << "Text message received";
+  parseCommand(message.toLocal8Bit());
 }
 
-void InspectorConnection::parseCommand(const QString& command) {
-  Q_ASSERT(!command.isEmpty());
+void InspectorConnection::binaryMessageReceived(const QByteArray& message) {
+  logger.log() << "Binary message received";
+  parseCommand(message);
+}
 
+void InspectorConnection::parseCommand(const QByteArray& command) {
   logger.log() << "command received: " << command;
 
-  QStringList parts = command.split(" ");
+  if (command.isEmpty()) {
+    return;
+  }
+
+  QList<QByteArray> parts = command.split(' ');
   Q_ASSERT(!parts.isEmpty());
 
   if (parts[0].trimmed() == "reset") {
@@ -74,7 +64,7 @@ void InspectorConnection::parseCommand(const QString& command) {
       return;
     }
 
-    m_connection->write("ok\n");
+    m_connection->sendTextMessage("ok");
     MozillaVPN::instance()->reset();
     return;
   }
@@ -85,7 +75,7 @@ void InspectorConnection::parseCommand(const QString& command) {
       return;
     }
 
-    m_connection->write("ok\n");
+    m_connection->sendTextMessage("ok");
     MozillaVPN::instance()->controller()->quit();
     return;
   }
@@ -98,11 +88,11 @@ void InspectorConnection::parseCommand(const QString& command) {
 
     QQuickItem* obj = findObject(parts[1]);
     if (!obj) {
-      m_connection->write("ko\n");
+      m_connection->sendTextMessage("ko");
       return;
     }
 
-    m_connection->write("ok\n");
+    m_connection->sendTextMessage("ok");
     return;
   }
 
@@ -114,19 +104,18 @@ void InspectorConnection::parseCommand(const QString& command) {
 
     QQuickItem* obj = findObject(parts[1]);
     if (!obj) {
-      m_connection->write("ko\n");
+      m_connection->sendTextMessage("ko");
       return;
     }
 
-    QVariant property = obj->property(parts[2].toLocal8Bit());
+    QVariant property = obj->property(parts[2]);
     if (!property.isValid()) {
-      m_connection->write("ko\n");
+      m_connection->sendTextMessage("ko");
       return;
     }
 
-    m_connection->write(QString("-%1-\n")
-                            .arg(property.toString().toHtmlEscaped())
-                            .toLocal8Bit());
+    m_connection->sendTextMessage(
+        QString("-%1-").arg(property.toString().toHtmlEscaped()).toLocal8Bit());
     return;
   }
 
@@ -138,7 +127,7 @@ void InspectorConnection::parseCommand(const QString& command) {
 
     QQuickItem* obj = findObject(parts[1]);
     if (!obj) {
-      m_connection->write("ko\n");
+      m_connection->sendTextMessage("ko");
       return;
     }
 
@@ -148,7 +137,7 @@ void InspectorConnection::parseCommand(const QString& command) {
     point.ry() += obj->height() / 2;
     QTest::mouseClick(obj->window(), Qt::LeftButton, Qt::NoModifier, point);
 
-    m_connection->write("ok\n");
+    m_connection->sendTextMessage("ok");
     return;
   }
 
@@ -158,18 +147,30 @@ void InspectorConnection::parseCommand(const QString& command) {
       return;
     }
 
-    m_connection->write(
-        QString("-%1-\n").arg(s_lastUrl.toString()).toLocal8Bit());
+    m_connection->sendTextMessage(
+        QString("-%1-").arg(s_lastUrl.toString()).toLocal8Bit());
     return;
   }
 
-  m_connection->write("invalid command\n");
+  if (parts[0].trimmed() == "force_update_check") {
+    if (parts.length() != 2) {
+      tooManyArguments(1);
+      return;
+    }
+
+    s_updateVersion = parts[1];
+    MozillaVPN::instance()->releaseMonitor()->runSoon();
+
+    m_connection->sendTextMessage("ok");
+    return;
+  }
+
+  m_connection->sendTextMessage("invalid command");
 }
 
 void InspectorConnection::tooManyArguments(int arguments) {
-  m_connection->write(QString("too many arguments (%1 expected)\n")
-                          .arg(arguments)
-                          .toLocal8Bit());
+  m_connection->sendTextMessage(
+      QString("too many arguments (%1 expected)").arg(arguments).toLocal8Bit());
 }
 
 QQuickItem* InspectorConnection::findObject(const QString& name) {
@@ -217,3 +218,14 @@ QQuickItem* InspectorConnection::findObject(const QString& name) {
 
 // static
 void InspectorConnection::setLastUrl(const QUrl& url) { s_lastUrl = url; }
+
+// static
+QString InspectorConnection::stealAppVersion() {
+  if (s_updateVersion.isEmpty()) {
+    return APP_VERSION;
+  }
+
+  QString version = s_updateVersion;
+  s_updateVersion = "";
+  return version;
+}
