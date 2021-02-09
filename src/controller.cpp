@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportalactivator.h"
 #include "controllerimpl.h"
+#include "featurelist.h"
 #include "ipaddress.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
@@ -554,7 +555,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   // filtering out the RFC1918 local area network
-  if (MozillaVPN::instance()->localNetworkAccessSupported() &&
+  if (FeatureList::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.log() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());

@@ -1025,23 +1025,6 @@ void MozillaVPN::requestViewLogs() {
   emit viewLogsNeeded();
 }
 
-bool MozillaVPN::startOnBootSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
-  return true;
-#elif defined(MVPN_ANDROID)
-  return AndroidUtils::canEnableStartOnBoot();
-#else
-  return false;
-#endif
-}
-bool MozillaVPN::protectSelectedAppsSupported() const {
-#if defined(MVPN_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
 void MozillaVPN::activate() {
   logger.log() << "VPN tunnel activation";
 
@@ -1068,16 +1051,6 @@ void MozillaVPN::quit() {
   logger.log() << "quit";
   deleteTasks();
   qApp->quit();
-}
-
-bool MozillaVPN::localNetworkAccessSupported() const {
-#if defined(MVPN_IOS)
-  // managed by the OS automatically. No need to expose this feature.
-  return false;
-#endif
-
-  // All the rest (android, windows) is OK.
-  return true;
 }
 
 #ifdef MVPN_IOS

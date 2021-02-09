@@ -75,7 +75,7 @@ VPNFlickable {
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
 
-        visible: VPN.startOnBootSupported
+        visible: VPNFeatureList.startOnBootSupported
     }
 
     Component {
@@ -100,7 +100,7 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPN.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
+        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -122,7 +122,7 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.settings.appPermissions")
             imageLeftSrc: "../resources/settings/apps.svg"
             imageRightSrc: "../resources/chevron.svg"
-            visible: VPN.protectSelectedAppsSupported
+            visible: VPNFeatureList.protectSelectedAppsSupported
             onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
         }
         VPNSettingsItem {
