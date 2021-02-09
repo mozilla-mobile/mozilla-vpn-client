@@ -12,9 +12,6 @@ VPNAlert {
     visible: false
     state: VPN.alert
     states: [
-        // TODO - Needed alerts:
-        // BackgroundServiceRestored
-
         State {
             name: VPN.NoAlert
 
@@ -103,6 +100,20 @@ VPNAlert {
                 //% "Subscription failed"
                 alertText: qsTrId("vpn.alert.subscriptionFailureError")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.GeoIpRestrictionAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "geoip-restriction"
+                //% "Operation not available where you are located"
+                alertText: qsTrId("vpn.alert.getIPRestrictionError")
+                alertLinkText: ""
                 opacity: 1
                 visible: true
             }

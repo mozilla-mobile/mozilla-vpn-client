@@ -450,7 +450,7 @@ else:macos {
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp \
-            update/balrog.cpp \
+            update/balrog.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
@@ -462,7 +462,7 @@ else:macos {
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h \
-            update/balrog.h \
+            update/balrog.h
 
     OBJECTIVE_HEADERS += \
             platforms/macos/macosutils.h

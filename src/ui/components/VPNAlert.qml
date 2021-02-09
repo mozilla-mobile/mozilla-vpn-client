@@ -40,6 +40,7 @@ Rectangle {
             case ("no-connection"):
             case ("background-service"):
             case ("subscription-failed"):
+            case ("geoip-restriction"):
             default:
                 VPN.hideAlert();
             }
