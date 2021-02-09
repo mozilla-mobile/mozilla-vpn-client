@@ -111,6 +111,13 @@ VPNFlickable {
             onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml")
         }
         VPNSettingsItem {
+            settingTitle: qsTrId("vpn.settings.notifications")
+            imageLeftSrc: "../resources/settings/notifications.svg"
+            imageRightSrc: "../resources/chevron.svg"
+            onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
+	    visible: VPNFeatureList.captivePortalNotificationSupported
+        }
+        VPNSettingsItem {
             settingTitle: qsTrId("vpn.settings.language")
             imageLeftSrc: "../resources/settings/language.svg"
             imageRightSrc: "../resources/chevron.svg"
@@ -144,15 +151,6 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push(getHelpComponent)
         }
-
-        /* TODO - disable captive portal and its notifications
-        VPNSettingsItem {
-            settingTitle: qsTrId("vpn.settings.notifications")
-            imageLeftSrc: "../resources/settings/notifications.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-        }
-        */
 
         Rectangle {
             Layout.preferredHeight: fullscreenRequired? Theme.rowHeight * 1.5 : Theme.rowHeight

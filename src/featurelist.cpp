@@ -38,3 +38,11 @@ bool FeatureList::protectSelectedAppsSupported() const {
   return false;
 #endif
 }
+
+bool FeatureList::captivePortalNotificationSupported() const {
+#if defined(MVPN_WINDOWS)
+	return true;
+#else
+	return false
+#endif
+}
