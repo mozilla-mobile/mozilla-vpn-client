@@ -38,7 +38,7 @@
 #  include "platforms/android/androiddatamigration.h"
 #endif
 
-#ifdef QT_DEBUG
+#ifdef MVPN_INSPECTOR
 #  include "inspector/inspectorconnection.h"
 #endif
 
@@ -395,7 +395,7 @@ void MozillaVPN::openLink(LinkType linkType) {
 
   QDesktopServices::openUrl(url);
 
-#ifdef QT_DEBUG
+#ifdef MVPN_INSPECTOR
   InspectorConnection::setLastUrl(url);
 #endif
 }

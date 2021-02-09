@@ -178,10 +178,14 @@ HEADERS += \
         update/updater.h \
         update/versionapi.h
 
-debug {
-    message(Adding the inspector)
+inspector {
+    message(Enabling the inspector)
+
+    QT+= websockets
     QT+= testlib
     CONFIG += no_testcase_installs
+
+    DEFINES += MVPN_INSPECTOR
 
     SOURCES += \
             inspector/inspectorconnection.cpp \
@@ -204,9 +208,11 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 production {
+    message(Production build)
     DEFINES += MVPN_PRODUCTION_MODE
     RESOURCES += logo_prod.qrc
 } else {
+    message(Staging build)
     RESOURCES += logo_beta.qrc
 }
 

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Mozilla VPN - WebSocket controller</title>
+  </head>
+  <body>
+    <div id="content"></div>
+
+    <input type="text" id="input" />
+
+    <script>
+    let ws;
+
+    const content = document.getElementById("content");
+    const input = document.getElementById("input");
+    input.focus();
+    input.addEventListener("keydown", event => {
+      if (event.keyCode === 13 && ws) {
+        parseCommand(input.value);
+        input.value = "";
+      }
+    })
+
+    function t(msg) {
+      const p = document.createElement("p");
+      p.innerText = msg;
+      content.appendChild(p);
+    }
+
+    function command(e) {
+      console.log(e);
+    }
+
+    async function run() {
+      t("Connecting...");
+
+      await new Promise((resolve, reject) => {
+        ws = new WebSocket("ws://localhost:8765");
+        ws.onopen = () => { t("Connected!"); resolve(); }
+        ws.onerror = () => { t("Connection failed"); }
+        ws.onclose = () => { t("Disconnected"); }
+        ws.onmessage = data => { t(data.data); }
+      });
+    }
+
+    const commands = new Map();
+    commands.set("help", { func: cmd_help, desc: "The help menu" });
+    commands.set("reset", { func: () => ws.send("reset"), desc: "Reset the client" });
+    commands.set("quit", { func: () => ws.send("quit"), desc: "Quit the client" });
+    commands.set("has", { func: cmd_has, desc: "Returns if an object exists" });
+    commands.set("property", { func: cmd_property, desc: "Returns a property value of an object" });
+    commands.set("click", { func: cmd_click, desc: "Simulate a click on an object" });
+    commands.set("lasturl", { func: cmd_lasturl, desc: "Returns the last opened URL" });
+    commands.set("triggerUpdate", { func: cmd_triggerUpdate, desc: "Triggers an update forcing a particular version" });
+
+    function parseCommand(input) {
+      input = input.trim();
+      const parts = input.split(" ");
+      const cmd = commands.get(parts[0]);
+      if (cmd) {
+        cmd.func(parts);
+        return;
+      }
+
+      t(parts[0] + " - Command not found");
+    }
+
+    function cmd_help() {
+      for (let [key, value] of commands) {
+        t(key + " - " + value.desc);
+      }
+    }
+
+    function cmd_reset() {
+      ws.send("reset");
+    }
+
+    function cmd_has(parts) {
+      if (parts.length != 2) {
+        t("Usage: has <objectName>");
+        t("Example: has getHelpLink");
+        return;
+      }
+
+      ws.send("has " + parts[1]);
+    }
+
+    function cmd_property(parts) {
+      if (parts.length != 3) {
+        t("Usage: property <objectName> <propertyName>");
+        t("Example: property getHelpLink visible");
+        return;
+      }
+
+      ws.send("property " + parts[1] + " " + parts[2]);
+    }
+
+    function cmd_click(parts) {
+      if (parts.length != 2) {
+        t("Usage: click <objectName>");
+        t("Example: click getHelpLink");
+        return;
+      }
+
+      ws.send("click " + parts[1]);
+    }
+
+    function cmd_lasturl(parts) {
+      ws.send("lasturl");
+    }
+
+    function cmd_triggerUpdate(parts) {
+      if (parts.length != 2) {
+        t("Usage: triggerUpdate <version>");
+        t("Example: triggerUpdate 1.0");
+        return;
+      }
+      ws.send("force_update_check " + parts[1]);
+    }
+
+    run();
+    </script>
+  </body>
+</html>
