@@ -5,6 +5,7 @@
 #include "balrog.h"
 #include "constants.h"
 #include "errorhandler.h"
+#include "inspector/inspectorconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -67,6 +68,15 @@ void balrogLogger(int level, const char* msg) {
   Q_UNUSED(level);
   logger.log() << "BalrogGo:" << msg;
 }
+
+QString appVersion() {
+#ifdef MVPN_INSPECTOR
+  return InspectorConnection::stealAppVersion();
+#else
+  return APP_VERSION;
+#endif
+}
+
 }  // namespace
 
 Balrog::Balrog(QObject* parent, bool downloadAndInstall)
@@ -96,7 +106,7 @@ QString Balrog::userAgent() {
 
 void Balrog::start() {
   QString url =
-      QString(Constants::BALROG_URL).arg(APP_VERSION).arg(userAgent());
+      QString(Constants::BALROG_URL).arg(appVersion()).arg(userAgent());
   logger.log() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);

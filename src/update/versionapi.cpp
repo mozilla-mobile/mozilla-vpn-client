@@ -126,9 +126,10 @@ bool VersionApi::processData(const QByteArray& data) {
     return true;
   }
 
-  bool recommended = compareVersions(currentVersion, latestVersion) == -1;
-  logger.log() << "Update recommended: " << recommended;
-  emit updateRecommended();
+  if (compareVersions(currentVersion, latestVersion) == -1) {
+    logger.log() << "Update recommended.";
+    emit updateRecommended();
+  }
   return true;
 }
 

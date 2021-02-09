@@ -35,7 +35,7 @@
 #  endif
 #endif
 
-#ifdef QT_DEBUG
+#ifdef MVPN_INSPECTOR
 #  include "inspector/inspectorserver.h"
 #endif
 
@@ -394,7 +394,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
     });
 
-#if defined(QT_DEBUG) && !defined(MVPN_WASM)
+#ifdef MVPN_INSPECTOR
     InspectorServer inspectServer;
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
                      &InspectorServer::close);

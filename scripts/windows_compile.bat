@@ -24,6 +24,33 @@ IF NOT EXIST src (
   EXIT 1
 )
 
+SET SHOW_HELP=F
+
+if "%1" NEQ "" (
+  if "%1" == "-h" SET SHOW_HELP=T
+  if "%1" == "-help" SET SHOW_HELP=T
+  if "%1" NEQ "-p" (
+    if "%1" NEQ "--prod" SET SHOW_HELP=T
+  )
+)
+
+if "%SHOW_HELP%" == "T" (
+  ECHO "Options:"
+  ECHO "  -h|--help            Help menu"
+  ECHO "  -p|--prod            Production build"
+  EXIT 0
+)
+
+SET PROD_BUILD=F
+if "%1"== "-p" SET PROD_BUILD=T
+if "%1"== "--prod" SET PROD_BUILD=T
+
+SET PROD_FLAGS=
+if "%PROD_BUILD%" == "T" (
+  ECHO Production build enabled
+  SET PROD_FLAGS="CONFIG+=production"
+)
+
 ECHO Checking required commands...
 CALL :CheckCommand python
 CALL :CheckCommand nmake
@@ -34,7 +61,8 @@ ECHO Importing languages...
 python scripts\importLanguages.py
 
 ECHO Creating the project...
-qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %PROD_FLAGS%
+
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
   EXIT 1
