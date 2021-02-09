@@ -16,6 +16,7 @@ class ErrorHandler final {
     AuthenticationError,
     BackendServiceError,
     SubscriptionFailureError,
+    GeoIpRestrictionError,
     IgnoredError,
   };
 

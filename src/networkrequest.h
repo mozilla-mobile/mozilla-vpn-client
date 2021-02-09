@@ -21,7 +21,8 @@ class NetworkRequest final : public QObject {
 
   // This object deletes itself at the end of the operation.
 
-  static NetworkRequest* createForUrl(QObject* parent, const QString& url);
+  static NetworkRequest* createForGetUrl(QObject* parent, const QString& url,
+                                         int status = 0);
 
   static NetworkRequest* createForAuthenticationVerification(
       QObject* parent, const QString& pkceCodeSuccess,
@@ -64,6 +65,7 @@ class NetworkRequest final : public QObject {
   void postRequest(const QByteArray& body);
 
   void handleReply(QNetworkReply* reply);
+  void handleHeaderReceived();
 
   int statusCode() const;
 
@@ -72,7 +74,9 @@ class NetworkRequest final : public QObject {
   void timeout();
 
  signals:
-  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void requestHeaderReceived(QNetworkReply* reply);
+  void requestFailed(QNetworkReply* reply, QNetworkReply::NetworkError error,
+                     const QByteArray& data);
   void requestCompleted(QNetworkReply*, const QByteArray& data);
 
  private:
@@ -81,7 +85,7 @@ class NetworkRequest final : public QObject {
 
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
-  bool m_timeout = false;
+  bool m_completed = false;
 };
 
 #endif  // NETWORKREQUEST_H

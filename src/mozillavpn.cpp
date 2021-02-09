@@ -751,6 +751,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       alert = SubscriptionFailureAlert;
       break;
 
+    case ErrorHandler::GeoIpRestrictionError:
+      alert = GeoIpRestrictionAlert;
+      break;
+
     default:
       break;
   }
