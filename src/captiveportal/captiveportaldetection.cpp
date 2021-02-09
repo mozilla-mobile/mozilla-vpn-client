@@ -4,7 +4,6 @@
 
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
-#include "captiveportalrequest.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -53,23 +52,5 @@ void CaptivePortalDetection::detectCaptivePortal() {
     return;
   }
 
-  CaptivePortalRequest* request = new CaptivePortalRequest(this);
-  connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-    logger.log() << "Captive portal request completed - detected:" << detected;
-
-    if (!m_active ||
-        MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
-      logger.log() << "Disabled in the meantime.";
-      return;
-    }
-
-    // Comment this out to see the captive portal view each time.
-    if (!detected) {
-      return;
-    }
-
-    emit captivePortalDetected();
-  });
-
-  request->run();
+  // TODO
 }

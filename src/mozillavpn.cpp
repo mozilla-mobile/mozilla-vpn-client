@@ -117,10 +117,6 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
 
-  connect(&m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::captivePortalDetected,
-          &m_private->m_controller, &Controller::captivePortalDetected);
-
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionDataHolder,
           &ConnectionDataHolder::stateChanged);

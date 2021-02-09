@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
-#include "captiveportal/captiveportal.h"
-#include "captiveportal/captiveportalactivator.h"
 #include "controllerimpl.h"
 #include "featurelist.h"
 #include "ipaddress.h"
@@ -148,8 +146,7 @@ void Controller::implInitialized(bool status, bool a_connected,
 void Controller::activate() {
   logger.log() << "Activation" << m_state;
 
-  if (m_state != StateOff && m_state != StateSwitching &&
-      m_state != StateCaptivePortal) {
+  if (m_state != StateOff && m_state != StateSwitching) {
     logger.log() << "Already connected";
     return;
   }
@@ -371,8 +368,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 void Controller::quit() {
   logger.log() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff ||
-      m_state == StateCaptivePortal) {
+  if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToQuit();
     return;
   }
@@ -429,14 +425,6 @@ bool Controller::processNextStep() {
 
   if (nextStep == Update) {
     emit readyToUpdate();
-    return true;
-  }
-
-  if (nextStep == WaitForCaptivePortal) {
-    CaptivePortalActivator* activator = new CaptivePortalActivator(this);
-    activator->run();
-
-    setState(StateCaptivePortal);
     return true;
   }
 
@@ -510,17 +498,6 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
        list) {
     func(serverIpv4Gateway, txBytes, rxBytes);
   }
-}
-
-void Controller::captivePortalDetected() {
-  logger.log() << "Captive portal detected in state:" << m_state;
-
-  if (m_state != StateOn && m_state != StateConfirming) {
-    return;
-  }
-
-  m_nextStep = WaitForCaptivePortal;
-  deactivate();
 }
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
