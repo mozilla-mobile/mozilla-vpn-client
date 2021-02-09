@@ -71,7 +71,7 @@ void balrogLogger(int level, const char* msg) {
 
 QString appVersion() {
 #ifdef MVPN_INSPECTOR
-  return InspectorConnection::stealAppVersion();
+  return InspectorConnection::appVersionForUpdate();
 #else
   return APP_VERSION;
 #endif

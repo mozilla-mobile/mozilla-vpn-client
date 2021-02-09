@@ -49,6 +49,9 @@ SET PROD_FLAGS=
 if "%PROD_BUILD%" == "T" (
   ECHO Production build enabled
   SET PROD_FLAGS="CONFIG+=production"
+) else (
+  ECHO Staging build enabled
+  SET PROD_FLAGS="CONFIG+=inspector"
 )
 
 ECHO Checking required commands...

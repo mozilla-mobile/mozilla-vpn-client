@@ -183,6 +183,7 @@ inspector {
 
     QT+= websockets
     QT+= testlib
+    QT.testlib.CONFIG -= console
     CONFIG += no_testcase_installs
 
     DEFINES += MVPN_INSPECTOR
