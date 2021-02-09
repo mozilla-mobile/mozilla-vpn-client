@@ -87,11 +87,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
-  Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
-  Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
-                 CONSTANT)
-  Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
-                 CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
 
  public:
@@ -182,10 +177,6 @@ class MozillaVPN final : public QObject {
 
   bool startMinimized() const { return m_startMinimized; }
 
-  bool startOnBootSupported() const;
-
-  bool protectSelectedAppsSupported() const;
-
   void setStartMinimized(bool startMinimized) {
     m_startMinimized = startMinimized;
   }
@@ -199,8 +190,6 @@ class MozillaVPN final : public QObject {
   bool modelsInitialized() const;
 
   void quit();
-
-  bool localNetworkAccessSupported() const;
 
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);

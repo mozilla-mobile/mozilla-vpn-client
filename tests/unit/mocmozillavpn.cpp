@@ -108,10 +108,6 @@ void MozillaVPN::cleanupLogs() {}
 
 void MozillaVPN::serializeLogs(QTextStream*, std::function<void()>&&) {}
 
-bool MozillaVPN::startOnBootSupported() const { return false; }
-
-bool MozillaVPN::protectSelectedAppsSupported() const { return false; }
-
 void MozillaVPN::activate() {}
 
 void MozillaVPN::deactivate() {}
@@ -119,8 +115,6 @@ void MozillaVPN::deactivate() {}
 void MozillaVPN::refreshDevices() {}
 
 void MozillaVPN::quit() {}
-
-bool MozillaVPN::localNetworkAccessSupported() const { return false; }
 
 void MozillaVPN::update() {}
 

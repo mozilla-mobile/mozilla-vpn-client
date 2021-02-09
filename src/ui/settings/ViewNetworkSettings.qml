@@ -49,7 +49,7 @@ VPNFlickable {
         anchors.top: ipv6.bottom
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
-        visible: VPN.localNetworkAccessSupported
+        visible: VPNFeatureList.localNetworkAccessSupported
 
         //% "Local network access"
         labelText: qsTrId("vpn.settings.lanAccess")

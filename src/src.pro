@@ -54,6 +54,7 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         errorhandler.cpp \
+        featurelist.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
@@ -133,6 +134,7 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         errorhandler.h \
+        featurelist.h \
         fontloader.h \
         ipaddress.h \
         ipaddressrange.h \
