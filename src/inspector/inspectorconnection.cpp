@@ -220,12 +220,10 @@ QQuickItem* InspectorConnection::findObject(const QString& name) {
 void InspectorConnection::setLastUrl(const QUrl& url) { s_lastUrl = url; }
 
 // static
-QString InspectorConnection::stealAppVersion() {
+QString InspectorConnection::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
     return APP_VERSION;
   }
 
-  QString version = s_updateVersion;
-  s_updateVersion = "";
-  return version;
+  return s_updateVersion;
 }
