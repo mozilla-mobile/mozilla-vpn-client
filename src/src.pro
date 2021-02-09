@@ -32,9 +32,7 @@ SOURCES += \
         apppermission.cpp \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
-        captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
-        captiveportal/captiveportalrequest.cpp \
         closeeventhandler.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -110,9 +108,7 @@ HEADERS += \
         applistprovider.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
-        captiveportal/captiveportalactivator.h \
         captiveportal/captiveportaldetection.h \
-        captiveportal/captiveportalrequest.h \
         closeeventhandler.h \
         command.h \
         commandlineparser.h \
