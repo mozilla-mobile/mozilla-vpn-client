@@ -24,18 +24,18 @@ Row {
         }
 
         if (markerData < 1073741824 /* 1024^3 */) {
-            //% "mB/s"
+            //% "MB/s"
             //: Megabytes per second
             return qsTrId("vpn.connectioInfo.mBps");
         }
 
         if (markerData < 1099511627776 /* 1024^4 */) {
-            //% "gB/s"
+            //% "GB/s"
             //: Gigabytes per second
             return qsTrId("vpn.connectioInfo.gBps");
         }
 
-        //% "tB/s"
+        //% "TB/s"
         //: Terabytes per second
         return qsTrId("vpn.connectionInfo.tBps");
     }
