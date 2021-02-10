@@ -110,7 +110,11 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::controllerStateChanged);
+          &CaptivePortalDetection::stateChanged);
+
+  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
+          &m_private->m_captivePortalDetection,
+          &CaptivePortalDetection::stateChanged);
 
   connect(SettingsHolder::instance(),
           &SettingsHolder::captivePortalAlertChanged,
