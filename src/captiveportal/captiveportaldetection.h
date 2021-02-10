@@ -5,8 +5,9 @@
 #ifndef CAPTIVEPORTALDETECTION_H
 #define CAPTIVEPORTALDETECTION_H
 
-#include <QObject>
-#include <QTimer>
+#include "captiveportalnotifier.h"
+
+class CaptivePortalDetectionImpl;
 
 class CaptivePortalDetection final : public QObject {
   Q_OBJECT
@@ -18,23 +19,18 @@ class CaptivePortalDetection final : public QObject {
 
   void initialize();
 
- private:
-  void handleSuccess();
-  void handleFailure();
-
  public slots:
   void stateChanged();
-
   void settingsChanged();
-
-  void detectCaptivePortal();
-
- signals:
-  void captivePortalDetected();
+  void detectionCompleted(bool detected);
+  void notificationCompleted(bool disconnectionRequested);
 
  private:
-  QTimer m_timer;
   bool m_active = false;
+
+  CaptivePortalNotifier m_captivePortalNotifier;
+
+  QScopedPointer<CaptivePortalDetectionImpl> m_impl;
 };
 
 #endif  // CAPTIVEPORTALDETECTION_H

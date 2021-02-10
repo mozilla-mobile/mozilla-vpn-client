@@ -17,7 +17,8 @@ class FeatureList final : public QObject {
                  CONSTANT)
   Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
                  CONSTANT)
-  Q_PROPERTY(bool captivePortalNotificationSupported READ captivePortalNotificationSupported CONSTANT)
+  Q_PROPERTY(bool captivePortalNotificationSupported READ
+                 captivePortalNotificationSupported CONSTANT)
 
  public:
   FeatureList() = default;
