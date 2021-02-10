@@ -244,7 +244,6 @@ void ConnectionDataHolder::updateIpAddress() {
                 // connected server we may retry only once.
                 logger.log() << "Reported ip not in the right country, retry!";
                 TimerSingleShot::create(this, 3000, [this]() {
-                  m_updatingIpAddress = false;
                   updateIpAddress();
                 });
               }
