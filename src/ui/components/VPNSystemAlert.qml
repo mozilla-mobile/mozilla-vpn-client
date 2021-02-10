@@ -111,7 +111,7 @@ VPNAlert {
             PropertyChanges {
                 target: alertBox
                 alertType: "geoip-restriction"
-                //% "Operation not available where you are located"
+                //% "Operation not allowed from current location"
                 alertText: qsTrId("vpn.alert.getIPRestrictionError")
                 alertLinkText: ""
                 opacity: 1
