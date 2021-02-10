@@ -29,15 +29,20 @@ void CaptivePortalDetection::initialize() {
   m_active = SettingsHolder::instance()->captivePortalAlert();
 }
 
-void CaptivePortalDetection::controllerStateChanged() {
-  logger.log() << "Controller state changed";
+void CaptivePortalDetection::stateChanged() {
+  logger.log() << "Controller/Stability state changed";
 
-  if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-    m_timer.start(Constants::CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC);
-    detectCaptivePortal();
-  } else {
+  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
+      MozillaVPN::instance()->connectionHealth()->stability() == ConnectionHealth::Stable) {
+    logger.log() << "No captive portal detection required";
     m_timer.stop();
+    return;
   }
+
+  logger.log() << "Start the captive portal detection";
+
+  m_timer.start(Constants::CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC);
+  detectCaptivePortal();
 }
 
 void CaptivePortalDetection::settingsChanged() {

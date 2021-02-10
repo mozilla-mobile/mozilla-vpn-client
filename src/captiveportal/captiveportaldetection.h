@@ -23,7 +23,7 @@ class CaptivePortalDetection final : public QObject {
   void handleFailure();
 
  public slots:
-  void controllerStateChanged();
+  void stateChanged();
 
   void settingsChanged();
 
