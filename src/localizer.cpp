@@ -65,7 +65,6 @@ void Localizer::initialize() {
     Q_ASSERT(parts.length() == 2);
 
     parts = parts[0].split("_");
-    Q_ASSERT(parts.length() == 2);
 
     QString code = parts.at(1);
     m_languages.append(code);
