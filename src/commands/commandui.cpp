@@ -382,12 +382,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
                      &systemTrayHandler, &SystemTrayHandler::updateIcon);
 
-    QObject::connect(vpn.captivePortalDetection(),
-                     &CaptivePortalDetection::captivePortalDetected,
-                     [systemTrayHandler = &systemTrayHandler]() {
-                       systemTrayHandler->captivePortalNotificationRequested();
-                     });
-
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();

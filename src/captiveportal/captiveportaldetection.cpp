@@ -4,11 +4,16 @@
 
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
+#include "captiveportaldetectionimpl.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowscaptiveportaldetection.h"
+#endif
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
@@ -17,8 +22,9 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 CaptivePortalDetection::CaptivePortalDetection() {
   MVPN_COUNT_CTOR(CaptivePortalDetection);
 
-  connect(&m_timer, &QTimer::timeout, this,
-          &CaptivePortalDetection::detectCaptivePortal);
+  connect(&m_captivePortalNotifier,
+          &CaptivePortalNotifier::notificationCompleted, this,
+          &CaptivePortalDetection::notificationCompleted);
 }
 
 CaptivePortalDetection::~CaptivePortalDetection() {
@@ -32,17 +38,32 @@ void CaptivePortalDetection::initialize() {
 void CaptivePortalDetection::stateChanged() {
   logger.log() << "Controller/Stability state changed";
 
+  if (!m_active) {
+    return;
+  }
+
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
-      MozillaVPN::instance()->connectionHealth()->stability() == ConnectionHealth::Stable) {
+      MozillaVPN::instance()->connectionHealth()->stability() ==
+          ConnectionHealth::Stable) {
     logger.log() << "No captive portal detection required";
-    m_timer.stop();
+    m_impl.reset();
     return;
   }
 
   logger.log() << "Start the captive portal detection";
+#ifdef MVPN_WINDOWS
+  m_impl.reset(new WindowsCaptivePortalDetection());
+#else
+  logger.log() << "This platform does not support captive portal detection yet";
+  return;
+#endif
 
-  m_timer.start(Constants::CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC);
-  detectCaptivePortal();
+  Q_ASSERT(m_impl);
+
+  connect(m_impl.get(), &CaptivePortalDetectionImpl::detectionCompleted, this,
+          &CaptivePortalDetection::detectionCompleted);
+
+  m_impl->start();
 }
 
 void CaptivePortalDetection::settingsChanged() {
@@ -50,12 +71,28 @@ void CaptivePortalDetection::settingsChanged() {
   m_active = SettingsHolder::instance()->captivePortalAlert();
 }
 
-void CaptivePortalDetection::detectCaptivePortal() {
-  logger.log() << "Detecting captive portal - status:" << m_active;
+void CaptivePortalDetection::detectionCompleted(bool detected) {
+  logger.log() << "Detection completed:" << detected;
 
-  if (!m_active) {
+  m_impl.reset();
+
+  if (!detected) {
     return;
   }
 
-  // TODO
+  m_captivePortalNotifier.notify();
+}
+
+void CaptivePortalDetection::notificationCompleted(
+    bool disconnectionRequested) {
+  logger.log() << "User informed. The disconnection request status:"
+               << disconnectionRequested;
+
+  if (!disconnectionRequested) {
+    return;
+  }
+
+  MozillaVPN::instance()->deactivate();
+
+  // TODO: start the monitoring
 }

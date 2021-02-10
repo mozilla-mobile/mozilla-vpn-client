@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtrayhandler.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -165,13 +166,17 @@ void SystemTrayHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
-void SystemTrayHandler::captivePortalNotificationRequested() {
-  logger.log() << "Capitve portal notification shown";
-  //% "Captive portal detected"
-  QString title = qtTrId("vpn.systray.captivePortalAlert.title");
-  //% "VPN will automatically reconnect when ready"
-  QString message = qtTrId("vpn.systray.captivePortalAlert.message");
-  showMessage(title, message, NoIcon, 2000);
+void SystemTrayHandler::captivePortalNotificationRequired() {
+  logger.log() << "Captive portal notification shown";
+
+  //% "Guest Wi-Fi portal blocked"
+  QString title = qtTrId("vpn.systray.captivePortalBlock.title");
+
+  //% "The guest Wi-Fi network you're connected to requires action. Click to"
+  //% "turn off VPN to see the portal."
+  QString message = qtTrId("vpn.systray.captivePortalBlock.message");
+
+  showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void SystemTrayHandler::updateIcon(const QString& icon) {

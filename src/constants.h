@@ -10,6 +10,9 @@ namespace Constants {
 // should never happen.
 constexpr const char* SUBSCRIPTION_CURRENCY_VALUE_USD = "4.99$";
 
+// Number of msecs for the captive-portal block alert.
+constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
+
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \
     constexpr type what = testingValue;
