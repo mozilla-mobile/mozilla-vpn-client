@@ -25,6 +25,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   void captivePortalBlockNotificationRequired();
   void captivePortalUnblockNotificationRequired();
 
+  void unsecuredNetworkNotification(const QString& wifiName);
+
   void retranslate();
 
  public slots:

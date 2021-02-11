@@ -46,3 +46,11 @@ bool FeatureList::captivePortalNotificationSupported() const {
   return false;
 #endif
 }
+
+bool FeatureList::unsecuredNetworkNotificationSupported() const {
+#if defined(MVPN_WINDOWS)
+  return true;
+#else
+  return false;
+#endif
+}
