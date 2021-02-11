@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef INSPECTORCONNECTION_H
-#define INSPECTORCONNECTION_H
+#ifndef INSPECTORWEBSOCKETCONNECTION_H
+#define INSPECTORWEBSOCKETCONNECTION_H
 
 #include <QByteArray>
 #include <QObject>
@@ -12,13 +12,13 @@ class QUrl;
 class QQuickItem;
 class QWebSocket;
 
-class InspectorConnection final : public QObject {
+class InspectorWebSocketConnection final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(InspectorConnection)
+  Q_DISABLE_COPY_MOVE(InspectorWebSocketConnection)
 
  public:
-  InspectorConnection(QObject* parent, QWebSocket* connection);
-  ~InspectorConnection();
+  InspectorWebSocketConnection(QObject* parent, QWebSocket* connection);
+  ~InspectorWebSocketConnection();
 
   static void setLastUrl(const QUrl& url);
   static QString appVersionForUpdate();
@@ -37,4 +37,4 @@ class InspectorConnection final : public QObject {
   QByteArray m_buffer;
 };
 
-#endif  // INSPECTORCONNECTION_H
+#endif  // INSPECTORWEBSOCKETCONNECTION_H

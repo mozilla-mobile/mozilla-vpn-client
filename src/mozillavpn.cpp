@@ -39,7 +39,7 @@
 #endif
 
 #ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorconnection.h"
+#  include "inspector/inspectorwebsocketconnection.h"
 #endif
 
 #include <QApplication>
@@ -396,7 +396,7 @@ void MozillaVPN::openLink(LinkType linkType) {
   QDesktopServices::openUrl(url);
 
 #ifdef MVPN_INSPECTOR
-  InspectorConnection::setLastUrl(url);
+  InspectorWebSocketConnection::setLastUrl(url);
 #endif
 }
 

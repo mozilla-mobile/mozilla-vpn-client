@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "inspectorconnection.h"
+#include "inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -14,41 +14,42 @@
 #include <QTest>
 
 namespace {
-Logger logger(LOG_INSPECTOR, "InspectorConnection");
+Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 QUrl s_lastUrl;
 QString s_updateVersion;
 }  // namespace
 
-InspectorConnection::InspectorConnection(QObject* parent,
-                                         QWebSocket* connection)
+InspectorWebSocketConnection::InspectorWebSocketConnection(
+    QObject* parent, QWebSocket* connection)
     : QObject(parent), m_connection(connection) {
-  MVPN_COUNT_CTOR(InspectorConnection);
+  MVPN_COUNT_CTOR(InspectorWebSocketConnection);
 
   logger.log() << "New connection received";
 
   Q_ASSERT(m_connection);
   connect(m_connection, &QWebSocket::textMessageReceived, this,
-          &InspectorConnection::textMessageReceived);
+          &InspectorWebSocketConnection::textMessageReceived);
   connect(m_connection, &QWebSocket::binaryMessageReceived, this,
-          &InspectorConnection::binaryMessageReceived);
+          &InspectorWebSocketConnection::binaryMessageReceived);
 }
 
-InspectorConnection::~InspectorConnection() {
-  MVPN_COUNT_DTOR(InspectorConnection);
+InspectorWebSocketConnection::~InspectorWebSocketConnection() {
+  MVPN_COUNT_DTOR(InspectorWebSocketConnection);
   logger.log() << "Connection released";
 }
 
-void InspectorConnection::textMessageReceived(const QString& message) {
+void InspectorWebSocketConnection::textMessageReceived(const QString& message) {
   logger.log() << "Text message received";
   parseCommand(message.toLocal8Bit());
 }
 
-void InspectorConnection::binaryMessageReceived(const QByteArray& message) {
+void InspectorWebSocketConnection::binaryMessageReceived(
+    const QByteArray& message) {
   logger.log() << "Binary message received";
   parseCommand(message);
 }
 
-void InspectorConnection::parseCommand(const QByteArray& command) {
+void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
   logger.log() << "command received: " << command;
 
   if (command.isEmpty()) {
@@ -168,12 +169,12 @@ void InspectorConnection::parseCommand(const QByteArray& command) {
   m_connection->sendTextMessage("invalid command");
 }
 
-void InspectorConnection::tooManyArguments(int arguments) {
+void InspectorWebSocketConnection::tooManyArguments(int arguments) {
   m_connection->sendTextMessage(
       QString("too many arguments (%1 expected)").arg(arguments).toLocal8Bit());
 }
 
-QQuickItem* InspectorConnection::findObject(const QString& name) {
+QQuickItem* InspectorWebSocketConnection::findObject(const QString& name) {
   QStringList parts = name.split("/");
   Q_ASSERT(!parts.isEmpty());
 
@@ -217,10 +218,12 @@ QQuickItem* InspectorConnection::findObject(const QString& name) {
 }
 
 // static
-void InspectorConnection::setLastUrl(const QUrl& url) { s_lastUrl = url; }
+void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
+  s_lastUrl = url;
+}
 
 // static
-QString InspectorConnection::appVersionForUpdate() {
+QString InspectorWebSocketConnection::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
     return APP_VERSION;
   }
