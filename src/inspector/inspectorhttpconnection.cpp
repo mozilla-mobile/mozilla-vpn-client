@@ -27,6 +27,7 @@ struct Path {
 static QList<Path> s_paths{
     Path{"/", ":webserver/index.html", "text/html"},
     Path{"/index.html", ":webserver/index.html", "text/html"},
+    Path{"/main.css", ":webserver/main.css", "text/css"},
 };
 
 }  // namespace
@@ -94,7 +95,7 @@ void InspectorHttpConnection::processHeaders() {
 
       if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         logger.log() << "Unable to read file" << p.m_file;
-        return;
+        break;
       }
 
       QByteArray content = file.readAll();
@@ -109,6 +110,7 @@ void InspectorHttpConnection::processHeaders() {
       }
 
       m_connection->write(response);
+      m_connection->close();
       return;
     }
   }
