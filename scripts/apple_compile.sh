@@ -104,6 +104,7 @@ print G "$SHORTVERSION - $FULLVERSION"
 MACOS_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
+  CONFIG+=balrog
   MVPN_MACOS=1
 "
 

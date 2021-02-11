@@ -64,7 +64,7 @@ ECHO Importing languages...
 python scripts\importLanguages.py
 
 ECHO Creating the project...
-qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %PROD_FLAGS%
+qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=balrog %PROD_FLAGS%
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
