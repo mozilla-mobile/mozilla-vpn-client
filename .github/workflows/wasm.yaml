@@ -44,3 +44,27 @@ jobs:
         with:
             name: WebAssembly Build
             path: wasm
+  ghPages:
+    runs-on: ubuntu-20.04
+    needs: [wasm]
+    if: github.ref == 'refs/heads/main'  # Only do this on Main Branch Pushes and not PR's
+    name: Publish Wasm on Github Pages
+    env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.8
+        with:
+          name: WebAssembly Build
+          # Destination path
+          path: _site
+      - name: GH Pages deploy
+        uses: Cecilapp/GitHub-Pages-deploy@3.1.0
+        with:
+          # A verified email.
+          email: streich.mobile@gmail.com
+          # Where static files are.
+          build_dir: _site
+          
+
+
