@@ -44,8 +44,31 @@ VPNFlickable {
        }
     }
 
+    VPNCheckBoxRow {
+        id: unsecuredNetworkAlert
+
+        anchors.top: VPNFeatureList.captivePortalNotificationSupported ? captivePortalAlert.bottom : menu.bottom
+        anchors.topMargin: Theme.windowMargin
+        width: parent.width - Theme.windowMargin
+        visible: VPNFeatureList.unsecuredNetworkNotificationSupported
+
+        //% "Unsecured network alert"
+        labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
+        //% "Get notified if you connect to an unsecured Wi-Fi network
+        subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
+
+        isChecked: (VPNSettings.unsecuredNetworkAlert)
+        isEnabled: vpnFlickable.vpnIsOff
+        showDivider: vpnFlickable.vpnIsOff
+        onClicked: {
+            if (vpnFlickable.vpnIsOff) {
+                VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
+            }
+       }
+    }
+
     VPNCheckBoxAlert {
-        anchors.top: captivePortalAlert.bottom
+        anchors.top: VPNFeatureList.unsecuredNetworkNotificationSupported ? unsecuredNetworkAlert.bottom : captivePortalAlert.bottom
         visible: !vpnFlickable.vpnIsOff
 
         errorMessage: qsTrId("vpn.turnOffAlert.vpnMustBeOff")

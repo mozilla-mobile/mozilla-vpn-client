@@ -166,6 +166,19 @@ void SystemTrayHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
+void SystemTrayHandler::unsecuredNetworkNotification(const QString& wifiName) {
+  logger.log() << "Unsecured network notification shown";
+
+  //% "Unsecured Wi-Fi network detected"
+  QString title = qtTrId("vpn.systray.unsecuredNetwork.title");
+
+  //% "%1 is not secure. Turn on VPN to secure your device."
+  //: %1 is the Wi-Fi network name
+  QString message = qtTrId("vpn.systray.unsecuredNetwork.message");
+
+  showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
+}
+
 void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   logger.log() << "Captive portal block notification shown";
 
