@@ -217,6 +217,14 @@ production {
     RESOURCES += logo_beta.qrc
 }
 
+balrog {
+    message(Balrog enabled)
+    DEFINES += MVPN_BALROG
+
+    SOURCES += update/balrog.cpp
+    HEADERS += update/balrog.h
+}
+
 DUMMY {
     message(Dummy build)
 
@@ -450,8 +458,7 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/desktopauthenticationlistener.cpp \
-            update/balrog.cpp
+            tasks/authenticate/desktopauthenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
@@ -462,8 +469,7 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/desktopauthenticationlistener.h \
-            update/balrog.h
+            tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
             platforms/macos/macosutils.h
@@ -618,7 +624,6 @@ else:win* {
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
-        update/balrog.cpp \
         wgquickprocess.cpp
 
     HEADERS += \
@@ -637,7 +642,6 @@ else:win* {
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
-        update/balrog.h \
         wgquickprocess.h
 }
 
