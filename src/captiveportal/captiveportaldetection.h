@@ -20,6 +20,8 @@ class CaptivePortalDetection final : public QObject {
 
   void initialize();
 
+  void detectCaptivePortal();
+
  public slots:
   void stateChanged();
   void settingsChanged();
