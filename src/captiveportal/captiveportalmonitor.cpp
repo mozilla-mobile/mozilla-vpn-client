@@ -13,11 +13,10 @@ namespace {
 Logger logger(LOG_NETWORKING, "CaptivePortalMonitor");
 }
 
-CaptivePortalMonitor::CaptivePortalMonitor() {
+CaptivePortalMonitor::CaptivePortalMonitor(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(CaptivePortalMonitor);
 
-  connect(&m_timer, &QTimer::timeout, this,
-          &CaptivePortalMonitor::check);
+  connect(&m_timer, &QTimer::timeout, this, &CaptivePortalMonitor::check);
 }
 
 CaptivePortalMonitor::~CaptivePortalMonitor() {
@@ -39,10 +38,10 @@ void CaptivePortalMonitor::check() {
 
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
   connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-   logger.log() << "Captive portal detection:" << detected;
+    logger.log() << "Captive portal detection:" << detected;
 
-   if (detected || !m_timer.isActive()) {
-     return;
+    if (detected || !m_timer.isActive()) {
+      return;
     }
 
     // It seems that the captive-portal is gone. We can reactivate the VPN.

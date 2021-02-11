@@ -12,7 +12,7 @@ class CaptivePortalNotifier final : public QObject {
   Q_OBJECT
 
  public:
-  CaptivePortalNotifier();
+  explicit CaptivePortalNotifier(QObject* parent);
   ~CaptivePortalNotifier();
 
   void notifyCaptivePortalBlock();

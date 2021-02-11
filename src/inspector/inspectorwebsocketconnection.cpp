@@ -177,6 +177,30 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
+  if (parts[0].trimmed() == "force_captive_portal_check") {
+    if (parts.length() != 1) {
+      tooManyArguments(0);
+      return;
+    }
+
+    MozillaVPN::instance()->captivePortalDetection()->detectCaptivePortal();
+
+    m_connection->sendTextMessage("ok");
+    return;
+  }
+
+  if (parts[0].trimmed() == "force_captive_portal_detection") {
+    if (parts.length() != 1) {
+      tooManyArguments(0);
+      return;
+    }
+
+    MozillaVPN::instance()->captivePortalDetection()->captivePortalDetected();
+
+    m_connection->sendTextMessage("ok");
+    return;
+  }
+
   m_connection->sendTextMessage("invalid command");
 }
 

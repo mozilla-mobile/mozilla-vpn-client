@@ -12,15 +12,16 @@ namespace {
 Logger logger(LOG_NETWORKING, "CaptivePortalNotifier");
 }
 
-CaptivePortalNotifier::CaptivePortalNotifier() {
+CaptivePortalNotifier::CaptivePortalNotifier(QObject* parent)
+    : QObject(parent) {
   MVPN_COUNT_CTOR(CaptivePortalNotifier);
 
   m_notifyTimer.setSingleShot(true);
   connect(&m_notifyTimer, &QTimer::timeout, this,
           &CaptivePortalNotifier::notifyTimerExpired);
 
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::messageClicked,
-          this, &CaptivePortalNotifier::messageClicked);
+  connect(SystemTrayHandler::instance(), &QSystemTrayIcon::messageClicked, this,
+          &CaptivePortalNotifier::messageClicked);
 }
 
 CaptivePortalNotifier::~CaptivePortalNotifier() {

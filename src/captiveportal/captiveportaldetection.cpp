@@ -5,6 +5,8 @@
 #include "captiveportaldetection.h"
 #include "captiveportal.h"
 #include "captiveportaldetectionimpl.h"
+#include "captiveportalmonitor.h"
+#include "captiveportalnotifier.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -21,17 +23,6 @@ Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 
 CaptivePortalDetection::CaptivePortalDetection() {
   MVPN_COUNT_CTOR(CaptivePortalDetection);
-
-  connect(&m_captivePortalNotifier,
-          &CaptivePortalNotifier::notificationCaptivePortalBlockCompleted, this,
-          &CaptivePortalDetection::notificationCaptivePortalBlockCompleted);
-
-  connect(&m_captivePortalNotifier,
-          &CaptivePortalNotifier::notificationCaptivePortalUnblockCompleted, this,
-          &CaptivePortalDetection::notificationCaptivePortalUnblockCompleted);
-
-  connect(&m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
-          &CaptivePortalDetection::captivePortalGone);
 }
 
 CaptivePortalDetection::~CaptivePortalDetection() {
@@ -50,7 +41,7 @@ void CaptivePortalDetection::stateChanged() {
   }
 
   // Something has changed. Stopping the monitoring.
-  m_captivePortalMonitor.stop();
+  captivePortalMonitor()->stop();
 
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
       MozillaVPN::instance()->connectionHealth()->stability() ==
@@ -60,13 +51,14 @@ void CaptivePortalDetection::stateChanged() {
     return;
   }
 
-  detectCapitvePortal();
+  detectCaptivePortal();
 }
 
 void CaptivePortalDetection::detectCaptivePortal() {
   logger.log() << "Start the captive portal detection";
 
-  // This method is called by the inspector too. Let's check the status of the VPN.
+  // This method is called by the inspector too. Let's check the status of the
+  // VPN.
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
     logger.log() << "The VPN is not online. Ignore request.";
     return;
@@ -92,7 +84,7 @@ void CaptivePortalDetection::settingsChanged() {
   m_active = SettingsHolder::instance()->captivePortalAlert();
 
   if (!m_active) {
-    m_captivePortalMonitor.stop();
+    captivePortalMonitor()->stop();
     m_impl.reset();
   }
 }
@@ -106,8 +98,14 @@ void CaptivePortalDetection::detectionCompleted(bool detected) {
     return;
   }
 
+  captivePortalDetected();
+}
+
+void CaptivePortalDetection::captivePortalDetected() {
+  logger.log() << "Captive portal detected!";
+
   if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-    m_captivePortalNotifier.notifyCaptivePortalBlock();
+    captivePortalNotifier()->notifyCaptivePortalBlock();
   }
 }
 
@@ -115,7 +113,7 @@ void CaptivePortalDetection::captivePortalGone() {
   logger.log() << "Portal gone";
 
   if (MozillaVPN::instance()->controller()->state() == Controller::StateOff) {
-    m_captivePortalNotifier.notifyCaptivePortalUnblock();
+    captivePortalNotifier()->notifyCaptivePortalUnblock();
   }
 }
 
@@ -129,8 +127,7 @@ void CaptivePortalDetection::notificationCaptivePortalBlockCompleted(
   }
 
   MozillaVPN::instance()->deactivate();
-
-  m_captivePortalMonitor.start();
+  captivePortalMonitor()->start();
 }
 
 void CaptivePortalDetection::notificationCaptivePortalUnblockCompleted(
@@ -143,4 +140,33 @@ void CaptivePortalDetection::notificationCaptivePortalUnblockCompleted(
   }
 
   MozillaVPN::instance()->activate();
+}
+
+CaptivePortalMonitor* CaptivePortalDetection::captivePortalMonitor() {
+  if (!m_captivePortalMonitor) {
+    m_captivePortalMonitor = new CaptivePortalMonitor(this);
+
+    connect(m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
+            &CaptivePortalDetection::captivePortalGone);
+  }
+
+  return m_captivePortalMonitor;
+}
+
+CaptivePortalNotifier* CaptivePortalDetection::captivePortalNotifier() {
+  if (!m_captivePortalNotifier) {
+    m_captivePortalNotifier = new CaptivePortalNotifier(this);
+
+    connect(m_captivePortalNotifier,
+            &CaptivePortalNotifier::notificationCaptivePortalBlockCompleted,
+            this,
+            &CaptivePortalDetection::notificationCaptivePortalBlockCompleted);
+
+    connect(m_captivePortalNotifier,
+            &CaptivePortalNotifier::notificationCaptivePortalUnblockCompleted,
+            this,
+            &CaptivePortalDetection::notificationCaptivePortalUnblockCompleted);
+  }
+
+  return m_captivePortalNotifier;
 }
