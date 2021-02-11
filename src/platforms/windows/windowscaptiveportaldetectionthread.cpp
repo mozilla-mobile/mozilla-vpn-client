@@ -95,17 +95,17 @@ void WindowsCaptivePortalDetectionThread::startWorker(
   }
 
   QByteArray ipArray(ip.toLocal8Bit());
-  gostring_t ipGo{ipArray.constData(), ipArray.length()};
+  gostring_t ipGo{ipArray.constData(), (size_t)ipArray.length()};
 
   QByteArray hostArray(host.toLocal8Bit());
-  gostring_t hostGo{hostArray.constData(), hostArray.length()};
+  gostring_t hostGo{hostArray.constData(), (size_t)hostArray.length()};
 
   QByteArray urlArray(url.toLocal8Bit());
-  gostring_t urlGo{urlArray.constData(), hostArray.length()};
+  gostring_t urlGo{urlArray.constData(), (size_t)hostArray.length()};
 
   QByteArray expectedResutArray(expectedResult.toLocal8Bit());
   gostring_t expectedResultGo{expectedResutArray.constData(),
-                              expectedResutArray.length()};
+                              (size_t)expectedResutArray.length()};
 
   int32_t result =
       s_captivePortalDetection(ipGo, hostGo, urlGo, expectedResultGo);

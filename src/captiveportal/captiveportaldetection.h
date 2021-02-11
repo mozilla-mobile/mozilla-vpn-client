@@ -5,6 +5,7 @@
 #ifndef CAPTIVEPORTALDETECTION_H
 #define CAPTIVEPORTALDETECTION_H
 
+#include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
 
 class CaptivePortalDetectionImpl;
@@ -23,11 +24,14 @@ class CaptivePortalDetection final : public QObject {
   void stateChanged();
   void settingsChanged();
   void detectionCompleted(bool detected);
-  void notificationCompleted(bool disconnectionRequested);
+  void notificationCaptivePortalBlockCompleted(bool disconnectionRequested);
+  void notificationCaptivePortalUnblockCompleted(bool connectionRequested);
+  void captivePortalGone();
 
  private:
   bool m_active = false;
 
+  CaptivePortalMonitor m_captivePortalMonitor;
   CaptivePortalNotifier m_captivePortalNotifier;
 
   QScopedPointer<CaptivePortalDetectionImpl> m_impl;

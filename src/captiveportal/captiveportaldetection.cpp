@@ -23,8 +23,15 @@ CaptivePortalDetection::CaptivePortalDetection() {
   MVPN_COUNT_CTOR(CaptivePortalDetection);
 
   connect(&m_captivePortalNotifier,
-          &CaptivePortalNotifier::notificationCompleted, this,
-          &CaptivePortalDetection::notificationCompleted);
+          &CaptivePortalNotifier::notificationCaptivePortalBlockCompleted, this,
+          &CaptivePortalDetection::notificationCaptivePortalBlockCompleted);
+
+  connect(&m_captivePortalNotifier,
+          &CaptivePortalNotifier::notificationCaptivePortalUnblockCompleted, this,
+          &CaptivePortalDetection::notificationCaptivePortalUnblockCompleted);
+
+  connect(&m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
+          &CaptivePortalDetection::captivePortalGone);
 }
 
 CaptivePortalDetection::~CaptivePortalDetection() {
@@ -41,6 +48,9 @@ void CaptivePortalDetection::stateChanged() {
   if (!m_active) {
     return;
   }
+
+  // Something has changed. Stopping the monitoring.
+  m_captivePortalMonitor.stop();
 
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
       MozillaVPN::instance()->connectionHealth()->stability() ==
@@ -69,6 +79,11 @@ void CaptivePortalDetection::stateChanged() {
 void CaptivePortalDetection::settingsChanged() {
   logger.log() << "Settings has changed";
   m_active = SettingsHolder::instance()->captivePortalAlert();
+
+  if (!m_active) {
+    m_captivePortalMonitor.stop();
+    m_impl.reset();
+  }
 }
 
 void CaptivePortalDetection::detectionCompleted(bool detected) {
@@ -80,10 +95,20 @@ void CaptivePortalDetection::detectionCompleted(bool detected) {
     return;
   }
 
-  m_captivePortalNotifier.notify();
+  if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
+    m_captivePortalNotifier.notifyCaptivePortalBlock();
+  }
 }
 
-void CaptivePortalDetection::notificationCompleted(
+void CaptivePortalDetection::captivePortalGone() {
+  logger.log() << "Portal gone";
+
+  if (MozillaVPN::instance()->controller()->state() == Controller::StateOff) {
+    m_captivePortalNotifier.notifyCaptivePortalUnblock();
+  }
+}
+
+void CaptivePortalDetection::notificationCaptivePortalBlockCompleted(
     bool disconnectionRequested) {
   logger.log() << "User informed. The disconnection request status:"
                << disconnectionRequested;
@@ -94,5 +119,17 @@ void CaptivePortalDetection::notificationCompleted(
 
   MozillaVPN::instance()->deactivate();
 
-  // TODO: start the monitoring
+  m_captivePortalMonitor.start();
+}
+
+void CaptivePortalDetection::notificationCaptivePortalUnblockCompleted(
+    bool connectionRequested) {
+  logger.log() << "User informed. The connection request status:"
+               << connectionRequested;
+
+  if (!connectionRequested) {
+    return;
+  }
+
+  MozillaVPN::instance()->activate();
 }

@@ -22,7 +22,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   explicit SystemTrayHandler(QObject* parent);
   ~SystemTrayHandler();
 
-  void captivePortalNotificationRequired();
+  void captivePortalBlockNotificationRequired();
+  void captivePortalUnblockNotificationRequired();
 
   void retranslate();
 

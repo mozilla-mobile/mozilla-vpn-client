@@ -15,16 +15,27 @@ class CaptivePortalNotifier final : public QObject {
   CaptivePortalNotifier();
   ~CaptivePortalNotifier();
 
-  void notify();
+  void notifyCaptivePortalBlock();
+  void notifyCaptivePortalUnblock();
 
  signals:
-  void notificationCompleted(bool disconnectionRequired);
+  void notificationCaptivePortalBlockCompleted(bool disconnectionRequired);
+  void notificationCaptivePortalUnblockCompleted(bool connectionRequired);
 
  private:
   void messageClicked();
   void notifyTimerExpired();
+  void emitSignal(bool userAccepted);
 
  private:
+  enum {
+    Unset,
+    // The captive portal has been detected because it blocks the VPN.
+    Block,
+    // We are back online and we need to inform the user about it.
+    Unblock,
+  } m_type = Unset;
+
   QTimer m_notifyTimer;
 };
 
