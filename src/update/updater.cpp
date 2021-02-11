@@ -7,7 +7,7 @@
 #include "leakdetector.h"
 #include "versionapi.h"
 
-#if defined(MVPN_WINDOWS) || defined(MVPN_MACOS)
+#ifdef MVPN_BALROG
 #  include "balrog.h"
 #endif
 
@@ -17,7 +17,7 @@ Logger logger(LOG_NETWORKING, "Updater");
 
 // static
 Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
-#if defined(MVPN_WINDOWS) || defined(MVPN_MACOS)
+#ifdef MVPN_BALROG
   if (!downloadAndInstall) {
     return new Balrog(parent, false);
   }
