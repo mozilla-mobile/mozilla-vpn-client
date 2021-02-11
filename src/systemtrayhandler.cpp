@@ -166,8 +166,8 @@ void SystemTrayHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
-void SystemTrayHandler::captivePortalNotificationRequired() {
-  logger.log() << "Captive portal notification shown";
+void SystemTrayHandler::captivePortalBlockNotificationRequired() {
+  logger.log() << "Captive portal block notification shown";
 
   //% "Guest Wi-Fi portal blocked"
   QString title = qtTrId("vpn.systray.captivePortalBlock.title");
@@ -175,6 +175,19 @@ void SystemTrayHandler::captivePortalNotificationRequired() {
   //% "The guest Wi-Fi network you're connected to requires action. Click to"
   //% "turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock.message");
+
+  showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+}
+
+void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
+  logger.log() << "Captive portal unblock notification shown";
+
+  //% "Guest Wi-Fi portal detected"
+  QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
+
+  //% "The guest Wi-Fi network you're connected to may not be secure. Click to
+  //turn on VPN to secure your device."
+  QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
 
   showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }

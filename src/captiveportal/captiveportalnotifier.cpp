@@ -27,11 +27,20 @@ CaptivePortalNotifier::~CaptivePortalNotifier() {
   MVPN_COUNT_DTOR(CaptivePortalNotifier);
 }
 
-void CaptivePortalNotifier::notify() {
-  logger.log() << "Captive portal notify";
+void CaptivePortalNotifier::notifyCaptivePortalBlock() {
+  logger.log() << "Captive portal block notify";
 
+  m_type = Block;
   m_notifyTimer.start(Constants::CAPTIVE_PORTAL_ALERT_MSEC);
-  SystemTrayHandler::instance()->captivePortalNotificationRequired();
+  SystemTrayHandler::instance()->captivePortalBlockNotificationRequired();
+}
+
+void CaptivePortalNotifier::notifyCaptivePortalUnblock() {
+  logger.log() << "Captive portal unblock notify";
+
+  m_type = Unblock;
+  m_notifyTimer.start(Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  SystemTrayHandler::instance()->captivePortalUnblockNotificationRequired();
 }
 
 void CaptivePortalNotifier::messageClicked() {
@@ -43,10 +52,27 @@ void CaptivePortalNotifier::messageClicked() {
   }
 
   m_notifyTimer.stop();
-  emit notificationCompleted(true);
+  emitSignal(true /* user accepted */);
+}
+
+void CaptivePortalNotifier::emitSignal(bool userAccepted) {
+  switch (m_type) {
+    case Block:
+      m_type = Unset;
+      emit notificationCaptivePortalBlockCompleted(userAccepted);
+      break;
+
+    case Unblock:
+      m_type = Unset;
+      emit notificationCaptivePortalUnblockCompleted(userAccepted);
+      break;
+
+    default:
+      break;
+  }
 }
 
 void CaptivePortalNotifier::notifyTimerExpired() {
   logger.log() << "Notify timer expired";
-  emit notificationCompleted(false);
+  emitSignal(false /* user accepted */);
 }
