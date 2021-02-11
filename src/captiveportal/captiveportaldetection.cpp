@@ -60,7 +60,18 @@ void CaptivePortalDetection::stateChanged() {
     return;
   }
 
+  detectCapitvePortal();
+}
+
+void CaptivePortalDetection::detectCaptivePortal() {
   logger.log() << "Start the captive portal detection";
+
+  // This method is called by the inspector too. Let's check the status of the VPN.
+  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+    logger.log() << "The VPN is not online. Ignore request.";
+    return;
+  }
+
 #ifdef MVPN_WINDOWS
   m_impl.reset(new WindowsCaptivePortalDetection());
 #else
