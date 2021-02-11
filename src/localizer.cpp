@@ -124,7 +124,12 @@ QString Localizer::localizedLanguageName(const QString& code) const {
     return "English (US)";
   }
 
-  return locale.nativeLanguageName();
+  QString name = locale.nativeLanguageName();
+  if (name.isEmpty()) {
+    return languageName(code);
+  }
+
+  return name;
 }
 
 QHash<int, QByteArray> Localizer::roleNames() const {
