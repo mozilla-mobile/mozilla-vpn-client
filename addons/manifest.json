@@ -1,0 +1,49 @@
+{
+  "api_version": "0.1",
+  "addons": [
+    {
+      "id": "guide_03_adding_and_removing_devices",
+      "sha256": "793ca341c0d994303361421fefd5de3fe3b8fd97f8378f56d4cdd6e59e4550ac"
+    },
+    {
+      "id": "message_survey_28d_desktop",
+      "sha256": "d82bc4132a4cd64e5b9bded261d7f399d2753e16aeceae3ad2d0c6589b65c3cc"
+    },
+    {
+      "id": "tutorial_02_connect_on_startup",
+      "sha256": "9700899ef99820259c4614ea9ecdd38391984b5ef0f7885d0ebb23ab883bf840"
+    },
+    {
+      "id": "guide_01_how_to_vpn",
+      "sha256": "5e772e573276c9c173792285f441b4276943b6a42959b195aab26f0e5b9f92f0"
+    },
+    {
+      "id": "message_survey_staging_locale",
+      "sha256": "7944c44343b8a581ea33757671075c9d801ee417969142a560dba0a4d1bb9110"
+    },
+    {
+      "id": "message_survey_28d_mobile",
+      "sha256": "d13a532d2e5a977836583ce5d6aaf15362be9cd37e32216f9f09c0801394f324"
+    },
+    {
+      "id": "message_survey_staging_10s",
+      "sha256": "b97fb00f1858c99a71841afb09d8a92d245e3b83f7e09cb5bf723ac27daa9684"
+    },
+    {
+      "id": "tutorial_01_get_started",
+      "sha256": "5c80c6508849685dbfd52acb812ae420b8c6df3a9649f352017419014fde8af1"
+    },
+    {
+      "id": "message_survey_staging_4s",
+      "sha256": "c9e2f9a11e586a7ed538803b78a4290bcf38c4b9fe74ecde3fcf3cb1f85ea0c0"
+    },
+    {
+      "id": "guide_04_connecting_external_devices",
+      "sha256": "79b46eba3e5b1f2afb156830d188a519c553e0c437c1690c4e08df4d0e37bef0"
+    },
+    {
+      "id": "guide_02_is_my_vpn_working_correctly",
+      "sha256": "90e6671c0bb651ca1054322fc1eda2e56f49b854034a5d16ab95da562bce4c6c"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+  <title>A simple MozillaVPN log viewer</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand">MozillaVPN log viewer</a>
+      <form class="d-flex">
+        <input class="form-control me-2" type="file" id="file" />
+      </form>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <div class="card mb-3">
+          <div class="card-header">Search</div>
+          <div class="card-body">
+            <input type="text" class="form-control me-2" id="search" />
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">Date</div>
+          <div class="card-body">
+            <div class="row">
+              <label for="dateMinRange" class="col-sm-3 col-form-label">From</label>
+              <div class="col-sm-9">
+                <input class="form-control" type="range" id="dateMinRange" min="0" max="100" value="0" />
+              </div>
+            </div>
+            <div class="row" style="text-align:center"><p id="dateMinRangeLabel"></p></div>
+            <div class="row">
+              <label for="dateMaxRange" class="col-sm-3 col-form-label">To</label>
+              <div class="col-sm-9">
+                <input class="form-control" type="range" id="dateMaxRange" min="0" max="100" value="100" />
+              </div>
+            </div>
+            <div class="row" style="text-align:center"><p id="dateMaxRangeLabel"></p></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">Modules</div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Module selection">
+                <button type="button" class="btn btn-outline-secondary" id="moduleSelectAll">Select all</button>
+                <button type="button" class="btn btn-outline-secondary" id="moduleUnselectAll">Unselect all</button>
+              </div>
+            </div>
+
+            <div class="row mb-3"><div id="moduleList"></div></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">Components</div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Component selection">
+                <button type="button" class="btn btn-outline-secondary" id="componentSelectAll">Select all</button>
+                <button type="button" class="btn btn-outline-secondary" id="componentUnselectAll">Unselect all</button>
+              </div>
+            </div>
+
+            <div class="row mb-3"><div id="componentList"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-8">
+        <h4>Logs</h4>
+        <ul class="nav nav-tabs" id="contextsTabs" role="tablist"></ul>
+        <div class="tab-content" id="contextsLog"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+</body>
+</html>
