@@ -243,9 +243,8 @@ void ConnectionDataHolder::updateIpAddress() {
                 // In case the country-we're reported in does not match the
                 // connected server we may retry only once.
                 logger.log() << "Reported ip not in the right country, retry!";
-                TimerSingleShot::create(this, 3000, [this]() {
-                  updateIpAddress();
-                });
+                TimerSingleShot::create(this, 3000,
+                                        [this]() { updateIpAddress(); });
               }
               QJsonValue value = obj.value("ip");
               if (value.isString()) {
