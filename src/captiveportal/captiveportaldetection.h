@@ -5,10 +5,11 @@
 #ifndef CAPTIVEPORTALDETECTION_H
 #define CAPTIVEPORTALDETECTION_H
 
-#include "captiveportalmonitor.h"
-#include "captiveportalnotifier.h"
+#include <QObject>
 
 class CaptivePortalDetectionImpl;
+class CaptivePortalMonitor;
+class CaptivePortalNotifier;
 
 class CaptivePortalDetection final : public QObject {
   Q_OBJECT
@@ -20,7 +21,9 @@ class CaptivePortalDetection final : public QObject {
 
   void initialize();
 
+  // Methods exposed for the inspector.
   void detectCaptivePortal();
+  void captivePortalDetected();
 
  public slots:
   void stateChanged();
@@ -31,10 +34,17 @@ class CaptivePortalDetection final : public QObject {
   void captivePortalGone();
 
  private:
+  CaptivePortalMonitor* captivePortalMonitor();
+  CaptivePortalNotifier* captivePortalNotifier();
+
+ private:
   bool m_active = false;
 
-  CaptivePortalMonitor m_captivePortalMonitor;
-  CaptivePortalNotifier m_captivePortalNotifier;
+  // Don't use it directly. Use captivePortalMonitor().
+  CaptivePortalMonitor* m_captivePortalMonitor = nullptr;
+
+  // Don't use it directly. Use captivePortalNotifier().
+  CaptivePortalNotifier* m_captivePortalNotifier = nullptr;
 
   QScopedPointer<CaptivePortalDetectionImpl> m_impl;
 };

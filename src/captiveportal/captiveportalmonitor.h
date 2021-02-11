@@ -12,7 +12,7 @@ class CaptivePortalMonitor final : public QObject {
   Q_OBJECT
 
  public:
-  CaptivePortalMonitor();
+  explicit CaptivePortalMonitor(QObject* parent);
   ~CaptivePortalMonitor();
 
   void start();
@@ -21,7 +21,7 @@ class CaptivePortalMonitor final : public QObject {
  signals:
   void online();
 
-  private:
+ private:
   void check();
 
  private:

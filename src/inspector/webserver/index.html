@@ -78,6 +78,8 @@
     commands.set("click", { func: cmd_click, desc: "Simulate a click on an object" });
     commands.set("lasturl", { func: cmd_lasturl, desc: "Returns the last opened URL" });
     commands.set("triggerUpdate", { func: cmd_triggerUpdate, desc: "Triggers an update forcing a particular version" });
+    commands.set("detectCaptivePortal", { func: () => ws.send("force_captive_portal_check"), desc: "Starts the captive portal detection" });
+    commands.set("triggerCaptivePortal", { func: () => ws.send("force_captive_portal_detection"), desc: "Triggers the captive portal detection" });
 
     function parseCommand(input) {
       input = input.trim();
