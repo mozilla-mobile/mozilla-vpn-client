@@ -166,7 +166,7 @@ void SystemTrayHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
-void SystemTrayHandler::unsecuredNetworkNotification(const QString& wifiName) {
+void SystemTrayHandler::unsecuredNetworkNotification(const QString& networkName) {
   logger.log() << "Unsecured network notification shown";
 
   //% "Unsecured Wi-Fi network detected"
@@ -175,7 +175,7 @@ void SystemTrayHandler::unsecuredNetworkNotification(const QString& wifiName) {
   //% "%1 is not secure. Turn on VPN to secure your device."
   //: %1 is the Wi-Fi network name
   QString message =
-      qtTrId("vpn.systray.unsecuredNetwork.message").arg(wifiName);
+      qtTrId("vpn.systray.unsecuredNetwork.message").arg(networkName);
 
   showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
