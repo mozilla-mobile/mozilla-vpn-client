@@ -102,7 +102,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 
   auto guard = qScopeGuard([&] { WlanFreeMemory(connectionInfo); });
 
-  /*
   if (connectionInfo->wlanSecurityAttributes.dot11AuthAlgorithm !=
           DOT11_AUTH_ALGO_80211_OPEN &&
       connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
@@ -114,7 +113,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
     logger.log() << "The network is secure enought";
     return;
   }
-  */
 
   QString ssid;
   for (size_t i = 0;

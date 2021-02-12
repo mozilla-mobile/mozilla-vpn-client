@@ -286,6 +286,7 @@ else:linux:!android {
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
+            platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
@@ -296,6 +297,7 @@ else:linux:!android {
             platforms/linux/dbusclient.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
+            platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxpingsendworker.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
