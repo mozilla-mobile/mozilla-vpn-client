@@ -8,6 +8,7 @@
 #include <QElapsedTimer>
 #include <QMap>
 #include <QObject>
+#include <QTimer>
 
 class NetworkWatcherImpl;
 
@@ -26,12 +27,19 @@ class NetworkWatcher final : public QObject {
 
   void settingsChanged(bool active);
 
+  void messageClicked();
+
  private:
   bool m_active = false;
 
   NetworkWatcherImpl* m_impl = nullptr;
 
   QMap<QString, QElapsedTimer> m_networks;
+
+  QTimer m_notifyTimer;
+
+  // This is used to connect systemTrayHandler lazily.
+  bool m_firstNotification = true;
 };
 
 #endif  // NETWORKWATCHER_H
