@@ -5,6 +5,7 @@
 #include "inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 
@@ -31,6 +32,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
           &InspectorWebSocketConnection::textMessageReceived);
   connect(m_connection, &QWebSocket::binaryMessageReceived, this,
           &InspectorWebSocketConnection::binaryMessageReceived);
+
+  connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
+          &InspectorWebSocketConnection::logEntryAdded);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -215,6 +219,16 @@ QQuickItem* InspectorWebSocketConnection::findObject(const QString& name) {
   }
 
   return parent;
+}
+
+void InspectorWebSocketConnection::logEntryAdded(const QByteArray& log) {
+  // No logger here to avoid loops!
+
+  QByteArray buffer;
+  buffer.append("!");
+  buffer.append(log);
+
+  m_connection->sendTextMessage(buffer);
 }
 
 // static

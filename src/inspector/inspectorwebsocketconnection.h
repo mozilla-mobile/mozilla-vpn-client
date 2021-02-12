@@ -23,13 +23,15 @@ class InspectorWebSocketConnection final : public QObject {
   static void setLastUrl(const QUrl& url);
   static QString appVersionForUpdate();
 
- private slots:
+ private:
   void textMessageReceived(const QString& message);
   void binaryMessageReceived(const QByteArray& message);
 
   void parseCommand(const QByteArray& command);
   void tooManyArguments(int arguments);
   QQuickItem* findObject(const QString& name);
+
+  void logEntryAdded(const QByteArray& log);
 
  private:
   QWebSocket* m_connection;
