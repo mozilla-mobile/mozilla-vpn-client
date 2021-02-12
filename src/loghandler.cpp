@@ -160,11 +160,18 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
     prettyOutput(*m_output, log);
   }
 
-#if defined(MVPN_ANDROID)
+#if defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
   QByteArray buffer;
   QTextStream out(&buffer);
   prettyOutput(out, log);
 
+#  if defined(MVPN_INSPECTOR)
+  emit logEntryAdded(buffer);
+#  endif
+
+#endif  // defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
+
+#if defined(MVPN_ANDROID)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
