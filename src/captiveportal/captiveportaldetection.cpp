@@ -40,9 +40,6 @@ void CaptivePortalDetection::stateChanged() {
     return;
   }
 
-  // Something has changed. Stopping the monitoring.
-  captivePortalMonitor()->stop();
-
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
       MozillaVPN::instance()->connectionHealth()->stability() ==
           ConnectionHealth::Stable) {
@@ -56,6 +53,9 @@ void CaptivePortalDetection::stateChanged() {
 
 void CaptivePortalDetection::detectCaptivePortal() {
   logger.log() << "Start the captive portal detection";
+
+  // The monitor must be off when detecting the captive portal.
+  captivePortalMonitor()->stop();
 
   // This method is called by the inspector too. Let's check the status of the
   // VPN.
