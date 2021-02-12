@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkwatcher.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -11,7 +12,7 @@
 #include "systemtrayhandler.h"
 
 #ifdef MVPN_WINDOWS
-#include "platforms/windows/windowsnetworkwatcher.h"
+#  include "platforms/windows/windowsnetworkwatcher.h"
 #endif
 
 // How often we notify the same unsecured network
@@ -21,7 +22,11 @@ namespace {
 Logger logger(LOG_NETWORKING, "NetworkWatcher");
 }
 
-NetworkWatcher::NetworkWatcher() { MVPN_COUNT_CTOR(NetworkWatcher); }
+NetworkWatcher::NetworkWatcher() {
+  MVPN_COUNT_CTOR(NetworkWatcher);
+
+  m_notifyTimer.setSingleShot(true);
+}
 
 NetworkWatcher::~NetworkWatcher() { MVPN_COUNT_DTOR(NetworkWatcher); }
 
@@ -82,7 +87,8 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   }
 
   Controller::State state = MozillaVPN::instance()->controller()->state();
-  if (state == Controller::StateOn || state == Controller::StateConnecting || state == Controller::StateSwitching) {
+  if (state == Controller::StateOn || state == Controller::StateConnecting ||
+      state == Controller::StateSwitching) {
     logger.log() << "VPN on. Ignore unsecured network";
     return;
   }
@@ -95,5 +101,23 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
 
   m_networks[networkId].start();
 
+  if (m_firstNotification) {
+    connect(SystemTrayHandler::instance(), &QSystemTrayIcon::messageClicked,
+            this, &NetworkWatcher::messageClicked);
+    m_firstNotification = false;
+  }
+
+  m_notifyTimer.start(Constants::UNSECURED_NETWORK_ALERT_MSEC);
   SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
+}
+
+void NetworkWatcher::messageClicked() {
+  logger.log() << "Message clicked";
+
+  if (!m_notifyTimer.isActive()) {
+    logger.log() << "The message is not for us. Let's ignore it.";
+    return;
+  }
+
+  MozillaVPN::instance()->activate();
 }
