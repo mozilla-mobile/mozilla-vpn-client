@@ -54,7 +54,7 @@ VPNFlickable {
 
         //% "Unsecured network alert"
         labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
-        //% "Get notified if you connect to an unsecured Wi-Fi network
+        //% "Get notified if you connect to an unsecured Wi-Fi network"
         subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
 
         isChecked: (VPNSettings.unsecuredNetworkAlert)

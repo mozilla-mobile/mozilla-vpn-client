@@ -40,7 +40,8 @@ class SettingsHolder final : public QObject {
 
   GETSET(bool, hasIpv6Enabled, ipv6Enabled, setIpv6Enabled)
   GETSET(bool, hasLocalNetworkAccess, localNetworkAccess, setLocalNetworkAccess)
-  GETSET(bool, hasUnsecuredNetworkAlert, unsecuredNetworkAlert, setUnsecuredNetworkAlert)
+  GETSET(bool, hasUnsecuredNetworkAlert, unsecuredNetworkAlert,
+         setUnsecuredNetworkAlert)
   GETSET(bool, hasCaptivePortalAlert, captivePortalAlert, setCaptivePortalAlert)
   GETSET(bool, hasStartAtBoot, startAtBoot, setStartAtBoot)
   GETSET(QString, hasLanguageCode, languageCode, setLanguageCode)

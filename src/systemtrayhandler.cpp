@@ -174,7 +174,8 @@ void SystemTrayHandler::unsecuredNetworkNotification(const QString& wifiName) {
 
   //% "%1 is not secure. Turn on VPN to secure your device."
   //: %1 is the Wi-Fi network name
-  QString message = qtTrId("vpn.systray.unsecuredNetwork.message");
+  QString message =
+      qtTrId("vpn.systray.unsecuredNetwork.message").arg(wifiName);
 
   showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
