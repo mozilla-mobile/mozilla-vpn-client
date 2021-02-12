@@ -4,6 +4,10 @@
 
 #include "featurelist.h"
 
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androidutils.h"
+#endif
+
 namespace {
 FeatureList s_featureList;
 }
