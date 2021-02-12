@@ -192,6 +192,7 @@ void MozillaVPN::initialize() {
   Q_ASSERT(settingsHolder);
 
   m_private->m_captivePortalDetection.initialize();
+  m_private->m_networkWatcher.initialize();
 
   if (!settingsHolder->hasToken()) {
     return;

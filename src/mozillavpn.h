@@ -18,6 +18,7 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/user.h"
+#include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
 
@@ -279,6 +280,7 @@ class MozillaVPN final : public QObject {
     DeviceModel m_deviceModel;
     Keys m_keys;
     HelpModel m_helpModel;
+    NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;

@@ -82,6 +82,7 @@ SOURCES += \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
+        networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
@@ -159,6 +160,8 @@ HEADERS += \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
+        networkwatcher.h \
+        networkwatcherimpl.h \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
@@ -635,6 +638,7 @@ else:win* {
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
+        platforms/windows/windowsnetworkwatcher.cpp \
         platforms/windows/windowspingsendworker.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
@@ -655,6 +659,7 @@ else:win* {
         platforms/windows/windowscaptiveportaldetectionthread.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
+        platforms/windows/windowsnetworkwatcher.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
