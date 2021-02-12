@@ -15,6 +15,10 @@
 #  include "platforms/windows/windowsnetworkwatcher.h"
 #endif
 
+#ifdef MVPN_LINUX
+#  include "platforms/linux/linuxnetworkwatcher.h"
+#endif
+
 // How often we notify the same unsecured network
 constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
 
@@ -33,8 +37,10 @@ NetworkWatcher::~NetworkWatcher() { MVPN_COUNT_DTOR(NetworkWatcher); }
 void NetworkWatcher::initialize() {
   logger.log() << "Initialize";
 
-#ifdef MVPN_WINDOWS
+#if defined(MVPN_WINDOWS)
   m_impl = new WindowsNetworkWatcher(this);
+#elif defined(MVPN_LINUX)
+  m_impl = new LinuxNetworkWatcher(this);
 #else
   logger.log()
       << "No NetworkWatcher implementation for the current platform (yet)";

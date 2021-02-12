@@ -54,6 +54,11 @@ void CaptivePortalDetection::stateChanged() {
 void CaptivePortalDetection::detectCaptivePortal() {
   logger.log() << "Start the captive portal detection";
 
+  // Quick return in case this method is called by the inspector.
+ if (!m_active) {
+	 return;
+ }
+
   // The monitor must be off when detecting the captive portal.
   captivePortalMonitor()->stop();
 
