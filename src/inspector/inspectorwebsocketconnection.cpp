@@ -70,7 +70,9 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
   QList<QByteArray> parts = command.split(' ');
   Q_ASSERT(!parts.isEmpty());
 
-  if (parts[0].trimmed() == "reset") {
+  QString cmd = parts[0].trimmed();
+
+  if (cmd == "reset") {
     if (parts.length() != 1) {
       tooManyArguments(0);
       return;
@@ -81,7 +83,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "quit") {
+  if (cmd == "quit") {
     if (parts.length() != 1) {
       tooManyArguments(0);
       return;
@@ -92,7 +94,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "has") {
+  if (cmd == "has") {
     if (parts.length() != 2) {
       tooManyArguments(1);
       return;
@@ -108,7 +110,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "property") {
+  if (cmd == "property") {
     if (parts.length() != 3) {
       tooManyArguments(2);
       return;
@@ -131,7 +133,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "click") {
+  if (cmd == "click") {
     if (parts.length() != 2) {
       tooManyArguments(1);
       return;
@@ -153,7 +155,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "lasturl") {
+  if (cmd == "lasturl") {
     if (parts.length() != 1) {
       tooManyArguments(0);
       return;
@@ -164,7 +166,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "force_update_check") {
+  if (cmd == "force_update_check") {
     if (parts.length() != 2) {
       tooManyArguments(1);
       return;
@@ -177,7 +179,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "force_captive_portal_check") {
+  if (cmd == "force_captive_portal_check") {
     if (parts.length() != 1) {
       tooManyArguments(0);
       return;
@@ -189,7 +191,7 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
     return;
   }
 
-  if (parts[0].trimmed() == "force_captive_portal_detection") {
+  if (cmd == "force_captive_portal_detection") {
     if (parts.length() != 1) {
       tooManyArguments(0);
       return;
@@ -197,6 +199,18 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
 
     MozillaVPN::instance()->captivePortalDetection()->captivePortalDetected();
 
+    m_connection->sendTextMessage("ok");
+    return;
+  }
+
+  if (cmd == "force_unsecured_network") {
+    if (parts.length() != 1) {
+      tooManyArguments(0);
+      return;
+    }
+
+    MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
+                                                               "Dummy");
     m_connection->sendTextMessage("ok");
     return;
   }

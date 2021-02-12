@@ -20,6 +20,9 @@
         <div id="gradient-border" class="gradient"></div>
         <input type="text" id="input" placeholder="Enter command" />
       </div>
+      <div class="controller">
+        <div id="log"></div>
+      </div>
     </main>
 
     <footer class="websocket-footer">
@@ -36,6 +39,7 @@
     let ws;
 
     const content = document.getElementById("content");
+    const log = document.getElementById("log");
     const input = document.getElementById("input");
     input.focus();
     input.addEventListener("keydown", event => {
@@ -53,6 +57,14 @@
       content.scroll(0, (content.scrollHeight - boundingRect.height));
     }
 
+    function tl(msg) {
+      const p = document.createElement("p");
+      p.innerText = msg;
+      log.appendChild(p);
+      const boundingRect = content.getBoundingClientRect();
+      content.scroll(0, (content.scrollHeight - boundingRect.height));
+    }
+
     function command(e) {
       console.log(e);
     }
@@ -65,7 +77,7 @@
         ws.onopen = () => { t("Connected!"); resolve(); }
         ws.onerror = () => { t("Connection failed"); }
         ws.onclose = () => { t("Disconnected"); }
-        ws.onmessage = data => { t(data.data); }
+        ws.onmessage = data => { if (data.data[0] == "!") tl(data.data); else t(data.data); }
       });
     }
 
@@ -80,6 +92,7 @@
     commands.set("triggerUpdate", { func: cmd_triggerUpdate, desc: "Triggers an update forcing a particular version" });
     commands.set("detectCaptivePortal", { func: () => ws.send("force_captive_portal_check"), desc: "Starts the captive portal detection" });
     commands.set("triggerCaptivePortal", { func: () => ws.send("force_captive_portal_detection"), desc: "Triggers the captive portal detection" });
+    commands.set("triggerUnsecuredNetwork", { func: () => ws.send("force_unsecured_network"), desc: "Triggers the unsecured network detection" });
 
     function parseCommand(input) {
       input = input.trim();
