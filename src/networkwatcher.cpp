@@ -87,6 +87,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
                                       const QString& networkId) {
   logger.log() << "Unsecured network:" << networkName << "id:" << networkId;
 
+#ifndef UNIT_TEST
   if (!m_active) {
     logger.log() << "Disabled. Ignoring unsecured network";
     return;
@@ -120,6 +121,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
 
   m_notifyTimer.start(Constants::UNSECURED_NETWORK_ALERT_MSEC);
   SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
+#endif
 }
 
 void NetworkWatcher::messageClicked() {

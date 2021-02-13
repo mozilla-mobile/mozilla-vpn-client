@@ -166,7 +166,8 @@ void SystemTrayHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
-void SystemTrayHandler::unsecuredNetworkNotification(const QString& networkName) {
+void SystemTrayHandler::unsecuredNetworkNotification(
+    const QString& networkName) {
   logger.log() << "Unsecured network notification shown";
 
   //% "Unsecured Wi-Fi network detected"

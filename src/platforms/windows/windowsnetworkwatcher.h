@@ -17,7 +17,7 @@ class WindowsNetworkWatcher final : public NetworkWatcherImpl {
 
   void initialize() override;
 
-  private:
+ private:
   static void wlanCallback(PWLAN_NOTIFICATION_DATA data, PVOID context);
 
   void processWlan(PWLAN_NOTIFICATION_DATA data);
