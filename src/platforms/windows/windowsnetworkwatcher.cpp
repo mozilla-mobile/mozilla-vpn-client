@@ -108,8 +108,9 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
   for (size_t i = 0;
        i < connectionInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength;
        ++i) {
-    ssid.append(
-        QString::asprintf("%c",(char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
+    ssid.append(QString::asprintf(
+        "%c",
+        (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
   }
 
   QString bssid;
