@@ -88,25 +88,30 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   logger.log() << "Unsecured network:" << networkName << "id:" << networkId;
 
   if (!m_active) {
-    logger.log() << "Disabled. Ignore unsecured network";
+    logger.log() << "Disabled. Ignoring unsecured network";
     return;
   }
 
   Controller::State state = MozillaVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
-    logger.log() << "VPN on. Ignore unsecured network";
+    logger.log() << "VPN on. Ignoring unsecured network";
     return;
   }
 
   if (!m_networks.contains(networkId)) {
     m_networks.insert(networkId, QElapsedTimer());
   } else if (!m_networks[networkId].hasExpired(NETWORK_WATCHER_TIMER_MSEC)) {
+    logger.log() << "Notification already shown. Ignoring unsecured network";
     return;
   }
 
+  // Let's activate the QElapsedTimer to avoid notification loops.
   m_networks[networkId].start();
 
+  // We don't connect the system tray handler in the CTOR because it can be too
+  // early. Maybe the SystemTrayHandler has not been created yet. We do it at
+  // the first detection of an unsecured network.
   if (m_firstNotification) {
     connect(SystemTrayHandler::instance(), &QSystemTrayIcon::messageClicked,
             this, &NetworkWatcher::messageClicked);

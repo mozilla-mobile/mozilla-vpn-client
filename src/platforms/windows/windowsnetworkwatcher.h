@@ -17,18 +17,15 @@ class WindowsNetworkWatcher final : public NetworkWatcherImpl {
 
   void initialize() override;
 
-  void start() override;
-  void stop() override;
-
   private:
   static void wlanCallback(PWLAN_NOTIFICATION_DATA data, PVOID context);
 
   void processWlan(PWLAN_NOTIFICATION_DATA data);
 
  private:
+  // The handle is set during the initialization. Windows calls processWlan()
+  // to inform about network changes.
   HANDLE m_wlanHandle = nullptr;
-
-  bool m_active = false;
 };
 
 #endif  // WINDOWSNETWORKWATCHER_H

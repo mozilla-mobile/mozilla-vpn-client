@@ -12,6 +12,7 @@
 
 class NetworkWatcherImpl;
 
+// This class watches for network changes to detect unsecured wifi.
 class NetworkWatcher final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(NetworkWatcher)
@@ -33,6 +34,7 @@ class NetworkWatcher final : public QObject {
  private:
   bool m_active = false;
 
+  // Platform-specific implementation.
   NetworkWatcherImpl* m_impl = nullptr;
 
   QMap<QString, QElapsedTimer> m_networks;
