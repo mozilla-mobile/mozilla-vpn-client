@@ -7,9 +7,25 @@
 #include "logger.h"
 #include "timersingleshot.h"
 
-#include <QMap>
-#include <QVariant>
 #include <QtDBus/QtDBus>
+
+// https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NMDeviceType
+#ifndef NM_DEVICE_TYPE_WIFI
+#  define NM_DEVICE_TYPE_WIFI 2
+#endif
+
+// https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NM80211ApFlags
+#ifndef NM_802_11_AP_SEC_NONE
+#  define NM_802_11_AP_SEC_NONE 0x00000000
+#endif
+
+#ifndef NM_802_11_AP_SEC_PAIR_WEP40
+#  define NM_802_11_AP_SEC_PAIR_WEP40 0x00000001
+#endif
+
+#ifndef NM_802_11_AP_SEC_PAIR_WEP104
+#  define NM_802_11_AP_SEC_PAIR_WEP104 0x00000001
+#endif
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcher");
@@ -24,18 +40,21 @@ LinuxNetworkWatcher::~LinuxNetworkWatcher() {
   MVPN_COUNT_DTOR(LinuxNetworkWatcher);
 }
 
-void LinuxNetworkWatcher::initialize() { logger.log() << "initialize"; }
+void LinuxNetworkWatcher::initialize() {
+  logger.log() << "initialize";
 
-void LinuxNetworkWatcher::start() {
-  logger.log() << "actived";
-  m_active = true;
-
+  // Let's wait a few seconds to allow the UI to be fully loaded and shown.
+  // This is not strickly needed, but it's better from a user-experience.
   TimerSingleShot::create(this, 2000, [this]() {
+    logger.log()
+        << "Retrieving the list of wifi network devices from NetworkManager";
+
     QDBusInterface nm(
         "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
         "org.freedesktop.NetworkManager", QDBusConnection::systemBus());
     if (!nm.isValid()) {
-      logger.log() << "Failed to connect to system bus";
+      logger.log()
+          << "Failed to connect to the network manager via system dbus";
       return;
     }
 
@@ -52,33 +71,34 @@ void LinuxNetworkWatcher::start() {
       QDBusInterface device("org.freedesktop.NetworkManager", devicePath,
                             "org.freedesktop.NetworkManager.Device",
                             QDBusConnection::systemBus());
-      // 2 is WiFi dev, see
-      // https://people.freedesktop.org/~lkundrak/nm-docs/nm-dbus-types.html#NMDeviceType
-      if (device.property("DeviceType").toInt() != 2) {
+      if (device.property("DeviceType").toInt() != NM_DEVICE_TYPE_WIFI) {
         continue;
       }
 
-      // we got a wifi device, let's get an according dbus interface
-      QDBusInterface wifiDevice(
-          "org.freedesktop.NetworkManager", devicePath,
-          "org.freedesktop.NetworkManager.Device.Wireless",
-          QDBusConnection::systemBus());
+      logger.log() << "Found a wifi device:" << devicePath;
+      m_devicePaths.append(devicePath);
 
-      wifiDevice.connection().connect(
+      // Here we monitor the changes.
+      QDBusConnection::systemBus().connect(
           "org.freedesktop.NetworkManager", devicePath,
           "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
           SLOT(propertyChanged(QString, QVariantMap, QStringList)));
-
-      m_devicePaths.append(devicePath);
     }
-  });
 
-  checkDevices();
+    if (m_devicePaths.isEmpty()) {
+      logger.log() << "No wifi devices found";
+      return;
+    }
+
+    // We could be already be activated.
+    checkDevices();
+  });
 }
 
-void LinuxNetworkWatcher::stop() {
-  logger.log() << "deactived";
-  m_active = false;
+void LinuxNetworkWatcher::start() {
+  logger.log() << "actived";
+  NetworkWatcherImpl::start();
+  checkDevices();
 }
 
 void LinuxNetworkWatcher::propertyChanged(QString interface,
@@ -88,13 +108,13 @@ void LinuxNetworkWatcher::propertyChanged(QString interface,
 
   logger.log() << "Properties changed for interface" << interface;
 
-  if (!m_active) {
-    logger.log() << "Not active";
+  if (!isActive()) {
+    logger.log() << "Not active. Ignoring the changes";
     return;
   }
 
   if (!properties.contains("ActiveAccessPoint")) {
-    logger.log() << "Access point did not changed";
+    logger.log() << "Access point did not changed. Ignoring the changes";
     return;
   }
 
@@ -103,6 +123,11 @@ void LinuxNetworkWatcher::propertyChanged(QString interface,
 
 void LinuxNetworkWatcher::checkDevices() {
   logger.log() << "Checking devices";
+
+  if (!isActive()) {
+    logger.log() << "Not active";
+    return;
+  }
 
   for (const QString& devicePath : m_devicePaths) {
     QDBusInterface wifiDevice("org.freedesktop.NetworkManager", devicePath,
@@ -114,7 +139,7 @@ void LinuxNetworkWatcher::checkDevices() {
                                   .value<QDBusObjectPath>()
                                   .path();
     if (accessPointPath.isEmpty()) {
-      logger.log() << "No access point";
+      logger.log() << "No access point found";
       continue;
     }
 
@@ -122,20 +147,7 @@ void LinuxNetworkWatcher::checkDevices() {
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
-    // https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NM80211ApFlags
     int securityFlags = ap.property("WpaFlags").toInt();
-
-#ifndef NM_802_11_AP_SEC_NONE
-#  define NM_802_11_AP_SEC_NONE 0x00000000
-#endif
-
-#ifndef NM_802_11_AP_SEC_PAIR_WEP40
-#  define NM_802_11_AP_SEC_PAIR_WEP40 0x00000001
-#endif
-
-#ifndef NM_802_11_AP_SEC_PAIR_WEP104
-#  define NM_802_11_AP_SEC_PAIR_WEP104 0x00000001
-#endif
 
     if (securityFlags == NM_802_11_AP_SEC_NONE ||
         (securityFlags & NM_802_11_AP_SEC_PAIR_WEP40 ||
@@ -143,7 +155,10 @@ void LinuxNetworkWatcher::checkDevices() {
       QString ssid = ap.property("Ssid").toString();
       QString bssid = ap.property("HwAddress").toString();
 
+      // We have found 1 unsecured network. We don't need to check other wifi
+      // network devices.
       emit unsecuredNetwork(ssid, bssid);
+      break;
     }
   }
 }

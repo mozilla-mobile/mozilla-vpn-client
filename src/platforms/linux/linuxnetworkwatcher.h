@@ -20,18 +20,17 @@ class LinuxNetworkWatcher final : public NetworkWatcherImpl {
   void initialize() override;
 
   void start() override;
-  void stop() override;
 
  private slots:
   void propertyChanged(QString interface, QVariantMap properties,
                        QStringList list);
 
   void checkDevices();
-  ;
 
  private:
-  bool m_active = false;
-
+  // We collect the list of DBus wifi network device paths during the
+  // initialization. When a property of them changes, we check if the access
+  // point is active and unsecure.
   QStringList m_devicePaths;
 };
 

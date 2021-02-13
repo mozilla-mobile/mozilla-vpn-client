@@ -46,17 +46,7 @@ void WindowsNetworkWatcher::initialize() {
     return;
   }
 
-  logger.log() << "all good";
-}
-
-void WindowsNetworkWatcher::start() {
-  logger.log() << "actived";
-  m_active = true;
-}
-
-void WindowsNetworkWatcher::stop() {
-  logger.log() << "deactived";
-  m_active = false;
+  logger.log() << "callback registered";
 }
 
 // static
@@ -73,7 +63,7 @@ void WindowsNetworkWatcher::wlanCallback(PWLAN_NOTIFICATION_DATA data,
 void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
   logger.log() << "Processing wlan data";
 
-  if (!m_active) {
+  if (!isActive()) {
     logger.log() << "The watcher is off";
     return;
   }

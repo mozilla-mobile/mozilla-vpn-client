@@ -18,11 +18,16 @@ class NetworkWatcherImpl : public QObject {
 
   virtual void initialize() = 0;
 
-  virtual void start() = 0;
-  virtual void stop() = 0;
+  virtual void start() { m_active = true; }
+  virtual void stop() { m_active = false; }
+
+  bool isActive() const { return m_active; }
 
  signals:
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
+
+ private:
+  bool m_active = false;
 };
 
 #endif  // NETWORKWATCHERIMPL_H
