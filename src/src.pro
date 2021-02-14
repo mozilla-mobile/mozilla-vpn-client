@@ -468,6 +468,7 @@ else:macos {
     # For the loginitem
     LIBS += -framework ServiceManagement
     LIBS += -framework Security
+    LIBS += -framework CoreWLAN
 
     DEFINES += MVPN_MACOS
 
@@ -480,6 +481,7 @@ else:macos {
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
+            platforms/macos/macosnetworkwatcher.mm \
             platforms/macos/macosutils.mm
 
     HEADERS += \
@@ -490,6 +492,7 @@ else:macos {
             tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
+            platforms/macos/macosnetworkwatcher.h \
             platforms/macos/macosutils.h
 
     isEmpty(MVPN_MACOS) {
