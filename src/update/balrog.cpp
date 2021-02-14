@@ -228,6 +228,8 @@ bool Balrog::checkSignature(const QByteArray& signature,
 
   // TODO: do we care about OID extensions?
 
+  // Qt5.15 doesn't implement the certificate validation (yet?)
+#ifndef MVPN_MACOS
   QList<QSslError> errors = QSslCertificate::verify(list);
   for (const QSslError& error : errors) {
     if (error.error() != QSslError::SelfSignedCertificateInChain) {
@@ -235,6 +237,7 @@ bool Balrog::checkSignature(const QByteArray& signature,
       return false;
     }
   }
+#endif
 
   logger.log() << "Validating root certificate";
   const QSslCertificate& rootCert = list.constLast();
