@@ -14,15 +14,12 @@ Logger logger(LOG_NETWORKING, "IPAddress");
 
 static quint32 s_allOnes = static_cast<quint32>(qPow(2, 32) - 1);
 
-static QHostAddress prefixLengthToAddress(int prefixLength) {
-  Q_ASSERT(prefixLength >= 0 && prefixLength <= 32);
-  return QHostAddress(s_allOnes ^ (s_allOnes >> prefixLength));
-}
-
 // static
 IPAddress IPAddress::create(const QString& ip) {
   if (ip.contains("/")) {
     QPair<QHostAddress, int> p = QHostAddress::parseSubnet(ip);
+    Q_ASSERT(p.first.protocol() == QAbstractSocket::IPv4Protocol);
+
     if (p.second < 32) {
       return IPAddress(p.first, p.second);
     }
@@ -59,13 +56,17 @@ IPAddress::IPAddress(const QHostAddress& address)
       m_hostmask(QHostAddress((quint32)(0))),
       m_broadcastAddress(address) {
   MVPN_COUNT_CTOR(IPAddress);
+  Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
 }
 
 IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
     : m_address(address), m_prefixLength(prefixLength) {
   MVPN_COUNT_CTOR(IPAddress);
+  Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
 
-  m_netmask = prefixLengthToAddress(prefixLength);
+  Q_ASSERT(prefixLength >= 0 && prefixLength <= 32);
+  m_netmask = QHostAddress(s_allOnes ^ (s_allOnes >> prefixLength));
+
   m_hostmask = QHostAddress(m_netmask.toIPv4Address() ^ s_allOnes);
   m_broadcastAddress =
       QHostAddress(address.toIPv4Address() | m_hostmask.toIPv4Address());
@@ -116,6 +117,29 @@ QList<IPAddress> IPAddress::subnets() const {
   }
 
   return list;
+}
+
+// static
+QList<IPAddress> IPAddress::excludes(const QList<IPAddress>& sourceList,
+                                     const QList<IPAddress>& excludeList) {
+  QList<IPAddress> results = sourceList;
+
+  for (const IPAddress& exclude : excludeList) {
+    QList<IPAddress> newResults;
+
+    for (const IPAddress& ip : results) {
+      if (ip.overlaps(exclude)) {
+        QList<IPAddress> range = ip.excludes(exclude);
+        newResults.append(range);
+      } else {
+        newResults.append(ip);
+      }
+    }
+
+    results = newResults;
+  }
+
+  return results;
 }
 
 QList<IPAddress> IPAddress::excludes(const IPAddress& ip) const {

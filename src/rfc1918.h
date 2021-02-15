@@ -5,14 +5,13 @@
 #ifndef RFC1918_H
 #define RFC1918_H
 
-#include "ipaddressrange.h"
+#include "ipaddress.h"
 
 #include <QList>
 
 class RFC1918 final {
  public:
-  static QList<IPAddressRange> ipv4();
-  static QList<IPAddressRange> ipv6();
+  static QList<IPAddress> ipv4();
 };
 
 #endif  // RFC1918_H

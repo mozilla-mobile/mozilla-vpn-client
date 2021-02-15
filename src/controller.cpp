@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportal.h"
 #include "captiveportal/captiveportalactivator.h"
 #include "controllerimpl.h"
+#include "ipaddress.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -525,38 +526,46 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const Server& server) {
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
-  QList<IPAddressRange> list;
-#if 0
-    if (SettingsHolder::instance()->captivePortalAlert()) {
-        CaptivePortal *captivePortal = MozillaVPN::instance()->captivePortal();
-        const QStringList &captivePortalIpv4Addresses = captivePortal->ipv4Addresses();
-        for (const QString &address : captivePortalIpv4Addresses) {
-            list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
-        }
+  // catch all-range.
+  QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
 
-        if (ipv6Enabled) {
-            const QStringList &captivePortalIpv6Addresses = captivePortal->ipv6Addresses();
-            for (const QString &address : captivePortalIpv6Addresses) {
-                list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
-            }
-        }
+  // filtering out the captive portal endpoint
+  if (SettingsHolder::instance()->captivePortalAlert()) {
+    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
+    const QStringList& captivePortalIpv4Addresses =
+        captivePortal->ipv4Addresses();
+
+    QList<IPAddress> excludeList;
+    for (const QString& address : captivePortalIpv4Addresses) {
+      excludeList.append(IPAddress::create(address));
     }
-#endif
 
+    // IPv6 is not supported by IPAddress yet.
+
+    allowedIPv4s = IPAddress::excludes(allowedIPv4s, excludeList);
+  }
+
+  QList<IPAddressRange> list;
+
+  // filtering out the RFC1918 local area network
   if (MozillaVPN::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     // In case of lan enabled, whitelist all non LAN ip's
-    list.append(RFC1918::ipv4());
+    allowedIPv4s = IPAddress::excludes(allowedIPv4s, RFC1918::ipv4());
+
+    list = IPAddressRange::fromIPAddressList(allowedIPv4s);
+
     if (ipv6Enabled) {
       list.append(RFC4193::ipv6());
     }
-    // Whitelist the servers gateway -
+
+    // Allow the servers gateway -
     // otherwise we can't ping it for connectionhealth
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
 
   } else {
     // Add catchall-range in case LAN is disabled
-    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+    list = IPAddressRange::fromIPAddressList(allowedIPv4s);
     if (ipv6Enabled) {
       list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     }
