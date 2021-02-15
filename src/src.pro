@@ -59,6 +59,7 @@ SOURCES += \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        ipaddress.cpp \
         ipaddressrange.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -133,6 +134,7 @@ HEADERS += \
         curve25519.h \
         errorhandler.h \
         fontloader.h \
+        ipaddress.h \
         ipaddressrange.h \
         leakdetector.h \
         localizer.h \
