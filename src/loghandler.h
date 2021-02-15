@@ -13,7 +13,9 @@ class QFile;
 class QMutexLocker;
 class QTextStream;
 
-class LogHandler final {
+class LogHandler final : public QObject {
+  Q_OBJECT
+
  public:
   struct Log {
     Log() = default;
@@ -61,6 +63,9 @@ class LogHandler final {
   static void writeLogs(QTextStream& out);
 
   static void cleanupLogs();
+
+ signals:
+  void logEntryAdded(const QByteArray& log);
 
  private:
   LogHandler(const QStringList& modules, const QMutexLocker& proofOfLock);

@@ -132,10 +132,14 @@ else
 fi
 
 PRODMODE=
+INSPECTOR=
 printn Y "Production mode: "
 if [[ "$PROD" ]]; then
   print G yes
   PRODMODE="CONFIG+=production"
+elif [ "$OS" = "macos" ]; then
+  print G "no (inspector enabled)"
+  INSPECTOR="CONFIG+=inspector"
 else
   print G no
 fi
@@ -155,6 +159,7 @@ $QMAKE \
   -spec macx-xcode \
   $MODE \
   $PRODMODE \
+  $INSPECTOR \
   $VPNMODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"
