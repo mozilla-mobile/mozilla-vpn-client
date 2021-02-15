@@ -186,15 +186,21 @@ inspector {
     QT.testlib.CONFIG -= console
     CONFIG += no_testcase_installs
 
+    RESOURCES += inspector/inspector.qrc
+
     DEFINES += MVPN_INSPECTOR
 
     SOURCES += \
-            inspector/inspectorconnection.cpp \
-            inspector/inspectorserver.cpp
+            inspector/inspectorhttpconnection.cpp \
+            inspector/inspectorhttpserver.cpp \
+            inspector/inspectorwebsocketconnection.cpp \
+            inspector/inspectorwebsocketserver.cpp
 
     HEADERS += \
-            inspector/inspectorconnection.h \
-            inspector/inspectorserver.h
+            inspector/inspectorhttpconnection.h \
+            inspector/inspectorhttpserver.h \
+            inspector/inspectorwebsocketconnection.h \
+            inspector/inspectorwebsocketserver.h
 }
 
 # Signal handling for unix platforms

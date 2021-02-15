@@ -5,7 +5,7 @@
 #include "balrog.h"
 #include "constants.h"
 #include "errorhandler.h"
-#include "inspector/inspectorconnection.h"
+#include "inspector/inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -71,7 +71,7 @@ void balrogLogger(int level, const char* msg) {
 
 QString appVersion() {
 #ifdef MVPN_INSPECTOR
-  return InspectorConnection::appVersionForUpdate();
+  return InspectorWebSocketConnection::appVersionForUpdate();
 #else
   return APP_VERSION;
 #endif

@@ -36,7 +36,8 @@
 #endif
 
 #ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorserver.h"
+#  include "inspector/inspectorhttpserver.h"
+#  include "inspector/inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -395,9 +396,13 @@ int CommandUI::run(QStringList& tokens) {
     });
 
 #ifdef MVPN_INSPECTOR
-    InspectorServer inspectServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
-                     &InspectorServer::close);
+    InspectorHttpServer inspectHttpServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectHttpServer, &InspectorHttpServer::close);
+
+    InspectorWebSocketServer inspectWebSocketServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectWebSocketServer, &InspectorWebSocketServer::close);
 #endif
 
 #ifdef MVPN_WASM

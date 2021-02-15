@@ -7,7 +7,7 @@
 #include "logger.h"
 
 #ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorconnection.h"
+#  include "inspector/inspectorwebsocketconnection.h"
 #endif
 
 #include <limits>
@@ -92,6 +92,6 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   QDesktopServices::openUrl(url.toString());
 
 #ifdef MVPN_INSPECTOR
-  InspectorConnection::setLastUrl(url);
+  InspectorWebSocketConnection::setLastUrl(url);
 #endif
 }
