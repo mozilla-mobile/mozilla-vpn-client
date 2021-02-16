@@ -689,6 +689,7 @@ else:wasm {
             platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
             platforms/wasm/wasmnetworkrequest.cpp \
+            platforms/wasm/wasmnetworkwatcher.cpp \
             platforms/wasm/wasmnotificationhandler.cpp \
             platforms/wasm/wasmwindowcontroller.cpp
 
@@ -697,6 +698,7 @@ else:wasm {
             platforms/dummy/dummypingsendworker.h \
             platforms/macos/macosmenubar.h \
             platforms/wasm/wasmauthenticationlistener.h \
+            platforms/wasm/wasmnetworkwatcher.h \
             platforms/wasm/wasmnotificationhandler.h \
             platforms/wasm/wasmwindowcontroller.h \
             systemtraynotificationhandler.h

@@ -178,6 +178,7 @@ void SystemTrayHandler::unsecuredNetworkNotification(
   QString message =
       qtTrId("vpn.systray.unsecuredNetwork.message").arg(networkName);
 
+  emit messageShown(title, message);
   showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
@@ -191,6 +192,7 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   //% "turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock.message");
 
+  emit messageShown(title, message);
   showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
@@ -204,6 +206,7 @@ void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   //% "turn on VPN to secure your device."
   QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
 
+  emit messageShown(title, message);
   showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 

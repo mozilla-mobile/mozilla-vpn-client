@@ -29,6 +29,9 @@ class SystemTrayHandler final : public QSystemTrayIcon {
 
   void retranslate();
 
+ signals:
+  void messageShown(const QString& title, const QString& message);
+
  public slots:
   void updateIcon(const QString& icon);
 
