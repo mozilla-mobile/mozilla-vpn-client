@@ -117,7 +117,9 @@ void CaptivePortalDetection::captivePortalDetected() {
 void CaptivePortalDetection::captivePortalGone() {
   logger.log() << "Portal gone";
 
-  if (MozillaVPN::instance()->controller()->state() == Controller::StateOff) {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  if (vpn->state() == MozillaVPN::StateMain &&
+      vpn->controller()->state() == Controller::StateOff) {
     captivePortalNotifier()->notifyCaptivePortalUnblock();
   }
 }
