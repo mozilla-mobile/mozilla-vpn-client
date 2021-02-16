@@ -1031,7 +1031,7 @@ bool MozillaVPN::startOnBootSupported() const {
 #endif
 }
 bool MozillaVPN::protectSelectedAppsSupported() const {
-#if defined(MVPN_ANDROID)
+#if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS)
   return true;
 #else
   return false;
