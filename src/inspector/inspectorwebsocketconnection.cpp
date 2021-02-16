@@ -9,6 +9,7 @@
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 
+#include <QHostAddress>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QWebSocket>
@@ -24,6 +25,12 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
     QObject* parent, QWebSocket* connection)
     : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(InspectorWebSocketConnection);
+
+  // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
+  // notation.
+  Q_ASSERT(connection->localAddress() == QHostAddress("::ffff:127.0.0.1") ||
+           connection->localAddress() == QHostAddress::LocalHost ||
+           connection->localAddress() == QHostAddress::LocalHostIPv6);
 
   logger.log() << "New connection received";
 

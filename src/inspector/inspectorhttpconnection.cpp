@@ -9,6 +9,7 @@
 #include "qmlengineholder.h"
 
 #include <QFile>
+#include <QHostAddress>
 #include <QTcpSocket>
 
 constexpr const char* HTTP_404_RESPONSE =
@@ -36,6 +37,12 @@ InspectorHttpConnection::InspectorHttpConnection(QObject* parent,
                                                  QTcpSocket* connection)
     : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(InspectorHttpConnection);
+
+  // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
+  // notation.
+  Q_ASSERT(connection->localAddress() == QHostAddress("::ffff:127.0.0.1") ||
+           connection->localAddress() == QHostAddress::LocalHost ||
+           connection->localAddress() == QHostAddress::LocalHostIPv6);
 
   logger.log() << "New connection received";
 
