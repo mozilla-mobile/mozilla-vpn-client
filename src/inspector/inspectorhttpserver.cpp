@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QHostAddress>
 #include <QTcpSocket>
 
 namespace {
@@ -36,6 +37,18 @@ InspectorHttpServer::~InspectorHttpServer() {
 void InspectorHttpServer::newConnectionReceived() {
   QTcpSocket* child = nextPendingConnection();
   Q_ASSERT(child);
+
+  QHostAddress address = child->localAddress();
+
+  // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
+  // notation.
+  if (address != QHostAddress("::ffff:127.0.0.1") &&
+      address != QHostAddress::LocalHost &&
+      address != QHostAddress::LocalHostIPv6) {
+    logger.log() << "Accepting connection from localhost only";
+    child->close();
+    return;
+  }
 
   InspectorHttpConnection* connection =
       new InspectorHttpConnection(this, child);

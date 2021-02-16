@@ -162,8 +162,10 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
 
 #if defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
   QByteArray buffer;
-  QTextStream out(&buffer);
-  prettyOutput(out, log);
+  {
+    QTextStream out(&buffer);
+    prettyOutput(out, log);
+  }
 
 #  if defined(MVPN_INSPECTOR)
   emit logEntryAdded(buffer);
