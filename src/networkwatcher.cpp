@@ -23,6 +23,10 @@
 #  include "platforms/macos/macosnetworkwatcher.h"
 #endif
 
+#ifdef MVPN_WASM
+#  include "platforms/wasm/wasmnetworkwatcher.h"
+#endif
+
 // How often we notify the same unsecured network
 constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
 
@@ -47,6 +51,8 @@ void NetworkWatcher::initialize() {
   m_impl = new LinuxNetworkWatcher(this);
 #elif defined(MVPN_MACOS)
   m_impl = new MacOSNetworkWatcher(this);
+#elif defined(MVPN_WASM)
+  m_impl = new WasmNetworkWatcher(this);
 #else
   logger.log()
       << "No NetworkWatcher implementation for the current platform (yet)";
