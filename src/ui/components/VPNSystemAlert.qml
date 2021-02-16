@@ -80,12 +80,26 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                alertType: "background-service"
+                alertType: "backend-service"
                 //% "Background service error"
-                alertText: qsTrId("vpn.alert.backgroundServiceError")
+                alertText: qsTrId("vpn.alert.backendServiceError")
                 //% "Restore"
                 //: Restore a service in case of error.
                 alertLinkText: qsTrId("vpn.alert.restore")
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.RemoteServiceErrorAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "backend-service"
+                //% "Remote service error"
+                alertText: qsTrId("vpn.alert.remoteServiceError")
+                alertLinkText: ""
                 opacity: 1
                 visible: true
             }
