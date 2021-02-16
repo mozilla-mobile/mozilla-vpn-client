@@ -597,6 +597,7 @@ else:win* {
 
     QT += networkauth
     QT += svg
+    QT += winextras
 
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
@@ -614,6 +615,7 @@ else:win* {
         eventlistener.cpp \
         localsocketcontroller.cpp \
         platforms/windows/windowsapplistprovider.cpp  \
+        platforms/windows/windowsappimageprovider.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
@@ -634,6 +636,7 @@ else:win* {
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
+        platforms/windows/windowsappimageprovider.h \ 
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
