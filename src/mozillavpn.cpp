@@ -445,13 +445,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 
   if (!m_private->m_user.fromJson(json)) {
     logger.log() << "Failed to parse the User JSON data";
-    errorHandle(ErrorHandler::BackendServiceError);
+    errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.log() << "Failed to parse the DeviceModel JSON data";
-    errorHandle(ErrorHandler::BackendServiceError);
+    errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -523,7 +523,7 @@ void MozillaVPN::completeActivation() {
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
     if (!modelsInitialized()) {
       logger.log() << "Failed to complete the authentication";
-      errorHandle(ErrorHandler::BackendServiceError);
+      errorHandle(ErrorHandler::RemoteServiceError);
       setUserAuthenticated(false);
       return;
     }
@@ -610,7 +610,7 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
 
     if (!modelsInitialized()) {
       logger.log() << "Models not initialized yet";
-      errorHandle(ErrorHandler::BackendServiceError);
+      errorHandle(ErrorHandler::RemoteServiceError);
       SettingsHolder::instance()->clear();
       setState(StateInitialize);
       return;
@@ -745,6 +745,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
     case ErrorHandler::BackendServiceError:
       alert = BackendServiceErrorAlert;
+      break;
+
+    case ErrorHandler::RemoteServiceError:
+      alert = RemoteServiceErrorAlert;
       break;
 
     case ErrorHandler::SubscriptionFailureError:
@@ -1181,4 +1185,9 @@ void MozillaVPN::controllerStateChanged() {
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();
   }
+}
+
+void MozillaVPN::backendServiceRestore() {
+  logger.log() << "Background service restore request";
+  // TODO
 }
