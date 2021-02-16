@@ -94,7 +94,7 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
           if ([error code] == ASWebAuthenticationSessionErrorCodeCanceledLogin) {
             emit abortedByUser();
           } else {
-            emit failed(ErrorHandler::BackendServiceError);
+            emit failed(ErrorHandler::RemoteServiceError);
           }
 
           return;
@@ -127,6 +127,6 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
     session = nullptr;
 
     logger.log() << "Authentication failed: session doesn't start.";
-    emit failed(ErrorHandler::BackendServiceError);
+    emit failed(ErrorHandler::RemoteServiceError);
   }
 }
