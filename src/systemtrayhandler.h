@@ -17,6 +17,13 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   Q_DISABLE_COPY_MOVE(SystemTrayHandler)
 
  public:
+  enum Message {
+    None,
+    UnsecuredNetwork,
+    CaptivePortalBlock,
+    CaptivePortalUnblock,
+  };
+
   static SystemTrayHandler* instance();
 
   explicit SystemTrayHandler(QObject* parent);
@@ -30,12 +37,16 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   void retranslate();
 
  signals:
-  void messageShown(const QString& title, const QString& message);
+  void notificationShown(const QString& title, const QString& message);
+
+  void notificationClicked(Message message);
 
  public slots:
   void updateIcon(const QString& icon);
 
   void updateContextMenu();
+
+  void messageClickHandle();
 
  private:
   void showHideWindow();
@@ -53,6 +64,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
   QMenu* m_helpMenu = nullptr;
+
+  Message m_lastMessage = None;
 };
 
 #endif  // SYSTEMTRAYHANDLER_H

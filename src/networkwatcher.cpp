@@ -34,11 +34,7 @@ namespace {
 Logger logger(LOG_NETWORKING, "NetworkWatcher");
 }
 
-NetworkWatcher::NetworkWatcher() {
-  MVPN_COUNT_CTOR(NetworkWatcher);
-
-  m_notifyTimer.setSingleShot(true);
-}
+NetworkWatcher::NetworkWatcher() { MVPN_COUNT_CTOR(NetworkWatcher); }
 
 NetworkWatcher::~NetworkWatcher() { MVPN_COUNT_DTOR(NetworkWatcher); }
 
@@ -126,23 +122,20 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   // early. Maybe the SystemTrayHandler has not been created yet. We do it at
   // the first detection of an unsecured network.
   if (m_firstNotification) {
-    connect(SystemTrayHandler::instance(), &QSystemTrayIcon::messageClicked,
-            this, &NetworkWatcher::messageClicked);
+    connect(SystemTrayHandler::instance(),
+            &SystemTrayHandler::notificationClicked, this,
+            &NetworkWatcher::notificationClicked);
     m_firstNotification = false;
   }
 
-  m_notifyTimer.start(Constants::UNSECURED_NETWORK_ALERT_MSEC);
   SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
 #endif
 }
 
-void NetworkWatcher::messageClicked() {
-  logger.log() << "Message clicked";
+void NetworkWatcher::notificationClicked(SystemTrayHandler::Message message) {
+  logger.log() << "Notification clicked";
 
-  if (!m_notifyTimer.isActive()) {
-    logger.log() << "The message is not for us. Let's ignore it.";
-    return;
+  if (message == SystemTrayHandler::UnsecuredNetwork) {
+    MozillaVPN::instance()->activate();
   }
-
-  MozillaVPN::instance()->activate();
 }

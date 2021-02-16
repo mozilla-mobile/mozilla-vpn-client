@@ -5,10 +5,10 @@
 #ifndef NETWORKWATCHER_H
 #define NETWORKWATCHER_H
 
+#include "systemtrayhandler.h"
+
 #include <QElapsedTimer>
 #include <QMap>
-#include <QObject>
-#include <QTimer>
 
 class NetworkWatcherImpl;
 
@@ -29,7 +29,7 @@ class NetworkWatcher final : public QObject {
  private:
   void settingsChanged(bool active);
 
-  void messageClicked();
+  void notificationClicked(SystemTrayHandler::Message message);
 
  private:
   bool m_active = false;
@@ -38,8 +38,6 @@ class NetworkWatcher final : public QObject {
   NetworkWatcherImpl* m_impl = nullptr;
 
   QMap<QString, QElapsedTimer> m_networks;
-
-  QTimer m_notifyTimer;
 
   // This is used to connect systemTrayHandler lazily.
   bool m_firstNotification = true;

@@ -121,32 +121,30 @@ void CaptivePortalDetection::captivePortalGone() {
   if (vpn->state() == MozillaVPN::StateMain &&
       vpn->controller()->state() == Controller::StateOff) {
     captivePortalNotifier()->notifyCaptivePortalUnblock();
+    captivePortalMonitor()->stop();
   }
 }
 
-void CaptivePortalDetection::notificationCaptivePortalBlockCompleted(
-    bool disconnectionRequested) {
-  logger.log() << "User informed. The disconnection request status:"
-               << disconnectionRequested;
+void CaptivePortalDetection::deactivationRequired() {
+  logger.log() << "The user wants to deactivate the vpn";
 
-  if (!disconnectionRequested) {
-    return;
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  if (vpn->controller()->state() == Controller::StateOn) {
+    vpn->deactivate();
+    captivePortalMonitor()->start();
   }
-
-  MozillaVPN::instance()->deactivate();
-  captivePortalMonitor()->start();
 }
 
-void CaptivePortalDetection::notificationCaptivePortalUnblockCompleted(
-    bool connectionRequested) {
-  logger.log() << "User informed. The connection request status:"
-               << connectionRequested;
+void CaptivePortalDetection::activationRequired() {
+  logger.log() << "User wants to activate the vpn";
 
-  if (!connectionRequested) {
-    return;
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  if (vpn->state() == MozillaVPN::StateMain &&
+      vpn->controller()->state() == Controller::StateOff) {
+    MozillaVPN::instance()->activate();
   }
-
-  MozillaVPN::instance()->activate();
 }
 
 CaptivePortalMonitor* CaptivePortalDetection::captivePortalMonitor() {
@@ -164,15 +162,12 @@ CaptivePortalNotifier* CaptivePortalDetection::captivePortalNotifier() {
   if (!m_captivePortalNotifier) {
     m_captivePortalNotifier = new CaptivePortalNotifier(this);
 
-    connect(m_captivePortalNotifier,
-            &CaptivePortalNotifier::notificationCaptivePortalBlockCompleted,
-            this,
-            &CaptivePortalDetection::notificationCaptivePortalBlockCompleted);
+    connect(m_captivePortalNotifier, &CaptivePortalNotifier::activationRequired,
+            this, &CaptivePortalDetection::activationRequired);
 
     connect(m_captivePortalNotifier,
-            &CaptivePortalNotifier::notificationCaptivePortalUnblockCompleted,
-            this,
-            &CaptivePortalDetection::notificationCaptivePortalUnblockCompleted);
+            &CaptivePortalNotifier::deactivationRequired, this,
+            &CaptivePortalDetection::deactivationRequired);
   }
 
   return m_captivePortalNotifier;
