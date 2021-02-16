@@ -36,9 +36,11 @@ Rectangle {
             case ("authentication-failed"):
                 VPN.authenticate();
                 break;
+            case ("backend-service"):
+               VPN.backendServiceRestore();
+               break;
             case ("connection-failed"):
             case ("no-connection"):
-            case ("background-service"):
             case ("subscription-failed"):
             case ("geoip-restriction"):
             default:

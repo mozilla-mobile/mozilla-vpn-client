@@ -84,7 +84,7 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
     QAndroidJniEnvironment env;
     jclass javaClass = env.findClass("org/mozilla/firefox/vpn/VPNWebView");
     if (!javaClass) {
-      propagateError(ErrorHandler::BackendServiceError);
+      propagateError(ErrorHandler::RemoteServiceError);
       return;
     }
 

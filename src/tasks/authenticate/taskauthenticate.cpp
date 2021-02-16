@@ -133,14 +133,14 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue userObj = obj.value("user");
   if (!userObj.isObject()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -152,7 +152,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 

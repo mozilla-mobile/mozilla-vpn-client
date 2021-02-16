@@ -131,3 +131,5 @@ MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
 }
 
 void MozillaVPN::controllerStateChanged() {}
+
+void MozillaVPN::backendServiceRestore() {}

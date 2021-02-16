@@ -59,6 +59,7 @@ class MozillaVPN final : public QObject {
     LogoutAlert,
     NoConnectionAlert,
     BackendServiceErrorAlert,
+    RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
   };
@@ -120,6 +121,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void deactivate();
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
+  Q_INVOKABLE void backendServiceRestore();
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
