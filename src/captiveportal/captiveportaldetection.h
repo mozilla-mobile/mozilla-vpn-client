@@ -29,9 +29,10 @@ class CaptivePortalDetection final : public QObject {
   void stateChanged();
   void settingsChanged();
   void detectionCompleted(bool detected);
-  void notificationCaptivePortalBlockCompleted(bool disconnectionRequested);
-  void notificationCaptivePortalUnblockCompleted(bool connectionRequested);
   void captivePortalGone();
+
+  void activationRequired();
+  void deactivationRequired();
 
  private:
   CaptivePortalMonitor* captivePortalMonitor();

@@ -95,8 +95,8 @@ WasmWindowController::WasmWindowController() {
 
   // System tray has a different message for internal notifications (not
   // related to the VPN status).
-  connect(SystemTrayHandler::instance(), &SystemTrayHandler::messageShown, this,
-          &WasmWindowController::notification);
+  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
+          this, &WasmWindowController::notification);
 }
 
 WasmWindowController::~WasmWindowController() {

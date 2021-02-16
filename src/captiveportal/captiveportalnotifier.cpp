@@ -16,12 +16,9 @@ CaptivePortalNotifier::CaptivePortalNotifier(QObject* parent)
     : QObject(parent) {
   MVPN_COUNT_CTOR(CaptivePortalNotifier);
 
-  m_notifyTimer.setSingleShot(true);
-  connect(&m_notifyTimer, &QTimer::timeout, this,
-          &CaptivePortalNotifier::notifyTimerExpired);
-
-  connect(SystemTrayHandler::instance(), &QSystemTrayIcon::messageClicked, this,
-          &CaptivePortalNotifier::messageClicked);
+  connect(SystemTrayHandler::instance(),
+          &SystemTrayHandler::notificationClicked, this,
+          &CaptivePortalNotifier::notificationClicked);
 }
 
 CaptivePortalNotifier::~CaptivePortalNotifier() {
@@ -30,50 +27,29 @@ CaptivePortalNotifier::~CaptivePortalNotifier() {
 
 void CaptivePortalNotifier::notifyCaptivePortalBlock() {
   logger.log() << "Captive portal block notify";
-
-  m_type = Block;
-  m_notifyTimer.start(Constants::CAPTIVE_PORTAL_ALERT_MSEC);
   SystemTrayHandler::instance()->captivePortalBlockNotificationRequired();
 }
 
 void CaptivePortalNotifier::notifyCaptivePortalUnblock() {
   logger.log() << "Captive portal unblock notify";
-
-  m_type = Unblock;
-  m_notifyTimer.start(Constants::CAPTIVE_PORTAL_ALERT_MSEC);
   SystemTrayHandler::instance()->captivePortalUnblockNotificationRequired();
 }
 
-void CaptivePortalNotifier::messageClicked() {
-  logger.log() << "Message clicked";
+void CaptivePortalNotifier::notificationClicked(
+    SystemTrayHandler::Message message) {
+  logger.log() << "Notification clicked";
 
-  if (!m_notifyTimer.isActive()) {
-    logger.log() << "The message is not for us. Let's ignore it.";
-    return;
-  }
-
-  m_notifyTimer.stop();
-  emitSignal(true /* user accepted */);
-}
-
-void CaptivePortalNotifier::emitSignal(bool userAccepted) {
-  switch (m_type) {
-    case Block:
-      m_type = Unset;
-      emit notificationCaptivePortalBlockCompleted(userAccepted);
+  switch (message) {
+    case SystemTrayHandler::CaptivePortalBlock:
+      emit deactivationRequired();
       break;
 
-    case Unblock:
-      m_type = Unset;
-      emit notificationCaptivePortalUnblockCompleted(userAccepted);
+    case SystemTrayHandler::CaptivePortalUnblock:
+      emit activationRequired();
       break;
 
     default:
+      logger.log() << "Ignore message";
       break;
   }
-}
-
-void CaptivePortalNotifier::notifyTimerExpired() {
-  logger.log() << "Notify timer expired";
-  emitSignal(false /* user accepted */);
 }

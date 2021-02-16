@@ -5,7 +5,8 @@
 #ifndef CAPTIVEPORTALNOTIFIER_H
 #define CAPTIVEPORTALNOTIFIER_H
 
-#include <QObject>
+#include "systemtrayhandler.h"
+
 #include <QTimer>
 
 class CaptivePortalNotifier final : public QObject {
@@ -19,24 +20,11 @@ class CaptivePortalNotifier final : public QObject {
   void notifyCaptivePortalUnblock();
 
  signals:
-  void notificationCaptivePortalBlockCompleted(bool disconnectionRequired);
-  void notificationCaptivePortalUnblockCompleted(bool connectionRequired);
+  void activationRequired();
+  void deactivationRequired();
 
  private:
-  void messageClicked();
-  void notifyTimerExpired();
-  void emitSignal(bool userAccepted);
-
- private:
-  enum {
-    Unset,
-    // The captive portal has been detected because it blocks the VPN.
-    Block,
-    // We are back online and we need to inform the user about it.
-    Unblock,
-  } m_type = Unset;
-
-  QTimer m_notifyTimer;
+  void notificationClicked(SystemTrayHandler::Message message);
 };
 
 #endif  // CAPTIVEPORTALNOTIFIER_H

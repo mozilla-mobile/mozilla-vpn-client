@@ -73,6 +73,9 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   connect(this, &QSystemTrayIcon::activated, this,
           &SystemTrayHandler::maybeActivated);
 
+  connect(this, &QSystemTrayIcon::messageClicked, this,
+          &SystemTrayHandler::messageClickHandle);
+
   retranslate();
 }
 
@@ -178,7 +181,9 @@ void SystemTrayHandler::unsecuredNetworkNotification(
   QString message =
       qtTrId("vpn.systray.unsecuredNetwork.message").arg(networkName);
 
-  emit messageShown(title, message);
+  m_lastMessage = UnsecuredNetwork;
+
+  emit notificationShown(title, message);
   showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
@@ -192,7 +197,9 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   //% "turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock.message");
 
-  emit messageShown(title, message);
+  m_lastMessage = CaptivePortalBlock;
+
+  emit notificationShown(title, message);
   showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
@@ -206,7 +213,9 @@ void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   //% "turn on VPN to secure your device."
   QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
 
-  emit messageShown(title, message);
+  m_lastMessage = CaptivePortalUnblock;
+
+  emit notificationShown(title, message);
   showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
@@ -264,4 +273,16 @@ void SystemTrayHandler::maybeActivated(
 #else
   Q_UNUSED(reason);
 #endif
+}
+
+void SystemTrayHandler::messageClickHandle() {
+  logger.log() << "Message clicked";
+
+  if (m_lastMessage == None) {
+    logger.log() << "Random message clicked received";
+    return;
+  }
+
+  emit notificationClicked(m_lastMessage);
+  m_lastMessage = None;
 }
