@@ -11,7 +11,10 @@ class CaptivePortalDetectionImpl : public QObject {
   Q_OBJECT
 
  public:
-  virtual void start() = 0;
+  CaptivePortalDetectionImpl();
+  virtual ~CaptivePortalDetectionImpl();
+
+  virtual void start();
 
  signals:
   void detectionCompleted(bool captivePortalDetected);

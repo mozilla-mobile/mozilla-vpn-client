@@ -70,8 +70,10 @@ void CaptivePortalDetection::detectCaptivePortal() {
     return;
   }
 
-#ifdef MVPN_WINDOWS
+#if defined(MVPN_WINDOWS)
   m_impl.reset(new WindowsCaptivePortalDetection());
+#elif defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  m_impl.reset(new CaptivePortalDetectionImpl());
 #else
   logger.log() << "This platform does not support captive portal detection yet";
   return;

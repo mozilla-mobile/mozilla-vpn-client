@@ -33,6 +33,7 @@ SOURCES += \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
+        captiveportal/captiveportaldetectionimpl.cpp \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
