@@ -34,6 +34,9 @@ class SystemTrayHandler final : public QSystemTrayIcon {
 
   void unsecuredNetworkNotification(const QString& networkName);
 
+  void showNotification(const QString& title, const QString& message,
+                        int timerMsec);
+
   void retranslate();
 
  signals:
