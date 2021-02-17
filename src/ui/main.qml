@@ -87,6 +87,7 @@ Window {
 
     VPNWasmHeader {
         id: wasmMenuHeader
+        visible: false
     }
 
     VPNStackView {
@@ -98,6 +99,7 @@ Window {
 
         Component.onCompleted: {
             if (isWasmApp) {
+                wasmMenuHeader.visible = true;
                 anchors.top = wasmMenuHeader.bottom;
                 height = safeContentHeight - wasmMenuHeader.height;
             }
