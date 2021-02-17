@@ -254,7 +254,7 @@ void Controller::connectionConfirmed() {
   emit timeChanged();
 
   if (m_nextStep != None) {
-    disconnect();
+    deactivate();
     return;
   }
 
