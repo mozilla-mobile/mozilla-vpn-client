@@ -49,13 +49,23 @@ const listSpacing = 8;
 const maxTextWidth = 296;
 const windowMargin = 16;
 
-const darkFocusBorder = fontColor
-const lightFocusBorder = "#d5d3e0"
+const darkFocusBorder = fontColor;
+const lightFocusBorder = "#d5d3e0";
 
 const blueButton = {
     "defaultColor" : blue,
     "buttonHovered": blueHovered,
     "buttonPressed": bluePressed,
+    "buttonDisabled": blueDisabled,
+    "focusBgColor": blue,
+    "focusOutline": blueFocusOutline,
+    "focusBorder": blueFocusBorder,
+};
+
+const wasmOptionBtn = {
+    "defaultColor" : "#00eeeeee",
+    "buttonHovered": "#330a84ff",
+    "buttonPressed": "#4d0a84ff",
     "buttonDisabled": blueDisabled,
     "focusBgColor": blue,
     "focusOutline": blueFocusOutline,
