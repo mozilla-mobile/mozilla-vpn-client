@@ -175,7 +175,6 @@ canvas {
 	box-shadow: var(--boxShadow);
 	border-radius: 2rem;
 	overflow: hidden;
-	padding: 1rem;
 	background-color: rgba(14, 13, 26, 0.05);
 	min-width: 400px;
 	height: 70vh;
