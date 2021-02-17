@@ -54,7 +54,8 @@ void CaptivePortalDetection::stateChanged() {
 void CaptivePortalDetection::detectCaptivePortal() {
   logger.log() << "Start the captive portal detection";
 
-  // Quick return in case this method is called by the inspector.
+  // Quick return in case this method is called by the inspector even when the
+  // feature is disabled.
   if (!m_active) {
     return;
   }
@@ -108,6 +109,12 @@ void CaptivePortalDetection::detectionCompleted(bool detected) {
 
 void CaptivePortalDetection::captivePortalDetected() {
   logger.log() << "Captive portal detected!";
+
+  // Quick return in case this method is called by the inspector even when the
+  // feature is disabled.
+  if (!m_active) {
+    return;
+  }
 
   if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
     captivePortalNotifier()->notifyCaptivePortalBlock();
