@@ -601,6 +601,8 @@ else:win* {
 
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
+    LIBS += Fwpuclnt.lib #Windows Filtering Plattform
+    LIBS += Rpcrt4.lib
 
     production {
         RC_ICONS = ui/resources/logo.ico
@@ -616,6 +618,7 @@ else:win* {
         localsocketcontroller.cpp \
         platforms/windows/windowsapplistprovider.cpp  \
         platforms/windows/windowsappimageprovider.cpp \
+        platforms/windows/windowsfirewallhelper.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
@@ -637,6 +640,7 @@ else:win* {
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
         platforms/windows/windowsappimageprovider.h \ 
+        platforms/windows/windowsfirewallhelper.h \ 
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
@@ -647,7 +651,7 @@ else:win* {
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
-        wgquickprocess.h
+        wgquickprocess.h \
 }
 
 else:wasm {

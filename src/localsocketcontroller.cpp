@@ -21,6 +21,10 @@
 #include <QJsonValue>
 #include <QStandardPaths>
 
+#ifdef MVPN_WINDOWS
+ #include "platforms/windows/windowsfirewallhelper.h"
+#endif
+
 namespace {
 Logger logger(LOG_CONTROLLER, "LocalSocketController");
 }
@@ -28,6 +32,8 @@ Logger logger(LOG_CONTROLLER, "LocalSocketController");
 LocalSocketController::LocalSocketController() {
   MVPN_COUNT_CTOR(LocalSocketController);
 
+  // TODO: remove init here
+  WindowsFirewallHelper::instance();
   m_socket = new QLocalSocket(this);
   connect(m_socket, &QLocalSocket::connected, this,
           &LocalSocketController::daemonConnected);
@@ -95,6 +101,9 @@ void LocalSocketController::activate(
     emit disconnected();
     return;
   }
+  mVpnDisabledApps = vpnDisabledApps;
+
+
 
   QJsonObject json;
   json.insert("type", "activate");
@@ -301,6 +310,12 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "connected") {
+
+    #ifdef MVPN_WINDOWS
+      for(const auto &app: mVpnDisabledApps){
+        WindowsFirewallHelper::instance()->excludeApp(app);
+      }
+    #endif
     emit connected();
     return;
   }
