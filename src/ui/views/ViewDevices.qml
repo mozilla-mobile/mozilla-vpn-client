@@ -14,7 +14,7 @@ Item {
     id: root
 
     property var isModalDialogOpened: removePopup.visible
-
+    property var wasmView
     height: window.safeContentHeight
     width: window.width
 
@@ -37,6 +37,11 @@ Item {
         contentHeight: maxDevicesReached.height + deviceList.height
         contentWidth: window.width
         state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
+        Component.onCompleted: {
+            if (wasmView) {
+                state = "deviceLimit"
+            }
+        }
         states: [
             State {
                 name: "active" // normal mode
@@ -48,7 +53,7 @@ Item {
 
             },
             State {
-                name: "deviceLimit" // device limit mode
+                name: "deviceLimit"
 
                 PropertyChanges {
                     target: menu
@@ -332,8 +337,6 @@ Item {
 
     VPNRemoveDevicePopup {
         id: removePopup
-
-        property var deviceName
 
         function initializeAndOpen(name) {
             removePopup.deviceName = name;
