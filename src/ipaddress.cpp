@@ -120,8 +120,8 @@ QList<IPAddress> IPAddress::subnets() const {
 }
 
 // static
-QList<IPAddress> IPAddress::excludes(const QList<IPAddress>& sourceList,
-                                     const QList<IPAddress>& excludeList) {
+QList<IPAddress> IPAddress::excludeAddresses(
+    const QList<IPAddress>& sourceList, const QList<IPAddress>& excludeList) {
   QList<IPAddress> results = sourceList;
 
   for (const IPAddress& exclude : excludeList) {
@@ -129,7 +129,7 @@ QList<IPAddress> IPAddress::excludes(const QList<IPAddress>& sourceList,
 
     for (const IPAddress& ip : results) {
       if (ip.overlaps(exclude)) {
-        QList<IPAddress> range = ip.excludes(exclude);
+        QList<IPAddress> range = ip.excludeAddresses(exclude);
         newResults.append(range);
       } else {
         newResults.append(ip);
@@ -142,7 +142,7 @@ QList<IPAddress> IPAddress::excludes(const QList<IPAddress>& sourceList,
   return results;
 }
 
-QList<IPAddress> IPAddress::excludes(const IPAddress& ip) const {
+QList<IPAddress> IPAddress::excludeAddresses(const IPAddress& ip) const {
   QList<IPAddress> sn = subnets();
   Q_ASSERT(sn.length() >= 2);
 
