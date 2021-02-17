@@ -10,8 +10,8 @@
 class IPAddress final {
  public:
   static IPAddress create(const QString& ip);
-  static QList<IPAddress> excludes(const QList<IPAddress>& sourceList,
-                                   const QList<IPAddress>& excludeList);
+  static QList<IPAddress> excludeAddresses(const QList<IPAddress>& sourceList,
+                                           const QList<IPAddress>& excludeList);
 
   IPAddress();
   IPAddress(const IPAddress& other);
@@ -39,7 +39,7 @@ class IPAddress final {
 
   QList<IPAddress> subnets() const;
 
-  QList<IPAddress> excludes(const IPAddress& ip) const;
+  QList<IPAddress> excludeAddresses(const IPAddress& ip) const;
 
  private:
   IPAddress(const QHostAddress& address);

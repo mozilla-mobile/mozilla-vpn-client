@@ -577,7 +577,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     logger.log() << "Exclude the server:" << server.ipv4AddrIn();
     excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
 
-    allowedIPv4s = IPAddress::excludes(allowedIPv4s, excludeIPv4s);
+    allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
     list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
     logger.log() << "Allow the server:" << server.ipv4Gateway();

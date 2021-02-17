@@ -20,6 +20,6 @@ class TestIpAddress final : public TestHelper {
   void equal_data();
   void equal();
 
-  void excludes_data();
-  void excludes();
+  void excludeAddresses_data();
+  void excludeAddresses();
 };

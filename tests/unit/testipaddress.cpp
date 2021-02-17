@@ -145,9 +145,9 @@ void TestIpAddress::equal() {
   QCOMPARE(ipAddressA == ipAddressB, result);
 }
 
-void TestIpAddress::excludes_data() {
+void TestIpAddress::excludeAddresses_data() {
   QTest::addColumn<QString>("input");
-  QTest::addColumn<QString>("excludes");
+  QTest::addColumn<QString>("excludeAddresses");
   QTest::addColumn<QString>("result");
 
   QTest::addRow("world vs localhost")
@@ -168,15 +168,15 @@ void TestIpAddress::excludes_data() {
          "3,64.0.0.0/2,8.0.0.0/7";
 }
 
-void TestIpAddress::excludes() {
+void TestIpAddress::excludeAddresses() {
   QFETCH(QString, input);
   IPAddress a = IPAddress::create(input);
 
-  QFETCH(QString, excludes);
-  IPAddress b = IPAddress::create(excludes);
+  QFETCH(QString, excludeAddresses);
+  IPAddress b = IPAddress::create(excludeAddresses);
 
   QStringList list;
-  for (const IPAddress& r : a.excludes(b)) {
+  for (const IPAddress& r : a.excludeAddresses(b)) {
     list.append(r.toString());
   }
 
