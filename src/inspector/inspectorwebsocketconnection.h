@@ -28,8 +28,6 @@ class InspectorWebSocketConnection final : public QObject {
   void binaryMessageReceived(const QByteArray& message);
 
   void parseCommand(const QByteArray& command);
-  void tooManyArguments(int arguments);
-  QQuickItem* findObject(const QString& name);
 
   void logEntryAdded(const QByteArray& log);
 
