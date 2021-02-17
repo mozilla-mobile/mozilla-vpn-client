@@ -286,3 +286,14 @@ void SystemTrayHandler::messageClickHandle() {
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;
 }
+
+void SystemTrayHandler::showNotification(const QString& title,
+                                         const QString& message,
+                                         int timerMsec) {
+  m_lastMessage = None;
+
+  emit notificationShown(title, message);
+
+  QIcon icon(Constants::LOGO_URL);
+  showMessage(title, message, icon, timerMsec * 1000);
+}
