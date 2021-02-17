@@ -1071,12 +1071,7 @@ void MozillaVPN::quit() {
 }
 
 bool MozillaVPN::localNetworkAccessSupported() const {
-#if defined(MVPN_LINUX)
-  // TODO: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/295
-  return false;
-#endif
-
-#if defined(MVPN_MACOS) || defined(MVPN_IOS)
+#if defined(MVPN_IOS)
   // managed by the OS automatically. No need to expose this feature.
   return false;
 #endif
