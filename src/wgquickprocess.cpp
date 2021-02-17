@@ -97,6 +97,10 @@ bool WgQuickProcess::createConfigFile(
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
+#ifdef QT_DEBUG
+  logger.log() << content;
+#endif
+
   QFile file(configFile);
   if (!file.open(QIODevice::WriteOnly)) {
     qWarning("Unable to create a file in the temporary folder");
