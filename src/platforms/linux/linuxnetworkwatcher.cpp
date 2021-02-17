@@ -15,17 +15,22 @@
 #endif
 
 // https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NM80211ApFlags
+// Wifi network has no security
 #ifndef NM_802_11_AP_SEC_NONE
 #  define NM_802_11_AP_SEC_NONE 0x00000000
 #endif
 
+// Wifi network has WEP (40 bits)
 #ifndef NM_802_11_AP_SEC_PAIR_WEP40
 #  define NM_802_11_AP_SEC_PAIR_WEP40 0x00000001
 #endif
 
+// Wifi network has WEP (104 bits)
 #ifndef NM_802_11_AP_SEC_PAIR_WEP104
-#  define NM_802_11_AP_SEC_PAIR_WEP104 0x00000001
+#  define NM_802_11_AP_SEC_PAIR_WEP104 0x00000002
 #endif
+
+constexpr const char* DBUS_NETWORKMANAGER = "org.freedesktop.NetworkManager";
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcher");
@@ -50,14 +55,19 @@ void LinuxNetworkWatcher::initialize() {
   logger.log() << "initialize";
 
   // Let's wait a few seconds to allow the UI to be fully loaded and shown.
-  // This is not strickly needed, but it's better from a user-experience.
+  // This is not strictly needed, but it's better for user experience because
+  // it makes the UI faster to appear, plus it gives a bit of delay between the
+  // UI to appear and the first notification.
   TimerSingleShot::create(this, 2000, [this]() {
     logger.log()
         << "Retrieving the list of wifi network devices from NetworkManager";
 
-    QDBusInterface nm(
-        "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
-        "org.freedesktop.NetworkManager", QDBusConnection::systemBus());
+    // To know the NeworkManager DBus methods and properties, read the official
+    // documentation:
+    // https://developer.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
+
+    QDBusInterface nm(DBUS_NETWORKMANAGER, "/org/freedesktop/NetworkManager",
+                      DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
     if (!nm.isValid()) {
       logger.log()
           << "Failed to connect to the network manager via system dbus";
@@ -74,7 +84,7 @@ void LinuxNetworkWatcher::initialize() {
     QList<QDBusObjectPath> paths = qdbus_cast<QList<QDBusObjectPath> >(arg);
     for (const QDBusObjectPath& path : paths) {
       QString devicePath = path.path();
-      QDBusInterface device("org.freedesktop.NetworkManager", devicePath,
+      QDBusInterface device(DBUS_NETWORKMANAGER, devicePath,
                             "org.freedesktop.NetworkManager.Device",
                             QDBusConnection::systemBus());
       if (device.property("DeviceType").toInt() != NM_DEVICE_TYPE_WIFI) {
@@ -86,8 +96,8 @@ void LinuxNetworkWatcher::initialize() {
 
       // Here we monitor the changes.
       QDBusConnection::systemBus().connect(
-          "org.freedesktop.NetworkManager", devicePath,
-          "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
+          DBUS_NETWORKMANAGER, devicePath, "org.freedesktop.DBus.Properties",
+          "PropertiesChanged", this,
           SLOT(propertyChanged(QString, QVariantMap, QStringList)));
     }
 
@@ -136,7 +146,7 @@ void LinuxNetworkWatcher::checkDevices() {
   }
 
   for (const QString& devicePath : m_devicePaths) {
-    QDBusInterface wifiDevice("org.freedesktop.NetworkManager", devicePath,
+    QDBusInterface wifiDevice(DBUS_NETWORKMANAGER, devicePath,
                               "org.freedesktop.NetworkManager.Device.Wireless",
                               QDBusConnection::systemBus());
 
@@ -149,7 +159,7 @@ void LinuxNetworkWatcher::checkDevices() {
       continue;
     }
 
-    QDBusInterface ap("org.freedesktop.NetworkManager", accessPointPath,
+    QDBusInterface ap(DBUS_NETWORKMANAGER, accessPointPath,
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
