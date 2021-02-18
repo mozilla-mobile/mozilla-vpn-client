@@ -512,19 +512,19 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 }
 
 bool Balrog::install(const QString& filePath) {
-  logger.log() << "Install the pacakge:" << filePath;
+  logger.log() << "Install the package:" << filePath;
 
 #if defined(MVPN_WINDOWS)
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
-            << "/i" << filePath;
+            << "/i" << QDir::toNativeSeparators(filePath);
 
   QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-          [process](int exitCode, QProcess::ExitStatus) {
+          [this, process](int exitCode, QProcess::ExitStatus) {
             logger.log() << "Installation completed - exitCode:" << exitCode;
 
             logger.log() << "Stdout:" << Qt::endl
@@ -533,6 +533,11 @@ bool Balrog::install(const QString& filePath) {
             logger.log() << "Stderr:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardError())
                          << Qt::endl;
+
+            if (exitCode != 0) {
+              deleteLater();
+              return;
+            }
 
             // We leak the object because the installer will restart the
             // app and we need to keep the temporary folder alive during the
