@@ -106,7 +106,8 @@ SOURCES += \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
-        update/versionapi.cpp
+        update/versionapi.cpp \
+        urlopener.cpp
 
 HEADERS += \
         apppermission.h \
@@ -187,7 +188,8 @@ HEADERS += \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
-        update/versionapi.h
+        update/versionapi.h \
+        urlopener.h
 
 inspector {
     message(Enabling the inspector)

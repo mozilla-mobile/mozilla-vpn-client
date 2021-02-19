@@ -15,8 +15,14 @@ module.exports = {
       return await new Promise(resolve => {
         client = new websocket('ws://localhost:8765/', '');
 
-        client.onopen = () => resolve(true);
-        client.onclose = () => this._resolveWaitRead();
+        client.onopen =
+            async () => {
+          const buffer = await this._writeCommand('stealurls');
+          assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+          resolve(true);
+        }
+
+                        client.onclose = () => this._resolveWaitRead();
         client.onerror = () => resolve(false);
 
         client.onmessage = data => {
