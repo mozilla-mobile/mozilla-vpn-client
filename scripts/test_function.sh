@@ -11,7 +11,7 @@ print N ""
 
 runTest() {
   print Y "Running the app..."
-  $1 &>/dev/null &
+  $1 &>/tmp/VPN_LOG.txt &
   PID=$!
   print G "done."
 
@@ -19,6 +19,8 @@ runTest() {
   mocha $2 || ERROR=yes
 
   wait $PID
+
+  cat /tmp/VPN_LOG.txt
 
   if [ "$ERROR" = yes ]; then
     print R "Nooo"
