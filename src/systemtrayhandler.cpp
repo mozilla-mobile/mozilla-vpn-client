@@ -194,7 +194,7 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   QString title = qtTrId("vpn.systray.captivePortalBlock.title");
 
   //% "The guest Wi-Fi network you’re connected to requires action. Click to"
-  //% "turn off VPN to see the portal."
+  //% " turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock.message");
 
   m_lastMessage = CaptivePortalBlock;
@@ -210,7 +210,7 @@ void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
 
   //% "The guest Wi-Fi network you’re connected to may not be secure. Click to"
-  //% "turn on VPN to secure your device."
+  //% " turn on VPN to secure your device."
   QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
 
   m_lastMessage = CaptivePortalUnblock;
