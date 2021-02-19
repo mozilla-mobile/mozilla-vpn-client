@@ -49,6 +49,7 @@ HEADERS += \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
+    ../../src/networkwatcher.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsendworker.h \
@@ -109,6 +110,7 @@ SOURCES += \
     ../../src/models/serverdata.cpp \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
+    ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsender.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \

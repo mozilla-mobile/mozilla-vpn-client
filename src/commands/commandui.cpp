@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
+#include "featurelist.h"
 #include "fontloader.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -198,6 +199,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNFeatureList",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = FeatureList::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNController",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->controller();
@@ -372,12 +381,6 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
                      &systemTrayHandler, &SystemTrayHandler::updateIcon);
-
-    QObject::connect(vpn.captivePortalDetection(),
-                     &CaptivePortalDetection::captivePortalDetected,
-                     [systemTrayHandler = &systemTrayHandler]() {
-                       systemTrayHandler->captivePortalNotificationRequested();
-                     });
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";

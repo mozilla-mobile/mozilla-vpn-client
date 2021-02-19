@@ -18,6 +18,7 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/user.h"
+#include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "statusicon.h"
 
@@ -87,11 +88,6 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
-  Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
-  Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
-                 CONSTANT)
-  Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
-                 CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
 
  public:
@@ -142,6 +138,7 @@ class MozillaVPN final : public QObject {
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   Keys* keys() { return &m_private->m_keys; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
+  NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
   ReleaseMonitor* releaseMonitor() { return &m_private->m_releaseMonitor; }
   ServerCountryModel* serverCountryModel() {
     return &m_private->m_serverCountryModel;
@@ -182,10 +179,6 @@ class MozillaVPN final : public QObject {
 
   bool startMinimized() const { return m_startMinimized; }
 
-  bool startOnBootSupported() const;
-
-  bool protectSelectedAppsSupported() const;
-
   void setStartMinimized(bool startMinimized) {
     m_startMinimized = startMinimized;
   }
@@ -199,8 +192,6 @@ class MozillaVPN final : public QObject {
   bool modelsInitialized() const;
 
   void quit();
-
-  bool localNetworkAccessSupported() const;
 
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
@@ -290,6 +281,7 @@ class MozillaVPN final : public QObject {
     DeviceModel m_deviceModel;
     Keys m_keys;
     HelpModel m_helpModel;
+    NetworkWatcher m_networkWatcher;
     ReleaseMonitor m_releaseMonitor;
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;

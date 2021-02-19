@@ -17,9 +17,150 @@
 
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
+
 QUrl s_lastUrl;
 QString s_updateVersion;
+
 }  // namespace
+
+static QQuickItem* findObject(const QString& name) {
+  QStringList parts = name.split("/");
+  Q_ASSERT(!parts.isEmpty());
+
+  QQuickItem* parent = nullptr;
+  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+  for (QObject* rootObject : engine->rootObjects()) {
+    if (!rootObject) {
+      continue;
+    }
+
+    parent = rootObject->findChild<QQuickItem*>(parts[0]);
+    if (parent) {
+      break;
+    }
+  }
+
+  if (!parent || parts.length() == 1) {
+    return parent;
+  }
+
+  for (int i = 1; i < parts.length(); ++i) {
+    QQuickItem* contentItem =
+        parent->property("contentItem").value<QQuickItem*>();
+    QList<QQuickItem*> contentItemChildren = contentItem->childItems();
+
+    bool found = false;
+    for (QQuickItem* item : contentItemChildren) {
+      if (item->objectName() == parts[i]) {
+        parent = item;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      return nullptr;
+    }
+  }
+
+  return parent;
+}
+
+static bool cmdReset(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->reset();
+  return true;
+}
+
+static bool cmdQuit(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->controller()->quit();
+  return true;
+}
+
+static bool cmdHas(QWebSocket*, const QList<QByteArray>& arguments) {
+  return !!findObject(arguments[1]);
+}
+
+static bool cmdProperty(QWebSocket* socket,
+                        const QList<QByteArray>& arguments) {
+  QQuickItem* obj = findObject(arguments[1]);
+  if (!obj) {
+    return false;
+  }
+
+  QVariant property = obj->property(arguments[2]);
+  if (!property.isValid()) {
+    return false;
+  }
+
+  socket->sendTextMessage(
+      QString("-%1-").arg(property.toString().toHtmlEscaped()).toLocal8Bit());
+  return true;
+}
+
+static bool cmdClick(QWebSocket*, const QList<QByteArray>& arguments) {
+  QQuickItem* obj = findObject(arguments[1]);
+  if (!obj) {
+    return false;
+  }
+
+  QPointF pointF = obj->mapToScene(QPoint(0, 0));
+  QPoint point = pointF.toPoint();
+  point.rx() += obj->width() / 2;
+  point.ry() += obj->height() / 2;
+  QTest::mouseClick(obj->window(), Qt::LeftButton, Qt::NoModifier, point);
+
+  return true;
+}
+
+static bool cmdLasturl(QWebSocket* socket, const QList<QByteArray>&) {
+  socket->sendTextMessage(
+      QString("-%1-").arg(s_lastUrl.toString()).toLocal8Bit());
+  return true;
+}
+
+static bool cmdForceUpdateCheck(QWebSocket*,
+                                const QList<QByteArray>& arguments) {
+  s_updateVersion = arguments[1];
+  MozillaVPN::instance()->releaseMonitor()->runSoon();
+  return true;
+}
+
+static bool cmdForceCaptivePortalCheck(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->captivePortalDetection()->detectCaptivePortal();
+  return true;
+}
+
+static bool cmdForceCaptivePortalDetection(QWebSocket*,
+                                           const QList<QByteArray>&) {
+  MozillaVPN::instance()->captivePortalDetection()->captivePortalDetected();
+  return true;
+}
+
+static bool cmdForceUnsecuredNetwork(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy", "Dummy");
+  return true;
+}
+
+struct WebSocketCommand {
+  QString m_commandName;
+  int32_t m_arguments;
+  bool (*m_callback)(QWebSocket* webSocket, const QList<QByteArray>& arguments);
+};
+
+static QList<WebSocketCommand> s_commands{
+    WebSocketCommand{"reset", 0, cmdReset},
+    WebSocketCommand{"quit", 0, cmdQuit},
+    WebSocketCommand{"has", 1, cmdHas},
+    WebSocketCommand{"property", 2, cmdProperty},
+    WebSocketCommand{"click", 1, cmdClick},
+    WebSocketCommand{"lasturl", 0, cmdLasturl},
+    WebSocketCommand{"force_update_check", 1, cmdForceUpdateCheck},
+    WebSocketCommand{"force_captive_portal_check", 0,
+                     cmdForceCaptivePortalCheck},
+    WebSocketCommand{"force_captive_portal_detection", 0,
+                     cmdForceCaptivePortalDetection},
+    WebSocketCommand{"force_unsecured_network", 0, cmdForceUnsecuredNetwork},
+};
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
     QObject* parent, QWebSocket* connection)
@@ -61,7 +202,7 @@ void InspectorWebSocketConnection::binaryMessageReceived(
 }
 
 void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
-  logger.log() << "command received: " << command;
+  logger.log() << "command received:" << command;
 
   if (command.isEmpty()) {
     return;
@@ -70,162 +211,29 @@ void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
   QList<QByteArray> parts = command.split(' ');
   Q_ASSERT(!parts.isEmpty());
 
-  if (parts[0].trimmed() == "reset") {
-    if (parts.length() != 1) {
-      tooManyArguments(0);
+  QString cmdName = parts[0].trimmed();
+
+  for (const WebSocketCommand& command : s_commands) {
+    if (cmdName == command.m_commandName) {
+      if (parts.length() != command.m_arguments + 1) {
+        m_connection->sendTextMessage(
+            QString("too many arguments (%1 expected)")
+                .arg(command.m_arguments)
+                .toLocal8Bit());
+        return;
+      }
+
+      if (command.m_callback(m_connection, parts)) {
+        m_connection->sendTextMessage("ok");
+      } else {
+        m_connection->sendTextMessage("ko");
+      }
+
       return;
     }
-
-    m_connection->sendTextMessage("ok");
-    MozillaVPN::instance()->reset();
-    return;
-  }
-
-  if (parts[0].trimmed() == "quit") {
-    if (parts.length() != 1) {
-      tooManyArguments(0);
-      return;
-    }
-
-    m_connection->sendTextMessage("ok");
-    MozillaVPN::instance()->controller()->quit();
-    return;
-  }
-
-  if (parts[0].trimmed() == "has") {
-    if (parts.length() != 2) {
-      tooManyArguments(1);
-      return;
-    }
-
-    QQuickItem* obj = findObject(parts[1]);
-    if (!obj) {
-      m_connection->sendTextMessage("ko");
-      return;
-    }
-
-    m_connection->sendTextMessage("ok");
-    return;
-  }
-
-  if (parts[0].trimmed() == "property") {
-    if (parts.length() != 3) {
-      tooManyArguments(2);
-      return;
-    }
-
-    QQuickItem* obj = findObject(parts[1]);
-    if (!obj) {
-      m_connection->sendTextMessage("ko");
-      return;
-    }
-
-    QVariant property = obj->property(parts[2]);
-    if (!property.isValid()) {
-      m_connection->sendTextMessage("ko");
-      return;
-    }
-
-    m_connection->sendTextMessage(
-        QString("-%1-").arg(property.toString().toHtmlEscaped()).toLocal8Bit());
-    return;
-  }
-
-  if (parts[0].trimmed() == "click") {
-    if (parts.length() != 2) {
-      tooManyArguments(1);
-      return;
-    }
-
-    QQuickItem* obj = findObject(parts[1]);
-    if (!obj) {
-      m_connection->sendTextMessage("ko");
-      return;
-    }
-
-    QPointF pointF = obj->mapToScene(QPoint(0, 0));
-    QPoint point = pointF.toPoint();
-    point.rx() += obj->width() / 2;
-    point.ry() += obj->height() / 2;
-    QTest::mouseClick(obj->window(), Qt::LeftButton, Qt::NoModifier, point);
-
-    m_connection->sendTextMessage("ok");
-    return;
-  }
-
-  if (parts[0].trimmed() == "lasturl") {
-    if (parts.length() != 1) {
-      tooManyArguments(0);
-      return;
-    }
-
-    m_connection->sendTextMessage(
-        QString("-%1-").arg(s_lastUrl.toString()).toLocal8Bit());
-    return;
-  }
-
-  if (parts[0].trimmed() == "force_update_check") {
-    if (parts.length() != 2) {
-      tooManyArguments(1);
-      return;
-    }
-
-    s_updateVersion = parts[1];
-    MozillaVPN::instance()->releaseMonitor()->runSoon();
-
-    m_connection->sendTextMessage("ok");
-    return;
   }
 
   m_connection->sendTextMessage("invalid command");
-}
-
-void InspectorWebSocketConnection::tooManyArguments(int arguments) {
-  m_connection->sendTextMessage(
-      QString("too many arguments (%1 expected)").arg(arguments).toLocal8Bit());
-}
-
-QQuickItem* InspectorWebSocketConnection::findObject(const QString& name) {
-  QStringList parts = name.split("/");
-  Q_ASSERT(!parts.isEmpty());
-
-  QQuickItem* parent = nullptr;
-  QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
-  for (QObject* rootObject : engine->rootObjects()) {
-    if (!rootObject) {
-      continue;
-    }
-
-    parent = rootObject->findChild<QQuickItem*>(parts[0]);
-    if (parent) {
-      break;
-    }
-  }
-
-  if (!parent || parts.length() == 1) {
-    return parent;
-  }
-
-  for (int i = 1; i < parts.length(); ++i) {
-    QQuickItem* contentItem =
-        parent->property("contentItem").value<QQuickItem*>();
-    QList<QQuickItem*> contentItemChildren = contentItem->childItems();
-
-    bool found = false;
-    for (QQuickItem* item : contentItemChildren) {
-      if (item->objectName() == parts[i]) {
-        parent = item;
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      return nullptr;
-    }
-  }
-
-  return parent;
 }
 
 void InspectorWebSocketConnection::logEntryAdded(const QByteArray& log) {

@@ -4,7 +4,10 @@
 
 const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
-var client;
+let client;
+
+let waitReadBuffer = [];
+let waitReadCallback = null;
 
 module.exports = {
   async connect() {
@@ -13,12 +16,21 @@ module.exports = {
         client = new websocket('ws://localhost:8765/', '');
 
         client.onopen = () => resolve(true);
-        client.onclose = () => this._resolveWaitRead('');
+        client.onclose = () => this._resolveWaitRead();
         client.onerror = () => resolve(false);
 
         client.onmessage = data => {
-          assert(this._waitRead, 'No waiting callback?');
-          this._resolveWaitRead(data.data.trim());
+          // Ignoring status and logs.
+          if (data.data[0] == '!' || data.data[0] == '@') return;
+
+          assert(waitReadCallback, 'No waiting callback?');
+
+          const msg = data.data.trim();
+          waitReadBuffer.push(msg);
+
+          if (msg === 'ok' || msg === 'ko') {
+            this._resolveWaitRead();
+          }
         }
       });
     });
@@ -30,19 +42,22 @@ module.exports = {
 
   async reset() {
     const buffer = await this._writeCommand('reset');
-    assert(buffer == 'ok', 'Invalid answer');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
   async quit() {
     const buffer = await this._writeCommand('quit');
-    assert(buffer == 'ok' || buffer == '', 'Invalid answer');
+    assert(
+        buffer.length === 0 || (buffer.length === 1 && (buffer[0] === 'ok')),
+        'Invalid answer');
   },
 
   async hasElement(id) {
     const buffer = await this._writeCommand(`has ${id}`);
-    if (buffer == 'ok') return true;
+    assert(buffer.length === 1, 'Invalid answer');
+    if (buffer[0] == 'ok') return true;
 
-    assert(buffer == 'ko', 'Invalid answer');
+    assert(buffer[0] == 'ko', 'Invalid answer');
     return false;
   },
 
@@ -55,15 +70,19 @@ module.exports = {
   async clickOnElement(id) {
     assert(await this.hasElement(id), 'Clicking on an non-existing element?!?');
     const buffer = await this._writeCommand(`click ${id}`);
-    assert(buffer == 'ok', 'Invalid answer');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
   async getElementProperty(id, property) {
     assert(await this.hasElement(id), 'Property checks must be done on existing elements');
     const buffer = await this._writeCommand(`property ${id} ${property}`);
-    if (buffer == 'ko') return null;
-    if (buffer[0] != '-' || buffer[buffer.length - 1] != '-') return null;
-    return buffer.substring(1, buffer.length - 1);
+    assert(buffer.length === 1 || buffer.length === 2, 'Invalid answer');
+
+    const msg = buffer[0];
+
+    if (msg == 'ko') return null;
+    if (msg[0] != '-' || msg[msg.length - 1] != '-') return null;
+    return msg.substring(1, msg.length - 1);
   },
 
   async waitForElementProperty(id, property, value) {
@@ -76,8 +95,11 @@ module.exports = {
 
   async getLastUrl() {
     const buffer = await this._writeCommand('lasturl');
-    if (buffer[0] != '-' || buffer[buffer.length - 1] != '-') return null;
-    return buffer.substring(1, buffer.length - 1);
+    assert(buffer.length === 1 || buffer.length === 2, 'Invalid answer');
+
+    const msg = buffer[0];
+    if (msg[0] != '-' || msg[msg.length - 1] != '-') return null;
+    return msg.substring(1, msg.length - 1);
   },
 
   async waitForCondition(condition) {
@@ -96,17 +118,20 @@ module.exports = {
 
   _writeCommand(command) {
     return new Promise(resolve => {
-      this._waitRead = resolve;
+      waitReadCallback = resolve;
       client.send(`${command}`);
     });
   },
 
-  _waitRead: null,
-  _resolveWaitRead(data) {
-    if (this._waitRead) {
-      const wr = this._waitRead;
-      this._waitRead = null;
-      wr(data);
+  _resolveWaitRead() {
+    if (waitReadCallback) {
+      const wr = waitReadCallback;
+      waitReadCallback = null;
+
+      const buffer = waitReadBuffer;
+      waitReadBuffer = [];
+
+      wr(buffer);
     }
   },
 };
