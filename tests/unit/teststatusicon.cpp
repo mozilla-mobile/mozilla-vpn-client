@@ -49,11 +49,6 @@ void TestStatusIcon::basic() {
   QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-animated1.svg");
   QCOMPARE(si.iconString(), ":/ui/resources/logo-animated1.svg");
   loop.exec();
-
-  TestHelper::controllerState = Controller::StateCaptivePortal;
-  si.stateChanged();
-  QCOMPARE(si.iconUrl().toString(), "qrc:/ui/resources/logo-generic.svg");
-  QCOMPARE(si.iconString(), ":/ui/resources/logo-generic.svg");
 }
 
 static TestStatusIcon s_testStatusIcon;

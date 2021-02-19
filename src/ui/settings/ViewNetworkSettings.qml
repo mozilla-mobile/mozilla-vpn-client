@@ -49,7 +49,7 @@ VPNFlickable {
         anchors.top: ipv6.bottom
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
-        visible: VPN.localNetworkAccessSupported
+        visible: VPNFeatureList.localNetworkAccessSupported
 
         //% "Local network access"
         labelText: qsTrId("vpn.settings.lanAccess")
@@ -69,7 +69,7 @@ VPNFlickable {
         anchors.top: localNetwork.visible ? localNetwork.bottom : ipv6.bottom
         visible: !vpnFlickable.vpnIsOff
 
-        //% "VPN must be off to edit network settings"
+        //% "VPN must be off to edit settings"
         //: Associated to a group of settings that require the VPN to be disconnected to change
         errorMessage: qsTrId("vpn.turnOffAlert.vpnMustBeOff")
     }

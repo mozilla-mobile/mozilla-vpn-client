@@ -75,7 +75,7 @@ VPNFlickable {
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
 
-        visible: VPN.startOnBootSupported
+        visible: VPNFeatureList.startOnBootSupported
     }
 
     Component {
@@ -100,7 +100,7 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPN.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
+        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -109,6 +109,13 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/networkSettings.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml")
+        }
+        VPNSettingsItem {
+            settingTitle: qsTrId("vpn.settings.notifications")
+            imageLeftSrc: "../resources/settings/notifications.svg"
+            imageRightSrc: "../resources/chevron.svg"
+            onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
+	    visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
         }
         VPNSettingsItem {
             settingTitle: qsTrId("vpn.settings.language")
@@ -122,7 +129,7 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.settings.appPermissions")
             imageLeftSrc: "../resources/settings/apps.svg"
             imageRightSrc: "../resources/chevron.svg"
-            visible: VPN.protectSelectedAppsSupported
+            visible: VPNFeatureList.protectSelectedAppsSupported
             onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
         }
         VPNSettingsItem {
@@ -144,15 +151,6 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push(getHelpComponent)
         }
-
-        /* TODO - disable captive portal and its notifications
-        VPNSettingsItem {
-            settingTitle: qsTrId("vpn.settings.notifications")
-            imageLeftSrc: "../resources/settings/notifications.svg"
-            imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-        }
-        */
 
         Rectangle {
             Layout.preferredHeight: fullscreenRequired? Theme.rowHeight * 1.5 : Theme.rowHeight

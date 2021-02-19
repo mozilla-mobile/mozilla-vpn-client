@@ -15,11 +15,22 @@
       <h1>Mozilla VPN - <span class="web-viewer">WebSocket Controller</span></h1>
     </header>
     <main class="websocket-controller">
-      <div class="controller">
+      <div class="controller draggable" data-draggable-id="1">
+        <div class="draggable-header">
+          <svg class="draggable-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path class="fill-path" fill="#000000" d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        </div>
         <div id="content"></div>
         <div id="gradient-border" class="gradient"></div>
         <input type="text" id="input" placeholder="Enter command" />
       </div>
+
+      <div class="log-wrapper draggable" data-draggable-id="2">
+        <div class="draggable-header">
+          <svg class="draggable-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path class="fill-path" fill="#000000" d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        </div>
+        <div id="log"></div>
+      </div>
+
     </main>
 
     <footer class="websocket-footer">
@@ -36,6 +47,7 @@
     let ws;
 
     const content = document.getElementById("content");
+    const log = document.getElementById("log");
     const input = document.getElementById("input");
     input.focus();
     input.addEventListener("keydown", event => {
@@ -45,12 +57,22 @@
       }
     })
 
+    // scroll controller to latest
     function t(msg) {
       const p = document.createElement("p");
       p.innerText = msg;
       content.appendChild(p);
       const boundingRect = content.getBoundingClientRect();
       content.scroll(0, (content.scrollHeight - boundingRect.height));
+    }
+
+    // scroll log to latest
+    function tl(msg) {
+      const p = document.createElement("p");
+      p.innerText = msg;
+      log.appendChild(p);
+      const boundingRect = log.getBoundingClientRect();
+      log.scroll(0, (log.scrollHeight - boundingRect.height));
     }
 
     function command(e) {
@@ -65,7 +87,7 @@
         ws.onopen = () => { t("Connected!"); resolve(); }
         ws.onerror = () => { t("Connection failed"); }
         ws.onclose = () => { t("Disconnected"); }
-        ws.onmessage = data => { t(data.data); }
+        ws.onmessage = data => { if (data.data[0] == "!") tl(data.data); else t(data.data); }
       });
     }
 
@@ -78,6 +100,9 @@
     commands.set("click", { func: cmd_click, desc: "Simulate a click on an object" });
     commands.set("lasturl", { func: cmd_lasturl, desc: "Returns the last opened URL" });
     commands.set("triggerUpdate", { func: cmd_triggerUpdate, desc: "Triggers an update forcing a particular version" });
+    commands.set("detectCaptivePortal", { func: () => ws.send("force_captive_portal_check"), desc: "Starts the captive portal detection" });
+    commands.set("triggerCaptivePortal", { func: () => ws.send("force_captive_portal_detection"), desc: "Triggers the captive portal detection" });
+    commands.set("triggerUnsecuredNetwork", { func: () => ws.send("force_unsecured_network"), desc: "Triggers the unsecured network detection" });
 
     function parseCommand(input) {
       input = input.trim();
@@ -157,6 +182,70 @@
     }
     input.addEventListener("focus", toggleBorderClassList);
     input.addEventListener("blur", toggleBorderClassList);
+
+    const draggableEls = document.querySelectorAll(".draggable");
+      function dragElement(elmnt) {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        if (elmnt.querySelector(".draggable-header")) {
+          elmnt.querySelector(".draggable-header").onmousedown = dragMouseDown;
+        } else {
+          // otherwise, move the DIV from anywhere inside the DIV:
+          elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+          updateZIndex(e);
+          e.target.classList.add("dragging");
+          e = e || window.event;
+          e.preventDefault();
+          
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          
+          document.onmouseup = closeDragElement;
+          document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // calculate the new cursor position:
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          // set the element's new position:
+          elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+          elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement(e) {
+          // stop moving when mouse is released:
+          e.target.classList.remove("dragging")
+          document.onmouseup = null;
+          document.onmousemove = null;
+        }
+      }
+
+      // Bring the "last dragged" or "last clicked" item to top of stacking order
+      function updateZIndex(e) {
+          if (e.target.parentElement.classList.contains("draggable")) {
+            e.target.parentElement.style.zIndex = draggableEls.length;
+          }
+          const draggedElement = e.target.parentElement;
+          draggedElement.style.zIndex = draggableEls.length;
+          draggableEls.forEach(el => {
+            if (el.dataset.draggableId !== draggedElement.dataset.draggableId) {
+              if (el.style.zIndex > 0) {
+                el.style.zIndex -= 1;
+              }
+            }
+          });
+        }
+      draggableEls.forEach(el => {
+        dragElement(el);
+        el.addEventListener("click", updateZIndex)
+      });
     </script>
   </body>
 </html>

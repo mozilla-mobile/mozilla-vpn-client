@@ -3,9 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
-#include "captiveportal/captiveportal.h"
-#include "captiveportal/captiveportalactivator.h"
 #include "controllerimpl.h"
+#include "featurelist.h"
 #include "ipaddress.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
@@ -147,8 +146,7 @@ void Controller::implInitialized(bool status, bool a_connected,
 void Controller::activate() {
   logger.log() << "Activation" << m_state;
 
-  if (m_state != StateOff && m_state != StateSwitching &&
-      m_state != StateCaptivePortal) {
+  if (m_state != StateOff && m_state != StateSwitching) {
     logger.log() << "Already connected";
     return;
   }
@@ -370,8 +368,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 void Controller::quit() {
   logger.log() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff ||
-      m_state == StateCaptivePortal) {
+  if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToQuit();
     return;
   }
@@ -428,14 +425,6 @@ bool Controller::processNextStep() {
 
   if (nextStep == Update) {
     emit readyToUpdate();
-    return true;
-  }
-
-  if (nextStep == WaitForCaptivePortal) {
-    CaptivePortalActivator* activator = new CaptivePortalActivator(this);
-    activator->run();
-
-    setState(StateCaptivePortal);
     return true;
   }
 
@@ -511,17 +500,6 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
   }
 }
 
-void Controller::captivePortalDetected() {
-  logger.log() << "Captive portal detected in state:" << m_state;
-
-  if (m_state != StateOn && m_state != StateConfirming) {
-    return;
-  }
-
-  m_nextStep = WaitForCaptivePortal;
-  deactivate();
-}
-
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const Server& server) {
   logger.log() << "Computing the allowed ip addresses";
@@ -554,7 +532,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   // filtering out the RFC1918 local area network
-  if (MozillaVPN::instance()->localNetworkAccessSupported() &&
+  if (FeatureList::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.log() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
