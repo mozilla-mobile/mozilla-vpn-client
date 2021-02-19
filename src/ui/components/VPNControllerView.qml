@@ -143,8 +143,8 @@ Rectangle {
 
             PropertyChanges {
                 target: logoTitle
-                //% "Connecting"
-                text: qsTrId("vpn.controller.connecting") + " …"
+                //% "Connecting…"
+                text: qsTrId("vpn.controller.connectingState")
                 color: "#FFFFFF"
             }
 
@@ -197,7 +197,7 @@ Rectangle {
 
             PropertyChanges {
                 target: logoTitle
-                text: qsTrId("vpn.controller.connecting") + " …"
+                text: qsTrId("vpn.controller.connectingState")
                 color: "#FFFFFF"
             }
 
