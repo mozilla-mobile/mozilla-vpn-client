@@ -51,6 +51,16 @@ module.exports = {
     client.close();
   },
 
+  async activate() {
+    const buffer = await this._writeCommand('activate');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
+  async deactivate() {
+    const buffer = await this._writeCommand('deactivate');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
   async reset() {
     const buffer = await this._writeCommand('reset');
     assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
@@ -177,6 +187,11 @@ module.exports = {
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
     await this.wait();
+  },
+
+  async logout() {
+    const buffer = await this._writeCommand('logout');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
   // Internal methods.

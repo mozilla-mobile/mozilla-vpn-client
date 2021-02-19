@@ -72,6 +72,21 @@ static bool cmdReset(QWebSocket*, const QList<QByteArray>&) {
   return true;
 }
 
+static bool cmdActivate(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->activate();
+  return true;
+}
+
+static bool cmdDeactivate(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->deactivate();
+  return true;
+}
+
+static bool cmdLogout(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->logout();
+  return true;
+}
+
 static bool cmdQuit(QWebSocket*, const QList<QByteArray>&) {
   MozillaVPN::instance()->controller()->quit();
   return true;
@@ -167,6 +182,9 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"force_captive_portal_detection", 0,
                      cmdForceCaptivePortalDetection},
     WebSocketCommand{"force_unsecured_network", 0, cmdForceUnsecuredNetwork},
+    WebSocketCommand{"activate", 0, cmdActivate},
+    WebSocketCommand{"deactivate", 0, cmdDeactivate},
+    WebSocketCommand{"logout", 0, cmdLogout},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

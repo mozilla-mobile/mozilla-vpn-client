@@ -136,5 +136,10 @@ describe('User authentication', function() {
     await vpn.wait();
   });
 
+  it('Logout', async () => {
+    await vpn.logout();
+    await vpn.wait();
+  });
+
   it('quit the app', async () => await vpn.quit());
 });
