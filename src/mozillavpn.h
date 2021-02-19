@@ -187,7 +187,7 @@ class MozillaVPN final : public QObject {
 
   [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
-  void reset();
+  void reset(bool forceInitialState);
 
   bool modelsInitialized() const;
 

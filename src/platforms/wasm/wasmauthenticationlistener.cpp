@@ -4,13 +4,9 @@
 
 #include "wasmauthenticationlistener.h"
 #include "leakdetector.h"
-#include "networkrequest.h"
 #include "logger.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QDesktopServices>
+#include <QTimer>
 
 namespace {
 
