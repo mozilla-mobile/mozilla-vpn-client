@@ -125,52 +125,7 @@ describe('User authentication', function() {
   });
 
   it('Start and complete the authentication', async () => {
-    await vpn.clickOnElement('getStarted');
-
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.includes('/api/v2/vpn/login');
-    });
-
-    // This is to make humans happy.
-    await vpn.wait();
-
-    await vpn.waitForElement('authenticatingView');
-    await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');
-
-    const url = await vpn.getLastUrl();
-
-    await driver.setContext('content');
-    await driver.navigate().to(url);
-
-    await FirefoxHelper.waitForURL(
-        driver, 'https://accounts.stage.mozaws.net/oauth/');
-
-    const emailField = await driver.findElement(By.className('email'));
-    assert.ok(!!emailField);
-    await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
-
-    let buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    buttonElm.click();
-
-    await FirefoxHelper.waitForURL(
-        driver, 'https://accounts.stage.mozaws.net/oauth/signin');
-
-    const passwordField = await driver.findElement(By.id('password'));
-    assert.ok(!!passwordField);
-    passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
-
-    buttonElm = await driver.findElement(By.id('submit-btn'));
-    assert.ok(!!buttonElm);
-    await buttonElm.click();
-
-    await FirefoxHelper.waitForURL(
-        driver,
-        'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
-
-    // This is to make humans happy.
-    await vpn.wait();
+    await vpn.authenticate(driver, false);
   });
 
   it('Post authentication view', async () => {
@@ -179,8 +134,6 @@ describe('User authentication', function() {
 
     // This is to make humans happy.
     await vpn.wait();
-
-    // TODO: to be continue...
   });
 
   it('quit the app', async () => await vpn.quit());

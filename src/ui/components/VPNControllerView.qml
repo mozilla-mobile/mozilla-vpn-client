@@ -261,7 +261,7 @@ Rectangle {
                 target: logoSubtitle
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
+                text: qsTrId("vpn.controller.active") + "  •  " + formatTime(VPNController.time)
                 color: "#FFFFFF"
                 opacity: 0.8
             }
@@ -535,6 +535,7 @@ Rectangle {
 
     VPNHeadline {
         id: logoTitle
+        objectName: "controllerTitle"
 
         horizontalAlignment: Text.AlignHCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -547,6 +548,7 @@ Rectangle {
 
     VPNInterLabel {
         id: logoSubtitle
+        objectName: "controllerSubTitle"
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: logoTitle.bottom
@@ -568,6 +570,7 @@ Rectangle {
 
     VPNToggle {
         id: toggle
+        objectName: "controllerToggle"
 
         anchors.bottom: box.bottom
         anchors.bottomMargin: 48
