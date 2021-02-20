@@ -541,22 +541,22 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
 
         function handleMultilineText() {
-            const titleLineCount = logoTitle.lineCount;
-            const subtitleLineCount = logoSubtitle.lineCount;
+            const titleIsWrapped = logoTitle.lineCount > 1;
+            const subTitleIsWrapped = (logoSubtitle.lineCount > 1 || connectionStability.numGridColumns === 1);
 
-            if (titleLineCount > 1 && subtitleLineCount > 1) {
+            if (titleIsWrapped && subTitleIsWrapped) {
                 topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 12
                 bottomTextMargin.Layout.preferredHeight = 6;
                 return;
             }
 
-            if (subtitleLineCount > 1) {
+            if (subTitleIsWrapped) {
                 topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 6
                 bottomTextMargin.Layout.preferredHeight = 2;
                 return;
             }
 
-            if (titleLineCount > 1) {
+            if (titleIsWrapped) {
                 topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 4
                 bottomTextMargin.Layout.preferredHeight = 8;
                 return;
@@ -608,7 +608,7 @@ Rectangle {
         VPNConnectionStability {
             id: connectionStability
             visible: false
-            Accessible.ignored: connectionInfoVisible
+            Accessible.ignored: connectionInfoVisible || !visible
         }
 
     }
