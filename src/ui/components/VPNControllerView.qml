@@ -452,7 +452,7 @@ Rectangle {
         id: logo
 
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 50
+        y: 48
         height: 80
         width: 80
     }
@@ -533,43 +533,90 @@ Rectangle {
         }
     }
 
-    VPNHeadline {
-        id: logoTitle
+    ColumnLayout {
+        id: col
 
-        horizontalAlignment: Text.AlignHCenter
+        spacing: 0
+        width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logo.bottom
-        anchors.topMargin: 24
-        font.pixelSize: 22
-        Accessible.ignored: connectionInfoVisible
-        Accessible.description: logoSubtitle.text
-    }
 
-    VPNInterLabel {
-        id: logoSubtitle
+        function handleMultilineText() {
+            const titleLineCount = logoTitle.lineCount;
+            const subtitleLineCount = logoSubtitle.lineCount;
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoTitle.bottom
-        anchors.topMargin: Theme.windowMargin / 2
-        lineHeight: Theme.controllerInterLineHeight
-        width: box.width - Theme.windowMargin * 3
-        Accessible.ignored: true
-    }
+            if (titleLineCount > 1 && subtitleLineCount > 1) {
+                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 12
+                bottomTextMargin.Layout.preferredHeight = 6;
+                return;
+            }
 
-    VPNConnectionStability {
-        id: connectionStability
+            if (subtitleLineCount > 1) {
+                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 6
+                bottomTextMargin.Layout.preferredHeight = 2;
+                return;
+            }
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoTitle.bottom
-        anchors.topMargin: Theme.windowMargin / 2
-        visible: false
-        Accessible.ignored: connectionInfoVisible
+            if (titleLineCount > 1) {
+                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 4
+                bottomTextMargin.Layout.preferredHeight = 8;
+                return;
+            }
+            bottomTextMargin.Layout.preferredHeight = 8;
+            topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight;
+        }
+
+        VPNVerticalSpacer {
+            property var _preferredHeight: logo.y + logo.height + 24
+
+            id: topTextMargin
+            Layout.preferredHeight: _preferredHeight
+        }
+
+        ColumnLayout {
+            Layout.minimumHeight: 32
+            Layout.fillWidth: true
+            spacing: 0
+
+            VPNHeadline {
+                id: logoTitle
+
+                Layout.alignment: Qt.AlignCenter
+                Layout.fillWidth: true
+                Layout.minimumHeight: 32
+                lineHeight: 22
+                font.pixelSize: 22
+                Accessible.ignored: connectionInfoVisible
+                Accessible.description: logoSubtitle.text
+                onPaintedHeightChanged: col.handleMultilineText()
+            }
+        }
+
+        VPNVerticalSpacer {
+            id: bottomTextMargin
+            Layout.preferredHeight: 8
+            Layout.fillWidth: true
+        }
+
+        VPNInterLabel {
+            id: logoSubtitle
+            lineHeight: Theme.controllerInterLineHeight
+            Layout.preferredWidth: parent.width
+            Accessible.ignored: true
+            onPaintedHeightChanged: col.handleMultilineText()
+        }
+
+        VPNConnectionStability {
+            id: connectionStability
+            visible: false
+            Accessible.ignored: connectionInfoVisible
+        }
+
     }
 
     VPNToggle {
         id: toggle
 
-        anchors.bottom: box.bottom
+        anchors.bottom: parent.bottom
         anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
