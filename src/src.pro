@@ -251,7 +251,6 @@ DUMMY {
 
     TARGET = mozillavpn
     QT += networkauth
-    QT += svg
 
     DEFINES += MVPN_DUMMY
 
