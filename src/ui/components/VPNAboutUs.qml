@@ -82,11 +82,39 @@ Item {
         }
 
         VPNTextBlock {
+            id: versionLabel
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
             text: VPN.versionString
         }
+    }
+    Rectangle{
+        id: buildIDHolder
+        anchors.left: viewAboutUs.left
+        anchors.top: aboutUsCopy.bottom
+        anchors.topMargin: 16
+        anchors.leftMargin: Theme.windowMargin
+        anchors.rightMargin: Theme.windowMargin
+        height: childrenRect.height
+        width: viewAboutUs.width - (Theme.windowMargin * 2)
+        color: "transparent"
 
+        visible: VPN.buildNumber.length > 0
+
+        VPNBoldLabel {
+            id: buildIDLabel
+            //% "Build Number"
+            //: Refers to an ID of the Build. For example: "Build Number: 12345678"
+            text: qsTrId("vpn.aboutUs.buildNumber")
+            anchors.top: versionLabel.bottom
+            anchors.topMargin: 16
+        }
+
+        VPNTextBlock {
+            anchors.top: buildIDLabel.bottom
+            anchors.topMargin: 8
+            text: VPN.buildNumber
+        }
     }
 
     Rectangle {
@@ -94,7 +122,7 @@ Item {
 
         height: 1
         width: viewAboutUs.width
-        anchors.top: aboutUsCopy.bottom
+        anchors.top: buildIDHolder.visible ? buildIDHolder.bottom : aboutUsCopy.bottom
         anchors.left: viewAboutUs.left
         anchors.right: viewAboutUs.right
         anchors.topMargin: 12
