@@ -4,6 +4,7 @@
 
 include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
 QT += network
 QT += quick
