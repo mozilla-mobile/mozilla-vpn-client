@@ -23,7 +23,6 @@
         <file>ui/components/VPNControllerServer.qml</file>
         <file>ui/components/VPNControllerDevice.qml</file>
         <file>ui/components/VPNInterLabel.qml</file>
-        <file>ui/components/VPNStabilityLabelActions.qml</file>
         <file>ui/components/VPNIconAndLabel.qml</file>
         <file>ui/components/VPNClickableRow.qml</file>
         <file>ui/components/VPNTextBlock.qml</file>
