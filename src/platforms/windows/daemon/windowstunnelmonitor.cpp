@@ -39,8 +39,6 @@ void WindowsTunnelMonitor::stop() {
 }
 
 void WindowsTunnelMonitor::timeout() {
-  logger.log() << "Checking the tunnel service state";
-
   SC_HANDLE scm;
   SC_HANDLE service;
 
@@ -77,9 +75,10 @@ void WindowsTunnelMonitor::timeout() {
   }
 
   if (status.dwCurrentState == SERVICE_RUNNING) {
-    logger.log() << "The service is active";
+    // The service is active
     return;
   }
 
+  logger.log() << "The service is not active";
   emit backendFailure();
 }

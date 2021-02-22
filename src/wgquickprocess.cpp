@@ -22,13 +22,11 @@ Logger logger(
     "WgQuickProcess");
 
 QString scriptPath() {
-  QDir appPath(QCoreApplication::applicationDirPath());
 #if defined(MVPN_LINUX)
-  appPath.cdUp();
-  appPath.cd("share");
-  appPath.cd("mozillavpn");
-  return appPath.filePath("wghelper.sh");
+  QDir appPath(MVPN_DATA_PATH);
+  return appPath.filePath("helper.sh");
 #elif defined(MVPN_MACOS_DAEMON)
+  QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
   appPath.cd("Resources");
   appPath.cd("utils");
@@ -111,6 +109,10 @@ QString WgQuickProcess::writeWgConfigFile(
 
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
+
+#ifdef QT_DEBUG
+  logger.log() << content;
+#endif
 
   QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));

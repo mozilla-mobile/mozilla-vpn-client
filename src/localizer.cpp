@@ -57,17 +57,14 @@ void Localizer::initialize() {
   QDir dir(":/i18n");
   QStringList files = dir.entryList();
   for (const QString& file : files) {
-    if (!file.endsWith(".qm")) {
+    if (!file.startsWith("mozillavpn_") || !file.endsWith(".qm")) {
       continue;
     }
 
     QStringList parts = file.split(".");
     Q_ASSERT(parts.length() == 2);
 
-    parts = parts[0].split("_");
-    Q_ASSERT(parts.length() == 2);
-
-    QString code = parts.at(1);
+    QString code = parts[0].remove(0, 11);
     m_languages.append(code);
   }
 }
@@ -127,7 +124,12 @@ QString Localizer::localizedLanguageName(const QString& code) const {
     return "English (US)";
   }
 
-  return locale.nativeLanguageName();
+  QString name = locale.nativeLanguageName();
+  if (name.isEmpty()) {
+    return languageName(code);
+  }
+
+  return name;
 }
 
 QHash<int, QByteArray> Localizer::roleNames() const {

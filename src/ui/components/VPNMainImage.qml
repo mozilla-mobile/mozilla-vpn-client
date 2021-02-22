@@ -149,28 +149,6 @@ Rectangle {
                 opacity: 1
             }
 
-        },
-        State {
-            name: VPNController.StateCaptivePortal
-
-            //TODO:
-            PropertyChanges {
-                target: logo
-                showVPNOnIcon: false
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: insetCircle
-                color: "#FF4F5E"
-            }
-
-            PropertyChanges {
-                target: insetIcon
-                source: "../resources/shield-off.svg"
-                opacity: 1
-            }
-
         }
     ]
     transitions: [

@@ -16,7 +16,7 @@ Item {
     states: [
         State {
             name: "deviceLimitReached"
-            when: vpnFlickable.state === "deviceLimit"
+            when: vpnFlickable.state === "deviceLimit" || vpnFlickable.wasmShowMaxDeviceWarning === true
 
             PropertyChanges {
                 target: listHeader

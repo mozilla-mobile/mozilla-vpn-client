@@ -4,6 +4,7 @@
 
 include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
 QT += network
 QT += quick
@@ -32,8 +33,10 @@ SOURCES += \
         apppermission.cpp \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
-        captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
+        captiveportal/captiveportaldetectionimpl.cpp \
+        captiveportal/captiveportalmonitor.cpp \
+        captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
         closeeventhandler.cpp \
         command.cpp \
@@ -54,11 +57,13 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         errorhandler.cpp \
+        featurelist.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        ipaddress.cpp \
         ipaddressrange.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -79,6 +84,7 @@ SOURCES += \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
+        networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
@@ -108,8 +114,10 @@ HEADERS += \
         applistprovider.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
-        captiveportal/captiveportalactivator.h \
         captiveportal/captiveportaldetection.h \
+        captiveportal/captiveportaldetectionimpl.h \
+        captiveportal/captiveportalmonitor.h \
+        captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
         closeeventhandler.h \
         command.h \
@@ -132,7 +140,9 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         errorhandler.h \
+        featurelist.h \
         fontloader.h \
+        ipaddress.h \
         ipaddressrange.h \
         leakdetector.h \
         localizer.h \
@@ -152,6 +162,8 @@ HEADERS += \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
+        networkwatcher.h \
+        networkwatcherimpl.h \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
@@ -178,18 +190,29 @@ HEADERS += \
         update/updater.h \
         update/versionapi.h
 
-debug {
-    message(Adding the inspector)
+inspector {
+    message(Enabling the inspector)
+
+    QT+= websockets
     QT+= testlib
+    QT.testlib.CONFIG -= console
     CONFIG += no_testcase_installs
 
+    RESOURCES += inspector/inspector.qrc
+
+    DEFINES += MVPN_INSPECTOR
+
     SOURCES += \
-            inspector/inspectorconnection.cpp \
-            inspector/inspectorserver.cpp
+            inspector/inspectorhttpconnection.cpp \
+            inspector/inspectorhttpserver.cpp \
+            inspector/inspectorwebsocketconnection.cpp \
+            inspector/inspectorwebsocketserver.cpp
 
     HEADERS += \
-            inspector/inspectorconnection.h \
-            inspector/inspectorserver.h
+            inspector/inspectorhttpconnection.h \
+            inspector/inspectorhttpserver.h \
+            inspector/inspectorwebsocketconnection.h \
+            inspector/inspectorwebsocketserver.h
 }
 
 # Signal handling for unix platforms
@@ -204,10 +227,20 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 production {
+    message(Production build)
     DEFINES += MVPN_PRODUCTION_MODE
     RESOURCES += logo_prod.qrc
 } else {
+    message(Staging build)
     RESOURCES += logo_beta.qrc
+}
+
+balrog {
+    message(Balrog enabled)
+    DEFINES += MVPN_BALROG
+
+    SOURCES += update/balrog.cpp
+    HEADERS += update/balrog.h
 }
 
 DUMMY {
@@ -255,6 +288,7 @@ else:linux:!android {
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
+            platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
@@ -265,6 +299,7 @@ else:linux:!android {
             platforms/linux/dbusclient.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
+            platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxpingsendworker.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
@@ -338,9 +373,10 @@ else:linux:!android {
     dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
     INSTALLS += dbus_service
 
-    wg_helper.path = $${USRPATH}/share/mozillavpn
-    wg_helper.files = platforms/linux/daemon/wghelper.sh
-    INSTALLS += wg_helper
+    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
+    helper.path = $${USRPATH}/share/mozillavpn
+    helper.files = platforms/linux/daemon/helper.sh
+    INSTALLS += helper
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
@@ -439,6 +475,7 @@ else:macos {
     # For the loginitem
     LIBS += -framework ServiceManagement
     LIBS += -framework Security
+    LIBS += -framework CoreWLAN
 
     DEFINES += MVPN_MACOS
 
@@ -447,11 +484,11 @@ else:macos {
             platforms/macos/macospingsendworker.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
-            tasks/authenticate/desktopauthenticationlistener.cpp \
-            update/balrog.cpp \
+            tasks/authenticate/desktopauthenticationlistener.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
+            platforms/macos/macosnetworkwatcher.mm \
             platforms/macos/macosutils.mm
 
     HEADERS += \
@@ -459,10 +496,10 @@ else:macos {
             platforms/macos/macospingsendworker.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
-            tasks/authenticate/desktopauthenticationlistener.h \
-            update/balrog.h \
+            tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
+            platforms/macos/macosnetworkwatcher.h \
             platforms/macos/macosutils.h
 
     isEmpty(MVPN_MACOS) {
@@ -608,14 +645,16 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
+        platforms/windows/windowscaptiveportaldetection.cpp \
+        platforms/windows/windowscaptiveportaldetectionthread.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
+        platforms/windows/windowsnetworkwatcher.cpp \
         platforms/windows/windowspingsendworker.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
-        update/balrog.cpp \
         wgquickprocess.cpp
 
     HEADERS += \
@@ -628,13 +667,15 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
+        platforms/windows/windowscaptiveportaldetection.h \
+        platforms/windows/windowscaptiveportaldetectionthread.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
+        platforms/windows/windowsnetworkwatcher.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
-        update/balrog.h \
         wgquickprocess.h
 }
 
@@ -655,15 +696,16 @@ else:wasm {
             platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
             platforms/wasm/wasmnetworkrequest.cpp \
-            platforms/wasm/wasmnotificationhandler.cpp \
-            platforms/wasm/wasmwindowcontroller.cpp
+            platforms/wasm/wasmnetworkwatcher.cpp \
+            platforms/wasm/wasmwindowcontroller.cpp \
+            systemtraynotificationhandler.cpp
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
             platforms/dummy/dummypingsendworker.h \
             platforms/macos/macosmenubar.h \
             platforms/wasm/wasmauthenticationlistener.h \
-            platforms/wasm/wasmnotificationhandler.h \
+            platforms/wasm/wasmnetworkwatcher.h \
             platforms/wasm/wasmwindowcontroller.h \
             systemtraynotificationhandler.h
 

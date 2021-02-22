@@ -12,6 +12,7 @@ Window {
     id: window
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
+    property var isWasmApp: Qt.platform.os === "wasm"
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
@@ -84,13 +85,25 @@ Window {
         }
     }
 
+    VPNWasmHeader {
+        id: wasmMenuHeader
+        visible: false
+    }
+
     VPNStackView {
         id: mainStackView
-
         initialItem: mainView
         width: parent.width
         anchors.top: iosSafeAreaTopMargin.bottom
         height: safeContentHeight
+
+        Component.onCompleted: {
+            if (isWasmApp) {
+                wasmMenuHeader.visible = true;
+                anchors.top = wasmMenuHeader.bottom;
+                height = safeContentHeight - wasmMenuHeader.height;
+            }
+        }
     }
 
     Component {
@@ -191,6 +204,7 @@ Window {
         }
 
     }
+
 
     Connections {
         target: VPN

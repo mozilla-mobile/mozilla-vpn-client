@@ -38,8 +38,8 @@
 #  include "platforms/android/androiddatamigration.h"
 #endif
 
-#ifdef QT_DEBUG
-#  include "inspector/inspectorconnection.h"
+#ifdef MVPN_INSPECTOR
+#  include "inspector/inspectorwebsocketconnection.h"
 #endif
 
 #include <QApplication>
@@ -110,16 +110,16 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::controllerStateChanged);
+          &CaptivePortalDetection::stateChanged);
+
+  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
+          &m_private->m_captivePortalDetection,
+          &CaptivePortalDetection::stateChanged);
 
   connect(SettingsHolder::instance(),
           &SettingsHolder::captivePortalAlertChanged,
           &m_private->m_captivePortalDetection,
           &CaptivePortalDetection::settingsChanged);
-
-  connect(&m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::captivePortalDetected,
-          &m_private->m_controller, &Controller::captivePortalDetected);
 
   connect(&m_private->m_controller, &Controller::stateChanged,
           &m_private->m_connectionDataHolder,
@@ -192,6 +192,7 @@ void MozillaVPN::initialize() {
   Q_ASSERT(settingsHolder);
 
   m_private->m_captivePortalDetection.initialize();
+  m_private->m_networkWatcher.initialize();
 
   if (!settingsHolder->hasToken()) {
     return;
@@ -395,8 +396,8 @@ void MozillaVPN::openLink(LinkType linkType) {
 
   QDesktopServices::openUrl(url);
 
-#ifdef QT_DEBUG
-  InspectorConnection::setLastUrl(url);
+#ifdef MVPN_INSPECTOR
+  InspectorWebSocketConnection::setLastUrl(url);
 #endif
 }
 
@@ -445,13 +446,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
 
   if (!m_private->m_user.fromJson(json)) {
     logger.log() << "Failed to parse the User JSON data";
-    errorHandle(ErrorHandler::BackendServiceError);
+    errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
     logger.log() << "Failed to parse the DeviceModel JSON data";
-    errorHandle(ErrorHandler::BackendServiceError);
+    errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -523,7 +524,7 @@ void MozillaVPN::completeActivation() {
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
     if (!modelsInitialized()) {
       logger.log() << "Failed to complete the authentication";
-      errorHandle(ErrorHandler::BackendServiceError);
+      errorHandle(ErrorHandler::RemoteServiceError);
       setUserAuthenticated(false);
       return;
     }
@@ -610,7 +611,7 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
 
     if (!modelsInitialized()) {
       logger.log() << "Models not initialized yet";
-      errorHandle(ErrorHandler::BackendServiceError);
+      errorHandle(ErrorHandler::RemoteServiceError);
       SettingsHolder::instance()->clear();
       setState(StateInitialize);
       return;
@@ -747,8 +748,16 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       alert = BackendServiceErrorAlert;
       break;
 
+    case ErrorHandler::RemoteServiceError:
+      alert = RemoteServiceErrorAlert;
+      break;
+
     case ErrorHandler::SubscriptionFailureError:
       alert = SubscriptionFailureAlert;
+      break;
+
+    case ErrorHandler::GeoIpRestrictionError:
+      alert = GeoIpRestrictionAlert;
       break;
 
     default:
@@ -1017,23 +1026,6 @@ void MozillaVPN::requestViewLogs() {
   emit viewLogsNeeded();
 }
 
-bool MozillaVPN::startOnBootSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
-  return true;
-#elif defined(MVPN_ANDROID)
-  return AndroidUtils::canEnableStartOnBoot();
-#else
-  return false;
-#endif
-}
-bool MozillaVPN::protectSelectedAppsSupported() const {
-#if defined(MVPN_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
 void MozillaVPN::activate() {
   logger.log() << "VPN tunnel activation";
 
@@ -1060,21 +1052,6 @@ void MozillaVPN::quit() {
   logger.log() << "quit";
   deleteTasks();
   qApp->quit();
-}
-
-bool MozillaVPN::localNetworkAccessSupported() const {
-#if defined(MVPN_LINUX)
-  // TODO: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/295
-  return false;
-#endif
-
-#if defined(MVPN_MACOS) || defined(MVPN_IOS)
-  // managed by the OS automatically. No need to expose this feature.
-  return false;
-#endif
-
-  // All the rest (android, windows) is OK.
-  return true;
 }
 
 #ifdef MVPN_IOS
@@ -1177,4 +1154,9 @@ void MozillaVPN::controllerStateChanged() {
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();
   }
+}
+
+void MozillaVPN::backendServiceRestore() {
+  logger.log() << "Background service restore request";
+  // TODO
 }

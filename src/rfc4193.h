@@ -11,6 +11,8 @@
 
 class RFC4193 final {
  public:
+  // Note: this returns the "opposite" of the RFC4193: what does not be treated
+  // as local network.
   static QList<IPAddressRange> ipv6();
 };
 

@@ -9,6 +9,8 @@ QT += qml
 QT += xml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
+DEFINES += BUILD_ID=\\\"1234\\\"
+
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += UNIT_TEST
 
@@ -31,6 +33,7 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
+    ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
@@ -48,6 +51,7 @@ HEADERS += \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
+    ../../src/networkwatcher.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsendworker.h \
@@ -72,6 +76,7 @@ HEADERS += \
     testconnectiondataholder.h \
     testlocalizer.h \
     testlogger.h \
+    testipaddress.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -91,6 +96,7 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
+    ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
@@ -106,6 +112,7 @@ SOURCES += \
     ../../src/models/serverdata.cpp \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
+    ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsender.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
@@ -131,6 +138,7 @@ SOURCES += \
     testconnectiondataholder.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
+    testipaddress.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \

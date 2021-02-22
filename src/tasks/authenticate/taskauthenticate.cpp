@@ -69,13 +69,14 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
             NetworkRequest::createForAuthenticationVerification(
                 this, pkceCodeSucces, pkceCodeVerifier);
 
-        connect(
-            request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.log() << "Failed to complete the authentication" << error;
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
-              emit completed();
-            });
+        connect(request, &NetworkRequest::requestFailed,
+                [this, vpn](QNetworkReply*, QNetworkReply::NetworkError error,
+                            const QByteArray&) {
+                  logger.log()
+                      << "Failed to complete the authentication" << error;
+                  vpn->errorHandle(ErrorHandler::toErrorType(error));
+                  emit completed();
+                });
 
         connect(request, &NetworkRequest::requestCompleted,
                 [this, vpn](QNetworkReply*, const QByteArray& data) {
@@ -132,14 +133,14 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue userObj = obj.value("user");
   if (!userObj.isObject()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -151,7 +152,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 

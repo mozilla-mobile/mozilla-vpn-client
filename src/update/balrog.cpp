@@ -4,13 +4,17 @@
 
 #include "balrog.h"
 #include "constants.h"
+#include "errorhandler.h"
+#include "inspector/inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QNetworkReply>
 #include <QProcess>
 #include <QScopeGuard>
 #include <QSslCertificate>
@@ -64,6 +68,15 @@ void balrogLogger(int level, const char* msg) {
   Q_UNUSED(level);
   logger.log() << "BalrogGo:" << msg;
 }
+
+QString appVersion() {
+#ifdef MVPN_INSPECTOR
+  return InspectorWebSocketConnection::appVersionForUpdate();
+#else
+  return APP_VERSION;
+#endif
+}
+
 }  // namespace
 
 Balrog::Balrog(QObject* parent, bool downloadAndInstall)
@@ -93,13 +106,14 @@ QString Balrog::userAgent() {
 
 void Balrog::start() {
   QString url =
-      QString(Constants::BALROG_URL).arg(APP_VERSION).arg(userAgent());
+      QString(Constants::BALROG_URL).arg(appVersion()).arg(userAgent());
   logger.log() << "URL:" << url;
 
-  NetworkRequest* request = NetworkRequest::createForUrl(this, url);
+  NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply*, QNetworkReply::NetworkError error,
+                 const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
@@ -159,10 +173,11 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
 
   logger.log() << "Fetching URL:" << x5u;
 
-  NetworkRequest* request = NetworkRequest::createForUrl(this, x5u);
+  NetworkRequest* request = NetworkRequest::createForGetUrl(this, x5u, 200);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply*, QNetworkReply::NetworkError error,
+                 const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
@@ -213,6 +228,8 @@ bool Balrog::checkSignature(const QByteArray& signature,
 
   // TODO: do we care about OID extensions?
 
+  // Qt5.15 doesn't implement the certificate validation (yet?)
+#ifndef MVPN_MACOS
   QList<QSslError> errors = QSslCertificate::verify(list);
   for (const QSslError& error : errors) {
     if (error.error() != QSslError::SelfSignedCertificateInChain) {
@@ -220,6 +237,7 @@ bool Balrog::checkSignature(const QByteArray& signature,
       return false;
     }
   }
+#endif
 
   logger.log() << "Validating root certificate";
   const QSslCertificate& rootCert = list.constLast();
@@ -338,12 +356,54 @@ bool Balrog::processData(const QByteArray& data) {
   if (!m_downloadAndInstall) {
     bool required = obj.value("required").toBool();
     if (required) {
+      // Even if we are geoip-restricted, we want to force the update when
+      // required.
       emit updateRequired();
-    } else {
-      emit updateRecommended();
+      deleteLater();
+      return true;
     }
 
-    deleteLater();
+    // Let's see if we can fetch the content. If we are unable to fetch the
+    // content, we don't push for a recommended update.
+    QString url = obj.value("url").toString();
+    if (url.isEmpty()) {
+      logger.log() << "Invalid URL in the JSON document";
+      return false;
+    }
+
+    NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
+
+    connect(request, &NetworkRequest::requestFailed,
+            [this](QNetworkReply*, QNetworkReply::NetworkError error,
+                   const QByteArray&) {
+              logger.log() << "Request failed" << error;
+              deleteLater();
+            });
+
+    connect(request, &NetworkRequest::requestHeaderReceived,
+            [this](QNetworkReply* reply) {
+              Q_ASSERT(reply);
+              logger.log() << "Request header received";
+
+              // We want to proceed only if the status code is 200. The request
+              // will be aborted, but the signal emitted.
+              QVariant statusCode =
+                  reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+              if (statusCode.isValid() && statusCode.toInt() == 200) {
+                emit updateRecommended();
+              }
+
+              logger.log() << "Abort request for status code"
+                           << statusCode.toInt();
+              reply->abort();
+            });
+
+    connect(request, &NetworkRequest::requestCompleted,
+            [this](QNetworkReply*, const QByteArray&) {
+              logger.log() << "Request completed";
+              deleteLater();
+            });
+
     return true;
   }
 
@@ -365,14 +425,16 @@ bool Balrog::processData(const QByteArray& data) {
     return false;
   }
 
-  NetworkRequest* request = NetworkRequest::createForUrl(this, url);
+  NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
 
   // No timeout for this request.
   request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply* reply, QNetworkReply::NetworkError error,
+                 const QByteArray&) {
             logger.log() << "Request failed" << error;
+            propagateError(reply, error);
             deleteLater();
           });
 
@@ -450,19 +512,19 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 }
 
 bool Balrog::install(const QString& filePath) {
-  logger.log() << "Install the pacakge:" << filePath;
+  logger.log() << "Install the package:" << filePath;
 
 #if defined(MVPN_WINDOWS)
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
-            << "/i" << filePath;
+            << "/i" << QDir::toNativeSeparators(filePath);
 
   QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-          [process](int exitCode, QProcess::ExitStatus) {
+          [this, process](int exitCode, QProcess::ExitStatus) {
             logger.log() << "Installation completed - exitCode:" << exitCode;
 
             logger.log() << "Stdout:" << Qt::endl
@@ -471,6 +533,11 @@ bool Balrog::install(const QString& filePath) {
             logger.log() << "Stderr:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardError())
                          << Qt::endl;
+
+            if (exitCode != 0) {
+              deleteLater();
+              return;
+            }
 
             // We leak the object because the installer will restart the
             // app and we need to keep the temporary folder alive during the
@@ -509,4 +576,23 @@ bool Balrog::install(const QString& filePath) {
 #endif
 
   return true;
+}
+
+void Balrog::propagateError(QNetworkReply* reply,
+                            QNetworkReply::NetworkError error) {
+  Q_ASSERT(reply);
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  QVariant statusCode =
+      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+  // 451 Unavailable For Legal Reasons
+  if (statusCode.isValid() && statusCode.toInt() == 451) {
+    logger.log() << "Geo IP restriction detected";
+    vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
+    return;
+  }
+
+  vpn->errorHandle(ErrorHandler::toErrorType(error));
 }

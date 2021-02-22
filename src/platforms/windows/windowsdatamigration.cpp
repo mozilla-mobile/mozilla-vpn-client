@@ -37,6 +37,11 @@ void migrateConfigFile(const QString& fileName) {
       settings.value("Network/CaptivePortalAlert").toBool();
   settingsHolder->setCaptivePortalAlert(captivePortalAlert);
 
+  // The 1.x setting file contains "unsecure" instead of "unsecured".
+  bool unsecuredNetworkAlert =
+      settings.value("Network/UnsecureNetworkAlert").toBool();
+  settingsHolder->setUnsecuredNetworkAlert(unsecuredNetworkAlert);
+
   bool localNetworkAccess =
       settings.value("Network/AllowLocalDeviceAccess").toBool();
   settingsHolder->setLocalNetworkAccess(localNetworkAccess);
