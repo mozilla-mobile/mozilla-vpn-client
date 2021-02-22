@@ -67,6 +67,11 @@ void PingHelper::nextPing() {
 void PingHelper::pingReceived(PingSender* pingSender, qint64 msec) {
   logger.log() << "Ping answer received in msec:" << msec;
 
+  if (!m_pingTime.isActive()) {
+    logger.log() << "Race condition. Let's ignore this ping";
+    return;
+  }
+
   QMutableListIterator<PingSender*> i(m_pings);
   while (i.hasNext()) {
     PingSender* thisPingSender = i.next();
