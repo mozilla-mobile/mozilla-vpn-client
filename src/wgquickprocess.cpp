@@ -22,13 +22,11 @@ Logger logger(
     "WgQuickProcess");
 
 QString scriptPath() {
-  QDir appPath(QCoreApplication::applicationDirPath());
 #if defined(MVPN_LINUX)
-  appPath.cdUp();
-  appPath.cd("share");
-  appPath.cd("mozillavpn");
-  return appPath.filePath("wghelper.sh");
+  QDir appPath(MVPN_DATA_PATH);
+  return appPath.filePath("helper.sh");
 #elif defined(MVPN_MACOS_DAEMON)
+  QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
   appPath.cd("Resources");
   appPath.cd("utils");
