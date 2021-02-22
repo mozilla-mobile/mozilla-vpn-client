@@ -537,12 +537,12 @@ Rectangle {
         id: col
 
         spacing: 0
-        width: parent.width - Theme.windowMargin
+        width: box.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
         function handleMultilineText() {
             const titleIsWrapped = logoTitle.lineCount > 1;
-            const subTitleIsWrapped = (logoSubtitle.lineCount > 1 || connectionStability.numGridColumns === 1);
+            const subTitleIsWrapped = (logoSubtitle.lineCount > 1 || (connectionStability.visible && connectionStability.numGridColumns === 1));
 
             if (titleIsWrapped && subTitleIsWrapped) {
                 topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 12
