@@ -67,7 +67,7 @@ void PingHelper::nextPing() {
 void PingHelper::pingReceived(PingSender* pingSender, qint64 msec) {
   logger.log() << "Ping answer received in msec:" << msec;
 
-  if (!m_pingTime.isActive()) {
+  if (!m_pingTimer.isActive()) {
     logger.log() << "Race condition. Let's ignore this ping";
     return;
   }
