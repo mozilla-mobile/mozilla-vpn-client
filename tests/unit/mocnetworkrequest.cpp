@@ -27,12 +27,15 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 
   TimerSingleShot::create(this, 0, [this, nc]() {
     deleteLater();
+
+    NetworkReply nr;
+
     if (nc.m_status == TestHelper::NetworkConfig::Failure) {
-      emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError, "");
+      emit requestFailed(&nr, QNetworkReply::NetworkError::HostNotFoundError,
+                         "");
     } else {
       Q_ASSERT(nc.m_status == TestHelper::NetworkConfig::Success);
 
-      NetworkReply nr;
       emit requestCompleted(&nr, nc.m_body);
     }
   });
@@ -41,8 +44,9 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
-NetworkRequest* NetworkRequest::createForUrl(QObject* parent, const QString&) {
-  return new NetworkRequest(parent, 1234);
+NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent, const QString&,
+                                                int status) {
+  return new NetworkRequest(parent, status);
 }
 
 // static

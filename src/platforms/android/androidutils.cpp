@@ -103,7 +103,7 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
   if (loadingUrl.path() == "/vpn/client/login/success") {
     QUrlQuery query(loadingUrl.query());
     if (!query.hasQueryItem("code")) {
-      emit m_listener->failed(ErrorHandler::BackendServiceError);
+      emit m_listener->failed(ErrorHandler::RemoteServiceError);
       m_listener = nullptr;
       return true;
     }

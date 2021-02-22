@@ -104,6 +104,7 @@ print G "$SHORTVERSION - $FULLVERSION"
 MACOS_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
+  CONFIG+=balrog
   MVPN_MACOS=1
 "
 
@@ -131,10 +132,14 @@ else
 fi
 
 PRODMODE=
+INSPECTOR=
 printn Y "Production mode: "
 if [[ "$PROD" ]]; then
   print G yes
   PRODMODE="CONFIG+=production"
+elif [ "$OS" = "macos" ]; then
+  print G "no (inspector enabled)"
+  INSPECTOR="CONFIG+=inspector"
 else
   print G no
 fi
@@ -151,9 +156,11 @@ fi
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \
+  BUILD_ID=$FULLVERSION \
   -spec macx-xcode \
   $MODE \
   $PRODMODE \
+  $INSPECTOR \
   $VPNMODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"

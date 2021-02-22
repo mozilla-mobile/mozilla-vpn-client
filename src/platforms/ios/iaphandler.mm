@@ -344,7 +344,7 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   NetworkRequest* request = NetworkRequest::createForIOSPurchase(this, receipt);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+          [this](QNetworkReply*, QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.log() << "Purchase request failed" << error;
 
             if (m_subscriptionState != eActive) {

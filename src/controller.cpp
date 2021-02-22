@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
-#include "captiveportal/captiveportal.h"
-#include "captiveportal/captiveportalactivator.h"
 #include "controllerimpl.h"
+#include "featurelist.h"
+#include "ipaddress.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -146,8 +146,7 @@ void Controller::implInitialized(bool status, bool a_connected,
 void Controller::activate() {
   logger.log() << "Activation" << m_state;
 
-  if (m_state != StateOff && m_state != StateSwitching &&
-      m_state != StateCaptivePortal) {
+  if (m_state != StateOff && m_state != StateSwitching) {
     logger.log() << "Already connected";
     return;
   }
@@ -254,7 +253,7 @@ void Controller::connectionConfirmed() {
   emit timeChanged();
 
   if (m_nextStep != None) {
-    disconnect();
+    deactivate();
     return;
   }
 
@@ -369,8 +368,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 void Controller::quit() {
   logger.log() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff ||
-      m_state == StateCaptivePortal) {
+  if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToQuit();
     return;
   }
@@ -427,14 +425,6 @@ bool Controller::processNextStep() {
 
   if (nextStep == Update) {
     emit readyToUpdate();
-    return true;
-  }
-
-  if (nextStep == WaitForCaptivePortal) {
-    CaptivePortalActivator* activator = new CaptivePortalActivator(this);
-    activator->run();
-
-    setState(StateCaptivePortal);
     return true;
   }
 
@@ -510,55 +500,74 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
   }
 }
 
-void Controller::captivePortalDetected() {
-  logger.log() << "Captive portal detected in state:" << m_state;
-
-  if (m_state != StateOn && m_state != StateConfirming) {
-    return;
-  }
-
-  m_nextStep = WaitForCaptivePortal;
-  deactivate();
-}
-
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const Server& server) {
+  logger.log() << "Computing the allowed ip addresses";
+
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
-  QList<IPAddressRange> list;
-#if 0
-    if (SettingsHolder::instance()->captivePortalAlert()) {
-        CaptivePortal *captivePortal = MozillaVPN::instance()->captivePortal();
-        const QStringList &captivePortalIpv4Addresses = captivePortal->ipv4Addresses();
-        for (const QString &address : captivePortalIpv4Addresses) {
-            list.append(IPAddressRange(address, 0, IPAddressRange::IPv4));
-        }
+  QList<IPAddress> excludeIPv4s;
+  QList<IPAddressRange> allowedIPv6s;
 
-        if (ipv6Enabled) {
-            const QStringList &captivePortalIpv6Addresses = captivePortal->ipv6Addresses();
-            for (const QString &address : captivePortalIpv6Addresses) {
-                list.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
-            }
-        }
+  // filtering out the captive portal endpoint
+  if (SettingsHolder::instance()->captivePortalAlert()) {
+    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
+
+    const QStringList& captivePortalIpv4Addresses =
+        captivePortal->ipv4Addresses();
+
+    for (const QString& address : captivePortalIpv4Addresses) {
+      logger.log() << "Filtering out the captive portal address" << address;
+      excludeIPv4s.append(IPAddress::create(address));
     }
-#endif
 
-  if (MozillaVPN::instance()->localNetworkAccessSupported() &&
+    if (ipv6Enabled) {
+      const QStringList& captivePortalIpv6Addresses =
+          captivePortal->ipv6Addresses();
+      for (const QString& address : captivePortalIpv6Addresses) {
+        // TODO IPv6 is not supported by IPAddress yet.
+        allowedIPv6s.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
+      }
+    }
+  }
+
+  // filtering out the RFC1918 local area network
+  if (FeatureList::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
-    // In case of lan enabled, whitelist all non LAN ip's
-    list.append(RFC1918::ipv4());
-    if (ipv6Enabled) {
-      list.append(RFC4193::ipv6());
-    }
-    // Whitelist the servers gateway -
-    // otherwise we can't ping it for connectionhealth
-    list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+    logger.log() << "Filtering out the local area networks (rfc 1918)";
+    excludeIPv4s.append(RFC1918::ipv4());
 
-  } else {
-    // Add catchall-range in case LAN is disabled
-    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
     if (ipv6Enabled) {
+      // TODO IPv6 is not supported by IPAddress yet.
+      logger.log() << "Filtering out the local area networks (rfc 4193)";
+      allowedIPv6s.append(RFC4193::ipv6());
+    }
+  }
+
+  QList<IPAddressRange> list;
+
+  if (excludeIPv4s.isEmpty()) {
+    logger.log() << "Catch all IPv4";
+    list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+  } else {
+    QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
+
+    logger.log() << "Exclude the server:" << server.ipv4AddrIn();
+    excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
+
+    allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
+    list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
+
+    logger.log() << "Allow the server:" << server.ipv4Gateway();
+    list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
+  }
+
+  if (ipv6Enabled) {
+    if (allowedIPv6s.isEmpty()) {
+      logger.log() << "Catch all IPv6";
       list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+    } else {
+      list.append(allowedIPv6s);
     }
   }
 

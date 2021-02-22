@@ -19,53 +19,126 @@ Item {
         //% "Language"
         title: qsTrId("vpn.settings.language")
         isSettingsView: true
+        onActiveFocusChanged: if (focus) forceFocus = true
     }
 
-    ButtonGroup {
-        id: radioButtonGroup
-    }
+    FocusScope {
+        id: focusScope
 
-    VPNList {
-        id: languageList
+        property var lastFocusedItemIdx
 
-        anchors.top: menu.bottom
-        anchors.left: parent.left
-        anchors.leftMargin: defaultMargin
-        anchors.rightMargin: defaultMargin
-        width: parent.width - defaultMargin * 2
         height: parent.height - menu.height
-        spacing: 26
-        listName: menu.title
-        interactive: languageList.childrenRect.height > height
-        model: VPNLocalizer
+        anchors.top: menu.bottom
+        width: parent.width
+        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        Accessible.name: menu.title
+        Accessible.role: Accessible.List
 
-        header: Rectangle {
-            height: defaultMargin
-            color: "transparent"
-            width: parent.width
+        ButtonGroup {
+            id: radioButtonGroup
         }
 
-        delegate: VPNRadioDelegate {
-            radioButtonLabelText: localizedLanguage
-            checked: VPNLocalizer.code === code
-            onClicked: VPNLocalizer.code = code
+        VPNFlickable {
+            id: vpnFlickable
 
-            width: languageList.width
-            anchors.left: parent.left
-            anchors.topMargin: Theme.windowMargin
-            //% "%1 %2"
-            //: This string is read by accessibility tools.
-            //: %1 is the language name, %2 is the localized language name.
-            accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                .arg(language)
-                .arg(localizedLanguage)
+            flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
+            anchors.fill: parent
 
-            VPNRadioSublabel {
-                text: language
+            NumberAnimation on contentY {
+                id: scrollAnimation
+
+                duration: 200
+                easing.type: Easing.OutQuad
             }
 
-        }
+            Rectangle {
+                id: verticalSpacer
 
+                height: Theme.windowMargin
+                width: parent.width
+                color: "transparent"
+            }
+
+            Column {
+                id: col
+
+                spacing: 20
+                width: parent.width
+                anchors.top: verticalSpacer.bottom
+                Component.onCompleted: {
+
+                    // Scroll vpnFlickable so that the current server city is
+                    // vertically centered in the view
+
+                    const yCenter = vpnFlickable.height / 2;
+
+                    for (let idx = 0; idx < repeater.count; idx++) {
+                        const repeaterItem = repeater.itemAt(idx);
+                        const repeaterItemYPosition = repeaterItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                        if (!repeaterItem.checked || repeaterItemYPosition < yCenter) {
+                            continue;
+                        }
+
+                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 1.5) - yCenter;
+                        const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
+
+                        vpnFlickable.contentY = destinationY;
+                        return;
+                    }
+                }
+
+                function scrollDelegateIntoView(item) {
+                    if (window.height > vpnFlickable.contentHeight) {
+                        return;
+                    }
+                    const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
+                    const approximateDelegateHeight = 60;
+                    const ext = approximateDelegateHeight + yPosition;
+
+                    if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
+                        const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
+                        scrollAnimation.to = destinationY;
+                        scrollAnimation.start();
+                    }
+                }
+
+                Repeater {
+                    id: repeater
+                    model: VPNLocalizer
+                    delegate: VPNRadioDelegate {
+                        property bool isSelectedLanguage: checked
+
+                        id: del
+                        radioButtonLabelText: localizedLanguage
+                        checked: VPNLocalizer.code === code
+                        onClicked: VPNLocalizer.code = code
+                        anchors.left: parent.left
+                        anchors.leftMargin: defaultMargin
+                        width: parent.width - defaultMargin * 2
+                        //% "%1 %2"
+                        //: This string is read by accessibility tools.
+                        //: %1 is the language name, %2 is the localized language name.
+                        accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                            .arg(language)
+                            .arg(localizedLanguage)
+
+                        activeFocusOnTab: true
+                        onActiveFocusChanged: col.scrollDelegateIntoView(del)
+                        Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
+                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+                        Keys.onBacktabPressed: {
+                            focusScope.lastFocusedItemIdx = index;
+                            menu.forceActiveFocus();
+                        }
+
+                        VPNRadioSublabel {
+                            text: language
+                        }
+
+                    }
+                }
+            }
+        }
     }
 
 }

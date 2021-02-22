@@ -29,9 +29,8 @@ void VersionApi::start() {
   NetworkRequest* request = NetworkRequest::createForVersions(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
-          });
+          [](QNetworkReply*, QNetworkReply::NetworkError error,
+             const QByteArray&) { logger.log() << "Request failed" << error; });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](QNetworkReply*, const QByteArray& data) {
@@ -127,9 +126,10 @@ bool VersionApi::processData(const QByteArray& data) {
     return true;
   }
 
-  bool recommended = compareVersions(currentVersion, latestVersion) == -1;
-  logger.log() << "Update recommended: " << recommended;
-  emit updateRecommended();
+  if (compareVersions(currentVersion, latestVersion) == -1) {
+    logger.log() << "Update recommended.";
+    emit updateRecommended();
+  }
   return true;
 }
 

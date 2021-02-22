@@ -69,7 +69,7 @@ LINUX="
 MACOS="
   -appstore-compliant \
   -no-feature-qdbus \
-  -no-dbus
+  -no-speechd
 "
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then

@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
+#include "featurelist.h"
 #include "fontloader.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -35,8 +36,9 @@
 #  endif
 #endif
 
-#ifdef QT_DEBUG
-#  include "inspector/inspectorserver.h"
+#ifdef MVPN_INSPECTOR
+#  include "inspector/inspectorhttpserver.h"
+#  include "inspector/inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -192,6 +194,14 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNFeatureList",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = FeatureList::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -372,12 +382,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
                      &systemTrayHandler, &SystemTrayHandler::updateIcon);
 
-    QObject::connect(vpn.captivePortalDetection(),
-                     &CaptivePortalDetection::captivePortalDetected,
-                     [systemTrayHandler = &systemTrayHandler]() {
-                       systemTrayHandler->captivePortalNotificationRequested();
-                     });
-
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
@@ -394,10 +398,14 @@ int CommandUI::run(QStringList& tokens) {
 #endif
     });
 
-#if defined(QT_DEBUG) && !defined(MVPN_WASM)
-    InspectorServer inspectServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
-                     &InspectorServer::close);
+#ifdef MVPN_INSPECTOR
+    InspectorHttpServer inspectHttpServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectHttpServer, &InspectorHttpServer::close);
+
+    InspectorWebSocketServer inspectWebSocketServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectWebSocketServer, &InspectorWebSocketServer::close);
 #endif
 
 #ifdef MVPN_WASM

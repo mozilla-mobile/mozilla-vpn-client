@@ -387,7 +387,7 @@ add_route() {
 		fi
 	else
 		[[ $TABLE == main || $TABLE == auto || -z $TABLE ]] || die "Darwin only supports TABLE=auto|main|off"
-		[[ $(route -n get "-$family" "$1" 2>/dev/null) =~ interface:\ $REAL_INTERFACE$'\n' ]] || cmd route -q -n add -$family "$1" -interface "$REAL_INTERFACE" >/dev/null
+		cmd route -q -n add -$family "$1" -interface "$REAL_INTERFACE" >/dev/null
 
 	fi
 }

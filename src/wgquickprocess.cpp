@@ -112,6 +112,10 @@ QString WgQuickProcess::writeWgConfigFile(
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
+#ifdef QT_DEBUG
+  logger.log() << content;
+#endif
+
   QDir dir(tmpDir.path());
   QFile file(dir.filePath(QString("%1.conf").arg(WG_INTERFACE)));
 
