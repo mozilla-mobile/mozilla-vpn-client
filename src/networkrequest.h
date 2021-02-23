@@ -59,6 +59,10 @@ class NetworkRequest final : public QObject {
 
   int statusCode() const;
 
+  QByteArray rawHeader(const QByteArray& headerName) const;
+
+  void abort();
+
  private:
   NetworkRequest(QObject* parent, int status);
 
