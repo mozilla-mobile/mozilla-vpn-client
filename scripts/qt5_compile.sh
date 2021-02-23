@@ -103,7 +103,6 @@ print Y "Wait..."
   -skip qtmultimedia \
   -skip qtserialport \
   -skip qtsensors \
-  -skip qtwebsockets \
   -skip qtgamepad \
   -skip qtwebchannel \
   -skip qtandroidextras \
