@@ -297,7 +297,7 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     logger.log() << "Network error:" << m_reply->error()
                  << "status code:" << status << "- body:" << data;
-    emit requestFailed(m_reply, m_reply->error(), data);
+    emit requestFailed(m_reply->error(), data);
     return;
   }
 
@@ -306,11 +306,11 @@ void NetworkRequest::replyFinished() {
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    emit requestFailed(m_reply, QNetworkReply::ConnectionRefusedError, data);
+    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }
 
-  emit requestCompleted(m_reply, data);
+  emit requestCompleted(data);
 }
 
 void NetworkRequest::handleHeaderReceived() {
@@ -327,7 +327,7 @@ void NetworkRequest::timeout() {
   m_reply->abort();
 
   logger.log() << "Network request timeout";
-  emit requestFailed(m_reply, QNetworkReply::TimeoutError, QByteArray());
+  emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
 void NetworkRequest::getRequest() {
