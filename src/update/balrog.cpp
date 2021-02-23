@@ -381,15 +381,13 @@ bool Balrog::processData(const QByteArray& data) {
             });
 
     connect(request, &NetworkRequest::requestHeaderReceived,
-            [this](QNetworkReply* reply) {
+            [this](NetworkRequest* request) {
               Q_ASSERT(reply);
               logger.log() << "Request header received";
 
               // We want to proceed only if the status code is 200. The request
               // will be aborted, but the signal emitted.
-              QVariant statusCode =
-                  reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-              if (statusCode.isValid() && statusCode.toInt() == 200) {
+              if (request->statusCode() == 200) {
                 emit updateRecommended();
               }
 
