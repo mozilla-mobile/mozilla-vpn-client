@@ -50,7 +50,7 @@ EXPORT unsigned char balrogValidateSignature(gostring_t publicKey,
                                              gostring_t data);
 }
 
-constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
+constexpr const char* BALROG_MACOS_UA = "Darwin_x86_64-clang-u-x86_64";
 
 #else
 #  error Platform not supported yet
