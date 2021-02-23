@@ -147,6 +147,7 @@ if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/android/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
+    BUILD_ID=$VERSIONCODE \
     CONFIG+=qtquickcompiler \
     CONFIG-=debug \
     CONFIG-=debug_and_release \
@@ -157,6 +158,7 @@ else
   printn Y "Use debug config \n"
   $QTPATH/android/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
+    BUILD_ID=$VERSIONCODE \
     CONFIG+=debug \
     CONFIG-=debug_and_release \
     CONFIG-=release \

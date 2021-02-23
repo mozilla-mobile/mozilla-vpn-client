@@ -4,6 +4,11 @@
 
 const assert = require('assert');
 const websocket = require('websocket').w3cwebsocket;
+const FirefoxHelper = require('./firefox.js');
+
+const webdriver = require('selenium-webdriver'), By = webdriver.By,
+      Keys = webdriver.Key, until = webdriver.until;
+
 let client;
 
 let waitReadBuffer = [];
@@ -15,8 +20,14 @@ module.exports = {
       return await new Promise(resolve => {
         client = new websocket('ws://localhost:8765/', '');
 
-        client.onopen = () => resolve(true);
-        client.onclose = () => this._resolveWaitRead();
+        client.onopen =
+            async () => {
+          const buffer = await this._writeCommand('stealurls');
+          assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+          resolve(true);
+        }
+
+                        client.onclose = () => this._resolveWaitRead();
         client.onerror = () => resolve(false);
 
         client.onmessage = data => {
@@ -38,6 +49,16 @@ module.exports = {
 
   disconnect() {
     client.close();
+  },
+
+  async activate() {
+    const buffer = await this._writeCommand('activate');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
+  async deactivate() {
+    const buffer = await this._writeCommand('deactivate');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
   async reset() {
@@ -112,6 +133,65 @@ module.exports = {
 
   wait() {
     return new Promise(resolve => setTimeout(resolve, 1000));
+  },
+
+  async authenticate(driver, resetting = true) {
+    if (resetting) await this.reset();
+
+    await this.waitForElement('getHelpLink');
+    await this.waitForElementProperty('getHelpLink', 'visible', 'true');
+    assert(await this.getElementProperty('getStarted', 'visible') == 'true');
+    assert(await this.getElementProperty('learnMoreLink', 'visible') == 'true');
+
+    await this.clickOnElement('getStarted');
+
+    await this.waitForCondition(async () => {
+      const url = await this.getLastUrl();
+      return url.includes('/api/v2/vpn/login');
+    });
+
+    await this.wait();
+
+    await this.waitForElement('authenticatingView');
+    await this.waitForElementProperty('authenticatingView', 'visible', 'true');
+
+    const url = await this.getLastUrl();
+
+    await driver.setContext('content');
+    await driver.navigate().to(url);
+
+    await FirefoxHelper.waitForURL(
+        driver, 'https://accounts.stage.mozaws.net/oauth/');
+
+    const emailField = await driver.findElement(By.className('email'));
+    assert.ok(!!emailField);
+    await emailField.sendKeys(process.env.ACCOUNT_EMAIL);
+
+    let buttonElm = await driver.findElement(By.id('submit-btn'));
+    assert.ok(!!buttonElm);
+    buttonElm.click();
+
+    await FirefoxHelper.waitForURL(
+        driver, 'https://accounts.stage.mozaws.net/oauth/signin');
+
+    const passwordField = await driver.findElement(By.id('password'));
+    assert.ok(!!passwordField);
+    passwordField.sendKeys(process.env.ACCOUNT_PASSWORD);
+
+    buttonElm = await driver.findElement(By.id('submit-btn'));
+    assert.ok(!!buttonElm);
+    await buttonElm.click();
+
+    await FirefoxHelper.waitForURL(
+        driver,
+        'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
+
+    await this.wait();
+  },
+
+  async logout() {
+    const buffer = await this._writeCommand('logout');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
   // Internal methods.

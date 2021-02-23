@@ -4,6 +4,7 @@
 
 include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
 QT += network
 QT += quick
@@ -106,7 +107,8 @@ SOURCES += \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
-        update/versionapi.cpp
+        update/versionapi.cpp \
+        urlopener.cpp
 
 HEADERS += \
         apppermission.h \
@@ -187,7 +189,8 @@ HEADERS += \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
-        update/versionapi.h
+        update/versionapi.h \
+        urlopener.h
 
 inspector {
     message(Enabling the inspector)
@@ -249,7 +252,6 @@ DUMMY {
 
     TARGET = mozillavpn
     QT += networkauth
-    QT += svg
 
     DEFINES += MVPN_DUMMY
 
@@ -371,6 +373,11 @@ else:linux:!android {
     dbus_service.files = platforms/linux/daemon/org.mozilla.vpn.dbus.service
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
+
+    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
+    helper.path = $${USRPATH}/share/mozillavpn
+    helper.files = platforms/linux/daemon/helper.sh
+    INSTALLS += helper
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
