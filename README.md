@@ -210,6 +210,7 @@ Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issu
 ## Status
 
 [![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_coverage.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_coverage.yaml)
+[![Functional tests](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/functional_tests.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/functional_tests.yaml)
 [![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml)
 [![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml)
 [![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml)
