@@ -5,13 +5,13 @@
 #include "desktopauthenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "urlopener.h"
 
 #ifdef MVPN_INSPECTOR
 #  include "inspector/inspectorwebsocketconnection.h"
 #endif
 
 #include <limits>
-#include <QDesktopServices>
 #include <QOAuthHttpServerReplyHandler>
 #include <QRandomGenerator>
 #include <QUrlQuery>
@@ -89,9 +89,6 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   query.addQueryItem("port", QString::number(m_server->port()));
 
   url.setQuery(query);
-  QDesktopServices::openUrl(url.toString());
 
-#ifdef MVPN_INSPECTOR
-  InspectorWebSocketConnection::setLastUrl(url);
-#endif
+  UrlOpener::open(url.toString());
 }

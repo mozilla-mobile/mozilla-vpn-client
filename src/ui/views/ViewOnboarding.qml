@@ -106,6 +106,7 @@ Item {
 
     VPNButton {
         id: nextPanel
+        objectName: "onboardingNext"
 
         //% "Next"
         readonly property var textNext: qsTrId("vpn.onboarding.next")

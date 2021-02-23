@@ -18,6 +18,7 @@
 namespace {
 Logger logger(LOG_INSPECTOR, "InspectorWebSocketConnection");
 
+bool s_stealUrls = false;
 QUrl s_lastUrl;
 QString s_updateVersion;
 
@@ -67,7 +68,22 @@ static QQuickItem* findObject(const QString& name) {
 }
 
 static bool cmdReset(QWebSocket*, const QList<QByteArray>&) {
-  MozillaVPN::instance()->reset();
+  MozillaVPN::instance()->reset(true);
+  return true;
+}
+
+static bool cmdActivate(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->activate();
+  return true;
+}
+
+static bool cmdDeactivate(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->deactivate();
+  return true;
+}
+
+static bool cmdLogout(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->logout();
   return true;
 }
 
@@ -112,6 +128,11 @@ static bool cmdClick(QWebSocket*, const QList<QByteArray>& arguments) {
   return true;
 }
 
+static bool cmdStealurls(QWebSocket*, const QList<QByteArray>&) {
+  s_stealUrls = true;
+  return true;
+}
+
 static bool cmdLasturl(QWebSocket* socket, const QList<QByteArray>&) {
   socket->sendTextMessage(
       QString("-%1-").arg(s_lastUrl.toString()).toLocal8Bit());
@@ -153,6 +174,7 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"has", 1, cmdHas},
     WebSocketCommand{"property", 2, cmdProperty},
     WebSocketCommand{"click", 1, cmdClick},
+    WebSocketCommand{"stealurls", 0, cmdStealurls},
     WebSocketCommand{"lasturl", 0, cmdLasturl},
     WebSocketCommand{"force_update_check", 1, cmdForceUpdateCheck},
     WebSocketCommand{"force_captive_portal_check", 0,
@@ -160,6 +182,9 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"force_captive_portal_detection", 0,
                      cmdForceCaptivePortalDetection},
     WebSocketCommand{"force_unsecured_network", 0, cmdForceUnsecuredNetwork},
+    WebSocketCommand{"activate", 0, cmdActivate},
+    WebSocketCommand{"deactivate", 0, cmdDeactivate},
+    WebSocketCommand{"logout", 0, cmdLogout},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
@@ -250,6 +275,9 @@ void InspectorWebSocketConnection::logEntryAdded(const QByteArray& log) {
 void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {
   s_lastUrl = url;
 }
+
+// static
+bool InspectorWebSocketConnection::stealUrls() { return s_stealUrls; }
 
 // static
 QString InspectorWebSocketConnection::appVersionForUpdate() {
