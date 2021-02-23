@@ -21,6 +21,7 @@ class InspectorWebSocketConnection final : public QObject {
   ~InspectorWebSocketConnection();
 
   static void setLastUrl(const QUrl& url);
+  static bool stealUrls();
   static QString appVersionForUpdate();
 
  private:

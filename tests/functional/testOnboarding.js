@@ -6,18 +6,20 @@ const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
 
-const exec = util.promisify(require('child_process').exec);
-
 describe('Initial view and onboarding', function() {
   this.timeout(100000);
 
-  before(async () => await vpn.connect());
+  before(async () => {
+    await vpn.connect();
+  });
 
   beforeEach(() => {});
 
   afterEach(() => {});
 
-  after(() => vpn.disconnect());
+  after(async () => {
+    vpn.disconnect();
+  });
 
   it('reset the app', async () => await vpn.reset());
 
@@ -44,6 +46,8 @@ describe('Initial view and onboarding', function() {
     await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
     await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
 
+    // We don't test the view log.
+
     await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -68,28 +72,52 @@ describe('Initial view and onboarding', function() {
     await vpn.wait();
   });
 
-  it('Open onboarding', async() => {
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+  it('Complete the onboarding (aborting in each phase)', async () => {
+    let onboardingView = 0;
 
-    await vpn.clickOnElement('learnMoreLink');
+    while (true) {
+      assert(
+          await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+      await vpn.clickOnElement('learnMoreLink');
 
-    await vpn.waitForElement('skipOnboarding');
-    await vpn.waitForElementProperty('skipOnboarding', 'visible', 'true');
+      await vpn.waitForElement('skipOnboarding');
+      await vpn.waitForElementProperty('skipOnboarding', 'visible', 'true');
 
-    // This is needed just for humans. The UI is already in the other state
-    // before completing the animation.
-    await vpn.wait();
-  });
+      // This is needed just for humans. The UI is already in the other state
+      // before completing the animation.
+      await vpn.wait();
 
-  it('Go back to the main view', async() => {
-    await vpn.clickOnElement('skipOnboarding');
+      for (let i = 0; i < onboardingView; ++i) {
+        assert(await vpn.hasElement('onboardingNext'));
+        assert(
+            await vpn.getElementProperty('onboardingNext', 'visible') ==
+            'true');
+        await vpn.clickOnElement('onboardingNext');
 
-    await vpn.waitForElement('getHelpLink');
-    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+        // This is needed just for humans. The UI is already in the other state
+        // before completing the animation.
+        await vpn.wait();
+      }
 
-    // This is needed just for humans. The UI is already in the other state
-    // before completing the animation.
-    await vpn.wait();
+      assert(
+          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
+      if (await vpn.getElementProperty('onboardingNext', 'text') != 'Next') {
+        break;
+      }
+
+      await vpn.clickOnElement('skipOnboarding');
+
+      await vpn.waitForElement('getHelpLink');
+      await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+
+      // This is needed just for humans. The UI is already in the other state
+      // before completing the animation.
+      await vpn.wait();
+
+      ++onboardingView;
+    }
+
+    assert(onboardingView, 4);
   });
 
   it('quit the app', async () => await vpn.quit());
