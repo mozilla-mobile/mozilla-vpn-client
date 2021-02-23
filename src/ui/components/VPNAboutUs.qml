@@ -84,9 +84,8 @@ Item {
         VPNTextBlock {
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
-            text: VPN.versionString
+            text: VPN.buildNumber === "" ? VPN.versionString : (VPN.versionString + " (" + VPN.buildNumber + ")")
         }
-
     }
 
     Rectangle {

@@ -12,6 +12,8 @@
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 
+constexpr const char* VPN_NAME = "MozillaVPN";
+
 namespace {
 Logger logger(LOG_MAIN, "WindowsCommons");
 }
@@ -42,17 +44,12 @@ QString WindowsCommons::tunnelConfigFile() {
       continue;
     }
 
-    QDir mozillaDir(dir.filePath("Mozilla"));
-    if (!mozillaDir.exists()) {
+    QDir vpnDir(dir.filePath(VPN_NAME));
+    if (!vpnDir.exists()) {
       continue;
     }
 
-    QDir fpnDir(mozillaDir.filePath("FirefoxPrivateNetworkVPN"));
-    if (!fpnDir.exists()) {
-      continue;
-    }
-
-    QString wireguardFile(fpnDir.filePath("FirefoxPrivateNetworkVPN.conf"));
+    QString wireguardFile(vpnDir.filePath(QString("%1.conf").arg(VPN_NAME)));
     if (!QFileInfo::exists(wireguardFile)) {
       continue;
     }
@@ -65,20 +62,13 @@ QString WindowsCommons::tunnelConfigFile() {
   for (const QString& path : paths) {
     QDir dir(path);
 
-    QDir mozillaDir(dir.filePath("Mozilla"));
-    if (!mozillaDir.exists() && !dir.mkdir("Mozilla")) {
+    QDir vpnDir(dir.filePath(VPN_NAME));
+    if (!vpnDir.exists() && !dir.mkdir(VPN_NAME)) {
       logger.log() << "Failed to create path Mozilla under" << path;
       continue;
     }
 
-    QDir fpnDir(mozillaDir.filePath("FirefoxPrivateNetworkVPN"));
-    if (!fpnDir.exists() && !mozillaDir.mkdir("FirefoxPrivateNetworkVPN")) {
-      logger.log() << "Failed to create path FirefoxPrivateNetworkVPN under"
-                   << mozillaDir.path();
-      continue;
-    }
-
-    return fpnDir.filePath("FirefoxPrivateNetworkVPN.conf");
+    return vpnDir.filePath(QString("%1.conf").arg(VPN_NAME));
   }
 
   logger.log() << "Failed to create the right paths";

@@ -261,7 +261,7 @@ Rectangle {
                 target: logoSubtitle
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
+                text: qsTrId("vpn.controller.active") + "  •  " + formatTime(VPNController.time)
                 color: "#FFFFFF"
                 opacity: 0.8
             }
