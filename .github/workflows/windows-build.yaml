@@ -36,11 +36,6 @@ jobs:
           mkdir /c/MozillaVPNBuild
           cp -r * /c/MozillaVPNBuild
           cd ..
-          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
-          cp /c/MozillaVPNBuild/bin/libEGL.dll .
-          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
-          cp /c/MozillaVPNBuild/*.msm .
 
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
