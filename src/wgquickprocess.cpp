@@ -23,7 +23,8 @@ Logger logger(
 
 QString scriptPath() {
 #if defined(MVPN_LINUX)
-  return "wg-quick";
+  QDir appPath(MVPN_DATA_PATH);
+  return appPath.filePath("helper.sh");
 #elif defined(MVPN_MACOS_DAEMON)
   QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
