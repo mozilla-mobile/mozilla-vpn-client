@@ -12,7 +12,7 @@
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 
-constexpr const char *VPN_NAME = "MozillaVPN";
+constexpr const char* VPN_NAME = "MozillaVPN";
 
 namespace {
 Logger logger(LOG_MAIN, "WindowsCommons");
