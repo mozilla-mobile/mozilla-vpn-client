@@ -209,7 +209,8 @@ Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issu
 
 ## Status
 
-![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Unit%20Test%20Coverage/badge.svg)
-![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Linters%20(clang,%20l10n)/badge.svg)
-![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Android/badge.svg)
-![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/MacOS/badge.svg)
+[![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_coverage.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_coverage.yaml)
+[![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml)
+[![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml)
+[![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml)
+[![Windows](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/windows-build.yaml)
