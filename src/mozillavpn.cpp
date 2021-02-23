@@ -20,6 +20,7 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "urlopener.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iaphandler.h"
@@ -44,7 +45,6 @@
 
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
@@ -394,11 +394,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       return;
   }
 
-  QDesktopServices::openUrl(url);
-
-#ifdef MVPN_INSPECTOR
-  InspectorWebSocketConnection::setLastUrl(url);
-#endif
+  UrlOpener::open(url);
 }
 
 void MozillaVPN::scheduleTask(Task* task) {
@@ -658,8 +654,7 @@ void MozillaVPN::cancelAuthentication() {
     return;
   }
 
-  reset();
-  setState(StateInitialize);
+  reset(true);
 }
 
 void MozillaVPN::logout() {
@@ -682,10 +677,10 @@ void MozillaVPN::logout() {
     scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
   }
 
-  scheduleTask(new TaskFunction([](MozillaVPN* vpn) { vpn->reset(); }));
+  scheduleTask(new TaskFunction([](MozillaVPN* vpn) { vpn->reset(false); }));
 }
 
-void MozillaVPN::reset() {
+void MozillaVPN::reset(bool forceInitialState) {
   logger.log() << "Cleaning up all";
 
   deleteTasks();
@@ -695,6 +690,10 @@ void MozillaVPN::reset() {
   m_private->m_serverData.forget();
 
   setUserAuthenticated(false);
+
+  if (forceInitialState) {
+    setState(StateInitialize);
+  }
 }
 
 void MozillaVPN::deleteTasks() {
@@ -779,8 +778,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 
   if (alert == AuthenticationFailedAlert) {
-    reset();
-    setState(StateInitialize);
+    reset(true);
     return;
   }
 }
@@ -836,7 +834,7 @@ bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogs(location, [](const QString& filename) {
     logger.log() << "Opening the logFile somehow:" << filename;
     QUrl url = QUrl::fromLocalFile(filename);
-    QDesktopServices::openUrl(url);
+    UrlOpener::open(url);
   });
 }
 

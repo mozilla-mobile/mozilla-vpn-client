@@ -50,7 +50,7 @@ EXPORT unsigned char balrogValidateSignature(gostring_t publicKey,
                                              gostring_t data);
 }
 
-constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
+constexpr const char* BALROG_MACOS_UA = "Darwin_x86_64-clang-u-x86_64";
 
 #else
 #  error Platform not supported yet
@@ -514,17 +514,20 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 bool Balrog::install(const QString& filePath) {
   logger.log() << "Install the package:" << filePath;
 
+  QString logFile = m_tmpDir.filePath("msiexec.log");
+
 #if defined(MVPN_WINDOWS)
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
-            << "/i" << QDir::toNativeSeparators(filePath);
+            << "/i" << QDir::toNativeSeparators(filePath) << "/lv"
+            << QDir::toNativeSeparators(logFile);
 
   QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-          [this, process](int exitCode, QProcess::ExitStatus) {
+          [this, process, logFile](int exitCode, QProcess::ExitStatus) {
             logger.log() << "Installation completed - exitCode:" << exitCode;
 
             logger.log() << "Stdout:" << Qt::endl
@@ -533,6 +536,13 @@ bool Balrog::install(const QString& filePath) {
             logger.log() << "Stderr:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardError())
                          << Qt::endl;
+
+            QFile log(logFile);
+            if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
+              logger.log() << "Unable to read the msiexec log file";
+            } else {
+              logger.log() << "Log file:" << Qt::endl << log.readAll();
+            }
 
             if (exitCode != 0) {
               deleteLater();

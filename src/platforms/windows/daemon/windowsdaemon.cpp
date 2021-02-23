@@ -19,10 +19,9 @@
 
 #include <Windows.h>
 
-#define TUNNEL_NAMED_PIPE                                                      \
-  "\\\\."                                                                      \
-  "\\pipe\\ProtectedPrefix\\Administrators\\WireGuard\\FirefoxPrivateNetworkV" \
-  "PN"
+#define TUNNEL_NAMED_PIPE \
+  "\\\\."                 \
+  "\\pipe\\ProtectedPrefix\\Administrators\\WireGuard\\MozillaVPN"
 
 namespace {
 
