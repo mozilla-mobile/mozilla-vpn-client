@@ -127,11 +127,11 @@ void Balrog::start() {
           });
 }
 
-bool Balrog::fetchSignature(NetworkRequest* request,
+bool Balrog::fetchSignature(NetworkRequest* initialRequest,
                             const QByteArray& dataUpdate) {
-  Q_ASSERT(request);
+  Q_ASSERT(initialRequest);
 
-  QByteArray header = request->rawHeader("Content-Signature");
+  QByteArray header = initialRequest->rawHeader("Content-Signature");
   if (header.isEmpty()) {
     logger.log() << "Content-Signature missing";
     return false;
@@ -171,15 +171,15 @@ bool Balrog::fetchSignature(NetworkRequest* request,
 
   logger.log() << "Fetching URL:" << x5u;
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(this, x5u, 200);
+  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(this, x5u, 200);
 
-  connect(request, &NetworkRequest::requestFailed,
+  connect(x5uRequest, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
+  connect(x5uRequest, &NetworkRequest::requestCompleted,
           [this, signatureBlob, algorithm, dataUpdate](const QByteArray& data) {
             logger.log() << "Request completed";
             if (!checkSignature(data, signatureBlob, algorithm, dataUpdate)) {
@@ -387,7 +387,7 @@ bool Balrog::processData(const QByteArray& data) {
               }
 
               logger.log() << "Abort request for status code"
-                           << statusCode.toInt();
+                           << request->statusCode();
               request->abort();
             });
 

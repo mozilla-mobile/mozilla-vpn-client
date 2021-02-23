@@ -378,3 +378,23 @@ int NetworkRequest::statusCode() const {
 }
 
 void NetworkRequest::disableTimeout() { m_timer.stop(); }
+
+QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
+  if (!m_reply) {
+    logger.log() << "INTERNAL ERROR! NetworkRequest::rawHeader called before "
+                    "starting the request";
+    return QByteArray();
+  }
+
+  return m_reply->rawHeader(headerName);
+}
+
+void NetworkRequest::abort() {
+  if (!m_reply) {
+    logger.log() << "INTERNAL ERROR! NetworkRequest::abort called before "
+                    "starting the request";
+    return;
+  }
+
+  m_reply->abort();
+}
