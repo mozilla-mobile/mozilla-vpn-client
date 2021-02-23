@@ -76,6 +76,13 @@ IF NOT EXIST MozillaVPN.vcxproj (
   EXIT 1
 )
 
+ECHO Compiling the balrog.dll...
+CALL balrog\build.cmd
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
+  EXIT 1
+)
+
 ECHO Compiling the tunnel.dll...
 CALL windows\tunnel\build.cmd
 IF %ERRORLEVEL% NEQ 0 (
