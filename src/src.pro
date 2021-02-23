@@ -374,6 +374,11 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
+    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
+    helper.path = $${USRPATH}/share/mozillavpn
+    helper.files = platforms/linux/daemon/helper.sh
+    INSTALLS += helper
+
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
 }
