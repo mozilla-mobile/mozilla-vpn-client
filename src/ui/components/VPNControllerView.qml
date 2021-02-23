@@ -599,6 +599,8 @@ Rectangle {
 
         VPNInterLabel {
             id: logoSubtitle
+            objectName: "controllerSubTitle"
+
             lineHeight: Theme.controllerInterLineHeight
             Layout.preferredWidth: parent.width
             Accessible.ignored: true
@@ -615,6 +617,7 @@ Rectangle {
 
     VPNToggle {
         id: toggle
+        objectName: "controllerToggle"
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 48
