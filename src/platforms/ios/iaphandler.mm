@@ -381,17 +381,17 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, ids](QNetworkReply*, const QByteArray&) {
-            logger.log() << "Purchase request completed";
-            SettingsHolder::instance()->addSubscriptionTransactions(ids);
+    logger.log() << "Purchase request completed";
+    SettingsHolder::instance()->addSubscriptionTransactions(ids);
 
-            if (m_subscriptionState != eActive) {
-              logger.log() << "We have been canceled in the meantime";
-              return;
-            }
+    if (m_subscriptionState != eActive) {
+      logger.log() << "We have been canceled in the meantime";
+      return;
+    }
 
-            stopSubscription();
-            emit subscriptionCompleted();
-          });
+    stopSubscription();
+    emit subscriptionCompleted();
+  });
 }
 
 void IAPHandler::subscribe() {
