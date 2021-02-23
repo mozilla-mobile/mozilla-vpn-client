@@ -71,6 +71,8 @@ VPNFlickable {
         anchors.top: VPNFeatureList.unsecuredNetworkNotificationSupported ? unsecuredNetworkAlert.bottom : captivePortalAlert.bottom
         visible: !vpnFlickable.vpnIsOff
 
-        errorMessage: qsTrId("vpn.turnOffAlert.vpnMustBeOff")
+        //% "VPN must be off to edit notifications"
+        //: Associated to a group of settings that require the VPN to be disconnected to change
+        errorMessage: qsTrId("vpn.settings.notificationVpnMustBeOff")
     }
 }
