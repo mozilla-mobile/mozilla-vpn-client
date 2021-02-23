@@ -118,7 +118,7 @@
 		-->
 		<DirectoryRef Id="MozillaVPNFolder">
 			<Merge Id="WintunMergeModule" Language="0" DiskId="1" SourceFile=".deps/wintun-$(var.WintunPlatform)-0.8.1.msm" />
-			<Merge Id="VCRedistModule" SourceFile="c:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Redist/MSVC/14.28.29325/MergeModules/Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
 		</DirectoryRef>
 
 		<!--
