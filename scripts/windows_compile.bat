@@ -60,6 +60,14 @@ CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
+ECHO Copying the installer dependencies...
+CALL :CopyDependency libcrypto-1_1-x64.dll c:\MozillaVPNBuild\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll c:\MozillaVPNBuild\bin\libssl-1_1-x64.dll
+CALL :CopyDependency libEGL.dll c:\MozillaVPNBuild\bin\libEGL.dll
+CALL :CopyDependency libGLESv2.dll c:\MozillaVPNBuild\bin\libGLESv2.dll
+CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
+CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
+
 ECHO Importing languages...
 python scripts\importLanguages.py
 
@@ -114,8 +122,19 @@ ECHO All done.
 EXIT 0
 
 :CheckCommand
-WHERE %~1 > nul
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Command `%~1` has not been found.
-  EXIT 1
-)
+  WHERE %~1 > nul
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Command `%~1` has not been found.
+    EXIT 1
+  )
+  goto :eof
+
+:CopyDependency
+  IF NOT EXIST %~1 (
+    COPY /y "%~2" "%~1" > nul
+    IF %ERRORLEVEL% NEQ 0 (
+      ECHO Failed to copy the dependency `%~1`.
+      EXIT 1
+    )
+  )
+  goto :eof
