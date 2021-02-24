@@ -7,11 +7,6 @@
 
 #include "daemon.h"
 
-#include <QDateTime>
-
-class QLocalSocket;
-class QJsonObject;
-
 class MacOSDaemon final : public Daemon {
  public:
   MacOSDaemon();
@@ -19,15 +14,10 @@ class MacOSDaemon final : public Daemon {
 
   static MacOSDaemon* instance();
 
-  bool activate(const Config& config) override;
-
   QByteArray getStatus() override;
 
  protected:
   bool run(Op op, const Config& config) override;
-
- private:
-  QDateTime m_connectionDate;
 };
 
 #endif  // MACOSDAEMON_H

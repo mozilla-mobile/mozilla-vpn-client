@@ -5,8 +5,8 @@
 #include "windowsdaemon.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/windows/windowscommons.h"
 #include "wgquickprocess.h"
-#include "windowscommons.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -19,10 +19,9 @@
 
 #include <Windows.h>
 
-#define TUNNEL_NAMED_PIPE                                                      \
-  "\\\\."                                                                      \
-  "\\pipe\\ProtectedPrefix\\Administrators\\WireGuard\\FirefoxPrivateNetworkV" \
-  "PN"
+#define TUNNEL_NAMED_PIPE \
+  "\\\\."                 \
+  "\\pipe\\ProtectedPrefix\\Administrators\\WireGuard\\MozillaVPN"
 
 namespace {
 
@@ -211,15 +210,6 @@ WindowsDaemon::~WindowsDaemon() {
   m_state = Inactive;
 
   stopAndDeleteTunnelService();
-}
-
-bool WindowsDaemon::activate(const Config& config) {
-  if (!Daemon::activate(config)) {
-    return false;
-  }
-
-  m_connectionDate = QDateTime::currentDateTime();
-  return true;
 }
 
 QByteArray WindowsDaemon::getStatus() {

@@ -15,7 +15,6 @@
 
 #include <functional>
 
-class CaptivePortal;
 class ControllerImpl;
 class MozillaVPN;
 class IPAddressRange;
@@ -33,7 +32,6 @@ class Controller final : public QObject {
     StateOn,
     StateDisconnecting,
     StateSwitching,
-    StateCaptivePortal,
   };
   Q_ENUM(State)
 
@@ -85,8 +83,6 @@ class Controller final : public QObject {
 
   Q_INVOKABLE void quit();
 
-  void captivePortalDetected();
-
  private slots:
   void connected();
   void disconnected();
@@ -136,7 +132,6 @@ class Controller final : public QObject {
     Quit,
     Update,
     Disconnect,
-    WaitForCaptivePortal,
   };
 
   NextStep m_nextStep = None;

@@ -23,7 +23,8 @@ Logger logger(
 
 QString scriptPath() {
 #if defined(MVPN_LINUX)
-  return "wg-quick";
+  QDir appPath(MVPN_DATA_PATH);
+  return appPath.filePath("helper.sh");
 #elif defined(MVPN_MACOS_DAEMON)
   QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
@@ -96,6 +97,10 @@ bool WgQuickProcess::createConfigFile(
 
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
+
+#ifdef QT_DEBUG
+  logger.log() << content;
+#endif
 
   QFile file(configFile);
   if (!file.open(QIODevice::WriteOnly)) {

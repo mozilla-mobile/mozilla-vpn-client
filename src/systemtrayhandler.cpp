@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtrayhandler.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -35,6 +36,8 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
+  setToolTip(qtTrId("vpn.main.productName"));
+
   // Status label
   m_statusLabel = m_menu.addAction("");
   m_statusLabel->setEnabled(false);
@@ -66,6 +69,12 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
 
   connect(QmlEngineHolder::instance()->window(), &QWindow::visibleChanged, this,
           &SystemTrayHandler::updateContextMenu);
+
+  connect(this, &QSystemTrayIcon::activated, this,
+          &SystemTrayHandler::maybeActivated);
+
+  connect(this, &QSystemTrayIcon::messageClicked, this,
+          &SystemTrayHandler::messageClickHandle);
 
   retranslate();
 }
@@ -160,13 +169,54 @@ void SystemTrayHandler::updateContextMenu() {
                                   Controller::StateOff);
 }
 
-void SystemTrayHandler::captivePortalNotificationRequested() {
-  logger.log() << "Capitve portal notification shown";
-  //% "Captive portal detected"
-  QString title = qtTrId("vpn.systray.captivePortalAlert.title");
-  //% "VPN will automatically reconnect when ready"
-  QString message = qtTrId("vpn.systray.captivePortalAlert.message");
-  showMessage(title, message, NoIcon, 2000);
+void SystemTrayHandler::unsecuredNetworkNotification(
+    const QString& networkName) {
+  logger.log() << "Unsecured network notification shown";
+
+  //% "Unsecured Wi-Fi network detected"
+  QString title = qtTrId("vpn.systray.unsecuredNetwork.title");
+
+  //% "%1 is not secure. Turn on VPN to secure your device."
+  //: %1 is the Wi-Fi network name
+  QString message =
+      qtTrId("vpn.systray.unsecuredNetwork.message").arg(networkName);
+
+  m_lastMessage = UnsecuredNetwork;
+
+  emit notificationShown(title, message);
+  showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
+}
+
+void SystemTrayHandler::captivePortalBlockNotificationRequired() {
+  logger.log() << "Captive portal block notification shown";
+
+  //% "Guest Wi-Fi portal blocked"
+  QString title = qtTrId("vpn.systray.captivePortalBlock.title");
+
+  //% "The guest Wi-Fi network you’re connected to requires action. Click to"
+  //% " turn off VPN to see the portal."
+  QString message = qtTrId("vpn.systray.captivePortalBlock.message");
+
+  m_lastMessage = CaptivePortalBlock;
+
+  emit notificationShown(title, message);
+  showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+}
+
+void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
+  logger.log() << "Captive portal unblock notification shown";
+
+  //% "Guest Wi-Fi portal detected"
+  QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
+
+  //% "The guest Wi-Fi network you’re connected to may not be secure. Click to"
+  //% " turn on VPN to secure your device."
+  QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
+
+  m_lastMessage = CaptivePortalUnblock;
+
+  emit notificationShown(title, message);
+  showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void SystemTrayHandler::updateIcon(const QString& icon) {
@@ -209,4 +259,41 @@ void SystemTrayHandler::retranslate() {
   m_quitAction->setText(qtTrId("systray.quit"));
 
   updateContextMenu();
+}
+
+void SystemTrayHandler::maybeActivated(
+    QSystemTrayIcon::ActivationReason reason) {
+  logger.log() << "Activated";
+
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+  if (reason == QSystemTrayIcon::DoubleClick) {
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
+  }
+#else
+  Q_UNUSED(reason);
+#endif
+}
+
+void SystemTrayHandler::messageClickHandle() {
+  logger.log() << "Message clicked";
+
+  if (m_lastMessage == None) {
+    logger.log() << "Random message clicked received";
+    return;
+  }
+
+  emit notificationClicked(m_lastMessage);
+  m_lastMessage = None;
+}
+
+void SystemTrayHandler::showNotification(const QString& title,
+                                         const QString& message,
+                                         int timerMsec) {
+  m_lastMessage = None;
+
+  emit notificationShown(title, message);
+
+  QIcon icon(Constants::LOGO_URL);
+  showMessage(title, message, icon, timerMsec * 1000);
 }

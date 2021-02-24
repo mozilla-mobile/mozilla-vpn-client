@@ -13,6 +13,8 @@ mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
 mozillavpn_qmltyperegistrations.cpp
+balrog/balrog.a
+balrog/balrog.h
 qrc_qml.cpp
 .qmake.stash
 dbus_adaptor.*
@@ -60,3 +62,8 @@ MozillaVPN.exe
 MozillaVPN.exp
 MozillaVPN.lib
 MozillaVPN_resource.rc
+
+# WASM
+mozillavpn.js
+mozillavpn.wasm
+qtloader.js

@@ -402,5 +402,10 @@
         <file>ui/components/VPNLoader.qml</file>
         <file>ui/components/VPNGreyLink.qml</file>
         <file>ui/components/VPNExpandableAppList.qml</file>
+        <file>ui/components/VPNVerticalSpacer.qml</file>
+        <file>ui/components/VPNWasmAlerts.qml</file>
+        <file>ui/components/VPNWasmMenu.qml</file>
+        <file>ui/components/VPNWasmMenuButton.qml</file>
+        <file>ui/components/VPNWasmHeader.qml</file>
     </qresource>
 </RCC>

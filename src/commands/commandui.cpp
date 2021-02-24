@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
+#include "featurelist.h"
 #include "fontloader.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -20,14 +21,13 @@
 #include "apppermission.h"
 
 #ifdef MVPN_LINUX
+#  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-
 #endif
 
 #ifdef MVPN_MACOS
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
-
 #endif
 
 #ifdef Q_OS_MAC
@@ -36,8 +36,9 @@
 #  endif
 #endif
 
-#ifdef QT_DEBUG
-#  include "inspector/inspectorserver.h"
+#ifdef MVPN_INSPECTOR
+#  include "inspector/inspectorhttpserver.h"
+#  include "inspector/inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -53,11 +54,16 @@
 #endif
 
 #ifdef MVPN_WINDOWS
+#  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iaphandler.h"
+#endif
+
+#ifdef MVPN_WASM
+#  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
 #include <QApplication>
@@ -120,6 +126,16 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
+    // If there is another instance, the execution terminates here.
+    if (!EventListener::checkOtherInstances()) {
+      return 0;
+    }
+
+    // This class receives communications from other instances.
+    EventListener eventListener;
+#endif
+
 #ifndef MVPN_WINDOWS
     // Signal handling for a proper shutdown.
     SignalHandler sh;
@@ -145,9 +161,10 @@ int CommandUI::run(QStringList& tokens) {
     MacOSUtils::setDockClickHandler();
 #endif
 
-
 #ifdef MVPN_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher(SettingsHolder::instance()->startAtBoot());
+    WindowsStartAtBootWatcher startAtBootWatcher(
+        SettingsHolder::instance()->startAtBoot());
+
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
@@ -177,6 +194,14 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNFeatureList",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = FeatureList::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -357,12 +382,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
                      &systemTrayHandler, &SystemTrayHandler::updateIcon);
 
-    QObject::connect(vpn.captivePortalDetection(),
-                     &CaptivePortalDetection::captivePortalDetected,
-                     [systemTrayHandler = &systemTrayHandler]() {
-                       systemTrayHandler->captivePortalNotificationRequested();
-                     });
-
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
@@ -373,12 +392,24 @@ int CommandUI::run(QStringList& tokens) {
       MacOSMenuBar::instance()->retranslate();
 #  endif
 #endif
+
+#ifdef MVPN_WASM
+      WasmWindowController::instance()->retranslate();
+#endif
     });
 
-#ifdef QT_DEBUG
-    InspectorServer inspectServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
-                     &InspectorServer::close);
+#ifdef MVPN_INSPECTOR
+    InspectorHttpServer inspectHttpServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectHttpServer, &InspectorHttpServer::close);
+
+    InspectorWebSocketServer inspectWebSocketServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectWebSocketServer, &InspectorWebSocketServer::close);
+#endif
+
+#ifdef MVPN_WASM
+    WasmWindowController wasmWindowController;
 #endif
 
     // Let's go.

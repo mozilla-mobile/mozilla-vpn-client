@@ -143,8 +143,8 @@ Rectangle {
 
             PropertyChanges {
                 target: logoTitle
-                //% "Connecting"
-                text: qsTrId("vpn.controller.connecting") + " …"
+                //% "Connecting…"
+                text: qsTrId("vpn.controller.connectingState")
                 color: "#FFFFFF"
             }
 
@@ -197,7 +197,7 @@ Rectangle {
 
             PropertyChanges {
                 target: logoTitle
-                text: qsTrId("vpn.controller.connecting") + " …"
+                text: qsTrId("vpn.controller.connectingState")
                 color: "#FFFFFF"
             }
 
@@ -261,7 +261,7 @@ Rectangle {
                 target: logoSubtitle
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active")+ "  •  " + formatTime(VPNController.time)
+                text: qsTrId("vpn.controller.active") + "  •  " + formatTime(VPNController.time)
                 color: "#FFFFFF"
                 opacity: 0.8
             }
@@ -392,54 +392,6 @@ Rectangle {
                 visible: false
                 opacity: 1
                 startAnimation: false
-            }
-
-        },
-        State {
-            name: VPNController.StateCaptivePortal
-
-            PropertyChanges {
-                target: box
-                color: "#FFFFFF"
-            }
-
-            PropertyChanges {
-                target: logoTitle
-                text: qsTrId("vpn.controller.deactivated") // TODO
-                color: Theme.fontColorDark
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: logoSubtitle
-                text: qsTrId("vpn.controller.activationSloagan") // TODO
-                color: Theme.fontColor
-                opacity: 0.55
-            }
-
-            PropertyChanges {
-                target: settingsImage
-                source: "../resources/settings.svg"
-            }
-
-            PropertyChanges {
-                target: connectionInfoButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfo
-                visible: false
-            }
-
-            PropertyChanges {
-                target: connectionStability
-                visible: false
-            }
-
-            PropertyChanges {
-                target: animatedRingsWrapper
-                visible: false
             }
 
         }
@@ -583,6 +535,7 @@ Rectangle {
 
     VPNHeadline {
         id: logoTitle
+        objectName: "controllerTitle"
 
         horizontalAlignment: Text.AlignHCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -595,6 +548,7 @@ Rectangle {
 
     VPNInterLabel {
         id: logoSubtitle
+        objectName: "controllerSubTitle"
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: logoTitle.bottom
@@ -616,6 +570,7 @@ Rectangle {
 
     VPNToggle {
         id: toggle
+        objectName: "controllerToggle"
 
         anchors.bottom: box.bottom
         anchors.bottomMargin: 48

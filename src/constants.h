@@ -10,6 +10,12 @@ namespace Constants {
 // should never happen.
 constexpr const char* SUBSCRIPTION_CURRENCY_VALUE_USD = "4.99$";
 
+// Number of msecs for the captive-portal block alert.
+constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
+
+// Number of msecs for the unsecured network alert.
+constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
+
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \
     constexpr type what = testingValue;
@@ -54,6 +60,11 @@ PRODBETAEXPR(const char*, API_URL, "https://vpn.mozilla.org",
              "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net")
 PRODBETAEXPR(const char*, LOGO_URL, ":/ui/resources/logo-dock.png",
              ":/ui/resources/logo-dock-beta.png")
+PRODBETAEXPR(
+    const char*, BALROG_URL,
+    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
+    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
+    "update.json");
 
 #undef PRODBETAEXPR
 

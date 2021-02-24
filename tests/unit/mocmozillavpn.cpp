@@ -108,10 +108,6 @@ void MozillaVPN::cleanupLogs() {}
 
 void MozillaVPN::serializeLogs(QTextStream*, std::function<void()>&&) {}
 
-bool MozillaVPN::startOnBootSupported() const { return false; }
-
-bool MozillaVPN::protectSelectedAppsSupported() const { return false; }
-
 void MozillaVPN::activate() {}
 
 void MozillaVPN::deactivate() {}
@@ -120,4 +116,14 @@ void MozillaVPN::refreshDevices() {}
 
 void MozillaVPN::quit() {}
 
-bool MozillaVPN::localNetworkAccessSupported() const { return false; }
+void MozillaVPN::update() {}
+
+void MozillaVPN::setUpdating(bool) {}
+
+MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
+  return DeviceNotFound;
+}
+
+void MozillaVPN::controllerStateChanged() {}
+
+void MozillaVPN::backendServiceRestore() {}

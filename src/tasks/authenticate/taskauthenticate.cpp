@@ -69,16 +69,17 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
             NetworkRequest::createForAuthenticationVerification(
                 this, pkceCodeSucces, pkceCodeVerifier);
 
-        connect(
-            request, &NetworkRequest::requestFailed,
-            [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.log() << "Failed to complete the authentication" << error;
-              vpn->errorHandle(ErrorHandler::toErrorType(error));
-              emit completed();
-            });
+        connect(request, &NetworkRequest::requestFailed,
+                [this, vpn](QNetworkReply*, QNetworkReply::NetworkError error,
+                            const QByteArray&) {
+                  logger.log()
+                      << "Failed to complete the authentication" << error;
+                  vpn->errorHandle(ErrorHandler::toErrorType(error));
+                  emit completed();
+                });
 
         connect(request, &NetworkRequest::requestCompleted,
-                [this, vpn](const QByteArray& data) {
+                [this, vpn](QNetworkReply*, const QByteArray& data) {
                   logger.log() << "Authentication completed";
                   authenticationCompleted(vpn, data);
                 });
@@ -131,14 +132,17 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
   logger.log() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
-  Q_ASSERT(!json.isNull());
+  if (json.isNull()) {
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    return;
+  }
 
-  Q_ASSERT(json.isObject());
   QJsonObject obj = json.object();
-
-  Q_ASSERT(obj.contains("user"));
   QJsonValue userObj = obj.value("user");
-  Q_ASSERT(userObj.isObject());
+  if (!userObj.isObject()) {
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    return;
+  }
 
 #ifdef QT_DEBUG
   logger.log()
@@ -146,9 +150,11 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
       << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
 #endif
 
-  Q_ASSERT(obj.contains("token"));
   QJsonValue tokenValue = obj.value("token");
-  Q_ASSERT(tokenValue.isString());
+  if (!tokenValue.isString()) {
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
+    return;
+  }
 
   QJsonDocument userDoc;
   userDoc.setObject(userObj.toObject());

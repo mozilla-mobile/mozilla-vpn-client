@@ -5,8 +5,6 @@
 #ifndef WINDOWSDATAMIGRATION_H
 #define WINDOWSDATAMIGRATION_H
 
-#include <QString>
-
 class WindowsDataMigration final {
  public:
   static void migrate();

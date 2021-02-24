@@ -54,16 +54,18 @@ void TaskAddDevice::run(MozillaVPN* vpn) {
       NetworkRequest::createForDeviceCreation(this, m_deviceName, publicKey);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, vpn](QNetworkReply*, QNetworkReply::NetworkError error,
+                      const QByteArray&) {
             logger.log() << "Failed to add the device" << error;
             vpn->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this, vpn, publicKey, privateKey](const QByteArray&) {
-            logger.log() << "Device added";
-            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [this, vpn, publicKey, privateKey](QNetworkReply*, const QByteArray&) {
+        logger.log() << "Device added";
+        vpn->deviceAdded(m_deviceName, publicKey, privateKey);
+        emit completed();
+      });
 }

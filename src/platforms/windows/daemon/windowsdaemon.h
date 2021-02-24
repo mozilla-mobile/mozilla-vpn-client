@@ -8,8 +8,6 @@
 #include "daemon/daemon.h"
 #include "windowstunnelmonitor.h"
 
-#include <QDateTime>
-
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
 
 class WindowsDaemon final : public Daemon {
@@ -18,8 +16,6 @@ class WindowsDaemon final : public Daemon {
  public:
   WindowsDaemon();
   ~WindowsDaemon();
-
-  bool activate(const Config& config) override;
 
   QByteArray getStatus() override;
 
@@ -36,8 +32,6 @@ class WindowsDaemon final : public Daemon {
   void monitorBackendFailure();
 
  private:
-  QDateTime m_connectionDate;
-
   enum State {
     Active,
     Inactive,

@@ -4,6 +4,7 @@
 
 include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
 QT += network
 QT += quick
@@ -32,8 +33,10 @@ SOURCES += \
         apppermission.cpp \
         authenticationlistener.cpp \
         captiveportal/captiveportal.cpp \
-        captiveportal/captiveportalactivator.cpp \
         captiveportal/captiveportaldetection.cpp \
+        captiveportal/captiveportaldetectionimpl.cpp \
+        captiveportal/captiveportalmonitor.cpp \
+        captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
         closeeventhandler.cpp \
         command.cpp \
@@ -54,11 +57,13 @@ SOURCES += \
         cryptosettings.cpp \
         curve25519.cpp \
         errorhandler.cpp \
+        featurelist.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        ipaddress.cpp \
         ipaddressrange.cpp \
         leakdetector.cpp \
         localizer.cpp \
@@ -79,6 +84,7 @@ SOURCES += \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
+        networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
@@ -99,15 +105,20 @@ SOURCES += \
         tasks/function/taskfunction.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
-        timersingleshot.cpp
+        timersingleshot.cpp \
+        update/updater.cpp \
+        update/versionapi.cpp \
+        urlopener.cpp
 
 HEADERS += \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
         captiveportal/captiveportal.h \
-        captiveportal/captiveportalactivator.h \
         captiveportal/captiveportaldetection.h \
+        captiveportal/captiveportaldetectionimpl.h \
+        captiveportal/captiveportalmonitor.h \
+        captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
         closeeventhandler.h \
         command.h \
@@ -130,7 +141,9 @@ HEADERS += \
         cryptosettings.h \
         curve25519.h \
         errorhandler.h \
+        featurelist.h \
         fontloader.h \
+        ipaddress.h \
         ipaddressrange.h \
         leakdetector.h \
         localizer.h \
@@ -150,6 +163,8 @@ HEADERS += \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \
+        networkwatcher.h \
+        networkwatcherimpl.h \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
@@ -172,20 +187,34 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
-        timersingleshot.h
+        timersingleshot.h \
+        update/updater.h \
+        update/versionapi.h \
+        urlopener.h
 
-debug {
-    message(Adding the inspector)
+inspector {
+    message(Enabling the inspector)
+
+    QT+= websockets
     QT+= testlib
+    QT.testlib.CONFIG -= console
     CONFIG += no_testcase_installs
 
+    RESOURCES += inspector/inspector.qrc
+
+    DEFINES += MVPN_INSPECTOR
+
     SOURCES += \
-            inspector/inspectorconnection.cpp \
-            inspector/inspectorserver.cpp
+            inspector/inspectorhttpconnection.cpp \
+            inspector/inspectorhttpserver.cpp \
+            inspector/inspectorwebsocketconnection.cpp \
+            inspector/inspectorwebsocketserver.cpp
 
     HEADERS += \
-            inspector/inspectorconnection.h \
-            inspector/inspectorserver.h
+            inspector/inspectorhttpconnection.h \
+            inspector/inspectorhttpserver.h \
+            inspector/inspectorwebsocketconnection.h \
+            inspector/inspectorwebsocketserver.h
 }
 
 # Signal handling for unix platforms
@@ -200,10 +229,20 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 production {
+    message(Production build)
     DEFINES += MVPN_PRODUCTION_MODE
     RESOURCES += logo_prod.qrc
 } else {
+    message(Staging build)
     RESOURCES += logo_beta.qrc
+}
+
+balrog {
+    message(Balrog enabled)
+    DEFINES += MVPN_BALROG
+
+    SOURCES += update/balrog.cpp
+    HEADERS += update/balrog.h
 }
 
 DUMMY {
@@ -213,7 +252,6 @@ DUMMY {
 
     TARGET = mozillavpn
     QT += networkauth
-    QT += svg
 
     DEFINES += MVPN_DUMMY
 
@@ -245,20 +283,24 @@ else:linux:!android {
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
 
     SOURCES += \
+            eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
+            platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
+            eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
+            platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxpingsendworker.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
@@ -332,6 +374,11 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
+    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
+    helper.path = $${USRPATH}/share/mozillavpn
+    helper.files = ../linux/daemon/helper.sh
+    INSTALLS += helper
+
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
 }
@@ -341,6 +388,9 @@ else:android {
     message(Android build)
 
     QMAKE_CXXFLAGS *= -Werror
+    # Android Deploy-to-Qt strips the info anyway
+    # but we want to create an extra bundle with the info :)
+    CONFIG += force_debug_info
 
     TARGET = mozillavpn
     QT += networkauth
@@ -426,6 +476,7 @@ else:macos {
     # For the loginitem
     LIBS += -framework ServiceManagement
     LIBS += -framework Security
+    LIBS += -framework CoreWLAN
 
     DEFINES += MVPN_MACOS
 
@@ -438,6 +489,7 @@ else:macos {
 
     OBJECTIVE_SOURCES += \
             platforms/macos/macoscryptosettings.mm \
+            platforms/macos/macosnetworkwatcher.mm \
             platforms/macos/macosutils.mm
 
     HEADERS += \
@@ -448,6 +500,7 @@ else:macos {
             tasks/authenticate/desktopauthenticationlistener.h
 
     OBJECTIVE_HEADERS += \
+            platforms/macos/macosnetworkwatcher.h \
             platforms/macos/macosutils.h
 
     isEmpty(MVPN_MACOS) {
@@ -587,15 +640,19 @@ else:win* {
         daemon/daemon.cpp \
         daemon/daemonlocalserver.cpp \
         daemon/daemonlocalserverconnection.cpp \
+        eventlistener.cpp \
         localsocketcontroller.cpp \
-        platforms/windows/daemon/windowscommons.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
         platforms/windows/windowsservicemanager.cpp \
+        platforms/windows/windowscaptiveportaldetection.cpp \
+        platforms/windows/windowscaptiveportaldetectionthread.cpp \
+        platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
+        platforms/windows/windowsnetworkwatcher.cpp \
         platforms/windows/windowspingsendworker.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
@@ -606,19 +663,57 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        eventlistener.h \
         localsocketcontroller.h \
-        platforms/windows/daemon/windowscommons.h \
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
         platforms/windows/windowsservicemanager.h \
+        platforms/windows/windowscaptiveportaldetection.h \
+        platforms/windows/windowscaptiveportaldetectionthread.h \
+        platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
+        platforms/windows/windowsnetworkwatcher.h \
         platforms/windows/windowspingsendworker.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
         wgquickprocess.h
+}
+
+else:wasm {
+    message(WASM \\o/)
+    DEFINES += MVPN_DUMMY
+    DEFINES += MVPN_WASM
+
+    QMAKE_CXXFLAGS *= -Werror
+
+    TARGET = mozillavpn
+    QT += svg
+
+    SOURCES += \
+            platforms/dummy/dummycontroller.cpp \
+            platforms/dummy/dummycryptosettings.cpp \
+            platforms/dummy/dummypingsendworker.cpp \
+            platforms/macos/macosmenubar.cpp \
+            platforms/wasm/wasmauthenticationlistener.cpp \
+            platforms/wasm/wasmnetworkrequest.cpp \
+            platforms/wasm/wasmnetworkwatcher.cpp \
+            platforms/wasm/wasmwindowcontroller.cpp \
+            systemtraynotificationhandler.cpp
+
+    HEADERS += \
+            platforms/dummy/dummycontroller.h \
+            platforms/dummy/dummypingsendworker.h \
+            platforms/macos/macosmenubar.h \
+            platforms/wasm/wasmauthenticationlistener.h \
+            platforms/wasm/wasmnetworkwatcher.h \
+            platforms/wasm/wasmwindowcontroller.h \
+            systemtraynotificationhandler.h
+
+    SOURCES -= networkrequest.cpp
+    RESOURCES += platforms/wasm/networkrequests.qrc
 }
 
 # Anything else
