@@ -101,6 +101,11 @@ bool DBusService::activate(const QString& jsonConfig) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.log() << "Deactivate";
+  if (!WireguardUtils::interfaceExists()) {
+    qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
+             WG_INTERFACE);
+    return false;
+  }
   return Daemon::deactivate(emitSignals);
 }
 

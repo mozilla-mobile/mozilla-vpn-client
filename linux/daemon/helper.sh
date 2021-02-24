@@ -192,7 +192,6 @@ cmd_up() {
 }
 
 cmd_down() {
-	[[ " $(wg show interfaces) " == *" $INTERFACE "* ]] || die "\`$INTERFACE' is not a WireGuard interface"
 	del_if
 	unset_dns || true
 	remove_firewall || true
