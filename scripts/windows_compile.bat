@@ -30,7 +30,13 @@ if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "-help" SET SHOW_HELP=T
   if "%1" NEQ "-p" (
-    if "%1" NEQ "--prod" SET SHOW_HELP=T
+    if "%1" NEQ "--prod" (
+      if "%1" NEQ "-t" (
+        if "%1" NEQ "--test" (
+          SET SHOW_HELP=T
+        )
+      )
+    )
   )
 )
 
@@ -38,6 +44,7 @@ if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
   ECHO "  -p|--prod            Production build"
+  ECHO "  -t|--test            Test mode"
   EXIT 0
 )
 
@@ -45,13 +52,24 @@ SET PROD_BUILD=F
 if "%1"== "-p" SET PROD_BUILD=T
 if "%1"== "--prod" SET PROD_BUILD=T
 
-SET PROD_FLAGS=
+SET TEST_BUILD=F
+if "%1"== "-t" SET TEST_BUILD=T
+if "%1"== "--test" SET TEST_BUILD=T
+
+SET FLAGS=
 if "%PROD_BUILD%" == "T" (
   ECHO Production build enabled
-  SET PROD_FLAGS="CONFIG+=production"
+  SET FLAGS=%FLAGS% CONFIG+=production
 ) else (
   ECHO Staging build enabled
-  SET PROD_FLAGS="CONFIG+=inspector"
+  SET FLAGS=%FLAGS% CONFIG+=inspector
+)
+
+if "%TEST_BUILD%" == "T" (
+  ECHO Test build enabled
+  SET FLAGS=%FLAGS% CONFIG+=DUMMY
+) else (
+  SET FLAGS=%FLAGS% CONFIG+=balrog
 )
 
 ECHO Checking required commands...
@@ -72,7 +90,7 @@ ECHO Importing languages...
 python scripts\importLanguages.py
 
 ECHO Creating the project...
-qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=balrog %PROD_FLAGS%
+qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
