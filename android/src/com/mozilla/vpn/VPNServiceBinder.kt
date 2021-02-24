@@ -5,6 +5,7 @@
 package org.mozilla.firefox.vpn
 import android.content.Context
 import android.os.Binder
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
 import android.util.Log
@@ -12,10 +13,10 @@ import com.mozilla.vpn.NotificationUtil
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
-import org.json.JSONObject
 
 class VPNServiceBinder(service: VPNService) : Binder() {
 
@@ -174,12 +175,17 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * [ACTIONS.registerEventListener]
      */
     fun dispatchEvent(code: Int, payload: String) {
-        mListener?.let {
-            if (it.isBinderAlive) {
-                val data = Parcel.obtain()
-                data.writeByteArray(payload.toByteArray(charset("UTF-8")))
-                it.transact(code, data, Parcel.obtain(), 0)
+        try {
+            mListener?.let {
+                if (it.isBinderAlive) {
+                    val data = Parcel.obtain()
+                    data.writeByteArray(payload.toByteArray(charset("UTF-8")))
+                    it.transact(code, data, Parcel.obtain(), 0)
+                }
             }
+        } catch (e: DeadObjectException) {
+            // If the QT Process is killed (not just inactive)
+            // we cant access isBinderAlive, so nothing to do here.
         }
     }
 
