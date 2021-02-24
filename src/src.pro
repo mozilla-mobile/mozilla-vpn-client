@@ -376,7 +376,7 @@ else:linux:!android {
 
     DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
     helper.path = $${USRPATH}/share/mozillavpn
-    helper.files = platforms/linux/daemon/helper.sh
+    helper.files = ../linux/daemon/helper.sh
     INSTALLS += helper
 
     CONFIG += link_pkgconfig
