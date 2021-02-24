@@ -67,3 +67,7 @@ MozillaVPN_resource.rc
 mozillavpn.js
 mozillavpn.wasm
 qtloader.js
+
+*.dll
+.vs/
+*.msi

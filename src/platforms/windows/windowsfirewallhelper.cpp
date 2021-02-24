@@ -14,6 +14,14 @@
 #include <comdef.h>
 #include <netfw.h>
 
+#include <initguid.h>
+#include <guiddef.h>
+
+
+DEFINE_GUID(MOZILLA_BIND_IP_V4_GUID, 0x3dc73ff7,0xbf6c,0x443e,0xa7,0x67,0x00,0x92,0xbc,0x89,0x75,0x60);
+DEFINE_GUID(MOZILLA_BIND_IP_SUBLAYER,0x9d83081d,0x32cc,0x42b3,0x86,0x73,0xcc,0x90,0x04,0x8d,0x59,0xbd);
+
+
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsFirewallHelper");
 WindowsFirewallHelper* s_instance= nullptr;
@@ -250,7 +258,25 @@ bool WindowsFirewallHelper::excludeApp(QString path){
            return false;
        }
     }
+    // Only check the First condition -> APPID Match
+    filter.numFilterConditions = 1;
+    // Make a Callout to rebind the open request to the Right Interface
+    filter.action.type = FWP_ACTION_CALLOUT_TERMINATING;
+    filter.action.calloutKey = MOZILLA_BIND_IP_V4_GUID;
+    // #9 Rewrite ipv4 traffic
+    {
+       QString name = QString("Force eth0 for IPv4 Traffic of: "+path);
+       std::wstring wname = name.toStdWString();
+       PCWSTR filterName = wname.c_str();
+       filter.displayData.name = (PWSTR)filterName;
+       filter.layerKey = FWPM_LAYER_ALE_BIND_REDIRECT_V4;
+       result = FwpmFilterAdd0(mSessionHandle, &filter, NULL, &filterID);
 
+       if (result != ERROR_SUCCESS){
+           logger.log() << "Failed to set rule "<< name <<"\n" << result;
+           return false;
+       }
+    }
 
     logger.log() << "Ruleset applied for: "<< path;
     return true;
