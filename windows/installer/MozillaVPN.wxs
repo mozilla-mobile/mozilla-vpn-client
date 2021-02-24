@@ -96,7 +96,7 @@
 					Arguments="windowsdaemon"
 					ErrorControl="normal"
 					Vital="yes">
-					 <util:PermissionEx User="Users" ServiceQueryStatus="yes"  ServiceStart="yes" ServiceStop="yes" ServiceUserDefinedControl="yes"/>
+					 <util:PermissionEx User="Users" ServiceQueryStatus="yes"  ServiceStart="yes" />
 				</ServiceInstall>
 
 				<util:ServiceConfig
