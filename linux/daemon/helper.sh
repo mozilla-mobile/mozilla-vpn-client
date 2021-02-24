@@ -109,13 +109,26 @@ set_dns() {
 	# Iterate through values of DNS array and pipe "nameserver" string to 
 	# resolvconf command which adds nameserver rows for each dns entry to /etc/resolv.conf
 	# (maybe amongst other things)
-	{ printf 'nameserver %s\n' "${DNS[@]}" 
-	} | resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
+	printf 'nameserver %s\n' "${DNS[@]}" | resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
 	HAVE_SET_DNS=1
 }
 
 unset_dns() {
 	resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
+}
+
+add_route() {
+	local proto=-4
+	[[ $1 == *:* ]] && proto=-6
+	[[ $TABLE != off ]] || return 0
+
+	if [[ -n $TABLE && $TABLE != auto ]]; then
+		cmd ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
+	elif [[ $1 == */0 ]]; then
+		add_default "$1"
+	else
+		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || cmd ip $proto route add "$1" dev "$INTERFACE"
+	fi
 }
 
 get_fwmark() {
@@ -184,10 +197,9 @@ cmd_up() {
 	done
 	set_mtu_up
 	set_dns
-	# Get the allowed ips from wg show (added to peer using set_conf always 0.0.0.0/0 ::/0)
-	# Then process them with add_default
+	# Get the allowed ips from wg show (added to peer using set_conf)
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do
-		add_default "$i"
+		add_route "$i"
 	done
 	trap - INT TERM EXIT
 }
