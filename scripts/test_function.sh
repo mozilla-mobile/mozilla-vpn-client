@@ -11,7 +11,7 @@ print N ""
 
 runTest() {
   print Y "Running the app..."
-  $1 &>/tmp/VPN_LOG.txt &
+  "$1" &>/tmp/VPN_LOG.txt &
   PID=$!
   print G "done."
 
@@ -39,7 +39,7 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
 fi
 
 printn Y "Retrieving mozillavpn version... "
-$1 -v 2>/dev/null || die "Failed."
+"$1" -v 2>/dev/null || die "Failed."
 print G "done."
 
 if [ -f "$2" ]; then

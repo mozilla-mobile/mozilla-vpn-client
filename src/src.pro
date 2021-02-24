@@ -250,7 +250,12 @@ DUMMY {
 
     QMAKE_CXXFLAGS *= -Werror
 
-    TARGET = mozillavpn
+    macos {
+      TARGET = MozillaVPN
+    } else {
+      TARGET = mozillavpn
+    }
+
     QT += networkauth
 
     DEFINES += MVPN_DUMMY
