@@ -26,14 +26,9 @@
 #endif
 
 #ifdef MVPN_MACOS
+#  include "platforms/macos/macosmenubar.h"
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
-#endif
-
-#ifdef Q_OS_MAC
-#  ifndef MVPN_IOS
-#    include "platforms/macos/macosmenubar.h"
-#  endif
 #endif
 
 #ifdef MVPN_INSPECTOR
@@ -365,8 +360,7 @@ int CommandUI::run(QStringList& tokens) {
                      notificationHandler,
                      &NotificationHandler::showNotification);
 
-#ifdef Q_OS_MAC
-#  ifndef MVPN_IOS
+#ifdef MVPN_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
@@ -376,7 +370,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-#  endif
 #endif
 
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
@@ -387,10 +380,8 @@ int CommandUI::run(QStringList& tokens) {
       QmlEngineHolder::instance()->engine()->retranslate();
       SystemTrayHandler::instance()->retranslate();
 
-#ifdef Q_OS_MAC
-#  ifndef MVPN_IOS
+#ifdef MVPN_MACOS
       MacOSMenuBar::instance()->retranslate();
-#  endif
 #endif
 
 #ifdef MVPN_WASM
