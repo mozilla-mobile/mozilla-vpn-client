@@ -175,7 +175,6 @@ set_config() {
 
 cmd_up() {
 	local i
-	[[ -z $(ip link show dev "$INTERFACE" 2>/dev/null) ]] || die "\`$INTERFACE' already exists"
 	trap 'del_if; exit' INT TERM EXIT
 	add_if
 	set_config

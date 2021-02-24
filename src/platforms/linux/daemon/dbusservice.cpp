@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 #include "wgquickprocess.h"
+#include "daemon/wgutils.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -87,6 +88,11 @@ bool DBusService::activate(const QString& jsonConfig) {
   Config config;
   if (!parseConfig(obj, config)) {
     logger.log() << "Invalid configuration";
+    return false;
+  }
+
+  if (WireguardUtils::interfaceExists()) {
+    qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
     return false;
   }
 
