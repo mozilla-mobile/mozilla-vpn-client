@@ -44,7 +44,7 @@
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifndef MVPN_WINDOWS
+#ifndef Q_OS_WIN
 #  include "signalhandler.h"
 #endif
 
@@ -131,7 +131,7 @@ int CommandUI::run(QStringList& tokens) {
     EventListener eventListener;
 #endif
 
-#ifndef MVPN_WINDOWS
+#ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
