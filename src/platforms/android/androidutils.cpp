@@ -79,7 +79,7 @@ void AndroidUtils::startAuthentication(AuthenticationListener* listener,
   Q_ASSERT(!m_listener);
   m_listener = listener;
 
-  connect(listener, &QObject::destroyed, [this]() { m_listener = nullptr; });
+  connect(listener, &QObject::destroyed, this, &AndroidUtils::resetListener);
 
   m_url = url;
   emit urlChanged();
