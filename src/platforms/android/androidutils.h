@@ -39,6 +39,8 @@ class AndroidUtils final : public QObject {
   AndroidUtils(QObject* parent);
   ~AndroidUtils();
 
+  void resetListener() { m_listener = nullptr; }
+
  private:
   QUrl m_url;
   AuthenticationListener* m_listener = nullptr;
