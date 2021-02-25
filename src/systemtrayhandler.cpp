@@ -295,5 +295,5 @@ void SystemTrayHandler::showNotification(const QString& title,
   emit notificationShown(title, message);
 
   QIcon icon(Constants::LOGO_URL);
-  showMessage(title, message, icon, timerMsec * 1000);
+  showMessage(title, message, icon, timerMsec);
 }
