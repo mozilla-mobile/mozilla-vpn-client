@@ -322,13 +322,16 @@ else:linux:!android {
             platforms/linux/daemon/dbusservice.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
+            platforms/linux/daemon/wgutilslinux.cpp \
             wgquickprocess.cpp
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/daemon.h \
+            daemon/wgutils.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/polkithelper.h \
+            platforms/linux/daemon/wgutilslinux.h \
             wgquickprocess.h
 
     isEmpty(USRPATH) {
@@ -550,6 +553,7 @@ else:macos {
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/wgutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
@@ -672,6 +676,7 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/wgutils.h \
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/daemon/windowsdaemon.h \

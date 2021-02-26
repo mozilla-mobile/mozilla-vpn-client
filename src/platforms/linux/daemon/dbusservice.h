@@ -6,6 +6,7 @@
 #define DBUSSERVICE_H
 
 #include "daemon/daemon.h"
+#include "wgutilslinux.h"
 
 class DbusAdaptor;
 
@@ -37,13 +38,16 @@ class DBusService final : public Daemon {
   bool run(Op op, const Config& config) override;
 
   bool supportServerSwitching(const Config& config) const override;
-
   bool switchServer(const Config& config) override;
+
+  bool supportWGUtils() const override { return true; }
+  WireguardUtilsLinux* wgutils() override;
 
   QByteArray getStatus() override;
 
  private:
   DbusAdaptor* m_adaptor = nullptr;
+  WireguardUtilsLinux* m_wgutils = nullptr;
 };
 
 #endif  // DBUSSERVICE_H

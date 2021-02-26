@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 #include "wgquickprocess.h"
+#include "wgutilslinux.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -39,6 +40,13 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
+
+WireguardUtilsLinux* DBusService::wgutils() {
+  if (!m_wgutils) {
+    m_wgutils = new WireguardUtilsLinux();
+  }
+  return m_wgutils;
+}
 
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);

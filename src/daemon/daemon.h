@@ -6,6 +6,7 @@
 #define DAEMON_H
 
 #include "ipaddressrange.h"
+#include "wgutils.h"
 
 #include <QDateTime>
 
@@ -55,19 +56,16 @@ class Daemon : public QObject {
 
  protected:
   virtual bool run(Op op, const Config& config) = 0;
-
   virtual bool supportServerSwitching(const Config& config) const {
     Q_UNUSED(config);
     return false;
   }
-
   virtual bool switchServer(const Config& config);
+  virtual bool supportWGUtils() const { return false; }
+  virtual WireguardUtils* wgutils();
 
- protected:
   bool m_connected = false;
-
   QDateTime m_connectionDate;
-
   Config m_lastConfig;
 };
 
