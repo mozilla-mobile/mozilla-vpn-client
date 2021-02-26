@@ -284,6 +284,7 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
+  m_completed = true;
   m_timer.stop();
 
   int status = statusCode();
@@ -296,45 +297,37 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     logger.log() << "Network error:" << m_reply->error()
                  << "status code:" << status << "- body:" << data;
-    emit requestFailed(m_reply, m_reply->error(), data);
+    emit requestFailed(m_reply->error(), data);
     return;
   }
 
-  emit requestCompleted(m_reply, data);
-}
-
-void NetworkRequest::handleHeaderReceived() {
-  Q_ASSERT(m_reply);
-
-  logger.log() << "Network header received";
-
-  int status = statusCode();
-
+  // This is an extra check for succeeded requests (status code 200 vs 201, for
+  // instance). The real network status check is done in the previous if-stmt.
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    m_timer.stop();
-
-    m_completed = true;
-    m_reply->abort();
-
-    emit requestFailed(m_reply, QNetworkReply::ConnectionRefusedError,
-                       QByteArray());
+    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }
 
-  emit requestHeaderReceived(m_reply);
+  emit requestCompleted(data);
+}
+
+void NetworkRequest::handleHeaderReceived() {
+  logger.log() << "Network header received";
+  emit requestHeaderReceived(this);
 }
 
 void NetworkRequest::timeout() {
   Q_ASSERT(m_reply);
   Q_ASSERT(!m_reply->isFinished());
+  Q_ASSERT(!m_completed);
 
   m_completed = true;
   m_reply->abort();
 
   logger.log() << "Network request timeout";
-  emit requestFailed(m_reply, QNetworkReply::TimeoutError, QByteArray());
+  emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
 void NetworkRequest::getRequest() {

@@ -69,15 +69,14 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
       this, url, CAPTIVEPORTAL_HOST);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Captive portal request failed:" << error;
             --m_pendingRequests;
             maybeComplete();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply*, const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.log() << "Captive portal request completed:" << data;
 
             --m_pendingRequests;

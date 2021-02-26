@@ -216,8 +216,7 @@ void ConnectionDataHolder::updateIpAddress() {
 
   NetworkRequest* request = NetworkRequest::createForIpInfo(this);
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "IP address request failed" << error;
 
             ErrorHandler::ErrorType errorType =
@@ -231,7 +230,7 @@ void ConnectionDataHolder::updateIpAddress() {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply*, const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.log() << "IP address request completed";
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isObject()) {
