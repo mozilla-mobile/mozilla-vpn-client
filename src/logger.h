@@ -36,8 +36,6 @@ constexpr const char* LOG_IOS = "ios";
 constexpr const char* LOG_ANDROID = "android";
 #endif
 
-class QNetworkReply;
-
 class Logger {
  public:
   Logger(const QString& module, const QString& className);

@@ -14,7 +14,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QNetworkReply>
 #include <QProcess>
 #include <QScopeGuard>
 #include <QSslCertificate>
@@ -112,28 +111,27 @@ void Balrog::start() {
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply* reply, const QByteArray& data) {
+          [this, request](const QByteArray& data) {
             logger.log() << "Request completed";
 
-            if (!fetchSignature(reply, data)) {
+            if (!fetchSignature(request, data)) {
               logger.log() << "Ignore failure.";
               deleteLater();
             }
           });
 }
 
-bool Balrog::fetchSignature(QNetworkReply* reply,
+bool Balrog::fetchSignature(NetworkRequest* request,
                             const QByteArray& dataUpdate) {
-  Q_ASSERT(reply);
+  Q_ASSERT(request);
 
-  QByteArray header = reply->rawHeader("Content-Signature");
+  QByteArray header = request->rawHeader("Content-Signature");
   if (header.isEmpty()) {
     logger.log() << "Content-Signature missing";
     return false;
@@ -176,15 +174,13 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, x5u, 200);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, signatureBlob, algorithm, dataUpdate](QNetworkReply*,
-                                                       const QByteArray& data) {
+          [this, signatureBlob, algorithm, dataUpdate](const QByteArray& data) {
             logger.log() << "Request completed";
             if (!checkSignature(data, signatureBlob, algorithm, dataUpdate)) {
               deleteLater();
@@ -374,32 +370,29 @@ bool Balrog::processData(const QByteArray& data) {
     NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                   const QByteArray&) {
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.log() << "Request failed" << error;
               deleteLater();
             });
 
     connect(request, &NetworkRequest::requestHeaderReceived,
-            [this](QNetworkReply* reply) {
-              Q_ASSERT(reply);
+            [this](NetworkRequest* request) {
+              Q_ASSERT(request);
               logger.log() << "Request header received";
 
               // We want to proceed only if the status code is 200. The request
               // will be aborted, but the signal emitted.
-              QVariant statusCode =
-                  reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-              if (statusCode.isValid() && statusCode.toInt() == 200) {
+              if (request->statusCode() == 200) {
                 emit updateRecommended();
               }
 
               logger.log() << "Abort request for status code"
                            << statusCode.toInt();
-              reply->abort();
+              request->abort();
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this](QNetworkReply*, const QByteArray&) {
+            [this](const QByteArray&) {
               logger.log() << "Request completed";
               deleteLater();
             });
@@ -430,17 +423,16 @@ bool Balrog::processData(const QByteArray& data) {
   // No timeout for this request.
   request->disableTimeout();
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply* reply, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
-            logger.log() << "Request failed" << error;
-            propagateError(reply, error);
-            deleteLater();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this, request](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.log() << "Request failed" << error;
+        propagateError(request, error);
+        deleteLater();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, hashValue, hashFunction, url](QNetworkReply*,
-                                               const QByteArray& data) {
+          [this, hashValue, hashFunction, url](const QByteArray& data) {
             logger.log() << "Request completed";
 
             if (!computeHash(url, data, hashValue, hashFunction)) {
@@ -588,17 +580,15 @@ bool Balrog::install(const QString& filePath) {
   return true;
 }
 
-void Balrog::propagateError(QNetworkReply* reply,
+void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
-  Q_ASSERT(reply);
+  Q_ASSERT(request);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QVariant statusCode =
-      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
   // 451 Unavailable For Legal Reasons
-  if (statusCode.isValid() && statusCode.toInt() == 451) {
+  if (request->statusCode() == 451) {
     logger.log() << "Geo IP restriction detected";
     vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
     return;

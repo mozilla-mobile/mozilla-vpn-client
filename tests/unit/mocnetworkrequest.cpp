@@ -9,15 +9,6 @@
 
 namespace {};
 
-// A simple class to make QNetworkReply CTOR public
-class NetworkReply : public QNetworkReply {
- public:
-  NetworkReply() : QNetworkReply(nullptr) {}
-
-  qint64 readData(char*, qint64) override { return -1; }
-  void abort() override {}
-};
-
 NetworkRequest::NetworkRequest(QObject* parent, int status)
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
@@ -28,15 +19,12 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
   TimerSingleShot::create(this, 0, [this, nc]() {
     deleteLater();
 
-    NetworkReply nr;
-
     if (nc.m_status == TestHelper::NetworkConfig::Failure) {
-      emit requestFailed(&nr, QNetworkReply::NetworkError::HostNotFoundError,
-                         "");
+      emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError, "");
     } else {
       Q_ASSERT(nc.m_status == TestHelper::NetworkConfig::Success);
 
-      emit requestCompleted(&nr, nc.m_body);
+      emit requestCompleted(nc.m_body);
     }
   });
 }
