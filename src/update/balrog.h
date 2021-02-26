@@ -11,6 +11,8 @@
 #include <QNetworkReply>
 #include <QTemporaryDir>
 
+class NetworkRequest;
+
 class Balrog final : public Updater {
   Q_DISABLE_COPY_MOVE(Balrog)
 
@@ -24,7 +26,7 @@ class Balrog final : public Updater {
   static QString userAgent();
 
   bool processData(const QByteArray& data);
-  bool fetchSignature(QNetworkReply* reply, const QByteArray& data);
+  bool fetchSignature(NetworkRequest* request, const QByteArray& data);
   bool checkSignature(const QByteArray& signature,
                       const QByteArray& signatureBlob,
                       QCryptographicHash::Algorithm algorithm,
@@ -36,7 +38,8 @@ class Balrog final : public Updater {
                    const QString& hashValue, const QString& hashFunction);
   bool saveFileAndInstall(const QString& url, const QByteArray& data);
   bool install(const QString& filePath);
-  void propagateError(QNetworkReply* reply, QNetworkReply::NetworkError error);
+  void propagateError(NetworkRequest* request,
+                      QNetworkReply::NetworkError error);
 
  private:
   QTemporaryDir m_tmpDir;
