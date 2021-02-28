@@ -42,7 +42,7 @@ class CommandLinuxDaemon final : public Command {
         return 1;
       }
 
-      if (!dbus->checkInterface()) {
+      if (!dbus->removeInterfaceIfExists()) {
         return 1;
       }
 

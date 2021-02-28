@@ -21,7 +21,7 @@ class DBusService final : public Daemon {
 
   void setAdaptor(DbusAdaptor* adaptor);
 
-  bool checkInterface();
+  bool removeInterfaceIfExists();
 
   using Daemon::activate;
 
