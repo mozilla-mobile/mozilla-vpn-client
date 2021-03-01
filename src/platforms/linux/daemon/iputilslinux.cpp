@@ -30,6 +30,36 @@ bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
   return true;
 }
 
+bool IPUtilsLinux::setMTUAndUp() {
+  // TODO - Linux specific
+
+  // Create socket file descriptor to perform the ioctl operations on
+  int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+
+  // Setup the interface to interact with
+  struct ifreq ifr;
+  strncpy(ifr.ifr_name, WG_INTERFACE, IFNAMSIZ);
+
+  // MTU
+  ifr.ifr_mtu = 1420;
+  int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
+  if (ret) {
+    logger.log() << "Failed to set MTU -- Return code: " << ret;
+    return false;
+  }
+  // Up
+  ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
+  ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
+  if (ret) {
+    logger.log() << "Failed to set device up -- Return code: " << ret;
+    return false;
+  }
+
+  close(sockfd);
+  // TODO c++ question - do I need to free any other objects?
+  return true;
+}
+
 bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
   struct ifreq ifr;
   struct sockaddr_in* ifrAddr = (struct sockaddr_in*)&ifr.ifr_addr;

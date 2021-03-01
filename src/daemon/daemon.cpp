@@ -101,6 +101,9 @@ bool Daemon::activate(const InterfaceConfig& config) {
     if (!iputils()->addInterfaceIPs(config)) {
       return false;
     }
+    if (!iputils()->setMTUAndUp()) {
+      return false;
+    }
   }
 
   m_lastConfig = config;

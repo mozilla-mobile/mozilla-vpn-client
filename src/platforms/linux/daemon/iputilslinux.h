@@ -12,6 +12,7 @@
 class IPUtilsLinux final : public IPUtils {
  public:
   bool addInterfaceIPs(const InterfaceConfig& config) override;
+  bool setMTUAndUp() override;
 
  private:
   struct in6_ifreq {

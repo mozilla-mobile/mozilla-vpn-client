@@ -14,6 +14,10 @@ class IPUtils : public QObject {
     qFatal("Have you forgotten to implement IPUtils::addInterfaceIPs?");
     return false;
   };
+  virtual bool setMTUAndUp() {
+    qFatal("Have you forgotten to implement IPUtils::setMTUAndUp?");
+    return false;
+  };
 };
 
 #endif  // IPUTILS_H
