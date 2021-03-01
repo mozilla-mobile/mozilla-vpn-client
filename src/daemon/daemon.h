@@ -5,6 +5,7 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
+#include "config.h"
 #include "wgutils.h"
 
 #include <QDateTime>
