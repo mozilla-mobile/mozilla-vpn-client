@@ -10,9 +10,13 @@
 
 class WireguardUtilsLinux final : public WireguardUtils {
  public:
+  struct peerBytes {
+    double txBytes, rxBytes;
+  };
   bool interfaceExists() override;
   QStringList currentInterfaces() override;
   bool removeInterfaceIfExists();
+  peerBytes getThroughputForInterface();
 };
 
 #endif  // WIREGUARDUTILSLINUX_H

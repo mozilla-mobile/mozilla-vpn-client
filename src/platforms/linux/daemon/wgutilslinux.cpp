@@ -49,3 +49,21 @@ bool WireguardUtilsLinux::removeInterfaceIfExists() {
   }
   return true;
 }
+
+WireguardUtilsLinux::peerBytes
+WireguardUtilsLinux::getThroughputForInterface() {
+  uint64_t txBytes = 0;
+  uint64_t rxBytes = 0;
+  wg_device* device = nullptr;
+  wg_peer* peer;
+  peerBytes pb;
+  wg_get_device(&device, WG_INTERFACE);
+  wg_for_each_peer(device, peer) {
+    txBytes += peer->tx_bytes;
+    rxBytes += peer->rx_bytes;
+  }
+  wg_free_device(device);
+  pb.rxBytes = double(rxBytes);
+  pb.txBytes = double(txBytes);
+  return pb;
+}

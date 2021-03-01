@@ -97,33 +97,17 @@ QString DBusService::status() { return QString(getStatus()); }
 
 QByteArray DBusService::getStatus() {
   logger.log() << "Status request";
-
   QJsonObject json;
-
-  wg_device* device = nullptr;
-  if (wg_get_device(&device, WG_INTERFACE) != 0) {
+  if (!wgutils()->interfaceExists()) {
     logger.log() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
   }
-
-  uint64_t txBytes = 0;
-  uint64_t rxBytes = 0;
-
-  wg_peer* peer;
-  wg_for_each_peer(device, peer) {
-    txBytes += peer->tx_bytes;
-    rxBytes += peer->rx_bytes;
-  }
-
-  wg_free_device(device);
-
   json.insert("status", QJsonValue(true));
-  json.insert("serverIpv4Gateway",
-              QJsonValue(m_lastConfig.m_serverIpv4Gateway));
-  json.insert("txBytes", QJsonValue(double(txBytes)));
-  json.insert("rxBytes", QJsonValue(double(rxBytes)));
-
+  json.insert("serverIpv4Gateway", QJsonValue(m_lastConfig.m_serverIpv4Gateway));
+  WireguardUtilsLinux::peerBytes pb = wgutils()->getThroughputForInterface();
+  json.insert("txBytes", QJsonValue(pb.txBytes));
+  json.insert("rxBytes", QJsonValue(pb.rxBytes));
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
