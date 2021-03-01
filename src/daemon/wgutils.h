@@ -5,21 +5,45 @@
 #ifndef WIREGUARDUTILS_H
 #define WIREGUARDUTILS_H
 
+#include "ipaddressrange.h"
+
 #include <QCoreApplication>
 
 constexpr const char* WG_INTERFACE = "moz0";
 
 class WireguardUtils : public QObject {
  public:
+  struct peerBytes {
+    double txBytes, rxBytes;
+  };
+
   virtual bool interfaceExists() {
     qFatal("Have you forgotten to implement WireguardUtils::interfaceExists?");
     return false;
   };
 
-  virtual QStringList currentInterfaces() {
+  virtual bool addInterface() {
+    qFatal("Have you forgotten to implement WireguardUtils::addInterface?");
+    return false;
+  };
+
+  virtual bool configureInterface(const Config& config) {
+    Q_UNUSED(config)
     qFatal(
-        "Have you forgotten to implement WireguardUtils::currentInterfaces?");
-    return QStringList();
+        "Have you forgotten to implement WireguardUtils::configureInterface?");
+    return false;
+  };
+
+  virtual bool deleteInterface() {
+    qFatal("Have you forgotten to implement WireguardUtils::deleteInterface?");
+    return false;
+  };
+
+  virtual peerBytes getThroughputForInterface() {
+    qFatal(
+        "Have you forgotten to implement "
+        "WireguardUtils::getThroughputForInterface?");
+    return peerBytes();
   };
 };
 

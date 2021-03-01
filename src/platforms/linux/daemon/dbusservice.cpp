@@ -38,7 +38,14 @@ void DBusService::setAdaptor(DbusAdaptor* adaptor) {
 }
 
 bool DBusService::removeInterfaceIfExists() {
-  return wgutils()->removeInterfaceIfExists();
+  if (wgutils()->interfaceExists()) {
+    logger.log() << "Device already exists. Let's remove it.";
+    if (!wgutils()->deleteInterface()) {
+      logger.log() << "Failed to remove the device.";
+      return false;
+    }
+  }
+  return true;
 }
 
 QString DBusService::version() {
