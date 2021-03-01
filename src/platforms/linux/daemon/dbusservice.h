@@ -35,10 +35,10 @@ class DBusService final : public Daemon {
   QString getLogs();
 
  protected:
-  bool run(Op op, const Config& config) override;
+  bool run(Op op, const InterfaceConfig& config) override;
 
-  bool supportServerSwitching(const Config& config) const override;
-  bool switchServer(const Config& config) override;
+  bool supportServerSwitching(const InterfaceConfig& config) const override;
+  bool switchServer(const InterfaceConfig& config) override;
 
   bool supportWGUtils() const override { return true; }
   WireguardUtilsLinux* wgutils() override;

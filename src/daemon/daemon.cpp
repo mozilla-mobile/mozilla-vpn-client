@@ -49,7 +49,7 @@ Daemon* Daemon::instance() {
   return s_daemon;
 }
 
-bool Daemon::activate(const Config& config) {
+bool Daemon::activate(const InterfaceConfig& config) {
   // There are 3 possible scenarios in which this method is called:
   //
   // 1. the VPN is off: the method tries to enable the VPN.
@@ -104,7 +104,7 @@ bool Daemon::activate(const Config& config) {
 }
 
 // static
-bool Daemon::parseConfig(const QJsonObject& obj, Config& config) {
+bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #define GETVALUESTR(name, where)                                \
   if (!obj.contains(name)) {                                    \
     logger.log() << name << " missing in the jsonConfig input"; \
@@ -264,7 +264,7 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
-bool Daemon::switchServer(const Config& config) {
+bool Daemon::switchServer(const InterfaceConfig& config) {
   Q_UNUSED(config);
   qFatal("Have you forgotten to implement switchServer?");
   return false;
