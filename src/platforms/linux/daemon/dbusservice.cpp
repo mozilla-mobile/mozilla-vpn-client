@@ -70,7 +70,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 
   QJsonObject obj = json.object();
 
-  Config config;
+  InterfaceConfig config;
   if (!parseConfig(obj, config)) {
     logger.log() << "Invalid configuration";
     return false;
@@ -107,7 +107,7 @@ QString DBusService::getLogs() {
   return Daemon::logs();
 }
 
-bool DBusService::run(Op op, const Config& config) {
+bool DBusService::run(Op op, const InterfaceConfig& config) {
   QStringList addresses;
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
@@ -121,12 +121,12 @@ bool DBusService::run(Op op, const Config& config) {
       addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
 }
 
-bool DBusService::switchServer(const Config& config) {
+bool DBusService::switchServer(const InterfaceConfig& config) {
   logger.log() << "Switching server";
   return wgutils()->configureInterface(config);
 }
 
-bool DBusService::supportServerSwitching(const Config& config) const {
+bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
   return m_lastConfig.m_privateKey == config.m_privateKey &&
          m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
          m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
