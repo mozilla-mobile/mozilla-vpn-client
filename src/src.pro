@@ -327,6 +327,7 @@ else:linux:!android {
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
+            daemon/config.h \
             daemon/daemon.h \
             daemon/wgutils.h \
             platforms/linux/daemon/dbusservice.h \
@@ -550,6 +551,7 @@ else:macos {
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp
         HEADERS += \
+                   daemon/config.h \
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
@@ -673,6 +675,7 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
+        daemon/config.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
