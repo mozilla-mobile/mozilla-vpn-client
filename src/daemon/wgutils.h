@@ -41,7 +41,7 @@ class WireguardUtils : public QObject {
     return false;
   };
 
-  virtual bool configureInterface(const Config& config) {
+  virtual bool configureInterface(const InterfaceConfig& config) {
     Q_UNUSED(config)
     qFatal(
         "Have you forgotten to implement WireguardUtils::configureInterface?");

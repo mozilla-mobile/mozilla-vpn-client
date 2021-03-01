@@ -43,8 +43,7 @@ bool WireguardUtilsLinux::addInterface() {
   return true;
 }
 
-bool WireguardUtilsLinux::configureInterface(
-    const WireguardUtils::Config& config) {
+bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
   /*
    * Set conf:
    * - sets name of device
@@ -126,7 +125,7 @@ QStringList WireguardUtilsLinux::currentInterfaces() {
 }
 
 wg_peer* WireguardUtilsLinux::buildPeerForDevice(
-    wg_device* device, const WireguardUtils::Config& config) {
+    wg_device* device, const InterfaceConfig& config) {
   // Peer
   wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
   if (!peer) {

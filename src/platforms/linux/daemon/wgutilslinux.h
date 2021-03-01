@@ -12,7 +12,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
  public:
   bool interfaceExists() override;
   bool addInterface() override;
-  bool configureInterface(const Config& config) override;
+  bool configureInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
   peerBytes getThroughputForInterface() override;
 
@@ -22,7 +22,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
                        int port);
   bool setAllowedIpsOnPeer(struct wg_peer* peer,
                            QList<IPAddressRange> allowedIPAddressRanges);
-  wg_peer* buildPeerForDevice(struct wg_device* device, const Config& conf);
+  wg_peer* buildPeerForDevice(struct wg_device* device,
+                              const InterfaceConfig& conf);
 };
 
 #endif  // WIREGUARDUTILSLINUX_H
