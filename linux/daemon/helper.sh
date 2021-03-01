@@ -71,7 +71,6 @@ del_if() {
 			ip -6 rule delete table main suppress_prefixlength 0
 		done
 	fi
-	ip link delete dev "$INTERFACE"
 }
 
 add_addr() {
