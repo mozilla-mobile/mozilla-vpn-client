@@ -12,7 +12,6 @@ import "../themes/themes.js" as Theme
 
 ColumnLayout{
     id: appListContainer
-
     property var listModel: undefined
     property var header: ""
     property var description: ""
@@ -31,8 +30,8 @@ ColumnLayout{
         clip: true
         canGrowVertical: true
         accessibleName: name
-        Layout.preferredWidth: parent.width - Theme.windowMargin
         height: appRowHeader.height
+        width: parent.width
         Layout.preferredHeight: Theme.rowHeight * 1.5
 
 

@@ -17,20 +17,22 @@ Logger logger(LOG_MAIN, "WindowsCommons");
 }
 
 // A simple function to log windows error messages.
+void WindowsCommons::windowsLog(const QString& msg, DWORD errorId) {
+    LPSTR messageBuffer = nullptr;
+    size_t size = FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr, errorId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPSTR)&messageBuffer, 0, nullptr);
+
+    std::string message(messageBuffer, size);
+
+    logger.log() << msg << "-" << QString(message.c_str());
+    LocalFree(messageBuffer);
+}
+
 void WindowsCommons::windowsLog(const QString& msg) {
-  DWORD errorId = GetLastError();
-
-  LPSTR messageBuffer = nullptr;
-  size_t size = FormatMessageA(
-      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-          FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, errorId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      (LPSTR)&messageBuffer, 0, nullptr);
-
-  std::string message(messageBuffer, size);
-
-  logger.log() << msg << "-" << QString(message.c_str());
-  LocalFree(messageBuffer);
+    windowsLog(msg,GetLastError());
 }
 
 QString WindowsCommons::tunnelConfigFile() {

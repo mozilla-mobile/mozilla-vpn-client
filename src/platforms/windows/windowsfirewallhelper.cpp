@@ -81,10 +81,23 @@ WindowsFirewallHelper::WindowsFirewallHelper(QObject* parent) : QObject(parent) 
 WindowsFirewallHelper::~WindowsFirewallHelper() {
   MVPN_COUNT_DTOR(WindowsFirewallHelper);
 }
-
+int WindowsFirewallHelper::getVPNInterfaceNumber(){
+    for( auto i : QNetworkInterface::allInterfaces()){
+        logger.log() << i.humanReadableName() << i.index();
+        if(i.humanReadableName() == "FirefoxPrivateNetworkVPN"){
+            return i.index();
+        }
+    }
+    logger.log() << "FirefoxPrivateNetworkVPN adapter not found";
+    return -1;
+}
 
 bool WindowsFirewallHelper::excludeApp(const QString& exePath){
-  int interface_index = 30;// QNetworkInterface::interfaceIndexFromName("FirefoxPrivateNetworkVPN");
+  int interface_index = getVPNInterfaceNumber();
+  if(interface_index == -1){
+      logger.log() << "No interface for Filter-Ruleset";
+      return false;
+  }
 
   logger.log() << "FirefoxPrivateNetworkVPN has index " <<interface_index;
 
@@ -149,7 +162,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -163,7 +176,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -177,7 +190,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -191,7 +204,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -213,7 +226,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -227,7 +240,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -241,7 +254,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name, result);
       return false;
     }
   }
@@ -255,7 +268,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name);
       return false;
     }
   }
@@ -274,7 +287,7 @@ bool WindowsFirewallHelper::excludeApp(const QString& exePath){
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS){
-      logger.log() << "Failed to set rule "<< name <<"\n" << result;
+      WindowsCommons::windowsLog("Failed to set rule " + name);
       return false;
     }
   }

@@ -14,6 +14,7 @@ class WindowsFirewallHelper final : public QObject {
   ~WindowsFirewallHelper();
   bool excludeApp(const QString& exePath);
   static WindowsFirewallHelper* instance();
+  static int getVPNInterfaceNumber();
   private:
   WindowsFirewallHelper(QObject* parent);
     HANDLE m_sessionHandle;

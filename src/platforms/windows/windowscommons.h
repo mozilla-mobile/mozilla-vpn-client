@@ -6,10 +6,13 @@
 #define WINDOWSCOMMONS_H
 
 #include <QString>
+#include <Windows.h>
 
 class WindowsCommons final {
  public:
   static void windowsLog(const QString& msg);
+  static void windowsLog(const QString& msg, DWORD err);
+
 
   static QString tunnelConfigFile();
 };
