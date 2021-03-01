@@ -32,6 +32,13 @@ WireguardUtilsLinux* DBusService::wgutils() {
   return m_wgutils;
 }
 
+IPUtilsLinux* DBusService::iputils() {
+  if (!m_iputils) {
+    m_iputils = new IPUtilsLinux();
+  }
+  return m_iputils;
+}
+
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);
   m_adaptor = adaptor;

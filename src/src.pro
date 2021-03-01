@@ -320,6 +320,7 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
             platforms/linux/daemon/wgutilslinux.cpp \
@@ -332,6 +333,7 @@ else:linux:!android {
             daemon/iputils.h \
             daemon/wgutils.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/iputilslinux.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wgutilslinux.h \
             wgquickprocess.h
