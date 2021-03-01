@@ -11,7 +11,7 @@
 #include <QLocalSocket>
 
 #ifdef MVPN_WINDOWS
-    #include "platforms/windows/windowsservicemanager.h"
+#  include "platforms/windows/windowsservicemanager.h"
 #endif
 
 class QJsonObject;
@@ -37,8 +37,8 @@ class LocalSocketController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
-  public slots:
-    void deamonReady();
+ public slots:
+  void deamonReady();
 
  private:
   void daemonConnected();
@@ -48,9 +48,9 @@ class LocalSocketController final : public ControllerImpl {
 
   void write(const QJsonObject& json);
 
-  #ifdef MVPN_WINDOWS
-    WindowsServiceManager m_serviceManager;
-  #endif
+#ifdef MVPN_WINDOWS
+  WindowsServiceManager m_serviceManager;
+#endif
 
  private:
   enum {
