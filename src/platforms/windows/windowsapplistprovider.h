@@ -5,17 +5,26 @@
 #ifndef WINDOWSAPPLISTPROVIDER_H
 #define WINDOWSAPPLISTPROVIDER_H
 
+#include <QFileInfo>
+
 #include "applistprovider.h"
 #include <QObject>
 
-class WindowsAppListProvider : public AppListProvider {
+class WindowsAppListProvider final : public AppListProvider{
   Q_OBJECT
  public:
   WindowsAppListProvider(QObject* parent);
   ~WindowsAppListProvider();
   void getApplicationList() override;
+  QString getAppName(const QString& appId) override;
+
+  bool isValidAppId(const QString& appId) override;
  private:
-  void readLinkFiles(QString path,QMap<QString,QString>* out);
+  void readLinkFiles(const QString &path,QMap<QString,QString> &out);
+  static QStringList getUninstallerList();
+
+  bool isUninstaller(const QFileInfo& file);
+  QStringList m_uninstallerCommands;
 };
 
 #endif  // WINDOWSAPPLISTPROVIDER_H

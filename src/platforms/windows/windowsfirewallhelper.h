@@ -5,21 +5,19 @@
 #ifndef WINDOWSFIREWALLHELPER_H
 #define WINDOWSFIREWALLHELPER_H
 
-#include <QObject>
-#include <QQuickImageProvider>
 #include <windows.h>
-#include <fwpmu.h>
+#include <QString>
+#include <QObject>
 
-
-class WindowsFirewallHelper final {
+class WindowsFirewallHelper final : public QObject {
  public:
   ~WindowsFirewallHelper();
-  bool excludeApp(QString exePath);
+  bool excludeApp(const QString& exePath);
   static WindowsFirewallHelper* instance();
   private:
-    WindowsFirewallHelper();
-    HANDLE mSessionHandle;
-    GUID mLayerID;
+  WindowsFirewallHelper(QObject* parent);
+    HANDLE m_sessionHandle;
+    GUID m_layerID;
 };
 
 

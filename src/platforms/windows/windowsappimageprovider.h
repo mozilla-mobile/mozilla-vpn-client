@@ -16,6 +16,7 @@ class WindowsAppImageProvider final : public QQuickImageProvider,
   ~WindowsAppImageProvider();
   QPixmap requestPixmap(const QString& id, QSize* size,
                       const QSize& requestedSize) override;
+  static bool hasImage(const QString& path);
 
 };
 

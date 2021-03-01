@@ -16,6 +16,7 @@ class AppPermission final : public QAbstractListModel {
 
   Q_PROPERTY(QSortFilterProxyModel* enabledApps MEMBER m_enabledList CONSTANT)
   Q_PROPERTY(QSortFilterProxyModel* disabledApps MEMBER m_disabledlist CONSTANT)
+  Q_PROPERTY(bool canAddApps READ canAddMissingApp CONSTANT)
 
  public:
   ~AppPermission();
@@ -37,6 +38,9 @@ class AppPermission final : public QAbstractListModel {
   // Remove all Apps from the Disabled App List
   Q_INVOKABLE void unprotectAll();
 
+  // Opens a Selector to add an app to the "unprotected" list. 
+  Q_INVOKABLE void addUnprotectedApp();
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -53,6 +57,14 @@ class AppPermission final : public QAbstractListModel {
   AppPermission(QObject* parent);
   AppListProvider* m_listprovider = nullptr;
   QMap<QString, QString> m_applist;
+
+  static bool canAddMissingApp() {
+#ifdef MVPN_WINDOWS
+    return true;
+#else
+    return false;
+#endif
+  }
 
   // Sublist of AppPermission, can either include all Enabled or Disabled apps
   class FilteredAppList : public QSortFilterProxyModel {

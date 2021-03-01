@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <QVector>
 #include "settingsholder.h"
+#include <QFileDialog>
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
@@ -108,20 +109,24 @@ Q_INVOKABLE void AppPermission::requestApplist() {
 }
 
 void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
+  beginResetModel();
+  m_applist = applist;
   if (!m_applist.isEmpty()) {
-    // Check the Disabled-List
-    auto keys = applist.keys();
+    const auto keys = applist.keys();
     SettingsHolder* settingsHolder = SettingsHolder::instance();
-    foreach (QString blockedAppID, settingsHolder->vpnDisabledApps()) {
-      if (!keys.contains(blockedAppID)) {
-        logger.log() << "Removed obsolete appid" << blockedAppID;
-        settingsHolder->removeVpnDisabledApp(blockedAppID);
+    foreach (QString blockedAppId, settingsHolder->vpnDisabledApps()) {
+      if (!m_listprovider->isValidAppId(blockedAppId)) {
+        // In case the AppID is no longer valid we don't need to keep it
+        logger.log() << "Removed obsolete appid" << blockedAppId;
+        settingsHolder->removeVpnDisabledApp(blockedAppId);
+      } else if (!keys.contains(blockedAppId)) {
+        // In case the AppID is valid but not in our applist, we need to create an entry
+        logger.log() << "Added missing appid" << blockedAppId;
+        m_applist.insert(blockedAppId, m_listprovider->getAppName(blockedAppId));
       }
     }
   }
-  beginResetModel();
-  logger.log() << "Recived new Applist -- Entrys: " << applist.size();
-  m_applist = applist;
+  logger.log() << "Received new Applist -- Entries: " << applist.size();
   endResetModel();
 }
 
@@ -132,6 +137,22 @@ Q_INVOKABLE void AppPermission::protectAll() {
 Q_INVOKABLE void AppPermission::unprotectAll() {
   SettingsHolder::instance()->setVpnDisabledApps(m_applist.keys());
   dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
+}
+
+void AppPermission::addUnprotectedApp() {
+  auto fileName =
+      QFileDialog::getOpenFileName(qApp->activeWindow(), tr("Add Application"), "/home",
+                                   tr("Executables (*.exe)"));
+  logger.log() << fileName;
+  auto info = QFileInfo(fileName);
+  if (!info.isExecutable()) {
+    return;
+  }
+  beginResetModel();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->addVpnDisabledApp(info.absoluteFilePath());
+  m_applist.insert(info.absoluteFilePath(), info.fileName());
+  endResetModel();
 };
 
 bool AppPermission::FilteredAppList::filterAcceptsRow(

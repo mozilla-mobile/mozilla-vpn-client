@@ -32,8 +32,6 @@ Logger logger(LOG_CONTROLLER, "LocalSocketController");
 LocalSocketController::LocalSocketController() {
   MVPN_COUNT_CTOR(LocalSocketController);
 
-  // TODO: remove init here
-  WindowsFirewallHelper::instance();
   m_socket = new QLocalSocket(this);
   connect(m_socket, &QLocalSocket::connected, this,
           &LocalSocketController::daemonConnected);
@@ -101,7 +99,7 @@ void LocalSocketController::activate(
     emit disconnected();
     return;
   }
-  mVpnDisabledApps = vpnDisabledApps;
+  m_vpnDisabledApps = vpnDisabledApps;
 
 
 
@@ -312,7 +310,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   if (type == "connected") {
 
     #ifdef MVPN_WINDOWS
-      for(const auto &app: mVpnDisabledApps){
+    for (const auto& app : m_vpnDisabledApps) {
         WindowsFirewallHelper::instance()->excludeApp(app);
       }
     #endif

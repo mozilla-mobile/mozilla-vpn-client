@@ -15,7 +15,7 @@ VPNFlickable {
     readonly property int defaultMargin: 18
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
-    flickContentHeight: menu.height + enableAppList.height + enableAppList.anchors.topMargin + (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (disabledList.visible? (disabledList.height+disabledList.anchors.topMargin):0)+(enabledList.visible? (enabledList.height + enabledList.anchors.topMargin):0)+20
+    flickContentHeight: menu.height + enableAppList.height + enableAppList.anchors.topMargin + (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (disabledList.visible? (disabledList.height+disabledList.anchors.topMargin):0)+(enabledList.visible? (enabledList.height + enabledList.anchors.topMargin):0)+20 + (addMissingAppBtn.visible? addMissingAppBtn.height+20 : 0)
 
     Component.onCompleted: {
        VPNAppPermissions.requestApplist();
@@ -98,8 +98,7 @@ VPNFlickable {
         id: disabledList
         anchors.topMargin: 20
         anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : enableAppList.bottom
-        anchors.leftMargin: 5
-        anchors.rightMargin: 5
+
         width: vpnFlickable.width - 5 *2
         visible: VPNSettings.protectSelectedApps
         isEnabled: vpnIsOff
@@ -123,8 +122,6 @@ VPNFlickable {
         id: enabledList
         anchors.topMargin: 20
         anchors.top: disabledList.bottom
-        anchors.leftMargin: 5
-        anchors.rightMargin: 5
         width: vpnFlickable.width - 5 *2
         visible: VPNSettings.protectSelectedApps
         isEnabled: vpnIsOff
@@ -141,5 +138,43 @@ VPNFlickable {
         //: Label for the button to remove protection from all apps
         //: currently protected.
         actionText: qsTrId("vpn.settings.unprotectall")
+    }
+
+    VPNClickableRow {
+        id: addMissingAppBtn
+        width: vpnFlickable.width - 5 *2
+        anchors.top: enabledList.bottom
+        anchors.topMargin: 20
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: VPNAppPermissions.addUnprotectedApp();
+        visible: VPNAppPermissions.canAddApps
+
+        RowLayout {
+            //id: appRowHeader
+            width: parent.width
+            anchors.centerIn: parent
+            spacing: 0
+
+            Image {
+                Layout.leftMargin: defaultMargin / 2 + 5
+                Layout.rightMargin: defaultMargin/2 +5
+                source: "../resources/add.svg"
+                transformOrigin: Image.Center
+                smooth: true
+                sourceSize.height: 14
+                sourceSize.width: 14
+                fillMode: Image.PreserveAspectFit
+            }
+            VPNBoldLabel{
+                text: qsTrId("vpn.splitTunnel.addMissingApp")
+            }
+            VPNIcon {
+                id: linkIcon
+                //Layout.leftMargin: defaultMargin / 2
+                source: "../resources/externalLink.svg"
+                transformOrigin: Image.Center
+                smooth: true
+            }
+        }
     }
 }

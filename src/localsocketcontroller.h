@@ -54,7 +54,7 @@ class LocalSocketController final : public ControllerImpl {
   QByteArray m_buffer;
 
   std::function<void(const QString&)> m_logCallback = nullptr;
-  QList<QString> mVpnDisabledApps;
+  QList<QString> m_vpnDisabledApps;
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

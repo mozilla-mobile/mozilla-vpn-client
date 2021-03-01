@@ -22,6 +22,12 @@ class AppListProvider : public QObject {
   // Impl should emit newAppList signal when done.
   virtual void getApplicationList() = 0;
 
+
+  // Returns true if the AppId Exists and is valid
+  virtual bool isValidAppId(const QString &appId) = 0;
+  // Returns the Name of an AppId
+  virtual QString getAppName(const QString& appId) = 0;
+
  signals:
   // Should be emitted when the new Application List is Ready
   // QMap key should be the identifier that the controller can

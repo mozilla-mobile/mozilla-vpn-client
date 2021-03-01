@@ -603,6 +603,7 @@ else:win* {
     DEFINES += MVPN_WINDOWS
     LIBS += Fwpuclnt.lib #Windows Filtering Plattform
     LIBS += Rpcrt4.lib
+    LIBS += Advapi32.lib
 
     production {
         RC_ICONS = ui/resources/logo.ico
@@ -651,7 +652,7 @@ else:win* {
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
-        wgquickprocess.h \
+        wgquickprocess.h
 }
 
 else:wasm {
