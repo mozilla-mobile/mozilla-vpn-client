@@ -62,7 +62,7 @@ class Daemon : public QObject {
   }
   virtual bool switchServer(const Config& config);
   virtual bool supportWGUtils() const { return false; }
-  virtual WireguardUtils* wgutils();
+  virtual WireguardUtils* wgutils() { return nullptr; }
 
   bool m_connected = false;
   QDateTime m_connectionDate;
