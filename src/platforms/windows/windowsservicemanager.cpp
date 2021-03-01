@@ -4,6 +4,7 @@
 #include "Windows.h"
 #include "Winsvc.h"
 #include "windowsservicemanager.h"
+#include "windowscommons.h"
 #include <QTimer>
 
 
@@ -38,7 +39,7 @@ WindowsServiceManager::WindowsServiceManager(){
     err = GetLastError();
     if (err != NULL)
     {
-        logger.log() << "Service Access denied" << err;
+        WindowsCommons::windowsLog("OpenService failed");
         return;
     }
     m_has_access=true;
@@ -132,7 +133,8 @@ bool WindowsServiceManager::startService(){
         startPolling(SERVICE_RUNNING, 10);
     }
     else {
-        logger.log() <<"StartService failed" << GetLastError();
+        WindowsCommons::windowsLog("StartService failed");
+        MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
     }
     return ok;
 }
@@ -156,7 +158,8 @@ bool WindowsServiceManager::stopService(){
         startPolling(SERVICE_STOPPED, 10);
     }
     else {
-        logger.log() <<"StartService failed" << GetLastError();
+        WindowsCommons::windowsLog("StopService failed");
+        MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
     }
     return ok;
 }
