@@ -248,9 +248,19 @@ balrog {
 DUMMY {
     message(Dummy build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    win* {
+      CONFIG += embed_manifest_exe
+      QT += svg
+    } else {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
-    TARGET = mozillavpn
+    macos {
+      TARGET = MozillaVPN
+    } else {
+      TARGET = mozillavpn
+    }
+
     QT += networkauth
 
     DEFINES += MVPN_DUMMY

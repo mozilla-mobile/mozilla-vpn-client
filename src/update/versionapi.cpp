@@ -29,11 +29,12 @@ void VersionApi::start() {
   NetworkRequest* request = NetworkRequest::createForVersions(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply*, QNetworkReply::NetworkError error,
-             const QByteArray&) { logger.log() << "Request failed" << error; });
+          [](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.log() << "Request failed" << error;
+          });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply*, const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.log() << "Request completed";
 
             if (!processData(data)) {

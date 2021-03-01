@@ -35,6 +35,7 @@ jobs:
           tar xf msm.tar.gz
           mkdir /c/MozillaVPNBuild
           cp -r * /c/MozillaVPNBuild
+          cp -r *.msm ..
           cd ..
 
       - name: Adding msbuild to PATH
