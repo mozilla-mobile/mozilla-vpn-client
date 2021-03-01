@@ -50,6 +50,7 @@ macos/gobridge/wireguard-go-version.h
 *.swp
 .idea/
 .vscode/
+.vs/
 MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
 
