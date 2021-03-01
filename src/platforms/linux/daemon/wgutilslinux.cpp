@@ -40,16 +40,12 @@ QStringList WireguardUtilsLinux::currentInterfaces() {
 }
 
 bool WireguardUtilsLinux::removeInterfaceIfExists() {
-  wg_device* device = nullptr;
-  if (wg_get_device(&device, WG_INTERFACE) == 0) {
+  if (interfaceExists()) {
     logger.log() << "Device already exists. Let's remove it.";
-    wg_free_device(device);
-
     if (wg_del_device(WG_INTERFACE) != 0) {
       logger.log() << "Failed to remove the device.";
       return false;
     }
   }
-
   return true;
 }
