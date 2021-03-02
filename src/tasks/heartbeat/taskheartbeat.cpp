@@ -25,11 +25,13 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError, const QByteArray&) {
+          [this, vpn](QNetworkReply::NetworkError, const QByteArray&) {
             logger.log() << "Failed to talk with the server";
             // We don't know if this happeneded because of a global network
             // failure or a local network issue. In general, let's ignore this
             // error.
+            // TODO: treat 500 as failure!
+            vpn->heartbeatCompleted(true);
             emit completed();
           });
 
@@ -42,9 +44,11 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
             QJsonValue db = json.value("dbOK");
             if ((mullvad.isBool() && db.isBool()) &&
                 (!mullvad.toBool() || !db.toBool())) {
-              vpn->heartbeatFailure();
+              vpn->heartbeatCompleted(false);
+              return;
             }
 
+            vpn->heartbeatCompleted(true);
             emit completed();
           });
 }

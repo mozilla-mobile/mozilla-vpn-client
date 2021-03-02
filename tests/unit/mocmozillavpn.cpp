@@ -128,4 +128,6 @@ void MozillaVPN::controllerStateChanged() {}
 
 void MozillaVPN::backendServiceRestore() {}
 
-void MozillaVPN::heartbeatFailure() {}
+void MozillaVPN::heartbeatCompleted(bool) {}
+
+void MozillaVPN::triggerHeartbeat() {}

@@ -50,6 +50,7 @@ class MozillaVPN final : public QObject {
     StateSubscriptionValidation,
     StateSubscriptionBlocked,
     StateDeviceLimit,
+    StateBackendFailure,
   };
   Q_ENUM(State);
 
@@ -119,6 +120,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
+  Q_INVOKABLE void triggerHeartbeat();
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -199,7 +201,7 @@ class MozillaVPN final : public QObject {
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
 
-  void heartbeatFailure();
+  void heartbeatCompleted(bool success);
 
  private:
   void setState(State state);

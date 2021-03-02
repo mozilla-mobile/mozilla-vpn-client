@@ -163,7 +163,7 @@ static bool cmdForceUnsecuredNetwork(QWebSocket*, const QList<QByteArray>&) {
 }
 
 static bool cmdForceHeartbeatFailure(QWebSocket*, const QList<QByteArray>&) {
-  MozillaVPN::instance()->heartbeatFailure();
+  MozillaVPN::instance()->heartbeatCompleted(false /* success */);
   return true;
 }
 

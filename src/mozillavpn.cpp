@@ -168,29 +168,29 @@ void MozillaVPN::initialize() {
 
   m_private->m_releaseMonitor.runSoon();
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
 #ifdef MVPN_IOS
-  if (!SettingsHolder::instance()->hasNativeIOSDataMigrated()) {
+  if (!settingsHolder->hasNativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
-    SettingsHolder::instance()->setNativeIOSDataMigrated(true);
+    settingsHolder->setNativeIOSDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_WINDOWS
-  if (!SettingsHolder::instance()->hasNativeWindowsDataMigrated()) {
+  if (!settingsHolder->hasNativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
-    SettingsHolder::instance()->setNativeWindowsDataMigrated(true);
+    settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_ANDROID
-  if (!SettingsHolder::instance()->hasNativeAndroidDataMigrated()) {
+  if (!settingsHolder->hasNativeAndroidDataMigrated()) {
     AndroidDataMigration::migrate();
-    SettingsHolder::instance()->setNativeAndroidDataMigrated(true);
+    settingsHolder->setNativeAndroidDataMigrated(true);
   }
 #endif
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
 
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
@@ -1161,7 +1161,21 @@ void MozillaVPN::backendServiceRestore() {
   // TODO
 }
 
-void MozillaVPN::heartbeatFailure() {
-  logger.log() << "Server-side failure detected";
-  // TODO
+void MozillaVPN::heartbeatCompleted(bool success) {
+  logger.log() << "Server-side check done:" << success;
+
+  if (!success) {
+    deleteTasks();
+    setState(StateBackendFailure);
+    return;
+  }
+
+  if (!modelsInitialized() || !m_userAuthenticated) {
+    setState(StateInitialize);
+    return;
+  }
+
+  maybeStateMain();
 }
+
+void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
