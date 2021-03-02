@@ -153,6 +153,7 @@ sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
 sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
+sed -i -e "s/FULLVERSION/$FULLVERSION/g" debian/rules || die "Failed"
 debuild $EXTRA_DEBUILD_OPTS || die "Failed"
 
 if [[ "$DO_UPLOAD" == "1" ]]; then
