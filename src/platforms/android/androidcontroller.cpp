@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
+#include "errorhandler.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
-#include "errorhandler.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QAndroidBinder>
