@@ -113,6 +113,8 @@ class Controller final : public QObject {
 
   void resetConnectionCheck();
 
+  void heartbeatCompleted();
+
  private:
   State m_state = StateInitializing;
 
@@ -138,7 +140,14 @@ class Controller final : public QObject {
 
   ConnectionCheck m_connectionCheck;
   int m_connectionRetry = 0;
-  bool m_expectDisconnection = false;
+
+  enum ReconnectionStep {
+    NoReconnection,
+    ExpectDisconnection,
+    ExpectHeartbeat,
+  };
+
+  ReconnectionStep m_reconnectionStep = NoReconnection;
 
   QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
                            uint64_t rxBytes)>>

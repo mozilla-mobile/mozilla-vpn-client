@@ -19,6 +19,7 @@
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "urlopener.h"
 
@@ -80,8 +81,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
     scheduleTask(new TaskAccountAndServers());
-
     scheduleTask(new TaskCaptivePortalLookup());
+    scheduleTask(new TaskHeartbeat());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -317,6 +318,7 @@ void MozillaVPN::authenticate() {
     return;
   }
 
+  scheduleTask(new TaskHeartbeat());
   scheduleTask(new TaskAuthenticate());
 }
 
@@ -1156,5 +1158,10 @@ void MozillaVPN::controllerStateChanged() {
 
 void MozillaVPN::backendServiceRestore() {
   logger.log() << "Background service restore request";
+  // TODO
+}
+
+void MozillaVPN::heartbeatFailure() {
+  logger.log() << "Server-side failure detected";
   // TODO
 }

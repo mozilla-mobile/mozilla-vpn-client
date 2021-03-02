@@ -67,3 +67,5 @@ void Controller::quit() {}
 void Controller::connectionConfirmed() {}
 
 void Controller::connectionFailed() {}
+
+void Controller::heartbeatCompleted() {}

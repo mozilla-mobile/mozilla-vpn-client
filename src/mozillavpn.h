@@ -199,6 +199,8 @@ class MozillaVPN final : public QObject {
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
 
+  void heartbeatFailure();
+
  private:
   void setState(State state);
 
