@@ -5,7 +5,7 @@
 #ifndef WIREGUARDUTILSLINUX_H
 #define WIREGUARDUTILSLINUX_H
 
-#include "daemon/wgutils.h"
+#include "daemon/wireguardutils.h"
 #include <QStringList>
 
 class WireguardUtilsLinux final : public WireguardUtils {

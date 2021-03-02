@@ -9,7 +9,6 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 #include "wgquickprocess.h"
-#include "wgutilslinux.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>

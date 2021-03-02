@@ -6,7 +6,7 @@
 #define DBUSSERVICE_H
 
 #include "daemon/daemon.h"
-#include "wgutilslinux.h"
+#include "wireguardutilslinux.h"
 
 class DbusAdaptor;
 

@@ -6,7 +6,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "wgutils.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
