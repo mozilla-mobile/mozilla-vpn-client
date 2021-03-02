@@ -25,13 +25,13 @@ bool WireguardUtilsLinux::interfaceExists() {
 };
 
 QStringList WireguardUtilsLinux::currentInterfaces() {
-  char* deviceName;
-  size_t len;
-  QStringList devices;
   char* deviceNames = wg_list_device_names();
+  QStringList devices;
   if (!deviceNames) {
     return devices;
   }
+  char* deviceName;
+  size_t len;
   wg_for_each_device_name(deviceNames, deviceName, len) {
     devices.append(deviceName);
   }
