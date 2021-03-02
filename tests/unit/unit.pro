@@ -6,8 +6,11 @@ QT += testlib
 QT += charts
 QT += network
 QT += qml
+QT += xml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
+DEFINES += BUILD_ID=\\\"1234\\\"
+
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += UNIT_TEST
 
@@ -30,6 +33,7 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
+    ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
@@ -47,9 +51,12 @@ HEADERS += \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
+    ../../src/networkwatcher.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsendworker.h \
+    ../../src/platforms/android/androiddatamigration.h \
+    ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
@@ -61,11 +68,15 @@ HEADERS += \
     ../../src/tasks/adddevice/taskadddevice.h \
     ../../src/tasks/function/taskfunction.h \
     ../../src/timersingleshot.h \
+    ../../src/update/updater.h \
+    ../../src/update/versionapi.h \
     helper.h \
+    testandroidmigration.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testlocalizer.h \
     testlogger.h \
+    testipaddress.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -85,6 +96,7 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
+    ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
@@ -100,8 +112,11 @@ SOURCES += \
     ../../src/models/serverdata.cpp \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
+    ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsender.cpp \
+    ../../src/platforms/android/androiddatamigration.cpp \
+    ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
@@ -112,14 +127,18 @@ SOURCES += \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/timersingleshot.cpp \
+    ../../src/update/updater.cpp \
+    ../../src/update/versionapi.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
+    testandroidmigration.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
+    testipaddress.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \

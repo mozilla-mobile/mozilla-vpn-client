@@ -46,18 +46,8 @@ MacOSDaemon* MacOSDaemon::instance() {
   return s_daemon;
 }
 
-bool MacOSDaemon::activate(const Config& config) {
-  if (!Daemon::activate(config)) {
-    return false;
-  }
-
-  m_connectionDate = QDateTime::currentDateTime();
-  return true;
-}
-
-void MacOSDaemon::status(QLocalSocket* socket) {
+QByteArray MacOSDaemon::getStatus() {
   logger.log() << "Status request";
-  Q_ASSERT(socket);
 
   QJsonObject obj;
   obj.insert("type", "status");
@@ -95,8 +85,8 @@ void MacOSDaemon::status(QLocalSocket* socket) {
         QStringList parts = line.split("\t");
 
         if (parts.length() == 4) {
-          txBytes = parts[2].toLongLong();
-          rxBytes = parts[3].toLongLong();
+          rxBytes = parts[2].toLongLong();
+          txBytes = parts[3].toLongLong();
         }
       }
     }
@@ -109,28 +99,19 @@ void MacOSDaemon::status(QLocalSocket* socket) {
     obj.insert("rxBytes", QJsonValue(double(rxBytes)));
   }
 
-  socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-  socket->write("\n");
-}
-
-void MacOSDaemon::logs(QLocalSocket* socket) {
-  logger.log() << "Log request";
-
-  Q_ASSERT(socket);
-
-  QJsonObject obj;
-  obj.insert("type", "logs");
-  obj.insert("logs", Daemon::logs().replace("\n", "|"));
-  socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-  socket->write("\n");
+  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
 bool MacOSDaemon::run(Daemon::Op op, const Config& config) {
+  QStringList addresses;
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    addresses.append(ip.toString());
+  }
+
   return WgQuickProcess::run(
       op, config.m_privateKey, config.m_deviceIpv4Address,
       config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
       config.m_serverIpv6Gateway, config.m_serverPublicKey,
       config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-      config.m_allowedIPAddressRanges.join(", "), config.m_serverPort,
-      config.m_ipv6Enabled);
+      addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
 }

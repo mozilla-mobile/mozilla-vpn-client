@@ -79,7 +79,7 @@ void AndroidUtils::startAuthentication(AuthenticationListener* listener,
   Q_ASSERT(!m_listener);
   m_listener = listener;
 
-  connect(listener, &QObject::destroyed, [this]() { m_listener = nullptr; });
+  connect(listener, &QObject::destroyed, this, &AndroidUtils::resetListener);
 
   m_url = url;
   emit urlChanged();
@@ -103,7 +103,7 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
   if (loadingUrl.path() == "/vpn/client/login/success") {
     QUrlQuery query(loadingUrl.query());
     if (!query.hasQueryItem("code")) {
-      emit m_listener->failed(ErrorHandler::BackendServiceError);
+      emit m_listener->failed(ErrorHandler::RemoteServiceError);
       m_listener = nullptr;
       return true;
     }

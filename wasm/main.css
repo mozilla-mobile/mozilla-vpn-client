@@ -1,0 +1,457 @@
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	--bgColor: #F9F9FA;
+	--boxShadow: 0 12px 18px 2px rgba(34,0,51,.04),0 6px 22px 4px rgba(7,48,114,.12),0 6px 10px -4px rgba(14,13,26,.12);
+	--gradientBeforeBackground: #eee;
+	--gutters: .5rem;
+	--inputBackground: rgb(240, 240, 244);
+	--inputBackgroundFocus: rgb(223, 223, 227);
+	--inspectorInputHeight: 5rem;
+	--loaderOpacity: 1;
+	--Metropolis: "Metropolis", sans-serif;
+	--MozGradient: linear-gradient(-90deg, #ff9100 0%, #f10366 50%, #6173ff 100%);
+	--svgFill: "#ffffffc9";
+	--textColor: #20123a;
+	--textColorLight: #686869;
+}
+
+html, 
+body { 
+	padding: 0;
+	margin : 0;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	height: 100vh;
+	width: 100vw;
+	font-size: 15px;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	-webkit-overflow-scrolling: touch;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+	background-color: var(--bgColor);
+	font-weight: 400;
+	display: flex;
+	flex-direction: column;
+	color: var(--textColor)
+}
+
+.rel {
+	position: relative;
+}
+
+h1 {
+	font-weight: 500;
+	margin: auto auto auto .5rem;
+	font-size: 1.15rem;
+	font-family: 'Metropolis', sans-serif;
+}
+
+p {
+	line-height: 1.5;
+	margin: .5rem;
+}
+
+header,
+footer {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	padding: 1rem 1.5rem;
+	height: 4rem;
+}
+
+header {
+	align-items: flex-start;
+}
+
+footer {
+	justify-content: space-between;
+	padding-bottom: 1.5rem;
+	align-items: center;
+}
+
+.web-viewer {
+	font-weight: 400;
+}
+
+.icon-link {
+	color: rgba(0,0,0,0);
+	min-width: 2rem;
+	font-size: 1px;
+	opacity: 1;
+	transition: opacity 0.3s ease;
+}
+
+.logo {
+	min-height: 2rem;
+	max-height: 2rem;
+	max-width: 2rem;
+}
+
+.logo path,
+.fill-path {
+	fill: var(--svgFill);
+}
+
+rect {
+	fill: none;
+}
+
+.Mozilla-logo {
+	min-width: 7rem;
+}
+
+.icon-link:hover {
+	opacity: .7;
+	transition: opacity 0.3s ease;
+}
+
+.col-sm {
+	padding: 0 calc(var(--gutters) * 2);
+	position: relative;
+}
+
+.controller-content {
+	flex: 1 1 40%
+}
+
+.qml-content {
+	flex: 1 1 60%;
+}
+
+.col-left {
+	padding-top: 2rem;
+}
+
+.container {
+	margin: auto;
+	padding: 1rem 4rem;
+}
+
+.container,
+.row {
+	width: 100%;
+	max-width: 1000px;
+	justify-content: space-between;
+}
+
+.subhead {
+	max-width: 80%;
+	font-size: 1.1rem;
+	margin-top: 0;
+}
+
+.row {
+	margin: 0 !important;
+	display: flex;
+}
+
+canvas { 
+	cursor: default; 
+	z-index: 999;
+	width: 100%;
+}
+
+.control-bg {
+	background: rgba(14, 13, 26, 0.05);
+	border-radius: 2rem;
+	max-width: 500px;
+	height: 300px;
+	overflow: hidden;
+}
+
+#controlcanvas {
+	height: 100%;
+}
+
+#qmlcanvas {
+	height: 68vh;
+	max-height: 700px;
+}
+
+.canvas-bg {
+	box-shadow: var(--boxShadow);
+	border-radius: 2rem;
+	overflow: hidden;
+	background-color: rgba(14, 13, 26, 0.05);
+	min-width: 400px;
+	height: 70vh;
+	max-height: 760px;
+}
+
+.wasm-loaded .canvas-bg {
+	background-color: #F9F9FA;
+	transition: background-color 0.3s ease;
+}
+
+canvas {
+	opacity: 0;
+	background-color: #FFFFFF;
+	cursor: default; 
+	z-index: 999;
+	width: 100%;
+	transition: opacity 0.3s ease;
+}
+
+.wasm-loaded canvas {
+	opacity: 1;
+	transition: opacity 0.3s ease;
+	transition-delay: .5s;
+}
+
+#qtstatus {
+	font-size: 14px;
+	text-align: center;
+	margin: 3rem auto 0 auto;
+	height: 1rem;
+	color: var(--textColorLight);
+}
+
+.loader,
+.loading-error-message {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	margin: auto;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.loader {
+	height: 3rem;
+}
+
+.loading-error-message {
+	width: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.wasm-loading .loader,
+.wasm-loading-error .loading-error-message {
+	visibility: visible;
+	opacity: var(--loaderOpacity);
+	transition: opacity 0.3s ease;
+}
+
+/* websocket controller */
+
+.websocket-controller {
+	position: absolute;
+	top: 3rem;
+	bottom: 3rem;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.draggable {
+	resize: both;
+	position: absolute;
+}
+
+.draggable-header {
+	position: absolute;
+	cursor: grab;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 6rem;
+	opacity: .5;
+	z-index: 5;
+}
+
+.dragging {
+	cursor: grabbing !important;
+}
+
+.draggable-icon {
+	position: absolute;
+	right: 1.25rem;
+	top: 1.5rem;
+	margin: auto;
+}
+
+.log-wrapper {
+	border-radius: 1rem;
+	background-color: var(--inputBackground);
+	min-height: 20vh;
+	min-width: 30vw;
+	overflow: hidden;
+	z-index: 0;
+	left: 10vw;
+	box-shadow: var(--boxShadow);
+}
+
+#log {
+	overflow: scroll;
+	position: absolute;
+	left: 1rem;
+	right: 0rem;
+	top: 1.5rem;
+	bottom: 1rem;
+	font-size: 13px;
+}
+
+.websocket-footer {
+	margin: auto 0 0 0;
+}
+
+.controller {
+	background-color: var(--bgColor);
+	border-radius: 1.5rem;
+	box-shadow: var(--boxShadow);
+	min-height: 300px;
+	height: 60vh;
+	width: 40vw;
+	position: absolute;
+	overflow: hidden;
+	font-size: 13px;
+	z-index: 1;
+
+}
+
+.controller, 
+.websocket-controller {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+#content {
+	position: absolute;
+	top: 1.5rem;
+	left: 1.5rem;
+	right: 1.5rem;
+	bottom: calc(var(--inspectorInputHeight) - 1rem);
+	overflow: scroll;
+}
+
+input {
+	position: absolute;
+	left: -5%;
+	bottom: -3px;
+	background-color: var(--inputBackground);
+	width: 110%;
+	border: none;
+	height: var(--inspectorInputHeight);
+	padding: 1rem 10%;
+	font-size: 1rem;
+	color: var(--textColor);
+	caret-color: orange;
+	transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+input:focus {
+	background: var(--inputBackgroundFocus);
+	outline: none;
+}
+
+.gradient {
+	height: 1px;
+	background: var(--MozGradient);
+	width: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: calc(var(--inspectorInputHeight) - 4px);
+	z-index: 2;
+	opacity: .4;
+	transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.gradient.visible {
+	opacity: 1;
+}
+
+.gradient::before {
+	height: 4px;
+	width: 100%;
+	background-color: var(--gradientBeforeBackground);
+	content: "";
+	opacity: 0;
+	display: block;
+	position: absolute;
+	top: -4px;
+	transition: opacity 0.2s ease;
+}
+
+.gradient.visible::before {
+	opacity: 1;
+}
+
+/* end websocket CSS */
+
+@media screen and (max-width: 1000px) {
+	.row {
+		flex-direction: column-reverse;
+	}
+
+	.col-sm {
+		padding: 1rem 0
+	}
+
+	.Mozilla-VPN-logo {
+		margin-left: auto;
+	}
+
+	h1,
+	.subhead {
+		text-align: center;
+	}
+
+	.control-bg {
+		max-width: 100%;
+	}
+
+	#qmlcanvas,
+	.canvas-bg {
+		min-width: 100%;
+	}
+
+	.subhead {
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+@media screen and (max-width: 700px) {
+	.container {
+		padding: 1rem;
+	}
+
+	.controller {
+		min-width: 300px;
+	}
+	
+	.subhead {
+		max-width: 100%;
+	}
+}
+
+
+@media (prefers-color-scheme: dark) {
+	:root {
+			 --bgColor: #4a4a55;
+			 --boxShadow: 0 12px 18px 2px rgba(34,0,51,.04),0 6px 22px 4px rgba(0, 0, 0, 0.12),0 6px 10px -4px rgba(14,13,26,.12);
+			 --inputBackground: #474752;
+			 --inputBackgroundFocus: rgb(62, 62, 74);
+			 --gradientBeforeBackground: #312f3780;
+			 --loaderOpacity: .4;
+			--textColorLight: rgba(255, 255, 255, .5);
+			--textColor: white;
+			--svgFill: #ffffffc9;
+	}
+}

@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "timersingleshot.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -19,10 +20,10 @@ namespace {
 Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 }
 
-//% "Unknown"
-//: This refers to the current IP address, i.e. "IP: Unknown".
+//% "Loading"
+//: This refers to the current IP address, i.e. "IP: Loading".
 ConnectionDataHolder::ConnectionDataHolder()
-    : m_ipAddress(qtTrId("vpn.connectionInfo.unknown")) {
+    : m_ipAddress(qtTrId("vpn.connectionInfo.loading")) {
   MVPN_COUNT_CTOR(ConnectionDataHolder);
 
   connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
@@ -104,6 +105,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
                                     const QVariant& a_axisX,
                                     const QVariant& a_axisY) {
   logger.log() << "Activated";
+  updateIpAddress();
 
   QtCharts::QSplineSeries* txSeries =
       qobject_cast<QtCharts::QSplineSeries*>(a_txSeries.value<QObject*>());
@@ -200,6 +202,12 @@ void ConnectionDataHolder::reset() {
 
 void ConnectionDataHolder::updateIpAddress() {
   logger.log() << "Updating IP address";
+  auto state = MozillaVPN::instance()->controller()->state();
+  // Only start the check if we're actually connected/connecting
+  if (state != Controller::StateOn && state != Controller::StateConfirming) {
+    logger.log() << "Skip Updating IP address, not connected";
+    return;
+  }
 
   if (m_updatingIpAddress) {
     return;
@@ -224,14 +232,25 @@ void ConnectionDataHolder::updateIpAddress() {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.log() << "IP address request completed";
-
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isObject()) {
               QJsonObject obj = json.object();
 
+              QJsonValue country = obj.take("country");
+              if (m_checkStatusTimer.isActive() &&
+                  country.toString().toLower() !=
+                      MozillaVPN::instance()->currentServer()->countryCode()) {
+                // In case the country-we're reported in does not match the
+                // connected server we may retry only once.
+                logger.log() << "Reported ip not in the right country, retry!";
+                TimerSingleShot::create(this, 3000,
+                                        [this]() { updateIpAddress(); });
+              }
               QJsonValue value = obj.value("ip");
               if (value.isString()) {
                 m_ipAddress = value.toString();
+                logger.log() << "Set own Address: " << m_ipAddress << " in "
+                             << country.toString();
                 emit ipAddressChanged();
               }
             }

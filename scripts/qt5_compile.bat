@@ -5,6 +5,10 @@
 @ECHO off
 SETLOCAL
 
+IF EXIST env.bat (
+  CALL env.bat
+)
+
 IF "%selfWrapped%" == "" (
   :: This is necessary so that we can use "EXIT" to terminate the batch file,
   :: and all subroutines, but not the original cmd.exe
@@ -40,7 +44,7 @@ CALL :CheckCommand cl
 ECHO Compiling openssl...
 cd %1
 
-perl Configure VC-WIN64A no-shared --prefix=c:\MozillaVPNBuild
+perl Configure VC-WIN64A --release --prefix=c:\MozillaVPNBuild --openssldir=c:\MozillaVPNBuild\SSL
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure OpenSSL.
   EXIT 1
@@ -65,7 +69,7 @@ IF NOT EXIST configure.bat (
   EXIT /B 1
 )
 
-configure -static -opensource -release -no-dbus -no-feature-qdbus -confirm-license -strip -silent -no-compile-examples -nomake tests -make libs -no-sql-psql -no-sql-sqlite -skip qt3d -skip webengine -skip qtmultimedia -skip qtserialport -skip qtsensors -skip qtwebsockets -skip qtgamepad -skip qtwebchannel -skip qtandroidextras -feature-imageformat_png -qt-libpng -qt-zlib -recheck-all -openssl -I c:\MozillaVPNBuild\include -L c:\MozillaVPNBuild\lib -prefix c:\MozillaVPNBuild
+configure -static -opensource -release -no-dbus -no-feature-qdbus -confirm-license -strip -silent -no-compile-examples -nomake tests -make libs -no-sql-psql -no-sql-sqlite -skip qt3d -skip webengine -skip qtmultimedia -skip qtserialport -skip qtsensors -skip qtgamepad -skip qtwebchannel -skip qtandroidextras -feature-imageformat_png -qt-libpng -qt-zlib -recheck-all -openssl-linked -I c:\MozillaVPNBuild\include -L c:\MozillaVPNBuild\lib -prefix c:\MozillaVPNBuild
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure QT5.
   EXIT /B 1

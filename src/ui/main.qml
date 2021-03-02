@@ -12,12 +12,15 @@ Window {
     id: window
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
+    property var isWasmApp: Qt.platform.os === "wasm"
 
     function fullscreenRequired() {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
+
+    screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
 
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
@@ -82,13 +85,25 @@ Window {
         }
     }
 
+    VPNWasmHeader {
+        id: wasmMenuHeader
+        visible: false
+    }
+
     VPNStackView {
         id: mainStackView
-
         initialItem: mainView
         width: parent.width
         anchors.top: iosSafeAreaTopMargin.bottom
         height: safeContentHeight
+
+        Component.onCompleted: {
+            if (isWasmApp) {
+                wasmMenuHeader.visible = true;
+                anchors.top = wasmMenuHeader.bottom;
+                height = safeContentHeight - wasmMenuHeader.height;
+            }
+        }
     }
 
     Component {
@@ -190,12 +205,14 @@ Window {
 
     }
 
+
     Connections {
         target: VPN
         function onViewLogsNeeded() {
             if (Qt.platform.os !== "android" &&
                     Qt.platform.os !== "ios" &&
-                    Qt.platform.os !== "tvos") {
+                    Qt.platform.os !== "tvos" &&
+                    Qt.platform.os !== "wasm")  {
                 VPN.viewLogs();
             } else {
                 mainStackView.push("views/ViewLogs.qml");

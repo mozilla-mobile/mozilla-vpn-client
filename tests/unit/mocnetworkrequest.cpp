@@ -18,16 +18,24 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 
   TimerSingleShot::create(this, 0, [this, nc]() {
     deleteLater();
+
     if (nc.m_status == TestHelper::NetworkConfig::Failure) {
       emit requestFailed(QNetworkReply::NetworkError::HostNotFoundError, "");
     } else {
       Q_ASSERT(nc.m_status == TestHelper::NetworkConfig::Success);
+
       emit requestCompleted(nc.m_body);
     }
   });
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+
+// static
+NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent, const QString&,
+                                                int status) {
+  return new NetworkRequest(parent, status);
+}
 
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(

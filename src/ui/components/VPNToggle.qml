@@ -184,27 +184,6 @@ VPNButtonBase {
                 toggleColor: Theme.vpnToggleConnected
             }
 
-        },
-        State {
-            name: VPNController.StateCaptivePortal
-
-            //TODO:
-            PropertyChanges {
-                target: cursor
-                anchors.leftMargin: 4
-            }
-
-            PropertyChanges {
-                target: toggle
-                color: "#E7E7E7"
-                border.color: Theme.white
-            }
-
-            PropertyChanges {
-                target: toggleButton
-                toggleColor: Theme.vpnToggleDisconnected
-            }
-
         }
     ]
     transitions: [

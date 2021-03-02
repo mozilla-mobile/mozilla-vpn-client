@@ -12,9 +12,6 @@ VPNAlert {
     visible: false
     state: VPN.alert
     states: [
-        // TODO - Needed alerts:
-        // BackgroundServiceRestored
-
         State {
             name: VPN.NoAlert
 
@@ -83,12 +80,26 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                alertType: "background-service"
+                alertType: "backend-service"
                 //% "Background service error"
-                alertText: qsTrId("vpn.alert.backgroundServiceError")
+                alertText: qsTrId("vpn.alert.backendServiceError")
                 //% "Restore"
                 //: Restore a service in case of error.
                 alertLinkText: qsTrId("vpn.alert.restore")
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.RemoteServiceErrorAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "backend-service"
+                //% "Remote service error"
+                alertText: qsTrId("vpn.alert.remoteServiceError")
+                alertLinkText: ""
                 opacity: 1
                 visible: true
             }
@@ -103,6 +114,20 @@ VPNAlert {
                 //% "Subscription failed"
                 alertText: qsTrId("vpn.alert.subscriptionFailureError")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.GeoIpRestrictionAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "geoip-restriction"
+                //% "Operation not allowed from current location"
+                alertText: qsTrId("vpn.alert.getIPRestrictionError")
+                alertLinkText: ""
                 opacity: 1
                 visible: true
             }

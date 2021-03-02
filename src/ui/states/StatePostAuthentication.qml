@@ -42,6 +42,7 @@ Item {
 
     VPNButton {
         id: button
+        objectName: "postAuthenticationButton"
 
         //% "Continue"
         text: qsTrId("vpn.postAuthentication.continue")

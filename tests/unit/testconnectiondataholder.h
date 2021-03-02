@@ -8,9 +8,14 @@ class TestConnectionDataHolder final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void initTestCase() { TestHelper::controllerState = Controller::StateOn; }
   void checkIpAddressFailure();
   void checkIpAddressSucceess_data();
   void checkIpAddressSucceess();
 
   void chart();
+
+  void cleanupTestCase() {
+    TestHelper::controllerState = Controller::StateInitializing;
+  }
 };

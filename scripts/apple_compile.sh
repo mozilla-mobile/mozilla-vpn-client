@@ -17,7 +17,7 @@ NETWORKEXTENSION=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios> [-d|--debug] [-p|--prod] [-n|--networkextension]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-n|--networkextension]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
@@ -63,7 +63,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]]; then
+if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]] && [[ "$OS" != "macostest" ]]; then
   helpFunction
 fi
 
@@ -78,6 +78,8 @@ fi
 
 QMAKE=qmake
 if [ "$OS" = "macos" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
+  QMAKE=$QT_MACOS_BIN/qmake
+elif [ "$OS" = "macostest" ] && ! [ "$QT_MACOS_BIN" = "" ]; then
   QMAKE=$QT_MACOS_BIN/qmake
 elif [ "$OS" = "ios" ] && ! [ "$QT_IOS_BIN" = "" ]; then
   QMAKE=$QT_IOS_BIN/qmake
@@ -104,7 +106,15 @@ print G "$SHORTVERSION - $FULLVERSION"
 MACOS_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
+  CONFIG+=balrog
   MVPN_MACOS=1
+"
+
+MACOSTEST_FLAGS="
+  QTPLUGIN+=qsvg
+  CONFIG-=static
+  CONFIG+=DUMMY
+  CONFIG+=inspector
 "
 
 IOS_FLAGS="
@@ -120,10 +130,14 @@ else
   MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release"
 fi
 
+OSRUBY=$OS
 printn Y "OS: "
 print G "$OS"
 if [ "$OS" = "macos" ]; then
   PLATFORM=$MACOS_FLAGS
+elif [ "$OS" = "macostest" ]; then
+  OSRUBY=macos
+  PLATFORM=$MACOSTEST_FLAGS
 elif [ "$OS" = "ios" ]; then
   PLATFORM=$IOS_FLAGS
 else
@@ -131,10 +145,14 @@ else
 fi
 
 PRODMODE=
+INSPECTOR=
 printn Y "Production mode: "
 if [[ "$PROD" ]]; then
   print G yes
   PRODMODE="CONFIG+=production"
+elif [ "$OS" = "macos" ]; then
+  print G "no (inspector enabled)"
+  INSPECTOR="CONFIG+=inspector"
 else
   print G no
 fi
@@ -151,15 +169,17 @@ fi
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \
+  BUILD_ID=$FULLVERSION \
   -spec macx-xcode \
   $MODE \
   $PRODMODE \
+  $INSPECTOR \
   $VPNMODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OS" "$NETWORKEXTENSION" || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" || die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Opening in XCode..."

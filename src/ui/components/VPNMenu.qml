@@ -14,6 +14,7 @@ Item {
     property bool isSettingsView: false
     property bool isMainView: false
     property bool accessibleIgnored: false
+    property alias forceFocus: iconButton.focus
 
     width: parent.width
     height: 56

@@ -18,6 +18,6 @@ SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {
 void SystemTrayNotificationHandler::notify(const QString& title,
                                            const QString& message,
                                            int timerSec) {
-  SystemTrayHandler::instance()->showMessage(
-      title, message, SystemTrayHandler::NoIcon, timerSec * 1000);
+  SystemTrayHandler::instance()->showNotification(title, message,
+                                                  timerSec * 1000);
 }

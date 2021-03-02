@@ -78,17 +78,24 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   JNINativeMethod methods[]{{"startActivityForResult",
                              "(Landroid/content/Intent;)V",
                              reinterpret_cast<void*>(startActivityForResult)}};
-  QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNService");
+  QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNPermissionHelper");
   QAndroidJniEnvironment env;
   jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
   env->RegisterNatives(objectClass, methods,
                        sizeof(methods) / sizeof(methods[0]));
   env->DeleteLocalRef(objectClass);
 
+  auto appContext = QtAndroid::androidActivity().callObjectMethod(
+      "getApplicationContext", "()Landroid/content/Context;");
+
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/VPNService", "startService",
+      "(Landroid/content/Context;)V", appContext.object());
+
   // Start the VPN Service (if not yet) and Bind to it
-  QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(),
-                                        "org.mozilla.firefox.vpn.VPNService"),
-                         *this, QtAndroid::BindFlag::AutoCreate);
+  QtAndroid::bindService(
+      QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
+      *this, QtAndroid::BindFlag::AutoCreate);
 }
 
 void AndroidController::enableStartAtBoot(bool enabled) {
@@ -121,9 +128,9 @@ void AndroidController::setNotificationText(const QString& title,
 void AndroidController::setFallbackConnectedNotification() {
   QJsonObject args;
   args["title"] = qtTrId("vpn.main.productName");
-  //% "Is running in the Background"
-  //: Refers to the app - which is in the Background
-  args["message"] = qtTrId("vpn.android.notification.isRunning");
+  //% "Ready for you to connect"
+  //: Refers to the app - which is currently running the background and waiting
+  args["message"] = qtTrId("vpn.android.notification.isIDLE");
   QJsonDocument doc(args);
   QAndroidParcel data;
   data.writeData(doc.toJson());
@@ -135,6 +142,13 @@ void AndroidController::activate(
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, Reason reason) {
   logger.log() << "Activation";
+
+  logger.log() << "Prompting for VPN permission";
+  auto appContext = QtAndroid::androidActivity().callObjectMethod(
+      "getApplicationContext", "()Landroid/content/Context;");
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/VPNPermissionHelper", "startService",
+      "(Landroid/content/Context;)V", appContext.object());
   m_server = server;
 
   // Serialise arguments for the VPNService
@@ -271,14 +285,11 @@ bool AndroidController::VPNBinder::onTransact(int code,
   switch (code) {
     case EVENT_INIT:
       logger.log() << "Transact: init";
-      Q_ASSERT(!m_controller->m_initialized);
-      m_controller->m_initialized = true;
-      buffer = readUTF8Parcel(data);
-      if (buffer == "connected") {
-        emit m_controller->initialized(true, true, QDateTime());
-      } else {
-        emit m_controller->initialized(true, false, QDateTime());
-      }
+      doc = QJsonDocument::fromJson(data.readData());
+      emit m_controller->initialized(
+          true, doc.object()["connected"].toBool(),
+          QDateTime::fromMSecsSinceEpoch(
+              doc.object()["time"].toVariant().toLongLong()));
       // Pass a localised version of the Fallback string for the Notification
       m_controller->setFallbackConnectedNotification();
 

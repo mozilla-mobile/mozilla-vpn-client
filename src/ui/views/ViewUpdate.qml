@@ -63,8 +63,6 @@ VPNFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    // TODO - should anything happen here besides opening
-                    // the user account website?
                     VPN.openLink(VPN.LinkAccount);
                 }
             }
@@ -171,8 +169,9 @@ VPNFlickable {
             id: updateBtn
 
             text: qsTrId("vpn.updates.updateNow")
+            loaderVisible: VPN.updating
             radius: 4
-            onClicked: VPN.openLink(VPN.LinkUpdate)
+            onClicked: VPN.update()
         }
 
         VPNLinkButton {
