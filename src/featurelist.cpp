@@ -54,7 +54,7 @@ bool FeatureList::captivePortalNotificationSupported() const {
 
 bool FeatureList::unsecuredNetworkNotificationSupported() const {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM)
+    defined(MVPN_WASM) || defined(MVPN_ANDROID)
   return true;
 #else
   return false;

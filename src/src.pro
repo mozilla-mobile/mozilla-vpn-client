@@ -418,6 +418,7 @@ else:android {
 
     SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
+                platforms/android/androidnetworkwatcher.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
@@ -430,6 +431,7 @@ else:android {
 
     HEADERS +=  platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
+                platforms/android/androidnetworkwatcher.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \

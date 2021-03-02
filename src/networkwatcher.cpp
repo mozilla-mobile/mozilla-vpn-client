@@ -23,6 +23,10 @@
 #  include "platforms/macos/macosnetworkwatcher.h"
 #endif
 
+#ifdef MVPN_ANDROID
+#  include "platforms/android/androidnetworkwatcher.h"
+#endif
+
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasmnetworkwatcher.h"
 #endif
@@ -49,6 +53,8 @@ void NetworkWatcher::initialize() {
   m_impl = new MacOSNetworkWatcher(this);
 #elif defined(MVPN_WASM)
   m_impl = new WasmNetworkWatcher(this);
+#elif defined(MVPN_ANDROID)
+  m_impl = new AndroidNetworkWatcher(this);
 #else
   logger.log()
       << "No NetworkWatcher implementation for the current platform (yet)";
