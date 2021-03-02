@@ -192,6 +192,15 @@ Window {
                         source: "states/StateDeviceLimit.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateBackendFailure
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateBackendFailure.qml"
+                    }
+
                 }
             ]
 
