@@ -14,6 +14,7 @@
 #include "rfc1918.h"
 #include "rfc4193.h"
 #include "settingsholder.h"
+#include "tasks/heartbeat/taskheartbeat.h"
 #include "timercontroller.h"
 #include "timersingleshot.h"
 
@@ -276,7 +277,7 @@ void Controller::connectionFailed() {
   ++m_connectionRetry;
   emit connectionRetryChanged();
 
-  m_expectDisconnection = true;
+  m_reconnectionStep = ExpectDisconnection;
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(ControllerImpl::ReasonConfirming);
@@ -285,15 +286,18 @@ void Controller::connectionFailed() {
 void Controller::disconnected() {
   logger.log() << "Disconnected from state:" << m_state;
 
-  if (m_expectDisconnection) {
+  if (m_reconnectionStep == ExpectDisconnection) {
     Q_ASSERT(m_state == StateConfirming);
     Q_ASSERT(m_connectionRetry > 0);
 
-    m_expectDisconnection = false;
-
     // We are retrying the connection. Let's ignore this disconnect signal and
-    // let's retrigger the connection.
-    activateInternal();
+    // let's see if the servers are up.
+
+    m_reconnectionStep = ExpectHeartbeat;
+
+    TaskHeartbeat* task = new TaskHeartbeat();
+    connect(task, &Task::completed, this, &Controller::heartbeatCompleted);
+    task->run(MozillaVPN::instance());
     return;
   }
 
@@ -575,10 +579,23 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 }
 
 void Controller::resetConnectionCheck() {
-  m_expectDisconnection = false;
+  m_reconnectionStep = NoReconnection;
 
   m_connectionCheck.stop();
 
   m_connectionRetry = 0;
   emit connectionRetryChanged();
+}
+
+void Controller::heartbeatCompleted() {
+  if (m_reconnectionStep != ExpectHeartbeat) {
+    return;
+  }
+
+  m_reconnectionStep = NoReconnection;
+
+  // If we are still in the main state, we can try to reconnect.
+  if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
+    activateInternal();
+  }
 }

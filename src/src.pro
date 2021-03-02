@@ -103,6 +103,7 @@ SOURCES += \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
+        tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
@@ -185,6 +186,7 @@ HEADERS += \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
+        tasks/heartbeat/taskheartbeat.h \
         tasks/removedevice/taskremovedevice.h \
         timercontroller.h \
         timersingleshot.h \

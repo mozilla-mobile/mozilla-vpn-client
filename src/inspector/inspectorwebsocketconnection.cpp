@@ -162,6 +162,11 @@ static bool cmdForceUnsecuredNetwork(QWebSocket*, const QList<QByteArray>&) {
   return true;
 }
 
+static bool cmdForceHeartbeatFailure(QWebSocket*, const QList<QByteArray>&) {
+  MozillaVPN::instance()->heartbeatFailure();
+  return true;
+}
+
 struct WebSocketCommand {
   QString m_commandName;
   int32_t m_arguments;
@@ -184,6 +189,7 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"force_unsecured_network", 0, cmdForceUnsecuredNetwork},
     WebSocketCommand{"activate", 0, cmdActivate},
     WebSocketCommand{"deactivate", 0, cmdDeactivate},
+    WebSocketCommand{"force_heartbeat_failure", 0, cmdForceHeartbeatFailure},
     WebSocketCommand{"logout", 0, cmdLogout},
 };
 
