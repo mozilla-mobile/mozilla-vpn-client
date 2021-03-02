@@ -82,11 +82,9 @@ bool Daemon::activate(const InterfaceConfig& config) {
     return activate(config);
   }
 
-  if (supportWGUtils()) {
-    if (wgutils()->interfaceExists()) {
-      qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
-      return false;
-    }
+  if (supportWGUtils() && wgutils()->interfaceExists()) {
+    qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
+    return false;
   }
 
   m_lastConfig = config;
@@ -229,12 +227,10 @@ bool Daemon::deactivate(bool emitSignals) {
     return true;
   }
 
-  if (supportWGUtils()) {
-    if (!wgutils()->interfaceExists()) {
-      qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
-               WG_INTERFACE);
-      return false;
-    }
+  if (supportWGUtils() && !wgutils()->interfaceExists()) {
+    qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
+             WG_INTERFACE);
+    return false;
   }
 
   m_connected = false;
