@@ -56,7 +56,8 @@ SET TEST_BUILD=F
 if "%1"== "-t" SET TEST_BUILD=T
 if "%1"== "--test" SET TEST_BUILD=T
 
-SET FLAGS=
+SET FLAGS=BUILD_ID=%VERSION%
+
 if "%PROD_BUILD%" == "T" (
   ECHO Production build enabled
   SET FLAGS=%FLAGS% CONFIG+=production
@@ -88,6 +89,9 @@ CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "c:\\Program Files (x86)\\Micro
 
 ECHO Importing languages...
 python scripts\importLanguages.py
+
+ECHO Extract version...
+FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
 
 ECHO Creating the project...
 qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
@@ -156,3 +160,12 @@ EXIT 0
     )
   )
   goto :eof
+
+:SetVersion
+  for /f "tokens=1* delims=." %%A IN ("%1") DO call :ComposeVersion %%A
+  goto :EOF
+
+:ComposeVersion
+  SET VERSION=%1
+  set VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%time:~0,2%%time:~3,2%
+  goto :EOF
