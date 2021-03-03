@@ -9,7 +9,6 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 #include "wgquickprocess.h"
-#include "wgutilslinux.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -28,6 +27,7 @@ DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 WireguardUtilsLinux* DBusService::wgutils() {
   if (!m_wgutils) {
     m_wgutils = new WireguardUtilsLinux();
+    m_wgutils->setParent(this);
   }
   return m_wgutils;
 }

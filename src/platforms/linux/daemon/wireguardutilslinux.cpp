@@ -1,8 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-#include "wgutilslinux.h"
-#include "daemon/daemon.h"
+#include "wireguardutilslinux.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QScopeGuard>
@@ -25,6 +25,16 @@ extern "C" {
 
 namespace {
 Logger logger(LOG_LINUX, "WireguardUtilsLinux");
+}
+
+WireguardUtilsLinux::WireguardUtilsLinux() : WireguardUtils() {
+  MVPN_COUNT_CTOR(WireguardUtilsLinux);
+  logger.log() << "WireguardUtilsLinux created.";
+}
+
+WireguardUtilsLinux::~WireguardUtilsLinux() {
+  MVPN_COUNT_DTOR(WireguardUtilsLinux);
+  logger.log() << "WireguardUtilsLinux destroyed.";
 }
 
 bool WireguardUtilsLinux::interfaceExists() {
@@ -110,13 +120,13 @@ WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
 
 // PRIVATE METHODS
 QStringList WireguardUtilsLinux::currentInterfaces() {
-  char* deviceName;
-  size_t len;
-  QStringList devices;
   char* deviceNames = wg_list_device_names();
+  QStringList devices;
   if (!deviceNames) {
     return devices;
   }
+  char* deviceName;
+  size_t len;
   wg_for_each_device_name(deviceNames, deviceName, len) {
     devices.append(deviceName);
   }
