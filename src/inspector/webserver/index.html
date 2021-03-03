@@ -103,6 +103,7 @@
     commands.set("detectCaptivePortal", { func: () => ws.send("force_captive_portal_check"), desc: "Starts the captive portal detection" });
     commands.set("triggerCaptivePortal", { func: () => ws.send("force_captive_portal_detection"), desc: "Triggers the captive portal detection" });
     commands.set("triggerUnsecuredNetwork", { func: () => ws.send("force_unsecured_network"), desc: "Triggers the unsecured network detection" });
+    commands.set("triggerHeartbeatFailure", { func: () => ws.send("force_heartbeat_failure"), desc: "Triggers the heartbeat server-side failure" });
 
     function parseCommand(input) {
       input = input.trim();

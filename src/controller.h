@@ -76,6 +76,8 @@ class Controller final : public QObject {
 
   int connectionRetry() const { return m_connectionRetry; }
 
+  void backendFailure();
+
  public slots:
   void activate();
 
@@ -100,6 +102,7 @@ class Controller final : public QObject {
   void timeChanged();
   void readyToQuit();
   void readyToUpdate();
+  void readyToBackendFailure();
   void connectionRetryChanged();
 
  private:
@@ -112,6 +115,8 @@ class Controller final : public QObject {
   void activateInternal();
 
   void resetConnectionCheck();
+
+  void heartbeatCompleted();
 
  private:
   State m_state = StateInitializing;
@@ -132,13 +137,21 @@ class Controller final : public QObject {
     Quit,
     Update,
     Disconnect,
+    BackendFailure,
   };
 
   NextStep m_nextStep = None;
 
   ConnectionCheck m_connectionCheck;
   int m_connectionRetry = 0;
-  bool m_expectDisconnection = false;
+
+  enum ReconnectionStep {
+    NoReconnection,
+    ExpectDisconnection,
+    ExpectHeartbeat,
+  };
+
+  ReconnectionStep m_reconnectionStep = NoReconnection;
 
   QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
                            uint64_t rxBytes)>>

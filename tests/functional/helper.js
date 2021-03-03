@@ -66,6 +66,11 @@ module.exports = {
     assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
+  async forceHeartbeatFailure() {
+    const buffer = await this._writeCommand('force_heartbeat_failure');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
   async quit() {
     const buffer = await this._writeCommand('quit');
     assert(

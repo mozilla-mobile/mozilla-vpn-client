@@ -48,6 +48,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForCaptivePortalLookup(QObject* parent);
 
+  static NetworkRequest* createForHeartbeat(QObject* parent);
+
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);
 

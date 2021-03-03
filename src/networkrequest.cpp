@@ -229,6 +229,17 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+
+  QUrl url(Constants::API_URL);
+  url.setPath("/__heartbeat__");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
