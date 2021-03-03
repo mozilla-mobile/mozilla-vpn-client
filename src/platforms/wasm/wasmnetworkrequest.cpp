@@ -127,6 +127,14 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+  createDummyRequest(r);
+  return r;
+}
+
 void NetworkRequest::replyFinished() {}
 
 void NetworkRequest::timeout() {}
