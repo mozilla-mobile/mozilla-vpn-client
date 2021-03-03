@@ -5,16 +5,32 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
-
 import "../components"
 
-Item {
-    VPNButton {
-        // This is needed for testing.
-        objectName: "heartbeatTryButton";
 
-        text: "click me"
-        anchors.fill: parent
-        onClicked: VPN.triggerHeartbeat();
+VPNStackView {
+    id: stackview
+
+    function handleButtonClick() {
+        VPN.triggerHeartbeat();
     }
+
+    Component.onCompleted:stackview.push(
+        "../views/ViewErrorFullScreen.qml",
+        {
+            //% "Something went wrong…"
+            headlineText: qsTrId("vpn.errors.somethingWentWrong"),
+
+            //% "Unable to establish a connection at this time. We're working hard to resolve the issue. Please try again shortly."
+            errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
+
+            //% "Try Again"
+            buttonText: qsTrId("vpn.errors.tryAgain"),
+
+            buttonObjectName: "heartbeatTryButton",
+            buttonOnClick: stackview.handleButtonClick,
+            signOffLinkVisible: false,
+            getHelpLinkVisible: true
+        }
+    )
 }
