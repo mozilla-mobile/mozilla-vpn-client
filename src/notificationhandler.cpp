@@ -56,7 +56,7 @@ void NotificationHandler::showNotification() {
       if (m_switching) {
         m_switching = false;
 
-        title = qtTrId("vpn.systray.statusSwitch.title")
+        title = qtTrId("vpn.systray.statusSwitch.title");
         message = qtTrId("vpn.systray.statusSwtich.message")
                       .arg(m_switchingServerCountry)
                       .arg(m_switchingServerCity)

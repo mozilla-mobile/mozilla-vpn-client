@@ -85,10 +85,6 @@ with open('translations/translations.pri', 'w') as pri_file:
 print('Updated translations.pri')
 
 # Step 3
-# Generate new ts files
-os.system('lupdate src/src.pro')
-
-# Step 4
 # Now import translations into the files
 for l10n_file in l10n_files:
     os.system(f"lconvert -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
