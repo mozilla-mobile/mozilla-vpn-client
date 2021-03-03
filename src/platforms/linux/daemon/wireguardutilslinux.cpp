@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #include "wireguardutilslinux.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 // Import wireguard C library for Linux
@@ -16,6 +17,16 @@ extern "C" {
 
 namespace {
 Logger logger(LOG_LINUX, "WireguardUtilsLinux");
+}
+
+WireguardUtilsLinux::WireguardUtilsLinux() : WireguardUtils() {
+  MVPN_COUNT_CTOR(WireguardUtilsLinux);
+  logger.log() << "WireguardUtilsLinux created.";
+}
+
+WireguardUtilsLinux::~WireguardUtilsLinux() {
+  MVPN_COUNT_DTOR(WireguardUtilsLinux);
+  logger.log() << "WireguardUtilsLinux destroyed.";
 }
 
 bool WireguardUtilsLinux::interfaceExists() {

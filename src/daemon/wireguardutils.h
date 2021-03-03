@@ -5,6 +5,8 @@
 #ifndef WIREGUARDUTILS_H
 #define WIREGUARDUTILS_H
 
+#include <QObject>
+#include <QStringList>
 #include <QCoreApplication>
 
 constexpr const char* WG_INTERFACE = "moz0";
@@ -15,7 +17,6 @@ class WireguardUtils : public QObject {
     qFatal("Have you forgotten to implement WireguardUtils::interfaceExists?");
     return false;
   };
-
   virtual QStringList currentInterfaces() {
     qFatal(
         "Have you forgotten to implement WireguardUtils::currentInterfaces?");
