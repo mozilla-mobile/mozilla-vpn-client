@@ -87,7 +87,6 @@ VPNFlickable {
             }
 
             VPNBoldLabel {
-                //% "Mozilla VPN"
                 text: qsTrId("MozillaVPN")
                 color: "#000000"
                 anchors.verticalCenter: parent.verticalCenter
@@ -105,9 +104,7 @@ VPNFlickable {
         alertColor: Theme.blueButton
         visible: state === "recommended"
         onVisibleChanged: if (visible) showAlert.start();
-        //% "New version is available."
         alertText: qsTrId("vpn.updates.newVersionAvailable")
-        //% "Update now"
         alertLinkText: qsTrId("vpn.updates.updateNow")
         width: parent.width - (Theme.windowMargin * 2)
 

@@ -12,31 +12,21 @@ Row {
 
     function computeRange() {
         if (markerData < 1024) {
-            //% "B/s"
-            //: Bytes per second
             return qsTrId("vpn.connectionInfo.Bps");
         }
 
         if (markerData < 1048576 /* 1024^2 */) {
-            //% "kB/s"
-            //: Kilobytes per second
             return qsTrId("vpn.connectionInfo.kBps");
         }
 
         if (markerData < 1073741824 /* 1024^3 */) {
-            //% "MB/s"
-            //: Megabytes per second
             return qsTrId("vpn.connectioInfo.mBps");
         }
 
         if (markerData < 1099511627776 /* 1024^4 */) {
-            //% "GB/s"
-            //: Gigabytes per second
             return qsTrId("vpn.connectioInfo.gBps");
         }
 
-        //% "TB/s"
-        //: Terabytes per second
         return qsTrId("vpn.connectionInfo.tBps");
     }
 
@@ -61,10 +51,6 @@ Row {
     }
     Accessible.focusable: true
     Accessible.role: Accessible.StaticText
-    //% "%1: %2 %3"
-    //: Used as accessibility description for the connection info:
-    //: %1 is the localized label for “Upload” or “Download”, %2 is the speed
-    //: value, %3 is the localized unit. Example: “Upload: 10 Mbps”.
     Accessible.name: qsTrId("vpn.connectionInfo.accessibleName")
         .arg(label.text)
         .arg(value.text)

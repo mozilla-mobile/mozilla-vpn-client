@@ -17,18 +17,15 @@ Item {
         id: aboutUsListModel
 
         ListElement {
-            //% "Terms of Service"
             linkTitle: qsTrId("vpn.aboutUs.tos")
             openUrl: VPN.LinkTermsOfService
         }
 
         ListElement {
-            //% "Privacy Notice"
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice")
             openUrl: VPN.LinkPrivacyNotice
         }
         ListElement {
-            //% "License"
             linkTitle: qsTrId("vpn.aboutUs.license")
             openUrl: VPN.LinkLicense
         }
@@ -38,7 +35,6 @@ Item {
     VPNMenu {
         id: menu
 
-        //% "About us"
         title: qsTrId("vpn.settings.aboutUs")
         isSettingsView: true
     }
@@ -74,8 +70,6 @@ Item {
         VPNBoldLabel {
             id: releaseLabel
 
-            //% "Release Version"
-            //: Refers to the installed version. For example: "Release Version: 1.23"
             text: qsTrId("vpn.aboutUs.releaseVersion")
             anchors.top: mozillaText.bottom
             anchors.topMargin: 16

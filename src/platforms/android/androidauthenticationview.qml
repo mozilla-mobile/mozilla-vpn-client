@@ -59,7 +59,6 @@ Item {
             anchors.top: menuBar.top
             anchors.centerIn: menuBar
 
-            //% "Authentication"
             text: qsTrId("vpn.android.authentication")
         }
 

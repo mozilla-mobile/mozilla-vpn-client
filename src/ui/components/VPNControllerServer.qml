@@ -10,11 +10,7 @@ import "../themes/themes.js" as Theme
 VPNClickableRow {
     id: servers
 
-    //% "Select location"
-    //: Select the Location of the VPN server
     property var titleText: qsTrId("vpn.servers.selectLocation")
-    //% "current location - %1"
-    //: Accessibility description for current location of the VPN server
     property var descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.city)
 
     accessibleName: titleText + ": " + descriptionText

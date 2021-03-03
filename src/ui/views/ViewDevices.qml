@@ -21,7 +21,6 @@ Item {
     VPNMenu {
         id: menu
 
-        //% "My devices"
         title: qsTrId("vpn.devices.myDevices")
         accessibleIgnored: isModalDialogOpened
     }
@@ -138,8 +137,6 @@ Item {
                 property var deviceName: name
 
                 spacing: 0
-                //% "%1 %2"
-                //: Example: "deviceName deviceDescription"
                 Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
                 Accessible.role: Accessible.ListItem
                 Accessible.ignored: root.isModalDialogOpened
@@ -193,25 +190,18 @@ Item {
 
                         function deviceSubtitle() {
                             if (currentOne) {
-                                //% "Current Device"
                                 return qsTrId("vpn.devices.currentDevice");
                             }
 
                             const diff = (Date.now() - createdAt.valueOf()) / 1000;
                             if (diff < 3600) {
-                                //% "Added less than an hour ago"
                                 return qsTrId("vpn.devices.addedltHour");
                             }
 
                             if (diff < 86400) {
-                                //: %1 is the number of hours.
-                                //% "Added a few hours ago (%1)"
                                 return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
                             }
 
-                            //% "Added %1 days ago"
-                            //: %1 is the number of days.
-                            //: Note: there is currently no support for proper plurals
                             return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
                         }
 
@@ -236,8 +226,6 @@ Item {
                     Layout.preferredHeight: Theme.rowHeight
                     Layout.preferredWidth: Theme.rowHeight
                     onClicked: removePopup.initializeAndOpen(name, index)
-                    //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
-                    //% "Remove %1"
                     accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.deviceName)
                     // Only allow focus within the current item in the list.
                     focusPolicy: deviceList.currentItem === deviceRow ? Qt.StrongFocus : Qt.NoFocus

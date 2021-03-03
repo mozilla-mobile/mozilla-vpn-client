@@ -23,7 +23,6 @@ VPNFlickable {
         VPNHeadline {
             id: headline
 
-            //% "Error confirming subscription…"
             text: qsTrId("vpn.subscriptionBlocked.title")
             Layout.preferredHeight: paintedHeight
             Layout.preferredWidth: Math.max(Theme.maxTextWidth, vpnFlickable.width * 0.85)
@@ -73,7 +72,6 @@ VPNFlickable {
                     width: Theme.maxTextWidth
                     font.pixelSize: Theme.fontSize
                     lineHeight: 22
-                    //% "Another Firefox Account has already subscribed using this Apple ID."
                     text:qsTrId("vpn.subscriptionBlocked.anotherFxaSubscribed")
                 }
 
@@ -87,7 +85,6 @@ VPNFlickable {
                     width: Theme.maxTextWidth
                     font.pixelSize: Theme.fontSize
                     lineHeight: 22
-                    //% "Visit our help center to learn more about managing your subscriptions."
                     text: qsTrId("vpn.subscriptionBlocked.visitHelpCenter")
                 }
 
@@ -109,7 +106,6 @@ VPNFlickable {
             Layout.alignment: Qt.AlignBottom
 
             VPNButton {
-                //% "Get Help"
                 text: qsTrId("vpn.subscriptionBlocked.getHelp")
                 anchors.bottom: spacer.top
                 anchors.horizontalCenter: parent.horizontalCenter

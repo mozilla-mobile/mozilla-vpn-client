@@ -16,7 +16,6 @@ VPNFlickable {
     VPNMenu {
         id: menu
 
-        //% "Notifications"
         title: qsTrId("vpn.settings.notifications")
         isSettingsView: true
     }
@@ -29,9 +28,7 @@ VPNFlickable {
         width: parent.width - Theme.windowMargin
         visible: VPNFeatureList.captivePortalNotificationSupported
 
-        //% "Guest Wi-Fi portal alert"
         labelText: qsTrId("vpn.settings.guestWifiAlert")
-        //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
         subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
 
         isChecked: (VPNSettings.captivePortalAlert)
@@ -52,9 +49,7 @@ VPNFlickable {
         width: parent.width - Theme.windowMargin
         visible: VPNFeatureList.unsecuredNetworkNotificationSupported
 
-        //% "Unsecured network alert"
         labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
-        //% "Get notified if you connect to an unsecured Wi-Fi network"
         subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
 
         isChecked: (VPNSettings.unsecuredNetworkAlert)
@@ -71,8 +66,6 @@ VPNFlickable {
         anchors.top: VPNFeatureList.unsecuredNetworkNotificationSupported ? unsecuredNetworkAlert.bottom : captivePortalAlert.bottom
         visible: !vpnFlickable.vpnIsOff
 
-        //% "VPN must be off to edit these settings"
-        //: Associated to a group of settings that require the VPN to be disconnected to change
         errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
     }
 }

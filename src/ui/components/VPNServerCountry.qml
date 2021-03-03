@@ -127,8 +127,6 @@ VPNClickableRow {
         width: serverCountry.width - anchors.leftMargin
 
         Accessible.role: Accessible.List
-        //% "Cities"
-        //: The title for the list of cities.
         Accessible.name: qsTrId("cities")
 
         Behavior on opacity {

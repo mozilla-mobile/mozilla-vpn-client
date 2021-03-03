@@ -71,7 +71,6 @@ VPNButtonBase {
 
             PropertyChanges {
                 target: toggleButton
-                //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
             }
 
@@ -93,7 +92,6 @@ VPNButtonBase {
 
             PropertyChanges {
                 target: toggleButton
-                //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: Theme.vpnToggleConnected
             }
@@ -116,7 +114,6 @@ VPNButtonBase {
 
             PropertyChanges {
                 target: toggleButton
-                //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: Theme.vpnToggleConnected
             }

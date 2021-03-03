@@ -38,8 +38,6 @@ Item {
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-        //% "Back"
-        //: Go back
         accessibleName: qsTrId("vpn.main.back")
         Accessible.ignored: accessibleIgnored
 

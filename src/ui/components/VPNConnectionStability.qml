@@ -150,9 +150,6 @@ RowLayout {
     }
 
     VPNInterLabel {
-        //% "Check Connection"
-        //: Message displayed to the user when the connection is unstable or
-        //: missing, asking them to check their connection.
         text: qsTrId("vpn.connectionStability.checkConnection")
         color: "#FFFFFF"
         opacity: 0.8

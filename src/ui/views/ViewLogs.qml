@@ -23,7 +23,6 @@ Item {
         id: menu
 
         isMainView: true
-        //% "View Logs"
         title: qsTrId("vpn.viewlogs.title")
     }
 
@@ -87,12 +86,10 @@ Item {
             width: copyClearWrapper.width
 
             VPNLogsButton {
-                //% "Copy"
                 buttonText: qsTrId("vpn.logs.copy")
                 iconSource: "../resources/copy.svg"
                 onClicked: {
                     VPN.storeInClipboard(logText.text);
-                    //% "Copied!"
                     buttonText = qsTrId("vpn.logs.copied");
                 }
             }
@@ -105,7 +102,6 @@ Item {
             }
 
             VPNLogsButton {
-                //% "Clear"
                 buttonText: qsTrId("vpn.logs.clear")
                 iconSource: "../resources/delete.svg"
                 onClicked: {

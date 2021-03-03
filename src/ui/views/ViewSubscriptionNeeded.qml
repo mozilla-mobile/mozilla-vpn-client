@@ -50,10 +50,7 @@ VPNFlickable {
     VPNPanel {
         id: vpnPanel
 
-        //: “/mo” stands for “per month”. %1 is replaced by the cost (including currency).
-        //% "Subscribe for %1/mo"
         logoTitle: qsTrId("vpn.subscription.title").arg(VPNIAP.priceValue)
-        //% "30-day money-back guarantee"
         logoSubtitle: qsTrId("vpn.subscription.moneyBackGuarantee")
         anchors.top: spacer1.bottom
         logo: "../resources/logo.svg"
@@ -89,7 +86,6 @@ VPNFlickable {
         VPNCallout {
             // "Device level encryption" - String defined in ViewOnboarding.qml
             calloutTitle: qsTrId("vpn.onboarding.headline.1")
-            //% "We encrypt your entire device."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle2")
             calloutImage: "../resources/onboarding/onboarding1.svg"
         }
@@ -97,25 +93,18 @@ VPNFlickable {
         VPNCallout {
             // Servers in 30+ countries - String defined in ViewOnboarding.qml
             calloutTitle: qsTrId("vpn.onboarding.headline.2")
-            //% "Protect your access to the web."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle3")
             calloutImage: "../resources/onboarding/onboarding2.svg"
         }
 
         VPNCallout {
-            //% "Connect up to %1 devices"
-            //: %1 is the number of devices.
-            //: Note: there is currently no support for proper plurals
             calloutTitle: qsTrId("vpn.subscription.featureTitle4").arg(VPNUser.maxDevices)
-            //% "We won’t restrict your bandwidth."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle4")
             calloutImage: "../resources/onboarding/onboarding3.svg"
         }
 
         VPNCallout {
-            //% "No activity logs"
             calloutTitle: qsTrId("vpn.subscription.featureTitle1")
-            //% "We’re Mozilla. We’re on your side."
             calloutSubtitle: qsTrId("vpn.subscription.featureSubtitle1")
             calloutImage: "../resources/onboarding/onboarding4.svg"
         }
@@ -141,7 +130,6 @@ VPNFlickable {
         VPNButton {
             id: subscribeNow
 
-            //% "Subscribe now"
             text: qsTrId("vpn.updates.subscribeNow")
             Layout.alignment: Qt.AlignHCenter
             loaderVisible: false
@@ -201,7 +189,6 @@ VPNFlickable {
         }
 
         VPNLinkButton {
-            //% "Restore purchases"
             labelText: qsTrId("vpn.main.restorePurchases")
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: Theme.rowHeight

@@ -119,8 +119,6 @@ Popup {
             anchors.horizontalCenterOffset: 0
             horizontalAlignment: Text.AlignHCenter
             color: Theme.white
-            //% "IP: %1"
-            //: The current IP address
             text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
             Accessible.name: text
             Accessible.role: Accessible.StaticText
@@ -133,16 +131,12 @@ Popup {
             anchors.horizontalCenter: parent.horizontalCenter
 
             VPNGraphLegendMarker {
-                //% "Download"
-                //: The current download speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.download")
                 rectColor: "#EE3389"
                 markerData: chartWrapper.rBytes
             }
 
             VPNGraphLegendMarker {
-                //% "Upload"
-                //: The current upload speed. The speed is shown on the next line.
                 markerLabel: qsTrId("vpn.connectionInfo.upload")
                 rectColor: "#F68953"
                 markerData: chartWrapper.tBytes
@@ -159,7 +153,6 @@ Popup {
             anchors.left: parent.left
             anchors.topMargin: Theme.windowMargin / 2
             anchors.leftMargin: Theme.windowMargin / 2
-            //% "Close"
             accessibleName: qsTrId("vpn.connectionInfo.close")
 
             Image {

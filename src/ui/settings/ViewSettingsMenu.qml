@@ -41,7 +41,6 @@ VPNFlickable {
         id: vpnPanel
         logoSize: 80
         logo:  VPNUser.avatar
-        //% "VPN User"
         readonly property var textVpnUser: qsTrId("vpn.settings.user")
         logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         logoSubtitle: VPNUser.email
@@ -63,7 +62,6 @@ VPNFlickable {
     VPNCheckBoxRow {
         id: startAtBootCheckBox
 
-        //% "Launch VPN app on Startup"
         labelText: qsTrId("vpn.settings.runOnBoot")
         subLabelText: ""
         isChecked: VPNSettings.startAtBoot
@@ -125,7 +123,6 @@ VPNFlickable {
             visible: VPNLocalizer.hasLanguages
         }
         VPNSettingsItem {
-            //% "App Permissions"
             settingTitle: qsTrId("vpn.settings.appPermissions")
             imageLeftSrc: "../resources/settings/apps.svg"
             imageRightSrc: "../resources/chevron.svg"
@@ -139,7 +136,6 @@ VPNFlickable {
             onClicked: settingsStackView.push(aboutUsComponent)
         }
         VPNSettingsItem {
-            //% "Give feedback"
             settingTitle: qsTrId("vpn.settings.giveFeedback")
             imageLeftSrc: "../resources/settings/feedback.svg"
             imageRightSrc: "../resources/externalLink.svg"

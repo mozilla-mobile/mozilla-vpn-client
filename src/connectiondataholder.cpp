@@ -20,8 +20,7 @@ namespace {
 Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 }
 
-//% "Loading"
-//: This refers to the current IP address, i.e. "IP: Loading".
+
 ConnectionDataHolder::ConnectionDataHolder()
     : m_ipAddress(qtTrId("vpn.connectionInfo.loading")) {
   MVPN_COUNT_CTOR(ConnectionDataHolder);

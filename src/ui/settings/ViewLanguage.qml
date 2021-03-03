@@ -15,8 +15,6 @@ Item {
 
     VPNMenu {
         id: menu
-
-        //% "Language"
         title: qsTrId("vpn.settings.language")
         isSettingsView: true
         onActiveFocusChanged: if (focus) forceFocus = true
@@ -115,9 +113,6 @@ Item {
                         anchors.left: parent.left
                         anchors.leftMargin: defaultMargin
                         width: parent.width - defaultMargin * 2
-                        //% "%1 %2"
-                        //: This string is read by accessibility tools.
-                        //: %1 is the language name, %2 is the localized language name.
                         accessibleName: qsTrId("vpn.settings.languageAccessibleName")
                             .arg(language)
                             .arg(localizedLanguage)

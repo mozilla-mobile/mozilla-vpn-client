@@ -37,6 +37,7 @@ xcode.xconfig
 .gradle/
 
 *.ts
+!translations/mozillavpn_en.ts
 tests/unit/tests
 build
 Debug/

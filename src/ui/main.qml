@@ -31,7 +31,6 @@ Window {
     maximumWidth: width
     minimumHeight: height
     minimumWidth: width
-    //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
     onClosing: {

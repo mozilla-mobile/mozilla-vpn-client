@@ -103,10 +103,8 @@ void SystemTrayHandler::updateContextMenu() {
   m_separator->setVisible(isStateMain);
 
   if (QmlEngineHolder::instance()->window()->isVisible()) {
-    //% "Hide Mozilla VPN"
     m_showHideLabel->setText(qtTrId("systray.hide"));
   } else {
-    //% "Show Mozilla VPN"
     m_showHideLabel->setText(qtTrId("systray.show"));
   }
 
@@ -119,12 +117,10 @@ void SystemTrayHandler::updateContextMenu() {
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
-      //% "Connected to:"
       statusLabel = qtTrId("vpn.systray.status.connectedTo");
       break;
 
     case Controller::StateOff:
-      //% "Connect to the last location:"
       statusLabel = qtTrId("vpn.systray.status.connectTo");
       break;
 
@@ -133,12 +129,10 @@ void SystemTrayHandler::updateContextMenu() {
     case Controller::StateConnecting:
       [[fallthrough]];
     case Controller::StateConfirming:
-      //% "Connecting to:"
       statusLabel = qtTrId("vpn.systray.status.connectingTo");
       break;
 
     case Controller::StateDisconnecting:
-      //% "Disconnecting from:"
       statusLabel = qtTrId("vpn.systray.status.disconnectingFrom");
       break;
 
@@ -160,8 +154,6 @@ void SystemTrayHandler::updateContextMenu() {
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(
-      //% "%1, %2"
-      //: Location in the systray. %1 is the country, %2 is the city.
       qtTrId("vpn.systray.location")
           .arg(vpn->currentServer()->country())
           .arg(vpn->currentServer()->city()));
@@ -173,11 +165,8 @@ void SystemTrayHandler::unsecuredNetworkNotification(
     const QString& networkName) {
   logger.log() << "Unsecured network notification shown";
 
-  //% "Unsecured Wi-Fi network detected"
   QString title = qtTrId("vpn.systray.unsecuredNetwork.title");
 
-  //% "%1 is not secure. Turn on VPN to secure your device."
-  //: %1 is the Wi-Fi network name
   QString message =
       qtTrId("vpn.systray.unsecuredNetwork.message").arg(networkName);
 
@@ -190,11 +179,8 @@ void SystemTrayHandler::unsecuredNetworkNotification(
 void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   logger.log() << "Captive portal block notification shown";
 
-  //% "Guest Wi-Fi portal blocked"
   QString title = qtTrId("vpn.systray.captivePortalBlock.title");
 
-  //% "The guest Wi-Fi network you’re connected to requires action. Click to"
-  //% " turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock.message");
 
   m_lastMessage = CaptivePortalBlock;
@@ -206,11 +192,8 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
 void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   logger.log() << "Captive portal unblock notification shown";
 
-  //% "Guest Wi-Fi portal detected"
   QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
 
-  //% "The guest Wi-Fi network you’re connected to may not be secure. Click to"
-  //% " turn on VPN to secure your device."
   QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
 
   m_lastMessage = CaptivePortalUnblock;
@@ -237,10 +220,8 @@ void SystemTrayHandler::showHideWindow() {
 void SystemTrayHandler::retranslate() {
   logger.log() << "Retranslate";
 
-  //% "Disconnect"
   m_disconnectAction->setText(qtTrId("systray.disconnect"));
 
-  //% "Help"
   m_helpMenu->setTitle(qtTrId("systray.help"));
   for (QAction* action : m_helpMenu->actions()) {
     m_helpMenu->removeAction(action);
@@ -252,10 +233,7 @@ void SystemTrayHandler::retranslate() {
                           [help = vpn->helpModel(), id]() { help->open(id); });
   });
 
-  //% "Preferences…"
   m_preferencesAction->setText(qtTrId("systray.preferences"));
-
-  //% "Quit Mozilla VPN"
   m_quitAction->setText(qtTrId("systray.quit"));
 
   updateContextMenu();

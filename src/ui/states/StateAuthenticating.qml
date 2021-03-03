@@ -7,7 +7,5 @@ import "../components"
 
 VPNLoader {
     objectName: "authenticatingView"
-
-    //% "Waiting for sign in and subscription confirmation…"
     headlineText: qsTrId("vpn.authenticating.waitForSignIn")
 }

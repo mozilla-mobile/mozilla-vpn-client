@@ -43,7 +43,6 @@ void MacOSMenuBar::initialize() {
 
   m_menuBar = new QMenuBar(nullptr);
 
-  //% "File"
   QMenu* fileMenu = m_menuBar->addMenu(qtTrId("menubar.file.title"));
 
   // Do not use qtTrId here!
@@ -80,10 +79,8 @@ void MacOSMenuBar::controllerStateChanged() {
 void MacOSMenuBar::retranslate() {
   logger.log() << "Retranslate";
 
-  //% "Close"
   m_closeAction->setText(qtTrId("menubar.file.close"));
 
-  //% "Help"
   m_helpMenu->setTitle(qtTrId("menubar.help.title"));
   for (QAction* action : m_helpMenu->actions()) {
     m_helpMenu->removeAction(action);

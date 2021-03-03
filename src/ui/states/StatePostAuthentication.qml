@@ -18,14 +18,12 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.08
         anchors.horizontalCenter: parent.horizontalCenter
-        //% "Quick access"
         text: qsTrId("vpn.postAuthentication..quickAccess")
     }
 
     VPNSubtitle {
         id: logoSubtitle
 
-        //% "You can quickly access Mozilla VPN from your status bar."
         text: qsTrId("vpn.postAuthentication.statusBarIntro")
         anchors.top: headline.bottom
         anchors.topMargin: 12
@@ -44,7 +42,6 @@ Item {
         id: button
         objectName: "postAuthenticationButton"
 
-        //% "Continue"
         text: qsTrId("vpn.postAuthentication.continue")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter

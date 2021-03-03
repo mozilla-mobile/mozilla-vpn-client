@@ -30,7 +30,6 @@ Item {
     VPNPanel {
         logo: "../resources/logo.svg"
         logoTitle: qsTrId("vpn.main.productName")
-        //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
         logoSubtitle: qsTrId("vpn.main.productDescription")
         logoSize: 80
         height: parent.height - (getStarted.height + getStarted.anchors.bottomMargin + learnMore.height + learnMore.anchors.bottomMargin)
@@ -42,7 +41,6 @@ Item {
 
         anchors.bottom: learnMore.top
         anchors.bottomMargin: 24
-        //% "Get started"
         text: qsTrId("vpn.main.getStarted")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
@@ -55,7 +53,6 @@ Item {
         id: learnMore
         objectName: "learnMoreLink"
 
-        //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
         onClicked: stackview.push("ViewOnboarding.qml")
     }

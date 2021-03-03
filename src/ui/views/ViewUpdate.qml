@@ -20,9 +20,7 @@ VPNFlickable {
 
             PropertyChanges {
                 target: vpnPanel
-                //% "Update recommended"
                 logoTitle: qsTrId("vpn.updates.updateRecomended")
-                //% "Please update the app before you continue to use the VPN"
                 logoSubtitle: qsTrId("vpn.updates.updateRecomended.description")
                 logo: "../resources/updateRecommended.svg"
             }
@@ -48,9 +46,7 @@ VPNFlickable {
 
             PropertyChanges {
                 target: vpnPanel
-                //% "Update required"
                 logoTitle: qsTrId("vpn.updates.updateRequired")
-                //% "We detected and fixed a serious bug. You must update your app."
                 logoSubtitle: qsTrId("vpn.updates.updateRequire.reason")
                 logo: "../resources/updateRequired.svg"
             }
@@ -143,7 +139,6 @@ VPNFlickable {
                 color: Theme.fontColorDark
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                //% "Your connection will not be secure while you update."
                 text: qsTrId("vpn.updates.updateConnectionInsecureWarning")
             }
 
@@ -177,9 +172,7 @@ VPNFlickable {
         VPNLinkButton {
             id: footerLink
 
-            //% "Not now"
             readonly property var textNotNow: qsTrId("vpn.updates.notNow")
-            //% "Manage account"
             readonly property var textManageAccount: qsTrId("vpn.main.manageAccount")
 
             Layout.alignment: Qt.AlignHCenter

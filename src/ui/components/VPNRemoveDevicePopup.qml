@@ -101,7 +101,6 @@ Popup {
                 Layout.rightMargin: Theme.windowMargin
                 Layout.minimumHeight: 36
                 verticalAlignment: Text.AlignBottom
-                //% "Remove device?"
                 text: qsTrId("vpn.devices.removeDeviceQuestion")
             }
 
@@ -113,8 +112,6 @@ Popup {
                 Layout.topMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 color: Theme.fontColorDark
-                //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
-                //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(popup.deviceName)
             }
 
@@ -135,7 +132,6 @@ Popup {
                 VPNPopupButton {
                     id: cancelBtn
 
-                    //% "Cancel"
                     buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
                     buttonTextColor: "#262626"
                     colorScheme: Theme.popupButtonCancel
@@ -149,8 +145,6 @@ Popup {
                 VPNPopupButton {
                     id: removeBtn
 
-                    //: This is the “remove” device button.
-                    //% "Remove"
                     buttonText: qsTrId("vpn.devices.removeDeviceButton")
                     buttonTextColor: Theme.white
                     colorScheme: Theme.redButton

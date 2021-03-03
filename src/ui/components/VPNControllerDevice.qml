@@ -12,7 +12,6 @@ VPNClickableRow {
 
         Accessible.role: Accessible.Button
 
-    //% "My devices"
     property var titleText: qsTrId("vpn.devices.myDevices")
 
     accessibleName: titleText + " - " + label.text
@@ -31,8 +30,6 @@ VPNClickableRow {
 
                 PropertyChanges {
                     target: label
-                    //% "%1 of %2"
-                    //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
                     text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
                 }
 

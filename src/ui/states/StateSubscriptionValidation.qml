@@ -5,7 +5,6 @@
 import "../components"
 
 VPNLoader {
-    //% "Please wait…"
     headlineText: qsTrId("vpn.subscription.pleaseWait")
     footerLinkIsVisible: false
 }
