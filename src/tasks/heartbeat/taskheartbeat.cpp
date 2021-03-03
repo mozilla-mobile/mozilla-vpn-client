@@ -25,12 +25,26 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForHeartbeat(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this, vpn](QNetworkReply::NetworkError, const QByteArray&) {
+          [this, request, vpn](QNetworkReply::NetworkError, const QByteArray&) {
             logger.log() << "Failed to talk with the server";
+
+            int statusCode = request->statusCode();
+
+            // Internal server errors.
+            if (statusCode >= 500 && statusCode <= 509) {
+              vpn->heartbeatCompleted(false);
+              return;
+            }
+
+            // Request failure ((?!?)
+            if (statusCode >= 400 && statusCode <= 409) {
+              vpn->heartbeatCompleted(false);
+              return;
+            }
+
             // We don't know if this happeneded because of a global network
             // failure or a local network issue. In general, let's ignore this
             // error.
-            // TODO: treat 500 as failure!
             vpn->heartbeatCompleted(true);
             emit completed();
           });
