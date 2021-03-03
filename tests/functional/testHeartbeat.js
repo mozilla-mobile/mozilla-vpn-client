@@ -162,8 +162,7 @@ describe('Backend failure', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…' ||
-          connectingMsg == 'vpn.controller.connectingState';
+      return connectingMsg == 'Connecting…';
     });
 
     assert(
@@ -185,8 +184,7 @@ describe('Backend failure', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…' ||
-          connectingMsg == 'vpn.controller.connectingState';
+      return connectingMsg == 'Connecting…';
     });
   });
 
@@ -211,8 +209,7 @@ describe('Backend failure', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…' ||
-          connectingMsg == 'vpn.controller.connectingState';
+      return connectingMsg == 'Connecting…';
     });
   });
 
