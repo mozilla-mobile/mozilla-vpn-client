@@ -10,6 +10,9 @@ import "../components"
 
 Item {
     VPNButton {
+        // This is needed for testing.
+        objectName: "heartbeatTryButton";
+
         text: "click me"
         anchors.fill: parent
         onClicked: VPN.triggerHeartbeat();
