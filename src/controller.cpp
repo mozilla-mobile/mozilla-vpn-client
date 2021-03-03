@@ -124,6 +124,7 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_UNUSED(status);
 
   if (processNextStep()) {
+    setState(StateOff);
     return;
   }
 
@@ -319,6 +320,7 @@ void Controller::disconnected() {
   NextStep nextStep = m_nextStep;
 
   if (processNextStep()) {
+    setState(StateOff);
     return;
   }
 
