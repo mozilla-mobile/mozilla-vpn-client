@@ -69,3 +69,5 @@ void Controller::connectionConfirmed() {}
 void Controller::connectionFailed() {}
 
 void Controller::heartbeatCompleted() {}
+
+void Controller::backendFailure() {}

@@ -96,6 +96,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(&m_private->m_controller, &Controller::readyToUpdate,
           [this]() { setState(StateUpdateRequired); });
 
+  connect(&m_private->m_controller, &Controller::readyToBackendFailure,
+          [this]() {
+            deleteTasks();
+            setState(StateBackendFailure);
+          });
+
   connect(&m_private->m_controller, &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);
 
@@ -1165,8 +1171,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   logger.log() << "Server-side check done:" << success;
 
   if (!success) {
-    deleteTasks();
-    setState(StateBackendFailure);
+    m_private->m_controller.backendFailure();
     return;
   }
 

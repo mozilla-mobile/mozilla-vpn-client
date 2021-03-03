@@ -385,6 +385,22 @@ void Controller::quit() {
   }
 }
 
+void Controller::backendFailure() {
+  logger.log() << "backend failure";
+
+  if (m_state == StateOff) {
+    emit readyToBackendFailure();
+    return;
+  }
+
+  m_nextStep = BackendFailure;
+
+  if (m_state == StateOn) {
+    deactivate();
+    return;
+  }
+}
+
 void Controller::updateRequired() {
   logger.log() << "Update required";
 
@@ -429,6 +445,11 @@ bool Controller::processNextStep() {
 
   if (nextStep == Update) {
     emit readyToUpdate();
+    return true;
+  }
+
+  if (nextStep == BackendFailure) {
+    emit readyToBackendFailure();
     return true;
   }
 

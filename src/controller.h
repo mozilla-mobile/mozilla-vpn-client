@@ -76,6 +76,8 @@ class Controller final : public QObject {
 
   int connectionRetry() const { return m_connectionRetry; }
 
+  void backendFailure();
+
  public slots:
   void activate();
 
@@ -100,6 +102,7 @@ class Controller final : public QObject {
   void timeChanged();
   void readyToQuit();
   void readyToUpdate();
+  void readyToBackendFailure();
   void connectionRetryChanged();
 
  private:
@@ -134,6 +137,7 @@ class Controller final : public QObject {
     Quit,
     Update,
     Disconnect,
+    BackendFailure,
   };
 
   NextStep m_nextStep = None;
