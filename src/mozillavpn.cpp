@@ -1175,6 +1175,10 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
+  if (m_state != StateBackendFailure) {
+    return;
+  }
+
   if (!modelsInitialized() || !m_userAuthenticated) {
     setState(StateInitialize);
     return;

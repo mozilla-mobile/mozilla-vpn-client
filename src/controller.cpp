@@ -390,7 +390,7 @@ void Controller::quit() {
 void Controller::backendFailure() {
   logger.log() << "backend failure";
 
-  if (m_state == StateOff) {
+  if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToBackendFailure();
     return;
   }
