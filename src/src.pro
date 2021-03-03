@@ -750,3 +750,9 @@ else{
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+
+equals(QMAKE_CXX, clang++):debug {
+    message(Coverage enabled)
+    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
+    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
