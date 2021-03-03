@@ -63,8 +63,7 @@ describe('User authentication', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…' ||
-          connectingMsg == 'vpn.controller.connectingState';
+      return connectingMsg == 'Connecting…';
     });
 
     assert(
