@@ -246,10 +246,8 @@ bool Daemon::deactivate(bool emitSignals) {
   m_connected = false;
   bool status = run(Down, m_lastConfig);
 
-  if (supportWGUtils()) {
-    if (!wgutils()->deleteInterface()) {
-      return false;
-    }
+  if (supportWGUtils() && !wgutils()->deleteInterface()) {
+    return false;
   }
 
   logger.log() << "Status:" << status;

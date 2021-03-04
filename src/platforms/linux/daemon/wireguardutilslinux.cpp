@@ -108,8 +108,11 @@ WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
   uint64_t rxBytes = 0;
   wg_device* device = nullptr;
   wg_peer* peer;
-  peerBytes pb;
-  wg_get_device(&device, WG_INTERFACE);
+  peerBytes pb = {0, 0};
+  if (wg_get_device(&device, WG_INTERFACE) != 0) {
+    qWarning("Unable to get interface `%s`.", WG_INTERFACE);
+    return pb;
+  }
   wg_for_each_peer(device, peer) {
     txBytes += peer->tx_bytes;
     rxBytes += peer->rx_bytes;
