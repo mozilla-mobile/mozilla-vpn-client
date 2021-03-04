@@ -13,6 +13,8 @@ constexpr const char* WG_INTERFACE = "moz0";
 
 class WireguardUtils : public QObject {
  public:
+  explicit WireguardUtils(QObject* parent) : QObject(parent){};
+  virtual ~WireguardUtils() = default;
   virtual bool interfaceExists() {
     qFatal("Have you forgotten to implement WireguardUtils::interfaceExists?");
     return false;

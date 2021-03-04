@@ -10,7 +10,7 @@
 
 class WireguardUtilsLinux final : public WireguardUtils {
  public:
-  WireguardUtilsLinux();
+  WireguardUtilsLinux(QObject* parent);
   ~WireguardUtilsLinux();
   bool interfaceExists() override;
   QStringList currentInterfaces() override;

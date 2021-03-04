@@ -41,7 +41,7 @@ class DBusService final : public Daemon {
   bool switchServer(const InterfaceConfig& config) override;
 
   bool supportWGUtils() const override { return true; }
-  WireguardUtilsLinux* wgutils() override;
+  WireguardUtils* wgutils() override;
 
   QByteArray getStatus() override;
 
