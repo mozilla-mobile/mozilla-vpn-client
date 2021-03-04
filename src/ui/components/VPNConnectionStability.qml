@@ -8,155 +8,135 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 RowLayout {
-    id: stability
-    Layout.preferredHeight: Theme.controllerInterLineHeight
+    property var numGridColumns: grid.columns
 
+    function setColumns() {
+        grid.columns = grid.childrenRect.width > (window.width  - 48) ? 1 : 3;
+        col.handleMultilineText();
+    }
+    id: stability
+
+    Layout.preferredHeight: Theme.controllerInterLineHeight
+    Layout.alignment: Qt.AlignHCenter
     spacing: 0
-    opacity: 0
     state: VPNConnectionHealth.stability
+    onStateChanged: setColumns();
+
     states: [
         State {
             name: VPNConnectionHealth.Stable
-
             PropertyChanges {
                 target: stability
                 visible: false
                 opacity: 0
             }
-
             PropertyChanges {
-                target: logoSubtitle
-                visible: true
+             target: logoSubtitle
+             visible: true
             }
 
         },
         State {
             name: VPNConnectionHealth.Unstable
-
             PropertyChanges {
                 target: stability
-                opacity: 1
                 visible: true
+                opacity: 1
             }
-
             PropertyChanges {
-                target: logoSubtitle
-                visible: false
+             target: logoSubtitle
+             visible: false
+            }
+            PropertyChanges {
+                target: stabilityLabel
+                color: Theme.orange
+            }
+            PropertyChanges {
+                target: warningIcon
+                source: "../resources/warning-orange.svg"
             }
 
         },
         State {
             name: VPNConnectionHealth.NoSignal
-
+            extend: VPNConnectionHealth.Unstable
             PropertyChanges {
-                target: stability
-                opacity: 1
-                visible: true
-            }
+                target: stabilityLabel
+                color: Theme.red
 
+            }
             PropertyChanges {
-                target: logoSubtitle
-                visible: false
+                target: warningIcon
+                source: "../resources/warning.svg"
             }
-
-        }
-    ]
-    transitions: [
-        Transition {
-            from: VPNConnectionHealth.Stable
-            to: VPNConnectionHealth.Unstable || VPNConnectionHealth.NoSignal
-
-            SequentialAnimation {
-                PropertyAction {
-                    target: stability
-                    property: "visible"
-                    value: true
-                }
-
-                VPNStabilityLabelActions {
-                }
-
-                NumberAnimation {
-                    target: stability
-                    property: "opacity"
-                    to: 1
-                    duration: 200
-                }
-
-            }
-
-        },
-        Transition {
-            SequentialAnimation {
-                NumberAnimation {
-                    target: iconLabelWrapper
-                    property: "opacity"
-                    to: 0
-                    duration: 100
-                }
-
-                VPNStabilityLabelActions {
-                }
-
-                NumberAnimation {
-                    target: iconLabelWrapper
-                    property: "opacity"
-                    to: 1
-                    duration: 200
-                }
-
-            }
-
         }
     ]
 
-    RowLayout {
-        id: iconLabelWrapper
+    GridLayout {
+        id: grid
+        columnSpacing: 0
+        state: parent.state
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+        Component.onCompleted: setColumns()
 
-        spacing: 0
-        Layout.minimumWidth: 60
+        RowLayout {
+            spacing: 6
+            Layout.alignment: Qt.AlignHCenter
+
+            Rectangle {
+                height: 16
+                width: 14
+                color: "transparent"
+
+                Image {
+                    id: warningIcon
+
+                    sourceSize.height: 14
+                    sourceSize.width: 14
+                    fillMode: Image.PreserveAspectFit
+                }
+            }
+
+            VPNInterLabel {
+                //% "Unstable"
+                //: This refers to the user’s internet connection.
+                readonly property var textUnstable: qsTrId("vpn.connectionStability.unstable")
+                //% "No Signal"
+                readonly property var textNoSignal: qsTrId("vpn.connectionStability.noSignal")
+
+
+                id: stabilityLabel
+
+                lineHeight: Theme.controllerInterLineHeight
+                onPaintedWidthChanged: setColumns();
+                text: VPNConnectionHealth.stability === VPNConnectionHealth.Unstable ? textUnstable : textNoSignal
+            }
+        }
 
         Rectangle {
-            height: 16
-            width: 14
-            color: "transparent"
-            Layout.rightMargin: 6
-
-            Image {
-                id: warningIcon
-
-                sourceSize.height: 14
-                sourceSize.width: 14
-                fillMode: Image.PreserveAspectFit
-            }
-
+            color: "#FFFFFF"
+            opacity: 0.8
+            radius: 3
+            Layout.leftMargin: Theme.windowMargin / 2
+            Layout.rightMargin: Layout.leftMargin
+            Layout.preferredHeight: 4
+            Layout.preferredWidth: 4
+            visible: parent.columns === 3
         }
 
         VPNInterLabel {
-            id: stabilityLabel
-            lineHeight: Theme.controllerInterLineHeight
+            //% "Check Connection"
+            //: Message displayed to the user when the connection is unstable or
+            //: missing, asking them to check their connection.
+            text: qsTrId("vpn.connectionStability.checkConnection")
+            color: "#FFFFFF"
+            opacity: 0.8
+            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignCenter
+            onPaintedWidthChanged: setColumns();
+            lineHeight: grid.columns > 1 ? Theme.controllerInterLineHeight : 10
         }
-
-    }
-
-    Rectangle {
-        Layout.preferredHeight: 4
-        Layout.preferredWidth: 4
-        color: "#FFFFFF"
-        opacity: 0.8
-        radius: 3
-        Layout.leftMargin: Theme.windowMargin / 2
-        Layout.rightMargin: Layout.leftMargin
-    }
-
-    VPNInterLabel {
-        //% "Check Connection"
-        //: Message displayed to the user when the connection is unstable or
-        //: missing, asking them to check their connection.
-        text: qsTrId("vpn.connectionStability.checkConnection")
-        color: "#FFFFFF"
-        opacity: 0.8
-        lineHeight: Theme.controllerInterLineHeight
     }
 
 }
