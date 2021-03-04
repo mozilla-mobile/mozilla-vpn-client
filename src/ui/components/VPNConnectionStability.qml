@@ -31,8 +31,8 @@ RowLayout {
                 opacity: 0
             }
             PropertyChanges {
-             target: logoSubtitle
-             visible: true
+                target: logoSubtitle
+                visible: true
             }
 
         },
@@ -44,8 +44,8 @@ RowLayout {
                 opacity: 1
             }
             PropertyChanges {
-             target: logoSubtitle
-             visible: false
+                target: logoSubtitle
+                visible: false
             }
             PropertyChanges {
                 target: stabilityLabel
