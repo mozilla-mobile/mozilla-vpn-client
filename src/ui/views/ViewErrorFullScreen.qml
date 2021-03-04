@@ -119,7 +119,6 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignHCenter
                 labelText: qsTrId("vpn.main.getHelp")
                 fontName: Theme.fontBoldFamily
-                linkColor: Theme.redButton
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
