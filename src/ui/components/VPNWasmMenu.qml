@@ -75,15 +75,17 @@ VPNFlickable {
             onClicked: mainStackView.replace("../views/ViewUpdate.qml", {state: "recommended"}, StackView.Immediate)
         }
 
+        VPNWasmMenuButton {
+            Layout.fillWidth: true
+            text: "Backend failure"
+            onClicked: mainStackView.replace("../states/StateBackendFailure.qml", StackView.Immediate)
+        }
+
         // TODO
         /*
-            -- Main ( VPN Connecting )
-            -- Main ( VPN Confirming )
-            -- Main ( VPN Switching )
             -- Main ( VPN Connection Unstable )
             -- Main ( VPN No Connection)
         */
-
 
         VPNVerticalSpacer {
             height: Theme.windowMargin
