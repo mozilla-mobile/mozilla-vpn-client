@@ -118,7 +118,6 @@ VPNFlickable {
                 Layout.preferredHeight: Theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 labelText: qsTrId("vpn.main.getHelp")
-                fontName: Theme.fontBoldFamily
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
