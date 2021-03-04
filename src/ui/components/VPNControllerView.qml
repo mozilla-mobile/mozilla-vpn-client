@@ -579,6 +579,7 @@ Rectangle {
 
             VPNHeadline {
                 id: logoTitle
+                objectName: "controllerTitle"
 
                 Layout.alignment: Qt.AlignCenter
                 Layout.fillWidth: true
