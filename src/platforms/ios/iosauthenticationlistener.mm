@@ -88,6 +88,7 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
         if (error) {
           logger.log() << "Authentication failed:"
                        << QString::fromNSString([error localizedDescription]);
+          logger.log() << "Code:" << [error code];
           logger.log() << "Suggestion:"
                        << QString::fromNSString([error localizedRecoverySuggestion]);
           logger.log() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
