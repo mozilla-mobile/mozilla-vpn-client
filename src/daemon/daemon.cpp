@@ -93,6 +93,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
     // set conf
     if (!wgutils()->configureInterface(config)) {
+      qWarning("Interface configuration failed. Removing `%s`.", WG_INTERFACE);
+      wgutils()->deleteInterface();
       return false;
     }
   }
