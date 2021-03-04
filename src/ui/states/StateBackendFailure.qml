@@ -21,7 +21,7 @@ VPNStackView {
             //% "Something went wrong…"
             headlineText: qsTrId("vpn.errors.somethingWentWrong"),
 
-            //% "Unable to establish a connection at this time. We're working hard to resolve the issue. Please try again shortly."
+            //% "Unable to establish a connection at this time. We’re working hard to resolve the issue. Please try again shortly."
             errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
 
             //% "Try Again"
