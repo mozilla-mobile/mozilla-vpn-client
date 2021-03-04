@@ -24,10 +24,9 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtilsLinux* DBusService::wgutils() {
+WireguardUtils* DBusService::wgutils() {
   if (!m_wgutils) {
-    m_wgutils = new WireguardUtilsLinux();
-    m_wgutils->setParent(this);
+    m_wgutils = new WireguardUtilsLinux(this);
   }
   return m_wgutils;
 }

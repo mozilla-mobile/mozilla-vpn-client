@@ -19,6 +19,9 @@ class WireguardUtils : public QObject {
     double txBytes, rxBytes;
   };
 
+  explicit WireguardUtils(QObject* parent) : QObject(parent){};
+  virtual ~WireguardUtils() = default;
+
   virtual bool interfaceExists() {
     qFatal("Have you forgotten to implement WireguardUtils::interfaceExists?");
     return false;
