@@ -99,7 +99,7 @@ VPNFlickable {
         anchors.topMargin: 20
         anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : enableAppList.bottom
 
-        width: vpnFlickable.width - 5 *2
+        width: vpnFlickable.width
         visible: VPNSettings.protectSelectedApps
         isEnabled: vpnIsOff
 
@@ -122,7 +122,7 @@ VPNFlickable {
         id: enabledList
         anchors.topMargin: 20
         anchors.top: disabledList.bottom
-        width: vpnFlickable.width - 5 *2
+        width: vpnFlickable.width
         visible: VPNSettings.protectSelectedApps
         isEnabled: vpnIsOff
 
