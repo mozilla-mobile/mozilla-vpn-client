@@ -42,10 +42,6 @@ class CommandLinuxDaemon final : public Command {
         return 1;
       }
 
-      if (!dbus->removeInterfaceIfExists()) {
-        return 1;
-      }
-
       SignalHandler sh;
       QObject::connect(&sh, &SignalHandler::quitRequested, [&]() {
         dbus->deactivate();

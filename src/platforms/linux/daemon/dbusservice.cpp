@@ -20,6 +20,10 @@ Logger logger(LOG_LINUX, "DBusService");
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
+  bool cleanStart = removeInterfaceIfExists();
+  if (!cleanStart) {
+    qFatal("Interface `%s` exists, cannot proceed.", WG_INTERFACE);
+  }
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
