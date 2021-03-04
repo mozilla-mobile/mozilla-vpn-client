@@ -16,6 +16,17 @@
 namespace {
 Logger logger(LOG_MAIN, "Localizer");
 Localizer* s_instance = nullptr;
+
+struct StaticLanguage {
+  QString m_name;
+  QString m_localizedName;
+};
+
+// Some languages do not have the right localized/non-localized names in the QT
+// framework (and some are missing entirely). This static map is the fallback
+// when this happens.
+QMap<QString, StaticLanguage> s_languageMap{
+    {"co", StaticLanguage{"Corsu", ""}}};
 }  // namespace
 
 // static
@@ -102,6 +113,13 @@ bool Localizer::loadLanguageInternal(const QString& code) {
 }
 
 QString Localizer::languageName(const QString& code) const {
+  if (s_languageMap.contains(code)) {
+    QString languageName = s_languageMap[code].m_name;
+    if (!languageName.isEmpty()) {
+      return languageName;
+    }
+  }
+
   QLocale locale(code);
   if (code.isEmpty()) {
     locale = QLocale::system();
@@ -111,10 +129,21 @@ QString Localizer::languageName(const QString& code) const {
     return "English (US)";
   }
 
-  return QLocale::languageToString(locale.language());
+  QString name = QLocale::languageToString(locale.language());
+
+  // Capitalize the string.
+  name.replace(0, 1, locale.toUpper(QString(name[0])));
+  return name;
 }
 
 QString Localizer::localizedLanguageName(const QString& code) const {
+  if (s_languageMap.contains(code)) {
+    QString languageName = s_languageMap[code].m_localizedName;
+    if (!languageName.isEmpty()) {
+      return languageName;
+    }
+  }
+
   QLocale locale(code);
   if (code.isEmpty()) {
     locale = QLocale::system();
@@ -129,6 +158,8 @@ QString Localizer::localizedLanguageName(const QString& code) const {
     return languageName(code);
   }
 
+  // Capitalize the string.
+  name.replace(0, 1, locale.toUpper(QString(name[0])));
   return name;
 }
 
