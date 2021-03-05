@@ -22,7 +22,8 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
   bool cleanStart = removeInterfaceIfExists();
   if (!cleanStart) {
-    qFatal("Interface `%s` exists, cannot proceed.", WG_INTERFACE);
+    qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
+           WG_INTERFACE);
   }
 }
 
