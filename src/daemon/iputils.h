@@ -5,15 +5,22 @@
 #ifndef IPUTILS_H
 #define IPUTILS_H
 
-#include "config.h"
+#include "interfaceconfig.h"
+
+#include <QObject>
+#include <QCoreApplication>
 
 class IPUtils : public QObject {
  public:
+  explicit IPUtils(QObject* parent) : QObject(parent){};
+  virtual ~IPUtils() = default;
+
   virtual bool addInterfaceIPs(const InterfaceConfig& config) {
     Q_UNUSED(config);
     qFatal("Have you forgotten to implement IPUtils::addInterfaceIPs?");
     return false;
   };
+
   virtual bool setMTUAndUp() {
     qFatal("Have you forgotten to implement IPUtils::setMTUAndUp?");
     return false;

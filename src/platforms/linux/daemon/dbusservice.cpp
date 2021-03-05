@@ -36,9 +36,9 @@ WireguardUtils* DBusService::wgutils() {
   return m_wgutils;
 }
 
-IPUtilsLinux* DBusService::iputils() {
+IPUtils* DBusService::iputils() {
   if (!m_iputils) {
-    m_iputils = new IPUtilsLinux();
+    m_iputils = new IPUtilsLinux(this);
   }
   return m_iputils;
 }

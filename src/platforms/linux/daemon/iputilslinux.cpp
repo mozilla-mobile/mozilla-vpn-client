@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iputilslinux.h"
-#include "daemon/wgutils.h"
+#include "leakdetector.h"
+#include "daemon/wireguardutils.h"
 #include "logger.h"
 
 #include <arpa/inet.h>
@@ -15,6 +16,16 @@
 
 namespace {
 Logger logger(LOG_LINUX, "IPUtilsLinux");
+}
+
+IPUtilsLinux::IPUtilsLinux(QObject* parent) : IPUtils(parent) {
+  MVPN_COUNT_CTOR(IPUtilsLinux);
+  logger.log() << "IPUtilsLinux created.";
+}
+
+IPUtilsLinux::~IPUtilsLinux() {
+  MVPN_COUNT_DTOR(IPUtilsLinux);
+  logger.log() << "IPUtilsLinux destroyed.";
 }
 
 bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {

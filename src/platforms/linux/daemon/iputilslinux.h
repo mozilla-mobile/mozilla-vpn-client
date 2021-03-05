@@ -11,6 +11,8 @@
 
 class IPUtilsLinux final : public IPUtils {
  public:
+  IPUtilsLinux(QObject* parent);
+  ~IPUtilsLinux();
   bool addInterfaceIPs(const InterfaceConfig& config) override;
   bool setMTUAndUp() override;
 

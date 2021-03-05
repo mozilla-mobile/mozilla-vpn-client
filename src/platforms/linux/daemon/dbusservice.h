@@ -42,7 +42,7 @@ class DBusService final : public Daemon {
   bool supportWGUtils() const override { return true; }
   WireguardUtils* wgutils() override;
   bool supportIPUtils() const override { return true; }
-  IPUtilsLinux* iputils() override;
+  IPUtils* iputils() override;
 
   QByteArray getStatus() override;
 
