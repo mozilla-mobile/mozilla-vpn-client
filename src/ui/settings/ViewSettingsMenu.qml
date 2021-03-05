@@ -24,7 +24,7 @@ VPNFlickable {
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-        accessibleName: qsTrId("vpn.main.back")
+        accessibleName: qsTrId("vpn.connectionInfo.close")
 
         Image {
             id: backImage
