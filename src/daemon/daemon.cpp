@@ -6,7 +6,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "wgutils.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -94,6 +93,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
     // set conf
     if (!wgutils()->configureInterface(config)) {
+      qWarning("Interface configuration failed. Removing `%s`.", WG_INTERFACE);
+      wgutils()->deleteInterface();
       return false;
     }
   }
@@ -246,21 +247,17 @@ bool Daemon::deactivate(bool emitSignals) {
     return true;
   }
 
-  if (supportWGUtils()) {
-    if (!wgutils()->interfaceExists()) {
-      qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
-               WG_INTERFACE);
-      return false;
-    }
+  if (supportWGUtils() && !wgutils()->interfaceExists()) {
+    qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
+             WG_INTERFACE);
+    return false;
   }
 
   m_connected = false;
   bool status = run(Down, m_lastConfig);
 
-  if (supportWGUtils()) {
-    if (!wgutils()->deleteInterface()) {
-      return false;
-    }
+  if (supportWGUtils() && !wgutils()->deleteInterface()) {
+    return false;
   }
 
   logger.log() << "Status:" << status;

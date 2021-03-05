@@ -7,7 +7,7 @@
 
 #include "daemon/daemon.h"
 #include "iputilslinux.h"
-#include "wgutilslinux.h"
+#include "wireguardutilslinux.h"
 
 class DbusAdaptor;
 
@@ -21,8 +21,6 @@ class DBusService final : public Daemon {
   ~DBusService();
 
   void setAdaptor(DbusAdaptor* adaptor);
-
-  bool removeInterfaceIfExists();
 
   using Daemon::activate;
 
@@ -42,13 +40,14 @@ class DBusService final : public Daemon {
   bool switchServer(const InterfaceConfig& config) override;
 
   bool supportWGUtils() const override { return true; }
-  WireguardUtilsLinux* wgutils() override;
+  WireguardUtils* wgutils() override;
   bool supportIPUtils() const override { return true; }
   IPUtilsLinux* iputils() override;
 
   QByteArray getStatus() override;
 
  private:
+  bool removeInterfaceIfExists();
   DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;

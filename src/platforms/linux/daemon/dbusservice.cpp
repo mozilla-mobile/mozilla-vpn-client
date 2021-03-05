@@ -9,7 +9,6 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 #include "wgquickprocess.h"
-#include "wgutilslinux.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -21,13 +20,17 @@ Logger logger(LOG_LINUX, "DBusService");
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
+  bool cleanStart = removeInterfaceIfExists();
+  if (!cleanStart) {
+    qFatal("Interface `%s` exists, cannot proceed.", WG_INTERFACE);
+  }
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtilsLinux* DBusService::wgutils() {
+WireguardUtils* DBusService::wgutils() {
   if (!m_wgutils) {
-    m_wgutils = new WireguardUtilsLinux();
+    m_wgutils = new WireguardUtilsLinux(this);
   }
   return m_wgutils;
 }

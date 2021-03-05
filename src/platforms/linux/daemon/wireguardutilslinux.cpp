@@ -1,7 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-#include "wgutilslinux.h"
+
+#include "wireguardutilslinux.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <QScopeGuard>
@@ -24,6 +26,17 @@ extern "C" {
 
 namespace {
 Logger logger(LOG_LINUX, "WireguardUtilsLinux");
+}
+
+WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
+    : WireguardUtils(parent) {
+  MVPN_COUNT_CTOR(WireguardUtilsLinux);
+  logger.log() << "WireguardUtilsLinux created.";
+}
+
+WireguardUtilsLinux::~WireguardUtilsLinux() {
+  MVPN_COUNT_DTOR(WireguardUtilsLinux);
+  logger.log() << "WireguardUtilsLinux destroyed.";
 }
 
 bool WireguardUtilsLinux::interfaceExists() {
@@ -95,8 +108,11 @@ WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
   uint64_t rxBytes = 0;
   wg_device* device = nullptr;
   wg_peer* peer;
-  peerBytes pb;
-  wg_get_device(&device, WG_INTERFACE);
+  peerBytes pb = {0, 0};
+  if (wg_get_device(&device, WG_INTERFACE) != 0) {
+    qWarning("Unable to get interface `%s`.", WG_INTERFACE);
+    return pb;
+  }
   wg_for_each_peer(device, peer) {
     txBytes += peer->tx_bytes;
     rxBytes += peer->rx_bytes;
@@ -109,13 +125,13 @@ WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
 
 // PRIVATE METHODS
 QStringList WireguardUtilsLinux::currentInterfaces() {
-  char* deviceName;
-  size_t len;
-  QStringList devices;
   char* deviceNames = wg_list_device_names();
+  QStringList devices;
   if (!deviceNames) {
     return devices;
   }
+  char* deviceName;
+  size_t len;
   wg_for_each_device_name(deviceNames, deviceName, len) {
     devices.append(deviceName);
   }

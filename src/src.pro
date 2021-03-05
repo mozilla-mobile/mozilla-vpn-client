@@ -323,19 +323,19 @@ else:linux:!android {
             platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
-            platforms/linux/daemon/wgutilslinux.cpp \
+            platforms/linux/daemon/wireguardutilslinux.cpp \
             wgquickprocess.cpp
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
-            daemon/config.h \
+            daemon/interfaceconfig.h \
             daemon/daemon.h \
             daemon/iputils.h \
-            daemon/wgutils.h \
+            daemon/wireguardutils.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/iputilslinux.h \
             platforms/linux/daemon/polkithelper.h \
-            platforms/linux/daemon/wgutilslinux.h \
+            platforms/linux/daemon/wireguardutilslinux.h \
             wgquickprocess.h
 
     isEmpty(USRPATH) {
@@ -554,12 +554,12 @@ else:macos {
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp
         HEADERS += \
-                   daemon/config.h \
+                   daemon/interfaceconfig.h \
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
                    daemon/iputils.h \
-                   daemon/wgutils.h \
+                   daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
@@ -679,12 +679,12 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
-        daemon/config.h \
+        daemon/interfaceconfig.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
         daemon/iputils.h \
-        daemon/wgutils.h \
+        daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/daemon/windowsdaemon.h \

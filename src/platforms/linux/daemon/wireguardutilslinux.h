@@ -5,11 +5,13 @@
 #ifndef WIREGUARDUTILSLINUX_H
 #define WIREGUARDUTILSLINUX_H
 
-#include "daemon/wgutils.h"
+#include "daemon/wireguardutils.h"
 #include <QStringList>
 
 class WireguardUtilsLinux final : public WireguardUtils {
  public:
+  WireguardUtilsLinux(QObject* parent);
+  ~WireguardUtilsLinux();
   bool interfaceExists() override;
   bool addInterface() override;
   bool configureInterface(const InterfaceConfig& config) override;

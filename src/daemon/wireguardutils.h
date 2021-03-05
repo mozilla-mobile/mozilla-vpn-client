@@ -5,8 +5,10 @@
 #ifndef WIREGUARDUTILS_H
 #define WIREGUARDUTILS_H
 
-#include "config.h"
+#include "interfaceconfig.h"
 
+#include <QObject>
+#include <QStringList>
 #include <QCoreApplication>
 
 constexpr const char* WG_INTERFACE = "moz0";
@@ -16,6 +18,9 @@ class WireguardUtils : public QObject {
   struct peerBytes {
     double txBytes, rxBytes;
   };
+
+  explicit WireguardUtils(QObject* parent) : QObject(parent){};
+  virtual ~WireguardUtils() = default;
 
   virtual bool interfaceExists() {
     qFatal("Have you forgotten to implement WireguardUtils::interfaceExists?");
