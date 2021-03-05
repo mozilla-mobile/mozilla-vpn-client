@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include <QHostAddress>
+#include <QScopeGuard>
 
 namespace {
 Logger logger(LOG_LINUX, "IPUtilsLinux");
@@ -29,7 +30,6 @@ IPUtilsLinux::~IPUtilsLinux() {
 }
 
 bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
-  // TODO - These are linux specific
   if (!addIP4AddressToDevice(config)) {
     return false;
   }
@@ -42,10 +42,9 @@ bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
 }
 
 bool IPUtilsLinux::setMTUAndUp() {
-  // TODO - Linux specific
-
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+  auto guard = qScopeGuard([&] { close(sockfd); });
 
   // Setup the interface to interact with
   struct ifreq ifr;
@@ -58,6 +57,7 @@ bool IPUtilsLinux::setMTUAndUp() {
     logger.log() << "Failed to set MTU -- Return code: " << ret;
     return false;
   }
+
   // Up
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
   ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
@@ -66,8 +66,6 @@ bool IPUtilsLinux::setMTUAndUp() {
     return false;
   }
 
-  close(sockfd);
-  // TODO c++ question - do I need to free any other objects?
   return true;
 }
 
@@ -77,8 +75,7 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
 
   // Name the interface and set family
   strncpy(ifr.ifr_name, WG_INTERFACE, IFNAMSIZ);
-  ifr.ifr_addr.sa_family =
-      AF_INET;  // TODO c++ question - why can't I use ifrAddr here?
+  ifr.ifr_addr.sa_family = AF_INET;
 
   // Get the device address to add to interface
   QPair<QHostAddress, int> parsedAddr =
@@ -89,19 +86,15 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
 
   // Create IPv4 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+  auto guard = qScopeGuard([&] { close(sockfd); });
+
+  // Set ifr to interface
   int ret = ioctl(sockfd, SIOCSIFADDR, &ifr);
   if (ret) {
     logger.log() << "Failed to set IPv4: " << deviceAddr
                  << " -- Return code: " << ret;
     return false;
   }
-  /*
-   * TODO - Open question. We are not setting the netmask based on the /32
-   * do we want to? Could there be other cidr values?
-   */
-  close(sockfd);
-
-  // TODO c++ question - do I need to free any other objects?
   return true;
 }
 
@@ -119,6 +112,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
 
   // Create IPv6 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
+  auto guard = qScopeGuard([&] { close(sockfd); });
 
   // Get the index of named ifr and link with ifr6
   struct ifreq ifr;
@@ -139,6 +133,5 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
     return false;
   }
 
-  close(sockfd);
   return true;
 }
