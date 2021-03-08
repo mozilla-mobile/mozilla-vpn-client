@@ -55,8 +55,6 @@ constexpr const char* BALROG_MACOS_UA = "Darwin_x86_64-clang-u-x86_64";
 #  error Platform not supported yet
 #endif
 
-constexpr const char* BALROG_ROOT_CERT_FINGERPRINT =
-    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 constexpr const char* BALROG_CERT_SUBJECT_CN =
     "aus.content-signature.mozilla.org";
 
@@ -238,8 +236,8 @@ bool Balrog::checkSignature(const QByteArray& signature,
   logger.log() << "Validating root certificate";
   const QSslCertificate& rootCert = list.constLast();
   QByteArray rootCertHash = rootCert.digest(QCryptographicHash::Sha256).toHex();
-  if (rootCertHash != BALROG_ROOT_CERT_FINGERPRINT) {
-    logger.log() << "Invalid root certificate fingerprint";
+  if (rootCertHash != Constants::BALROG_ROOT_CERT_FINGERPRINT) {
+    logger.log() << "Invalid root certificate fingerprint" << rootCertHash;
     return false;
   }
 
