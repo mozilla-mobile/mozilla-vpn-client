@@ -53,11 +53,11 @@ int CommandServers::run(QStringList& tokens) {
     MozillaVPN vpn;
 
     if (!cacheOption.m_set) {
-      TaskAccountAndServers* task = new TaskAccountAndServers();
-      task->run(&vpn);
+      TaskAccountAndServers task;
+      task.run(&vpn);
 
       QEventLoop loop;
-      QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     } else if (!loadModels()) {
       return 0;
