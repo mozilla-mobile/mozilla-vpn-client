@@ -60,10 +60,11 @@ class MozillaVPN final : public QObject {
     ConnectionFailedAlert,
     LogoutAlert,
     NoConnectionAlert,
-    BackendServiceErrorAlert,
+    ControllerErrorAlert,
     RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
+    UnrecoverableErrorAlert,
   };
   Q_ENUM(AlertType)
 
