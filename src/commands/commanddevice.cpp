@@ -65,11 +65,11 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    TaskRemoveDevice* task = new TaskRemoveDevice(device.publicKey());
-    task->run(&vpn);
+    TaskRemoveDevice task(device.publicKey());
+    task.run(&vpn);
 
     QEventLoop loop;
-    QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+    QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
     loop.exec();
 
     return 0;
