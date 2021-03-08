@@ -81,7 +81,7 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
 
   if (!m_server->isListening()) {
     logger.log() << "Unable to listen for the authentication server.";
-    emit failed(ErrorHandler::BackendServiceError);
+    emit failed(ErrorHandler::UnrecoverableError);
     return;
   }
 

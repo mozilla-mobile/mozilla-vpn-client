@@ -118,10 +118,10 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    setState(StateOff);
+    return;
   }
-
-  Q_UNUSED(status);
 
   if (processNextStep()) {
     setState(StateOff);
