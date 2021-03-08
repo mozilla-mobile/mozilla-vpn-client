@@ -221,7 +221,7 @@ void LocalSocketController::readData() {
 }
 
 void LocalSocketController::parseCommand(const QByteArray& command) {
-  logger.log() << "Parse command:" << command;
+  logger.log() << "Parse command:" << command.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(command);
   if (!json.isObject()) {
