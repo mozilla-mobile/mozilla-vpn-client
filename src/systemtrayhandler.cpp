@@ -181,10 +181,7 @@ void SystemTrayHandler::unsecuredNetworkNotification(
   QString message =
       qtTrId("vpn.systray.unsecuredNetwork.message").arg(networkName);
 
-  m_lastMessage = UnsecuredNetwork;
-
-  emit notificationShown(title, message);
-  showNotificationInternal(title, message,
+  showNotificationInternal(UnsecuredNetwork, title, message,
                            Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
@@ -198,10 +195,7 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   //% " turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock.message");
 
-  m_lastMessage = CaptivePortalBlock;
-
-  emit notificationShown(title, message);
-  showNotificationInternal(title, message,
+  showNotificationInternal(CaptivePortalBlock, title, message,
                            Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
@@ -215,10 +209,7 @@ void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   //% " turn on VPN to secure your device."
   QString message = qtTrId("vpn.systray.captivePortalUnblock.message");
 
-  m_lastMessage = CaptivePortalUnblock;
-
-  emit notificationShown(title, message);
-  showNotificationInternal(title, message,
+  showNotificationInternal(CaptivePortalUnblock, title, message,
                            Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
@@ -293,15 +284,17 @@ void SystemTrayHandler::messageClickHandle() {
 void SystemTrayHandler::showNotification(const QString& title,
                                          const QString& message,
                                          int timerMsec) {
-  m_lastMessage = None;
-
-  emit notificationShown(title, message);
-  showNotificationInternal(title, message, timerMsec);
+  showNotificationInternal(None, title, message, timerMsec);
 }
 
-void SystemTrayHandler::showNotificationInternal(const QString& title,
+void SystemTrayHandler::showNotificationInternal(Message type,
+                                                 const QString& title,
                                                  const QString& message,
                                                  int timerMsec) {
+  m_lastMessage = type;
+
+  emit notificationShown(title, message);
+
   QIcon icon(Constants::LOGO_URL);
   showMessage(title, message, icon, timerMsec);
 }
