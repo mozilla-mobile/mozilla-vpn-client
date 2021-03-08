@@ -56,8 +56,8 @@ class SystemTrayHandler final : public QSystemTrayIcon {
 
   void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
-  void showNotificationInternal(const QString& title, const QString& message,
-                                int timerMsec);
+  void showNotificationInternal(Message type, const QString& title,
+                                const QString& message, int timerMsec);
 
  private:
   QMenu m_menu;
