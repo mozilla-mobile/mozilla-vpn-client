@@ -1061,7 +1061,7 @@ void MozillaVPN::quit() {
 }
 
 #ifdef MVPN_IOS
-void MozillaVPN::subscriptionStarted(bool restore) {
+void MozillaVPN::subscriptionStarted() {
   logger.log() << "Subscription started";
 
   setState(StateSubscriptionValidation);
@@ -1072,13 +1072,13 @@ void MozillaVPN::subscriptionStarted(bool restore) {
   // again.
   if (!iap->hasProductsRegistered()) {
     scheduleTask(new TaskIOSProducts());
-    scheduleTask(new TaskFunction(
-        [restore](MozillaVPN* vpn) { vpn->subscriptionStarted(restore); }));
+    scheduleTask(
+        new TaskFunction([](MozillaVPN* vpn) { vpn->subscriptionStarted(); }));
 
     return;
   }
 
-  iap->startSubscription(restore);
+  iap->startSubscription();
 }
 
 void MozillaVPN::subscriptionCompleted() {
