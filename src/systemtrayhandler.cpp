@@ -184,7 +184,8 @@ void SystemTrayHandler::unsecuredNetworkNotification(
   m_lastMessage = UnsecuredNetwork;
 
   emit notificationShown(title, message);
-  showMessage(title, message, NoIcon, Constants::UNSECURED_NETWORK_ALERT_MSEC);
+  showNotificationInternal(title, message,
+                           Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
 void SystemTrayHandler::captivePortalBlockNotificationRequired() {
@@ -200,7 +201,8 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
   m_lastMessage = CaptivePortalBlock;
 
   emit notificationShown(title, message);
-  showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  showNotificationInternal(title, message,
+                           Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
@@ -216,7 +218,8 @@ void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   m_lastMessage = CaptivePortalUnblock;
 
   emit notificationShown(title, message);
-  showMessage(title, message, NoIcon, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  showNotificationInternal(title, message,
+                           Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void SystemTrayHandler::updateIcon(const QString& icon) {
@@ -293,7 +296,12 @@ void SystemTrayHandler::showNotification(const QString& title,
   m_lastMessage = None;
 
   emit notificationShown(title, message);
+  showNotificationInternal(title, message, timerMsec);
+}
 
+void SystemTrayHandler::showNotificationInternal(const QString& title,
+                                                 const QString& message,
+                                                 int timerMsec) {
   QIcon icon(Constants::LOGO_URL);
   showMessage(title, message, icon, timerMsec);
 }
