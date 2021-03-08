@@ -110,6 +110,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 obj.put("connected", mService.state == Tunnel.State.UP)
                 obj.put("time", mService.connectionTime)
                 dispatchEvent(EVENTS.init, obj.toString())
+
                 return true
             }
 

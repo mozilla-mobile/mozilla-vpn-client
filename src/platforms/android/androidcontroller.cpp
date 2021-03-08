@@ -3,12 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
+#include "errorhandler.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #include <QAndroidBinder>
@@ -68,7 +70,7 @@ AndroidController* AndroidController::instance() { return s_instance; }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.log() << "Initializing";
-
+  m_initialized = false;
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
@@ -147,7 +149,6 @@ void AndroidController::activate(
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/VPNPermissionHelper", "startService",
       "(Landroid/content/Context;)V", appContext.object());
-
   m_server = server;
 
   // Serialise arguments for the VPNService
@@ -242,7 +243,7 @@ void AndroidController::cleanupBackendLogs() {
 
 void AndroidController::onServiceConnected(
     const QString& name, const QAndroidBinder& serviceBinder) {
-  logger.log() << "Server connected";
+  logger.log() << "VPN-Service connected";
 
   Q_UNUSED(name);
 
@@ -259,10 +260,9 @@ void AndroidController::onServiceConnected(
 }
 
 void AndroidController::onServiceDisconnected(const QString& name) {
-  logger.log() << "Server disconnected";
-  m_serviceConnected = false;
   Q_UNUSED(name);
-  // TODO: Maybe restart? Or crash?
+  logger.log() << "Service disconnected";
+  MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
 }
 
 /**
@@ -280,7 +280,6 @@ bool AndroidController::VPNBinder::onTransact(int code,
   Q_UNUSED(data);
   Q_UNUSED(reply);
   Q_UNUSED(flags);
-
   QJsonDocument doc;
   QString buffer;
   switch (code) {
