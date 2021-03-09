@@ -14,25 +14,37 @@ let client;
 let waitReadBuffer = [];
 let waitReadCallback = null;
 
+let _lastNotification = {
+  title: null,
+  message: null,
+};
+
 module.exports = {
   async connect() {
     await this.waitForCondition(async () => {
       return await new Promise(resolve => {
         client = new websocket('ws://localhost:8765/', '');
 
-        client.onopen =
-            async () => {
+        client.onopen = async () => {
           const buffer = await this._writeCommand('stealurls');
           assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
           resolve(true);
-        }
+        };
 
-                        client.onclose = () => this._resolveWaitRead();
+        client.onclose = () => this._resolveWaitRead();
         client.onerror = () => resolve(false);
 
         client.onmessage = data => {
           // Ignoring status and logs.
-          if (data.data[0] == '!' || data.data[0] == '@') return;
+          if (data.data[0] === '!' || data.data[0] === '@') return;
+
+          // Store the last notification
+          if (data.data[0] === '^') {
+            const parts = data.data.split('^');
+            _lastNotification.title = parts[1];
+            _lastNotification.message = parts[2];
+            return;
+          }
 
           assert(waitReadCallback, 'No waiting callback?');
 
@@ -42,7 +54,7 @@ module.exports = {
           if (msg === 'ok' || msg === 'ko') {
             this._resolveWaitRead();
           }
-        }
+        };
       });
     });
   },
@@ -71,6 +83,11 @@ module.exports = {
     assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
+  async forceUnsecuredNetworkAlert() {
+    const buffer = await this._writeCommand('force_unsecured_network');
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
   async quit() {
     const buffer = await this._writeCommand('quit');
     assert(
@@ -81,9 +98,9 @@ module.exports = {
   async hasElement(id) {
     const buffer = await this._writeCommand(`has ${id}`);
     assert(buffer.length === 1, 'Invalid answer');
-    if (buffer[0] == 'ok') return true;
+    if (buffer[0] === 'ok') return true;
 
-    assert(buffer[0] == 'ko', 'Invalid answer');
+    assert(buffer[0] === 'ko', 'Invalid answer');
     return false;
   },
 
@@ -106,8 +123,8 @@ module.exports = {
 
     const msg = buffer[0];
 
-    if (msg == 'ko') return null;
-    if (msg[0] != '-' || msg[msg.length - 1] != '-') return null;
+    if (msg === 'ko') return null;
+    if (msg[0] !== '-' || msg[msg.length - 1] !== '-') return null;
     return msg.substring(1, msg.length - 1);
   },
 
@@ -115,7 +132,7 @@ module.exports = {
     assert(await this.hasElement(id), 'Property checks must be done on existing elements');
     return this.waitForCondition(async () => {
       const real = await this.getElementProperty(id, property);
-      return real == value;
+      return real === value;
     });
   },
 
@@ -124,14 +141,14 @@ module.exports = {
     assert(buffer.length === 1 || buffer.length === 2, 'Invalid answer');
 
     const msg = buffer[0];
-    if (msg[0] != '-' || msg[msg.length - 1] != '-') return null;
+    if (msg[0] !== '-' || msg[msg.length - 1] !== '-') return null;
     return msg.substring(1, msg.length - 1);
   },
 
   async waitForCondition(condition) {
-    for (let i = 0; i < 10; ++i) {
+    for (let i = 0; i < 50; ++i) {
       if (await condition()) return;
-      await this.wait();
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
     throw new Error('Timeout for waitForCondition');
   },
@@ -145,8 +162,9 @@ module.exports = {
 
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await this.getElementProperty('getStarted', 'visible') == 'true');
-    assert(await this.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await this.getElementProperty('getStarted', 'visible') === 'true');
+    assert(
+        await this.getElementProperty('learnMoreLink', 'visible') === 'true');
 
     await this.clickOnElement('getStarted');
 
@@ -197,6 +215,10 @@ module.exports = {
   async logout() {
     const buffer = await this._writeCommand('logout');
     assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
+  lastNotification() {
+    return _lastNotification;
   },
 
   // Internal methods.
