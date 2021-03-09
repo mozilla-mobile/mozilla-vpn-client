@@ -167,5 +167,6 @@ EXIT 0
 
 :ComposeVersion
   SET VERSION=%1
-  set VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%time:~0,2%%time:~3,2%
+  SET T=%TIME: =0%
+  SET VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%T:~0,2%%T:~3,2%
   goto :EOF
