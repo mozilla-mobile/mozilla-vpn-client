@@ -99,7 +99,8 @@ QByteArray DBusService::getStatus() {
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
   }
   json.insert("status", QJsonValue(true));
-  json.insert("serverIpv4Gateway", QJsonValue(m_lastConfig.m_serverIpv4Gateway));
+  json.insert("serverIpv4Gateway",
+              QJsonValue(m_lastConfig.m_serverIpv4Gateway));
   WireguardUtilsLinux::peerBytes pb = wgutils()->getThroughputForInterface();
   json.insert("txBytes", QJsonValue(pb.txBytes));
   json.insert("rxBytes", QJsonValue(pb.rxBytes));
