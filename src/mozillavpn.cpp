@@ -19,6 +19,7 @@
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "urlopener.h"
 
@@ -80,8 +81,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, [this]() {
     scheduleTask(new TaskAccountAndServers());
-
     scheduleTask(new TaskCaptivePortalLookup());
+    scheduleTask(new TaskHeartbeat());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -94,6 +95,12 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   connect(&m_private->m_controller, &Controller::readyToUpdate,
           [this]() { setState(StateUpdateRequired); });
+
+  connect(&m_private->m_controller, &Controller::readyToBackendFailure,
+          [this]() {
+            deleteTasks();
+            setState(StateBackendFailure);
+          });
 
   connect(&m_private->m_controller, &Controller::stateChanged, this,
           &MozillaVPN::controllerStateChanged);
@@ -167,29 +174,29 @@ void MozillaVPN::initialize() {
 
   m_private->m_releaseMonitor.runSoon();
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
 #ifdef MVPN_IOS
-  if (!SettingsHolder::instance()->hasNativeIOSDataMigrated()) {
+  if (!settingsHolder->hasNativeIOSDataMigrated()) {
     IOSDataMigration::migrate();
-    SettingsHolder::instance()->setNativeIOSDataMigrated(true);
+    settingsHolder->setNativeIOSDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_WINDOWS
-  if (!SettingsHolder::instance()->hasNativeWindowsDataMigrated()) {
+  if (!settingsHolder->hasNativeWindowsDataMigrated()) {
     WindowsDataMigration::migrate();
-    SettingsHolder::instance()->setNativeWindowsDataMigrated(true);
+    settingsHolder->setNativeWindowsDataMigrated(true);
   }
 #endif
 
 #ifdef MVPN_ANDROID
-  if (!SettingsHolder::instance()->hasNativeAndroidDataMigrated()) {
+  if (!settingsHolder->hasNativeAndroidDataMigrated()) {
     AndroidDataMigration::migrate();
-    SettingsHolder::instance()->setNativeAndroidDataMigrated(true);
+    settingsHolder->setNativeAndroidDataMigrated(true);
   }
 #endif
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
 
   m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
@@ -317,6 +324,7 @@ void MozillaVPN::authenticate() {
     return;
   }
 
+  scheduleTask(new TaskHeartbeat());
   scheduleTask(new TaskAuthenticate());
 }
 
@@ -743,8 +751,8 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       }
       break;
 
-    case ErrorHandler::BackendServiceError:
-      alert = BackendServiceErrorAlert;
+    case ErrorHandler::ControllerError:
+      alert = ControllerErrorAlert;
       break;
 
     case ErrorHandler::RemoteServiceError:
@@ -757,6 +765,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
     case ErrorHandler::GeoIpRestrictionError:
       alert = GeoIpRestrictionAlert;
+      break;
+
+    case ErrorHandler::UnrecoverableError:
+      alert = UnrecoverableErrorAlert;
       break;
 
     default:
@@ -1053,7 +1065,7 @@ void MozillaVPN::quit() {
 }
 
 #ifdef MVPN_IOS
-void MozillaVPN::subscriptionStarted(bool restore) {
+void MozillaVPN::subscriptionStarted() {
   logger.log() << "Subscription started";
 
   setState(StateSubscriptionValidation);
@@ -1064,13 +1076,13 @@ void MozillaVPN::subscriptionStarted(bool restore) {
   // again.
   if (!iap->hasProductsRegistered()) {
     scheduleTask(new TaskIOSProducts());
-    scheduleTask(new TaskFunction(
-        [restore](MozillaVPN* vpn) { vpn->subscriptionStarted(restore); }));
+    scheduleTask(
+        new TaskFunction([](MozillaVPN* vpn) { vpn->subscriptionStarted(); }));
 
     return;
   }
 
-  iap->startSubscription(restore);
+  iap->startSubscription();
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1158,3 +1170,25 @@ void MozillaVPN::backendServiceRestore() {
   logger.log() << "Background service restore request";
   // TODO
 }
+
+void MozillaVPN::heartbeatCompleted(bool success) {
+  logger.log() << "Server-side check done:" << success;
+
+  if (!success) {
+    m_private->m_controller.backendFailure();
+    return;
+  }
+
+  if (m_state != StateBackendFailure) {
+    return;
+  }
+
+  if (!modelsInitialized() || !m_userAuthenticated) {
+    setState(StateInitialize);
+    return;
+  }
+
+  maybeStateMain();
+}
+
+void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }

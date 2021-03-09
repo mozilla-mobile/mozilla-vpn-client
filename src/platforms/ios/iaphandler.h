@@ -19,7 +19,6 @@ class IAPHandler final : public QObject {
   static IAPHandler* instance();
 
   Q_INVOKABLE void subscribe();
-  Q_INVOKABLE void restoreSubscription();
 
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
@@ -27,14 +26,14 @@ class IAPHandler final : public QObject {
 
   void registerProducts(const QStringList& products);
 
-  void startSubscription(bool restore);
+  void startSubscription();
 
   const QString& priceValue() const { return m_priceValue; }
 
  signals:
   void productsRegistered();
 
-  void subscriptionStarted(bool restore);
+  void subscriptionStarted();
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();

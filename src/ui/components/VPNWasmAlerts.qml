@@ -26,7 +26,7 @@ Item {
         }
 
         Repeater {
-            model: 7
+            model: 9
             delegate: VPNSystemAlert {
                 state: index
                 visible: true

@@ -96,7 +96,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<bool> reply = *call;
   if (reply.isError()) {
     logger.log() << "Error received from the DBus service";
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
     emit disconnected();
     return;
   }
@@ -109,7 +109,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   }
 
   logger.log() << "DBus service says: error.";
-  MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 

@@ -79,12 +79,7 @@ void ReleaseMonitor::update() {
   connect(updater, &QObject::destroyed, [] {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-
     vpn->setUpdating(false);
-
-    if (vpn->alert() == MozillaVPN::NoAlert) {
-      vpn->errorHandle(ErrorHandler::BackendServiceError);
-    }
   });
 
   updater->start();

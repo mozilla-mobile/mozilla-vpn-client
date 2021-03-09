@@ -43,8 +43,9 @@ ASWebAuthenticationSession* session = nullptr;
   return self;
 }
 
+#  pragma mark - ASWebAuthenticationPresentationContextProviding
 - (nonnull ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:
-    (nonnull ASWebAuthenticationSession*)session {
+    (nonnull ASWebAuthenticationSession*)session API_AVAILABLE(ios(13.0)) {
   return m_view.window;
 }
 
@@ -87,6 +88,7 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
         if (error) {
           logger.log() << "Authentication failed:"
                        << QString::fromNSString([error localizedDescription]);
+          logger.log() << "Code:" << [error code];
           logger.log() << "Suggestion:"
                        << QString::fromNSString([error localizedRecoverySuggestion]);
           logger.log() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
@@ -119,7 +121,9 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
   UIView* view = static_cast<UIView*>(
       QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", window));
 
-  session.presentationContextProvider = [[ContextProvider alloc] initWithUIView:view];
+  if (@available(iOS 13, *)) {
+    session.presentationContextProvider = [[ContextProvider alloc] initWithUIView:view];
+  }
 #endif
 
   if (![session start]) {

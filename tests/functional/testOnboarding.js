@@ -48,6 +48,13 @@ describe('Initial view and onboarding', function() {
 
     // We don't test the view log.
 
+    await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.startsWith('file://') && url.includes('mozillavpn') &&
+          url.endsWith('.txt');
+    });
+
     await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();

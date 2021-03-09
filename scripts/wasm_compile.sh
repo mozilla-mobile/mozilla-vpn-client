@@ -45,6 +45,11 @@ if ! [ -d "src" ] || ! [ -d "wasm" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
+printn Y "Extract the project version... "
+SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+print G "$SHORTVERSION - $FULLVERSION"
+
 QMAKE=$WASM_QT_PATH/qmake
 [ -f "$QMAKE" ] || die "Unable to find qmake at the path $QMAKE"
 
@@ -63,7 +68,7 @@ print Y "Importing translation files..."
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 print Y "Configuring the project via qmake..."
-$QMAKE CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release || die "Compilation failed"
+$QMAKE CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release BUILD_ID=$FULLVERSION || die "Compilation failed"
 
 print Y "Compiling..."
 make -j8 || die "Compilation failed"

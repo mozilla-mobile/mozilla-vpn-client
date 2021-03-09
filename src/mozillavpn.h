@@ -50,6 +50,7 @@ class MozillaVPN final : public QObject {
     StateSubscriptionValidation,
     StateSubscriptionBlocked,
     StateDeviceLimit,
+    StateBackendFailure,
   };
   Q_ENUM(State);
 
@@ -59,10 +60,11 @@ class MozillaVPN final : public QObject {
     ConnectionFailedAlert,
     LogoutAlert,
     NoConnectionAlert,
-    BackendServiceErrorAlert,
+    ControllerErrorAlert,
     RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
+    UnrecoverableErrorAlert,
   };
   Q_ENUM(AlertType)
 
@@ -119,6 +121,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
+  Q_INVOKABLE void triggerHeartbeat();
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -199,6 +202,8 @@ class MozillaVPN final : public QObject {
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
 
+  void heartbeatCompleted(bool success);
+
  private:
   void setState(State state);
 
@@ -225,7 +230,7 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
 #ifdef MVPN_IOS
-  void subscriptionStarted(bool restore);
+  void subscriptionStarted();
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
