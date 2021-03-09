@@ -751,8 +751,8 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       }
       break;
 
-    case ErrorHandler::BackendServiceError:
-      alert = BackendServiceErrorAlert;
+    case ErrorHandler::ControllerError:
+      alert = ControllerErrorAlert;
       break;
 
     case ErrorHandler::RemoteServiceError:
@@ -765,6 +765,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
     case ErrorHandler::GeoIpRestrictionError:
       alert = GeoIpRestrictionAlert;
+      break;
+
+    case ErrorHandler::UnrecoverableError:
+      alert = UnrecoverableErrorAlert;
       break;
 
     default:
