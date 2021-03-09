@@ -53,16 +53,6 @@ parse_options() {
 	shopt -u nocasematch
 }
 
-add_if() {
-	local ret
-	if ! ip link add "$INTERFACE" type wireguard; then
-		ret=$?
-		[[ -e /sys/module/wireguard ]] || ! command -v "${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" >/dev/null && exit $ret
-		echo "[!] Missing WireGuard kernel module. Falling back to slow userspace implementation." >&2
-		"${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" "$INTERFACE"
-	fi
-}
-
 del_if() {
 	local table
 	[[ $HAVE_SET_DNS -eq 0 ]] || unset_dns
@@ -81,7 +71,6 @@ del_if() {
 			ip -6 rule delete table main suppress_prefixlength 0
 		done
 	fi
-	ip link delete dev "$INTERFACE"
 }
 
 add_addr() {
@@ -182,15 +171,9 @@ add_default() {
 	return 0
 }
 
-set_config() {
-	wg setconf "$INTERFACE" <(echo "$WG_CONFIG")
-}
-
 cmd_up() {
 	local i
 	trap 'del_if; exit' INT TERM EXIT
-	add_if
-	set_config
 	for i in "${ADDRESSES[@]}"; do
 		add_addr "$i"
 	done

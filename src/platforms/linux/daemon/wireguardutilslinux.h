@@ -13,7 +13,19 @@ class WireguardUtilsLinux final : public WireguardUtils {
   WireguardUtilsLinux(QObject* parent);
   ~WireguardUtilsLinux();
   bool interfaceExists() override;
-  QStringList currentInterfaces() override;
+  bool addInterface() override;
+  bool configureInterface(const InterfaceConfig& config) override;
+  bool deleteInterface() override;
+  peerBytes getThroughputForInterface() override;
+
+ private:
+  QStringList currentInterfaces();
+  bool setPeerEndpoint(struct sockaddr* peerEndpoint, const QString& address,
+                       int port);
+  bool setAllowedIpsOnPeer(struct wg_peer* peer,
+                           QList<IPAddressRange> allowedIPAddressRanges);
+  wg_peer* buildPeerForDevice(struct wg_device* device,
+                              const InterfaceConfig& conf);
 };
 
 #endif  // WIREGUARDUTILSLINUX_H

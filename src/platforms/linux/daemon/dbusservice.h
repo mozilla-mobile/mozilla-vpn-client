@@ -21,8 +21,6 @@ class DBusService final : public Daemon {
 
   void setAdaptor(DbusAdaptor* adaptor);
 
-  bool checkInterface();
-
   using Daemon::activate;
 
  public slots:
@@ -48,6 +46,7 @@ class DBusService final : public Daemon {
  private:
   DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
+  bool removeInterfaceIfExists();
 };
 
 #endif  // DBUSSERVICE_H
