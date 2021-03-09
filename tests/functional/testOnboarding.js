@@ -24,12 +24,12 @@ describe('Initial view and onboarding', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
-    assert(await vpn.getLastUrl() == '');
+    assert(await vpn.getLastUrl() === '');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') == 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
   it('Open the help menu', async () => {
@@ -84,7 +84,7 @@ describe('Initial view and onboarding', function() {
 
     while (true) {
       assert(
-          await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+          await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
       await vpn.clickOnElement('learnMoreLink');
 
       await vpn.waitForElement('skipOnboarding');
@@ -97,7 +97,7 @@ describe('Initial view and onboarding', function() {
       for (let i = 0; i < onboardingView; ++i) {
         assert(await vpn.hasElement('onboardingNext'));
         assert(
-            await vpn.getElementProperty('onboardingNext', 'visible') ==
+            await vpn.getElementProperty('onboardingNext', 'visible') ===
             'true');
         await vpn.clickOnElement('onboardingNext');
 
@@ -107,8 +107,8 @@ describe('Initial view and onboarding', function() {
       }
 
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
-      if (await vpn.getElementProperty('onboardingNext', 'text') != 'Next') {
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
+      if (await vpn.getElementProperty('onboardingNext', 'text') !== 'Next') {
         break;
       }
 

@@ -8,6 +8,7 @@
 #include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "systemtrayhandler.h"
 
 #include <QHostAddress>
 #include <QQuickItem>
@@ -214,6 +215,9 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
 
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorWebSocketConnection::logEntryAdded);
+
+  connect(SystemTrayHandler::instance(), &SystemTrayHandler::notificationShown,
+          this, &InspectorWebSocketConnection::notificationShown);
 }
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
@@ -273,6 +277,17 @@ void InspectorWebSocketConnection::logEntryAdded(const QByteArray& log) {
   QByteArray buffer;
   buffer.append("!");
   buffer.append(log);
+
+  m_connection->sendTextMessage(buffer);
+}
+
+void InspectorWebSocketConnection::notificationShown(const QString& title,
+                                                     const QString& message) {
+  QByteArray buffer;
+  buffer.append("^");
+  buffer.append(title);
+  buffer.append("^");
+  buffer.append(message);
 
   m_connection->sendTextMessage(buffer);
 }

@@ -35,12 +35,12 @@ describe('User authentication', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
-    assert(await vpn.getLastUrl() == '');
+    assert(await vpn.getLastUrl() === '');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') == 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
   it('Start and abort the authentication (initial view)', async () => {
@@ -70,7 +70,7 @@ describe('User authentication', function() {
   });
 
   it('Start and abort the authentication (onboarding view)', async () => {
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
     await vpn.clickOnElement('learnMoreLink');
 
     await vpn.waitForElement('skipOnboarding');
@@ -83,11 +83,11 @@ describe('User authentication', function() {
     while (true) {
       assert(await vpn.hasElement('onboardingNext'));
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
 
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
-      if (await vpn.getElementProperty('onboardingNext', 'text') == 'Next') {
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
+      if (await vpn.getElementProperty('onboardingNext', 'text') === 'Next') {
         await vpn.clickOnElement('onboardingNext');
 
         // This is needed just for humans. The UI is already in the other state
