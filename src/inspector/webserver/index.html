@@ -104,6 +104,8 @@
     commands.set("triggerCaptivePortal", { func: () => ws.send("force_captive_portal_detection"), desc: "Triggers the captive portal detection" });
     commands.set("triggerUnsecuredNetwork", { func: () => ws.send("force_unsecured_network"), desc: "Triggers the unsecured network detection" });
     commands.set("triggerHeartbeatFailure", { func: () => ws.send("force_heartbeat_failure"), desc: "Triggers the heartbeat server-side failure" });
+    commands.set("set_setting", { func: cmd_settingSet, desc: "Set a setting" });
+    commands.set("get_setting", { func: cmd_settingGet, desc: "Get a setting" });
 
     function parseCommand(input) {
       input = input.trim();
@@ -168,6 +170,24 @@
         return;
       }
       ws.send("force_update_check " + parts[1]);
+    }
+
+    function cmd_settingSet(parts) {
+      if (parts.length != 3) {
+        t("Usage: set_setting <key> <value>");
+        t("Example: set_setting unsecured-network-alert true");
+        return;
+      }
+      ws.send(`set_setting ${parts[1]} ${parts[2]}`);
+    }
+
+    function cmd_settingGet(parts) {
+      if (parts.length != 2) {
+        t("Usage: get_setting <key>");
+        t("Example: get_setting unsecured-network-alert");
+        return;
+      }
+      ws.send(`get_setting ${parts[1]}`);
     }
 
     run();
