@@ -60,6 +60,7 @@ ECHO Extract version...
 FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
 
 SET FLAGS=BUILD_ID=%VERSION%
+echo %FLAGS%
 
 if "%PROD_BUILD%" == "T" (
   ECHO Production build enabled
@@ -68,6 +69,7 @@ if "%PROD_BUILD%" == "T" (
   ECHO Staging build enabled
   SET FLAGS=%FLAGS% CONFIG+=inspector
 )
+echo %FLAGS%
 
 if "%TEST_BUILD%" == "T" (
   ECHO Test build enabled
@@ -75,6 +77,7 @@ if "%TEST_BUILD%" == "T" (
 ) else (
   SET FLAGS=%FLAGS% CONFIG+=balrog
 )
+echo %FLAGS%
 
 ECHO Checking required commands...
 CALL :CheckCommand python
@@ -162,10 +165,13 @@ EXIT 0
   goto :eof
 
 :SetVersion
+  echo "PROCESSING %1"
   for /f "tokens=1* delims=." %%A IN ("%1") DO call :ComposeVersion %%A
   goto :EOF
 
 :ComposeVersion
+  echo "SUB PROCESSING %1"
   SET VERSION=%1
-  set VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%time:~0,2%%time:~3,2%
+  SET VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%time:~0,2%%time:~3,2%
+  echo "RESULT %VERSION%"
   goto :EOF
