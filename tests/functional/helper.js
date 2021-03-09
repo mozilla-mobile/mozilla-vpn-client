@@ -217,8 +217,28 @@ module.exports = {
     assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
   },
 
+  async setSetting(key, value) {
+    const buffer = await this._writeCommand(`set_setting ${key} ${value}`);
+    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+  },
+
+  async getSetting(key) {
+    const buffer = await this._writeCommand(`get_setting ${key}`);
+    assert(buffer.length === 1 || buffer.length === 2, 'Invalid answer');
+
+    const msg = buffer[0];
+    if (msg === 'ko') return null;
+    if (msg[0] !== '-' || msg[msg.length - 1] !== '-') return null;
+    return msg.substring(1, msg.length - 1);
+  },
+
   lastNotification() {
     return _lastNotification;
+  },
+
+  resetLastNotification() {
+    _lastNotification.title = null;
+    _lastNotification.message = null;
   },
 
   // Internal methods.

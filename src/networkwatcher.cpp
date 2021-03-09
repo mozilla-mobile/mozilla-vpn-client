@@ -52,19 +52,20 @@ void NetworkWatcher::initialize() {
 #else
   logger.log()
       << "No NetworkWatcher implementation for the current platform (yet)";
-  return;
 #endif
 
-  connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
-          &NetworkWatcher::unsecuredNetwork);
+  if (m_impl) {
+    connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
+            &NetworkWatcher::unsecuredNetwork);
 
-  m_impl->initialize();
+    m_impl->initialize();
+  }
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
   m_active = settingsHolder->unsecuredNetworkAlert();
-  if (m_active) {
+  if (m_active && m_impl) {
     m_impl->start();
   }
 
@@ -101,7 +102,15 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  Controller::State state = MozillaVPN::instance()->controller()->state();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  if (vpn->state() != MozillaVPN::StateMain) {
+    logger.log() << "VPN not ready. Ignoring unsecured network";
+    return;
+  }
+
+  Controller::State state = vpn->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
     logger.log() << "VPN on. Ignoring unsecured network";

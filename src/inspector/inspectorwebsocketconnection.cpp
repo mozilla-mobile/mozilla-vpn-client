@@ -8,6 +8,7 @@
 #include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "settingsholder.h"
 #include "systemtrayhandler.h"
 
 #include <QHostAddress>
@@ -86,6 +87,84 @@ static bool cmdDeactivate(QWebSocket*, const QList<QByteArray>&) {
 static bool cmdLogout(QWebSocket*, const QList<QByteArray>&) {
   MozillaVPN::instance()->logout();
   return true;
+}
+
+struct WebSocketSettingCommand {
+  QString m_settingName;
+  enum {
+    Boolean,
+  } m_type;
+  bool (*m_set)(const QByteArray& value);
+  QString (*m_get)();
+};
+
+bool cmdSettingSetUnsecuredNetworkAlert(const QByteArray& value) {
+  SettingsHolder::instance()->setUnsecuredNetworkAlert(value == "true");
+  return true;
+}
+
+QString cmdSettingGetUnsecuredNetworkAlert() {
+  return SettingsHolder::instance()->unsecuredNetworkAlert() ? "true" : "false";
+}
+
+// The list of settings exposed to the websocket.
+static QList<WebSocketSettingCommand> s_settingCommands{
+    WebSocketSettingCommand{
+        "unsecured-network-alert", WebSocketSettingCommand::Boolean,
+        cmdSettingSetUnsecuredNetworkAlert, cmdSettingGetUnsecuredNetworkAlert},
+};
+
+static bool cmdSetSetting(QWebSocket* socket, const QList<QByteArray>& params) {
+  for (const WebSocketSettingCommand& setting : s_settingCommands) {
+    if (params[1] == setting.m_settingName) {
+      switch (setting.m_type) {
+        case WebSocketSettingCommand::Boolean:
+          if (params[2] != "true" && params[2] != "false") {
+            socket->sendTextMessage(
+                QString("Expected boolean (true/false) for settings %1")
+                    .arg(QString(params[1]))
+                    .toLocal8Bit());
+            return false;
+          }
+
+          break;
+
+        default:
+          Q_ASSERT(false);
+      }
+
+      return setting.m_set(params[2]);
+    }
+  }
+
+  QStringList settings;
+  for (const WebSocketSettingCommand& setting : s_settingCommands) {
+    settings.append(setting.m_settingName);
+  }
+
+  socket->sendTextMessage(QString("Invalid settings. The options are: %1")
+                              .arg(settings.join(", "))
+                              .toLocal8Bit());
+  return false;
+}
+
+static bool cmdGetSetting(QWebSocket* socket, const QList<QByteArray>& params) {
+  for (const WebSocketSettingCommand& setting : s_settingCommands) {
+    if (params[1] == setting.m_settingName) {
+      socket->sendTextMessage(QString("-%1-").arg(setting.m_get()));
+      return true;
+    }
+  }
+
+  QStringList settings;
+  for (const WebSocketSettingCommand& setting : s_settingCommands) {
+    settings.append(setting.m_settingName);
+  }
+
+  socket->sendTextMessage(QString("Invalid settings. The options are: %1")
+                              .arg(settings.join(", "))
+                              .toLocal8Bit());
+  return false;
 }
 
 static bool cmdQuit(QWebSocket*, const QList<QByteArray>&) {
@@ -192,6 +271,8 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"deactivate", 0, cmdDeactivate},
     WebSocketCommand{"force_heartbeat_failure", 0, cmdForceHeartbeatFailure},
     WebSocketCommand{"logout", 0, cmdLogout},
+    WebSocketCommand{"set_setting", 2, cmdSetSetting},
+    WebSocketCommand{"get_setting", 1, cmdGetSetting},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
@@ -285,9 +366,9 @@ void InspectorWebSocketConnection::notificationShown(const QString& title,
                                                      const QString& message) {
   QByteArray buffer;
   buffer.append("^");
-  buffer.append(title);
+  buffer.append(title.toUtf8());
   buffer.append("^");
-  buffer.append(message);
+  buffer.append(message.toUtf8());
 
   m_connection->sendTextMessage(buffer);
 }
