@@ -52,6 +52,8 @@ git submodule init
 git submodule update
 ```
 
+When submodules have been updated by main, compared to your branch, run `git submodule update <name of module>`.
+
 #### Build
 
 To build next to source:
