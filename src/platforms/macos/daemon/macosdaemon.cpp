@@ -102,7 +102,7 @@ QByteArray MacOSDaemon::getStatus() {
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
-bool MacOSDaemon::run(Daemon::Op op, const Config& config) {
+bool MacOSDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
   QStringList addresses;
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
