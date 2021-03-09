@@ -9,8 +9,6 @@
 
 #include <QObject>
 
-constexpr const char* WG_INTERFACE = "moz0";
-
 class WgQuickProcess final {
   Q_DISABLE_COPY_MOVE(WgQuickProcess)
 
