@@ -15,6 +15,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "settingsLanguagesBackButton"
 
         //% "Language"
         title: qsTrId("vpn.settings.language")

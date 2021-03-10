@@ -455,3 +455,20 @@ input:focus {
 			--svgFill: #ffffffc9;
 	}
 }
+
+.webSocketResponseType {
+  padding-right: 1em;
+  color: blue;
+}
+
+.webSocketResponseError {
+  padding-left: 1em;
+  padding-right: 1em;
+  color: red;
+}
+
+.webSocketResponseValue {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+

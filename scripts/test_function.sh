@@ -28,9 +28,8 @@ runTest() {
 
   wait $PID
 
-  cat /tmp/VPN_LOG.txt
-
   if [ "$ERROR" = yes ]; then
+    cat /tmp/VPN_LOG.txt
     print R "Nooo"
     exit 1
   fi

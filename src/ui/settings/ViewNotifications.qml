@@ -15,6 +15,7 @@ VPNFlickable {
 
     VPNMenu {
         id: menu
+        objectName: "settingsNotificationsBackButton"
 
         //% "Notifications"
         title: qsTrId("vpn.settings.notifications")
@@ -23,6 +24,7 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: captivePortalAlert
+        objectName: "settingCaptivePortalAlert"
 
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
@@ -46,6 +48,7 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: unsecuredNetworkAlert
+        objectName: "settingUnsecuredNetworkAlert"
 
         anchors.top: VPNFeatureList.captivePortalNotificationSupported ? captivePortalAlert.bottom : menu.bottom
         anchors.topMargin: Theme.windowMargin
