@@ -127,6 +127,11 @@ static QJsonObject cmdClick(const QList<QByteArray>& arguments) {
   return obj;
 }
 
+static QJsonObject cmdClickNotification(const QList<QByteArray>&) {
+  SystemTrayHandler::instance()->messageClickHandle();
+  return QJsonObject();
+}
+
 static QJsonObject cmdStealurls(const QList<QByteArray>&) {
   s_stealUrls = true;
   return QJsonObject();
@@ -273,6 +278,8 @@ static QList<WebSocketCommand> s_commands{
     WebSocketCommand{"property", "Retrieve a property value from an object", 2,
                      cmdProperty},
     WebSocketCommand{"click", "Click on an object", 1, cmdClick},
+    WebSocketCommand{"click_notification", "Click on a notification", 0,
+                     cmdClickNotification},
     WebSocketCommand{
         "stealurls",
         "Do not open the URLs in browser and expose them via webSocket", 0,
