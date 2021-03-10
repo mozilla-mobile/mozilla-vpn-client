@@ -123,6 +123,13 @@ module.exports = {
         `Invalid answer: ${json.error}`);
   },
 
+  async clickOnNotification() {
+    const json = await this._writeCommand('click_notification');
+    assert(
+        json.type === 'click_notification' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
   async getElementProperty(id, property) {
     assert(await this.hasElement(id), 'Property checks must be done on existing elements');
     const json = await this._writeCommand(`property ${id} ${property}`);

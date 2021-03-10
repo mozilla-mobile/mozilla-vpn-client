@@ -118,8 +118,8 @@ describe('Unsecured network alert', function() {
         'VPN is off');
   });
 
-  it('Unsecured network alert when connecting', async () => {
-    await vpn.activate();
+  it('Clicking the notification', async () => {
+    await vpn.clickOnNotification();
 
     await vpn.waitForCondition(async () => {
       let connectingMsg =
