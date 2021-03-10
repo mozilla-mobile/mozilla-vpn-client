@@ -94,6 +94,13 @@ module.exports = {
         `Invalid answer: ${json.error}`);
   },
 
+  async forceCaptivePortalDetection() {
+    const json = await this._writeCommand('force_captive_portal_detection');
+    assert(
+        json.type === 'force_captive_portal_detection' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
   async quit() {
     const json = await this._writeCommand('quit');
     assert(
