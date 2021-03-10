@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
+#include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
@@ -50,22 +51,19 @@ void NetworkWatcher::initialize() {
 #elif defined(MVPN_WASM)
   m_impl = new WasmNetworkWatcher(this);
 #else
-  logger.log()
-      << "No NetworkWatcher implementation for the current platform (yet)";
+  m_impl = new DummyNetworkWatcher(this);
 #endif
 
-  if (m_impl) {
-    connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
-            &NetworkWatcher::unsecuredNetwork);
+  connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
+          &NetworkWatcher::unsecuredNetwork);
 
-    m_impl->initialize();
-  }
+  m_impl->initialize();
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
   m_active = settingsHolder->unsecuredNetworkAlert();
-  if (m_active && m_impl) {
+  if (m_active) {
     m_impl->start();
   }
 
@@ -80,10 +78,6 @@ void NetworkWatcher::settingsChanged(bool active) {
   }
 
   m_active = active;
-
-  if (!m_impl) {
-    return;
-  }
 
   if (m_active) {
     m_impl->start();
