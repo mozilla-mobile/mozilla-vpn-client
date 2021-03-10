@@ -11,6 +11,8 @@
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
+#include <functional>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -72,255 +74,265 @@ static QQuickItem* findObject(const QString& name) {
   return parent;
 }
 
-static QJsonObject cmdHelp(const QList<QByteArray>&);
-
-static QJsonObject cmdReset(const QList<QByteArray>&) {
-  MozillaVPN::instance()->reset(true);
-  return QJsonObject();
-}
-
-static QJsonObject cmdQuit(const QList<QByteArray>&) {
-  MozillaVPN::instance()->controller()->quit();
-  return QJsonObject();
-}
-
-static QJsonObject cmdHas(const QList<QByteArray>& arguments) {
-  QJsonObject obj;
-  obj["value"] = !!findObject(arguments[1]);
-  return obj;
-}
-
-static QJsonObject cmdProperty(const QList<QByteArray>& arguments) {
-  QJsonObject obj;
-
-  QQuickItem* item = findObject(arguments[1]);
-  if (!item) {
-    obj["error"] = "Object not found";
-    return obj;
-  }
-
-  QVariant property = item->property(arguments[2]);
-  if (!property.isValid()) {
-    obj["error"] = "Property is invalid";
-    return obj;
-  }
-
-  obj["value"] = property.toString();
-  return obj;
-}
-
-static QJsonObject cmdClick(const QList<QByteArray>& arguments) {
-  QJsonObject obj;
-
-  QQuickItem* item = findObject(arguments[1]);
-  if (!item) {
-    obj["error"] = "Object not found";
-    return obj;
-  }
-
-  QPointF pointF = item->mapToScene(QPoint(0, 0));
-  QPoint point = pointF.toPoint();
-  point.rx() += item->width() / 2;
-  point.ry() += item->height() / 2;
-  QTest::mouseClick(item->window(), Qt::LeftButton, Qt::NoModifier, point);
-
-  return obj;
-}
-
-static QJsonObject cmdClickNotification(const QList<QByteArray>&) {
-  SystemTrayHandler::instance()->messageClickHandle();
-  return QJsonObject();
-}
-
-static QJsonObject cmdStealurls(const QList<QByteArray>&) {
-  s_stealUrls = true;
-  return QJsonObject();
-}
-
-static QJsonObject cmdLasturl(const QList<QByteArray>&) {
-  QJsonObject obj;
-  obj["value"] = s_lastUrl.toString();
-  return obj;
-}
-
-static QJsonObject cmdForceUpdateCheck(const QList<QByteArray>& arguments) {
-  s_updateVersion = arguments[1];
-  MozillaVPN::instance()->releaseMonitor()->runSoon();
-  return QJsonObject();
-}
-
-static QJsonObject cmdForceCaptivePortalCheck(const QList<QByteArray>&) {
-  MozillaVPN::instance()->captivePortalDetection()->detectCaptivePortal();
-  return QJsonObject();
-}
-
-static QJsonObject cmdForceCaptivePortalDetection(const QList<QByteArray>&) {
-  MozillaVPN::instance()->captivePortalDetection()->captivePortalDetected();
-  return QJsonObject();
-}
-
-static QJsonObject cmdForceUnsecuredNetwork(const QList<QByteArray>&) {
-  MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy", "Dummy");
-  return QJsonObject();
-}
-
-static QJsonObject cmdActivate(const QList<QByteArray>&) {
-  MozillaVPN::instance()->activate();
-  return QJsonObject();
-}
-
-static QJsonObject cmdDeactivate(const QList<QByteArray>&) {
-  MozillaVPN::instance()->deactivate();
-  return QJsonObject();
-}
-
-static QJsonObject cmdForceHeartbeatFailure(const QList<QByteArray>&) {
-  MozillaVPN::instance()->heartbeatCompleted(false /* success */);
-  return QJsonObject();
-}
-
-static QJsonObject cmdLogout(const QList<QByteArray>&) {
-  MozillaVPN::instance()->logout();
-  return QJsonObject();
-}
-
 struct WebSocketSettingCommand {
   QString m_settingName;
+
   enum {
     Boolean,
   } m_type;
-  void (*m_set)(const QByteArray& value);
-  QJsonValue (*m_get)();
+
+  std::function<void(const QByteArray&)> m_set;
+  std::function<QJsonValue()> m_get;
 };
-
-void cmdSettingSetUnsecuredNetworkAlert(const QByteArray& value) {
-  SettingsHolder::instance()->setUnsecuredNetworkAlert(value == "true");
-}
-
-QJsonValue cmdSettingGetUnsecuredNetworkAlert() {
-  return SettingsHolder::instance()->unsecuredNetworkAlert() ? "true" : "false";
-}
 
 // The list of settings exposed to the websocket.
 static QList<WebSocketSettingCommand> s_settingCommands{
+    // Unsecured-network-alert
     WebSocketSettingCommand{
         "unsecured-network-alert", WebSocketSettingCommand::Boolean,
-        cmdSettingSetUnsecuredNetworkAlert, cmdSettingGetUnsecuredNetworkAlert},
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setUnsecuredNetworkAlert(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->unsecuredNetworkAlert() ? "true"
+                                                                     : "false";
+        }},
+
+    // Captive portal
+    WebSocketSettingCommand{
+        "captive-portal-alert", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setCaptivePortalAlert(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->captivePortalAlert() ? "true"
+                                                                  : "false";
+        }},
 };
-
-static QJsonObject cmdSetSetting(const QList<QByteArray>& params) {
-  QJsonObject obj;
-
-  for (const WebSocketSettingCommand& setting : s_settingCommands) {
-    if (params[1] == setting.m_settingName) {
-      switch (setting.m_type) {
-        case WebSocketSettingCommand::Boolean:
-          if (params[2] != "true" && params[2] != "false") {
-            obj["error"] =
-                QString("Expected boolean (true/false) for settings %1")
-                    .arg(QString(params[1]));
-            return obj;
-          }
-
-          break;
-
-        default:
-          Q_ASSERT(false);
-      }
-
-      setting.m_set(params[2]);
-      return obj;
-    }
-  }
-
-  QStringList settings;
-  for (const WebSocketSettingCommand& setting : s_settingCommands) {
-    settings.append(setting.m_settingName);
-  }
-
-  obj["error"] =
-      QString("Invalid settings. The options are: %1").arg(settings.join(", "));
-  return obj;
-}
-
-static QJsonObject cmdGetSetting(const QList<QByteArray>& params) {
-  QJsonObject obj;
-
-  for (const WebSocketSettingCommand& setting : s_settingCommands) {
-    if (params[1] == setting.m_settingName) {
-      obj["value"] = setting.m_get();
-      return obj;
-    }
-  }
-
-  QStringList settings;
-  for (const WebSocketSettingCommand& setting : s_settingCommands) {
-    settings.append(setting.m_settingName);
-  }
-
-  obj["error"] =
-      QString("Invalid settings. The options are: %1").arg(settings.join(", "));
-  return obj;
-}
 
 struct WebSocketCommand {
   QString m_commandName;
   QString m_commandDescription;
   int32_t m_arguments;
-  QJsonObject (*m_callback)(const QList<QByteArray>& arguments);
+  std::function<QJsonObject(const QList<QByteArray>&)> m_callback;
 };
 
 static QList<WebSocketCommand> s_commands{
-    WebSocketCommand{"help", "The help menu", 0, cmdHelp},
-    WebSocketCommand{"reset", "Reset the app", 0, cmdReset},
-    WebSocketCommand{"quit", "Quit the app", 0, cmdQuit},
-    WebSocketCommand{"has", "Check if an object exists", 1, cmdHas},
+    WebSocketCommand{"help", "The help menu", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       QString value;
+
+                       {
+                         QTextStream out(&value);
+                         for (const WebSocketCommand& command : s_commands) {
+                           out << command.m_commandName << '\t'
+                               << command.m_commandDescription << Qt::endl;
+                         }
+                       }
+
+                       obj["value"] = value;
+                       return obj;
+                     }},
+
+    WebSocketCommand{"reset", "Reset the app", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->reset(true);
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"quit", "Quit the app", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->controller()->quit();
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"has", "Check if an object exists", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       obj["value"] = !!findObject(arguments[1]);
+                       return obj;
+                     }},
+
     WebSocketCommand{"property", "Retrieve a property value from an object", 2,
-                     cmdProperty},
-    WebSocketCommand{"click", "Click on an object", 1, cmdClick},
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+
+                       QQuickItem* item = findObject(arguments[1]);
+                       if (!item) {
+                         obj["error"] = "Object not found";
+                         return obj;
+                       }
+
+                       QVariant property = item->property(arguments[2]);
+                       if (!property.isValid()) {
+                         obj["error"] = "Property is invalid";
+                         return obj;
+                       }
+
+                       obj["value"] = property.toString();
+                       return obj;
+                     }},
+
+    WebSocketCommand{"click", "Click on an object", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+
+                       QQuickItem* item = findObject(arguments[1]);
+                       if (!item) {
+                         obj["error"] = "Object not found";
+                         return obj;
+                       }
+
+                       QPointF pointF = item->mapToScene(QPoint(0, 0));
+                       QPoint point = pointF.toPoint();
+                       point.rx() += item->width() / 2;
+                       point.ry() += item->height() / 2;
+                       QTest::mouseClick(item->window(), Qt::LeftButton,
+                                         Qt::NoModifier, point);
+
+                       return obj;
+                     }},
+
     WebSocketCommand{"click_notification", "Click on a notification", 0,
-                     cmdClickNotification},
+                     [](const QList<QByteArray>&) {
+                       SystemTrayHandler::instance()->messageClickHandle();
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{
         "stealurls",
         "Do not open the URLs in browser and expose them via webSocket", 0,
-        cmdStealurls},
-    WebSocketCommand{"lasturl", "Retrieve the last opened URL", 0, cmdLasturl},
+        [](const QList<QByteArray>&) {
+          s_stealUrls = true;
+          return QJsonObject();
+        }},
+
+    WebSocketCommand{"lasturl", "Retrieve the last opened URL", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+                       obj["value"] = s_lastUrl.toString();
+                       return obj;
+                     }},
+
     WebSocketCommand{"force_update_check", "Force a version update check", 1,
-                     cmdForceUpdateCheck},
+                     [](const QList<QByteArray>& arguments) {
+                       s_updateVersion = arguments[1];
+                       MozillaVPN::instance()->releaseMonitor()->runSoon();
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{"force_captive_portal_check",
                      "Force a captive portal check", 0,
-                     cmdForceCaptivePortalCheck},
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()
+                           ->captivePortalDetection()
+                           ->detectCaptivePortal();
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{"force_captive_portal_detection",
                      "Simulate a captive portal detection", 0,
-                     cmdForceCaptivePortalDetection},
-    WebSocketCommand{"force_unsecured_network",
-                     "Force an unsecured network detection", 0,
-                     cmdForceUnsecuredNetwork},
-    WebSocketCommand{"activate", "Activate the VPN", 0, cmdActivate},
-    WebSocketCommand{"deactivate", "Deactivate the VPN", 0, cmdDeactivate},
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()
+                           ->captivePortalDetection()
+                           ->captivePortalDetected();
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{
+        "force_unsecured_network", "Force an unsecured network detection", 0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
+                                                                     "Dummy");
+          return QJsonObject();
+        }},
+
+    WebSocketCommand{"activate", "Activate the VPN", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->activate();
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"deactivate", "Deactivate the VPN", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->deactivate();
+                       return QJsonObject();
+                     }},
+
     WebSocketCommand{"force_heartbeat_failure", "Force a heartbeat failure", 0,
-                     cmdForceHeartbeatFailure},
-    WebSocketCommand{"logout", "Logout the user", 0, cmdLogout},
-    WebSocketCommand{"set_setting", "Set a setting", 2, cmdSetSetting},
-    WebSocketCommand{"get_setting", "Get a setting value", 1, cmdGetSetting},
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->heartbeatCompleted(
+                           false /* success */);
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{"logout", "Logout the user", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN::instance()->logout();
+                       return QJsonObject();
+                     }},
+
+    WebSocketCommand{
+        "set_setting", "Set a setting", 2,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+
+          for (const WebSocketSettingCommand& setting : s_settingCommands) {
+            if (arguments[1] == setting.m_settingName) {
+              switch (setting.m_type) {
+                case WebSocketSettingCommand::Boolean:
+                  if (arguments[2] != "true" && arguments[2] != "false") {
+                    obj["error"] =
+                        QString("Expected boolean (true/false) for settings %1")
+                            .arg(QString(arguments[1]));
+                    return obj;
+                  }
+
+                  break;
+
+                default:
+                  Q_ASSERT(false);
+              }
+
+              setting.m_set(arguments[2]);
+              return obj;
+            }
+          }
+
+          QStringList settings;
+          for (const WebSocketSettingCommand& setting : s_settingCommands) {
+            settings.append(setting.m_settingName);
+          }
+
+          obj["error"] = QString("Invalid settings. The options are: %1")
+                             .arg(settings.join(", "));
+          return obj;
+        }},
+
+    WebSocketCommand{
+        "get_setting", "Get a setting value", 1,
+        [](const QList<QByteArray>& arguments) {
+          QJsonObject obj;
+
+          for (const WebSocketSettingCommand& setting : s_settingCommands) {
+            if (arguments[1] == setting.m_settingName) {
+              obj["value"] = setting.m_get();
+              return obj;
+            }
+          }
+
+          QStringList settings;
+          for (const WebSocketSettingCommand& setting : s_settingCommands) {
+            settings.append(setting.m_settingName);
+          }
+
+          obj["error"] = QString("Invalid settings. The options are: %1")
+                             .arg(settings.join(", "));
+          return obj;
+        }},
 };
-
-static QJsonObject cmdHelp(const QList<QByteArray>&) {
-  QJsonObject obj;
-
-  QString value;
-
-  {
-    QTextStream out(&value);
-    for (const WebSocketCommand& command : s_commands) {
-      out << command.m_commandName << '\t' << command.m_commandDescription
-          << Qt::endl;
-    }
-  }
-
-  obj["value"] = value;
-  return obj;
-}
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
     QObject* parent, QWebSocket* connection)
