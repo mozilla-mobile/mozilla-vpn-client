@@ -79,9 +79,10 @@ class Controller final : public QObject {
   void backendFailure();
 
  public slots:
-  void activate();
-
-  void deactivate();
+  // These 2 methods activate/deactivate the VPN. Return true if a signal will
+  // be emitted at the end of the operation.
+  bool activate();
+  bool deactivate();
 
   Q_INVOKABLE void quit();
 
