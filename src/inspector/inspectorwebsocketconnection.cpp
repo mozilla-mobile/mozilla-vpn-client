@@ -55,6 +55,10 @@ static QQuickItem* findObject(const QString& name) {
   for (int i = 1; i < parts.length(); ++i) {
     QQuickItem* contentItem =
         parent->property("contentItem").value<QQuickItem*>();
+    if (!contentItem) {
+      return nullptr;
+    }
+
     QList<QQuickItem*> contentItemChildren = contentItem->childItems();
 
     bool found = false;
@@ -108,6 +112,38 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->captivePortalAlert() ? "true"
                                                                   : "false";
         }},
+
+    // start at boot
+    WebSocketSettingCommand{
+        "start-at-boot", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setStartAtBoot(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->startAtBoot() ? "true" : "false";
+        }},
+
+    // ipv6
+    WebSocketSettingCommand{
+        "ipv6-enabled", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setIpv6Enabled(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->ipv6Enabled() ? "true" : "false";
+        }},
+
+    // local area network access
+    WebSocketSettingCommand{
+        "local-network-access", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setLocalNetworkAccess(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->localNetworkAccess() ? "true"
+                                                                  : "false";
+        }},
+
 };
 
 struct WebSocketCommand {
