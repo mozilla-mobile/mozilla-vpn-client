@@ -7,6 +7,8 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
+constexpr uint32_t TASKCONTROLLER_TIMER_MSEC = 3000;
+
 namespace {
 Logger logger(QStringList{LOG_MAIN, LOG_CONTROLLER}, "TaskControllerAction");
 }
@@ -29,15 +31,49 @@ TaskControllerAction::~TaskControllerAction() {
 void TaskControllerAction::run(MozillaVPN* vpn) {
   logger.log() << "TaskControllerAction run";
 
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
+
+  connect(controller, &Controller::stateChanged, this,
+          &TaskControllerAction::stateChanged);
+
+  bool expectSignal = false;
+
   switch (m_action) {
     case eActivate:
-      vpn->controller()->activate();
+      expectSignal = controller->activate();
       break;
 
     case eDeactivate:
-      vpn->controller()->deactivate();
+      expectSignal = controller->deactivate();
       break;
   }
 
-  m_timer.start();
+  // No signal expected. Probably, the VPN is already in the right state. Let's
+  // use the timer to wait 1 cycle only.
+  if (!expectSignal) {
+    m_timer.start(0);
+    return;
+  }
+
+  // Fallback 3 seconds.
+  m_timer.start(TASKCONTROLLER_TIMER_MSEC);
+}
+
+void TaskControllerAction::stateChanged() {
+  if (!m_timer.isActive()) {
+    logger.log() << "stateChanged received by to be ignored";
+    return;
+  }
+
+  Controller* controller = MozillaVPN::instance()->controller();
+  Q_ASSERT(controller);
+
+  Controller::State state = controller->state();
+  if ((m_action == eActivate && state == Controller::StateOn) ||
+      (m_action == eDeactivate && state == Controller::StateOff)) {
+    logger.log() << "Operation completed";
+    m_timer.stop();
+    emit completed();
+  }
 }
