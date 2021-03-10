@@ -177,6 +177,7 @@ VPNFlickable {
     VPNSignOut {
         id: signOutLink
 
+        objectName: "settingsLogout"
         onClicked: VPNController.logout()
     }
 

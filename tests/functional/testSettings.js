@@ -276,6 +276,11 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
   });
 
+  it('Checking the logout', async () => {
+    await vpn.waitForElement('settingsLogout');
+    await vpn.waitForElementProperty('settingsLogout', 'visible', 'true');
+  });
+
   it('Logout', async () => {
     await vpn.logout();
     await vpn.wait();
