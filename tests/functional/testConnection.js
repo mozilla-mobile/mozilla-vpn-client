@@ -12,7 +12,7 @@ const webdriver = require('selenium-webdriver'), By = webdriver.By,
 
 const exec = util.promisify(require('child_process').exec);
 
-describe('User authentication', function() {
+describe('Connectivity', function() {
   let driver;
 
   this.timeout(200000);

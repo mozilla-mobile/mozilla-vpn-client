@@ -138,7 +138,9 @@ module.exports = {
   },
 
   async getElementProperty(id, property) {
-    assert(await this.hasElement(id), 'Property checks must be done on existing elements');
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
     const json = await this._writeCommand(`property ${id} ${property}`);
     assert(
         json.type === 'property' && !('error' in json),
@@ -147,7 +149,9 @@ module.exports = {
   },
 
   async waitForElementProperty(id, property, value) {
-    assert(await this.hasElement(id), 'Property checks must be done on existing elements');
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
     return this.waitForCondition(async () => {
       const real = await this.getElementProperty(id, property);
       return real === value;

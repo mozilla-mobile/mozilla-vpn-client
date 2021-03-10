@@ -42,11 +42,19 @@ describe('Initial view and onboarding', function() {
 
   it('Open some links', async () => {
     await vpn.waitForElement('getHelpBackList');
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+    await vpn.waitForElementProperty('getHelpBackList', 'visible', 'true');
 
-    // We don't test the view log.
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-0', 'visible', 'true');
+
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-1', 'visible', 'true');
+
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+    await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-2', 'visible', 'true');
 
     await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
     await vpn.waitForCondition(async () => {
@@ -68,7 +76,7 @@ describe('Initial view and onboarding', function() {
     });
   });
 
-  it('Go back to the main view', async() => {
+  it('Go back to the main view', async () => {
     await vpn.clickOnElement('getHelpBack');
 
     await vpn.waitForElement('getHelpLink');
