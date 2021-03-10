@@ -63,6 +63,8 @@ Item {
             Column {
                 id: col
 
+                objectName: "languageList"
+
                 spacing: 20
                 width: parent.width
                 anchors.top: verticalSpacer.bottom
@@ -105,11 +107,14 @@ Item {
 
                 Repeater {
                     id: repeater
+
                     model: VPNLocalizer
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
                         id: del
+                        objectName: "language-" + code
+
                         radioButtonLabelText: localizedLanguage
                         checked: VPNLocalizer.code === code
                         onClicked: VPNLocalizer.code = code

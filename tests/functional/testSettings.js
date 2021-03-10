@@ -130,13 +130,40 @@ describe('Settings', function() {
     await vpn.waitForElementProperty(
         'settingsLanguagesBackButton', 'visible', 'true');
 
-    // TODO: the languages
+    await vpn.waitForElement('languageList/language-it');
+    await vpn.waitForElementProperty(
+        'languageList/language-it', 'visible', 'true');
+    await vpn.clickOnElement('languageList/language-it');
+    await vpn.wait();
 
     await vpn.clickOnElement('settingsLanguagesBackButton');
     await vpn.wait();
 
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'manageAccountButton', 'text', 'Gestisci account');
+
+    await vpn.clickOnElement('settingsLanguages');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsLanguagesBackButton');
+    await vpn.waitForElementProperty(
+        'settingsLanguagesBackButton', 'visible', 'true');
+
+    await vpn.waitForElement('languageList/language-en');
+    await vpn.waitForElementProperty(
+        'languageList/language-en', 'visible', 'true');
+    await vpn.clickOnElement('languageList/language-en');
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'manageAccountButton', 'text', 'Manage account');
   });
 
   // TODO: app-permission
