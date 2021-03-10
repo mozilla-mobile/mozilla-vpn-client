@@ -32,6 +32,8 @@ class InspectorWebSocketConnection final : public QObject {
 
   void logEntryAdded(const QByteArray& log);
 
+  void notificationShown(const QString& title, const QString& message);
+
  private:
   QWebSocket* m_connection;
 

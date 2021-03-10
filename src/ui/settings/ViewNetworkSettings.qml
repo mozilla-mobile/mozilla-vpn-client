@@ -16,6 +16,7 @@ VPNFlickable {
 
     VPNMenu {
         id: menu
+        objectName: "settingsNetworkingBackButton"
 
         //% "Network settings"
         title: qsTrId("vpn.settings.networking")
@@ -24,6 +25,7 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: ipv6
+        objectName: "settingIpv6Enabled"
 
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
@@ -45,6 +47,7 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: localNetwork
+        objectName: "settingLocalNetworkAccess"
 
         anchors.top: ipv6.bottom
         anchors.topMargin: Theme.windowMargin

@@ -11,8 +11,12 @@ const webdriver = require('selenium-webdriver'), By = webdriver.By,
 
 let client;
 
-let waitReadBuffer = [];
 let waitReadCallback = null;
+
+let _lastNotification = {
+  title: null,
+  message: null,
+};
 
 module.exports = {
   async connect() {
@@ -20,29 +24,33 @@ module.exports = {
       return await new Promise(resolve => {
         client = new websocket('ws://localhost:8765/', '');
 
-        client.onopen =
-            async () => {
-          const buffer = await this._writeCommand('stealurls');
-          assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+        client.onopen = async () => {
+          const json = await this._writeCommand('stealurls');
+          assert(
+              json.type === 'stealurls' && !('error' in json),
+              `Invalid answer: ${json.error}`);
           resolve(true);
-        }
+        };
 
-                        client.onclose = () => this._resolveWaitRead();
+        client.onclose = () => this._resolveWaitRead({});
         client.onerror = () => resolve(false);
 
         client.onmessage = data => {
-          // Ignoring status and logs.
-          if (data.data[0] == '!' || data.data[0] == '@') return;
+          const json = JSON.parse(data.data);
+
+          // Ignoring logs.
+          if (json.type === 'log') return;
+
+          // Store the last notification
+          if (json.type === 'notification') {
+            _lastNotification.title = json.title;
+            _lastNotification.message = json.message;
+            return;
+          }
 
           assert(waitReadCallback, 'No waiting callback?');
-
-          const msg = data.data.trim();
-          waitReadBuffer.push(msg);
-
-          if (msg === 'ok' || msg === 'ko') {
-            this._resolveWaitRead();
-          }
-        }
+          this._resolveWaitRead(json);
+        };
       });
     });
   },
@@ -52,39 +60,60 @@ module.exports = {
   },
 
   async activate() {
-    const buffer = await this._writeCommand('activate');
-    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+    const json = await this._writeCommand('activate');
+    assert(
+        json.type === 'activate' && !('error' in json),
+        `Invalid answer: ${json.error}`);
   },
 
   async deactivate() {
-    const buffer = await this._writeCommand('deactivate');
-    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+    const json = await this._writeCommand('deactivate');
+    assert(
+        json.type === 'deactivate' && !('error' in json),
+        `Invalid answer: ${json.error}`);
   },
 
   async reset() {
-    const buffer = await this._writeCommand('reset');
-    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+    const json = await this._writeCommand('reset');
+    assert(
+        json.type === 'reset' && !('error' in json),
+        `Invalid answer: ${json.error}`);
   },
 
   async forceHeartbeatFailure() {
-    const buffer = await this._writeCommand('force_heartbeat_failure');
-    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+    const json = await this._writeCommand('force_heartbeat_failure');
+    assert(
+        json.type === 'force_heartbeat_failure' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
+  async forceUnsecuredNetworkAlert() {
+    const json = await this._writeCommand('force_unsecured_network');
+    assert(
+        json.type === 'force_unsecured_network' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
+  async forceCaptivePortalDetection() {
+    const json = await this._writeCommand('force_captive_portal_detection');
+    assert(
+        json.type === 'force_captive_portal_detection' && !('error' in json),
+        `Invalid answer: ${json.error}`);
   },
 
   async quit() {
-    const buffer = await this._writeCommand('quit');
+    const json = await this._writeCommand('quit');
     assert(
-        buffer.length === 0 || (buffer.length === 1 && (buffer[0] === 'ok')),
-        'Invalid answer');
+        !('type' in json) || (json.type === 'quit' && !('error' in json)),
+        `Invalid answer: ${json.error}`);
   },
 
   async hasElement(id) {
-    const buffer = await this._writeCommand(`has ${id}`);
-    assert(buffer.length === 1, 'Invalid answer');
-    if (buffer[0] == 'ok') return true;
-
-    assert(buffer[0] == 'ko', 'Invalid answer');
-    return false;
+    const json = await this._writeCommand(`has ${id}`);
+    assert(
+        json.type === 'has' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value || false;
   },
 
   async waitForElement(id) {
@@ -95,43 +124,52 @@ module.exports = {
 
   async clickOnElement(id) {
     assert(await this.hasElement(id), 'Clicking on an non-existing element?!?');
-    const buffer = await this._writeCommand(`click ${id}`);
-    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+    const json = await this._writeCommand(`click ${id}`);
+    assert(
+        json.type === 'click' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
+  async clickOnNotification() {
+    const json = await this._writeCommand('click_notification');
+    assert(
+        json.type === 'click_notification' && !('error' in json),
+        `Invalid answer: ${json.error}`);
   },
 
   async getElementProperty(id, property) {
-    assert(await this.hasElement(id), 'Property checks must be done on existing elements');
-    const buffer = await this._writeCommand(`property ${id} ${property}`);
-    assert(buffer.length === 1 || buffer.length === 2, 'Invalid answer');
-
-    const msg = buffer[0];
-
-    if (msg == 'ko') return null;
-    if (msg[0] != '-' || msg[msg.length - 1] != '-') return null;
-    return msg.substring(1, msg.length - 1);
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
+    const json = await this._writeCommand(`property ${id} ${property}`);
+    assert(
+        json.type === 'property' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value || '';
   },
 
   async waitForElementProperty(id, property, value) {
-    assert(await this.hasElement(id), 'Property checks must be done on existing elements');
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
     return this.waitForCondition(async () => {
       const real = await this.getElementProperty(id, property);
-      return real == value;
+      return real === value;
     });
   },
 
   async getLastUrl() {
-    const buffer = await this._writeCommand('lasturl');
-    assert(buffer.length === 1 || buffer.length === 2, 'Invalid answer');
-
-    const msg = buffer[0];
-    if (msg[0] != '-' || msg[msg.length - 1] != '-') return null;
-    return msg.substring(1, msg.length - 1);
+    const json = await this._writeCommand('lasturl');
+    assert(
+        json.type === 'lasturl' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value || '';
   },
 
   async waitForCondition(condition) {
-    for (let i = 0; i < 10; ++i) {
+    for (let i = 0; i < 50; ++i) {
       if (await condition()) return;
-      await this.wait();
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
     throw new Error('Timeout for waitForCondition');
   },
@@ -145,8 +183,9 @@ module.exports = {
 
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await this.getElementProperty('getStarted', 'visible') == 'true');
-    assert(await this.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await this.getElementProperty('getStarted', 'visible') === 'true');
+    assert(
+        await this.getElementProperty('learnMoreLink', 'visible') === 'true');
 
     await this.clickOnElement('getStarted');
 
@@ -195,8 +234,34 @@ module.exports = {
   },
 
   async logout() {
-    const buffer = await this._writeCommand('logout');
-    assert(buffer.length === 1 && buffer[0] === 'ok', 'Invalid answer');
+    const json = await this._writeCommand('logout');
+    assert(
+        json.type === 'logout' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
+  async setSetting(key, value) {
+    const json = await this._writeCommand(`set_setting ${key} ${value}`);
+    assert(
+        json.type === 'set_setting' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
+  async getSetting(key) {
+    const json = await this._writeCommand(`get_setting ${key}`);
+    assert(
+        json.type === 'get_setting' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
+  },
+
+  lastNotification() {
+    return _lastNotification;
+  },
+
+  resetLastNotification() {
+    _lastNotification.title = null;
+    _lastNotification.message = null;
   },
 
   // Internal methods.
@@ -208,15 +273,12 @@ module.exports = {
     });
   },
 
-  _resolveWaitRead() {
+  _resolveWaitRead(json) {
     if (waitReadCallback) {
       const wr = waitReadCallback;
       waitReadCallback = null;
 
-      const buffer = waitReadBuffer;
-      waitReadBuffer = [];
-
-      wr(buffer);
+      wr(json);
     }
   },
 };
