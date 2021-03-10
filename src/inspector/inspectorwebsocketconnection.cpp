@@ -53,20 +53,32 @@ static QQuickItem* findObject(const QString& name) {
   }
 
   for (int i = 1; i < parts.length(); ++i) {
-    QQuickItem* contentItem =
-        parent->property("contentItem").value<QQuickItem*>();
-    if (!contentItem) {
-      return nullptr;
-    }
-
-    QList<QQuickItem*> contentItemChildren = contentItem->childItems();
+    QList<QQuickItem*> children = parent->childItems();
 
     bool found = false;
-    for (QQuickItem* item : contentItemChildren) {
+    for (QQuickItem* item : children) {
       if (item->objectName() == parts[i]) {
         parent = item;
         found = true;
         break;
+      }
+    }
+
+    if (!found) {
+      QQuickItem* contentItem =
+          parent->property("contentItem").value<QQuickItem*>();
+      if (!contentItem) {
+        return nullptr;
+      }
+
+      QList<QQuickItem*> contentItemChildren = contentItem->childItems();
+
+      for (QQuickItem* item : contentItemChildren) {
+        if (item->objectName() == parts[i]) {
+          parent = item;
+          found = true;
+          break;
+        }
       }
     }
 
