@@ -131,7 +131,7 @@ if [[ "$RELEASE" ]]; then
   MODE="CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release"
 else
   print G "debug"
-  MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release CONFIG+=inspector"
+  MODE="CONFIG+=debug CONFIG-=release CONFIG-=debug_and_release"
 fi
 
 OSRUBY=$OS
