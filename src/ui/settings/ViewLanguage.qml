@@ -42,6 +42,7 @@ Item {
         VPNFlickable {
             id: vpnFlickable
 
+            objectName: "settingsLanguagesView"
             flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
@@ -70,7 +71,7 @@ Item {
                 anchors.top: verticalSpacer.bottom
                 Component.onCompleted: {
 
-                    // Scroll vpnFlickable so that the current server city is
+                    // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
                     const yCenter = vpnFlickable.height / 2;

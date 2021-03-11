@@ -237,6 +237,33 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
+    WebSocketCommand{"set_property", "Set a property value to an object", 4,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+
+                       QVariant value;
+                       if (arguments[3] == "i") {
+                         value = arguments[4].toInt();
+                       } else if (arguments[3] == "s") {
+                         value = arguments[4];
+                       } else {
+                         obj["error"] = "Unsupported type. Use: i, s";
+                       }
+
+                       QQuickItem* item = findObject(arguments[1]);
+                       if (!item) {
+                         obj["error"] = "Object not found";
+                         return obj;
+                       }
+
+                       if (!item->setProperty(arguments[2], value)) {
+                         obj["error"] = "Property is invalid";
+                         return obj;
+                       }
+
+                       return obj;
+                     }},
+
     WebSocketCommand{"click", "Click on an object", 1,
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;

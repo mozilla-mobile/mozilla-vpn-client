@@ -19,7 +19,14 @@ describe('Take screenshots for each view', function() {
   async function screenCapture(name) {
     for (let language of languages) {
       await vpn.setSetting('language-code', language);
+
+      // we need to give time to the app to retranslate the UI. If the number
+      // is too slow we have the UI in funny states (part in 1 language, part
+      // in another language, ...). But if the number is too high, the
+      // "connecting" state is faster and we do not take all the screen
+      // captures for all the languages.
       await new Promise(r => setTimeout(r, 30));
+
       const file = await vpn.screenCapture();
       fs.renameSync(file, `${dir}/${name}_${language}.png`);
     }
@@ -62,6 +69,23 @@ describe('Take screenshots for each view', function() {
     await vpn.wait();
 
     await screenCapture('initialize');
+  });
+
+  it('heartbeat', async () => {
+    await vpn.forceHeartbeatFailure();
+
+    await vpn.waitForElement('heartbeatTryButton');
+    await vpn.waitForElementProperty('heartbeatTryButton', 'visible', 'true');
+
+    await screenCapture('heartbeat');
+
+    await vpn.wait();
+
+    await vpn.clickOnElement('heartbeatTryButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('getHelpLink');
+    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
   });
 
   it('help view', async () => {
@@ -176,6 +200,24 @@ describe('Take screenshots for each view', function() {
     await vpn.wait();
 
     await screenCapture('settings');
+
+    const contentHeight =
+        parseInt(await vpn.getElementProperty('settingsView', 'contentHeight'))
+    const height =
+        parseInt(await vpn.getElementProperty('settingsView', 'height'));
+    let contentY =
+        parseInt(await vpn.getElementProperty('settingsView', 'contentY'));
+
+    let scrollId = 0;
+    while (true) {
+      if (contentHeight <= (contentY + height)) {
+        break;
+      }
+
+      contentY += height;
+      await vpn.setElementProperty('settingsView', 'contentY', 'i', contentY);
+      await screenCapture(`settings_${++scrollId}`);
+    }
   });
 
   it('settings / networking', async () => {
@@ -216,6 +258,25 @@ describe('Take screenshots for each view', function() {
     await vpn.wait();
 
     await screenCapture('settings_languages');
+
+    const contentHeight = parseInt(
+        await vpn.getElementProperty('settingsLanguagesView', 'contentHeight'))
+    const height = parseInt(
+        await vpn.getElementProperty('settingsLanguagesView', 'height'));
+    let contentY = parseInt(
+        await vpn.getElementProperty('settingsLanguagesView', 'contentY'));
+
+    let scrollId = 0;
+    while (true) {
+      if (contentHeight <= (contentY + height)) {
+        break;
+      }
+
+      contentY += height;
+      await vpn.setElementProperty(
+          'settingsLanguagesView', 'contentY', 'i', contentY);
+      await screenCapture(`settings_languages_${++scrollId}`);
+    }
 
     await vpn.clickOnElement('settingsLanguagesBackButton');
     await vpn.wait();
