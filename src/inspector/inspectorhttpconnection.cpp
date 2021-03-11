@@ -38,11 +38,13 @@ InspectorHttpConnection::InspectorHttpConnection(QObject* parent,
     : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(InspectorHttpConnection);
 
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   Q_ASSERT(connection->localAddress() == QHostAddress("::ffff:127.0.0.1") ||
            connection->localAddress() == QHostAddress::LocalHost ||
            connection->localAddress() == QHostAddress::LocalHostIPv6);
+#endif
 
   logger.log() << "New connection received";
 

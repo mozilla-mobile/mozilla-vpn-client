@@ -14,6 +14,7 @@
 
 #include <functional>
 
+#include <QBuffer>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -442,76 +443,42 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
-    WebSocketCommand{
-        "screen_capture", "Take a screen capture", 0,
-        [](const QList<QByteArray>&) {
-          QJsonObject obj;
+    WebSocketCommand{"screen_capture", "Take a screen capture", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
 
-          QWindow* window = QmlEngineHolder::instance()->window();
-          if (!window) {
-            obj["error"] = "Unable to identify the window";
-            return obj;
-          }
+                       QWindow* window = QmlEngineHolder::instance()->window();
+                       if (!window) {
+                         obj["error"] = "Unable to identify the window";
+                         return obj;
+                       }
 
-          QScreen* screen = window->screen();
-          if (!screen) {
-            obj["error"] = "Unable to identify the screen";
-            return obj;
-          }
+                       QScreen* screen = window->screen();
+                       if (!screen) {
+                         obj["error"] = "Unable to identify the screen";
+                         return obj;
+                       }
 
-          QPixmap pixmap = screen->grabWindow(window->winId());
-          if (pixmap.isNull()) {
-            obj["error"] = "Unable to grab the window";
-            return obj;
-          }
+                       QPixmap pixmap = screen->grabWindow(window->winId());
+                       if (pixmap.isNull()) {
+                         obj["error"] = "Unable to grab the window";
+                         return obj;
+                       }
 
-          static QList<QStandardPaths::StandardLocation> locations{
-              QStandardPaths::DesktopLocation, QStandardPaths::HomeLocation,
-              QStandardPaths::TempLocation};
-          for (QStandardPaths::StandardLocation location : locations) {
-            if (!QFileInfo::exists(
-                    QStandardPaths::writableLocation(location))) {
-              continue;
-            }
+                       QByteArray data;
+                       {
+                         QBuffer buffer(&data);
+                         buffer.open(QIODevice::WriteOnly);
+                         if (!pixmap.save(&buffer, "PNG")) {
+                           obj["error"] = "Unable to save the pixmap";
+                           return obj;
+                         }
+                       }
 
-            QString filename;
-            QDate now = QDate::currentDate();
-
-            QTextStream(&filename) << "mozillavpn-" << now.year() << "-"
-                                   << now.month() << "-" << now.day() << ".png";
-
-            QDir dir(QStandardPaths::writableLocation(location));
-            QString file = dir.filePath(filename);
-
-            if (QFileInfo::exists(file)) {
-              logger.log() << file << "exists. Let's try a new filename";
-
-              for (uint32_t i = 1;; ++i) {
-                QString filename;
-                QTextStream(&filename)
-                    << "mozillavpn-" << now.year() << "-" << now.month() << "-"
-                    << now.day() << "_" << i << ".png";
-                file = dir.filePath(filename);
-                if (!QFileInfo::exists(file)) {
-                  logger.log() << "Filename found!" << i;
-                  break;
-                }
-              }
-            }
-
-            if (!pixmap.save(file)) {
-              logger.log() << "Unable to save the pixmap";
-              continue;
-            }
-
-            obj["value"] = file;
-            return obj;
-          }
-
-          obj["error"] =
-              "Unable to write the pixmap: no desktop, no home no temp folder.";
-          return obj;
-        }},
+                       obj["value"] =
+                           QString(data.toBase64(QByteArray::Base64Encoding));
+                       return obj;
+                     }},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
@@ -519,11 +486,13 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
     : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(InspectorWebSocketConnection);
 
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   Q_ASSERT(connection->localAddress() == QHostAddress("::ffff:127.0.0.1") ||
            connection->localAddress() == QHostAddress::LocalHost ||
            connection->localAddress() == QHostAddress::LocalHostIPv6);
+#endif
 
   logger.log() << "New connection received";
 

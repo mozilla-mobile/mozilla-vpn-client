@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-var fs = require('fs');
+const fs = require('fs');
 const util = require('util');
 const vpn = require('./helper.js');
 const FirefoxHelper = require('./firefox.js');
@@ -27,8 +27,9 @@ describe('Take screenshots for each view', function() {
       // captures for all the languages.
       await new Promise(r => setTimeout(r, 30));
 
-      const file = await vpn.screenCapture();
-      fs.renameSync(file, `${dir}/${name}_${language}.png`);
+      const data = await vpn.screenCapture();
+      const buffer = Buffer.from(data, 'base64');
+      fs.writeFileSync(`${dir}/${name}_${language}.png`, buffer);
     }
   }
 
