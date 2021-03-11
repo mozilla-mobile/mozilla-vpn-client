@@ -406,7 +406,7 @@ static QList<WebSocketCommand> s_commands{
         }},
 
     WebSocketCommand{
-        "get_setting", "Get a setting value", 1,
+        "setting", "Get a setting value", 1,
         [](const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
