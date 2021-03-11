@@ -39,6 +39,8 @@ class Localizer final : public QAbstractListModel {
 
   void setCode(const QString& code) { loadLanguage(code); }
 
+  const QStringList& languages() const { return m_languages; }
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
