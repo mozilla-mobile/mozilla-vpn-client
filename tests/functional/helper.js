@@ -148,6 +148,17 @@ module.exports = {
     return json.value || '';
   },
 
+  async setElementProperty(id, property, type, value) {
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
+    const json = await this._writeCommand(
+        `set_property ${id} ${property} ${type} ${value}`);
+    assert(
+        json.type === 'set_property' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
   async waitForElementProperty(id, property, value) {
     assert(
         await this.hasElement(id),
@@ -248,9 +259,9 @@ module.exports = {
   },
 
   async getSetting(key) {
-    const json = await this._writeCommand(`get_setting ${key}`);
+    const json = await this._writeCommand(`setting ${key}`);
     assert(
-        json.type === 'get_setting' && !('error' in json),
+        json.type === 'setting' && !('error' in json),
         `Invalid answer: ${json.error}`);
     return json.value;
   },

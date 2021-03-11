@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 
 VPNFlickable {
     id: vpnFlickable
+    objectName: "settingsView"
 
     width: window.width
     flickContentHeight: settingsList.y + settingsList.height + signOutLink.height + signOutLink.anchors.bottomMargin
