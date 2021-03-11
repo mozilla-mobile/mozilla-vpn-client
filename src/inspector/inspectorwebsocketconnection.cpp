@@ -433,7 +433,7 @@ static QList<WebSocketCommand> s_commands{
           }
 
           QPixmap pixmap = screen->grabWindow(window->winId());
-          if (!pixmap.isNull()) {
+          if (pixmap.isNull()) {
             obj["error"] = "Unable to grab the window";
             return obj;
           }
