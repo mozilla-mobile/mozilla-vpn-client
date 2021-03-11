@@ -19,10 +19,10 @@ let _lastNotification = {
 };
 
 module.exports = {
-  async connect() {
+  async connect(hostname = '127.0.0.1') {
     await this.waitForCondition(async () => {
       return await new Promise(resolve => {
-        client = new websocket('ws://localhost:8765/', '');
+        client = new websocket(`ws://${hostname}:8765/`, '');
 
         client.onopen = async () => {
           const json = await this._writeCommand('stealurls');
