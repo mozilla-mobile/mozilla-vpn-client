@@ -229,6 +229,17 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+
+  QUrl url(Constants::API_URL);
+  url.setPath("/__heartbeat__");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
@@ -284,6 +295,7 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
+  m_completed = true;
   m_timer.stop();
 
   int status = statusCode();
@@ -296,45 +308,37 @@ void NetworkRequest::replyFinished() {
   if (m_reply->error() != QNetworkReply::NoError) {
     logger.log() << "Network error:" << m_reply->error()
                  << "status code:" << status << "- body:" << data;
-    emit requestFailed(m_reply, m_reply->error(), data);
+    emit requestFailed(m_reply->error(), data);
     return;
   }
 
-  emit requestCompleted(m_reply, data);
-}
-
-void NetworkRequest::handleHeaderReceived() {
-  Q_ASSERT(m_reply);
-
-  logger.log() << "Network header received";
-
-  int status = statusCode();
-
+  // This is an extra check for succeeded requests (status code 200 vs 201, for
+  // instance). The real network status check is done in the previous if-stmt.
   if (m_status && status != m_status) {
     logger.log() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
-    m_timer.stop();
-
-    m_completed = true;
-    m_reply->abort();
-
-    emit requestFailed(m_reply, QNetworkReply::ConnectionRefusedError,
-                       QByteArray());
+    emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }
 
-  emit requestHeaderReceived(m_reply);
+  emit requestCompleted(data);
+}
+
+void NetworkRequest::handleHeaderReceived() {
+  logger.log() << "Network header received";
+  emit requestHeaderReceived(this);
 }
 
 void NetworkRequest::timeout() {
   Q_ASSERT(m_reply);
   Q_ASSERT(!m_reply->isFinished());
+  Q_ASSERT(!m_completed);
 
   m_completed = true;
   m_reply->abort();
 
   logger.log() << "Network request timeout";
-  emit requestFailed(m_reply, QNetworkReply::TimeoutError, QByteArray());
+  emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
 void NetworkRequest::getRequest() {
@@ -385,3 +389,23 @@ int NetworkRequest::statusCode() const {
 }
 
 void NetworkRequest::disableTimeout() { m_timer.stop(); }
+
+QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
+  if (!m_reply) {
+    logger.log() << "INTERNAL ERROR! NetworkRequest::rawHeader called before "
+                    "starting the request";
+    return QByteArray();
+  }
+
+  return m_reply->rawHeader(headerName);
+}
+
+void NetworkRequest::abort() {
+  if (!m_reply) {
+    logger.log() << "INTERNAL ERROR! NetworkRequest::abort called before "
+                    "starting the request";
+    return;
+  }
+
+  m_reply->abort();
+}
