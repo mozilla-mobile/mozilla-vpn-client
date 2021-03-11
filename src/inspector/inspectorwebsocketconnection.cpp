@@ -4,6 +4,7 @@
 
 #include "inspectorwebsocketconnection.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
@@ -13,6 +14,7 @@
 
 #include <functional>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -98,6 +100,7 @@ struct WebSocketSettingCommand {
 
   enum {
     Boolean,
+    String,
   } m_type;
 
   std::function<void(const QByteArray&)> m_set;
@@ -158,6 +161,14 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->localNetworkAccess() ? "true"
                                                                   : "false";
         }},
+
+    // language
+    WebSocketSettingCommand{
+        "language-code", WebSocketSettingCommand::String,
+        [](const QByteArray& value) {
+          Localizer::instance()->setCode(QString(value));
+        },
+        []() { return SettingsHolder::instance()->languageCode(); }},
 
 };
 
@@ -343,6 +354,10 @@ static QList<WebSocketCommand> s_commands{
 
                   break;
 
+                case WebSocketSettingCommand::String:
+                  // Nothing to do for strings.
+                  break;
+
                 default:
                   Q_ASSERT(false);
               }
@@ -383,6 +398,22 @@ static QList<WebSocketCommand> s_commands{
                              .arg(settings.join(", "));
           return obj;
         }},
+
+    WebSocketCommand{"languages", "Returns a list of languages", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       Localizer* localizer = Localizer::instance();
+                       Q_ASSERT(localizer);
+
+                       QJsonArray languages;
+                       for (const QString& language : localizer->languages()) {
+                         languages.append(language);
+                       }
+
+                       obj["value"] = languages;
+                       return obj;
+                     }},
 
     WebSocketCommand{
         "screen_capture", "Take a screen capture", 0,
