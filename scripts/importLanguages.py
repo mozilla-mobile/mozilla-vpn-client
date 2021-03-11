@@ -10,8 +10,7 @@ import xml.etree.ElementTree as ET
 import os
 import sys
 
-prod_locales = ["en"]
-# Include only locales above this threshold (e.g. 70%)
+# Include only locales above this threshold (e.g. 70%) in production
 l10n_threshold = 0.70
 
 parser = argparse.ArgumentParser()
@@ -32,11 +31,6 @@ for locale in os.listdir('i18n'):
 
     # Skip hidden folders
     if locale.startswith('.'):
-        continue
-
-    # Ignore locale if it's a production build and the locale should not be
-    # included
-    if args.isprod and locale not in prod_locales:
         continue
 
     xliff_path = os.path.join('i18n', locale, 'mozillavpn.xliff')
@@ -63,9 +57,12 @@ for locale in os.listdir('i18n'):
         translations += 1
 
     completeness = translations/(sources*1.0)
-    if completeness < l10n_threshold:
+
+    # Ignore locale with less than 70% of completeness for production builds
+    if args.isprod and completeness < l10n_threshold:
         print(f'KO\t- {locale} is translated at {round(completeness*100, 2)}%, at least {l10n_threshold*100}% is needed')
         continue  # Not enough translations next file please
+
     baseName = f'mozillavpn_{locale}'
     print(f'OK\t- {locale} added ({round(completeness*100, 2)}% translated)')
     l10n_files.append({
