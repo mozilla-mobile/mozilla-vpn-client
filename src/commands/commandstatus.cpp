@@ -62,11 +62,11 @@ int CommandStatus::run(QStringList& tokens) {
     }
 
     if (!cacheOption.m_set) {
-      TaskAccountAndServers* task = new TaskAccountAndServers();
-      task->run(&vpn);
+      TaskAccountAndServers task;
+      task.run(&vpn);
 
       QEventLoop loop;
-      QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     }
 
