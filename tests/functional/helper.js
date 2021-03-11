@@ -264,6 +264,22 @@ module.exports = {
     _lastNotification.message = null;
   },
 
+  async languages() {
+    const json = await this._writeCommand('languages');
+    assert(
+        json.type === 'languages' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
+  },
+
+  async screenCapture() {
+    const json = await this._writeCommand('screen_capture');
+    assert(
+        json.type === 'screen_capture' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
+  },
+
   // Internal methods.
 
   _writeCommand(command) {
