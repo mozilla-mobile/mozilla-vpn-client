@@ -136,12 +136,6 @@ void Controller::implInitialized(bool status, bool a_connected,
     m_connectionDate = connectionDate;
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
-    return;
-  }
-
-  if (SettingsHolder::instance()->startAtBoot()) {
-    logger.log() << "Start on boot";
-    activate();
   }
 }
 

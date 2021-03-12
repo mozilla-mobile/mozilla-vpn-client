@@ -1161,6 +1161,15 @@ void MozillaVPN::setUpdating(bool updating) {
 void MozillaVPN::controllerStateChanged() {
   logger.log() << "Controller state changed";
 
+  if (!m_controllerInitialized) {
+    m_controllerInitialized = true;
+
+    if (SettingsHolder::instance()->startAtBoot()) {
+      logger.log() << "Start on boot";
+      activate();
+    }
+  }
+
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();
   }
