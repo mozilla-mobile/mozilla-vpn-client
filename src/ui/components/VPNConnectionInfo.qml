@@ -152,6 +152,7 @@ Popup {
 
         VPNIconButton {
             id: backButton
+            objectName: "connectionInfoBackButton"
 
             onClicked: popup.close()
             buttonColorScheme: Theme.iconButtonDarkBackground

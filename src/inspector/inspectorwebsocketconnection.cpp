@@ -4,6 +4,7 @@
 
 #include "inspectorwebsocketconnection.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "mozillavpn.h"
@@ -13,12 +14,17 @@
 
 #include <functional>
 
+#include <QBuffer>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QHostAddress>
+#include <QPixmap>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScreen>
+#include <QStandardPaths>
 #include <QWebSocket>
 #include <QTest>
 
@@ -95,6 +101,7 @@ struct WebSocketSettingCommand {
 
   enum {
     Boolean,
+    String,
   } m_type;
 
   std::function<void(const QByteArray&)> m_set;
@@ -155,6 +162,14 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->localNetworkAccess() ? "true"
                                                                   : "false";
         }},
+
+    // language
+    WebSocketSettingCommand{
+        "language-code", WebSocketSettingCommand::String,
+        [](const QByteArray& value) {
+          Localizer::instance()->setCode(QString(value));
+        },
+        []() { return SettingsHolder::instance()->languageCode(); }},
 
 };
 
@@ -220,6 +235,33 @@ static QList<WebSocketCommand> s_commands{
                        }
 
                        obj["value"] = property.toString();
+                       return obj;
+                     }},
+
+    WebSocketCommand{"set_property", "Set a property value to an object", 4,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+
+                       QVariant value;
+                       if (arguments[3] == "i") {
+                         value = arguments[4].toInt();
+                       } else if (arguments[3] == "s") {
+                         value = arguments[4];
+                       } else {
+                         obj["error"] = "Unsupported type. Use: i, s";
+                       }
+
+                       QQuickItem* item = findObject(arguments[1]);
+                       if (!item) {
+                         obj["error"] = "Object not found";
+                         return obj;
+                       }
+
+                       if (!item->setProperty(arguments[2], value)) {
+                         obj["error"] = "Property is invalid";
+                         return obj;
+                       }
+
                        return obj;
                      }},
 
@@ -340,6 +382,10 @@ static QList<WebSocketCommand> s_commands{
 
                   break;
 
+                case WebSocketSettingCommand::String:
+                  // Nothing to do for strings.
+                  break;
+
                 default:
                   Q_ASSERT(false);
               }
@@ -360,7 +406,7 @@ static QList<WebSocketCommand> s_commands{
         }},
 
     WebSocketCommand{
-        "get_setting", "Get a setting value", 1,
+        "setting", "Get a setting value", 1,
         [](const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
@@ -380,6 +426,59 @@ static QList<WebSocketCommand> s_commands{
                              .arg(settings.join(", "));
           return obj;
         }},
+
+    WebSocketCommand{"languages", "Returns a list of languages", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       Localizer* localizer = Localizer::instance();
+                       Q_ASSERT(localizer);
+
+                       QJsonArray languages;
+                       for (const QString& language : localizer->languages()) {
+                         languages.append(language);
+                       }
+
+                       obj["value"] = languages;
+                       return obj;
+                     }},
+
+    WebSocketCommand{"screen_capture", "Take a screen capture", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       QWindow* window = QmlEngineHolder::instance()->window();
+                       if (!window) {
+                         obj["error"] = "Unable to identify the window";
+                         return obj;
+                       }
+
+                       QScreen* screen = window->screen();
+                       if (!screen) {
+                         obj["error"] = "Unable to identify the screen";
+                         return obj;
+                       }
+
+                       QPixmap pixmap = screen->grabWindow(window->winId());
+                       if (pixmap.isNull()) {
+                         obj["error"] = "Unable to grab the window";
+                         return obj;
+                       }
+
+                       QByteArray data;
+                       {
+                         QBuffer buffer(&data);
+                         buffer.open(QIODevice::WriteOnly);
+                         if (!pixmap.save(&buffer, "PNG")) {
+                           obj["error"] = "Unable to save the pixmap";
+                           return obj;
+                         }
+                       }
+
+                       obj["value"] =
+                           QString(data.toBase64(QByteArray::Base64Encoding));
+                       return obj;
+                     }},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
@@ -387,11 +486,13 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
     : QObject(parent), m_connection(connection) {
   MVPN_COUNT_CTOR(InspectorWebSocketConnection);
 
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   Q_ASSERT(connection->localAddress() == QHostAddress("::ffff:127.0.0.1") ||
            connection->localAddress() == QHostAddress::LocalHost ||
            connection->localAddress() == QHostAddress::LocalHostIPv6);
+#endif
 
   logger.log() << "New connection received";
 
