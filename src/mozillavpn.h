@@ -313,6 +313,7 @@ class MozillaVPN final : public QObject {
   bool m_userAuthenticated = false;
   bool m_startMinimized = false;
   bool m_updating = false;
+  bool m_controllerInitialized = false;
 
 #ifdef UNIT_TEST
   friend class TestTasks;
