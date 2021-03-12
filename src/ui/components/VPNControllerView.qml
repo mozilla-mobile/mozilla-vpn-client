@@ -459,6 +459,7 @@ Rectangle {
 
     VPNIconButton {
         id: connectionInfoButton
+        objectName: "connectionInfoButton"
 
         onClicked: connectionInfo.open()
         buttonColorScheme: Theme.iconButtonDarkBackground

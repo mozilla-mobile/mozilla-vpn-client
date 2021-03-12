@@ -19,10 +19,10 @@ let _lastNotification = {
 };
 
 module.exports = {
-  async connect() {
+  async connect(hostname = '127.0.0.1') {
     await this.waitForCondition(async () => {
       return await new Promise(resolve => {
-        client = new websocket('ws://localhost:8765/', '');
+        client = new websocket(`ws://${hostname}:8765/`, '');
 
         client.onopen = async () => {
           const json = await this._writeCommand('stealurls');
@@ -148,6 +148,17 @@ module.exports = {
     return json.value || '';
   },
 
+  async setElementProperty(id, property, type, value) {
+    assert(
+        await this.hasElement(id),
+        'Property checks must be done on existing elements');
+    const json = await this._writeCommand(
+        `set_property ${id} ${property} ${type} ${value}`);
+    assert(
+        json.type === 'set_property' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+  },
+
   async waitForElementProperty(id, property, value) {
     assert(
         await this.hasElement(id),
@@ -248,9 +259,9 @@ module.exports = {
   },
 
   async getSetting(key) {
-    const json = await this._writeCommand(`get_setting ${key}`);
+    const json = await this._writeCommand(`setting ${key}`);
     assert(
-        json.type === 'get_setting' && !('error' in json),
+        json.type === 'setting' && !('error' in json),
         `Invalid answer: ${json.error}`);
     return json.value;
   },
@@ -262,6 +273,22 @@ module.exports = {
   resetLastNotification() {
     _lastNotification.title = null;
     _lastNotification.message = null;
+  },
+
+  async languages() {
+    const json = await this._writeCommand('languages');
+    assert(
+        json.type === 'languages' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
+  },
+
+  async screenCapture() {
+    const json = await this._writeCommand('screen_capture');
+    assert(
+        json.type === 'screen_capture' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
   },
 
   // Internal methods.
