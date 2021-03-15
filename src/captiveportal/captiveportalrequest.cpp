@@ -99,7 +99,8 @@ void CaptivePortalRequest::maybeComplete() {
 
   if (!m_completed && m_pendingRequests == 0) {
     m_completed = true;
-    emit completed(false);
     deleteLater();
+
+    emit completed(false);
   }
 }

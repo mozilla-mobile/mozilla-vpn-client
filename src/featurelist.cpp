@@ -16,7 +16,8 @@ FeatureList s_featureList;
 FeatureList* FeatureList::instance() { return &s_featureList; }
 
 bool FeatureList::startOnBootSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
+    defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
 #elif defined(MVPN_ANDROID)
   return AndroidUtils::canEnableStartOnBoot();
@@ -45,7 +46,7 @@ bool FeatureList::protectSelectedAppsSupported() const {
 
 bool FeatureList::captivePortalNotificationSupported() const {
 #if defined(MVPN_WINDOWS) || defined(MVPN_WASM) || defined(MVPN_LINUX) || \
-    defined(MVPN_MACOS)
+    defined(MVPN_MACOS) || defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
 #else
   return false;
@@ -54,7 +55,7 @@ bool FeatureList::captivePortalNotificationSupported() const {
 
 bool FeatureList::unsecuredNetworkNotificationSupported() const {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM) || defined(MVPN_ANDROID)
+    defined(MVPN_WASM) || defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
 #else
   return false;

@@ -40,6 +40,7 @@ void InspectorHttpServer::newConnectionReceived() {
 
   QHostAddress address = child->localAddress();
 
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   if (address != QHostAddress("::ffff:127.0.0.1") &&
@@ -49,6 +50,7 @@ void InspectorHttpServer::newConnectionReceived() {
     child->close();
     return;
   }
+#endif
 
   InspectorHttpConnection* connection =
       new InspectorHttpConnection(this, child);

@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 
 VPNFlickable {
     id: vpnFlickable
+    objectName: "settingsView"
 
     width: window.width
     flickContentHeight: settingsList.y + settingsList.height + signOutLink.height + signOutLink.anchors.bottomMargin
@@ -18,13 +19,14 @@ VPNFlickable {
 
     VPNIconButton {
         id: iconButton
+        objectName: "settingsCloseButton"
 
         onClicked: stackview.pop(StackView.Immediate)
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: Theme.windowMargin / 2
         anchors.leftMargin: Theme.windowMargin / 2
-        accessibleName: qsTrId("vpn.main.back")
+        accessibleName: qsTrId("vpn.connectionInfo.close")
 
         Image {
             id: backImage
@@ -52,6 +54,7 @@ VPNFlickable {
 
     VPNButton {
         id: manageAccountButton
+        objectName: "manageAccountButton"
 
         text: qsTrId("vpn.main.manageAccount")
         anchors.top: vpnPanel.bottom
@@ -62,6 +65,7 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: startAtBootCheckBox
+        objectName: "settingStartAtBoot"
 
         //% "Launch VPN app on Startup"
         labelText: qsTrId("vpn.settings.runOnBoot")
@@ -105,12 +109,16 @@ VPNFlickable {
         anchors.horizontalCenter: parent.horizontalCenter
 
         VPNSettingsItem {
+            objectName: "settingsNetworking"
+
             settingTitle: qsTrId("vpn.settings.networking")
             imageLeftSrc: "../resources/settings/networkSettings.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNetworkSettings.qml")
         }
         VPNSettingsItem {
+            objectName: "settingsNotifications"
+
             settingTitle: qsTrId("vpn.settings.notifications")
             imageLeftSrc: "../resources/settings/notifications.svg"
             imageRightSrc: "../resources/chevron.svg"
@@ -118,6 +126,8 @@ VPNFlickable {
 	    visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
         }
         VPNSettingsItem {
+            objectName: "settingsLanguages"
+
             settingTitle: qsTrId("vpn.settings.language")
             imageLeftSrc: "../resources/settings/language.svg"
             imageRightSrc: "../resources/chevron.svg"
@@ -133,12 +143,16 @@ VPNFlickable {
             onClicked: settingsStackView.push("../settings/ViewAppPermissions.qml")
         }
         VPNSettingsItem {
+            objectName: "settingsAboutUs"
+
             settingTitle: qsTrId("vpn.settings.aboutUs")
             imageLeftSrc: "../resources/settings/aboutUs.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push(aboutUsComponent)
         }
         VPNSettingsItem {
+            objectName: "settingsGiveFeedback"
+
             //% "Give feedback"
             settingTitle: qsTrId("vpn.settings.giveFeedback")
             imageLeftSrc: "../resources/settings/feedback.svg"
@@ -146,6 +160,8 @@ VPNFlickable {
             onClicked: VPN.openLink(VPN.LinkFeedback)
         }
         VPNSettingsItem {
+            objectName: "settingsGetHelp"
+
             settingTitle: qsTrId("vpn.main.getHelp")
             imageLeftSrc: "../resources/settings/getHelp.svg"
             imageRightSrc: "../resources/chevron.svg"
@@ -162,6 +178,7 @@ VPNFlickable {
     VPNSignOut {
         id: signOutLink
 
+        objectName: "settingsLogout"
         onClicked: VPNController.logout()
     }
 

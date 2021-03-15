@@ -76,7 +76,7 @@ VPNAlert {
 
         },
         State {
-            name: VPN.BackendServiceErrorAlert
+            name: VPN.ControllerErrorAlert
 
             PropertyChanges {
                 target: alertBox
@@ -86,6 +86,19 @@ VPNAlert {
                 //% "Restore"
                 //: Restore a service in case of error.
                 alertLinkText: qsTrId("vpn.alert.restore")
+                opacity: 1
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.UnrecoverableErrorAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "backend-service"
+                alertText: qsTrId("vpn.alert.backendServiceError")
+                alertLinkText: ""
                 opacity: 1
                 visible: true
             }

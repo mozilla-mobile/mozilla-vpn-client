@@ -14,10 +14,11 @@ RELEASE=1
 OS=
 PROD=
 NETWORKEXTENSION=
+INSPECTOR=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-n|--networkextension]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-i|--inspector] [-n|--networkextension]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
@@ -43,6 +44,10 @@ while [[ $# -gt 0 ]]; do
     ;;
   -p | --prod)
     PROD=1
+    shift
+    ;;
+  -i | --inspector)
+    INSPECTOR=1
     shift
     ;;
   -n | --networkextension)
@@ -114,7 +119,6 @@ MACOSTEST_FLAGS="
   QTPLUGIN+=qsvg
   CONFIG-=static
   CONFIG+=DUMMY
-  CONFIG+=inspector
 "
 
 IOS_FLAGS="
@@ -145,15 +149,20 @@ else
 fi
 
 PRODMODE=
-INSPECTOR=
 printn Y "Production mode: "
 if [[ "$PROD" ]]; then
   print G yes
   PRODMODE="CONFIG+=production"
-elif [ "$OS" = "macos" ]; then
-  print G "no (inspector enabled)"
+else
+  print G no
+fi
+
+printn Y "Enabling inspector: "
+if [[ "$INSPECTOR " ]]; then
+  print G yes
   INSPECTOR="CONFIG+=inspector"
 else
+  INSPECTOR=""
   print G no
 fi
 

@@ -15,11 +15,11 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-void Controller::activate() {}
+bool Controller::activate() { return false; }
 
 void Controller::activateInternal() {}
 
-void Controller::deactivate() {}
+bool Controller::deactivate() { return false; }
 
 void Controller::connected() {}
 

@@ -14,10 +14,11 @@ class ErrorHandler final {
     ConnectionFailureError,
     NoConnectionError,
     AuthenticationError,
-    BackendServiceError,
+    ControllerError,
     RemoteServiceError,
     SubscriptionFailureError,
     GeoIpRestrictionError,
+    UnrecoverableError,
     IgnoredError,
   };
 

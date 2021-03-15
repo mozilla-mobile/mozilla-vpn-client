@@ -52,11 +52,13 @@ HEADERS += \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
     ../../src/networkwatcher.h \
+    ../../src/networkwatcherimpl.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsendworker.h \
     ../../src/platforms/android/androiddatamigration.h \
     ../../src/platforms/android/androidsharedprefs.h \
+    ../../src/platforms/dummy/dummynetworkwatcher.h \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
@@ -117,6 +119,7 @@ SOURCES += \
     ../../src/pingsender.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
     ../../src/platforms/android/androidsharedprefs.cpp \
+    ../../src/platforms/dummy/dummynetworkwatcher.cpp \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \

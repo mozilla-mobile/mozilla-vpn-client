@@ -56,7 +56,7 @@
 		-->
 		<MajorUpgrade
 			AllowDowngrades="no"
-			AllowSameVersionUpgrades="no"
+			AllowSameVersionUpgrades="yes"
 			DowngradeErrorMessage="A newer version of [ProductName] is already installed."
 			Schedule="afterInstallExecute" />
 

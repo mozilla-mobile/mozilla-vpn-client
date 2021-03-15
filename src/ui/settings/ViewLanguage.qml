@@ -15,6 +15,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "settingsLanguagesBackButton"
 
         //% "Language"
         title: qsTrId("vpn.settings.language")
@@ -41,6 +42,7 @@ Item {
         VPNFlickable {
             id: vpnFlickable
 
+            objectName: "settingsLanguagesView"
             flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
@@ -62,12 +64,14 @@ Item {
             Column {
                 id: col
 
+                objectName: "languageList"
+
                 spacing: 20
                 width: parent.width
                 anchors.top: verticalSpacer.bottom
                 Component.onCompleted: {
 
-                    // Scroll vpnFlickable so that the current server city is
+                    // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
                     const yCenter = vpnFlickable.height / 2;
@@ -104,11 +108,14 @@ Item {
 
                 Repeater {
                     id: repeater
+
                     model: VPNLocalizer
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
                         id: del
+                        objectName: "language-" + code
+
                         radioButtonLabelText: localizedLanguage
                         checked: VPNLocalizer.code === code
                         onClicked: VPNLocalizer.code = code
