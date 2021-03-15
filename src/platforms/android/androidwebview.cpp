@@ -113,14 +113,14 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
                                userAgent.object<jstring>());
 
   if (!m_object.isValid()) {
-    propagateError(ErrorHandler::BackendServiceError);
+    propagateError(ErrorHandler::UnrecoverableError);
     return;
   }
 
   m_webView =
       m_object.callObjectMethod("getWebView", "()Landroid/webkit/WebView;");
   if (!m_webView.isValid()) {
-    propagateError(ErrorHandler::BackendServiceError);
+    propagateError(ErrorHandler::UnrecoverableError);
     return;
   }
 

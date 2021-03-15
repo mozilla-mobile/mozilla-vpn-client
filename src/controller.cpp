@@ -118,10 +118,10 @@ void Controller::implInitialized(bool status, bool a_connected,
   Q_ASSERT(m_state == StateInitializing);
 
   if (!status) {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
+    setState(StateOff);
+    return;
   }
-
-  Q_UNUSED(status);
 
   if (processNextStep()) {
     setState(StateOff);
@@ -136,21 +136,15 @@ void Controller::implInitialized(bool status, bool a_connected,
     m_connectionDate = connectionDate;
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
-    return;
-  }
-
-  if (SettingsHolder::instance()->startAtBoot()) {
-    logger.log() << "Start on boot";
-    activate();
   }
 }
 
-void Controller::activate() {
+bool Controller::activate() {
   logger.log() << "Activation" << m_state;
 
   if (m_state != StateOff && m_state != StateSwitching) {
     logger.log() << "Already connected";
-    return;
+    return false;
   }
 
   if (m_state == StateOff) {
@@ -161,6 +155,7 @@ void Controller::activate() {
   resetConnectionCheck();
 
   activateInternal();
+  return true;
 }
 
 void Controller::activateInternal() {
@@ -195,13 +190,13 @@ void Controller::activateInternal() {
                    vpnDisabledApps, stateToReason(m_state));
 }
 
-void Controller::deactivate() {
+bool Controller::deactivate() {
   logger.log() << "Deactivation" << m_state;
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateConfirming) {
     logger.log() << "Already disconnected";
-    return;
+    return false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming) {
@@ -213,6 +208,7 @@ void Controller::deactivate() {
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));
+  return true;
 }
 
 void Controller::connected() {

@@ -751,8 +751,8 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       }
       break;
 
-    case ErrorHandler::BackendServiceError:
-      alert = BackendServiceErrorAlert;
+    case ErrorHandler::ControllerError:
+      alert = ControllerErrorAlert;
       break;
 
     case ErrorHandler::RemoteServiceError:
@@ -765,6 +765,10 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
     case ErrorHandler::GeoIpRestrictionError:
       alert = GeoIpRestrictionAlert;
+      break;
+
+    case ErrorHandler::UnrecoverableError:
+      alert = UnrecoverableErrorAlert;
       break;
 
     default:
@@ -1061,7 +1065,7 @@ void MozillaVPN::quit() {
 }
 
 #ifdef MVPN_IOS
-void MozillaVPN::subscriptionStarted(bool restore) {
+void MozillaVPN::subscriptionStarted() {
   logger.log() << "Subscription started";
 
   setState(StateSubscriptionValidation);
@@ -1072,13 +1076,13 @@ void MozillaVPN::subscriptionStarted(bool restore) {
   // again.
   if (!iap->hasProductsRegistered()) {
     scheduleTask(new TaskIOSProducts());
-    scheduleTask(new TaskFunction(
-        [restore](MozillaVPN* vpn) { vpn->subscriptionStarted(restore); }));
+    scheduleTask(
+        new TaskFunction([](MozillaVPN* vpn) { vpn->subscriptionStarted(); }));
 
     return;
   }
 
-  iap->startSubscription(restore);
+  iap->startSubscription();
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1156,6 +1160,15 @@ void MozillaVPN::setUpdating(bool updating) {
 
 void MozillaVPN::controllerStateChanged() {
   logger.log() << "Controller state changed";
+
+  if (!m_controllerInitialized) {
+    m_controllerInitialized = true;
+
+    if (SettingsHolder::instance()->startAtBoot()) {
+      logger.log() << "Start on boot";
+      activate();
+    }
+  }
 
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();

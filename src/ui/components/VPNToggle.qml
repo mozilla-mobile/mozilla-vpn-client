@@ -260,9 +260,10 @@ VPNButtonBase {
     }
 
     function toggleClickable() {
-        return VPNController.state === VPNController.StateOn ||
-               VPNController.state === VPNController.StateOff ||
-               (VPNController.state === VPNController.StateConfirming && connectionRetryOverX);
+        return VPN.state === VPN.StateMain &&
+               (VPNController.state === VPNController.StateOn ||
+                VPNController.state === VPNController.StateOff ||
+                (VPNController.state === VPNController.StateConfirming && connectionRetryOverX));
     }
 
     // Toggle background color changes on hover and press

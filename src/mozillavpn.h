@@ -60,10 +60,11 @@ class MozillaVPN final : public QObject {
     ConnectionFailedAlert,
     LogoutAlert,
     NoConnectionAlert,
-    BackendServiceErrorAlert,
+    ControllerErrorAlert,
     RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
+    UnrecoverableErrorAlert,
   };
   Q_ENUM(AlertType)
 
@@ -229,7 +230,7 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
 #ifdef MVPN_IOS
-  void subscriptionStarted(bool restore);
+  void subscriptionStarted();
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
@@ -312,6 +313,7 @@ class MozillaVPN final : public QObject {
   bool m_userAuthenticated = false;
   bool m_startMinimized = false;
   bool m_updating = false;
+  bool m_controllerInitialized = false;
 
 #ifdef UNIT_TEST
   friend class TestTasks;

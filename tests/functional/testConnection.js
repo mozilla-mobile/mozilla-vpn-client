@@ -12,7 +12,7 @@ const webdriver = require('selenium-webdriver'), By = webdriver.By,
 
 const exec = util.promisify(require('child_process').exec);
 
-describe('User authentication', function() {
+describe('Connectivity', function() {
   let driver;
 
   this.timeout(200000);
@@ -44,12 +44,12 @@ describe('User authentication', function() {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ==
+        await vpn.getElementProperty('controllerTitle', 'text') ===
         'VPN is off');
 
     await vpn.waitForElementProperty('controllerSubTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ==
+        await vpn.getElementProperty('controllerSubTitle', 'text') ===
         'Turn on to protect your privacy');
 
     await vpn.waitForElementProperty('controllerToggle', 'visible', 'true');
@@ -63,11 +63,11 @@ describe('User authentication', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…';
+      return connectingMsg === 'Connecting…';
     });
 
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ==
+        await vpn.getElementProperty('controllerSubTitle', 'text') ===
         'Masking connection and location');
   });
 
@@ -80,6 +80,13 @@ describe('User authentication', function() {
     assert((await vpn.getElementProperty('controllerSubTitle', 'text'))
                .startsWith('Secure and private '));
 
+    await vpn.waitForCondition(() => {
+      return vpn.lastNotification().title === 'VPN Connected';
+    });
+
+    assert(vpn.lastNotification().title === 'VPN Connected');
+    assert(vpn.lastNotification().message.startsWith('Connected to '));
+
     vpn.wait();
   });
 
@@ -89,12 +96,12 @@ describe('User authentication', function() {
     await vpn.deactivate();
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty('controllerTitle', 'text') ===
           'Disconnecting…';
     });
 
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ==
+        await vpn.getElementProperty('controllerSubTitle', 'text') ===
         'Unmasking connection and location');
 
     vpn.wait();
@@ -102,13 +109,20 @@ describe('User authentication', function() {
 
   it('disconnected', async () => {
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty('controllerTitle', 'text') ===
           'VPN is off';
     });
 
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ==
+        await vpn.getElementProperty('controllerSubTitle', 'text') ===
         'Turn on to protect your privacy');
+
+    await vpn.waitForCondition(() => {
+      return vpn.lastNotification().title === 'VPN Disconnected';
+    });
+
+    assert(vpn.lastNotification().title === 'VPN Disconnected');
+    assert(vpn.lastNotification().message.startsWith('Disconnected from '));
 
     vpn.wait();
   });

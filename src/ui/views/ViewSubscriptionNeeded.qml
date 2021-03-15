@@ -200,14 +200,6 @@ VPNFlickable {
             Layout.fillWidth: true
         }
 
-        VPNLinkButton {
-            //% "Restore purchases"
-            labelText: qsTrId("vpn.main.restorePurchases")
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredHeight: Theme.rowHeight
-            onClicked: VPNIAP.restoreSubscription()
-        }
-
         Rectangle { // vertical spacer
             color: "transparent"
             Layout.preferredHeight: Theme.windowMargin * .5

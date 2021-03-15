@@ -52,7 +52,7 @@ void LocalSocketController::errorOccurred(
   }
 
   m_state = eDisconnected;
-  MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 
@@ -221,7 +221,7 @@ void LocalSocketController::readData() {
 }
 
 void LocalSocketController::parseCommand(const QByteArray& command) {
-  logger.log() << "Parse command:" << command;
+  logger.log() << "Parse command:" << command.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(command);
   if (!json.isObject()) {
@@ -306,7 +306,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
     return;
   }
 

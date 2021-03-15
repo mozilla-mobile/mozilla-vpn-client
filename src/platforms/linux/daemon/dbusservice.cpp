@@ -40,6 +40,13 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
+WireguardUtils* DBusService::wgutils() {
+  if (!m_wgutils) {
+    m_wgutils = new WireguardUtilsLinux(this);
+  }
+  return m_wgutils;
+}
+
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);
   m_adaptor = adaptor;
@@ -84,7 +91,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 
   QJsonObject obj = json.object();
 
-  Config config;
+  InterfaceConfig config;
   if (!parseConfig(obj, config)) {
     logger.log() << "Invalid configuration";
     return false;
@@ -137,7 +144,7 @@ QString DBusService::getLogs() {
   return Daemon::logs();
 }
 
-bool DBusService::run(Op op, const Config& config) {
+bool DBusService::run(Op op, const InterfaceConfig& config) {
   QStringList addresses;
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
@@ -212,7 +219,7 @@ static inline bool endpointStringToSockaddr(const QString& address, int port,
   return false;
 }
 
-bool DBusService::switchServer(const Config& config) {
+bool DBusService::switchServer(const InterfaceConfig& config) {
   logger.log() << "Switching server";
 
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
@@ -290,7 +297,7 @@ bool DBusService::switchServer(const Config& config) {
   return true;
 }
 
-bool DBusService::supportServerSwitching(const Config& config) const {
+bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
   return m_lastConfig.m_privateKey == config.m_privateKey &&
          m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
          m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
