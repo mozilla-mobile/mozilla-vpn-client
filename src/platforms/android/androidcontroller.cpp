@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidcontroller.h"
+#include "androidintentreciver.h"
+#include "androidutils.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -36,7 +38,7 @@ const int ACTION_REQUEST_CLEANUP_LOG = 6;
 const int ACTION_RESUME_ACTIVATE = 7;
 const int ACTION_ENABLE_START_ON_BOOT = 8;
 const int ACTION_SET_NOTIFICATION_TEXT = 9;
-const int ACTION_SET_NOTIFICATION_FALLBACK = 10;
+const int ACTION_SET_CONFIG = 10;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -68,6 +70,7 @@ AndroidController* AndroidController::instance() { return s_instance; }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.log() << "Initializing";
+  AndroidIntentReciver::Init();
 
   Q_UNUSED(device);
   Q_UNUSED(keys);
@@ -123,16 +126,26 @@ void AndroidController::setNotificationText(const QString& title,
  * switches into the Connected state without the app open
  * e.g via always-on vpn
  */
-void AndroidController::setFallbackConnectedNotification() {
+void AndroidController::sendConfiguration() {
   QJsonObject args;
   args["title"] = qtTrId("vpn.main.productName");
   //% "Ready for you to connect"
   //: Refers to the app - which is currently running the background and waiting
   args["message"] = qtTrId("vpn.android.notification.isIDLE");
+
+  args["captivePortalIPv4"] = AndroidUtils::serialiseList(
+      SettingsHolder::instance()->captivePortalIpv4Addresses());
+  args["captivePortalIPv6"] = AndroidUtils::serialiseList(
+      SettingsHolder::instance()->captivePortalIpv6Addresses());
+
+  args["captivePortalHeader"] = qtTrId("vpn.systray.captivePortalBlock.title");
+  args["captivePortalMessage"] =
+      qtTrId("vpn.systray.captivePortalBlock.message");
+
   QJsonDocument doc(args);
   QAndroidParcel data;
   data.writeData(doc.toJson());
-  m_serviceBinder.transact(ACTION_SET_NOTIFICATION_FALLBACK, data, nullptr);
+  m_serviceBinder.transact(ACTION_SET_CONFIG, data, nullptr);
 }
 
 void AndroidController::activate(
@@ -292,7 +305,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
           QDateTime::fromMSecsSinceEpoch(
               doc.object()["time"].toVariant().toLongLong()));
       // Pass a localised version of the Fallback string for the Notification
-      m_controller->setFallbackConnectedNotification();
+      m_controller->sendConfiguration();
 
       break;
     case EVENT_CONNECTED:

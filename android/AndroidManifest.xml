@@ -28,10 +28,11 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:label="Mozilla VPN"
         android:extractNativeLibs="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/vpnicon">
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
-            android:name="org.qtproject.qt5.android.bindings.QtActivity"
+            android:name=".VPNActivity"
             android:process=":QtOnlyProcess"
             android:label="Mozilla VPN"
             android:screenOrientation="unspecified"

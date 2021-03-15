@@ -17,6 +17,7 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 #include <QtAndroid>
+#include <QJsonArray>
 
 namespace {
 AndroidUtils* s_instance = nullptr;
@@ -129,4 +130,12 @@ void AndroidUtils::abortAuthentication() {
   Q_ASSERT(m_listener);
   emit m_listener->abortedByUser();
   m_listener = nullptr;
+}
+
+QJsonArray AndroidUtils::serialiseList(const QStringList& list) {
+  QJsonArray out;
+  for (const auto& e : list) {
+    out.append(e);
+  }
+  return out;
 }

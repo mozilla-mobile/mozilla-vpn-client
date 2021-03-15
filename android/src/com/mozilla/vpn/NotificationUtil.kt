@@ -13,16 +13,19 @@ import android.os.Build
 import android.os.Parcel
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import org.json.JSONObject
 import org.mozilla.firefox.vpn.VPNService
 
-object NotificationUtil {
-    var sCurrentContext: Context? = null
-    private var sNotificationBuilder: NotificationCompat.Builder? = null
+class NotificationUtil private constructor(context: Context) {
+    private val sCurrentContext: Context = context
 
-    const val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
-    const val CONNECTED_NOTIFICATION_ID = 1337
-    const val tag = "NotificationUtil"
+    private var sNotificationBuilder: NotificationCompat.Builder? = null
+    private val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
+    private val NOTIFICATION_CHANNEL_ID_CAPTIVEPORTAL = "com.mozilla.captivePortalNotification"
+
+    private val CONNECTED_NOTIFICATION_ID = 1337
+    private val tag = "NotificationUtil"
 
     /**
      * Updates the current shown notification from a
@@ -35,6 +38,51 @@ object NotificationUtil {
         val content = JSONObject(json)
 
         update(content.getString("title"), content.getString("message"))
+    }
+
+    // Creates a new Important Notification
+    fun notifyCaptivePortal(header: String, message: String) {
+        val notificationManager: NotificationManager =
+            sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // From Oreo on we need to have a "notification channel" to post to.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "VPN-CaptivePortal"
+            val descriptionText = "Notifications about Captive Portal"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID_CAPTIVEPORTAL, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // In case we do not have gotten a message to show from the Frontend
+        // try to populate the notification with a translated Fallback message
+        // Create the Intent that Should be Fired if the User Clicks the notification
+        val mainActivityName = "org.mozilla.firefox.vpn.VPNActivity"
+        val activity = Class.forName(mainActivityName)
+        val intent = Intent(sCurrentContext, activity)
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("command", "captive-portal-stop".toByteArray())
+        val pendingIntent = PendingIntent.getActivity(sCurrentContext, 1337, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+        // Build our notification
+
+        val builder = NotificationCompat.Builder(sCurrentContext!!, NOTIFICATION_CHANNEL_ID_CAPTIVEPORTAL)
+        builder.setSmallIcon(org.mozilla.firefox.vpn.R.drawable.ic_mozvpn_round)
+            .setContentTitle(header)
+            .setContentText(message)
+            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(message)
+            )
+
+        val notification = builder.build()
+        NotificationManagerCompat.from(sCurrentContext!!).notify(99, notification)
     }
 
     /**
@@ -56,19 +104,14 @@ object NotificationUtil {
      * Saves the default translated "connected" notification, in case the vpn gets started
      * without the app.
      */
-    fun saveFallBackMessage(data: Parcel, context: Context) {
-        // [data] is here a json containing the notification content
-        val buffer = data.createByteArray()
-        val json = buffer?.let { String(it) }
-        val content = JSONObject(json)
-
+    fun saveFallBackMessage(title: String, message: String, context: Context) {
         val prefs =
             context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
         prefs.edit()
-            .putString("fallbackNotificationHeader", content.getString("title"))
-            .putString("fallbackNotificationMessage", content.getString("message"))
+            .putString("fallbackNotificationHeader", title)
+            .putString("fallbackNotificationMessage", message)
             .apply()
-        Log.v(tag, "Saved new fallback message -> ${content.getString("title")}")
+        Log.v(tag, "Saved new fallback message -> $message")
     }
 
     /*
@@ -77,7 +120,6 @@ object NotificationUtil {
     */
     fun show(service: VPNService) {
         sNotificationBuilder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL_ID)
-        sCurrentContext = service
         val notificationManager: NotificationManager =
             sCurrentContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         // From Oreo on we need to have a "notification channel" to post to.
@@ -114,6 +156,19 @@ object NotificationUtil {
                 .setContentIntent(pendingIntent)
 
             service.startForeground(CONNECTED_NOTIFICATION_ID, it.build())
+        }
+    }
+
+    companion object {
+        private var instance: NotificationUtil? = null
+        fun get(ctx: Context): NotificationUtil {
+            if (instance == null) {
+                instance = NotificationUtil(ctx.applicationContext)
+            }
+            return instance!!
+        }
+        fun get(): NotificationUtil? {
+            return instance
         }
     }
 }

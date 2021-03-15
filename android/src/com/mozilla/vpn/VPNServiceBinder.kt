@@ -9,6 +9,7 @@ import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
 import android.util.Log
+import com.mozilla.vpn.CaptivePortalDetector
 import com.mozilla.vpn.NotificationUtil
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
@@ -38,7 +39,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val resumeActivate = 7
         const val enableStartOnBoot = 8
         const val setNotificationText = 9
-        const val setFallBackNotification = 10
+        const val setConfiguration = 10
     }
 
     /**
@@ -151,11 +152,25 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 return true
             }
             ACTIONS.setNotificationText -> {
-                NotificationUtil.update(data)
+                NotificationUtil.get(mService).update(data)
                 return true
             }
-            ACTIONS.setFallBackNotification -> {
-                NotificationUtil.saveFallBackMessage(data, mService)
+            ACTIONS.setConfiguration -> {
+                // [data] is here a json containing the service configuarion
+                val buffer = data.createByteArray()
+                val json = buffer?.let { String(it) }
+                val obj = JSONObject(json)
+                NotificationUtil.get(mService).saveFallBackMessage(obj.get("title").toString(), obj.get("message").toString(), mService)
+                CaptivePortalDetector.get(mService)
+                    .saveCaptivePortalConfig(
+                        obj.getJSONArray("captivePortalIPv4"),
+                        obj.getJSONArray("captivePortalIPv6"),
+                        obj.getString("captivePortalHeader"),
+                        obj.getString("captivePortalMessage"),
+                    )
+                // Once we have the Configuration we can start listenering to
+                // network change events
+                NetworkChangeReceiver.get(mService)
                 return true
             }
 

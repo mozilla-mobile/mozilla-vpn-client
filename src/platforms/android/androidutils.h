@@ -20,6 +20,8 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
+  static QJsonArray serialiseList(const QStringList& list);
+
   static bool canEnableStartOnBoot();
 
   static AndroidUtils* instance();

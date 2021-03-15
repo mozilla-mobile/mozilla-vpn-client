@@ -17,7 +17,7 @@ import java.lang.Exception
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
-    private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
+    val mBinder: VPNServiceBinder = VPNServiceBinder(this)
     private val mBackend = GoBackend(this)
     private val mTunnel = VPNTunnel("mvpn1", mBinder)
     private var mConfig: Config? = null
@@ -36,7 +36,8 @@ class VPNService : android.net.VpnService() {
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
-        NotificationUtil.show(this)
+        s_instance = this
+        NotificationUtil.get(this).show(this)
         Log.v(tag, "Got Bind request")
         return mBinder
     }
@@ -47,6 +48,7 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        s_instance = this
         this.startService(Intent(this, GoBackend.VpnService::class.java))
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
@@ -60,7 +62,7 @@ class VPNService : android.net.VpnService() {
             }
         }
         // Go foreground if we need to connect
-        NotificationUtil.show(this)
+        NotificationUtil.get(this).show(this)
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
@@ -121,7 +123,7 @@ class VPNService : android.net.VpnService() {
             mTunnel.abort()
             return
         }
-        NotificationUtil.show(this) // Go foreground
+        NotificationUtil.get(this).show(this) // Go foreground
         this.startService(Intent(this, GoBackend.VpnService::class.java))
         if (newConf == null && mConfig == null) {
             Log.e(tag, "Tried to start VPN with null config - abort")
@@ -156,5 +158,8 @@ class VPNService : android.net.VpnService() {
                 }
             )
         }
+        private var s_instance: VPNService? = null
+        val instance: VPNService?
+            get() = s_instance
     }
 }
