@@ -23,7 +23,7 @@ Item {
 
         currentIndex: 0
         height: onboardingPanel.panelHeight
-        width: onboardingPanel.width - Theme.windowMargin * 4
+        width: onboardingPanel.width
         anchors.horizontalCenter: onboardingPanel.horizontalCenter
 
         ListModel {
@@ -77,6 +77,7 @@ Item {
                     logo: image
                     logoTitle: headline
                     logoSubtitle: subtitle
+                    height: nextPanel.y
                     Component.onCompleted: fade.start()
 
                     PropertyAnimation on opacity {
