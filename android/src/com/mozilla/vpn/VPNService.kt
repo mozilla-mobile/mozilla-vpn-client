@@ -7,7 +7,7 @@ package org.mozilla.firefox.vpn
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
+import com.mozilla.vpn.Log
 import com.mozilla.vpn.NotificationUtil
 import com.mozilla.vpn.VPNTunnel
 import com.wireguard.android.backend.*
@@ -36,6 +36,7 @@ class VPNService : android.net.VpnService() {
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
+        Log.init(this)
         NotificationUtil.show(this)
         Log.v(tag, "Got Bind request")
         return mBinder
@@ -47,6 +48,7 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.init(this)
         this.startService(Intent(this, GoBackend.VpnService::class.java))
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
