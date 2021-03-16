@@ -32,7 +32,12 @@ class CaptivePortalDetector private constructor(c: Context) :
     private val CAPTIVEPORTAL_HOST = "detectportal.firefox.com"
     private val CAPTIVEPORTAL_REQUEST_CONTENT = "success"
 
-    fun saveCaptivePortalConfig(ipv4List: JSONArray, ipv6List: JSONArray, notificationHeader: String, notificationMessage: String) {
+    fun saveCaptivePortalConfig(
+        ipv4List: JSONArray,
+        ipv6List: JSONArray,
+        notificationHeader: String,
+        notificationMessage: String
+    ) {
         val prefs =
             context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
         prefs.edit()
