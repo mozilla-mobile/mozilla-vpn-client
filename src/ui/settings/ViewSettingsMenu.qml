@@ -50,7 +50,7 @@ VPNFlickable {
         anchors.top: parent.top
         anchors.topMargin: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
         maskImage: true
-        imageIsVector: false
+        isSettingsView: true
     }
 
     VPNButton {
