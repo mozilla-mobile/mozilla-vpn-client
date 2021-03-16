@@ -47,9 +47,10 @@ VPNFlickable {
         readonly property var textVpnUser: qsTrId("vpn.settings.user")
         logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
         logoSubtitle: VPNUser.email
-        y: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
+        anchors.top: parent.top
+        anchors.topMargin: (Math.max(window.safeContentHeight * .08, Theme.windowMargin * 2))
         maskImage: true
-        imageIsVector: false
+        isSettingsView: true
     }
 
     VPNButton {
@@ -78,7 +79,6 @@ VPNFlickable {
         anchors.rightMargin: Theme.hSpacing
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
-
         visible: VPNFeatureList.startOnBootSupported
     }
 
