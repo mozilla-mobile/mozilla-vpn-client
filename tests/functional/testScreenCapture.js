@@ -290,7 +290,7 @@ describe('Take screenshots for each view', function() {
 
   // TODO: app-permission
 
-  it('setting / about us', async () => {
+  it('settings / about us', async () => {
     await vpn.waitForElement('settingsAboutUs');
     await vpn.waitForElementProperty('settingsAboutUs', 'visible', 'true');
     await vpn.clickOnElement('settingsAboutUs');
