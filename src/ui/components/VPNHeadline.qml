@@ -11,7 +11,7 @@ import "../themes/themes.js" as Theme
 Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+    wrapMode: Text.WordWrap
     width: Theme.maxTextWidth
     color: Theme.fontColorDark
     font.family: Theme.fontFamily
@@ -21,4 +21,11 @@ Text {
     Layout.alignment: Qt.AlignHCenter
     Accessible.role: Accessible.StaticText
     Accessible.name: text
+
+    Component.onCompleted: {
+        if (paintedWidth > Theme.maxTextWidth) {
+            fontSizeMode = Text.Fit
+            minimumPixelSize = 16
+        }
+    }
 }
