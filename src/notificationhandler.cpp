@@ -42,7 +42,9 @@ void NotificationHandler::showNotification() {
   logger.log() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (vpn->state() != MozillaVPN::StateMain &&
+      !(vpn->state() == MozillaVPN::StateInitialize &&
+        vpn->controller()->state() == Controller::StateOff)) {
     return;
   }
 
