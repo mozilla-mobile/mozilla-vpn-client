@@ -68,8 +68,15 @@ jobs:
       - name: Run the test script
         run: |
           export PATH=.:$(npm bin):$PATH
+          export HEADLESS=yes
           xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+
+      - name: Uploading screenshots
+        uses: actions/upload-artifact@v1
+        with:
+            name: Screen capture
+            path: /tmp/screencapture
 
