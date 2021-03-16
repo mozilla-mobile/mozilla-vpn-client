@@ -49,7 +49,7 @@ RowLayout {
         id: labelWrapper
 
         Layout.fillWidth: true
-        spacing: 0
+        spacing: 4
 
         VPNInterLabel {
             id: label
