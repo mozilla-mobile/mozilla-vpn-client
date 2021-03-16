@@ -7,6 +7,7 @@
 
 #include "controllerimpl.h"
 
+#include <QDateTime>
 #include <QObject>
 
 class DummyController final : public ControllerImpl {
