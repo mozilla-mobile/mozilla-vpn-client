@@ -173,21 +173,45 @@ VPNFlickable {
             id: box
         }
 
-        VPNControllerServer {
+        VPNController {
+            function handleClick() {
+                stackview.push("ViewServers.qml")
+            }
             id: serverInfo
 
-            onClicked: stackview.push("ViewServers.qml")
-            y: box.y + box.height + Theme.iconSize
-            rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit ||
+            //% "Select location"
+            //: Select the Location of the VPN server
+            titleText: qsTrId("vpn.servers.selectLocation")
+            //% "current location - %1"
+            //: Accessibility description for current location of the VPN server
+            descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.city)
+
+            subtitleText: VPNCurrentServer.city
+            imgSource:  "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
+            anchors.top: box.bottom
+            anchors.topMargin: 24
+
+            disableRowWhen: VPN.state === VPN.StateDeviceLimit ||
                                  (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) ||
                                  box.connectionInfoVisible
         }
 
-        VPNControllerDevice {
+        VPNController {
+            function handleClick() {
+                stackview.push("ViewDevices.qml")
+            }
+
+            id: serverInfo3
             anchors.top: serverInfo.bottom
-            anchors.topMargin: 8
-            onClicked: stackview.push("ViewDevices.qml")
-            rowShouldBeDisabled: box.connectionInfoVisible
+            anchors.topMargin: 24
+            subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
+            imgSource: "../resources/devices.svg"
+            imgSize: 22
+            imgIsVector: true
+            //% "My devices"
+            titleText: qsTrId("vpn.devices.myDevices")
+            disableRowWhen: box.connectionInfoVisible
+            state: VPN.state !== VPN.StateDeviceLimit ? "" : "deviceLimit"
         }
 
         Behavior on y {
