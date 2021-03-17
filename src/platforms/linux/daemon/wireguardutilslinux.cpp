@@ -60,11 +60,12 @@ bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
    * Set conf:
    * - sets name of device
    * - sets public key on device
-   * - sets private key on peer
-   * - sets endpoint on peer
-   * - sets allowed ips on peer
+   * - adds peer to device
+   * -- sets private key on peer
+   * -- sets endpoint on peer
+   * -- sets allowed ips on peer
    */
-  // DEVICE
+
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
   if (!device) {
     logger.log() << "Allocation failure";
@@ -77,8 +78,7 @@ bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
   // Private Key
   wg_key_from_base64(device->private_key, config.m_privateKey.toLocal8Bit());
   // Peer
-  wg_peer* peer = buildPeerForDevice(device, config);
-  if (!peer) {
+  if (!buildPeerForDevice(device, config)) {
     logger.log() << "Failed to create peer.";
     return false;
   }
@@ -139,13 +139,13 @@ QStringList WireguardUtilsLinux::currentInterfaces() {
   return devices;
 }
 
-wg_peer* WireguardUtilsLinux::buildPeerForDevice(
-    wg_device* device, const InterfaceConfig& config) {
-  // Peer
+bool WireguardUtilsLinux::buildPeerForDevice(wg_device* device,
+                                             const InterfaceConfig& config) {
+  Q_ASSERT(device);
   wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
   if (!peer) {
     logger.log() << "Allocation failure";
-    return nullptr;
+    return false;
   }
   device->first_peer = device->last_peer = peer;
 
@@ -154,13 +154,14 @@ wg_peer* WireguardUtilsLinux::buildPeerForDevice(
   // Endpoint
   if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
                        config.m_serverPort)) {
-    return nullptr;
+    return false;
   }
+  // Allowed IPs
   if (!setAllowedIpsOnPeer(peer, config.m_allowedIPAddressRanges)) {
     logger.log() << "Failed to set allowed IPs on Peer";
-    return nullptr;
+    return false;
   }
-  return peer;
+  return true;
 }
 
 bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,

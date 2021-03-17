@@ -24,8 +24,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
                        int port);
   bool setAllowedIpsOnPeer(struct wg_peer* peer,
                            QList<IPAddressRange> allowedIPAddressRanges);
-  wg_peer* buildPeerForDevice(struct wg_device* device,
-                              const InterfaceConfig& conf);
+  bool buildPeerForDevice(struct wg_device* device,
+                          const InterfaceConfig& conf);
 };
 
 #endif  // WIREGUARDUTILSLINUX_H
