@@ -14,10 +14,14 @@ import android.util.Log as nativeLog
  * Also stores a copy of all logs in tmp/mozilla_deamon_logs.txt
 */
 class Log {
+    val LOG_MAX_FILE_SIZE = 204800
     private var file: File
     private constructor(context: Context) {
         val tempDIR = context.cacheDir
         file = File(tempDIR, "mozilla_deamon_logs.txt")
+        if (file.length() > LOG_MAX_FILE_SIZE) {
+            file.writeText("")
+        }
     }
 
     companion object {
