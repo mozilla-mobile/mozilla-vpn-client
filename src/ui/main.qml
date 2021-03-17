@@ -26,7 +26,7 @@ Window {
 
     visible: true
     width: fullscreenRequired() ? maximumWidth : 360
-    height: fullscreenRequired() ? maximumHeight : 454
+    height: fullscreenRequired() ? maximumHeight : 520
     maximumHeight: height
     maximumWidth: width
     minimumHeight: height
