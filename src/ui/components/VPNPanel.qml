@@ -43,8 +43,8 @@ Item {
                 anchors.bottom: logoWrapper.bottom
                 verticalAlignment: Image.AlignBottom
                 anchors.bottomMargin: 0
-                sourceSize.height: isSettingsView ? undefined : logosize
-                sourceSize.width: isSettingsView  ? undefined : logosize
+                sourceSize.height: isSettingsView ? undefined : logoSize
+                sourceSize.width: isSettingsView  ? undefined : logoSize
                 fillMode: Image.PreserveAspectFit
                 layer.enabled: true
                 Component.onCompleted: {
