@@ -22,34 +22,11 @@ class WireguardUtils : public QObject {
   explicit WireguardUtils(QObject* parent) : QObject(parent){};
   virtual ~WireguardUtils() = default;
 
-  virtual bool interfaceExists() {
-    qFatal("Have you forgotten to implement WireguardUtils::interfaceExists?");
-    return false;
-  };
-
-  virtual bool addInterface() {
-    qFatal("Have you forgotten to implement WireguardUtils::addInterface?");
-    return false;
-  };
-
-  virtual bool configureInterface(const InterfaceConfig& config) {
-    Q_UNUSED(config)
-    qFatal(
-        "Have you forgotten to implement WireguardUtils::configureInterface?");
-    return false;
-  };
-
-  virtual bool deleteInterface() {
-    qFatal("Have you forgotten to implement WireguardUtils::deleteInterface?");
-    return false;
-  };
-
-  virtual peerBytes getThroughputForInterface() {
-    qFatal(
-        "Have you forgotten to implement "
-        "WireguardUtils::getThroughputForInterface?");
-    return peerBytes();
-  };
+  virtual bool interfaceExists() = 0;
+  virtual bool addInterface() = 0;
+  virtual bool configureInterface(const InterfaceConfig& config) = 0;
+  virtual bool deleteInterface() = 0;
+  virtual peerBytes getThroughputForInterface() = 0;
 };
 
 #endif  // WIREGUARDUTILS_H
