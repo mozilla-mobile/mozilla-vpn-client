@@ -96,6 +96,7 @@ Window {
         width: parent.width
         anchors.top: iosSafeAreaTopMargin.bottom
         height: safeContentHeight
+        clip: true
 
         Component.onCompleted: {
             if (isWasmApp) {
