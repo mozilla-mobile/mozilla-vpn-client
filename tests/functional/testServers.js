@@ -61,7 +61,6 @@ describe('Server list', function() {
 
     await vpn.clickOnElement('serverListButton');
     await vpn.wait();
-
   });
 
   it('retrieve list of servers and the current one', async () => {
@@ -110,6 +109,8 @@ describe('Server list', function() {
       let server = servers[Math.floor(Math.random() * servers.length)];
 
       const countryId = 'serverCountryList/serverCountry-' + server.code;
+      await vpn.waitForElement(countryId);
+
       await vpn.setElementProperty(
           'serverCountryView', 'contentY', 'i',
           parseInt(await vpn.getElementProperty(countryId, 'y')));
@@ -122,11 +123,13 @@ describe('Server list', function() {
           server.cities[Math.floor(Math.random() * server.cities.length)];
       const cityId = countryId + '/serverCityList/serverCity-' +
           city.name.replace(/ /g, '_');
+      await vpn.waitForElement(cityId);
 
       await vpn.setElementProperty(
           'serverCountryView', 'contentY', 'i',
           parseInt(await vpn.getElementProperty(cityId, 'y')) +
               parseInt(await vpn.getElementProperty(countryId, 'y')));
+      await vpn.wait();
 
       await vpn.clickOnElement(cityId);
       await vpn.wait();
@@ -172,7 +175,101 @@ describe('Server list', function() {
     }
   });
 
-  // TODO: testing the server switching
+  it('server switching', async () => {
+    await vpn.waitForElement('serverListBackButton');
+    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
+    await vpn.clickOnElement('serverListBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('serverListButton');
+    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+    await vpn.wait();
+
+    await vpn.activate();
+
+    await vpn.waitForCondition(async () => {
+      return await vpn.getElementProperty('controllerTitle', 'text') ==
+          'VPN is on';
+    });
+
+    let currentCountry = '';
+    for (let server of servers) {
+      if (server.code === currentCountryCode) {
+        currentCountry = server.name;
+        break;
+      }
+    }
+
+    assert(currentCountry != '');
+
+    assert(vpn.lastNotification().title === 'VPN Connected');
+    assert(
+        vpn.lastNotification().message ===
+        `Connected to ${currentCountry}, ${currentCity}`);
+
+    await vpn.clickOnElement('serverListButton');
+    await vpn.wait();
+
+    let server;
+    while (true) {
+      server = servers[Math.floor(Math.random() * servers.length)];
+      if (server.code != currentCountryCode) break;
+    }
+
+    const countryId = 'serverCountryList/serverCountry-' + server.code;
+    await vpn.waitForElement(countryId);
+
+    await vpn.setElementProperty(
+        'serverCountryView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(countryId, 'y')));
+
+    await vpn.clickOnElement(countryId);
+
+    let city = server.cities[Math.floor(Math.random() * server.cities.length)];
+    const cityId = countryId + '/serverCityList/serverCity-' +
+        city.name.replace(/ /g, '_');
+    await vpn.waitForElement(cityId);
+
+    await vpn.setElementProperty(
+        'serverCountryView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty(cityId, 'y')) +
+            parseInt(await vpn.getElementProperty(countryId, 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement(cityId);
+
+    const previousCountry = currentCountry;
+    const previousCity = currentCity;
+
+    currentCountryCode = server.code;
+    currentCountry = server.name;
+    currentCity = city.name;
+
+    await vpn.waitForElement('controllerTitle');
+    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+
+    await vpn.waitForCondition(async () => {
+      let connectingMsg =
+          await vpn.getElementProperty('controllerTitle', 'text');
+      return connectingMsg === 'Switching…';
+    });
+
+    assert(
+        await vpn.getElementProperty('controllerSubTitle', 'text') ===
+        `From ${previousCity} to ${currentCity}`);
+
+    await vpn.waitForCondition(async () => {
+      return await vpn.getElementProperty('controllerTitle', 'text') ==
+          'VPN is on';
+    });
+
+    assert(vpn.lastNotification().title === 'VPN Switched Servers');
+    assert(
+        vpn.lastNotification().message ===
+        `Switched from ${previousCountry}, ${previousCity} to ${
+            currentCountry}, ${currentCity}`);
+  });
+
   // TODO: server list disabled when reached the device limit
 
   it('Logout', async () => {
