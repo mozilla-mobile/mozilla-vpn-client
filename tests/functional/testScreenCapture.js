@@ -226,13 +226,13 @@ describe('Take screenshots for each view', function() {
 
   it('settings / networking', async () => {
     await vpn.waitForElement('settingsNetworking');
+    await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
 
     await vpn.setElementProperty(
         'settingsView', 'contentY', 'i',
         parseInt(await vpn.getElementProperty('settingsNetworking', 'y')));
     await vpn.wait();
 
-    await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
     await vpn.clickOnElement('settingsNetworking');
     await vpn.wait();
 
