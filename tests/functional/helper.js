@@ -163,10 +163,16 @@ module.exports = {
     assert(
         await this.hasElement(id),
         'Property checks must be done on existing elements');
-    return this.waitForCondition(async () => {
+    try {
+      return this.waitForCondition(async () => {
+        const real = await this.getElementProperty(id, property);
+        return real === value;
+      });
+    } catch (e) {
       const real = await this.getElementProperty(id, property);
-      return real === value;
-    });
+      throw new Error(`Timeout for waitForElementProperty - property: ${
+          property} - value: ${real} - expected: ${value}`);
+    }
   },
 
   async getLastUrl() {
