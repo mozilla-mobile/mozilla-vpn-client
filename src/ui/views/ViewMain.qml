@@ -13,7 +13,7 @@ VPNFlickable {
     id: mainView
 
     flickContentHeight:  {
-        let flickHeight = 444;
+        let flickHeight = Theme.desktopAppHeight - 1
         if (alertBox.visible) {
             flickHeight += alertBox.height + Theme.windowMargin;
         }
@@ -173,7 +173,7 @@ VPNFlickable {
             id: box
         }
 
-        VPNController {
+        VPNControllerNav {
             function handleClick() {
                 stackview.push("ViewServers.qml")
             }
@@ -189,25 +189,25 @@ VPNFlickable {
             subtitleText: VPNCurrentServer.city
             imgSource:  "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
             anchors.top: box.bottom
-            anchors.topMargin: 24
+            anchors.topMargin: 30
 
             disableRowWhen: VPN.state === VPN.StateDeviceLimit ||
                                  (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) ||
                                  box.connectionInfoVisible
         }
 
-        VPNController {
+        VPNControllerNav {
             function handleClick() {
                 stackview.push("ViewDevices.qml")
             }
 
             id: serverInfo3
             anchors.top: serverInfo.bottom
-            anchors.topMargin: 24
+            anchors.topMargin: 22
             subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
             imgSource: "../resources/devices.svg"
-            imgSize: 22
             imgIsVector: true
+            imgSize: 24
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoVisible

@@ -14,13 +14,12 @@ ColumnLayout {
     property var subtitleText
     property var descriptionText
     property var imgSource
-    property var imgSize: Theme.windowMargin
+    property var imgSize: 20
     property var imgIsVector: false
     property var disableRowWhen
     spacing: 4
     width: parent.width - Theme.windowMargin
     anchors.horizontalCenter: parent.horizontalCenter
-    anchors.topMargin: 24
     state: ""
     states: [
         State {
@@ -68,17 +67,21 @@ ColumnLayout {
             RowLayout {
                 spacing:8
 
-                Image {
-                    id: flag
+                Rectangle {
+                    Layout.preferredWidth: 24
+                    Layout.preferredHeight: 24
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
+                    color: "transparent"
 
-                    Layout.preferredWidth: imgIsVector? undefined : imgSize
-                    Layout.preferredHeight: imgIsVector? undefined : imgSize
-                    sourceSize.height: imgIsVector ? imgSize : undefined
-                    sourceSize.width: imgIsVector ? imgSize : undefined
-                    Layout.alignment: Qt.AlignLeft
-                    fillMode: Image.PreserveAspectFit
-                    source: imgSource
-
+                    Image {
+                        id: flag
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        width: imgIsVector? undefined : imgSize
+                        sourceSize.width: imgIsVector ? imgSize : undefined
+                        fillMode: Image.PreserveAspectFit
+                        source: imgSource
+                    }
                 }
 
                 VPNLightLabel {
