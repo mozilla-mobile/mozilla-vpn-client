@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
+import "themes/themes.js" as Theme
 
 Window {
     id: window
@@ -26,7 +27,7 @@ Window {
 
     visible: true
     width: fullscreenRequired() ? maximumWidth : 360
-    height: fullscreenRequired() ? maximumHeight : 520
+    height: fullscreenRequired() ? maximumHeight : Theme.desktopAppHeight
     maximumHeight: height
     maximumWidth: width
     minimumHeight: height
