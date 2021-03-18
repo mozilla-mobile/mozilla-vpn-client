@@ -14,6 +14,7 @@ Item {
     id: root
     VPNMenu {
         id: menu
+        objectName: "serverListBackButton"
 
         title: qsTrId("vpn.servers.selectLocation")
         onActiveFocusChanged: if (focus) forceFocus = true
@@ -38,6 +39,7 @@ Item {
 
         VPNFlickable {
             id: vpnFlickable
+            objectName: "serverCountryView"
 
             flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
@@ -59,6 +61,7 @@ Item {
 
             Column {
                 id: serverList
+                objectName: "serverCountryList"
 
                 spacing: 14
                 width: parent.width
