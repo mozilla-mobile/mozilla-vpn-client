@@ -16,9 +16,11 @@ describe('Take screenshots for each view', function() {
 
   this.timeout(100000);
 
-  async function screenCapture(name) {
+  async function screenCapture(name, cb = null) {
     for (let language of languages) {
       await vpn.setSetting('language-code', language);
+
+      if (cb) await cb();
 
       // we need to give time to the app to retranslate the UI. If the number
       // is too slow we have the UI in funny states (part in 1 language, part
@@ -73,12 +75,13 @@ describe('Take screenshots for each view', function() {
   });
 
   it('heartbeat', async () => {
-    await vpn.forceHeartbeatFailure();
+    await screenCapture('heartbeat', async () => {
+      await vpn.reset();
+      await vpn.forceHeartbeatFailure();
 
-    await vpn.waitForElement('heartbeatTryButton');
-    await vpn.waitForElementProperty('heartbeatTryButton', 'visible', 'true');
-
-    await screenCapture('heartbeat');
+      await vpn.waitForElement('heartbeatTryButton');
+      await vpn.waitForElementProperty('heartbeatTryButton', 'visible', 'true');
+    });
 
     await vpn.wait();
 
