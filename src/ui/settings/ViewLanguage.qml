@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
@@ -26,12 +27,18 @@ Item {
     FocusScope {
         id: focusScope
 
-        property var lastFocusedItemIdx
+        property var lastFocusedItemIdx: -1
 
         height: parent.height - menu.height
         anchors.top: menu.bottom
         width: parent.width
-        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        onActiveFocusChanged: {
+            if (focus && lastFocusedItemIdx !== -1) {
+              repeater.itemAt(lastFocusedItemIdx).forceActiveFocus();
+          } else if (focus) {
+                useSystemLanguageToggle.forceActiveFocus()
+            }
+        }
         Accessible.name: menu.title
         Accessible.role: Accessible.List
 
@@ -39,11 +46,12 @@ Item {
             id: radioButtonGroup
         }
 
+
         VPNFlickable {
             id: vpnFlickable
 
             objectName: "settingsLanguagesView"
-            flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
+            flickContentHeight: row.y + row.implicitHeight + col.y + col.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
             NumberAnimation on contentY {
@@ -53,13 +61,92 @@ Item {
                 easing.type: Easing.OutQuad
             }
 
-            Rectangle {
-                id: verticalSpacer
 
-                height: Theme.windowMargin
-                width: parent.width
-                color: "transparent"
+            RowLayout {
+                id: row
+                width: parent.width - (defaultMargin * 2)
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: defaultMargin
+                anchors.rightMargin: defaultMargin
+                anchors.top: parent.top
+                anchors.topMargin: 20
+                spacing: 12
+
+                ColumnLayout {
+                    id: labelWrapper
+                    spacing: 4
+                    Layout.maximumWidth: parent.width - useSystemLanguageToggle.width - 16
+
+                    states: [
+                        State {
+                            when: useSystemLanguageToggle.checked
+                            PropertyChanges {
+                                target: labelDescription
+                                //% "Mozilla VPN will use your system's default language."
+                                text: qsTrId("vpn.settings.useSystemLanguage")
+                            }
+                        },
+                        State {
+                            when: !useSystemLanguageToggle.checked
+                            PropertyChanges {
+                                target: labelDescription
+                                //% "Mozilla VPN will not use the default system language."
+                                text: qsTrId("vpn.settings.doNotUseSystemLanguage")
+                            }
+                        }
+
+                    ]
+                    VPNInterLabel {
+                        id: label
+                        Layout.alignment: Qt.AlignLeft
+                        //% Use system language
+                            text: qsTrId("vpn.settings.useSystemLanguage")
+
+                        color: Theme.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                        Layout.fillWidth: true
+                    }
+
+                    VPNTextBlock {
+                        id: labelDescription
+                        Layout.fillWidth: true
+                    }
+                }
+
+                VPNSettingsToggle {
+                    id: useSystemLanguageToggle
+                    onActiveFocusChanged: {
+                        if (focus) {
+                            forceFocus = true;
+                            focusScope.lastFocusedItemIdx = -1;
+                            col.scrollDelegateIntoView(useSystemLanguageToggle)
+                      }
+                    }
+                    Layout.preferredHeight: 24
+                    Layout.preferredWidth: 45
+                    width: undefined
+                    height: undefined
+                    Keys.onDownPressed: repeater.itemAt(0).forceActiveFocus()
+
+                    checked: true
+                    onClicked: {
+                        checked = !checked;
+                    }
+                }
             }
+
+            Rectangle {
+                id: divider
+                height: 1
+                width: parent.width - 36
+                anchors.top: row.bottom
+                anchors.topMargin: defaultMargin
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: "#E7E7E7"
+                opacity: 1
+            }
+
 
             Column {
                 id: col
@@ -68,13 +155,19 @@ Item {
 
                 spacing: 20
                 width: parent.width
-                anchors.top: verticalSpacer.bottom
+                anchors.top: divider.bottom
+                anchors.topMargin: 24
                 Component.onCompleted: {
+
+                    // PLACEHOLDER  if (system language setting is toggled on) maybe we don't scroll
+                    // should we bubble the system language to the top of the list instead?
+                    // should we disable the list?
+
 
                     // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
-                    const yCenter = vpnFlickable.height / 2;
+                    const yCenter = (vpnFlickable.height - row.implicitHeight - menu.height ) / 2
 
                     for (let idx = 0; idx < repeater.count; idx++) {
                         const repeaterItem = repeater.itemAt(idx);
@@ -92,11 +185,12 @@ Item {
                 }
 
                 function scrollDelegateIntoView(item) {
+
                     if (window.height > vpnFlickable.contentHeight) {
                         return;
                     }
                     const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                    const approximateDelegateHeight = 60;
+                    const approximateDelegateHeight = 50;
                     const ext = approximateDelegateHeight + yPosition;
 
                     if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
@@ -110,6 +204,7 @@ Item {
                     id: repeater
 
                     model: VPNLocalizer
+
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
@@ -118,7 +213,10 @@ Item {
 
                         radioButtonLabelText: localizedLanguage
                         checked: VPNLocalizer.code === code
-                        onClicked: VPNLocalizer.code = code
+                        onClicked: {
+                            // Placeholder - if (the system language pref is selected) is there extra work to do here?
+                            VPNLocalizer.code = code;
+                        }
                         anchors.left: parent.left
                         anchors.leftMargin: defaultMargin
                         width: parent.width - defaultMargin * 2
@@ -130,11 +228,19 @@ Item {
                             .arg(localizedLanguage)
 
                         activeFocusOnTab: true
-                        onActiveFocusChanged: col.scrollDelegateIntoView(del)
+                        onActiveFocusChanged: {
+                            if (focus) {
+                                col.scrollDelegateIntoView(del)
+                                focusScope.lastFocusedItemIdx = index;
+                            }
+                        }
                         Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : useSystemLanguageToggle.forceActiveFocus()
                         Keys.onBacktabPressed: {
-                            focusScope.lastFocusedItemIdx = index;
+                            if (index === 0) {
+                                useSystemLanguageToggle.forceActiveFocus()
+                                return
+                            }
                             menu.forceActiveFocus();
                         }
 
