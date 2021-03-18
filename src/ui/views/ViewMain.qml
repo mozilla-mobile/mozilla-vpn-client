@@ -204,7 +204,7 @@ VPNFlickable {
             id: serverInfo3
             anchors.top: serverInfo.bottom
             anchors.topMargin: 22
-            subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
+            subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(VPNUser.maxDevices)
             imgSource: "../resources/devices.svg"
             imgIsVector: true
             imgSize: 24
