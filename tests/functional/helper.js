@@ -283,6 +283,14 @@ module.exports = {
     return json.value;
   },
 
+  async servers() {
+    const json = await this._writeCommand('servers');
+    assert(
+        json.type === 'servers' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
+  },
+
   async screenCapture() {
     const json = await this._writeCommand('screen_capture');
     assert(
