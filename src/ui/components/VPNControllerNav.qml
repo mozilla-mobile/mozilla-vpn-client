@@ -25,13 +25,6 @@ ColumnLayout {
         State {
             name: "deviceLimit"
             PropertyChanges {
-                target: controller
-                //% "%1 of %2"
-                //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-                subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
-            }
-
-            PropertyChanges {
                 target: icon
                 source: "../resources/warning.svg"
                 sourceSize.height: 14
