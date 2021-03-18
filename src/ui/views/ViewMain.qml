@@ -204,6 +204,8 @@ VPNFlickable {
             id: serverInfo3
             anchors.top: serverInfo.bottom
             anchors.topMargin: 22
+            //% "%1 of %2"
+            //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
             subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(VPNUser.maxDevices)
             imgSource: "../resources/devices.svg"
             imgIsVector: true
