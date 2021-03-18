@@ -223,6 +223,12 @@ describe('Take screenshots for each view', function() {
 
   it('settings / networking', async () => {
     await vpn.waitForElement('settingsNetworking');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNetworking', 'y')));
+    await vpn.wait();
+
     await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
     await vpn.clickOnElement('settingsNetworking');
     await vpn.wait();
@@ -240,6 +246,12 @@ describe('Take screenshots for each view', function() {
     await vpn.waitForElement('settingsNotifications');
     await vpn.waitForElementProperty(
         'settingsNotifications', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNotifications', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsNotifications');
     await vpn.wait();
 
@@ -255,6 +267,12 @@ describe('Take screenshots for each view', function() {
   it('settings / languages', async () => {
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
 
@@ -293,6 +311,12 @@ describe('Take screenshots for each view', function() {
   it('settings / about us', async () => {
     await vpn.waitForElement('settingsAboutUs');
     await vpn.waitForElementProperty('settingsAboutUs', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsAboutUs', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsAboutUs');
     await vpn.wait();
 
@@ -308,6 +332,12 @@ describe('Take screenshots for each view', function() {
   it('settings / help', async () => {
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
 
@@ -321,6 +351,9 @@ describe('Take screenshots for each view', function() {
   });
 
   it('closing the settings view', async () => {
+    await vpn.setElementProperty('settingsView', 'contentY', 'i', 0);
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsCloseButton');
     await vpn.wait();
 
