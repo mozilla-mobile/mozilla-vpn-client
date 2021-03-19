@@ -123,11 +123,11 @@ add_route() {
 	[[ $TABLE != off ]] || return 0
 
 	if [[ -n $TABLE && $TABLE != auto ]]; then
-		cmd ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
+		ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
 	elif [[ $1 == */0 ]]; then
 		add_default "$1"
 	else
-		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || cmd ip $proto route add "$1" dev "$INTERFACE"
+		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || ip $proto route add "$1" dev "$INTERFACE"
 	fi
 }
 
