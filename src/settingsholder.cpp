@@ -4,6 +4,7 @@
 
 #include "settingsholder.h"
 #include "cryptosettings.h"
+#include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -145,24 +146,31 @@ void SettingsHolder::clear() {
 
 GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT, bool, toBool, SETTINGS_IPV6ENABLED,
               hasIpv6Enabled, ipv6Enabled, setIpv6Enabled, ipv6EnabledChanged)
-GETSETDEFAULT(SETTINGS_LOCALNETWORKACCESS_DEFAULT, bool, toBool,
-              SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
+GETSETDEFAULT(FeatureList::instance()->localNetworkAccessSupported() &&
+                  SETTINGS_LOCALNETWORKACCESS_DEFAULT,
+              bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
               localNetworkAccessChanged)
-GETSETDEFAULT(SETTINGS_UNSECUREDNETWORKALERT_DEFAULT, bool, toBool,
-              SETTINGS_UNSECUREDNETWORKALERT, hasUnsecuredNetworkAlert,
-              unsecuredNetworkAlert, setUnsecuredNetworkAlert,
-              unsecuredNetworkAlertChanged)
-GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT, bool, toBool,
-              SETTINGS_CAPTIVEPORTALALERT, hasCaptivePortalAlert,
+GETSETDEFAULT(
+    FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
+        SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
+    bool, toBool, SETTINGS_UNSECUREDNETWORKALERT, hasUnsecuredNetworkAlert,
+    unsecuredNetworkAlert, setUnsecuredNetworkAlert,
+    unsecuredNetworkAlertChanged)
+GETSETDEFAULT(FeatureList::instance()->captivePortalNotificationSupported() &&
+                  SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
+              bool, toBool, SETTINGS_CAPTIVEPORTALALERT, hasCaptivePortalAlert,
               captivePortalAlert, setCaptivePortalAlert,
               captivePortalAlertChanged)
-GETSETDEFAULT(SETTINGS_STARTATBOOT_DEFAULT, bool, toBool, SETTINGS_STARTATBOOT,
-              hasStartAtBoot, startAtBoot, setStartAtBoot, startAtBootChanged)
-GETSETDEFAULT(SETTINGS_PROTECTSELECTEDAPPS_DEFAULT, bool, toBool,
-              SETTINGS_PROTECTSELECTEDAPPS, hasProtectSelectedApps,
-              protectSelectedApps, setProtectSelectedApps,
-              protectSelectedAppsChanged)
+GETSETDEFAULT(FeatureList::instance()->startOnBootSupported() &&
+                  SETTINGS_STARTATBOOT_DEFAULT,
+              bool, toBool, SETTINGS_STARTATBOOT, hasStartAtBoot, startAtBoot,
+              setStartAtBoot, startAtBootChanged)
+GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
+                  SETTINGS_PROTECTSELECTEDAPPS_DEFAULT,
+              bool, toBool, SETTINGS_PROTECTSELECTEDAPPS,
+              hasProtectSelectedApps, protectSelectedApps,
+              setProtectSelectedApps, protectSelectedAppsChanged)
 GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
