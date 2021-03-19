@@ -13,6 +13,7 @@ Item {
     id: container
 
     readonly property int defaultMargin: 18
+    property var useSystemLanguage: useSystemLanguageToggle.checked
 
     VPNMenu {
         id: menu
@@ -116,6 +117,16 @@ Item {
 
                 VPNSettingsToggle {
                     id: useSystemLanguageToggle
+
+                    toolTipTitle: {
+                        if (checked) {
+                            //% Disable to select a different language
+                           return qsTrId("vpn.settings.useSystemLanguageEnabled")
+                        }
+                        //% Use system language by default
+                        return qsTrId("vpn.settings.useSystemLanguageDisabled")
+                    }
+
                     onActiveFocusChanged: {
                         if (focus) {
                             forceFocus = true;
@@ -159,10 +170,13 @@ Item {
                 anchors.topMargin: 24
                 Component.onCompleted: {
 
-                    // PLACEHOLDER  if (system language setting is toggled on) maybe we don't scroll
-                    // should we bubble the system language to the top of the list instead?
-                    // should we disable the list?
+                    if (useSystemLanguage) {
+                        // PLACEHOLDER  if (system language setting is toggled on) maybe we don't scroll
+                        // should we bubble the system language to the top of the list instead?
+                        // should we disable the list?
 
+                        return;
+                    }
 
                     // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view

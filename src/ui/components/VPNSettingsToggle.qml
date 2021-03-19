@@ -13,14 +13,13 @@ CheckBox {
     property var toggleColor: Theme.vpnToggleConnected
     property var uiState: Theme.uiState
     property alias forceFocus: vpnSettingsToggle.focus
+    property var toolTipTitle
 
     height: 24
     width: 45
-    state: checked ? "toggled-on" : "toggled-off"
-
     states: [
         State {
-            name: "toggled-on"
+            when: checked
 
             PropertyChanges {
                 target: vpnSettingsToggle
@@ -31,14 +30,16 @@ CheckBox {
                 target: cursor
                 x: 24
             }
+
         },
 
         State {
-            name: "toggled-off"
+            when: !checked
 
             PropertyChanges {
                 target: vpnSettingsToggle
                 toggleColor: Theme.vpnToggleDisconnected
+
             }
 
             PropertyChanges {
@@ -46,8 +47,12 @@ CheckBox {
                 x: 3
             }
         }
-
     ]
+
+    VPNToolTip {
+        text: toolTipTitle
+    }
+
 
     transitions: [
         Transition {
