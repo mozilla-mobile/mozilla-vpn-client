@@ -134,14 +134,14 @@ fi
 print Y "Configuring the debian package for $RELEASE..."
 cp -r ../../linux/debian .  || die "Failed"
 
-mv debian/control.$RELEASE debian/control || die "Failed"
-
 if [[ "$STAGE" ]]; then
   print Y "Staging env configured"
   mv debian/rules.stage.$RELEASE debian/rules || die "Failed"
+  mv debian/control.stage.$RELEASE debian/control || die "Failed"
 else
   print Y "Production env configured"
   mv debian/rules.prod.$RELEASE debian/rules || die "Failed"
+  mv debian/control.prod.$RELEASE debian/control || die "Failed"
 fi
 
 rm debian/control.* || die "Failed"
