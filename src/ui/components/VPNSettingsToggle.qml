@@ -70,7 +70,7 @@ CheckBox {
         anchors.fill: hoverPressHandler
         border.color: toggleColor.focusBorder
         color: "transparent"
-        anchors.margins: 1
+        anchors.margins: -1
         radius: 50
         opacity: vpnSettingsToggle.activeFocus ? 1: 0
     }
@@ -90,7 +90,7 @@ CheckBox {
         id: mouseArea
 
         anchors.fill: hoverPressHandler
-        targetEl: hoverPressHandler
+        targetEl: uiPlaceholder
     }
 
     Rectangle {
@@ -99,10 +99,10 @@ CheckBox {
         color: "#C2C2C2"
         opacity: 0
         z: -1
-        anchors.fill: vpnSettingsToggle
+        anchors.fill: uiPlaceholder
         radius: height / 2
-        anchors.margins: vpnSettingsToggle.focus ? -5 : -4
-
+        anchors.margins: -4
+        state: uiPlaceholder.state
         states: [
             State {
                 name: uiState.stateHovered
@@ -154,7 +154,6 @@ CheckBox {
         id: uiPlaceholder /* Binding loop hack-around */
         height: 24
         width: 45
-        z: 1
         color: "transparent"
     }
 
@@ -163,8 +162,7 @@ CheckBox {
         itemToFocus: vpnSettingsToggle
         itemToAnchor: uiPlaceholder
         colorScheme: toggleColor
-        radius: 50
+        radius: height / 2
         showFocusRings: false
-        opacity: VPNController.state === VPNController.StateOff ? .6 : 1
     }
 }

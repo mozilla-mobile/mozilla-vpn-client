@@ -13,7 +13,7 @@ Item {
     id: container
 
     readonly property int defaultMargin: 18
-    property var useSystemLanguage: useSystemLanguageToggle.checked
+    property var useSystemLanguageEnabled: useSystemLanguageToggle.checked
 
     VPNMenu {
         id: menu
@@ -84,8 +84,8 @@ Item {
                             when: useSystemLanguageToggle.checked
                             PropertyChanges {
                                 target: labelDescription
-                                //% "Mozilla VPN will use your system's default language."
-                                text: qsTrId("vpn.settings.useSystemLanguage")
+                                //% "Mozilla VPN will use your system’s default language."
+                                text: qsTrId("vpn.settings.systemLangaugeEnabledSubtitle")
                             }
                         },
                         State {
@@ -93,7 +93,7 @@ Item {
                             PropertyChanges {
                                 target: labelDescription
                                 //% "Mozilla VPN will not use the default system language."
-                                text: qsTrId("vpn.settings.doNotUseSystemLanguage")
+                                text: qsTrId("vpn.settings.systemLanguageDisabledSubtitle")
                             }
                         }
 
@@ -101,9 +101,8 @@ Item {
                     VPNInterLabel {
                         id: label
                         Layout.alignment: Qt.AlignLeft
-                        //% Use system language
-                            text: qsTrId("vpn.settings.useSystemLanguage")
-
+                        //% "Use system language"
+                        text: qsTrId("vpn.settings.systemLanguageTitle")
                         color: Theme.fontColorDark
                         horizontalAlignment: Text.AlignLeft
                         Layout.fillWidth: true
@@ -118,15 +117,14 @@ Item {
                 VPNSettingsToggle {
                     id: useSystemLanguageToggle
 
+                    objectName: "settingsSystemLanguageToggle"
                     toolTipTitle: {
                         if (checked) {
-                            //% Disable to select a different language
-                           return qsTrId("vpn.settings.useSystemLanguageEnabled")
+                           //% "Disable to select different language"
+                           return qsTrId("vpn.settings.systemLanguageEnabled")
                         }
-                        //% Use system language by default
-                        return qsTrId("vpn.settings.useSystemLanguageDisabled")
+                        return qsTrId("vpn.settings.systemLanguageTitle")
                     }
-
                     onActiveFocusChanged: {
                         if (focus) {
                             forceFocus = true;
@@ -138,9 +136,9 @@ Item {
                     Layout.preferredWidth: 45
                     width: undefined
                     height: undefined
-                    Keys.onDownPressed: repeater.itemAt(0).forceActiveFocus()
+                    Keys.onDownPressed: if (!checked) repeater.itemAt(0).forceActiveFocus()
 
-                    checked: true
+                    checked: false
                     onClicked: {
                         checked = !checked;
                     }
@@ -167,10 +165,10 @@ Item {
                 spacing: 20
                 width: parent.width
                 anchors.top: divider.bottom
-                anchors.topMargin: 24
+                anchors.topMargin: 20
                 Component.onCompleted: {
 
-                    if (useSystemLanguage) {
+                    if (useSystemLanguageEnabled) {
                         // PLACEHOLDER  if (system language setting is toggled on) maybe we don't scroll
                         // should we bubble the system language to the top of the list instead?
                         // should we disable the list?
@@ -218,15 +216,16 @@ Item {
                     id: repeater
 
                     model: VPNLocalizer
-
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
                         id: del
                         objectName: "language-" + code
+                        enabled: !useSystemLanguageEnabled
 
+                        opacity: useSystemLanguageEnabled ? .5 : 1
                         radioButtonLabelText: localizedLanguage
-                        checked: VPNLocalizer.code === code
+                        checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
                         onClicked: {
                             // Placeholder - if (the system language pref is selected) is there extra work to do here?
                             VPNLocalizer.code = code;
@@ -241,7 +240,7 @@ Item {
                             .arg(language)
                             .arg(localizedLanguage)
 
-                        activeFocusOnTab: true
+                        activeFocusOnTab: !useSystemLanguageEnabled
                         onActiveFocusChanged: {
                             if (focus) {
                                 col.scrollDelegateIntoView(del)
