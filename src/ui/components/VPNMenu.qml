@@ -20,7 +20,16 @@ Item {
     height: 56
     // Ensure that menu is on top of possible scrollable
     // content.
-    z: 1
+    z: 2
+
+    MouseArea {
+        // Prevent mouse events from passing through to
+        // underlying elements
+        anchors.fill: menuBar
+        preventStealing: true
+        propagateComposedEvents: false
+        hoverEnabled: true
+    }
 
     Rectangle {
         id: menuBackground
