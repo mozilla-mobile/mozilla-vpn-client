@@ -15,99 +15,53 @@ constexpr const char* DBUS_INTERFACE = "org.freedesktop.Notifications";
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxSystemTrayHandler");
-LinuxSystemTrayHandler* s_instance = nullptr;
 }  // namespace
 
 // static
-LinuxSystemTrayHandler* LinuxSystemTrayHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
+bool LinuxSystemTrayHandler::requiredCustomImpl() {
+  // This custom systemTrayHandler implementation is required only on Unity.
+  QStringList registeredServices = QDBusConnection::sessionBus()
+                                       .interface()
+                                       ->registeredServiceNames()
+                                       .value();
+  return registeredServices.contains("com.canonical.Unity");
 }
 
 LinuxSystemTrayHandler::LinuxSystemTrayHandler(QObject* parent)
     : SystemTrayHandler(parent) {
   MVPN_COUNT_CTOR(LinuxSystemTrayHandler);
-  s_instance = this;
-  // Are we on Unity?
-  QStringList registeredServices = QDBusConnection::sessionBus()
-                                       .interface()
-                                       ->registeredServiceNames()
-                                       .value();
-  m_isUnity = registeredServices.contains("com.canonical.Unity");
 }
 
 LinuxSystemTrayHandler::~LinuxSystemTrayHandler() {
   MVPN_COUNT_DTOR(LinuxSystemTrayHandler);
 }
 
-void LinuxSystemTrayHandler::unsecuredNetworkNotification(
-    const QString& networkName) {
-  logger.log() << "Unsecured network notification shown";
+void LinuxSystemTrayHandler::showNotificationInternal(Message type,
+                                                      const QString& title,
+                                                      const QString& message,
+                                                      int timerMsec) {
+  QString actionMessage;
+  switch (type) {
+    case None:
+      return SystemTrayHandler::showNotificationInternal(type, title, message,
+                                                         timerMsec);
 
-  //% "Unsecured Wi-Fi network detected"
-  QString title = qtTrId("vpn.systray.unsecuredNetwork.title");
+    case UnsecuredNetwork:
+      actionMessage = qtTrId("vpn.toggle.on");
+      break;
 
-  //% "%1 is not secure. Click here to turn on VPN and secure your device."
-  //: %1 is the Wi-Fi network name
-  QString message =
-      qtTrId("vpn.systray.unsecuredNetwork2.message").arg(networkName);
-  QString actionMessage = qtTrId("vpn.toggle.on");
+    case CaptivePortalBlock:
+      actionMessage = qtTrId("vpn.toggle.off");
+      break;
 
-  if (m_isUnity) {
-    showUnityActionNotification(UnsecuredNetwork, title, actionMessage, message,
-                                Constants::UNSECURED_NETWORK_ALERT_MSEC);
-  } else {
-    SystemTrayHandler::instance()->showNotificationInternal(
-        UnsecuredNetwork, title, message,
-        Constants::UNSECURED_NETWORK_ALERT_MSEC);
+    case CaptivePortalUnblock:
+      actionMessage = qtTrId("vpn.toggle.on");
+      break;
+
+    default:
+      Q_ASSERT(false);
   }
-}
 
-void LinuxSystemTrayHandler::captivePortalBlockNotificationRequired() {
-  logger.log() << "Captive portal block notification shown";
-
-  //% "Guest Wi-Fi portal blocked"
-  QString title = qtTrId("vpn.systray.captivePortalBlock.title");
-
-  //% "The guest Wi-Fi network you’re connected to requires action. Click here"
-  //% " to turn off VPN to see the portal."
-  QString message = qtTrId("vpn.systray.captivePortalBlock2.message");
-  QString actionMessage = qtTrId("vpn.toggle.off");
-
-  if (m_isUnity) {
-    showUnityActionNotification(CaptivePortalBlock, title, actionMessage,
-                                message, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
-  } else {
-    SystemTrayHandler::instance()->showNotificationInternal(
-        CaptivePortalBlock, title, message,
-        Constants::CAPTIVE_PORTAL_ALERT_MSEC);
-  }
-}
-
-void LinuxSystemTrayHandler::captivePortalUnblockNotificationRequired() {
-  logger.log() << "Captive portal unblock notification shown";
-
-  //% "Guest Wi-Fi portal detected"
-  QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
-
-  //% "The guest Wi-Fi network you’re connected to may not be secure. Click"
-  //% " here to turn on VPN to secure your device."
-  QString message = qtTrId("vpn.systray.captivePortalUnblock2.message");
-  QString actionMessage = qtTrId("vpn.toggle.on");
-
-  if (m_isUnity) {
-    showUnityActionNotification(CaptivePortalUnblock, title, actionMessage,
-                                message, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
-  } else {
-    SystemTrayHandler::instance()->showNotificationInternal(
-        CaptivePortalUnblock, title, message,
-        Constants::CAPTIVE_PORTAL_ALERT_MSEC);
-  }
-}
-
-void LinuxSystemTrayHandler::showUnityActionNotification(
-    SystemTrayHandler::Message type, const QString& title,
-    const QString& actionMessage, const QString& message, int timerMsec) {
   m_lastMessage = type;
   emit notificationShown(title, message);
 
