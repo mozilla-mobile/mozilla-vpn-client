@@ -12,7 +12,7 @@
 class MozillaVPN;
 class QAction;
 
-class SystemTrayHandler final : public QSystemTrayIcon {
+class SystemTrayHandler : public QSystemTrayIcon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SystemTrayHandler)
 
@@ -51,13 +51,16 @@ class SystemTrayHandler final : public QSystemTrayIcon {
 
   void messageClickHandle();
 
+ protected:
+  void showNotificationInternal(Message type, const QString& title,
+                                const QString& message, int timerMsec);
+  Message m_lastMessage = None;
+
  private:
   void showHideWindow();
 
   void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
-  void showNotificationInternal(Message type, const QString& title,
-                                const QString& message, int timerMsec);
 
  private:
   QMenu m_menu;
@@ -70,8 +73,6 @@ class SystemTrayHandler final : public QSystemTrayIcon {
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
   QMenu* m_helpMenu = nullptr;
-
-  Message m_lastMessage = None;
 };
 
 #endif  // SYSTEMTRAYHANDLER_H

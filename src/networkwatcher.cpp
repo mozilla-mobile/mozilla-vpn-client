@@ -17,6 +17,7 @@
 #endif
 
 #ifdef MVPN_LINUX
+#  include "platforms/linux/linuxsystemtrayhandler.h"
 #  include "platforms/linux/linuxnetworkwatcher.h"
 #endif
 
@@ -131,7 +132,11 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     m_firstNotification = false;
   }
 
+#  if defined(MVPN_LINUX)
+  LinuxSystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
+#  else
   SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
+#  endif
 #endif
 }
 

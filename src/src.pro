@@ -306,6 +306,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxnotificationhandler.cpp \
             platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -318,6 +319,7 @@ else:linux:!android {
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxnotificationhandler.h \
             platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
