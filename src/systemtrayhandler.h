@@ -62,7 +62,6 @@ class SystemTrayHandler : public QSystemTrayIcon {
 
   void maybeActivated(QSystemTrayIcon::ActivationReason reason);
 
-
  private:
   QMenu m_menu;
 
