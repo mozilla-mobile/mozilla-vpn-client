@@ -10,6 +10,10 @@
 #include "qmlengineholder.h"
 #include "statusicon.h"
 
+#ifdef MVPN_LINUX
+#  include "platforms/linux/linuxsystemtrayhandler.h"
+#endif
+
 #include <array>
 #include <QIcon>
 #include <QMenu>
@@ -20,6 +24,17 @@ Logger logger(LOG_MAIN, "SystemTrayHandler");
 
 SystemTrayHandler* s_instance = nullptr;
 }  // namespace
+
+// static
+SystemTrayHandler* SystemTrayHandler::create(QObject* parent) {
+#if defined(MVPN_LINUX)
+  if (LinuxSystemTrayHandler::requiredCustomImpl()) {
+    return new LinuxSystemTrayHandler(parent);
+  }
+#endif
+
+  return new SystemTrayHandler(parent);
+}
 
 // static
 SystemTrayHandler* SystemTrayHandler::instance() {
@@ -88,6 +103,11 @@ SystemTrayHandler::~SystemTrayHandler() {
 
 void SystemTrayHandler::updateContextMenu() {
   logger.log() << "Update context menu";
+
+  // If the QML Engine Holder has been released, we are shutting down.
+  if (!QmlEngineHolder::exists()) {
+    return;
+  }
 
   MozillaVPN* vpn = MozillaVPN::instance();
 

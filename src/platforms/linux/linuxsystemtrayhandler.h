@@ -13,20 +13,14 @@ class LinuxSystemTrayHandler final : public SystemTrayHandler {
   Q_DISABLE_COPY_MOVE(LinuxSystemTrayHandler)
 
  public:
-  static LinuxSystemTrayHandler* instance();
+  static bool requiredCustomImpl();
 
   LinuxSystemTrayHandler(QObject* parent);
   ~LinuxSystemTrayHandler();
-  void captivePortalBlockNotificationRequired();
-  void captivePortalUnblockNotificationRequired();
-  void unsecuredNetworkNotification(const QString& networkName);
 
  private:
-  void showUnityActionNotification(SystemTrayHandler::Message type,
-                                   const QString& title,
-                                   const QString& actionMessage,
-                                   const QString& message, int timerMsec);
-  bool m_isUnity = true;
+  void showNotificationInternal(Message type, const QString& title,
+                                const QString& message, int timerMsec) override;
 };
 
 #endif  // LINUXNOTIFICATIONHANDLER_H

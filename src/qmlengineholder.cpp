@@ -33,6 +33,9 @@ QmlEngineHolder* QmlEngineHolder::instance() {
   return s_instance;
 }
 
+// static
+bool QmlEngineHolder::exists() { return !!s_instance; }
+
 QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
   return m_engine.networkAccessManager();
 }

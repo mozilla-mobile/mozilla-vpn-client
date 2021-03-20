@@ -8,10 +8,6 @@
 #include "logger.h"
 #include "systemtrayhandler.h"
 
-#ifdef MVPN_LINUX
-#  include "platforms/linux/linuxsystemtrayhandler.h"
-#endif
-
 namespace {
 Logger logger(LOG_NETWORKING, "CaptivePortalNotifier");
 }
@@ -31,22 +27,12 @@ CaptivePortalNotifier::~CaptivePortalNotifier() {
 
 void CaptivePortalNotifier::notifyCaptivePortalBlock() {
   logger.log() << "Captive portal block notify";
-
-#if defined(MVPN_LINUX)
-  LinuxSystemTrayHandler::instance()->captivePortalBlockNotificationRequired();
-#else
   SystemTrayHandler::instance()->captivePortalBlockNotificationRequired();
-#endif
 }
 
 void CaptivePortalNotifier::notifyCaptivePortalUnblock() {
   logger.log() << "Captive portal unblock notify";
-#if defined(MVPN_LINUX)
-  LinuxSystemTrayHandler::instance()
-      ->captivePortalUnblockNotificationRequired();
-#else
   SystemTrayHandler::instance()->captivePortalUnblockNotificationRequired();
-#endif
 }
 
 void CaptivePortalNotifier::notificationClicked(

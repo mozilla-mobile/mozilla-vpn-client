@@ -23,7 +23,6 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
-#  include "platforms/linux/linuxsystemtrayhandler.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -342,24 +341,22 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-#if defined(MVPN_LINUX)
-    LinuxSystemTrayHandler systemTrayHandler(qApp);
-#else
-    SystemTrayHandler systemTrayHandler(qApp);
-#endif
-    systemTrayHandler.show();
+    SystemTrayHandler* systemTrayHandler = SystemTrayHandler::create(qApp);
+    Q_ASSERT(systemTrayHandler);
+
+    systemTrayHandler->show();
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &systemTrayHandler,
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
                      &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.currentServer(), &ServerData::changed,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
@@ -378,7 +375,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateIcon);
+                     systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
