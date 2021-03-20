@@ -37,6 +37,9 @@ class SystemTrayHandler : public QSystemTrayIcon {
   void showNotification(const QString& title, const QString& message,
                         int timerMsec);
 
+  void showNotificationInternal(Message type, const QString& title,
+                                const QString& message, int timerMsec);
+
   void retranslate();
 
  signals:
@@ -52,8 +55,6 @@ class SystemTrayHandler : public QSystemTrayIcon {
   void messageClickHandle();
 
  protected:
-  void showNotificationInternal(Message type, const QString& title,
-                                const QString& message, int timerMsec);
   Message m_lastMessage = None;
 
  private:
