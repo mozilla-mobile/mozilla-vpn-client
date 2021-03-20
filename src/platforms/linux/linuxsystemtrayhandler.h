@@ -24,7 +24,8 @@ class LinuxSystemTrayHandler final : public SystemTrayHandler {
  private:
   void showUnityActionNotification(SystemTrayHandler::Message type,
                                    const QString& title,
-                                   const QString& actionText, int timerMsec);
+                                   const QString& actionMessage,
+                                   const QString& message, int timerMsec);
   bool m_isUnity = true;
 };
 

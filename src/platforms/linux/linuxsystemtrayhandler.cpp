@@ -51,9 +51,10 @@ void LinuxSystemTrayHandler::unsecuredNetworkNotification(
   //: %1 is the Wi-Fi network name
   QString message =
       qtTrId("vpn.systray.unsecuredNetwork2.message").arg(networkName);
+  QString actionMessage = qtTrId("vpn.toggle.on");
 
   if (m_isUnity) {
-    showUnityActionNotification(UnsecuredNetwork, title, message,
+    showUnityActionNotification(UnsecuredNetwork, title, actionMessage, message,
                                 Constants::UNSECURED_NETWORK_ALERT_MSEC);
   } else {
     SystemTrayHandler::instance()->showNotificationInternal(
@@ -71,10 +72,11 @@ void LinuxSystemTrayHandler::captivePortalBlockNotificationRequired() {
   //% "The guest Wi-Fi network you’re connected to requires action. Click here"
   //% " to turn off VPN to see the portal."
   QString message = qtTrId("vpn.systray.captivePortalBlock2.message");
+  QString actionMessage = qtTrId("vpn.toggle.off");
 
   if (m_isUnity) {
-    showUnityActionNotification(CaptivePortalBlock, title, message,
-                                Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+    showUnityActionNotification(CaptivePortalBlock, title, actionMessage,
+                                message, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
   } else {
     SystemTrayHandler::instance()->showNotificationInternal(
         CaptivePortalBlock, title, message,
@@ -91,10 +93,11 @@ void LinuxSystemTrayHandler::captivePortalUnblockNotificationRequired() {
   //% "The guest Wi-Fi network you’re connected to may not be secure. Click"
   //% " here to turn on VPN to secure your device."
   QString message = qtTrId("vpn.systray.captivePortalUnblock2.message");
+  QString actionMessage = qtTrId("vpn.toggle.on");
 
   if (m_isUnity) {
-    showUnityActionNotification(CaptivePortalUnblock, title, message,
-                                Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+    showUnityActionNotification(CaptivePortalUnblock, title, actionMessage,
+                                message, Constants::CAPTIVE_PORTAL_ALERT_MSEC);
   } else {
     SystemTrayHandler::instance()->showNotificationInternal(
         CaptivePortalUnblock, title, message,
@@ -104,7 +107,7 @@ void LinuxSystemTrayHandler::captivePortalUnblockNotificationRequired() {
 
 void LinuxSystemTrayHandler::showUnityActionNotification(
     SystemTrayHandler::Message type, const QString& title,
-    const QString& message, int timerMsec) {
+    const QString& actionMessage, const QString& message, int timerMsec) {
   m_lastMessage = type;
   emit notificationShown(title, message);
 
@@ -114,10 +117,11 @@ void LinuxSystemTrayHandler::showUnityActionNotification(
     qWarning("Failed to connect to the notification manager via system dbus");
     return;
   }
+
   uint32_t replacesId = 0;  // Don't replace.
   const char* appIcon;
-  QStringList actions{"", message};
+  QStringList actions{"", actionMessage};
   QMap<QString, QVariant> hints;
-  n.call("Notify", "", replacesId, appIcon, title, "", actions, hints,
+  n.call("Notify", "", replacesId, appIcon, title, message, actions, hints,
          timerMsec);
 }
