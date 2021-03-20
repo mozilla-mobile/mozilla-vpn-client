@@ -28,7 +28,14 @@ LinuxSystemTrayHandler::LinuxSystemTrayHandler(QObject* parent)
     : SystemTrayHandler(parent) {
   MVPN_COUNT_CTOR(LinuxSystemTrayHandler);
   s_instance = this;
+  // Are we on Unity?
+  QStringList registeredServices = QDBusConnection::sessionBus()
+                                       .interface()
+                                       ->registeredServiceNames()
+                                       .value();
+  m_isUnity = registeredServices.contains("com.canonical.Unity");
 }
+
 LinuxSystemTrayHandler::~LinuxSystemTrayHandler() {
   MVPN_COUNT_DTOR(LinuxSystemTrayHandler);
 }
@@ -42,59 +49,75 @@ void LinuxSystemTrayHandler::unsecuredNetworkNotification(
 
   //% "%1 is not secure. Click here to turn on VPN and secure your device."
   //: %1 is the Wi-Fi network name
-  QString actionText =
+  QString message =
       qtTrId("vpn.systray.unsecuredNetwork2.message").arg(networkName);
 
-  showActionNotification(UnsecuredNetwork, title, actionText,
-                         Constants::UNSECURED_NETWORK_ALERT_MSEC);
+  if (m_isUnity) {
+    showUnityActionNotification(UnsecuredNetwork, title, message,
+                                Constants::UNSECURED_NETWORK_ALERT_MSEC);
+  } else {
+    SystemTrayHandler::instance()->showNotificationInternal(
+        UnsecuredNetwork, title, message,
+        Constants::UNSECURED_NETWORK_ALERT_MSEC);
+  }
 }
 
-void LinuxSystemTrayHandler::showMessage(const QStringList actions,
-                                         const QString& summary,
-                                         const QString& body, int timerMsec) {
-  logger.log() << "--------------------------------------- IT'S A DBUS MESSAGE";
-  /*
-  Notify via org.freedesktop.SystemTrays dbus
-  Documentation: https://developer.gnome.org/notification-spec/#commands
+void LinuxSystemTrayHandler::captivePortalBlockNotificationRequired() {
+  logger.log() << "Captive portal block notification shown";
 
-  Inputs for "Notify" command are:
-  - STRING app_name,
-  - UINT32 replaces_id,
-  - STRING app_icon,
-  - STRING summary,
-  - STRING body,
-  - ARRAY actions,
-  - DICT hints,
-  - INT32 expire_timeout
-  */
+  //% "Guest Wi-Fi portal blocked"
+  QString title = qtTrId("vpn.systray.captivePortalBlock.title");
+
+  //% "The guest Wi-Fi network you’re connected to requires action. Click here"
+  //% " to turn off VPN to see the portal."
+  QString message = qtTrId("vpn.systray.captivePortalBlock2.message");
+
+  if (m_isUnity) {
+    showUnityActionNotification(CaptivePortalBlock, title, message,
+                                Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  } else {
+    SystemTrayHandler::instance()->showNotificationInternal(
+        CaptivePortalBlock, title, message,
+        Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  }
+}
+
+void LinuxSystemTrayHandler::captivePortalUnblockNotificationRequired() {
+  logger.log() << "Captive portal unblock notification shown";
+
+  //% "Guest Wi-Fi portal detected"
+  QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
+
+  //% "The guest Wi-Fi network you’re connected to may not be secure. Click"
+  //% " here to turn on VPN to secure your device."
+  QString message = qtTrId("vpn.systray.captivePortalUnblock2.message");
+
+  if (m_isUnity) {
+    showUnityActionNotification(CaptivePortalUnblock, title, message,
+                                Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  } else {
+    SystemTrayHandler::instance()->showNotificationInternal(
+        CaptivePortalUnblock, title, message,
+        Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+  }
+}
+
+void LinuxSystemTrayHandler::showUnityActionNotification(
+    SystemTrayHandler::Message type, const QString& title,
+    const QString& message, int timerMsec) {
+  m_lastMessage = type;
+  emit notificationShown(title, message);
+
   QDBusInterface n(DBUS_ITEM, DBUS_PATH, DBUS_INTERFACE,
                    QDBusConnection::sessionBus());
   if (!n.isValid()) {
     qWarning("Failed to connect to the notification manager via system dbus");
     return;
   }
-  const char* appName =
-      "Mozilla VPN";        // This doesn't appear to be getting used
   uint32_t replacesId = 0;  // Don't replace.
   const char* appIcon = MVPN_ICON_PATH;
+  QStringList actions{"", message};
   QMap<QString, QVariant> hints;
-  n.call("Notify", appName, replacesId, appIcon, summary, body, actions, hints,
+  n.call("Notify", "", replacesId, appIcon, title, "", actions, hints,
          timerMsec);
-}
-
-void LinuxSystemTrayHandler::showActionNotification(
-    SystemTrayHandler::Message type, const QString& title,
-    const QString& actionText, int timerMsec) {
-  m_lastMessage = type;
-  emit notificationShown(title, actionText);
-  QStringList actions{"", actionText};
-  showMessage(actions, title, "", timerMsec);
-}
-
-void LinuxSystemTrayHandler::showNotificationInternal(
-    SystemTrayHandler::Message type, const QString& title,
-    const QString& message, int timerMsec) {
-  m_lastMessage = type;
-  emit notificationShown(title, message);
-  showMessage(QStringList(), title, message, timerMsec);
 }

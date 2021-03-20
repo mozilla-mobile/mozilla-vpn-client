@@ -17,19 +17,15 @@ class LinuxSystemTrayHandler final : public SystemTrayHandler {
 
   LinuxSystemTrayHandler(QObject* parent);
   ~LinuxSystemTrayHandler();
+  void captivePortalBlockNotificationRequired();
+  void captivePortalUnblockNotificationRequired();
   void unsecuredNetworkNotification(const QString& networkName);
 
- protected:
-  void showActionNotification(SystemTrayHandler::Message type,
-                              const QString& title, const QString& actionText,
-                              int timerMsec);
-  void showNotificationInternal(SystemTrayHandler::Message type,
-                                const QString& title, const QString& message,
-                                int timerMsec);
-
  private:
-  void showMessage(QStringList actions, const QString& summary,
-                   const QString& body, int timerMsec);
+  void showUnityActionNotification(SystemTrayHandler::Message type,
+                                   const QString& title,
+                                   const QString& actionText, int timerMsec);
+  bool m_isUnity = true;
 };
 
 #endif  // LINUXNOTIFICATIONHANDLER_H

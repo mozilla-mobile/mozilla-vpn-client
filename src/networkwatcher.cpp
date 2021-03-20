@@ -137,6 +137,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
 #  else
   SystemTrayHandler::instance()->unsecuredNetworkNotification(networkName);
 #  endif
+
 #endif
 }
 
