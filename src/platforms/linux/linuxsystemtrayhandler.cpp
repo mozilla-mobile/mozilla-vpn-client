@@ -12,6 +12,7 @@
 constexpr const char* DBUS_ITEM = "org.freedesktop.Notifications";
 constexpr const char* DBUS_PATH = "/org/freedesktop/Notifications";
 constexpr const char* DBUS_INTERFACE = "org.freedesktop.Notifications";
+constexpr const char* ACTION_ID = "mozilla_vpn_notification";
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxSystemTrayHandler");
@@ -19,17 +20,28 @@ Logger logger(LOG_LINUX, "LinuxSystemTrayHandler");
 
 // static
 bool LinuxSystemTrayHandler::requiredCustomImpl() {
+  if (!QDBusConnection::sessionBus().isConnected()) {
+    return false;
+  }
+
+  QDBusConnectionInterface* interface =
+      QDBusConnection::sessionBus().interface();
+  if (!interface) {
+    return false;
+  }
+
   // This custom systemTrayHandler implementation is required only on Unity.
-  QStringList registeredServices = QDBusConnection::sessionBus()
-                                       .interface()
-                                       ->registeredServiceNames()
-                                       .value();
+  QStringList registeredServices = interface->registeredServiceNames().value();
   return registeredServices.contains("com.canonical.Unity");
 }
 
 LinuxSystemTrayHandler::LinuxSystemTrayHandler(QObject* parent)
     : SystemTrayHandler(parent) {
   MVPN_COUNT_CTOR(LinuxSystemTrayHandler);
+
+  QDBusConnection::sessionBus().connect(DBUS_ITEM, DBUS_PATH, DBUS_INTERFACE,
+                                        "ActionInvoked", this,
+                                        SLOT(actionInvoked(uint, QString)));
 }
 
 LinuxSystemTrayHandler::~LinuxSystemTrayHandler() {
@@ -74,8 +86,22 @@ void LinuxSystemTrayHandler::showNotificationInternal(Message type,
 
   uint32_t replacesId = 0;  // Don't replace.
   const char* appIcon = MVPN_ICON_PATH;
-  QStringList actions{"", actionMessage};
+  QStringList actions{ACTION_ID, actionMessage};
   QMap<QString, QVariant> hints;
-  n.call("Notify", "", replacesId, appIcon, title, message, actions, hints,
-         timerMsec);
+
+  QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId, appIcon,
+                                  title, message, actions, hints, timerMsec);
+  if (!reply.isValid()) {
+    logger.log() << "Failed to show the notification";
+  }
+
+  m_lastNotificationId = reply;
+}
+
+void LinuxSystemTrayHandler::actionInvoked(uint actionId, QString action) {
+  logger.log() << "Notification clicked" << actionId << action;
+
+  if (action == ACTION_ID && m_lastNotificationId == actionId) {
+    messageClickHandle();
+  }
 }

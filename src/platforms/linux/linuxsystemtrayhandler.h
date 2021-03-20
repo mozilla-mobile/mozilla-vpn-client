@@ -10,6 +10,7 @@
 #include <QObject>
 
 class LinuxSystemTrayHandler final : public SystemTrayHandler {
+  Q_OBJECT
   Q_DISABLE_COPY_MOVE(LinuxSystemTrayHandler)
 
  public:
@@ -21,6 +22,12 @@ class LinuxSystemTrayHandler final : public SystemTrayHandler {
  private:
   void showNotificationInternal(Message type, const QString& title,
                                 const QString& message, int timerMsec) override;
+
+ private slots:
+  void actionInvoked(uint actionId, QString action);
+
+ private:
+  uint m_lastNotificationId = 0;
 };
 
 #endif  // LINUXNOTIFICATIONHANDLER_H

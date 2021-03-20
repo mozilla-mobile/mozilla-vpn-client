@@ -341,7 +341,8 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-    SystemTrayHandler* systemTrayHandler = SystemTrayHandler::create(qApp);
+    SystemTrayHandler* systemTrayHandler =
+        SystemTrayHandler::create(&engineHolder);
     Q_ASSERT(systemTrayHandler);
 
     systemTrayHandler->show();
