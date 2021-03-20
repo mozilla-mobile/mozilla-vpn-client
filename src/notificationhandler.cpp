@@ -7,9 +7,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 
-#if defined(MVPN_LINUX)
-#  include "platforms/linux/linuxnotificationhandler.h"
-#elif defined(MVPN_IOS)
+#if defined(MVPN_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
 #elif defined(MVPN_ANDROID)
 #  include "platforms/android/androidnotificationhandler.h"
@@ -23,9 +21,7 @@ Logger logger(LOG_MAIN, "NotificationHandler");
 
 // static
 NotificationHandler* NotificationHandler::create(QObject* parent) {
-#if defined(MVPN_LINUX)
-  return new LinuxNotificationHandler(parent);
-#elif defined(MVPN_IOS)
+#if defined(MVPN_IOS)
   return new IOSNotificationHandler(parent);
 #elif defined(MVPN_ANDROID)
   return new AndroidNotificationHandler(parent);
