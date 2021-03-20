@@ -23,6 +23,7 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
+#  include "platforms/linux/linuxsystemtrayhandler.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -341,7 +342,11 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
+#if defined(MVPN_LINUX)
+    LinuxSystemTrayHandler systemTrayHandler(qApp);
+#else
     SystemTrayHandler systemTrayHandler(qApp);
+#endif
     systemTrayHandler.show();
 
     NotificationHandler* notificationHandler =
