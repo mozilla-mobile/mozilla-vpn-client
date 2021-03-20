@@ -119,7 +119,7 @@ void LinuxSystemTrayHandler::showUnityActionNotification(
   }
 
   uint32_t replacesId = 0;  // Don't replace.
-  const char* appIcon;
+  const char* appIcon = MVPN_ICON_PATH;
   QStringList actions{"", actionMessage};
   QMap<QString, QVariant> hints;
   n.call("Notify", "", replacesId, appIcon, title, message, actions, hints,
