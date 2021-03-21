@@ -24,10 +24,11 @@ class SystemTrayHandler : public QSystemTrayIcon {
     CaptivePortalUnblock,
   };
 
+  static SystemTrayHandler* create(QObject* parent);
+
   static SystemTrayHandler* instance();
 
-  explicit SystemTrayHandler(QObject* parent);
-  ~SystemTrayHandler();
+  virtual ~SystemTrayHandler();
 
   void captivePortalBlockNotificationRequired();
   void captivePortalUnblockNotificationRequired();
@@ -36,9 +37,6 @@ class SystemTrayHandler : public QSystemTrayIcon {
 
   void showNotification(const QString& title, const QString& message,
                         int timerMsec);
-
-  void showNotificationInternal(Message type, const QString& title,
-                                const QString& message, int timerMsec);
 
   void retranslate();
 
@@ -53,6 +51,12 @@ class SystemTrayHandler : public QSystemTrayIcon {
   void updateContextMenu();
 
   void messageClickHandle();
+
+ protected:
+  explicit SystemTrayHandler(QObject* parent);
+
+  virtual void showNotificationInternal(Message type, const QString& title,
+                                        const QString& message, int timerMsec);
 
  protected:
   Message m_lastMessage = None;
