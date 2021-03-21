@@ -305,6 +305,7 @@ else:linux:!android {
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -316,6 +317,7 @@ else:linux:!android {
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -372,6 +374,7 @@ else:linux:!android {
     icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
     INSTALLS += icon48x48
 
+    DEFINES += MVPN_ICON_PATH=\\\"$${USRPATH}/share/icons/hicolor/64x64/apps/mozillavpn.png\\\"
     icon64x64.path = $${USRPATH}/share/icons/hicolor/64x64/apps
     icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
     INSTALLS += icon64x64

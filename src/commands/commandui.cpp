@@ -341,20 +341,23 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-    SystemTrayHandler systemTrayHandler(qApp);
-    systemTrayHandler.show();
+    SystemTrayHandler* systemTrayHandler =
+        SystemTrayHandler::create(&engineHolder);
+    Q_ASSERT(systemTrayHandler);
+
+    systemTrayHandler->show();
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &systemTrayHandler,
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
                      &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.currentServer(), &ServerData::changed,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
@@ -373,7 +376,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateIcon);
+                     systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
