@@ -137,10 +137,12 @@ Item {
                     width: undefined
                     height: undefined
                     Keys.onDownPressed: if (!checked) repeater.itemAt(0).forceActiveFocus()
-
-                    checked: false
+                    checked: VPNLocalizer.code === ""
                     onClicked: {
                         checked = !checked;
+                        if (checked) {
+                            VPNLocalizer.code = "";
+                        }
                     }
                 }
             }
@@ -228,7 +230,6 @@ Item {
                         radioButtonLabelText: localizedLanguage
                         checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
                         onClicked: {
-                            // Placeholder - if (the system language pref is selected) is there extra work to do here?
                             VPNLocalizer.code = code;
                         }
                         anchors.left: parent.left
