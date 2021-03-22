@@ -46,7 +46,7 @@ void ConnectionHealth::stop() {
 
 void ConnectionHealth::start(const QString& serverIpv4Gateway) {
   logger.log() << "ConnectionHealth activated";
-  if (!serverIpv4Gateway.isEmpty() ||
+  if (serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
     return;
   }
