@@ -169,17 +169,13 @@ Item {
                 Component.onCompleted: {
 
                     if (useSystemLanguageEnabled) {
-                        // PLACEHOLDER  if (system language setting is toggled on) maybe we don't scroll
-                        // should we bubble the system language to the top of the list instead?
-                        // should we disable the list?
-
                         return;
                     }
 
                     // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
-                    const yCenter = (vpnFlickable.height - row.implicitHeight - menu.height ) / 2
+                    const yCenter = (vpnFlickable.height - menu.height ) / 2
 
                     for (let idx = 0; idx < repeater.count; idx++) {
                         const repeaterItem = repeater.itemAt(idx);
@@ -188,8 +184,13 @@ Item {
                             continue;
                         }
 
-                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 1.5) - yCenter;
+                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 3) - yCenter;
                         const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
+
+                        // Prevent edge case negative scrolling
+                        if (destinationY < 0) {
+                            return;
+                        }
 
                         vpnFlickable.contentY = destinationY;
                         return;
@@ -243,7 +244,7 @@ Item {
                         activeFocusOnTab: !useSystemLanguageEnabled
                         onActiveFocusChanged: {
                             if (focus) {
-                                col.scrollDelegateIntoView(del)
+                                col.scrollDelegateIntoView(del);
                                 focusScope.lastFocusedItemIdx = index;
                             }
                         }
