@@ -36,7 +36,7 @@ ErrorHandler::ErrorType ErrorHandler::toErrorType(
       return ConnectionFailureError;
 
     case QNetworkReply::HostNotFoundError:
-      [[fallthrough]];
+      return NoConnectionError;
     case QNetworkReply::TimeoutError:
       return VPNDependentConnectionError;
     case QNetworkReply::UnknownNetworkError:
