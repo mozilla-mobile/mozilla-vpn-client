@@ -37,7 +37,7 @@ Item {
             if (focus && lastFocusedItemIdx !== -1) {
               repeater.itemAt(lastFocusedItemIdx).forceActiveFocus();
           } else if (focus) {
-                useSystemLanguageToggle.forceActiveFocus()
+                useSystemLanguageToggle.forceActiveFocus();
             }
         }
         Accessible.name: menu.title
@@ -121,15 +121,15 @@ Item {
                     toolTipTitle: {
                         if (checked) {
                            //% "Disable to select different language"
-                           return qsTrId("vpn.settings.systemLanguageEnabled")
+                           return qsTrId("vpn.settings.systemLanguageEnabled");
                         }
-                        return qsTrId("vpn.settings.systemLanguageTitle")
+                        return qsTrId("vpn.settings.systemLanguageTitle");
                     }
                     onActiveFocusChanged: {
                         if (focus) {
                             forceFocus = true;
                             focusScope.lastFocusedItemIdx = -1;
-                            col.scrollDelegateIntoView(useSystemLanguageToggle)
+                            col.scrollDelegateIntoView(useSystemLanguageToggle);
                       }
                     }
                     Layout.preferredHeight: 24
@@ -253,8 +253,8 @@ Item {
                         Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : useSystemLanguageToggle.forceActiveFocus()
                         Keys.onBacktabPressed: {
                             if (index === 0) {
-                                useSystemLanguageToggle.forceActiveFocus()
-                                return
+                                useSystemLanguageToggle.forceActiveFocus();
+                                return;
                             }
                             menu.forceActiveFocus();
                         }
