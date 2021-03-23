@@ -219,6 +219,20 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
                            Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
+void SystemTrayHandler::captivePortalPossibleNotificationRequired() {
+  logger.log() << "Captive portal possible notification shown";
+
+  //% "Guest Wi-Fi portal possible"
+  QString title = qtTrId("vpn.systray.captivePortalPossible.title");
+
+  //% "The guest Wi-Fi network you’re connected to might require action. Click
+  //here" % " to turn off VPN to see the portal."
+  QString message = qtTrId("vpn.systray.captivePortalPossible.message");
+
+  showNotificationInternal(CaptivePortalBlock, title, message,
+                           Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+}
+
 void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   logger.log() << "Captive portal unblock notification shown";
 

@@ -7,6 +7,7 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QQueue>
 
 class CaptivePortalRequest final : public QObject {
   Q_OBJECT
@@ -18,16 +19,19 @@ class CaptivePortalRequest final : public QObject {
 
   void run();
 
+  enum CaptivePortalResult { NoPortal, PortalPossible, PortalDetected };
+
  signals:
-  void completed(bool detected);
+  void completed(CaptivePortalResult detected);
 
  private:
   void createRequest(const QUrl& url);
-  void maybeComplete();
+  void nextStep();
+  void onResult(CaptivePortalResult portalDetected);
 
  private:
-  uint32_t m_pendingRequests = 0;
   bool m_completed = false;
+  QQueue<QUrl> m_requestQueue = QQueue<QUrl>();
 };
 
 #endif  // CAPTIVEPORTALREQUEST_H
