@@ -135,6 +135,8 @@ describe('Settings', function() {
   });
 
   it('Checking the languages settings', async () => {
+    await vpn.setSetting('language-code', '');
+
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
 
