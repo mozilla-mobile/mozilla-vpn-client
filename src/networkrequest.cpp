@@ -205,7 +205,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
     QObject* parent, const QUrl& url, const QByteArray& host) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 0);
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
