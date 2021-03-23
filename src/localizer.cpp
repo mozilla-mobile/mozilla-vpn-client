@@ -100,26 +100,9 @@ void Localizer::initialize() {
 
 void Localizer::loadLanguage(const QString& code) {
   logger.log() << "Loading language:" << code;
-  if (loadLanguageInternal(code)) {
-    return;
-  }
-
-  logger.log() << "Loading default language (fallback)";
-  loadLanguageInternal("en");
-}
-
-bool Localizer::loadLanguageInternal(const QString& code) {
-  QLocale locale = QLocale(code);
-  if (code.isEmpty()) {
-    locale = QLocale::system();
-  }
-
-  QLocale::setDefault(locale);
-
-  if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-    logger.log() << "Loading the locale failed."
-                 << "code";
-    return false;
+  if (!loadLanguageInternal(code)) {
+    logger.log() << "Loading default language (fallback)";
+    loadLanguageInternal("en");
   }
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -135,6 +118,21 @@ bool Localizer::loadLanguageInternal(const QString& code) {
 
   m_code = code;
   emit codeChanged();
+}
+
+bool Localizer::loadLanguageInternal(const QString& code) {
+  QLocale locale = QLocale(code);
+  if (code.isEmpty()) {
+    locale = QLocale::system();
+  }
+
+  QLocale::setDefault(locale);
+
+  if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
+    logger.log() << "Loading the locale failed."
+                 << "code";
+    return false;
+  }
 
   return true;
 }
