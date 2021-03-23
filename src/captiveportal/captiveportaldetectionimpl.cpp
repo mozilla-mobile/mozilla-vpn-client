@@ -23,10 +23,11 @@ void CaptivePortalDetectionImpl::start() {
   logger.log() << "Captive portal detection started";
 
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
-  connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-    logger.log() << "Captive portal detection:" << detected;
-    emit detectionCompleted(detected);
-  });
+  connect(request, &CaptivePortalRequest::completed,
+          [this](CaptivePortalRequest::CaptivePortalResult detected) {
+            logger.log() << "Captive portal detection:" << detected;
+            emit detectionCompleted(detected);
+          });
 
   request->run();
 }

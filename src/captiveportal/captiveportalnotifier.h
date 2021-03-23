@@ -17,6 +17,7 @@ class CaptivePortalNotifier final : public QObject {
   ~CaptivePortalNotifier();
 
   void notifyCaptivePortalBlock();
+  void notifyCaptivePortalPossible();
   void notifyCaptivePortalUnblock();
 
  signals:

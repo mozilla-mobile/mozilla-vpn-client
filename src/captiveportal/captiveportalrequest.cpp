@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
+#include "timersingleshot.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
@@ -41,7 +42,7 @@ void CaptivePortalRequest::run() {
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {
-    emit completed(false);
+    emit completed(NoPortal);
     return;
   }
 
@@ -51,64 +52,77 @@ void CaptivePortalRequest::run() {
 
   for (const QString& address : ipv4Addresses) {
     QUrl url(QString(CAPTIVEPORTAL_URL_IPV4).arg(address));
-    createRequest(url);
+    m_requestQueue.enqueue(url);
   }
 
   for (const QString& address : ipv6Addresses) {
     QUrl url(QString(CAPTIVEPORTAL_URL_IPV6).arg(address));
-    createRequest(url);
+    m_requestQueue.enqueue(url);
   }
+  // If we can't confirm in 30s that we are not behind
+  // a captive-portal, show a notification that a portal might exist
+  TimerSingleShot::create(this, 30 * 1000, [this]() {
+    logger.log() << "CaptivePortal max timeout reached, exiting detection";
+    onResult(PortalPossible);
+  });
+
+  nextStep();
 }
 
 void CaptivePortalRequest::createRequest(const QUrl& url) {
+  if (m_completed) {
+    return;
+  }
   logger.log() << "request:" << url.toString();
-
-  ++m_pendingRequests;
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalDetection(
       this, url, CAPTIVEPORTAL_HOST);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this, url](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Captive portal request failed:" << error;
-            --m_pendingRequests;
-            maybeComplete();
+            m_requestQueue.enqueue(url);
+            nextStep();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, request](const QByteArray& data) {
             logger.log() << "Captive portal request completed:" << data;
-
-            --m_pendingRequests;
-            m_completed = true;
-            deleteLater();
-
             // Usually, captive-portal pages do a redirect to an internal page.
             if (request->statusCode() != 200) {
               logger.log() << "Captive portal detected. Expected 200, received:"
                            << request->statusCode();
-              emit completed(true);
+              onResult(PortalDetected);
               return;
             }
 
             if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
               logger.log() << "No captive portal!";
-              emit completed(false);
+              onResult(NoPortal);
               return;
             }
 
             logger.log() << "Captive portal detected. Content does not match.";
-            emit completed(true);
+            onResult(PortalDetected);
           });
 }
 
-void CaptivePortalRequest::maybeComplete() {
-  logger.log() << "Failure - pendingRequests:" << m_pendingRequests;
-
-  if (!m_completed && m_pendingRequests == 0) {
-    m_completed = true;
-    deleteLater();
-
-    emit completed(false);
+void CaptivePortalRequest::nextStep() {
+  if (!m_completed && m_requestQueue.isEmpty()) {
+    logger.log() << "No More requests in queue, no portal detected";
+    onResult(NoPortal);
   }
+  // Wait 500ms between each request so we're not spaming the poor hotspot
+  TimerSingleShot::create(
+      this, 500, [this]() { createRequest(m_requestQueue.dequeue()); });
+}
+
+void CaptivePortalRequest::onResult(CaptivePortalResult portalDetected) {
+  if (m_completed) {
+    return;
+  }
+  m_completed = true;
+  m_requestQueue.clear();
+  deleteLater();
+  emit completed(portalDetected);
 }
