@@ -24,4 +24,21 @@ void TestLocalizer::basic() {
   QCOMPARE(l.data(QModelIndex(), Localizer::LanguageRole), QVariant());
 }
 
+void TestLocalizer::systemLanguage() {
+  SettingsHolder settings;
+  Localizer l;
+  l.initialize();
+
+  QCOMPARE(l.code(), "");
+  QCOMPARE(l.previousCode(), "en");
+
+  l.setCode("en");
+  QCOMPARE(l.code(), "");
+  QCOMPARE(l.previousCode(), "en");
+
+  l.setCode("");
+  QCOMPARE(l.code(), "");
+  QCOMPARE(l.previousCode(), "en");
+}
+
 static TestLocalizer s_testLocalizer;

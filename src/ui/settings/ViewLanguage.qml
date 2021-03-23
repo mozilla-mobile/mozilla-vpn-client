@@ -142,6 +142,8 @@ Item {
                         checked = !checked;
                         if (checked) {
                             VPNLocalizer.code = "";
+                        } else {
+                            VPNLocalizer.code = VPNLocalizer.previousCode;
                         }
                     }
                 }

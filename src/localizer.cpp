@@ -46,11 +46,6 @@ Localizer::Localizer() {
     m_code = settingsHolder->languageCode();
   }
 
-  if (m_code.isEmpty()) {
-    QLocale locale = QLocale::system();
-    m_code = locale.bcp47Name();
-  }
-
   initialize();
 }
 
@@ -62,6 +57,29 @@ Localizer::~Localizer() {
 }
 
 void Localizer::initialize() {
+  QString systemCode = QLocale::system().bcp47Name();
+
+  // In previous versions, we did not have the support for the system language.
+  // If this is the first time we are here, we need to check if the current
+  // language matches with the system one.
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasSystemLanguageCodeMigrated() ||
+      !settingsHolder->systemLanguageCodeMigrated()) {
+    settingsHolder->setSystemLanguageCodeMigrated(true);
+
+    if (settingsHolder->hasLanguageCode() &&
+        settingsHolder->languageCode() == systemCode) {
+      settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
+      settingsHolder->setLanguageCode("");
+    }
+  }
+
+  // We always need a previous code.
+  if (!settingsHolder->hasPreviousLanguageCode() ||
+      settingsHolder->previousLanguageCode().isEmpty()) {
+    settingsHolder->setPreviousLanguageCode(systemCode);
+  }
+
   loadLanguage(m_code);
 
   QCoreApplication::installTranslator(&m_translator);
@@ -102,6 +120,15 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     logger.log() << "Loading the locale failed."
                  << "code";
     return false;
+  }
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (code.isEmpty() && settingsHolder->hasLanguageCode()) {
+    QString previousCode = settingsHolder->languageCode();
+    if (!previousCode.isEmpty()) {
+      settingsHolder->setPreviousLanguageCode(previousCode);
+      emit previousCodeChanged();
+    }
   }
 
   SettingsHolder::instance()->setLanguageCode(code);
@@ -193,4 +220,8 @@ QVariant Localizer::data(const QModelIndex& index, int role) const {
     default:
       return QVariant();
   }
+}
+
+QString Localizer::previousCode() const {
+  return SettingsHolder::instance()->previousLanguageCode();
 }
