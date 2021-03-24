@@ -15,11 +15,11 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      - name: Checkout mozilla-vpn-client-l10n Git 
+      - name: Checkout mozilla-vpn-client-l10n Git
         run: |
           cd i18n/
-          git fetch 
-          git checkout origin/master --force
+          git fetch
+          git checkout origin/main --force
       - uses: peter-evans/create-pull-request@v3
         with:
           commit-message: "Extract new strings and update all locales"
