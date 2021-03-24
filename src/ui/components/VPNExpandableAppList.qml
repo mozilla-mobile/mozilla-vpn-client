@@ -10,7 +10,7 @@ import QtGraphicalEffects 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-ColumnLayout{
+ColumnLayout {
     id: appListContainer
 
     property var listModel: undefined
@@ -23,11 +23,16 @@ ColumnLayout{
     property var isActionEnabled: isEnabled && applist.count > 0
     property var dividerVisible: false
 
-
     opacity: isEnabled && applist.count > 0 ? 1 : 0.5
     anchors.horizontalCenter: parent.horizontalCenter
     width: parent.width
     spacing: 0
+
+    Behavior on y {
+        PropertyAnimation {
+            duration: 200
+        }
+    }
 
     VPNClickableRow {
         id: appRow
@@ -35,10 +40,16 @@ ColumnLayout{
         handleMouseClick: function() { isListVisible = !isListVisible && applist.count > 0; }
         handleKeyClick: function() { isListVisible = !isListVisible && applist.count > 0; }
         canGrowVertical: true
-//        accessibleName: name
-        Layout.fillWidth: true
+        accessibleName: description
+        Layout.preferredWidth: parent.width - Theme.windowMargin
+        Layout.alignment: Qt.AlignHCenter
         Layout.minimumHeight: Theme.rowHeight * 1.5
         enabled: vpnIsOff && applist.count > 0
+        anchors.left: undefined
+        anchors.right: undefined
+        anchors.rightMargin: undefined
+        anchors.leftMargin: undefined
+
         ColumnLayout {
             id: appRowHeader
             width: appRow.width
@@ -53,7 +64,6 @@ ColumnLayout{
                         duration: 100
                     }
                 }
-
                 VPNIcon {
                     id: toggleArrow
                     Layout.leftMargin: defaultMargin / 3
@@ -81,7 +91,6 @@ ColumnLayout{
                     }
 
                     VPNTextBlock{
-//                        visible: !isListVisible || !isEnabled
                         text: " (%0)".arg(applist.count)
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignLeft
@@ -89,7 +98,6 @@ ColumnLayout{
                         Layout.fillWidth: true
                     }
                 }
-
             }
 
             VPNVerticalSpacer {
@@ -115,7 +123,6 @@ ColumnLayout{
         Layout.alignment: Qt.AlignRight
         fontSize: Theme.fontSizeSmall
 
-//        buttonPadding: 0
         // (Un)protect-All Button
         labelText: actionText
         onClicked: {
@@ -139,6 +146,39 @@ ColumnLayout{
 
         visible: isListVisible && count  > 0
 
+        PropertyAnimation on opacity {
+            duration: 200
+        }
+
+        removeDisplaced: Transition {
+              NumberAnimation {
+                  properties: "x,y"
+                  duration: 200
+              }
+
+          }
+          remove: Transition {
+              PropertyAnimation {
+                  property: "opacity"
+                  from: 1
+                  to: 0
+                  duration: 200
+              }
+          }
+        addDisplaced: Transition {
+            NumberAnimation {
+                properties: "x,y"
+                duration: 200
+            }
+        }
+        add: Transition {
+            PropertyAnimation {
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 200
+            }
+        }
         delegate: RowLayout {
             width: parent.width - Theme.windowMargin
             anchors.rightMargin: 0
@@ -146,14 +186,13 @@ ColumnLayout{
             spacing: Theme.windowMargin
 
             Image {
-                //iconURL: "image://app/"+appID
-                source: "../resources/update-lock.svg"
-                visible: iconURL != ""
-                sourceSize.width:16
+                source: "image://app/"+appID
+                visible: appID !== ""
+                sourceSize.width: Theme.windowMargin
                 sourceSize.height: 6
                 Layout.alignment: Qt.AlignTop
                 Layout.leftMargin: 36
-                Layout.topMargin: 6
+                Layout.topMargin: 4
                 asynchronous: true
                 fillMode:  Image.PreserveAspectFit
             }
@@ -161,7 +200,6 @@ ColumnLayout{
             ColumnLayout {
                 id: labelWrapper
                 Layout.alignment: Qt.AlignTop
-
                 spacing: 4
 
                 VPNInterLabel {
@@ -173,12 +211,9 @@ ColumnLayout{
                 }
 
                 VPNTextBlock {
-                    id: subLabel
-
                     Layout.fillWidth: true
                     text: appID
                     visible: !!text.length
-                    wrapMode: subLabelWrapMode
                 }
 
             }
