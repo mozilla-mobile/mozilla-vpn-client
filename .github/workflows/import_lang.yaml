@@ -19,7 +19,8 @@ jobs:
         run: |
           cd i18n/
           git fetch
-          git checkout origin/main --force
+          default_branch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+          git checkout "origin/$default_branch" --force
       - uses: peter-evans/create-pull-request@v3
         with:
           commit-message: "Extract new strings and update all locales"
