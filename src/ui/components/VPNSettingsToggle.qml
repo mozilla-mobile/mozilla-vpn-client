@@ -15,6 +15,8 @@ CheckBox {
     property alias forceFocus: vpnSettingsToggle.focus
     property var toolTipTitle
 
+    onClicked: toolTip.hide()
+
     height: 24
     width: 45
     states: [
@@ -50,6 +52,7 @@ CheckBox {
     ]
 
     VPNToolTip {
+        id: toolTip
         text: toolTipTitle
     }
 
