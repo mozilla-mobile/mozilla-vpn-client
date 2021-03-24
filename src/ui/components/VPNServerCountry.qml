@@ -11,9 +11,11 @@ import "../themes/themes.js" as Theme
 
 VPNClickableRow {
     id: serverCountry
+    objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === VPNCurrentServer.countryCode)
     property var currentCityIndex
+    property alias serverCountryName: countryName.text
 
     function openCityList() {
         cityListVisible = !cityListVisible;
@@ -119,6 +121,7 @@ VPNClickableRow {
 
     Column {
         id: cityList
+        objectName: "serverCityList"
 
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 22
@@ -142,6 +145,7 @@ VPNClickableRow {
             model: cities
             delegate: VPNRadioDelegate {
                 id: del
+                objectName: "serverCity-" + modelData.replace(/ /g, '_')
 
                 activeFocusOnTab: cityListVisible
                 onActiveFocusChanged: if (focus) serverList.scrollDelegateIntoView(del)
