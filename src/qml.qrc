@@ -407,6 +407,5 @@
         <file>ui/components/VPNWasmHeader.qml</file>
         <file>ui/views/ViewErrorFullScreen.qml</file>
         <file>ui/components/VPNControllerNav.qml</file>
-        <file>ui/components/VPNSettingsToggle.qml</file>
     </qresource>
 </RCC>
