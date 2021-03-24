@@ -24,9 +24,6 @@ constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
 constexpr const char* SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char* SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
-constexpr const char* SETTINGS_PREVIOUSLANGUAGECODE = "previousLanguageCode";
-constexpr const char* SETTINGS_SYSTEMLANGUAGECODEMIGRATED =
-    "systemLanguageCodeMigrated";
 constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
@@ -231,11 +228,6 @@ GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        setPostAuthenticationShown);
 GETSET(QString, toString, SETTINGS_LANGUAGECODE, hasLanguageCode, languageCode,
        setLanguageCode);
-GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
-       hasPreviousLanguageCode, previousLanguageCode, setPreviousLanguageCode);
-GETSET(bool, toBool, SETTINGS_SYSTEMLANGUAGECODEMIGRATED,
-       hasSystemLanguageCodeMigrated, systemLanguageCodeMigrated,
-       setSystemLanguageCodeMigrated);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
