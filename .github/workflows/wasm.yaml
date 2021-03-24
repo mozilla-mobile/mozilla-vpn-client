@@ -3,10 +3,12 @@ name: WebAssembly
 on:
   push:
     branches:
-     - main
+      - main
+      - release
   pull_request:
     branches:
       - main
+      - release
 
 jobs:
   wasm:

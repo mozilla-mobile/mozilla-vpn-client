@@ -2,7 +2,7 @@ name: Linters (clang, l10n)
 on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
-    branches: [ main ]
+    branches: [ main, release ]
     types: [ opened, synchronize, reopened ]
 jobs:
   fetch:

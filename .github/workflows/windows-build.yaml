@@ -3,10 +3,12 @@ name: Windows
 on:
   push:
     branches:
-     - main
+      - main
+      - release
   pull_request:
     branches:
       - main
+      - release
 
 jobs:
   windows-staging:
