@@ -171,6 +171,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
         },
         []() { return SettingsHolder::instance()->languageCode(); }},
 
+    // server country
+    WebSocketSettingCommand{
+        "current-server-country-code", WebSocketSettingCommand::String, nullptr,
+        []() {
+          return MozillaVPN::instance()->currentServer()->countryCode();
+        }},
+
+    // server city
+    WebSocketSettingCommand{
+        "current-server-city", WebSocketSettingCommand::String, nullptr,
+        []() { return MozillaVPN::instance()->currentServer()->city(); }},
 };
 
 struct WebSocketCommand {
@@ -390,6 +401,12 @@ static QList<WebSocketCommand> s_commands{
                   Q_ASSERT(false);
               }
 
+              if (!setting.m_set) {
+                obj["error"] =
+                    QString("Read-only settings %1").arg(QString(arguments[1]));
+                return obj;
+              }
+
               setting.m_set(arguments[2]);
               return obj;
             }
@@ -477,6 +494,34 @@ static QList<WebSocketCommand> s_commands{
 
                        obj["value"] =
                            QString(data.toBase64(QByteArray::Base64Encoding));
+                       return obj;
+                     }},
+
+    WebSocketCommand{"servers", "Returns a list of servers", 0,
+                     [](const QList<QByteArray>&) {
+                       QJsonObject obj;
+
+                       QJsonArray countryArray;
+                       ServerCountryModel* scm =
+                           MozillaVPN::instance()->serverCountryModel();
+                       for (const ServerCountry& country : scm->countries()) {
+                         QJsonArray cityArray;
+                         for (const ServerCity& city : country.cities()) {
+                           QJsonObject cityObj;
+                           cityObj["name"] = city.name();
+                           cityObj["code"] = city.code();
+                           cityArray.append(cityObj);
+                         }
+
+                         QJsonObject countryObj;
+                         countryObj["name"] = country.name();
+                         countryObj["code"] = country.code();
+                         countryObj["cities"] = cityArray;
+
+                         countryArray.append(countryObj);
+                       }
+
+                       obj["value"] = countryArray;
                        return obj;
                      }},
 };

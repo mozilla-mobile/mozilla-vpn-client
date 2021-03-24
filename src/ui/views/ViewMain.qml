@@ -177,7 +177,9 @@ VPNFlickable {
             function handleClick() {
                 stackview.push("ViewServers.qml")
             }
+
             id: serverInfo
+            objectName: "serverListButton"
 
             //% "Select location"
             //: Select the Location of the VPN server
@@ -201,7 +203,6 @@ VPNFlickable {
                 stackview.push("ViewDevices.qml")
             }
 
-            id: serverInfo3
             anchors.top: serverInfo.bottom
             anchors.topMargin: 22
             //% "%1 of %2"
