@@ -19,7 +19,7 @@ jobs:
         run: |
           cd i18n/
           git fetch 
-          git checkout origin/master --force
+          git checkout origin/main --force
       - uses: peter-evans/create-pull-request@v3
         with:
           commit-message: "Extract new strings and update all locales"
