@@ -52,7 +52,7 @@ ColumnLayout {
 
         ColumnLayout {
             id: appRowHeader
-            width: appRow.width
+            width: appRow.Layout.preferredWidth
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
             RowLayout {
@@ -66,8 +66,8 @@ ColumnLayout {
                 }
                 VPNIcon {
                     id: toggleArrow
-                    Layout.leftMargin: defaultMargin / 3
-                    Layout.rightMargin: defaultMargin - 4
+                    Layout.leftMargin: 6
+                    Layout.rightMargin: 14
                     Layout.alignment: Qt.AlignVCenter
 
                     source: "../resources/arrow-toggle.svg"
