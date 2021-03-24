@@ -192,7 +192,7 @@ module.exports = {
   },
 
   wait() {
-    return new Promise(resolve => setTimeout(resolve, 1000));
+    return new Promise(resolve => setTimeout(resolve, 500));
   },
 
   async authenticate(driver, resetting = true) {
