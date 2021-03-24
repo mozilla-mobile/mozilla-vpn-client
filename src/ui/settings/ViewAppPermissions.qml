@@ -36,10 +36,10 @@ VPNFlickable {
         id: rect
         anchors.fill: enableAppList
         anchors.topMargin: -12
-        anchors.bottomMargin: -12
-        anchors.leftMargin: -16
-        anchors.rightMargin: -16
-        color: "#FFFFFF"
+        anchors.bottomMargin: anchors.topMargin
+        anchors.leftMargin: -Theme.windowMargin
+        anchors.rightMargin: anchors.leftMargin
+        color: Theme.white
         radius: 4
     }
 
@@ -49,11 +49,11 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin * 1.5
         anchors.horizontalCenter: parent.horizontalCenter
         width: vpnFlickable.width - Theme.windowMargin * 3.5
+        spacing: Theme.windowMargin
 
         ColumnLayout {
             Layout.fillWidth: true
             VPNInterLabel {
-                id: label
                 Layout.alignment: Qt.AlignLeft
                 Layout.fillWidth: true
                 //% "Protect specific apps"
@@ -63,12 +63,10 @@ VPNFlickable {
             }
 
             VPNTextBlock {
-                id: subLabel
-
                 Layout.fillWidth: true
                 //% "Choose which apps should use the VPN"
                 text: qsTrId("vpn.settings.protectSelectedApps.description")
-                visible: !!subLabel.text.length
+                visible: !!text.length
             }
         }
 
@@ -77,7 +75,7 @@ VPNFlickable {
             Layout.preferredWidth: 45
             checked: (VPNSettings.protectSelectedApps)
             enabled: vpnFlickable.vpnIsOff
-            toolTipTitle: ""
+            toolTipTitle: qsTrId("vpn.settings.protectSelectedApps")
             onClicked: {
                 if (vpnFlickable.vpnIsOff) {
                     VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
@@ -88,26 +86,27 @@ VPNFlickable {
 
     VPNCheckBoxAlert {
         id: vpnOnAlert
-        anchors.top: enableAppList.bottom
-        visible: !vpnFlickable.vpnIsOff
 
+        anchors.top: enableAppList.bottom
+        anchors.topMargin: Theme.windowMargin * 2
+        visible: !vpnFlickable.vpnIsOff
+        anchors.leftMargin: Theme.windowMargin
+        width: enableAppList.width
         //% "VPN must be off to edit App Permissions"
         //: Associated to a group of settings that require the VPN to be disconnected to change
         errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
     }
 
-
     RowLayout {
         id: allAppsProtectedHint
-        anchors.top: enableAppList.bottom
-        anchors.topMargin: Theme.windowMargin *3
-        anchors.horizontalCenter: parent.horizontalCenter
 
+        anchors.top: enableAppList.bottom
+        anchors.topMargin: Theme.windowMargin * 2
+        anchors.horizontalCenter: parent.horizontalCenter
         visible: !VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
 
         Rectangle {
             color: "transparent"
-            Layout.preferredHeight: infoMessage.lineHeight
             Layout.maximumHeight: infoMessage.lineHeight
             Layout.preferredWidth: 14
             Layout.rightMargin: 8
@@ -130,13 +129,12 @@ VPNFlickable {
             Layout.alignment: Qt.AlignVCenter
             verticalAlignment: Text.AlignTop
         }
-
     }
 
     VPNExpandableAppList{
         id: enabledList
         visible: VPNSettings.protectSelectedApps
-        anchors.topMargin: 36
+        anchors.topMargin: 28
         anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : enableAppList.bottom
 
         //% "Protected"
@@ -159,7 +157,6 @@ VPNFlickable {
 
         anchors.top: enabledList.bottom
         visible: VPNSettings.protectSelectedApps
-
         //% "Unprotected"
         //: Header for the list of apps not protected by VPN
         header: qsTrId("vpn.settings.unprotected")
