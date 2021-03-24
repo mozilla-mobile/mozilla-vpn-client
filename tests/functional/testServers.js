@@ -18,7 +18,7 @@ describe('Server list', function() {
   let currentCountryCode;
   let currentCity;
 
-  this.timeout(200000);
+  this.timeout(1000000);
 
   before(async () => {
     await vpn.connect();
@@ -81,8 +81,16 @@ describe('Server list', function() {
       await vpn.setElementProperty(
           'serverCountryView', 'contentY', 'i',
           parseInt(await vpn.getElementProperty(countryId, 'y')));
+      await vpn.wait();
 
-      if (currentCountryCode !== server.code) {
+      if (currentCountryCode === server.code) {
+        assert(
+            await vpn.getElementProperty(countryId, 'cityListVisible') ===
+            'true');
+      }
+
+      if (await vpn.getElementProperty(countryId, 'cityListVisible') ===
+          'false') {
         await vpn.clickOnElement(countryId);
       }
 
@@ -103,74 +111,53 @@ describe('Server list', function() {
   });
 
   it('pick cities', async () => {
-    // let's check the first 4 servers only...
-    let checkServers = 4;
-    while (checkServers-- > 0) {
-      let server = servers[Math.floor(Math.random() * servers.length)];
-
+    for (let server of servers) {
       const countryId = 'serverCountryList/serverCountry-' + server.code;
       await vpn.waitForElement(countryId);
 
       await vpn.setElementProperty(
           'serverCountryView', 'contentY', 'i',
           parseInt(await vpn.getElementProperty(countryId, 'y')));
+      await vpn.wait();
 
-      if (currentCountryCode !== server.code) {
+      if (await vpn.getElementProperty(countryId, 'cityListVisible') ===
+          'false') {
         await vpn.clickOnElement(countryId);
       }
 
-      let city =
-          server.cities[Math.floor(Math.random() * server.cities.length)];
-      const cityId = countryId + '/serverCityList/serverCity-' +
-          city.name.replace(/ /g, '_');
-      await vpn.waitForElement(cityId);
+      await vpn.waitForElementProperty(countryId, 'cityListVisible', 'true');
 
-      await vpn.setElementProperty(
-          'serverCountryView', 'contentY', 'i',
-          parseInt(await vpn.getElementProperty(cityId, 'y')) +
-              parseInt(await vpn.getElementProperty(countryId, 'y')));
-      await vpn.wait();
+      for (let city of server.cities) {
+        const cityId = countryId + '/serverCityList/serverCity-' +
+            city.name.replace(/ /g, '_');
+        await vpn.waitForElement(cityId);
 
-      await vpn.clickOnElement(cityId);
-      await vpn.wait();
-
-      currentCountryCode = server.code;
-      currentCity = city.name;
-
-      // Back to the main view.
-
-      await vpn.waitForElement('serverListButton');
-      await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
-      await vpn.waitForElementProperty(
-          'serverListButton', 'subtitleText', city.name);
-      await vpn.wait();
-
-      await vpn.clickOnElement('serverListButton');
-      await vpn.wait();
-
-      // One selected
-      await vpn.waitForElement(cityId);
-      await vpn.waitForElementProperty(cityId, 'checked', 'true');
-
-      // All the others, unselected
-      for (let otherServer of servers) {
-        const otherCountryId =
-            'serverCountryList/serverCountry-' + otherServer.code;
         await vpn.setElementProperty(
             'serverCountryView', 'contentY', 'i',
-            parseInt(await vpn.getElementProperty(otherCountryId, 'y')));
+            parseInt(await vpn.getElementProperty(cityId, 'y')) +
+                parseInt(await vpn.getElementProperty(countryId, 'y')));
+        await vpn.waitForElementProperty(cityId, 'visible', 'true');
+        await vpn.wait();
 
-        if (currentCountryCode !== otherServer.code) {
-          await vpn.clickOnElement(otherCountryId);
-        }
+        await vpn.clickOnElement(cityId);
+        await vpn.wait();
 
-        for (let otherCity of otherServer.cities) {
-          if (city.code === otherCity.code) continue;
+        currentCountryCode = server.code;
+        currentCity = city.name;
 
-          const otherCityId = otherCountryId + '/serverCityList/serverCity-' +
-              otherCity.name.replace(/ /g, '_');
-          await vpn.waitForElementProperty(otherCityId, 'checked', 'false');
-        }
+        // Back to the main view.
+
+        await vpn.waitForElement('serverListButton');
+        await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+        await vpn.waitForElementProperty(
+            'serverListButton', 'subtitleText', city.name);
+
+        await vpn.clickOnElement('serverListButton');
+        await vpn.wait();
+
+        // One selected
+        await vpn.waitForElement(cityId);
+        await vpn.waitForElementProperty(cityId, 'checked', 'true');
       }
     }
   });
