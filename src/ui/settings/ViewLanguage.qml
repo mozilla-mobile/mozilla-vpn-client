@@ -85,6 +85,8 @@ Item {
                             PropertyChanges {
                                 target: labelDescription
                                 //% "Mozilla VPN will use your system’s default language."
+                                //: Description for the language switcher toggle when
+                                //: "Use system language" is enabled.
                                 text: qsTrId("vpn.settings.systemLangaugeEnabledSubtitle")
                             }
                         },
@@ -93,6 +95,8 @@ Item {
                             PropertyChanges {
                                 target: labelDescription
                                 //% "Mozilla VPN will not use the default system language."
+                                //: Description for the language switcher toggle when
+                                //: "Use system language" is disabled.
                                 text: qsTrId("vpn.settings.systemLanguageDisabledSubtitle")
                             }
                         }
@@ -102,6 +106,7 @@ Item {
                         id: label
                         Layout.alignment: Qt.AlignLeft
                         //% "Use system language"
+                        //: Title for the language switcher toggle.
                         text: qsTrId("vpn.settings.systemLanguageTitle")
                         color: Theme.fontColorDark
                         horizontalAlignment: Text.AlignLeft
@@ -120,7 +125,8 @@ Item {
                     objectName: "settingsSystemLanguageToggle"
                     toolTipTitle: {
                         if (checked) {
-                           //% "Disable to select different language"
+                           //% "Disable to select a different language"
+                           //: Tooltip for the language switcher toggle
                            return qsTrId("vpn.settings.systemLanguageEnabled");
                         }
                         return qsTrId("vpn.settings.systemLanguageTitle");
