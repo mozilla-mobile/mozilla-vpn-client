@@ -306,6 +306,7 @@ else:linux:!android {
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxnetworkwatcher.cpp \
+            platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsendworker.cpp \
             platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
@@ -318,6 +319,7 @@ else:linux:!android {
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
+            platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsendworker.h \
             platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
