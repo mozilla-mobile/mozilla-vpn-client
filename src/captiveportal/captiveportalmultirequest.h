@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef CAPTIVEPORTALREQUEST_H
-#define CAPTIVEPORTALREQUEST_H
+#ifndef CAPTIVEPORTALMULTIREQUEST_H
+#define CAPTIVEPORTALMULTIREQUEST_H
 
 #include "captiveportalresult.h"
 
@@ -11,13 +11,13 @@
 #include <QUrl>
 #include <QQueue>
 
-class CaptivePortalRequest final : public QObject {
+class CaptivePortalMultiRequest final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(CaptivePortalRequest)
+  Q_DISABLE_COPY_MOVE(CaptivePortalMultiRequest)
 
  public:
-  explicit CaptivePortalRequest(QObject* parent);
-  ~CaptivePortalRequest();
+  explicit CaptivePortalMultiRequest(QObject* parent);
+  ~CaptivePortalMultiRequest();
 
   void run();
 
@@ -25,13 +25,11 @@ class CaptivePortalRequest final : public QObject {
   void completed(CaptivePortalResult detected);
 
  private:
-  void createRequest(const QUrl& url);
-  void nextStep();
+  void createRequest();
   void onResult(CaptivePortalResult portalDetected);
 
  private:
   bool m_completed = false;
-  QQueue<QUrl> m_requestQueue = QQueue<QUrl>();
 };
 
-#endif  // CAPTIVEPORTALREQUEST_H
+#endif  // CAPTIVEPORTALMULTIREQUEST_H

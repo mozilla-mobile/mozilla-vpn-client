@@ -42,7 +42,7 @@ void CaptivePortalRequest::run() {
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {
-    emit completed(NoPortal);
+    onResult(NoPortal);
     return;
   }
 
@@ -52,21 +52,13 @@ void CaptivePortalRequest::run() {
 
   for (const QString& address : ipv4Addresses) {
     QUrl url(QString(CAPTIVEPORTAL_URL_IPV4).arg(address));
-    m_requestQueue.enqueue(url);
+    createRequest(url);
   }
 
   for (const QString& address : ipv6Addresses) {
     QUrl url(QString(CAPTIVEPORTAL_URL_IPV6).arg(address));
-    m_requestQueue.enqueue(url);
+    createRequest(url);
   }
-  // If we can't confirm in 30s that we are not behind
-  // a captive-portal, show a notification that a portal might exist
-  TimerSingleShot::create(this, 30 * 1000, [this]() {
-    logger.log() << "CaptivePortal max timeout reached, exiting detection";
-    onResult(PortalPossible);
-  });
-
-  nextStep();
 }
 
 void CaptivePortalRequest::createRequest(const QUrl& url) {
@@ -81,8 +73,7 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
   connect(request, &NetworkRequest::requestFailed,
           [this, url](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Captive portal request failed:" << error;
-            m_requestQueue.enqueue(url);
-            nextStep();
+            onResult(Failure);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
@@ -107,22 +98,12 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
           });
 }
 
-void CaptivePortalRequest::nextStep() {
-  if (!m_completed && m_requestQueue.isEmpty()) {
-    logger.log() << "No More requests in queue, no portal detected";
-    onResult(NoPortal);
-  }
-  // Wait 500ms between each request so we're not spaming the poor hotspot
-  TimerSingleShot::create(
-      this, 500, [this]() { createRequest(m_requestQueue.dequeue()); });
-}
 
 void CaptivePortalRequest::onResult(CaptivePortalResult portalDetected) {
   if (m_completed) {
     return;
   }
   m_completed = true;
-  m_requestQueue.clear();
   deleteLater();
   emit completed(portalDetected);
 }
