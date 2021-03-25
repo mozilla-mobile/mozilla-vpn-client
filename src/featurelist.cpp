@@ -45,11 +45,7 @@ bool FeatureList::protectSelectedAppsSupported() const {
 }
 
 bool FeatureList::captivePortalNotificationSupported() const {
-#if defined(MVPN_WINDOWS) || defined(MVPN_WASM)
-  return true;
-#else
   return false;
-#endif
 }
 
 bool FeatureList::unsecuredNetworkNotificationSupported() const {
