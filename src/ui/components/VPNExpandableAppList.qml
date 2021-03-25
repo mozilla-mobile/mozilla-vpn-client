@@ -44,7 +44,7 @@ ColumnLayout {
         Layout.preferredWidth: parent.width - Theme.windowMargin
         Layout.alignment: Qt.AlignHCenter
         Layout.minimumHeight: Theme.rowHeight * 1.5
-        enabled: vpnIsOff && applist.count > 0
+        enabled: vpnFlickable.vpnIsOff && applist.count > 0
         anchors.left: undefined
         anchors.right: undefined
         anchors.rightMargin: undefined
@@ -69,11 +69,9 @@ ColumnLayout {
                     Layout.leftMargin: 6
                     Layout.rightMargin: 14
                     Layout.alignment: Qt.AlignVCenter
-
                     source: "../resources/arrow-toggle.svg"
                     transformOrigin: Image.Center
                     smooth: true
-                    opacity: applist.count > 0 ?1:0;
                     rotation: isListVisible ? 0 :-90
                 }
 
@@ -155,7 +153,6 @@ ColumnLayout {
                   properties: "x,y"
                   duration: 200
               }
-
           }
           remove: Transition {
               PropertyAnimation {
