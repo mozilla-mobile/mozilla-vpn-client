@@ -107,7 +107,9 @@ Item {
 
             anchors.top: enableAppList.bottom
             anchors.topMargin: Theme.windowMargin * 2
-            anchors.horizontalCenter: parent.horizontalCenter
+
+            anchors.left: parent.left
+            anchors.leftMargin: 18
             visible: !VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
 
             Rectangle {
