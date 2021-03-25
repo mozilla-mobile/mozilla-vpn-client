@@ -12,7 +12,7 @@ import "../themes/themes.js" as Theme
 
 Item {
     id: root
-    anchors.fill: parent
+
     VPNMenu {
         id: menu
         title: qsTrId("vpn.settings.appPermissions")
@@ -23,12 +23,25 @@ Item {
         id: vpnFlickable
         readonly property int defaultMargin: 18
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-        flickContentHeight: enableAppList.height + enableAppList.anchors.topMargin + (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (disabledList.visible ? disabledList.height : 0) + (enabledList.visible ? enabledList.height : 0) + 60
+        flickContentHeight: enableAppList.height + enableAppList.anchors.topMargin + (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (disabledList.visible ? disabledList.height : 0) + (enabledList.visible ? enabledList.height : 0) + 100
         anchors.top: menu.bottom
         height: root.height - menu.height
         width: root.width
         Component.onCompleted: {
            VPNAppPermissions.requestApplist();
+        }
+
+        VPNCheckBoxAlert {
+            id: vpnOnAlert
+
+            anchors.top: parent.top
+            anchors.topMargin: Theme.windowMargin * 1
+            visible: !vpnFlickable.vpnIsOff
+            anchors.leftMargin: Theme.windowMargin
+            width: enableAppList.width
+            //% "VPN must be off to edit App Permissions"
+            //: Associated to a group of settings that require the VPN to be disconnected to change
+            errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
         }
 
         VPNDropShadow {
@@ -50,7 +63,7 @@ Item {
 
         RowLayout {
             id: enableAppList
-            anchors.top: parent.top
+            anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : parent.top
             anchors.topMargin: Theme.windowMargin * 1.5
             anchors.horizontalCenter: parent.horizontalCenter
             width: vpnFlickable.width - Theme.windowMargin * 3.5
@@ -87,19 +100,6 @@ Item {
                     }
                 }
             }
-        }
-
-        VPNCheckBoxAlert {
-            id: vpnOnAlert
-
-            anchors.top: enableAppList.bottom
-            anchors.topMargin: Theme.windowMargin * 2
-            visible: !vpnFlickable.vpnIsOff
-            anchors.leftMargin: Theme.windowMargin
-            width: enableAppList.width
-            //% "VPN must be off to edit App Permissions"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
         }
 
         RowLayout {
