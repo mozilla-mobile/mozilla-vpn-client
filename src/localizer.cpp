@@ -26,7 +26,10 @@ struct StaticLanguage {
 // framework (and some are missing entirely). This static map is the fallback
 // when this happens.
 QMap<QString, StaticLanguage> s_languageMap{
-    {"co", StaticLanguage{"Corsu", ""}}};
+    {"co", StaticLanguage{"Corsu", ""}},
+    {"es_AR", StaticLanguage{"Spanish (Argentina)", "Español, Argentina"}},
+    {"es_MX", StaticLanguage{"Spanish (Mexico)", "Español, México"}},
+};
 }  // namespace
 
 // static
