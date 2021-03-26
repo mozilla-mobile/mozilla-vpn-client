@@ -76,7 +76,7 @@ Item {
         logo: "../resources/devicesLimit.svg"
         //% "Remove a device"
         logoTitle: qsTrId("vpn.devices.doDeviceRemoval")
-        //% "You’ve reached the limit. To turn on the VPN on this device, you’ll need to remove one."
+        //% "You’ve reached the device limit. To turn on the VPN on this device, you’ll need to remove one."
         logoSubtitle: qsTrId("vpn.devices.maxDevicesHeader")
 
     }
