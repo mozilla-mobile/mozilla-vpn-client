@@ -108,16 +108,22 @@ void MacOSNetworkWatcher::checkInterface() {
     return;
   }
 
-  NSString* bssid = [interface bssid];
-  if (!bssid || QString::fromNSString(bssid) == "00:00:00:00:00:00") {
+  NSString* ssidNS = [interface ssid];
+  if (!ssidNS) {
     logger.log() << "WiFi is not in used";
+    return;
+  }
+
+  QString ssid = QString::fromNSString(ssidNS);
+  if (ssid.isEmpty()) {
+    logger.log() << "WiFi doesn't have a valid SSID";
     return;
   }
 
   CWSecurity security = [interface security];
   if (security == kCWSecurityNone || security == kCWSecurityWEP) {
     logger.log() << "Unsecured network found!";
-    emit unsecuredNetwork(QString::fromNSString([interface ssid]), QString::fromNSString(bssid));
+    emit unsecuredNetwork(ssid, ssid);
     return;
   }
 
