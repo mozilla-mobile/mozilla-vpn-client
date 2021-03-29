@@ -81,3 +81,11 @@ void MacOSUtils::setDockClickHandler() {
     logger.log() << "Failed to register the dock click handler";
   }
 }
+
+void MacOSUtils::hideDockIcon() {
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
+}
+
+void MacOSUtils::showDockIcon() {
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+}

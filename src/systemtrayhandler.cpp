@@ -14,6 +14,10 @@
 #  include "platforms/linux/linuxsystemtrayhandler.h"
 #endif
 
+#ifdef MVPN_MACOS
+#  include "platforms/macos/macosutils.h"
+#endif
+
 #include <array>
 #include <QIcon>
 #include <QMenu>
@@ -243,8 +247,14 @@ void SystemTrayHandler::showHideWindow() {
   QmlEngineHolder* engine = QmlEngineHolder::instance();
   if (engine->window()->isVisible()) {
     engine->hideWindow();
+#ifdef MVPN_MACOS
+    MacOSUtils::hideDockIcon();
+#endif
   } else {
     engine->showWindow();
+#ifdef MVPN_MACOS
+    MacOSUtils::showDockIcon();
+#endif
   }
 }
 
