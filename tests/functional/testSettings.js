@@ -123,9 +123,11 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsNotifications');
     await vpn.wait();
 
-    await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
-    await checkSetting(
-        'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    /* TODO: captive-portal disabled
+        await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
+        await checkSetting(
+            'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    */
 
     await vpn.clickOnElement('settingsNotificationsBackButton');
     await vpn.wait();
