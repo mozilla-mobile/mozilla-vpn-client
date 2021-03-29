@@ -29,6 +29,8 @@ QMap<QString, StaticLanguage> s_languageMap{
     {"co", StaticLanguage{"Corsu", ""}},
     {"es_AR", StaticLanguage{"Spanish (Argentina)", "Español, Argentina"}},
     {"es_MX", StaticLanguage{"Spanish (Mexico)", "Español, México"}},
+    {"en_GB", StaticLanguage{"English (United Kingdom)", ""}},
+    {"en_CA", StaticLanguage{"English (Canada)", ""}},
 };
 
 }  // namespace
