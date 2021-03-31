@@ -52,11 +52,6 @@ Localizer::Localizer() {
     m_code = settingsHolder->languageCode();
   }
 
-  if (m_code.isEmpty()) {
-    QLocale locale = QLocale::system();
-    m_code = locale.bcp47Name();
-  }
-
   initialize();
 }
 
@@ -68,6 +63,29 @@ Localizer::~Localizer() {
 }
 
 void Localizer::initialize() {
+  QString systemCode = QLocale::system().bcp47Name();
+
+  // In previous versions, we did not have the support for the system language.
+  // If this is the first time we are here, we need to check if the current
+  // language matches with the system one.
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasSystemLanguageCodeMigrated() ||
+      !settingsHolder->systemLanguageCodeMigrated()) {
+    settingsHolder->setSystemLanguageCodeMigrated(true);
+
+    if (settingsHolder->hasLanguageCode() &&
+        settingsHolder->languageCode() == systemCode) {
+      settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
+      settingsHolder->setLanguageCode("");
+    }
+  }
+
+  // We always need a previous code.
+  if (!settingsHolder->hasPreviousLanguageCode() ||
+      settingsHolder->previousLanguageCode().isEmpty()) {
+    settingsHolder->setPreviousLanguageCode(systemCode);
+  }
+
   loadLanguage(m_code);
 
   QCoreApplication::installTranslator(&m_translator);
@@ -93,12 +111,24 @@ void Localizer::initialize() {
 
 void Localizer::loadLanguage(const QString& code) {
   logger.log() << "Loading language:" << code;
-  if (loadLanguageInternal(code)) {
-    return;
+  if (!loadLanguageInternal(code)) {
+    logger.log() << "Loading default language (fallback)";
+    loadLanguageInternal("en");
   }
 
-  logger.log() << "Loading default language (fallback)";
-  loadLanguageInternal("en");
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (code.isEmpty() && settingsHolder->hasLanguageCode()) {
+    QString previousCode = settingsHolder->languageCode();
+    if (!previousCode.isEmpty()) {
+      settingsHolder->setPreviousLanguageCode(previousCode);
+      emit previousCodeChanged();
+    }
+  }
+
+  SettingsHolder::instance()->setLanguageCode(code);
+
+  m_code = code;
+  emit codeChanged();
 }
 
 bool Localizer::loadLanguageInternal(const QString& code) {
@@ -114,11 +144,6 @@ bool Localizer::loadLanguageInternal(const QString& code) {
                  << "code";
     return false;
   }
-
-  SettingsHolder::instance()->setLanguageCode(code);
-
-  m_code = code;
-  emit codeChanged();
 
   return true;
 }
@@ -220,4 +245,8 @@ QStringList Localizer::languages() const {
 bool Localizer::languageSort(const Localizer::Language& a,
                              const Localizer::Language& b) {
   return a.m_localizedName < b.m_localizedName;
+}
+
+QString Localizer::previousCode() const {
+  return SettingsHolder::instance()->previousLanguageCode();
 }
