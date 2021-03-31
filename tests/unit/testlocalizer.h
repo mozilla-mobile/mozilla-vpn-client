@@ -9,4 +9,6 @@ class TestLocalizer final : public TestHelper {
 
  private slots:
   void basic();
+
+  void systemLanguage();
 };
