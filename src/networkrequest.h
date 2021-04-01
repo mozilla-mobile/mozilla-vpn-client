@@ -50,6 +50,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForHeartbeat(QObject* parent);
 
+  static NetworkRequest* createForSurveyData(QObject* parent);
+
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);
 

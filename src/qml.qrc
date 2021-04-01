@@ -41,6 +41,7 @@
         <file>ui/components/VPNDropShadow.qml</file>
         <file>ui/components/VPNButtonBase.qml</file>
         <file>ui/components/VPNSystemAlert.qml</file>
+        <file>ui/components/VPNSurveyAlert.qml</file>
         <file>ui/components/VPNSignOut.qml</file>
         <file>ui/components/VPNUIStates.qml</file>
         <file>ui/components/VPNList.qml</file>
