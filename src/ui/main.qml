@@ -286,4 +286,8 @@ Window {
         z: 2
     }
 
+    VPNSurveyAlert {
+        z: 2
+    }
+
 }

@@ -528,6 +528,19 @@ static QList<WebSocketCommand> s_commands{
                        obj["value"] = countryArray;
                        return obj;
                      }},
+
+    WebSocketCommand{
+        "reset_surveys",
+        "Reset the list of triggered surveys and the installation time", 0,
+        [](const QList<QByteArray>&) {
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+
+          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder->setConsumedSurveys(QStringList());
+
+          return QJsonObject();
+        }},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

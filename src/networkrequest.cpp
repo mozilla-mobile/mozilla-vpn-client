@@ -154,6 +154,23 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+  r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+  QUrl url(Constants::API_URL);
+  url.setPath("/api/v1/vpn/surveys");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   Q_ASSERT(parent);
 

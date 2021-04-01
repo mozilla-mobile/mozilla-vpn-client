@@ -37,12 +37,19 @@ Rectangle {
                 VPN.authenticate();
                 break;
             case ("backend-service"):
-               VPN.backendServiceRestore();
-               break;
+                VPN.backendServiceRestore();
+                break;
+            case ("survey"):
+                VPNSurveyModel.openCurrentSurvey();
+                break;
             case ("connection-failed"):
+                // fall-through
             case ("no-connection"):
+                // fall-through
             case ("subscription-failed"):
+                // fall-through
             case ("geoip-restriction"):
+                // fall-through
             default:
                 VPN.hideAlert();
             }
@@ -104,6 +111,9 @@ Rectangle {
             if (alertType === "update") {
                 closeAlert.start();
                 return VPN.hideUpdateRecommendedAlert();
+            }
+            if (alertType === "survey") {
+                return VPNSurveyModel.dismissCurrentSurvey();
             }
             return VPN.hideAlert();
         }

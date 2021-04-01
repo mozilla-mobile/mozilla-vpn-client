@@ -5,6 +5,8 @@
 #ifndef SETTINGSHOLDER_H
 #define SETTINGSHOLDER_H
 
+#include <QDateTime>
+#include <QStringList>
 #include <QObject>
 #include <QSettings>
 
@@ -67,6 +69,8 @@ class SettingsHolder final : public QObject {
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
   GETSET(QByteArray, hasDevices, devices, setDevices)
+  GETSET(QByteArray, hasSurveys, surveys, setSurveys)
+  GETSET(QStringList, hasConsumedSurveys, consumedSurveys, setConsumedSurveys)
   GETSET(QStringList, hasIapProducts, iapProducts, setIapProducts)
   GETSET(QStringList, hasCaptivePortalIpv4Addresses, captivePortalIpv4Addresses,
          setCaptivePortalIpv4Addresses)
@@ -78,10 +82,13 @@ class SettingsHolder final : public QObject {
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
+  GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
   void addVpnDisabledApp(const QString& appID);
+
+  void addConsumedSurvey(const QString& surveyId);
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,

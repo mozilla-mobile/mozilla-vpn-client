@@ -72,16 +72,18 @@ SOURCES += \
         loghandler.cpp \
         logoutobserver.cpp \
         main.cpp \
-        models/helpmodel.cpp \
-        models/user.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/helpmodel.cpp \
         models/keys.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
+        models/survey.cpp \
+        models/surveymodel.cpp \
+        models/user.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -108,6 +110,7 @@ SOURCES += \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
+        tasks/surveydata/tasksurveydata.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -163,6 +166,8 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
+        models/survey.h \
+        models/surveymodel.h \
         models/user.h \
         mozillavpn.h \
         networkmanager.h \
@@ -193,6 +198,7 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/removedevice/taskremovedevice.h \
+        tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
