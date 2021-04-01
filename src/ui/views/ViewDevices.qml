@@ -138,4 +138,13 @@ Item {
     }
 
     Component.onCompleted: VPN.refreshDevices()
+
+    Component {
+        id: getHelpComponent
+
+        VPNGetHelp {
+            isSettingsView: false
+        }
+
+    }
 }
