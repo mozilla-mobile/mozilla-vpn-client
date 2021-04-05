@@ -63,6 +63,7 @@ HEADERS += \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
+    ../../src/serveri18n.h \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
@@ -125,6 +126,7 @@ SOURCES += \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
+    ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
