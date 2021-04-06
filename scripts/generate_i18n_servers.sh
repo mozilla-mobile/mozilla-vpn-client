@@ -28,7 +28,7 @@ print Y "Running the app..."
 PID=$!
 print G "done."
 
-print Y "Running the app..."
+print Y "Running the localization script..."
 mocha tests/functional/localizeServers.js 2>translations/servers.json || ERROR=yes
 
 wait $PID

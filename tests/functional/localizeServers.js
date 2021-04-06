@@ -23,12 +23,16 @@ describe('Server list', function() {
   let translations = [];
   let languages = new Map();
 
-  const cityNames = new Map();
-  cityNames.set('Dallas, TX', 'Dallas, Tx.');
-  cityNames.set('Denver, CO', 'Denver, Colorado');
-  cityNames.set('Miami, FL', 'Miami');
-  cityNames.set('Phoenix, AZ', 'Phoenix, Arizona');
-  cityNames.set('Salt Lake City, UT', 'Salt Lake City, Utah');
+  const countryIDs = new Map();
+  countryIDs.set('Netherlands', 'http://www.wikidata.org/entity/Q55');
+
+  const cityIDs = new Map();
+  cityIDs.set('Frankfurt', 'http://www.wikidata.org/entity/Q1794');
+  cityIDs.set('Dallas, TX', 'http://www.wikidata.org/entity/Q16557');
+  cityIDs.set('Denver, CO', 'http://www.wikidata.org/entity/Q16554');
+  cityIDs.set('Miami, FL', 'http://www.wikidata.org/entity/Q8652');
+  cityIDs.set('Phoenix, AZ', 'http://www.wikidata.org/entity/Q16556');
+  cityIDs.set('Salt Lake City, UT', 'http://www.wikidata.org/entity/Q23337');
 
   this.timeout(1000000);
 
@@ -88,37 +92,59 @@ describe('Server list', function() {
       if (translation) translations.push(translation);
     }
 
-    process.stderr.write(JSON.stringify(translations));
+    process.stderr.write(JSON.stringify(translations, null, ' '));
   });
 
   async function localizeCountry(server) {
     console.log('Localize country', server.name);
 
-    const sparql = `SELECT ?country ?countryName (lang(?countryName) as ?lang) 
-                    WHERE
-                    {
-                      # wdt:P31 is "instance-of"
-                      # wd:Q6256 is "country"
-                      { ?country wdt:P31 wd:Q6256 ;
-                                 rdfs:label ?countryName .
-                                { ?country rdfs:label "${
-        server.name}"@en . } UNION { ?country skos:altLabel "${
-        server.name}"@en . } }
-                      UNION
-                      { ?country wdt:P31 wd:Q3624078 ;
-                                 rdfs:label ?countryName ;
-                                { ?country rdfs:label "${
-        server.name}"@en . } UNION { ?country skos:altLabel "${
-        server.name}"@en . } }
-                      UNION
-                      # wd:Q515 is "city"
-                      { ?country wdt:P31 wd:Q515 ;
-                                 rdfs:label ?countryName ;
-                                { ?country rdfs:label "${
-        server.name}"@en . } UNION { ?country skos:altLabel "${
-        server.name}"@en . } }
-                    }`;
+    let countryUrl;
+    if (countryIDs.has(server.name)) {
+      countryUrl = countryIDs.get(server.name);
+    } else {
+      const sparql = `SELECT ?country
+                      WHERE
+                      {
+                        # wdt:P31 is "instance-of"
+                        # wd:Q6256 is "country"
+                        { ?country wdt:P31 wd:Q6256 ;
+                                  { ?country rdfs:label "${
+          server.name}"@en . } UNION { ?country skos:altLabel "${
+          server.name}"@en . } }
+                        UNION
+                        { ?country wdt:P31 wd:Q3624078 ;
+                                  { ?country rdfs:label "${
+          server.name}"@en . } UNION { ?country skos:altLabel "${
+          server.name}"@en . } }
+                        UNION
+                        # wd:Q515 is "city"
+                        { ?country wdt:P31 wd:Q515 ;
+                                  { ?country rdfs:label "${
+          server.name}"@en . } UNION { ?country skos:altLabel "${
+          server.name}"@en . } }
+                      }`;
 
+      const url = wbk.sparqlQuery(sparql)
+      const result = await retrieveJson(url);
+
+      if (!('head' in result))
+        throw new Error('Invalid SPARQL result (no head)');
+      if (!('results' in result))
+        throw new Error('Invalid SPARQL result (no results)');
+      if (!('bindings' in result.results))
+        throw new Error('Invalid SPARQL result (no results/bindings)');
+
+      if (result.results.bindings.length === 0) {
+        throw new Error('No results');
+      }
+
+      countryUrl = result.results.bindings[0].country.value;
+    }
+
+    console.log(' - WikiData Resource:', countryUrl);
+
+    const sparql = `SELECT ?countryName (lang(?countryName) as ?lang) 
+                    WHERE { <${countryUrl}> rdfs:label ?countryName . }`;
     const url = wbk.sparqlQuery(sparql)
     const result = await retrieveJson(url);
 
@@ -131,8 +157,6 @@ describe('Server list', function() {
     if (result.results.bindings.length === 0) {
       throw new Error('No results');
     }
-
-    const countryUrl = result.results.bindings[0].country.value;
 
     const translation = {countryCode: server.code, languages: {}, cities: []};
 
@@ -161,37 +185,55 @@ describe('Server list', function() {
 
     const translation = {city: city.name, languages: {}};
 
-    let cityName = city.name;
-    if (cityNames.has(cityName)) {
-      cityName = cityNames.get(cityName);
+    let cityUrl;
+    if (cityIDs.has(city.name)) {
+      cityUrl = cityIDs.get(city.name);
+    } else {
+      const sparql = `SELECT ?city
+                      WHERE
+                      {
+                        # wdt:P31 is "instance-of"
+                        # wd:Q515 is "city"
+                        { ?city wdt:P31 wd:Q515 ;
+                                wdt:P17 <${countryUrl}> ;
+                                { ?city rdfs:label "${
+          city.name}"@en . } UNION { ?city skos:altLabel "${city.name}"@en . } }
+                        UNION
+                        { ?city wdt:P31 ?bigcity ;
+                                wdt:P17 <${countryUrl}> ;
+                                { ?city rdfs:label "${
+          city.name}"@en . } UNION { ?city skos:altLabel "${city.name}"@en . }
+                          ?bigcity wdt:P279 wd:Q515 . }
+                        UNION
+                        { ?city wdt:P31 ?metropolis ;
+                                wdt:P17 <${countryUrl}> ;
+                                { ?city rdfs:label "${
+          city.name}"@en . } UNION { ?city skos:altLabel "${city.name}"@en . }
+                          ?metropolis wdt:P279 ?bigcity .
+                          ?bigcity wdt:P279 wd:Q515 . }
+                      }`;
+
+      const url = wbk.sparqlQuery(sparql)
+      const result = await retrieveJson(url);
+
+      if (!('head' in result))
+        throw new Error('Invalid SPARQL result (no head)');
+      if (!('results' in result))
+        throw new Error('Invalid SPARQL result (no results)');
+      if (!('bindings' in result.results))
+        throw new Error('Invalid SPARQL result (no results/bindings)');
+
+      if (result.results.bindings.length === 0) {
+        throw new Error('No results');
+      }
+
+      cityUrl = result.results.bindings[0].city.value;
     }
 
+    console.log(' - WikiData Resource:', cityUrl);
+
     const sparql = `SELECT ?cityName (lang(?cityName) as ?lang) 
-                    WHERE
-                    {
-                      # wdt:P31 is "instance-of"
-                      # wd:Q515 is "city"
-                      { ?city wdt:P31 wd:Q515 ;
-                              wdt:P17 <${countryUrl}> ;
-                              rdfs:label ?cityName .
-                              { ?city rdfs:label "${
-        cityName}"@en . } UNION { ?city skos:altLabel "${cityName}"@en . } }
-                      UNION
-                      { ?city wdt:P31 ?bigcity ;
-                              wdt:P17 <${countryUrl}> ;
-                              rdfs:label ?cityName ;
-                              { ?city rdfs:label "${
-        cityName}"@en . } UNION { ?city skos:altLabel "${cityName}"@en . }
-                        ?bigcity wdt:P279 wd:Q515 . }
-                      UNION
-                      { ?city wdt:P31 ?metropolis ;
-                              wdt:P17 <${countryUrl}> ;
-                              rdfs:label ?cityName ;
-                              { ?city rdfs:label "${
-        cityName}"@en . } UNION { ?city skos:altLabel "${cityName}"@en . }
-                        ?metropolis wdt:P279 ?bigcity .
-                        ?bigcity wdt:P279 wd:Q515 . }
-    }`;
+                    WHERE { <${cityUrl}> rdfs:label ?cityName . }`;
 
     const url = wbk.sparqlQuery(sparql)
     const result = await retrieveJson(url);
