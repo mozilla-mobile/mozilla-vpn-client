@@ -123,9 +123,11 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsNotifications');
     await vpn.wait();
 
-    await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
-    await checkSetting(
-        'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    /* TODO: captive-portal disabled
+        await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
+        await checkSetting(
+            'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    */
 
     await vpn.clickOnElement('settingsNotificationsBackButton');
     await vpn.wait();
@@ -135,6 +137,8 @@ describe('Settings', function() {
   });
 
   it('Checking the languages settings', async () => {
+    await vpn.setSetting('language-code', '');
+
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
 
@@ -149,6 +153,16 @@ describe('Settings', function() {
     await vpn.waitForElement('settingsLanguagesBackButton');
     await vpn.waitForElementProperty(
         'settingsLanguagesBackButton', 'visible', 'true');
+
+    await vpn.waitForElement('settingsSystemLanguageToggle');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'true');
+
+    await vpn.clickOnElement('settingsSystemLanguageToggle');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'false');
 
     await vpn.setElementProperty(
         'settingsLanguagesView', 'contentY', 'i',
@@ -184,6 +198,8 @@ describe('Settings', function() {
     await vpn.waitForElement('settingsLanguagesBackButton');
     await vpn.waitForElementProperty(
         'settingsLanguagesBackButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'false');
 
     await vpn.setElementProperty(
         'settingsLanguagesView', 'contentY', 'i',
@@ -196,6 +212,31 @@ describe('Settings', function() {
         'languageList/language-en', 'visible', 'true');
     await vpn.clickOnElement('languageList/language-en');
     await vpn.wait();
+
+    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'manageAccountButton', 'text', 'Manage account');
+
+    await vpn.clickOnElement('settingsLanguages');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsLanguagesBackButton');
+
+    await vpn.setElementProperty('settingsLanguagesView', 'contentY', 'i', 0);
+    await vpn.wait();
+
+    await vpn.waitForElementProperty(
+        'settingsLanguagesBackButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'false');
+
+    await vpn.clickOnElement('settingsSystemLanguageToggle');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'true');
 
     await vpn.clickOnElement('settingsLanguagesBackButton');
     await vpn.wait();
