@@ -28,6 +28,7 @@ describe('Server list', function() {
 
   const cityIDs = new Map();
   cityIDs.set('Frankfurt', 'http://www.wikidata.org/entity/Q1794');
+  cityIDs.set('Melbourne', 'http://www.wikidata.org/entity/Q3141');
   cityIDs.set('Dallas, TX', 'http://www.wikidata.org/entity/Q16557');
   cityIDs.set('Denver, CO', 'http://www.wikidata.org/entity/Q16554');
   cityIDs.set('Miami, FL', 'http://www.wikidata.org/entity/Q8652');
@@ -168,6 +169,12 @@ describe('Server list', function() {
       }
     }
 
+    translation.languages =
+        Object.keys(translation.languages).sort().reduce((obj, key) => {
+          obj[key] = translation.languages[key];
+          return obj;
+        }, {});
+
     for (let city of server.cities) {
       if (city.name === server.name) {
         continue;
@@ -255,6 +262,12 @@ describe('Server list', function() {
         translation.languages[languages.get(langCode)] = lang.cityName['value'];
       }
     }
+
+    translation.languages =
+        Object.keys(translation.languages).sort().reduce((obj, key) => {
+          obj[key] = translation.languages[key];
+          return obj;
+        }, {});
 
     return translation;
   }
