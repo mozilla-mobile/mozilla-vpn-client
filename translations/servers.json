@@ -3,39 +3,39 @@
   "countryCode": "au",
   "languages": {
    "cy": "Awstralia",
+   "de": "Australien",
    "dsb": "Awstralska",
-   "hsb": "Awstralska",
-   "pt_BR": "Austrália",
-   "zh_TW": "澳洲",
-   "nl": "Australië",
-   "ja": "オーストラリア",
-   "fr": "Australie",
-   "ru": "Австралия",
-   "oc": "Austràlia",
    "el": "Αυστραλία",
-   "uk": "Австралія",
+   "fr": "Australie",
+   "hsb": "Awstralska",
+   "ja": "オーストラリア",
+   "nl": "Australië",
+   "oc": "Austràlia",
+   "pt_BR": "Austrália",
+   "ru": "Австралия",
    "sk": "Austrália",
-   "de": "Australien"
+   "uk": "Австралія",
+   "zh_TW": "澳洲"
   },
   "cities": [
    {
     "city": "Melbourne",
     "languages": {
+     "el": "Μελβούρνη",
+     "ja": "メルボルン",
      "ru": "Мельбурн",
-     "de": "Melbourne City",
-     "en": "City of Melbourne",
-     "fr": "Ville de Melbourne",
-     "it": "Città di Melbourne",
-     "ja": "メルボルン市"
+     "sq": "Melburni",
+     "uk": "Мельбурн",
+     "zh_TW": "墨爾本"
     }
    },
    {
     "city": "Sydney",
     "languages": {
+     "el": "Σίδνεϊ",
+     "ja": "シドニー",
      "ru": "Сидней",
      "uk": "Сідней",
-     "ja": "シドニー",
-     "el": "Σίδνεϊ",
      "zh_TW": "雪梨"
     }
    }
@@ -44,39 +44,39 @@
  {
   "countryCode": "at",
   "languages": {
-   "pt_BR": "Áustria",
-   "sk": "Rakúsko",
-   "zh_TW": "奧地利",
-   "ru": "Австрия",
+   "cy": "Awstria",
+   "de": "Österreich",
+   "dsb": "Awstriska",
+   "el": "Αυστρία",
+   "fr": "Autriche",
+   "hsb": "Awstriska",
    "ja": "オーストリア",
    "nl": "Oostenrijk",
-   "uk": "Австрія",
-   "fr": "Autriche",
-   "de": "Österreich",
    "oc": "Àustria",
-   "el": "Αυστρία",
-   "cy": "Awstria",
-   "dsb": "Awstriska",
-   "hsb": "Awstriska"
+   "pt_BR": "Áustria",
+   "ru": "Австрия",
+   "sk": "Rakúsko",
+   "uk": "Австрія",
+   "zh_TW": "奧地利"
   },
   "cities": [
    {
     "city": "Vienna",
     "languages": {
      "cy": "Fienna",
+     "de": "Wien",
      "dsb": "Wien",
      "el": "Βιέννη",
-     "hsb": "Wien",
-     "sk": "Viedeň",
-     "sq": "Vjenë",
      "fr": "Vienne",
+     "hsb": "Wien",
+     "ja": "ウィーン",
      "nl": "Wenen",
      "oc": "Viena",
-     "ja": "ウィーン",
-     "ru": "Вена",
-     "uk": "Відень",
-     "de": "Wien",
      "pt_BR": "Viena",
+     "ru": "Вена",
+     "sk": "Viedeň",
+     "sq": "Vjenë",
+     "uk": "Відень",
      "zh_TW": "維也納"
     }
    }
@@ -85,12 +85,6 @@
  {
   "countryCode": "be",
   "languages": {
-   "pt_BR": "Bélgica",
-   "ru": "Бельгия",
-   "sk": "Belgicko",
-   "sq": "Belgjika",
-   "uk": "Бельгія",
-   "zh_TW": "比利時",
    "co": "Belgica",
    "cy": "Gwlad Belg",
    "de": "Belgien",
@@ -101,31 +95,37 @@
    "it": "Belgio",
    "ja": "ベルギー",
    "nl": "België",
-   "oc": "Belgica"
+   "oc": "Belgica",
+   "pt_BR": "Bélgica",
+   "ru": "Бельгия",
+   "sk": "Belgicko",
+   "sq": "Belgjika",
+   "uk": "Бельгія",
+   "zh_TW": "比利時"
   },
   "cities": [
    {
     "city": "Brussels",
     "languages": {
+     "co": "Bruxelles",
      "cy": "Dinas Brwsel",
+     "de": "Brüssel",
+     "el": "Βρυξέλλες",
+     "en": "City of Brussels",
      "en_CA": "City of Brussels",
      "en_GB": "City of Brussels",
-     "ja": "ブリュッセル＝ヴィル",
-     "pt_BR": "Cidade de Bruxelas",
-     "sk": "Brusel",
-     "zh_TW": "布魯塞爾市",
-     "nl": "Brussel",
-     "ru": "Брюссель",
      "fr": "Bruxelles",
      "hsb": "Brüssel",
-     "sq": "Brukseli",
-     "de": "Brüssel",
      "it": "Bruxelles",
-     "uk": "Брюссель",
-     "co": "Bruxelles",
-     "el": "Βρυξέλλες",
+     "ja": "ブリュッセル＝ヴィル",
+     "nl": "Brussel",
      "oc": "Brussèlas",
-     "en": "City of Brussels"
+     "pt_BR": "Cidade de Bruxelas",
+     "ru": "Брюссель",
+     "sk": "Brusel",
+     "sq": "Brukseli",
+     "uk": "Брюссель",
+     "zh_TW": "布魯塞爾市"
     }
    }
   ]
@@ -155,26 +155,26 @@
    {
     "city": "Sao Paulo",
     "languages": {
-     "sq": "São Paulo",
-     "dsb": "São Paulo",
-     "hsb": "São Paulo",
-     "it": "San Paolo",
-     "nl": "São Paulo",
-     "de": "São Paulo",
-     "fr": "São Paulo",
-     "en": "São Paulo",
-     "ru": "Сан-Паулу",
-     "uk": "Сан-Паулу",
-     "zh_TW": "聖保羅",
-     "pt_BR": "São Paulo",
      "co": "São Paulo",
      "cy": "São Paulo",
+     "de": "São Paulo",
+     "dsb": "São Paulo",
      "el": "Σάο Πάολο",
+     "en": "São Paulo",
      "en_CA": "São Paulo",
      "en_GB": "São Paulo",
-     "sk": "São Paulo",
+     "fr": "São Paulo",
+     "hsb": "São Paulo",
+     "it": "San Paolo",
      "ja": "サンパウロ",
-     "oc": "São Paulo"
+     "nl": "São Paulo",
+     "oc": "São Paulo",
+     "pt_BR": "São Paulo",
+     "ru": "Сан-Паулу",
+     "sk": "São Paulo",
+     "sq": "São Paulo",
+     "uk": "Сан-Паулу",
+     "zh_TW": "聖保羅"
     }
    }
   ]
@@ -182,35 +182,35 @@
  {
   "countryCode": "bg",
   "languages": {
+   "cy": "Bwlgaria",
+   "de": "Bulgarien",
+   "dsb": "Bulgaŕska",
+   "el": "Βουλγαρία",
+   "fr": "Bulgarie",
+   "hsb": "Bołharska",
+   "ja": "ブルガリア",
+   "nl": "Bulgarije",
+   "pt_BR": "Bulgária",
+   "ru": "Болгария",
    "sk": "Bulharsko",
    "sq": "Bullgaria",
-   "dsb": "Bulgaŕska",
-   "nl": "Bulgarije",
-   "ru": "Болгария",
    "uk": "Болгарія",
-   "fr": "Bulgarie",
-   "de": "Bulgarien",
-   "pt_BR": "Bulgária",
-   "zh_TW": "保加利亞",
-   "cy": "Bwlgaria",
-   "el": "Βουλγαρία",
-   "hsb": "Bołharska",
-   "ja": "ブルガリア"
+   "zh_TW": "保加利亞"
   },
   "cities": [
    {
     "city": "Sofia",
     "languages": {
-     "zh_TW": "索菲亞",
-     "oc": "Sòfia",
-     "pt_BR": "Sófia",
-     "sq": "Sofja",
-     "ja": "ソフィア",
-     "ru": "София",
-     "uk": "Софія",
      "dsb": "Sofija",
      "el": "Σόφια",
-     "hsb": "Sofija"
+     "hsb": "Sofija",
+     "ja": "ソフィア",
+     "oc": "Sòfia",
+     "pt_BR": "Sófia",
+     "ru": "София",
+     "sq": "Sofja",
+     "uk": "Софія",
+     "zh_TW": "索菲亞"
     }
    }
   ]
@@ -218,44 +218,44 @@
  {
   "countryCode": "ca",
   "languages": {
-   "pt_BR": "Canadá",
-   "sq": "Kanadaja",
-   "zh_TW": "加拿大",
    "co": "Canadà",
+   "de": "Kanada",
    "dsb": "Kanada",
+   "el": "Καναδάς",
    "hsb": "Kanada",
    "ja": "カナダ",
-   "uk": "Канада",
-   "de": "Kanada",
    "oc": "Canadà",
+   "pt_BR": "Canadá",
    "ru": "Канада",
    "sk": "Kanada",
-   "el": "Καναδάς"
+   "sq": "Kanadaja",
+   "uk": "Канада",
+   "zh_TW": "加拿大"
   },
   "cities": [
    {
     "city": "Montreal",
     "languages": {
-     "sq": "Montreali",
-     "ru": "Монреаль",
+     "co": "Montréal",
+     "cy": "Montréal",
+     "el": "Μόντρεαλ",
      "fr": "Montréal",
      "it": "Montréal",
      "ja": "モントリオール",
+     "ru": "Монреаль",
+     "sq": "Montreali",
      "uk": "Монреаль",
-     "cy": "Montréal",
-     "el": "Μόντρεαλ",
-     "co": "Montréal",
      "zh_TW": "蒙特婁"
     }
    },
    {
     "city": "Toronto",
     "languages": {
-     "zh_TW": "多倫多",
      "el": "Τορόντο",
      "ja": "トロント",
      "ru": "Торонто",
-     "uk": "Торонто"
+     "uk": "Торонто",
+     "zh_TW": "多倫多"
     }
    },
    {
@@ -273,13 +273,6 @@
  {
   "countryCode": "cz",
   "languages": {
-   "hsb": "Čěska",
-   "ja": "チェコ",
-   "oc": "Republica Chèca",
-   "pt_BR": "República Tcheca",
-   "nl": "Tsjechië",
-   "it": "Repubblica Ceca",
-   "ru": "Чехия",
    "co": "Cechia",
    "cy": "Y Weriniaeth Tsiec",
    "de": "Tschechien",
@@ -287,6 +280,13 @@
    "el": "Τσεχία",
    "en_CA": "Czechia",
    "fr": "Tchéquie",
+   "hsb": "Čěska",
+   "it": "Repubblica Ceca",
+   "ja": "チェコ",
+   "nl": "Tsjechië",
+   "oc": "Republica Chèca",
+   "pt_BR": "República Tcheca",
+   "ru": "Чехия",
    "sk": "Česko",
    "sq": "Republika Çeke",
    "uk": "Чехія",
@@ -296,22 +296,22 @@
    {
     "city": "Prague",
     "languages": {
-     "zh_TW": "布拉格",
+     "co": "Praga",
+     "cy": "Prag",
+     "de": "Prag",
      "dsb": "Praha",
      "el": "Πράγα",
      "hsb": "Praha",
-     "sk": "Praha",
-     "nl": "Praag",
-     "ru": "Прага",
-     "ja": "プラハ",
-     "de": "Prag",
      "it": "Praga",
+     "ja": "プラハ",
+     "nl": "Praag",
      "oc": "Praga",
-     "co": "Praga",
      "pt_BR": "Praga",
+     "ru": "Прага",
+     "sk": "Praha",
      "sq": "Praga",
-     "cy": "Prag",
-     "uk": "Прага"
+     "uk": "Прага",
+     "zh_TW": "布拉格"
     }
    }
   ]
@@ -321,42 +321,42 @@
   "languages": {
    "co": "Danimarca",
    "cy": "Denmarc",
+   "de": "Dänemark",
    "dsb": "Dańska",
    "el": "Δανία",
+   "fr": "Danemark",
    "hsb": "Danska",
    "it": "Danimarca",
-   "pt_BR": "Dinamarca",
-   "uk": "Данія",
-   "zh_TW": "丹麥",
-   "nl": "Denemarken",
-   "fr": "Danemark",
-   "ru": "Дания",
-   "de": "Dänemark",
    "ja": "デンマーク",
-   "sq": "Danimarka",
+   "nl": "Denemarken",
    "oc": "Danemarc",
-   "sk": "Dánsko"
+   "pt_BR": "Dinamarca",
+   "ru": "Дания",
+   "sk": "Dánsko",
+   "sq": "Danimarka",
+   "uk": "Данія",
+   "zh_TW": "丹麥"
   },
   "cities": [
    {
     "city": "Copenhagen",
     "languages": {
-     "zh_TW": "哥本哈根",
-     "ja": "コペンハーゲン",
-     "ru": "Копенгаген",
-     "uk": "Копенгаген",
-     "de": "Kopenhagen",
-     "fr": "Copenhague",
-     "nl": "Kopenhagen",
-     "it": "Copenaghen",
-     "oc": "Copenaga",
      "co": "Copenaghen",
+     "de": "Kopenhagen",
      "dsb": "Kopenhagen",
      "el": "Κοπεγχάγη",
+     "fr": "Copenhague",
      "hsb": "Kopenhagen",
+     "it": "Copenaghen",
+     "ja": "コペンハーゲン",
+     "nl": "Kopenhagen",
+     "oc": "Copenaga",
      "pt_BR": "Copenhague",
+     "ru": "Копенгаген",
      "sk": "Kodaň",
-     "sq": "Kopenhagen"
+     "sq": "Kopenhagen",
+     "uk": "Копенгаген",
+     "zh_TW": "哥本哈根"
     }
    }
   ]
@@ -364,33 +364,33 @@
  {
   "countryCode": "fi",
   "languages": {
-   "zh_TW": "芬蘭",
+   "co": "Finlandia",
+   "cy": "Y Ffindir",
+   "de": "Finnland",
+   "dsb": "Finska",
+   "el": "Φινλανδία",
+   "fr": "Finlande",
    "hsb": "Finska",
+   "it": "Finlandia",
+   "ja": "フィンランド",
    "oc": "Finlàndia",
    "pt_BR": "Finlândia",
+   "ru": "Финляндия",
    "sk": "Fínsko",
    "sq": "Finlanda",
    "uk": "Фінляндія",
-   "ru": "Финляндия",
-   "ja": "フィンランド",
-   "fr": "Finlande",
-   "de": "Finnland",
-   "el": "Φινλανδία",
-   "it": "Finlandia",
-   "co": "Finlandia",
-   "cy": "Y Ffindir",
-   "dsb": "Finska"
+   "zh_TW": "芬蘭"
   },
   "cities": [
    {
     "city": "Helsinki",
     "languages": {
-     "zh_TW": "赫爾辛基",
+     "el": "Ελσίνκι",
+     "ja": "ヘルシンキ",
      "pt_BR": "Helsinque",
      "ru": "Хельсинки",
      "uk": "Гельсінкі",
-     "el": "Ελσίνκι",
-     "ja": "ヘルシンキ"
+     "zh_TW": "赫爾辛基"
     }
    }
   ]
@@ -398,37 +398,37 @@
  {
   "countryCode": "fr",
   "languages": {
-   "zh_TW": "法國",
-   "ru": "Франция",
-   "nl": "Frankrijk",
-   "it": "Francia",
-   "oc": "França",
-   "pt_BR": "França",
-   "ja": "フランス",
-   "de": "Frankreich",
-   "el": "Γαλλία",
-   "uk": "Франція",
-   "sq": "Francë",
-   "sk": "Francúzsko",
    "co": "Francia",
    "cy": "Ffrainc",
+   "de": "Frankreich",
    "dsb": "Francojska",
-   "hsb": "Francoska"
+   "el": "Γαλλία",
+   "hsb": "Francoska",
+   "it": "Francia",
+   "ja": "フランス",
+   "nl": "Frankrijk",
+   "oc": "França",
+   "pt_BR": "França",
+   "ru": "Франция",
+   "sk": "Francúzsko",
+   "sq": "Francë",
+   "uk": "Франція",
+   "zh_TW": "法國"
   },
   "cities": [
    {
     "city": "Paris",
     "languages": {
      "co": "Parighji",
-     "zh_TW": "巴黎",
+     "el": "Παρίσι",
+     "it": "Parigi",
      "ja": "パリ",
      "nl": "Parijs",
      "oc": "París",
-     "it": "Parigi",
      "ru": "Париж",
+     "sk": "Paríž",
      "uk": "Париж",
-     "el": "Παρίσι",
-     "sk": "Paríž"
+     "zh_TW": "巴黎"
     }
    }
   ]
@@ -436,7 +436,6 @@
  {
   "countryCode": "de",
   "languages": {
-   "zh_TW": "德國",
    "co": "Germania",
    "cy": "Yr Almaen",
    "de": "Deutschland",
@@ -452,24 +451,18 @@
    "ru": "Германия",
    "sk": "Nemecko",
    "sq": "Gjermania",
-   "uk": "Німеччина"
+   "uk": "Німеччина",
+   "zh_TW": "德國"
   },
   "cities": [
    {
     "city": "Dusseldorf",
     "languages": {
-     "oc": "Düsseldorf",
-     "pt_BR": "Düsseldorf",
-     "ru": "Дюссельдорф",
-     "sk": "Düsseldorf",
-     "sq": "Dyzeldorfi",
-     "uk": "Дюссельдорф",
-     "el": "Ντύσσελντορφ",
-     "zh_TW": "杜塞爾多夫",
      "co": "Düsseldorf",
      "cy": "Düsseldorf",
      "de": "Düsseldorf",
      "dsb": "Düsseldorf",
+     "el": "Ντύσσελντορφ",
      "en": "Düsseldorf",
      "en_CA": "Düsseldorf",
      "en_GB": "Düsseldorf",
@@ -477,29 +470,36 @@
      "hsb": "Düsseldorf",
      "it": "Düsseldorf",
      "ja": "デュッセルドルフ",
-     "nl": "Düsseldorf"
+     "nl": "Düsseldorf",
+     "oc": "Düsseldorf",
+     "pt_BR": "Düsseldorf",
+     "ru": "Дюссельдорф",
+     "sk": "Düsseldorf",
+     "sq": "Dyzeldorfi",
+     "uk": "Дюссельдорф",
+     "zh_TW": "杜塞爾多夫"
     }
    },
    {
     "city": "Frankfurt",
     "languages": {
+     "co": "Francuforte nant'à u Menu",
+     "cy": "Frankfurt am Main",
+     "de": "Frankfurt am Main",
+     "dsb": "Frankfurt nad Mainom",
+     "el": "Φραγκφούρτη",
+     "en": "Frankfurt am Main",
+     "fr": "Francfort-sur-le-Main",
+     "hsb": "Frankobrod nad Mohanom",
+     "it": "Francoforte sul Meno",
+     "ja": "フランクフルト・アム・マイン",
+     "nl": "Frankfurt am Main",
      "oc": "Francfòrt de Men",
      "ru": "Франкфурт-на-Майне",
      "sk": "Frankfurt nad Mohanom",
      "sq": "Frankfurti mbi Main",
      "uk": "Франкфурт-на-Майні",
-     "zh_TW": "美茵河畔法蘭克福",
-     "nl": "Frankfurt am Main",
-     "de": "Frankfurt am Main",
-     "en": "Frankfurt am Main",
-     "co": "Francuforte nant'à u Menu",
-     "cy": "Frankfurt am Main",
-     "dsb": "Frankfurt nad Mainom",
-     "el": "Φραγκφούρτη",
-     "fr": "Francfort-sur-le-Main",
-     "hsb": "Frankobrod nad Mohanom",
-     "it": "Francoforte sul Meno",
-     "ja": "フランクフルト・アム・マイン"
+     "zh_TW": "美茵河畔法蘭克福"
     }
    }
   ]
@@ -507,52 +507,52 @@
  {
   "countryCode": "hk",
   "languages": {
-   "uk": "Гонконг",
-   "zh_TW": "香港",
-   "ja": "香港",
-   "nl": "Hongkong",
-   "ru": "Гонконг",
    "cy": "Hong Cong",
    "de": "Hongkong",
    "el": "Χονγκ Κονγκ",
-   "sk": "Hongkong"
+   "ja": "香港",
+   "nl": "Hongkong",
+   "ru": "Гонконг",
+   "sk": "Hongkong",
+   "uk": "Гонконг",
+   "zh_TW": "香港"
   },
   "cities": []
  },
  {
   "countryCode": "hu",
   "languages": {
-   "hsb": "Madźarska",
-   "it": "Ungheria",
-   "oc": "Ongria",
-   "pt_BR": "Hungria",
-   "sk": "Maďarsko",
-   "sq": "Hungaria",
-   "zh_TW": "匈牙利",
-   "nl": "Hongarije",
-   "ru": "Венгрия",
-   "fr": "Hongrie",
-   "ja": "ハンガリー",
-   "de": "Ungarn",
-   "uk": "Угорщина",
    "co": "Ungheria",
    "cy": "Hwngari",
+   "de": "Ungarn",
    "dsb": "Hungorska",
-   "el": "Ουγγαρία"
+   "el": "Ουγγαρία",
+   "fr": "Hongrie",
+   "hsb": "Madźarska",
+   "it": "Ungheria",
+   "ja": "ハンガリー",
+   "nl": "Hongarije",
+   "oc": "Ongria",
+   "pt_BR": "Hungria",
+   "ru": "Венгрия",
+   "sk": "Maďarsko",
+   "sq": "Hungaria",
+   "uk": "Угорщина",
+   "zh_TW": "匈牙利"
   },
   "cities": [
    {
     "city": "Budapest",
     "languages": {
-     "zh_TW": "布達佩斯",
-     "nl": "Boedapest",
-     "ru": "Будапешт",
      "el": "Βουδαπέστη",
      "ja": "ブダペスト",
+     "nl": "Boedapest",
      "oc": "Budapèst",
      "pt_BR": "Budapeste",
+     "ru": "Будапешт",
      "sk": "Budapešť",
-     "uk": "Будапешт"
+     "uk": "Будапешт",
+     "zh_TW": "布達佩斯"
     }
    }
   ]
@@ -560,24 +560,24 @@
  {
   "countryCode": "ie",
   "languages": {
-   "pt_BR": "República da Irlanda",
-   "sq": "Republika e Irlandës",
-   "zh_TW": "愛爾蘭",
-   "nl": "Ierland",
-   "ja": "アイルランド",
-   "sk": "Írsko",
-   "uk": "Ірландія",
-   "fr": "Irlande",
-   "ru": "Ирландия",
    "co": "Irlanda",
    "cy": "Iwerddon",
    "de": "Irland",
    "dsb": "Irska",
    "el": "Δημοκρατία της Ιρλανδίας",
    "en_CA": "Republic of Ireland",
+   "fr": "Irlande",
    "hsb": "Irska",
    "it": "Irlanda",
-   "oc": "Republica d'Irlanda"
+   "ja": "アイルランド",
+   "nl": "Ierland",
+   "oc": "Republica d'Irlanda",
+   "pt_BR": "República da Irlanda",
+   "ru": "Ирландия",
+   "sk": "Írsko",
+   "sq": "Republika e Irlandës",
+   "uk": "Ірландія",
+   "zh_TW": "愛爾蘭"
   },
   "cities": [
    {
@@ -585,13 +585,13 @@
     "languages": {
      "co": "Dublinu",
      "cy": "Dulyn",
-     "sq": "Dublini",
-     "zh_TW": "都柏林",
-     "ja": "ダブリン",
-     "uk": "Дублін",
-     "ru": "Дублин",
+     "el": "Δουβλίνο",
      "it": "Dublino",
-     "el": "Δουβλίνο"
+     "ja": "ダブリン",
+     "ru": "Дублин",
+     "sq": "Dublini",
+     "uk": "Дублін",
+     "zh_TW": "都柏林"
     }
    }
   ]
@@ -599,41 +599,41 @@
  {
   "countryCode": "it",
   "languages": {
-   "zh_TW": "義大利",
+   "co": "Italia",
+   "cy": "Yr Eidal",
+   "de": "Italien",
+   "dsb": "Italska",
+   "el": "Ιταλία",
+   "fr": "Italie",
+   "hsb": "Italska",
+   "it": "Italia",
+   "ja": "イタリア",
+   "nl": "Italië",
+   "oc": "Itàlia",
    "pt_BR": "Itália",
+   "ru": "Италия",
    "sk": "Taliansko",
    "sq": "Italia",
    "uk": "Італія",
-   "hsb": "Italska",
-   "oc": "Itàlia",
-   "nl": "Italië",
-   "ru": "Италия",
-   "ja": "イタリア",
-   "de": "Italien",
-   "it": "Italia",
-   "fr": "Italie",
-   "co": "Italia",
-   "cy": "Yr Eidal",
-   "dsb": "Italska",
-   "el": "Ιταλία"
+   "zh_TW": "義大利"
   },
   "cities": [
    {
     "city": "Milan",
     "languages": {
      "co": "Milanu",
+     "de": "Mailand",
      "el": "Μιλάνο",
-     "sq": "Milano",
-     "pt_BR": "Milão",
+     "hsb": "Mailand",
      "it": "Milano",
      "ja": "ミラノ",
      "nl": "Milaan",
+     "pt_BR": "Milão",
      "ru": "Милан",
-     "zh_TW": "米蘭",
-     "uk": "Мілан",
      "sk": "Miláno",
-     "de": "Mailand",
-     "hsb": "Mailand"
+     "sq": "Milano",
+     "uk": "Мілан",
+     "zh_TW": "米蘭"
     }
    }
   ]
@@ -641,34 +641,34 @@
  {
   "countryCode": "jp",
   "languages": {
-   "zh_TW": "日本",
-   "hsb": "Japanska",
-   "it": "Giappone",
-   "fr": "Japon",
-   "ru": "Япония",
-   "ja": "日本",
-   "oc": "Japon",
    "co": "Giapponu",
    "dsb": "Japańska",
    "el": "Ιαπωνία",
+   "fr": "Japon",
+   "hsb": "Japanska",
+   "it": "Giappone",
+   "ja": "日本",
+   "oc": "Japon",
    "pt_BR": "Japão",
+   "ru": "Япония",
    "sk": "Japonsko",
    "sq": "Japonia",
-   "uk": "Японія"
+   "uk": "Японія",
+   "zh_TW": "日本"
   },
   "cities": [
    {
     "city": "Tokyo",
     "languages": {
-     "uk": "Токіо-сіті",
-     "nl": "Tokio",
-     "ja": "東京",
-     "ru": "Токио",
-     "zh_TW": "東京",
      "de": "Tokio",
      "el": "Τόκυο",
+     "ja": "東京",
+     "nl": "Tokio",
      "oc": "Tòquio",
-     "sk": "Tokio"
+     "ru": "Токио",
+     "sk": "Tokio",
+     "uk": "Токіо-сіті",
+     "zh_TW": "東京"
     }
    }
   ]
@@ -676,57 +676,50 @@
  {
   "countryCode": "lu",
   "languages": {
-   "sk": "Luxembursko",
-   "zh_TW": "盧森堡",
-   "pt_BR": "Luxemburgo",
-   "ru": "Люксембург",
-   "uk": "Люксембург",
-   "nl": "Luxemburg",
-   "de": "Luxemburg",
-   "el": "Λουξεμβούργο",
-   "ja": "ルクセンブルク",
-   "it": "Lussemburgo",
-   "oc": "Luxemborg",
-   "sq": "Luksemburgu",
    "co": "Lussemburgu",
    "cy": "Lwcsembwrg",
+   "de": "Luxemburg",
    "dsb": "Luxemburgska",
-   "hsb": "Luxemburgska"
+   "el": "Λουξεμβούργο",
+   "hsb": "Luxemburgska",
+   "it": "Lussemburgo",
+   "ja": "ルクセンブルク",
+   "nl": "Luxemburg",
+   "oc": "Luxemborg",
+   "pt_BR": "Luxemburgo",
+   "ru": "Люксембург",
+   "sk": "Luxembursko",
+   "sq": "Luksemburgu",
+   "uk": "Люксембург",
+   "zh_TW": "盧森堡"
   },
   "cities": []
  },
  {
   "countryCode": "md",
   "languages": {
-   "sk": "Moldavsko",
-   "zh_TW": "摩爾多瓦",
+   "co": "Moldavia",
+   "cy": "Moldofa",
+   "de": "Republik Moldau",
+   "dsb": "Moldawska",
+   "el": "Μολδαβία",
+   "fr": "Moldavie",
    "hsb": "Moldawska",
+   "it": "Moldavia",
    "ja": "モルドバ",
+   "nl": "Moldavië",
+   "oc": "Moldàvia",
    "pt_BR": "Moldávia",
    "ru": "Молдавия",
-   "nl": "Moldavië",
-   "fr": "Moldavie",
+   "sk": "Moldavsko",
    "sq": "Moldavia",
-   "el": "Μολδαβία",
-   "oc": "Moldàvia",
    "uk": "Молдова",
-   "cy": "Moldofa",
-   "it": "Moldavia",
-   "co": "Moldavia",
-   "de": "Republik Moldau",
-   "dsb": "Moldawska"
+   "zh_TW": "摩爾多瓦"
   },
   "cities": [
    {
     "city": "Chisinau",
     "languages": {
-     "oc": "Chişinău",
-     "pt_BR": "Chişinău",
-     "sk": "Kišiňov",
-     "sq": "Kishinau",
-     "uk": "Кишинів",
-     "zh_TW": "奇西瑙",
-     "ru": "Кишинёв",
      "co": "Chişinău",
      "cy": "Chişinău",
      "de": "Chișinău",
@@ -737,7 +730,14 @@
      "fr": "Chișinău",
      "hsb": "Kišinjow",
      "it": "Chișinău",
-     "ja": "キシナウ"
+     "ja": "キシナウ",
+     "oc": "Chişinău",
+     "pt_BR": "Chişinău",
+     "ru": "Кишинёв",
+     "sk": "Kišiňov",
+     "sq": "Kishinau",
+     "uk": "Кишинів",
+     "zh_TW": "奇西瑙"
     }
    }
   ]
@@ -745,35 +745,35 @@
  {
   "countryCode": "nl",
   "languages": {
-   "pt_BR": "Países Baixos",
-   "sk": "Holandsko",
-   "sq": "Holanda",
-   "uk": "Нідерланди",
-   "el": "Ολλανδία",
-   "zh_TW": "荷蘭",
-   "ru": "Нидерланды",
-   "fr": "Pays-Bas",
-   "nl": "Nederland",
    "co": "Paesi Bassi",
    "cy": "Yr Iseldiroedd",
    "de": "Niederlande",
    "dsb": "Nižozemska",
+   "el": "Ολλανδία",
+   "fr": "Pays-Bas",
    "hsb": "Nižozemska",
    "it": "Paesi Bassi",
    "ja": "オランダ",
-   "oc": "Païses Basses"
+   "nl": "Nederland",
+   "oc": "Païses Basses",
+   "pt_BR": "Países Baixos",
+   "ru": "Нидерланды",
+   "sk": "Holandsko",
+   "sq": "Holanda",
+   "uk": "Нідерланди",
+   "zh_TW": "荷蘭"
   },
   "cities": [
    {
     "city": "Amsterdam",
     "languages": {
-     "zh_TW": "阿姆斯特丹",
-     "pt_BR": "Amsterdã",
-     "sq": "Amsterdami",
+     "el": "Άμστερνταμ",
      "ja": "アムステルダム",
+     "pt_BR": "Amsterdã",
      "ru": "Амстердам",
+     "sq": "Amsterdami",
      "uk": "Амстердам",
-     "el": "Άμστερνταμ"
+     "zh_TW": "阿姆斯特丹"
     }
    }
   ]
@@ -781,34 +781,34 @@
  {
   "countryCode": "nz",
   "languages": {
-   "uk": "Нова Зеландія",
-   "zh_TW": "紐西蘭",
-   "ja": "ニュージーランド",
-   "nl": "Nieuw-Zeeland",
-   "ru": "Новая Зеландия",
-   "fr": "Nouvelle-Zélande",
    "co": "Nova Zilanda",
    "cy": "Seland Newydd",
    "de": "Neuseeland",
    "dsb": "Nowoseelandska",
    "el": "Νέα Ζηλανδία",
+   "fr": "Nouvelle-Zélande",
    "hsb": "Nowoseelandska",
    "it": "Nuova Zelanda",
+   "ja": "ニュージーランド",
+   "nl": "Nieuw-Zeeland",
    "oc": "Nòva Zelanda",
    "pt_BR": "Nova Zelândia",
+   "ru": "Новая Зеландия",
    "sk": "Nový Zéland",
-   "sq": "Zelanda e Re"
+   "sq": "Zelanda e Re",
+   "uk": "Нова Зеландія",
+   "zh_TW": "紐西蘭"
   },
   "cities": [
    {
     "city": "Auckland",
     "languages": {
-     "uk": "Окленд",
-     "zh_TW": "奧克蘭",
+     "el": "Ώκλαντ",
+     "ja": "オークランド",
      "ru": "Окленд",
      "sq": "Okland",
-     "el": "Ώκλαντ",
-     "ja": "オークランド"
+     "uk": "Окленд",
+     "zh_TW": "奧克蘭"
     }
    }
   ]
@@ -816,35 +816,35 @@
  {
   "countryCode": "no",
   "languages": {
-   "zh_TW": "挪威",
+   "co": "Nurvegia",
+   "cy": "Norwy",
+   "de": "Norwegen",
+   "dsb": "Norwegska",
+   "el": "Νορβηγία",
+   "fr": "Norvège",
+   "hsb": "Norwegska",
+   "it": "Norvegia",
+   "ja": "ノルウェー",
+   "nl": "Noorwegen",
    "oc": "Norvègia",
    "pt_BR": "Noruega",
+   "ru": "Норвегия",
    "sk": "Nórsko",
    "sq": "Norvegjia",
    "uk": "Норвегія",
-   "it": "Norvegia",
-   "nl": "Noorwegen",
-   "de": "Norwegen",
-   "ru": "Норвегия",
-   "fr": "Norvège",
-   "co": "Nurvegia",
-   "cy": "Norwy",
-   "dsb": "Norwegska",
-   "el": "Νορβηγία",
-   "hsb": "Norwegska",
-   "ja": "ノルウェー"
+   "zh_TW": "挪威"
   },
   "cities": [
    {
     "city": "Oslo",
     "languages": {
-     "zh_TW": "奧斯陸",
+     "co": "Oslu",
+     "el": "Όσλο",
+     "ja": "オスロ",
      "oc": "Òslo",
      "ru": "Осло",
      "uk": "Осло",
-     "co": "Oslu",
-     "el": "Όσλο",
-     "ja": "オスロ"
+     "zh_TW": "奧斯陸"
     }
    }
   ]
@@ -852,44 +852,44 @@
  {
   "countryCode": "pl",
   "languages": {
-   "pt_BR": "Polônia",
+   "co": "Polonia",
    "cy": "Gwlad Pwyl",
+   "de": "Polen",
    "dsb": "Pólska",
    "el": "Πολωνία",
-   "hsb": "Pólska",
-   "ru": "Польша",
-   "nl": "Polen",
    "fr": "Pologne",
-   "ja": "ポーランド",
-   "de": "Polen",
-   "oc": "Polonha",
-   "sk": "Poľsko",
+   "hsb": "Pólska",
    "it": "Polonia",
-   "zh_TW": "波蘭",
-   "co": "Polonia",
+   "ja": "ポーランド",
+   "nl": "Polen",
+   "oc": "Polonha",
+   "pt_BR": "Polônia",
+   "ru": "Польша",
+   "sk": "Poľsko",
    "sq": "Polonia",
-   "uk": "Польща"
+   "uk": "Польща",
+   "zh_TW": "波蘭"
   },
   "cities": [
    {
     "city": "Warsaw",
     "languages": {
-     "uk": "Варшава",
-     "zh_TW": "華沙",
-     "ru": "Варшава",
-     "it": "Varsavia",
-     "nl": "Warschau",
-     "fr": "Varsovie",
      "co": "Varsavia",
      "de": "Warschau",
      "dsb": "Waršawa",
      "el": "Βαρσοβία",
+     "fr": "Varsovie",
      "hsb": "Waršawa",
+     "it": "Varsavia",
      "ja": "ワルシャワ",
+     "nl": "Warschau",
      "oc": "Varsòvia",
      "pt_BR": "Varsóvia",
+     "ru": "Варшава",
      "sk": "Varšava",
-     "sq": "Varshava"
+     "sq": "Varshava",
+     "uk": "Варшава",
+     "zh_TW": "華沙"
     }
    }
   ]
@@ -902,26 +902,18 @@
    "dsb": "Portugalska",
    "el": "Πορτογαλία",
    "hsb": "Portugalska",
+   "it": "Portogallo",
+   "ja": "ポルトガル",
    "ru": "Португалия",
    "sk": "Portugalsko",
    "sq": "Portugalia",
    "uk": "Португалія",
-   "zh_TW": "葡萄牙",
-   "it": "Portogallo",
-   "ja": "ポルトガル"
+   "zh_TW": "葡萄牙"
   },
   "cities": [
    {
     "city": "Lisbon",
     "languages": {
-     "zh_TW": "里斯本",
-     "nl": "Lissabon",
-     "oc": "Lisbona",
-     "pt_BR": "Lisboa",
-     "ru": "Лиссабон",
-     "sk": "Lisabon",
-     "sq": "Lisbona",
-     "uk": "Лісабон",
      "co": "Lisbona",
      "de": "Lissabon",
      "dsb": "Lisabon",
@@ -929,7 +921,15 @@
      "fr": "Lisbonne",
      "hsb": "Lisabon",
      "it": "Lisbona",
-     "ja": "リスボン"
+     "ja": "リスボン",
+     "nl": "Lissabon",
+     "oc": "Lisbona",
+     "pt_BR": "Lisboa",
+     "ru": "Лиссабон",
+     "sk": "Lisabon",
+     "sq": "Lisbona",
+     "uk": "Лісабон",
+     "zh_TW": "里斯本"
     }
    }
   ]
@@ -938,41 +938,41 @@
   "countryCode": "ro",
   "languages": {
    "cy": "Rwmania",
+   "de": "Rumänien",
    "dsb": "Rumuńska",
    "el": "Ρουμανία",
-   "hsb": "Rumunska",
-   "pt_BR": "Romênia",
-   "sk": "Rumunsko",
-   "uk": "Румунія",
-   "nl": "Roemenië",
-   "ru": "Румыния",
-   "de": "Rumänien",
    "fr": "Roumanie",
+   "hsb": "Rumunska",
    "ja": "ルーマニア",
+   "nl": "Roemenië",
+   "pt_BR": "Romênia",
+   "ru": "Румыния",
+   "sk": "Rumunsko",
    "sq": "Rumania",
+   "uk": "Румунія",
    "zh_TW": "羅馬尼亞"
   },
   "cities": [
    {
     "city": "Bucharest",
     "languages": {
-     "oc": "Bucarèst",
-     "pt_BR": "Bucareste",
-     "sk": "Bukurešť",
-     "sq": "Bukureshti",
-     "uk": "Бухарест",
-     "zh_TW": "布加勒斯特",
-     "nl": "Boekarest",
-     "fr": "Bucarest",
-     "ru": "Бухарест",
      "co": "Bucarest",
      "cy": "Bwcarést",
      "de": "Bukarest",
      "dsb": "Bukarest",
      "el": "Βουκουρέστι",
+     "fr": "Bucarest",
      "hsb": "Bukarest",
      "it": "Bucarest",
-     "ja": "ブカレスト"
+     "ja": "ブカレスト",
+     "nl": "Boekarest",
+     "oc": "Bucarèst",
+     "pt_BR": "Bucareste",
+     "ru": "Бухарест",
+     "sk": "Bukurešť",
+     "sq": "Bukureshti",
+     "uk": "Бухарест",
+     "zh_TW": "布加勒斯特"
     }
    }
   ]
@@ -980,38 +980,38 @@
  {
   "countryCode": "rs",
   "languages": {
+   "de": "Serbien",
+   "dsb": "Serbiska",
+   "el": "Σερβία",
+   "fr": "Serbie",
    "hsb": "Serbiska",
    "ja": "セルビア",
-   "pt_BR": "Sérvia",
-   "zh_TW": "塞爾維亞",
-   "sk": "Srbsko",
    "nl": "Servië",
-   "fr": "Serbie",
-   "de": "Serbien",
+   "pt_BR": "Sérvia",
    "ru": "Сербия",
+   "sk": "Srbsko",
    "uk": "Сербія",
-   "dsb": "Serbiska",
-   "el": "Σερβία"
+   "zh_TW": "塞爾維亞"
   },
   "cities": [
    {
     "city": "Belgrade",
     "languages": {
-     "it": "Belgrado",
-     "nl": "Belgrado",
-     "ja": "ベオグラード",
-     "ru": "Белград",
-     "uk": "Белград",
+     "co": "Belgradu",
      "cy": "Beograd",
      "de": "Belgrad",
-     "oc": "Belgrad",
-     "co": "Belgradu",
      "dsb": "Běłogrod",
      "el": "Βελιγράδι",
      "hsb": "Běłohród",
+     "it": "Belgrado",
+     "ja": "ベオグラード",
+     "nl": "Belgrado",
+     "oc": "Belgrad",
      "pt_BR": "Belgrado",
+     "ru": "Белград",
      "sk": "Belehrad",
      "sq": "Beogradi",
+     "uk": "Белград",
      "zh_TW": "貝爾格勒"
     }
    }
@@ -1020,56 +1020,56 @@
  {
   "countryCode": "sg",
   "languages": {
-   "sk": "Singapur",
-   "sq": "Singapori",
-   "zh_TW": "新加坡",
-   "hsb": "Singapur",
-   "oc": "Singapor",
-   "pt_BR": "Singapura",
-   "fr": "Singapour",
-   "ja": "シンガポール",
-   "ru": "Сингапур",
-   "uk": "Сінгапур",
    "co": "Singaporia",
    "cy": "Singapôr",
    "de": "Singapur",
    "dsb": "Singapur",
-   "el": "Σιγκαπούρη"
+   "el": "Σιγκαπούρη",
+   "fr": "Singapour",
+   "hsb": "Singapur",
+   "ja": "シンガポール",
+   "oc": "Singapor",
+   "pt_BR": "Singapura",
+   "ru": "Сингапур",
+   "sk": "Singapur",
+   "sq": "Singapori",
+   "uk": "Сінгапур",
+   "zh_TW": "新加坡"
   },
   "cities": []
  },
  {
   "countryCode": "es",
   "languages": {
-   "zh_TW": "西班牙",
-   "pt_BR": "Espanha",
-   "sk": "Španielsko",
-   "sq": "Spanja",
-   "dsb": "Špańska",
-   "hsb": "Španiska",
-   "nl": "Spanje",
-   "ru": "Испания",
-   "fr": "Espagne",
+   "co": "Spagna",
+   "cy": "Sbaen",
    "de": "Spanien",
+   "dsb": "Špańska",
+   "el": "Ισπανία",
+   "fr": "Espagne",
+   "hsb": "Španiska",
    "it": "Spagna",
    "ja": "スペイン",
-   "el": "Ισπανία",
-   "cy": "Sbaen",
-   "co": "Spagna",
+   "nl": "Spanje",
    "oc": "Espanha",
-   "uk": "Іспанія"
+   "pt_BR": "Espanha",
+   "ru": "Испания",
+   "sk": "Španielsko",
+   "sq": "Spanja",
+   "uk": "Іспанія",
+   "zh_TW": "西班牙"
   },
   "cities": [
    {
     "city": "Madrid",
     "languages": {
-     "pt_BR": "Madri",
-     "sq": "Madridi",
      "co": "Madridi",
      "el": "Μαδρίτη",
      "ja": "マドリード",
-     "uk": "Мадрид",
+     "pt_BR": "Madri",
      "ru": "Мадрид",
+     "sq": "Madridi",
+     "uk": "Мадрид",
      "zh_TW": "馬德里"
     }
    }
@@ -1078,69 +1078,69 @@
  {
   "countryCode": "se",
   "languages": {
-   "pt_BR": "Suécia",
-   "sk": "Švédsko",
-   "uk": "Швеція",
-   "zh_TW": "瑞典",
+   "co": "Svezia",
+   "de": "Schweden",
+   "dsb": "Šwedska",
+   "el": "Σουηδία",
+   "fr": "Suède",
    "hsb": "Šwedska",
    "it": "Svezia",
    "ja": "スウェーデン",
    "nl": "Zweden",
-   "fr": "Suède",
-   "ru": "Швеция",
-   "de": "Schweden",
-   "sq": "Suedia",
    "oc": "Suècia",
-   "co": "Svezia",
-   "dsb": "Šwedska",
-   "el": "Σουηδία"
+   "pt_BR": "Suécia",
+   "ru": "Швеция",
+   "sk": "Švédsko",
+   "sq": "Suedia",
+   "uk": "Швеція",
+   "zh_TW": "瑞典"
   },
   "cities": [
    {
     "city": "Gothenburg",
     "languages": {
-     "sk": "Göteborg",
-     "sq": "Göteborg",
-     "zh_TW": "哥特堡",
-     "ja": "ヨーテボリ",
-     "de": "Göteborg",
-     "fr": "Göteborg",
-     "nl": "Göteborg",
-     "ru": "Гётеборг",
      "co": "Göteborg",
-     "it": "Göteborg",
-     "uk": "Гетеборг",
      "cy": "Göteborg",
+     "de": "Göteborg",
      "dsb": "Göteborg",
      "el": "Γκέτεμποργκ",
+     "fr": "Göteborg",
      "hsb": "Göteborg",
-     "oc": "Göteborg"
+     "it": "Göteborg",
+     "ja": "ヨーテボリ",
+     "nl": "Göteborg",
+     "oc": "Göteborg",
+     "ru": "Гётеборг",
+     "sk": "Göteborg",
+     "sq": "Göteborg",
+     "uk": "Гетеборг",
+     "zh_TW": "哥特堡"
     }
    },
    {
     "city": "Malmö",
     "languages": {
-     "uk": "Мальме",
-     "zh_TW": "馬爾摩",
      "el": "Μάλμε",
      "ja": "マルメ",
-     "ru": "Мальмё"
+     "ru": "Мальмё",
+     "uk": "Мальме",
+     "zh_TW": "馬爾摩"
     }
    },
    {
     "city": "Stockholm",
     "languages": {
-     "zh_TW": "斯德哥爾摩",
+     "co": "Stoccolma",
      "el": "Στοκχόλμη",
      "it": "Stoccolma",
      "ja": "ストックホルム",
      "oc": "Estocòlme",
+     "pt_BR": "Estocolmo",
+     "ru": "Стокгольм",
      "sk": "Štokholm",
      "sq": "Stokholmi",
-     "ru": "Стокгольм",
      "uk": "Стокгольм",
-     "pt_BR": "Estocolmo",
-     "co": "Stoccolma"
+     "zh_TW": "斯德哥爾摩"
     }
    }
   ]
@@ -1148,44 +1148,44 @@
  {
   "countryCode": "ch",
   "languages": {
-   "hsb": "Šwicarska",
-   "oc": "Soïssa",
-   "pt_BR": "Suíça",
-   "sk": "Švajčiarsko",
-   "uk": "Швейцарія",
-   "zh_TW": "瑞士",
-   "sq": "Zvicër",
-   "nl": "Zwitserland",
-   "ru": "Швейцария",
-   "fr": "Suisse",
-   "de": "Schweiz",
-   "it": "Svizzera",
-   "ja": "スイス",
    "co": "Svizzera",
    "cy": "Y Swistir",
+   "de": "Schweiz",
    "dsb": "Šwicaŕska",
-   "el": "Ελβετία"
+   "el": "Ελβετία",
+   "fr": "Suisse",
+   "hsb": "Šwicarska",
+   "it": "Svizzera",
+   "ja": "スイス",
+   "nl": "Zwitserland",
+   "oc": "Soïssa",
+   "pt_BR": "Suíça",
+   "ru": "Швейцария",
+   "sk": "Švajčiarsko",
+   "sq": "Zvicër",
+   "uk": "Швейцарія",
+   "zh_TW": "瑞士"
   },
   "cities": [
    {
     "city": "Zurich",
     "languages": {
-     "oc": "Zuric",
-     "pt_BR": "Zurique",
-     "sk": "Zürich",
-     "zh_TW": "蘇黎世",
-     "sq": "Cyrih",
-     "nl": "Zürich",
-     "ru": "Цюрих",
-     "uk": "Цюрих",
-     "de": "Zürich",
-     "en": "Zürich",
      "cy": "Zürich",
+     "de": "Zürich",
      "dsb": "Zürich",
      "el": "Ζυρίχη",
+     "en": "Zürich",
      "hsb": "Zürich",
      "it": "Zurigo",
-     "ja": "チューリッヒ"
+     "ja": "チューリッヒ",
+     "nl": "Zürich",
+     "oc": "Zuric",
+     "pt_BR": "Zurique",
+     "ru": "Цюрих",
+     "sk": "Zürich",
+     "sq": "Cyrih",
+     "uk": "Цюрих",
+     "zh_TW": "蘇黎世"
     }
    }
   ]
@@ -1193,22 +1193,22 @@
  {
   "countryCode": "gb",
   "languages": {
-   "nl": "Verenigd Koninkrijk",
-   "fr": "Royaume-Uni",
-   "en": "United Kingdom",
-   "ru": "Великобритания",
    "co": "Regnu Unitu",
    "cy": "y Deyrnas Unedig",
    "de": "Vereinigtes Königreich",
    "dsb": "Zjadnośone kralojstwo",
    "el": "Ηνωμένο Βασίλειο",
+   "en": "United Kingdom",
    "en_CA": "United Kingdom",
    "en_GB": "United Kingdom",
+   "fr": "Royaume-Uni",
    "hsb": "Zjednoćene kralestwo",
    "it": "Regno Unito",
    "ja": "イギリス",
+   "nl": "Verenigd Koninkrijk",
    "oc": "Reialme Unit",
    "pt_BR": "Reino Unido",
+   "ru": "Великобритания",
    "sk": "Spojené kráľovstvo",
    "sq": "Britania e Madhe",
    "uk": "Велика Британія",
@@ -1218,31 +1218,31 @@
    {
     "city": "London",
     "languages": {
-     "sk": "Londýn",
-     "sq": "Londër",
+     "co": "Londra",
+     "cy": "Llundain",
      "el": "Λονδίνο",
-     "nl": "Londen",
-     "ru": "Лондон",
-     "uk": "Лондон",
      "fr": "Londres",
+     "it": "Londra",
      "ja": "ロンドン",
+     "nl": "Londen",
      "oc": "Londres",
      "pt_BR": "Londres",
-     "it": "Londra",
-     "zh_TW": "倫敦",
-     "co": "Londra",
-     "cy": "Llundain"
+     "ru": "Лондон",
+     "sk": "Londýn",
+     "sq": "Londër",
+     "uk": "Лондон",
+     "zh_TW": "倫敦"
     }
    },
    {
     "city": "Manchester",
     "languages": {
-     "zh_TW": "曼徹斯特",
+     "cy": "Manceinion",
+     "el": "Μάντσεστερ",
+     "ja": "マンチェスター",
      "ru": "Манчестер",
      "uk": "Манчестер",
-     "ja": "マンチェスター",
-     "cy": "Manceinion",
-     "el": "Μάντσεστερ"
+     "zh_TW": "曼徹斯特"
     }
    }
   ]
@@ -1250,18 +1250,6 @@
  {
   "countryCode": "us",
   "languages": {
-   "sk": "Spojené štáty americké",
-   "hsb": "Zjednoćene staty Ameriki",
-   "it": "Stati Uniti d'America",
-   "ja": "アメリカ合衆国",
-   "nl": "Verenigde Staten van Amerika",
-   "oc": "Estats Units d'America",
-   "pt_BR": "Estados Unidos",
-   "ru": "США",
-   "sq": "Shtetet e Bashkuara të Amerikës",
-   "uk": "Сполучені Штати Америки",
-   "fr": "États-Unis",
-   "zh_TW": "美國",
    "co": "Stati Uniti d'America",
    "cy": "Unol Daleithiau America",
    "de": "Vereinigte Staaten",
@@ -1269,20 +1257,24 @@
    "el": "Ηνωμένες Πολιτείες Αμερικής",
    "en": "United States of America",
    "en_CA": "United States",
-   "en_GB": "United States of America"
+   "en_GB": "United States of America",
+   "fr": "États-Unis",
+   "hsb": "Zjednoćene staty Ameriki",
+   "it": "Stati Uniti d'America",
+   "ja": "アメリカ合衆国",
+   "nl": "Verenigde Staten van Amerika",
+   "oc": "Estats Units d'America",
+   "pt_BR": "Estados Unidos",
+   "ru": "США",
+   "sk": "Spojené štáty americké",
+   "sq": "Shtetet e Bashkuara të Amerikës",
+   "uk": "Сполучені Штати Америки",
+   "zh_TW": "美國"
   },
   "cities": [
    {
     "city": "Atlanta, GA",
     "languages": {
-     "nl": "Atlanta",
-     "oc": "Atlanta",
-     "ru": "Атланта",
-     "sk": "Atlanta",
-     "sq": "Atlanta",
-     "uk": "Атланта",
-     "zh_TW": "亞特蘭大",
-     "pt_BR": "Atlanta",
      "co": "Atlanta",
      "cy": "Atlanta",
      "de": "Atlanta",
@@ -1290,20 +1282,20 @@
      "en": "Atlanta",
      "fr": "Atlanta",
      "it": "Atlanta",
-     "ja": "アトランタ"
+     "ja": "アトランタ",
+     "nl": "Atlanta",
+     "oc": "Atlanta",
+     "pt_BR": "Atlanta",
+     "ru": "Атланта",
+     "sk": "Atlanta",
+     "sq": "Atlanta",
+     "uk": "Атланта",
+     "zh_TW": "亞特蘭大"
     }
    },
    {
     "city": "Chicago, IL",
     "languages": {
-     "uk": "Чикаго",
-     "zh_TW": "芝加哥",
-     "nl": "Chicago",
-     "oc": "Chicago",
-     "pt_BR": "Chicago",
-     "ru": "Чикаго",
-     "sk": "Chicago",
-     "sq": "Chicago",
      "co": "Chicago",
      "cy": "Chicago",
      "de": "Chicago",
@@ -1315,237 +1307,245 @@
      "fr": "Chicago",
      "hsb": "Chicago",
      "it": "Chicago",
-     "ja": "シカゴ"
+     "ja": "シカゴ",
+     "nl": "Chicago",
+     "oc": "Chicago",
+     "pt_BR": "Chicago",
+     "ru": "Чикаго",
+     "sk": "Chicago",
+     "sq": "Chicago",
+     "uk": "Чикаго",
+     "zh_TW": "芝加哥"
     }
    },
    {
     "city": "Dallas, TX",
     "languages": {
-     "zh_TW": "達拉斯",
-     "cy": "Dallas, Texas",
-     "ru": "Даллас",
-     "uk": "Даллас",
      "co": "Dallas",
+     "cy": "Dallas, Texas",
      "de": "Dallas",
+     "el": "Ντάλας",
      "en": "Dallas",
      "en_CA": "Dallas",
      "en_GB": "Dallas",
      "fr": "Dallas",
+     "hsb": "Dallas",
      "it": "Dallas",
+     "ja": "ダラス",
      "nl": "Dallas",
      "oc": "Dallas",
      "pt_BR": "Dallas",
+     "ru": "Даллас",
      "sk": "Dallas",
-     "ja": "ダラス",
      "sq": "Dallas",
-     "el": "Ντάλας",
-     "hsb": "Dallas"
+     "uk": "Даллас",
+     "zh_TW": "達拉斯"
     }
    },
    {
     "city": "Denver, CO",
     "languages": {
-     "oc": "Denver",
-     "sk": "Denver",
-     "zh_TW": "丹佛",
-     "pt_BR": "Denver",
-     "ja": "デンヴァー",
-     "de": "Denver",
-     "en": "Denver",
-     "fr": "Denver",
-     "it": "Denver",
-     "uk": "Денвер",
-     "nl": "Denver",
-     "ru": "Денвер",
-     "en_CA": "Denver",
-     "en_GB": "Denver",
-     "sq": "Denver",
      "co": "Denver",
      "cy": "Denver, Colorado",
-     "el": "Ντένβερ"
+     "de": "Denver",
+     "el": "Ντένβερ",
+     "en": "Denver",
+     "en_CA": "Denver",
+     "en_GB": "Denver",
+     "fr": "Denver",
+     "it": "Denver",
+     "ja": "デンヴァー",
+     "nl": "Denver",
+     "oc": "Denver",
+     "pt_BR": "Denver",
+     "ru": "Денвер",
+     "sk": "Denver",
+     "sq": "Denver",
+     "uk": "Денвер",
+     "zh_TW": "丹佛"
     }
    },
    {
     "city": "Los Angeles, CA",
     "languages": {
-     "zh_TW": "洛杉磯",
-     "hsb": "Los Angeles",
-     "oc": "Los Angeles",
-     "sq": "Los Axhelos",
-     "nl": "Los Angeles",
-     "en": "Los Angeles",
-     "ja": "ロサンゼルス",
-     "it": "Los Angeles",
+     "co": "Los Angeles",
+     "cy": "Los Angeles",
      "de": "Los Angeles",
+     "dsb": "Los Angeles",
      "el": "Λος Άντζελες",
+     "en": "Los Angeles",
      "en_CA": "Los Angeles",
      "en_GB": "Los Angeles",
      "fr": "Los Angeles",
+     "hsb": "Los Angeles",
+     "it": "Los Angeles",
+     "ja": "ロサンゼルス",
+     "nl": "Los Angeles",
+     "oc": "Los Angeles",
      "pt_BR": "Los Angeles",
      "ru": "Лос-Анджелес",
      "sk": "Los Angeles",
+     "sq": "Los Axhelos",
      "uk": "Лос-Анджелес",
-     "co": "Los Angeles",
-     "cy": "Los Angeles",
-     "dsb": "Los Angeles"
+     "zh_TW": "洛杉磯"
     }
    },
    {
     "city": "Miami, FL",
     "languages": {
-     "oc": "Miami",
-     "pt_BR": "Miami",
-     "sk": "Miami",
-     "sq": "Miami",
-     "zh_TW": "邁阿密",
+     "co": "Miami",
+     "cy": "Miami",
+     "de": "Miami",
+     "el": "Μαϊάμι",
      "en": "Miami",
+     "en_CA": "Miami",
+     "en_GB": "Miami",
      "fr": "Miami",
      "it": "Miami",
      "ja": "マイアミ",
      "nl": "Miami",
+     "oc": "Miami",
+     "pt_BR": "Miami",
      "ru": "Майами",
+     "sk": "Miami",
+     "sq": "Miami",
      "uk": "Маямі",
-     "de": "Miami",
-     "co": "Miami",
-     "cy": "Miami",
-     "el": "Μαϊάμι",
-     "en_CA": "Miami",
-     "en_GB": "Miami"
+     "zh_TW": "邁阿密"
     }
    },
    {
     "city": "New York, NY",
     "languages": {
-     "sq": "New York City",
-     "uk": "Нью-Йорк",
-     "zh_TW": "紐約",
-     "nl": "New York",
-     "sk": "New York",
-     "fr": "New York",
-     "it": "New York",
-     "en": "New York City",
-     "ru": "Нью-Йорк",
-     "ja": "ニューヨーク",
      "co": "New York",
      "cy": "Dinas Efrog Newydd",
      "de": "New York City",
      "dsb": "New York City",
      "el": "Νέα Υόρκη",
+     "en": "New York City",
      "en_CA": "New York City",
      "en_GB": "New York City",
+     "fr": "New York",
      "hsb": "New York City",
+     "it": "New York",
+     "ja": "ニューヨーク",
+     "nl": "New York",
      "oc": "Nòva York",
-     "pt_BR": "Nova Iorque"
+     "pt_BR": "Nova Iorque",
+     "ru": "Нью-Йорк",
+     "sk": "New York",
+     "sq": "New York City",
+     "uk": "Нью-Йорк",
+     "zh_TW": "紐約"
     }
    },
    {
     "city": "Phoenix, AZ",
     "languages": {
-     "zh_TW": "鳳凰城",
      "co": "Phoenix",
      "cy": "Phoenix",
      "de": "Phoenix",
      "el": "Φοίνιξ",
      "en": "Phoenix",
-     "nl": "Phoenix",
-     "ja": "フェニックス",
-     "it": "Phoenix",
      "fr": "Phoenix",
+     "it": "Phoenix",
+     "ja": "フェニックス",
+     "nl": "Phoenix",
      "oc": "Phoenix",
      "pt_BR": "Phoenix",
      "ru": "Финикс",
      "sk": "Phoenix",
+     "sq": "Phoenix",
      "uk": "Фінікс",
-     "sq": "Phoenix"
+     "zh_TW": "鳳凰城"
     }
    },
    {
     "city": "Raleigh, NC",
     "languages": {
-     "uk": "Ралі",
-     "ja": "ローリー",
-     "de": "Raleigh",
-     "en": "Raleigh",
-     "fr": "Raleigh",
-     "it": "Raleigh",
-     "nl": "Raleigh",
-     "ru": "Роли",
      "cy": "Raleigh, Gogledd Carolina",
+     "de": "Raleigh",
      "el": "Ράλεϊ",
+     "en": "Raleigh",
      "en_CA": "Raleigh, North Carolina",
      "en_GB": "Raleigh",
+     "fr": "Raleigh",
+     "it": "Raleigh",
+     "ja": "ローリー",
+     "nl": "Raleigh",
      "oc": "Raleigh",
      "pt_BR": "Raleigh",
+     "ru": "Роли",
      "sk": "Raleigh",
-     "sq": "Raleigh"
+     "sq": "Raleigh",
+     "uk": "Ралі"
     }
    },
    {
     "city": "Salt Lake City, UT",
     "languages": {
-     "ru": "Солт-Лейк-Сити",
-     "sk": "Salt Lake City",
-     "sq": "Salt Lake City",
-     "uk": "Солт-Лейк-Сіті",
-     "zh_TW": "鹽湖城",
-     "pt_BR": "Salt Lake City",
-     "nl": "Salt Lake City",
-     "en": "Salt Lake City",
      "co": "Salt Lake City",
      "cy": "Salt Lake City",
      "de": "Salt Lake City",
      "el": "Σολτ Λέικ Σίτι",
+     "en": "Salt Lake City",
      "en_CA": "Salt Lake City",
      "en_GB": "Salt Lake City",
      "fr": "Salt Lake City",
      "it": "Salt Lake City",
      "ja": "ソルトレイクシティ",
-     "oc": "Salt Lake City"
+     "nl": "Salt Lake City",
+     "oc": "Salt Lake City",
+     "pt_BR": "Salt Lake City",
+     "ru": "Солт-Лейк-Сити",
+     "sk": "Salt Lake City",
+     "sq": "Salt Lake City",
+     "uk": "Солт-Лейк-Сіті",
+     "zh_TW": "鹽湖城"
     }
    },
    {
     "city": "San Jose, CA",
     "languages": {
-     "sk": "San José",
-     "sq": "San Hose",
-     "zh_TW": "聖荷西",
-     "en": "San Jose",
-     "fr": "San José",
-     "nl": "San Jose",
-     "ru": "Сан-Хосе",
-     "it": "San Jose",
-     "de": "San José",
-     "uk": "Сан-Хосе",
      "cy": "San Jose, Califfornia",
+     "de": "San José",
      "el": "Σαν Χοσέ",
+     "en": "San Jose",
      "en_CA": "San Jose, California",
      "en_GB": "San Jose",
+     "fr": "San José",
+     "it": "San Jose",
      "ja": "サンノゼ",
+     "nl": "San Jose",
      "oc": "San José",
-     "pt_BR": "São José"
+     "pt_BR": "São José",
+     "ru": "Сан-Хосе",
+     "sk": "San José",
+     "sq": "San Hose",
+     "uk": "Сан-Хосе",
+     "zh_TW": "聖荷西"
     }
    },
    {
     "city": "Seattle, WA",
     "languages": {
+     "co": "Seattle",
+     "cy": "Seattle",
+     "de": "Seattle",
+     "el": "Σιάτλ",
+     "en": "Seattle",
+     "en_CA": "Seattle",
+     "en_GB": "Seattle",
+     "fr": "Seattle",
+     "it": "Seattle",
+     "ja": "シアトル",
+     "nl": "Seattle",
+     "oc": "Seattle",
      "pt_BR": "Seattle",
+     "ru": "Сиэтл",
      "sk": "Seattle",
      "sq": "Seattle",
      "uk": "Сіетл",
-     "zh_TW": "西雅圖",
-     "ja": "シアトル",
-     "de": "Seattle",
-     "fr": "Seattle",
-     "nl": "Seattle",
-     "oc": "Seattle",
-     "ru": "Сиэтл",
-     "en": "Seattle",
-     "co": "Seattle",
-     "cy": "Seattle",
-     "el": "Σιάτλ",
-     "en_CA": "Seattle",
-     "en_GB": "Seattle",
-     "it": "Seattle"
+     "zh_TW": "西雅圖"
     }
    }
   ]
