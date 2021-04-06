@@ -26,7 +26,13 @@ struct StaticLanguage {
 // framework (and some are missing entirely). This static map is the fallback
 // when this happens.
 QMap<QString, StaticLanguage> s_languageMap{
-    {"co", StaticLanguage{"Corsu", ""}}};
+    {"co", StaticLanguage{"Corsu", ""}},
+    {"es_AR", StaticLanguage{"Spanish (Argentina)", "Español, Argentina"}},
+    {"es_MX", StaticLanguage{"Spanish (Mexico)", "Español, México"}},
+    {"en_GB", StaticLanguage{"English (United Kingdom)", ""}},
+    {"en_CA", StaticLanguage{"English (Canada)", ""}},
+};
+
 }  // namespace
 
 // static
@@ -46,11 +52,6 @@ Localizer::Localizer() {
     m_code = settingsHolder->languageCode();
   }
 
-  if (m_code.isEmpty()) {
-    QLocale locale = QLocale::system();
-    m_code = locale.bcp47Name();
-  }
-
   initialize();
 }
 
@@ -62,6 +63,29 @@ Localizer::~Localizer() {
 }
 
 void Localizer::initialize() {
+  QString systemCode = QLocale::system().bcp47Name();
+
+  // In previous versions, we did not have the support for the system language.
+  // If this is the first time we are here, we need to check if the current
+  // language matches with the system one.
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasSystemLanguageCodeMigrated() ||
+      !settingsHolder->systemLanguageCodeMigrated()) {
+    settingsHolder->setSystemLanguageCodeMigrated(true);
+
+    if (settingsHolder->hasLanguageCode() &&
+        settingsHolder->languageCode() == systemCode) {
+      settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
+      settingsHolder->setLanguageCode("");
+    }
+  }
+
+  // We always need a previous code.
+  if (!settingsHolder->hasPreviousLanguageCode() ||
+      settingsHolder->previousLanguageCode().isEmpty()) {
+    settingsHolder->setPreviousLanguageCode(systemCode);
+  }
+
   loadLanguage(m_code);
 
   QCoreApplication::installTranslator(&m_translator);
@@ -76,18 +100,35 @@ void Localizer::initialize() {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts[0].remove(0, 11);
-    m_languages.append(code);
+
+    Language language{code, languageName(code), localizedLanguageName(code)};
+    m_languages.append(language);
   }
+
+  // Sorting languages.
+  std::sort(m_languages.begin(), m_languages.end(), languageSort);
 }
 
 void Localizer::loadLanguage(const QString& code) {
   logger.log() << "Loading language:" << code;
-  if (loadLanguageInternal(code)) {
-    return;
+  if (!loadLanguageInternal(code)) {
+    logger.log() << "Loading default language (fallback)";
+    loadLanguageInternal("en");
   }
 
-  logger.log() << "Loading default language (fallback)";
-  loadLanguageInternal("en");
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (code.isEmpty() && settingsHolder->hasLanguageCode()) {
+    QString previousCode = settingsHolder->languageCode();
+    if (!previousCode.isEmpty()) {
+      settingsHolder->setPreviousLanguageCode(previousCode);
+      emit previousCodeChanged();
+    }
+  }
+
+  SettingsHolder::instance()->setLanguageCode(code);
+
+  m_code = code;
+  emit codeChanged();
 }
 
 bool Localizer::loadLanguageInternal(const QString& code) {
@@ -104,15 +145,11 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     return false;
   }
 
-  SettingsHolder::instance()->setLanguageCode(code);
-
-  m_code = code;
-  emit codeChanged();
-
   return true;
 }
 
-QString Localizer::languageName(const QString& code) const {
+// static
+QString Localizer::languageName(const QString& code) {
   if (s_languageMap.contains(code)) {
     QString languageName = s_languageMap[code].m_name;
     if (!languageName.isEmpty()) {
@@ -136,7 +173,8 @@ QString Localizer::languageName(const QString& code) const {
   return name;
 }
 
-QString Localizer::localizedLanguageName(const QString& code) const {
+// static
+QString Localizer::localizedLanguageName(const QString& code) {
   if (s_languageMap.contains(code)) {
     QString languageName = s_languageMap[code].m_localizedName;
     if (!languageName.isEmpty()) {
@@ -182,15 +220,33 @@ QVariant Localizer::data(const QModelIndex& index, int role) const {
 
   switch (role) {
     case LanguageRole:
-      return QVariant(languageName(m_languages.at(index.row())));
+      return QVariant(m_languages.at(index.row()).m_name);
 
     case LocalizedLanguageRole:
-      return QVariant(localizedLanguageName(m_languages.at(index.row())));
+      return QVariant(m_languages.at(index.row()).m_localizedName);
 
     case CodeRole:
-      return QVariant(m_languages.at(index.row()));
+      return QVariant(m_languages.at(index.row()).m_code);
 
     default:
       return QVariant();
   }
+}
+
+QStringList Localizer::languages() const {
+  QStringList languages;
+  for (const Language& language : m_languages) {
+    languages.append(language.m_code);
+  }
+
+  return languages;
+}
+
+bool Localizer::languageSort(const Localizer::Language& a,
+                             const Localizer::Language& b) {
+  return a.m_localizedName < b.m_localizedName;
+}
+
+QString Localizer::previousCode() const {
+  return SettingsHolder::instance()->previousLanguageCode();
 }

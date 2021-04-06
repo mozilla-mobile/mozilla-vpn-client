@@ -45,6 +45,10 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasCaptivePortalAlert, captivePortalAlert, setCaptivePortalAlert)
   GETSET(bool, hasStartAtBoot, startAtBoot, setStartAtBoot)
   GETSET(QString, hasLanguageCode, languageCode, setLanguageCode)
+  GETSET(QString, hasPreviousLanguageCode, previousLanguageCode,
+         setPreviousLanguageCode)
+  GETSET(bool, hasSystemLanguageCodeMigrated, systemLanguageCodeMigrated,
+         setSystemLanguageCodeMigrated)
   GETSET(QString, hasToken, token, setToken)
   GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
   GETSET(QString, hasPublicKey, publicKey, setPublicKey)
