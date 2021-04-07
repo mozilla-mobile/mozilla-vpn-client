@@ -28,10 +28,10 @@ Window {
     visible: true
 
     function getWidth() {
-        return fullscreenRequired() ? maximumWidth : Theme.desktopAppWidth;
+        return fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
     }
     function getHeight() {
-        return fullscreenRequired() ? maximumHeight : Theme.desktopAppHeight;
+        return fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
     }
 
     width: getWidth()
