@@ -390,6 +390,8 @@ int CommandUI::run(QStringList& tokens) {
 #ifdef MVPN_WASM
       WasmWindowController::instance()->retranslate();
 #endif
+
+      MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
 #ifdef MVPN_INSPECTOR
