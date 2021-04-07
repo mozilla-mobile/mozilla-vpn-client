@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 
 #include <QCoreApplication>
@@ -249,4 +250,14 @@ bool Localizer::languageSort(const Localizer::Language& a,
 
 QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
+}
+
+QString Localizer::translateServerCountry(const QString& countryCode,
+                                          const QString& countryName) {
+  return ServerI18N::translateCountryName(countryCode, countryName);
+}
+
+QString Localizer::translateServerCity(const QString& countryCode,
+                                       const QString& cityName) {
+  return ServerI18N::translateCityName(countryCode, cityName);
 }
