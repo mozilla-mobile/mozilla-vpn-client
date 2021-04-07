@@ -29,7 +29,12 @@ PID=$!
 print G "done."
 
 print Y "Running the localization script..."
-mocha tests/functional/localizeServers.js 2>translations/servers.json || ERROR=yes
+
+export SERVER_OUTPUT=translations/servers.json
+export SERVER_API=translations/servers-api.json
+export SERVER_TEMPLATE=translations/servers-template.json
+
+mocha tests/functional/localizeServers.js || ERROR=yes
 
 wait $PID
 
@@ -38,3 +43,6 @@ if [ "$ERROR" = yes ]; then
   print R "Nooo"
   exit 1
 fi
+
+echo "All done! The final server list can be found here: $SERVER_OUTPUT"
+echo "This is the merging of the generated server names ($SERVER_API) and the template file ($SERVER_TEMPLATE)."

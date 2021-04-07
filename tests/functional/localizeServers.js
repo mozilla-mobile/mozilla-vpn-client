@@ -7,7 +7,8 @@ const util = require('util');
 const vpn = require('./helper.js');
 const FirefoxHelper = require('./firefox.js');
 const fetch = require('node-fetch');
-const WBK = require('wikibase-sdk')
+const WBK = require('wikibase-sdk');
+const fs = require('fs');
 
 const webdriver = require('selenium-webdriver'), By = webdriver.By,
       Keys = webdriver.Key, until = webdriver.until;
@@ -22,6 +23,10 @@ describe('Server list', function() {
   let wbk;
   let translations = [];
   let languages = new Map();
+
+  let serverOutputFile;
+  let serverApiFile;
+  let serverTemplateFile;
 
   const countryIDs = new Map();
   countryIDs.set('Netherlands', 'http://www.wikidata.org/entity/Q55');
@@ -67,6 +72,17 @@ describe('Server list', function() {
     vpn.disconnect();
   });
 
+  it('validate env', async () => {
+    serverOutputFile = process.env.SERVER_OUTPUT;
+    assert(!!serverOutputFile);
+
+    serverApiFile = process.env.SERVER_API;
+    assert(!!serverApiFile);
+
+    serverTemplateFile = process.env.SERVER_TEMPLATE;
+    assert(!!serverTemplateFile);
+  });
+
   it('authenticate', async () => await vpn.authenticate(driver));
 
   it('Post authentication view', async () => {
@@ -92,9 +108,97 @@ describe('Server list', function() {
       const translation = await localizeCountry(server);
       if (translation) translations.push(translation);
     }
-
-    process.stderr.write(JSON.stringify(translations, null, ' '));
   });
+
+  it('write files', async () => {
+    console.log('Write the API localized file');
+    fs.writeFileSync(serverApiFile, JSON.stringify(translations, null, ' '));
+
+    console.log('Merge the template file');
+    const template = JSON.parse(fs.readFileSync(serverTemplateFile));
+    assert(Array.isArray(template));
+
+    for (let country of template) {
+      mergeCountry(country);
+    }
+
+    console.log('Sorting data');
+    for (let country of translations) {
+      if ('languages' in country) {
+        country.languages =
+            Object.keys(country.languages).sort().reduce((obj, key) => {
+              obj[key] = country.languages[key];
+              return obj;
+            }, {});
+      }
+
+      if (Array.isArray(country.cities)) {
+        for (let city of country.cities) {
+          if ('languages' in city) {
+            city.languages =
+                Object.keys(city.languages).sort().reduce((obj, key) => {
+                  obj[key] = city.languages[key];
+                  return obj;
+                }, {});
+          }
+        }
+      }
+    }
+
+    console.log('Merge the final file');
+    fs.writeFileSync(serverOutputFile, JSON.stringify(translations, null, ' '));
+  });
+
+  function mergeCountry(country) {
+    assert(country.countryCode);
+
+    for (let c of translations) {
+      if (c.countryCode === country.countryCode) {
+        return mergeCountryReal(c, country);
+      }
+    }
+
+    console.log('Adding country', country.countryCode);
+    translations.push(country);
+  }
+
+  function mergeCountryReal(country, template) {
+    console.log('Merge country', template.countryCode);
+
+    if ('languages' in template) {
+      for (let language of Object.keys(template.languages)) {
+        country.languages[language] = template.languages[language];
+      }
+    }
+
+    if (Array.isArray(template.cities)) {
+      for (let city of template.cities) {
+        mergeCity(country, city);
+      }
+    }
+  }
+
+  function mergeCity(country, template) {
+    assert(template.city);
+    for (let c of country.cities) {
+      if (c.city === template.city) {
+        return mergeCityReal(c, template);
+      }
+    }
+
+    console.log('Adding city', template.city);
+    country.cities.push(template);
+  }
+
+  function mergeCityReal(city, template) {
+    console.log('Merge city', template.city);
+
+    if ('languages' in template) {
+      for (let language of Object.keys(template.languages)) {
+        city.languages[language] = template.languages[language];
+      }
+    }
+  }
 
   async function localizeCountry(server) {
     console.log('Localize country', server.name);
@@ -168,12 +272,6 @@ describe('Server list', function() {
         translation.languages[languages.get(langCode)] = value;
       }
     }
-
-    translation.languages =
-        Object.keys(translation.languages).sort().reduce((obj, key) => {
-          obj[key] = translation.languages[key];
-          return obj;
-        }, {});
 
     for (let city of server.cities) {
       if (city.name === server.name) {
@@ -262,12 +360,6 @@ describe('Server list', function() {
         translation.languages[languages.get(langCode)] = lang.cityName['value'];
       }
     }
-
-    translation.languages =
-        Object.keys(translation.languages).sort().reduce((obj, key) => {
-          obj[key] = translation.languages[key];
-          return obj;
-        }, {});
 
     return translation;
   }
