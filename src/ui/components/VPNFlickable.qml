@@ -30,13 +30,14 @@ Flickable {
 
     contentHeight: Math.max(window.safeContentHeight, flickContentHeight)
     boundsBehavior: Flickable.StopAtBounds
-    boundsMovement: Flickable.StopAtBounds
-    flickDeceleration: -0.5*(maximumFlicVelocity*0.25)*(maximumFlickVelocity*0.25)/100
-    maximumFlickVelocity: 1000
-
     opacity: 0
+
     Component.onCompleted: {
         opacity = 1;
+        if (Qt.platform.os === "windows") {
+            maximumFlickVelocity = 700;
+            flickDeceleration = -0.5*(maximumFlicVelocity*0.25)*(maximumFlickVelocity*0.25)/100;
+        }
     }
 
     NumberAnimation on contentY {
