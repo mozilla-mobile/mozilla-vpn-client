@@ -203,6 +203,7 @@ VPNFlickable {
                 stackview.push("ViewDevices.qml")
             }
 
+            objectName: "deviceListButton"
             anchors.top: serverInfo.bottom
             anchors.topMargin: 22
             //% "%1 of %2"
