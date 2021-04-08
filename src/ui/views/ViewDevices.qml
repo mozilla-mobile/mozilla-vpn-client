@@ -20,6 +20,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "deviceListBackButton"
 
         //% "My devices"
         title: qsTrId("vpn.devices.myDevices")
