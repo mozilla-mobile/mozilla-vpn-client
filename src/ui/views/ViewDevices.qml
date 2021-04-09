@@ -51,7 +51,14 @@ Item {
                     target: menu
                     rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
                 }
-
+                PropertyChanges {
+                    target: col
+                    visible: false
+                }
+                PropertyChanges {
+                    target: menu
+                    btnDisabled: false
+                }
             },
             State {
                 name: "deviceLimit"
@@ -60,7 +67,14 @@ Item {
                     target: menu
                     rightTitle: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
                 }
-
+                PropertyChanges {
+                    target: col
+                    visible: true
+                }
+                PropertyChanges {
+                    target: menu
+                    btnDisabled: true
+                }
             }
         ]
 
@@ -74,7 +88,8 @@ Item {
             id: content
             width: vpnFlickable.width
             anchors.top: maxDevicesReached.bottom
-            spacing: Theme.windowMargin
+            anchors.topMargin: Theme.windowMargin / 2
+            spacing: Theme.windowMargin / 2
 
             Repeater {
                 id: deviceList
@@ -86,22 +101,28 @@ Item {
             }
 
             VPNVerticalSpacer {
-                Layout.preferredHeight: Theme.rowHeight / 2
-            }
-
-            Rectangle {
                 Layout.preferredHeight: 1
-                Layout.preferredWidth: parent.width - Theme.windowMargin * 2
-                Layout.alignment: Qt.AlignHCenter
-                color: "#e7e7e7"
-                visible: VPN.state === VPN.StateDeviceLimit
             }
 
             ColumnLayout {
                 id: col
                 spacing: 0
-                visible: VPN.state === VPN.StateDeviceLimit
+
+                Layout.preferredWidth: vpnFlickable.width
                 Layout.alignment: Qt.AlignHCenter
+
+                VPNVerticalSpacer {
+                    Layout.preferredHeight: Theme.windowMargin * 2
+                    Layout.preferredWidth: vpnFlickable.width - Theme.windowMargin * 2
+                    Layout.alignment: Qt.AlignHCenter
+                    Rectangle {
+                        id: divider
+                        height: 1
+                        width:  parent.width
+                        anchors.centerIn: parent
+                        color: "#e7e7e7"
+                    }
+                }
 
                 VPNLinkButton {
                     id: getHelpLink

@@ -16,10 +16,10 @@ Item {
     Layout.preferredHeight: deviceRow.height
 
     Rectangle {
-        color: Theme.grey
-        opacity: device.focus || iconButton.focus ? .1 : 0
+        color: Theme.greyHovered
+        opacity: device.focus || iconButton.focus ? 1 : 0
         anchors.fill: device
-        anchors.topMargin: -Theme.windowMargin / 2
+        anchors.topMargin: -Theme.windowMargin / 1.5
         anchors.bottomMargin: anchors.topMargin
     }
 
@@ -179,7 +179,7 @@ Item {
             buttonColorScheme: Theme.removeDeviceBtn
             visible: !currentOne
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.rightMargin: Theme.windowMargin
+            Layout.rightMargin: Theme.windowMargin / 2
             Layout.preferredHeight: Theme.rowHeight
             Layout.preferredWidth: Theme.rowHeight
             onClicked: removePopup.initializeAndOpen(name, index)
