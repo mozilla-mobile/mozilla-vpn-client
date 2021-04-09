@@ -12,10 +12,8 @@ Item {
     property var pendingDeviceRemoval: false
 
     width: deviceList.width
-    state: "deviceLimitNotReached"
     states: [
         State {
-            name: "deviceLimitReached"
             when: vpnFlickable.state === "deviceLimit" || vpnFlickable.wasmShowMaxDeviceWarning === true
 
             PropertyChanges {
@@ -26,7 +24,6 @@ Item {
 
         },
         State {
-            name: "deviceLimitNotReached"
             when: vpnFlickable.state === "active"
 
             PropertyChanges {
