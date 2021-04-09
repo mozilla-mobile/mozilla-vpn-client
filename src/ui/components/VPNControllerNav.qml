@@ -20,20 +20,6 @@ ColumnLayout {
     spacing: 4
     width: parent.width - Theme.windowMargin
     anchors.horizontalCenter: parent.horizontalCenter
-    state: ""
-    states: [
-        State {
-            name: "deviceLimit"
-            PropertyChanges {
-                target: icon
-                source: "../resources/warning.svg"
-                sourceSize.height: 14
-                sourceSize.width: 14
-                Layout.rightMargin: 6
-                Layout.leftMargin: 6
-            }
-        }
-    ]
 
     VPNBoldLabel {
         text: titleText
