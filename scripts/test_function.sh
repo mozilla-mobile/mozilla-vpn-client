@@ -45,15 +45,21 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
+APP=$1
+
 printn Y "Retrieving mozillavpn version... "
-"$1" -v 2>/dev/null || die "Failed."
+"$APP" -v 2>/dev/null || die "Failed."
 print G "done."
 
-if [ -f "$2" ]; then
-  runTest "$1" "$2"
+shift
+
+if [ $# -ne 0 ]; then
+  for i in $*; do
+    runTest "$APP" "$i"
+  done
 else
   for i in tests/functional/test*; do
-    runTest "$1" "$i"
+    runTest "$APP" "$i"
   done
 fi
 
