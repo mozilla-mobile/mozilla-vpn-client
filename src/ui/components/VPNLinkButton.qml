@@ -20,8 +20,6 @@ VPNButtonBase {
 
 
     radius: 4
-
-    onFocusChanged: if (focus && typeof(ensureVisible) !== "undefined") ensureVisible(root)
     horizontalPadding: buttonPadding
 
     Keys.onReleased: {
