@@ -55,14 +55,6 @@ Item {
             flickContentHeight: row.y + row.implicitHeight + col.y + col.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
-            NumberAnimation on contentY {
-                id: scrollAnimation
-
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-
-
             RowLayout {
                 id: row
                 width: parent.width - (defaultMargin * 2)
@@ -135,7 +127,7 @@ Item {
                         if (focus) {
                             forceFocus = true;
                             focusScope.lastFocusedItemIdx = -1;
-                            col.scrollDelegateIntoView(useSystemLanguageToggle);
+                            vpnFlickable.ensureVisible(useSystemLanguageToggle);
                       }
                     }
                     Layout.preferredHeight: 24
@@ -165,7 +157,6 @@ Item {
                 color: "#E7E7E7"
                 opacity: 1
             }
-
 
             Column {
                 id: col
@@ -207,22 +198,6 @@ Item {
                     }
                 }
 
-                function scrollDelegateIntoView(item) {
-
-                    if (window.height > vpnFlickable.contentHeight) {
-                        return;
-                    }
-                    const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                    const approximateDelegateHeight = 50;
-                    const ext = approximateDelegateHeight + yPosition;
-
-                    if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
-                        const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
-                        scrollAnimation.to = destinationY;
-                        scrollAnimation.start();
-                    }
-                }
-
                 Repeater {
                     id: repeater
 
@@ -253,7 +228,7 @@ Item {
                         activeFocusOnTab: !useSystemLanguageEnabled
                         onActiveFocusChanged: {
                             if (focus) {
-                                col.scrollDelegateIntoView(del);
+                                vpnFlickable.ensureVisible(del);
                                 focusScope.lastFocusedItemIdx = index;
                             }
                         }

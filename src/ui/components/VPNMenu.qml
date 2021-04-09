@@ -42,6 +42,8 @@ Item {
     VPNIconButton {
         id: iconButton
 
+        skipEnsureVisible: true // prevents scrolling of lists when this is focused
+
         onClicked: isMainView ? mainStackView.pop() : (isSettingsView ? settingsStackView.pop() : stackview.pop())
         anchors.top: parent.top
         anchors.left: parent.left
