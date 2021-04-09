@@ -14,6 +14,7 @@ Item {
     property bool isSettingsView: false
     property bool isMainView: false
     property bool accessibleIgnored: false
+    property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
 
     width: parent.width
@@ -52,6 +53,8 @@ Item {
         accessibleName: qsTrId("vpn.main.back")
         Accessible.ignored: accessibleIgnored
 
+        enabled: !btnDisabled
+        opacity: enabled ? 1 : .4
         Image {
             id: backImage
 
