@@ -193,9 +193,7 @@ VPNFlickable {
             anchors.top: box.bottom
             anchors.topMargin: 30
 
-            disableRowWhen: VPN.state === VPN.StateDeviceLimit ||
-                                 (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) ||
-                                 box.connectionInfoVisible
+            disableRowWhen: (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) || box.connectionInfoVisible
         }
 
         VPNControllerNav {
@@ -215,7 +213,6 @@ VPNFlickable {
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoVisible
-            state: VPN.state !== VPN.StateDeviceLimit ? "" : "deviceLimit"
         }
 
         Behavior on y {
