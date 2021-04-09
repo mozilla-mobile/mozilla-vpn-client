@@ -10,5 +10,5 @@ import "../components"
 VPNStackView {
     id: stackview
 
-    initialItem: "../views/ViewMain.qml"
+    initialItem: "../views/ViewDevices.qml"
 }
