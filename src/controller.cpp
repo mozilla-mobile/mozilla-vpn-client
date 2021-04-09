@@ -133,7 +133,9 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    m_connectionDate = connectionDate;
+    resetConnectionTimer();
+    m_connectionTimerExtraSecs =
+        connectionDate.secsTo(QDateTime::currentDateTime());
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
   }
@@ -161,7 +163,7 @@ bool Controller::activate() {
 void Controller::activateInternal() {
   logger.log() << "Activation internal";
 
-  m_connectionDate = QDateTime::currentDateTime();
+  resetConnectionTimer();
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -220,7 +222,7 @@ void Controller::connected() {
       m_state != StateConfirming) {
     setState(StateConnecting);
 
-    m_connectionDate = QDateTime::currentDateTime();
+    resetConnectionTimer();
 
     TimerSingleShot::create(this, TIME_ACTIVATION, [this]() {
       if (m_state == StateConnecting) {
@@ -266,7 +268,7 @@ void Controller::connectionFailed() {
     return;
   }
 
-  if (m_connectionRetry >= CONNECTION_MAX_RETRY) {
+  if (m_nextStep != None || m_connectionRetry >= CONNECTION_MAX_RETRY) {
     deactivate();
     return;
   }
@@ -464,7 +466,7 @@ void Controller::setState(State state) {
 }
 
 int Controller::time() const {
-  return (int)(m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000);
+  return (int)(m_connectionTimer.elapsed() / 1000) + m_connectionTimerExtraSecs;
 }
 
 void Controller::getBackendLogs(
@@ -617,4 +619,9 @@ void Controller::heartbeatCompleted() {
   if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
     activateInternal();
   }
+}
+
+void Controller::resetConnectionTimer() {
+  m_connectionTimerExtraSecs = 0;
+  m_connectionTimer.start();
 }

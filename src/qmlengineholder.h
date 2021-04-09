@@ -20,6 +20,8 @@ class QmlEngineHolder final : public NetworkManager {
 
   static QmlEngineHolder* instance();
 
+  static bool exists();
+
   QQmlApplicationEngine* engine() { return &m_engine; }
 
   QNetworkAccessManager* networkAccessManager() override;

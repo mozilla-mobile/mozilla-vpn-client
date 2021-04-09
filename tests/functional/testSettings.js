@@ -91,7 +91,14 @@ describe('Settings', function() {
   it('Checking the networking settings', async () => {
     await vpn.waitForElement('settingsNetworking');
     await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNetworking', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsNetworking');
+    await vpn.wait();
 
     await checkSetting('settingIpv6Enabled', 'ipv6-enabled');
     await checkSetting('settingLocalNetworkAccess', 'local-network-access');
@@ -107,11 +114,20 @@ describe('Settings', function() {
     await vpn.waitForElement('settingsNotifications');
     await vpn.waitForElementProperty(
         'settingsNotifications', 'visible', 'true');
-    await vpn.clickOnElement('settingsNotifications');
 
-    await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
-    await checkSetting(
-        'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNotifications', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsNotifications');
+    await vpn.wait();
+
+    /* TODO: captive-portal disabled
+        await checkSetting('settingCaptivePortalAlert', 'captive-portal-alert');
+        await checkSetting(
+            'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
+    */
 
     await vpn.clickOnElement('settingsNotificationsBackButton');
     await vpn.wait();
@@ -121,14 +137,38 @@ describe('Settings', function() {
   });
 
   it('Checking the languages settings', async () => {
+    await vpn.setSetting('language-code', '');
+
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
 
     await vpn.waitForElement('settingsLanguagesBackButton');
     await vpn.waitForElementProperty(
         'settingsLanguagesBackButton', 'visible', 'true');
+
+    await vpn.waitForElement('settingsSystemLanguageToggle');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'true');
+
+    await vpn.clickOnElement('settingsSystemLanguageToggle');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'false');
+
+    await vpn.setElementProperty(
+        'settingsLanguagesView', 'contentY', 'i',
+        parseInt(
+            await vpn.getElementProperty('languageList/language-it', 'y')));
+    await vpn.wait();
 
     await vpn.waitForElement('languageList/language-it');
     await vpn.waitForElementProperty(
@@ -139,10 +179,18 @@ describe('Settings', function() {
     await vpn.clickOnElement('settingsLanguagesBackButton');
     await vpn.wait();
 
+    await vpn.setElementProperty('settingsView', 'contentY', 'i', 0);
+    await vpn.wait();
+
     await vpn.waitForElement('manageAccountButton');
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
     await vpn.waitForElementProperty(
         'manageAccountButton', 'text', 'Gestisci account');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
+    await vpn.wait();
 
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
@@ -150,12 +198,45 @@ describe('Settings', function() {
     await vpn.waitForElement('settingsLanguagesBackButton');
     await vpn.waitForElementProperty(
         'settingsLanguagesBackButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'false');
+
+    await vpn.setElementProperty(
+        'settingsLanguagesView', 'contentY', 'i',
+        parseInt(
+            await vpn.getElementProperty('languageList/language-en', 'y')));
+    await vpn.wait();
 
     await vpn.waitForElement('languageList/language-en');
     await vpn.waitForElementProperty(
         'languageList/language-en', 'visible', 'true');
     await vpn.clickOnElement('languageList/language-en');
     await vpn.wait();
+
+    await vpn.clickOnElement('settingsLanguagesBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'manageAccountButton', 'text', 'Manage account');
+
+    await vpn.clickOnElement('settingsLanguages');
+    await vpn.wait();
+
+    await vpn.waitForElement('settingsLanguagesBackButton');
+
+    await vpn.setElementProperty('settingsLanguagesView', 'contentY', 'i', 0);
+    await vpn.wait();
+
+    await vpn.waitForElementProperty(
+        'settingsLanguagesBackButton', 'visible', 'true');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'false');
+
+    await vpn.clickOnElement('settingsSystemLanguageToggle');
+    await vpn.waitForElementProperty(
+        'settingsSystemLanguageToggle', 'checked', 'true');
 
     await vpn.clickOnElement('settingsLanguagesBackButton');
     await vpn.wait();
@@ -171,6 +252,11 @@ describe('Settings', function() {
   it('Checking the about us', async () => {
     await vpn.waitForElement('settingsAboutUs');
     await vpn.waitForElementProperty('settingsAboutUs', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsAboutUs', 'y')));
+    await vpn.wait();
 
     await vpn.clickOnElement('settingsAboutUs');
     await vpn.wait();
@@ -219,6 +305,12 @@ describe('Settings', function() {
   it('Checking the give feedback', async () => {
     await vpn.waitForElement('settingsGiveFeedback');
     await vpn.waitForElementProperty('settingsGiveFeedback', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsGiveFeedback', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsGiveFeedback');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -229,6 +321,11 @@ describe('Settings', function() {
   it('Checking the get help', async () => {
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
+    await vpn.wait();
 
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();

@@ -89,6 +89,18 @@ android {
             jniLibs.srcDirs = ['libs']
        }
     }
+    // In case generate a new key anytime:
+    // $: keytool -genkey -v -keystore debug.keystore -storepass android \
+    //            -alias androiddebugkey -keypass android -keyalg RSA \ 
+    //            -keysize 2048 -validity 10000
+    signingConfigs {
+    debug {
+            storeFile rootProject.file('./debug.keystore')
+            storePassword('android')
+            keyAlias 'androiddebugkey'
+            keyPassword('android')
+        }
+    }
 
     lintOptions {
         abortOnError false

@@ -237,3 +237,8 @@ const QString ServerCountryModel::countryName(
 
   return QString();
 }
+
+void ServerCountryModel::retranslate() {
+  beginResetModel();
+  endResetModel();
+}

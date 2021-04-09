@@ -33,6 +33,7 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
+    ../../src/featurelist.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/leakdetector.h \
@@ -62,6 +63,7 @@ HEADERS += \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
+    ../../src/serveri18n.h \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
@@ -94,6 +96,7 @@ SOURCES += \
     ../../src/connectiondataholder.cpp \
     ../../src/curve25519.cpp \
     ../../src/errorhandler.cpp \
+    ../../src/featurelist.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
@@ -123,6 +126,7 @@ SOURCES += \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
+    ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \

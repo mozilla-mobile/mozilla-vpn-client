@@ -8,15 +8,13 @@ import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
-import android.util.Log
 import com.mozilla.vpn.CaptivePortalDetector
+import com.mozilla.vpn.Log
 import com.mozilla.vpn.NotificationUtil
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.lang.Exception
 
 class VPNServiceBinder(service: VPNService) : Binder() {
@@ -125,12 +123,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
 
             ACTIONS.requestGetLog -> {
                 // Grabs all the Logs and dispatch new Log Event
-                val process = Runtime.getRuntime().exec("logcat -d")
-                val bufferedReader = BufferedReader(
-                    InputStreamReader(process.inputStream)
-                )
-                val allText = bufferedReader.use(BufferedReader::readText)
-                dispatchEvent(EVENTS.backendLogs, allText)
+                dispatchEvent(EVENTS.backendLogs, Log.getContent())
                 return true
             }
             ACTIONS.enableStartOnBoot -> {
@@ -148,7 +141,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             }
 
             ACTIONS.requestCleanupLog -> {
-                Runtime.getRuntime().exec("logcat -c")
+                Log.clearFile()
                 return true
             }
             ACTIONS.setNotificationText -> {
@@ -189,12 +182,12 @@ class VPNServiceBinder(service: VPNService) : Binder() {
      * To register an Eventhandler use [onTransact] with
      * [ACTIONS.registerEventListener]
      */
-    fun dispatchEvent(code: Int, payload: String) {
+    fun dispatchEvent(code: Int, payload: String?) {
         try {
             mListener?.let {
                 if (it.isBinderAlive) {
                     val data = Parcel.obtain()
-                    data.writeByteArray(payload.toByteArray(charset("UTF-8")))
+                    data.writeByteArray(payload?.toByteArray(charset("UTF-8")))
                     it.transact(code, data, Parcel.obtain(), 0)
                 }
             }

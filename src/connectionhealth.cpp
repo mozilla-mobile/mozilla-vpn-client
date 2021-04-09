@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include <QApplication>
 
 // In seconds, the timeout for unstable pings.
 constexpr uint32_t PING_TIME_UNSTABLE_SEC = 1;
@@ -27,6 +28,9 @@ ConnectionHealth::ConnectionHealth() {
 
   connect(&m_pingHelper, &PingHelper::pingSentAndReceived, this,
           &ConnectionHealth::pingSentAndReceived);
+
+  connect(qApp, &QApplication::applicationStateChanged, this,
+          &ConnectionHealth::applicationStateChanged);
 }
 
 ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
@@ -38,6 +42,19 @@ void ConnectionHealth::stop() {
   m_noSignalTimer.stop();
 
   setStability(Stable);
+}
+
+void ConnectionHealth::start(const QString& serverIpv4Gateway) {
+  logger.log() << "ConnectionHealth activated";
+
+  if (m_suspended || serverIpv4Gateway.isEmpty() ||
+      MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+    return;
+  }
+
+  m_currentGateway = serverIpv4Gateway;
+  m_pingHelper.start(serverIpv4Gateway);
+  m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -66,13 +83,7 @@ void ConnectionHealth::connectionStateChanged() {
         Q_UNUSED(rxBytes);
 
         stop();
-
-        if (!serverIpv4Gateway.isEmpty() &&
-            MozillaVPN::instance()->controller()->state() ==
-                Controller::StateOn) {
-          m_pingHelper.start(serverIpv4Gateway);
-          m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
-        }
+        start(serverIpv4Gateway);
       });
 }
 
@@ -92,4 +103,26 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
 void ConnectionHealth::noSignalDetected() {
   logger.log() << "No signal detected";
   setStability(NoSignal);
+}
+
+void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
+  switch (state) {
+    case Qt::ApplicationState::ApplicationActive:
+      if (m_suspended) {
+        m_suspended = false;
+
+        Q_ASSERT(!m_noSignalTimer.isActive());
+        logger.log() << "Resuming connection check from Suspension";
+        start(m_currentGateway);
+      }
+      break;
+
+    case Qt::ApplicationState::ApplicationSuspended:
+    case Qt::ApplicationState::ApplicationInactive:
+    case Qt::ApplicationState::ApplicationHidden:
+      logger.log() << "Pausing connection for Suspension";
+      m_suspended = true;
+      stop();
+      break;
+  }
 }

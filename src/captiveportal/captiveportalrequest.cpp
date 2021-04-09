@@ -76,12 +76,20 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
+          [this, request](const QByteArray& data) {
             logger.log() << "Captive portal request completed:" << data;
 
             --m_pendingRequests;
             m_completed = true;
             deleteLater();
+
+            // Usually, captive-portal pages do a redirect to an internal page.
+            if (request->statusCode() != 200) {
+              logger.log() << "Captive portal detected. Expected 200, received:"
+                           << request->statusCode();
+              emit completed(true);
+              return;
+            }
 
             if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
               logger.log() << "No captive portal!";
@@ -89,7 +97,7 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
               return;
             }
 
-            logger.log() << "Captive portal detected!";
+            logger.log() << "Captive portal detected. Content does not match.";
             emit completed(true);
           });
 }

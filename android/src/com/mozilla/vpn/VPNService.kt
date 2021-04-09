@@ -7,7 +7,7 @@ package org.mozilla.firefox.vpn
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
+import com.mozilla.vpn.Log
 import com.mozilla.vpn.NotificationUtil
 import com.mozilla.vpn.VPNTunnel
 import com.wireguard.android.backend.*
@@ -38,6 +38,7 @@ class VPNService : android.net.VpnService() {
     override fun onBind(intent: Intent?): IBinder? {
         s_instance = this
         NotificationUtil.get(this).show(this)
+        Log.init(this)
         Log.v(tag, "Got Bind request")
         return mBinder
     }
@@ -48,7 +49,7 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        s_instance = this
+        Log.init(this)
         this.startService(Intent(this, GoBackend.VpnService::class.java))
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {

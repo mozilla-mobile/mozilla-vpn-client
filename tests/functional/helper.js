@@ -163,10 +163,16 @@ module.exports = {
     assert(
         await this.hasElement(id),
         'Property checks must be done on existing elements');
-    return this.waitForCondition(async () => {
+    try {
+      return this.waitForCondition(async () => {
+        const real = await this.getElementProperty(id, property);
+        return real === value;
+      });
+    } catch (e) {
       const real = await this.getElementProperty(id, property);
-      return real === value;
-    });
+      throw new Error(`Timeout for waitForElementProperty - property: ${
+          property} - value: ${real} - expected: ${value}`);
+    }
   },
 
   async getLastUrl() {
@@ -186,7 +192,7 @@ module.exports = {
   },
 
   wait() {
-    return new Promise(resolve => setTimeout(resolve, 1000));
+    return new Promise(resolve => setTimeout(resolve, 500));
   },
 
   async authenticate(driver, resetting = true) {
@@ -279,6 +285,14 @@ module.exports = {
     const json = await this._writeCommand('languages');
     assert(
         json.type === 'languages' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value;
+  },
+
+  async servers() {
+    const json = await this._writeCommand('servers');
+    assert(
+        json.type === 'servers' && !('error' in json),
         `Invalid answer: ${json.error}`);
     return json.value;
   },

@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
+import "themes/themes.js" as Theme
 
 Window {
     id: window
@@ -25,12 +26,21 @@ Window {
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
-    width: fullscreenRequired() ? maximumWidth : 360
-    height: fullscreenRequired() ? maximumHeight : 454
-    maximumHeight: height
-    maximumWidth: width
-    minimumHeight: height
-    minimumWidth: width
+
+    function getWidth() {
+        return fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    }
+    function getHeight() {
+        return fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    }
+
+    width: getWidth()
+    height: getHeight()
+    maximumHeight: getHeight()
+    maximumWidth: getWidth()
+    minimumHeight: getHeight()
+    minimumWidth: getWidth()
+
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"
@@ -96,6 +106,7 @@ Window {
         width: parent.width
         anchors.top: iosSafeAreaTopMargin.bottom
         height: safeContentHeight
+        clip: true
 
         Component.onCompleted: {
             if (isWasmApp) {

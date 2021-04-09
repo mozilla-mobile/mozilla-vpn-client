@@ -158,7 +158,7 @@ else
 fi
 
 printn Y "Enabling inspector: "
-if [[ "$INSPECTOR " ]]; then
+if [[ "$INSPECTOR" ]]; then
   print G yes
   INSPECTOR="CONFIG+=inspector"
 else

@@ -50,9 +50,11 @@ describe('Backend failure', function() {
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+    await vpn.wait();
   });
 
   it('Backend failure in the help menu', async () => {
+    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
     await vpn.clickOnElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
 

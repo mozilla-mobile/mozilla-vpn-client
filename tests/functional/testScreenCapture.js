@@ -13,12 +13,21 @@ const dir = '/tmp/screencapture';
 describe('Take screenshots for each view', function() {
   let languages = [];
   let driver;
+  let servers;
 
-  this.timeout(100000);
+  this.timeout(2000000);
 
-  async function screenCapture(name) {
+  async function singleScreenCapture(name, language) {
+    const data = await vpn.screenCapture();
+    const buffer = Buffer.from(data, 'base64');
+    fs.writeFileSync(`${dir}/${name}_${language}.png`, buffer);
+  }
+
+  async function screenCapture(name, cb = null) {
     for (let language of languages) {
       await vpn.setSetting('language-code', language);
+
+      if (cb) await cb();
 
       // we need to give time to the app to retranslate the UI. If the number
       // is too slow we have the UI in funny states (part in 1 language, part
@@ -27,9 +36,7 @@ describe('Take screenshots for each view', function() {
       // captures for all the languages.
       await new Promise(r => setTimeout(r, 30));
 
-      const data = await vpn.screenCapture();
-      const buffer = Buffer.from(data, 'base64');
-      fs.writeFileSync(`${dir}/${name}_${language}.png`, buffer);
+      await singleScreenCapture(name, language);
     }
   }
 
@@ -73,12 +80,13 @@ describe('Take screenshots for each view', function() {
   });
 
   it('heartbeat', async () => {
-    await vpn.forceHeartbeatFailure();
+    await screenCapture('heartbeat', async () => {
+      await vpn.reset();
+      await vpn.forceHeartbeatFailure();
 
-    await vpn.waitForElement('heartbeatTryButton');
-    await vpn.waitForElementProperty('heartbeatTryButton', 'visible', 'true');
-
-    await screenCapture('heartbeat');
+      await vpn.waitForElement('heartbeatTryButton');
+      await vpn.waitForElementProperty('heartbeatTryButton', 'visible', 'true');
+    });
 
     await vpn.wait();
 
@@ -162,6 +170,70 @@ describe('Take screenshots for each view', function() {
     await screenCapture('vpn_off');
   });
 
+  it('retrieve list of servers and the current one', async () => {
+    servers = await vpn.servers();
+  });
+
+  it('server view', async () => {
+    await vpn.waitForElement('serverListButton');
+    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+    await vpn.clickOnElement('serverListButton');
+    await vpn.wait();
+
+    for (let language of languages) {
+      await vpn.setSetting('language-code', language);
+
+      // Let's open all the server items
+      for (let server of servers) {
+        const countryId = 'serverCountryList/serverCountry-' + server.code;
+        await vpn.waitForElement(countryId);
+        await vpn.waitForElementProperty(countryId, 'visible', 'true');
+
+        await vpn.setElementProperty(
+            'serverCountryView', 'contentY', 'i',
+            parseInt(await vpn.getElementProperty(countryId, 'y')));
+        await new Promise(r => setTimeout(r, 30));
+
+        if (await vpn.getElementProperty(countryId, 'cityListVisible') ===
+            'false') {
+          await vpn.clickOnElement(countryId);
+          await new Promise(r => setTimeout(r, 30));
+        }
+      }
+      const contentHeight = parseInt(
+          await vpn.getElementProperty('serverCountryView', 'contentHeight'))
+      const height =
+          parseInt(await vpn.getElementProperty('serverCountryView', 'height'));
+
+      await vpn.setElementProperty('serverCountryView', 'contentY', 'i', 0);
+
+      await singleScreenCapture('server', language);
+
+      let contentY = 0;
+
+      let scrollId = 0;
+      while (true) {
+        if (contentHeight <= (contentY + height)) {
+          break;
+        }
+
+        contentY += height;
+        await vpn.setElementProperty(
+            'serverCountryView', 'contentY', 'i', contentY);
+        await singleScreenCapture(`server_${++scrollId}`, language);
+      }
+    }
+
+    await vpn.waitForElement('serverListBackButton');
+    await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
+    await vpn.clickOnElement('serverListBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('serverListButton');
+    await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
+    await vpn.wait();
+  });
+
   it('connecting', async () => {
     await vpn.activate();
 
@@ -224,6 +296,12 @@ describe('Take screenshots for each view', function() {
   it('settings / networking', async () => {
     await vpn.waitForElement('settingsNetworking');
     await vpn.waitForElementProperty('settingsNetworking', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNetworking', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsNetworking');
     await vpn.wait();
 
@@ -240,6 +318,12 @@ describe('Take screenshots for each view', function() {
     await vpn.waitForElement('settingsNotifications');
     await vpn.waitForElementProperty(
         'settingsNotifications', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsNotifications', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsNotifications');
     await vpn.wait();
 
@@ -255,6 +339,12 @@ describe('Take screenshots for each view', function() {
   it('settings / languages', async () => {
     await vpn.waitForElement('settingsLanguages');
     await vpn.waitForElementProperty('settingsLanguages', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsLanguages', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsLanguages');
     await vpn.wait();
 
@@ -290,9 +380,15 @@ describe('Take screenshots for each view', function() {
 
   // TODO: app-permission
 
-  it('setting / about us', async () => {
+  it('settings / about us', async () => {
     await vpn.waitForElement('settingsAboutUs');
     await vpn.waitForElementProperty('settingsAboutUs', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsAboutUs', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsAboutUs');
     await vpn.wait();
 
@@ -308,6 +404,12 @@ describe('Take screenshots for each view', function() {
   it('settings / help', async () => {
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsGetHelp', 'y')));
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsGetHelp');
     await vpn.wait();
 
@@ -321,6 +423,9 @@ describe('Take screenshots for each view', function() {
   });
 
   it('closing the settings view', async () => {
+    await vpn.setElementProperty('settingsView', 'contentY', 'i', 0);
+    await vpn.wait();
+
     await vpn.clickOnElement('settingsCloseButton');
     await vpn.wait();
 

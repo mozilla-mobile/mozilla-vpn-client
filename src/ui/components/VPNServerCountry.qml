@@ -11,9 +11,11 @@ import "../themes/themes.js" as Theme
 
 VPNClickableRow {
     id: serverCountry
+    objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === VPNCurrentServer.countryCode)
     property var currentCityIndex
+    property alias serverCountryName: countryName.text
 
     function openCityList() {
         cityListVisible = !cityListVisible;
@@ -35,7 +37,7 @@ VPNClickableRow {
     activeFocusOnTab: true
     onActiveFocusChanged: parent.scrollDelegateIntoView(serverCountry)
 
-    accessibleName: name
+    accessibleName: VPNLocalizer.translateServerCountry(code, name)
     Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
     Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
@@ -110,7 +112,7 @@ VPNClickableRow {
         VPNBoldLabel {
             id: countryName
 
-            text: name
+            text: VPNLocalizer.translateServerCountry(code, name)
             Layout.leftMargin: Theme.hSpacing
             Layout.fillWidth: true
         }
@@ -119,6 +121,7 @@ VPNClickableRow {
 
     Column {
         id: cityList
+        objectName: "serverCityList"
 
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 22
@@ -142,6 +145,7 @@ VPNClickableRow {
             model: cities
             delegate: VPNRadioDelegate {
                 id: del
+                objectName: "serverCity-" + modelData.replace(/ /g, '_')
 
                 activeFocusOnTab: cityListVisible
                 onActiveFocusChanged: if (focus) serverList.scrollDelegateIntoView(del)
@@ -149,8 +153,8 @@ VPNClickableRow {
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
 
-                radioButtonLabelText: modelData
-                accessibleName: modelData
+                radioButtonLabelText: VPNLocalizer.translateServerCity(code, modelData)
+                accessibleName: VPNLocalizer.translateServerCity(code, modelData)
                 onClicked: {
                     VPNController.changeServer(code, modelData);
                     stackview.pop();

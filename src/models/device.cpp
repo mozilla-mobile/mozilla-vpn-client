@@ -41,15 +41,6 @@ QString Device::currentDeviceName() {
       QSysInfo::productVersion();
 #endif
 
-  /*  If we want to generate a new device name at each execution, comment out
-this block: #ifdef QT_DEBUG static quint32 uniqueId = 0; if (uniqueId == 0) {
-      uniqueId = QRandomGenerator::global()->generate();
-  }
-
-  deviceName = QString("%1 %2").arg(deviceName).arg(uniqueId);
-#endif
-  */
-
   return deviceName;
 }
 

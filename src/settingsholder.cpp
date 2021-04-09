@@ -4,6 +4,7 @@
 
 #include "settingsholder.h"
 #include "cryptosettings.h"
+#include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -11,8 +12,8 @@
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
-constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = false;
-constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = false;
+constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = true;
+constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = true;
 constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
@@ -23,6 +24,9 @@ constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
 constexpr const char* SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char* SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
+constexpr const char* SETTINGS_PREVIOUSLANGUAGECODE = "previousLanguageCode";
+constexpr const char* SETTINGS_SYSTEMLANGUAGECODEMIGRATED =
+    "systemLanguageCodeMigrated";
 constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
@@ -145,24 +149,31 @@ void SettingsHolder::clear() {
 
 GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT, bool, toBool, SETTINGS_IPV6ENABLED,
               hasIpv6Enabled, ipv6Enabled, setIpv6Enabled, ipv6EnabledChanged)
-GETSETDEFAULT(SETTINGS_LOCALNETWORKACCESS_DEFAULT, bool, toBool,
-              SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
+GETSETDEFAULT(FeatureList::instance()->localNetworkAccessSupported() &&
+                  SETTINGS_LOCALNETWORKACCESS_DEFAULT,
+              bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
               localNetworkAccessChanged)
-GETSETDEFAULT(SETTINGS_UNSECUREDNETWORKALERT_DEFAULT, bool, toBool,
-              SETTINGS_UNSECUREDNETWORKALERT, hasUnsecuredNetworkAlert,
-              unsecuredNetworkAlert, setUnsecuredNetworkAlert,
-              unsecuredNetworkAlertChanged)
-GETSETDEFAULT(SETTINGS_CAPTIVEPORTALALERT_DEFAULT, bool, toBool,
-              SETTINGS_CAPTIVEPORTALALERT, hasCaptivePortalAlert,
+GETSETDEFAULT(
+    FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
+        SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
+    bool, toBool, SETTINGS_UNSECUREDNETWORKALERT, hasUnsecuredNetworkAlert,
+    unsecuredNetworkAlert, setUnsecuredNetworkAlert,
+    unsecuredNetworkAlertChanged)
+GETSETDEFAULT(FeatureList::instance()->captivePortalNotificationSupported() &&
+                  SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
+              bool, toBool, SETTINGS_CAPTIVEPORTALALERT, hasCaptivePortalAlert,
               captivePortalAlert, setCaptivePortalAlert,
               captivePortalAlertChanged)
-GETSETDEFAULT(SETTINGS_STARTATBOOT_DEFAULT, bool, toBool, SETTINGS_STARTATBOOT,
-              hasStartAtBoot, startAtBoot, setStartAtBoot, startAtBootChanged)
-GETSETDEFAULT(SETTINGS_PROTECTSELECTEDAPPS_DEFAULT, bool, toBool,
-              SETTINGS_PROTECTSELECTEDAPPS, hasProtectSelectedApps,
-              protectSelectedApps, setProtectSelectedApps,
-              protectSelectedAppsChanged)
+GETSETDEFAULT(FeatureList::instance()->startOnBootSupported() &&
+                  SETTINGS_STARTATBOOT_DEFAULT,
+              bool, toBool, SETTINGS_STARTATBOOT, hasStartAtBoot, startAtBoot,
+              setStartAtBoot, startAtBootChanged)
+GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
+                  SETTINGS_PROTECTSELECTEDAPPS_DEFAULT,
+              bool, toBool, SETTINGS_PROTECTSELECTEDAPPS,
+              hasProtectSelectedApps, protectSelectedApps,
+              setProtectSelectedApps, protectSelectedAppsChanged)
 GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
@@ -220,6 +231,11 @@ GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        setPostAuthenticationShown);
 GETSET(QString, toString, SETTINGS_LANGUAGECODE, hasLanguageCode, languageCode,
        setLanguageCode);
+GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
+       hasPreviousLanguageCode, previousLanguageCode, setPreviousLanguageCode);
+GETSET(bool, toBool, SETTINGS_SYSTEMLANGUAGECODEMIGRATED,
+       hasSystemLanguageCodeMigrated, systemLanguageCodeMigrated,
+       setSystemLanguageCodeMigrated);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,

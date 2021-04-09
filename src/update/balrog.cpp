@@ -31,8 +31,7 @@ typedef void (*logFunc)(int level, const char* msg);
 #  include "windows.h"
 #  include "platforms/windows/windowscommons.h"
 
-constexpr const char* BALROG_WINDOWS_UA64 = "WINNT_x86_64";
-constexpr const char* BALROG_WINDOWS_UA32 = "WINNT_x86_32";
+constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
 
 typedef void BalrogSetLogger(logFunc func);
 typedef unsigned char BalrogValidateSignature(gostring_t publicKey,
@@ -49,7 +48,7 @@ EXPORT unsigned char balrogValidateSignature(gostring_t publicKey,
                                              gostring_t data);
 }
 
-constexpr const char* BALROG_MACOS_UA = "Darwin_x86_64-clang-u-x86_64";
+constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
 
 #else
 #  error Platform not supported yet
@@ -90,10 +89,7 @@ Balrog::~Balrog() {
 // static
 QString Balrog::userAgent() {
 #if defined(MVPN_WINDOWS)
-  static bool h =
-      QSysInfo::currentCpuArchitecture().contains(QLatin1String("64"));
-
-  return h ? BALROG_WINDOWS_UA64 : BALROG_WINDOWS_UA32;
+  return BALROG_WINDOWS_UA;
 #elif defined(MVPN_MACOS)
   return BALROG_MACOS_UA;
 #else

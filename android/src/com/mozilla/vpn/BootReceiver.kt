@@ -8,12 +8,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
+import com.mozilla.vpn.Log
 import com.wireguard.android.backend.GoBackend
 
 class BootReceiver : BroadcastReceiver() {
     private val TAG = "BootReceiver"
     override fun onReceive(context: Context, arg1: Intent) {
+        Log.init(context)
         if (!canEnableVPNOnBoot()) {
             Log.i(TAG, "This device does not support start on boot - exit")
             return
