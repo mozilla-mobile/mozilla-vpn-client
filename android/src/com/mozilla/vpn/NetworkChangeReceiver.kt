@@ -16,10 +16,15 @@ const val TYPE_WIFI = 1
 const val TYPE_MOBILE = 2
 const val TYPE_NOT_CONNECTED = 0
 
-class NetworkChangeReceiver : BroadcastReceiver() {
+class NetworkChangeReceiver(c: Context) : BroadcastReceiver() {
+    private val context=c
     private val tag = "NetworkChangeReceiver"
+    private var active=false;
 
     override fun onReceive(context: Context?, intent: Intent) {
+        if(!active){
+            return;
+        }
 
         if ("android.net.conn.CONNECTIVITY_CHANGE" != intent.action &&
             "android.net.wifi.WIFI_STATE_CHANGED" != intent.action
@@ -50,18 +55,24 @@ class NetworkChangeReceiver : BroadcastReceiver() {
         return TYPE_NOT_CONNECTED
     }
 
+    fun activate(){
+        val filter = IntentFilter()
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE")
+        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED")
+        context.applicationContext.registerReceiver(s_instance, filter)
+        active=true
+    }
+    fun deactivate(){
+        active=false
+    }
+
     companion object {
         var s_instance: NetworkChangeReceiver? = null
         @JvmStatic
         fun get(c: Context): NetworkChangeReceiver {
             if (s_instance == null) {
-                s_instance = NetworkChangeReceiver()
+                s_instance = NetworkChangeReceiver(c)
             }
-            val filter = IntentFilter()
-            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE")
-            filter.addAction("android.net.wifi.WIFI_STATE_CHANGED")
-            c.applicationContext.registerReceiver(s_instance, filter)
-
             return s_instance as NetworkChangeReceiver
         }
     }

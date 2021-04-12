@@ -154,16 +154,24 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val json = buffer?.let { String(it) }
                 val obj = JSONObject(json)
                 NotificationUtil.get(mService).saveFallBackMessage(obj.get("title").toString(), obj.get("message").toString(), mService)
-                CaptivePortalDetector.get(mService)
-                    .saveCaptivePortalConfig(
-                        obj.getJSONArray("captivePortalIPv4"),
-                        obj.getJSONArray("captivePortalIPv6"),
-                        obj.getString("captivePortalHeader"),
-                        obj.getString("captivePortalMessage"),
-                    )
-                // Once we have the Configuration we can start listenering to
-                // network change events
-                NetworkChangeReceiver.get(mService)
+                // Only activate Captive portal if we have a complete config
+                val CAPTIVE_PORTALKEYS = arrayOf("captivePortalIPv4","captivePortalIPv6","captivePortalHeader","captivePortalMessage")
+                if(CAPTIVE_PORTALKEYS.all { obj.has(it) }){
+                    CaptivePortalDetector.get(mService)
+                        .saveCaptivePortalConfig(
+                            obj.getJSONArray("captivePortalIPv4"),
+                            obj.getJSONArray("captivePortalIPv6"),
+                            obj.getString("captivePortalHeader"),
+                            obj.getString("captivePortalMessage"),
+                        )
+
+                    // Once we have a Configuration we may start listen to
+                    // network change events
+                    NetworkChangeReceiver.get(mService).activate()
+                }else{
+                    CaptivePortalDetector.get(mService).deactivate()
+                    NetworkChangeReceiver.get(mService).deactivate()
+                }
                 return true
             }
 

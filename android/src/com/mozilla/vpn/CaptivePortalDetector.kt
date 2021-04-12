@@ -20,6 +20,7 @@ class CaptivePortalDetector private constructor(c: Context) :
     private val context: Context = c.applicationContext
     private var mIpv4List = JSONArray()
     private var mIpv6List = JSONArray()
+    private var mEnabled = false;
 
     private var notificationMessage = "Guest Wi-Fi portal blocked"
     private var notificationHeader = "The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal."
@@ -51,9 +52,19 @@ class CaptivePortalDetector private constructor(c: Context) :
         mIpv6List = ipv6List
     }
 
+    fun deactivate(){
+        if(mEnabled){
+            val prefs =
+                context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+            prefs.edit().putBoolean("captivePortal.Enabled",false).apply()
+        }
+        mEnabled= false;
+    }
+
     fun readCaptivePortalConfig() {
         val prefs =
             context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+        mEnabled = prefs.getBoolean("captivePortal.Enabled",false)
         mIpv4List = JSONArray(prefs.getString("ipv4List", "[]"))
         mIpv6List = JSONArray(prefs.getString("ipv6List", "[]"))
         notificationMessage = prefs.getString("captivePortalMessage", "").toString()
@@ -96,6 +107,9 @@ class CaptivePortalDetector private constructor(c: Context) :
     }
 
     override fun onResponse(response: Boolean?) {
+        if(!mEnabled){
+            return;
+        }
         currentRequests -= 1
         if(response == null){
             // This should not happen.
@@ -123,6 +137,9 @@ class CaptivePortalDetector private constructor(c: Context) :
         currentRequests = 0
         if (!detected) {
             return
+        }
+        if(!mEnabled){
+            return;
         }
 
         val nt = NotificationUtil.get(context)
