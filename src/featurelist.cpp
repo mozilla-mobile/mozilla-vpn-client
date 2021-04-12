@@ -49,6 +49,17 @@ bool FeatureList::captivePortalNotificationSupported() const {
     defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
 #else
+  // If we decide to enable the captive-portal notification for IOS, remember
+  // to add the following keys/values in the ios/app/Info.plist:
+  // ```
+  // <key>NSAppTransportSecurity</key>
+  // <dict>
+  //   <key>NSAllowsArbitraryLoads</key>
+  //   <true/>
+  // </dict>
+  // ```
+  // NSAllowsArbitraryLoads allows the loading of HTTP (not-encrypted)
+  // requests. By default, IOS apps work in HTTPS-only mode.
   return false;
 #endif
 }
