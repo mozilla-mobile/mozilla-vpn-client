@@ -15,7 +15,7 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 
 class CaptivePortalDetector private constructor(c: Context) :
-    Response.Listener<String>,
+    Response.Listener<Boolean>,
     Response.ErrorListener {
     private val context: Context = c.applicationContext
     private var mIpv4List = JSONArray()
@@ -30,7 +30,7 @@ class CaptivePortalDetector private constructor(c: Context) :
     private var currentRequests = 0
 
     private val CAPTIVEPORTAL_HOST = "detectportal.firefox.com"
-    private val CAPTIVEPORTAL_REQUEST_CONTENT = "success"
+
 
     fun saveCaptivePortalConfig(
         ipv4List: JSONArray,
@@ -67,23 +67,16 @@ class CaptivePortalDetector private constructor(c: Context) :
      */
     fun detectPortal() {
         Log.i(tag, "Start CaptivePortalScan")
-        val url = "http://$CAPTIVEPORTAL_HOST/success.txt"
-        val stringRequest = StringRequest(
-            Request.Method.GET, url, this, this
-        )
-        stringRequest.tag = tag
-        requestQueue.add(stringRequest)
-        currentRequests += 1
-        Log.i(tag, "Started -> $url request")
 
         for (i in 0 until mIpv4List.length()) {
             val element = mIpv4List.get(i).toString()
             val url = "http://$element/success.txt"
-            val stringRequest = StringRequest(
-                Request.Method.GET, url, this, this
+            val request = CaptivePortalRequest(
+                url, this, this
             )
-            stringRequest.tag = tag
-            requestQueue.add(stringRequest)
+            request.headers["host"] = CAPTIVEPORTAL_HOST;
+            request.tag = tag
+            requestQueue.add(request)
             currentRequests += 1
 
             Log.i(tag, "Started -> $url request")
@@ -92,25 +85,24 @@ class CaptivePortalDetector private constructor(c: Context) :
             val element = mIpv6List.get(i).toString()
             val url = "http://[$element]/success.txt"
             Log.i(tag, url)
-            val stringRequest = StringRequest(
-                Request.Method.GET, url, this, this
+            val request = CaptivePortalRequest(
+                url, this, this
             )
-            stringRequest.tag = tag
-            requestQueue.add(stringRequest)
+            request.headers["host"] = CAPTIVEPORTAL_HOST;
+            request.tag = tag
+            requestQueue.add(request)
             currentRequests += 1
         }
     }
-    override fun onResponse(response: String?) {
+
+    override fun onResponse(response: Boolean?) {
         currentRequests -= 1
-        // Checking for contains here as there might a \n into the response.
-        if (response != null && response.contains(CAPTIVEPORTAL_REQUEST_CONTENT)) {
-            // We have internet access.
-            Log.i(tag, "Captive Portal request reports success - no portal detected")
-            onResult(false)
-            return
+        if(response == null){
+            // This should not happen.
+            return;
         }
-        Log.i(tag, "Captive Portal request reports non-success, $response - portal detected")
-        onResult(true)
+        Log.i(tag, "Captive Portal request reports success")
+        onResult(response)
     }
 
     override fun onErrorResponse(error: VolleyError?) {

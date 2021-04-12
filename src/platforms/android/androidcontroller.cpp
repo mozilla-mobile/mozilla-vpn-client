@@ -133,10 +133,21 @@ void AndroidController::sendConfiguration() {
   //: Refers to the app - which is currently running the background and waiting
   args["message"] = qtTrId("vpn.android.notification.isIDLE");
 
-  args["captivePortalIPv4"] = AndroidUtils::serialiseList(
-      SettingsHolder::instance()->captivePortalIpv4Addresses());
-  args["captivePortalIPv6"] = AndroidUtils::serialiseList(
-      SettingsHolder::instance()->captivePortalIpv6Addresses());
+  auto settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->captivePortalAlert()) {
+    if (settingsHolder->hasCaptivePortalIpv4Addresses()) {
+      args["captivePortalIPv4"] = AndroidUtils::serialiseList(
+          settingsHolder->captivePortalIpv4Addresses());
+    } else {
+      args["captivePortalIPv4"] = "[]";
+    }
+    if (settingsHolder->hasCaptivePortalIpv6Addresses()) {
+      args["captivePortalIPv6"] = AndroidUtils::serialiseList(
+          settingsHolder->captivePortalIpv6Addresses());
+    } else {
+      args["captivePortalIPv6"] = "[]";
+    }
+  }
 
   args["captivePortalHeader"] = qtTrId("vpn.systray.captivePortalBlock.title");
   args["captivePortalMessage"] =
