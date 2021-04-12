@@ -212,7 +212,11 @@ static QList<WebSocketCommand> s_commands{
 
     WebSocketCommand{"reset", "Reset the app", 0,
                      [](const QList<QByteArray>&) {
-                       MozillaVPN::instance()->reset(true);
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       vpn->reset(true);
+                       vpn->hideAlert();
                        return QJsonObject();
                      }},
 

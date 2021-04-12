@@ -84,8 +84,8 @@ llvm-profdata-10 merge ${FILES[@]} -o /tmp/mozillavpn.llvm-final || die "Failed 
 print G "done."
 
 print Y "Report:"
-llvm-cov-10 report "$1" -instr-profile=/tmp/mozillavpn.llvm-final src
+llvm-cov-10 report "$APP" -instr-profile=/tmp/mozillavpn.llvm-final src || die "Failed to create the report"
 
 printn Y "Generating the HTML report... "
-llvm-cov-10 show "$1" -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
+llvm-cov-10 show "$APP" -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
 print G $REPORT_FILE
