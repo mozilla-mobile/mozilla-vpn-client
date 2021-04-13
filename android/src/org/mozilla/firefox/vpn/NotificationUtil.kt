@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package com.mozilla.vpn
+package org.mozilla.firefox.vpn
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.Parcel
 import androidx.core.app.NotificationCompat
 import org.json.JSONObject
-import org.mozilla.firefox.vpn.VPNService
 
 object NotificationUtil {
     var sCurrentContext: Context? = null
@@ -62,7 +61,7 @@ object NotificationUtil {
         val content = JSONObject(json)
 
         val prefs =
-            context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+            context.getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
         prefs.edit()
             .putString("fallbackNotificationHeader", content.getString("title"))
             .putString("fallbackNotificationMessage", content.getString("message"))
@@ -93,7 +92,7 @@ object NotificationUtil {
         // In case we do not have gotten a message to show from the Frontend
         // try to populate the notification with a translated Fallback message
         val prefs =
-            service.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+            service.getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
         val message =
             "" + prefs.getString("fallbackNotificationMessage", "Running in the Background")
         val header = "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")

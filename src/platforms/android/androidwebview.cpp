@@ -21,6 +21,7 @@ namespace {
 Logger logger(LOG_ANDROID, "AndroidWebView");
 bool s_methodsInitialized = false;
 AndroidWebView* s_instance = nullptr;
+constexpr auto WEBVIEW_CLASS = "org/mozilla/firefox/vpn/qt/VPNWebView";
 }  // namespace
 
 // static
@@ -82,7 +83,7 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
     s_methodsInitialized = true;
 
     QAndroidJniEnvironment env;
-    jclass javaClass = env.findClass("org/mozilla/firefox/vpn/VPNWebView");
+    jclass javaClass = env.findClass(WEBVIEW_CLASS);
     if (!javaClass) {
       propagateError(ErrorHandler::RemoteServiceError);
       return;
@@ -107,10 +108,9 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
   QAndroidJniObject activity = QtAndroid::androidActivity();
   Q_ASSERT(activity.isValid());
 
-  m_object = QAndroidJniObject("org/mozilla/firefox/vpn/VPNWebView",
-                               "(Landroid/app/Activity;Ljava/lang/String;)V",
-                               activity.object<jobject>(),
-                               userAgent.object<jstring>());
+  m_object = QAndroidJniObject(
+      WEBVIEW_CLASS, "(Landroid/app/Activity;Ljava/lang/String;)V",
+      activity.object<jobject>(), userAgent.object<jstring>());
 
   if (!m_object.isValid()) {
     propagateError(ErrorHandler::UnrecoverableError);
