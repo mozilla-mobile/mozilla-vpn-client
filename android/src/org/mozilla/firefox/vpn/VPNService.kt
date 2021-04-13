@@ -7,9 +7,6 @@ package org.mozilla.firefox.vpn
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import com.mozilla.vpn.Log
-import com.mozilla.vpn.NotificationUtil
-import com.mozilla.vpn.VPNTunnel
 import com.wireguard.android.backend.*
 import com.wireguard.android.backend.GoBackend
 import com.wireguard.config.Config
@@ -66,7 +63,7 @@ class VPNService : android.net.VpnService() {
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
-            val prefs = getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+            val prefs = getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
             val lastConfString = prefs.getString("lastConf", "")
             if (lastConfString.isNullOrEmpty()) {
                 // We have nothing to connect to -> Exit

@@ -2,17 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.firefox.vpn;
+package org.mozilla.firefox.vpn.qt;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
 import android.os.RemoteException;
-import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
@@ -25,7 +19,6 @@ import com.android.installreferrer.api.ReferrerDetails;
 
 import java.lang.Runnable;
 import java.lang.String;
-import java.util.Date;
 import java.util.concurrent.Semaphore;
 
 public class VPNWebView

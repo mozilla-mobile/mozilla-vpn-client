@@ -31,7 +31,7 @@ void AndroidAppListProvider::getApplicationList() {
   Q_ASSERT(activity.isValid());
 
   QAndroidJniObject str = QAndroidJniObject::callStaticObjectMethod(
-      "com/mozilla/vpn/PackageManagerHelper", "getAllAppNames",
+      "org/mozilla/firefox/vpn/qt/PackageManagerHelper", "getAllAppNames",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
   QJsonDocument appList = QJsonDocument::fromJson(str.toString().toLocal8Bit());
   QJsonObject listObj = appList.object();
