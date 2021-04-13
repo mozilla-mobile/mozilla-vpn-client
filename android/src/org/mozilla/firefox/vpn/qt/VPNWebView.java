@@ -7,10 +7,13 @@ package org.mozilla.firefox.vpn.qt;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.RemoteException;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 import android.util.Log;
 
 import com.android.installreferrer.api.InstallReferrerClient;
@@ -43,12 +46,12 @@ public class VPNWebView
         }
 
         @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon)
-        {
-            Log.v(TAG, "Url changed: " + url);
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+          // While the login view is open, disable the ability to do screenshots.
+          m_activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-            super.onPageStarted(view, url, favicon);
-            nativeOnPageStarted(url, favicon);
+          super.onPageStarted(view, url, favicon);
+          nativeOnPageStarted(url, favicon);
         }
 
         @Override
@@ -145,10 +148,11 @@ public class VPNWebView
     {
         Log.v(TAG, "bye!");
         m_activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                m_webView.destroy();
-            }
+          @Override
+          public void run() {
+            m_webView.destroy();
+            m_activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+          }
         });
     }
 }

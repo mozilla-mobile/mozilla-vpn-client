@@ -63,7 +63,7 @@ class VPNService : android.net.VpnService() {
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
-            val prefs = getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
+            val prefs = Prefs.get(this)
             val lastConfString = prefs.getString("lastConf", "")
             if (lastConfString.isNullOrEmpty()) {
                 // We have nothing to connect to -> Exit
