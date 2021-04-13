@@ -31,7 +31,6 @@ class CaptivePortalRequest final : public QObject {
 
  private:
   bool m_completed = false;
-  QQueue<QUrl> m_requestQueue = QQueue<QUrl>();
 };
 
 #endif  // CAPTIVEPORTALREQUEST_H
