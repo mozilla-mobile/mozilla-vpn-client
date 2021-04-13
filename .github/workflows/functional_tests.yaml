@@ -3,10 +3,11 @@ on:
   push:
     branches:
       - main
+      - 'releases/**'
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+      - 'releases/**'
 
 jobs:
   functionaltests:

@@ -26,12 +26,21 @@ Window {
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
-    width: fullscreenRequired() ? maximumWidth : 360
-    height: fullscreenRequired() ? maximumHeight : Theme.desktopAppHeight
-    maximumHeight: height
-    maximumWidth: width
-    minimumHeight: height
-    minimumWidth: width
+
+    function getWidth() {
+        return fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    }
+    function getHeight() {
+        return fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
+    }
+
+    width: getWidth()
+    height: getHeight()
+    maximumHeight: getHeight()
+    maximumWidth: getWidth()
+    minimumHeight: getHeight()
+    minimumWidth: getWidth()
+
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
     color: "#F9F9FA"

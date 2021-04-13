@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.mozilla.vpn.Log
 import com.wireguard.android.backend.GoBackend
 
 class BootReceiver : BroadcastReceiver() {
@@ -19,7 +18,7 @@ class BootReceiver : BroadcastReceiver() {
             Log.i(TAG, "This device does not support start on boot - exit")
             return
         }
-        val prefs = context.getSharedPreferences("com.mozilla.vpn.prefrences", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
         val startOnBoot = prefs.getBoolean("startOnBoot", false)
         if (!startOnBoot) {
             Log.i(TAG, "This device did not enable start on boot - exit")

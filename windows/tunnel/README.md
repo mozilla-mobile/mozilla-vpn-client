@@ -4,4 +4,4 @@ A simple yet effective way of leveraging the existing WireGuard codebase. This i
 
 ## Building
 
-To build the embeddable dll service, run `.\build.cmd` to produce `x86\tunnel.dll` and `x64\tunnel.dll`.
+To build the embeddable dll service, run `.\build.cmd` to produce `x64\tunnel.dll`.
