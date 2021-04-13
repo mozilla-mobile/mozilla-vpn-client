@@ -203,6 +203,11 @@ Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/singl
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
 
+## Inspector
+
+To build the inspector `qmake CONFIG+=debug CONFIG+=inspector`. Or use appropriate script parameters.
+When running MozillaVPN, go to http://localhost:8766 to view the inspector.
+
 ## Bug report
 
 Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issues
