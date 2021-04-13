@@ -5,6 +5,7 @@
 package org.mozilla.firefox.vpn
 
 import android.content.Context
+import org.mozilla.firefox.vpn.BuildConfig
 import java.io.File
 import java.time.LocalDateTime
 import android.util.Log as nativeLog
@@ -33,14 +34,17 @@ class Log {
         }
         fun i(tag: String, message: String) {
             instance?.write("[info] - ($tag) - $message")
+            if (!BuildConfig.DEBUG) { return; }
             nativeLog.i(tag, message)
         }
         fun v(tag: String, message: String) {
             instance?.write("($tag) - $message")
+            if (!BuildConfig.DEBUG) { return; }
             nativeLog.v(tag, message)
         }
         fun e(tag: String, message: String) {
             instance?.write("[error] - ($tag) - $message")
+            if (!BuildConfig.DEBUG) { return; }
             nativeLog.e(tag, message)
         }
 

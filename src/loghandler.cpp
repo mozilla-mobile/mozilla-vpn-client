@@ -173,7 +173,7 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
 
 #endif  // defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
 
-#if defined(MVPN_ANDROID)
+#if defined(MVPN_ANDROID) && defined(QT_DEBUG)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);

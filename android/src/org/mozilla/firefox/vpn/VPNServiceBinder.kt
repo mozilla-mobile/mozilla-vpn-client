@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn
-import android.content.Context
 import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
@@ -57,9 +56,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     val json = buffer?.let { String(it) }
                     // Store the config in case the service gets
                     // asked boot vpn from the OS
-                    val prefs = mService.getSharedPreferences(
-                        "org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE
-                    )
+                    val prefs = Prefs.get(mService)
                     prefs.edit()
                         .putString("lastConf", json)
                         .apply()
@@ -129,9 +126,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val buffer = data.createByteArray()
                 if (buffer == null) { return true; }
                 val startOnBootEnabled = buffer.get(0) != 0.toByte()
-                val prefs = mService.getSharedPreferences(
-                    "org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE
-                )
+                val prefs = Prefs.get(mService)
                 prefs.edit()
                     .putBoolean("startOnBoot", startOnBootEnabled)
                     .apply()

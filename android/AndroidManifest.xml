@@ -20,6 +20,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true" />
     <application
         android:hardwareAccelerated="true"
+        android:allowBackup="false"
         android:name="org.qtproject.qt5.android.bindings.QtApplication"
         android:label="Mozilla VPN"
         android:extractNativeLibs="true"

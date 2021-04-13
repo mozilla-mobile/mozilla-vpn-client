@@ -60,8 +60,7 @@ object NotificationUtil {
         val json = buffer?.let { String(it) }
         val content = JSONObject(json)
 
-        val prefs =
-            context.getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
+        val prefs = Prefs.get(context)
         prefs.edit()
             .putString("fallbackNotificationHeader", content.getString("title"))
             .putString("fallbackNotificationMessage", content.getString("message"))
@@ -91,8 +90,7 @@ object NotificationUtil {
         }
         // In case we do not have gotten a message to show from the Frontend
         // try to populate the notification with a translated Fallback message
-        val prefs =
-            service.getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
+        val prefs = Prefs.get(service)
         val message =
             "" + prefs.getString("fallbackNotificationMessage", "Running in the Background")
         val header = "" + prefs.getString("fallbackNotificationHeader", "Mozilla VPN")
