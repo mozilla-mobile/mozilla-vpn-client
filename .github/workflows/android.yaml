@@ -3,10 +3,12 @@ name: Android
 on:
   push:
     branches:
-     - main
+      - main
+      - 'releases/**'
   pull_request:
     branches:
       - main
+      - 'releases/**'
 
 jobs:
   android-production-debug:
