@@ -18,6 +18,12 @@ class Localizer final : public QAbstractListModel {
   Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
 
+  struct Language {
+    QString m_code;
+    QString m_name;
+    QString m_localizedName;
+  };
+
  public:
   enum ServerCountryRoles {
     LanguageRole = Qt::UserRole + 1,
@@ -41,7 +47,7 @@ class Localizer final : public QAbstractListModel {
 
   QString previousCode() const;
 
-  const QStringList& languages() const { return m_languages; }
+  QStringList languages() const;
 
   // QAbstractListModel methods
 
@@ -51,13 +57,22 @@ class Localizer final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+  // For QML
+
+  Q_INVOKABLE QString translateServerCountry(const QString& countryCode,
+                                             const QString& countryName);
+
+  Q_INVOKABLE QString translateServerCity(const QString& countryCode,
+                                          const QString& cityName);
+
  signals:
   void codeChanged();
   void previousCodeChanged();
 
  private:
-  QString languageName(const QString& code) const;
-  QString localizedLanguageName(const QString& code) const;
+  static QString languageName(const QString& code);
+  static QString localizedLanguageName(const QString& code);
+  static bool languageSort(const Language& a, const Language& b);
 
   bool loadLanguageInternal(const QString& code);
 
@@ -65,7 +80,8 @@ class Localizer final : public QAbstractListModel {
   QTranslator m_translator;
 
   QString m_code;
-  QStringList m_languages;
+
+  QList<Language> m_languages;
 };
 
 #endif  // LOCALIZER_H

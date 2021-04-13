@@ -494,6 +494,7 @@ Rectangle {
     VPNIconButton {
         id: settingsButton
         objectName: "settingsButton"
+        opacity: 1
 
         onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
         anchors.top: parent.top

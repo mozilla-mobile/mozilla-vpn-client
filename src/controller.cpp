@@ -268,7 +268,7 @@ void Controller::connectionFailed() {
     return;
   }
 
-  if (m_connectionRetry >= CONNECTION_MAX_RETRY) {
+  if (m_nextStep != None || m_connectionRetry >= CONNECTION_MAX_RETRY) {
     deactivate();
     return;
   }

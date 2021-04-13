@@ -17,9 +17,7 @@ RowLayout {
     property bool isChecked
     property bool isEnabled: true
     property bool showDivider: true
-    property var iconURL: ""
     property var leftMargin: 18
-    property var subLabelWrapMode: Text.WordWrap
 
     signal clicked()
     spacing: 0
@@ -32,17 +30,6 @@ RowLayout {
         checked: isChecked
         enabled: isEnabled
         opacity: isEnabled ? 1 : 0.5
-    }
-    Image {
-        source: iconURL
-        visible: iconURL != ""
-        sourceSize.width: labelWrapper.height
-        sourceSize.height: labelWrapper.height
-        Layout.leftMargin: 5
-        Layout.rightMargin: 18
-
-        asynchronous: true
-        fillMode:  Image.PreserveAspectFit
     }
 
     ColumnLayout {
@@ -66,7 +53,7 @@ RowLayout {
             Layout.fillWidth: true
             text: subLabelText
             visible: !!subLabelText.length
-            wrapMode: subLabelWrapMode
+            wrapMode: Text.WordWrap
         }
 
         Rectangle {

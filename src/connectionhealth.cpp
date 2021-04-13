@@ -46,10 +46,12 @@ void ConnectionHealth::stop() {
 
 void ConnectionHealth::start(const QString& serverIpv4Gateway) {
   logger.log() << "ConnectionHealth activated";
-  if (serverIpv4Gateway.isEmpty() ||
+
+  if (m_suspended || serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
     return;
   }
+
   m_currentGateway = serverIpv4Gateway;
   m_pingHelper.start(serverIpv4Gateway);
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
@@ -107,11 +109,14 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
   switch (state) {
     case Qt::ApplicationState::ApplicationActive:
       if (m_suspended) {
+        m_suspended = false;
+
         Q_ASSERT(!m_noSignalTimer.isActive());
         logger.log() << "Resuming connection check from Suspension";
         start(m_currentGateway);
       }
       break;
+
     case Qt::ApplicationState::ApplicationSuspended:
     case Qt::ApplicationState::ApplicationInactive:
     case Qt::ApplicationState::ApplicationHidden:
