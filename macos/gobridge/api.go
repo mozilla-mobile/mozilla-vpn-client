@@ -7,43 +7,48 @@ package main
 
 // #include <stdlib.h>
 // #include <sys/types.h>
-// static void callLogger(void *func, int level, const char *msg)
+// static void callLogger(void *func, void *ctx, int level, const char *msg)
 // {
-// 	((void(*)(int, const char *))func)(level, msg);
+// 	((void(*)(void *, int, const char *))func)(ctx, level, msg);
 // }
 import "C"
 
 import (
-	"bufio"
-	"bytes"
-	"errors"
-	"golang.org/x/sys/unix"
-	"golang.zx2c4.com/wireguard/device"
-	"golang.zx2c4.com/wireguard/tun"
-	"log"
+	"fmt"
 	"math"
 	"os"
 	"os/signal"
 	"runtime"
+	"runtime/debug"
 	"strings"
+	"time"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
+	"golang.zx2c4.com/wireguard/conn"
+	"golang.zx2c4.com/wireguard/device"
+	"golang.zx2c4.com/wireguard/tun"
 )
 
 var loggerFunc unsafe.Pointer
-var versionString *C.char
+var loggerCtx unsafe.Pointer
 
-type CLogger struct {
-	level C.int
+type CLogger int
+
+func cstring(s string) *C.char {
+	b, err := unix.BytePtrFromString(s)
+	if err != nil {
+		b := [1]C.char{}
+		return &b[0]
+	}
+	return (*C.char)(unsafe.Pointer(b))
 }
 
-func (l *CLogger) Write(p []byte) (int, error) {
+func (l CLogger) Printf(format string, args ...interface{}) {
 	if uintptr(loggerFunc) == 0 {
-		return 0, errors.New("No logger initialized")
+		return
 	}
-	message := C.CString(string(p))
-	C.callLogger(loggerFunc, l.level, message)
-	C.free(unsafe.Pointer(message))
-	return len(p), nil
+	C.callLogger(loggerFunc, loggerCtx, C.int(l), cstring(fmt.Sprintf(format, args...)))
 }
 
 type tunnelHandle struct {
@@ -54,8 +59,6 @@ type tunnelHandle struct {
 var tunnelHandles = make(map[int32]tunnelHandle)
 
 func init() {
-	versionString = C.CString(device.WireGuardGoVersion)
-	device.RoamingDisabled = true
 	signals := make(chan os.Signal)
 	signal.Notify(signals, unix.SIGUSR2)
 	go func() {
@@ -66,53 +69,56 @@ func init() {
 				n := runtime.Stack(buf, true)
 				buf[n] = 0
 				if uintptr(loggerFunc) != 0 {
-					C.callLogger(loggerFunc, 0, (*C.char)(unsafe.Pointer(&buf[0])))
+					C.callLogger(loggerFunc, loggerCtx, 0, (*C.char)(unsafe.Pointer(&buf[0])))
 				}
 			}
 		}
 	}()
 }
 
-//export wgEnableRoaming
-func wgEnableRoaming(enabled bool) {
-	device.RoamingDisabled = !enabled
-}
-
 //export wgSetLogger
-func wgSetLogger(loggerFn uintptr) {
+func wgSetLogger(context, loggerFn uintptr) {
+	loggerCtx = unsafe.Pointer(context)
 	loggerFunc = unsafe.Pointer(loggerFn)
 }
 
 //export wgTurnOn
-func wgTurnOn(settings string, tunFd int32) int32 {
+func wgTurnOn(settings *C.char, tunFd int32) int32 {
 	logger := &device.Logger{
-		Debug: log.New(&CLogger{level: 0}, "", 0),
-		Info:  log.New(&CLogger{level: 1}, "", 0),
-		Error: log.New(&CLogger{level: 2}, "", 0),
+		Verbosef: CLogger(0).Printf,
+		Errorf:   CLogger(1).Printf,
 	}
-
-	err := unix.SetNonblock(int(tunFd), true)
+	dupTunFd, err := unix.Dup(int(tunFd))
 	if err != nil {
-		logger.Error.Println(err)
+		logger.Errorf("Unable to dup tun fd: %v", err)
 		return -1
 	}
-	tun, err := tun.CreateTUNFromFile(os.NewFile(uintptr(tunFd), "/dev/tun"), 0)
+
+	err = unix.SetNonblock(dupTunFd, true)
 	if err != nil {
-		logger.Error.Println(err)
+		logger.Errorf("Unable to set tun fd as non blocking: %v", err)
+		unix.Close(dupTunFd)
 		return -1
 	}
-	logger.Info.Println("Attaching to interface")
-	device := device.NewDevice(tun, logger)
+	tun, err := tun.CreateTUNFromFile(os.NewFile(uintptr(dupTunFd), "/dev/tun"), 0)
+	if err != nil {
+		logger.Errorf("Unable to create new tun device from fd: %v", err)
+		unix.Close(dupTunFd)
+		return -1
+	}
+	logger.Verbosef("Attaching to interface")
+	dev := device.NewDevice(tun, conn.NewStdNetBind(), logger)
 
-	setError := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
-	if setError != nil {
-		logger.Error.Println(setError)
-	        device.Close()
+	err = dev.IpcSet(C.GoString(settings))
+	if err != nil {
+		logger.Errorf("Unable to set IPC settings: %v", err)
+		unix.Close(dupTunFd)
+					dev.Close()
 		return -1
 	}
 
-	device.Up()
-	logger.Info.Println("Device started")
+	dev.Up()
+	logger.Verbosef("Device started")
 
 	var i int32
 	for i = 0; i < math.MaxInt32; i++ {
@@ -121,33 +127,37 @@ func wgTurnOn(settings string, tunFd int32) int32 {
 		}
 	}
 	if i == math.MaxInt32 {
-	        device.Close()
+		unix.Close(dupTunFd)
+					dev.Close()
 		return -1
 	}
-	tunnelHandles[i] = tunnelHandle{device, logger}
+	tunnelHandles[i] = tunnelHandle{dev, logger}
 	return i
 }
 
 //export wgTurnOff
 func wgTurnOff(tunnelHandle int32) {
-	device, ok := tunnelHandles[tunnelHandle]
+	dev, ok := tunnelHandles[tunnelHandle]
 	if !ok {
 		return
 	}
 	delete(tunnelHandles, tunnelHandle)
-	device.Close()
+	dev.Close()
 }
 
 //export wgSetConfig
-func wgSetConfig(tunnelHandle int32, settings string) int64 {
-	device, ok := tunnelHandles[tunnelHandle]
+func wgSetConfig(tunnelHandle int32, settings *C.char) int64 {
+	dev, ok := tunnelHandles[tunnelHandle]
 	if !ok {
 		return 0
 	}
-	err := device.IpcSetOperation(bufio.NewReader(strings.NewReader(settings)))
+	err := dev.IpcSet(C.GoString(settings))
 	if err != nil {
-		device.Error.Println(err)
-		return err.ErrorCode()
+		dev.Errorf("Unable to set IPC settings: %v", err)
+		if ipcErr, ok := err.(*device.IPCError); ok {
+			return ipcErr.ErrorCode()
+		}
+		return -1
 	}
 	return 0
 }
@@ -158,29 +168,58 @@ func wgGetConfig(tunnelHandle int32) *C.char {
 	if !ok {
 		return nil
 	}
-	settings := new(bytes.Buffer)
-	writer := bufio.NewWriter(settings)
-	err := device.IpcGetOperation(writer)
+	settings, err := device.IpcGet()
 	if err != nil {
 		return nil
 	}
-	writer.Flush()
-	return C.CString(settings.String())
+	return C.CString(settings)
 }
 
 //export wgBumpSockets
 func wgBumpSockets(tunnelHandle int32) {
-	device, ok := tunnelHandles[tunnelHandle]
+	dev, ok := tunnelHandles[tunnelHandle]
 	if !ok {
 		return
 	}
-	device.BindUpdate()
-	device.SendKeepalivesToPeersWithCurrentKeypair()
+	go func() {
+		for i := 0; i < 10; i++ {
+			err := dev.BindUpdate()
+			if err == nil {
+				dev.SendKeepalivesToPeersWithCurrentKeypair()
+				return
+			}
+			dev.Errorf("Unable to update bind, try %d: %v", i+1, err)
+			time.Sleep(time.Second / 2)
+		}
+		dev.Errorf("Gave up trying to update bind; tunnel is likely dysfunctional")
+	}()
+}
+
+//export wgDisableSomeRoamingForBrokenMobileSemantics
+func wgDisableSomeRoamingForBrokenMobileSemantics(tunnelHandle int32) {
+	dev, ok := tunnelHandles[tunnelHandle]
+	if !ok {
+		return
+	}
+	dev.DisableSomeRoamingForBrokenMobileSemantics()
 }
 
 //export wgVersion
 func wgVersion() *C.char {
-	return versionString
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return C.CString("unknown")
+	}
+	for _, dep := range info.Deps {
+		if dep.Path == "golang.zx2c4.com/wireguard" {
+			parts := strings.Split(dep.Version, "-")
+			if len(parts) == 3 && len(parts[2]) == 12 {
+				return C.CString(parts[2][:7])
+			}
+			return C.CString(dep.Version)
+		}
+	}
+	return C.CString("unknown")
 }
 
 func main() {}
