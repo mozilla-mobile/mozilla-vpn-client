@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 
 #include <QCoreApplication>
@@ -26,7 +27,13 @@ struct StaticLanguage {
 // framework (and some are missing entirely). This static map is the fallback
 // when this happens.
 QMap<QString, StaticLanguage> s_languageMap{
-    {"co", StaticLanguage{"Corsu", ""}}};
+    {"co", StaticLanguage{"Corsu", ""}},
+    {"es_AR", StaticLanguage{"Spanish (Argentina)", "Español, Argentina"}},
+    {"es_MX", StaticLanguage{"Spanish (Mexico)", "Español, México"}},
+    {"en_GB", StaticLanguage{"English (United Kingdom)", ""}},
+    {"en_CA", StaticLanguage{"English (Canada)", ""}},
+};
+
 }  // namespace
 
 // static
@@ -94,8 +101,13 @@ void Localizer::initialize() {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts[0].remove(0, 11);
-    m_languages.append(code);
+
+    Language language{code, languageName(code), localizedLanguageName(code)};
+    m_languages.append(language);
   }
+
+  // Sorting languages.
+  std::sort(m_languages.begin(), m_languages.end(), languageSort);
 }
 
 void Localizer::loadLanguage(const QString& code) {
@@ -137,7 +149,8 @@ bool Localizer::loadLanguageInternal(const QString& code) {
   return true;
 }
 
-QString Localizer::languageName(const QString& code) const {
+// static
+QString Localizer::languageName(const QString& code) {
   if (s_languageMap.contains(code)) {
     QString languageName = s_languageMap[code].m_name;
     if (!languageName.isEmpty()) {
@@ -161,7 +174,8 @@ QString Localizer::languageName(const QString& code) const {
   return name;
 }
 
-QString Localizer::localizedLanguageName(const QString& code) const {
+// static
+QString Localizer::localizedLanguageName(const QString& code) {
   if (s_languageMap.contains(code)) {
     QString languageName = s_languageMap[code].m_localizedName;
     if (!languageName.isEmpty()) {
@@ -207,19 +221,43 @@ QVariant Localizer::data(const QModelIndex& index, int role) const {
 
   switch (role) {
     case LanguageRole:
-      return QVariant(languageName(m_languages.at(index.row())));
+      return QVariant(m_languages.at(index.row()).m_name);
 
     case LocalizedLanguageRole:
-      return QVariant(localizedLanguageName(m_languages.at(index.row())));
+      return QVariant(m_languages.at(index.row()).m_localizedName);
 
     case CodeRole:
-      return QVariant(m_languages.at(index.row()));
+      return QVariant(m_languages.at(index.row()).m_code);
 
     default:
       return QVariant();
   }
 }
 
+QStringList Localizer::languages() const {
+  QStringList languages;
+  for (const Language& language : m_languages) {
+    languages.append(language.m_code);
+  }
+
+  return languages;
+}
+
+bool Localizer::languageSort(const Localizer::Language& a,
+                             const Localizer::Language& b) {
+  return a.m_localizedName < b.m_localizedName;
+}
+
 QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
+}
+
+QString Localizer::translateServerCountry(const QString& countryCode,
+                                          const QString& countryName) {
+  return ServerI18N::translateCountryName(countryCode, countryName);
+}
+
+QString Localizer::translateServerCity(const QString& countryCode,
+                                       const QString& cityName) {
+  return ServerI18N::translateCityName(countryCode, cityName);
 }

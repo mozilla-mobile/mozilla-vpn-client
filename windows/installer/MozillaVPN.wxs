@@ -6,17 +6,9 @@
 	Copyright (C) 2019 Edge Security LLC. All Rights Reserved.
 -->
 
-<?if $(var.Platform) = x64 ?>
-	<?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
-	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-	<?define WintunPlatform = "amd64" ?>
-<?elseif $(var.Platform) = x86 ?>
-	<?define UpgradeCode = "3e078a42-bcaf-407f-96ed-1b47f44565d8"?>
-	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
-	<?define WintunPlatform = "x86" ?>
-<?else?>
-	<?error Unknown platform ?>
-<?endif?>
+<?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
+<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?define WintunPlatform = "amd64" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 	<Product

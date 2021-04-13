@@ -408,5 +408,6 @@
         <file>ui/views/ViewErrorFullScreen.qml</file>
         <file>ui/components/VPNControllerNav.qml</file>
         <file>ui/components/VPNSettingsToggle.qml</file>
+        <file>ui/components/VPNDeviceListItem.qml</file>
     </qresource>
 </RCC>

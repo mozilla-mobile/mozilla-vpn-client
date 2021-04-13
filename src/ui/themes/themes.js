@@ -48,7 +48,8 @@ const vSpacing = 24;
 const listSpacing = 8;
 const maxTextWidth = 296;
 const windowMargin = 16;
-const desktopAppHeight = 520
+const desktopAppHeight = 520;
+const desktopAppWidth = 360;
 
 const darkFocusBorder = fontColor;
 const lightFocusBorder = "#d5d3e0";

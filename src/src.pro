@@ -95,6 +95,7 @@ SOURCES += \
         releasemonitor.cpp \
         rfc1918.cpp \
         rfc4193.cpp \
+        serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -180,6 +181,7 @@ HEADERS += \
         releasemonitor.h \
         rfc1918.h \
         rfc4193.h \
+        serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
@@ -746,6 +748,8 @@ else:wasm {
 else {
     error(Unsupported platform)
 }
+
+RESOURCES += $$PWD/../translations/servers.qrc
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)

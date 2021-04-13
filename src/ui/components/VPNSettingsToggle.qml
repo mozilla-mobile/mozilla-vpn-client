@@ -15,6 +15,8 @@ CheckBox {
     property alias forceFocus: vpnSettingsToggle.focus
     property var toolTipTitle
 
+    onClicked: toolTip.hide()
+
     height: 24
     width: 45
     states: [
@@ -50,6 +52,7 @@ CheckBox {
     ]
 
     VPNToolTip {
+        id: toolTip
         text: toolTipTitle
     }
 
@@ -139,15 +142,15 @@ CheckBox {
         vpnSettingsToggle.clicked()
     }
 
+    Keys.onReleased: {
+        if (event.key === Qt.Key_Return)
+            handleKeyClick();
+            uiPlaceholder.state = uiState.stateDefault;
+    }
+
     Keys.onPressed: {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
             uiPlaceholder.state = uiState.statePressed;
-    }
-
-    Keys.onReleased: {
-        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
-            handleKeyClick();
-            uiPlaceholder.state = uiState.stateDefault;
     }
 
     Rectangle {
