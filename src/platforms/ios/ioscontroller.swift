@@ -26,7 +26,7 @@ public class IOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
     private var stateChangeCallback: ((Bool) -> Void?)? = nil
-    private var privateKey : Data? = nil
+    private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
     private var switchingServer: Bool = false
@@ -38,15 +38,13 @@ public class IOSControllerImpl : NSObject {
     @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
         super.init()
 
-        assert(privateKey.count == TunnelConfiguration.keyLength)
-
         Logger.configureGlobal(tagged: "APP", withFilePath: "")
 
         vpnBundleID = bundleID;
         precondition(!vpnBundleID.isEmpty)
 
         stateChangeCallback = callback
-        self.privateKey = privateKey
+        self.privateKey = PrivateKey(rawValue: privateKey)
         self.deviceIpv4Address = deviceIpv4Address
         self.deviceIpv6Address = deviceIpv6Address
 
@@ -156,7 +154,7 @@ public class IOSControllerImpl : NSObject {
         // Let's remove the previous config if it exists.
         (tunnel!.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
 
-        let keyData = Data(base64Key: serverPublicKey)!
+        let keyData = PublicKey(base64Key: serverPublicKey)!
         let ipv4GatewayIP = IPv4Address(serverIpv4Gateway)
         let ipv6GatewayIP = IPv6Address(serverIpv6Gateway)
 
