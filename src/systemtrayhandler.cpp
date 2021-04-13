@@ -290,7 +290,8 @@ void SystemTrayHandler::maybeActivated(
   logger.log() << "Activated";
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
-  if (reason == QSystemTrayIcon::DoubleClick) {
+  if (reason == QSystemTrayIcon::DoubleClick ||
+      reason == QSystemTrayIcon::Trigger) {
     QmlEngineHolder* engine = QmlEngineHolder::instance();
     engine->showWindow();
   }

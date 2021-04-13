@@ -54,7 +54,6 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
             }
 
             QString code = values["code"].toString();
-            m_server->close();
 
             emit completed(code);
           });

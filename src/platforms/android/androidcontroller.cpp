@@ -49,6 +49,9 @@ namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
 AndroidController* s_instance = nullptr;
 
+constexpr auto PERMISSIONHELPER_CLASS =
+    "org/mozilla/firefox/vpn/qt/VPNPermissionHelper";
+
 }  // namespace
 
 AndroidController::AndroidController() : m_binder(this) {
@@ -76,7 +79,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   JNINativeMethod methods[]{{"startActivityForResult",
                              "(Landroid/content/Intent;)V",
                              reinterpret_cast<void*>(startActivityForResult)}};
-  QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNPermissionHelper");
+  QAndroidJniObject javaClass(PERMISSIONHELPER_CLASS);
   QAndroidJniEnvironment env;
   jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
   env->RegisterNatives(objectClass, methods,
@@ -145,8 +148,8 @@ void AndroidController::activate(
   auto appContext = QtAndroid::androidActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
   QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/VPNPermissionHelper", "startService",
-      "(Landroid/content/Context;)V", appContext.object());
+      PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
+      appContext.object());
 
   m_server = server;
 

@@ -74,9 +74,6 @@ describe('Server list', function() {
       const countryId = 'serverCountryList/serverCountry-' + server.code;
       await vpn.waitForElement(countryId);
       await vpn.waitForElementProperty(countryId, 'visible', 'true');
-      assert(
-          await vpn.getElementProperty(countryId, 'serverCountryName') ===
-          server.name);
 
       await vpn.setElementProperty(
           'serverCountryView', 'contentY', 'i',
@@ -99,8 +96,6 @@ describe('Server list', function() {
             city.name.replace(/ /g, '_');
         await vpn.waitForElement(cityId);
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
-        await vpn.waitForElementProperty(
-            cityId, 'radioButtonLabelText', city.name);
         await vpn.waitForElementProperty(
             cityId, 'checked',
             currentCountryCode === server.code && currentCity === city.name ?
@@ -137,6 +132,10 @@ describe('Server list', function() {
             parseInt(await vpn.getElementProperty(cityId, 'y')) +
                 parseInt(await vpn.getElementProperty(countryId, 'y')));
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
+
+        const cityName =
+            await vpn.getElementProperty(cityId, 'radioButtonLabelText');
+
         await vpn.wait();
 
         await vpn.clickOnElement(cityId);
@@ -150,7 +149,7 @@ describe('Server list', function() {
         await vpn.waitForElement('serverListButton');
         await vpn.waitForElementProperty('serverListButton', 'visible', 'true');
         await vpn.waitForElementProperty(
-            'serverListButton', 'subtitleText', city.name);
+            'serverListButton', 'subtitleText', cityName);
 
         await vpn.clickOnElement('serverListButton');
         await vpn.wait();

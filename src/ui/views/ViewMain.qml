@@ -186,16 +186,14 @@ VPNFlickable {
             titleText: qsTrId("vpn.servers.selectLocation")
             //% "current location - %1"
             //: Accessibility description for current location of the VPN server
-            descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.city)
+            descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNLocalizer.translateServerCity(VPNCurrentServer.countryCode, VPNCurrentServer.city))
 
-            subtitleText: VPNCurrentServer.city
+            subtitleText: VPNLocalizer.translateServerCity(VPNCurrentServer.countryCode, VPNCurrentServer.city)
             imgSource:  "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
             anchors.top: box.bottom
             anchors.topMargin: 30
 
-            disableRowWhen: VPN.state === VPN.StateDeviceLimit ||
-                                 (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) ||
-                                 box.connectionInfoVisible
+            disableRowWhen: (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) || box.connectionInfoVisible
         }
 
         VPNControllerNav {
@@ -203,6 +201,7 @@ VPNFlickable {
                 stackview.push("ViewDevices.qml")
             }
 
+            objectName: "deviceListButton"
             anchors.top: serverInfo.bottom
             anchors.topMargin: 22
             //% "%1 of %2"
@@ -214,7 +213,6 @@ VPNFlickable {
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoVisible
-            state: VPN.state !== VPN.StateDeviceLimit ? "" : "deviceLimit"
         }
 
         Behavior on y {

@@ -8,8 +8,6 @@ import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
-import com.mozilla.vpn.Log
-import com.mozilla.vpn.NotificationUtil
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
@@ -60,7 +58,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     // Store the config in case the service gets
                     // asked boot vpn from the OS
                     val prefs = mService.getSharedPreferences(
-                        "com.mozilla.vpn.prefrences", Context.MODE_PRIVATE
+                        "org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE
                     )
                     prefs.edit()
                         .putString("lastConf", json)
@@ -132,7 +130,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 if (buffer == null) { return true; }
                 val startOnBootEnabled = buffer.get(0) != 0.toByte()
                 val prefs = mService.getSharedPreferences(
-                    "com.mozilla.vpn.prefrences", Context.MODE_PRIVATE
+                    "org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE
                 )
                 prefs.edit()
                     .putBoolean("startOnBoot", startOnBootEnabled)

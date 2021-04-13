@@ -494,8 +494,7 @@ Rectangle {
     VPNIconButton {
         id: settingsButton
         objectName: "settingsButton"
-        enabled: VPN.state !== VPN.StateDeviceLimit
-        opacity: VPN.state === VPN.StateDeviceLimit ? .5 : 1
+        opacity: 1
 
         onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
         anchors.top: parent.top

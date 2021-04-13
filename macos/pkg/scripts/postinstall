@@ -48,6 +48,11 @@ EOM
 pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
 sleep 1
 
+# Load the daemon
 launchctl unload -w $DAEMON_PLIST_PATH
 echo "$DAEMON_PLIST" > $DAEMON_PLIST_PATH
 launchctl load -w $DAEMON_PLIST_PATH
+
+# Run the app
+open /Applications/Mozilla VPN.app
+exit 0
