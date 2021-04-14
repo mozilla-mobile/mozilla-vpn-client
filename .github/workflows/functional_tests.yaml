@@ -35,6 +35,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
+          git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py
 
       - name: Compile
