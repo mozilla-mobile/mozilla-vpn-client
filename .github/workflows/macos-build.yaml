@@ -44,6 +44,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py
 
       - name: Configuring the build
@@ -124,6 +125,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
+          git submodule update --remote --depth 1 i18n
           python3 scripts/importLanguages.py -p
 
       - name: Configuring the build

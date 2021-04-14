@@ -91,6 +91,7 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "c:\\Program Files (x86)\\Micro
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
+git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
 
 ECHO Creating the project with flags: %FLAGS%

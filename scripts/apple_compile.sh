@@ -101,6 +101,7 @@ rm -rf mozillavpn.xcodeproj/ || die "Failed to remove things"
 print G "done."
 
 print Y "Importing translation files..."
+git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
 
 printn Y "Extract the project version... "
