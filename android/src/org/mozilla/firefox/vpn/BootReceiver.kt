@@ -18,7 +18,7 @@ class BootReceiver : BroadcastReceiver() {
             Log.i(TAG, "This device does not support start on boot - exit")
             return
         }
-        val prefs = context.getSharedPreferences("org.mozilla.firefox.vpn.prefrences", Context.MODE_PRIVATE)
+        val prefs = Prefs.get(context)
         val startOnBoot = prefs.getBoolean("startOnBoot", false)
         if (!startOnBoot) {
             Log.i(TAG, "This device did not enable start on boot - exit")
