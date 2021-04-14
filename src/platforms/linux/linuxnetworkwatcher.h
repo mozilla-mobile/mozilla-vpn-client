@@ -7,31 +7,28 @@
 
 #include "networkwatcherimpl.h"
 
-#include <QMap>
-#include <QVariant>
+#include <QThread>
+
+class LinuxNetworkWatcherWorker;
 
 class LinuxNetworkWatcher final : public NetworkWatcherImpl {
   Q_OBJECT
 
  public:
-  LinuxNetworkWatcher(QObject* parent);
+  explicit LinuxNetworkWatcher(QObject* parent);
   ~LinuxNetworkWatcher();
 
   void initialize() override;
 
   void start() override;
 
- private slots:
-  void propertyChanged(QString interface, QVariantMap properties,
-                       QStringList list);
-
-  void checkDevices();
+ signals:
+  void initializeInThread();
+  void checkDevicesInThread();
 
  private:
-  // We collect the list of DBus wifi network device paths during the
-  // initialization. When a property of them changes, we check if the access
-  // point is active and unsecure.
-  QStringList m_devicePaths;
+  LinuxNetworkWatcherWorker* m_worker = nullptr;
+  QThread m_thread;
 };
 
 #endif  // LINUXNETWORKWATCHER_H
