@@ -15,6 +15,9 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
+# For MacOS, please keep the list of source files in sync with
+# `scripts/xcode_patcher.rb`.
+
 SOURCES += \
         handler.cpp \
         logger.cpp \
@@ -33,7 +36,6 @@ linux:!android {
     manifest.path = /usr/lib/mozilla/native-messaging-hosts
     manifest.files = manifests/linux/mozillavpn.json
     INSTALLS += manifest
-
 } else {
     error(Unsupported platform)
 }
