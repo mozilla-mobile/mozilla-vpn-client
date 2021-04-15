@@ -11,5 +11,10 @@
 }
 
 TEMPLATE = subdirs
+
 SUBDIRS += src
 SUBDIRS += tests/unit
+
+linux:!android {
+    SUBDIRS += extension/app
+}
