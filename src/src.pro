@@ -94,6 +94,8 @@ SOURCES += \
         releasemonitor.cpp \
         rfc1918.cpp \
         rfc4193.cpp \
+        server/serverconnection.cpp \
+        server/serverhandler.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
@@ -178,6 +180,8 @@ HEADERS += \
         releasemonitor.h \
         rfc1918.h \
         rfc4193.h \
+        server/serverconnection.h \
+        server/serverhandler.h \
         serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
