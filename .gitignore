@@ -67,3 +67,6 @@ MozillaVPN_resource.rc
 mozillavpn.js
 mozillavpn.wasm
 qtloader.js
+
+# WebExtension native app
+extension/app/mozillavpnnp
