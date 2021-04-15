@@ -80,6 +80,9 @@ describe('User authentication', function() {
     // before completing the animation.
     await vpn.wait();
 
+    await vpn.waitForElement('onboardingNext');
+    const onboardingNavBtnInitialText = await vpn.getElementProperty('onboardingNext', 'text');
+    
     while (true) {
       assert(await vpn.hasElement('onboardingNext'));
       assert(
@@ -87,7 +90,7 @@ describe('User authentication', function() {
 
       assert(
           await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
-      if (await vpn.getElementProperty('onboardingNext', 'text') === 'Next') {
+      if (await vpn.getElementProperty('onboardingNext', 'text') === onboardingNavBtnInitialText) {
         await vpn.clickOnElement('onboardingNext');
 
         // This is needed just for humans. The UI is already in the other state
