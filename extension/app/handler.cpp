@@ -65,7 +65,8 @@ int Handler::run() {
     }
 
     readStdin = FD_ISSET(0, &rfds);
-    readVpnConnection = m_vpnConnection.connected() && FD_ISSET(m_vpnConnection.socket(), &rfds));
+    readVpnConnection = m_vpnConnection.connected() &&
+                        FD_ISSET(m_vpnConnection.socket(), &rfds);
 #endif
 
     // Something to read from STDIN
@@ -152,7 +153,7 @@ bool Handler::readMessage(json& output) {
     return false;
   }
 
-  string m(message, message + sizeof message / sizeof message[0]);
+  string m(message, message + length);
   free(message);
 
   output = json::parse(m);

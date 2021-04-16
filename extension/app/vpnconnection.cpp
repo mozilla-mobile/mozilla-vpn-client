@@ -6,6 +6,15 @@
 #include "constants.h"
 #include "logger.h"
 
+#ifndef MVPN_WINDOWS
+#  include <arpa/inet.h>
+#  include <assert.h>
+#  include <netinet/in.h>
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <unistd.h>
+#endif
+
 using namespace nlohmann;
 using namespace std;
 
@@ -109,7 +118,7 @@ bool VPNConnection::readMessage(nlohmann::json& output) {
     return false;
   }
 
-  string m(message, message + sizeof message / sizeof message[0]);
+  string m(message, message + length);
   free(message);
 
   output = json::parse(m);
@@ -117,8 +126,12 @@ bool VPNConnection::readMessage(nlohmann::json& output) {
 }
 
 void VPNConnection::closeAndReset() {
-  assert(m_socket != -1);
+  assert(m_socket != VPN_INVALID_SOCKET);
+#ifdef MVPN_WINDOWS
   closesocket(m_socket);
+#else
+  close(m_socket);
+#endif
   m_socket = VPN_INVALID_SOCKET;
 }
 
