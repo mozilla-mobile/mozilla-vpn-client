@@ -21,6 +21,9 @@ class VPNConnection final {
   bool writeMessage(const nlohmann::json& body);
 
  private:
+  void closeAndReset();
+
+ private:
   int m_socket = -1;
 };
 

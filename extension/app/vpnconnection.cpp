@@ -42,9 +42,7 @@ bool VPNConnection::connect() {
 
   if (::connect(m_socket, (sockaddr*)&addr, sizeof(addr)) != 0) {
     Logger::log("Failed to connect to the socket");
-
-    close(m_socket);
-    m_socket = -1;
+    closeAndReset();
     return false;
   }
 
@@ -59,8 +57,14 @@ bool VPNConnection::writeMessage(const json& body) {
   uint32_t length = (uint32_t)message.length();
   char* rawLength = reinterpret_cast<char*>(&length);
 
-  return send(m_socket, rawLength, sizeof(uint32_t), 0) == sizeof(uint32_t) &&
-         send(m_socket, message.c_str(), length, 0) == length;
+  if (send(m_socket, rawLength, sizeof(uint32_t), 0) != sizeof(uint32_t) ||
+      send(m_socket, message.c_str(), length, 0) != length) {
+    Logger::log("Failed to write to the VPN Client");
+    closeAndReset();
+    return false;
+  }
+
+  return true;
 }
 
 bool VPNConnection::readMessage(nlohmann::json& output) {
@@ -68,20 +72,32 @@ bool VPNConnection::readMessage(nlohmann::json& output) {
 
   char rawLength[sizeof(uint32_t)];
   if (recv(m_socket, rawLength, sizeof(uint32_t), 0) != sizeof(uint32_t)) {
+    Logger::log("Failed to read from the VPN Client");
+    closeAndReset();
     return false;
   }
 
   uint32_t length = *reinterpret_cast<uint32_t*>(rawLength);
   if (!length || length > Constants::MAX_MSG_SIZE) {
+    Logger::log("Invalid package size from the VPN Client");
+    closeAndReset();
     return false;
   }
 
   char message[length];
   if (recv(m_socket, message, length, 0) != length) {
+    Logger::log("Failed to read from the VPN Client");
+    closeAndReset();
     return false;
   }
 
   string m(message, message + sizeof message / sizeof message[0]);
   output = json::parse(m);
   return true;
+}
+
+void VPNConnection::closeAndReset() {
+  assert(m_socket != -1);
+  close(m_socket);
+  m_socket = -1;
 }
