@@ -4,19 +4,9 @@
 
 package org.mozilla.firefox.vpn.qt;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
 import android.view.KeyEvent;
 
 public class VPNActivity extends org.qtproject.qt5.android.bindings.QtActivity {
-  @Override
-  protected void onNewIntent(Intent intent) {
-    // Since there is only one instance of the qt-activity,
-    // we need to save every incoming intent, so we can process it later.
-    setIntent(intent);
-    super.onNewIntent(intent);
-  }
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -29,11 +19,10 @@ public class VPNActivity extends org.qtproject.qt5.android.bindings.QtActivity {
 
   @Override
   public void onBackPressed() {
-    Log.d("QT-Ac", "BACK BUTTON HANDELED");
     try {
       if (!handleBackButton()) {
         // Move the activity into paused state if back button was pressed
-        super.onBackPressed();
+        moveTaskToBack(true);
       }
     } catch (Exception e) {
     }

@@ -88,7 +88,6 @@ SOURCES += \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
-        platforms/android/androidvpnactivity.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
@@ -173,7 +172,6 @@ HEADERS += \
         pinghelper.h \
         pingsender.h \
         pingsendworker.h \
-        platforms/android/androidvpnactivity.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
@@ -438,6 +436,7 @@ else:android {
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
+                platforms/android/androidvpnactivity.cpp \
                 platforms/android/androidstartatbootwatcher.cpp \
                 platforms/android/androiddatamigration.cpp \
                 platforms/android/androidappimageprovider.cpp \
@@ -450,6 +449,7 @@ else:android {
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \
+                platforms/android/androidvpnactivity.h \
                 platforms/android/androidstartatbootwatcher.h\
                 platforms/android/androiddatamigration.h\
                 platforms/android/androidappimageprovider.h \
