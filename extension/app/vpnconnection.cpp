@@ -57,8 +57,7 @@ bool VPNConnection::writeMessage(const json& body) {
   uint32_t length = (uint32_t)message.length();
   char* rawLength = reinterpret_cast<char*>(&length);
 
-  if (send(m_socket, rawLength, sizeof(uint32_t), 0) != sizeof(uint32_t) ||
-      send(m_socket, message.c_str(), length, 0) != length) {
+  if (!write(rawLength, sizeof(uint32_t)) || !write(message.c_str(), length)) {
     Logger::log("Failed to write to the VPN Client");
     closeAndReset();
     return false;
@@ -71,7 +70,7 @@ bool VPNConnection::readMessage(nlohmann::json& output) {
   assert(connected());
 
   char rawLength[sizeof(uint32_t)];
-  if (recv(m_socket, rawLength, sizeof(uint32_t), 0) != sizeof(uint32_t)) {
+  if (!read(rawLength, sizeof(uint32_t))) {
     Logger::log("Failed to read from the VPN Client");
     closeAndReset();
     return false;
@@ -85,7 +84,7 @@ bool VPNConnection::readMessage(nlohmann::json& output) {
   }
 
   char message[length];
-  if (recv(m_socket, message, length, 0) != length) {
+  if (!read(message, length)) {
     Logger::log("Failed to read from the VPN Client");
     closeAndReset();
     return false;
@@ -100,4 +99,36 @@ void VPNConnection::closeAndReset() {
   assert(m_socket != -1);
   close(m_socket);
   m_socket = -1;
+}
+
+bool VPNConnection::write(const char* buffer, uint32_t length) {
+  // The message can be processed in chuncks. Let's do consecutive send() calls
+  // until we have sent the full message.
+  uint32_t n = 0;
+  while (n < length) {
+    int rv = send(m_socket, buffer + n, length - n, 0);
+    if (rv <= 0) {
+      return false;
+    }
+
+    n += rv;
+  }
+
+  return true;
+}
+
+bool VPNConnection::read(char* buffer, uint32_t length) {
+  // The message can be received in chuncks. Let's do consecutive recv() calls
+  // until we have the full message.
+  uint32_t n = 0;
+  while (n < length) {
+    int rv = recv(m_socket, buffer + n, length - n, 0);
+    if (rv <= 0) {
+      return false;
+    }
+
+    n += rv;
+  }
+
+  return true;
 }

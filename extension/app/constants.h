@@ -10,6 +10,6 @@ constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
 
 constexpr uint32_t VPN_CLIENT_PORT = 8754;
 constexpr const char* VPN_CLIENT_HOST = "127.0.0.1";
-}
+}  // namespace Constants
 
 #endif  // CONSTANTS_H
