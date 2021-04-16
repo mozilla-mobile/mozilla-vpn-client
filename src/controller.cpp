@@ -535,7 +535,8 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   QList<IPAddressRange> allowedIPv6s;
 
   // filtering out the captive portal endpoint
-  if (SettingsHolder::instance()->captivePortalAlert()) {
+  if (FeatureList::instance()->captivePortalNotificationSupported() &&
+      SettingsHolder::instance()->captivePortalAlert()) {
     CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 
     const QStringList& captivePortalIpv4Addresses =
