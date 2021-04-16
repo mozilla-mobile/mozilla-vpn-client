@@ -15,7 +15,6 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
-#include "server/serverhandler.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
@@ -59,6 +58,10 @@
 
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasmwindowcontroller.h"
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+#  include "server/serverhandler.h"
 #endif
 
 #include <QApplication>
@@ -400,9 +403,11 @@ int CommandUI::run(QStringList& tokens) {
     WasmWindowController wasmWindowController;
 #endif
 
+#ifdef MVPN_WEBEXTENSION
     ServerHandler serverHandler;
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
+#endif
 
     // Let's go.
     return qApp->exec();

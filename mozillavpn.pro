@@ -15,6 +15,6 @@ TEMPLATE = subdirs
 SUBDIRS += src
 SUBDIRS += tests/unit
 
-linux:!android {
+webextension {
     SUBDIRS += extension/app
 }
