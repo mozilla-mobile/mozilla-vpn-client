@@ -7,7 +7,10 @@
 #include "logger.h"
 
 #include <iostream>
-#include <sys/select.h>
+
+#ifndef MVPN_WINDOWS
+#  include <sys/select.h>
+#endif
 
 using namespace nlohmann;
 using namespace std;
@@ -19,6 +22,28 @@ int Handler::run() {
     // start reading from STDIN and retry the connection later on.
     maybeConnect();
 
+    bool readStdin = false;
+    bool readVpnConnection = false;
+
+#ifdef MVPN_WINDOWS
+    HANDLE handles[3];
+    handles[0] = GetStdHandle(STD_INPUT_HANDLE);
+    handles[1] = INVALID_HANDLE_VALUE;
+    handles[2] = INVALID_HANDLE_VALUE;
+
+    int count = 1;
+
+    if (m_vpnConnection.connected()) {
+      handles[1] = WSACreateEvent();
+      WSAEventSelect(m_vpnConnection.socket(), handles[1], FD_READ);
+      ++count;
+    }
+
+    DWORD rv = WaitForMultipleObjectsEx(count, handles, FALSE, INFINITE, FALSE);
+
+    readStdin = (rv == WAIT_OBJECT_0);
+    readVpnConnection = m_vpnConnection.connected() && rv == WAIT_OBJECT_0 + 1;
+#else  // POSIX
     fd_set rfds;
     int nfds = 0;  // the STDIN
 
@@ -39,8 +64,12 @@ int Handler::run() {
       continue;
     }
 
+    readStdin = FD_ISSET(0, &rfds);
+    readVpnConnection = m_vpnConnection.connected() && FD_ISSET(m_vpnConnection.socket(), &rfds));
+#endif
+
     // Something to read from STDIN
-    if (FD_ISSET(0, &rfds)) {
+    if (readStdin) {
       Logger::log("STDIN message received");
 
       json message;
@@ -73,8 +102,7 @@ int Handler::run() {
     }
 
     // Something to read from the VPN client
-    if (m_vpnConnection.connected() &&
-        FD_ISSET(m_vpnConnection.socket(), &rfds)) {
+    if (m_vpnConnection.connected() && readVpnConnection) {
       json message;
       if (!m_vpnConnection.readMessage(message)) {
         assert(!m_vpnConnection.connected());
@@ -112,13 +140,21 @@ bool Handler::readMessage(json& output) {
     return false;
   }
 
-  char message[length];
+  char* message = (char*)malloc(length);
+  if (!message) {
+    Logger::log("Failed to allocate the message buffer");
+    return false;
+  }
+
   if (fread(message, sizeof(char), length, stdin) != length) {
     Logger::log("Failed to read from STDIN");
+    free(message);
     return false;
   }
 
   string m(message, message + sizeof message / sizeof message[0]);
+  free(message);
+
   output = json::parse(m);
   return true;
 }

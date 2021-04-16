@@ -5,8 +5,8 @@
 #ifndef HANDLER_H
 #define HANDLER_H
 
-#include "vpnconnection.h"
 #include "json.hpp"
+#include "vpnconnection.h"
 
 class Handler final {
  public:
