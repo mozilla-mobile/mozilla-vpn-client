@@ -73,7 +73,7 @@ class XCodeprojPatcher
       if platform == 'ios'
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
       elsif networkExtension
-        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/networkExtension.entitlements'
+        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/app.entitlements'
       else
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/daemon.entitlements'
       end
