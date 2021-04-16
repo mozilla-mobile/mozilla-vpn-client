@@ -51,6 +51,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         when (code) {
             ACTIONS.activate -> {
                 try {
+                    Log.i(tag,"Activiation Requested, parsing Config")
                     // [data] is here a json containing the wireguard conf
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
@@ -60,6 +61,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                     prefs.edit()
                         .putString("lastConf", json)
                         .apply()
+
+                    Log.sensitive(tag,json)
 
                     Log.v(tag, "Stored new Tunnel config in Service")
                     val config = buildConfigFromJSON(json)

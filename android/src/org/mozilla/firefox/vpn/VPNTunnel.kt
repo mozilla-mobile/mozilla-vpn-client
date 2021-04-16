@@ -23,6 +23,7 @@ class VPNTunnel : Tunnel {
     }
 
     override fun onStateChange(newState: Tunnel.State) {
+        Log.i("Tunnel","State Change $mState -> $newState" )
         if (mState != newState) {
             mState = newState
             if (mState == Tunnel.State.UP) {
