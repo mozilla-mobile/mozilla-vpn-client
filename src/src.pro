@@ -88,6 +88,7 @@ SOURCES += \
         notificationhandler.cpp \
         pinghelper.cpp \
         pingsender.cpp \
+        platforms/android/androidvpnactivity.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
@@ -172,6 +173,7 @@ HEADERS += \
         pinghelper.h \
         pingsender.h \
         pingsendworker.h \
+        platforms/android/androidvpnactivity.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
