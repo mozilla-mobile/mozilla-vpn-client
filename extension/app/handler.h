@@ -18,6 +18,8 @@ class Handler final {
 
   bool maybeConnect();
 
+  bool writeVpnNotConnected();
+
  private:
   VPNConnection m_vpnConnection;
 };
