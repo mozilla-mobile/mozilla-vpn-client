@@ -7,13 +7,32 @@
 
 #include "json.hpp"
 
+#ifdef MVPN_WINDOWS
+#  include <winsock2.h>
+#  include <windows.h>
+#endif
+
 class VPNConnection final {
  public:
+  VPNConnection();
   ~VPNConnection();
 
-  bool connected() const { return m_socket != -1; }
+  bool connected() const {
+#ifdef MVPN_WINDOWS
+    return m_socket != INVALID_SOCKET;
+#else
+    return m_socket != -1;
+#endif
+  }
 
-  int socket() const { return m_socket; }
+#ifdef MVPN_WINDOWS
+  const SOCKET&
+#else
+  int
+#endif
+  socket() const {
+    return m_socket;
+  }
 
   bool connect();
 
@@ -27,7 +46,13 @@ class VPNConnection final {
   void closeAndReset();
 
  private:
+#ifdef MVPN_WINDOWS
+  SOCKET m_socket = INVALID_SOCKET;
+
+  WSADATA m_wsaData;
+#else
   int m_socket = -1;
+#endif
 };
 
 #endif  // VPNCONNECTION_H

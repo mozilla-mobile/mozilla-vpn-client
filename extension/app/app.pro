@@ -36,6 +36,13 @@ linux:!android {
     manifest.path = /usr/lib/mozilla/native-messaging-hosts
     manifest.files = manifests/linux/mozillavpn.json
     INSTALLS += manifest
+} else:win* {
+    CONFIG += embed_manifest_exe
+    DEFINES += MVPN_WINDOWS
+
+    # To avoid conficts between the 2 projects
+    OBJECTS_DIR = .npobj
+    MOC_DIR = .npmoc
 } else {
     error(Unsupported platform)
 }
