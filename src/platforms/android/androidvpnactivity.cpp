@@ -16,8 +16,8 @@ AndroidVPNActivity::AndroidVPNActivity() {
   instance = this;
   QtAndroid::runOnAndroidThreadSync([]() {
     // Hook in the native implementation for startActivityForResult into the JNI
-    JNINativeMethod methods[]{{"handleBackButton", "()Z",
-                               reinterpret_cast<bool*>(handleBackButton())}};
+    JNINativeMethod methods[]{
+        {"handleBackButton", "()Z", reinterpret_cast<bool*>(handleBackButton)}};
     QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
     jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
@@ -34,6 +34,8 @@ void AndroidVPNActivity::init() {
 }
 
 // static
-bool AndroidVPNActivity::handleBackButton() {
+bool AndroidVPNActivity::handleBackButton(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env);
+  Q_UNUSED(thiz);
   return MozillaVPN::instance()->closeEventHandler()->eventHandled();
 }
