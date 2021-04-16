@@ -20,6 +20,12 @@ class ServerConnection final : public QObject {
 
  private:
   void readData();
+  void writeData(const QByteArray& data);
+
+  void writeState();
+  void writeInvalidRequest();
+
+  void processMessage(const QByteArray& message);
 
  private:
   QTcpSocket* m_connection;

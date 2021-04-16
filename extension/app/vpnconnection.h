@@ -21,6 +21,9 @@ class VPNConnection final {
   bool writeMessage(const nlohmann::json& body);
 
  private:
+  bool write(const char* buffer, uint32_t length);
+  bool read(char* buffer, uint32_t length);
+
   void closeAndReset();
 
  private:
