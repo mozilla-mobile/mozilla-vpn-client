@@ -136,6 +136,7 @@ class VPNService : android.net.VpnService() {
         try {
             mBackend.setState(mTunnel, Tunnel.State.UP, mConfig)
         } catch (e: Exception) {
+            Log.e(tag, "Exception while enabling the tunnel: ${e.message}")
             mTunnel.abort()
         }
     }
