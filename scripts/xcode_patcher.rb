@@ -9,7 +9,7 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash)
+  def run(file, shortVersion, fullVersion, platform, networkExtension, webExtension, configHash)
     open_project file
     open_target_main
 
@@ -22,7 +22,7 @@ class XCodeprojPatcher
 
     if platform == 'macos'
       setup_target_loginitem shortVersion, fullVersion, configHash
-      setup_target_nativemessaging shortVersion, fullVersion, configHash
+      setup_target_nativemessaging shortVersion, fullVersion, configHash if webExtension
     end
 
 
@@ -568,7 +568,8 @@ configFile.each { |line|
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
 networkExtension = true if ARGV[4] == "1"
+webExtension = true if ARGV[5] == "1"
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config
+r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, webExtension, config
 exit 0
