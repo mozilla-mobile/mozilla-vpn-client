@@ -38,6 +38,7 @@
 #endif
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
+#  include "platforms/android/androidvpnactivity.h"
 #endif
 
 #ifdef MVPN_INSPECTOR
@@ -196,6 +197,9 @@ void MozillaVPN::initialize() {
     AndroidDataMigration::migrate();
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
+
+  // Register natvies of the vpn activity
+  AndroidVPNActivity::init();
 #endif
 
   m_private->m_captivePortalDetection.initialize();
