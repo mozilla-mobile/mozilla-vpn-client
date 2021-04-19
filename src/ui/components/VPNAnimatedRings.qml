@@ -39,7 +39,9 @@ Rectangle {
         onTriggered: { canRender = true;}
     }
 
-    onStartAnimationChanged: animatedRings.requestPaint()
+    onStartAnimationChanged: {
+        animatedRings.makeDirty()
+    }
     anchors.fill: box
     radius: box.radius
     color: "transparent"
@@ -63,6 +65,19 @@ Rectangle {
         property var drawingRing3
         property var ringXCenter: parent.width / 2
         property var ringYCenter: animatedRingsWrapper.yCenter
+
+        renderStrategy: Canvas.Threaded
+        renderTarget: Canvas.FramebufferObject
+
+        // Finds the Minimum Box that we need to repaint and marks this
+        // for painting
+        function makeDirty(){
+            markDirty(dirtyRectangle())
+        }
+        function dirtyRectangle(){
+            let radius = Math.max(ring1Radius,ring2Radius,ring3Radius)
+            return Qt.rect(ringXCenter-radius,ringYCenter-radius, radius, radius)
+        }
 
         function updateRing(rRadius, rBorderWidth) {
             if (rRadius >= maxRadius) {
@@ -149,8 +164,10 @@ Rectangle {
         height: animatedRingsWrapper.height
         width: animatedRingsWrapper.width
         anchors.fill: animatedRingsWrapper
-        onRing1RadiusChanged: animatedRings.requestPaint()
-        renderStrategy: Canvas.Threaded
+        onRing1RadiusChanged: {
+            animatedRings.makeDirty()
+        }
+
         contextType: "2d"
         onPaint: {
             // Dont paint if not needed
