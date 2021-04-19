@@ -6,7 +6,6 @@ package org.mozilla.firefox.vpn
 
 import com.wireguard.android.backend.Tunnel
 
-
 class VPNTunnel : Tunnel {
     val mName: String
     val mBinder: VPNServiceBinder
@@ -23,6 +22,7 @@ class VPNTunnel : Tunnel {
     }
 
     override fun onStateChange(newState: Tunnel.State) {
+        Log.i("Tunnel", "State Change $mState -> $newState")
         if (mState != newState) {
             mState = newState
             if (mState == Tunnel.State.UP) {

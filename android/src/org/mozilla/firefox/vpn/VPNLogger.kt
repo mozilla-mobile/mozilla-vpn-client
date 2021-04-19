@@ -5,7 +5,6 @@
 package org.mozilla.firefox.vpn
 
 import android.content.Context
-import org.mozilla.firefox.vpn.BuildConfig
 import java.io.File
 import java.time.LocalDateTime
 import android.util.Log as nativeLog
@@ -46,6 +45,12 @@ class Log {
             instance?.write("[error] - ($tag) - $message")
             if (!BuildConfig.DEBUG) { return; }
             nativeLog.e(tag, message)
+        }
+        // Only Prints && Loggs when in debug, noop in release.
+        fun sensitive(tag: String, message: String?) {
+            if (!BuildConfig.DEBUG) { return; }
+            if (message == null) { return; }
+            e(tag, message)
         }
 
         fun getContent(): String? {
