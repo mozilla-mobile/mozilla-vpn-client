@@ -38,6 +38,7 @@ xcode.xconfig
 
 *.ts
 tests/unit/tests
+tests/nativemessaging/tests
 build
 Debug/
 !android/src/debug/
