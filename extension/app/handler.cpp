@@ -89,6 +89,11 @@ int Handler::run() {
         return false;
       }
 
+      if (message == "bridge_ping") {
+        writeMessage("bridge_pong");
+        continue;
+      }
+
       // Maybe we are not connected yet. We need to be connected to send the
       // message to the VPN client.
       if (!maybeConnect()) {
@@ -165,9 +170,9 @@ bool Handler::readMessage(json& output) {
   }
 
   string m(message, message + length);
-  free(message);
-
   output = json::parse(m);
+
+  free(message);
   return true;
 }
 
