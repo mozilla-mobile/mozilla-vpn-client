@@ -40,7 +40,6 @@
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidappimageprovider.h"
-#  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -163,14 +162,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
-#endif
-
-#ifdef MVPN_ANDROID
-    AndroidStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &AndroidStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #ifdef MVPN_LINUX
