@@ -35,14 +35,25 @@ int Handler::run() {
 
     if (m_vpnConnection.connected()) {
       handles[1] = WSACreateEvent();
-      WSAEventSelect(m_vpnConnection.socket(), handles[1], FD_READ);
+      if (handles[1] == WSA_INVALID_EVENT) {
+        Logger::log("Failed to create a WSA event");
+        return false;
+      }
+
+      if (WSAEventSelect(m_vpnConnection.socket(), handles[1], FD_READ) ==
+          SOCKET_ERROR) {
+        Logger::log("Failed to associate the event with the socket");
+        return false;
+      }
+
       ++count;
     }
 
     DWORD rv = WaitForMultipleObjectsEx(count, handles, FALSE, INFINITE, FALSE);
 
-    readStdin = (rv == WAIT_OBJECT_0);
-    readVpnConnection = m_vpnConnection.connected() && rv == WAIT_OBJECT_0 + 1;
+    readStdin = (rv == WAIT_OBJECT_0 &&
+                 WaitForSingleObjectEx(handles[0], 0, FALSE) == WAIT_OBJECT_0);
+    readVpnConnection = m_vpnConnection.connected() && rv == WAIT_OBJECT_0 + 1 &&  WaitForSingleObjectEx(handles[1], 0, FALSE) == WAIT_OBJECT_0);
 #else  // POSIX
     fd_set rfds;
     int nfds = 0;  // the STDIN
