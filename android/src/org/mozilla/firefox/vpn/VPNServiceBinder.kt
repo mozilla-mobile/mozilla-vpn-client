@@ -31,9 +31,8 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         const val requestGetLog = 5
         const val requestCleanupLog = 6
         const val resumeActivate = 7
-        const val enableStartOnBoot = 8
-        const val setNotificationText = 9
-        const val setFallBackNotification = 10
+        const val setNotificationText = 8
+        const val setFallBackNotification = 9
     }
 
     /**
@@ -123,18 +122,6 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 dispatchEvent(EVENTS.backendLogs, Log.getContent())
                 return true
             }
-            ACTIONS.enableStartOnBoot -> {
-                // Sets the Start on boot pref data is here a Byte Array with length 1
-                // and the byte is a boolean
-                val buffer = data.createByteArray()
-                if (buffer == null) { return true; }
-                val startOnBootEnabled = buffer.get(0) != 0.toByte()
-                val prefs = Prefs.get(mService)
-                prefs.edit()
-                    .putBoolean("startOnBoot", startOnBootEnabled)
-                    .apply()
-            }
-
             ACTIONS.requestCleanupLog -> {
                 Log.clearFile()
                 return true

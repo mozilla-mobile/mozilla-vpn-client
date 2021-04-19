@@ -19,8 +19,6 @@ bool FeatureList::startOnBootSupported() const {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
     defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
-#elif defined(MVPN_ANDROID)
-  return AndroidUtils::canEnableStartOnBoot();
 #else
   return false;
 #endif
