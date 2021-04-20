@@ -72,7 +72,7 @@ void DaemonLocalServerConnection::readData() {
 }
 
 void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
-  logger.log() << "Command received:" << data;
+  logger.log() << "Command received:" << data.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {

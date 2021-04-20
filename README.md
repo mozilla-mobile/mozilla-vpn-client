@@ -119,6 +119,7 @@ GROUP_ID_MACOS = <>
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login
+NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging
 
 # IOS configuration
 GROUP_ID_IOS = <>
@@ -154,6 +155,7 @@ GROUP_ID_MACOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 LOGIN_ID_IOS = <>
+NATIVEMESSAGING_ID_MACOS = <>
 
 # IOS configuration
 GROUP_ID_IOS = <>

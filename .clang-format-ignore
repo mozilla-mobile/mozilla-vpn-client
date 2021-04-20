@@ -1,3 +1,4 @@
 ./3rdparty/*
 ./android/modules/wireguard/*
 ./src/hacl-star/*
+./extension/app/json.hpp
