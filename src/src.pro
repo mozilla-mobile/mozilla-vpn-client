@@ -198,6 +198,17 @@ HEADERS += \
         update/versionapi.h \
         urlopener.h
 
+webextension {
+    DEFINES += MVPN_WEBEXTENSION
+
+    SOURCES += \
+            server/serverconnection.cpp \
+            server/serverhandler.cpp
+    HEADERS += \
+            server/serverconnection.h \
+            server/serverhandler.h
+}
+
 inspector {
     message(Enabling the inspector)
 
@@ -437,7 +448,6 @@ else:android {
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
                 platforms/android/androidvpnactivity.cpp \
-                platforms/android/androidstartatbootwatcher.cpp \
                 platforms/android/androiddatamigration.cpp \
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
@@ -450,7 +460,6 @@ else:android {
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \
                 platforms/android/androidvpnactivity.h \
-                platforms/android/androidstartatbootwatcher.h\
                 platforms/android/androiddatamigration.h\
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \

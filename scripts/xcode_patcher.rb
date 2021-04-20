@@ -9,7 +9,7 @@ class XCodeprojPatcher
   attr :target_main
   attr :target_extension
 
-  def run(file, shortVersion, fullVersion, platform, networkExtension, configHash)
+  def run(file, shortVersion, fullVersion, platform, networkExtension, webExtension, configHash)
     open_project file
     open_target_main
 
@@ -19,7 +19,12 @@ class XCodeprojPatcher
     @configFile = group.new_file('xcode.xconfig')
 
     setup_target_main shortVersion, fullVersion, platform, networkExtension, configHash
-    setup_target_loginitem shortVersion, fullVersion, configHash if platform == "macos"
+
+    if platform == 'macos'
+      setup_target_loginitem shortVersion, fullVersion, configHash
+      setup_target_nativemessaging shortVersion, fullVersion, configHash if webExtension
+    end
+
 
     if networkExtension
       setup_target_extension shortVersion, fullVersion, platform, configHash
@@ -68,7 +73,7 @@ class XCodeprojPatcher
       if platform == 'ios'
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
       elsif networkExtension
-        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/networkExtension.entitlements'
+        config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/app.entitlements'
       else
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/daemon.entitlements'
       end
@@ -462,6 +467,77 @@ class XCodeprojPatcher
     app_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
+  def setup_target_nativemessaging(shortVersion, fullVersion, configHash)
+    @target_nativemessaging = @project.new_target(:application, 'MozillaVPNNativeMessaging', :osx)
+
+    @target_nativemessaging.build_configurations.each do |config|
+      config.base_configuration_reference = @configFile
+
+      config.build_settings['LD_RUNPATH_SEARCH_PATHS'] ||= '"$(inherited) @executable_path/../Frameworks"'
+
+      # Versions and names
+      config.build_settings['MARKETING_VERSION'] ||= shortVersion
+      config.build_settings['CURRENT_PROJECT_VERSION'] ||= fullVersion
+      config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] ||= configHash['NATIVEMESSAGING_ID_MACOS']
+      config.build_settings['PRODUCT_NAME'] = 'MozillaVPNNativeMessaging'
+
+      # other configs
+      config.build_settings['INFOPLIST_FILE'] ||= 'macos/nativeMessaging/Info.plist'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/nativeMessaging/MozillaVPNNativeMessaging.entitlements'
+      config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
+      config.build_settings['SKIP_INSTALL'] = 'YES'
+    end
+
+    group = @project.main_group.new_group('NativeMessaging')
+    [
+      'extension/app/constants.h',
+      'extension/app/handler.cpp',
+      'extension/app/handler.h',
+      'extension/app/json.hpp',
+      'extension/app/logger.cpp',
+      'extension/app/logger.h',
+      'extension/app/main.cpp',
+      'extension/app/vpnconnection.cpp',
+      'extension/app/vpnconnection.h',
+    ].each { |filename|
+      file = group.new_file(filename)
+      @target_nativemessaging.add_file_references([file])
+    }
+
+    # This fails: @target_main.add_dependency @target_nativemessaging
+    container_proxy = @project.new(Xcodeproj::Project::PBXContainerItemProxy)
+    container_proxy.container_portal = @project.root_object.uuid
+    container_proxy.proxy_type = Xcodeproj::Constants::PROXY_TYPES[:native_target]
+    container_proxy.remote_global_id_string = @target_nativemessaging.uuid
+    container_proxy.remote_info = @target_nativemessaging.name
+
+    dependency = @project.new(Xcodeproj::Project::PBXTargetDependency)
+    dependency.name = @target_nativemessaging.name
+    dependency.target = @target_main
+    dependency.target_proxy = container_proxy
+
+    @target_main.dependencies << dependency
+
+    copy_app = @target_main.new_copy_files_build_phase
+    copy_app.name = 'Copy LoginItem'
+    copy_app.symbol_dst_subfolder_spec = :wrapper
+    copy_app.dst_path = 'Contents/Library/NativeMessaging'
+
+    app_file = copy_app.add_file_reference @target_nativemessaging.product_reference
+    app_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
+
+    copy_nativeMessagingManifest = @target_main.new_copy_files_build_phase
+    copy_nativeMessagingManifest.name = 'Copy native messaging manifest'
+    copy_nativeMessagingManifest.symbol_dst_subfolder_spec = :wrapper
+    copy_nativeMessagingManifest.dst_path = 'Contents/Resources/utils'
+
+    group = @project.main_group.new_group('WireGuardHelper')
+    file = group.new_file 'extension/app/manifests/macos/mozillavpn.json'
+
+    nativeMessagingManifest_file = copy_nativeMessagingManifest.add_file_reference file
+    nativeMessagingManifest_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
+  end
+
   def die(msg)
    print $msg
    exit 1
@@ -492,7 +568,8 @@ configFile.each { |line|
 platform = "macos"
 platform = "ios" if ARGV[3] == "ios"
 networkExtension = true if ARGV[4] == "1"
+webExtension = true if ARGV[5] == "1"
 
 r = XCodeprojPatcher.new
-r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, config
+r.run ARGV[0], ARGV[1], ARGV[2], platform, networkExtension, webExtension, config
 exit 0

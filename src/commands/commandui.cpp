@@ -40,7 +40,6 @@
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidappimageprovider.h"
-#  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -59,6 +58,10 @@
 
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasmwindowcontroller.h"
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+#  include "server/serverhandler.h"
 #endif
 
 #include <QApplication>
@@ -163,14 +166,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
-#endif
-
-#ifdef MVPN_ANDROID
-    AndroidStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &AndroidStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #ifdef MVPN_LINUX
@@ -406,6 +401,12 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+    ServerHandler serverHandler;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
+                     &ServerHandler::close);
 #endif
 
     // Let's go.

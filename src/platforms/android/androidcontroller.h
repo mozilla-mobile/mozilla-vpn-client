@@ -31,8 +31,6 @@ class AndroidController final : public ControllerImpl,
 
   void checkStatus() override;
 
-  void enableStartAtBoot(bool enabled);
-
   void setNotificationText(const QString& title, const QString& message,
                            int timerSec);
   void setFallbackConnectedNotification();

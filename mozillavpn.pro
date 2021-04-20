@@ -11,5 +11,11 @@
 }
 
 TEMPLATE = subdirs
+
 SUBDIRS += src
 SUBDIRS += tests/unit
+
+webextension {
+    SUBDIRS += extension/app
+    SUBDIRS += tests/nativemessaging
+}

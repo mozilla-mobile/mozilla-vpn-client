@@ -10,7 +10,7 @@ import "../themes/themes.js" as Theme
 
 VPNButtonBase {
     id: iconButton
-
+    property bool skipEnsureVisible: false
     property var accessibleName
     property var buttonColorScheme: Theme.iconButtonLightBackground
 

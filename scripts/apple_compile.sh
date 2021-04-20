@@ -14,11 +14,12 @@ RELEASE=1
 OS=
 PROD=
 NETWORKEXTENSION=
+WEBEXTENSION=
 INSPECTOR=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-i|--inspector] [-n|--networkextension]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-i|--inspector] [-n|--networkextension] [-w|--webextension]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
@@ -54,6 +55,10 @@ while [[ $# -gt 0 ]]; do
     NETWORKEXTENSION=1
     shift
     ;;
+  -w | --webextension)
+    WEBEXTENSION=1
+    shift
+    ;;
   -h | --help)
     helpFunction
     ;;
@@ -75,6 +80,8 @@ fi
 if [[ "$OS" == "ios" ]]; then
   # Network-extension is the default for IOS
   NETWORKEXTENSION=1
+  # No web-extension for IOS
+  WEBEXTENSION=
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
@@ -176,6 +183,15 @@ else
   print G daemon
 fi
 
+printn Y "Web-Extension: "
+WEMODE=
+if [[ "$WEBEXTENSION" ]]; then
+  print G web-extension
+  WEMODE="CONFIG+=webextension"
+else
+  print G daemon
+fi
+
 print Y "Creating the xcode project via qmake..."
 $QMAKE \
   VERSION=$SHORTVERSION \
@@ -185,11 +201,12 @@ $QMAKE \
   $PRODMODE \
   $INSPECTOR \
   $VPNMODE \
+  $WEMODE \
   $PLATFORM \
   src/src.pro || die "Compilation failed"
 
 print Y "Patching the xcode project..."
-ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" || die "Failed to merge xcode with wireguard"
+ruby scripts/xcode_patcher.rb "MozillaVPN.xcodeproj" "$SHORTVERSION" "$FULLVERSION" "$OSRUBY" "$NETWORKEXTENSION" "$WEBEXTENSION"|| die "Failed to merge xcode with wireguard"
 print G "done."
 
 print Y "Opening in XCode..."
