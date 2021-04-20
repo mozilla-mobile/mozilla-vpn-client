@@ -88,10 +88,21 @@ Item {
             anchors.topMargin: 16
         }
 
-        VPNTextBlock {
+        TextEdit {
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
             text: VPN.buildNumber === "" ? VPN.versionString : (VPN.versionString + " (" + VPN.buildNumber + ")")
+            readOnly: true
+            wrapMode: Text.WordWrap
+            selectByMouse: true
+
+            color: Theme.fontColor
+            font.family: Theme.fontInterFamily
+            font.pixelSize: Theme.fontSizeSmall
+            width: Theme.maxTextWidth
+
+            Accessible.role: Accessible.StaticText
+            Accessible.name: text
         }
     }
 
