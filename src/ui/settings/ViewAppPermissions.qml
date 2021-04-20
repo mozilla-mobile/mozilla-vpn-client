@@ -142,7 +142,7 @@ Item {
             id: enabledList
             visible: VPNSettings.protectSelectedApps
             anchors.topMargin: 28
-            anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : enableAppList.bottom
+            anchors.top: enableAppList.bottom
 
             //% "Protected"
             //: Header for the list of apps protected by VPN
