@@ -44,13 +44,6 @@ Item {
             flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
-            NumberAnimation on contentY {
-                id: scrollAnimation
-
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-
             Rectangle {
                 id: verticalSpacer
 
@@ -85,21 +78,6 @@ Item {
 
                         vpnFlickable.contentY = destinationY;
                         return;
-                    }
-                }
-
-                function scrollDelegateIntoView(item) {
-                    if (window.height > vpnFlickable.contentHeight) {
-                        return;
-                    }
-                    const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                    const approximateDelegateHeight = 60;
-                    const ext = approximateDelegateHeight + yPosition;
-
-                    if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
-                        const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
-                        scrollAnimation.to = destinationY;
-                        scrollAnimation.start();
                     }
                 }
 
