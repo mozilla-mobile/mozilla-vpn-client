@@ -18,13 +18,14 @@ ColumnLayout {
     property var description: ""
     property var actionText: ""
     property var onAction: ()=>{}
-    property var isEnabled: true
+    property var isEnabled: vpnFlickable.vpnIsOff
     property var isListVisible : true && applist.count > 0
     property var isActionEnabled: isEnabled && applist.count > 0
     property var dividerVisible: false
 
     opacity: isEnabled && applist.count > 0 ? 1 : 0.5
     anchors.horizontalCenter: parent.horizontalCenter
+    visible: VPNSettings.protectSelectedApps
     width: parent.width
     spacing: 0
 
@@ -128,7 +129,6 @@ ColumnLayout {
             isListVisible=false
         }
         enabled: isActionEnabled
-        opacity: isActionEnabled ? 1 : 0
         visible: isListVisible
     }
 
@@ -142,7 +142,7 @@ ColumnLayout {
         Layout.preferredHeight: contentItem.childrenRect.height
         Layout.topMargin: 4
 
-        visible: isListVisible && count  > 0
+        visible: isListVisible && count > 0
 
         PropertyAnimation on opacity {
             duration: 200
@@ -221,6 +221,7 @@ ColumnLayout {
                onClicked: VPNAppPermissions.flip(appID)
                checked: appIsEnabled
                Layout.rightMargin: 4
+               enabled: appListContainer.isEnabled
             }
         }
     }
