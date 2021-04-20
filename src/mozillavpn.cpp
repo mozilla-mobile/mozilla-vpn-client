@@ -197,8 +197,6 @@ void MozillaVPN::initialize() {
     AndroidDataMigration::migrate();
     settingsHolder->setNativeAndroidDataMigrated(true);
   }
-
-  // Register natvies of the vpn activity
   AndroidVPNActivity::init();
 #endif
 

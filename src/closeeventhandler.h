@@ -22,8 +22,6 @@ class CloseEventHandler final : public QObject {
   Q_INVOKABLE void addStackView(const QVariant& stackView);
   Q_INVOKABLE void addView(const QVariant& view);
 
-  static bool s_eventHandled();
-
  signals:
   void goBack(QQuickItem* item);
 
