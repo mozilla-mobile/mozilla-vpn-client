@@ -25,3 +25,8 @@ OBJECTS_DIR = .obj
 MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
+
+equals(QMAKE_CXX, clang++) {
+    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
+    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}
