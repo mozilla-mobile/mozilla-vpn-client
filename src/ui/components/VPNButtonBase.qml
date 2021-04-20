@@ -27,7 +27,7 @@ RoundButton {
     }
     Keys.onReleased: {
         if (loaderVisible) {
-            return
+            return;
         }
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
             visualStateItem.state = uiState.stateDefault;
@@ -44,8 +44,8 @@ RoundButton {
         if (!activeFocus)
             return visualStateItem.state = uiState.stateDefault;
 
-        if (typeof (ensureVisible) !== "undefined")
-            return ensureVisible(visualStateItem);
+        if (vpnFlickable && typeof (vpnFlickable.ensureVisible) !== "undefined")
+            return vpnFlickable.ensureVisible(visualStateItem);
     }
 
     background: Rectangle {

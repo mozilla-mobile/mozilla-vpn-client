@@ -25,8 +25,8 @@ VPNClickableRow {
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
-        scrollAnimation.start();
+        vpnFlickable.ensureVisAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
+        vpnFlickable.ensureVisAnimation.start();
     }
 
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
@@ -35,7 +35,6 @@ VPNClickableRow {
     clip: true
 
     activeFocusOnTab: true
-    onActiveFocusChanged: parent.scrollDelegateIntoView(serverCountry)
 
     accessibleName: VPNLocalizer.translateServerCountry(code, name)
     Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
@@ -148,10 +147,11 @@ VPNClickableRow {
                 objectName: "serverCity-" + modelData.replace(/ /g, '_')
 
                 activeFocusOnTab: cityListVisible
-                onActiveFocusChanged: if (focus) serverList.scrollDelegateIntoView(del)
 
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
+
+                onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
 
                 radioButtonLabelText: VPNLocalizer.translateServerCity(code, modelData)
                 accessibleName: VPNLocalizer.translateServerCity(code, modelData)
