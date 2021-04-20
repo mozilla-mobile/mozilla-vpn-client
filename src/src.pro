@@ -198,6 +198,17 @@ HEADERS += \
         update/versionapi.h \
         urlopener.h
 
+webextension {
+    DEFINES += MVPN_WEBEXTENSION
+
+    SOURCES += \
+            server/serverconnection.cpp \
+            server/serverhandler.cpp
+    HEADERS += \
+            server/serverconnection.h \
+            server/serverhandler.h
+}
+
 inspector {
     message(Enabling the inspector)
 

@@ -98,7 +98,6 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
       *this, QtAndroid::BindFlag::AutoCreate);
 }
 
-
 /*
  * Sets the current notification text that is shown
  */
