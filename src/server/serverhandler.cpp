@@ -21,7 +21,7 @@ ServerHandler::ServerHandler() {
 
   logger.log() << "Creating the server";
 
-  if (!listen(QHostAddress::Any, SERVER_PORT)) {
+  if (!listen(QHostAddress::LocalHost, SERVER_PORT)) {
     logger.log() << "Failed to listen on port" << SERVER_PORT;
     return;
   }
@@ -35,20 +35,6 @@ ServerHandler::~ServerHandler() { MVPN_COUNT_DTOR(ServerHandler); }
 void ServerHandler::newConnectionReceived() {
   QTcpSocket* child = nextPendingConnection();
   Q_ASSERT(child);
-
-  QHostAddress address = child->localAddress();
-
-#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
-  // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
-  // notation.
-  if (address != QHostAddress("::ffff:127.0.0.1") &&
-      address != QHostAddress::LocalHost &&
-      address != QHostAddress::LocalHostIPv6) {
-    logger.log() << "Accepting connection from localhost only";
-    child->close();
-    return;
-  }
-#endif
 
   ServerConnection* connection = new ServerConnection(this, child);
   connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
