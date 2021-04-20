@@ -60,6 +60,10 @@
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
+#ifdef MVPN_WEBEXTENSION
+#  include "server/serverhandler.h"
+#endif
+
 #include <QApplication>
 
 #ifdef QT_DEBUG
@@ -397,6 +401,12 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+    ServerHandler serverHandler;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
+                     &ServerHandler::close);
 #endif
 
     // Let's go.

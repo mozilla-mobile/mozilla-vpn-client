@@ -51,6 +51,9 @@ class ServerCountryModel final : public QAbstractListModel {
 
   void retranslate();
 
+  // For the web-extension
+  const QByteArray& rawJson() const { return m_rawJson; }
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
