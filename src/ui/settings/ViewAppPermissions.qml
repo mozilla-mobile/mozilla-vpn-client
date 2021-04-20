@@ -140,7 +140,6 @@ Item {
 
         VPNExpandableAppList{
             id: enabledList
-            visible: VPNSettings.protectSelectedApps
             anchors.topMargin: 28
             anchors.top: enableAppList.bottom
 
@@ -163,7 +162,6 @@ Item {
             id: disabledList
 
             anchors.top: enabledList.bottom
-            visible: VPNSettings.protectSelectedApps
             //% "Unprotected"
             //: Header for the list of apps not protected by VPN
             header: qsTrId("vpn.settings.unprotected")
