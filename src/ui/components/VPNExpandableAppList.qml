@@ -186,7 +186,7 @@ ColumnLayout {
                 source: "image://app/"+appID
                 visible: appID !== ""
                 sourceSize.width: Theme.windowMargin
-                sourceSize.height: 6
+                sourceSize.height: Theme.windowMargin
                 Layout.alignment: Qt.AlignTop
                 Layout.leftMargin: 36
                 Layout.topMargin: 4
