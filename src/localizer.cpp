@@ -135,10 +135,10 @@ void Localizer::loadLanguage(const QString& code) {
 bool Localizer::loadLanguageInternal(const QString& code) {
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
-    // On IOS, for some QT issue (to be investigated) we cannot use
-    // QLocale::system() directly becaue it would load the 'en' language instead
-    // of the system one. Let's recreate a new QLocale object using the bcp47
-    // code.
+    // On IOS, for some QT issues (to be investigated) we cannot use
+    // QLocale::system() directly because it would load the 'en' language
+    // instead of the system one. Let's recreate a new QLocale object using the
+    // bcp47 code.
     locale = QLocale(QLocale::system().bcp47Name());
   }
 
