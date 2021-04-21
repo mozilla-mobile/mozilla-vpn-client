@@ -4,7 +4,7 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
-        <key>CFBundleAllowMixedLocalizations</key>
+	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
 	<key>CFBundleDisplayName</key>
 	<string>Mozilla VPN</string>
