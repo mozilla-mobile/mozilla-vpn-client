@@ -6,7 +6,6 @@
 
 . $(dirname $0)/commons.sh
 
-export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm
 REPORT_FILE=/tmp/report.html
 
 print N "This script runs the unit tests and shows the test coverage."
@@ -20,7 +19,9 @@ print Y "Compiling..."
 make || die "Failed to compile"
 print G "done."
 
-print Y "Running tests..."
+export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm
+
+print Y "Running the unit-tests..."
 ./tests/unit/tests || die "Failed to run tests"
 print G "done."
 
@@ -28,13 +29,19 @@ if ! [ -f $LLVM_PROFILE_FILE ]; then
   die "No report generated!"
 fi
 
+unset LLVM_PROFILE_FILE
+
+print Y "Running the native-messaging tests..."
+./tests/nativemessaging/tests ./extension/app/mozillavpnnp || die "Failed to run tests"
+print G "done."
+
 printn Y "Merge the profile data... "
-llvm-profdata-10 merge $LLVM_PROFILE_FILE -o $LLVM_PROFILE_FILE-final || die "Failed to merge the coverage report"
+llvm-profdata-10 merge /tmp/mozillavpn.llvm -o /tmp/mozillavpn.llvm-final || die "Failed to merge the coverage report"
 print G "done."
 
 print Y "Report:"
-llvm-cov-10 report ./tests/unit/tests -instr-profile=$LLVM_PROFILE_FILE-final src
+llvm-cov-10 report ./tests/unit/tests -instr-profile=/tmp/mozillavpn.llvm-final src
 
 printn Y "Generating the HTML report... "
-llvm-cov-10 show ./tests/unit/tests -instr-profile=$LLVM_PROFILE_FILE-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
+llvm-cov-10 show ./tests/unit/tests -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
 print G $REPORT_FILE
