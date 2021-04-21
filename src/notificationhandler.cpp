@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 #if defined(MVPN_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
@@ -60,6 +61,11 @@ void NotificationHandler::showNotification() {
 
       if (m_switching) {
         m_switching = false;
+
+        if (!SettingsHolder::instance()->serverSwitchNotification()) {
+          // Dont show notification if it's turned off.
+          return;
+        }
 
         //% "VPN Switched Servers"
         title = qtTrId("vpn.systray.statusSwitch.title");

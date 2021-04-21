@@ -24,6 +24,9 @@ class SettingsHolder final : public QObject {
                  startAtBootChanged)
   Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
+  Q_PROPERTY(
+      bool serverSwitchNotification READ serverSwitchNotification WRITE
+          setServerSwitchNotification NOTIFY serverSwitchNotificationChanged)
 
  public:
   SettingsHolder();
@@ -75,6 +78,8 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+  GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
+         setServerSwitchNotification);
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
@@ -110,6 +115,7 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
+  void serverSwitchNotificationChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

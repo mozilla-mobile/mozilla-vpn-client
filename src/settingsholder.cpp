@@ -16,11 +16,14 @@ constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = true;
 constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = true;
 constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
+constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
+constexpr const char* SETTINGS_SERVERSWITCHNOTIFICATION =
+    "serverSwitchNotification";
 constexpr const char* SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char* SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
@@ -177,6 +180,10 @@ GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
 GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
+GETSETDEFAULT(SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT, bool, toBool,
+              SETTINGS_SERVERSWITCHNOTIFICATION, hasServerSwitchNotification,
+              serverSwitchNotification, setServerSwitchNotification,
+              serverSwitchNotificationChanged);
 
 #undef GETSETDEFAULT
 
