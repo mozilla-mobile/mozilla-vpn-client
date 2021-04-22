@@ -70,6 +70,12 @@ constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
 
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
+// Setting Keys That won't show up in a report;
+QVector<QString> SENSITIVE_SETTINGS({
+    SETTINGS_TOKEN, SETTINGS_PRIVATEKEY,
+    SETTINGS_SERVERS,  // Those 2 Are not sensitive but
+    SETTINGS_DEVICES   // are more noise then info
+});
 
 SettingsHolder* s_instance = nullptr;
 }  // namespace
@@ -131,6 +137,24 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
 
   // We do not remove language, ipv6 and localnetwork settings.
+}
+
+// Returns a Report which settings are set
+// Used to Print in LogFiles:
+QString SettingsHolder::getReport() {
+  QString buff = "\n\nSettings \n======== \n";
+  auto settingsKeys = m_settings.childKeys();
+  for (auto setting : settingsKeys) {
+    if (SENSITIVE_SETTINGS.contains(setting)) {
+      buff.append(QString("%0 -> <Sensitive> \n").arg(setting));
+      continue;
+    }
+    auto row =
+        QString("%1->%2 \n").arg(setting, m_settings.value(setting).toString());
+    buff.append(row);
+  }
+  buff.append("\n======== \n");
+  return buff;
 }
 
 #define GETSETDEFAULT(def, type, toType, key, has, get, set, signal)    \

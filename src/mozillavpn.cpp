@@ -946,6 +946,8 @@ void MozillaVPN::serializeLogs(QTextStream* out,
         } else {
           *out << "No logs from the backend.";
         }
+        *out << SettingsHolder::instance()->getReport();
+        *out << Device::currentDeviceReport();
 
         finalizeCallback();
       });
