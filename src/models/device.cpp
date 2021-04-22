@@ -44,6 +44,20 @@ QString Device::currentDeviceName() {
   return deviceName;
 }
 
+// static
+QString Device::currentDeviceReport() {
+  QString buffer = "";
+  buffer.append("\nDevice Report \n ============ \n");
+
+  buffer.append(QString("Name->%0 \n").arg(currentDeviceName()));
+  buffer.append(QString("ABI->%0 \n").arg(QSysInfo::buildAbi()));
+  buffer.append(QString("OS->%0 \n").arg(QSysInfo::productType()));
+  buffer.append(QString("OS Version->%0 \n").arg(QSysInfo::productVersion()));
+
+  buffer.append("============ \n");
+  return buffer;
+}
+
 Device::Device() { MVPN_COUNT_CTOR(Device); }
 
 Device::Device(const Device& other) {
