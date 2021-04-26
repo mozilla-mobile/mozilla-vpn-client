@@ -206,14 +206,9 @@ void Controller::activateInternal() {
 
   // Use the Gateway as DNS Server
   // If the user as entered a valid dns, use that instead
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureCustomDNS::instance()->isSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.debug() << "User DNS Set" << dns.toString();
-  }
+  QHostAddress dns =
+      QHostAddress(SettingsHolder::instance()->getDNS(server.ipv4Gateway()));
+  logger.debug() << "DNS Set" << dns.toString();
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
@@ -282,14 +277,7 @@ bool Controller::silentSwitchServers() {
     serverList.append(hop);
   }
 
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureCustomDNS::instance()->isSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.debug() << "User DNS Set" << dns.toString();
-  }
+  QHostAddress dns = QHostAddress(settingsHolder->getDNS(server.ipv4Gateway()));
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
@@ -690,11 +678,10 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     }
   }
   if (shouldExcludeDns()) {
+    auto dns = SettingsHolder::instance()->getDNS(server.ipv4Gateway());
     // Filter out the Custom DNS Server, if the User has one.
-    logger.debug() << "Filtering out the DNS address"
-                   << SettingsHolder::instance()->userDNS();
-    excludeIPv4s.append(
-        IPAddress::create(SettingsHolder::instance()->userDNS()));
+    logger.debug() << "Filtering out the DNS address" << dns;
+    excludeIPv4s.append(IPAddress::create(dns));
   }
 
   QList<IPAddressRange> list;
@@ -742,7 +729,8 @@ bool Controller::shouldExcludeDns() {
   if (!FeatureCustomDNS::instance()->isSupported()) {
     return false;
   }
-  if (settings->useGatewayDNS()) {
+  // Only a Custom DNS might require to be routed outside of the VPN-Tunnel
+  if (settings->dnsProvider() != SettingsHolder::DnsProvider::Custom) {
     return false;
   }
   auto dns = settings->userDNS();

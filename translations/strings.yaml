@@ -223,13 +223,13 @@ customDNSSettings:
   dnsDefaultToggle: Default
   dnsDefaultRadioHeader: Use default DNS
   dnsDefaultRadioBody: Automatically use Mozilla VPN-protected DNS
-#  dnsAdvancedToggle: Advanced
-#  dnsAdblockRadioHeader: Use adblock DNS
-#  dnsAdblockRadioBody: Block internet ads with VPN
-#  dnsAntitrackRadioHeader: Use anti-tracking DNS
-#  dnsAntitrackRadioBody: Block harmful domains with VPN
-#  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
-#  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
+  dnsAdvancedToggle: Advanced
+  dnsAdblockRadioHeader: Use adblock DNS
+  dnsAdblockRadioBody: Block internet ads with VPN
+  dnsAntitrackRadioHeader: Use anti-tracking DNS
+  dnsAntitrackRadioBody: Block harmful domains with VPN
+  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
+  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
   dnsCustomDNSRadioHeader: Use custom DNS
   dnsCustomDNSRadioBody: Resolve websites using a custom DNS
   dnsFieldPlaceHolder: Enter custom DNS
