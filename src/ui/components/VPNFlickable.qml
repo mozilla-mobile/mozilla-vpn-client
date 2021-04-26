@@ -47,8 +47,12 @@ Flickable {
     contentHeight: Math.max(window.safeContentHeight, flickContentHeight)
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
+
     Component.onCompleted: {
         opacity = 1;
+        if (Qt.platform.os === "windows") {
+            maximumFlickVelocity = 700;
+        }
     }
 
     NumberAnimation on contentY {
