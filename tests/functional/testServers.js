@@ -162,6 +162,7 @@ describe('Server list', function() {
   });
 
   it('server switching', async () => {
+    await vpn.setSetting('server-switch-notification', 'true');
     await vpn.waitForElement('serverListBackButton');
     await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
     await vpn.clickOnElement('serverListBackButton');
