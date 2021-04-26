@@ -23,6 +23,7 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
+#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -173,6 +174,10 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
+
+    // Register an Image Provider that will resolve "image://app/{id}" for qml
+    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
+    engine->addImageProvider(QString("app"), provider);
 #endif
 
 #ifdef MVPN_ANDROID
