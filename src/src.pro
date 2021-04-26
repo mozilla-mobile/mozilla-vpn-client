@@ -335,6 +335,8 @@ else:linux:!android {
             eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
+            platforms/linux/linuxappimageprovider.cpp \
+            platforms/linux/linuxapplistprovider.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
@@ -349,6 +351,8 @@ else:linux:!android {
             eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
+            platforms/linux/linuxappimageprovider.h \
+            platforms/linux/linuxapplistprovider.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \

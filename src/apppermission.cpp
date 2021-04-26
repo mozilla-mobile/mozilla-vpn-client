@@ -11,8 +11,10 @@
 #include <QVector>
 #include "settingsholder.h"
 
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
+#elif defined(MVPN_LINUX)
+#  include "platforms/linux/linuxapplistprovider.h"
 #else
 #  include "platforms/dummy/dummyapplistprovider.h"
 #endif
@@ -30,8 +32,10 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   m_disabledlist = new FilteredAppList(this, false);
 
   m_listprovider =
-#ifdef MVPN_ANDROID
+#if defined(MVPN_ANDROID)
       new AndroidAppListProvider(this);
+#elif defined(MVPN_LINUX)
+      new LinuxAppListProvider(this);
 #else
       new DummyAppListProvider(this);
 #endif
