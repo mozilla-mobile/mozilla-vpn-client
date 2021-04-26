@@ -303,6 +303,9 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "disconnected") {
+    #ifdef MVPN_WINDOWS
+        m_driver.stop();
+    #endif
     emit disconnected();
     return;
   }
@@ -310,9 +313,8 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   if (type == "connected") {
 
     #ifdef MVPN_WINDOWS
-    for (const auto& app : m_vpnDisabledApps) {
-        WindowsFirewallHelper::instance()->excludeApp(app);
-      }
+       m_driver.start();
+       m_driver.setRules(m_vpnDisabledApps);
     #endif
     emit connected();
     return;

@@ -83,6 +83,7 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/windows/windowssplittunnel.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -157,6 +158,7 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/windows/windowssplittunnel.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
