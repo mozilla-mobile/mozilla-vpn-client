@@ -409,5 +409,6 @@
         <file>ui/components/VPNControllerNav.qml</file>
         <file>ui/components/VPNSettingsToggle.qml</file>
         <file>ui/components/VPNDeviceListItem.qml</file>
+        <file>ui/components/VPNIpInput.qml</file>
     </qresource>
 </RCC>

@@ -9,6 +9,7 @@
 #include "logger.h"
 
 #include <QSettings>
+#include <QHostAddress>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
@@ -16,7 +17,9 @@ constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = true;
 constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = true;
 constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
+constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
+const QString SETTINGS_USER_DNS_DEFAULT = "0.0.0.0";
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
@@ -31,7 +34,9 @@ constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
 constexpr const char* SETTINGS_PUBLICKEY = "publicKey";
+constexpr const char* SETTINGS_USEGATEWAYDNS = "useGatewayDNS";
 constexpr const char* SETTINGS_USER_AVATAR = "user/avatar";
+constexpr const char* SETTINGS_USER_DNS = "user/dns";
 constexpr const char* SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char* SETTINGS_USER_EMAIL = "user/email";
 constexpr const char* SETTINGS_USER_MAXDEVICES = "user/maxDevices";
@@ -154,6 +159,11 @@ GETSETDEFAULT(FeatureList::instance()->localNetworkAccessSupported() &&
               bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
               localNetworkAccessChanged)
+GETSETDEFAULT(SETTINGS_USEGATEWAYDNS_DEFAULT, bool, toBool,
+              SETTINGS_USEGATEWAYDNS, hasUsegatewayDNS, useGatewayDNS,
+              setUseGatewayDNS, useGatewayDNSChanged)
+GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
+              hasUserDNS, userDNS, setUserDNS, userDNSChanged)
 GETSETDEFAULT(
     FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
         SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
@@ -298,4 +308,12 @@ void SettingsHolder::addVpnDisabledApp(const QString& appID) {
   }
   applist.append(appID);
   setVpnDisabledApps(applist);
+}
+
+bool SettingsHolder::isValidUserDNS(const QString& dns) {
+  logger.log() << "checking -> " << dns;
+  QHostAddress address = QHostAddress(dns);
+
+  logger.log() << "is null " << address.isNull();
+  return !address.isNull();
 }

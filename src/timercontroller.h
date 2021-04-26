@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QHostAddress>
 
 constexpr uint32_t TIME_ACTIVATION = 1000;
 constexpr uint32_t TIME_DEACTIVATION = 1500;
@@ -27,7 +28,8 @@ class TimerController final : public ControllerImpl {
 
   void activate(const Server& server, const Device* device, const Keys* keys,
                 const QList<IPAddressRange>& allowedIPAddressRanges,
-                const QList<QString>& vpnDisabledApps, Reason reason) override;
+                const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
+                Reason reason) override;
 
   void deactivate(Reason reason) override;
 

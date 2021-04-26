@@ -187,9 +187,19 @@ void Controller::activateInternal() {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  // Use the Gateway as DNS Server
+  // If the user as entered a valid dns, use that instead
+  QHostAddress dns = QHostAddress(server.ipv4Gateway());
+  if (!settingsHolder->useGatewayDNS() &&
+      settingsHolder->userDNS().size() > 0 &&
+      settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
+    dns = QHostAddress(settingsHolder->userDNS());
+    ;
+  }
+
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, stateToReason(m_state));
+                   vpnDisabledApps, dns, stateToReason(m_state));
 }
 
 bool Controller::deactivate() {
