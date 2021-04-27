@@ -68,16 +68,6 @@ VPNFlickable {
                 }
            }
         }
-
-        VPNCheckBoxAlert {
-            width: parent.width
-            visible: !vpnFlickable.vpnIsOff
-
-            //% "VPN must be off to edit these settings"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-        }
-
         VPNCheckBoxRow {
             id: useGateWayDNS
             visible: VPNFeatureList.userDNSSupported
@@ -133,6 +123,14 @@ VPNFlickable {
             value: VPNSettings.userDNS
 
 
+        }
+        VPNCheckBoxAlert {
+            width: parent.width
+            visible: !vpnFlickable.vpnIsOff
+
+            //% "VPN must be off to edit these settings"
+            //: Associated to a group of settings that require the VPN to be disconnected to change
+            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
         }
 
     }
