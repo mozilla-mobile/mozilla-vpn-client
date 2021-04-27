@@ -80,12 +80,13 @@ VPNFlickable {
 
         VPNCheckBoxRow {
             id: useGateWayDNS
+            visible: VPNFeatureList.userDNSSupported
             objectName: "settingMozillaDNSEnabled"
             width: parent.width
 
-            //% "Use Anonymous DNS"
+            //% "Use VPN DNS"
             labelText: qsTrId("vpn.settings.useGatewayDNS")
-            //% "Resolve Websites you're visiting using Mozillas Anonymous DNS"
+            //% "Hide what websites you're visiting Mozillas Anonymous DNS-Service"
             subLabelText: qsTrId("vpn.settings.useGatewayDNS.description")
             isChecked: (VPNSettings.useGatewayDNS)
             isEnabled: vpnFlickable.vpnIsOff
@@ -97,41 +98,36 @@ VPNFlickable {
            }
         }
 
-        VPNIpInput{
+        VPNTextInput{
             id: ipInput
-            visible: !useGateWayDNS.isChecked
+            visible: !useGateWayDNS.isChecked && useGateWayDNS.visible
             isEnabled: vpnFlickable.vpnIsOff
             Layout.leftMargin: 55
             width: parent.width - Layout.leftMargin
             height: 30
             //% "DNS Server to use:"
             labelText: qsTrId("vpn.settings.userDNS.header")
+            //% "Enter the DNS Server you would like to use. Please note that the connection to the Server won't use the VPN"
+            subLabelText: qsTrId("vpn.settings.userDNS.description")
 
-            valueChanged:(v)=>{
-                             print(v)
-              if(v.length < 8){
-               // If we have less then 8 chars it's impossible to have a valid ip
+
+            valueChanged:(ip)=>{
+              if(ip.length < 7){
+               // If we have less then 7 characters it's impossible to have a valid ip
+               // so we should not bother the user yet while the input has focus
                ipInput.valueInavlid = false;
-               print(ipInput.valueInavlid)
                return;
-              }
-              if(v.split(".").filter(i=>i.length>0).length < 4){
-                // Ignore validation until we have a number in each segment
-                ipInput.valueInavlid = false;
-                print(ipInput.valueInavlid)
-                return;
               }
 
               // Now bother user if the ip is invalid :)
-              if(!VPNSettings.isValidUserDNS(v)){
+              if(!VPNSettings.isValidUserDNS(ip)){
                 ipInput.valueInavlid = true;
 
                 return;
               }
               ipInput.valueInavlid = false;
-              if(v !== VPNSettings.userDNS){
-                print(v)
-                VPNSettings.userDNS=v
+              if(ip !== VPNSettings.userDNS){
+                VPNSettings.userDNS=ip
               }
             }
             value: VPNSettings.userDNS

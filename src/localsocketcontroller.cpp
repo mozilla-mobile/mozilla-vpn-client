@@ -87,7 +87,9 @@ void LocalSocketController::daemonConnected() {
 void LocalSocketController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, Reason reason) {
+    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+    Reason reason) {
+  Q_UNUSED(dnsServer);
   Q_UNUSED(vpnDisabledApps);
   Q_UNUSED(reason);
 

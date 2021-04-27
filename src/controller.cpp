@@ -190,11 +190,11 @@ void Controller::activateInternal() {
   // Use the Gateway as DNS Server
   // If the user as entered a valid dns, use that instead
   QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (!settingsHolder->useGatewayDNS() &&
+  if (FeatureList::instance()->userDNSSupported() &&
+      !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
       settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
     dns = QHostAddress(settingsHolder->userDNS());
-    ;
   }
 
   Q_ASSERT(m_impl);
@@ -565,6 +565,18 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
         allowedIPv6s.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
       }
     }
+  }
+
+  // Filter out the Custom DNS Server, if the User has one.
+  if (FeatureList::instance()->userDNSSupported() &&
+      !SettingsHolder::instance()->useGatewayDNS() &&
+      SettingsHolder::instance()->userDNS().size() > 0 &&
+      SettingsHolder::instance()->isValidUserDNS(
+          SettingsHolder::instance()->userDNS())) {
+    logger.log() << "Filtering out the DNS address"
+                 << SettingsHolder::instance()->userDNS();
+    excludeIPv4s.append(
+        IPAddress::create(SettingsHolder::instance()->userDNS()));
   }
 
   // filtering out the RFC1918 local area network

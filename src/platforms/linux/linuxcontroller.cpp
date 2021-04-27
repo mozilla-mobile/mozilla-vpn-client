@@ -69,7 +69,9 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 void LinuxController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, Reason reason) {
+    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+    Reason reason) {
+  Q_UNUSED(dnsServer);
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 

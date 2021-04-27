@@ -22,6 +22,14 @@ ColumnLayout {
         color: Theme.fontColorDark
         horizontalAlignment: Text.AlignLeft
     }
+    VPNTextBlock {
+        id: subLabel
+
+        Layout.fillWidth: true
+        text: subLabelText
+        visible: !!subLabelText.length
+        wrapMode: Text.WordWrap
+    }
 
     Rectangle{
         width: parent.width
@@ -38,7 +46,6 @@ ColumnLayout {
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.left: parent.left
           anchors.leftMargin: Theme.vSpacing
-          inputMask:  "000.000.000.000; "
           text: value
           onTextChanged: ()=>{
             valueChanged(this.text)
