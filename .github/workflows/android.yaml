@@ -44,6 +44,14 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+          python3 scripts/generate_glean.py
+
       - name: Importing translation files
         shell: bash
         run: |
@@ -93,6 +101,14 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+          python3 scripts/generate_glean.py
+
       - name: Importing translation files
         shell: bash
         run: |
@@ -113,23 +129,25 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
             name: production-release debug-sym(arm64-v8a)
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a                        
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a
+
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v1
         with:
             name: production-release debug-sym(armeabi-v7a)
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/armeabi-v7a                       
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/armeabi-v7a
+
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v1
         with:
             name: production-release debug-sym(x86)
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86                       
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86
+
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v1
         with:
             name: production-release debug-sym(x86_64)
-            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86_64                     
-
+            path: .tmp/src/android-build/build/intermediates/merged_native_libs/release/out/lib/x86_64
 
   android-staging-debug:
     runs-on: ubuntu-20.04
@@ -163,6 +181,14 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+          python3 scripts/generate_glean.py
 
       - name: Importing translation files
         shell: bash
