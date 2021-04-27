@@ -58,5 +58,5 @@ mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
 cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Mozilla/NativeMessagingHosts/mozillavpn.json"
 
 # Run the app
-open /Applications/Mozilla VPN.app
+open "/Applications/Mozilla VPN.app"
 exit 0
