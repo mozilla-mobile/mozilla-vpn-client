@@ -204,7 +204,6 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('WireGuardExtension')
     [
       '3rdparty/wireguard-apple/Sources/WireGuardKit/WireGuardAdapter.swift',
-      '3rdparty/wireguard-apple/Sources/WireGuardNetworkExtension/PacketTunnelProvider.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardKit/PacketTunnelSettingsGenerator.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardKit/DNSResolver.swift',
       '3rdparty/wireguard-apple/Sources/WireGuardNetworkExtension/ErrorNotifier.swift',
@@ -231,6 +230,7 @@ class XCodeprojPatcher
     group = @project.main_group.new_group('SwiftIntegration')
 
     [
+      'src/platforms/ios/iostunnel.swift',
       'src/platforms/ios/iosglue.mm',
       'src/platforms/ios/ioslogger.swift',
     ].each { |filename|
