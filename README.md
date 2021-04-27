@@ -23,6 +23,12 @@ following dependencies:
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
 
+Python3 (pip) depedencies:
+
+- glean_parser
+- pyhumps
+- pyyaml
+
 #### QT5
 
 Qt5 can be installed in a number of ways:
@@ -106,6 +112,10 @@ The procedure to compile MozillaVPN for macOS is the following:
 1. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
+1. Install python3 dependencies:
+  $ pip3 install glean_parser
+  $ pip3 install pyhumps
+  $ pip3 install pyyaml
 1. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
   $ ./scripts/apple\_compile.sh macos
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -144,6 +154,10 @@ The IOS procedure is similar to the macOS one:
 1. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
+1. Install python3 dependencies:
+  $ pip install glean_parser
+  $ pip3 install pyhumps
+  $ pip3 install pyyaml
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`
   $ cp xcode.xconfig.template xcode.xconfig
 1. Modify xcode.xconfig to something like:
@@ -177,12 +191,19 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
   $ git submodule update --remote
 ```
 
-5. Build the apk
+5. Install python3 dependencies:
+```
+  $ pip3 install glean_parser
+  $ pip3 install pyhumps
+  $ pip3 install pyyaml
+```
+
+6. Build the apk
 ```bash 
   $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
-6. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
-7. Install with adb on device/emulator
+7. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
+8. Install with adb on device/emulator
 ```bash
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
@@ -199,6 +220,7 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
+5. Install python3 dependencies (pip install glean_parser pyyaml pyhumps)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
