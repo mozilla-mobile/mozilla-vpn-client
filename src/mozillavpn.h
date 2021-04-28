@@ -94,7 +94,7 @@ class MozillaVPN final : public QObject {
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
-  Q_PROPERTY(bool productionMode READ productionMode CONSTANT)
+  Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
 
  public:
   MozillaVPN();
@@ -107,13 +107,7 @@ class MozillaVPN final : public QObject {
   State state() const;
   AlertType alert() const { return m_alert; }
 
-  bool productionMode() const {
-#ifdef MVPN_PRODUCTION_MODE
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool stagingMode() const;
 
   // Exposed QML methods:
   Q_INVOKABLE void getStarted();

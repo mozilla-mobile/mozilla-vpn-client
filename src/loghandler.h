@@ -20,12 +20,13 @@ class LogHandler final : public QObject {
   struct Log {
     Log() = default;
 
-    Log(const QStringList& modules, const QString& className,
+    Log(QtMsgType type, const QStringList& modules, const QString& className,
         const QString& message)
         : m_dateTime(QDateTime::currentDateTime()),
           m_modules(modules),
           m_className(className),
           m_message(message),
+          m_type(type),
           m_fromQT(false) {}
 
     Log(QtMsgType type, const QString& file, const QString& function,
@@ -55,7 +56,7 @@ class LogHandler final : public QObject {
                                const QMessageLogContext& context,
                                const QString& message);
 
-  static void messageHandler(const QStringList& modules,
+  static void messageHandler(QtMsgType type, const QStringList& modules,
                              const QString& className, const QString& message);
 
   static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
@@ -65,6 +66,8 @@ class LogHandler final : public QObject {
   static void cleanupLogs();
 
   static void setLocation(const QString& path);
+
+  static void enableDebug();
 
  signals:
   void logEntryAdded(const QByteArray& log);
@@ -85,6 +88,7 @@ class LogHandler final : public QObject {
   static void cleanupLogFile(const QMutexLocker& proofOfLock);
 
   const QStringList m_modules;
+  bool m_showDebug = false;
 
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;

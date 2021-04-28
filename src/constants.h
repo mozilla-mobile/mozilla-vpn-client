@@ -11,6 +11,7 @@ namespace Constants {
 
 // Returns true if we are in a production environment.
 bool inProduction();
+void setStaging();
 
 // This value is the fallback in case apple is slower than the user. This
 // should never happen.

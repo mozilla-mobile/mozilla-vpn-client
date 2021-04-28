@@ -60,14 +60,23 @@ VPNFlickable {
             if (vpnFlickable.vpnIsOff) {
                 VPNSettings.stagingServer = !VPNSettings.stagingServer
             }
-       }
+        }
+    }
+
+    VPNCheckBoxAlert {
+        id: restartRequired
+        anchors.top: stagingServer.bottom
+        visible: VPN.stagingMode != VPNSettings.stagingServer
+
+        //% "VPN must be restarted to take effect"
+        errorMessage: qsTrId("vpn.settings.restartRequired")
     }
 
     VPNCheckBoxRow {
         id: untestedFeatures
         objectName: "settingsUntestedFeatures"
 
-        anchors.top: stagingServer.bottom
+        anchors.top: restartRequired.visible ? restartRequired.bottom : stagingServer.bottom
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 

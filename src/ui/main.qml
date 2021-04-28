@@ -86,7 +86,7 @@ Window {
                   }
           },
 
-          debug: {logPings: !VPN.productionMode }
+          debug: {logPings: VPN.stagingMode }
         });
     }
     Rectangle {

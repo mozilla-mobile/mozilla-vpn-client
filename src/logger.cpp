@@ -12,11 +12,18 @@ Logger::Logger(const QStringList& modules, const QString& className)
     : m_modules(modules), m_className(className) {}
 
 Logger::Log Logger::log() { return Log(this); }
+Logger::Log Logger::warning() { return Log(this, QtMsgType::QtWarningMsg); }
+Logger::Log Logger::info() { return Log(this, QtMsgType::QtInfoMsg); }
+Logger::Log Logger::debug() { return Log(this, QtMsgType::QtDebugMsg); }
 
-Logger::Log::Log(Logger* logger) : m_logger(logger), m_data(new Data()) {}
+Logger::Log::Log(Logger* logger, QtMsgType type) {
+  m_logger = logger;
+  m_type = type;
+  m_data = new Data();
+}
 
 Logger::Log::~Log() {
-  LogHandler::messageHandler(m_logger->modules(), m_logger->className(),
+  LogHandler::messageHandler(m_type, m_logger->modules(), m_logger->className(),
                              m_data->m_buffer.trimmed());
   delete m_data;
 }

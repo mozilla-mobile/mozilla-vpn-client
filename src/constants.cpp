@@ -3,20 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "constants.h"
-
-#include <QDir>
+#include "settingsholder.h"
 
 namespace {
 
-bool s_initialized = false;
+#if defined(UNIT_TEST)
+bool s_inProduction = false;
+#else
 bool s_inProduction = true;
+#endif
 }  // namespace
 
-bool Constants::inProduction() {
-  if (!s_initialized) {
-    s_initialized = true;
-    s_inProduction = !QDir::home().exists(".mozillavpn_in_staging.txt");
-  }
+bool Constants::inProduction() { return s_inProduction; }
 
-  return s_inProduction;
-}
+void Constants::setStaging() { s_inProduction = false; }
