@@ -42,7 +42,7 @@ StatusIcon::~StatusIcon() { MVPN_COUNT_DTOR(StatusIcon); }
 
 void StatusIcon::activateAnimation() {
   m_animatedIconIndex = 0;
-  m_animatedIconTimer.start(Constants::STATUSICON_ANIMATION_MSEC);
+  m_animatedIconTimer.start(Constants::statusIconAnimationMsec());
   animateIcon();
 }
 

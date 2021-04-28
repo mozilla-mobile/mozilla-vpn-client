@@ -8,7 +8,7 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 	dh $@ --with systemd --warn-missing
 
 override_dh_auto_configure:
-	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=inspector BUILD_ID=FULLVERSION
+	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=FULLVERSION
 
 override_dh_installdocs:
 

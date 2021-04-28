@@ -66,11 +66,11 @@ void balrogLogger(int level, const char* msg) {
 }
 
 QString appVersion() {
-#ifdef MVPN_INSPECTOR
-  return InspectorWebSocketConnection::appVersionForUpdate();
-#else
+  if (!Constants::inProduction()) {
+    return InspectorWebSocketConnection::appVersionForUpdate();
+  }
+
   return APP_VERSION;
-#endif
 }
 
 }  // namespace
@@ -99,7 +99,7 @@ QString Balrog::userAgent() {
 
 void Balrog::start() {
   QString url =
-      QString(Constants::BALROG_URL).arg(appVersion()).arg(userAgent());
+      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.log() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);

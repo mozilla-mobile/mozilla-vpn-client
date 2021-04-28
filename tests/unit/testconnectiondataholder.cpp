@@ -99,12 +99,12 @@ void TestConnectionDataHolder::chart() {
                QVariant::fromValue(axisX), QVariant::fromValue(axisY));
 
   QCOMPARE(spy.count(), 0);
-  QCOMPARE(txSeries->count(), Constants::CHARTS_MAX_POINTS);
-  QCOMPARE(rxSeries->count(), Constants::CHARTS_MAX_POINTS);
+  QCOMPARE(txSeries->count(), Constants::chartsMaxPoints());
+  QCOMPARE(rxSeries->count(), Constants::chartsMaxPoints());
 
   QEventLoop loop;
   connect(&cdh, &ConnectionDataHolder::bytesChanged, [&] {
-    if (spy.count() >= Constants::CHARTS_MAX_POINTS * 2) {
+    if (spy.count() >= Constants::chartsMaxPoints() * 2) {
       loop.exit();
     }
   });

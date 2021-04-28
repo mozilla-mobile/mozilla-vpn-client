@@ -29,7 +29,7 @@ SurveyModel::SurveyModel() {
   MVPN_COUNT_CTOR(SurveyModel);
 
   connect(&m_timer, &QTimer::timeout, this, &SurveyModel::maybeShowSurvey);
-  m_timer.start(Constants::SURVEY_TIMER_MSEC);
+  m_timer.start(Constants::surveyTimerMsec());
 }
 
 SurveyModel::~SurveyModel() { MVPN_COUNT_DTOR(SurveyModel); }

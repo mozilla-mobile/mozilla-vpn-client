@@ -104,7 +104,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   path.append("linux");
 #endif
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath(path);
 
   QUrlQuery query;

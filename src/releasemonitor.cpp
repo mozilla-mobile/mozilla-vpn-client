@@ -45,7 +45,7 @@ void ReleaseMonitor::runInternal() {
 
 void ReleaseMonitor::schedule() {
   logger.log() << "ReleaseMonitor scheduling";
-  m_timer.start(Constants::RELEASE_MONITOR_MSEC);
+  m_timer.start(Constants::releaseMonitorMsec());
 }
 
 void ReleaseMonitor::updateRequired() {
