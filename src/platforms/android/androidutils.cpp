@@ -87,7 +87,7 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
 
   logger.log() << "AndroidWebView is about to load" << url;
 
-  QString apiUrl = Constants::API_URL;
+  QString apiUrl = Constants::apiUrl();
   if (!url.startsWith(apiUrl)) {
     return false;
   }

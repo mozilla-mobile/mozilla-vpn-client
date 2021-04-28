@@ -66,7 +66,7 @@ $QMAKE -v &>/dev/null || die "qmake doesn't exist or it fails"
 
 print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
-python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
+python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Configuring the project via qmake..."
 $QMAKE CONFIG-=debug  CONFIG-=debug_and_release CONFIG+=release BUILD_ID=$FULLVERSION || die "Compilation failed"

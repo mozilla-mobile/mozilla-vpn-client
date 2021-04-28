@@ -41,10 +41,6 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorwebsocketconnection.h"
-#endif
-
 #include <QApplication>
 #include <QClipboard>
 #include <QDir>
@@ -343,22 +339,22 @@ void MozillaVPN::openLink(LinkType linkType) {
 
   switch (linkType) {
     case LinkAccount:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/account");
       break;
 
     case LinkContact:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/contact");
       break;
 
     case LinkFeedback:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/client/feedback");
       break;
 
     case LinkHelpSupport:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/support");
       break;
 
@@ -369,17 +365,17 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
 
     case LinkTermsOfService:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/terms");
       break;
 
     case LinkPrivacyNotice:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/privacy");
       break;
 
     case LinkUpdate:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/update/");
 #if defined(MVPN_LINUX)
       url.append("linux");
@@ -395,7 +391,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       break;
 
     case LinkSubscriptionBlocked:
-      url = Constants::API_URL;
+      url = Constants::apiUrl();
       url.append("/r/vpn/subscriptionBlocked");
       break;
 
@@ -844,9 +840,9 @@ void MozillaVPN::setUserAuthenticated(bool state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.log() << "Start scheduling account and servers"
-               << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
+               << Constants::scheduleAccountAndServersTimerMsec();
   m_periodicOperationsTimer.start(
-      Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
+      Constants::scheduleAccountAndServersTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
