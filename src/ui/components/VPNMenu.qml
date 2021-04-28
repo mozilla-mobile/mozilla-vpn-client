@@ -16,6 +16,9 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
+    property alias bgColor: menuBackground.color
+
+    signal clicked()
 
     width: parent.width
     height: 56
@@ -30,6 +33,8 @@ Item {
         preventStealing: true
         propagateComposedEvents: false
         hoverEnabled: true
+
+        onClicked: menuBar.clicked()
     }
 
     Rectangle {

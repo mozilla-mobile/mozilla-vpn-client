@@ -10,6 +10,7 @@
 
 #include <QSettings>
 
+constexpr bool SETTINGS_INPRODUCTION_DEFAULT = true;
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
 constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = true;
@@ -18,6 +19,7 @@ constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
 
+constexpr const char* SETTINGS_INPRODUCTION = "inProduction";
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
@@ -94,8 +96,6 @@ SettingsHolder::SettingsHolder()
 #endif
 {
   MVPN_COUNT_CTOR(SettingsHolder);
-
-  logger.log() << "Creating SettingsHolder instance";
 
   Q_ASSERT(!s_instance);
   s_instance = this;
@@ -298,4 +298,16 @@ void SettingsHolder::addVpnDisabledApp(const QString& appID) {
   }
   applist.append(appID);
   setVpnDisabledApps(applist);
+}
+
+bool SettingsHolder::inProduction() const {
+  if (!m_settings.contains(SETTINGS_INPRODUCTION)) {
+    return SETTINGS_INPRODUCTION_DEFAULT;
+  }
+  return m_settings.value(SETTINGS_INPRODUCTION).toBool();
+}
+
+void SettingsHolder::flipProductionStagingMode() {
+  logger.log() << "Flip production vs staging" << !inProduction();
+  m_settings.setValue(SETTINGS_INPRODUCTION, !inProduction());
 }

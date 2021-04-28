@@ -68,7 +68,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v2/vpn/login/verify");
   r->m_request.setUrl(url);
 
@@ -96,7 +96,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/device");
   r->m_request.setUrl(url);
 
@@ -122,7 +122,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QString url(Constants::API_URL);
+  QString url(Constants::apiUrl());
   url.append("/api/v1/vpn/device/");
   url.append(QUrl::toPercentEncoding(pubKey));
 
@@ -146,7 +146,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/servers");
   r->m_request.setUrl(url);
 
@@ -159,7 +159,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/versions");
   r->m_request.setUrl(url);
 
@@ -176,7 +176,7 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/account");
   r->m_request.setUrl(url);
 
@@ -193,7 +193,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/ipinfo");
   r->m_request.setUrl(url);
 
@@ -221,7 +221,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/dns/detectportal");
   r->m_request.setUrl(url);
 
@@ -232,7 +232,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/__heartbeat__");
   r->m_request.setUrl(url);
 
@@ -250,7 +250,7 @@ NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/products/ios");
   r->m_request.setUrl(url);
 
@@ -270,7 +270,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath("/api/v1/vpn/purchases/ios");
   r->m_request.setUrl(url);
 

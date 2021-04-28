@@ -11,6 +11,7 @@ import "../themes/themes.js" as Theme
 
 Item {
     property alias isSettingsView: menu.isSettingsView
+    property int inProductionClickCount: 0
 
     VPNMenu {
         id: menu
@@ -19,6 +20,23 @@ Item {
         //% "Get Help"
         title: qsTrId("vpn.main.getHelp")
         isSettingsView: true
+
+        onClicked: {
+            if (++parent.inProductionClickCount == 12) {
+                VPNSettings.flipProductionStagingMode();
+                if (parent.isSettingsView) {
+                    settingsStackView.pop();
+                } else {
+                    stackview.pop();
+                }
+            }
+        }
+
+        Component.onCompleted: {
+            if (!VPN.inProduction) {
+                menu.bgColor = "#cccccc"
+            }
+        }
     }
 
     VPNList {

@@ -29,7 +29,9 @@
 #endif
 
 // How often we notify the same unsecured network
+#ifndef UNIT_TEST
 constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
+#endif
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkWatcher");

@@ -326,6 +326,6 @@ void SystemTrayHandler::showNotificationInternal(Message type,
 
   emit notificationShown(title, message);
 
-  QIcon icon(Constants::LOGO_URL);
+  QIcon icon(Constants::logoUrl());
   showMessage(title, message, icon, timerMsec);
 }

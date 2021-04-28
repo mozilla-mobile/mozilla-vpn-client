@@ -33,6 +33,10 @@ class SettingsHolder final : public QObject {
 
   void clear();
 
+  Q_INVOKABLE void flipProductionStagingMode();
+
+  bool inProduction() const;
+
 #define GETSET(type, has, get, set) \
   bool has() const;                 \
   type get() const;                 \

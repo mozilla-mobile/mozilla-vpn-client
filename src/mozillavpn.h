@@ -92,6 +92,7 @@ class MozillaVPN final : public QObject {
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
+  Q_PROPERTY(bool inProduction READ inProduction CONSTANT)
 
  public:
   MozillaVPN();
@@ -203,6 +204,9 @@ class MozillaVPN final : public QObject {
   void setUpdating(bool updating);
 
   void heartbeatCompleted(bool success);
+
+  // This is used by QML that doesn't have access to constants.h
+  static bool inProduction();
 
  private:
   void setState(State state);

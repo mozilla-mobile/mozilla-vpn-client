@@ -8,7 +8,6 @@
 
 VERSION=1
 RELEASE=focal
-STAGE=
 
 if [ -f .env ]; then
   . .env
@@ -16,7 +15,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage]"
+  print N "\t$0 [-r|--release <release>] [-v|--version <id>]"
   print N ""
   print N "By default, the release is 'focal'"
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
@@ -31,10 +30,6 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-  -s | --stage)
-    STAGE=1
-    shift
-    ;;
   -r | --release)
     RELEASE="$2"
     shift
@@ -79,7 +74,7 @@ cd .tmp/mozillavpn-$SHORTVERSION || die "Failed"
 print G "done."
 
 print Y "Importing translation files..."
-python3 scripts/importLanguages.py $([[ "$STAGE" ]] && echo "" || echo "-p") || die "Failed to import languages"
+python3 scripts/importLanguages.py || die "Failed to import languages"
 
 printn Y "Removing the debian template folder... "
 rm -rf linux/debian || die "Failed"
@@ -92,19 +87,11 @@ print G "done."
 print Y "Configuring the debian package for $RELEASE..."
 cp -r ../../linux/debian .  || die "Failed"
 
-if [[ "$STAGE" ]]; then
-  print Y "Staging env configured"
-  mv debian/rules.stage.$RELEASE debian/rules || die "Failed"
-  mv debian/control.stage.$RELEASE debian/control || die "Failed"
-else
-  print Y "Production env configured"
-  mv debian/rules.prod.$RELEASE debian/rules || die "Failed"
-  mv debian/control.prod.$RELEASE debian/control || die "Failed"
-fi
+mv debian/rules.$RELEASE debian/rules || die "Failed"
+mv debian/control.$RELEASE debian/control || die "Failed"
 
 rm debian/control.* || die "Failed"
-rm debian/rules.stage* || die "Failed"
-rm debian/rules.prod* || die "Failed"
+rm debian/rules.* || die "Failed"
 
 mv debian/changelog.template debian/changelog || die "Failed"
 sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" debian/changelog || die "Failed"

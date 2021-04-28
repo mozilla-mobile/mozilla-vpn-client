@@ -70,16 +70,18 @@ bool Command::loadModels() {
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.log() << "MozillaVPN" << APP_VERSION;
+
+  SettingsHolder settingsHolder;
+
+  logger.log() << "MozillaVPN" << APP_VERSION
+               << (Constants::inProduction() ? "production" : "staging");
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  SettingsHolder settingsHolder;
   Localizer localizer;
   SimpleNetworkManager snm;
 
@@ -89,20 +91,22 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.log() << "MozillaVPN" << APP_VERSION;
+
+  SettingsHolder settingsHolder;
+
+  logger.log() << "MozillaVPN" << APP_VERSION
+               << (Constants::inProduction() ? "production" : "staging");
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  SettingsHolder settingsHolder;
   Localizer localizer;
   SimpleNetworkManager snm;
 
-  QIcon icon(Constants::LOGO_URL);
+  QIcon icon(Constants::logoUrl());
   app.setWindowIcon(icon);
 
   return callback();
@@ -111,9 +115,12 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.log() << "MozillaVPN" << APP_VERSION;
+
+  SettingsHolder settingsHolder;
+
+  logger.log() << "MozillaVPN" << APP_VERSION
+               << (Constants::inProduction() ? "production" : "staging");
 
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -122,10 +129,9 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  SettingsHolder settingsHolder;
   Localizer localizer;
 
-  QIcon icon(Constants::LOGO_URL);
+  QIcon icon(Constants::logoUrl());
   app.setWindowIcon(icon);
 
   return callback();

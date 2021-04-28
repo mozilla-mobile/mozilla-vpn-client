@@ -114,7 +114,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 #  error Not supported
 #endif
 
-  QUrl url(Constants::API_URL);
+  QUrl url(Constants::apiUrl());
   url.setPath(path);
 
   QUrlQuery query;
