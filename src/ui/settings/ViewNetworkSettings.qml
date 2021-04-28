@@ -76,7 +76,7 @@ VPNFlickable {
 
             //% "Use VPN DNS"
             labelText: qsTrId("vpn.settings.useGatewayDNS")
-            //% "Hide what websites you're visiting Mozillas Anonymous DNS-Service"
+            //% "Hide what websites you are visiting Mozillas Anonymous DNS-Service"
             subLabelText: qsTrId("vpn.settings.useGatewayDNS.description")
             isChecked: (VPNSettings.useGatewayDNS)
             isEnabled: vpnFlickable.vpnIsOff
