@@ -46,14 +46,14 @@ QString Device::currentDeviceName() {
 
 // static
 QString Device::currentDeviceReport() {
-  QString buffer = "";
+  QString buffer;
   QTextStream out(&buffer);
-  out << QString("Name->%1").arg(currentDeviceName()) << Qt::endl;
-  out << QString("ABI->%1").arg(QSysInfo::buildAbi()) << Qt::endl;
-  out << QString("OS->%1").arg(QSysInfo::productType()) << Qt::endl;
-  out << QString("OS Version->%1").arg(QSysInfo::productVersion()) << Qt::endl;
-  out << QString("APP Version->%1").arg(APP_VERSION) << Qt::endl;
-  out << QString("Build ID->%1").arg(BUILD_ID) << Qt::endl;
+  out << "Name -> " << currentDeviceName() << Qt::endl;
+  out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "OS -> " << QSysInfo::productType() << Qt::endl;
+  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+  out << "APP Version -> " << APP_VERSION << Qt::endl;
+  out << "Build ID -> " << BUILD_ID << Qt::endl;
 
   return buffer;
 }

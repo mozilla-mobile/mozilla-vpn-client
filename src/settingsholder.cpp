@@ -142,15 +142,15 @@ void SettingsHolder::clear() {
 // Returns a Report which settings are set
 // Used to Print in LogFiles:
 QString SettingsHolder::getReport() {
-  QString buff = "";
+  QString buff;
   QTextStream out(&buff);
   auto settingsKeys = m_settings.childKeys();
   for (auto setting : settingsKeys) {
     if (SENSITIVE_SETTINGS.contains(setting)) {
-      out << QString("%1 -> <Sensitive>").arg(setting) << Qt::endl;
+      out << setting << " -> <Sensitive>" << Qt::endl;
       continue;
     }
-    out << QString("%1->%2").arg(setting, m_settings.value(setting).toString())
+    out << setting << " -> " << m_settings.value(setting).toString()
         << Qt::endl;
   }
   return buff;
