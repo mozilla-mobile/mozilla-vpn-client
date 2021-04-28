@@ -12,7 +12,7 @@ class InspectorWebSocketServer final : public QWebSocketServer {
   Q_DISABLE_COPY_MOVE(InspectorWebSocketServer)
 
  public:
-  InspectorWebSocketServer();
+  explicit InspectorWebSocketServer(QObject* parent);
   ~InspectorWebSocketServer();
 
  private:
