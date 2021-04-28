@@ -8,7 +8,6 @@
 
 REVISION=1
 RELEASE=focal
-BUILDTYPE=prod
 SOURCEONLY=N
 PPA_URL=
 DPKG_SIGN="--no-sign"
@@ -25,7 +24,6 @@ helpFunction() {
   print N "Build options:"
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "  -s, --stage            Build packages to use staging services"
   print N "      --source           Build source packages only (no binary)"
   print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
   print N ""
@@ -47,10 +45,6 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-  -s | --stage)
-    BUILDTYPE=stage
-    shift
-    ;;
   -r | --release)
     RELEASE="$2"
     shift
@@ -143,15 +137,14 @@ EOF
 ## For a given distro, build the DSC and debian tarball.
 build_deb_source() {
   local distro=$1
-  local buildtype=$2
   local buildrev=${distro}${REVISION}
 
   print Y "Building sources for $distro ($buildtype)..."
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
-  mv $WORKDIR/debian/rules.$buildtype.$distro $WORKDIR/debian/rules
-  mv $WORKDIR/debian/control.$buildtype.$distro $WORKDIR/debian/control
+  mv $WORKDIR/debian/rules.$distro $WORKDIR/debian/rules
+  mv $WORKDIR/debian/control.$distro $WORKDIR/debian/control
   rm $WORKDIR/debian/control.*
   rm $WORKDIR/debian/rules.*
 
@@ -170,16 +163,15 @@ if [ "$SOURCEONLY" == "Y" ]; then
   print Y "Configuring the DEB sources..."
   for control in ../linux/debian/control.*; do
     filename=$(basename $control)
-    buildtype=$(echo $filename | cut -d'.' -f2)
-    distro=$(echo $filename | cut -d'.' -f3)
+    distro=$(echo $filename | cut -d'.' -f2)
 
     build_deb_source $distro $buildtype
 
-    mkdir $distro-$buildtype/
-    mv mozillavpn_${SHORTVERSION}-*_source.buildinfo $distro-$buildtype/ || die "Failed"
-    mv mozillavpn_${SHORTVERSION}-*_source.changes $distro-$buildtype/ || die "Failed"
-    mv mozillavpn_${SHORTVERSION}-*.debian.tar.* $distro-$buildtype/ || die "Failed"
-    mv mozillavpn_${SHORTVERSION}-*.dsc $distro-$buildtype/ || die "Failed"
+    mkdir $distro
+    mv mozillavpn_${SHORTVERSION}-*_source.buildinfo $distro/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*_source.changes $distro/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.debian.tar.* $distro/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.dsc $distro/ || die "Failed"
   done
 
   print Y "Configuring the RPM spec..."
@@ -188,16 +180,16 @@ if [ "$SOURCEONLY" == "Y" ]; then
 else
   case "$RELEASE" in
     bionic|focal|groovy|hirsute)
-      build_deb_source $RELEASE $BUILDTYPE
+      build_deb_source $RELEASE
 
-      print Y "Building Debian packages for $RELEASE ($BUILDTYPE)"
+      print Y "Building Debian packages for $RELEASE"
       (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
       ;;
     
     fedora)
       build_rpm_spec
 
-      print Y "Building RPM packages for $RELEASE ($BUILDTYPE)"
+      print Y "Building RPM packages for $RELEASE"
       rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
       RPM=Y
       ;;
@@ -213,7 +205,7 @@ rm -rf $WORKDIR || die "Failed"
 
 if [ ! -z "$PPA_URL" ]; then
   print Y "Uploading sources to $PPA_URL"
-  for dist in $(find . -type d -name '*-prod'); do
+  for dist in $(find . -type d -name); do
     ln -s ../mozillavpn_${SHORTVERSION}.orig.tar.gz $dist/mozillavpn_${SHORTVERSION}.orig.tar.gz
     dput "$PPA_URL" $dist/mozillavpn_${SHORTVERSION}-*_source.changes
   done

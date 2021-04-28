@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "loghandler.h"
+#include "constants.h"
 #include "logger.h"
 
 #include <QDate>
@@ -179,20 +180,23 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
     prettyOutput(*m_output, log);
   }
 
-#if defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
+  if (!Constants::inProduction()) {
+    QByteArray buffer;
+    {
+      QTextStream out(&buffer);
+      prettyOutput(out, log);
+    }
+
+    emit logEntryAdded(buffer);
+  }
+
+#if defined(MVPN_ANDROID) && defined(QT_DEBUG)
   QByteArray buffer;
   {
     QTextStream out(&buffer);
     prettyOutput(out, log);
   }
 
-#  if defined(MVPN_INSPECTOR)
-  emit logEntryAdded(buffer);
-#  endif
-
-#endif  // defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
-
-#if defined(MVPN_ANDROID) && defined(QT_DEBUG)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);

@@ -86,7 +86,6 @@ git submodule update
 To build next to source:
 
 ```
-qmake CONFIG+=production
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
@@ -96,7 +95,7 @@ For local dev builds, the following qmake command may be more helpful `qmake CON
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
 ```
-qmake USRPATH=/usr ETCPATH=/etc CONFIG+=production
+qmake USRPATH=/usr ETCPATH=/etc
 ```
 
 #### Run
@@ -293,10 +292,13 @@ Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/singl
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
 
+## Staging vs Production environment
+
+To enable the staging environment, before running the application, create an empty file in your home directory, with this name: `.mozillavpn_in_staging.txt`
+
 ## Inspector
 
-To build the inspector `qmake CONFIG+=debug CONFIG+=inspector`. Or use appropriate script parameters.
-
+The inspector is enabled when the staging environment is activated.
 When running MozillaVPN, go to http://localhost:8766 to view the inspector.
 
 From the inspector, type `help` to see the list of available commands.

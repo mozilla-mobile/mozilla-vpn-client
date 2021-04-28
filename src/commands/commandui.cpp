@@ -8,10 +8,13 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "featurelist.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "l18nstrings.h"
+#include "inspector/inspectorhttpserver.h"
+#include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -32,11 +35,6 @@
 #  include "platforms/macos/macosmenubar.h"
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
-#endif
-
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorhttpserver.h"
-#  include "inspector/inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -458,15 +456,17 @@ int CommandUI::run(QStringList& tokens) {
       MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
-#ifdef MVPN_INSPECTOR
-    InspectorHttpServer inspectHttpServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                     &inspectHttpServer, &InspectorHttpServer::close);
+    if (!Constants::inProduction()) {
+      InspectorHttpServer* inspectHttpServer = new InspectorHttpServer(qApp);
+      QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                       inspectHttpServer, &InspectorHttpServer::close);
 
-    InspectorWebSocketServer inspectWebSocketServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                     &inspectWebSocketServer, &InspectorWebSocketServer::close);
-#endif
+      InspectorWebSocketServer* inspectWebSocketServer =
+          new InspectorWebSocketServer(qApp);
+      QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                       inspectWebSocketServer,
+                       &InspectorWebSocketServer::close);
+    }
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;

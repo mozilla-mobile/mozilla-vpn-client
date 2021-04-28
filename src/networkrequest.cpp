@@ -84,13 +84,15 @@ NetworkRequest::~NetworkRequest() {
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-#ifndef MVPN_PRODUCTION_MODE
+  if (Constants::inProduction()) {
+    return Constants::API_PRODUCTION_URL;
+  }
+
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (pe.contains("MVPN_API_BASE_URL")) {
     return pe.value("MVPN_API_BASE_URL");
   }
-#endif
-  return Constants::API_URL;
+  return Constants::API_STAGING_URL;
 }
 
 // static

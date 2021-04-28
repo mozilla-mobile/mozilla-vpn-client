@@ -10,7 +10,6 @@ BRANCH=
 PPA=mozbaku/mozillavpn-focal
 VERSION=1
 RELEASE=focal
-STAGE=
 
 if [ -f .env ]; then
   . .env
@@ -18,7 +17,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-r|--release <release>] [-v|--version <id>] [-s|--stage] [-ns|--no-sign] [-o|--orig <origURL>]"
+  print N "\t$0 [-b|--branch <branch>] [-p|--ppa <ppa>] [-r|--release <release>] [-v|--version <id>] [-ns|--no-sign] [-o|--orig <origURL>]"
   print N ""
   print N "By default, the ppa is: mozbaku/mozillavpn"
   print N "By default, the release is 'focal'"
@@ -45,10 +44,6 @@ while [[ $# -gt 0 ]]; do
   -p | --ppa)
     PPA="$2"
     shift
-    shift
-    ;;
-  -s | --stage)
-    STAGE=1
     shift
     ;;
   -r | --release)
@@ -120,7 +115,7 @@ else
   print G "done."
 
   print Y "Importing translation files..."
-  python3 scripts/importLanguages.py $([[ "$STAGE" ]] && echo "" || echo "-p") || die "Failed to import languages"
+  python3 scripts/importLanguages.py || die "Failed to import languages"
 
   print Y "Generating glean samples..."
   python3 scripts/generate_glean.py || die "Failed to generate glean samples"
@@ -141,19 +136,11 @@ fi
 print Y "Configuring the debian package for $RELEASE..."
 cp -r ../../linux/debian .  || die "Failed"
 
-if [[ "$STAGE" ]]; then
-  print Y "Staging env configured"
-  mv debian/rules.stage.$RELEASE debian/rules || die "Failed"
-  mv debian/control.stage.$RELEASE debian/control || die "Failed"
-else
-  print Y "Production env configured"
-  mv debian/rules.prod.$RELEASE debian/rules || die "Failed"
-  mv debian/control.prod.$RELEASE debian/control || die "Failed"
-fi
+mv debian/rules.$RELEASE debian/rules || die "Failed"
+mv debian/control.$RELEASE debian/control || die "Failed"
 
 rm debian/control.* || die "Failed"
-rm debian/rules.stage* || die "Failed"
-rm debian/rules.prod* || die "Failed"
+rm debian/rules.* || die "Failed"
 
 mv debian/changelog.template debian/changelog || die "Failed"
 sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" debian/changelog || die "Failed"

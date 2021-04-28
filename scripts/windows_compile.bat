@@ -29,15 +29,11 @@ SET SHOW_HELP=F
 if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "-help" SET SHOW_HELP=T
-  if "%1" NEQ "-p" (
-    if "%1" NEQ "--prod" (
-      if "%1" NEQ "-t" (
-        if "%1" NEQ "--test" (
-          if "%1" NEQ "-w" (
-            if "%1" NEQ "--webextension" (
-              SET SHOW_HELP=T
-            )
-          )
+  if "%1" NEQ "-t" (
+    if "%1" NEQ "--test" (
+      if "%1" NEQ "-w" (
+        if "%1" NEQ "--webextension" (
+          SET SHOW_HELP=T
         )
       )
     )
@@ -47,15 +43,10 @@ if "%1" NEQ "" (
 if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
-  ECHO "  -p|--prod            Production build"
   ECHO "  -t|--test            Test mode"
   ECHO "  -w|--webextension    Enable the webExtension support"
   EXIT 0
 )
-
-SET PROD_BUILD=F
-if "%1"== "-p" SET PROD_BUILD=T
-if "%1"== "--prod" SET PROD_BUILD=T
 
 SET TEST_BUILD=F
 if "%1"== "-t" SET TEST_BUILD=T
@@ -69,14 +60,6 @@ ECHO Extract version...
 FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
 
 SET FLAGS=BUILD_ID=%VERSION%
-
-if "%PROD_BUILD%" == "T" (
-  ECHO Production build enabled
-  SET FLAGS=%FLAGS% CONFIG+=production
-) else (
-  ECHO Staging build enabled
-  SET FLAGS=%FLAGS% CONFIG+=inspector
-)
 
 if "%TEST_BUILD%" == "T" (
   ECHO Test build enabled

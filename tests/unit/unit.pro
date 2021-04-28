@@ -32,6 +32,7 @@ HEADERS += \
     ../../src/commandlineparser.h \
     ../../src/connectioncheck.h \
     ../../src/connectiondataholder.h \
+    ../../src/constants.h \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
@@ -109,6 +110,7 @@ SOURCES += \
     ../../src/commandlineparser.cpp \
     ../../src/connectioncheck.cpp \
     ../../src/connectiondataholder.cpp \
+    ../../src/constants.cpp \
     ../../src/curve25519.cpp \
     ../../src/errorhandler.cpp \
     ../../src/featurelist.cpp \
