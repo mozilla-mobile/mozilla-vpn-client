@@ -60,7 +60,7 @@ bool WgQuickProcess::createConfigFile(
   content.append("\nDNS = ");
   content.append(dnsServer.toUtf8());
 
-  logger.log() << "USING DNS-->"<< dnsServer.toUtf8();
+  logger.log() << "USING DNS-->" << dnsServer.toUtf8();
 
   // If the DNS is not the Gateway, it's a user defined DNS
   // thus, not add any other :)
@@ -113,7 +113,8 @@ bool WgQuickProcess::run(
     const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
     const QString& serverIpv6Gateway, const QString& serverPublicKey,
     const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
-    const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled, const QString& dnsServer) {
+    const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled,
+    const QString& dnsServer) {
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
     qWarning("Cannot create a temporary directory");
@@ -126,7 +127,8 @@ bool WgQuickProcess::run(
   if (!createConfigFile(configFile, privateKey, deviceIpv4Address,
                         deviceIpv6Address, serverIpv4Gateway, serverIpv6Gateway,
                         serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
-                        allowedIPAddressRanges, serverPort, ipv6Enabled,dnsServer)) {
+                        allowedIPAddressRanges, serverPort, ipv6Enabled,
+                        dnsServer)) {
     logger.log() << "Failed to create the config file";
     return false;
   }

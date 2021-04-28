@@ -111,7 +111,7 @@ void LocalSocketController::activate(
   json.insert("serverPort", QJsonValue((double)server.choosePort()));
   json.insert("ipv6Enabled",
               QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
-  json.insert("dnsServer",QJsonValue(dnsServer.toString()));
+  json.insert("dnsServer", QJsonValue(dnsServer.toString()));
 
   QJsonArray allowedIPAddesses;
   for (const IPAddressRange& i : allowedIPAddressRanges) {

@@ -317,8 +317,8 @@ bool SettingsHolder::isValidUserDNS(const QString& dns) {
 
   logger.log() << "is null " << address.isNull();
 
-  if(address.isNull()){
-      return false;
+  if (address.isNull()) {
+    return false;
   }
   /* Currently we need to limit this to LAN-DNS
    * (at least on windows) since the killswitch makes
@@ -326,9 +326,8 @@ bool SettingsHolder::isValidUserDNS(const QString& dns) {
    */
 
   auto lanRange = RFC1918::ipv4();
-  for(auto network :lanRange){
-      if(network.contains(address))
-          return true;
+  for (auto network : lanRange) {
+    if (network.contains(address)) return true;
   }
   return false;
 }

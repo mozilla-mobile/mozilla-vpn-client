@@ -568,7 +568,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     }
   }
 
-
   // filtering out the RFC1918 local area network
   if (FeatureList::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
@@ -580,16 +579,16 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       logger.log() << "Filtering out the local area networks (rfc 4193)";
       allowedIPv6s.append(RFC4193::ipv6());
     }
-  }else if(FeatureList::instance()->userDNSSupported() &&
-                     !SettingsHolder::instance()->useGatewayDNS() &&
-                     SettingsHolder::instance()->userDNS().size() > 0 &&
-                     SettingsHolder::instance()->isValidUserDNS(
-                         SettingsHolder::instance()->userDNS())){
-      // Filter out the Custom DNS Server, if the User has one.
-        logger.log() << "Filtering out the DNS address"
-                     << SettingsHolder::instance()->userDNS();
-        excludeIPv4s.append(
-            IPAddress::create(SettingsHolder::instance()->userDNS()));
+  } else if (FeatureList::instance()->userDNSSupported() &&
+             !SettingsHolder::instance()->useGatewayDNS() &&
+             SettingsHolder::instance()->userDNS().size() > 0 &&
+             SettingsHolder::instance()->isValidUserDNS(
+                 SettingsHolder::instance()->userDNS())) {
+    // Filter out the Custom DNS Server, if the User has one.
+    logger.log() << "Filtering out the DNS address"
+                 << SettingsHolder::instance()->userDNS();
+    excludeIPv4s.append(
+        IPAddress::create(SettingsHolder::instance()->userDNS()));
   }
 
   QList<IPAddressRange> list;
