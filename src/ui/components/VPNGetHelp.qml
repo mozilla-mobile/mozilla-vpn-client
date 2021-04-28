@@ -31,6 +31,12 @@ Item {
                 }
             }
         }
+
+        Component.onCompleted: {
+            if (!VPN.inProduction) {
+                menu.bgColor = "#cccccc"
+            }
+        }
     }
 
     VPNList {

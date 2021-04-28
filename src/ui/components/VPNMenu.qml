@@ -16,6 +16,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
+    property alias bgColor: menuBackground.color
 
     signal clicked()
 

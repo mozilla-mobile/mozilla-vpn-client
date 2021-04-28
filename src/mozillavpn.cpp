@@ -1209,3 +1209,6 @@ void MozillaVPN::heartbeatCompleted(bool success) {
 }
 
 void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
+
+// static
+bool MozillaVPN::inProduction() { return Constants::inProduction(); }
