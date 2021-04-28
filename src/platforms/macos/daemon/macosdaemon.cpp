@@ -130,7 +130,7 @@ bool MacOSDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
       config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
       config.m_serverIpv6Gateway, config.m_serverPublicKey,
       config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-      addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
+      addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled, config.m_dnsServer);
 }
 
 void MacOSDaemon::maybeCleanup() {

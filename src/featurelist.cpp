@@ -72,7 +72,8 @@ bool FeatureList::unsecuredNetworkNotificationSupported() const {
 }
 
 bool FeatureList::userDNSSupported() const {
-#if defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_DUMMY)
+#if defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_DUMMY) || \
+    defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
   return true;
 #else
   return false;

@@ -19,6 +19,7 @@ struct InterfaceConfig {
   QString m_serverPublicKey;
   QString m_serverIpv4AddrIn;
   QString m_serverIpv6AddrIn;
+  QString m_dnsServer;
   int m_serverPort = 0;
   bool m_ipv6Enabled = false;
   QList<IPAddressRange> m_allowedIPAddressRanges;

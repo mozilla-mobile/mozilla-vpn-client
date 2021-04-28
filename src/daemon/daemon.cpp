@@ -124,6 +124,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   GETVALUESTR("serverPublicKey", config.m_serverPublicKey);
   GETVALUESTR("serverIpv4AddrIn", config.m_serverIpv4AddrIn);
   GETVALUESTR("serverIpv6AddrIn", config.m_serverIpv6AddrIn);
+  GETVALUESTR("dnsServer", config.m_dnsServer);
 
 #undef GETVALUESTR
 

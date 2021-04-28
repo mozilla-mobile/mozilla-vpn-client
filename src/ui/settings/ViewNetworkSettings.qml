@@ -97,7 +97,7 @@ VPNFlickable {
             height: 30
             //% "DNS Server to use:"
             labelText: qsTrId("vpn.settings.userDNS.header")
-            //% "Enter the DNS Server you would like to use. Please note that the connection to the Server won't use the VPN"
+            //% "Enter a DNS Server in your local network to use"
             subLabelText: qsTrId("vpn.settings.userDNS.description")
 
 

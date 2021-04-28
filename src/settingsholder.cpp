@@ -7,6 +7,7 @@
 #include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "rfc1918.h"
 
 #include <QSettings>
 #include <QHostAddress>
@@ -315,5 +316,19 @@ bool SettingsHolder::isValidUserDNS(const QString& dns) {
   QHostAddress address = QHostAddress(dns);
 
   logger.log() << "is null " << address.isNull();
-  return !address.isNull();
+
+  if(address.isNull()){
+      return false;
+  }
+  /* Currently we need to limit this to LAN-DNS
+   * (at least on windows) since the killswitch makes
+   * sure that no dns traffic may happen to outside of lan
+   */
+
+  auto lanRange = RFC1918::ipv4();
+  for(auto network :lanRange){
+      if(network.contains(address))
+          return true;
+  }
+  return false;
 }

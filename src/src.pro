@@ -762,7 +762,7 @@ else {
 RESOURCES += $$PWD/../translations/servers.qrc
 
 exists($$PWD/../translations/translations.pri) {
-    include($$PWD/../translations/translations.pri)
+  #  include($$PWD/../translations/translations.pri)
 }
 else{
     message(Languages were not imported - using fallback english)
