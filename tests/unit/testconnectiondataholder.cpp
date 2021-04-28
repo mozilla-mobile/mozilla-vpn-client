@@ -5,12 +5,15 @@
 #include "testconnectiondataholder.h"
 #include "../../src/connectiondataholder.h"
 #include "../../src/constants.h"
+#include "../../src/settingsholder.h"
 #include "helper.h"
 
 #include <QSplineSeries>
 #include <QValueAxis>
 
 void TestConnectionDataHolder::checkIpAddressFailure() {
+  SettingsHolder settingsHolder;
+
   ConnectionDataHolder cdh;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
