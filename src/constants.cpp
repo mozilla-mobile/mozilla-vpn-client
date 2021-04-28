@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "constants.h"
+#include "settingsholder.h"
 
 #include <QDir>
 
@@ -15,7 +16,9 @@ bool s_inProduction = true;
 bool Constants::inProduction() {
   if (!s_initialized) {
     s_initialized = true;
-    s_inProduction = !QDir::home().exists(".mozillavpn_in_staging.txt");
+
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    s_inProduction = settingsHolder->inProduction();
   }
 
   return s_inProduction;

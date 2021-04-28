@@ -17,6 +17,8 @@ Item {
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
 
+    signal clicked()
+
     width: parent.width
     height: 56
     // Ensure that menu is on top of possible scrollable
@@ -30,6 +32,8 @@ Item {
         preventStealing: true
         propagateComposedEvents: false
         hoverEnabled: true
+
+        onClicked: menuBar.clicked()
     }
 
     Rectangle {

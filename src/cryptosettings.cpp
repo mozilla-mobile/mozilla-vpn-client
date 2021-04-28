@@ -24,11 +24,9 @@ uint64_t lastNonce = 0;
 
 // static
 bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
-  logger.log() << "Read the settings file";
-
   QByteArray version = device.read(1);
   if (version.length() != 1) {
-    logger.log() << "Failed to read the version";
+    qWarning("Failed to read the version");
     return false;
   }
 
@@ -38,7 +36,7 @@ bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
     case EncryptionChachaPolyV1:
       return readEncryptedChachaPolyV1File(device, map);
     default:
-      logger.log() << "Unsupported version";
+      qWarning("Unsupported version");
       return false;
   }
 }
@@ -50,7 +48,7 @@ bool CryptoSettings::readJsonFile(QIODevice& device,
 
   QJsonDocument json = QJsonDocument::fromJson(content);
   if (!json.isObject()) {
-    logger.log() << "Invalid content read from the JSON file";
+    qWarning("Invalid content read from the JSON file");
     return false;
   }
 
@@ -68,25 +66,25 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
     QIODevice& device, QSettings::SettingsMap& map) {
   QByteArray nonce = device.read(NONCE_SIZE);
   if (nonce.length() != NONCE_SIZE) {
-    logger.log() << "Failed to read the nonce";
+    qWarning("Failed to read the nonce");
     return false;
   }
 
   QByteArray mac = device.read(MAC_SIZE);
   if (mac.length() != MAC_SIZE) {
-    logger.log() << "Failed to read the MAC";
+    qWarning("Failed to read the MAC");
     return false;
   }
 
   QByteArray ciphertext = device.readAll();
   if (ciphertext.length() == 0) {
-    logger.log() << "Failed to read the ciphertext";
+    qWarning("Failed to read the ciphertext");
     return false;
   }
 
   uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
   if (!getKey(key)) {
-    logger.log() << "Something went wrong reading the key";
+    qWarning("Something went wrong reading the key");
     return false;
   }
 
@@ -96,14 +94,13 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
       key, (uint8_t*)nonce.data(), version.length(), (uint8_t*)version.data(),
       ciphertext.length(), (uint8_t*)content.data(),
       (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
-  logger.log() << "Result:" << result;
   if (result != 0) {
     return false;
   }
 
   QJsonDocument json = QJsonDocument::fromJson(content);
   if (!json.isObject()) {
-    logger.log() << "Invalid content read from the JSON file";
+    qWarning("Invalid content read from the JSON file");
     return false;
   }
 
@@ -115,7 +112,6 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
 
   Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
   memcpy(&lastNonce, nonce.data(), sizeof(lastNonce));
-  logger.log() << "Nonce:" << lastNonce;
 
   return true;
 }
