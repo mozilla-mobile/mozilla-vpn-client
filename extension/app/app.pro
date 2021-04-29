@@ -33,9 +33,17 @@ linux:!android {
     target.path = /usr/lib/mozillavpn
     INSTALLS += target
 
-    manifest.path = /usr/lib/mozilla/native-messaging-hosts
-    manifest.files = manifests/linux/mozillavpn.json
-    INSTALLS += manifest
+    manifestFirefox.path = /usr/lib/mozilla/native-messaging-hosts
+    manifestFirefox.files = manifests/linux/mozillavpn.json
+    INSTALLS += manifestFirefox
+
+    manifestChrome.path = /etc/opt/chrome/native-messaging-hosts
+    manifestChrome.files = manifests/linux/mozillavpn.json
+    INSTALLS += manifestChrome
+
+    manifestChromium.path = /etc/chromium/native-messaging-hosts
+    manifestChromium.files = manifests/linux/mozillavpn.json
+    INSTALLS += manifestChromium
 } else:win* {
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
