@@ -10,12 +10,43 @@
 
 #ifndef MVPN_WINDOWS
 #  include <sys/select.h>
+#else
+#  include <fcntl.h>
+#  include <io.h>
 #endif
 
 using namespace nlohmann;
 using namespace std;
 
+#ifdef MVPN_WINDOWS
+static bool setBinaryMode(FILE* file) {
+  if (_setmode(_fileno(file), _O_BINARY) == -1) {
+    Logger::log("Failed to set BINARY mode");
+    return false;
+  }
+
+  if (setvbuf(file, NULL, _IONBF, 0) != 0) {
+    Logger::log("Failed to set no-buffering mode");
+    return false;
+  }
+
+  return true;
+}
+#endif
+
 int Handler::run() {
+#ifdef MVPN_WINDOWS
+  if (!setBinaryMode(stdin)) {
+    Logger::log("Failed to set STDIN in binary mode");
+    return 1;
+  }
+
+  if (!setBinaryMode(stdout)) {
+    Logger::log("Failed to set STDOUT in binary mode");
+    return 1;
+  }
+#endif
+
   while (true) {
     // Let's see if we need to connect to the VPN client before reading any
     // message. We don't care about the result of this operation because we can
@@ -37,23 +68,25 @@ int Handler::run() {
       handles[1] = WSACreateEvent();
       if (handles[1] == WSA_INVALID_EVENT) {
         Logger::log("Failed to create a WSA event");
-        return false;
+        return 1;
       }
 
       if (WSAEventSelect(m_vpnConnection.socket(), handles[1], FD_READ) ==
           SOCKET_ERROR) {
         Logger::log("Failed to associate the event with the socket");
-        return false;
+        return 1;
       }
 
       ++count;
     }
 
-    DWORD rv = WaitForMultipleObjectsEx(count, handles, FALSE, INFINITE, FALSE);
+    // We use the following call only to "wait".
+    WaitForMultipleObjectsEx(count, handles, FALSE, INFINITE, FALSE);
 
-    readStdin = (rv == WAIT_OBJECT_0 &&
-                 WaitForSingleObjectEx(handles[0], 0, FALSE) == WAIT_OBJECT_0);
-    readVpnConnection = m_vpnConnection.connected() && rv == WAIT_OBJECT_0 + 1 &&  WaitForSingleObjectEx(handles[1], 0, FALSE) == WAIT_OBJECT_0);
+    readStdin = (WaitForSingleObjectEx(handles[0], 0, FALSE) == WAIT_OBJECT_0);
+    readVpnConnection =
+        (m_vpnConnection.connected() &&
+         WaitForSingleObjectEx(handles[1], 0, FALSE) == WAIT_OBJECT_0);
 #else  // POSIX
     fd_set rfds;
     int nfds = 0;  // the STDIN
@@ -68,7 +101,7 @@ int Handler::run() {
 
     int rv = select(nfds + 1, &rfds, NULL, NULL, NULL);
     if (rv == -1) {
-      return false;
+      return 1;
     }
 
     if (!rv) {
@@ -86,11 +119,15 @@ int Handler::run() {
 
       json message;
       if (!readMessage(message)) {
-        return false;
+        return 1;
       }
 
+      // This is mainly for testing.
       if (message == "bridge_ping") {
-        writeMessage("bridge_pong");
+        if (!writeMessage("bridge_pong")) {
+          return 1;
+        }
+
         continue;
       }
 
@@ -100,7 +137,7 @@ int Handler::run() {
         Logger::log("VPN Client not connected");
 
         if (!writeVpnNotConnected()) {
-          return false;
+          return 1;
         }
 
         continue;
@@ -111,7 +148,7 @@ int Handler::run() {
       if (!m_vpnConnection.writeMessage(message)) {
         assert(!m_vpnConnection.connected());
         if (!writeVpnNotConnected()) {
-          return false;
+          return 1;
         }
 
         continue;
@@ -127,10 +164,12 @@ int Handler::run() {
       }
 
       if (!writeMessage(message)) {
-        return false;
+        return 1;
       }
     }
   }
+
+  return 0;
 }
 
 bool Handler::maybeConnect() {
@@ -199,6 +238,7 @@ bool Handler::writeMessage(const json& body) {
   return true;
 }
 
+// static
 bool Handler::writeVpnNotConnected() {
   return writeMessage({{"error", "vpn-client-down"}});
 }
