@@ -54,8 +54,9 @@ constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
 #  error Platform not supported yet
 #endif
 
-constexpr const char* BALROG_CERT_SUBJECT_CN =
-    "aus.content-signature.mozilla.org";
+// TODO - Do we need to do this cert subject verification?
+// constexpr const char* BALROG_CERT_SUBJECT_CN =
+//    "aus.content-signature.mozilla.org";
 
 namespace {
 Logger logger(LOG_NETWORKING, "Balrog");
@@ -133,7 +134,6 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 
   QByteArray x5u;
   QByteArray signatureBlob;
-  QCryptographicHash::Algorithm algorithm = QCryptographicHash::Sha256;
 
   for (const QByteArray& item : header.split(';')) {
     QByteArray entry = item.trimmed();
@@ -146,115 +146,30 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
     QByteArray key = entry.left(pos);
     if (key == "x5u") {
       x5u = entry.remove(0, pos + 1);
-    } else if (key == "p384ecdsa") {
-      algorithm = QCryptographicHash::Sha384;
-      signatureBlob = entry.remove(0, pos + 1);
-    } else if (key == "p256ecdsa") {
-      algorithm = QCryptographicHash::Sha256;
-      signatureBlob = entry.remove(0, pos + 1);
-    } else if (key == "p521ecdsa") {
-      algorithm = QCryptographicHash::Sha512;
+    } else {
       signatureBlob = entry.remove(0, pos + 1);
     }
   }
 
   if (x5u.isEmpty() || signatureBlob.isEmpty()) {
-    logger.log() << "No p256ecdsa/p384ecdsa or x5u found";
+    logger.log() << "No signatureBlob or x5u found";
     return false;
   }
 
-  logger.log() << "Fetching URL:" << x5u;
+  logger.log() << "x5u URL:" << x5u;
 
-  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(this, x5u, 200);
-
-  connect(x5uRequest, &NetworkRequest::requestFailed,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
-            deleteLater();
-          });
-
-  connect(x5uRequest, &NetworkRequest::requestCompleted,
-          [this, signatureBlob, algorithm, dataUpdate](const QByteArray& data) {
-            logger.log() << "Request completed";
-            if (!checkSignature(data, signatureBlob, algorithm, dataUpdate)) {
-              deleteLater();
-            }
-          });
+  if (!checkSignature(x5u, signatureBlob, dataUpdate)) {
+    deleteLater();
+  }
 
   return true;
 }
 
-bool Balrog::checkSignature(const QByteArray& signature,
+bool Balrog::checkSignature(const QByteArray& x5u,
                             const QByteArray& signatureBlob,
-                            QCryptographicHash::Algorithm algorithm,
                             const QByteArray& data) {
-  logger.log() << "Checking the signature";
-  QList<QSslCertificate> list;
-  QByteArray cert;
-  for (const QByteArray& line : signature.split('\n')) {
-    cert.append(line);
-    cert.append('\n');
-
-    if (line != "-----END CERTIFICATE-----") {
-      continue;
-    }
-
-    QSslCertificate ssl(cert, QSsl::Pem);
-    if (ssl.isNull()) {
-      logger.log() << "Invalid certificate" << cert;
-      return false;
-    }
-
-    list.append(ssl);
-    cert.clear();
-  }
-
-  if (list.isEmpty()) {
-    logger.log() << "No certificates found";
-    return false;
-  }
-
-  logger.log() << "Found certificates:" << list.length();
-
-  // TODO: do we care about OID extensions?
-
-  // Qt5.15 doesn't implement the certificate validation (yet?)
-#ifndef MVPN_MACOS
-  QList<QSslError> errors = QSslCertificate::verify(list);
-  for (const QSslError& error : errors) {
-    if (error.error() != QSslError::SelfSignedCertificateInChain) {
-      logger.log() << "Chain validation failed:" << error.errorString();
-      return false;
-    }
-  }
-#endif
-
-  logger.log() << "Validating root certificate";
-  const QSslCertificate& rootCert = list.constLast();
-  QByteArray rootCertHash = rootCert.digest(QCryptographicHash::Sha256).toHex();
-  if (rootCertHash != Constants::BALROG_ROOT_CERT_FINGERPRINT) {
-    logger.log() << "Invalid root certificate fingerprint" << rootCertHash;
-    return false;
-  }
-
-  const QSslCertificate& leaf = list.constFirst();
-  logger.log() << "Validating cert subject";
-  QStringList cnList = leaf.subjectInfo("CN");
-  if (cnList.isEmpty() || cnList[0] != BALROG_CERT_SUBJECT_CN) {
-    logger.log() << "Invalid CN:" << cnList;
-    return false;
-  }
-
-  logger.log() << "Validate public key";
-  QSslKey leafPublicKey = leaf.publicKey();
-  if (leafPublicKey.isNull()) {
-    logger.log() << "Empty public key";
-    return false;
-  }
-
   logger.log() << "Validate the signature";
-  if (!validateSignature(leafPublicKey.toPem(), data, algorithm,
-                         signatureBlob)) {
+  if (!validateSignature(x5u, signatureBlob, data)) {
     logger.log() << "Invalid signature";
     return false;
   }
@@ -268,13 +183,9 @@ bool Balrog::checkSignature(const QByteArray& signature,
   return true;
 }
 
-bool Balrog::validateSignature(const QByteArray& publicKey,
-                               const QByteArray& data,
-                               QCryptographicHash::Algorithm algorithm,
-                               const QByteArray& signature) {
-  // The algortihm is detected by the length of the signature
-  Q_UNUSED(algorithm);
-
+bool Balrog::validateSignature(const QByteArray& x5u,
+                               const QByteArray& signatureBlob,
+                               const QByteArray& data) {
 #if defined(MVPN_WINDOWS)
   static HMODULE balrogDll = nullptr;
   static BalrogSetLogger* balrogSetLogger = nullptr;
@@ -312,19 +223,17 @@ bool Balrog::validateSignature(const QByteArray& publicKey,
 
   balrogSetLogger(balrogLogger);
 
-  QByteArray publicKeyCopy = publicKey;
-  gostring_t publicKeyGo{publicKeyCopy.constData(),
-                         (size_t)publicKeyCopy.length()};
+  QByteArray x5uCopy = x5u;
+  gostring_t x5uGo{x5uCopy.constData(), (size_t)x5uCopy.length()};
 
-  QByteArray signatureCopy = signature;
+  QByteArray signatureCopy = signatureBlob;
   gostring_t signatureGo{signatureCopy.constData(),
                          (size_t)signatureCopy.length()};
 
   QByteArray dataCopy = data;
   gostring_t dataGo{dataCopy.constData(), (size_t)dataCopy.length()};
 
-  unsigned char verify =
-      balrogValidateSignature(publicKeyGo, signatureGo, dataGo);
+  unsigned char verify = balrogValidateSignature(x5uGo, signatureGo, dataGo);
   if (!verify) {
     logger.log() << "Verification failed";
     return false;
