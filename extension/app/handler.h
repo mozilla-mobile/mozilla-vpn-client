@@ -14,11 +14,11 @@ class Handler final {
 
  private:
   static bool readMessage(nlohmann::json& output);
+
   static bool writeMessage(const nlohmann::json& body);
+  static bool writeVpnNotConnected();
 
   bool maybeConnect();
-
-  bool writeVpnNotConnected();
 
  private:
   VPNConnection m_vpnConnection;

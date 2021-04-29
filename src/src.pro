@@ -199,6 +199,8 @@ HEADERS += \
         urlopener.h
 
 webextension {
+    message(Enabling the webextension support)
+
     DEFINES += MVPN_WEBEXTENSION
 
     SOURCES += \
