@@ -142,6 +142,17 @@ get_fwmark() {
 remove_firewall() {
 	local line iptables found restore
 	for iptables in iptables ip6tables; do
+		for rulenum in $($iptables -t mangle -L OUTPUT --line-numbers -n | awk '{if ($2 == "mozvpn-exclude") print $1}'); do
+			$iptables -t mangle -D OUTPUT $rulenum
+		done
+		for rulenum in $($iptables -t nat -L POSTROUTING --line-numbers -n | awk '{if ($2 == "mozvpn-exclude") print $1}'); do
+			$iptables -t nat -D POSTROUTING $rulenum
+		done
+		$iptables -t mangle -F mozvpn-exclude
+		$iptables -t mangle -X mozvpn-exclude
+		$iptables -t nat -F mozvpn-exclude
+		$iptables -t nat -X mozvpn-exclude
+
 		restore="" found=0
 		while read -r line; do
 			[[ $line == "*"* || $line == COMMIT || $line == "-A "*"-m comment --comment \"wg-quick(8) rule for $INTERFACE\""* ]] || continue
@@ -162,14 +173,18 @@ add_default() {
 		done
 		wg set "$INTERFACE" fwmark $table
 	fi
-	local proto=-4 iptables=iptables pf=ip
-	[[ $1 == *:* ]] && proto=-6 iptables=ip6tables pf=ip6
+	local proto=-4 iptables=iptables pf=ip loopmask=127.0.0.0/8
+	[[ $1 == *:* ]] && proto=-6 iptables=ip6tables pf=ip6 loopmask=::1
 	ip $proto route add "$1" dev "$INTERFACE" table $table
 	ip $proto rule add not fwmark $table table $table
 	ip $proto rule add table main suppress_prefixlength 0
 
-    # Things work without this, but it looks important
+	$iptables -t mangle -N mozvpn-exclude 2>/dev/null
+	$iptables -t mangle -A OUTPUT -m mark ! -d $loopmask ! --mark $table -j mozvpn-exclude
+	$iptables -t nat -N mozvpn-exclude 2>/dev/null
+	$iptables -t nat -A POSTROUTING -m mark --mark $table -j mozvpn-exclude
 
+	# Things work without this, but it looks important
 	# local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n'
 	# while read -r line; do
 	# 	[[ $line =~ .*inet6?\ ([0-9a-f:.]+)/[0-9]+.* ]] || continue
