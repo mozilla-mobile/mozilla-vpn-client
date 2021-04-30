@@ -21,7 +21,8 @@ class PingHelper final : public QObject {
   PingHelper();
   ~PingHelper();
 
-  void start(const QString& serverIpv4Gateway);
+  void start(const QString& serverIpv4Gateway,
+             const QString& deviceIpv4Address);
 
   void stop();
 
@@ -35,6 +36,7 @@ class PingHelper final : public QObject {
 
  private:
   QString m_gateway;
+  QString m_source;
 
   QTimer m_pingTimer;
 
