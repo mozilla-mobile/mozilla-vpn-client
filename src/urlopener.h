@@ -9,7 +9,7 @@ class QUrl;
 
 class UrlOpener final {
  public:
-  static void open(const QUrl& url);
+  static void open(QUrl url, bool addEmailAddress = false);
 };
 
 #endif  // URLOPENER_H
