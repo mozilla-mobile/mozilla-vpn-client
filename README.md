@@ -236,7 +236,7 @@ There is also a script to compile the application: `scripts\windows_compile.bat`
 
 ## Inspector
 
-To build the inspector `qmake CONFIG+=debug CONFIG+=inspector`. Or use appropriate script parameters.
+The inspector is enabled by default in any staging build.
 
 When running MozillaVPN, go to http://localhost:8766 to view the inspector.
 

@@ -75,7 +75,6 @@ if "%PROD_BUILD%" == "T" (
   SET FLAGS=%FLAGS% CONFIG+=production
 ) else (
   ECHO Staging build enabled
-  SET FLAGS=%FLAGS% CONFIG+=inspector
 )
 
 if "%TEST_BUILD%" == "T" (
