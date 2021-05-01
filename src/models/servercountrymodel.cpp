@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "servercountry.h"
 #include "serverdata.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 
 #include <QJsonArray>
@@ -64,7 +65,8 @@ bool ServerCountryModel::fromJson(const QByteArray& s) {
 namespace {
 
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b) {
-  return a.name() < b.name();
+  return ServerI18N::translateCountryName(a.code(), a.name()) <
+         ServerI18N::translateCountryName(b.code(), b.name());
 }
 
 }  // anonymous namespace
@@ -103,7 +105,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
     m_countries.append(country);
   }
 
-  std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
+  sortCountries();
 
   endResetModel();
 
@@ -113,6 +115,7 @@ bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
 QHash<int, QByteArray> ServerCountryModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[NameRole] = "name";
+  roles[LocalizedNameRole] = "localizedName";
   roles[CodeRole] = "code";
   roles[CitiesRole] = "cities";
   return roles;
@@ -127,15 +130,24 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
     case NameRole:
       return QVariant(m_countries.at(index.row()).name());
 
+    case LocalizedNameRole: {
+      const ServerCountry& country = m_countries.at(index.row());
+      return QVariant(
+          ServerI18N::translateCountryName(country.code(), country.name()));
+    }
+
     case CodeRole:
       return QVariant(m_countries.at(index.row()).code());
 
     case CitiesRole: {
-      QStringList list;
-      const QList<ServerCity>& cities = m_countries.at(index.row()).cities();
+      const ServerCountry& country = m_countries.at(index.row());
 
+      QList<QVariant> list;
+      const QList<ServerCity>& cities = country.cities();
       for (const ServerCity& city : cities) {
-        list.append(city.name());
+        QStringList names{city.name(), ServerI18N::translateCityName(
+                                           country.code(), city.name())};
+        list.append(QVariant(names));
       }
 
       return QVariant(list);
@@ -205,7 +217,7 @@ bool ServerCountryModel::exists(ServerData& data) const {
   for (const ServerCountry& country : m_countries) {
     if (country.code() == data.countryCode()) {
       for (const ServerCity& city : country.cities()) {
-        if (data.city() == city.name()) {
+        if (data.cityName() == city.name()) {
           return true;
         }
       }
@@ -240,5 +252,13 @@ const QString ServerCountryModel::countryName(
 
 void ServerCountryModel::retranslate() {
   beginResetModel();
+  sortCountries();
   endResetModel();
+}
+
+void ServerCountryModel::sortCountries() {
+  std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
+  for (ServerCountry& country : m_countries) {
+    country.sortCities();
+  }
 }
