@@ -7,20 +7,11 @@
 #include "serverdata.h"
 #include "serveri18n.h"
 
+#include <QCollator>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStringList>
-
-namespace {
-
-bool sortCityCallback(const ServerCity& a, const ServerCity& b,
-                      const QString& countryCode) {
-  return ServerI18N::translateCityName(countryCode, a.name()) <
-         ServerI18N::translateCityName(countryCode, b.name());
-}
-
-}  // anonymous namespace
 
 ServerCountry::ServerCountry() { MVPN_COUNT_CTOR(ServerCountry); }
 
@@ -93,8 +84,22 @@ const QList<Server> ServerCountry::servers(const ServerData& data) const {
   return QList<Server>();
 }
 
+namespace {
+
+bool sortCityCallback(const ServerCity& a, const ServerCity& b,
+                      const QString& countryCode, QCollator* collator) {
+  Q_ASSERT(collator);
+  return collator->compare(
+             ServerI18N::translateCityName(countryCode, a.name()),
+             ServerI18N::translateCityName(countryCode, b.name())) < 0;
+}
+
+}  // anonymous namespace
+
 void ServerCountry::sortCities() {
+  QCollator collator;
+
   std::sort(m_cities.begin(), m_cities.end(),
             std::bind(sortCityCallback, std::placeholders::_1,
-                      std::placeholders::_2, m_code));
+                      std::placeholders::_2, m_code, &collator));
 }
