@@ -114,6 +114,10 @@ void maybeInitialize() {
 
 QString translateItem(const QString& countryCode, const QString& cityName,
                       const QString& fallback) {
+  if (!SettingsHolder::instance()->hasLanguageCode()) {
+    return fallback;
+  }
+
   maybeInitialize();
   return s_items.value(itemKey(SettingsHolder::instance()->languageCode(),
                                countryCode, cityName),
