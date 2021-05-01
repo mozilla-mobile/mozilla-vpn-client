@@ -10,6 +10,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
+#include <QCollator>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -61,15 +62,6 @@ bool ServerCountryModel::fromJson(const QByteArray& s) {
   m_rawJson = s;
   return true;
 }
-
-namespace {
-
-bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b) {
-  return ServerI18N::translateCountryName(a.code(), a.name()) <
-         ServerI18N::translateCountryName(b.code(), b.name());
-}
-
-}  // anonymous namespace
 
 bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
   beginResetModel();
@@ -256,8 +248,24 @@ void ServerCountryModel::retranslate() {
   endResetModel();
 }
 
+namespace {
+
+bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
+                         QCollator* collator) {
+  Q_ASSERT(collator);
+  return collator->compare(
+             ServerI18N::translateCountryName(a.code(), a.name()),
+             ServerI18N::translateCountryName(b.code(), b.name())) < 0;
+}
+
+}  // anonymous namespace
+
 void ServerCountryModel::sortCountries() {
-  std::sort(m_countries.begin(), m_countries.end(), sortCountryCallback);
+  QCollator collator;
+  std::sort(m_countries.begin(), m_countries.end(),
+            std::bind(sortCountryCallback, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
+
   for (ServerCountry& country : m_countries) {
     country.sortCities();
   }
