@@ -354,11 +354,19 @@ else:linux:!android {
             platforms/linux/daemon/wireguardutilslinux.cpp \
             wgquickprocess.cpp
 
+    # The application firewall source code:
+    SOURCES += \
+            platforms/linux/appfirewall/apptracker.cpp \
+            platforms/linux/appfirewall/pidtracker.cpp \
+            platforms/linux/appfirewall/linuxappfirewall.cpp
+
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/interfaceconfig.h \
             daemon/daemon.h \
             daemon/wireguardutils.h \
+            platforms/linux/appfirewall/apptracker.h \
+            platforms/linux/appfirewall/pidtracker.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wireguardutilslinux.h \
