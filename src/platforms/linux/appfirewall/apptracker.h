@@ -6,6 +6,7 @@
 #define APPTRACKER_H
 
 #include <QObject>
+#include <QDBusConnection>
 #include <QDBusInterface>
 
 class AppTracker final : public QObject {
@@ -13,7 +14,7 @@ class AppTracker final : public QObject {
   Q_DISABLE_COPY_MOVE(AppTracker)
 
  public:
-  explicit AppTracker(QObject* parent);
+  explicit AppTracker(QDBusConnection connection, QObject* parent);
   ~AppTracker();
 
   void initialize();
@@ -25,10 +26,6 @@ class AppTracker final : public QObject {
   void gtkLaunchEvent(const QByteArray& appid, const QString& display,
                       qlonglong pid, const QStringList& uris,
                       const QVariantMap& extra);
-
- private:
-  QString m_busPath;
-  QDBusInterface* m_interface = nullptr;
 };
 
 #endif  // APPTRACKER_H

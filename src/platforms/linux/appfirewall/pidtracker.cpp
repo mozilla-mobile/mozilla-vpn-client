@@ -108,7 +108,8 @@ void PidTracker::handleProcEvent(struct cn_msg* cnmsg) {
   struct proc_event* ev = (struct proc_event*)cnmsg->data;
 
   if (ev->what == proc_event::PROC_EVENT_FORK) {
-    ProcessGroup* group = m_processTree[ev->event_data.fork.parent_pid];
+    ProcessGroup* group =
+        m_processTree.value(ev->event_data.fork.parent_pid, nullptr);
     if (!group) {
       return;
     }
@@ -119,7 +120,8 @@ void PidTracker::handleProcEvent(struct cn_msg* cnmsg) {
   }
 
   if (ev->what == proc_event::PROC_EVENT_EXIT) {
-    ProcessGroup* group = m_processTree[ev->event_data.exit.process_pid];
+    ProcessGroup* group =
+        m_processTree.value(ev->event_data.exit.process_pid, nullptr);
     if (!group) {
       return;
     }

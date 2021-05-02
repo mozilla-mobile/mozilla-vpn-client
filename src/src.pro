@@ -357,6 +357,7 @@ else:linux:!android {
     # The application firewall source code:
     SOURCES += \
             platforms/linux/appfirewall/apptracker.cpp \
+            platforms/linux/appfirewall/firewallservice.cpp \
             platforms/linux/appfirewall/pidtracker.cpp \
             platforms/linux/appfirewall/linuxappfirewall.cpp
 
@@ -366,6 +367,7 @@ else:linux:!android {
             daemon/daemon.h \
             daemon/wireguardutils.h \
             platforms/linux/appfirewall/apptracker.h \
+            platforms/linux/appfirewall/firewallservice.h \
             platforms/linux/appfirewall/pidtracker.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/polkithelper.h \
@@ -379,8 +381,12 @@ else:linux:!android {
         ETCPATH=/etc
     }
 
-    DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
-    DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
+    DBUS_ADAPTORS += \
+            platforms/linux/daemon/org.mozilla.vpn.dbus.xml \
+            platforms/linux/appfirewall/org.mozilla.vpn.firewall.xml
+    DBUS_INTERFACES = \
+            platforms/linux/daemon/org.mozilla.vpn.dbus.xml \
+            platforms/linux/appfirewall/org.mozilla.vpn.firewall.xml
 
     target.path = $${USRPATH}/bin
     INSTALLS += target

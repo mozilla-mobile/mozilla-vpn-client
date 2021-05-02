@@ -19,6 +19,8 @@ qrc_qml.cpp
 .qmake.stash
 dbus_adaptor.*
 dbus_interface.*
+firewall_adaptor.*
+firewall_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
 translations/*.qm

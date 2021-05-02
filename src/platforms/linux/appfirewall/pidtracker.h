@@ -39,6 +39,15 @@ class PidTracker final : public QObject {
   void initialize();
   void track(const QString& name, int rootpid);
 
+  QList<int> pids() { return m_processTree.keys(); }
+  QHash<int, ProcessGroup*>::key_iterator begin() {
+    return m_processTree.keyBegin();
+  }
+  QHash<int, ProcessGroup*>::key_iterator end() {
+    return m_processTree.keyEnd();
+  }
+  const ProcessGroup* group(int pid) { return m_processTree.value(pid); }
+
  signals:
   void pidForked(const QString& name, int parent, int child);
   void pidExited(const QString& name, int pid);

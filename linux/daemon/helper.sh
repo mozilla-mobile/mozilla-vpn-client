@@ -183,6 +183,11 @@ add_default() {
 	$iptables -t mangle -A OUTPUT -m mark ! -d $loopmask ! --mark $table -j mozvpn-exclude
 	$iptables -t nat -N mozvpn-exclude 2>/dev/null
 	$iptables -t nat -A POSTROUTING -m mark --mark $table -j mozvpn-exclude
+	if [ -e "/sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid" ]; then
+		local cgclass=$(cat /sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid)
+		$iptables -t mangle -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MARK --set-mark $table
+		$iptables -t nat -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MASQUERADE
+	fi
 
 	# Things work without this, but it looks important
 	# local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n'
