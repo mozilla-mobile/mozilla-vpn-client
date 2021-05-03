@@ -17,7 +17,8 @@ class ServerData final : public QObject {
   Q_DISABLE_COPY_MOVE(ServerData);
 
   Q_PROPERTY(QString countryCode READ countryCode NOTIFY changed)
-  Q_PROPERTY(QString city READ city NOTIFY changed)
+  Q_PROPERTY(QString cityName READ cityName NOTIFY changed)
+  Q_PROPERTY(QString localizedCityName READ localizedCityName NOTIFY changed)
 
  public:
   ServerData();
@@ -33,28 +34,30 @@ class ServerData final : public QObject {
 
   const QString& countryCode() const { return m_countryCode; }
 
-  const QString& country() const { return m_country; }
+  const QString& countryName() const { return m_countryName; }
 
-  const QString& city() const { return m_city; }
+  const QString& cityName() const { return m_cityName; }
+
+  QString localizedCityName() const;
 
   void forget() { m_initialized = false; }
 
-  void update(const QString& countryCode, const QString& country,
-              const QString& city);
+  void update(const QString& countryCode, const QString& countryName,
+              const QString& cityName);
 
  signals:
   void changed();
 
  private:
-  void initializeInternal(const QString& countryCode, const QString& country,
-                          const QString& city);
+  void initializeInternal(const QString& countryCode,
+                          const QString& countryName, const QString& cityName);
 
  private:
   bool m_initialized = false;
 
   QString m_countryCode;
-  QString m_country;
-  QString m_city;
+  QString m_countryName;
+  QString m_cityName;
 };
 
 #endif  // SERVERDATA_H

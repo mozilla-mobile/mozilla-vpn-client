@@ -344,7 +344,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   Q_ASSERT(vpn);
 
   if (vpn->currentServer()->countryCode() == countryCode &&
-      vpn->currentServer()->city() == city) {
+      vpn->currentServer()->cityName() == city) {
     logger.log() << "No server change needed";
     return;
   }
@@ -360,7 +360,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 
   logger.log() << "Switching to a different server";
 
-  m_currentCity = vpn->currentServer()->city();
+  m_currentCity = vpn->currentServer()->cityName();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 

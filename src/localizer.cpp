@@ -9,6 +9,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
+#include <QCollator>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -107,7 +108,10 @@ void Localizer::initialize() {
   }
 
   // Sorting languages.
-  std::sort(m_languages.begin(), m_languages.end(), languageSort);
+  QCollator collator;
+  std::sort(m_languages.begin(), m_languages.end(),
+            std::bind(languageSort, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
 }
 
 void Localizer::loadLanguage(const QString& code) {
@@ -248,20 +252,12 @@ QStringList Localizer::languages() const {
 }
 
 bool Localizer::languageSort(const Localizer::Language& a,
-                             const Localizer::Language& b) {
-  return a.m_localizedName < b.m_localizedName;
+                             const Localizer::Language& b,
+                             QCollator* collator) {
+  Q_ASSERT(collator);
+  return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
 
 QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
-}
-
-QString Localizer::translateServerCountry(const QString& countryCode,
-                                          const QString& countryName) {
-  return ServerI18N::translateCountryName(countryCode, countryName);
-}
-
-QString Localizer::translateServerCity(const QString& countryCode,
-                                       const QString& cityName) {
-  return ServerI18N::translateCityName(countryCode, cityName);
 }

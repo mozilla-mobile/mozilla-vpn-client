@@ -181,7 +181,7 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     // server city
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
-        []() { return MozillaVPN::instance()->currentServer()->city(); }},
+        []() { return MozillaVPN::instance()->currentServer()->cityName(); }},
 };
 
 struct WebSocketCommand {
