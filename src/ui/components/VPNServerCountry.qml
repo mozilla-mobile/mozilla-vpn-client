@@ -36,7 +36,7 @@ VPNClickableRow {
 
     activeFocusOnTab: true
 
-    accessibleName: VPNLocalizer.translateServerCountry(code, name)
+    accessibleName: localizedName
     Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
     Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
@@ -111,7 +111,7 @@ VPNClickableRow {
         VPNBoldLabel {
             id: countryName
 
-            text: VPNLocalizer.translateServerCountry(code, name)
+            text: localizedName
             Layout.leftMargin: Theme.hSpacing
             Layout.fillWidth: true
         }
@@ -144,7 +144,7 @@ VPNClickableRow {
             model: cities
             delegate: VPNRadioDelegate {
                 id: del
-                objectName: "serverCity-" + modelData.replace(/ /g, '_')
+                objectName: "serverCity-" + modelData[0].replace(/ /g, '_')
 
                 activeFocusOnTab: cityListVisible
 
@@ -153,14 +153,14 @@ VPNClickableRow {
 
                 onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
 
-                radioButtonLabelText: VPNLocalizer.translateServerCity(code, modelData)
-                accessibleName: VPNLocalizer.translateServerCity(code, modelData)
+                radioButtonLabelText: modelData[1]
+                accessibleName: modelData[1]
                 onClicked: {
-                    VPNController.changeServer(code, modelData);
+                    VPNController.changeServer(code, modelData[0]);
                     stackview.pop();
                 }
                 height: 54
-                checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
+                checked: code === VPNCurrentServer.countryCode && modelData[0] === VPNCurrentServer.cityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {

@@ -8,6 +8,7 @@
 #include <QAbstractListModel>
 #include <QTranslator>
 
+class QCollator;
 class SettingsHolder;
 
 class Localizer final : public QAbstractListModel {
@@ -57,14 +58,6 @@ class Localizer final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
-  // For QML
-
-  Q_INVOKABLE QString translateServerCountry(const QString& countryCode,
-                                             const QString& countryName);
-
-  Q_INVOKABLE QString translateServerCity(const QString& countryCode,
-                                          const QString& cityName);
-
  signals:
   void codeChanged();
   void previousCodeChanged();
@@ -72,7 +65,8 @@ class Localizer final : public QAbstractListModel {
  private:
   static QString languageName(const QString& code);
   static QString localizedLanguageName(const QString& code);
-  static bool languageSort(const Language& a, const Language& b);
+  static bool languageSort(const Language& a, const Language& b,
+                           QCollator* collator);
 
   bool loadLanguageInternal(const QString& code);
 
