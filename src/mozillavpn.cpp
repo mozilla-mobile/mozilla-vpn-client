@@ -1185,6 +1185,8 @@ void MozillaVPN::controllerStateChanged() {
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();
   }
+
+  NetworkManager::instance()->clearCache();
 }
 
 void MozillaVPN::backendServiceRestore() {
