@@ -119,9 +119,13 @@ QString translateItem(const QString& countryCode, const QString& cityName,
   }
 
   maybeInitialize();
-  return s_items.value(itemKey(SettingsHolder::instance()->languageCode(),
-                               countryCode, cityName),
-                       fallback);
+
+  QString languageCode = SettingsHolder::instance()->languageCode();
+  if (languageCode.isEmpty()) {
+    languageCode = QLocale::system().bcp47Name();
+  }
+
+  return s_items.value(itemKey(languageCode, countryCode, cityName), fallback);
 }
 
 }  // namespace
