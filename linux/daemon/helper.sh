@@ -124,8 +124,6 @@ add_route() {
 
 	if [[ -n $TABLE && $TABLE != auto ]]; then
 		ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
-	elif [[ $1 == */0 ]]; then
-		add_default "$1"
 	else
 		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || ip $proto route add "$1" dev "$INTERFACE"
 	fi
@@ -164,30 +162,32 @@ remove_firewall() {
 }
 
 HAVE_SET_FIREWALL=0
-add_default() {
-	local table line
-	if ! get_fwmark table; then
-		table=51820
-		while [[ -n $(ip -4 route show table $table 2>/dev/null) || -n $(ip -6 route show table $table 2>/dev/null) ]]; do
-			((table++))
+add_firewall() {
+	local line
+	if ! get_fwmark TABLE; then
+		TABLE=51820
+		while [[ -n $(ip -4 route show table $TABLE 2>/dev/null) || -n $(ip -6 route show table $TABLE 2>/dev/null) ]]; do
+			((TABLE++))
 		done
-		wg set "$INTERFACE" fwmark $table
+		wg set "$INTERFACE" fwmark $TABLE
 	fi
-	local proto=-4 iptables=iptables pf=ip loopmask=127.0.0.0/8
-	[[ $1 == *:* ]] && proto=-6 iptables=ip6tables pf=ip6 loopmask=::1
-	ip $proto route add "$1" dev "$INTERFACE" table $table
-	ip $proto rule add not fwmark $table table $table
-	ip $proto rule add table main suppress_prefixlength 0
+	for iptables in iptables ip6tables; do
+		local proto=-4 loopmask=127.0.0.0/8
+		[[ $iptables == ip6tables ]] && proto=-6 iptables=ip6tables loopmask=::1
 
-	$iptables -t mangle -N mozvpn-exclude 2>/dev/null
-	$iptables -t mangle -A OUTPUT -m mark ! -d $loopmask ! --mark $table -j mozvpn-exclude
-	$iptables -t nat -N mozvpn-exclude 2>/dev/null
-	$iptables -t nat -A POSTROUTING -m mark --mark $table -j mozvpn-exclude
-	if [ -e "/sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid" ]; then
-		local cgclass=$(cat /sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid)
-		$iptables -t mangle -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MARK --set-mark $table
-		$iptables -t nat -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MASQUERADE
-	fi
+		ip $proto rule add not fwmark $TABLE table $TABLE
+		ip $proto rule add table main suppress_prefixlength 0
+
+		$iptables -t mangle -N mozvpn-exclude || true
+		$iptables -t mangle -A OUTPUT -m mark ! -d $loopmask ! --mark $TABLE -j mozvpn-exclude
+		$iptables -t nat -N mozvpn-exclude || true
+		$iptables -t nat -A POSTROUTING -m mark --mark $TABLE -j mozvpn-exclude
+		if [ -e "/sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid" ]; then
+			local cgclass=$(cat /sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid)
+			$iptables -t mangle -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MARK --set-mark $TABLE
+			$iptables -t nat -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MASQUERADE
+		fi
+	done
 
 	# Things work without this, but it looks important
 	# local marker="-m comment --comment \"wg-quick(8) rule for $INTERFACE\"" restore=$'*raw\n'
@@ -216,6 +216,7 @@ cmd_up() {
 	done
 	set_mtu_up
 	set_dns
+	add_firewall
 	# Get the allowed ips from wg show (added to peer using set_conf)
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do
 		add_route "$i"
