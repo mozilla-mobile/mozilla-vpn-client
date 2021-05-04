@@ -35,6 +35,12 @@ PidTracker::~PidTracker() {
   MVPN_COUNT_DTOR(PidTracker);
   logger.log() << "PidTracker destroyed.";
 
+  m_processTree.clear();
+  while (!m_processGroups.isEmpty()) {
+    ProcessGroup* group = m_processGroups.takeFirst();
+    delete group;
+  }
+
   if (nlsock > 0) {
     close(nlsock);
   }
@@ -109,24 +115,30 @@ void PidTracker::handleProcEvent(struct cn_msg* cnmsg) {
 
   if (ev->what == proc_event::PROC_EVENT_FORK) {
     ProcessGroup* group =
-        m_processTree.value(ev->event_data.fork.parent_pid, nullptr);
+        m_processTree.value(ev->event_data.fork.parent_tgid, nullptr);
     if (!group) {
       return;
     }
-    m_processTree[ev->event_data.fork.child_pid] = group;
+    if (m_processTree.contains(ev->event_data.fork.child_tgid)) {
+      return;
+    }
+    m_processTree[ev->event_data.fork.child_tgid] = group;
     group->refcount++;
-    emit pidForked(group->name, ev->event_data.fork.parent_pid,
-                   ev->event_data.fork.child_pid);
+    emit pidForked(group->name, ev->event_data.fork.parent_tgid,
+                   ev->event_data.fork.child_tgid);
   }
 
   if (ev->what == proc_event::PROC_EVENT_EXIT) {
+    if (ev->event_data.exit.parent_tgid == 0) {
+      return;
+    }
     ProcessGroup* group =
-        m_processTree.value(ev->event_data.exit.process_pid, nullptr);
+        m_processTree.value(ev->event_data.exit.process_tgid, nullptr);
     if (!group) {
       return;
     }
-    emit pidExited(group->name, ev->event_data.exit.process_pid);
-    m_processTree.remove(ev->event_data.exit.process_pid);
+    emit pidExited(group->name, ev->event_data.exit.process_tgid);
+    m_processTree.remove(ev->event_data.exit.process_tgid);
 
     Q_ASSERT(group->refcount > 0);
     group->refcount--;
