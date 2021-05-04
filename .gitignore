@@ -27,12 +27,15 @@ translations/*.pri
 .tmp
 .env
 
+asset_catalog_compiler.Info.plist
+
 # Ignore files that might be added by Android Studio
 # if someone opens the android/ subproject
 android/.gradle/
 android/.idea/
 android/build
 android/local.properties
+android/*/.cxx/
 xcode.xconfig
 .gradle/
 
@@ -71,3 +74,4 @@ qtloader.js
 
 # WebExtension native app
 extension/app/mozillavpnnp
+
