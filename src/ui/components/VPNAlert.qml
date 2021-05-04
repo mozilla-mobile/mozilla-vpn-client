@@ -4,24 +4,49 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-Rectangle {
+Item {
     id: alertBox
 
     property var alertType: ""
     property var alertColor: Theme.redButton
+    property var textColor: "#ffffff"
     property var alertText: ""
     property var alertLinkText: ""
+    property bool isLayout: false
+    property var alertHeight: Math.max(Theme.rowHeight, (label.paintedHeight + (Theme.windowMargin * 1.25)))
 
-    color: "transparent"
-    height: Math.max(40, (labelWrapper.height + Theme.windowMargin))
-    width: parent.width - Theme.windowMargin
-    y: fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.margins: Theme.windowMargin / 2
-    radius: Theme.cornerRadius
+    VPNDropShadow {
+        anchors.fill: parent
+        source: parent
+        opacity: .1
+        state: "overwrite-state"
+        z: -1
+    }
+
+    z: 3
+    Layout.minimumHeight: alertHeight
+    Layout.maximumHeight: alertHeight
+    Layout.fillWidth: isLayout
+
+    onVisibleChanged: {
+        if (visible) {
+            showAlert.start();
+        }
+    }
+
+    Component.onCompleted:  {
+        if (!isLayout) {
+            height = alertHeight;
+            width = parent.width - Theme.windowMargin;
+            y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
+            anchors.horizontalCenter = parent.horizontalCenter;
+            anchors.margins = Theme.windowMargin / 2;
+        }
+    }
 
     VPNButtonBase {
         id: alertAction
@@ -65,7 +90,7 @@ Rectangle {
             id: labelWrapper
 
             color: "transparent"
-            height: label.paintedHeight
+            height: label.paintedHeight + Theme.windowMargin
             anchors.left: alertAction.left
             width: alertAction.width - Theme.rowHeight
             anchors.verticalCenter: parent.verticalCenter
@@ -76,7 +101,7 @@ Rectangle {
                  text: alertBox.alertText + " " + "<b><u>" + alertLinkText + "</b></u>"
                  horizontalAlignment: Text.AlignHCenter
                  font.pixelSize: Theme.fontSizeSmall
-                 color: Theme.white
+                 color: textColor
                  width: labelWrapper.width - Theme.windowMargin
                  wrapMode: Label.WordWrap
              }
@@ -92,6 +117,8 @@ Rectangle {
         focusedComponent: closeButton
         anchors.fill: closeButton
         setMargins: -3
+        radius: Theme.cornerRadius
+
     }
 
     VPNButtonBase {
@@ -105,7 +132,7 @@ Rectangle {
         clip: true
         anchors.right: parent.right
         anchors.rightMargin: 0
-        radius: 0
+        radius: Theme.cornerRadius
         Accessible.name: "Close"
         onClicked: {
             if (alertType === "update") {
@@ -113,6 +140,7 @@ Rectangle {
                 return VPN.hideUpdateRecommendedAlert();
             }
             if (alertType === "survey") {
+                closeAlert.start()
                 return VPNSurveyModel.dismissCurrentSurvey();
             }
             return VPN.hideAlert();
@@ -122,6 +150,7 @@ Rectangle {
             anchors.fill: closeButton
             border.color: alertColor.focusBorder
             opacity: closeButton.activeFocus ? 1 : 0
+            radius: Theme.cornerRadius
             z: 1
         }
 
@@ -132,7 +161,7 @@ Rectangle {
             width: parent.width + 10
             anchors.left: closeButton.left
             anchors.leftMargin: -10
-            radius: 4
+            radius: Theme.cornerRadius
             color: "transparent"
             clip: true
             state: closeButton.state
@@ -154,7 +183,7 @@ Rectangle {
         Image {
             id: alertBoxClose
 
-            source: "../resources/close-white.svg"
+            source: textColor === "#ffffff" ? "../resources/close-white.svg" : "../resources/close-dark.svg"
             sourceSize.width: 12
             sourceSize.height: 12
             anchors.centerIn: closeButton
@@ -169,6 +198,38 @@ Rectangle {
         anchors.fill: alertBox
         border.color: alertColor.focusBorder
         opacity: alertAction.activeFocus ? 1 : 0
+        radius: Theme.cornerRadius
+    }
+    PropertyAnimation {
+        id: showAlert
+        target: alertBox
+        property: "opacity"
+        from: 0
+        to: 1
+        duration: 100
+    }
+
+    SequentialAnimation {
+        property var closeTarget
+        id: closeAlert
+
+        PropertyAnimation {
+            target: alertBox
+            property: "opacity"
+            to: 0
+            duration: 60
+        }
+        PropertyAnimation {
+            target: alertBox
+            property: isLayout ? "Layout.minimumHeight" : "height"
+            to: 0
+            duration: 60
+        }
+        PropertyAction {
+            target: alertBox
+            property: "visible"
+            value: "false"
+        }
     }
 
 }

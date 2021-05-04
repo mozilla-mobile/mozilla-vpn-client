@@ -18,8 +18,6 @@ ColumnLayout {
     property var imgIsVector: false
     property var disableRowWhen
     spacing: 4
-    width: parent.width - Theme.windowMargin
-    anchors.horizontalCenter: parent.horizontalCenter
 
     VPNBoldLabel {
         text: titleText
