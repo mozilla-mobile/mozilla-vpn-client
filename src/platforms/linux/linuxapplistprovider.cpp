@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QSettings>
+#include <QProcessEnvironment>
 
 #include "logger.h"
 #include "leakdetector.h"
@@ -25,11 +26,15 @@ LinuxAppListProvider::LinuxAppListProvider(QObject* parent)
   MVPN_COUNT_CTOR(LinuxAppListProvider);
 }
 
-void LinuxAppListProvider::getApplicationList() {
-  logger.log() << "Fetch Application list from Linux desktop";
+LinuxAppListProvider::~LinuxAppListProvider() {
+  MVPN_COUNT_DTOR(LinuxAppListProvider);
+}
 
-  QMap<QString, QString> out;
-  QDirIterator iter(DESKTOP_ENTRY_LOCATION, QStringList() << "*.desktop", QDir::Files);
+void LinuxAppListProvider::fetchEntries(const QString& dataDir,
+                                        QMap<QString, QString>& map) {
+  logger.log() << "Fetch Application list from" << dataDir;
+
+  QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files);
   while (iter.hasNext()) {
     QFileInfo fileinfo(iter.next());
     QSettings entry(fileinfo.filePath(), QSettings::IniFormat);
@@ -43,7 +48,26 @@ void LinuxAppListProvider::getApplicationList() {
       continue;
     }
 
-    out[fileinfo.fileName()] = entry.value("Name").toString();
+    map[fileinfo.canonicalFilePath()] = entry.value("Name").toString();
+  }
+}
+
+void LinuxAppListProvider::getApplicationList() {
+  logger.log() << "Fetch Application list from Linux desktop";
+  QMap<QString, QString> out;
+
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains("XDG_DATA_DIRS")) {
+    QStringList parts = pe.value("XDG_DATA_DIRS").split(":");
+    for (const QString& part : parts) {
+      fetchEntries(part.trimmed() + "/applications", out);
+    }
+  } else {
+    fetchEntries(DESKTOP_ENTRY_LOCATION, out);
+  }
+
+  if (pe.contains("HOME")) {
+    fetchEntries(pe.value("HOME") + "/.local/share/applications", out);
   }
 
   emit newAppList(out);

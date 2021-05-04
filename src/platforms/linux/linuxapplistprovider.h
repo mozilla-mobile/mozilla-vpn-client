@@ -13,7 +13,11 @@ class LinuxAppListProvider : public AppListProvider {
   Q_OBJECT
  public:
   LinuxAppListProvider(QObject* parent);
+  ~LinuxAppListProvider();
   void getApplicationList() override;
+
+ private:
+  void fetchEntries(const QString& dataDir, QMap<QString, QString>& map);
 };
 
 #endif  // LINUXAPPLISTPROVIDER_H
