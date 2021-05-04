@@ -22,6 +22,8 @@ class NetworkManager : public QObject {
   static QByteArray userAgent();
 
   virtual QNetworkAccessManager* networkAccessManager() = 0;
+
+  virtual void clearCache() = 0;
 };
 
 #endif  // NETWORKMANAGER_H
