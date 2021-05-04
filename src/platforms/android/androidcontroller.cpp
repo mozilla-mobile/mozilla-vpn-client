@@ -136,6 +136,7 @@ void AndroidController::activate(
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, Reason reason) {
   logger.log() << "Activation";
+  Q_UNUSED(reason);
 
   logger.log() << "Prompting for VPN permission";
   auto appContext = QtAndroid::androidActivity().callObjectMethod(
@@ -176,6 +177,15 @@ void AndroidController::activate(
   foreach (auto appID, vpnDisabledApps) {
     excludedApps.append(QJsonValue(appID));
   }
+
+  QJsonObject builderConfig;
+  builderConfig["excludedApps"] = excludedApps;
+  builderConfig["ipv4Address"] = device->ipv4Address();
+  builderConfig["ipv6Address"] = device->ipv6Address();
+  builderConfig["dns1"] = server.ipv4Gateway();
+  builderConfig["dns2"] = server.ipv6Gateway();
+  builderConfig["routes"] = allowedIPs;
+  builderConfig["ipv6Enabled"] = SettingsHolder::instance()->ipv6Enabled();
 
   QJsonObject args;
   args["device"] = jDevice;

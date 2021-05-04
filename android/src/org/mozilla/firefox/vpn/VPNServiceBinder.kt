@@ -7,7 +7,6 @@ import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
-import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.*
 import com.wireguard.crypto.Key
 import org.json.JSONObject
@@ -102,17 +101,16 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 val binder = data.readStrongBinder()
                 mListener = binder
                 val obj = JSONObject()
-                obj.put("connected", mService.state == Tunnel.State.UP)
+                obj.put("connected", mService.isUp)
                 obj.put("time", mService.connectionTime)
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
 
             ACTIONS.requestStatistic -> {
-                val statistics = this.mService.statistic
+
                 val obj = JSONObject()
-                obj.put("totalRX", statistics?.totalRx())
-                obj.put("totalTX", statistics?.totalTx())
+
                 dispatchEvent(EVENTS.statisticUpdate, obj.toString())
                 return true
             }

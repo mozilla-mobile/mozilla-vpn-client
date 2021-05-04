@@ -1,9 +1,1 @@
-
-include ':libwg'
-project(':libwg').projectDir = new File(rootDir, 'modules/wireguard/libwg')
-include ':config'
-project(':config').projectDir = new File(rootDir, 'modules/wireguard/config')
-include ':crypto'
-project(':crypto').projectDir = new File(rootDir, 'modules/wireguard/crypto')
-include ':utility'
-project(':utility').projectDir = new File(rootDir, 'modules/wireguard/utility')
+ 
