@@ -17,6 +17,11 @@ DEFINES += UNIT_TEST
 TEMPLATE = app
 TARGET = tests
 
+wasm {
+    CONFIG += c++1z
+    QMAKE_CXXFLAGS *= -Werror
+}
+
 INCLUDEPATH += \
             . \
             ../../src \
