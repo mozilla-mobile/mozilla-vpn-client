@@ -57,14 +57,8 @@ class VPNService : android.net.VpnService() {
                 Log.i(tag, "Start only!")
                 return super.onStartCommand(intent, flags, startId)
             }
-            if (intent.getBooleanExtra("startOnBoot", false)) {
-                Log.v(tag, "Starting VPN because 'start on boot is enabled'")
-            } else {
-                Log.v(tag, "Starting VPN because 'always on vpn' is enabled")
-            }
         }
-        // Go foreground if we need to connect
-        NotificationUtil.show(this)
+        // This start is from always-on
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
@@ -108,6 +102,16 @@ class VPNService : android.net.VpnService() {
             }
             mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
             mConnectionTime = 0
+        }
+    val totalRx: Int
+        get() {
+            val value = getConfigValue("rx_bytes") ?: return 0
+            return value.toInt()
+        }
+    val totalTx: Int
+        get() {
+            val value = getConfigValue("tx_bytes") ?: return 0
+            return value.toInt()
         }
 
      /*
@@ -174,29 +178,54 @@ class VPNService : android.net.VpnService() {
         isUp = false
     }
 
+    /**
+     * Configures an Android VPN Service Tunnel
+     * with a given Wireguard Config
+     */
     private fun setupBuilder(config: Config, builder: Builder) {
         // Setup Split tunnel
-        for (excludedApplication in newConf.`interface`.excludedApplications)
+        for (excludedApplication in config.`interface`.excludedApplications)
             builder.addDisallowedApplication(excludedApplication)
 
         // Device IP
-        for (addr in newConf.`interface`.addresses) builder.addAddress(addr.address, addr.mask)
+        for (addr in config.`interface`.addresses) builder.addAddress(addr.address, addr.mask)
         // DNS
-        for (addr in newConf.`interface`.dnsServers) builder.addDnsServer(addr.hostAddress)
+        for (addr in config.`interface`.dnsServers) builder.addDnsServer(addr.hostAddress)
         // Add All routes the VPN may route tos
-        for (peer in newConf.peers) {
+        for (peer in config.peers) {
             for (addr in peer.allowedIps) {
                 builder.addRoute(addr.address, addr.mask)
             }
         }
         builder.allowFamily(OsConstants.AF_INET)
         builder.allowFamily(OsConstants.AF_INET6)
-        builder.setMtu(newConf.`interface`.mtu.orElse(1280))
+        builder.setMtu(config.`interface`.mtu.orElse(1280))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) builder.setMetered(false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) setUnderlyingNetworks(null)
 
         builder.setBlocking(true)
+    }
+
+    /**
+     * Gets config value for {key} from the Current
+     * running Wireguard tunnel
+     */
+    private fun getConfigValue(key: String): String? {
+        if (!isUp) {
+            return null
+        }
+        val config = wgGetConfig(currentTunnelHandle) ?: return null
+        val lines = config.split("\n")
+        for (line in lines) {
+            val parts = line.split("=")
+            val k = parts.first()
+            val value = parts.last()
+            if (key == k) {
+                return value
+            }
+        }
+        return null
     }
 
     companion object {

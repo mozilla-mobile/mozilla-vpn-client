@@ -108,9 +108,9 @@ class VPNServiceBinder(service: VPNService) : Binder() {
             }
 
             ACTIONS.requestStatistic -> {
-
                 val obj = JSONObject()
-
+                obj.put("totalRX", mService.totalRx)
+                obj.put("totalTX", mService.totalTx)
                 dispatchEvent(EVENTS.statisticUpdate, obj.toString())
                 return true
             }
