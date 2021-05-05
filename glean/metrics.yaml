@@ -1,0 +1,168 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these pings are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# Metrics in this file may make use of SDK reserved ping names. See
+# https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
+# for additional information.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+sample:
+  authentication_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started the authentication flow.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_aborted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has aborted the authentication flow.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has completed the authentication flow.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_failure:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The authentication flow has terminated with an error
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_failure_by_geo:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The authentication flow has terminated with a geo-restriction error
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  settings_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the settings
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  manage_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the `manage account` button
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_info_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the connection info view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  max_device_reached:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Device limit reached
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never

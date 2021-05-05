@@ -20,7 +20,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
-            hacl-star/kremlin/minimal
+            hacl-star/kremlin/minimal \
+            ../glean/generated
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -243,6 +244,7 @@ unix {
 }
 
 RESOURCES += qml.qrc
+RESOURCES += ../glean/glean.qrc
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =

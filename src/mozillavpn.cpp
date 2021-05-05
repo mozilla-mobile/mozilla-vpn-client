@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "gleansample.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -149,6 +150,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(iap, &IAPHandler::alreadySubscribed, this,
           &MozillaVPN::alreadySubscribed);
 #endif
+
+  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
+  m_gleanTimer.start(Constants::GLEAN_TIMEOUT_MSEC);
+  m_gleanTimer.setSingleShot(false);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -302,6 +307,7 @@ void MozillaVPN::maybeStateMain() {
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
+    emit triggerGleanSample(GleanSample::maxDeviceReached);
     setState(StateDeviceLimit);
     return;
   }
@@ -326,6 +332,8 @@ void MozillaVPN::authenticate() {
     return;
   }
 
+  emit triggerGleanSample(GleanSample::authenticationStarted);
+
   scheduleTask(new TaskHeartbeat());
   scheduleTask(new TaskAuthenticate());
 }
@@ -334,6 +342,8 @@ void MozillaVPN::abortAuthentication() {
   logger.log() << "Abort authentication";
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
+
+  emit triggerGleanSample(GleanSample::authenticationAborted);
 }
 
 void MozillaVPN::openLink(LinkType linkType) {
@@ -449,6 +459,8 @@ void MozillaVPN::setToken(const QString& token) {
 void MozillaVPN::authenticationCompleted(const QByteArray& json,
                                          const QString& token) {
   logger.log() << "Authentication completed";
+
+  emit triggerGleanSample(GleanSample::authenticationCompleted);
 
   if (!m_private->m_user.fromJson(json)) {
     logger.log() << "Failed to parse the User JSON data";
@@ -797,6 +809,11 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   // Any error in authenticating state sends to the Initial state.
   if (m_state == StateAuthenticating) {
+    if (alert == GeoIpRestrictionAlert) {
+      emit triggerGleanSample(GleanSample::authenticationFailureByGeo);
+    } else {
+      emit triggerGleanSample(GleanSample::authenticationFailure);
+    }
     setState(StateInitialize);
     return;
   }
