@@ -14,7 +14,7 @@
 #include "simplenetworkmanager.h"
 
 #ifdef MVPN_WINDOWS
-# include <Windows.h>
+#  include <Windows.h>
 #endif
 
 #include <QApplication>
