@@ -5,6 +5,7 @@
 #ifndef FIREWALLSERVICE_H
 #define FIREWALLSERVICE_H
 
+#include "apptracker.h"
 #include "firewall_adaptor.h"
 #include "pidtracker.h"
 
@@ -18,21 +19,27 @@ class FirewallService final : public QObject {
   ~FirewallService();
 
   void initialize(void) { m_pidtracker->initialize(); }
-  void trackApp(const QString& name, int rootpid);
 
  public slots:
   QString status();
   QString version();
-  void excludeApp(const QStringList& names);
-  void includeApp(const QStringList& names);
+  QString runningApps();
+  bool excludeApp(const QStringList& names);
+  bool includeApp(const QStringList& names);
+  bool flushApps();
 
  private slots:
+  void userListCompleted(QDBusPendingCallWatcher* call);
+  void userCreated(uint uid, const QDBusObjectPath& path);
+  void userRemoved(uint uid, const QDBusObjectPath& path);
   void pidForked(const QString& name, int parent, int child);
   void pidExited(const QString& name, int pid);
+  void appLaunched(const QString& name, uint userid, int rootpid);
   void appTerminate(const QString& name, int rootpid);
 
  private:
   FirewallAdaptor* m_adaptor;
+  QMap<uint, AppTracker*> m_users;
   PidTracker* m_pidtracker;
   QStringList m_excludedApps;
 };

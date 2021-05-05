@@ -7,11 +7,19 @@
     <method name="status">
       <arg type="s" direction="out"/>
     </method>
+    <method name="runningApps">
+      <arg type="s" direction="out"/>
+    </method>
     <method name="excludeApp">
+      <arg type="b" direction="out"/>
       <arg name="names" type="as" direction="in"/>
     </method>
     <method name="includeApp">
+      <arg type="b" direction="out"/>
       <arg name="names" type="as" direction="in"/>
+    </method>
+    <method name="flushApps">
+      <arg type="b" direction="out"/>
     </method>
   </interface>
 </node>

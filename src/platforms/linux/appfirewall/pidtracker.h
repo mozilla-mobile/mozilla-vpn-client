@@ -13,6 +13,7 @@
 #include "leakdetector.h"
 
 struct cn_msg;
+class FirewallService;
 
 class ProcessGroup {
  public:
@@ -24,6 +25,7 @@ class ProcessGroup {
   }
   ~ProcessGroup() { MVPN_COUNT_DTOR(ProcessGroup); }
   QString name;
+  uint userid;
   int rootpid;
   int refcount;
 };
@@ -32,12 +34,14 @@ class PidTracker final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(PidTracker)
 
+  friend FirewallService;
+
  public:
   explicit PidTracker(QObject* parent);
   ~PidTracker();
 
   void initialize();
-  void track(const QString& name, int rootpid);
+  void track(const QString& name, uint userid, int rootpid);
 
   QList<int> pids() { return m_processTree.keys(); }
   QHash<int, ProcessGroup*>::key_iterator begin() {

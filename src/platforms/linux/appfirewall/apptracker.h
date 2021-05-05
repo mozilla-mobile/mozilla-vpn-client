@@ -14,15 +14,16 @@ class AppTracker final : public QObject {
   Q_DISABLE_COPY_MOVE(AppTracker)
 
  public:
-  explicit AppTracker(QDBusConnection connection, QObject* parent);
+  explicit AppTracker(uint userid, QDBusObjectPath path, QObject* parent);
   ~AppTracker();
 
-  void initialize();
-
  signals:
-  void appLaunched(QString name, int rootpid);
+  void appLaunched(const QString& name, uint userid, int rootpid);
 
- public slots:
+ private:
+  uint m_userid;
+
+ private slots:
   void gtkLaunchEvent(const QByteArray& appid, const QString& display,
                       qlonglong pid, const QStringList& uris,
                       const QVariantMap& extra);

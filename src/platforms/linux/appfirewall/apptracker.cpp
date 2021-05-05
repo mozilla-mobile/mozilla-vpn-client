@@ -2,25 +2,46 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "apptracker.h"
+#include "leakdetector.h"
+#include "logger.h"
+
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
 #include <QProcessEnvironment>
 
-#include "apptracker.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
+constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
 
 namespace {
 Logger logger(LOG_LINUX, "AppTracker");
 }
 
-constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
-constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
-
-AppTracker::AppTracker(QDBusConnection connection, QObject* parent)
+AppTracker::AppTracker(uint userid, QDBusObjectPath path, QObject* parent)
     : QObject(parent) {
   MVPN_COUNT_CTOR(AppTracker);
   logger.log() << "AppTracker created.";
+  Q_UNUSED(path);
+
+  m_userid = userid;
+
+  /* For correctness should ask systemd for the user's runtime directory. */
+  QString busPath = "unix:path=/run/user/" + QString::number(userid) + "/bus";
+  logger.log() << "Connection to" << busPath;
+
+  /* The D-Bus security policy will require us to adopt the effective UID of
+   * the session bus before we can connect to it. But the firewall needs to
+   * be running as root to manage control groups.
+   */
+  uid_t realuid = getuid();
+  seteuid(userid);
+  QDBusConnection connection =
+      QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
+  seteuid(realuid);
 
   bool isConnected = connection.connect(
       "", GTK_DESKTOP_APP_PATH, GTK_DESKTOP_APP_SERVICE, "Launched", this,
@@ -34,6 +55,7 @@ AppTracker::AppTracker(QDBusConnection connection, QObject* parent)
 AppTracker::~AppTracker() {
   MVPN_COUNT_DTOR(AppTracker);
   logger.log() << "AppTracker destroyed.";
+  QDBusConnection::disconnectFromBus("user-" + QString::number(m_userid));
 }
 
 void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
@@ -45,6 +67,6 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
 
   QString appIdName = QString(appid);
   if (!appIdName.isEmpty()) {
-    emit appLaunched(appIdName, pid);
+    emit appLaunched(appIdName, m_userid, pid);
   }
 }

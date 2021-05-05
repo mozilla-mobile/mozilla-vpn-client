@@ -21,6 +21,11 @@ constexpr const char* VPN_EXCLUDE_CLASS_PATH =
     VPN_EXCLUDE_CGROUP "/net_cls.classid";
 constexpr unsigned long VPN_EXCLUDE_CLASS_ID = 0x00110011;
 
+constexpr const char* LOGIN_MANAGER_SERVICE = "org.freedesktop.login1";
+constexpr const char* LOGIN_MANAGER_PATH = "/org/freedesktop/login1";
+constexpr const char* LOGIN_MANAGER_INTERFACE =
+    "org.freedesktop.login1.Manager";
+
 namespace {
 Logger logger(LOG_LINUX, "FirewallService");
 }
@@ -36,13 +41,11 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
     logger.log() << "Failed to create VPN exclusion cgroup:" << strerror(errno);
     return;
   }
-  if (err == 0) {
-    FILE* fpclass = fopen(VPN_EXCLUDE_CLASS_PATH, "w");
-    if (fpclass) {
-      fprintf(fpclass, "%lu", VPN_EXCLUDE_CLASS_ID);
-    }
-    fclose(fpclass);
+  FILE* fpclass = fopen(VPN_EXCLUDE_CLASS_PATH, "w");
+  if (fpclass) {
+    fprintf(fpclass, "%lu", VPN_EXCLUDE_CLASS_ID);
   }
+  fclose(fpclass);
 
   m_pidtracker = new PidTracker(this);
   connect(m_pidtracker, SIGNAL(pidForked(const QString&, int, int)), this,
@@ -51,6 +54,19 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
           SLOT(pidExited(const QString&, int)));
   connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
           SLOT(appTerminate(const QString&, int)));
+
+  QDBusConnection m_conn = QDBusConnection::systemBus();
+  m_conn.connect("", LOGIN_MANAGER_PATH, LOGIN_MANAGER_INTERFACE, "UserNew",
+                 this, SLOT(userCreated(uint, const QDBusObjectPath&)));
+  m_conn.connect("", LOGIN_MANAGER_PATH, LOGIN_MANAGER_INTERFACE, "UserRemoved",
+                 this, SLOT(userRemoved(uint, const QDBusObjectPath&)));
+
+  QDBusInterface n(LOGIN_MANAGER_SERVICE, LOGIN_MANAGER_PATH,
+                   LOGIN_MANAGER_INTERFACE, m_conn);
+  QDBusPendingReply reply = n.asyncCall("ListUsers");
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
+                   &FirewallService::userListCompleted);
 }
 
 FirewallService::~FirewallService() { MVPN_COUNT_DTOR(FirewallService); }
@@ -67,6 +83,30 @@ QString FirewallService::status() {
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
 
+QString FirewallService::runningApps() {
+  QJsonArray result;
+
+  for (auto app = m_pidtracker->m_processGroups.begin();
+       app != m_pidtracker->m_processGroups.end(); app++) {
+    const ProcessGroup* group = *app;
+    QJsonObject appObject;
+    QJsonArray pidList;
+    appObject.insert("name", QJsonValue(group->name));
+    appObject.insert("userid", QJsonValue((qint64)group->userid));
+    appObject.insert("rootpid", QJsonValue(group->rootpid));
+
+    for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
+      if (m_pidtracker->group(*pid) == group) {
+        pidList.append(QJsonValue(*pid));
+      }
+    }
+    appObject.insert("pids", pidList);
+    result.append(appObject);
+  }
+
+  return QJsonDocument(result).toJson(QJsonDocument::Compact);
+}
+
 static inline void addToControlGroup(const char* cgprocs, int pid) {
   FILE* fp = fopen(cgprocs, "w");
   if (fp) {
@@ -75,7 +115,7 @@ static inline void addToControlGroup(const char* cgprocs, int pid) {
   fclose(fp);
 }
 
-void FirewallService::excludeApp(const QStringList& names) {
+bool FirewallService::excludeApp(const QStringList& names) {
   for (auto app = names.begin(); app != names.end(); app++) {
     logger.log() << "Adding" << *app << "to VPN exclusion group";
     if (m_excludedApps.contains(*app)) continue;
@@ -88,9 +128,10 @@ void FirewallService::excludeApp(const QStringList& names) {
       }
     }
   }
+  return true;
 }
 
-void FirewallService::includeApp(const QStringList& names) {
+bool FirewallService::includeApp(const QStringList& names) {
   for (auto app = names.begin(); app != names.end(); app++) {
     logger.log() << "Removing" << *app << "from VPN exclusion group";
     m_excludedApps.removeAll(*app);
@@ -102,27 +143,96 @@ void FirewallService::includeApp(const QStringList& names) {
       }
     }
   }
+  return true;
+}
+
+bool FirewallService::flushApps() {
+  for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
+    const ProcessGroup* group = m_pidtracker->group(*pid);
+    if (m_excludedApps.contains(group->name)) {
+      addToControlGroup(ROOT_CLASS_PROCS, *pid);
+    }
+  }
+
+  for (auto app = m_excludedApps.begin(); app != m_excludedApps.end(); app++) {
+    logger.log() << "Removing" << *app << "from VPN exclusion group";
+  }
+  m_excludedApps.clear();
+  return true;
 }
 
 void FirewallService::pidForked(const QString& name, int parent, int child) {
   if (m_excludedApps.contains(name)) {
     addToControlGroup(VPN_EXCLUDE_PROCS, child);
   }
+#ifdef QT_DEBUG
   logger.log() << "fork:" << name << "PID:" << parent << "->" << child;
+#endif
 }
 
 void FirewallService::pidExited(const QString& name, int pid) {
+#ifdef QT_DEBUG
   logger.log() << "exit:" << name << "PID:" << pid;
+#endif
 }
 
 void FirewallService::appTerminate(const QString& name, int rootpid) {
   logger.log() << "terminate:" << name << "PID:" << rootpid;
 }
 
-void FirewallService::trackApp(const QString& name, int rootpid) {
+void FirewallService::appLaunched(const QString& name, uint userid,
+                                  int rootpid) {
   if (m_excludedApps.contains(name)) {
     addToControlGroup(VPN_EXCLUDE_PROCS, rootpid);
   }
   logger.log() << "tracking:" << name << "PID:" << rootpid;
-  m_pidtracker->track(name, rootpid);
+  m_pidtracker->track(name, userid, rootpid);
+}
+
+void FirewallService::userListCompleted(QDBusPendingCallWatcher* watcher) {
+  QDBusPendingReply reply = *watcher;
+  if (!reply.isValid()) {
+    return;
+  }
+
+  const QDBusArgument array = reply.argumentAt(0).value<QDBusArgument>();
+  array.beginArray();
+  while (!array.atEnd()) {
+    uint userid;
+    QString name;
+    QDBusObjectPath path;
+
+    array.beginStructure();
+    array >> userid;
+    array >> name;
+    array >> path;
+    array.endStructure();
+
+    userCreated(userid, path);
+  }
+  array.endArray();
+
+  delete watcher;
+}
+
+void FirewallService::userCreated(uint uid, const QDBusObjectPath& path) {
+  if (m_users.contains(uid)) {
+    return;
+  }
+  AppTracker* session = new AppTracker(uid, path, this);
+  m_users[uid] = session;
+  QObject::connect(session, SIGNAL(appLaunched(const QString&, uint, int)),
+                   this, SLOT(appLaunched(const QString&, uint, int)));
+
+  logger.log() << "User created uid:" << uid << "at:" << path.path();
+}
+
+void FirewallService::userRemoved(uint uid, const QDBusObjectPath& path) {
+  AppTracker* session = m_users.value(uid);
+  if (!session) {
+    return;
+  }
+  logger.log() << "User removed uid:" << uid << "at:" << path.path();
+  m_users.remove(uid);
+  delete session;
 }

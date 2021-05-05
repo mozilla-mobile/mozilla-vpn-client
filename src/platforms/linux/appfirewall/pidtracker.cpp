@@ -98,13 +98,14 @@ void PidTracker::initialize() {
           SLOT(readData()));
 }
 
-void PidTracker::track(const QString& name, int rootpid) {
+void PidTracker::track(const QString& name, uint userid, int rootpid) {
   if (m_processTree.contains(rootpid)) {
     logger.log() << "Ignoring attempt to track duplicate PID";
     return;
   }
   ProcessGroup* group = new ProcessGroup(name, rootpid);
   group->refcount = 1;
+  group->userid = userid;
 
   m_processGroups.append(group);
   m_processTree[rootpid] = group;
