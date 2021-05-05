@@ -2,3 +2,5 @@
 ./android/modules/wireguard/*
 ./src/hacl-star/*
 ./extension/app/json.hpp
+./glean/glean.js
+./glean/generated

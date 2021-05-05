@@ -30,6 +30,14 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+          python3 scripts/generate_glean.py
+
       - name: Importing translation files
         shell: bash
         run: |
