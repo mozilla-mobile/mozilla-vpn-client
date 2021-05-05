@@ -8,6 +8,7 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
 import "themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 Window {
     id: window
@@ -20,26 +21,14 @@ Window {
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
-
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
 
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
 
-    function getWidth() {
-        return fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    }
-    function getHeight() {
-        return fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
-    }
-
-    width: getWidth()
-    height: getHeight()
-    maximumHeight: getHeight()
-    maximumWidth: getWidth()
-    minimumHeight: getHeight()
-    minimumWidth: getWidth()
+    width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
@@ -62,9 +51,39 @@ Window {
         console.log("closing.");
     }
     Component.onCompleted: {
-        if (VPN.startMinimized)
+        if (VPN.startMinimized) {
             this.showMinimized();
+        }
 
+        if (!fullscreenRequired()) {
+            maximumHeight = Theme.desktopAppHeight
+            minimumHeight = Theme.desktopAppHeight
+            maximumWidth = Theme.desktopAppWidth
+            minimumWidth = Theme.desktopAppWidth
+        }
+
+        Glean.glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported, {
+          appBuild: `MozillaVPN/${VPN.versionString}`,
+          appDisplayVersion: VPN.versionString,
+          httpClient: {
+                  post(url, body, headers) {
+                      return new Promise((resolve, reject) => {
+                          const xhr = new XMLHttpRequest();
+                          xhr.open("POST", url);
+
+                          for (const header in headers) {
+                            xhr.setRequestHeader(header, headers[header]);
+                          }
+                          xhr.onloadend = () => {
+                            resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
+                          }
+                          xhr.send(body);
+                      });
+                  }
+          },
+          // TODO: this should be removed
+          debug: {logPings: true}
+        });
     }
     Rectangle {
         id: iosSafeAreaTopMargin
@@ -225,7 +244,6 @@ Window {
 
     }
 
-
     Connections {
         target: VPN
         function onViewLogsNeeded() {
@@ -245,6 +263,20 @@ Window {
             }
 
             mainStackView.push("../platforms/android/androidauthenticationview.qml", StackView.Immediate)
+        }
+
+        function onSendGleanPings() {
+            Glean.sendPing();
+        }
+
+        function onTriggerGleanSample(sample) {
+            Glean.sample[sample].record();
+        }
+
+        function onAboutToQuit() {
+            // We are about to quit. Let's see if we are fast enough to send
+            // the last chunck of data to the glean servers.
+            Glean.sendPing();
         }
     }
 

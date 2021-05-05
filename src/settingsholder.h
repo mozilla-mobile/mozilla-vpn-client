@@ -24,6 +24,8 @@ class SettingsHolder final : public QObject {
                  startAtBootChanged)
   Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
+  Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
+                 gleanEnabledChanged)
 
  public:
   SettingsHolder();
@@ -75,6 +77,7 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+  GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
@@ -110,6 +113,7 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
+  void gleanEnabledChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

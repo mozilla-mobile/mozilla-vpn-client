@@ -108,6 +108,9 @@ ECHO Importing languages...
 git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
 
+ECHO Generating glean samples...
+python scripts\generate_glean.py
+
 if "%WEBEXTENSION_BUILD%" == "T" (
   qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
   IF %ERRORLEVEL% NEQ 0 (
