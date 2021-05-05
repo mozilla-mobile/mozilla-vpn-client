@@ -36,6 +36,7 @@ android/.idea/
 android/build
 android/local.properties
 android/*/.cxx/
+!android/*/*/Makefile 
 xcode.xconfig
 .gradle/
 

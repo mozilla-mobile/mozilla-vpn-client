@@ -177,7 +177,6 @@ void AndroidController::activate(
     excludedApps.append(QJsonValue(appID));
   }
 
-
   QJsonObject args;
   args["device"] = jDevice;
   args["keys"] = jKeys;
