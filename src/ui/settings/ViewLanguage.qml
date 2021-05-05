@@ -71,29 +71,6 @@ Item {
                     spacing: 4
                     Layout.maximumWidth: parent.width - useSystemLanguageToggle.width - 16
 
-                    states: [
-                        State {
-                            when: useSystemLanguageToggle.checked
-                            PropertyChanges {
-                                target: labelDescription
-                                //% "Mozilla VPN will use your system’s default language."
-                                //: Description for the language switcher toggle when
-                                //: "Use system language" is enabled.
-                                text: qsTrId("vpn.settings.systemLangaugeEnabledSubtitle")
-                            }
-                        },
-                        State {
-                            when: !useSystemLanguageToggle.checked
-                            PropertyChanges {
-                                target: labelDescription
-                                //% "Mozilla VPN will not use the default system language."
-                                //: Description for the language switcher toggle when
-                                //: "Use system language" is disabled.
-                                text: qsTrId("vpn.settings.systemLanguageDisabledSubtitle")
-                            }
-                        }
-
-                    ]
                     VPNInterLabel {
                         id: label
                         Layout.alignment: Qt.AlignLeft
@@ -108,6 +85,10 @@ Item {
                     VPNTextBlock {
                         id: labelDescription
                         Layout.fillWidth: true
+                        //% "Mozilla VPN will use the default system language."
+                        //: Description for the language switcher toggle when
+                        //: "Use system language" is enabled.
+                        text: qsTrId("vpn.settings.systemLangaugeSubtitle")
                     }
                 }
 
