@@ -10,15 +10,14 @@
 #include "logger.h"
 
 #include <errno.h>
+#include <mntent.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define VPN_EXCLUDE_CGROUP "/sys/fs/cgroup/net_cls/mozvpn.exclude"
-constexpr const char* ROOT_CLASS_PROCS = "/sys/fs/cgroup/net_cls/cgroup.procs";
-constexpr const char* VPN_EXCLUDE_PROCS = VPN_EXCLUDE_CGROUP "/cgroup.procs";
-constexpr const char* VPN_EXCLUDE_CLASS_PATH =
-    VPN_EXCLUDE_CGROUP "/net_cls.classid";
+constexpr const char* CGROUP_PROCS_FILE = "/cgroup.procs";
+constexpr const char* CGROUP_CLASS_FILE = "/net_cls.classid";
+constexpr const char* VPN_EXCLUDE_CGROUP = "mozvpn.exclude";
 constexpr unsigned long VPN_EXCLUDE_CLASS_ID = 0x00110011;
 
 constexpr const char* LOGIN_MANAGER_SERVICE = "org.freedesktop.login1";
@@ -30,22 +29,48 @@ namespace {
 Logger logger(LOG_LINUX, "FirewallService");
 }
 
+class UserData {
+ public:
+  QString name;
+  uint userid;
+  QDBusObjectPath path;
+};
+QDBusArgument& operator<<(QDBusArgument& args, const UserData& data) {
+  args.beginStructure();
+  args << data.userid << data.name << data.path;
+  args.endStructure();
+  return args;
+}
+const QDBusArgument& operator>>(const QDBusArgument& args, UserData& data) {
+  args.beginStructure();
+  args >> data.userid >> data.name >> data.path;
+  args.endStructure();
+  return args;
+}
+Q_DECLARE_METATYPE(UserData);
+typedef QList<UserData> UserDataList;
+Q_DECLARE_METATYPE(UserDataList);
+
 FirewallService::FirewallService(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(FirewallService);
   m_adaptor = new FirewallAdaptor(this);
 
-  int err;
-  err = mkdir(VPN_EXCLUDE_CGROUP,
-              S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+  qRegisterMetaType<UserData>();
+  qDBusRegisterMetaType<UserData>();
+  qRegisterMetaType<UserDataList>();
+  qDBusRegisterMetaType<UserDataList>();
+
+  /* Resolve the control group paths we need. */
+  m_defaultCgroup = findCgroupPath("net_cls");
+  m_excludeCgroup = m_defaultCgroup + "/" + VPN_EXCLUDE_CGROUP;
+
+  int err = mkdir(m_excludeCgroup.toLocal8Bit().constData(),
+                  S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
   if ((err < 0) && (errno != EEXIST)) {
     logger.log() << "Failed to create VPN exclusion cgroup:" << strerror(errno);
     return;
   }
-  FILE* fpclass = fopen(VPN_EXCLUDE_CLASS_PATH, "w");
-  if (fpclass) {
-    fprintf(fpclass, "%lu", VPN_EXCLUDE_CLASS_ID);
-  }
-  fclose(fpclass);
+  writeCgroupFile(m_excludeCgroup + CGROUP_CLASS_FILE, VPN_EXCLUDE_CLASS_ID);
 
   m_pidtracker = new PidTracker(this);
   connect(m_pidtracker, SIGNAL(pidForked(const QString&, int, int)), this,
@@ -63,7 +88,7 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
 
   QDBusInterface n(LOGIN_MANAGER_SERVICE, LOGIN_MANAGER_PATH,
                    LOGIN_MANAGER_INTERFACE, m_conn);
-  QDBusPendingReply reply = n.asyncCall("ListUsers");
+  QDBusPendingReply<UserDataList> reply = n.asyncCall("ListUsers");
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    &FirewallService::userListCompleted);
@@ -107,14 +132,6 @@ QString FirewallService::runningApps() {
   return QJsonDocument(result).toJson(QJsonDocument::Compact);
 }
 
-static inline void addToControlGroup(const char* cgprocs, int pid) {
-  FILE* fp = fopen(cgprocs, "w");
-  if (fp) {
-    fprintf(fp, "%d", pid);
-  }
-  fclose(fp);
-}
-
 bool FirewallService::excludeApp(const QStringList& names) {
   for (auto app = names.begin(); app != names.end(); app++) {
     logger.log() << "Adding" << *app << "to VPN exclusion group";
@@ -124,7 +141,7 @@ bool FirewallService::excludeApp(const QStringList& names) {
     for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
       const ProcessGroup* group = m_pidtracker->group(*pid);
       if (group->name == *app) {
-        addToControlGroup(VPN_EXCLUDE_PROCS, *pid);
+        writeCgroupFile(m_excludeCgroup + CGROUP_PROCS_FILE, *pid);
       }
     }
   }
@@ -139,7 +156,7 @@ bool FirewallService::includeApp(const QStringList& names) {
     for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
       const ProcessGroup* group = m_pidtracker->group(*pid);
       if (group->name == *app) {
-        addToControlGroup(ROOT_CLASS_PROCS, *pid);
+        writeCgroupFile(m_defaultCgroup + CGROUP_PROCS_FILE, *pid);
       }
     }
   }
@@ -150,7 +167,7 @@ bool FirewallService::flushApps() {
   for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
     const ProcessGroup* group = m_pidtracker->group(*pid);
     if (m_excludedApps.contains(group->name)) {
-      addToControlGroup(ROOT_CLASS_PROCS, *pid);
+      writeCgroupFile(m_defaultCgroup + CGROUP_PROCS_FILE, *pid);
     }
   }
 
@@ -163,7 +180,7 @@ bool FirewallService::flushApps() {
 
 void FirewallService::pidForked(const QString& name, int parent, int child) {
   if (m_excludedApps.contains(name)) {
-    addToControlGroup(VPN_EXCLUDE_PROCS, child);
+    writeCgroupFile(m_excludeCgroup + CGROUP_PROCS_FILE, child);
   }
 #ifdef QT_DEBUG
   logger.log() << "fork:" << name << "PID:" << parent << "->" << child;
@@ -183,34 +200,22 @@ void FirewallService::appTerminate(const QString& name, int rootpid) {
 void FirewallService::appLaunched(const QString& name, uint userid,
                                   int rootpid) {
   if (m_excludedApps.contains(name)) {
-    addToControlGroup(VPN_EXCLUDE_PROCS, rootpid);
+    writeCgroupFile(m_excludeCgroup + CGROUP_PROCS_FILE, rootpid);
   }
   logger.log() << "tracking:" << name << "PID:" << rootpid;
   m_pidtracker->track(name, userid, rootpid);
 }
 
 void FirewallService::userListCompleted(QDBusPendingCallWatcher* watcher) {
-  QDBusPendingReply reply = *watcher;
+  QDBusPendingReply<UserDataList> reply = *watcher;
   if (!reply.isValid()) {
     return;
   }
 
-  const QDBusArgument array = reply.argumentAt(0).value<QDBusArgument>();
-  array.beginArray();
-  while (!array.atEnd()) {
-    uint userid;
-    QString name;
-    QDBusObjectPath path;
-
-    array.beginStructure();
-    array >> userid;
-    array >> name;
-    array >> path;
-    array.endStructure();
-
-    userCreated(userid, path);
+  UserDataList list = reply.value();
+  for (auto user : list) {
+    userCreated(user.userid, user.path);
   }
-  array.endArray();
 
   delete watcher;
 }
@@ -235,4 +240,36 @@ void FirewallService::userRemoved(uint uid, const QDBusObjectPath& path) {
   logger.log() << "User removed uid:" << uid << "at:" << path.path();
   m_users.remove(uid);
   delete session;
+}
+
+QString FirewallService::findCgroupPath(const QString& type) {
+  struct mntent entry;
+  char buf[PATH_MAX];
+
+  FILE* fp = fopen("/etc/mtab", "r");
+  if (fp == NULL) {
+    return QString();
+  }
+
+  while (getmntent_r(fp, &entry, buf, sizeof(buf)) != NULL) {
+    if (strcmp(entry.mnt_type, "cgroup") != 0) {
+      continue;
+    }
+    if (hasmntopt(&entry, type.toLocal8Bit().constData()) != NULL) {
+      fclose(fp);
+      return QString(entry.mnt_dir);
+    }
+  }
+  fclose(fp);
+
+  return QString();
+}
+
+void FirewallService::writeCgroupFile(const QString& path,
+                                      unsigned long value) {
+  FILE* fp = fopen(path.toLocal8Bit().constData(), "w");
+  if (fp) {
+    fprintf(fp, "%lu", value);
+  }
+  fclose(fp);
 }

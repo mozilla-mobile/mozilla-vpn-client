@@ -42,6 +42,12 @@ class FirewallService final : public QObject {
   QMap<uint, AppTracker*> m_users;
   PidTracker* m_pidtracker;
   QStringList m_excludedApps;
+
+  QString m_defaultCgroup;
+  QString m_excludeCgroup;
+
+  static QString findCgroupPath(const QString& type = "net_cls");
+  static void writeCgroupFile(const QString& path, unsigned long value);
 };
 
 #endif  // FIREWALLSERVICE_H
