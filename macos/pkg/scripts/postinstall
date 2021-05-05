@@ -57,6 +57,14 @@ launchctl load -w $DAEMON_PLIST_PATH
 mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
 cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Mozilla/NativeMessagingHosts/mozillavpn.json"
 
+# Install the chrome native messaging manifest
+mkdir -p "/Library/Google/Chrome/NativeMessagingHosts"
+cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Google/Chrome/NativeMessagingHosts/mozillavpn.json"
+
+# Install the chromium native messaging manifest
+mkdir -p "/Library/Application Support/Chromium/NativeMessagingHosts"
+cp -f "/Applications/Mozilla VPN.app/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Chromium/NativeMessagingHosts/mozillavpn.json"
+
 # Run the app
-open /Applications/Mozilla VPN.app
+open "/Applications/Mozilla VPN.app"
 exit 0

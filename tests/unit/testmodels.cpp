@@ -768,8 +768,9 @@ void TestModels::serverCountryModelBasic() {
   QVERIFY(!dm.fromSettings());
 
   QHash<int, QByteArray> rn = dm.roleNames();
-  QCOMPARE(rn.count(), 3);
+  QCOMPARE(rn.count(), 4);
   QCOMPARE(rn[ServerCountryModel::NameRole], "name");
+  QCOMPARE(rn[ServerCountryModel::LocalizedNameRole], "localizedName");
   QCOMPARE(rn[ServerCountryModel::CodeRole], "code");
   QCOMPARE(rn[ServerCountryModel::CitiesRole], "cities");
 
@@ -836,7 +837,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good but empty cities")
       << QJsonDocument(obj).toJson() << true << 1
       << QVariant("serverCountryName") << QVariant("serverCountryCode")
-      << QVariant(QStringList{"serverCityName"});
+      << QVariant(
+             QList<QVariant>{QStringList{"serverCityName", "serverCityName"}});
 
   cities.append(city);
   d.insert("cities", cities);
@@ -845,7 +847,8 @@ void TestModels::serverCountryModelFromJson_data() {
   QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 2
                         << QVariant("serverCountryName")
                         << QVariant("serverCountryCode")
-                        << QVariant(QStringList{"serverCityName"});
+                        << QVariant(QList<QVariant>{QStringList{
+                               "serverCityName", "serverCityName"}});
 }
 
 void TestModels::serverCountryModelFromJson() {
@@ -854,6 +857,8 @@ void TestModels::serverCountryModelFromJson() {
 
   // from json
   {
+    SettingsHolder settingsHolder;
+
     ServerCountryModel m;
     QCOMPARE(m.fromJson(json), result);
 
@@ -973,8 +978,8 @@ void TestModels::serverCountryModelPick() {
     ServerData sd;
     QCOMPARE(m.pickIfExists("serverCountryCode", "serverCityCode", sd), true);
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.country(), "serverCountryName");
-    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(sd.countryName(), "serverCountryName");
+    QCOMPARE(sd.cityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
 
     QCOMPARE(m.pickIfExists("serverCountryCode2", "serverCityCode", sd), false);
@@ -985,8 +990,8 @@ void TestModels::serverCountryModelPick() {
     ServerData sd;
     m.pickRandom(sd);
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.country(), "serverCountryName");
-    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(sd.countryName(), "serverCountryName");
+    QCOMPARE(sd.cityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
   }
 
@@ -994,8 +999,8 @@ void TestModels::serverCountryModelPick() {
     ServerData sd;
     QCOMPARE(m.pickByIPv4Address("ipv4AddrIn", sd), true);
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.country(), "serverCountryName");
-    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(sd.countryName(), "serverCountryName");
+    QCOMPARE(sd.cityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
 
     QCOMPARE(m.pickByIPv4Address("ipv4AddrIn2", sd), false);
@@ -1011,8 +1016,8 @@ void TestModels::serverDataBasic() {
 
   QVERIFY(!sd.initialized());
   QCOMPARE(sd.countryCode(), "");
-  QCOMPARE(sd.country(), "");
-  QCOMPARE(sd.city(), "");
+  QCOMPARE(sd.countryName(), "");
+  QCOMPARE(sd.cityName(), "");
 
   {
     QJsonObject countryObj;
@@ -1035,8 +1040,8 @@ void TestModels::serverDataBasic() {
 
     QVERIFY(sd.initialized());
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.country(), "serverCountryName");
-    QCOMPARE(sd.city(), "serverCityName");
+    QCOMPARE(sd.countryName(), "serverCountryName");
+    QCOMPARE(sd.cityName(), "serverCityName");
 
     {
       SettingsHolder settingsHolder;
@@ -1047,8 +1052,8 @@ void TestModels::serverDataBasic() {
       QVERIFY(sd2.fromSettings());
       QVERIFY(sd2.initialized());
       QCOMPARE(sd2.countryCode(), "serverCountryCode");
-      QCOMPARE(sd2.country(), "serverCountryName");
-      QCOMPARE(sd2.city(), "serverCityName");
+      QCOMPARE(sd2.countryName(), "serverCountryName");
+      QCOMPARE(sd2.cityName(), "serverCityName");
 
       QCOMPARE(spy.count(), 1);
     }
@@ -1059,16 +1064,16 @@ void TestModels::serverDataBasic() {
 
   QVERIFY(sd.initialized());
   QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.country(), "new Country");
-  QCOMPARE(sd.city(), "new City");
+  QCOMPARE(sd.countryName(), "new Country");
+  QCOMPARE(sd.cityName(), "new City");
 
   sd.forget();
   QCOMPARE(spy.count(), 2);
 
   QVERIFY(!sd.initialized());
   QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.country(), "new Country");
-  QCOMPARE(sd.city(), "new City");
+  QCOMPARE(sd.countryName(), "new Country");
+  QCOMPARE(sd.cityName(), "new City");
 
   {
     SettingsHolder settingsHolder;

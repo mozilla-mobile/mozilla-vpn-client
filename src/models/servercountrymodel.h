@@ -20,6 +20,7 @@ class ServerCountryModel final : public QAbstractListModel {
  public:
   enum ServerCountryRoles {
     NameRole = Qt::UserRole + 1,
+    LocalizedNameRole,
     CodeRole,
     CitiesRole,
   };
@@ -66,6 +67,8 @@ class ServerCountryModel final : public QAbstractListModel {
 
  private:
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
+
+  void sortCountries();
 
  private:
   QByteArray m_rawJson;

@@ -2,6 +2,9 @@ name: Put new Issues on the Board
 on:
   issues:
     types: [opened]
+permissions:
+  issues: write
+  repository-projects: write
 
 jobs:
   sort:

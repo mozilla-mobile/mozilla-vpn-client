@@ -26,6 +26,8 @@ class QmlEngineHolder final : public NetworkManager {
 
   QNetworkAccessManager* networkAccessManager() override;
 
+  void clearCache() override;
+
   QWindow* window() const;
   void showWindow();
   void hideWindow();

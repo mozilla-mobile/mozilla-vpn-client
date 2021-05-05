@@ -74,6 +74,9 @@ constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
 #endif
 
+constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
+constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 
@@ -188,6 +191,9 @@ GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
 GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
+GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
+              SETTINGS_GLEANENABLED, hasGleanEnabled, gleanEnabled,
+              setGleanEnabled, gleanEnabledChanged)
 
 #undef GETSETDEFAULT
 

@@ -24,6 +24,8 @@ class SettingsHolder final : public QObject {
                  startAtBootChanged)
   Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
+  Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
+                 gleanEnabledChanged)
 
   Q_PROPERTY(bool useGatewayDNS READ useGatewayDNS WRITE setUseGatewayDNS NOTIFY
                  useGatewayDNSChanged)
@@ -82,6 +84,8 @@ class SettingsHolder final : public QObject {
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
   GETSET(bool, hasUsegatewayDNS, useGatewayDNS, setUseGatewayDNS)
   GETSET(QString, hasUserDNS, userDNS, setUserDNS)
+  GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
+
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
@@ -122,6 +126,8 @@ class SettingsHolder final : public QObject {
   void vpnDisabledAppsChanged(const QStringList& apps);
   void useGatewayDNSChanged(bool value);
   void userDNSChanged(QString value);
+  void gleanEnabledChanged(bool value);
+
 
  private:
   explicit SettingsHolder(QObject* parent);
