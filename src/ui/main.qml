@@ -20,26 +20,14 @@ Window {
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
     }
-
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
 
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
 
     visible: true
 
-    function getWidth() {
-        return fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
-    }
-    function getHeight() {
-        return fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
-    }
-
-    width: getWidth()
-    height: getHeight()
-    maximumHeight: getHeight()
-    maximumWidth: getWidth()
-    minimumHeight: getHeight()
-    minimumWidth: getWidth()
+    width: fullscreenRequired() ? Screen.width : Theme.desktopAppWidth;
+    height: fullscreenRequired() ? Screen.height : Theme.desktopAppHeight;
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
@@ -62,9 +50,15 @@ Window {
         console.log("closing.");
     }
     Component.onCompleted: {
-        if (VPN.startMinimized)
+        if (VPN.startMinimized) {
             this.showMinimized();
-
+        }
+        if (!fullscreenRequired()) {
+            maximumHeight = Theme.desktopAppHeight
+            minimumHeight = Theme.desktopAppHeight
+            maximumWidth = Theme.desktopAppWidth
+            minimumWidth = Theme.desktopAppWidth
+        }
     }
     Rectangle {
         id: iosSafeAreaTopMargin
