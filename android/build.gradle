@@ -12,10 +12,6 @@ buildscript {
         jsr305Version = '3.0.2'
         streamsupportVersion = '1.7.0'
         threetenabpVersion = '1.1.1'
-        wireguardVersionCode = 486
-        wireguardVersionName = '1.0.20210211'
-        collectionVersion = '1.1.0'
-        junitVersion = '4.13.1'
         groupName = 'org.mozilla.firefox.vpn'
     }
     repositories {
