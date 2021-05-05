@@ -321,6 +321,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+                     &MozillaVPN::aboutToQuit);
+
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 

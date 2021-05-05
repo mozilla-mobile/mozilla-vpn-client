@@ -40,6 +40,13 @@ jobs:
           cp -r *.msm ..
           cd ..
 
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
 
@@ -87,6 +94,13 @@ jobs:
           cp /c/MozillaVPNBuild/bin/libEGL.dll .
           cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
           cp /c/MozillaVPNBuild/*.msm .
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
 
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1

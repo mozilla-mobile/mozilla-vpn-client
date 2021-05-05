@@ -46,7 +46,7 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    vpn.changeServer(sd.countryCode(), sd.city());
+    vpn.changeServer(sd.countryCode(), sd.cityName());
     return 0;
   });
 }
