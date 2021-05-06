@@ -15,6 +15,10 @@ class LinuxAppImageProvider final : public QQuickImageProvider,
   ~LinuxAppImageProvider();
   QImage requestImage(const QString& id, QSize* size,
                       const QSize& requestedSize) override;
+
+ private:
+  static void addFallbackPaths(const QString& dataDir,
+                               QStringList& fallbackPaths);
 };
 
 #endif  // LINUXAPPIMAGEPROVIDER_H
