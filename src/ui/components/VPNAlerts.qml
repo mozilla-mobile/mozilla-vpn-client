@@ -34,7 +34,6 @@ ColumnLayout {
         id: surveyAlert
 
         isLayout: true
-        // TODO
         alertType: "survey"
         //% "TBD"
         alertText: qsTrId("vpn.systray.survey.title")
