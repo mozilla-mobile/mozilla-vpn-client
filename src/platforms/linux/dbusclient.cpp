@@ -18,6 +18,8 @@
 
 constexpr const char* DBUS_SERVICE = "org.mozilla.vpn.dbus";
 constexpr const char* DBUS_PATH = "/";
+constexpr const char* FIREWALL_SERVICE = "org.mozilla.vpn.firewall";
+constexpr const char* FIREWALL_PATH = "/org/mozilla/vpn/firewall";
 
 namespace {
 Logger logger(LOG_LINUX, "DBusClient");
@@ -28,6 +30,8 @@ DBusClient::DBusClient(QObject* parent) : QObject(parent) {
 
   m_dbus = new OrgMozillaVpnDbusInterface(DBUS_SERVICE, DBUS_PATH,
                                           QDBusConnection::systemBus(), this);
+  m_firewall = new OrgMozillaVpnFirewallInterface(
+      FIREWALL_SERVICE, FIREWALL_PATH, QDBusConnection::systemBus(), this);
 
   connect(m_dbus, &OrgMozillaVpnDbusInterface::connected, this,
           &DBusClient::connected);
@@ -111,6 +115,25 @@ QDBusPendingCallWatcher* DBusClient::getLogs() {
 QDBusPendingCallWatcher* DBusClient::cleanupLogs() {
   logger.log() << "Cleanup logs via DBus";
   QDBusPendingReply<QString> reply = m_dbus->cleanupLogs();
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
+                   &QDBusPendingCallWatcher::deleteLater);
+  return watcher;
+}
+
+QDBusPendingCallWatcher* DBusClient::excludeApp(
+    const QStringList& vpnDisabledApps) {
+  logger.log() << "Exclude apps via DBus";
+  QDBusPendingReply<bool> reply = m_firewall->excludeApp(vpnDisabledApps);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
+                   &QDBusPendingCallWatcher::deleteLater);
+  return watcher;
+}
+
+QDBusPendingCallWatcher* DBusClient::flushApps() {
+  logger.log() << "Clearing firewalled apps via DBus";
+  QDBusPendingReply<bool> reply = m_firewall->flushApps();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
                    &QDBusPendingCallWatcher::deleteLater);

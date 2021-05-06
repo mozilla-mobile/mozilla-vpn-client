@@ -6,6 +6,7 @@
 #define DBUSCLIENT_H
 
 #include "dbus_interface.h"
+#include "firewall_interface.h"
 
 #include <QList>
 #include <QObject>
@@ -38,12 +39,17 @@ class DBusClient final : public QObject {
 
   QDBusPendingCallWatcher* cleanupLogs();
 
+  QDBusPendingCallWatcher* excludeApp(const QStringList& vpnDisabledApps);
+
+  QDBusPendingCallWatcher* flushApps();
+
  signals:
   void connected();
   void disconnected();
 
  private:
   OrgMozillaVpnDbusInterface* m_dbus;
+  OrgMozillaVpnFirewallInterface* m_firewall;
 };
 
 #endif  // DBUSCLIENT_H

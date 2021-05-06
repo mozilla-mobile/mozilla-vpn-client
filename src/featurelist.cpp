@@ -8,6 +8,10 @@
 #  include "platforms/android/androidutils.h"
 #endif
 
+#ifdef MVPN_LINUX
+#  include <QDBusInterface>
+#endif
+
 namespace {
 FeatureList s_featureList;
 }
@@ -35,8 +39,13 @@ bool FeatureList::localNetworkAccessSupported() const {
 }
 
 bool FeatureList::protectSelectedAppsSupported() const {
-#if defined(MVPN_ANDROID) || defined(MVPN_LINUX)
+#if defined(MVPN_ANDROID)
   return true;
+#elif defined(MVPN_LINUX)
+  QDBusInterface iface("org.mozilla.vpn.firewall", "/org/mozilla/vpn/firewall",
+                       "org.mozilla.vpn.firewall",
+                       QDBusConnection::systemBus());
+  return iface.isValid();
 #else
   return false;
 #endif

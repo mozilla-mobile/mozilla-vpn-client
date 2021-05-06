@@ -71,9 +71,9 @@ void LinuxController::activate(
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, Reason reason) {
   Q_UNUSED(reason);
-  Q_UNUSED(vpnDisabledApps);
 
   logger.log() << "LinuxController activated";
+  m_dbus->excludeApp(vpnDisabledApps);
   connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges),
           &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
@@ -90,6 +90,7 @@ void LinuxController::deactivate(Reason reason) {
 
   connect(m_dbus->deactivate(), &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
+  m_dbus->flushApps();
 }
 
 void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
