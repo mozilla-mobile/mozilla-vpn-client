@@ -27,12 +27,22 @@ LinuxPingSendWorker::~LinuxPingSendWorker() {
   MVPN_COUNT_DTOR(LinuxPingSendWorker);
 }
 
-void LinuxPingSendWorker::sendPing(const QString& destination) {
-  logger.log() << "LinuxPingSendWorker - start" << destination;
+void LinuxPingSendWorker::sendPing(const QString& destination,
+                                   const QString& source) {
+  logger.log() << "LinuxPingSendWorker - start" << destination << "from"
+               << source;
 
   struct in_addr dst;
+  struct in_addr src;
+  struct sockaddr_in addr;
+
   if (inet_aton(destination.toLocal8Bit().constData(), &dst) == 0) {
     logger.log() << "Lookup error";
+    emit pingFailed();
+    return;
+  }
+  if (inet_aton(source.toLocal8Bit().constData(), &src) == 0) {
+    logger.log() << "source address error";
     emit pingFailed();
     return;
   }
@@ -46,7 +56,16 @@ void LinuxPingSendWorker::sendPing(const QString& destination) {
     return;
   }
 
-  struct sockaddr_in addr;
+  memset(&addr, 0, sizeof addr);
+  addr.sin_family = AF_INET;
+  addr.sin_addr = src;
+  if (bind(m_socket, (struct sockaddr*)&addr, sizeof addr) != 0) {
+    logger.log() << "bind error";
+    emit pingFailed();
+    releaseObjects();
+    return;
+  }
+
   memset(&addr, 0, sizeof addr);
   addr.sin_family = AF_INET;
   addr.sin_addr = dst;

@@ -133,6 +133,8 @@ QByteArray DBusService::getStatus() {
   json.insert("status", QJsonValue(true));
   json.insert("serverIpv4Gateway",
               QJsonValue(m_lastConfig.m_serverIpv4Gateway));
+  json.insert("deviceIpv4Address",
+              QJsonValue(m_lastConfig.m_deviceIpv4Address));
   json.insert("txBytes", QJsonValue(double(txBytes)));
   json.insert("rxBytes", QJsonValue(double(rxBytes)));
 
