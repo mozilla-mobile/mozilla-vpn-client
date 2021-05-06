@@ -56,9 +56,9 @@ PingSender::PingSender(QObject* parent, QThread* thread) : QObject(parent) {
 
 PingSender::~PingSender() { MVPN_COUNT_DTOR(PingSender); }
 
-void PingSender::send(const QString& destination) {
+void PingSender::send(const QString& destination, const QString& source) {
   logger.log() << "PingSender send to" << destination;
-  emit sendPing(destination);
+  emit sendPing(destination, source);
 }
 
 void PingSender::pingFailed() {
