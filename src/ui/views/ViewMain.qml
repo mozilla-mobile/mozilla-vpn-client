@@ -10,7 +10,7 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
-    id: mainView
+    id: vpnFlickable
 
     flickContentHeight:  {
         let flickHeight = Theme.desktopAppHeight - 1
@@ -133,9 +133,9 @@ VPNFlickable {
                 }
 
                 PropertyAnimation {
-                    target: mainView
+                    target: vpnFlickable
                     property: "flickContentHeight"
-                    to: mainView.flickContentHeight - alertBox.height - Theme.windowMargin
+                    to: vpnFlickable.flickContentHeight - alertBox.height - Theme.windowMargin
                     duration: 200
                 }
 
