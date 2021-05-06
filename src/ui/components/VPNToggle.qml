@@ -35,6 +35,12 @@ VPNButtonBase {
     radius: 16
     hoverEnabled: false
 
+    onActiveFocusChanged: {
+        if (!focus && toolTip.visible) {
+            toolTip.close();
+        }
+    }
+
     states: [
         State {
             name: VPNController.StateInitializing
