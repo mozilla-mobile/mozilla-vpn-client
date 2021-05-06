@@ -65,6 +65,12 @@ VPNFlickable {
         }
     ]
 
+    MouseArea {
+        anchors.fill: parent
+        enabled: box.connectionInfoVisible
+        onClicked: box.closeConnectionInfo()
+    }
+
     Item {
         id: mobileHeader
 
