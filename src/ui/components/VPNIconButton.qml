@@ -19,8 +19,10 @@ VPNButtonBase {
 
     Accessible.name: accessibleName
     Component.onCompleted: state = uiState.stateDefault
+    onReleased: toolTip.close()
 
     VPNToolTip {
+        id: toolTip
         text: accessibleName
     }
 
