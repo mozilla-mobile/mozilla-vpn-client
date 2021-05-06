@@ -68,16 +68,6 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/qt515/bin:$PATH
-          ./scripts/linux_script.sh -s
-          mkdir packages
-          cp .tmp/*.deb packages
-
-      - name: Uploading
-
-      - name: Create package structure
-        shell: bash
-        run: |
-          export PATH=/opt/qt515/bin:$PATH
           ./scripts/linux_script.sh
           mkdir packages
           cp .tmp/*.deb packages
