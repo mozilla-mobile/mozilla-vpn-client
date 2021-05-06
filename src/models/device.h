@@ -20,6 +20,8 @@ class Device final {
 
   static QString currentDeviceName();
 
+  static QString currentDeviceReport();
+
   [[nodiscard]] bool fromJson(const QJsonValue& json);
 
   const QString& name() const { return m_deviceName; }
