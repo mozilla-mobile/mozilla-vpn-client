@@ -8,13 +8,16 @@
 #include <QObject>
 #include <QQuickImageProvider>
 
-class LinuxAppImageProvider final : public QQuickImageProvider,
-                                      public QObject {
+class LinuxAppImageProvider final : public QQuickImageProvider, public QObject {
  public:
   LinuxAppImageProvider(QObject* parent);
   ~LinuxAppImageProvider();
   QImage requestImage(const QString& id, QSize* size,
                       const QSize& requestedSize) override;
+
+ private:
+  static void addFallbackPaths(const QString& dataDir,
+                               QStringList& fallbackPaths);
 };
 
 #endif  // LINUXAPPIMAGEPROVIDER_H
