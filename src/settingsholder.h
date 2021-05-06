@@ -33,6 +33,8 @@ class SettingsHolder final : public QObject {
 
   static SettingsHolder* instance();
 
+  QString getReport();
+
   void clear();
 
 #define GETSET(type, has, get, set) \

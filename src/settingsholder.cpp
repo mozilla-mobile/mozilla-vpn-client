@@ -73,6 +73,12 @@ constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
 
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
+// Setting Keys That won't show up in a report;
+QVector<QString> SENSITIVE_SETTINGS({
+    SETTINGS_TOKEN, SETTINGS_PRIVATEKEY,
+    SETTINGS_SERVERS,  // Those 2 Are not sensitive but
+    SETTINGS_DEVICES   // are more noise then info
+});
 
 SettingsHolder* s_instance = nullptr;
 }  // namespace
@@ -134,6 +140,23 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
 
   // We do not remove language, ipv6 and localnetwork settings.
+}
+
+// Returns a Report which settings are set
+// Used to Print in LogFiles:
+QString SettingsHolder::getReport() {
+  QString buff;
+  QTextStream out(&buff);
+  auto settingsKeys = m_settings.childKeys();
+  for (auto setting : settingsKeys) {
+    if (SENSITIVE_SETTINGS.contains(setting)) {
+      out << setting << " -> <Sensitive>" << Qt::endl;
+      continue;
+    }
+    out << setting << " -> " << m_settings.value(setting).toString()
+        << Qt::endl;
+  }
+  return buff;
 }
 
 #define GETSETDEFAULT(def, type, toType, key, has, get, set, signal)    \
