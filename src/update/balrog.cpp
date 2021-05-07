@@ -34,18 +34,23 @@ typedef void (*logFunc)(int level, const char* msg);
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
 
 typedef void BalrogSetLogger(logFunc func);
-typedef unsigned char BalrogValidateSignature(gostring_t publicKey,
-                                              gostring_t signature,
-                                              gostring_t data);
+typedef unsigned char BalrogValidate(gostring_t x5uData,
+                                     gostring_t updateData,
+                                     gostring_t signature,
+                                     gostring_t rootHash,
+                                     gostring_t leafCertSubject);
+
 
 #elif defined(MVPN_MACOS)
 #  define EXPORT __attribute__((visibility("default")))
 
 extern "C" {
 EXPORT void balrogSetLogger(logFunc func);
-EXPORT unsigned char balrogValidateSignature(gostring_t publicKey,
-                                             gostring_t signature,
-                                             gostring_t data);
+EXPORT unsigned char balrogValidate(gostring_t x5uData,
+                                    gostring_t updateData,
+                                    gostring_t signature,
+                                    gostring_t rootHash,
+                                    gostring_t leafCertSubject);
 }
 
 constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
@@ -181,13 +186,13 @@ bool Balrog::checkSignature(const QByteArray& x5uData,
                             const QByteArray& signatureBlob) {
   logger.log() << "Checking the signature";
 
-  if (!validateX5u(x5uData, updateData, signatureBlob)) {
+  if (!validateSignature(x5uData, updateData, signatureBlob)) {
     logger.log() << "Invalid signature";
     return false;
   }
 
   logger.log() << "Fetch resource";
-  if (!processData(data)) {
+  if (!processData(updateData)) {
     logger.log() << "Fetch has failed";
     return false;
   }
@@ -201,7 +206,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
 #if defined(MVPN_WINDOWS)
   static HMODULE balrogDll = nullptr;
   static BalrogSetLogger* balrogSetLogger = nullptr;
-  static BalrogValidateSignature* balrogValidateSignature = nullptr;
+  static BalrogValidate* balrogValidate = nullptr;
 
   if (!balrogDll) {
     // This process will be used by the wireguard tunnel. No need to call
@@ -222,12 +227,12 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
     }
   }
 
-  if (!balrogValidateSignature) {
-    balrogValidateSignature = (BalrogValidateSignature*)GetProcAddress(
-        balrogDll, "balrogValidateSignature");
-    if (!balrogValidateSignature) {
+  if (!balrogValidate) {
+    balrogValidate = (BalrogValidate*)GetProcAddress(
+        balrogDll, "balrogValidate");
+    if (!balrogValidate) {
       WindowsCommons::windowsLog(
-          "Failed to get balrogValidateSignature function");
+          "Failed to get balrogValidate function");
       return false;
     }
   }
@@ -246,12 +251,16 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   gostring_t updateDataGo{updateDataCopy.constData(),
                           (size_t)updateDataCopy.length()};
 
+  QByteArray rootHashCopy = Constants::BALROG_ROOT_CERT_FINGERPRINT;
+  gostring_t rootHashGo{rootHashCopy.constData(),
+                        (size_t)rootHashCopy.length()};
+
   QByteArray certSubjectCopy = BALROG_CERT_SUBJECT_CN;
   gostring_t certSubjectGo{certSubjectCopy.constData(),
                            (size_t)certSubjectCopy.length()};
 
-  unsigned char verify =
-      balrogValidate(x5uDataGo, updateDataGo, signatureGo, certSubjectGo);
+  unsigned char verify = balrogValidate(x5uDataGo, updateDataGo, signatureGo,
+                                        rootHashGo, certSubjectGo);
   if (!verify) {
     logger.log() << "Verification failed";
     return false;
