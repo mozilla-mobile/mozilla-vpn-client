@@ -140,9 +140,10 @@ Item {
                 return VPN.hideUpdateRecommendedAlert();
             }
             if (alertType === "survey") {
-                closeAlert.start()
+                closeAlert.start();
                 return VPNSurveyModel.dismissCurrentSurvey();
             }
+            closeAlert.start();
             return VPN.hideAlert();
         }
 
@@ -200,13 +201,23 @@ Item {
         opacity: alertAction.activeFocus ? 1 : 0
         radius: Theme.cornerRadius
     }
-    PropertyAnimation {
+
+    SequentialAnimation {
         id: showAlert
-        target: alertBox
-        property: "opacity"
-        from: 0
-        to: 1
-        duration: 100
+
+        PropertyAnimation {
+            target: alertBox
+            property: isLayout ? "Layout.minimumHeight" : "height"
+            to: alertHeight
+            duration: 60
+        }
+
+        PropertyAnimation {
+            target: alertBox
+            property: "opacity"
+            to: 1
+            duration: 100
+        }
     }
 
     SequentialAnimation {
