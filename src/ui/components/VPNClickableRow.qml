@@ -34,8 +34,10 @@ VPNButtonBase {
     Accessible.ignored: rowShouldBeDisabled
     Accessible.name: accessibleName
 
-    PropertyAnimation on opacity {
-        duration: 200
+    Behavior on opacity {
+        PropertyAnimation {
+            duration: 100
+        }
     }
 
     // visual state changes are applied to this
