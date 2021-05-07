@@ -19,13 +19,21 @@ VPNButtonBase {
 
     Accessible.name: accessibleName
     Component.onCompleted: state = uiState.stateDefault
+    onReleased: toolTip.close()
+    onActiveFocusChanged: {
+        if (!focus && toolTip.visible) {
+            toolTip.close();
+        }
+    }
 
     VPNToolTip {
+        id: toolTip
         text: accessibleName
     }
 
     VPNMouseArea {
         id: mouseArea
+        onExited: toolTip.close()
     }
 
     VPNUIStates {
