@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QTextStream>
 
 #ifdef QT_DEBUG
 #  include <QRandomGenerator>

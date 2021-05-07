@@ -273,7 +273,9 @@ DUMMY {
       CONFIG += embed_manifest_exe
       QT += svg
     } else {
-      QMAKE_CXXFLAGS *= -Werror
+      versionAtLeast(QT_VERSION, 5.15.1) {
+        QMAKE_CXXFLAGS *= -Werror
+      }
     }
 
     macos {
@@ -303,8 +305,6 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
-
-    QMAKE_CXXFLAGS *= -Werror
 
     TARGET = mozillavpn
     QT += networkauth
@@ -427,7 +427,10 @@ else:linux:!android {
 else:android {
     message(Android build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
+
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
     CONFIG += force_debug_info
@@ -507,7 +510,9 @@ else:android {
 else:macos {
     message(MacOSX build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
@@ -729,7 +734,9 @@ else:wasm {
     DEFINES += MVPN_DUMMY
     DEFINES += MVPN_WASM
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = mozillavpn
     QT += svg
