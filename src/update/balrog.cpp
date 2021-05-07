@@ -34,22 +34,17 @@ typedef void (*logFunc)(int level, const char* msg);
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
 
 typedef void BalrogSetLogger(logFunc func);
-typedef unsigned char BalrogValidate(gostring_t x5uData,
-                                     gostring_t updateData,
-                                     gostring_t signature,
-                                     gostring_t rootHash,
+typedef unsigned char BalrogValidate(gostring_t x5uData, gostring_t updateData,
+                                     gostring_t signature, gostring_t rootHash,
                                      gostring_t leafCertSubject);
-
 
 #elif defined(MVPN_MACOS)
 #  define EXPORT __attribute__((visibility("default")))
 
 extern "C" {
 EXPORT void balrogSetLogger(logFunc func);
-EXPORT unsigned char balrogValidate(gostring_t x5uData,
-                                    gostring_t updateData,
-                                    gostring_t signature,
-                                    gostring_t rootHash,
+EXPORT unsigned char balrogValidate(gostring_t x5uData, gostring_t updateData,
+                                    gostring_t signature, gostring_t rootHash,
                                     gostring_t leafCertSubject);
 }
 
@@ -228,11 +223,10 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   }
 
   if (!balrogValidate) {
-    balrogValidate = (BalrogValidate*)GetProcAddress(
-        balrogDll, "balrogValidate");
+    balrogValidate =
+        (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
     if (!balrogValidate) {
-      WindowsCommons::windowsLog(
-          "Failed to get balrogValidate function");
+      WindowsCommons::windowsLog("Failed to get balrogValidate function");
       return false;
     }
   }
