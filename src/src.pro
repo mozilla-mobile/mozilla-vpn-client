@@ -83,7 +83,6 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
-        platforms/windows/windowssplittunnel.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
@@ -158,7 +157,6 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
-        platforms/windows/windowssplittunnel.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
@@ -625,6 +623,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
+        platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
@@ -647,6 +646,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
+        platforms/windows/daemon/windowssplittunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \

@@ -30,6 +30,7 @@ class Daemon : public QObject {
     int m_serverPort = 0;
     bool m_ipv6Enabled = false;
     QList<IPAddressRange> m_allowedIPAddressRanges;
+    QList<QString> m_vpnDisabledApps;
   };
 
   explicit Daemon(QObject* parent);

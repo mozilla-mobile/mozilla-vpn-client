@@ -7,6 +7,7 @@
 
 #include "daemon/daemon.h"
 #include "windowstunnelmonitor.h"
+#include "windowssplittunnel.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
 
@@ -40,6 +41,7 @@ class WindowsDaemon final : public Daemon {
   State m_state = Inactive;
 
   WindowsTunnelMonitor m_tunnelMonitor;
+  WindowsSplitTunnel m_splitTunnelManager;
 };
 
 #endif  // WINDOWSDAEMON_H

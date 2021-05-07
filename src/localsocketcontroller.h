@@ -6,7 +6,6 @@
 #define LOCALSOCKETCONTROLLER_H
 
 #include "controllerimpl.h"
-#include "platforms/windows/windowssplittunnel.h"
 
 #include <functional>
 #include <QLocalSocket>
@@ -55,8 +54,6 @@ class LocalSocketController final : public ControllerImpl {
   QByteArray m_buffer;
 
   std::function<void(const QString&)> m_logCallback = nullptr;
-  QList<QString> m_vpnDisabledApps;
-  WindowsSplitTunnel m_driver;
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

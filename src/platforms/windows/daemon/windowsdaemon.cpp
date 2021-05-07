@@ -392,6 +392,7 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
   }
 
   if (op == Daemon::Down) {
+    m_splitTunnelManager.stop();
     m_tunnelMonitor.stop();
     stopAndDeleteTunnelService();
     m_state = Inactive;
@@ -434,6 +435,13 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
   logger.log() << "Registration completed";
 
   m_tunnelMonitor.start();
+
+  if(config.m_vpnDisabledApps.length() > 0){
+      logger.log() << "Tunnel UP, Starting SplitTunneling";
+      m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
+      m_splitTunnelManager.start();
+  }
+
   m_state = Active;
   return true;
 }

@@ -1,5 +1,5 @@
 #include "windowssplittunnel.h"
-#include "windowscommons.h"
+#include "../windowscommons.h"
 #include "logger.h"
 #include <QNetworkInterface>
 #define PSAPI_VERSION 2

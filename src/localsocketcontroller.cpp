@@ -92,16 +92,12 @@ void LocalSocketController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, Reason reason) {
-  Q_UNUSED(vpnDisabledApps);
   Q_UNUSED(reason);
 
   if (m_state != eReady) {
     emit disconnected();
     return;
   }
-  m_vpnDisabledApps = vpnDisabledApps;
-
-
 
   QJsonObject json;
   json.insert("type", "activate");
@@ -126,6 +122,12 @@ void LocalSocketController::activate(
     allowedIPAddesses.append(range);
   };
   json.insert("allowedIPAddressRanges", allowedIPAddesses);
+  QJsonArray splitTunnelApps;
+  for (const auto& uri : vpnDisabledApps) {
+    splitTunnelApps.append(QJsonValue(uri));
+  }
+  json.insert("vpnDisabledApps", splitTunnelApps);
+
   write(json);
 }
 
@@ -303,19 +305,11 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "disconnected") {
-    #ifdef MVPN_WINDOWS
-        m_driver.stop();
-    #endif
     emit disconnected();
     return;
   }
 
   if (type == "connected") {
-
-    #ifdef MVPN_WINDOWS
-       m_driver.start();
-       m_driver.setRules(m_vpnDisabledApps);
-    #endif
     emit connected();
     return;
   }
