@@ -99,9 +99,8 @@ bool SurveyModel::fromJsonInternal(const QByteArray& json) {
 void SurveyModel::maybeShowSurvey() {
   logger.log() << "Checking surveys";
 
-  if (!m_currentSurveyId.isEmpty()) {
-    return;
-  }
+  // if (!m_currentSurveyId.isEmpty()) {
+  // }
 
   for (const Survey& survey : m_surveys) {
     if (survey.isTriggerable()) {
@@ -114,8 +113,8 @@ void SurveyModel::maybeShowSurvey() {
 void SurveyModel::showSurvey(const Survey& survey) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-
-  m_currentSurveyId = survey.id();
+    m_currentSurveyId = survey.id();
+    m_currentSurveyId = 1;
   emit hasSurveyChanged();
 }
 

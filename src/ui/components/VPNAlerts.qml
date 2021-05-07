@@ -10,11 +10,11 @@ import "./../themes/themes.js" as Theme
 
 ColumnLayout {
     id: notifications
-    spacing: 8
+    spacing: Theme.windowMargin / 2
     Layout.maximumWidth: col.width - Theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
-    visible: surveyAlert.visible || updateAlert.visible
+    visible: VPNSurveyModel.hasSurvey || updateAlert.visible
 
     VPNAlert {
         id: updateAlert
@@ -39,18 +39,9 @@ ColumnLayout {
         alertText: qsTrId("vpn.systray.survey.title")
         //% "TBD"
         alertLinkText: qsTrId("vpn.systray.survey.message")
-        opacity: 1
         alertColor: Theme.greenAlert
         textColor: Theme.fontColorDark
         visible: VPNSurveyModel.hasSurvey
     }
 
-
-    PropertyAnimation {
-        id: showAlert
-        property: "opacity"
-        from: 0
-        to: 1
-        duration: 200
-    }
 }
