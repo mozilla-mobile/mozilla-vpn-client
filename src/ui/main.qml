@@ -170,6 +170,15 @@ Window {
 
                 },
                 State {
+                    name: VPN.StateTelemetryPolicy
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateTelemetryPolicy.qml"
+                    }
+
+                },
+                State {
                     name: VPN.StateMain
 
                     PropertyChanges {

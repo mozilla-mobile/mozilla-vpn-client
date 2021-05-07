@@ -96,6 +96,19 @@ describe('Unsecured network alert', function() {
     await vpn.wait();
   });
 
+  it('Unsecured network alert in the Telemetry Policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+
+    await vpn.forceUnsecuredNetworkAlert();
+    await vpn.wait();
+
+    // Notifications are not OK yet.
+    assert(vpn.lastNotification().title === null);
+
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+  });
+
   it('Unsecured network alert in the Controller view', async () => {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');

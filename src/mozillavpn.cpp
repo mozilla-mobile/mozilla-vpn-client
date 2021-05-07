@@ -294,15 +294,21 @@ void MozillaVPN::maybeStateMain() {
   }
 #endif
 
-#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   if (!settingsHolder->hasPostAuthenticationShown() ||
       !settingsHolder->postAuthenticationShown()) {
-    settingsHolder->setPostAuthenticationShown(true);
     setState(StatePostAuthentication);
     return;
   }
 #endif
+
+  if (!settingsHolder->hasTelemetryPolicyShown() ||
+      !settingsHolder->telemetryPolicyShown()) {
+    setState(StateTelemetryPolicy);
+    return;
+  }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
@@ -840,6 +846,24 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
 
 void MozillaVPN::postAuthenticationCompleted() {
   logger.log() << "Post authentication completed";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->setPostAuthenticationShown(true);
+
+  // Super racy, but it could happen that we are already in update-required
+  // state.
+  if (m_state == StateUpdateRequired) {
+    return;
+  }
+
+  maybeStateMain();
+}
+
+void MozillaVPN::telemetryPolicyCompleted() {
+  logger.log() << "telemetry policy completed";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->setTelemetryPolicyShown(true);
 
   // Super racy, but it could happen that we are already in update-required
   // state.
