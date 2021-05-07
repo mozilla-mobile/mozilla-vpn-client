@@ -11,7 +11,7 @@ QT += quick
 QT += widgets
 QT += charts
 
-CONFIG += c++1z
+CONFIG += c++14
 
 TEMPLATE  = app
 
