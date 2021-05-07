@@ -91,6 +91,12 @@ describe('Server list', function() {
     await vpn.wait();
   });
 
+  it('Telemetry Policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+  });
+
   it('Retrieve the list of languages', async () => {
     for (let language of await vpn.languages()) {
       languages.set(language.toLowerCase().replace('_', '-'), language);

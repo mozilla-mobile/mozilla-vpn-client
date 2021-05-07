@@ -58,6 +58,7 @@
         <file>ui/states/StateInitialize.qml</file>
         <file>ui/states/StateAuthenticating.qml</file>
         <file>ui/states/StatePostAuthentication.qml</file>
+        <file>ui/states/StateTelemetryPolicy.qml</file>
         <file>ui/states/StateUpdateRequired.qml</file>
         <file>ui/states/StateDeviceLimit.qml</file>
         <file>ui/states/StateBackendFailure.qml</file>
