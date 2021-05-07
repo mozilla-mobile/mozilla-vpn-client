@@ -51,3 +51,13 @@ QStringList WireguardUtilsLinux::currentInterfaces() {
   free(deviceNames);
   return devices;
 }
+
+uint32_t WireguardUtilsLinux::getFirewallMark() {
+  wg_device* device = nullptr;
+  uint32_t fwmark = 0;
+  if (wg_get_device(&device, WG_INTERFACE) == 0) {
+    fwmark = device->fwmark;
+    wg_free_device(device);
+  }
+  return fwmark;
+}

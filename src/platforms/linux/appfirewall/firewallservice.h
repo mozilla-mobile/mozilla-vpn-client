@@ -46,7 +46,6 @@ class FirewallService final : public QObject {
   QString m_defaultCgroup;
   QString m_excludeCgroup;
 
-  static QString findCgroupPath(const QString& type = "net_cls");
   static void writeCgroupFile(const QString& path, unsigned long value);
 };
 

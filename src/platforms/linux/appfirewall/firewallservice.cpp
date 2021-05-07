@@ -8,9 +8,9 @@
 #include "firewallservice.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/linux/linuxdependencies.h"
 
 #include <errno.h>
-#include <mntent.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -61,7 +61,7 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
   qDBusRegisterMetaType<UserDataList>();
 
   /* Resolve the control group paths we need. */
-  m_defaultCgroup = findCgroupPath("net_cls");
+  m_defaultCgroup = LinuxDependencies::findCgroupPath("net_cls");
   m_excludeCgroup = m_defaultCgroup + "/" + VPN_EXCLUDE_CGROUP;
 
   int err = mkdir(m_excludeCgroup.toLocal8Bit().constData(),
@@ -240,29 +240,6 @@ void FirewallService::userRemoved(uint uid, const QDBusObjectPath& path) {
   logger.log() << "User removed uid:" << uid << "at:" << path.path();
   m_users.remove(uid);
   delete session;
-}
-
-QString FirewallService::findCgroupPath(const QString& type) {
-  struct mntent entry;
-  char buf[PATH_MAX];
-
-  FILE* fp = fopen("/etc/mtab", "r");
-  if (fp == NULL) {
-    return QString();
-  }
-
-  while (getmntent_r(fp, &entry, buf, sizeof(buf)) != NULL) {
-    if (strcmp(entry.mnt_type, "cgroup") != 0) {
-      continue;
-    }
-    if (hasmntopt(&entry, type.toLocal8Bit().constData()) != NULL) {
-      fclose(fp);
-      return QString(entry.mnt_dir);
-    }
-  }
-  fclose(fp);
-
-  return QString();
 }
 
 void FirewallService::writeCgroupFile(const QString& path,

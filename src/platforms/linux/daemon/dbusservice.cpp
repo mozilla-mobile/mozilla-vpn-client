@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "polkithelper.h"
 #include "wgquickprocess.h"
+#include "platforms/linux/linuxdependencies.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -25,6 +26,7 @@ extern "C" {
 #endif
 
 #include "../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h"
+#include "platforms/linux/netfilter/netfilter.h"
 
 #if defined(__cplusplus)
 }
@@ -32,13 +34,23 @@ extern "C" {
 
 namespace {
 Logger logger(LOG_LINUX, "DBusService");
+
+void NetfilterLogger(int level, const char* msg) {
+  Q_UNUSED(level);
+  logger.log() << "NetfilterGo:" << msg;
+}
 }
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
+  NetfilterSetLogger((GoUintptr)&NetfilterLogger);
+  NetfilterCreateTables();
 }
 
-DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
+DBusService::~DBusService() {
+  MVPN_COUNT_DTOR(DBusService);
+  NetfilterRemoveTables();
+}
 
 WireguardUtils* DBusService::wgutils() {
   if (!m_wgutils) {
@@ -102,6 +114,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.log() << "Deactivate";
+  NetfilterClearTables();
   return Daemon::deactivate(emitSignals);
 }
 
@@ -152,12 +165,41 @@ bool DBusService::run(Op op, const InterfaceConfig& config) {
     addresses.append(ip.toString());
   }
 
-  return WgQuickProcess::run(
+  bool result = WgQuickProcess::run(
       op, config.m_privateKey, config.m_deviceIpv4Address,
       config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
       config.m_serverIpv6Gateway, config.m_serverPublicKey,
       config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
       addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
+  if (!result) {
+    return false;
+  }
+
+  QString cgroup = LinuxDependencies::findCgroupPath("net_cls");
+  if (cgroup.isEmpty()) {
+    return true;
+  }
+
+  QFile blockClass(cgroup + "/mozvpn.block/net_cls.classid");
+  if (blockClass.open(QIODevice::ReadOnly)) {
+    QString value = QString::fromLocal8Bit(blockClass.readLine(64));
+    uint32_t classid = value.toULong();
+    if (classid != 0) {
+      NetfilterBlockCgroup(classid);
+    }
+  }
+
+  QFile excludeClass(cgroup + "/mozvpn.exclude/net_cls.classid");
+  if (excludeClass.open(QIODevice::ReadOnly)) {
+    QString value = QString::fromLocal8Bit(excludeClass.readLine(64));
+    uint32_t fwmark = m_wgutils->getFirewallMark();
+    uint32_t classid = value.toULong();
+    if ((classid != 0) && (fwmark != 0)) {
+      NetfilterMarkCgroup(classid, fwmark);
+    }
+  }
+
+  return true;
 }
 
 static inline bool endpointStringToSockaddr(const QString& address, int port,

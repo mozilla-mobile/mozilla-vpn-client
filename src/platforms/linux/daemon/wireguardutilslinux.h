@@ -14,6 +14,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
   ~WireguardUtilsLinux();
   bool interfaceExists() override;
   QStringList currentInterfaces() override;
+
+  uint32_t getFirewallMark();
 };
 
 #endif  // WIREGUARDUTILSLINUX_H

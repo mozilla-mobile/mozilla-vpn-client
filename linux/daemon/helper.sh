@@ -140,17 +140,6 @@ get_fwmark() {
 remove_firewall() {
 	local line iptables found restore
 	for iptables in iptables ip6tables; do
-		for rulenum in $($iptables -t mangle -L OUTPUT --line-numbers -n | awk '{if ($2 == "mozvpn-exclude") print $1}'); do
-			$iptables -t mangle -D OUTPUT $rulenum
-		done
-		for rulenum in $($iptables -t nat -L POSTROUTING --line-numbers -n | awk '{if ($2 == "mozvpn-exclude") print $1}'); do
-			$iptables -t nat -D POSTROUTING $rulenum
-		done
-		$iptables -t mangle -F mozvpn-exclude
-		$iptables -t mangle -X mozvpn-exclude
-		$iptables -t nat -F mozvpn-exclude
-		$iptables -t nat -X mozvpn-exclude
-
 		restore="" found=0
 		while read -r line; do
 			[[ $line == "*"* || $line == COMMIT || $line == "-A "*"-m comment --comment \"wg-quick(8) rule for $INTERFACE\""* ]] || continue
@@ -177,16 +166,6 @@ add_firewall() {
 
 		ip $proto rule add not fwmark $TABLE table $TABLE
 		ip $proto rule add table main suppress_prefixlength 0
-
-		$iptables -t mangle -N mozvpn-exclude || true
-		$iptables -t mangle -A OUTPUT -m mark ! -d $loopmask ! --mark $TABLE -j mozvpn-exclude
-		$iptables -t nat -N mozvpn-exclude || true
-		$iptables -t nat -A POSTROUTING -m mark --mark $TABLE -j mozvpn-exclude
-		if [ -e "/sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid" ]; then
-			local cgclass=$(cat /sys/fs/cgroup/net_cls/mozvpn.exclude/net_cls.classid)
-			$iptables -t mangle -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MARK --set-mark $TABLE
-			$iptables -t nat -A mozvpn-exclude -m cgroup --cgroup $cgclass -j MASQUERADE
-		fi
 	done
 
 	# Things work without this, but it looks important
