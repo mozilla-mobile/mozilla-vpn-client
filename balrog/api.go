@@ -36,23 +36,34 @@ func (l *CLogger) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-//
-// NEW METHOD SIGNATURE - balrogValidate(x5uDataGo, updateDataGo, signatureGo, certSubjectGo);
-// - parse x5uData
-// - validate chain
-// - validate root (with root cert fingerprint?)
-// - validate leaf (with certSubject)
-// - get publickey from leaf
-// - validate updateData (aka input) with publickey and signature
-//
-//
-func balrogValidate(x5u string, input string, signature string, certSubject string) bool {
-	rootHash := "rootHash"
-	certChain := "certChain"
-	err := contentsignature.Verify([]byte(input), []byte(certChain), signature, rootHash)
+//export balrogSetLogger
+func balrogSetLogger(loggerFn uintptr) {
+	loggerFunc = unsafe.Pointer(loggerFn)
+  }
+  
+//export balrogValidate
+func balrogValidate(x5u string, input string, signature string, rootHash string, leafCertSubject string) bool {
+	//
+	// NEW METHOD SIGNATURE - balrogValidate(x5uDataGo, updateDataGo, signatureGo, certSubjectGo);
+	// - parse x5uData
+	// - validate chain
+	// - validate root (with root cert fingerprint?)
+	// - validate leaf (with certSubject)
+	// - get publickey from leaf
+	// - validate updateData (aka input) with publickey and signature
+	//
+	//
+	logger := log.New(&CLogger{level: 0}, "", 0)
+	err := contentsignature.Verify([]byte(input), []byte(x5u), signature, rootHash)
 	if err != nil {
-		logger := log.New(&CLogger{level: 0}, "", 0)
 		logger.Println("Verification failed with error:", err.Error())
+		return false
+	}
+	// Verify method does not verify the leaf
+	certs, _ := contentsignature.ParseChain([]byte(x5u))
+	leaf := certs[0]
+	if string(leaf.RawSubject) != leafCertSubject {
+		logger.Println("Leaf subject didn't match. Expected: ", leafCertSubject, " Got: ", leaf.Subject)
 		return false
 	}
 	return true
