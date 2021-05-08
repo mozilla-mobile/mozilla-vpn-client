@@ -154,7 +154,7 @@ void PidTracker::handleProcEvent(struct cn_msg* cnmsg) {
 void PidTracker::readData() {
   struct sockaddr_nl src;
   socklen_t srclen = sizeof(src);
-  size_t recvlen;
+  ssize_t recvlen;
 
   recvlen = recvfrom(nlsock, readBuf, sizeof(readBuf), MSG_DONTWAIT,
                      (struct sockaddr*)&src, &srclen);

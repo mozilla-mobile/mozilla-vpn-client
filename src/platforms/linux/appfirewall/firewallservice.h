@@ -33,9 +33,8 @@ class FirewallService final : public QObject {
   void userCreated(uint uid, const QDBusObjectPath& path);
   void userRemoved(uint uid, const QDBusObjectPath& path);
   void pidForked(const QString& name, int parent, int child);
-  void pidExited(const QString& name, int pid);
   void appLaunched(const QString& name, uint userid, int rootpid);
-  void appTerminate(const QString& name, int rootpid);
+  void appTerminated(const QString& name, int rootpid);
 
  private:
   FirewallAdaptor* m_adaptor;

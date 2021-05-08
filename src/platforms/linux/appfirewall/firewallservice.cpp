@@ -75,10 +75,8 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
   m_pidtracker = new PidTracker(this);
   connect(m_pidtracker, SIGNAL(pidForked(const QString&, int, int)), this,
           SLOT(pidForked(const QString&, int, int)));
-  connect(m_pidtracker, SIGNAL(pidExited(const QString&, int)), this,
-          SLOT(pidExited(const QString&, int)));
   connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
-          SLOT(appTerminate(const QString&, int)));
+          SLOT(appTerminated(const QString&, int)));
 
   QDBusConnection m_conn = QDBusConnection::systemBus();
   m_conn.connect("", LOGIN_MANAGER_PATH, LOGIN_MANAGER_INTERFACE, "UserNew",
@@ -182,18 +180,10 @@ void FirewallService::pidForked(const QString& name, int parent, int child) {
   if (m_excludedApps.contains(name)) {
     writeCgroupFile(m_excludeCgroup + CGROUP_PROCS_FILE, child);
   }
-#ifdef QT_DEBUG
-  logger.log() << "fork:" << name << "PID:" << parent << "->" << child;
-#endif
+  Q_UNUSED(parent);
 }
 
-void FirewallService::pidExited(const QString& name, int pid) {
-#ifdef QT_DEBUG
-  logger.log() << "exit:" << name << "PID:" << pid;
-#endif
-}
-
-void FirewallService::appTerminate(const QString& name, int rootpid) {
+void FirewallService::appTerminated(const QString& name, int rootpid) {
   logger.log() << "terminate:" << name << "PID:" << rootpid;
 }
 

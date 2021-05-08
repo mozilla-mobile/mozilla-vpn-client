@@ -38,10 +38,14 @@ AppTracker::AppTracker(uint userid, QDBusObjectPath path, QObject* parent)
    * be running as root to manage control groups.
    */
   uid_t realuid = getuid();
-  seteuid(userid);
+  if (seteuid(userid) < 0) {
+    logger.log() << "Failed to set effective UID";
+  }
   QDBusConnection connection =
       QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
-  seteuid(realuid);
+  if (seteuid(realuid) < 0) {
+    logger.log() << "Failed to restore effective UID";
+  }
 
   bool isConnected = connection.connect(
       "", GTK_DESKTOP_APP_PATH, GTK_DESKTOP_APP_SERVICE, "Launched", this,

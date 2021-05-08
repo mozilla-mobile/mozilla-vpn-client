@@ -66,65 +66,99 @@ func nftCommit(logger *log.Logger) int32 {
 }
 
 func nftMarkCgroup(ctx *nftCtx, cgroup uint32, fwmark uint32) {
-  // Destination IP address parsing is a little different for IPv4 and IPv6
-  var localhost []byte
-  var dstoffset uint32
-  if ctx.table.Family == nftables.TableFamilyIPv6 {
-    localhost = net.ParseIP("::1").To16()
-    dstoffset = 24
-  } else {
-    localhost = net.ParseIP("127.0.0.1").To4()
-    dstoffset = 16
+  // Match packets originating from the cgroup
+  var loadcgroup = expr.Meta{
+    Key:        expr.MetaKeyCGROUP,
+    Register:   1,
+  }
+  var matchcgroup = expr.Cmp{
+    Op:         expr.CmpOpEq,
+    Register:   1,
+    Data:       binaryutil.NativeEndian.PutUint32(cgroup),
+  }
+  // Match packets that have not been marked
+  var loadfwmark = expr.Meta{
+    Key:        expr.MetaKeyMARK,
+    Register:   1,
+  }
+  var matchfwmark = expr.Cmp{
+    Op:         expr.CmpOpNeq,
+    Register:   1,
+    Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+  }
+  // Set the packet mark
+  var immfwmark = expr.Immediate{
+    Register:   1,
+    Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+  }
+  var setfwmark = expr.Meta{
+    Key:        expr.MetaKeyMARK,
+    Register:   1,
+    SourceRegister: true,
   }
 
-  mozvpn_conn.AddRule(&nftables.Rule{
-    Table: ctx.table,
-    Chain: ctx.mangle,
-    Exprs: []expr.Any{
-      // Match packets from the cgroup
-      &expr.Meta{
-        Key:        expr.MetaKeyCGROUP,
-        Register:   1,
+  if ctx.table.Family == nftables.TableFamilyIPv6 {
+    mozvpn_conn.AddRule(&nftables.Rule{
+      Table: ctx.table,
+      Chain: ctx.mangle,
+      Exprs: []expr.Any{
+        // Load the boilerplate matching rules
+        &loadcgroup,
+        &matchcgroup,
+        &loadfwmark,
+        &matchfwmark,
+        // Match packets sent from IPv6 localhost
+        &expr.Payload{
+          DestRegister: 1,
+          Base:       expr.PayloadBaseNetworkHeader,
+          Offset:     24,
+          Len:        16,
+        },
+        &expr.Cmp{
+          Op:         expr.CmpOpNeq,
+          Register:   1,
+          Data:       net.ParseIP("::1").To16(),
+        },
+        // Set the firewall mark
+        &immfwmark,
+        &setfwmark,
       },
-      &expr.Cmp{
-        Op:         expr.CmpOpEq,
-        Register:   1,
-        Data:       binaryutil.NativeEndian.PutUint32(cgroup),
+    })
+  } else {
+    mozvpn_conn.AddRule(&nftables.Rule{
+      Table: ctx.table,
+      Chain: ctx.mangle,
+      Exprs: []expr.Any{
+        // Load the boilerplate matching rules
+        &loadcgroup,
+        &matchcgroup,
+        &loadfwmark,
+        &matchfwmark,
+        // Match packets sent from 127.0.0.0/8
+        &expr.Payload{
+          DestRegister: 1,
+          Base:       expr.PayloadBaseNetworkHeader,
+          Offset:     16,
+          Len:        4,
+        },
+        &expr.Bitwise{
+          SourceRegister: 1,
+          DestRegister: 1,
+          Len:        4,
+          Mask:       net.ParseIP("255.0.0.0").To4(),
+          Xor:        []byte{0,0,0,0},
+        },
+        &expr.Cmp{
+          Op:         expr.CmpOpNeq,
+          Register:   1,
+          Data:       net.ParseIP("127.0.0.0").To4(),
+        },
+        // Set the firewall mark
+        &immfwmark,
+        &setfwmark,
       },
-      // Match packets not already marked
-      &expr.Meta{
-        Key:        expr.MetaKeyMARK,
-        Register:   1,
-      },
-      &expr.Cmp{
-        Op:         expr.CmpOpNeq,
-        Register:   1,
-        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
-      },
-      // Match all destinations except localhost
-      &expr.Payload{
-        DestRegister: 1,
-        Base:       expr.PayloadBaseNetworkHeader,
-        Offset:     dstoffset,
-        Len:        uint32(len(localhost)),
-      },
-      &expr.Cmp{
-        Op:         expr.CmpOpNeq,
-        Register:   1,
-        Data:       localhost,
-      },
-      // Set the firewall mark
-      &expr.Immediate{
-        Register:   1,
-        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
-      },
-      &expr.Meta{
-        Key:        expr.MetaKeyMARK,
-        Register:   1,
-        SourceRegister: true,
-      },
-    },
-  })
+    })
+  }
 
   mozvpn_conn.AddRule(&nftables.Rule{
     Table: ctx.table,
