@@ -22,6 +22,13 @@ ColumnLayout {
     VPNBoldLabel {
         text: titleText
         Layout.leftMargin: Theme.windowMargin
+        opacity: disableRowWhen ?  .7 : 1
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
+            }
+        }
     }
 
     VPNClickableRow {

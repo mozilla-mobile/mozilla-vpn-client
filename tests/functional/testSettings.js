@@ -82,7 +82,7 @@ describe('Settings', function() {
     await vpn.clickOnElement('manageAccountButton');
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
-      return url.endsWith('/r/vpn/account');
+      return url.includes('/r/vpn/account');
     });
 
     await checkSetting('settingStartAtBoot', 'start-at-boot');

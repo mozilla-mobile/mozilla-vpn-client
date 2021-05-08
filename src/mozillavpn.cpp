@@ -358,11 +358,13 @@ void MozillaVPN::openLink(LinkType linkType) {
   logger.log() << "Opening link: " << linkType;
 
   QString url;
+  bool addEmailAddress = false;
 
   switch (linkType) {
     case LinkAccount:
       url = Constants::API_URL;
       url.append("/r/vpn/account");
+      addEmailAddress = true;
       break;
 
     case LinkContact:
@@ -422,7 +424,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       return;
   }
 
-  UrlOpener::open(url);
+  UrlOpener::open(url, addEmailAddress);
 }
 
 void MozillaVPN::scheduleTask(Task* task) {
@@ -982,6 +984,12 @@ void MozillaVPN::serializeLogs(QTextStream* out,
         } else {
           *out << "No logs from the backend.";
         }
+        *out << Qt::endl;
+        *out << "==== SETTINGS ====" << Qt::endl;
+        *out << SettingsHolder::instance()->getReport();
+        *out << "==== DEVICE ====" << Qt::endl;
+        *out << Device::currentDeviceReport();
+        *out << Qt::endl;
 
         finalizeCallback();
       });
