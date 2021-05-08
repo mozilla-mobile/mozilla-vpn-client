@@ -26,11 +26,18 @@ WindowsPingSendWorker::~WindowsPingSendWorker() {
   MVPN_COUNT_DTOR(WindowsPingSendWorker);
 }
 
-void WindowsPingSendWorker::sendPing(const QString& destination) {
-  logger.log() << "WindowsPingSendWorker - start" << destination;
+void WindowsPingSendWorker::sendPing(const QString& destination,
+                                     const QString& source) {
+  logger.log() << "WindowsPingSendWorker - start" << destination << "from"
+               << source;
 
-  IN_ADDR ip{};
-  if (InetPtonA(AF_INET, destination.toLocal8Bit(), &ip) != 1) {
+  IN_ADDR dst{};
+  IN_ADDR src{};
+  if (InetPtonA(AF_INET, destination.toLocal8Bit(), &dst) != 1) {
+    emit pingFailed();
+    return;
+  }
+  if (InetPtonA(AF_INET, source.toLocal8Bit(), &src) != 1) {
     emit pingFailed();
     return;
   }
@@ -48,8 +55,9 @@ void WindowsPingSendWorker::sendPing(const QString& destination) {
   unsigned char replyBuffer[replyBufferSize]{};
 
   DWORD replyCount =
-      IcmpSendEcho(icmpHandle, ip.S_un.S_addr, payload, payloadSize, nullptr,
-                   replyBuffer, replyBufferSize, 10000);
+      IcmpSendEcho2Ex(icmpHandle, INVALID_HANDLE_VALUE, nullptr, nullptr,
+                      src.S_un.S_addr, dst.S_un.S_addr, payload, payloadSize,
+                      nullptr, replyBuffer, replyBufferSize, 10000);
   IcmpCloseHandle(icmpHandle);
 
   if (replyCount == 0) {

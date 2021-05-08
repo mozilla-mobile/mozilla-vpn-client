@@ -11,7 +11,7 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
-    id: mainView
+    id: vpnFlickable
 
     flickContentHeight: col.height + Theme.windowMargin
     states: [
@@ -37,6 +37,13 @@ VPNFlickable {
             }
         }
     ]
+
+    MouseArea {
+        anchors.fill: parent
+        enabled: box.connectionInfoVisible
+        onClicked: box.closeConnectionInfo()
+    }
+
 
     GridLayout {
         id: col

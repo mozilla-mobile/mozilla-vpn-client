@@ -70,8 +70,10 @@ MacOSPingSendWorker::~MacOSPingSendWorker() {
   MVPN_COUNT_DTOR(MacOSPingSendWorker);
 }
 
-void MacOSPingSendWorker::sendPing(const QString& destination) {
-  logger.log() << "MacOSPingSendWorker - sending ping to:" << destination;
+void MacOSPingSendWorker::sendPing(const QString& destination,
+                                   const QString& source) {
+  logger.log() << "MacOSPingSendWorker - sending ping to:" << destination
+               << "from:" << source;
 
   Q_ASSERT(m_socket == 0);
 
@@ -83,6 +85,25 @@ void MacOSPingSendWorker::sendPing(const QString& destination) {
 
   if (m_socket < 0) {
     logger.log() << "Socket creation failed";
+    emit pingFailed();
+    releaseObjects();
+    return;
+  }
+
+  struct sockaddr_in src;
+  bzero(&src, sizeof(src));
+  src.sin_family = AF_INET;
+  src.sin_len = sizeof(src);
+
+  if (inet_aton(source.toLocal8Bit().constData(), &src.sin_addr) == 0) {
+    logger.log() << "source address error";
+    emit pingFailed();
+    releaseObjects();
+    return;
+  }
+
+  if (bind(m_socket, (struct sockaddr*)&src, sizeof(src)) != 0) {
+    logger.log() << "bind error";
     emit pingFailed();
     releaseObjects();
     return;

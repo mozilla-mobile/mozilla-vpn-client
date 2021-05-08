@@ -30,6 +30,10 @@ Rectangle {
         return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
+    function closeConnectionInfo() {
+        connectionInfo.close();
+    }
+
     state: VPNController.state
     radius: 8
     Layout.preferredHeight: 318
@@ -480,6 +484,7 @@ Rectangle {
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: connectionInfoImage
@@ -517,6 +522,7 @@ Rectangle {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: settingsImage
@@ -641,10 +647,12 @@ Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
     }
 
     VPNConnectionInfo {
         id: connectionInfo
+        visible: false
 
         Behavior on opacity {
             NumberAnimation {
