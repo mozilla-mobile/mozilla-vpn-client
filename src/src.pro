@@ -360,6 +360,7 @@ else:linux:!android {
             platforms/linux/appfirewall/apptracker.cpp \
             platforms/linux/appfirewall/firewallservice.cpp \
             platforms/linux/appfirewall/pidtracker.cpp \
+            platforms/linux/appfirewall/startupnotifywatcher.cpp \
             platforms/linux/appfirewall/linuxappfirewall.cpp
 
     HEADERS += \
@@ -370,6 +371,7 @@ else:linux:!android {
             platforms/linux/appfirewall/apptracker.h \
             platforms/linux/appfirewall/firewallservice.h \
             platforms/linux/appfirewall/pidtracker.h \
+            platforms/linux/appfirewall/startupnotifywatcher.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wireguardutilslinux.h \

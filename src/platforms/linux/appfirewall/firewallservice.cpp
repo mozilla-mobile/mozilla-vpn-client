@@ -8,6 +8,7 @@
 #include "firewallservice.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "startupnotifywatcher.h"
 #include "platforms/linux/linuxdependencies.h"
 
 #include <errno.h>
@@ -90,6 +91,10 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    &FirewallService::userListCompleted);
+
+  StartupNotifyWatcher* m_xnotify = new StartupNotifyWatcher("unix:0", this);
+  QObject::connect(m_xnotify, SIGNAL(appLaunched(const QString&, uint, int)),
+                   this, SLOT(appLaunched(const QString&, uint, int)));
 }
 
 FirewallService::~FirewallService() { MVPN_COUNT_DTOR(FirewallService); }
