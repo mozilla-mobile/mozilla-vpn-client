@@ -58,7 +58,7 @@ Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 git submodule init
 git submodule update
 # glean
-./scripts/generate_clean.py
+./scripts/generate_glean.py
 # translations
 python scripts/importLanguages.py
 ```
