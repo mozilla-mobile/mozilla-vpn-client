@@ -17,7 +17,7 @@ class StartupNotifyWatcher : public QObject {
   Q_DISABLE_COPY_MOVE(StartupNotifyWatcher)
 
  public:
-  explicit StartupNotifyWatcher(const QString& display, QObject* parent);
+  explicit StartupNotifyWatcher(QObject* parent);
   ~StartupNotifyWatcher();
 
  signals:
@@ -33,6 +33,7 @@ class StartupNotifyWatcher : public QObject {
   QByteArray m_buffer;
   QMap<QString, QString> m_values;
   QSocketNotifier* m_notifier;
+  int m_socket = -1;
   bool m_corrupt;
 
   static xcb_atom_t xatomLookup(xcb_connection_t*, const char* name);

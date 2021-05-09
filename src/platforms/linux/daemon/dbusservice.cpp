@@ -39,7 +39,7 @@ void NetfilterLogger(int level, const char* msg) {
   Q_UNUSED(level);
   logger.log() << "NetfilterGo:" << msg;
 }
-}
+}  // namespace
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);

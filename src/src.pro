@@ -444,6 +444,7 @@ else:linux:!android {
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
+    PKGCONFIG += xcb
 }
 
 # Platform-specific: android

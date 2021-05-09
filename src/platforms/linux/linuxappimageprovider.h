@@ -8,8 +8,7 @@
 #include <QObject>
 #include <QQuickImageProvider>
 
-class LinuxAppImageProvider final : public QQuickImageProvider,
-                                      public QObject {
+class LinuxAppImageProvider final : public QQuickImageProvider, public QObject {
  public:
   LinuxAppImageProvider(QObject* parent);
   ~LinuxAppImageProvider();

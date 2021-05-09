@@ -73,7 +73,8 @@ QImage LinuxAppImageProvider::requestImage(const QString& id, QSize* size,
   QPixmap pixmap = icon.pixmap(requestedSize);
   size->setHeight(pixmap.height());
   size->setWidth(pixmap.width());
-  logger.log() << "Loaded icon" << icon.name() << "size:" << pixmap.width() << "x" << pixmap.height();
+  logger.log() << "Loaded icon" << icon.name() << "size:" << pixmap.width()
+               << "x" << pixmap.height();
 
   return pixmap.toImage();
 }

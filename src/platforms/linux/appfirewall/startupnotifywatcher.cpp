@@ -6,33 +6,75 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <unistd.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/un.h>
 #include <xcb/xcb.h>
-#include <xcb/xcb_event.h>
+
+constexpr const char* XDISPLAY_PRIMARY_SOCKET = "/tmp/.X11-unix/X0";
 
 namespace {
 Logger logger(LOG_LINUX, "StartupNotifyWatcher");
 }
 
-StartupNotifyWatcher::StartupNotifyWatcher(const QString& display,
-                                           QObject* parent)
-    : QObject(parent) {
+StartupNotifyWatcher::StartupNotifyWatcher(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(StartupNotifyWatcher);
   logger.log() << "StartupNotifyWatcher created.";
 
-  /* Connext to the X display server. */
-  const char* xdisplay = NULL;
-  if (!display.isEmpty()) {
-    xdisplay = display.toLocal8Bit().constData();
+  /* Acquire the effective UID of the primary X display */
+  uid_t realuid = getuid();
+  struct stat st;
+  if (stat(XDISPLAY_PRIMARY_SOCKET, &st) != 0) {
+    logger.log() << "Unable to state X display:" << strerror(errno);
+    return;
   }
-  xconn = xcb_connect(xdisplay, NULL);
+  if (st.st_uid != realuid) {
+    if (seteuid(st.st_uid) != 0) {
+      logger.log() << "Failed to set EUID for X display:" << strerror(errno);
+      st.st_uid = realuid;
+    }
+  }
+
+  /* Open the primary X display socket. */
+  struct sockaddr_un addr;
+  socklen_t len = sizeof(int);
+  int bufsize;
+
+  strcpy(addr.sun_path, XDISPLAY_PRIMARY_SOCKET);
+  addr.sun_family = AF_UNIX;
+  m_socket = socket(AF_UNIX, SOCK_STREAM, 0);
+  if (m_socket < 0) {
+    logger.log() << "Failed to open socket:" << strerror(errno);
+    return;
+  }
+  if (getsockopt(m_socket, SOL_SOCKET, SO_SNDBUF, &bufsize, &len) == 0) {
+    if (bufsize < (64 * 1024)) {
+      bufsize = 64 * 1024;
+      setsockopt(m_socket, SOL_SOCKET, SO_SNDBUF, &bufsize, len);
+    }
+  }
+  if (::connect(m_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+    logger.log() << "Failed to connect to socket:" << strerror(errno);
+    return;
+  }
+
+  if (st.st_uid != realuid) {
+    if (seteuid(realuid) != 0) {
+      logger.log() << "Failed to restore UID:" << strerror(errno);
+      return;
+    }
+  }
+
+  /* Connext to the X display server. */
+  xconn = xcb_connect_to_fd(m_socket, NULL);
   if (xconn == NULL) {
-    logger.log() << "Failed to create connection";
+    logger.log() << "Failed to create X connection";
     return;
   }
   int err = xcb_connection_has_error(xconn);
-  if (err < 0) {
-    logger.log() << "Connection failed with code:" << err;
+  if (err != 0) {
+    logger.log() << "X connection failed with code:" << err;
     return;
   }
 
@@ -56,8 +98,7 @@ StartupNotifyWatcher::StartupNotifyWatcher(const QString& display,
   m_corrupt = true;
 
   /* Listen for client events */
-  m_notifier = new QSocketNotifier(xcb_get_file_descriptor(xconn),
-                                   QSocketNotifier::Read, this);
+  m_notifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
   connect(m_notifier,
           SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
           SLOT(xeventReady()));
@@ -66,6 +107,9 @@ StartupNotifyWatcher::StartupNotifyWatcher(const QString& display,
 StartupNotifyWatcher::~StartupNotifyWatcher() {
   MVPN_COUNT_DTOR(StartupNotifyWatcher);
   xcb_disconnect(xconn);
+  if (m_socket >= 0) {
+    close(m_socket);
+  }
 }
 
 xcb_atom_t StartupNotifyWatcher::xatomLookup(xcb_connection_t* c,
@@ -150,17 +194,14 @@ void StartupNotifyWatcher::xeventStartupData(
   }
 #endif
 
-  /* Application start is completed when we get a 'remove' event. */
-  if (type == "remove") {
-    if (m_values.contains("APPLICATION_ID") && m_values.contains("PID")) {
-      QString pid = m_values["PID"];
-      QString path = "/proc/" + pid;
-      struct stat st;
-      if (stat(path.toLocal8Bit().constData(), &st) == 0) {
-        emit appLaunched(m_values["APPLICATION_ID"], st.st_uid, pid.toInt());
-      }
+  /* Report a launch event if we have an APPLICATION_ID and a valid PID */
+  if (m_values.contains("APPLICATION_ID") && m_values.contains("PID")) {
+    QString pid = m_values["PID"];
+    QString path = "/proc/" + pid;
+    struct stat st;
+    if (stat(path.toLocal8Bit().constData(), &st) == 0) {
+      emit appLaunched(m_values["APPLICATION_ID"], st.st_uid, pid.toInt());
     }
-    m_values.empty();
     m_corrupt = true;
   }
 }
@@ -170,7 +211,7 @@ void StartupNotifyWatcher::xeventReady() {
   if (xevent == NULL) {
     return;
   }
-  if (XCB_EVENT_RESPONSE_TYPE(xevent) == XCB_CLIENT_MESSAGE) {
+  if ((xevent->response_type & 0x7f) == XCB_CLIENT_MESSAGE) {
     xcb_client_message_event_t* msg = (xcb_client_message_event_t*)xevent;
     if (msg->type == xatom_begin) {
       m_buffer.clear();

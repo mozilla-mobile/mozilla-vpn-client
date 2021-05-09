@@ -92,7 +92,7 @@ FirewallService::FirewallService(QObject* parent) : QObject(parent) {
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    &FirewallService::userListCompleted);
 
-  StartupNotifyWatcher* m_xnotify = new StartupNotifyWatcher("unix:0", this);
+  StartupNotifyWatcher* m_xnotify = new StartupNotifyWatcher(this);
   QObject::connect(m_xnotify, SIGNAL(appLaunched(const QString&, uint, int)),
                    this, SLOT(appLaunched(const QString&, uint, int)));
 }
@@ -242,6 +242,6 @@ void FirewallService::writeCgroupFile(const QString& path,
   FILE* fp = fopen(path.toLocal8Bit().constData(), "w");
   if (fp) {
     fprintf(fp, "%lu", value);
+    fclose(fp);
   }
-  fclose(fp);
 }
