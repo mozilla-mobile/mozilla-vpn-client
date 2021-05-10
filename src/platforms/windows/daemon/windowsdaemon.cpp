@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
+#include "platforms/windows/windowsservicemanager.h"
 #include "wgquickprocess.h"
 
 #include <QCoreApplication>
@@ -438,6 +439,10 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
 
   if(config.m_vpnDisabledApps.length() > 0){
       logger.log() << "Tunnel UP, Starting SplitTunneling";
+      if(!WindowsSplitTunnel::isInstalled()){
+          logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
+          WindowsSplitTunnel::installDriver();
+      }
       m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
       m_splitTunnelManager.start();
   }

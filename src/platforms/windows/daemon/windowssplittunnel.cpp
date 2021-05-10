@@ -4,7 +4,8 @@
 #include <QNetworkInterface>
 #define PSAPI_VERSION 2
 #include <psapi.h>
-
+#include <QCoreApplication>
+#include <QFileInfo>
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
 
@@ -568,5 +569,41 @@ ProcessInfo WindowsSplitTunnel::getProcessInfo(HANDLE process, const PROCESSENTR
     }
     return pi;
 }
+LPCWSTR WindowsSplitTunnel::SERVICENAME= L"MozillaSplitTunnel";
 
+// static
+HANDLE WindowsSplitTunnel::installDriver(){
+    LPCWSTR displayName = L"Mozilla Split Tunnel Service";
+    QFileInfo driver(qApp->applicationDirPath()+"/mullvad-split-tunnel.sys");
+    if(!driver.exists()){
+        logger.log() << "Split Tunnel Driver File not found " << driver.absoluteFilePath();
+        return INVALID_HANDLE_VALUE;
+    }
+    auto path = driver.absolutePath();
+    LPCWSTR binPath = (const wchar_t*) path.utf16();
+    auto scm_rights = SC_MANAGER_ALL_ACCESS;
+    auto serviceManager = OpenSCManager(NULL,  // local computer
+                                     NULL,  // servicesActive database
+                                     scm_rights);
+    auto service = CreateService(serviceManager, WindowsSplitTunnel::SERVICENAME, displayName,
+                            SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
+                            SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+                            binPath, nullptr, 0,nullptr, nullptr, nullptr);
+    CloseServiceHandle(serviceManager);
+    return service;
+}
+
+bool WindowsSplitTunnel::isInstalled(){
+    auto scm_rights = SC_MANAGER_ALL_ACCESS;
+    auto serviceManager = OpenSCManager(NULL,  // local computer
+                                     NULL,  // servicesActive database
+                                     scm_rights);
+
+
+    auto servicehandle = OpenService(serviceManager,WindowsSplitTunnel::SERVICENAME,GENERIC_READ);
+    auto err = GetLastError();
+    CloseServiceHandle(serviceManager);
+    CloseServiceHandle(servicehandle);
+    return err != ERROR_SERVICE_DOES_NOT_EXIST;
+}
 

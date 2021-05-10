@@ -152,6 +152,11 @@ public:
     // Deletes Rules and puts it into passive mode
     void stop();
 
+    // Installes the Kernel Driver as Driver Service
+    static HANDLE installDriver();
+    static bool isInstalled();
+    static LPCWSTR SERVICENAME;
+
 private:
     HANDLE m_driver = INVALID_HANDLE_VALUE;
     constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
@@ -168,6 +173,7 @@ private:
     void getAddress(int adapterIndex, IN_ADDR* out_ipv4, IN6_ADDR* out_ipv6);
     // Collects info about an Opened Process
     ProcessInfo getProcessInfo(HANDLE process, const PROCESSENTRY32W& processMeta);
+
 };
 
 #endif // WINDOWSSPLITTUNNEL_H
