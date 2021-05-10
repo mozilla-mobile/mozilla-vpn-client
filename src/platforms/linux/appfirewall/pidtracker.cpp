@@ -104,6 +104,7 @@ void PidTracker::track(const QString& name, uint userid, int rootpid) {
     return;
   }
   ProcessGroup* group = new ProcessGroup(name, rootpid);
+  group->kthreads[rootpid] = 1;
   group->refcount = 1;
   group->userid = userid;
 
@@ -115,32 +116,44 @@ void PidTracker::handleProcEvent(struct cn_msg* cnmsg) {
   struct proc_event* ev = (struct proc_event*)cnmsg->data;
 
   if (ev->what == proc_event::PROC_EVENT_FORK) {
-    ProcessGroup* group =
-        m_processTree.value(ev->event_data.fork.parent_tgid, nullptr);
+    auto forkdata = &ev->event_data.fork;
+    /* If the child process already exists, track a new kernel thread. */
+    ProcessGroup* group = m_processTree.value(forkdata->child_tgid, nullptr);
+    if (group) {
+      group->kthreads[forkdata->child_tgid]++;
+      return;
+    }
+
+    /* Track a new userspace process if was forked from a known parent. */
+    group = m_processTree.value(forkdata->parent_tgid, nullptr);
     if (!group) {
       return;
     }
-    if (m_processTree.contains(ev->event_data.fork.child_tgid)) {
-      return;
-    }
-    m_processTree[ev->event_data.fork.child_tgid] = group;
+    m_processTree[forkdata->child_tgid] = group;
+    group->kthreads[forkdata->child_tgid] = 1;
     group->refcount++;
-    emit pidForked(group->name, ev->event_data.fork.parent_tgid,
-                   ev->event_data.fork.child_tgid);
+    emit pidForked(group->name, forkdata->parent_tgid, forkdata->child_tgid);
   }
 
   if (ev->what == proc_event::PROC_EVENT_EXIT) {
-    if (ev->event_data.exit.parent_tgid == 0) {
-      return;
-    }
-    ProcessGroup* group =
-        m_processTree.value(ev->event_data.exit.process_tgid, nullptr);
+    auto exitdata = &ev->event_data.exit;
+    ProcessGroup* group = m_processTree.value(exitdata->process_tgid, nullptr);
     if (!group) {
       return;
     }
-    emit pidExited(group->name, ev->event_data.exit.process_tgid);
-    m_processTree.remove(ev->event_data.exit.process_tgid);
 
+    /* Decrement the number of kernel threads in this userspace process. */
+    uint threadcount = group->kthreads.value(exitdata->process_tgid, 0);
+    if (threadcount == 0) {
+      return;
+    }
+    if (threadcount > 1) {
+      group->kthreads[exitdata->process_tgid] = threadcount - 1;
+      return;
+    }
+    group->kthreads.remove(exitdata->process_tgid);
+
+    /* A userspace process exits when all of its kernel threads exit. */
     Q_ASSERT(group->refcount > 0);
     group->refcount--;
     if (group->refcount == 0) {

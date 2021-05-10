@@ -113,21 +113,18 @@ QString FirewallService::status() {
 
 QString FirewallService::runningApps() {
   QJsonArray result;
-
-  for (auto app = m_pidtracker->m_processGroups.begin();
-       app != m_pidtracker->m_processGroups.end(); app++) {
-    const ProcessGroup* group = *app;
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    const ProcessGroup* group = *i;
     QJsonObject appObject;
     QJsonArray pidList;
     appObject.insert("name", QJsonValue(group->name));
     appObject.insert("userid", QJsonValue((qint64)group->userid));
     appObject.insert("rootpid", QJsonValue(group->rootpid));
 
-    for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
-      if (m_pidtracker->group(*pid) == group) {
-        pidList.append(QJsonValue(*pid));
-      }
+    for (auto pid : group->kthreads.keys()) {
+      pidList.append(QJsonValue(pid));
     }
+
     appObject.insert("pids", pidList);
     result.append(appObject);
   }
@@ -136,15 +133,18 @@ QString FirewallService::runningApps() {
 }
 
 bool FirewallService::excludeApp(const QStringList& names) {
-  for (auto app = names.begin(); app != names.end(); app++) {
-    logger.log() << "Adding" << *app << "to VPN exclusion group";
-    if (m_excludedApps.contains(*app)) continue;
-    m_excludedApps.append(*app);
+  for (auto appName : names) {
+    logger.log() << "Adding" << appName << "to VPN exclusion group";
+    if (m_excludedApps.contains(appName)) continue;
+    m_excludedApps.append(appName);
 
-    for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
-      const ProcessGroup* group = m_pidtracker->group(*pid);
-      if (group->name == *app) {
-        writeCgroupFile(m_excludeCgroup + CGROUP_PROCS_FILE, *pid);
+    for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+      const ProcessGroup* group = *i;
+      if (group->name != appName) {
+        continue;
+      }
+      for (auto pid : group->kthreads.keys()) {
+        writeCgroupFile(m_excludeCgroup + CGROUP_PROCS_FILE, pid);
       }
     }
   }
@@ -152,14 +152,17 @@ bool FirewallService::excludeApp(const QStringList& names) {
 }
 
 bool FirewallService::includeApp(const QStringList& names) {
-  for (auto app = names.begin(); app != names.end(); app++) {
-    logger.log() << "Removing" << *app << "from VPN exclusion group";
-    m_excludedApps.removeAll(*app);
+  for (auto appName : names) {
+    logger.log() << "Removing" << appName << "from VPN exclusion group";
+    m_excludedApps.removeAll(appName);
 
-    for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
-      const ProcessGroup* group = m_pidtracker->group(*pid);
-      if (group->name == *app) {
-        writeCgroupFile(m_defaultCgroup + CGROUP_PROCS_FILE, *pid);
+    for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+      const ProcessGroup* group = *i;
+      if (group->name != appName) {
+        continue;
+      }
+      for (auto pid : group->kthreads.keys()) {
+        writeCgroupFile(m_defaultCgroup + CGROUP_PROCS_FILE, pid);
       }
     }
   }
@@ -167,15 +170,15 @@ bool FirewallService::includeApp(const QStringList& names) {
 }
 
 bool FirewallService::flushApps() {
-  for (auto pid = m_pidtracker->begin(); pid != m_pidtracker->end(); pid++) {
-    const ProcessGroup* group = m_pidtracker->group(*pid);
-    if (m_excludedApps.contains(group->name)) {
-      writeCgroupFile(m_defaultCgroup + CGROUP_PROCS_FILE, *pid);
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    const ProcessGroup* group = *i;
+    for (auto pid : group->kthreads.keys()) {
+      writeCgroupFile(m_defaultCgroup + CGROUP_PROCS_FILE, pid);
     }
   }
 
-  for (auto app = m_excludedApps.begin(); app != m_excludedApps.end(); app++) {
-    logger.log() << "Removing" << *app << "from VPN exclusion group";
+  for (auto appName : m_excludedApps) {
+    logger.log() << "Removing" << appName << "from VPN exclusion group";
   }
   m_excludedApps.clear();
   return true;
