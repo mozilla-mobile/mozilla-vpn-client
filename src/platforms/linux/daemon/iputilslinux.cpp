@@ -44,6 +44,10 @@ bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
 bool IPUtilsLinux::setMTUAndUp() {
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+  if (sockfd < 0) {
+    logger.log() << "Failed to create ioctl socket.";
+    return false;
+  }
   auto guard = qScopeGuard([&] { close(sockfd); });
 
   // Setup the interface to interact with
@@ -86,6 +90,10 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
 
   // Create IPv4 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+  if (sockfd < 0) {
+    logger.log() << "Failed to create ioctl socket.";
+    return false;
+  }
   auto guard = qScopeGuard([&] { close(sockfd); });
 
   // Set ifr to interface
@@ -112,6 +120,10 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
 
   // Create IPv6 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
+  if (sockfd < 0) {
+    logger.log() << "Failed to create ioctl socket.";
+    return false;
+  }
   auto guard = qScopeGuard([&] { close(sockfd); });
 
   // Get the index of named ifr and link with ifr6
