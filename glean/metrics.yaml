@@ -14,23 +14,6 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
-  authentication_started:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has started the authentication flow.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
-    data_reviews:
-      - TBD
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
   authentication_aborted:
     type: event
     lifetime: ping
@@ -99,30 +82,13 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  settings_view_opened:
+  authentication_started:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has opened the settings
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
-    data_reviews:
-      - TBD
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-    expires: never
-
-  manage_account_clicked:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has clicked the `manage account` button
+      The user has started the authentication flow.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
@@ -150,6 +116,23 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
+  manage_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the `manage account` button
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
   max_device_reached:
     type: event
     lifetime: ping
@@ -157,6 +140,23 @@ sample:
       - main
     description: |
       Device limit reached
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  settings_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the settings
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
