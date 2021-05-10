@@ -3,12 +3,18 @@
 
 #include <QString>
 #include <QStringList>
+#pragma once
 
 // Note: include order matters here.
 #include <ws2tcpip.h>
-#include <windows.h>
 #include <Ws2ipdef.h>
 #include <tlhelp32.h>
+
+#include <ioapiset.h>
+
+#include <windows.h>
+
+
 // States for GetState
 enum DRIVER_STATE
 {
@@ -20,6 +26,20 @@ enum DRIVER_STATE
     STATE_RUNNING = 4,
     STATE_ZOMBIE = 5,
 };
+
+
+#ifndef CTL_CODE
+
+#define FILE_ANY_ACCESS 0x0000
+
+#define METHOD_BUFFERED 0
+#define METHOD_IN_DIRECT 1
+#define METHOD_NEITHER 3
+
+#define CTL_CODE( DeviceType, Function, Method, Access ) (                 \
+    ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method) \
+)
+#endif
 
 // Known ControlCodes
 #define IOCTL_INITIALIZE \

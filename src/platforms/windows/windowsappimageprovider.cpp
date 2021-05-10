@@ -8,6 +8,7 @@
 #include "leakdetector.h"
 #include "windowscommons.h"
 
+#include <shellapi.h>
 #include <QObject>
 #include <QDir>
 #include <QPixmap>
