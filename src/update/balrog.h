@@ -27,13 +27,11 @@ class Balrog final : public Updater {
 
   bool processData(const QByteArray& data);
   bool fetchSignature(NetworkRequest* request, const QByteArray& data);
-  bool checkSignature(const QByteArray& signature,
-                      const QByteArray& signatureBlob,
-                      QCryptographicHash::Algorithm algorithm,
-                      const QByteArray& data);
-  bool validateSignature(const QByteArray& publicKey, const QByteArray& data,
-                         QCryptographicHash::Algorithm algorithm,
-                         const QByteArray& signature);
+  bool checkSignature(const QByteArray& x5uData, const QByteArray& updateData,
+                      const QByteArray& signatureBlob);
+  bool validateSignature(const QByteArray& x5uData,
+                         const QByteArray& updateData,
+                         const QByteArray& signatureBlob);
   bool computeHash(const QString& url, const QByteArray& data,
                    const QString& hashValue, const QString& hashFunction);
   bool saveFileAndInstall(const QString& url, const QByteArray& data);
