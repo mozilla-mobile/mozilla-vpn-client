@@ -104,6 +104,8 @@ class MozillaVPN final : public QObject {
   State state() const;
   AlertType alert() const { return m_alert; }
 
+  QString serverPublicKey() { return m_serverPublicKey; }
+
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
@@ -203,6 +205,8 @@ class MozillaVPN final : public QObject {
   void setUpdating(bool updating);
 
   void heartbeatCompleted(bool success);
+
+  void setServerPublicKey(QString publicKey);
 
  private:
   void setState(State state);
@@ -305,6 +309,8 @@ class MozillaVPN final : public QObject {
 
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
+
+  QString m_serverPublicKey;
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;

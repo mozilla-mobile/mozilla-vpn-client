@@ -311,6 +311,11 @@ void MozillaVPN::maybeStateMain() {
   }
 }
 
+void MozillaVPN::setServerPublicKey(QString publicKey) {
+  logger.log() << "Set server public key:" << publicKey;
+  m_serverPublicKey = publicKey;
+}
+
 void MozillaVPN::authenticate() {
   logger.log() << "Authenticate";
 
