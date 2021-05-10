@@ -96,12 +96,14 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
   if (msec < PING_TIME_UNSTABLE_SEC * 1000) {
     setStability(Stable);
   } else {
+    MozillaVPN::instance()->controller()->silentSwitchServers();
     setStability(Unstable);
   }
 }
 
 void ConnectionHealth::noSignalDetected() {
   logger.log() << "No signal detected";
+  MozillaVPN::instance()->controller()->silentSwitchServers();
   setStability(NoSignal);
 }
 
