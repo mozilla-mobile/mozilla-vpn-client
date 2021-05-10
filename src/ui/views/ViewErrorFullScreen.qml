@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 VPNFlickable {
     property var headlineText
@@ -121,7 +122,10 @@ VPNFlickable {
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
-                onClicked: stackview.push(getHelpComponent)
+                onClicked: {
+                    Glean.sample.GetHelpClickedFullScreenError.record();
+                    stackview.push(getHelpComponent);
+                }
             }
 
             VPNSignOut {
