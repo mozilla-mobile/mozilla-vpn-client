@@ -20,21 +20,6 @@ Logger logger(
 #endif
     ,
     "WgQuickProcess");
-
-QString scriptPath() {
-#if defined(MVPN_LINUX)
-  QDir appPath(MVPN_DATA_PATH);
-  return appPath.filePath("helper.sh");
-#elif defined(MVPN_MACOS_DAEMON)
-  QDir appPath(QCoreApplication::applicationDirPath());
-  appPath.cdUp();
-  appPath.cd("Resources");
-  appPath.cd("utils");
-  return appPath.filePath("helper.sh");
-#endif
-  return QString();
-}
-
 }  // namespace
 
 // static
@@ -167,4 +152,19 @@ bool WgQuickProcess::run(
                << Qt::endl;
 
   return wgQuickProcess.exitCode() == 0;
+}
+
+// static
+QString WgQuickProcess::scriptPath() {
+#if defined(MVPN_LINUX)
+  QDir appPath(MVPN_DATA_PATH);
+  return appPath.filePath("helper.sh");
+#elif defined(MVPN_MACOS_DAEMON)
+  QDir appPath(QCoreApplication::applicationDirPath());
+  appPath.cdUp();
+  appPath.cd("Resources");
+  appPath.cd("utils");
+  return appPath.filePath("helper.sh");
+#endif
+  return QString();
 }

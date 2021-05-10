@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
+#include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
@@ -28,7 +29,9 @@
 #endif
 
 // How often we notify the same unsecured network
+#ifndef UNIT_TEST
 constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
+#endif
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkWatcher");
@@ -50,9 +53,7 @@ void NetworkWatcher::initialize() {
 #elif defined(MVPN_WASM)
   m_impl = new WasmNetworkWatcher(this);
 #else
-  logger.log()
-      << "No NetworkWatcher implementation for the current platform (yet)";
-  return;
+  m_impl = new DummyNetworkWatcher(this);
 #endif
 
   connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
@@ -80,10 +81,6 @@ void NetworkWatcher::settingsChanged(bool active) {
 
   m_active = active;
 
-  if (!m_impl) {
-    return;
-  }
-
   if (m_active) {
     m_impl->start();
   } else {
@@ -101,7 +98,15 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  Controller::State state = MozillaVPN::instance()->controller()->state();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  if (vpn->state() != MozillaVPN::StateMain) {
+    logger.log() << "VPN not ready. Ignoring unsecured network";
+    return;
+  }
+
+  Controller::State state = vpn->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
     logger.log() << "VPN on. Ignoring unsecured network";

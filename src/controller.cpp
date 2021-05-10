@@ -133,24 +133,20 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    m_connectionDate = connectionDate;
+    resetConnectionTimer();
+    m_connectionTimerExtraSecs =
+        connectionDate.secsTo(QDateTime::currentDateTime());
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
-    return;
-  }
-
-  if (SettingsHolder::instance()->startAtBoot()) {
-    logger.log() << "Start on boot";
-    activate();
   }
 }
 
-void Controller::activate() {
+bool Controller::activate() {
   logger.log() << "Activation" << m_state;
 
   if (m_state != StateOff && m_state != StateSwitching) {
     logger.log() << "Already connected";
-    return;
+    return false;
   }
 
   if (m_state == StateOff) {
@@ -161,12 +157,13 @@ void Controller::activate() {
   resetConnectionCheck();
 
   activateInternal();
+  return true;
 }
 
 void Controller::activateInternal() {
   logger.log() << "Activation internal";
 
-  m_connectionDate = QDateTime::currentDateTime();
+  resetConnectionTimer();
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -195,13 +192,13 @@ void Controller::activateInternal() {
                    vpnDisabledApps, stateToReason(m_state));
 }
 
-void Controller::deactivate() {
+bool Controller::deactivate() {
   logger.log() << "Deactivation" << m_state;
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateConfirming) {
     logger.log() << "Already disconnected";
-    return;
+    return false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming) {
@@ -213,6 +210,7 @@ void Controller::deactivate() {
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));
+  return true;
 }
 
 void Controller::connected() {
@@ -224,7 +222,7 @@ void Controller::connected() {
       m_state != StateConfirming) {
     setState(StateConnecting);
 
-    m_connectionDate = QDateTime::currentDateTime();
+    resetConnectionTimer();
 
     TimerSingleShot::create(this, TIME_ACTIVATION, [this]() {
       if (m_state == StateConnecting) {
@@ -270,7 +268,7 @@ void Controller::connectionFailed() {
     return;
   }
 
-  if (m_connectionRetry >= CONNECTION_MAX_RETRY) {
+  if (m_nextStep != None || m_connectionRetry >= CONNECTION_MAX_RETRY) {
     deactivate();
     return;
   }
@@ -346,7 +344,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   Q_ASSERT(vpn);
 
   if (vpn->currentServer()->countryCode() == countryCode &&
-      vpn->currentServer()->city() == city) {
+      vpn->currentServer()->cityName() == city) {
     logger.log() << "No server change needed";
     return;
   }
@@ -362,7 +360,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 
   logger.log() << "Switching to a different server";
 
-  m_currentCity = vpn->currentServer()->city();
+  m_currentCity = vpn->currentServer()->cityName();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 
@@ -468,7 +466,7 @@ void Controller::setState(State state) {
 }
 
 int Controller::time() const {
-  return (int)(m_connectionDate.msecsTo(QDateTime::currentDateTime()) / 1000);
+  return (int)(m_connectionTimer.elapsed() / 1000) + m_connectionTimerExtraSecs;
 }
 
 void Controller::getBackendLogs(
@@ -490,16 +488,18 @@ void Controller::cleanupBackendLogs() {
 }
 
 void Controller::getStatus(
-    std::function<void(const QString& serverIpv4Gateway, uint64_t txByte,
+    std::function<void(const QString& serverIpv4Gateway,
+                       const QString& deviceIpv4Address, uint64_t txByte,
                        uint64_t rxBytes)>&& a_callback) {
   logger.log() << "check status";
 
-  std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  std::function<void(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
   if (m_state != StateOn && m_state != StateConfirming) {
-    callback(QString(), 0, 0);
+    callback(QString(), QString(), 0, 0);
     return;
   }
 
@@ -513,17 +513,19 @@ void Controller::getStatus(
 }
 
 void Controller::statusUpdated(const QString& serverIpv4Gateway,
+                               const QString& deviceIpv4Address,
                                uint64_t txBytes, uint64_t rxBytes) {
   logger.log() << "Status updated";
-  QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       list;
 
   list.swap(m_getStatusCallbacks);
-  for (const std::function<void(const QString&serverIpv4Gateway,
-                                uint64_t txBytes, uint64_t rxBytes)>&func :
-       list) {
-    func(serverIpv4Gateway, txBytes, rxBytes);
+  for (const std::function<void(
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           uint64_t txBytes, uint64_t rxBytes)>&func : list) {
+    func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
 }
 
@@ -537,7 +539,8 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   QList<IPAddressRange> allowedIPv6s;
 
   // filtering out the captive portal endpoint
-  if (SettingsHolder::instance()->captivePortalAlert()) {
+  if (FeatureList::instance()->captivePortalNotificationSupported() &&
+      SettingsHolder::instance()->captivePortalAlert()) {
     CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 
     const QStringList& captivePortalIpv4Addresses =
@@ -621,4 +624,9 @@ void Controller::heartbeatCompleted() {
   if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
     activateInternal();
   }
+}
+
+void Controller::resetConnectionTimer() {
+  m_connectionTimerExtraSecs = 0;
+  m_connectionTimer.start();
 }

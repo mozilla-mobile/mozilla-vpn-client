@@ -28,6 +28,8 @@ class WgQuickProcess final {
       const QString& serverPublicKey, const QString& serverIpv4AddrIn,
       const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
       int serverPort, bool ipv6Enabled);
+
+  static QString scriptPath();
 };
 
 #endif  // WGQUICKPROCESS_H

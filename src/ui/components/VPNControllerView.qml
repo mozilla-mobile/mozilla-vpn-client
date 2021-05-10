@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 Rectangle {
     id: box
@@ -27,6 +28,10 @@ Rectangle {
         var mins = time % 60;
         time = Math.floor(time / 60);
         return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
+    }
+
+    function closeConnectionInfo() {
+        connectionInfo.close();
     }
 
     state: VPNController.state
@@ -445,7 +450,12 @@ Rectangle {
 
     VPNAnimatedRings {
         id: animatedRingsWrapper
-        isCurrentyVisible: stackview.depth === 1
+        // Make sure we only do the render animation when
+        // The element is visible &&
+        // the application is not minimized
+        isCurrentyVisible: stackview.depth === 1 &&
+                           (Qt.application.state === Qt.ApplicationActive ||
+                            Qt.application.state === Qt.ApplicationInactive)
     }
 
     VPNMainImage {
@@ -459,8 +469,13 @@ Rectangle {
 
     VPNIconButton {
         id: connectionInfoButton
+        objectName: "connectionInfoButton"
 
-        onClicked: connectionInfo.open()
+        onClicked: {
+            Glean.sample.connectionInfoOpened.record();
+            connectionInfo.open()
+        }
+
         buttonColorScheme: Theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
@@ -470,6 +485,7 @@ Rectangle {
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: connectionInfoImage
@@ -492,8 +508,14 @@ Rectangle {
 
     VPNIconButton {
         id: settingsButton
+        objectName: "settingsButton"
+        opacity: 1
 
-        onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+        onClicked: {
+            Glean.sample.settingsViewOpened.record();
+            stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+        }
+
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2
@@ -501,6 +523,7 @@ Rectangle {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: settingsImage
@@ -625,10 +648,12 @@ Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
     }
 
     VPNConnectionInfo {
         id: connectionInfo
+        visible: false
 
         Behavior on opacity {
             NumberAnimation {

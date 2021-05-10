@@ -41,6 +41,7 @@ void InspectorWebSocketServer::newConnectionReceived() {
 
   QHostAddress address = child->localAddress();
 
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
   // notation.
   if (address != QHostAddress("::ffff:127.0.0.1") &&
@@ -50,6 +51,7 @@ void InspectorWebSocketServer::newConnectionReceived() {
     child->close();
     return;
   }
+#endif
 
   InspectorWebSocketConnection* connection =
       new InspectorWebSocketConnection(this, child);

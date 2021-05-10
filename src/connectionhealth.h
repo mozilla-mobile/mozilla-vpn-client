@@ -31,12 +31,15 @@ class ConnectionHealth final : public QObject {
 
  public slots:
   void connectionStateChanged();
+  void applicationStateChanged(Qt::ApplicationState state);
 
  signals:
   void stabilityChanged();
 
  private:
   void stop();
+  void start(const QString& serverIpv4Gateway,
+             const QString& deviceIpv4Address);
 
   void pingSentAndReceived(qint64 msec);
 
@@ -50,6 +53,10 @@ class ConnectionHealth final : public QObject {
   QTimer m_noSignalTimer;
 
   PingHelper m_pingHelper;
+
+  bool m_suspended = false;
+  QString m_currentGateway;
+  QString m_deviceAddress;
 };
 
 #endif  // CONNECTIONHEALTH_H

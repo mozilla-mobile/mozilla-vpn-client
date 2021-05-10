@@ -20,8 +20,6 @@
         <file>ui/components/VPNHeadline.qml</file>
         <file>ui/components/VPNAlert.qml</file>
         <file>ui/components/VPNConnectionStability.qml</file>
-        <file>ui/components/VPNControllerServer.qml</file>
-        <file>ui/components/VPNControllerDevice.qml</file>
         <file>ui/components/VPNInterLabel.qml</file>
         <file>ui/components/VPNIconAndLabel.qml</file>
         <file>ui/components/VPNClickableRow.qml</file>
@@ -408,5 +406,8 @@
         <file>ui/components/VPNWasmMenuButton.qml</file>
         <file>ui/components/VPNWasmHeader.qml</file>
         <file>ui/views/ViewErrorFullScreen.qml</file>
+        <file>ui/components/VPNControllerNav.qml</file>
+        <file>ui/components/VPNSettingsToggle.qml</file>
+        <file>ui/components/VPNDeviceListItem.qml</file>
     </qresource>
 </RCC>

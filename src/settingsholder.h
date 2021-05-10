@@ -24,12 +24,16 @@ class SettingsHolder final : public QObject {
                  startAtBootChanged)
   Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
+  Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
+                 gleanEnabledChanged)
 
  public:
   SettingsHolder();
   ~SettingsHolder();
 
   static SettingsHolder* instance();
+
+  QString getReport();
 
   void clear();
 
@@ -45,6 +49,10 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasCaptivePortalAlert, captivePortalAlert, setCaptivePortalAlert)
   GETSET(bool, hasStartAtBoot, startAtBoot, setStartAtBoot)
   GETSET(QString, hasLanguageCode, languageCode, setLanguageCode)
+  GETSET(QString, hasPreviousLanguageCode, previousLanguageCode,
+         setPreviousLanguageCode)
+  GETSET(bool, hasSystemLanguageCodeMigrated, systemLanguageCodeMigrated,
+         setSystemLanguageCodeMigrated)
   GETSET(QString, hasToken, token, setToken)
   GETSET(QString, hasPrivateKey, privateKey, setPrivateKey)
   GETSET(QString, hasPublicKey, publicKey, setPublicKey)
@@ -71,6 +79,7 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+  GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
@@ -106,6 +115,7 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
+  void gleanEnabledChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<true/>
 	<key>CFBundleDisplayName</key>
 	<string>Mozilla VPN</string>
 	<key>CFBundleExecutable</key>
@@ -30,11 +32,6 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>MozillaVPNLaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

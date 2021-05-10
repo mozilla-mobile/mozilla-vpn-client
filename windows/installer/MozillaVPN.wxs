@@ -6,17 +6,9 @@
 	Copyright (C) 2019 Edge Security LLC. All Rights Reserved.
 -->
 
-<?if $(var.Platform) = x64 ?>
-	<?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
-	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-	<?define WintunPlatform = "amd64" ?>
-<?elseif $(var.Platform) = x86 ?>
-	<?define UpgradeCode = "3e078a42-bcaf-407f-96ed-1b47f44565d8"?>
-	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
-	<?define WintunPlatform = "x86" ?>
-<?else?>
-	<?error Unknown platform ?>
-<?endif?>
+<?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
+<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?define WintunPlatform = "amd64" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 	<Product
@@ -87,6 +79,9 @@
 				<File Source="../../libEGL.dll" />
 				<File Source="../../libGLESv2.dll" />
 
+				<File Source="../../extension/app/manifests/windows/mozillavpn.json" />
+				<File Source="../../mozillavpnnp.exe" />
+
 				<!-- Broker Service -->
 				<ServiceInstall
 					Type="ownProcess"
@@ -121,6 +116,17 @@
 			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
 		</DirectoryRef>
 
+		<DirectoryRef Id="MozillaVPNFolder">
+			<Component Id="RegistryEntries" Guid="71d1c1ef-2133-4cbf-954d-7f1e0e24dace">
+				<RegistryKey Root="HKLM" Key="Software\Mozilla\NativeMessagingHosts\mozillavpn">
+					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
+				</RegistryKey>
+				<RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
+					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
+				</RegistryKey>
+			</Component>
+		</DirectoryRef>
+
 		<!--
 			Features
 		-->
@@ -132,6 +138,9 @@
 		</Feature>
 		<Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
 			<MergeRef Id="VCRedistModule" />
+		</Feature>
+		<Feature Id="MozillaVPNRegistryEntries" Title="Native Messaging Registry Entries" Level="1">
+			<ComponentRef Id="RegistryEntries" />
 		</Feature>
 
 		<!--

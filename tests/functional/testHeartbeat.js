@@ -41,7 +41,7 @@ describe('Backend failure', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('Backend failure during the main view', async () => {
-    assert(await vpn.getLastUrl() == '');
+    assert(await vpn.getLastUrl() === '');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
@@ -50,9 +50,11 @@ describe('Backend failure', function() {
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
+    await vpn.wait();
   });
 
   it('Backend failure in the help menu', async () => {
+    await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
     await vpn.clickOnElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'false');
 
@@ -70,7 +72,7 @@ describe('Backend failure', function() {
     let onboarding = true;
     while (onboarding) {
       assert(
-          await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+          await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
       await vpn.clickOnElement('learnMoreLink');
 
       await vpn.waitForElement('skipOnboarding');
@@ -81,7 +83,7 @@ describe('Backend failure', function() {
       for (let i = 0; i < onboardingView; ++i) {
         assert(await vpn.hasElement('onboardingNext'));
         assert(
-            await vpn.getElementProperty('onboardingNext', 'visible') ==
+            await vpn.getElementProperty('onboardingNext', 'visible') ===
             'true');
         await vpn.clickOnElement('onboardingNext');
 
@@ -89,10 +91,10 @@ describe('Backend failure', function() {
       }
 
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
 
       onboarding =
-          await vpn.getElementProperty('onboardingNext', 'text') == 'Next';
+          await vpn.getElementProperty('onboardingNext', 'text') === 'Next';
 
       await backendFailureAndRestore();
 
@@ -144,7 +146,7 @@ describe('Backend failure', function() {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ==
+        await vpn.getElementProperty('controllerTitle', 'text') ===
         'VPN is off');
 
     await backendFailureAndRestore();
@@ -152,7 +154,7 @@ describe('Backend failure', function() {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ==
+        await vpn.getElementProperty('controllerTitle', 'text') ===
         'VPN is off');
   });
 
@@ -162,11 +164,11 @@ describe('Backend failure', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…';
+      return connectingMsg === 'Connecting…';
     });
 
     assert(
-        await vpn.getElementProperty('controllerSubTitle', 'text') ==
+        await vpn.getElementProperty('controllerSubTitle', 'text') ===
         'Masking connection and location');
 
     await backendFailureAndRestore();
@@ -174,7 +176,7 @@ describe('Backend failure', function() {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ==
+        await vpn.getElementProperty('controllerTitle', 'text') ===
         'VPN is off');
   });
 
@@ -184,13 +186,13 @@ describe('Backend failure', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…';
+      return connectingMsg === 'Connecting…';
     });
   });
 
   it('BackendFailure when connected', async () => {
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty('controllerTitle', 'text') ===
           'VPN is on';
     });
 
@@ -199,7 +201,7 @@ describe('Backend failure', function() {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ==
+        await vpn.getElementProperty('controllerTitle', 'text') ===
         'VPN is off');
   });
 
@@ -209,13 +211,13 @@ describe('Backend failure', function() {
     await vpn.waitForCondition(async () => {
       let connectingMsg =
           await vpn.getElementProperty('controllerTitle', 'text');
-      return connectingMsg == 'Connecting…';
+      return connectingMsg === 'Connecting…';
     });
   });
 
   it('connected', async () => {
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty('controllerTitle', 'text') ===
           'VPN is on';
     });
 
@@ -226,7 +228,7 @@ describe('Backend failure', function() {
     await vpn.deactivate();
 
     await vpn.waitForCondition(async () => {
-      return await vpn.getElementProperty('controllerTitle', 'text') ==
+      return await vpn.getElementProperty('controllerTitle', 'text') ===
           'Disconnecting…';
     });
 
@@ -235,7 +237,7 @@ describe('Backend failure', function() {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
     assert(
-        await vpn.getElementProperty('controllerTitle', 'text') ==
+        await vpn.getElementProperty('controllerTitle', 'text') ===
         'VPN is off');
   });
 

@@ -26,6 +26,11 @@ provided under the terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*). A
 copy of the LGPL-2.0 is [available
 here](https://opensource.org/licenses/LGPL-2.0) and a copy is provided below.
 
+For Desktop releases (Linux, MacOS and Windows), the project relies on [JSON
+for Modern C++](https://github.com/nlohmann/json) under the term of the MIT
+Public License (*MIT*), a copy of which is [available
+here](https://opensource.org/licenses/MIT) and a copy is provided below.
+
 Finally, this project uses EC25519 and CHACHA-POLY implementations from HACL\*,
 available under the terms of the MIT Public License (*MIT*) and copyright (c)
 2016-2020 INRIA, CMU, and Microsoft Corporation.

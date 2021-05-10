@@ -1,0 +1,7 @@
+#!/bin/sh
+action="$1"
+if [ "$action" = "upgrade" ]; then
+  if dpkg --compare-versions "$2" lt 2.3.0; then
+    killall mozillavpn 2>/dev/null
+  fi
+fi

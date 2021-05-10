@@ -36,9 +36,9 @@ ErrorHandler::ErrorType ErrorHandler::toErrorType(
       return ConnectionFailureError;
 
     case QNetworkReply::HostNotFoundError:
-      [[fallthrough]];
+      return NoConnectionError;
     case QNetworkReply::TimeoutError:
-      [[fallthrough]];
+      return VPNDependentConnectionError;
     case QNetworkReply::UnknownNetworkError:
       // On mac, this means: no internet
       // On Android check if

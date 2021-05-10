@@ -16,10 +16,9 @@ FeatureList s_featureList;
 FeatureList* FeatureList::instance() { return &s_featureList; }
 
 bool FeatureList::startOnBootSupported() const {
-#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
+    defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
-#elif defined(MVPN_ANDROID)
-  return AndroidUtils::canEnableStartOnBoot();
 #else
   return false;
 #endif
@@ -44,19 +43,38 @@ bool FeatureList::protectSelectedAppsSupported() const {
 }
 
 bool FeatureList::captivePortalNotificationSupported() const {
-#if defined(MVPN_WINDOWS) || defined(MVPN_WASM) || defined(MVPN_LINUX) || \
-    defined(MVPN_MACOS)
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
+    defined(MVPN_DUMMY) || defined(MVPN_WASM)
   return true;
 #else
+  // If we decide to enable the captive-portal notification for IOS, remember
+  // to add the following keys/values in the ios/app/Info.plist:
+  // ```
+  // <key>NSAppTransportSecurity</key>
+  // <dict>
+  //   <key>NSAllowsArbitraryLoads</key>
+  //   <true/>
+  // </dict>
+  // ```
+  // NSAllowsArbitraryLoads allows the loading of HTTP (not-encrypted)
+  // requests. By default, IOS apps work in HTTPS-only mode.
   return false;
 #endif
 }
 
 bool FeatureList::unsecuredNetworkNotificationSupported() const {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
-    defined(MVPN_WASM)
+    defined(MVPN_WASM) || defined(MVPN_DUMMY)
   return true;
 #else
   return false;
+#endif
+}
+
+bool FeatureList::gleanSupported() const {
+#ifdef MVPN_PRODUCTION_MODE
+  return false;
+#else
+  return true;
 #endif
 }

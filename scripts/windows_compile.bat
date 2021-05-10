@@ -33,7 +33,11 @@ if "%1" NEQ "" (
     if "%1" NEQ "--prod" (
       if "%1" NEQ "-t" (
         if "%1" NEQ "--test" (
-          SET SHOW_HELP=T
+          if "%1" NEQ "-w" (
+            if "%1" NEQ "--webextension" (
+              SET SHOW_HELP=T
+            )
+          )
         )
       )
     )
@@ -45,6 +49,7 @@ if "%SHOW_HELP%" == "T" (
   ECHO "  -h|--help            Help menu"
   ECHO "  -p|--prod            Production build"
   ECHO "  -t|--test            Test mode"
+  ECHO "  -w|--webextension    Enable the webExtension support"
   EXIT 0
 )
 
@@ -55,6 +60,10 @@ if "%1"== "--prod" SET PROD_BUILD=T
 SET TEST_BUILD=F
 if "%1"== "-t" SET TEST_BUILD=T
 if "%1"== "--test" SET TEST_BUILD=T
+
+SET WEBEXTENSION_BUILD=F
+if "%1"== "-w" SET WEBEXTENSION_BUILD=T
+if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
 
 ECHO Extract version...
 FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
@@ -76,6 +85,11 @@ if "%TEST_BUILD%" == "T" (
   SET FLAGS=%FLAGS% CONFIG+=balrog
 )
 
+if "%WEBEXTENSION_BUILD%" == "T" (
+  ECHO Web-Extension support enabled
+  SET FLAGS=%FLAGS% CONFIG+=webextension
+)
+
 ECHO Checking required commands...
 CALL :CheckCommand python
 CALL :CheckCommand nmake
@@ -91,7 +105,37 @@ CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "c:\\Program Files (x86)\\Micro
 CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
+git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
+
+ECHO Generating glean samples...
+python scripts\generate_glean.py
+
+if "%WEBEXTENSION_BUILD%" == "T" (
+  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to configure the project
+    EXIT 1
+  )
+
+  IF NOT EXIST mozillavpnnp.vcxproj (
+    echo The VC project doesn't exist. Why?
+    EXIT 1
+  )
+
+  ECHO Cleaning up the project...
+  MSBuild -t:Clean -p:Configuration=Release mozillavpnnp.vcxproj
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to clean up the project
+    EXIT 1
+  )
+
+  MSBuild -t:Build -p:Configuration=Release mozillavpnnp.vcxproj
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Failed to build the project
+    EXIT 1
+  )
+)
 
 ECHO Creating the project with flags: %FLAGS%
 qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%

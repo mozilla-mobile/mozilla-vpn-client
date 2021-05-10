@@ -10,10 +10,10 @@ import "../components"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
-    id: mainView
+    id: vpnFlickable
 
     flickContentHeight:  {
-        let flickHeight = 444;
+        let flickHeight = Theme.desktopAppHeight - 1
         if (alertBox.visible) {
             flickHeight += alertBox.height + Theme.windowMargin;
         }
@@ -64,6 +64,12 @@ VPNFlickable {
 
         }
     ]
+
+    MouseArea {
+        anchors.fill: parent
+        enabled: box.connectionInfoVisible
+        onClicked: box.closeConnectionInfo()
+    }
 
     Item {
         id: mobileHeader
@@ -133,9 +139,9 @@ VPNFlickable {
                 }
 
                 PropertyAnimation {
-                    target: mainView
+                    target: vpnFlickable
                     property: "flickContentHeight"
-                    to: mainView.flickContentHeight - alertBox.height - Theme.windowMargin
+                    to: vpnFlickable.flickContentHeight - alertBox.height - Theme.windowMargin
                     duration: 200
                 }
 
@@ -173,21 +179,46 @@ VPNFlickable {
             id: box
         }
 
-        VPNControllerServer {
-            id: serverInfo
+        VPNControllerNav {
+            function handleClick() {
+                stackview.push("ViewServers.qml")
+            }
 
-            onClicked: stackview.push("ViewServers.qml")
-            y: box.y + box.height + Theme.iconSize
-            rowShouldBeDisabled: VPN.state === VPN.StateDeviceLimit ||
-                                 (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) ||
-                                 box.connectionInfoVisible
+            id: serverInfo
+            objectName: "serverListButton"
+
+            //% "Select location"
+            //: Select the Location of the VPN server
+            titleText: qsTrId("vpn.servers.selectLocation")
+            //% "current location - %1"
+            //: Accessibility description for current location of the VPN server
+            descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.localizedCityName)
+
+            subtitleText: VPNCurrentServer.localizedCityName
+            imgSource:  "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
+            anchors.top: box.bottom
+            anchors.topMargin: 30
+
+            disableRowWhen: (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) || box.connectionInfoVisible
         }
 
-        VPNControllerDevice {
+        VPNControllerNav {
+            function handleClick() {
+                stackview.push("ViewDevices.qml")
+            }
+
+            objectName: "deviceListButton"
             anchors.top: serverInfo.bottom
-            anchors.topMargin: 8
-            onClicked: stackview.push("ViewDevices.qml")
-            rowShouldBeDisabled: box.connectionInfoVisible
+            anchors.topMargin: 22
+            //% "%1 of %2"
+            //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
+            subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(VPNUser.maxDevices)
+            imgSource: "../resources/devices.svg"
+            imgIsVector: true
+            imgSize: 24
+            //% "My devices"
+            titleText: qsTrId("vpn.devices.myDevices")
+            disableRowWhen: box.connectionInfoVisible
         }
 
         Behavior on y {

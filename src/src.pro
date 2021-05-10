@@ -11,7 +11,7 @@ QT += quick
 QT += widgets
 QT += charts
 
-CONFIG += c++1z
+CONFIG += c++14
 
 TEMPLATE  = app
 
@@ -20,7 +20,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
-            hacl-star/kremlin/minimal
+            hacl-star/kremlin/minimal \
+            ../glean/generated
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -89,10 +90,12 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
         rfc4193.cpp \
+        serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -171,10 +174,12 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
         rfc4193.h \
+        serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
@@ -193,6 +198,19 @@ HEADERS += \
         update/updater.h \
         update/versionapi.h \
         urlopener.h
+
+webextension {
+    message(Enabling the webextension support)
+
+    DEFINES += MVPN_WEBEXTENSION
+
+    SOURCES += \
+            server/serverconnection.cpp \
+            server/serverhandler.cpp
+    HEADERS += \
+            server/serverconnection.h \
+            server/serverhandler.h
+}
 
 inspector {
     message(Enabling the inspector)
@@ -226,6 +244,7 @@ unix {
 }
 
 RESOURCES += qml.qrc
+RESOURCES += ../glean/glean.qrc
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -254,7 +273,9 @@ DUMMY {
       CONFIG += embed_manifest_exe
       QT += svg
     } else {
-      QMAKE_CXXFLAGS *= -Werror
+      versionAtLeast(QT_VERSION, 5.15.1) {
+        QMAKE_CXXFLAGS *= -Werror
+      }
     }
 
     macos {
@@ -285,8 +306,6 @@ DUMMY {
 else:linux:!android {
     message(Linux build)
 
-    QMAKE_CXXFLAGS *= -Werror
-
     TARGET = mozillavpn
     QT += networkauth
     QT += dbus
@@ -302,7 +321,9 @@ else:linux:!android {
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxnetworkwatcher.cpp \
+            platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -313,7 +334,9 @@ else:linux:!android {
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
+            platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -370,6 +393,7 @@ else:linux:!android {
     icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
     INSTALLS += icon48x48
 
+    DEFINES += MVPN_ICON_PATH=\\\"$${USRPATH}/share/icons/hicolor/64x64/apps/mozillavpn.png\\\"
     icon64x64.path = $${USRPATH}/share/icons/hicolor/64x64/apps
     icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
     INSTALLS += icon64x64
@@ -403,7 +427,10 @@ else:linux:!android {
 else:android {
     message(Android build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
+
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
     CONFIG += force_debug_info
@@ -427,7 +454,7 @@ else:android {
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
-                platforms/android/androidstartatbootwatcher.cpp \
+                platforms/android/androidvpnactivity.cpp \
                 platforms/android/androiddatamigration.cpp \
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
@@ -439,7 +466,7 @@ else:android {
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \
-                platforms/android/androidstartatbootwatcher.h\
+                platforms/android/androidvpnactivity.h \
                 platforms/android/androiddatamigration.h\
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
@@ -483,7 +510,9 @@ else:android {
 else:macos {
     message(MacOSX build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
@@ -705,7 +734,9 @@ else:wasm {
     DEFINES += MVPN_DUMMY
     DEFINES += MVPN_WASM
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = mozillavpn
     QT += svg
@@ -738,6 +769,8 @@ else:wasm {
 else {
     error(Unsupported platform)
 }
+
+RESOURCES += $$PWD/../translations/servers.qrc
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)

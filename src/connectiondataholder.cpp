@@ -29,8 +29,10 @@ ConnectionDataHolder::ConnectionDataHolder()
   connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
   connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
     MozillaVPN::instance()->controller()->getStatus(
-        [this](const QString& serverIpv4Gateway, uint64_t txBytes,
+        [this](const QString& serverIpv4Gateway,
+               const QString& deviceIpv4Address, uint64_t txBytes,
                uint64_t rxBytes) {
+          Q_UNUSED(deviceIpv4Address);
           if (!serverIpv4Gateway.isEmpty()) {
             add(txBytes, rxBytes);
           }

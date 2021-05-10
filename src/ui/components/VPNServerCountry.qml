@@ -11,9 +11,11 @@ import "../themes/themes.js" as Theme
 
 VPNClickableRow {
     id: serverCountry
+    objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === VPNCurrentServer.countryCode)
     property var currentCityIndex
+    property alias serverCountryName: countryName.text
 
     function openCityList() {
         cityListVisible = !cityListVisible;
@@ -23,8 +25,8 @@ VPNClickableRow {
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
-        scrollAnimation.start();
+        vpnFlickable.ensureVisAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
+        vpnFlickable.ensureVisAnimation.start();
     }
 
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
@@ -33,9 +35,8 @@ VPNClickableRow {
     clip: true
 
     activeFocusOnTab: true
-    onActiveFocusChanged: parent.scrollDelegateIntoView(serverCountry)
 
-    accessibleName: name
+    accessibleName: localizedName
     Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
     Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
@@ -110,7 +111,7 @@ VPNClickableRow {
         VPNBoldLabel {
             id: countryName
 
-            text: name
+            text: localizedName
             Layout.leftMargin: Theme.hSpacing
             Layout.fillWidth: true
         }
@@ -119,6 +120,7 @@ VPNClickableRow {
 
     Column {
         id: cityList
+        objectName: "serverCityList"
 
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 22
@@ -142,21 +144,23 @@ VPNClickableRow {
             model: cities
             delegate: VPNRadioDelegate {
                 id: del
+                objectName: "serverCity-" + modelData[0].replace(/ /g, '_')
 
                 activeFocusOnTab: cityListVisible
-                onActiveFocusChanged: if (focus) serverList.scrollDelegateIntoView(del)
 
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
 
-                radioButtonLabelText: modelData
-                accessibleName: modelData
+                onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
+
+                radioButtonLabelText: modelData[1]
+                accessibleName: modelData[1]
                 onClicked: {
-                    VPNController.changeServer(code, modelData);
+                    VPNController.changeServer(code, modelData[0]);
                     stackview.pop();
                 }
                 height: 54
-                checked: code === VPNCurrentServer.countryCode && modelData === VPNCurrentServer.city
+                checked: code === VPNCurrentServer.countryCode && modelData[0] === VPNCurrentServer.cityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {

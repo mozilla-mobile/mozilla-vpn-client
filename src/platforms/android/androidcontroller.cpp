@@ -34,9 +34,8 @@ const int ACTION_REQUEST_STATISTIC = 4;
 const int ACTION_REQUEST_GET_LOG = 5;
 const int ACTION_REQUEST_CLEANUP_LOG = 6;
 const int ACTION_RESUME_ACTIVATE = 7;
-const int ACTION_ENABLE_START_ON_BOOT = 8;
-const int ACTION_SET_NOTIFICATION_TEXT = 9;
-const int ACTION_SET_NOTIFICATION_FALLBACK = 10;
+const int ACTION_SET_NOTIFICATION_TEXT = 8;
+const int ACTION_SET_NOTIFICATION_FALLBACK = 9;
 
 // Event Types that will be Dispatched after registration
 const int EVENT_INIT = 0;
@@ -48,6 +47,9 @@ const int EVENT_BACKEND_LOGS = 4;
 namespace {
 Logger logger(LOG_ANDROID, "AndroidController");
 AndroidController* s_instance = nullptr;
+
+constexpr auto PERMISSIONHELPER_CLASS =
+    "org/mozilla/firefox/vpn/qt/VPNPermissionHelper";
 
 }  // namespace
 
@@ -76,7 +78,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   JNINativeMethod methods[]{{"startActivityForResult",
                              "(Landroid/content/Intent;)V",
                              reinterpret_cast<void*>(startActivityForResult)}};
-  QAndroidJniObject javaClass("org/mozilla/firefox/vpn/VPNPermissionHelper");
+  QAndroidJniObject javaClass(PERMISSIONHELPER_CLASS);
   QAndroidJniEnvironment env;
   jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
   env->RegisterNatives(objectClass, methods,
@@ -94,12 +96,6 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
   QtAndroid::bindService(
       QAndroidIntent(appContext.object(), "org.mozilla.firefox.vpn.VPNService"),
       *this, QtAndroid::BindFlag::AutoCreate);
-}
-
-void AndroidController::enableStartAtBoot(bool enabled) {
-  QAndroidParcel data;
-  data.writeData(QByteArray(1, enabled));
-  m_serviceBinder.transact(ACTION_ENABLE_START_ON_BOOT, data, nullptr);
 }
 
 /*
@@ -145,8 +141,8 @@ void AndroidController::activate(
   auto appContext = QtAndroid::androidActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
   QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/VPNPermissionHelper", "startService",
-      "(Landroid/content/Context;)V", appContext.object());
+      PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
+      appContext.object());
 
   m_server = server;
 
@@ -252,10 +248,6 @@ void AndroidController::onServiceConnected(
   QAndroidParcel binderParcel;
   binderParcel.writeBinder(m_binder);
   m_serviceBinder.transact(ACTION_REGISTERLISTENER, binderParcel, nullptr);
-
-  // Sync the StartAtBoot Pref as it might have been changed
-  // while the controler was not connected
-  enableStartAtBoot(SettingsHolder::instance()->startAtBoot());
 }
 
 void AndroidController::onServiceDisconnected(const QString& name) {
@@ -309,6 +301,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       // Data is here a JSON String
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
+                                       m_controller->m_server.ipv4AddrIn(),
                                        doc.object()["totalTX"].toInt(),
                                        doc.object()["totalRX"].toInt());
       break;

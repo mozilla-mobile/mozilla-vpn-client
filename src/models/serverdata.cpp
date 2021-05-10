@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "servercountrymodel.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 
 namespace {
@@ -30,7 +31,7 @@ bool ServerData::fromSettings() {
                      settingsHolder->currentServerCountry(),
                      settingsHolder->currentServerCity());
 
-  logger.log() << m_countryCode << m_country << m_city;
+  logger.log() << m_countryCode << m_countryName << m_cityName;
   return true;
 }
 
@@ -39,8 +40,8 @@ void ServerData::writeSettings() {
   Q_ASSERT(settingsHolder);
 
   settingsHolder->setCurrentServerCountryCode(m_countryCode);
-  settingsHolder->setCurrentServerCountry(m_country);
-  settingsHolder->setCurrentServerCity(m_city);
+  settingsHolder->setCurrentServerCountry(m_countryName);
+  settingsHolder->setCurrentServerCity(m_cityName);
 }
 
 void ServerData::initialize(const ServerCountry& country,
@@ -51,17 +52,21 @@ void ServerData::initialize(const ServerCountry& country,
   emit changed();
 }
 
-void ServerData::update(const QString& countryCode, const QString& country,
-                        const QString& city) {
-  initializeInternal(countryCode, country, city);
+void ServerData::update(const QString& countryCode, const QString& countryName,
+                        const QString& cityName) {
+  initializeInternal(countryCode, countryName, cityName);
   emit changed();
 }
 
 void ServerData::initializeInternal(const QString& countryCode,
-                                    const QString& country,
-                                    const QString& city) {
+                                    const QString& countryName,
+                                    const QString& cityName) {
   m_initialized = true;
   m_countryCode = countryCode;
-  m_country = country;
-  m_city = city;
+  m_countryName = countryName;
+  m_cityName = cityName;
+}
+
+QString ServerData::localizedCityName() const {
+  return ServerI18N::translateCityName(m_countryCode, m_cityName);
 }

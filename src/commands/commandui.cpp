@@ -40,7 +40,6 @@
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidappimageprovider.h"
-#  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -59,6 +58,10 @@
 
 #ifdef MVPN_WASM
 #  include "platforms/wasm/wasmwindowcontroller.h"
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+#  include "server/serverhandler.h"
 #endif
 
 #include <QApplication>
@@ -163,14 +166,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(SettingsHolder::instance(),
                      &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
                      &WindowsStartAtBootWatcher::startAtBootChanged);
-#endif
-
-#ifdef MVPN_ANDROID
-    AndroidStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &AndroidStartAtBootWatcher::startAtBootChanged);
 #endif
 
 #ifdef MVPN_LINUX
@@ -326,6 +321,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+                     &MozillaVPN::aboutToQuit);
+
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
@@ -341,20 +339,23 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-    SystemTrayHandler systemTrayHandler(qApp);
-    systemTrayHandler.show();
+    SystemTrayHandler* systemTrayHandler =
+        SystemTrayHandler::create(&engineHolder);
+    Q_ASSERT(systemTrayHandler);
+
+    systemTrayHandler->show();
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &systemTrayHandler,
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
                      &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.currentServer(), &ServerData::changed,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
@@ -373,7 +374,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateIcon);
+                     systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
@@ -387,6 +388,8 @@ int CommandUI::run(QStringList& tokens) {
 #ifdef MVPN_WASM
       WasmWindowController::instance()->retranslate();
 #endif
+
+      MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
 #ifdef MVPN_INSPECTOR
@@ -401,6 +404,12 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+    ServerHandler serverHandler;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
+                     &ServerHandler::close);
 #endif
 
     // Let's go.

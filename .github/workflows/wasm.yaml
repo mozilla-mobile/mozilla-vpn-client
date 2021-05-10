@@ -3,10 +3,12 @@ name: WebAssembly
 on:
   push:
     branches:
-     - main
+      - main
+      - 'releases/**'
   pull_request:
     branches:
       - main
+      - 'releases/**'
 
 jobs:
   wasm:
@@ -29,6 +31,13 @@ jobs:
           python3 -m pip install aqtinstall
           python3 -m aqt install --outputdir /opt 5.15.0 linux desktop wasm_32 -m qtcharts
 
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
         with:
@@ -44,6 +53,7 @@ jobs:
         with:
             name: WebAssembly Build
             path: wasm
+
   ghPages:
     runs-on: ubuntu-20.04
     needs: [wasm]

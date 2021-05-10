@@ -269,6 +269,12 @@ class MozillaVPN final : public QObject {
   void viewLogsNeeded();
   void updatingChanged();
 
+  // For Glean
+  void sendGleanPings();
+  void triggerGleanSample(const QString& gleanSampleName);
+
+  void aboutToQuit();
+
   // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
   // complains...
   void loadAndroidAuthenticationView();
@@ -308,11 +314,13 @@ class MozillaVPN final : public QObject {
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;
+  QTimer m_gleanTimer;
 
   bool m_updateRecommended = false;
   bool m_userAuthenticated = false;
   bool m_startMinimized = false;
   bool m_updating = false;
+  bool m_controllerInitialized = false;
 
 #ifdef UNIT_TEST
   friend class TestTasks;

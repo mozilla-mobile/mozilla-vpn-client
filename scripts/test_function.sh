@@ -28,9 +28,8 @@ runTest() {
 
   wait $PID
 
-  cat /tmp/VPN_LOG.txt
-
   if [ "$ERROR" = yes ]; then
+    cat /tmp/VPN_LOG.txt
     print R "Nooo"
     exit 1
   fi
@@ -46,15 +45,21 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
+APP=$1
+
 printn Y "Retrieving mozillavpn version... "
-"$1" -v 2>/dev/null || die "Failed."
+"$APP" -v 2>/dev/null || die "Failed."
 print G "done."
 
-if [ -f "$2" ]; then
-  runTest "$1" "$2"
+shift
+
+if [ $# -ne 0 ]; then
+  for i in $*; do
+    runTest "$APP" "$i"
+  done
 else
   for i in tests/functional/test*; do
-    runTest "$1" "$i"
+    runTest "$APP" "$i"
   done
 fi
 
@@ -79,8 +84,8 @@ llvm-profdata-10 merge ${FILES[@]} -o /tmp/mozillavpn.llvm-final || die "Failed 
 print G "done."
 
 print Y "Report:"
-llvm-cov-10 report "$1" -instr-profile=/tmp/mozillavpn.llvm-final src
+llvm-cov-10 report "$APP" -instr-profile=/tmp/mozillavpn.llvm-final src || die "Failed to create the report"
 
 printn Y "Generating the HTML report... "
-llvm-cov-10 show "$1" -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
+llvm-cov-10 show "$APP" -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
 print G $REPORT_FILE

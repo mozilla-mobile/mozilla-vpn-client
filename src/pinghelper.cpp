@@ -32,10 +32,12 @@ PingHelper::~PingHelper() {
   m_pingThread.wait();
 }
 
-void PingHelper::start(const QString& serverIpv4Gateway) {
+void PingHelper::start(const QString& serverIpv4Gateway,
+                       const QString& deviceIpv4Address) {
   logger.log() << "PingHelper activated for server:" << serverIpv4Gateway;
 
   m_gateway = serverIpv4Gateway;
+  m_source = deviceIpv4Address.section('/', 0, 0);
   m_pingTimer.start(PING_TIMOUT_SEC * 1000);
 }
 
@@ -56,7 +58,7 @@ void PingHelper::nextPing() {
   PingSender* pingSender = new PingSender(this, &m_pingThread);
   connect(pingSender, &PingSender::completed, this, &PingHelper::pingReceived);
   m_pings.append(pingSender);
-  pingSender->send(m_gateway);
+  pingSender->send(m_gateway, m_source);
 
   while (m_pings.length() > PINGS_MAX) {
     m_pings.at(0)->deleteLater();

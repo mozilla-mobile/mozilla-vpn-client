@@ -20,6 +20,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true" />
     <application
         android:hardwareAccelerated="true"
+        android:allowBackup="false"
         android:name="org.qtproject.qt5.android.bindings.QtApplication"
         android:label="Mozilla VPN"
         android:extractNativeLibs="true"
@@ -27,7 +28,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:icon="@mipmap/vpnicon">
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
-            android:name="org.qtproject.qt5.android.bindings.QtActivity"
+            android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
             android:process=":QtOnlyProcess"
             android:label="Mozilla VPN"
             android:screenOrientation="unspecified"
@@ -108,15 +109,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
                 <action android:name="android.net.VpnService"/>
             </intent-filter>
         </service>
-        <service android:name=".VPNPermissionHelper"
+        <service android:name="org.mozilla.firefox.vpn.qt.VPNPermissionHelper"
             android:process=":QtOnlyProcess"
             android:permission="android.permission.BIND_VPN_SERVICE">
         </service>
-        <receiver android:name=".BootReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

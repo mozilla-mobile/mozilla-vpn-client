@@ -27,17 +27,22 @@ translations/*.pri
 .tmp
 .env
 
+asset_catalog_compiler.Info.plist
+
 # Ignore files that might be added by Android Studio
 # if someone opens the android/ subproject
 android/.gradle/
 android/.idea/
 android/build
 android/local.properties
+android/*/.cxx/
+!android/*/*/Makefile 
 xcode.xconfig
 .gradle/
 
 *.ts
 tests/unit/tests
+tests/nativemessaging/tests
 build
 Debug/
 !android/src/debug/
@@ -67,3 +72,9 @@ MozillaVPN_resource.rc
 mozillavpn.js
 mozillavpn.wasm
 qtloader.js
+
+# WebExtension native app
+extension/app/mozillavpnnp
+
+# glean
+glean/generated/*

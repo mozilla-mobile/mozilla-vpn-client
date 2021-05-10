@@ -98,12 +98,12 @@ set_dns() {
 	# Iterate through values of DNS array and pipe "nameserver" string to 
 	# resolvconf command which adds nameserver rows for each dns entry to /etc/resolv.conf
 	# (maybe amongst other things)
-	printf 'nameserver %s\n' "${DNS[@]}" | resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
+	printf 'nameserver %s\n' "${DNS[@]}" | /bin/bash resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
 	HAVE_SET_DNS=1
 }
 
 unset_dns() {
-	resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
+	/bin/bash resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
 }
 
 add_route() {
@@ -112,11 +112,11 @@ add_route() {
 	[[ $TABLE != off ]] || return 0
 
 	if [[ -n $TABLE && $TABLE != auto ]]; then
-		cmd ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
+		ip $proto route add "$1" dev "$INTERFACE" table "$TABLE"
 	elif [[ $1 == */0 ]]; then
 		add_default "$1"
 	else
-		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || cmd ip $proto route add "$1" dev "$INTERFACE"
+		[[ -n $(ip $proto route show dev "$INTERFACE" match "$1" 2>/dev/null) ]] || ip $proto route add "$1" dev "$INTERFACE"
 	fi
 }
 

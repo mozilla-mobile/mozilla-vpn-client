@@ -17,17 +17,23 @@ Item {
         id: aboutUsListModel
 
         ListElement {
+            linkId: "tos"
+
             //% "Terms of Service"
             linkTitle: qsTrId("vpn.aboutUs.tos")
             openUrl: VPN.LinkTermsOfService
         }
 
         ListElement {
+            linkId: "privacy"
+
             //% "Privacy Notice"
             linkTitle: qsTrId("vpn.aboutUs.privacyNotice")
             openUrl: VPN.LinkPrivacyNotice
         }
         ListElement {
+            linkId: "license"
+
             //% "License"
             linkTitle: qsTrId("vpn.aboutUs.license")
             openUrl: VPN.LinkLicense
@@ -37,6 +43,7 @@ Item {
 
     VPNMenu {
         id: menu
+        objectName: "aboutUsBackButton"
 
         //% "About us"
         title: qsTrId("vpn.settings.aboutUs")
@@ -81,10 +88,21 @@ Item {
             anchors.topMargin: 16
         }
 
-        VPNTextBlock {
+        TextEdit {
             anchors.top: releaseLabel.bottom
             anchors.topMargin: 8
             text: VPN.buildNumber === "" ? VPN.versionString : (VPN.versionString + " (" + VPN.buildNumber + ")")
+            readOnly: true
+            wrapMode: Text.WordWrap
+            selectByMouse: true
+
+            color: Theme.fontColor
+            font.family: Theme.fontInterFamily
+            font.pixelSize: Theme.fontSizeSmall
+            width: Theme.maxTextWidth
+
+            Accessible.role: Accessible.StaticText
+            Accessible.name: text
         }
     }
 
@@ -104,6 +122,7 @@ Item {
 
     VPNList {
         id: settingList
+        objectName: "aboutUsList"
 
         anchors.top: divider.bottom
         anchors.topMargin: 16
@@ -115,6 +134,7 @@ Item {
         listName: menu.title
 
         delegate: VPNExternalLinkListItem {
+            objectName: "aboutUsList-" + linkId
             title: linkTitle
             accessibleName: linkTitle
             onClicked: VPN.openLink(openUrl)

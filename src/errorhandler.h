@@ -13,6 +13,7 @@ class ErrorHandler final {
     NoError,
     ConnectionFailureError,
     NoConnectionError,
+    VPNDependentConnectionError,
     AuthenticationError,
     ControllerError,
     RemoteServiceError,

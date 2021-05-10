@@ -16,7 +16,7 @@ class WindowsPingSendWorker final : public PingSendWorker {
   ~WindowsPingSendWorker();
 
  public slots:
-  void sendPing(const QString& destination) override;
+  void sendPing(const QString& destination, const QString& source) override;
 };
 
 #endif  // WINDOWSPINGSENDWORKER_H

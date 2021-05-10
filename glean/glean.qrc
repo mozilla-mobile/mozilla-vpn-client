@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/glean">
+        <file>load.js</file>
+        <file>glean.js</file>
+        <file>generated/pings.js</file>
+        <file>generated/sample.js</file>
+    </qresource>
+</RCC>
