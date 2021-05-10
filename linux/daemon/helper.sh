@@ -15,7 +15,6 @@ export PATH="${SELF%/*}:$PATH"
 
 WG_CONFIG=""
 INTERFACE=""
-ADDRESSES=( )
 DNS=( )
 CONFIG_FILE=""
 
@@ -42,7 +41,6 @@ parse_options() {
 		[[ $key == "[Interface]" ]] && interface_section=1
 		if [[ $interface_section -eq 1 ]]; then
 			case "$key" in
-			Address) ADDRESSES+=( ${value//,/ } ); continue ;;
 			DNS) for v in ${value//,/ }; do
 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v )
 			done; continue ;;
@@ -71,17 +69,6 @@ del_if() {
 			ip -6 rule delete table main suppress_prefixlength 0
 		done
 	fi
-}
-
-add_addr() {
-	local proto=-4
-	[[ $1 == *:* ]] && proto=-6
-	ip $proto address add "$1" dev "$INTERFACE"
-}
-
-set_mtu_up() {
-	# Using default MTU of 1420
-	ip link set mtu 1420 up dev "$INTERFACE"
 }
 
 resolvconf_iface_prefix() {
@@ -174,10 +161,6 @@ add_default() {
 cmd_up() {
 	local i
 	trap 'del_if; exit' INT TERM EXIT
-	for i in "${ADDRESSES[@]}"; do
-		add_addr "$i"
-	done
-	set_mtu_up
 	set_dns
 	# Get the allowed ips from wg show (added to peer using set_conf)
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do

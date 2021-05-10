@@ -98,6 +98,14 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
+  if (supportIPUtils()) {
+    if (!iputils()->addInterfaceIPs(config)) {
+      return false;
+    }
+    if (!iputils()->setMTUAndUp()) {
+      return false;
+    }
+  }
 
   m_lastConfig = config;
   m_connected = run(Up, m_lastConfig);

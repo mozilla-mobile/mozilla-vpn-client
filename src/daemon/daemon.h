@@ -5,6 +5,7 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
+#include "iputils.h"
 #include "interfaceconfig.h"
 #include "wireguardutils.h"
 
@@ -49,6 +50,8 @@ class Daemon : public QObject {
   virtual bool switchServer(const InterfaceConfig& config);
   virtual bool supportWGUtils() const { return false; }
   virtual WireguardUtils* wgutils() { return nullptr; }
+  virtual bool supportIPUtils() const { return false; }
+  virtual IPUtils* iputils() { return nullptr; }
 
   bool m_connected = false;
   QDateTime m_connectionDate;
