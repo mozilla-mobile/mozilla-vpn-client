@@ -9,10 +9,18 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 VPNFlickable {
     id: vpnFlickable
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+
+    Component.onCompleted: {
+        Glean.sample.networkSettingsViewOpened.record();
+        if (!vpnIsOff) {
+            Glean.sample.networkSettingsViewVpnMustBeOff.record();
+        }
+     }
 
     VPNMenu {
         id: menu

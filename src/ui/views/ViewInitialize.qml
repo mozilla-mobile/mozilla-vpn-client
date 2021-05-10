@@ -6,6 +6,8 @@ import QtQuick 2.5
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
+
 
 Item {
     id: viewInitialize
@@ -15,7 +17,10 @@ Item {
         objectName: "getHelpLink"
 
         labelText: qsTrId("vpn.main.getHelp")
-        onClicked: stackview.push(getHelpComponent)
+        onClicked: {
+            Glean.sample.GetHelpClickedViewInitialize.record();
+            stackview.push(getHelpComponent);
+        }
     }
 
     Component {
@@ -57,7 +62,11 @@ Item {
 
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
-        onClicked: stackview.push("ViewOnboarding.qml")
+        onClicked: {
+            Glean.sample.onboardingOpened.record();
+            stackview.push("ViewOnboarding.qml");
+        }
+
     }
 
 }
