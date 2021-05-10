@@ -99,9 +99,9 @@ bool SurveyModel::fromJsonInternal(const QByteArray& json) {
 void SurveyModel::maybeShowSurvey() {
   logger.log() << "Checking surveys";
 
-   if (!m_currentSurveyId.isEmpty()) {
-     return;
-   }
+  if (!m_currentSurveyId.isEmpty()) {
+    return;
+  }
 
   for (const Survey& survey : m_surveys) {
     if (survey.isTriggerable()) {
