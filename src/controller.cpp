@@ -39,11 +39,13 @@ namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
 
 ControllerImpl::Reason stateToReason(Controller::State state) {
-  if (state == Controller::StateSwitching) {
+  if (state == Controller::StateSwitching ||
+      state == Controller::StateSilentSwitching) {
     return ControllerImpl::ReasonSwitching;
   }
 
-  if (state == Controller::StateConfirming) {
+  if (state == Controller::StateConfirming ||
+      state == Controller::StateConfirmingSilentSwitch) {
     return ControllerImpl::ReasonConfirming;
   }
 
@@ -174,6 +176,8 @@ void Controller::activateInternal() {
   Server server = Server::weightChooser(servers);
   Q_ASSERT(server.initialized());
 
+  vpn->setServerPublicKey(server.publicKey());
+
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
   const QList<IPAddressRange> allowedIPAddressRanges =
@@ -192,16 +196,74 @@ void Controller::activateInternal() {
                    vpnDisabledApps, stateToReason(m_state));
 }
 
+void Controller::silentSwitchServers() {
+  logger.log() << "Silently switch servers";
+
+  if (m_state != StateOn) {
+    logger.log() << "Cannot silent switch if not on";
+    return;
+  }
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  QList<Server> servers = vpn->servers();
+  Q_ASSERT(!servers.isEmpty());
+
+  if (servers.length() <= 1) {
+    logger.log()
+        << "Cannot siltent switch servers because there is only one available";
+    return;
+  }
+
+  setState(StateSilentSwitching);
+
+  QList<Server>::iterator iterator = servers.begin();
+
+  while (iterator != servers.end()) {
+    if (iterator->publicKey() == vpn->serverPublicKey()) {
+      servers.erase(iterator);
+      break;
+    }
+    ++iterator;
+  }
+
+  Server server = Server::weightChooser(servers);
+  Q_ASSERT(server.initialized());
+
+  vpn->setServerPublicKey(server.publicKey());
+
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+
+  const QList<IPAddressRange> allowedIPAddressRanges =
+      getAllowedIPAddressRanges(server);
+
+  QList<QString> vpnDisabledApps;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->protectSelectedApps() &&
+      settingsHolder->hasVpnDisabledApps()) {
+    vpnDisabledApps = settingsHolder->vpnDisabledApps();
+  }
+
+  Q_ASSERT(m_impl);
+  m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
+                   vpnDisabledApps, stateToReason(StateSwitching));
+}
+
 bool Controller::deactivate() {
   logger.log() << "Deactivation" << m_state;
 
   if (m_state != StateOn && m_state != StateSwitching &&
-      m_state != StateConfirming) {
+      m_state != StateConfirming && m_state != StateSilentSwitching &&
+      m_state != StateConfirmingSilentSwitch) {
     logger.log() << "Already disconnected";
     return false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming) {
+  if (m_state == StateOn || m_state == StateConfirming ||
+      m_state == StateSilentSwitching ||
+      m_state == StateConfirmingSilentSwitch) {
     setState(StateDisconnecting);
   }
 
@@ -219,7 +281,7 @@ void Controller::connected() {
   // This is an unexpected connection. Let's use the Connecting state to animate
   // the UI.
   if (m_state != StateConnecting && m_state != StateSwitching &&
-      m_state != StateConfirming) {
+      m_state != StateConfirming && m_state != StateSilentSwitching) {
     setState(StateConnecting);
 
     resetConnectionTimer();
@@ -232,7 +294,11 @@ void Controller::connected() {
     return;
   }
 
-  setState(StateConfirming);
+  if (m_state == StateSilentSwitching) {
+    setState(StateConfirmingSilentSwitch);
+  } else {
+    setState(StateConfirming);
+  }
 
   // Now, let's wait for a ping sent and received from ConnectionHealth.
   m_connectionCheck.start();
@@ -241,7 +307,7 @@ void Controller::connected() {
 void Controller::connectionConfirmed() {
   logger.log() << "Connection confirmed";
 
-  if (m_state != StateConfirming) {
+  if (m_state != StateConfirming && m_state != StateConfirmingSilentSwitch) {
     logger.log() << "Invalid confirmation received";
     return;
   }
@@ -249,21 +315,23 @@ void Controller::connectionConfirmed() {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
 
-  setState(StateOn);
-  emit timeChanged();
+  if (m_state != StateConfirmingSilentSwitch) {
+    setState(StateOn);
+    emit timeChanged();
 
-  if (m_nextStep != None) {
-    deactivate();
-    return;
+    if (m_nextStep != None) {
+      deactivate();
+      return;
+    }
+
+    m_timer.start(TIMER_MSEC);
   }
-
-  m_timer.start(TIMER_MSEC);
 }
 
 void Controller::connectionFailed() {
   logger.log() << "Connection failed!";
 
-  if (m_state != StateConfirming) {
+  if (m_state != StateConfirming && m_state != StateConfirmingSilentSwitch) {
     logger.log() << "Invalid confirmation received";
     return;
   }
@@ -286,7 +354,8 @@ void Controller::disconnected() {
   logger.log() << "Disconnected from state:" << m_state;
 
   if (m_reconnectionStep == ExpectDisconnection) {
-    Q_ASSERT(m_state == StateConfirming);
+    Q_ASSERT(m_state == StateConfirming ||
+             m_state == StateConfirmingSilentSwitch);
     Q_ASSERT(m_connectionRetry > 0);
 
     // We are retrying the connection. Let's ignore this disconnect signal and
@@ -458,6 +527,11 @@ bool Controller::processNextStep() {
 
 void Controller::setState(State state) {
   logger.log() << "Setting state:" << state;
+
+  if (state == StateSilentSwitching || state == StateConfirmingSilentSwitch) {
+    m_state = state;
+    return;
+  }
 
   if (m_state != state) {
     m_state = state;
