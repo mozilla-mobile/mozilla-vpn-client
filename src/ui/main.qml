@@ -281,9 +281,5 @@ Window {
     }
 
     VPNSystemAlert {
-        id: alertBox
-
-        z: 2
     }
-
 }

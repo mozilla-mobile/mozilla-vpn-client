@@ -17,6 +17,7 @@
 #include "models/keys.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "models/surveymodel.h"
 #include "models/user.h"
 #include "networkwatcher.h"
 #include "releasemonitor.h"
@@ -157,6 +158,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   User* user() { return &m_private->m_user; }
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -171,6 +173,8 @@ class MozillaVPN final : public QObject {
   void serversFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
+
+  void surveyChecked(const QByteArray& json);
 
   const QList<Server> servers() const;
 
@@ -309,6 +313,7 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SurveyModel m_surveyModel;
     User m_user;
   };
 

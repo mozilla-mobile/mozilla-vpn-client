@@ -35,12 +35,11 @@ Rectangle {
     }
 
     state: VPNController.state
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.margins: 16
     radius: 8
-    height: 318
-    width: parent.width - 32
+    Layout.preferredHeight: 318
+    Layout.preferredWidth: parent.width - Theme.windowMargin
+    Layout.alignment: Qt.AlignHCenter
+
     antialiasing: true
     states: [
         State {
