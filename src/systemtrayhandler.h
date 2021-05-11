@@ -31,7 +31,6 @@ class SystemTrayHandler : public QSystemTrayIcon {
   virtual ~SystemTrayHandler();
 
   void captivePortalBlockNotificationRequired();
-  void captivePortalPossibleNotificationRequired();
   void captivePortalUnblockNotificationRequired();
 
   void unsecuredNetworkNotification(const QString& networkName);

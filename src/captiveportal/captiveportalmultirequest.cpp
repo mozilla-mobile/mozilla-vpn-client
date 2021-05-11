@@ -28,10 +28,10 @@ CaptivePortalMultiRequest::~CaptivePortalMultiRequest() {
 void CaptivePortalMultiRequest::run() {
   m_completed = false;
   // If we can't confirm in 30s that we are not behind
-  // a captive-portal, show a notification that a portal might exist
+  // a captive-portal, handle this like no portal exists
   TimerSingleShot::create(this, 30 * 1000, [this]() {
     logger.log() << "CaptivePortal max timeout reached, exiting detection";
-    onResult(PortalPossible);
+    onResult(NoPortal);
   });
   createRequest();
 }

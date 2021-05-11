@@ -29,10 +29,6 @@ void CaptivePortalNotifier::notifyCaptivePortalBlock() {
   logger.log() << "Captive portal block notify";
   SystemTrayHandler::instance()->captivePortalBlockNotificationRequired();
 }
-void CaptivePortalNotifier::notifyCaptivePortalPossible() {
-  logger.log() << "Captive portal possible notify";
-  SystemTrayHandler::instance()->captivePortalPossibleNotificationRequired();
-}
 
 void CaptivePortalNotifier::notifyCaptivePortalUnblock() {
   logger.log() << "Captive portal unblock notify";

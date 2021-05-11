@@ -25,7 +25,6 @@ class CaptivePortalDetection final : public QObject {
   // Methods exposed for the inspector.
   void detectCaptivePortal();
   void captivePortalDetected();
-  void captivePortalPossible();
 
  public slots:
   void stateChanged();
