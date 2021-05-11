@@ -112,9 +112,6 @@ void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
     case CaptivePortalResult::NoPortal:
     case CaptivePortalResult::Failure:
       return;
-    case CaptivePortalResult::PortalPossible:
-      captivePortalPossible();
-      return;
     case CaptivePortalResult::PortalDetected:
       captivePortalDetected();
       return;
@@ -136,19 +133,6 @@ void CaptivePortalDetection::captivePortalDetected() {
   if (vpn->controller()->state() == Controller::StateOn ||
       vpn->controller()->state() == Controller::StateConfirming) {
     captivePortalNotifier()->notifyCaptivePortalBlock();
-  }
-}
-void CaptivePortalDetection::captivePortalPossible() {
-  logger.log() << "Captive portal possible!";
-
-  // Quick return in case this method is called by the inspector even when the
-  // feature is disabled.
-  if (!m_active) {
-    return;
-  }
-
-  if (MozillaVPN::instance()->controller()->state() == Controller::StateOn) {
-    captivePortalNotifier()->notifyCaptivePortalPossible();
   }
 }
 
