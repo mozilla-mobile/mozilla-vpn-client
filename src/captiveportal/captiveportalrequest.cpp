@@ -95,7 +95,6 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
           });
 }
 
-
 void CaptivePortalRequest::onResult(CaptivePortalResult portalDetected) {
   if (m_completed) {
     return;

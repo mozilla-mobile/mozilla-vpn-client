@@ -223,7 +223,6 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
                            Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
-
 void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
   logger.log() << "Captive portal unblock notification shown";
 
