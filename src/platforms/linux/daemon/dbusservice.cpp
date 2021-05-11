@@ -175,6 +175,10 @@ bool DBusService::run(Op op, const InterfaceConfig& config) {
     return false;
   }
 
+  uint32_t fwmark = m_wgutils->getFirewallMark();
+  const GoString goIfname = {WG_INTERFACE, (ptrdiff_t)strlen(WG_INTERFACE)};
+  NetfilterIfup(goIfname, fwmark);
+
   QString cgroup = LinuxDependencies::findCgroupPath("net_cls");
   if (cgroup.isEmpty()) {
     return true;
@@ -192,7 +196,6 @@ bool DBusService::run(Op op, const InterfaceConfig& config) {
   QFile excludeClass(cgroup + "/mozvpn.exclude/net_cls.classid");
   if (excludeClass.open(QIODevice::ReadOnly)) {
     QString value = QString::fromLocal8Bit(excludeClass.readLine(64));
-    uint32_t fwmark = m_wgutils->getFirewallMark();
     uint32_t classid = value.toULong();
     if ((classid != 0) && (fwmark != 0)) {
       NetfilterMarkCgroup(classid, fwmark);

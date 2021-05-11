@@ -15,7 +15,6 @@ import "C"
 
 import (
   "log"
-  "net"
   "errors"
   "unsafe"
 
@@ -51,11 +50,12 @@ type nftCtx struct {
   table   *nftables.Table
   mangle  *nftables.Chain
   nat     *nftables.Chain
+  conntrack *nftables.Chain
+  preroute *nftables.Chain
 }
 
 var mozvpn_conn = nftables.Conn{}
-var mozvpn_ctx_v4 = nftCtx{}
-var mozvpn_ctx_v6 = nftCtx{}
+var mozvpn_ctx = nftCtx{}
 
 func nftCommit(logger *log.Logger) int32 {
   if err := mozvpn_conn.Flush(); err != nil {
@@ -65,115 +65,150 @@ func nftCommit(logger *log.Logger) int32 {
   return 0
 }
 
-func nftMarkCgroup(ctx *nftCtx, cgroup uint32, fwmark uint32) {
-  // Match packets originating from the cgroup
-  var loadcgroup = expr.Meta{
-    Key:        expr.MetaKeyCGROUP,
+func nftIfname(n string) []byte {
+  b := make([]byte, 16)
+  copy(b, []byte(n+"\x00"))
+  return b
+}
+
+const arphdr_loopback = 772
+const ctzone_external = 0x9e4c
+
+func nftIfup(ctx *nftCtx, ifname string, fwmark uint32) {
+  var immctzone = expr.Immediate{
     Register:   1,
+    Data:       binaryutil.NativeEndian.PutUint32(ctzone_external),
   }
-  var matchcgroup = expr.Cmp{
-    Op:         expr.CmpOpEq,
-    Register:   1,
-    Data:       binaryutil.NativeEndian.PutUint32(cgroup),
-  }
-  // Match packets that have not been marked
-  var loadfwmark = expr.Meta{
-    Key:        expr.MetaKeyMARK,
-    Register:   1,
-  }
-  var matchfwmark = expr.Cmp{
-    Op:         expr.CmpOpNeq,
-    Register:   1,
-    Data:       binaryutil.NativeEndian.PutUint32(fwmark),
-  }
-  // Set the packet mark
-  var immfwmark = expr.Immediate{
-    Register:   1,
-    Data:       binaryutil.NativeEndian.PutUint32(fwmark),
-  }
-  var setfwmark = expr.Meta{
-    Key:        expr.MetaKeyMARK,
+  var setctzone = expr.Ct{
+    Key:        expr.CtKeyZONE,
     Register:   1,
     SourceRegister: true,
   }
 
-  if ctx.table.Family == nftables.TableFamilyIPv6 {
-    mozvpn_conn.AddRule(&nftables.Rule{
-      Table: ctx.table,
-      Chain: ctx.mangle,
-      Exprs: []expr.Any{
-        // Load the boilerplate matching rules
-        &loadcgroup,
-        &matchcgroup,
-        &loadfwmark,
-        &matchfwmark,
-        // Match packets sent from IPv6 localhost
-        &expr.Payload{
-          DestRegister: 1,
-          Base:       expr.PayloadBaseNetworkHeader,
-          Offset:     24,
-          Len:        16,
-        },
-        &expr.Cmp{
-          Op:         expr.CmpOpNeq,
-          Register:   1,
-          Data:       net.ParseIP("::1").To16(),
-        },
-        // Set the firewall mark
-        &immfwmark,
-        &setfwmark,
-      },
-    })
-  } else {
-    mozvpn_conn.AddRule(&nftables.Rule{
-      Table: ctx.table,
-      Chain: ctx.mangle,
-      Exprs: []expr.Any{
-        // Load the boilerplate matching rules
-        &loadcgroup,
-        &matchcgroup,
-        &loadfwmark,
-        &matchfwmark,
-        // Match packets sent from 127.0.0.0/8
-        &expr.Payload{
-          DestRegister: 1,
-          Base:       expr.PayloadBaseNetworkHeader,
-          Offset:     16,
-          Len:        4,
-        },
-        &expr.Bitwise{
-          SourceRegister: 1,
-          DestRegister: 1,
-          Len:        4,
-          Mask:       net.ParseIP("255.0.0.0").To4(),
-          Xor:        []byte{0,0,0,0},
-        },
-        &expr.Cmp{
-          Op:         expr.CmpOpNeq,
-          Register:   1,
-          Data:       net.ParseIP("127.0.0.0").To4(),
-        },
-        // Set the firewall mark
-        &immfwmark,
-        &setfwmark,
-      },
-    })
-  }
-
+  // Move all marked packets into their own conntrack zone
   mozvpn_conn.AddRule(&nftables.Rule{
     Table: ctx.table,
-    Chain: ctx.nat,
+    Chain: ctx.conntrack,
     Exprs: []expr.Any{
-      // Match packets from the cgroup
+      // Match marked packets
       &expr.Meta{
-        Key:        expr.MetaKeyCGROUP,
+        Key:        expr.MetaKeyMARK,
         Register:   1,
       },
       &expr.Cmp{
         Op:         expr.CmpOpEq,
         Register:   1,
-        Data:       binaryutil.NativeEndian.PutUint32(cgroup),
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
       },
+      // Set the conntrack zone
+      &immctzone,
+      &setctzone,
+    },
+  })
+
+  // Inbound packets from outside the tunnel should be marked for RPF
+  // and moved into the external conntrack zone.
+  mozvpn_conn.AddRule(&nftables.Rule{
+    Table: ctx.table,
+    Chain: ctx.preroute,
+    Exprs: []expr.Any{
+      // Match packets arriving from outside the tunnel
+			&expr.Meta{
+        Key:      expr.MetaKeyIIFNAME,
+        Register: 1,
+      },
+      &expr.Cmp{
+        Op:       expr.CmpOpNeq,
+        Register: 1,
+        Data:     nftIfname(ifname),
+      },
+      // Match packets arriving on non-localhost.
+			&expr.Meta{
+        Key:      expr.MetaKeyIIFTYPE,
+        Register: 1,
+      },
+      &expr.Cmp{
+        Op:       expr.CmpOpNeq,
+        Register: 1,
+        Data:     binaryutil.NativeEndian.PutUint16(arphdr_loopback),
+      },
+     // Set the firewall mark for the packets
+      &expr.Immediate{
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+      },
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+        SourceRegister: true,
+      },
+      // Set the conntrack zone
+      &immctzone,
+      &setctzone,
+    },
+  })
+}
+
+func nftMarkCgroup(ctx *nftCtx, cgroup uint32, fwmark uint32) {
+  // Match packets originating from the cgroup
+  var loadcgroup = expr.Meta{
+    Key:      expr.MetaKeyCGROUP,
+    Register: 1,
+  }
+  var matchcgroup = expr.Cmp{
+    Op:       expr.CmpOpEq,
+    Register: 1,
+    Data:     binaryutil.NativeEndian.PutUint32(cgroup),
+  }
+
+  mozvpn_conn.AddRule(&nftables.Rule{
+    Table: ctx.table,
+    Chain: ctx.mangle,
+    Exprs: []expr.Any{
+      // Load the boilerplate matching rules
+      &loadcgroup,
+      &matchcgroup,
+      // Match packets that have not been marked
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+      },
+      &expr.Cmp{
+        Op:         expr.CmpOpNeq,
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+      },
+      // Do not match packets sent to localhost interfaces
+      &expr.Meta{
+        Key:      expr.MetaKeyOIFTYPE,
+        Register: 1,
+      },
+      &expr.Cmp{
+        Op:       expr.CmpOpNeq,
+        Register: 1,
+        Data:     binaryutil.NativeEndian.PutUint16(arphdr_loopback),
+      },
+      // Set the firewall mark
+      &expr.Immediate{
+        Register:   1,
+        Data:       binaryutil.NativeEndian.PutUint32(fwmark),
+      },
+      &expr.Meta{
+        Key:        expr.MetaKeyMARK,
+        Register:   1,
+        SourceRegister: true,
+      },
+    },
+  })
+
+  // Masquerade outgoing packets from the cgroup to trigger rerouting.
+  mozvpn_conn.AddRule(&nftables.Rule{
+    Table: ctx.table,
+    Chain: ctx.nat,
+    Exprs: []expr.Any{
+      // Match packets from the cgroup
+      &loadcgroup,
+      &matchcgroup,
       // Match marked packets
       &expr.Meta{
         Key:        expr.MetaKeyMARK,
@@ -191,17 +226,6 @@ func nftMarkCgroup(ctx *nftCtx, cgroup uint32, fwmark uint32) {
 }
 
 func nftBlockCgroup(ctx *nftCtx, cgroup uint32) {
-  // Destination IP address parsing is a little different for IPv4 and IPv6
-  var localhost []byte
-  var dstoffset uint32
-  if ctx.table.Family == nftables.TableFamilyIPv6 {
-    localhost = net.ParseIP("::1").To16()
-    dstoffset = 24
-  } else {
-    localhost = net.ParseIP("127.0.0.1").To4()
-    dstoffset = 16
-  }
-
   mozvpn_conn.AddRule(&nftables.Rule{
     Table: ctx.table,
     Chain: ctx.mangle,
@@ -216,17 +240,15 @@ func nftBlockCgroup(ctx *nftCtx, cgroup uint32) {
         Register:   1,
         Data:       binaryutil.NativeEndian.PutUint32(cgroup),
       },
-      // Match all destinations except localhost
-      &expr.Payload{
-        DestRegister: 1,
-        Base:       expr.PayloadBaseNetworkHeader,
-        Offset:     dstoffset,
-        Len:        uint32(len(localhost)),
+      // Do not match packets sent to localhost interfaces
+      &expr.Meta{
+        Key:      expr.MetaKeyOIFTYPE,
+        Register: 1,
       },
       &expr.Cmp{
-        Op:         expr.CmpOpNeq,
-        Register:   1,
-        Data:       localhost,
+        Op:       expr.CmpOpNeq,
+        Register: 1,
+        Data:     binaryutil.NativeEndian.PutUint16(arphdr_loopback),
       },
       // Drop the packets
       &expr.Verdict{
@@ -240,42 +262,37 @@ func nftBlockCgroup(ctx *nftCtx, cgroup uint32) {
 func NetfilterCreateTables() int32 {
   logger := log.New(&CLogger{level: 0}, "", 0)
 
-  mozvpn_ctx_v4.table = mozvpn_conn.AddTable(&nftables.Table{
-    Family: nftables.TableFamilyIPv4,
-    Name: "mozvpn-v4",
+  mozvpn_ctx.table = mozvpn_conn.AddTable(&nftables.Table{
+    Family: nftables.TableFamilyINet,
+    Name: "mozvpn",
   })
-  mozvpn_ctx_v4.mangle = mozvpn_conn.AddChain(&nftables.Chain{
-    Name:       "mozvpn-mangle-v4",
-    Table:      mozvpn_ctx_v4.table,
+  mozvpn_ctx.mangle = mozvpn_conn.AddChain(&nftables.Chain{
+    Name:       "mozvpn-mangle",
+    Table:      mozvpn_ctx.table,
     Type:       nftables.ChainTypeRoute,
     Hooknum:    nftables.ChainHookOutput,
-    Priority:   nftables.ChainPriorityMangle,
+    Priority:   nftables.ChainPriorityRaw,
   })
-  mozvpn_ctx_v4.nat = mozvpn_conn.AddChain(&nftables.Chain{
-    Name:       "mozvpn-nat-v4",
-    Table:      mozvpn_ctx_v4.table,
+  mozvpn_ctx.nat = mozvpn_conn.AddChain(&nftables.Chain{
+    Name:       "mozvpn-nat",
+    Table:      mozvpn_ctx.table,
     Type:       nftables.ChainTypeNAT,
     Hooknum:    nftables.ChainHookPostrouting,
     Priority:   nftables.ChainPriorityNATSource,
   })
-
-  mozvpn_ctx_v6.table = mozvpn_conn.AddTable(&nftables.Table{
-    Family:     nftables.TableFamilyIPv6,
-    Name:       "mozvpn-v6",
-  })
-  mozvpn_ctx_v6.mangle = mozvpn_conn.AddChain(&nftables.Chain{
-    Name:       "mozvpn-mangle-v6",
-    Table:      mozvpn_ctx_v6.table,
+  mozvpn_ctx.conntrack = mozvpn_conn.AddChain(&nftables.Chain{
+    Name:       "mozvpn-conntrack",
+    Table:      mozvpn_ctx.table,
     Type:       nftables.ChainTypeRoute,
     Hooknum:    nftables.ChainHookOutput,
-    Priority:   nftables.ChainPriorityMangle,
+    Priority:   nftables.ChainPriorityConntrack-1,
   })
-  mozvpn_ctx_v6.nat = mozvpn_conn.AddChain(&nftables.Chain{
-    Name:       "mozvpn-nat-v6",
-    Table:      mozvpn_ctx_v6.table,
-    Type:       nftables.ChainTypeNAT,
-    Hooknum:    nftables.ChainHookPostrouting,
-    Priority:   nftables.ChainPriorityNATSource,
+  mozvpn_ctx.preroute = mozvpn_conn.AddChain(&nftables.Chain{
+    Name:       "mozvpn-preroute",
+    Table:      mozvpn_ctx.table,
+    Type:       nftables.ChainTypeFilter,
+    Hooknum:    nftables.ChainHookPrerouting,
+    Priority:   nftables.ChainPriorityRaw,
   })
 
   logger.Println("Creating netfilter tables")
@@ -286,8 +303,7 @@ func NetfilterCreateTables() int32 {
 func NetfilterRemoveTables() int32 {
   logger := log.New(&CLogger{level: 0}, "", 0)
   
-  mozvpn_conn.DelTable(mozvpn_ctx_v4.table)
-  mozvpn_conn.DelTable(mozvpn_ctx_v6.table)
+  mozvpn_conn.DelTable(mozvpn_ctx.table)
 
   logger.Println("Removing netfilter tables")
   return nftCommit(logger)
@@ -297,21 +313,33 @@ func NetfilterRemoveTables() int32 {
 func NetfilterClearTables() int32 {
   logger := log.New(&CLogger{level: 0}, "", 0)
 
-  mozvpn_conn.FlushChain(mozvpn_ctx_v4.mangle)
-  mozvpn_conn.FlushChain(mozvpn_ctx_v4.nat)
-  mozvpn_conn.FlushChain(mozvpn_ctx_v6.mangle)
-  mozvpn_conn.FlushChain(mozvpn_ctx_v6.nat)
+  mozvpn_conn.FlushChain(mozvpn_ctx.mangle)
+  mozvpn_conn.FlushChain(mozvpn_ctx.nat)
+  mozvpn_conn.FlushChain(mozvpn_ctx.conntrack)
+  mozvpn_conn.FlushChain(mozvpn_ctx.preroute)
 
   logger.Println("Clearing netfilter tables")
   return nftCommit(logger)
+}
+
+//export NetfilterIfup
+func NetfilterIfup(ifname string, fwmark uint32) int32 {
+  logger := log.New(&CLogger{level: 0}, "", 0)
+
+  if fwmark != 0 {
+    nftIfup(&mozvpn_ctx, ifname, fwmark)
+  }
+
+  logger.Println("Starting netfilter tables for", ifname)
+  return nftCommit(logger)
+  return 0
 }
 
 //export NetfilterMarkCgroup
 func NetfilterMarkCgroup(cgroup uint32, fwmark uint32) int32 {
   logger := log.New(&CLogger{level: 0}, "", 0)
 
-  nftMarkCgroup(&mozvpn_ctx_v4, cgroup, fwmark)
-  nftMarkCgroup(&mozvpn_ctx_v6, cgroup, fwmark)
+  nftMarkCgroup(&mozvpn_ctx, cgroup, fwmark)
 
   logger.Println("Marking traffic from cgroup", cgroup)
   return nftCommit(logger)
@@ -321,8 +349,7 @@ func NetfilterMarkCgroup(cgroup uint32, fwmark uint32) int32 {
 func NetfilterBlockCgroup(cgroup uint32) int32 {
   logger := log.New(&CLogger{level: 0}, "", 0)
 
-  nftBlockCgroup(&mozvpn_ctx_v4, cgroup)
-  nftBlockCgroup(&mozvpn_ctx_v6, cgroup)
+  nftBlockCgroup(&mozvpn_ctx, cgroup)
 
   logger.Println("Blocking traffic from cgroup", cgroup)
   return nftCommit(logger)
