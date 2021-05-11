@@ -1,7 +1,0 @@
-'title' = 'Mozilla VPN for MacOS';
-
-'unsupported_version_title' = 'Unable to install';
-'unsupported_version_message' = 'Mozilla VPN requires Mac OS X 10.6 or later.';
-
-'previous_build_title' = 'Previous Installation Detected';
-'previous_build_message' = 'A previous installation of Mozilla VPN exists at /Applications/Mozilla VPN.app. This installer will remove the previous installation prior to installing. Please back up any data before proceeding.';

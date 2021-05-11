@@ -18,7 +18,7 @@ function installCheck() {
     if(system.files.fileExistsAtPath('/Applications/Mozilla VPN.app')) {
         my.result.title = system.localizedString('previous_build_title');
         my.result.message = system.localizedString('previous_build_message');
-          my.result.type = 'Warning';
+        my.result.type = 'Warning';
         return false;
     }
     return true;
