@@ -9,7 +9,6 @@ import Mozilla.VPN 1.0
 VPNAlert {
     id: alertBox
 
-    visible: false
     state: VPN.alert
     states: [
         State {
@@ -17,7 +16,6 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                opacity: 0
                 visible: false
             }
 
@@ -27,7 +25,6 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                opacity: 0
                 visible: false
             }
 
@@ -42,7 +39,6 @@ VPNAlert {
                 alertText: qsTrId("vpn.alert.authenticationError")
                 //% "Try again"
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -56,7 +52,6 @@ VPNAlert {
                 //% "Unable to connect"
                 alertText: qsTrId("vpn.alert.unableToConnect")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -70,7 +65,6 @@ VPNAlert {
                 //% "No internet connection"
                 alertText: qsTrId("vpn.alert.noInternet")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -86,7 +80,6 @@ VPNAlert {
                 //% "Restore"
                 //: Restore a service in case of error.
                 alertLinkText: qsTrId("vpn.alert.restore")
-                opacity: 1
                 visible: true
             }
 
@@ -113,7 +106,6 @@ VPNAlert {
                 //% "Remote service error"
                 alertText: qsTrId("vpn.alert.remoteServiceError")
                 alertLinkText: ""
-                opacity: 1
                 visible: true
             }
 
@@ -127,7 +119,6 @@ VPNAlert {
                 //% "Subscription failed"
                 alertText: qsTrId("vpn.alert.subscriptionFailureError")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -141,7 +132,6 @@ VPNAlert {
                 //% "Operation not allowed from current location"
                 alertText: qsTrId("vpn.alert.getIPRestrictionError")
                 alertLinkText: ""
-                opacity: 1
                 visible: true
             }
 
@@ -153,7 +143,6 @@ VPNAlert {
                 target: alertBox
                 //% "Signed out and device removed"
                 alertText: qsTrId("vpn.alert.deviceRemovedAndLogout")
-                opacity: 1
                 visible: true
             }
 
