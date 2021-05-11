@@ -9,7 +9,7 @@
 
 #include <QObject>
 #include <QUrl>
-#include <QQueue>
+
 
 class CaptivePortalRequest final : public QObject {
   Q_OBJECT
