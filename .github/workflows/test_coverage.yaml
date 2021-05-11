@@ -23,6 +23,13 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
       - name: Generating glean samples
         shell: bash
         run: |
@@ -31,12 +38,12 @@ jobs:
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
-      - name: Checkout submodules
+      - name: Importing translation files
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+          # Manually add QT executables to path
+          export PATH=/opt/qt515/bin:$PATH
+          python3 scripts/importLanguages.py -p
 
       - name: Importing translation files
         shell: bash

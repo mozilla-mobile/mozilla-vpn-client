@@ -266,7 +266,12 @@ unix {
 }
 
 RESOURCES += qml.qrc
-RESOURCES += ../glean/glean.qrc
+
+exists($$PWD/../glean/telemetry/gleansample.h) {
+    RESOURCES += $$PWD/../glean/glean.qrc
+} else {
+    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
+}
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -526,7 +531,7 @@ else:android {
        include(../3rdparty/openSSL/openssl.pri)
     } else{
        message(Have you imported the 3rd-party git submodules? Read the README.md)
-       error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build )
+       error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build)
     }
 
     # For the android build we need to unset those
@@ -831,16 +836,7 @@ RESOURCES += $$PWD/../translations/servers.qrc
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 } else {
-    message(Languages were not imported - using fallback english)
-    TRANSLATIONS += \
-        ../translations/en/mozillavpn_en.ts
-
-    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/en/mozillavpn_en.ts
-    ts.CONFIG += no_check_exist
-    ts.output = $$PWD/../translations/en/mozillavpn_en.ts
-    ts.input = .
-    QMAKE_EXTRA_TARGETS += ts
-    PRE_TARGETDEPS += ts
+    error(Languages were not imported. Please run `python3 ./scripts/importLanguages.py`)
 }
 
 QMAKE_LRELEASE_FLAGS += -idbased
