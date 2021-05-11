@@ -13,9 +13,6 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscaptiveportaldetection.h"
-#endif
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
@@ -77,9 +74,7 @@ void CaptivePortalDetection::detectCaptivePortal() {
     return;
   }
 
-#if defined(MVPN_WINDOWS)
-  m_impl.reset(new WindowsCaptivePortalDetection());
-#elif defined(MVPN_LINUX) || defined(MVPN_MACOS)
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   m_impl.reset(new CaptivePortalDetectionImpl());
 #else
   logger.log() << "This platform does not support captive portal detection yet";
