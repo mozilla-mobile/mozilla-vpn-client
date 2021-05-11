@@ -103,17 +103,20 @@ void MacOSUtils::installerStrings() {
   //% "Previous Installation Detected"
   qtTrId("macosinstaller.previous_build.title");
 
-  //% "A previous installation of Mozilla VPN exists at /Applications/Mozilla VPN.app. This
-  // installer will remove the previous installation prior to installing. Please back up any data
-  // before proceeding."
+  //% "A previous installation of Mozilla VPN exists at /Applications/Mozilla VPN.app. This"
+  //% "installer will remove the previous installation prior to installing. Please back up any data"
+  //% "before proceeding."
   qtTrId("macosinstaller.previous_build.message");
 
-  //% "You will now be guided through the installation steps for the Mozilla VPN. Thank you for
-  // choosing your VPN from the trusted pioneer of internet privacy."
+  //% "You will now be guided through the installation steps for the Mozilla VPN. Thank you for"
+  //% "choosing your VPN from the trusted pioneer of internet privacy."
   qtTrId("macosinstaller.welcome.message1");
 
   //% "Click \"Continue\" to continue the setup."
   qtTrId("macosinstaller.welcome.message2");
+
+  //% "Success!"
+  qtTrId("macosinstaller.conclusion.title");
 
   //% "The Mozilla VPN is successfully installed. Go to your Applications folder to open up the VPN
   // and start taking control of your online privacy."
