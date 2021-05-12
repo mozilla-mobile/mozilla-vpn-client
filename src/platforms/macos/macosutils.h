@@ -18,6 +18,11 @@ class MacOSUtils final {
 
   static void hideDockIcon();
   static void showDockIcon();
+
+ private:
+  // This method is not used. It exists just to add the installer strings into
+  // the QT language files.
+  static void installerStrings();
 };
 
 #endif  // MACOSUTILS_H

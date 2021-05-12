@@ -6,6 +6,7 @@
 #define CAPTIVEPORTALDETECTION_H
 
 #include <QObject>
+#include "captiveportalresult.h"
 
 class CaptivePortalDetectionImpl;
 class CaptivePortalMonitor;
@@ -28,7 +29,7 @@ class CaptivePortalDetection final : public QObject {
  public slots:
   void stateChanged();
   void settingsChanged();
-  void detectionCompleted(bool detected);
+  void detectionCompleted(CaptivePortalResult detected);
   void captivePortalGone();
 
   void activationRequired();

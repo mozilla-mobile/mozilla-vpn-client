@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "windowscaptiveportaldetectionthread.h"
+#include "../captiveportal/captiveportalresult.h"
 
 #include <QScopeGuard>
 
@@ -30,7 +31,8 @@ WindowsCaptivePortalDetection::~WindowsCaptivePortalDetection() {
 void WindowsCaptivePortalDetection::start() {
   logger.log() << "Captive portal detection started";
 
-  auto guard = qScopeGuard([&] { emit detectionCompleted(false); });
+  auto guard = qScopeGuard(
+      [&] { emit detectionCompleted(CaptivePortalResult::NoPortal); });
 
   QStringList ipv4Addresses =
       MozillaVPN::instance()->captivePortal()->ipv4Addresses();
@@ -46,7 +48,9 @@ void WindowsCaptivePortalDetection::start() {
   connect(&m_thread, &QThread::finished, thread, &QObject::deleteLater);
   connect(this, &QObject::destroyed, thread, &QObject::deleteLater);
   connect(thread, &WindowsCaptivePortalDetectionThread::detectionCompleted,
-          this, &WindowsCaptivePortalDetection::detectionCompleted);
+          [this](bool detected) {
+            emit detectionCompleted(detected ? PortalDetected : NoPortal);
+          });
   connect(this, &WindowsCaptivePortalDetection::startWorker, thread,
           &WindowsCaptivePortalDetectionThread::startWorker);
 
