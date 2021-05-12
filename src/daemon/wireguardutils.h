@@ -14,6 +14,8 @@
 constexpr const char* WG_INTERFACE = "moz0";
 
 class WireguardUtils : public QObject {
+  Q_OBJECT
+
  public:
   struct peerBytes {
     double txBytes, rxBytes;
@@ -27,6 +29,7 @@ class WireguardUtils : public QObject {
   virtual bool configureInterface(const InterfaceConfig& config) = 0;
   virtual bool deleteInterface() = 0;
   virtual peerBytes getThroughputForInterface() = 0;
+  virtual bool addRoutePrefix(const IPAddressRange& prefix) = 0;
 };
 
 #endif  // WIREGUARDUTILS_H

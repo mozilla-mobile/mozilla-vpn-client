@@ -314,6 +314,7 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
+    include($$PWD/golang.pri)
 
     TARGET = mozillavpn
     QT += networkauth
@@ -384,6 +385,8 @@ else:linux:!android {
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
+    GO_MODULES = platforms/linux/netfilter/netfilter.go
+    
     target.path = $${USRPATH}/bin
     INSTALLS += target
 

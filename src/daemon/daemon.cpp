@@ -106,6 +106,15 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
+  if (supportWGUtils()) {
+    // set routing
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      if (!wgutils()->addRoutePrefix(ip)) {
+        qWarning("Routing configuration failed. Removing `%s`.", WG_INTERFACE);
+        return false;
+      }
+    }
+  }
 
   m_lastConfig = config;
   m_connected = run(Up, m_lastConfig);
