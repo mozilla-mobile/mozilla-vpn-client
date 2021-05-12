@@ -11,8 +11,6 @@ QT += quick
 QT += widgets
 QT += charts
 
-CONFIG += c++14
-
 TEMPLATE  = app
 
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -39,6 +37,7 @@ SOURCES += \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
+        captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -127,6 +126,8 @@ HEADERS += \
         captiveportal/captiveportalmonitor.h \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
+        captiveportal/captiveportalmultirequest.h \
+        captiveportal/captiveportalresult.h \
         closeeventhandler.h \
         command.h \
         commandlineparser.h \
@@ -275,6 +276,8 @@ balrog {
 DUMMY {
     message(Dummy build)
 
+    CONFIG += c++1z
+
     win* {
       CONFIG += embed_manifest_exe
       QT += svg
@@ -315,6 +318,8 @@ else:linux:!android {
     TARGET = mozillavpn
     QT += networkauth
     QT += dbus
+
+    CONFIG += c++14
 
     DEFINES += MVPN_LINUX
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
@@ -440,6 +445,7 @@ else:android {
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
     CONFIG += force_debug_info
+    CONFIG += c++14
 
     TARGET = mozillavpn
     QT += networkauth
@@ -523,6 +529,8 @@ else:macos {
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
+
+    CONFIG += c++1z
 
     # For the loginitem
     LIBS += -framework ServiceManagement
@@ -619,6 +627,8 @@ else:ios {
     QT += svg
     QT += gui-private
 
+    CONFIG += c++1z
+
     # For the authentication
     LIBS += -framework AuthenticationServices
 
@@ -676,6 +686,8 @@ else:win* {
     message(Windows build)
 
     TARGET = MozillaVPN
+
+    CONFIG += c++1z
 
     QT += networkauth
     QT += svg
@@ -746,6 +758,8 @@ else:wasm {
 
     TARGET = mozillavpn
     QT += svg
+
+    CONFIG += c++1z
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
