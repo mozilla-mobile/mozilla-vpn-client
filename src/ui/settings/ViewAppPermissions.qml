@@ -33,7 +33,7 @@ Item {
             VPNAppPermissions.requestApplist();
             Glean.sample.appPermissionsViewOpened.record();
             if (!vpnIsOff) {
-                Glean.sample.appPermissionsViewVpnMustBeOff.record();
+                Glean.sample.appPermissionsViewWarning.record();
             }
          }
 

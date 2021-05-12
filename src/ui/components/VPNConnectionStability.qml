@@ -73,21 +73,6 @@ RowLayout {
         }
     ]
 
-    transitions: [
-        Transition {
-            to: VPNConnectionHealth.Unstable
-            ScriptAction {
-                script: Glean.sample.connectionHealthUnstable.record()
-            }
-        },
-        Transition {
-            to: VPNConnectionHealth.NoSignal
-            ScriptAction {
-                script: Glean.sample.connectionHealthNoSignal.record()
-            }
-        }
-    ]
-
     GridLayout {
         id: grid
         columnSpacing: 0

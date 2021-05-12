@@ -18,7 +18,7 @@ Item {
 
         labelText: qsTrId("vpn.main.getHelp")
         onClicked: {
-            Glean.sample.GetHelpClickedViewInitialize.record();
+            Glean.sample.getHelpClickedInitialize.record();
             stackview.push(getHelpComponent);
         }
     }
