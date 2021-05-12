@@ -151,6 +151,40 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
+  connection_health_no_signal:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection has no signal
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_health_unstable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection is unstable
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
   connection_info_opened:
     type: event
     lifetime: ping

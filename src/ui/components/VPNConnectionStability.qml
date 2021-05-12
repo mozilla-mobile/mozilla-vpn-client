@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 RowLayout {
     property var numGridColumns: grid.columns
@@ -68,6 +69,21 @@ RowLayout {
             PropertyChanges {
                 target: warningIcon
                 source: "../resources/warning.svg"
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            to: VPNConnectionHealth.Unstable
+            ScriptAction {
+                script: Glean.sample.connectionHealthUnstable.record()
+            }
+        },
+        Transition {
+            to: VPNConnectionHealth.NoSignal
+            ScriptAction {
+                script: Glean.sample.connectionHealthNoSignal.record()
             }
         }
     ]
