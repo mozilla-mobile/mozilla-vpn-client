@@ -18,7 +18,7 @@ VPNFlickable {
     Component.onCompleted: {
         Glean.sample.networkSettingsViewOpened.record();
         if (!vpnIsOff) {
-            Glean.sample.networkSettingsViewVpnMustBeOff.record();
+            Glean.sample.networkSettingsViewWarning.record();
         }
      }
 

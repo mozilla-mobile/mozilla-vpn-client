@@ -123,7 +123,7 @@ VPNFlickable {
                 anchors.bottom: undefined
                 anchors.bottomMargin: undefined
                 onClicked: {
-                    Glean.sample.GetHelpClickedFullScreenError.record();
+                    Glean.sample.getHelpClickedFullScreenError.record();
                     stackview.push(getHelpComponent);
                 }
             }

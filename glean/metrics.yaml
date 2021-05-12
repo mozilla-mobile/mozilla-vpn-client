@@ -30,8 +30,8 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
-  
-  app_permissions_view_vpn_must_be_off:
+
+  app_permissions_view_warning:
     type: event
     lifetime: ping
     send_in_pings:
@@ -202,13 +202,15 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  get_help_clicked_view_initialize:
+  get_help_clicked_initialize:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
       The user has clicked "Get help" from the initial view.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
       - TBD
     data_sensitivity:
@@ -217,13 +219,15 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  get_help_clicked_view_initialize:
+  get_help_clicked_view_settings:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
       The user has clicked "Get help" from the settings view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
       - TBD
     data_sensitivity:
@@ -265,7 +269,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
-  
+
   network_settings_view_opened:
     type: event
     lifetime: ping
@@ -282,8 +286,8 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
-  
-  network_settings_view_vpn_must_be_off:
+
+  network_settings_view_warning:
     type: event
     lifetime: ping
     send_in_pings:
@@ -317,8 +321,8 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
-  
-  notifications_view_vpn_must_be_off:
+
+  notifications_view_warning:
     type: event
     lifetime: ping
     send_in_pings:
