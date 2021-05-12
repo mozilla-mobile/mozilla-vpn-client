@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <installer-script minSpecVersion="1.000000">
-    <title>Mozilla VPN for MacOS</title>
+    <title>title</title>
     <background mime-type="image/png" file="background.png" alignment="left"/>
     <welcome file="welcome.html" mime-type="text/html" />
     <conclusion file="conclusion.html" mime-type="text/html" />
-    <license file="LICENSE.md"/>
     <options customize="never" allow-external-scripts="no"/>
     <domains enable_localSystem="true" />
     <installation-check script="installCheck();"/>
     <script>
 function installCheck() {
     if(!(system.compareVersions(system.version.ProductVersion, '10.6.0') >= 0)) {
-        my.result.title = 'Unable to install';
-        my.result.message = 'Mozilla VPN requires Mac OS X 10.6 or later.';
+        my.result.title = system.localizedString('unsupported_version_title');
+        my.result.message = system.localizedString('unsupported_version_message');
         my.result.type = 'Fatal';
         return false;
     }
     if(system.files.fileExistsAtPath('/Applications/Mozilla VPN.app')) {
-        my.result.title = 'Previous Installation Detected';
-        my.result.message = 'A previous installation of Mozilla VPN exists at /Applications/Mozilla VPN.app. This installer will remove the previous installation prior to installing. Please back up any data before proceeding.';
+        my.result.title = system.localizedString('previous_build_title');
+        my.result.message = system.localizedString('previous_build_message');
         my.result.type = 'Warning';
         return false;
     }
