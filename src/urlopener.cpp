@@ -5,16 +5,27 @@
 #include "urlopener.h"
 #include "logger.h"
 #include "inspector/inspectorwebsocketconnection.h"
+#include "settingsholder.h"
 
 #include <QDesktopServices>
 #include <QUrl>
+#include <QUrlQuery>
 
 namespace {
 Logger logger(LOG_MAIN, "UrlOpener");
 }
 
 // static
-void UrlOpener::open(const QUrl& url) {
+void UrlOpener::open(QUrl url, bool addEmailAddress) {
+  if (addEmailAddress) {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    if (settingsHolder->hasUserEmail()) {
+      QUrlQuery query(url.query());
+      query.addQueryItem("email", settingsHolder->userEmail());
+      url.setQuery(query);
+    }
+  }
+
 #ifdef MVPN_INSPECTOR
   InspectorWebSocketConnection::setLastUrl(url.toString());
 

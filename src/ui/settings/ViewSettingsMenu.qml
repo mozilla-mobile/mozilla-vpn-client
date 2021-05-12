@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 VPNFlickable {
     id: vpnFlickable
@@ -61,7 +62,10 @@ VPNFlickable {
         anchors.top: vpnPanel.bottom
         anchors.topMargin: Theme.vSpacing
         anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: VPN.openLink(VPN.LinkAccount)
+        onClicked: {
+            Glean.sample.manageAccountClicked.record();
+            VPN.openLink(VPN.LinkAccount)
+        }
     }
 
     VPNCheckBoxRow {
@@ -80,6 +84,27 @@ VPNFlickable {
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
         visible: VPNFeatureList.startOnBootSupported
+    }
+
+    VPNCheckBoxRow {
+        id: gleanEnabledCheckBox
+        objectName: "settingGleanEnabled"
+
+        //% "Enable telemetry"
+        labelText: qsTrId("vpn.settings.glean")
+        subLabelText: ""
+        isChecked: VPNSettings.gleanEnabled
+        isEnabled: true
+        showDivider: true
+        anchors.top: VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.bottom : manageAccountButton.bottom
+        anchors.topMargin: Theme.hSpacing * 1.5
+        anchors.rightMargin: Theme.hSpacing
+        width: vpnFlickable.width - Theme.hSpacing
+        onClicked: {
+            VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+        }
+        visible: VPNFeatureList.gleanSupported
     }
 
     Component {
@@ -104,7 +129,9 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
+        y: Theme.vSpacing + (VPNFeatureList.gleanSupported ? gleanEnabledCheckBox.y + gleanEnabledCheckBox.height :
+                              (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
+                                manageAccountButton.y + manageAccountButton.height))
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 

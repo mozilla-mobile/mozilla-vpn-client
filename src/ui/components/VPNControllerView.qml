@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 Rectangle {
     id: box
@@ -29,13 +30,16 @@ Rectangle {
         return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
+    function closeConnectionInfo() {
+        connectionInfo.close();
+    }
+
     state: VPNController.state
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.margins: 16
     radius: 8
-    height: 318
-    width: parent.width - 32
+    Layout.preferredHeight: 318
+    Layout.preferredWidth: parent.width - Theme.windowMargin
+    Layout.alignment: Qt.AlignHCenter
+
     antialiasing: true
     states: [
         State {
@@ -466,7 +470,11 @@ Rectangle {
         id: connectionInfoButton
         objectName: "connectionInfoButton"
 
-        onClicked: connectionInfo.open()
+        onClicked: {
+            Glean.sample.connectionInfoOpened.record();
+            connectionInfo.open()
+        }
+
         buttonColorScheme: Theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
@@ -476,6 +484,7 @@ Rectangle {
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: connectionInfoImage
@@ -501,7 +510,11 @@ Rectangle {
         objectName: "settingsButton"
         opacity: 1
 
-        onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+        onClicked: {
+            Glean.sample.settingsViewOpened.record();
+            stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+        }
+
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2
@@ -509,6 +522,7 @@ Rectangle {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: settingsImage
@@ -633,10 +647,12 @@ Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
     }
 
     VPNConnectionInfo {
         id: connectionInfo
+        visible: false
 
         Behavior on opacity {
             NumberAnimation {

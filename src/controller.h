@@ -73,7 +73,8 @@ class Controller final : public QObject {
   void cleanupBackendLogs();
 
   void getStatus(
-      std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+      std::function<void(const QString& serverIpv4Gateway,
+                         const QString& deviceIpv4Address, uint64_t txBytes,
                          uint64_t rxBytes)>&& callback);
 
   int connectionRetry() const { return m_connectionRetry; }
@@ -94,7 +95,8 @@ class Controller final : public QObject {
   void timerTimeout();
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
-  void statusUpdated(const QString& serverIpv4Gateway, uint64_t txBytes,
+  void statusUpdated(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
 
   void connectionConfirmed();
@@ -165,7 +167,8 @@ class Controller final : public QObject {
 
   ReconnectionStep m_reconnectionStep = NoReconnection;
 
-  QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
 };

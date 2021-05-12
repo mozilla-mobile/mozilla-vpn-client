@@ -8,6 +8,7 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
 import "themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 Window {
     id: window
@@ -53,12 +54,36 @@ Window {
         if (VPN.startMinimized) {
             this.showMinimized();
         }
+
         if (!fullscreenRequired()) {
             maximumHeight = Theme.desktopAppHeight
             minimumHeight = Theme.desktopAppHeight
             maximumWidth = Theme.desktopAppWidth
             minimumWidth = Theme.desktopAppWidth
         }
+
+        Glean.glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported, {
+          appBuild: `MozillaVPN/${VPN.versionString}`,
+          appDisplayVersion: VPN.versionString,
+          httpClient: {
+                  post(url, body, headers) {
+                      return new Promise((resolve, reject) => {
+                          const xhr = new XMLHttpRequest();
+                          xhr.open("POST", url);
+
+                          for (const header in headers) {
+                            xhr.setRequestHeader(header, headers[header]);
+                          }
+                          xhr.onloadend = () => {
+                            resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
+                          }
+                          xhr.send(body);
+                      });
+                  }
+          },
+
+          debug: {logPings: !VPN.productionMode }
+        });
     }
     Rectangle {
         id: iosSafeAreaTopMargin
@@ -219,7 +244,6 @@ Window {
 
     }
 
-
     Connections {
         target: VPN
         function onViewLogsNeeded() {
@@ -240,12 +264,22 @@ Window {
 
             mainStackView.push("../platforms/android/androidauthenticationview.qml", StackView.Immediate)
         }
+
+        function onSendGleanPings() {
+            Glean.sendPing();
+        }
+
+        function onTriggerGleanSample(sample) {
+            Glean.sample[sample].record();
+        }
+
+        function onAboutToQuit() {
+            // We are about to quit. Let's see if we are fast enough to send
+            // the last chunck of data to the glean servers.
+            Glean.sendPing();
+        }
     }
 
     VPNSystemAlert {
-        id: alertBox
-
-        z: 2
     }
-
 }

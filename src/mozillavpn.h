@@ -17,6 +17,7 @@
 #include "models/keys.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "models/surveymodel.h"
 #include "models/user.h"
 #include "networkwatcher.h"
 #include "releasemonitor.h"
@@ -92,6 +93,7 @@ class MozillaVPN final : public QObject {
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
+  Q_PROPERTY(bool productionMode READ productionMode CONSTANT)
 
  public:
   MozillaVPN();
@@ -105,6 +107,14 @@ class MozillaVPN final : public QObject {
   AlertType alert() const { return m_alert; }
 
   const QString& serverPublicKey() const { return m_serverPublicKey; }
+
+  bool productionMode() const {
+#ifdef MVPN_PRODUCTION_MODE
+    return true;
+#else
+    return false;
+#endif
+  }
 
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
@@ -150,6 +160,7 @@ class MozillaVPN final : public QObject {
     return &m_private->m_serverCountryModel;
   }
   StatusIcon* statusIcon() { return &m_private->m_statusIcon; }
+  SurveyModel* surveyModel() { return &m_private->m_surveyModel; }
   User* user() { return &m_private->m_user; }
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -164,6 +175,8 @@ class MozillaVPN final : public QObject {
   void serversFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
+
+  void surveyChecked(const QByteArray& json);
 
   const QList<Server> servers() const;
 
@@ -275,6 +288,12 @@ class MozillaVPN final : public QObject {
   void viewLogsNeeded();
   void updatingChanged();
 
+  // For Glean
+  void sendGleanPings();
+  void triggerGleanSample(const QString& gleanSampleName);
+
+  void aboutToQuit();
+
   // This is used only on android but, if we use #ifdef MVPN_ANDROID, qml engine
   // complains...
   void loadAndroidAuthenticationView();
@@ -300,6 +319,7 @@ class MozillaVPN final : public QObject {
     ServerCountryModel m_serverCountryModel;
     ServerData m_serverData;
     StatusIcon m_statusIcon;
+    SurveyModel m_surveyModel;
     User m_user;
   };
 
@@ -316,6 +336,7 @@ class MozillaVPN final : public QObject {
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;
+  QTimer m_gleanTimer;
 
   bool m_updateRecommended = false;
   bool m_userAuthenticated = false;

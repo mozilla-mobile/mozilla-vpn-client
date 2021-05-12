@@ -558,16 +558,18 @@ void Controller::cleanupBackendLogs() {
 }
 
 void Controller::getStatus(
-    std::function<void(const QString& serverIpv4Gateway, uint64_t txByte,
+    std::function<void(const QString& serverIpv4Gateway,
+                       const QString& deviceIpv4Address, uint64_t txByte,
                        uint64_t rxBytes)>&& a_callback) {
   logger.log() << "check status";
 
-  std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  std::function<void(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
   if (m_state != StateOn && m_state != StateConfirming) {
-    callback(QString(), 0, 0);
+    callback(QString(), QString(), 0, 0);
     return;
   }
 
@@ -581,17 +583,19 @@ void Controller::getStatus(
 }
 
 void Controller::statusUpdated(const QString& serverIpv4Gateway,
+                               const QString& deviceIpv4Address,
                                uint64_t txBytes, uint64_t rxBytes) {
   logger.log() << "Status updated";
-  QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       list;
 
   list.swap(m_getStatusCallbacks);
-  for (const std::function<void(const QString&serverIpv4Gateway,
-                                uint64_t txBytes, uint64_t rxBytes)>&func :
-       list) {
-    func(serverIpv4Gateway, txBytes, rxBytes);
+  for (const std::function<void(
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           uint64_t txBytes, uint64_t rxBytes)>&func : list) {
+    func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
 }
 

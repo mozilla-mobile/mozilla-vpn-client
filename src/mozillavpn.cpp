@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "gleansample.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -21,6 +22,7 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/surveydata/tasksurveydata.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
@@ -84,6 +86,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     scheduleTask(new TaskAccountAndServers());
     scheduleTask(new TaskCaptivePortalLookup());
     scheduleTask(new TaskHeartbeat());
+    scheduleTask(new TaskSurveyData());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -149,6 +152,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(iap, &IAPHandler::alreadySubscribed, this,
           &MozillaVPN::alreadySubscribed);
 #endif
+
+  connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
+  m_gleanTimer.start(Constants::GLEAN_TIMEOUT_MSEC);
+  m_gleanTimer.setSingleShot(false);
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -208,7 +215,9 @@ void MozillaVPN::initialize() {
   }
 
   logger.log() << "We have a valid token";
+
   if (!m_private->m_user.fromSettings()) {
+    logger.log() << "No user data found";
     return;
   }
 
@@ -238,6 +247,10 @@ void MozillaVPN::initialize() {
 
   if (!m_private->m_captivePortal.fromSettings()) {
     // We do not care about CaptivePortal settings.
+  }
+
+  if (!m_private->m_surveyModel.fromSettings()) {
+    // We do not care about Survey settings.
   }
 
   if (!modelsInitialized()) {
@@ -302,6 +315,7 @@ void MozillaVPN::maybeStateMain() {
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
+    emit triggerGleanSample(GleanSample::maxDeviceReached);
     setState(StateDeviceLimit);
     return;
   }
@@ -331,6 +345,8 @@ void MozillaVPN::authenticate() {
     return;
   }
 
+  emit triggerGleanSample(GleanSample::authenticationStarted);
+
   scheduleTask(new TaskHeartbeat());
   scheduleTask(new TaskAuthenticate());
 }
@@ -339,17 +355,21 @@ void MozillaVPN::abortAuthentication() {
   logger.log() << "Abort authentication";
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
+
+  emit triggerGleanSample(GleanSample::authenticationAborted);
 }
 
 void MozillaVPN::openLink(LinkType linkType) {
   logger.log() << "Opening link: " << linkType;
 
   QString url;
+  bool addEmailAddress = false;
 
   switch (linkType) {
     case LinkAccount:
       url = Constants::API_URL;
       url.append("/r/vpn/account");
+      addEmailAddress = true;
       break;
 
     case LinkContact:
@@ -409,7 +429,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       return;
   }
 
-  UrlOpener::open(url);
+  UrlOpener::open(url, addEmailAddress);
 }
 
 void MozillaVPN::scheduleTask(Task* task) {
@@ -454,6 +474,8 @@ void MozillaVPN::setToken(const QString& token) {
 void MozillaVPN::authenticationCompleted(const QByteArray& json,
                                          const QString& token) {
   logger.log() << "Authentication completed";
+
+  emit triggerGleanSample(GleanSample::authenticationCompleted);
 
   if (!m_private->m_user.fromJson(json)) {
     logger.log() << "Failed to parse the User JSON data";
@@ -661,6 +683,17 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   // m_private->m_controller.subscriptionNeeded();
 }
 
+void MozillaVPN::surveyChecked(const QByteArray& json) {
+  logger.log() << "Survey checked";
+
+  if (!m_private->m_surveyModel.fromJson(json)) {
+    logger.log() << "Failed to parse the Survey JSON data";
+    return;
+  }
+
+  m_private->m_surveyModel.writeSettings();
+}
+
 void MozillaVPN::cancelAuthentication() {
   logger.log() << "Canceling authentication";
 
@@ -802,6 +835,11 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   // Any error in authenticating state sends to the Initial state.
   if (m_state == StateAuthenticating) {
+    if (alert == GeoIpRestrictionAlert) {
+      emit triggerGleanSample(GleanSample::authenticationFailureByGeo);
+    } else {
+      emit triggerGleanSample(GleanSample::authenticationFailure);
+    }
     setState(StateInitialize);
     return;
   }
@@ -951,6 +989,12 @@ void MozillaVPN::serializeLogs(QTextStream* out,
         } else {
           *out << "No logs from the backend.";
         }
+        *out << Qt::endl;
+        *out << "==== SETTINGS ====" << Qt::endl;
+        *out << SettingsHolder::instance()->getReport();
+        *out << "==== DEVICE ====" << Qt::endl;
+        *out << Device::currentDeviceReport();
+        *out << Qt::endl;
 
         finalizeCallback();
       });
