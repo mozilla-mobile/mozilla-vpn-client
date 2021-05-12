@@ -10,7 +10,6 @@
 #include <QObject>
 #include <QUrl>
 
-
 class CaptivePortalRequest final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(CaptivePortalRequest)
