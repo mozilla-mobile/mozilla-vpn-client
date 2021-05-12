@@ -35,10 +35,10 @@ ColumnLayout {
 
         isLayout: true
         alertType: "survey"
-        //% "TBD"
-        alertText: qsTrId("vpn.systray.survey.title")
-        //% "TBD"
-        alertLinkText: qsTrId("vpn.systray.survey.message")
+        //% "We’d love your feedback!"
+        alertText: qsTrId("vpn.systray.survey.wouldLoveYourFeedback")
+        //% "Take Survey"
+        alertLinkText: qsTrId("vpn.systray.survey.takeSurvey")
         alertColor: Theme.greenAlert
         textColor: Theme.fontColorDark
         visible: VPNSurveyModel.hasSurvey
