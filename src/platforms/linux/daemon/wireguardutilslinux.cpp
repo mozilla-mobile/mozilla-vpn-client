@@ -5,6 +5,7 @@
 #include "wireguardutilslinux.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/linux/linuxdependencies.h"
 
 #include <QScopeGuard>
 
@@ -34,6 +35,9 @@ extern "C" {
  */
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr uint32_t WG_ROUTE_TABLE = 0xca6c;
+
+constexpr const char* VPN_EXCLUDE_CGROUP = "/mozvpn.exclude";
+constexpr const char* VPN_BLOCK_CGROUP = "/mozvpn.block";
 
 static void nlmsg_append_attr(char* buf, size_t maxlen, int attrtype,
                               const void* attrdata, size_t attrlen);
@@ -72,6 +76,8 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   connect(m_notifier,
           SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
           SLOT(nlsockReady()));
+
+  m_cgroups = LinuxDependencies::findCgroupPath("net_cls");
 
   logger.log() << "WireguardUtilsLinux created.";
 }
@@ -153,6 +159,14 @@ bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
   GoString goIfname = {.p = device->name, .n = (ptrdiff_t)strlen(device->name)};
   if (NetfilterIfup(goIfname, device->fwmark) != 0) {
     return false;
+  }
+  uint32_t excludeClassId = getCgroupClass(VPN_EXCLUDE_CGROUP);
+  if (excludeClassId != 0) {
+    NetfilterMarkCgroup(excludeClassId, device->fwmark);
+  }
+  uint32_t blockClassId = getCgroupClass(VPN_BLOCK_CGROUP);
+  if (blockClassId != 0) {
+    NetfilterBlockCgroup(blockClassId);
   }
   if (config.m_ipv6Enabled) {
     GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
@@ -504,4 +518,24 @@ void WireguardUtilsLinux::nlsockReady() {
     }
     nlmsg = NLMSG_NEXT(nlmsg, len);
   }
+}
+
+unsigned long WireguardUtilsLinux::getCgroupClass(const QString& path) {
+  if (m_cgroups.isEmpty()) {
+    return 0;
+  }
+
+  QString netClassPath = m_cgroups + path + "/net_cls.classid";
+  FILE* fp = fopen(qPrintable(netClassPath), "r");
+  if (fp == NULL) {
+    return 0;
+  }
+
+  char buf[64];
+  if (fgets(buf, sizeof(buf), fp) == NULL) {
+    fclose(fp);
+    return 0;
+  }
+  fclose(fp);
+  return strtoul(buf, NULL, 0);
 }

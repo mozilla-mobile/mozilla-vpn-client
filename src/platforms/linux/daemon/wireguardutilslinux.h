@@ -33,10 +33,12 @@ class WireguardUtilsLinux final : public WireguardUtils {
                           const InterfaceConfig& conf);
   bool setRouteRules(int action, int flags, int addrfamily);
   bool setRoutePrefix(int action, int flags, const IPAddressRange& prefix);
+  unsigned long getCgroupClass(const QString& path);
 
   int m_nlsock = -1;
   int m_nlseq = 0;
   QSocketNotifier* m_notifier = nullptr;
+  QString m_cgroups;
 
  private slots:
   void nlsockReady();
