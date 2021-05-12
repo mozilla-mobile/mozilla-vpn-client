@@ -14,13 +14,9 @@ package main
 import "C"
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
 	"path/filepath"
-	"strings"
 
 	"C"
 
