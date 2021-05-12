@@ -104,7 +104,7 @@ class MozillaVPN final : public QObject {
   State state() const;
   AlertType alert() const { return m_alert; }
 
-  QString serverPublicKey() { return m_serverPublicKey; }
+  const QString& serverPublicKey() const { return m_serverPublicKey; }
 
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
@@ -173,6 +173,8 @@ class MozillaVPN final : public QObject {
 
   void changeServer(const QString& countryCode, const QString& city);
 
+  void silentSwitch();
+
   const QString versionString() const { return QString(APP_VERSION); }
 
   const QString buildNumber() const { return QString(BUILD_ID); }
@@ -206,7 +208,7 @@ class MozillaVPN final : public QObject {
 
   void heartbeatCompleted(bool success);
 
-  void setServerPublicKey(QString publicKey);
+  void setServerPublicKey(const QString& publicKey);
 
  private:
   void setState(State state);

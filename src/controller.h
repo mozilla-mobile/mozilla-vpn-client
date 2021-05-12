@@ -32,8 +32,6 @@ class Controller final : public QObject {
     StateOn,
     StateDisconnecting,
     StateSwitching,
-    StateSilentSwitching,
-    StateConfirmingSilentSwitch,
   };
   Q_ENUM(State)
 
@@ -66,7 +64,7 @@ class Controller final : public QObject {
 
   const QString& switchingCity() const { return m_switchingCity; }
 
-  void silentSwitchServers();
+  bool silentSwitchServers();
 
   void updateRequired();
 
@@ -109,6 +107,7 @@ class Controller final : public QObject {
   void readyToUpdate();
   void readyToBackendFailure();
   void connectionRetryChanged();
+  void silentSwitchDone();
 
  private:
   void setState(State state);

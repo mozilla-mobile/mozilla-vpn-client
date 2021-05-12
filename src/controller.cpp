@@ -39,13 +39,11 @@ namespace {
 Logger logger(LOG_CONTROLLER, "Controller");
 
 ControllerImpl::Reason stateToReason(Controller::State state) {
-  if (state == Controller::StateSwitching ||
-      state == Controller::StateSilentSwitching) {
+  if (state == Controller::StateSwitching) {
     return ControllerImpl::ReasonSwitching;
   }
 
-  if (state == Controller::StateConfirming ||
-      state == Controller::StateConfirmingSilentSwitch) {
+  if (state == Controller::StateConfirming) {
     return ControllerImpl::ReasonConfirming;
   }
 
@@ -196,12 +194,12 @@ void Controller::activateInternal() {
                    vpnDisabledApps, stateToReason(m_state));
 }
 
-void Controller::silentSwitchServers() {
+bool Controller::silentSwitchServers() {
   logger.log() << "Silently switch servers";
 
   if (m_state != StateOn) {
     logger.log() << "Cannot silent switch if not on";
-    return;
+    return false;
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -213,10 +211,8 @@ void Controller::silentSwitchServers() {
   if (servers.length() <= 1) {
     logger.log()
         << "Cannot siltent switch servers because there is only one available";
-    return;
+    return false;
   }
-
-  setState(StateSilentSwitching);
 
   QList<Server>::iterator iterator = servers.begin();
 
@@ -249,21 +245,19 @@ void Controller::silentSwitchServers() {
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
                    vpnDisabledApps, stateToReason(StateSwitching));
+  return true;
 }
 
 bool Controller::deactivate() {
   logger.log() << "Deactivation" << m_state;
 
   if (m_state != StateOn && m_state != StateSwitching &&
-      m_state != StateConfirming && m_state != StateSilentSwitching &&
-      m_state != StateConfirmingSilentSwitch) {
+      m_state != StateConfirming) {
     logger.log() << "Already disconnected";
     return false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming ||
-      m_state == StateSilentSwitching ||
-      m_state == StateConfirmingSilentSwitch) {
+  if (m_state == StateOn || m_state == StateConfirming) {
     setState(StateDisconnecting);
   }
 
@@ -278,10 +272,16 @@ bool Controller::deactivate() {
 void Controller::connected() {
   logger.log() << "Connected from state:" << m_state;
 
+  // We are currently silently switching servers
+  if (m_state == StateOn) {
+    m_connectionCheck.start();
+    return;
+  }
+
   // This is an unexpected connection. Let's use the Connecting state to animate
   // the UI.
   if (m_state != StateConnecting && m_state != StateSwitching &&
-      m_state != StateConfirming && m_state != StateSilentSwitching) {
+      m_state != StateConfirming) {
     setState(StateConnecting);
 
     resetConnectionTimer();
@@ -294,11 +294,7 @@ void Controller::connected() {
     return;
   }
 
-  if (m_state == StateSilentSwitching) {
-    setState(StateConfirmingSilentSwitch);
-  } else {
-    setState(StateConfirming);
-  }
+  setState(StateConfirming);
 
   // Now, let's wait for a ping sent and received from ConnectionHealth.
   m_connectionCheck.start();
@@ -307,7 +303,7 @@ void Controller::connected() {
 void Controller::connectionConfirmed() {
   logger.log() << "Connection confirmed";
 
-  if (m_state != StateConfirming && m_state != StateConfirmingSilentSwitch) {
+  if (m_state != StateConfirming && m_state != StateOn) {
     logger.log() << "Invalid confirmation received";
     return;
   }
@@ -315,7 +311,7 @@ void Controller::connectionConfirmed() {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
 
-  if (m_state != StateConfirmingSilentSwitch) {
+  if (m_state != StateOn) {
     setState(StateOn);
     emit timeChanged();
 
@@ -325,13 +321,19 @@ void Controller::connectionConfirmed() {
     }
 
     m_timer.start(TIMER_MSEC);
+  } else {
+    emit silentSwitchDone();
   }
 }
 
 void Controller::connectionFailed() {
   logger.log() << "Connection failed!";
 
-  if (m_state != StateConfirming && m_state != StateConfirmingSilentSwitch) {
+  if (m_state == StateOn) {
+    emit silentSwitchDone();
+  }
+
+  if (m_state != StateConfirming && m_state != StateOn) {
     logger.log() << "Invalid confirmation received";
     return;
   }
@@ -354,8 +356,7 @@ void Controller::disconnected() {
   logger.log() << "Disconnected from state:" << m_state;
 
   if (m_reconnectionStep == ExpectDisconnection) {
-    Q_ASSERT(m_state == StateConfirming ||
-             m_state == StateConfirmingSilentSwitch);
+    Q_ASSERT(m_state == StateConfirming || m_state == StateOn);
     Q_ASSERT(m_connectionRetry > 0);
 
     // We are retrying the connection. Let's ignore this disconnect signal and
@@ -527,11 +528,6 @@ bool Controller::processNextStep() {
 
 void Controller::setState(State state) {
   logger.log() << "Setting state:" << state;
-
-  if (state == StateSilentSwitching || state == StateConfirmingSilentSwitch) {
-    m_state = state;
-    return;
-  }
 
   if (m_state != state) {
     m_state = state;

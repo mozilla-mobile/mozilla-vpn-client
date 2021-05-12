@@ -311,7 +311,7 @@ void MozillaVPN::maybeStateMain() {
   }
 }
 
-void MozillaVPN::setServerPublicKey(QString publicKey) {
+void MozillaVPN::setServerPublicKey(const QString& publicKey) {
   logger.log() << "Set server public key:" << publicKey;
   m_serverPublicKey = publicKey;
 }
@@ -1065,6 +1065,13 @@ void MozillaVPN::deactivate() {
 
   deleteTasks();
   scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
+}
+
+void MozillaVPN::silentSwitch() {
+  logger.log() << "VPN tunnel silent server switch";
+
+  deleteTasks();
+  scheduleTask(new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
 
 void MozillaVPN::refreshDevices() {
