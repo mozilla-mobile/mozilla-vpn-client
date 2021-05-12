@@ -6,6 +6,7 @@
 #define APPPERMISSION_H
 
 #include <QObject>
+#include <QPair>
 #include <QSortFilterProxyModel>
 #include <QAbstractListModel>
 #include "applistprovider.h"
@@ -24,6 +25,27 @@ class AppPermission final : public QAbstractListModel {
     AppNameRole,
     AppIdRole,
     AppEnabledRole,
+  };
+
+  class AppDescription {
+   public:
+    AppDescription(const QString& appId, const QString& appName) {
+      name = appName;
+      id = appId;
+    };
+    QString name;
+    QString id;
+
+    bool operator<(const AppDescription& other) const {
+      return name.compare(other.name, Qt::CaseInsensitive) < 0;
+    }
+    bool operator>(const AppDescription& other) const {
+      return name.compare(other.name, Qt::CaseInsensitive) > 0;
+    }
+    bool operator==(const AppDescription& other) const {
+      return id == other.id;
+    }
+    bool operator==(const QString& appId) const { return id == appId; }
   };
 
   static AppPermission* instance();
@@ -52,7 +74,7 @@ class AppPermission final : public QAbstractListModel {
  private:
   AppPermission(QObject* parent);
   AppListProvider* m_listprovider = nullptr;
-  QMap<QString, QString> m_applist;
+  QList<AppDescription> m_applist;
 
   // Sublist of AppPermission, can either include all Enabled or Disabled apps
   class FilteredAppList : public QSortFilterProxyModel {
