@@ -32,47 +32,45 @@ def getTranslation(root, string, nodeName):
             return child.text
     return ''
 
-# Generate the translation folder for a particular locale. `nodeTag` can be
-# `source` (for english only) or `translation` (for anything else)
-def translate(root, locale, nodeTag):
+# Generate the translation folder for a particular locale.
+def translate(root, locale):
+  nodeTag = "source" if locale == "en" else "translation"
+
   folder = os.path.join('macos', 'pkg', 'Resources', locale + '.lproj')
   os.mkdir(folder)
 
   localizableFile = os.path.join(folder, 'Localizable.strings')
-  f = open(localizableFile, 'w')
-  for key in keys:
-      f.write(f"'{key.replace('macosinstaller.', '').replace('.', '_')}' = '{getTranslation(root, key, nodeTag)}';\n")
-  f.close()
+  with open(localizableFile, 'w') as f:
+      for key in keys:
+          entry = key.replace('macosinstaller.', '').replace('.', '_').replace('\'', '\\\'')
+          f.write(f"'{entry}' = '{getTranslation(root, key, nodeTag)}';\n")
 
   welcomeFile = os.path.join(folder, "welcome.html")
-  f = open(welcomeFile, 'w')
-  f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n</head>')
-  f.write('<body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, \'Helvetica\', sans-serif; font-size: 13px; ">\n')
-  f.write('<br />\n')
-  f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.welcome.message1", nodeTag)}</p>\n');
-  f.write('<br />\n')
-  f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.welcome.message2", nodeTag)}</p>\n');
-  f.write('</body>\n</html>')
-  f.close()
+  with open(welcomeFile, 'w') as f:
+      f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n</head>')
+      f.write('<body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, \'Helvetica\', sans-serif; font-size: 13px; ">\n')
+      f.write('<br />\n')
+      f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.welcome.message1", nodeTag)}</p>\n');
+      f.write('<br />\n')
+      f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.welcome.message2", nodeTag)}</p>\n');
+      f.write('</body>\n</html>')
 
   conclusionFile = os.path.join(folder, "conclusion.html")
-  f = open(conclusionFile, 'w')
-  f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n</head>')
-  f.write('<body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, \'Helvetica\', sans-serif; font-size: 13px;">\n')
-  f.write('<br />\n')
-  f.write(f'<h3 style="margin-left: 5px; margin-right: 5px;">{getTranslation(root, "macosinstaller.conclusion.title", nodeTag)}</h3>\n');
-  f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message1", nodeTag)}</p>\n')
-  f.write('<br />\n')
-  f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message2", nodeTag)}\n');
-  f.write(f'<a rel="noopener noreferrer" href="https://support.mozilla.org/products/firefox-private-network-vpn?utm_source=mozilla-vpn&utm_medium=mozilla-vpn-installer&utm_campaign=mac-installer" style="color: #0a84ff;">{getTranslation(root, "macosinstaller.conclusion.message3", nodeTag)}</a></p>\n')
-  f.write('</body>\n</html>')
-  f.close()
+  with open(conclusionFile, 'w') as f:
+      f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n</head>')
+      f.write('<body style="color: #1a1919; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, \'Helvetica\', sans-serif; font-size: 13px;">\n')
+      f.write('<br />\n')
+      f.write(f'<h3 style="margin-left: 5px; margin-right: 5px;">{getTranslation(root, "macosinstaller.conclusion.title", nodeTag)}</h3>\n');
+      f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message1", nodeTag)}</p>\n')
+      f.write('<br />\n')
+      f.write(f'<p style="margin: 5px;">{getTranslation(root, "macosinstaller.conclusion.message2", nodeTag)}\n');
+      f.write(f'<a rel="noopener noreferrer" href="https://support.mozilla.org/products/firefox-private-network-vpn?utm_source=mozilla-vpn&utm_medium=mozilla-vpn-installer&utm_campaign=mac-installer" style="color: #0a84ff;">{getTranslation(root, "macosinstaller.conclusion.message3", nodeTag)}</a></p>\n')
+      f.write('</body>\n</html>')
 
 # Let's check if the `macos/pkg/Resources` folder exists.
 resourceFolder = os.path.join('macos', 'pkg', 'Resources')
 if not os.path.isdir(resourceFolder):
-    print(f"Folder '{resourceFolder}' should exist!")
-    exit(1)
+    exit(f"Folder '{resourceFolder}' should exist!")
 
 # Let's return an error if there are existing `lproj` folders.
 for locale in os.listdir(resourceFolder):
@@ -83,13 +81,11 @@ for locale in os.listdir(resourceFolder):
     if not locale.endswith('.lproj'):
         continue
 
-    print(f"Unexpected folder '{localeFile}'.")
-    exit(1)
+    exit(f"Unexpected folder '{localeFile}'.")
 
 # Checking the `translations` folder.
 if not os.path.isdir('translations'):
-    print("Folder 'translations' should exist!")
-    exit(1)
+    exit("Folder 'translations' should exist!")
 
 # For each translation, lets see if it's completed. If yes, let's create the
 # corresponding `Resources` folder.
@@ -101,7 +97,16 @@ for translation in os.listdir('translations'):
     if not translation.startswith('mozillavpn_'):
         continue
 
-    tree = ET.parse(translationFile)
+    locale = translation.split(".")[0]
+    locale = locale.split("mozillavpn_")[1]
+    if locale == 'en':
+       continue
+
+    try:
+        tree = ET.parse(translationFile)
+    except:
+        exit(f"{translationFile} doesn't seem to be a valid XML file");
+
     root = tree.getroot()
 
     fullTranslated = True
@@ -112,16 +117,17 @@ for translation in os.listdir('translations'):
     if not fullTranslated:
         continue
 
-    locale = translation.split(".")[0]
-    locale = locale.split("mozillavpn_")[1]
-    translate(root, locale, 'translation')
+    translate(root, locale)
 
-# Finally, the english translation.
+# Finally, the English translation.
 translationFile = os.path.join('translations', 'mozillavpn_en.ts')
 if not os.path.isfile(translationFile):
-    print(f"Translation '{translationFile}' is missing! Have you imported the languages?")
-    exit(1)
+    exit(f"Translation '{translationFile}' is missing! Have you imported the languages?")
 
-tree = ET.parse(translationFile)
+try:
+    tree = ET.parse(translationFile)
+except:
+    exit(f"{translationFile} doesn't seem to be a valid XML file");
+
 root = tree.getroot()
-translate(root, 'en', 'source')
+translate(root, 'en')
