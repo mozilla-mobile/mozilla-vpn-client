@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "connectionhealth.h"
+#include "gleansample.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
@@ -65,6 +66,14 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   }
 
   logger.log() << "Stability changed:" << stability;
+
+  if (stability == Unstable) {
+    emit MozillaVPN::instance()->triggerGleanSample(
+        GleanSample::connectionHealthUnstable);
+  } else if (stability == NoSignal) {
+    emit MozillaVPN::instance()->triggerGleanSample(
+        GleanSample::connectionHealthNoSignal);
+  }
 
   m_stability = stability;
   emit stabilityChanged();
