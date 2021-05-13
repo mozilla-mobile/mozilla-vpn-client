@@ -42,12 +42,15 @@ HEADERS += \
     ../../src/loghandler.h \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
+    ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/server.h \
     ../../src/models/servercity.h \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/survey.h \
+    ../../src/models/surveymodel.h \
     ../../src/models/user.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
@@ -67,6 +70,7 @@ HEADERS += \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/systemtrayhandler.h \
     ../../src/task.h \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -74,6 +78,7 @@ HEADERS += \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/urlopener.h \
     helper.h \
     testandroidmigration.h \
     testcommandlineparser.h \
@@ -109,12 +114,15 @@ SOURCES += \
     ../../src/loghandler.cpp \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
+    ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/server.cpp \
     ../../src/models/servercity.cpp \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/survey.cpp \
+    ../../src/models/surveymodel.cpp \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
@@ -130,12 +138,14 @@ SOURCES += \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
+    ../../src/systemtrayhandler.cpp \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/urlopener.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \

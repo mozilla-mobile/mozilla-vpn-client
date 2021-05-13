@@ -44,7 +44,7 @@ def run_glean_parser(yaml):
                      "--option", "namespace=RealGlean"])
     return True
   except:
-    print("glean_parser failed. Is it installed? Try with:\n\tnpm -g install glean_parser");
+    print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
     return False
 
 print("Generating the ping JS module...")
