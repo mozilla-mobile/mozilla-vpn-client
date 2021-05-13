@@ -107,7 +107,7 @@ WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
   uint64_t txBytes = 0;
   uint64_t rxBytes = 0;
   wg_device* device = nullptr;
-  wg_peer* peer;
+  wg_peer* peer = nullptr;
   peerBytes pb = {0, 0};
   if (wg_get_device(&device, WG_INTERFACE) != 0) {
     qWarning("Unable to get interface `%s`.", WG_INTERFACE);
@@ -175,6 +175,7 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
   hints.ai_protocol = IPPROTO_UDP;
 
   struct addrinfo* resolved = nullptr;
+  auto guard = qScopeGuard([&] { freeaddrinfo(resolved); });
   int retries = 15;
 
   for (unsigned int timeout = 1000000;;
@@ -216,17 +217,17 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
       (resolved->ai_family == AF_INET6 &&
        resolved->ai_addrlen == sizeof(struct sockaddr_in6))) {
     memcpy(peerEndpoint, resolved->ai_addr, resolved->ai_addrlen);
-    freeaddrinfo(resolved);
     return true;
   }
 
   logger.log() << "Invalid endpoint" << address;
-  freeaddrinfo(resolved);
   return false;
 }
 
 bool WireguardUtilsLinux::setAllowedIpsOnPeer(
     wg_peer* peer, QList<IPAddressRange> allowedIPAddressRanges) {
+  Q_ASSERT(peer);
+
   for (const IPAddressRange& ip : allowedIPAddressRanges) {
     wg_allowedip* allowedip =
         static_cast<wg_allowedip*>(calloc(1, sizeof(*allowedip)));
