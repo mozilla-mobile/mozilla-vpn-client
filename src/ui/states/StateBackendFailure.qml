@@ -24,6 +24,9 @@ VPNStackView {
             //% "Unable to establish a connection at this time. We’re working hard to resolve the issue. Please try again shortly."
             errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
 
+            //% "Check for outage updates on our <a href='https://vpn.status.mozilla.org'>status page</a>."
+            errorMessage2: qsTrId("vpn.errors.seeStatusPage"),
+
             //% "Try Again"
             buttonText: qsTrId("vpn.errors.tryAgain"),
 
