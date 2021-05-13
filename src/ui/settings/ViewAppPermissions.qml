@@ -9,6 +9,8 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
+
 
 Item {
     id: root
@@ -28,8 +30,12 @@ Item {
         height: root.height - menu.height
         width: root.width
         Component.onCompleted: {
-           VPNAppPermissions.requestApplist();
-        }
+            VPNAppPermissions.requestApplist();
+            Glean.sample.appPermissionsViewOpened.record();
+            if (!vpnIsOff) {
+                Glean.sample.appPermissionsViewWarning.record();
+            }
+         }
 
         VPNCheckBoxAlert {
             id: vpnOnAlert

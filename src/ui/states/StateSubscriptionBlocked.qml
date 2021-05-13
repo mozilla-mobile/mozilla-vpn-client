@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 VPNStackView {
     id: stackview
@@ -15,9 +16,8 @@ VPNStackView {
         VPN.openLink(VPN.LinkSubscriptionsBlocked)
     }
 
-    Component.onCompleted:stackview.push(
-        "../views/ViewErrorFullScreen.qml",
-        {
+    Component.onCompleted: {
+        stackview.push("../views/ViewErrorFullScreen.qml", {
             //% "Error confirming subscription…"
             headlineText: qsTrId("vpn.subscriptionBlocked.title"),
 
@@ -33,6 +33,8 @@ VPNStackView {
             buttonOnClick: stackview.handleButtonClick,
             signOffLinkVisible: true,
             getHelpLinkVisible: false
-        }
-    )
+            }
+        );
+        Glean.sample.subscriptionBlockedViewed.record();
+    }
 }
