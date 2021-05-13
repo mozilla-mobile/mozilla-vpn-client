@@ -108,6 +108,10 @@ void ConnectionHealth::noSignalDetected() {
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
+#if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  // Do not suspend PingsendHelper on Desktop.
+  return;
+#else
   switch (state) {
     case Qt::ApplicationState::ApplicationActive:
       if (m_suspended) {
@@ -127,4 +131,5 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
       stop();
       break;
   }
+#endif 
 }
