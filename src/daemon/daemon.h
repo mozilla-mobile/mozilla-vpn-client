@@ -5,8 +5,8 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-#include "iputils.h"
 #include "interfaceconfig.h"
+#include "iputils.h"
 #include "wireguardutils.h"
 
 #include <QDateTime>

@@ -17,13 +17,15 @@ class IPUtilsLinux final : public IPUtils {
   bool setMTUAndUp() override;
 
  private:
+  bool addIP4AddressToDevice(const InterfaceConfig& config);
+  bool addIP6AddressToDevice(const InterfaceConfig& config);
+
+ private:
   struct in6_ifreq {
     struct in6_addr addr;
     uint32_t prefixlen;
     unsigned int ifindex;
   };
-  bool addIP4AddressToDevice(const InterfaceConfig& config);
-  bool addIP6AddressToDevice(const InterfaceConfig& config);
 };
 
 #endif  // IPUTILSLINUX_H

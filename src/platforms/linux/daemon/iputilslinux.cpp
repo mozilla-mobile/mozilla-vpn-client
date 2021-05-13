@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iputilslinux.h"
-#include "leakdetector.h"
+
 #include "daemon/wireguardutils.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 #include <arpa/inet.h>
@@ -132,7 +133,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
   ifr.ifr_addr.sa_family = AF_INET6;
   int ret = ioctl(sockfd, SIOGIFINDEX, &ifr);
   if (ret) {
-    logger.log() << "Failed to get ifrindex. Return code: " << ret;
+    logger.log() << "Failed to get ifindex. Return code: " << ret;
     return false;
   }
   ifr6.ifindex = ifr.ifr_ifindex;
