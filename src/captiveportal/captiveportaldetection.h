@@ -41,6 +41,7 @@ class CaptivePortalDetection final : public QObject {
 
  private:
   bool m_active = false;
+  bool m_shouldRun = true;
 
   // Don't use it directly. Use captivePortalMonitor().
   CaptivePortalMonitor* m_captivePortalMonitor = nullptr;

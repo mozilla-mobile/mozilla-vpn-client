@@ -13,7 +13,6 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 }
@@ -45,6 +44,14 @@ void CaptivePortalDetection::stateChanged() {
       vpn->controller()->state() != Controller::StateConfirming) {
     logger.log() << "No captive portal detection required";
     m_impl.reset();
+    // Since we now reached a stable state, on the next time we have an
+    // instablity check for portal again.
+    m_shouldRun = true;
+    return;
+  }
+  if (!m_shouldRun) {
+    logger.log() << "Captive Portal detection was already done for this "
+                    "instability, skipping.";
     return;
   }
 
@@ -103,6 +110,7 @@ void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
   logger.log() << "Detection completed:" << detected;
 
   m_impl.reset();
+  m_shouldRun = false;
   switch (detected) {
     case CaptivePortalResult::NoPortal:
     case CaptivePortalResult::Failure:
