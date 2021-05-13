@@ -95,7 +95,7 @@ VPNFlickable {
                 Layout.rightMargin: Theme.windowMargin * 3
                 Layout.maximumWidth: Theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
-                //% "Learn more about what data Mozilla collects and how it's used."
+                //% "Learn more about what data Mozilla collects and how it’s used."
                 text: qsTrId("vpn.telemetryPolicy.learnMoreAboutData")
             }
 
