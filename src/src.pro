@@ -385,7 +385,7 @@ else:linux:!android {
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
-    GO_MODULES = platforms/linux/netfilter/netfilter.go
+    GO_MODULES = ../linux/netfilter/netfilter.go
     
     target.path = $${USRPATH}/bin
     INSTALLS += target
