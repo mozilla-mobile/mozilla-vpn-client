@@ -21,8 +21,6 @@ class DBusService final : public Daemon {
 
   void setAdaptor(DbusAdaptor* adaptor);
 
-  bool checkInterface();
-
   using Daemon::activate;
 
  public slots:
@@ -44,6 +42,9 @@ class DBusService final : public Daemon {
   WireguardUtils* wgutils() override;
 
   QByteArray getStatus() override;
+
+ private:
+  bool removeInterfaceIfExists();
 
  private:
   DbusAdaptor* m_adaptor = nullptr;
