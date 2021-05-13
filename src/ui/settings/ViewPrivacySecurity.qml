@@ -30,9 +30,9 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        //% "Data Collection and Use"
+        //% "Data collection and use"
         labelText: qsTrId("vpn.settings.dataCollection")
-        //% "Allow Mozilla VPN to send technical data to Mozilla."
+        //% "Allow Mozilla VPN to send technical data to Mozilla"
         subLabelText: qsTrId("vpn.settings.dataCollection.description")
         isChecked: VPNSettings.gleanEnabled
         onClicked: {

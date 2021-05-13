@@ -177,7 +177,7 @@ VPNFlickable {
 
             //% "Privacy & Security"
             settingTitle: qsTrId("vpn.main.privacySecurity")
-            imageLeftSrc: "../resources/settings/privacySecurity.svg"
+            imageLeftSrc: "../resources/settings/lock.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml")
         }
