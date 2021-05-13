@@ -128,7 +128,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/notifications.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-	    visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
+            visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
         }
         VPNSettingsItem {
             objectName: "settingsLanguages"
@@ -170,7 +170,10 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.main.getHelp")
             imageLeftSrc: "../resources/settings/getHelp.svg"
             imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push(getHelpComponent)
+            onClicked: {
+                Glean.sample.GetHelpClickedViewSettings.record();
+                settingsStackView.push(getHelpComponent);
+            }
         }
         VPNSettingsItem {
             objectName: "settingsPrivacySecurity"

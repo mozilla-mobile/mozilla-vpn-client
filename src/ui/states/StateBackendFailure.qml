@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import "../components"
+import "/glean/load.js" as Glean
 
 
 VPNStackView {
@@ -14,24 +15,24 @@ VPNStackView {
     function handleButtonClick() {
         VPN.triggerHeartbeat();
     }
+    Component.onCompleted: {
+        stackview.push(
+            "../views/ViewErrorFullScreen.qml", {
+                //% "Something went wrong…"
+                headlineText: qsTrId("vpn.errors.somethingWentWrong"),
 
-    Component.onCompleted:stackview.push(
-        "../views/ViewErrorFullScreen.qml",
-        {
-            //% "Something went wrong…"
-            headlineText: qsTrId("vpn.errors.somethingWentWrong"),
+                //% "Unable to establish a connection at this time. We’re working hard to resolve the issue. Please try again shortly."
+                errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
 
-            //% "Unable to establish a connection at this time. We’re working hard to resolve the issue. Please try again shortly."
-            errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
+                //% "Try Again"
+                buttonText: qsTrId("vpn.errors.tryAgain"),
 
-            //% "Try Again"
-            buttonText: qsTrId("vpn.errors.tryAgain"),
-
-            buttonObjectName: "heartbeatTryButton",
-            buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: false,
-            getHelpLinkVisible: true,
-            statusLinkVisible: true
-        }
-    )
+                buttonObjectName: "heartbeatTryButton",
+                buttonOnClick: stackview.handleButtonClick,
+                signOffLinkVisible: false,
+                getHelpLinkVisible: true
+            }
+        );
+        Glean.sample.backendFailureViewed.record();
+    }
 }

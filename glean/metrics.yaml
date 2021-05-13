@@ -14,13 +14,31 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
-  authentication_started:
+  app_permissions_view_opened:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has started the authentication flow.
+      The user has opened the app permissions view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  app_permissions_view_warning:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the app permissions view but is unable
+      to make changes because the VPN is on.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
@@ -99,13 +117,13 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  settings_view_opened:
+  authentication_started:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has opened the settings
+      The user has started the authentication flow.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
@@ -116,13 +134,47 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  manage_account_clicked:
+  backend_failure_viewed:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has clicked the `manage account` button
+      The user has been shown the "Something went wrong…" error view.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_health_no_signal:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection has no signal
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_health_unstable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection is unstable
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
     data_reviews:
@@ -145,7 +197,58 @@ sample:
     data_reviews:
       - TBD
     data_sensitivity:
-      - technical
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  get_help_clicked_initialize:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked "Get help" from the initial view.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  get_help_clicked_view_settings:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked "Get help" from the settings view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  manage_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the `manage account` button
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
@@ -163,6 +266,128 @@ sample:
       - TBD
     data_sensitivity:
       - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  network_settings_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the network settings view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  network_settings_view_warning:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened network settings but is unable
+      to make changes because the VPN is on.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  notifications_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the notifications view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  notifications_view_warning:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened notification settings and is unable
+      to make changes because the VPN is on.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  onboarding_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the onboarding flow
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  settings_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the settings
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  subscription_blocked_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed an error message after attempting to subscribe
+      with an Apple ID that already has a subscription.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
     notification_emails:
       - amarchesini@mozilla.com
     expires: never
