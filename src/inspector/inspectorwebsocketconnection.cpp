@@ -182,6 +182,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
         []() { return MozillaVPN::instance()->currentServer()->cityName(); }},
+
+    // glean-enabled
+    WebSocketSettingCommand{
+        "glean-enabled", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setGleanEnabled(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
+        }},
+
 };
 
 struct WebSocketCommand {
