@@ -41,7 +41,7 @@ Item {
     Component.onCompleted:  {
         if (!isLayout) {
             height = alertHeight;
-            width = parent.width - Theme.windowMargin;
+            width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
             y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
@@ -118,7 +118,6 @@ Item {
         anchors.fill: closeButton
         setMargins: -3
         radius: Theme.cornerRadius
-
     }
 
     VPNButtonBase {
@@ -127,10 +126,10 @@ Item {
 
         id: closeButton
 
-        height: parent.height
+        height: alertBox.height
         width: Theme.rowHeight
         clip: true
-        anchors.right: parent.right
+        anchors.right: alertBox.right
         anchors.rightMargin: 0
         radius: Theme.cornerRadius
         Accessible.name: "Close"
