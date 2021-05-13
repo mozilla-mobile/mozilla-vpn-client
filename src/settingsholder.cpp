@@ -27,6 +27,7 @@ constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
 constexpr const char* SETTINGS_PREVIOUSLANGUAGECODE = "previousLanguageCode";
 constexpr const char* SETTINGS_SYSTEMLANGUAGECODEMIGRATED =
     "systemLanguageCodeMigrated";
+constexpr const char* SETTINGS_INSTALLATIONTIME = "installationTime";
 constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
@@ -42,6 +43,8 @@ constexpr const char* SETTINGS_CURRENTSERVER_COUNTRYCODE =
 constexpr const char* SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char* SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char* SETTINGS_DEVICES = "devices";
+constexpr const char* SETTINGS_SURVEYS = "surveys";
+constexpr const char* SETTINGS_CONSUMEDSURVEYS = "consumedSurveys";
 constexpr const char* SETTINGS_IAPPRODUCTS = "iapProducts";
 constexpr const char* SETTINGS_CAPTIVEPORTALIPV4ADDRESSES =
     "captivePortal/ipv4Addresses";
@@ -108,6 +111,10 @@ SettingsHolder::SettingsHolder()
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  if (!hasInstallationTime()) {
+    setInstallationTime(QDateTime::currentDateTime());
+  }
 }
 
 SettingsHolder::~SettingsHolder() {
@@ -136,6 +143,7 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
   m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
   m_settings.remove(SETTINGS_DEVICES);
+  m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
 
@@ -247,6 +255,10 @@ GETSET(QString, toString, SETTINGS_CURRENTSERVER_CITY, hasCurrentServerCity,
        currentServerCity, setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices,
        setDevices)
+GETSET(QByteArray, toByteArray, SETTINGS_SURVEYS, hasSurveys, surveys,
+       setSurveys)
+GETSET(QStringList, toStringList, SETTINGS_CONSUMEDSURVEYS, hasConsumedSurveys,
+       consumedSurveys, setConsumedSurveys)
 GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts,
        iapProducts, setIapProducts)
 GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV4ADDRESSES,
@@ -265,6 +277,8 @@ GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
 GETSET(bool, toBool, SETTINGS_SYSTEMLANGUAGECODEMIGRATED,
        hasSystemLanguageCodeMigrated, systemLanguageCodeMigrated,
        setSystemLanguageCodeMigrated);
+GETSET(QDateTime, toDateTime, SETTINGS_INSTALLATIONTIME, hasInstallationTime,
+       installationTime, setInstallationTime);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
@@ -327,4 +341,13 @@ void SettingsHolder::addVpnDisabledApp(const QString& appID) {
   }
   applist.append(appID);
   setVpnDisabledApps(applist);
+}
+
+void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
+  QStringList list;
+  if (hasConsumedSurveys()) {
+    list = consumedSurveys();
+  }
+  list.append(surveyId);
+  setConsumedSurveys(list);
 }

@@ -47,10 +47,12 @@ class DBusService final : public Daemon {
   QByteArray getStatus() override;
 
  private:
+  bool removeInterfaceIfExists();
+
+ private:
   DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;
-  bool removeInterfaceIfExists();
 };
 
 #endif  // DBUSSERVICE_H

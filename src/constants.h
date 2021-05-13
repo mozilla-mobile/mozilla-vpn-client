@@ -51,6 +51,10 @@ CONSTEXPR(uint32_t, STATUSICON_ANIMATION_MSEC, 200, 200, 0)
 // How often glean pings are sent
 CONSTEXPR(uint32_t, GLEAN_TIMEOUT_MSEC, 3600000, 1000, 0)
 
+// How often we check the surveys to be executed (no network requests are done
+// for this check)
+CONSTEXPR(uint32_t, SURVEY_TIMER_MSEC, 300000, 4000, 0)
+
 #undef CONSTEXPR
 
 #ifdef MVPN_PRODUCTION_MODE

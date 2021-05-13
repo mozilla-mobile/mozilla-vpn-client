@@ -81,8 +81,8 @@ Window {
                       });
                   }
           },
-          // TODO: this should be removed
-          debug: {logPings: true}
+
+          debug: {logPings: !VPN.productionMode }
         });
     }
     Rectangle {
@@ -281,9 +281,5 @@ Window {
     }
 
     VPNSystemAlert {
-        id: alertBox
-
-        z: 2
     }
-
 }
