@@ -20,7 +20,6 @@ Logger logger(LOG_LINUX, "DBusService");
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
-  bool cleanStart = removeInterfaceIfExists();
   if (!removeInterfaceIfExists()) {
     qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
            WG_INTERFACE);
@@ -34,6 +33,13 @@ WireguardUtils* DBusService::wgutils() {
     m_wgutils = new WireguardUtilsLinux(this);
   }
   return m_wgutils;
+}
+
+IPUtils* DBusService::iputils() {
+  if (!m_iputils) {
+    m_iputils = new IPUtilsLinux(this);
+  }
+  return m_iputils;
 }
 
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
