@@ -20,7 +20,6 @@ Logger logger(LOG_LINUX, "DBusService");
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
-  bool cleanStart = removeInterfaceIfExists();
   if (!removeInterfaceIfExists()) {
     qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
            WG_INTERFACE);
