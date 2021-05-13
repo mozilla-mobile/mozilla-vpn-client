@@ -50,6 +50,7 @@
         <file>ui/settings/ViewNetworkSettings.qml</file>
         <file>ui/settings/ViewAppPermissions.qml</file>
         <file>ui/settings/ViewNotifications.qml</file>
+        <file>ui/settings/ViewPrivacySecurity.qml</file>
         <file>ui/settings/ViewSettingsMenu.qml</file>
         <file>ui/states/StateSubscriptionNeeded.qml</file>
         <file>ui/states/StateSubscriptionValidation.qml</file>
@@ -410,5 +411,6 @@
         <file>ui/components/VPNSettingsToggle.qml</file>
         <file>ui/components/VPNDeviceListItem.qml</file>
         <file>ui/components/VPNAlerts.qml</file>
+        <file>ui/resources/settings/lock.svg</file>
     </qresource>
 </RCC>
