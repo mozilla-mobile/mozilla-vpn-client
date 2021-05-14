@@ -42,6 +42,13 @@ IPUtils* DBusService::iputils() {
   return m_iputils;
 }
 
+DnsUtils* DBusService::dnsutils() {
+  if (!m_dnsutils) {
+    m_dnsutils = new DnsUtilsLinux(this);
+  }
+  return m_dnsutils;
+}
+
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);
   m_adaptor = adaptor;

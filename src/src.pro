@@ -357,6 +357,7 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/dnsutilslinux.cpp \
             platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
@@ -367,9 +368,12 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/interfaceconfig.h \
             daemon/daemon.h \
+            daemon/dnsutils.h \
             daemon/iputils.h \
             daemon/wireguardutils.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/dbustypeslinux.h \
+            platforms/linux/daemon/dnsutilslinux.h \
             platforms/linux/daemon/iputilslinux.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wireguardutilslinux.h \
@@ -610,6 +614,7 @@ else:macos {
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/dnsutils.h \
                    daemon/iputils.h \
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
@@ -737,6 +742,7 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/dnsutils.h \
         daemon/iputils.h \
         daemon/wireguardutils.h \
         eventlistener.h \

@@ -98,6 +98,16 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
+  if (supportDnsUtils()) {
+    QList<QHostAddress> resolvers;
+    resolvers.append(QHostAddress(config.m_serverIpv4Gateway));
+    if (config.m_ipv6Enabled) {
+      resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
+    }
+    if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
+      return false;
+    }
+  }
   if (supportIPUtils()) {
     if (!iputils()->addInterfaceIPs(config)) {
       return false;
@@ -254,6 +264,12 @@ bool Daemon::deactivate(bool emitSignals) {
   if (!m_connected) {
     logger.log() << "Already disconnected";
     return true;
+  }
+
+  if (supportDnsUtils()) {
+    if (!dnsutils()->restoreResolvers()) {
+      return false;
+    }
   }
 
   if (supportWGUtils() && !wgutils()->interfaceExists()) {

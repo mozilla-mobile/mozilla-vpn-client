@@ -70,12 +70,13 @@ set_dns() {
 	# Iterate through values of DNS array and pipe "nameserver" string to 
 	# resolvconf command which adds nameserver rows for each dns entry to /etc/resolv.conf
 	# (maybe amongst other things)
-	printf 'nameserver %s\n' "${DNS[@]}" | /bin/bash resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
+	#printf 'nameserver %s\n' "${DNS[@]}" | /bin/bash resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
 	HAVE_SET_DNS=1
 }
 
 unset_dns() {
-	/bin/bash resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
+	#/bin/bash resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
+	echo "Nothing to see here"
 }
 
 cmd_up() {

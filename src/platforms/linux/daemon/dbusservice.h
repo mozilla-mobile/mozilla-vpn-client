@@ -7,6 +7,7 @@
 
 #include "daemon/daemon.h"
 #include "iputilslinux.h"
+#include "dnsutilslinux.h"
 #include "wireguardutilslinux.h"
 
 class DbusAdaptor;
@@ -43,6 +44,8 @@ class DBusService final : public Daemon {
   WireguardUtils* wgutils() override;
   bool supportIPUtils() const override { return true; }
   IPUtils* iputils() override;
+  bool supportDnsUtils() const override { return true; }
+  DnsUtils* dnsutils() override;
 
   QByteArray getStatus() override;
 
@@ -53,6 +56,7 @@ class DBusService final : public Daemon {
   DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;
+  DnsUtilsLinux* m_dnsutils = nullptr;
 };
 
 #endif  // DBUSSERVICE_H
