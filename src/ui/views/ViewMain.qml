@@ -13,7 +13,7 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
 
-    flickContentHeight: col.height + Theme.windowMargin
+    flickContentHeight: Math.max(col.height + Theme.windowMargin, window.safeContentHeight - 1)
     states: [
         State {
             when: window.fullscreenRequired()
