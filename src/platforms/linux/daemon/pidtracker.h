@@ -16,15 +16,19 @@ struct cn_msg;
 
 class ProcessGroup {
  public:
-  ProcessGroup(const QString& groupName, int groupRootPid) {
+  ProcessGroup(const QString& groupName, int groupRootPid,
+               const QString& groupState = "active") {
     MVPN_COUNT_CTOR(ProcessGroup);
     name = groupName;
     rootpid = groupRootPid;
+    state = groupState;
     refcount = 0;
   }
   ~ProcessGroup() { MVPN_COUNT_DTOR(ProcessGroup); }
+
   QHash<int, uint> kthreads;
   QString name;
+  QString state;
   int rootpid;
   int refcount;
 };
@@ -42,7 +46,7 @@ class PidTracker final : public QObject {
   QList<int> pids() { return m_processTree.keys(); }
   QList<ProcessGroup*>::iterator begin() { return m_processGroups.begin(); }
   QList<ProcessGroup*>::iterator end() { return m_processGroups.end(); }
-  const ProcessGroup* group(int pid) { return m_processTree.value(pid); }
+  ProcessGroup* group(int pid) { return m_processTree.value(pid); }
 
  signals:
   void pidForked(const QString& name, int parent, int child);

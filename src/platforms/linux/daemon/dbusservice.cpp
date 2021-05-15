@@ -156,3 +156,70 @@ void DBusService::appLaunched(const QString& name, int rootpid) {
 void DBusService::appTerminated(const QString& name, int rootpid) {
   logger.log() << "terminate:" << name << "PID:" << rootpid;
 }
+
+/* Get the list of running applications that the firewall knows about. */
+QString DBusService::runningApps() {
+  QJsonArray result;
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    const ProcessGroup* group = *i;
+    QJsonObject appObject;
+    QJsonArray pidList;
+    appObject.insert("name", QJsonValue(group->name));
+    appObject.insert("rootpid", QJsonValue(group->rootpid));
+    appObject.insert("state", QJsonValue(group->state));
+
+    for (auto pid : group->kthreads.keys()) {
+      pidList.append(QJsonValue(pid));
+    }
+
+    appObject.insert("pids", pidList);
+    result.append(appObject);
+  }
+
+  return QJsonDocument(result).toJson(QJsonDocument::Compact);
+}
+
+/* Update the firewall for running applications matching the application ID. */
+bool DBusService::firewallApp(const QStringList& names, const QString& state) {
+  for (auto appName : names) {
+    logger.log() << "Setting" << appName << "to firewall state" << state;
+    m_firewallApps[appName] = state;
+
+    /* Change matching applications' state to excluded */
+    for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+      ProcessGroup* group = *i;
+      if (group->name != appName) {
+        continue;
+      }
+      group->state = state;
+    }
+  }
+  return true;
+}
+
+/* Update the firewall for the application matching the desired PID. */
+bool DBusService::firewallPid(int rootpid, const QString& state) {
+  ProcessGroup* group = m_pidtracker->group(rootpid);
+  if (!group) {
+    return false;
+  }
+  logger.log() << "Setting" << group->name << "PID:" << rootpid
+               << "to firewall state" << state;
+  group->state;
+  return true;
+}
+
+/* Clear the firewall and return all applications to the active state */
+bool DBusService::firewallClear() {
+  m_firewallApps.clear();
+
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    ProcessGroup* group = *i;
+    group->state = "active";
+
+    logger.log() << "Setting" << group->name << "PID:" << group->rootpid
+                 << "to firewall state" << group->state;
+  }
+
+  return true;
+}

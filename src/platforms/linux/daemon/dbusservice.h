@@ -36,6 +36,11 @@ class DBusService final : public Daemon {
   QString version();
   QString getLogs();
 
+  QString runningApps();
+  bool firewallApp(const QStringList& names, const QString& state);
+  bool firewallPid(int rootpid, const QString& state);
+  bool firewallClear();
+
  protected:
   bool supportServerSwitching(const InterfaceConfig& config) const override;
   bool switchServer(const InterfaceConfig& config) override;
@@ -60,6 +65,7 @@ class DBusService final : public Daemon {
 
   AppTracker* m_apptracker = nullptr;
   PidTracker* m_pidtracker = nullptr;
+  QMap<QString, QString> m_firewallApps;
 
  private slots:
   void appLaunched(const QString& name, int rootpid);
