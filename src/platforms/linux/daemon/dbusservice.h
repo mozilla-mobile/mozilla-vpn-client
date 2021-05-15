@@ -8,6 +8,7 @@
 #include "daemon/daemon.h"
 #include "iputilslinux.h"
 #include "dnsutilslinux.h"
+#include "pidtracker.h"
 #include "wireguardutilslinux.h"
 
 class DbusAdaptor;
@@ -55,6 +56,8 @@ class DBusService final : public Daemon {
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
+
+  PidTracker* m_pidtracker = nullptr;
 };
 
 #endif  // DBUSSERVICE_H

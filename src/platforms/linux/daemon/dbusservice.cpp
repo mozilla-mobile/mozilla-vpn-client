@@ -23,6 +23,8 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
     qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
            WG_INTERFACE);
   }
+
+  m_pidtracker = new PidTracker(this);
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }

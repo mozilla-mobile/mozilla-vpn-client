@@ -370,6 +370,7 @@ else:linux:!android {
             platforms/linux/daemon/dnsutilslinux.cpp \
             platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
+            platforms/linux/daemon/pidtracker.cpp \
             platforms/linux/daemon/polkithelper.cpp \
             platforms/linux/daemon/wireguardutilslinux.cpp
 
@@ -384,6 +385,7 @@ else:linux:!android {
             platforms/linux/daemon/dbustypeslinux.h \
             platforms/linux/daemon/dnsutilslinux.h \
             platforms/linux/daemon/iputilslinux.h \
+            platforms/linux/daemon/pidtracker.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wireguardutilslinux.h
 
