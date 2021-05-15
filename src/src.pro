@@ -366,6 +366,7 @@ else:linux:!android {
     SOURCES += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
+            platforms/linux/daemon/apptracker.cpp \
             platforms/linux/daemon/dbusservice.cpp \
             platforms/linux/daemon/dnsutilslinux.cpp \
             platforms/linux/daemon/iputilslinux.cpp \
@@ -381,6 +382,7 @@ else:linux:!android {
             daemon/dnsutils.h \
             daemon/iputils.h \
             daemon/wireguardutils.h \
+            platforms/linux/daemon/apptracker.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/dbustypeslinux.h \
             platforms/linux/daemon/dnsutilslinux.h \

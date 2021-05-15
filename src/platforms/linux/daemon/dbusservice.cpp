@@ -24,7 +24,13 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
            WG_INTERFACE);
   }
 
+  m_apptracker = new AppTracker(this);
   m_pidtracker = new PidTracker(this);
+
+  connect(m_apptracker, SIGNAL(appLaunched(const QString&, int)), this,
+          SLOT(appLaunched(const QString&, int)));
+  connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
+          SLOT(appTerminated(const QString&, int)));
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
@@ -140,4 +146,13 @@ bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
          m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
          m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
          m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+}
+
+void DBusService::appLaunched(const QString& name, int rootpid) {
+  logger.log() << "tracking:" << name << "PID:" << rootpid;
+  m_pidtracker->track(name, rootpid);
+}
+
+void DBusService::appTerminated(const QString& name, int rootpid) {
+  logger.log() << "terminate:" << name << "PID:" << rootpid;
 }

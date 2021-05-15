@@ -8,6 +8,7 @@
 #include <QtDBus/QtDBus>
 #include <QDBusArgument>
 #include <QByteArray>
+#include <QHostAddress>
 
 #include <sys/socket.h>
 
@@ -119,6 +120,31 @@ typedef QList<DnsDomain> DnsDomainList;
 Q_DECLARE_METATYPE(DnsDomain);
 Q_DECLARE_METATYPE(DnsDomainList);
 
+/* D-Bus metatype for marshalling the freedesktop login manager data. */
+class UserData {
+ public:
+  QString name;
+  uint userid;
+  QDBusObjectPath path;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args, const UserData& data) {
+    args.beginStructure();
+    args << data.userid << data.name << data.path;
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         UserData& data) {
+    args.beginStructure();
+    args >> data.userid >> data.name >> data.path;
+    args.endStructure();
+    return args;
+  }
+};
+typedef QList<UserData> UserDataList;
+Q_DECLARE_METATYPE(UserData);
+Q_DECLARE_METATYPE(UserDataList);
+
 class DnsMetatypeRegistrationProxy {
  public:
   DnsMetatypeRegistrationProxy() {
@@ -134,6 +160,10 @@ class DnsMetatypeRegistrationProxy {
     qDBusRegisterMetaType<DnsDomain>();
     qRegisterMetaType<DnsDomainList>();
     qDBusRegisterMetaType<DnsDomainList>();
+    qRegisterMetaType<UserData>();
+    qDBusRegisterMetaType<UserData>();
+    qRegisterMetaType<UserDataList>();
+    qDBusRegisterMetaType<UserDataList>();
   }
 };
 

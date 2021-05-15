@@ -6,6 +6,7 @@
 #define DBUSSERVICE_H
 
 #include "daemon/daemon.h"
+#include "apptracker.h"
 #include "iputilslinux.h"
 #include "dnsutilslinux.h"
 #include "pidtracker.h"
@@ -57,7 +58,12 @@ class DBusService final : public Daemon {
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
 
+  AppTracker* m_apptracker = nullptr;
   PidTracker* m_pidtracker = nullptr;
+
+ private slots:
+  void appLaunched(const QString& name, int rootpid);
+  void appTerminated(const QString& name, int rootpid);
 };
 
 #endif  // DBUSSERVICE_H
