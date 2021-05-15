@@ -43,7 +43,11 @@ class Daemon : public QObject {
   void backendFailure();
 
  protected:
-  virtual bool run(Op op, const InterfaceConfig& config) = 0;
+  virtual bool run(Op op, const InterfaceConfig& config) {
+    Q_UNUSED(op);
+    Q_UNUSED(config);
+    return true;
+  }
   virtual bool supportServerSwitching(const InterfaceConfig& config) const {
     Q_UNUSED(config);
     return false;

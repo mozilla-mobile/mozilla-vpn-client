@@ -35,8 +35,6 @@ class DBusService final : public Daemon {
   QString getLogs();
 
  protected:
-  bool run(Op op, const InterfaceConfig& config) override;
-
   bool supportServerSwitching(const InterfaceConfig& config) const override;
   bool switchServer(const InterfaceConfig& config) override;
 

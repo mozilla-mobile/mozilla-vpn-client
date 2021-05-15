@@ -8,7 +8,6 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "polkithelper.h"
-#include "wgquickprocess.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -126,20 +125,6 @@ QByteArray DBusService::getStatus() {
 QString DBusService::getLogs() {
   logger.log() << "Log request";
   return Daemon::logs();
-}
-
-bool DBusService::run(Op op, const InterfaceConfig& config) {
-  QStringList addresses;
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-    addresses.append(ip.toString());
-  }
-
-  return WgQuickProcess::run(
-      op, config.m_privateKey, config.m_deviceIpv4Address,
-      config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
-      config.m_serverIpv6Gateway, config.m_serverPublicKey,
-      config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-      addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
 }
 
 bool DBusService::switchServer(const InterfaceConfig& config) {
