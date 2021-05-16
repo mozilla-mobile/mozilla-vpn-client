@@ -428,6 +428,10 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
+    systemd_service.files = ../linux/debian/mozillavpn.service
+    systemd_service.path = /lib/systemd/system
+    INSTALLS += systemd_service
+
     DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
     helper.path = $${USRPATH}/share/mozillavpn
     helper.files = ../linux/daemon/helper.sh
