@@ -23,6 +23,10 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool addRoutePrefix(const IPAddressRange& prefix) override;
   peerBytes getThroughputForInterface() override;
 
+  QString getDefaultCgroup() const { return m_cgroups; }
+  QString getExcludeCgroup() const;
+  QString getBlockCgroup() const;
+
  private:
   QStringList currentInterfaces();
   bool setPeerEndpoint(struct sockaddr* peerEndpoint, const QString& address,
@@ -33,7 +37,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
                           const InterfaceConfig& conf);
   bool setRouteRules(int action, int flags, int addrfamily);
   bool setRoutePrefix(int action, int flags, const IPAddressRange& prefix);
-  unsigned long getCgroupClass(const QString& path);
+  static bool setupCgroupClass(const QString& path, unsigned long classid);
 
   int m_nlsock = -1;
   int m_nlseq = 0;

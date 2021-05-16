@@ -19,11 +19,8 @@ Logger logger(LOG_LINUX, "DBusService");
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
-  if (!removeInterfaceIfExists()) {
-    qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
-           WG_INTERFACE);
-  }
 
+  m_wgutils = new WireguardUtilsLinux(this);
   m_apptracker = new AppTracker(this);
   m_pidtracker = new PidTracker(this);
 
@@ -31,14 +28,16 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
           SLOT(appLaunched(const QString&, int)));
   connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
           SLOT(appTerminated(const QString&, int)));
+
+  if (!removeInterfaceIfExists()) {
+    qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
+           WG_INTERFACE);
+  }
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
 WireguardUtils* DBusService::wgutils() {
-  if (!m_wgutils) {
-    m_wgutils = new WireguardUtilsLinux(this);
-  }
   return m_wgutils;
 }
 
@@ -181,6 +180,13 @@ QString DBusService::runningApps() {
 
 /* Update the firewall for running applications matching the application ID. */
 bool DBusService::firewallApp(const QStringList& names, const QString& state) {
+  QString cgroup = m_wgutils->getDefaultCgroup();
+  if (state == "excluded") {
+    cgroup = m_wgutils->getExcludeCgroup();
+  } else if (state == "blocked") {
+    cgroup = m_wgutils->getBlockCgroup();
+  }
+
   for (auto appName : names) {
     logger.log() << "Setting" << appName << "to firewall state" << state;
     m_firewallApps[appName] = state;
@@ -192,6 +198,9 @@ bool DBusService::firewallApp(const QStringList& names, const QString& state) {
         continue;
       }
       group->state = state;
+      if (!cgroup.isNull()) {
+        group->moveToCgroup(cgroup);
+      }
     }
   }
   return true;
@@ -203,23 +212,37 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
   if (!group) {
     return false;
   }
+
+  QString cgroup = m_wgutils->getDefaultCgroup();
+  if (state == "excluded") {
+    cgroup = m_wgutils->getExcludeCgroup();
+  } else if (state == "blocked") {
+    cgroup = m_wgutils->getBlockCgroup();
+  }
+
+  group->state = state;
+  if (!cgroup.isNull()) {
+    group->moveToCgroup(cgroup);
+  }
   logger.log() << "Setting" << group->name << "PID:" << rootpid
                << "to firewall state" << state;
-  group->state;
   return true;
 }
 
 /* Clear the firewall and return all applications to the active state */
 bool DBusService::firewallClear() {
-  m_firewallApps.clear();
+  const QString cgroup = m_wgutils->getDefaultCgroup();
 
+  m_firewallApps.clear();
   for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
     ProcessGroup* group = *i;
     group->state = "active";
+    if (!cgroup.isNull()) {
+      group->moveToCgroup(cgroup);
+    }
 
     logger.log() << "Setting" << group->name << "PID:" << group->rootpid
                  << "to firewall state" << group->state;
   }
-
   return true;
 }

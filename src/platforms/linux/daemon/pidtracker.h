@@ -26,6 +26,8 @@ class ProcessGroup {
   }
   ~ProcessGroup() { MVPN_COUNT_DTOR(ProcessGroup); }
 
+  bool moveToCgroup(const QString& name);
+
   QHash<int, uint> kthreads;
   QString name;
   QString state;

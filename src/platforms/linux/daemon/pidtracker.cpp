@@ -203,3 +203,17 @@ void PidTracker::readData() {
     }
   }
 }
+
+bool ProcessGroup::moveToCgroup(const QString& name) {
+  QString cgProcsFile = name + "/cgroup.procs";
+  FILE* fp = fopen(qPrintable(cgProcsFile), "w");
+  if (!fp) {
+    return false;
+  }
+  for (auto pid : kthreads.keys()) {
+    fprintf(fp, "%d\n", pid);
+    fflush(fp);
+  }
+  fclose(fp);
+  return true;
+}
