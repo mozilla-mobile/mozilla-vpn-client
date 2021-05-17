@@ -37,7 +37,7 @@ class DBusService final : public Daemon {
   QString getLogs();
 
   QString runningApps();
-  bool firewallApp(const QStringList& names, const QString& state);
+  bool firewallApp(const QString& appName, const QString& state);
   bool firewallPid(int rootpid, const QString& state);
   bool firewallClear();
 
@@ -56,6 +56,11 @@ class DBusService final : public Daemon {
 
  private:
   bool removeInterfaceIfExists();
+  QString getAppStateCgroup(const QString& state);
+
+ private slots:
+  void appLaunched(const QString& name, int rootpid);
+  void appTerminated(const QString& name, int rootpid);
 
  private:
   DbusAdaptor* m_adaptor = nullptr;
@@ -66,10 +71,6 @@ class DBusService final : public Daemon {
   AppTracker* m_apptracker = nullptr;
   PidTracker* m_pidtracker = nullptr;
   QMap<QString, QString> m_firewallApps;
-
- private slots:
-  void appLaunched(const QString& name, int rootpid);
-  void appTerminated(const QString& name, int rootpid);
 };
 
 #endif  // DBUSSERVICE_H

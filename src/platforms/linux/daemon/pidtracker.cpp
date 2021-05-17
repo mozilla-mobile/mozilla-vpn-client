@@ -94,17 +94,20 @@ PidTracker::~PidTracker() {
   }
 }
 
-void PidTracker::track(const QString& name, int rootpid) {
-  if (m_processTree.contains(rootpid)) {
+ProcessGroup* PidTracker::track(const QString& name, int rootpid) {
+  ProcessGroup* group = m_processTree.value(rootpid, nullptr);
+  if (group) {
     logger.log() << "Ignoring attempt to track duplicate PID";
-    return;
+    return group;
   }
-  ProcessGroup* group = new ProcessGroup(name, rootpid);
+  group = new ProcessGroup(name, rootpid);
   group->kthreads[rootpid] = 1;
   group->refcount = 1;
 
   m_processGroups.append(group);
   m_processTree[rootpid] = group;
+
+  return group;
 }
 
 void PidTracker::handleProcEvent(struct cn_msg* cnmsg) {
@@ -205,11 +208,17 @@ void PidTracker::readData() {
 }
 
 bool ProcessGroup::moveToCgroup(const QString& name) {
+  /* Do nothing if Cgroups are not supported. */
+  if (name.isNull()) {
+    return true;
+  }
+
   QString cgProcsFile = name + "/cgroup.procs";
   FILE* fp = fopen(qPrintable(cgProcsFile), "w");
   if (!fp) {
     return false;
   }
+
   for (auto pid : kthreads.keys()) {
     fprintf(fp, "%d\n", pid);
     fflush(fp);

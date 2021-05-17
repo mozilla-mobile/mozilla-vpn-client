@@ -19,7 +19,7 @@
     </method>
     <method name="firewallApp">
       <arg type="b" direction="out"/>
-      <arg name="names" type="as" direction="in"/>
+      <arg name="appName" type="s" direction="in"/>
       <arg name="state" type="s" direction="in"/>
     </method>
     <method name="firewallPid">

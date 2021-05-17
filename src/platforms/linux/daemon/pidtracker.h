@@ -43,7 +43,7 @@ class PidTracker final : public QObject {
   explicit PidTracker(QObject* parent);
   ~PidTracker();
 
-  void track(const QString& name, int rootpid);
+  ProcessGroup* track(const QString& name, int rootpid);
 
   QList<int> pids() { return m_processTree.keys(); }
   QList<ProcessGroup*>::iterator begin() { return m_processGroups.begin(); }
@@ -56,16 +56,17 @@ class PidTracker final : public QObject {
   void terminated(const QString& name, int rootpid);
 
  private:
+  void handleProcEvent(struct cn_msg*);
+
+ private slots:
+  void readData();
+
+ private:
   int m_nlsock;
   char m_readBuf[2048];
   QSocketNotifier* m_socket;
   QHash<int, ProcessGroup*> m_processTree;
   QList<ProcessGroup*> m_processGroups;
-
-  void handleProcEvent(struct cn_msg*);
-
- private slots:
-  void readData();
 };
 
 #endif  // PIDTRACKER_H
