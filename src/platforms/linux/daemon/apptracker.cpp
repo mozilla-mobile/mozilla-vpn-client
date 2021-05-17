@@ -50,13 +50,11 @@ AppTracker::~AppTracker() {
 
 void AppTracker::userListCompleted(QDBusPendingCallWatcher* watcher) {
   QDBusPendingReply<UserDataList> reply = *watcher;
-  if (!reply.isValid()) {
-    return;
-  }
-
-  UserDataList list = reply.value();
-  for (auto user : list) {
-    userCreated(user.userid, user.path);
+  if (reply.isValid()) {
+    UserDataList list = reply.value();
+    for (auto user : list) {
+      userCreated(user.userid, user.path);
+    }
   }
 
   delete watcher;
