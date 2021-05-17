@@ -166,6 +166,16 @@ describe('Take screenshots for each view', function() {
     await vpn.wait();
   });
 
+  it('telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.wait();
+
+    await screenCapture('telemetry_policy');
+
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+  });
+
   it('main view', async () => {
     await screenCapture('vpn_off');
   });

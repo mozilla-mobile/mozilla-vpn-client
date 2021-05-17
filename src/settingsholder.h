@@ -80,6 +80,8 @@ class SettingsHolder final : public QObject {
          setCaptivePortalIpv6Addresses)
   GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown,
          setPostAuthenticationShown);
+  GETSET(bool, hasTelemetryPolicyShown, telemetryPolicyShown,
+         setTelemetryPolicyShown);
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
