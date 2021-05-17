@@ -37,7 +37,6 @@ VPNFlickable {
         isChecked: VPNSettings.gleanEnabled
         onClicked: {
             VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
        }
        visible: VPNFeatureList.gleanSupported
     }
