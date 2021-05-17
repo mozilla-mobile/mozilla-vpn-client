@@ -43,9 +43,9 @@ class MozillaVPN final : public QObject {
  public:
   enum State {
     StateInitialize,
+    StateTelemetryPolicy,
     StateAuthenticating,
     StatePostAuthentication,
-    StateTelemetryPolicy,
     StateMain,
     StateUpdateRequired,
     StateSubscriptionNeeded,
@@ -116,6 +116,7 @@ class MozillaVPN final : public QObject {
   }
 
   // Exposed QML methods:
+  Q_INVOKABLE void getStarted();
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);

@@ -331,6 +331,20 @@ void MozillaVPN::maybeStateMain() {
   }
 }
 
+void MozillaVPN::getStarted() {
+  logger.log() << "Get started";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  if (!settingsHolder->hasTelemetryPolicyShown() ||
+      !settingsHolder->telemetryPolicyShown()) {
+    setState(StateTelemetryPolicy);
+    return;
+  }
+
+  authenticate();
+}
+
 void MozillaVPN::authenticate() {
   logger.log() << "Authenticate";
 
@@ -887,6 +901,11 @@ void MozillaVPN::telemetryPolicyCompleted() {
   // Super racy, but it could happen that we are already in update-required
   // state.
   if (m_state == StateUpdateRequired) {
+    return;
+  }
+
+  if (!m_userAuthenticated) {
+    authenticate();
     return;
   }
 
