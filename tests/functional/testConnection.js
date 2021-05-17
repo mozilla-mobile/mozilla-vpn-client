@@ -40,12 +40,6 @@ describe('Connectivity', function() {
     await vpn.wait();
   });
 
-  it('Telemetry Poliy view', async () => {
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.wait();
-  });
-
   it('check the ui', async () => {
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
