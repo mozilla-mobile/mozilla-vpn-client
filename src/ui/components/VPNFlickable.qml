@@ -11,7 +11,7 @@ Flickable {
     id: vpnFlickable
 
     property var flickContentHeight
-    property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight)
+    property var windowHeightExceedsContentHeight: (window.safeContentHeight > flickContentHeight - 1)
     property bool hideScollBarOnStackTransition: false
 
     function ensureVisible(item) {
