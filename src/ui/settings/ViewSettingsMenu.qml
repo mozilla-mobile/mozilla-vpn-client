@@ -171,7 +171,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/getHelp.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: {
-                Glean.sample.GetHelpClickedViewSettings.record();
+                Glean.sample.getHelpClickedViewSettings.record();
                 settingsStackView.push(getHelpComponent);
             }
         }
