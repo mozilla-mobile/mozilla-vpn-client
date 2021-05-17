@@ -1318,6 +1318,7 @@ void TestModels::surveyModelFromJson_data() {
   QTest::addColumn<QString>("surveyId");
   QTest::addColumn<QString>("surveyUrl");
   QTest::addColumn<int>("surveyTriggerTime");
+  QTest::addColumn<bool>("surveyTriggerable");
 
   QTest::addRow("invalid") << QByteArray("") << false;
   QTest::addRow("object") << QByteArray("{}") << false;
@@ -1348,7 +1349,25 @@ void TestModels::surveyModelFromJson_data() {
   d.insert("trigger_time", 0);
   surveys.replace(0, d);
   QTest::addRow("good") << QJsonDocument(surveys).toJson() << true << 1 << "A"
-                        << "http://vpn.mozilla.org" << 0;
+                        << "http://vpn.mozilla.org" << 0 << true;
+
+  d.insert("platforms", 12345);
+  surveys.replace(0, d);
+  QTest::addRow("bogus platforms") << QJsonDocument(surveys).toJson() << false;
+
+  QJsonArray platforms = {"ios", "android"};
+  d.insert("platforms", platforms);
+  surveys.replace(0, d);
+  QTest::addRow("unmatched platforms")
+      << QJsonDocument(surveys).toJson() << true << 1 << "A"
+      << "http://vpn.mozilla.org" << 0 << false;
+
+  platforms.append("dummy");
+  d.insert("platforms", platforms);
+  surveys.replace(0, d);
+  QTest::addRow("matched platforms")
+      << QJsonDocument(surveys).toJson() << true << 1 << "A"
+      << "http://vpn.mozilla.org" << 0 << true;
 
   QJsonObject d2;
   d2.insert("id", "B");
@@ -1358,7 +1377,7 @@ void TestModels::surveyModelFromJson_data() {
   surveys.append(d2);
   QTest::addRow("good - 2 surveys")
       << QJsonDocument(surveys).toJson() << true << 2 << "A"
-      << "http://vpn.mozilla.org" << 0;
+      << "http://vpn.mozilla.org" << 0 << true;
 }
 
 void TestModels::surveyModelFromJson() {
@@ -1427,11 +1446,14 @@ void TestModels::surveyModelFromJson() {
         QCOMPARE(sm.surveys()[0].url(), surveyUrl);
 
         QFETCH(int, surveyTriggerTime);
+        QFETCH(bool, surveyTriggerable);
         QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
-        QVERIFY(sm.surveys()[0].isTriggerable());
+        QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
 
-        settingsHolder.addConsumedSurvey(surveyId);
-        QVERIFY(!sm.surveys()[0].isTriggerable());
+        if (surveyTriggerable) {
+          settingsHolder.addConsumedSurvey(surveyId);
+          QVERIFY(!sm.surveys()[0].isTriggerable());
+        }
       }
     }
   }
