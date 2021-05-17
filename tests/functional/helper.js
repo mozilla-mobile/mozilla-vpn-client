@@ -195,7 +195,7 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, 500));
   },
 
-  async authenticate(driver, resetting = true) {
+  async authenticate(driver, resetting = true, telemetry = true) {
     if (resetting) await this.reset();
 
     await this.waitForElement('getHelpLink');
@@ -205,6 +205,13 @@ module.exports = {
         await this.getElementProperty('learnMoreLink', 'visible') === 'true');
 
     await this.clickOnElement('getStarted');
+
+    if (telemetry) {
+      await this.waitForElement('telemetryPolicyButton');
+      await this.waitForElementProperty(
+          'telemetryPolicyButton', 'visible', 'true');
+      await this.clickOnElement('telemetryPolicyButton');
+    }
 
     await this.waitForCondition(async () => {
       const url = await this.getLastUrl();

@@ -57,12 +57,6 @@ describe('Settings', function() {
     await vpn.wait();
   });
 
-  it('Telemetry Policy view', async () => {
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
-    await vpn.wait();
-  });
-
   it('Opening and closing the settings view', async () => {
     await vpn.waitForElement('settingsButton');
     await vpn.clickOnElement('settingsButton');
