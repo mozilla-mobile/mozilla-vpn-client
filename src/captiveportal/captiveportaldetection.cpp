@@ -13,10 +13,6 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscaptiveportaldetection.h"
-#endif
-
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 }
@@ -48,6 +44,14 @@ void CaptivePortalDetection::stateChanged() {
       vpn->controller()->state() != Controller::StateConfirming) {
     logger.log() << "No captive portal detection required";
     m_impl.reset();
+    // Since we now reached a stable state, on the next time we have an
+    // instablity check for portal again.
+    m_shouldRun = true;
+    return;
+  }
+  if (!m_shouldRun) {
+    logger.log() << "Captive Portal detection was already done for this "
+                    "instability, skipping.";
     return;
   }
 
@@ -77,9 +81,7 @@ void CaptivePortalDetection::detectCaptivePortal() {
     return;
   }
 
-#if defined(MVPN_WINDOWS)
-  m_impl.reset(new WindowsCaptivePortalDetection());
-#elif defined(MVPN_LINUX) || defined(MVPN_MACOS)
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   m_impl.reset(new CaptivePortalDetectionImpl());
 #else
   logger.log() << "This platform does not support captive portal detection yet";
@@ -108,6 +110,7 @@ void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
   logger.log() << "Detection completed:" << detected;
 
   m_impl.reset();
+  m_shouldRun = false;
   switch (detected) {
     case CaptivePortalResult::NoPortal:
     case CaptivePortalResult::Failure:
