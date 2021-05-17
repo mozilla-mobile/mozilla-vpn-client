@@ -78,6 +78,10 @@ Window {
                             resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
                           }
                           xhr.send(body);
+
+                          if (typeof(VPNGleanTest) !== "undefined") {
+                              VPNGleanTest.requestDone(url, body);
+                          }
                       });
                   }
           },
@@ -286,6 +290,13 @@ Window {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
             Glean.sendPing();
+        }
+    }
+
+    Connections {
+        target: VPNSettings
+        function onGleanEnabledChanged() {
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
     }
 
