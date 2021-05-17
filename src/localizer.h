@@ -70,6 +70,10 @@ class Localizer final : public QAbstractListModel {
 
   bool loadLanguageInternal(const QString& code);
 
+  // This method is not used. It exists just to add the installer strings into
+  // the QT language files.
+  static void macOSInstallerStrings();
+
  private:
   QTranslator m_translator;
 
