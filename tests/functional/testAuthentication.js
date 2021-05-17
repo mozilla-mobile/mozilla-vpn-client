@@ -46,6 +46,11 @@ describe('User authentication', function() {
   it('Start and abort the authentication (initial view)', async () => {
     await vpn.clickOnElement('getStarted');
 
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -101,6 +106,11 @@ describe('User authentication', function() {
 
     await vpn.clickOnElement('onboardingNext');
 
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -131,14 +141,6 @@ describe('User authentication', function() {
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
     await vpn.clickOnElement('postAuthenticationButton');
-
-    // This is to make humans happy.
-    await vpn.wait();
-  });
-
-  it('Telemetry policy view', async () => {
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.clickOnElement('telemetryPolicyButton');
 
     // This is to make humans happy.
     await vpn.wait();
