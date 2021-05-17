@@ -136,6 +136,14 @@ describe('User authentication', function() {
     await vpn.wait();
   });
 
+  it('Telemetry policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.clickOnElement('telemetryPolicyButton');
+
+    // This is to make humans happy.
+    await vpn.wait();
+  });
+
   it('Logout', async () => {
     await vpn.logout();
     await vpn.wait();

@@ -138,8 +138,17 @@ describe('Backend failure', function() {
 
     await backendFailureAndRestore();
 
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+    await vpn.waitForElement('postAuthenticationButton');
+    await vpn.clickOnElement('postAuthenticationButton');
+  });
+
+  it('BackendFailure in the Telemetry Policy view', async () => {
+    await vpn.waitForElement('telemetryPolicyButton');
+
+    await backendFailureAndRestore();
+
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.clickOnElement('telemetryPolicyButton');
   });
 
   it('BackendFailure in the Controller view', async () => {

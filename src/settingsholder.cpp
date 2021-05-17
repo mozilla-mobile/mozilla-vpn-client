@@ -52,6 +52,7 @@ constexpr const char* SETTINGS_CAPTIVEPORTALIPV6ADDRESSES =
     "captivePortal/ipv6Addresses";
 constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
     "postAuthenticationShown";
+constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
 
@@ -146,6 +147,7 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
+  m_settings.remove(SETTINGS_TELEMETRYPOLICYSHOWN);
 
   // We do not remove language, ipv6 and localnetwork settings.
 }
@@ -270,6 +272,8 @@ GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
 GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        hasPostAuthenticationShown, postAuthenticationShown,
        setPostAuthenticationShown);
+GETSET(bool, toBool, SETTINGS_TELEMETRYPOLICYSHOWN, hasTelemetryPolicyShown,
+       telemetryPolicyShown, setTelemetryPolicyShown);
 GETSET(QString, toString, SETTINGS_LANGUAGECODE, hasLanguageCode, languageCode,
        setLanguageCode);
 GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
