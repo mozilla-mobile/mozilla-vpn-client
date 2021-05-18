@@ -125,7 +125,34 @@ QString translateItem(const QString& countryCode, const QString& cityName,
     languageCode = QLocale::system().bcp47Name();
   }
 
-  return s_items.value(itemKey(languageCode, countryCode, cityName), fallback);
+  QString result = s_items.value(itemKey(languageCode, countryCode, cityName));
+  if (!result.isEmpty()) {
+    return result;
+  }
+
+  // if the language code contains the 'region' part too, we check if we have
+  // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
+  bool trimmed = false;
+  int pos = languageCode.indexOf("-");
+  if (pos > 0) {
+    languageCode = languageCode.left(pos);
+    trimmed = true;
+  }
+
+  pos = languageCode.indexOf("_");
+  if (pos > 0) {
+    languageCode = languageCode.left(pos);
+    trimmed = true;
+  }
+
+  if (trimmed) {
+    result = s_items.value(itemKey(languageCode, countryCode, cityName));
+    if (!result.isEmpty()) {
+      return result;
+    }
+  }
+
+  return fallback;
 }
 
 }  // namespace
