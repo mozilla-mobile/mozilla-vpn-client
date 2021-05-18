@@ -91,7 +91,7 @@ bool Survey::isTriggerable() const {
     return false;
   }
 
-  if ((m_platforms.count() > 0) &&
+  if (!m_platforms.isEmpty() &&
       !m_platforms.contains(Constants::PLATFORM_NAME)) {
     return false;
   }
