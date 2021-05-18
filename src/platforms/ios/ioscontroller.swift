@@ -132,7 +132,7 @@ public class IOSControllerImpl : NSObject {
         return true
     }
 
-    @objc func connect(serverIpv4Gateway: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, reason: Int, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, ipv6Enabled: Bool, reason: Int, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
         assert(tunnel != nil)
 
@@ -140,7 +140,7 @@ public class IOSControllerImpl : NSObject {
         (tunnel!.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
 
         let keyData = PublicKey(base64Key: serverPublicKey)!
-        let ipv4GatewayIP = IPv4Address(serverIpv4Gateway)
+        let dnsServerIP = IPv4Address(dnsServer)
         let ipv6GatewayIP = IPv6Address(serverIpv6Gateway)
 
         var peerConfiguration = PeerConfiguration(publicKey: keyData)
@@ -167,7 +167,7 @@ public class IOSControllerImpl : NSObject {
                 interface.addresses.append(ipv6Address)
             }
         }
-        interface.dns = [ DNSServer(address: ipv4GatewayIP!)]
+        interface.dns = [ DNSServer(address: dnsServerIP!)]
 
         if (ipv6Enabled) {
             interface.dns.append(DNSServer(address: ipv6GatewayIP!))
