@@ -29,7 +29,7 @@ class AppPermission final : public QAbstractListModel {
 
   class AppDescription {
    public:
-    AppDescription(const QString& appId, const QString& appName) {
+    AppDescription(const QString& appId, const QString& appName = "") {
       name = appName;
       id = appId;
     };
