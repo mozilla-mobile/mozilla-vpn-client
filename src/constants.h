@@ -79,4 +79,22 @@ PRODBETAEXPR(
 
 #undef PRODBETAEXPR
 
+constexpr const char* PLATFORM_NAME =
+#if defined(MVPN_IOS)
+    "ios"
+#elif defined(MVPN_MACOS)
+    "macos"
+#elif defined(MVPN_LINUX)
+    "linux"
+#elif defined(MVPN_ANDROID)
+    "android"
+#elif defined(MVPN_WINDOWS)
+    "windows"
+#elif defined(UNIT_TEST) || defined(MVPN_DUMMY)
+    "dummy"
+#else
+#  error "Unsupported platform"
+#endif
+    ;
+
 };  // namespace Constants
