@@ -257,7 +257,7 @@ public class IOSControllerImpl : NSObject {
             return
         }
 
-        let deviceIpv4Address = tunnelConfiguration.interface.addresses[0].address
+        let deviceIpv4Address = tunnelConfiguration?.interface.addresses[0].address
         if deviceIpv4Address == nil {
             callback("", "", "")
             return
@@ -283,7 +283,7 @@ public class IOSControllerImpl : NSObject {
             }
         } catch {
             Logger.global?.log(message: "Failed to retrieve data from session")
-            callback("", "")
+            callback("", "", "")
         }
     }
 }
