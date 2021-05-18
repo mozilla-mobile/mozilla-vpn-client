@@ -421,17 +421,7 @@ void MozillaVPN::openLink(LinkType linkType) {
     case LinkUpdate:
       url = Constants::API_URL;
       url.append("/r/vpn/update/");
-#if defined(MVPN_LINUX)
-      url.append("linux");
-#elif defined(MVPN_MACOS)
-      url.append("macos");
-#elif defined(MVPN_IOS)
-      url.append("ios");
-#elif defined(MVPN_ANDROID)
-      url.append("android");
-#else
-      url.append("dummy");
-#endif
+      url.append(Constants::PLATFORM_NAME);
       break;
 
     case LinkSubscriptionBlocked:
