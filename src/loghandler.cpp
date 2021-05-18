@@ -221,28 +221,33 @@ void LogHandler::writeLogs(QTextStream& out) {
 // static
 void LogHandler::cleanupLogs() {
   QMutexLocker lock(&s_mutex);
+  cleanupLogFile(lock);
+}
 
+// static
+void LogHandler::cleanupLogFile(const QMutexLocker& proofOfLock) {
   if (!s_instance || !s_instance->m_logFile) {
     return;
   }
 
   QString logFileName = s_instance->m_logFile->fileName();
-  s_instance->closeLogFile(lock);
+  s_instance->closeLogFile(proofOfLock);
 
   {
     QFile file(logFileName);
     file.remove();
   }
 
-  s_instance->openLogFile(lock);
+  s_instance->openLogFile(proofOfLock);
 }
 
 // static
 void LogHandler::setLocation(const QString& path) {
+  QMutexLocker lock(&s_mutex);
   s_location = path;
 
   if (s_instance && s_instance->m_logFile) {
-    cleanupLogs();
+    cleanupLogFile(lock);
   }
 }
 

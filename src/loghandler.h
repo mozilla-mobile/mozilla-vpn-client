@@ -82,6 +82,8 @@ class LogHandler final : public QObject {
 
   void closeLogFile(const QMutexLocker& proofOfLock);
 
+  static void cleanupLogFile(const QMutexLocker& proofOfLock);
+
   const QStringList m_modules;
 
   QFile* m_logFile = nullptr;
