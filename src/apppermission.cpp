@@ -95,7 +95,7 @@ Q_INVOKABLE void AppPermission::flip(const QString& appID) {
     settingsHolder->addVpnDisabledApp(appID);
   }
 
-  int index = m_applist.indexOf(AppDescription(appID, "Test"));
+  int index = m_applist.indexOf(AppDescription(appID));
   dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 
