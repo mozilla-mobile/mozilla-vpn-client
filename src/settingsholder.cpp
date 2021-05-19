@@ -93,6 +93,12 @@ constexpr const char* SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS = "winMissingApps";
 constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
 constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
 
+constexpr bool SETTINGS_DEVELOPERUNLOCK_DEFAULT = false;
+constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
+
+constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
+constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
@@ -247,6 +253,12 @@ GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
               hasConnectionChangeNotification, connectionChangeNotification,
               setConnectionChangeNotification,
               connectionChangeNotificationChanged);
+GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
+              SETTINGS_DEVELOPERUNLOCK, hasDeveloperUnlock, developerUnlock,
+              setDeveloperUnlock, developerUnlockChanged)
+GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
+              SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
+              setStagingServer, stagingServerChanged)
 
 #undef GETSETDEFAULT
 
