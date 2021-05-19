@@ -17,8 +17,8 @@ VPNFlickable {
         id: menu
         objectName: "settingsPrivacySecurtyBackButton"
 
-        //% "Privacy & Security settings"
-        title: qsTrId("vpn.settings.privacySecurity")
+        //% "Privacy & Security"
+        title: qsTrId("vpn.settings.privacySecurityTitle")
         isSettingsView: true
     }
 
