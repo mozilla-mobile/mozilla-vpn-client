@@ -75,6 +75,15 @@ constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
 constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
 constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
 
+constexpr bool SETTINGS_DEVELOPERUNLOCK_DEFAULT = false;
+constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
+
+constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
+constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
+
+constexpr bool SETTINGS_UNTESTEDFEATURES_DEFAULT = false;
+constexpr const char* SETTINGS_UNTESTEDFEATURES = "untestedFeatures";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
@@ -216,7 +225,15 @@ GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
 GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
               SETTINGS_GLEANENABLED, hasGleanEnabled, gleanEnabled,
               setGleanEnabled, gleanEnabledChanged)
-
+GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
+              SETTINGS_DEVELOPERUNLOCK, hasDeveloperUnlock, developerUnlock,
+              setDeveloperUnlock, developerUnlockChanged)
+GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
+              SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
+              setStagingServer, stagingServerChanged)
+GETSETDEFAULT(SETTINGS_UNTESTEDFEATURES_DEFAULT, bool, toBool,
+              SETTINGS_UNTESTEDFEATURES, hasUntestedFeatures, untestedFeatures,
+              setUntestedFeatures, untestedFeaturesChanged)
 #undef GETSETDEFAULT
 
 #define GETSET(type, toType, key, has, get, set)                        \

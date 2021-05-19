@@ -29,6 +29,13 @@ class SettingsHolder final : public QObject {
   Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
                  gleanEnabledChanged)
 
+  Q_PROPERTY(bool developerUnlock READ developerUnlock WRITE setDeveloperUnlock
+                 NOTIFY developerUnlockChanged)
+  Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
+                 stagingServerChanged)
+  Q_PROPERTY(bool untestedFeatures READ untestedFeatures WRITE
+                 setUntestedFeatures NOTIFY untestedFeaturesChanged)
+
  public:
   SettingsHolder();
   ~SettingsHolder();
@@ -86,6 +93,9 @@ class SettingsHolder final : public QObject {
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
+  GETSET(bool, hasDeveloperUnlock, developerUnlock, setDeveloperUnlock)
+  GETSET(bool, hasStagingServer, stagingServer, setStagingServer)
+  GETSET(bool, hasUntestedFeatures, untestedFeatures, setUntestedFeatures)
   GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
 
   bool hasVpnDisabledApp(const QString& appID);
@@ -125,6 +135,9 @@ class SettingsHolder final : public QObject {
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
   void gleanEnabledChanged(bool value);
+  void developerUnlockChanged(bool value);
+  void stagingServerChanged(bool value);
+  void untestedFeaturesChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

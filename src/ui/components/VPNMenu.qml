@@ -16,6 +16,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
+    signal clicked(QtObject mouse)
 
     width: parent.width
     height: 56
@@ -30,6 +31,7 @@ Item {
         preventStealing: true
         propagateComposedEvents: false
         hoverEnabled: true
+        onClicked: menuBar.clicked(mouse)
     }
 
     Rectangle {
