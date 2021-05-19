@@ -30,7 +30,8 @@ VPNStackView {
                 buttonObjectName: "heartbeatTryButton",
                 buttonOnClick: stackview.handleButtonClick,
                 signOffLinkVisible: false,
-                getHelpLinkVisible: true
+                getHelpLinkVisible: true,
+                statusLinkVisible: true
             }
         );
         Glean.sample.backendFailureViewed.record();
