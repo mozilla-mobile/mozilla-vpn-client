@@ -226,6 +226,7 @@ bool Controller::silentSwitchServers() {
 
   Server server = Server::weightChooser(servers);
   Q_ASSERT(server.initialized());
+  Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
 
   vpn->setServerPublicKey(server.publicKey());
 
@@ -311,31 +312,32 @@ void Controller::connectionConfirmed() {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
 
-  if (m_state != StateOn) {
-    setState(StateOn);
-    emit timeChanged();
-
-    if (m_nextStep != None) {
-      deactivate();
-      return;
-    }
-
-    m_timer.start(TIMER_MSEC);
-  } else {
+  if (m_state == StateOn) {
     emit silentSwitchDone();
+    return;
   }
+
+  setState(StateOn);
+  emit timeChanged();
+
+  if (m_nextStep != None) {
+    deactivate();
+    return;
+  }
+
+  m_timer.start(TIMER_MSEC);
 }
 
 void Controller::connectionFailed() {
   logger.log() << "Connection failed!";
 
-  if (m_state == StateOn) {
-    emit silentSwitchDone();
-  }
-
   if (m_state != StateConfirming && m_state != StateOn) {
     logger.log() << "Invalid confirmation received";
     return;
+  }
+
+  if (m_state == StateOn) {
+    emit silentSwitchDone();
   }
 
   if (m_nextStep != None || m_connectionRetry >= CONNECTION_MAX_RETRY) {

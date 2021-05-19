@@ -1114,7 +1114,6 @@ void MozillaVPN::deactivate() {
 void MozillaVPN::silentSwitch() {
   logger.log() << "VPN tunnel silent server switch";
 
-  deleteTasks();
   scheduleTask(new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
 
