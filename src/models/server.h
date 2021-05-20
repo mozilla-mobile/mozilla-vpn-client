@@ -40,6 +40,10 @@ class Server final {
 
   uint32_t choosePort() const;
 
+  bool operator==(const Server& other) const {
+    return m_publicKey == other.m_publicKey;
+  }
+
  private:
   QString m_hostname;
   QString m_ipv4AddrIn;

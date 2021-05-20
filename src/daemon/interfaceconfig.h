@@ -11,6 +11,8 @@
 #include <QString>
 
 struct InterfaceConfig {
+  int m_hopindex = 0;
+  QString m_ifname;
   QString m_privateKey;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;

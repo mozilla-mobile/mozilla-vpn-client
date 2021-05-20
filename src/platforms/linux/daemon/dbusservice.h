@@ -30,7 +30,7 @@ class DBusService final : public Daemon {
  public slots:
   bool activate(const QString& jsonConfig);
 
-  bool deactivate(bool emitSignals = true) override;
+  bool deactivate(int hopindex, bool emitSignals = true) override;
   QString status();
 
   QString version();
@@ -52,6 +52,7 @@ class DBusService final : public Daemon {
   bool supportDnsUtils() const override { return true; }
   DnsUtils* dnsutils() override;
 
+  QString interfaceName(int hopindex) override;
   QByteArray getStatus() override;
 
  private:
