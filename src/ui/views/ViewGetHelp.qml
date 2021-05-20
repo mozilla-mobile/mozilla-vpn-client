@@ -53,7 +53,8 @@ VPNFlickable {
         spacing: Theme.listSpacing
         anchors.horizontalCenter: parent.horizontalCenter
 
-        settingTitle: qsTrId("Developer Options")
+        //% "Developer Options"
+        settingTitle: qsTrId("vpn.settings.developer")
         imageLeftSrc: "../resources/developer.svg"
         imageRightSrc: "../resources/chevron.svg"
         visible: VPNSettings.developerUnlock

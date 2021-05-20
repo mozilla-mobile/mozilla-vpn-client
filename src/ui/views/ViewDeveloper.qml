@@ -19,7 +19,8 @@ VPNFlickable {
 
     VPNMenu {
         id: menu
-        title: qsTrId("Developer Options")
+        //% "Developer Options"
+        title: qsTrId("vpn.settings.developer")
         isSettingsView: false
     }
 
@@ -31,8 +32,10 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        labelText: qsTrId("Show Developer Options")
-        subLabelText: qsTrId("Show or hide the developer options menu")
+        //% "Show Developer Options"
+        labelText: qsTrId("vpn.settings.developer.show")
+        //% "Show or hide the developer options menu"
+        subLabelText: qsTrId("vpn.settings.developer.description")
 
         isChecked: VPNSettings.developerUnlock
         onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
@@ -46,8 +49,10 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        labelText: qsTrId("Use Staging Servers")
-        subLabelText: qsTrId("Staging services are used to test features before they go live to production")
+        //% "Use Staging Servers"
+        labelText: qsTrId("vpn.settings.staging")
+        //% "Staging services are used to test features before they go live to production"
+        subLabelText: qsTrId("vpn.settings.staging.description")
 
         isChecked: (VPNSettings.stagingServer)
         isEnabled: vpnFlickable.vpnIsOff
@@ -66,8 +71,10 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        labelText: qsTrId("Enable Untested Features")
-        subLabelText: qsTrId("Enable features that may be incomplete or buggy")
+        //% "Enable Untested Features"
+        labelText: qsTrId("vpn.settings.untested")
+        //% "Enable features that may be incomplete or buggy"
+        subLabelText: qsTrId("vpn.settings.untested.description")
 
         isChecked: (VPNSettings.untestedFeatures)
         isEnabled: vpnFlickable.vpnIsOff
