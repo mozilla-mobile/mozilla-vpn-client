@@ -29,7 +29,9 @@ runTest() {
   wait $PID
 
   if [ "$ERROR" = yes ]; then
+    echo "::group::Error Logs"
     cat /tmp/VPN_LOG.txt
+    echo "::endgroup::"
     print R "Nooo"
     exit 1
   fi
