@@ -200,6 +200,8 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
+  const Server& randomHop(ServerData& data) const;
+
   const QString versionString() const { return QString(APP_VERSION); }
 
   const QString buildNumber() const { return QString(BUILD_ID); }

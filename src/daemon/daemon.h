@@ -26,10 +26,12 @@ class Daemon : public QObject {
 
   static Daemon* instance();
 
-  static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
+  bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
+  virtual QString interfaceName(int hopindex) = 0;
   virtual bool activate(const InterfaceConfig& config);
-  virtual bool deactivate(bool emitSignals = true);
+  virtual bool deactivate(int hopindex, bool emitSignals = true);
+  virtual bool deactivateAll(bool emitSignals = true);
 
   // Explose a JSON object with the daemon status.
   virtual QByteArray getStatus() = 0;
@@ -42,8 +44,8 @@ class Daemon : public QObject {
   void cleanLogs();
 
  signals:
-  void connected();
-  void disconnected();
+  void connected(int hopindex);
+  void disconnected(int hopindex);
   void backendFailure();
 
  protected:
@@ -64,9 +66,17 @@ class Daemon : public QObject {
   virtual bool supportDnsUtils() const { return false; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
-  bool m_connected = false;
-  QDateTime m_connectionDate;
-  InterfaceConfig m_lastConfig;
+  class ConnectionState {
+   public:
+    ConnectionState(){};
+    ConnectionState(const InterfaceConfig& config) {
+      m_config = config;
+      m_date = QDateTime::currentDateTime();
+    }
+    QDateTime m_date;
+    InterfaceConfig m_config;
+  };
+  QMap<int, ConnectionState> m_connections;
 };
 
 #endif  // DAEMON_H

@@ -189,6 +189,17 @@ void Controller::activateInternal() {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  QList<Server> serverList = {server};
+  if (FeatureList::instance()->multihopSupported() &&
+      settingsHolder->multihopTunnel()) {
+    ServerData data;
+    Server hop = vpn->randomHop(data);
+    while (serverList.contains(hop)) {
+      hop = vpn->randomHop(data);
+    }
+    serverList.append(hop);
+  }
+
   // Use the Gateway as DNS Server
   // If the user as entered a valid dns, use that instead
   QHostAddress dns = QHostAddress(server.ipv4Gateway());
@@ -201,7 +212,7 @@ void Controller::activateInternal() {
   }
 
   Q_ASSERT(m_impl);
-  m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
+  m_impl->activate(serverList, device, vpn->keys(), allowedIPAddressRanges,
                    vpnDisabledApps, dns, stateToReason(m_state));
 }
 
@@ -254,6 +265,17 @@ bool Controller::silentSwitchServers() {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  QList<Server> serverList = {server};
+  if (FeatureList::instance()->multihopSupported() &&
+      settingsHolder->multihopTunnel()) {
+    ServerData data;
+    Server hop = vpn->randomHop(data);
+    while (serverList.contains(hop)) {
+      hop = vpn->randomHop(data);
+    }
+    serverList.append(hop);
+  }
+
   QHostAddress dns = QHostAddress(server.ipv4Gateway());
   if (FeatureList::instance()->userDNSSupported() &&
       !settingsHolder->useGatewayDNS() &&
@@ -264,7 +286,7 @@ bool Controller::silentSwitchServers() {
   }
 
   Q_ASSERT(m_impl);
-  m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
+  m_impl->activate(serverList, device, vpn->keys(), allowedIPAddressRanges,
                    vpnDisabledApps, dns, stateToReason(StateSwitching));
   return true;
 }

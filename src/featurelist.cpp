@@ -138,7 +138,15 @@ bool FeatureList::accountCreationInAppSupported() const {
 
 bool FeatureList::inAppPurchaseSupported() const {
 #if defined(MVPN_IOS)
-  // Soon, android will have IAP.
+  // Soon-ish, android will have IAP. But not now yet.  return true;
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool FeatureList::multihopSupported() const {
+#if defined(MVPN_LINUX)
   return true;
 #else
   return false;

@@ -16,6 +16,9 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
+constexpr uint32_t ETH_MTU = 1500;
+constexpr uint32_t WG_MTU_OVERHEAD = 80;
+
 namespace {
 Logger logger(LOG_LINUX, "IPUtilsLinux");
 }
@@ -42,7 +45,7 @@ bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
   return true;
 }
 
-bool IPUtilsLinux::setMTUAndUp() {
+bool IPUtilsLinux::setMTUAndUp(const InterfaceConfig& config) {
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
@@ -53,9 +56,12 @@ bool IPUtilsLinux::setMTUAndUp() {
 
   // Setup the interface to interact with
   struct ifreq ifr;
-  strncpy(ifr.ifr_name, WG_INTERFACE, IFNAMSIZ);
+  strncpy(ifr.ifr_name, qPrintable(config.m_ifname), IFNAMSIZ);
 
   // MTU
+  // FIXME: We need to know how many layers deep this particular
+  // interface is into a tunnel to work effectively. Otherwise
+  // we will run into fragmentation issues.
   ifr.ifr_mtu = 1420;
   int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
   if (ret) {
@@ -79,7 +85,7 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
   struct sockaddr_in* ifrAddr = (struct sockaddr_in*)&ifr.ifr_addr;
 
   // Name the interface and set family
-  strncpy(ifr.ifr_name, WG_INTERFACE, IFNAMSIZ);
+  strncpy(ifr.ifr_name, qPrintable(config.m_ifname), IFNAMSIZ);
   ifr.ifr_addr.sa_family = AF_INET;
 
   // Get the device address to add to interface
@@ -129,7 +135,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
 
   // Get the index of named ifr and link with ifr6
   struct ifreq ifr;
-  strncpy(ifr.ifr_name, WG_INTERFACE, IFNAMSIZ);
+  strncpy(ifr.ifr_name, qPrintable(config.m_ifname), IFNAMSIZ);
   ifr.ifr_addr.sa_family = AF_INET6;
   int ret = ioctl(sockfd, SIOGIFINDEX, &ifr);
   if (ret) {
