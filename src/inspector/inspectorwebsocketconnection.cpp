@@ -232,6 +232,14 @@ static QList<WebSocketCommand> s_commands{
 
                        vpn->reset(true);
                        vpn->hideAlert();
+
+                       SettingsHolder* settingsHolder =
+                           SettingsHolder::instance();
+                       Q_ASSERT(settingsHolder);
+
+                       // Extra cleanup for testing
+                       settingsHolder->setTelemetryPolicyShown(false);
+
                        return QJsonObject();
                      }},
 
