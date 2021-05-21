@@ -45,3 +45,25 @@ QByteArray NetworkManager::userAgent() {
 
   return userAgent;
 }
+
+void NetworkManager::clearCache() {
+  if (m_requestCount == 0) {
+    Q_ASSERT(m_clearCacheNeeded == false);
+    clearCacheInternal();
+    return;
+  }
+
+  m_clearCacheNeeded = true;
+}
+
+void NetworkManager::increaseNetworkRequestCount() { ++m_requestCount; }
+
+void NetworkManager::decreaseNetworkRequestCount() {
+  Q_ASSERT(m_requestCount > 0);
+  --m_requestCount;
+
+  if (m_requestCount == 0 && m_clearCacheNeeded) {
+    m_clearCacheNeeded = false;
+    clearCacheInternal();
+  }
+}
