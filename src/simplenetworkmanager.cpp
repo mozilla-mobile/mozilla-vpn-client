@@ -23,7 +23,7 @@ QNetworkAccessManager* SimpleNetworkManager::networkAccessManager() {
   return m_networkManager;
 }
 
-void SimpleNetworkManager::clearCache() {
+void SimpleNetworkManager::clearCacheInternal() {
   if (!m_networkManager) {
     return;
   }
