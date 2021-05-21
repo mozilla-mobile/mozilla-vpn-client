@@ -38,9 +38,14 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
+
+  NetworkManager::instance()->increaseNetworkRequestCount();
 }
 
-NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+NetworkRequest::~NetworkRequest() {
+  MVPN_COUNT_DTOR(NetworkRequest);
+  NetworkManager::instance()->decreaseNetworkRequestCount();
+}
 
 // static
 NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,

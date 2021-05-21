@@ -41,7 +41,7 @@ QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
   return m_engine.networkAccessManager();
 }
 
-void QmlEngineHolder::clearCache() {
+void QmlEngineHolder::clearCacheInternal() {
   QNetworkAccessManager* nam = networkAccessManager();
   Q_ASSERT(nam);
 
