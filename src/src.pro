@@ -821,7 +821,7 @@ debug {
     HEADERS += gleantest.h
 }
 
-equals(QMAKE_CXX, clang++):debug {
+coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
