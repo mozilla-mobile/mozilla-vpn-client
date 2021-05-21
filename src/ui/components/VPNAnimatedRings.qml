@@ -39,7 +39,7 @@ Rectangle {
         onTriggered: { canRender = true;}
     }
 
-    onStartAnimationChanged: makeDirty()
+    onStartAnimationChanged: animatedRings.makeDirty()
     anchors.fill: box
     radius: box.radius
     color: "transparent"
