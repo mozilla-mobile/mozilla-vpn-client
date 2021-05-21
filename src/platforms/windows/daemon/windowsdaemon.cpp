@@ -197,7 +197,7 @@ QString exitCodeToFailure(DWORD exitCode) {
 
 }  // namespace
 
-WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
+WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
   MVPN_COUNT_CTOR(WindowsDaemon);
 
   connect(&m_tunnelMonitor, &WindowsTunnelMonitor::backendFailure, this,

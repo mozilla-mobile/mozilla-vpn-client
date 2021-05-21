@@ -33,12 +33,6 @@ class WindowsServiceManager : public QObject {
   // Starts to poll for serviceStopped
   bool stopService();
 
-     // Installs a Binary as a Service
- static bool installService(LPCWSTR path,LPCWSTR servicename, LPCWSTR description, bool kernel);
-
- public slots:
-  void pollStatus();
-
  signals:
   // Gets Emitted after the Service moved From SERVICE_START_PENDING to
   // SERVICE_RUNNING
@@ -59,7 +53,7 @@ class WindowsServiceManager : public QObject {
   int m_maxWaitTime;
   QTimer m_timer;
 
-  void startPolling(DWORD goal_state, int maxS);
+  bool startPolling(DWORD goal_state, int maxS);
 };
 
 #endif  // WINDOWSSERVICEMANAGER

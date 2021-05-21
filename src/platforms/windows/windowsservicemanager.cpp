@@ -25,11 +25,12 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
   }
   logger.log() << "OpenSCManager access given - " << err;
 
-  wcscpy_s(m_serviceName,wcslen(serviceName),serviceName);
+  //wcscpy_s(m_serviceName,wcslen(serviceName),serviceName);
 
+  logger.log() << "Opening Service - " << QString::fromWCharArray(serviceName);
   // Try to get an elevated handle
   m_service = OpenService(m_serviceManager,  // SCM database
-                          m_serviceName,     // name of service
+                          serviceName,     // name of service
                           (GENERIC_READ | SERVICE_START | SERVICE_STOP));
   err = GetLastError();
   if (err != NULL) {
@@ -38,7 +39,6 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
   }
   m_has_access = true;
   m_timer.setSingleShot(false);
-  connect(&m_timer, &QTimer::timeout, this, &WindowsServiceManager::pollStatus);
 
   logger.log() << "Service manager execute access granted";
 }
@@ -52,41 +52,33 @@ WindowsServiceManager::~WindowsServiceManager() {
   }
 }
 
-void WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
-  m_state_target = goal_state;
-  m_maxWaitTime = max_wait_sec;
-  m_currentWaitTime = 0;
-  m_timer.start(1000);
+bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
+  int tries = 0;
+  while (tries < max_wait_sec) {
+    SERVICE_STATUS status;
+    if (!QueryServiceStatus(m_service, &status)) {
+      WindowsCommons::windowsLog("Failed to retrieve the service status");
+      return false;
+    }
+
+    if (status.dwCurrentState == goal_state) {
+        if (status.dwCurrentState == SERVICE_RUNNING) {
+          emit serviceStarted();
+        }
+        if (status.dwCurrentState == SERVICE_STOPPED) {
+          emit serviceStopped();
+        }
+      return true;
+    }
+
+    logger.log() << "Polling Status" << m_state_target
+                 << "wanted, has: " << status.dwCurrentState;
+    Sleep(1000);
+    ++tries;
+  }
+  return false;
 }
 
-void WindowsServiceManager::pollStatus() {
-  if (!m_has_access) {
-    logger.log() << "Need read access to poll service state";
-    return;
-  }
-  auto state = getStatus().dwCurrentState;
-  logger.log() << "Polling Status" << m_state_target
-               << "wanted, has: " << state;
-  if ((state != m_state_target)) {
-    if (m_currentWaitTime >= m_maxWaitTime) {
-      m_timer.stop();
-      logger.log() << "Waiting for Service failed";
-      MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
-      return;
-    }
-    m_currentWaitTime++;
-    return;
-  }
-  m_timer.stop();
-  if (state == SERVICE_RUNNING) {
-    emit serviceStarted();
-    return;
-  }
-  if (state == SERVICE_STOPPED) {
-    emit serviceStopped();
-    return;
-  }
-}
 
 SERVICE_STATUS_PROCESS WindowsServiceManager::getStatus() {
   SERVICE_STATUS_PROCESS serviceStatus;
@@ -110,23 +102,15 @@ bool WindowsServiceManager::startService() {
     emit serviceStarted();
     return true;
   }
-  if (!m_has_access) {
-    logger.log() << "Need execute access to start service";
-    // Still start polling - windows should start the service
-    m_state_target = SERVICE_RUNNING;
-    pollStatus();
-    return false;
-  }
-  // In case he have execute rights, lets boot and wait for the service.
+
   bool ok = StartService(m_service,  // handle to service
                          0,          // number of arguments
                          NULL);      // no arguments
   if (ok) {
     logger.log() << ("Service start requested");
-    startPolling(SERVICE_RUNNING, 10);
+    startPolling(SERVICE_RUNNING, 30);
   } else {
     WindowsCommons::windowsLog("StartService failed");
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
   }
   return ok;
 }
@@ -152,6 +136,3 @@ bool WindowsServiceManager::stopService() {
   return ok;
 }
 
-bool WindowsServiceManager::installService(LPCWSTR path,LPCWSTR name,LPCWSTR description, bool kernel){
-    return true;
-}

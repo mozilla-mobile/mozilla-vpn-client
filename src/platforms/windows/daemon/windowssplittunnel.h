@@ -1,6 +1,7 @@
 #ifndef WINDOWSSPLITTUNNEL_H
 #define WINDOWSSPLITTUNNEL_H
 
+#include <QObject>
 #include <QString>
 #include <QStringList>
 #pragma once
@@ -137,10 +138,12 @@ typedef struct
 }ProcessInfo;
 
 
-class WindowsSplitTunnel
+class WindowsSplitTunnel : public QObject
 {
+    Q_OBJECT
 public:
-    WindowsSplitTunnel();
+    WindowsSplitTunnel(QObject* parent);
+    ~WindowsSplitTunnel();
 
 
     //void excludeApps(const QStringList& paths);
@@ -152,16 +155,21 @@ public:
     // Deletes Rules and puts it into passive mode
     void stop();
 
-    // Installes the Kernel Driver as Driver Service
-    static HANDLE installDriver();
-    static bool isInstalled();
-    static LPCWSTR SERVICENAME;
 
+    // Installes the Kernel Driver as Driver Service
+    static SC_HANDLE installDriver();
+    static bool uninstallDriver();
+    static bool isInstalled();
+
+private slots:
+        void initDriver();
 private:
     HANDLE m_driver = INVALID_HANDLE_VALUE;
     constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
-
+    constexpr static const auto DRIVER_FILENAME ="mullvad-split-tunnel.sys";
+    constexpr static const auto DRIVER_SERVICE_NAME = L"MozillaVPNSplitTunnel";
     DRIVER_STATE getState();
+
 
 
     // Generates a Configuration for Each APP

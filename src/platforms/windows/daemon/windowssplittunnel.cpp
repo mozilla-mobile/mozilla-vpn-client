@@ -1,5 +1,6 @@
 #include "windowssplittunnel.h"
 #include "../windowscommons.h"
+#include "../windowsservicemanager.h"
 #include "logger.h"
 #include <QNetworkInterface>
 #define PSAPI_VERSION 2
@@ -231,9 +232,32 @@ std::vector<uint8_t> MakeConfiguration(const std::vector<std::wstring> &imageNam
 
 
 
-WindowsSplitTunnel::WindowsSplitTunnel()
+WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent): QObject(parent)
 {
-    logger.log() << "Try to open Split Tunnel Driver";
+    if(!isInstalled()){
+         logger.log() << "Driver is not Installed, doing so";
+         auto handle = installDriver();
+         if(handle == INVALID_HANDLE_VALUE){
+            WindowsCommons::windowsLog("Failed to install Driver");
+         }
+         logger.log() << "Driver installed";
+         CloseServiceHandle(handle);
+    }else{
+        logger.log() << "Driver is installed";
+    }
+    auto driver_manager = WindowsServiceManager(DRIVER_SERVICE_NAME);
+    QObject::connect(&driver_manager, &WindowsServiceManager::serviceStarted,this,&WindowsSplitTunnel::initDriver);
+    driver_manager.startService();
+    return;
+}
+
+WindowsSplitTunnel::~WindowsSplitTunnel(){
+    uninstallDriver();
+}
+
+void WindowsSplitTunnel::initDriver()
+{
+logger.log() << "Try to open Split Tunnel Driver";
     // Open the Driver Symlink
     m_driver = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE,
                            0, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr);;
@@ -262,9 +286,7 @@ WindowsSplitTunnel::WindowsSplitTunnel()
         return;
     }
     logger.log() << "Driver initialised";
-    return;
 }
-
 
 
 void WindowsSplitTunnel::setRules(const QStringList& appPaths)
@@ -569,30 +591,46 @@ ProcessInfo WindowsSplitTunnel::getProcessInfo(HANDLE process, const PROCESSENTR
     }
     return pi;
 }
-LPCWSTR WindowsSplitTunnel::SERVICENAME= L"MozillaSplitTunnel";
 
 // static
-HANDLE WindowsSplitTunnel::installDriver(){
+SC_HANDLE WindowsSplitTunnel::installDriver(){
     LPCWSTR displayName = L"Mozilla Split Tunnel Service";
-    QFileInfo driver(qApp->applicationDirPath()+"/mullvad-split-tunnel.sys");
+    QFileInfo driver(qApp->applicationDirPath()+"/"+ DRIVER_FILENAME);
     if(!driver.exists()){
         logger.log() << "Split Tunnel Driver File not found " << driver.absoluteFilePath();
-        return INVALID_HANDLE_VALUE;
+        return (SC_HANDLE) INVALID_HANDLE_VALUE;
     }
-    auto path = driver.absolutePath();
+    auto path = driver.absolutePath() + "/"+ DRIVER_FILENAME;
     LPCWSTR binPath = (const wchar_t*) path.utf16();
     auto scm_rights = SC_MANAGER_ALL_ACCESS;
     auto serviceManager = OpenSCManager(NULL,  // local computer
                                      NULL,  // servicesActive database
                                      scm_rights);
-    auto service = CreateService(serviceManager, WindowsSplitTunnel::SERVICENAME, displayName,
+    auto service = CreateService(serviceManager, DRIVER_SERVICE_NAME, displayName,
                             SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
                             SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
                             binPath, nullptr, 0,nullptr, nullptr, nullptr);
     CloseServiceHandle(serviceManager);
     return service;
 }
+//static
+bool WindowsSplitTunnel::uninstallDriver(){
+    auto scm_rights = SC_MANAGER_ALL_ACCESS;
+    auto serviceManager = OpenSCManager(NULL,  // local computer
+                                     NULL,  // servicesActive database
+                                     scm_rights);
 
+
+    auto servicehandle = OpenService(serviceManager,DRIVER_SERVICE_NAME,GENERIC_READ);
+
+    auto result = DeleteService(servicehandle);
+    if(result){
+        logger.log() << "Split Tunnel Driver Removed";
+    }
+    return result;
+}
+
+// static
 bool WindowsSplitTunnel::isInstalled(){
     auto scm_rights = SC_MANAGER_ALL_ACCESS;
     auto serviceManager = OpenSCManager(NULL,  // local computer
@@ -600,7 +638,7 @@ bool WindowsSplitTunnel::isInstalled(){
                                      scm_rights);
 
 
-    auto servicehandle = OpenService(serviceManager,WindowsSplitTunnel::SERVICENAME,GENERIC_READ);
+    auto servicehandle = OpenService(serviceManager,DRIVER_SERVICE_NAME,GENERIC_READ);
     auto err = GetLastError();
     CloseServiceHandle(serviceManager);
     CloseServiceHandle(servicehandle);
