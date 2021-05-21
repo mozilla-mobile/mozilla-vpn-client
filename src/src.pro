@@ -799,8 +799,7 @@ RESOURCES += $$PWD/../translations/servers.qrc
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
-}
-else{
+} else {
     message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
         ../translations/mozillavpn_en.ts
@@ -816,6 +815,11 @@ else{
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+
+debug {
+    SOURCES += gleantest.cpp
+    HEADERS += gleantest.h
+}
 
 equals(QMAKE_CXX, clang++):debug {
     message(Coverage enabled)

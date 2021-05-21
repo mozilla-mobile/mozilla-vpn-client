@@ -175,6 +175,14 @@ module.exports = {
     }
   },
 
+  async getLastGleanRequest() {
+    const json = await this._writeCommand('last_glean_request');
+    assert(
+        json.type === 'last_glean_request' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value || null;
+  },
+
   async getLastUrl() {
     const json = await this._writeCommand('lasturl');
     assert(
