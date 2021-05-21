@@ -707,6 +707,8 @@ void MozillaVPN::cancelAuthentication() {
     return;
   }
 
+  emit triggerGleanSample(GleanSample::authenticationAborted);
+
   reset(true);
 }
 
