@@ -39,9 +39,7 @@ Rectangle {
         onTriggered: { canRender = true;}
     }
 
-    onStartAnimationChanged: {
-        animatedRings.makeDirty()
-    }
+    onStartAnimationChanged: animatedRings.makeDirty()
     anchors.fill: box
     radius: box.radius
     color: "transparent"
@@ -67,13 +65,13 @@ Rectangle {
         property var ringYCenter: animatedRingsWrapper.yCenter
 
         renderStrategy: Canvas.Threaded
-        renderTarget: Canvas.FramebufferObject
 
         // Finds the Minimum Box that we need to repaint and marks this
         // for painting
         function makeDirty(){
-            markDirty(dirtyRectangle())
+            markDirty(dirtyRectangle());
         }
+
         function dirtyRectangle(){
             let radius = Math.max(ring1Radius,ring2Radius,ring3Radius)
             return Qt.rect(ringXCenter-radius,ringYCenter-radius, radius, radius)
@@ -164,21 +162,19 @@ Rectangle {
         height: animatedRingsWrapper.height
         width: animatedRingsWrapper.width
         anchors.fill: animatedRingsWrapper
-        onRing1RadiusChanged: {
-            animatedRings.makeDirty()
-        }
+        onRing1RadiusChanged: makeDirty()
 
         contextType: "2d"
         onPaint: {
             // Dont paint if not needed
             if(!canRender){
-                return
+                return;
             }
             let ctx = getContext("2d");
             ctx.reset();
             if (!animatedRingsWrapper.startAnimation) {
                 resetRingValues();
-                return ;
+                return;
             }
             // Draw first ring
             drawRing(ctx, ring1Radius, ring1BorderWidth);
@@ -198,19 +194,12 @@ Rectangle {
         }
 
         Component.onCompleted: {
+            if (Qt.platform.os !== "ios") {
+                renderTarget = Canvas.FramebufferObject
+            }
+
             resetRingValues();
         }
-    }
-
-    Rectangle {
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: animatedRingsWrapper.horizontalCenter
-        y: 45
-        height: 90
-        width: 90
-        radius: 50
-        color: "#321C64"
-        antialiasing: true
     }
 
     RadialGradient {
