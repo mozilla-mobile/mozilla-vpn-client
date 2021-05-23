@@ -38,6 +38,5 @@ VPNFlickable {
         onClicked: {
             VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
        }
-       visible: VPNFeatureList.gleanSupported
     }
 }
