@@ -34,6 +34,7 @@ def getTranslation(root, string, nodeName):
 
 # Generate the translation folder for a particular locale.
 def translate(root, locale):
+  print(f'Translating {locale}')
   nodeTag = "source" if locale == "en" else "translation"
 
   folder = os.path.join('macos', 'pkg', 'Resources', locale + '.lproj')
@@ -94,7 +95,7 @@ for translation in os.listdir('translations'):
     if not os.path.isfile(translationFile):
         continue
 
-    if not translation.startswith('mozillavpn_'):
+    if not translation.startswith('mozillavpn_') or not translation.endswith('.ts'):
         continue
 
     locale = translation.split(".")[0]
