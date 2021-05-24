@@ -145,8 +145,8 @@ class VPNService : android.net.VpnService() {
         mConfig = newConf
         if (currentTunnelHandle != -1) {
             Log.e(tag, "Tunnel already up")
-            isUp = true
-            return
+            // Turn the tunnel down because this might be a switch
+            wgTurnOff(currentTunnelHandle)
         }
 
         val wgConfig: String = newConf!!.toWgUserspaceString()
