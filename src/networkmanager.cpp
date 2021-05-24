@@ -6,6 +6,8 @@
 #include "constants.h"
 #include "leakdetector.h"
 
+#include <QTextStream>
+
 namespace {
 NetworkManager* s_instance = nullptr;
 }
@@ -33,15 +35,27 @@ NetworkManager* NetworkManager::instance() {
 // static
 QByteArray NetworkManager::userAgent() {
   QByteArray userAgent;
-  userAgent.append("MozillaVPN/" APP_VERSION " (");
+
+  {
+    QTextStream out(&userAgent);
+    out << "MozillaVPN/" << APP_VERSION << " (";
+
+    // System data
+    out << "sys:";
 #ifdef MVPN_WASM
-  userAgent.append("WASM");
+    out << "WASM";
 #else
-  userAgent.append(QSysInfo::productType().toLocal8Bit());
-  userAgent.append(" ");
-  userAgent.append(QSysInfo::productVersion().toLocal8Bit());
-  userAgent.append(")");
+    out << QSysInfo::productType().toLocal8Bit() << " "
+        << QSysInfo::productVersion().toLocal8Bit();
 #endif
+
+#ifdef MVPN_EXTRA_USERAGENT
+    out << "; ";
+    out << MVPN_EXTRA_USERAGENT;
+#endif
+
+    out << ")";
+  }
 
   return userAgent;
 }
