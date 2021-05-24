@@ -44,7 +44,12 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
 
 NetworkRequest::~NetworkRequest() {
   MVPN_COUNT_DTOR(NetworkRequest);
-  NetworkManager::instance()->decreaseNetworkRequestCount();
+
+  // During the shutdown, the QML NetworkManager can be released before the
+  // deletion of the pending network requests.
+  if (NetworkManager::exists()) {
+    NetworkManager::instance()->decreaseNetworkRequestCount();
+  }
 }
 
 // static
