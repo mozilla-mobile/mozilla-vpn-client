@@ -6,6 +6,10 @@ include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
+!isEmpty(MVPN_EXTRA_USERAGENT) {
+    DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
+}
+
 QT += network
 QT += quick
 QT += widgets
