@@ -190,11 +190,14 @@ void ConnectionDataHolder::reset() {
   emit bytesChanged();
 
   if (m_txSeries) {
-    Q_ASSERT(m_txSeries->count() == Constants::CHARTS_MAX_POINTS);
-    Q_ASSERT(m_rxSeries->count() == Constants::CHARTS_MAX_POINTS);
-
-    for (int i = 0; i < Constants::CHARTS_MAX_POINTS; ++i) {
+    // In theory, m_txSeries and m_rxSeries should contain
+    // Constants::CHARTS_MAX_POINTS elements, but during the shutdown, strange
+    // things happen.
+    for (int i = 0; i < m_txSeries->count(); ++i) {
       m_txSeries->replace(i, i, 0);
+    }
+
+    for (int i = 0; i < m_rxSeries->count(); ++i) {
       m_rxSeries->replace(i, i, 0);
     }
   }
