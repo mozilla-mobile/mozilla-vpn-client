@@ -26,9 +26,12 @@ NetworkManager::~NetworkManager() {
 
 // static
 NetworkManager* NetworkManager::instance() {
-  Q_ASSERT(s_instance);
+  Q_ASSERT(exists());
   return s_instance;
 }
+
+// static
+bool NetworkManager::exists() { return !!s_instance; }
 
 // static
 QByteArray NetworkManager::userAgent() {
