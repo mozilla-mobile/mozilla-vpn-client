@@ -115,7 +115,7 @@ Item {
         color: Theme.white
         //% "IP: %1"
         //: The current IP address
-        text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
+        text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipv4Address)
         Accessible.name: text
         Accessible.role: Accessible.StaticText
     }
