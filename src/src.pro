@@ -69,6 +69,7 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         ipaddress.cpp \
         ipaddressrange.cpp \
+        ipfinder.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
@@ -157,6 +158,7 @@ HEADERS += \
         fontloader.h \
         ipaddress.h \
         ipaddressrange.h \
+        ipfinder.h \
         leakdetector.h \
         localizer.h \
         logger.h \

@@ -36,6 +36,7 @@ HEADERS += \
     ../../src/featurelist.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
+    ../../src/ipfinder.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
@@ -86,6 +87,7 @@ HEADERS += \
     testlocalizer.h \
     testlogger.h \
     testipaddress.h \
+    testipfinder.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -108,6 +110,7 @@ SOURCES += \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
+    ../../src/ipfinder.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
@@ -156,6 +159,7 @@ SOURCES += \
     testlocalizer.cpp \
     testlogger.cpp \
     testipaddress.cpp \
+    testipfinder.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
