@@ -38,6 +38,15 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
 #endif
 
+  // Let's use "glean-enabled" as an indicator for DNT/GPC too.
+  if (!SettingsHolder::instance()->gleanEnabled()) {
+    // Do-Not-Track:
+    // https://datatracker.ietf.org/doc/html/draft-mayer-do-not-track-00
+    m_request.setRawHeader("DNT", "1");
+    // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
+    m_request.setRawHeader("Sec-GPC", "1");
+  }
+
   m_timer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
