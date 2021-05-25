@@ -155,7 +155,7 @@ void CaptivePortalDetection::deactivationRequired() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (vpn->controller()->state() == Controller::StateOn) {
+  if (vpn->controller()->state() != Controller::StateOff) {
     vpn->deactivate();
     captivePortalMonitor()->start();
   }
