@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QTimer>
 
+class QHostAddress;
 class QNetworkAccessManager;
 
 class NetworkRequest final : public QObject {
@@ -41,7 +42,8 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForVersions(QObject* parent);
 
-  static NetworkRequest* createForIpInfo(QObject* parent);
+  static NetworkRequest* createForIpInfo(QObject* parent,
+                                         const QHostAddress& address);
 
   static NetworkRequest* createForCaptivePortalDetection(
       QObject* parent, const QUrl& url, const QByteArray& host);

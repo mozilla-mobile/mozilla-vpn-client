@@ -104,7 +104,8 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
+NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+                                                const QHostAddress&) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200);

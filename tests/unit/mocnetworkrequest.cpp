@@ -68,7 +68,8 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   return new NetworkRequest(parent, 1234);
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
+NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+                                                const QHostAddress&) {
   return new NetworkRequest(parent, 1234);
 }
 
