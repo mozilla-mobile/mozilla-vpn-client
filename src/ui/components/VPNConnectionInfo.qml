@@ -14,7 +14,6 @@ Item {
     property var tBytes: VPNConnectionData.txBytes
 
     id: connectionInfo
-
     anchors.fill: box
 
     function open() {
@@ -45,19 +44,19 @@ Item {
         width: connectionInfo.width
         height: (connectionInfo.height / 2) - 32
         legend.visible: false
-        anchors.horizontalCenter: connectionInfo.horizontalCenter
         anchors.top: connectionInfo.top
-        anchors.topMargin: 48
+        anchors.topMargin: 64
         anchors.left: connectionInfo.left
+        anchors.right: connectionInfo.right
         margins.top: 0
         margins.bottom: 0
         margins.left: 0
         margins.right: 0
         animationOptions: ChartView.NoAnimation
 
-         Accessible.focusable: true
-         Accessible.role: Accessible.Dialog
-         Accessible.name: connectionInfoButton.accessibleName
+        Accessible.focusable: true
+        Accessible.role: Accessible.Dialog
+        Accessible.name: connectionInfoButton.accessibleName
 
 
         ValueAxis {
@@ -104,22 +103,29 @@ Item {
 
     }
 
-    VPNBoldLabel {
+    Column {
+        spacing: 12
         anchors.top: parent.top
-        anchors.topMargin: Theme.windowMargin * 1.5
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.horizontalCenter: parent.center
-        anchors.horizontalCenterOffset: 0
-        horizontalAlignment: Text.AlignHCenter
-        color: Theme.white
-        //% "IP: %1"
-        //: The current IP address
-        text: qsTrId("vpn.connectionInfo.ip").arg(VPNConnectionData.ipAddress)
-        Accessible.name: text
-        Accessible.role: Accessible.StaticText
-    }
+        anchors.topMargin: Theme.windowMargin * 2
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width - ((backButton.anchors.leftMargin + backButton.width) * 2)
 
+        VPNIPAddress {
+            visible: VPNConnectionData.ipv4Address !== ""
+            //% "IP:"
+            //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
+            ipVersionText: qsTrId("vpn.connectionInfo.ip")
+            ipAddressText: VPNConnectionData.ipv4Address
+        }
+
+        VPNIPAddress {
+            visible: VPNConnectionData.ipv6Address !== ""
+            //% "IPv6:"
+            //: The abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
+            ipVersionText: qsTrId("vpn.connectionInfo.ipv6")
+            ipAddressText: VPNConnectionData.ipv6Address
+        }
+    }
     Row {
         spacing: 48
         anchors.bottom: parent.bottom
