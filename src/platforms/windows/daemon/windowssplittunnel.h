@@ -152,8 +152,10 @@ public:
 
     // Fetches and Pushed needed info to move to engaged mode
     void start();
-    // Deletes Rules and puts it into passive mode
+    // Deletes Rules and puts the driver into passive mode
     void stop();
+    // Resets the Whole Driver
+    void reset();
 
 
     // Installes the Kernel Driver as Driver Service

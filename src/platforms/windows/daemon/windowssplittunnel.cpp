@@ -5,173 +5,11 @@
 #include <QNetworkInterface>
 #define PSAPI_VERSION 2
 #include <psapi.h>
+#include <iphlpapi.h>
 #include <QCoreApplication>
 #include <QFileInfo>
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
-
-FILETIME GetProcessCreationTime(HANDLE processHandle)
-{
-    FILETIME creationTime, dummy;
-
-    const auto status = GetProcessTimes(processHandle, &creationTime, &dummy, &dummy, &dummy);
-
-    if (FALSE == status)
-    {
-        //THROW_WINDOWS_ERROR(GetLastError(), "GetProcessTimes");
-    }
-
-    return creationTime;
-}
-
-std::wstring GetProcessDevicePath(HANDLE processHandle)
-{
-    size_t bufferSize = 512;
-    std::vector<wchar_t> buffer;
-
-    for (;;)
-    {
-        buffer.resize(bufferSize);
-
-        const auto charsWritten = K32GetProcessImageFileNameW(processHandle,
-            &buffer[0], static_cast<DWORD>(buffer.size()));
-
-        if (0 == charsWritten)
-        {
-            if (ERROR_INSUFFICIENT_BUFFER == GetLastError())
-            {
-                bufferSize *= 2;
-                continue;
-            }
-
-            //THROW_WINDOWS_ERROR(GetLastError(), "K32GetProcessImageFileNameW");
-        }
-
-        //
-        // K32GetProcessImageFileNameW writes a null terminator
-        // but doesn't account for it in the return value.
-        //
-
-        return std::wstring(&buffer[0], &buffer[0] + charsWritten);
-    }
-}
-
-
-std::vector<ProcessInfo> CompileProcessInfo()
-{
-    auto snapshot = new HANDLE(
-        (HANDLE)CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
-
-    if (INVALID_HANDLE_VALUE == *snapshot)
-    {
-        //THROW_WINDOWS_ERROR(GetLastError(), "Snapshot processes");
-    }
-
-    PROCESSENTRY32W processEntry;
-    processEntry.dwSize = sizeof(PROCESSENTRY32W);
-
-    if (FALSE == Process32First(*snapshot, &processEntry))
-    {
-        //THROW_WINDOWS_ERROR(GetLastError(), "Initiate process enumeration");
-    }
-
-    std::map<DWORD, ProcessInfo> processes;
-
-    //
-    // Discover all processes.
-    //
-
-    do
-    {
-        auto handle = new HANDLE(OpenProcess(
-            PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processEntry.th32ProcessID));
-
-        if (NULL == *handle)
-        {
-            //THROW_WINDOWS_ERROR(GetLastError(), "Open process");
-            continue;
-        }
-
-        ProcessInfo pi;
-
-        pi.ProcessId = processEntry.th32ProcessID;
-        pi.ParentProcessId = processEntry.th32ParentProcessID;
-
-        try
-        {
-            pi.CreationTime = GetProcessCreationTime(*handle);
-        }
-        catch (...)
-        {
-            pi.CreationTime = { 0,0 };
-        }
-
-        try
-        {
-            pi.DevicePath = GetProcessDevicePath(*handle);
-        }
-        catch (...)
-        {
-            //
-            // Including a process without a path might seem useless.
-            // But it enables ancestor discovery.
-            //
-
-            pi.DevicePath = L"";
-        }
-
-        processes.insert(std::make_pair(pi.ProcessId, pi));
-    }
-    while (FALSE != Process32NextW(*snapshot, &processEntry));
-
-    //
-    // Find instances of PID recycling.
-    //
-    // This can be done by checking the creation time of the parent
-    // process and discovering that the age of the claimed parent process
-    // is lower than that of the child process.
-    //
-
-    for (auto& [pid, process] : processes)
-    {
-        auto parentIter = processes.find(process.ParentProcessId);
-
-        if (parentIter != processes.end())
-        {
-            ULARGE_INTEGER parentTime;
-            parentTime.LowPart = parentIter->second.CreationTime.dwLowDateTime;
-            parentTime.HighPart = parentIter->second.CreationTime.dwHighDateTime;
-
-            ULARGE_INTEGER processTime;
-            processTime.LowPart = process.CreationTime.dwLowDateTime;
-            processTime.HighPart = process.CreationTime.dwHighDateTime ;
-
-            if (0 != parentTime.QuadPart
-                && parentTime.QuadPart < processTime.QuadPart)
-            {
-                continue;
-            }
-        }
-
-        process.ParentProcessId = 0;
-    }
-
-    //
-    // Store process records into vector.
-    //
-
-    std::vector<ProcessInfo> output;
-
-    output.reserve(processes.size());
-
-    std::transform(processes.begin(), processes.end(), std::back_inserter(output),
-        [](const std::map<DWORD, ProcessInfo>::value_type &entry)
-        {
-            return entry.second;
-        });
-
-    return output;
-}
 
 
 std::vector<uint8_t> MakeConfiguration(const std::vector<std::wstring> &imageNames)
@@ -216,21 +54,7 @@ std::vector<uint8_t> MakeConfiguration(const std::vector<std::wstring> &imageNam
 
     return buffer;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent): QObject(parent)
 {
@@ -257,7 +81,7 @@ WindowsSplitTunnel::~WindowsSplitTunnel(){
 
 void WindowsSplitTunnel::initDriver()
 {
-logger.log() << "Try to open Split Tunnel Driver";
+    logger.log() << "Try to open Split Tunnel Driver";
     // Open the Driver Symlink
     m_driver = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE,
                            0, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr);;
@@ -311,14 +135,12 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths)
     config = MakeConfiguration(names);
     logger.log() << "Refrence impl config size:" << config.size();
 
-
-
-
     DWORD bytesReturned;
     auto ok = DeviceIoControl(m_driver,IOCTL_SET_CONFIGURATION,
         &config[0], (DWORD)config.size(), nullptr, 0, &bytesReturned,nullptr);
     if(!ok){
         logger.log() << "Failed to set Config";
+        reset();
         return;
     }
     logger.log() << "New Configuration applied";
@@ -330,6 +152,16 @@ void WindowsSplitTunnel::start(){
     logger.log() << "Starting SplitTunnel";
     DWORD bytesReturned;
 
+    if(getState() == STATE_STARTED){
+        logger.log() << "Driver needs Init Call";
+        DWORD bytesReturned;
+        auto ok = DeviceIoControl(m_driver, IOCTL_INITIALIZE, nullptr, 0, nullptr, 0, &bytesReturned, nullptr);
+        if(!ok){
+            logger.log() << "Driver init failed";
+            return;
+        }
+    }
+
     // Process Info (what is running already)
     if( getState() == STATE_INITIALIZED){
         logger.log() << "State is Init, requires process config";
@@ -340,15 +172,14 @@ void WindowsSplitTunnel::start(){
             logger.log() << "Failed to set Process Config";
             return;
         }
-        logger.log() << "Set Process Config || State" << getState();
+        logger.log() << "Set Process Config ok || new State:" << getState();
     }
 
     if( getState() == STATE_INITIALIZED){
          logger.log() << "Driver is still not ready after process list send";
          return;
     }
-
-
+    logger.log() << "Driver is  ready || new State:" << getState();
 
     auto config = generateIPConfiguration();
     auto ok = DeviceIoControl(m_driver,IOCTL_REGISTER_IP_ADDRESSES,
@@ -357,6 +188,7 @@ void WindowsSplitTunnel::start(){
         logger.log() << "Failed to set Network Config";
         return;
     }
+    logger.log() << "New Network Config Applied || new State:" << getState();
 
 }
 
@@ -370,6 +202,18 @@ void WindowsSplitTunnel::stop()
         return;
     }
     logger.log() << "Stopping Split tunnel successfull";
+}
+
+void WindowsSplitTunnel::reset()
+{
+    DWORD bytesReturned;
+    auto ok = DeviceIoControl(m_driver,IOCTL_ST_RESET,
+        nullptr, 0, nullptr, 0, &bytesReturned,nullptr);
+    if(!ok){
+        logger.log() << "Reset Split tunnel not successfull";
+        return;
+    }
+    logger.log() << "Reset Split tunnel successfull";
 }
 
 DRIVER_STATE WindowsSplitTunnel::getState(){
@@ -440,9 +284,27 @@ std::vector<uint8_t> WindowsSplitTunnel::generateIPConfiguration(){
     std::vector<uint8_t> out(sizeof(IP_ADDRESSES_CONFIG));
 
     auto config = reinterpret_cast<IP_ADDRESSES_CONFIG*>(&out[0]);
-    // TODO: Write cool stuff that termines the Adapter the Splitted App should use:
-    getAddress(17, &config->TunnelIpv4, &config->TunnelIpv6);
-    getAddress(5, &config->InternetIpv4, &config->InternetIpv6);
+    /* How to Choose the Right Adapter:
+     * Windows will has their own thing Called metric to rate each connection
+     * and use the lowest-cost network adapter possible.
+     *
+     * So the VPN-Adapter starts with a metric of 0, making it the most optimal route
+     * making it always the default.
+     * So as the "outside" Connection we want the 2nd best metric.
+     *
+     * We can't get the exact number without using powershell but lucky us:
+     * From msdn (GetAdaptersAddresses):
+     * >Starting with Windows 10, the order in which adapters appear in
+     * >the list is determined by the IPv4 or IPv6 route metric.
+     *
+     * So  QNetworkInterface::allInterfaces() is perfectly sorted for us.
+     */
+
+    auto ifaces = QNetworkInterface::allInterfaces();
+    // Always the VPN
+    getAddress(ifaces.at(0).index(), &config->TunnelIpv4, &config->TunnelIpv6);
+    // 2nd best route
+    getAddress(ifaces.at(1).index(), &config->InternetIpv4, &config->InternetIpv6);
     return out;
 }
 void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4, IN6_ADDR* out_ipv6){
@@ -494,7 +356,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob(){
     PROCESSENTRY32W currentProcess;
     currentProcess.dwSize = sizeof(PROCESSENTRY32W);
 
-    if (!(Process32First(snapshot_handle, &currentProcess)))
+    if (FALSE ==(Process32First(snapshot_handle, &currentProcess)))
     {
         WindowsCommons::windowsLog("Cant read first entry");
     }
@@ -511,18 +373,16 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob(){
         ProcessInfo info = getProcessInfo(process_handle,currentProcess);
         processes.insert(info.ProcessId,info);
 
-    }while (!(Process32NextW(snapshot_handle, &currentProcess)));
+    }while (FALSE != (Process32NextW(snapshot_handle, &currentProcess)));
 
 
-    /*auto process_list = processes.values();
+    auto process_list = processes.values();
     if( process_list.isEmpty()){
         logger.log() << "Process Snapshot list was empty";
         return std::vector<uint8_t>(0);
-    }*/
+    }
 
-    auto process_list = CompileProcessInfo();
     logger.log() << "Reading Processes NUM: " << process_list.size();
-
     //Determine the Size of the outBuffer:
     size_t totalStringSize = 0;
 

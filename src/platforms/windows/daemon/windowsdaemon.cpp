@@ -443,8 +443,8 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
           logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
           WindowsSplitTunnel::installDriver();
       }
-      m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
       m_splitTunnelManager.start();
+      m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
   }
 
   m_state = Active;
