@@ -10,7 +10,7 @@ const FirefoxHelper = require('./firefox.js');
 describe('Captive portal', function() {
   let driver;
 
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();

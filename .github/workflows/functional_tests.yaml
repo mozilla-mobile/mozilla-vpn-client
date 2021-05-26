@@ -95,6 +95,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
+      max-parallel: 3 #  To avoid max-device limit
       matrix:
         test: ${{ fromJson(needs.test_list.outputs.matrix) }}
     steps:
