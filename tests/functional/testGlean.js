@@ -8,7 +8,7 @@ const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Glean event logging', function() {
-  this.timeout(2000000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -41,6 +41,11 @@ describe('Glean event logging', function() {
     await vpn.wait();
 
     await vpn.clickOnElement('getStarted');
+
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -99,6 +104,11 @@ describe('Glean event logging', function() {
     }
 
     await vpn.clickOnElement('getStarted');
+
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('declineTelemetryLink');
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();

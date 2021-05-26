@@ -7,7 +7,7 @@ const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Telemetry view', function() {
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();

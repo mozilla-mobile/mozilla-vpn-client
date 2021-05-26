@@ -15,7 +15,7 @@ const exec = util.promisify(require('child_process').exec);
 describe('Settings', function() {
   let driver;
 
-  this.timeout(200000);
+  this.timeout(2000000);
 
   before(async () => {
     await vpn.connect();

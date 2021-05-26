@@ -192,15 +192,14 @@ module.exports = {
   },
 
   async waitForCondition(condition) {
-    for (let i = 0; i < 50; ++i) {
+    while (true) {
       if (await condition()) return;
       await new Promise(resolve => setTimeout(resolve, 200));
     }
-    throw new Error('Timeout for waitForCondition');
   },
 
   wait() {
-    return new Promise(resolve => setTimeout(resolve, 500));
+    return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
   async authenticate(driver, resetting = true, telemetry = true) {
