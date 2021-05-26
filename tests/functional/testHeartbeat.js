@@ -22,7 +22,7 @@ describe('Backend failure', function() {
     await vpn.wait();
   }
 
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
