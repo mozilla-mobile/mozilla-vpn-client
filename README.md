@@ -162,7 +162,7 @@ The IOS procedure is similar to the macOS one:
   $ git submodule init
   $ git submodule update --remote
 1. Install python3 dependencies:
-  $ pip install glean_parser
+  $ pip3 install glean_parser
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`
