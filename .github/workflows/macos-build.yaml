@@ -15,8 +15,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: Staging, qmake: "" }
-            - { name: Production, qmake: "CONFIG+=production" }
+            - { name: Staging, qmake: "CONFIG+=inspector CONFIG+=webextension", webExtension: 1 }
+            - { name: Production, qmake: "CONFIG+=production", webExtension: 0 }
 
     runs-on: macos-latest
 
@@ -124,7 +124,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos
+            macos "0" "${{ matrix.config.webExtension }}"
 
       - name: Compiling
         shell: bash
