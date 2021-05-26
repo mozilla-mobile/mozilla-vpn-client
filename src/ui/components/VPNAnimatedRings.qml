@@ -166,8 +166,8 @@ Rectangle {
 
         contextType: "2d"
         onPaint: {
-            // Dont paint if not needed
-            if(!canRender){
+            // Dont paint if not needed or if not ready
+            if (!context || !canRender){
                 return;
             }
             let ctx = getContext("2d");
