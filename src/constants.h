@@ -49,7 +49,7 @@ CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
 CONSTEXPR(uint32_t, STATUSICON_ANIMATION_MSEC, 200, 200, 0)
 
 // How often glean pings are sent
-CONSTEXPR(uint32_t, GLEAN_TIMEOUT_MSEC, 3600000, 1000, 0)
+CONSTEXPR(uint32_t, GLEAN_TIMEOUT_MSEC, 1200000, 1000, 0)
 
 // How often we check the surveys to be executed (no network requests are done
 // for this check)
