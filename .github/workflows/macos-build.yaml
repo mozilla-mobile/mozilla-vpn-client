@@ -109,6 +109,7 @@ jobs:
             CONFIG-=debug \
             CONFIG-=debug_and_release \
             CONFIG+=release \
+            CONFIG+=webextension \
             QTPLUGIN+=qsvg \
             CONFIG-=static \
             CONFIG+=balrog \
@@ -118,7 +119,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos "0" "${{ matrix.config.webExtension }}"
+            macos "0" "1"
 
       - name: Compiling
         shell: bash

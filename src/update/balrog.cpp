@@ -245,7 +245,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   gostring_t updateDataGo{updateDataCopy.constData(),
                           (size_t)updateDataCopy.length()};
 
-  QByteArray rootHashCopy = Constants::BALROG_ROOT_CERT_FINGERPRINT;
+  QByteArray rootHashCopy = Constants::balrogRootCertFingerprint();
   rootHashCopy = rootHashCopy.toUpper();
   gostring_t rootHashGo{rootHashCopy.constData(),
                         (size_t)rootHashCopy.length()};

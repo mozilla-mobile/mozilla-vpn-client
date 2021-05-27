@@ -60,10 +60,9 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
             name: android-build
-            path: .tmp/src/android-build/mozillavpn.apk
+            path: .tmp/src/android-build/build/outputs/apk/release/
 
       - name: Upload Debug Symbols (arm64-v8a)
-        if: ${{ matrix.config.sym }} 
         uses: actions/upload-artifact@v1
         with:
             name: debug-sym(arm64-v8a)
