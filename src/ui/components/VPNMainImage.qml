@@ -300,40 +300,17 @@ Rectangle {
         anchors.fill: logo
         start: Qt.point(0, logo.width)
         end: Qt.point(logo.height,0)
-        state: logo.showVPNOnIcon
-        states: [
-            State {
-                when: !logo.showVPNOnIcon
-                PropertyChanges {
-                    target: stop1
-                    color: "#FD3296"
-                }
-                PropertyChanges {
-                    target: stop2
-                    color: "#9D62FC"
-                }
-            },
-            State {
-                when: logo.showVPNOnIcon
-                PropertyChanges {
-                    target: stop1
-                    color: "#0090ED"
-                }
-                PropertyChanges {
-                    target: stop2
-                    color: "#B833E1"
-                }
-            }
-        ]
         gradient:
             Gradient {
                   GradientStop {
                       id: stop1
                       position: 0
+                      color: logo.showVPNOnIcon ? "#0090ED": "#FD3296"
                   }
                   GradientStop {
                       id: stop2
                       position: 1
+                      color: logo.showVPNOnIcon ? "#B833E1" : "#9D62FC"
                   }
               }
         visible: false
