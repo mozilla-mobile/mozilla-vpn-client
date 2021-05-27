@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "../../src/leakdetector.h"
+#include "constants.h"
 #include "helper.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
@@ -17,6 +18,7 @@ int main(int argc, char* argv[]) {
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
+  Constants::setStaging();
 
   QCoreApplication a(argc, argv);
 

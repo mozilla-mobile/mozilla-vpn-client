@@ -9,10 +9,10 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-VPNFlickable {
-    id: vpnFlickable
-    property alias isSettingsView: menu.isSettingsView
+Item {
+    id: getHelp
     objectName: "getHelp"
+    property alias isSettingsView: menu.isSettingsView
 
     property int unlockCounter: 0
     Timer {

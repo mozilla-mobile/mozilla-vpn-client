@@ -6,12 +6,7 @@
 #include "settingsholder.h"
 
 namespace {
-
-#if defined(UNIT_TEST)
-bool s_inProduction = false;
-#else
 bool s_inProduction = true;
-#endif
 }  // namespace
 
 bool Constants::inProduction() { return s_inProduction; }
