@@ -106,11 +106,6 @@ describe('User authentication', function() {
 
     await vpn.clickOnElement('onboardingNext');
 
-    await vpn.waitForElement('telemetryPolicyButton');
-    await vpn.waitForElementProperty(
-        'telemetryPolicyButton', 'visible', 'true');
-    await vpn.clickOnElement('telemetryPolicyButton');
-
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -135,7 +130,7 @@ describe('User authentication', function() {
   });
 
   it('Start and complete the authentication', async () => {
-    await vpn.authenticate(driver, false);
+    await vpn.authenticate(driver, false, false);
   });
 
   it('Post authentication view', async () => {

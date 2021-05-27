@@ -147,7 +147,6 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
-  m_settings.remove(SETTINGS_TELEMETRYPOLICYSHOWN);
 
   // We do not remove language, ipv6 and localnetwork settings.
 }
