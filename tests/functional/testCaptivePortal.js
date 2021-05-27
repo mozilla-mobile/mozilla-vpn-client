@@ -86,7 +86,7 @@ describe('Captive portal', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false));
+  it('authenticate', async () => await vpn.authenticate(driver, false, false));
 
   it('Captive portal in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

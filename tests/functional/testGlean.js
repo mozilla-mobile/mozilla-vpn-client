@@ -94,10 +94,9 @@ describe('Glean event logging', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('Start and abort the authentication (no logging)', async () => {
-    await vpn.setSetting('glean-enabled', false);
-    await vpn.wait();
+  it('reset the app', async () => await vpn.reset());
 
+  it('Start and abort the authentication (no logging)', async () => {
     let glean = await vpn.getLastGleanRequest();
     if (glean.url !== '') {
       assert(glean.url.includes('deletion-request'));
@@ -118,8 +117,9 @@ describe('Glean event logging', function() {
     await vpn.wait();
 
     glean = await vpn.getLastGleanRequest();
-    assert(glean.url === '');
-    assert(glean.data === '');
+    if (glean.url !== '') {
+      assert(glean.url.includes('deletion-request'));
+    }
 
     await vpn.waitForElement('authenticatingView');
     await vpn.waitForElementProperty('authenticatingView', 'visible', 'true');

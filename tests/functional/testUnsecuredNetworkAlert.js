@@ -93,7 +93,7 @@ describe('Unsecured network alert', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false));
+  it('authenticate', async () => await vpn.authenticate(driver, false, false));
 
   it('Unsecured network alert in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
