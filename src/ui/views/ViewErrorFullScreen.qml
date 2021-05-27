@@ -30,16 +30,7 @@ VPNFlickable {
         objectName: "getHelpLink"
 
         labelText: qsTrId("vpn.main.getHelp")
-        onClicked: stackview.push(getHelpComponent)
-    }
-
-    Component {
-        id: getHelpComponent
-
-        VPNGetHelp {
-            isSettingsView: false
-        }
-
+        onClicked: stackview.push("../views/ViewGetHelp.qml")
     }
 
     ColumnLayout {
