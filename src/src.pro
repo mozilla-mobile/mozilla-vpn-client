@@ -702,6 +702,7 @@ else:win* {
     TARGET = MozillaVPN
 
     CONFIG += c++1z
+    QMAKE_CXXFLAGS += -MP
 
     QT += networkauth
     QT += svg
