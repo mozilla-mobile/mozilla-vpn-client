@@ -32,7 +32,19 @@ DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {
 
 DnsUtilsLinux::~DnsUtilsLinux() {
   MVPN_COUNT_DTOR(DnsUtilsLinux);
-  restoreResolvers();
+
+  for (int ifindex : m_linkDomains.keys()) {
+    QList<QVariant> argumentList;
+    argumentList << QVariant::fromValue(ifindex);
+    argumentList << QVariant::fromValue(m_linkDomains[ifindex]);
+    m_resolver->asyncCallWithArgumentList(QStringLiteral("SetLinkDomains"),
+                                          argumentList);
+  }
+
+  if (m_ifindex > 0) {
+    m_resolver->asyncCall(QStringLiteral("RevertLink"), m_ifindex);
+  }
+
   logger.log() << "DnsUtilsLinux destroyed.";
 }
 

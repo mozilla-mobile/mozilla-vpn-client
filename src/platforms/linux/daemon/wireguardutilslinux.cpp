@@ -169,10 +169,11 @@ bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
     NetfilterBlockCgroup(blockClassId);
   }
   if (config.m_ipv6Enabled) {
+    int slashPos = config.m_deviceIpv6Address.indexOf('/');
     GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
                               .n = config.m_deviceIpv6Address.length()};
-    if (config.m_deviceIpv6Address.contains('/')) {
-      goIpv6Address.n = config.m_deviceIpv6Address.indexOf('/');
+    if (slashPos != -1) {
+      goIpv6Address.n = slashPos;
     }
     NetfilterIsolateIpv6(goIfname, goIpv6Address);
   }

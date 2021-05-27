@@ -13,6 +13,7 @@
 
 class DnsUtilsLinux final : public DnsUtils {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(DnsUtilsLinux)
 
  public:
   DnsUtilsLinux(QObject* parent);
@@ -22,10 +23,6 @@ class DnsUtilsLinux final : public DnsUtils {
   bool restoreResolvers() override;
 
  private:
-  int m_ifindex = 0;
-  QMap<int, DnsLinkDomainList> m_linkDomains;
-  QDBusInterface* m_resolver = nullptr;
-  QDBusInterface* m_properties = nullptr;
   void setLinkDNS(int ifindex, const QList<QHostAddress>& resolvers);
   void setLinkDomains(int ifindex, const QList<DnsLinkDomain>& domains);
   void setLinkDefaultRoute(int ifindex, bool enable);
@@ -34,6 +31,11 @@ class DnsUtilsLinux final : public DnsUtils {
  private slots:
   void dnsCallCompleted(QDBusPendingCallWatcher*);
   void dnsDomainsReceived(QDBusPendingCallWatcher*);
+
+ private:
+  int m_ifindex = 0;
+  QMap<int, DnsLinkDomainList> m_linkDomains;
+  QDBusInterface* m_resolver = nullptr;
 };
 
 #endif  // DNSUTILSLINUX_H
