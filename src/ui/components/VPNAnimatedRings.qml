@@ -41,7 +41,7 @@ Rectangle {
 
     onStartAnimationChanged: animatedRings.makeDirty()
     anchors.fill: box
-    radius: box.radius
+    radius: boxBackground.radius
     color: "transparent"
     antialiasing: true
     visible: false
