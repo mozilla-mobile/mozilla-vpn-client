@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QTextStream>
 
 #ifdef QT_DEBUG
 #  include <QRandomGenerator>
@@ -42,6 +43,20 @@ QString Device::currentDeviceName() {
 #endif
 
   return deviceName;
+}
+
+// static
+QString Device::currentDeviceReport() {
+  QString buffer;
+  QTextStream out(&buffer);
+  out << "Name -> " << currentDeviceName() << Qt::endl;
+  out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "OS -> " << QSysInfo::productType() << Qt::endl;
+  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+  out << "APP Version -> " << APP_VERSION << Qt::endl;
+  out << "Build ID -> " << BUILD_ID << Qt::endl;
+
+  return buffer;
 }
 
 Device::Device() { MVPN_COUNT_CTOR(Device); }

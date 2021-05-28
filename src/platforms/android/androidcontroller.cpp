@@ -304,6 +304,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       // Data is here a JSON String
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
+                                       m_controller->m_server.ipv4AddrIn(),
                                        doc.object()["totalTX"].toInt(),
                                        doc.object()["totalRX"].toInt());
       break;

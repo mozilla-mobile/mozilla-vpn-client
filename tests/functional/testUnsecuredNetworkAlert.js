@@ -10,7 +10,7 @@ const FirefoxHelper = require('./firefox.js');
 describe('Unsecured network alert', function() {
   let driver;
 
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -55,6 +55,18 @@ describe('Unsecured network alert', function() {
 
     await vpn.clickOnElement('getStarted');
 
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+
+    await vpn.forceUnsecuredNetworkAlert();
+    await vpn.wait();
+
+    assert(vpn.lastNotification().title === null);
+
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -81,7 +93,7 @@ describe('Unsecured network alert', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false));
+  it('authenticate', async () => await vpn.authenticate(driver, false, false));
 
   it('Unsecured network alert in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

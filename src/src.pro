@@ -6,12 +6,14 @@ include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
+!isEmpty(MVPN_EXTRA_USERAGENT) {
+    DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
+}
+
 QT += network
 QT += quick
 QT += widgets
 QT += charts
-
-CONFIG += c++1z
 
 TEMPLATE  = app
 
@@ -39,6 +41,7 @@ SOURCES += \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
+        captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -66,22 +69,25 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         ipaddress.cpp \
         ipaddressrange.cpp \
+        ipfinder.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
         loghandler.cpp \
         logoutobserver.cpp \
         main.cpp \
-        models/helpmodel.cpp \
-        models/user.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/helpmodel.cpp \
         models/keys.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
+        models/survey.cpp \
+        models/surveymodel.cpp \
+        models/user.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -108,6 +114,7 @@ SOURCES += \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
+        tasks/surveydata/tasksurveydata.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -124,6 +131,8 @@ HEADERS += \
         captiveportal/captiveportalmonitor.h \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
+        captiveportal/captiveportalmultirequest.h \
+        captiveportal/captiveportalresult.h \
         closeeventhandler.h \
         command.h \
         commandlineparser.h \
@@ -149,6 +158,7 @@ HEADERS += \
         fontloader.h \
         ipaddress.h \
         ipaddressrange.h \
+        ipfinder.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -163,6 +173,8 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
+        models/survey.h \
+        models/surveymodel.h \
         models/user.h \
         mozillavpn.h \
         networkmanager.h \
@@ -193,6 +205,7 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/removedevice/taskremovedevice.h \
+        tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
@@ -269,11 +282,15 @@ balrog {
 DUMMY {
     message(Dummy build)
 
+    CONFIG += c++1z
+
     win* {
       CONFIG += embed_manifest_exe
       QT += svg
     } else {
-      QMAKE_CXXFLAGS *= -Werror
+      versionAtLeast(QT_VERSION, 5.15.1) {
+        QMAKE_CXXFLAGS *= -Werror
+      }
     }
 
     macos {
@@ -304,11 +321,11 @@ DUMMY {
 else:linux:!android {
     message(Linux build)
 
-    QMAKE_CXXFLAGS *= -Werror
-
     TARGET = mozillavpn
     QT += networkauth
     QT += dbus
+
+    CONFIG += c++14
 
     DEFINES += MVPN_LINUX
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
@@ -345,6 +362,7 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
             platforms/linux/daemon/wireguardutilslinux.cpp \
@@ -354,8 +372,10 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/interfaceconfig.h \
             daemon/daemon.h \
+            daemon/iputils.h \
             daemon/wireguardutils.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/iputilslinux.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wireguardutilslinux.h \
             wgquickprocess.h
@@ -414,6 +434,10 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
+    systemd_service.files = ../linux/debian/mozillavpn.service
+    systemd_service.path = /lib/systemd/system
+    INSTALLS += systemd_service
+
     DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
     helper.path = $${USRPATH}/share/mozillavpn
     helper.files = ../linux/daemon/helper.sh
@@ -427,10 +451,14 @@ else:linux:!android {
 else:android {
     message(Android build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
+
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
     CONFIG += force_debug_info
+    CONFIG += c++14
 
     TARGET = mozillavpn
     QT += networkauth
@@ -507,11 +535,15 @@ else:android {
 else:macos {
     message(MacOSX build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
+
+    CONFIG += c++1z
 
     # For the loginitem
     LIBS += -framework ServiceManagement
@@ -581,6 +613,7 @@ else:macos {
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/iputils.h \
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
@@ -607,6 +640,8 @@ else:ios {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
     QT += gui-private
+
+    CONFIG += c++1z
 
     # For the authentication
     LIBS += -framework AuthenticationServices
@@ -666,6 +701,9 @@ else:win* {
 
     TARGET = MozillaVPN
 
+    CONFIG += c++1z
+    QMAKE_CXXFLAGS += -MP
+
     QT += networkauth
     QT += svg
 
@@ -688,8 +726,6 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
-        platforms/windows/windowscaptiveportaldetection.cpp \
-        platforms/windows/windowscaptiveportaldetectionthread.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
@@ -705,6 +741,7 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/iputils.h \
         daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
@@ -712,8 +749,6 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
-        platforms/windows/windowscaptiveportaldetection.h \
-        platforms/windows/windowscaptiveportaldetectionthread.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
@@ -729,10 +764,14 @@ else:wasm {
     DEFINES += MVPN_DUMMY
     DEFINES += MVPN_WASM
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = mozillavpn
     QT += svg
+
+    CONFIG += c++1z
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
@@ -766,9 +805,8 @@ else {
 RESOURCES += $$PWD/../translations/servers.qrc
 
 exists($$PWD/../translations/translations.pri) {
-  #  include($$PWD/../translations/translations.pri)
-}
-else{
+    include($$PWD/../translations/translations.pri)
+} else {
     message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
         ../translations/mozillavpn_en.ts
@@ -785,7 +823,12 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-equals(QMAKE_CXX, clang++):debug {
+debug {
+    SOURCES += gleantest.cpp
+    HEADERS += gleantest.h
+}
+
+coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping

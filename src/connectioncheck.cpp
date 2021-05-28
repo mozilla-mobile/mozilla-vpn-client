@@ -29,8 +29,8 @@ void ConnectionCheck::start() {
   logger.log() << "Starting a connection check";
 
   MozillaVPN::instance()->controller()->getStatus(
-      [this](const QString& serverIpv4Gateway, uint64_t txBytes,
-             uint64_t rxBytes) {
+      [this](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+             uint64_t txBytes, uint64_t rxBytes) {
         Q_UNUSED(txBytes);
         Q_UNUSED(rxBytes);
 
@@ -38,7 +38,7 @@ void ConnectionCheck::start() {
 
         if (!serverIpv4Gateway.isEmpty()) {
           m_timer.start(CONNECTION_CHECK_TIMEOUT_MSEC);
-          m_pingHelper.start(serverIpv4Gateway);
+          m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
         }
       });
 }

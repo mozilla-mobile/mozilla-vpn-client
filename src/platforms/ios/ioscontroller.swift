@@ -235,31 +235,37 @@ public class IOSControllerImpl : NSObject {
         (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
     }
 
-    @objc func checkStatus(callback: @escaping (String, String) -> Void) {
+    @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {
         Logger.global?.log(message: "Check status")
         assert(tunnel != nil)
 
         let proto = tunnel!.protocolConfiguration as? NETunnelProviderProtocol
         if proto == nil {
-            callback("", "")
+            callback("", "", "")
             return
         }
 
         let tunnelConfiguration = proto?.asTunnelConfiguration()
         if tunnelConfiguration == nil {
-            callback("", "")
+            callback("", "", "")
             return
         }
 
         let serverIpv4Gateway = tunnelConfiguration?.interface.dns[0].address
         if serverIpv4Gateway == nil {
-            callback("", "")
+            callback("", "", "")
+            return
+        }
+
+        let deviceIpv4Address = tunnelConfiguration?.interface.addresses[0].address
+        if deviceIpv4Address == nil {
+            callback("", "", "")
             return
         }
 
         guard let session = tunnel?.connection as? NETunnelProviderSession
         else {
-            callback("", "")
+            callback("", "", "")
             return
         }
 
@@ -269,15 +275,15 @@ public class IOSControllerImpl : NSObject {
                       let configString = String(data: data, encoding: .utf8)
                 else {
                     Logger.global?.log(message: "Failed to convert data to string")
-                    callback("", "")
+                    callback("", "", "")
                     return
                 }
 
-                callback("\(serverIpv4Gateway!)", configString)
+                callback("\(serverIpv4Gateway!)", "\(deviceIpv4Address!)", configString)
             }
         } catch {
             Logger.global?.log(message: "Failed to retrieve data from session")
-            callback("", "")
+            callback("", "", "")
         }
     }
 }

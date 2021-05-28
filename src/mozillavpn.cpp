@@ -22,6 +22,7 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/surveydata/tasksurveydata.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
@@ -85,6 +86,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     scheduleTask(new TaskAccountAndServers());
     scheduleTask(new TaskCaptivePortalLookup());
     scheduleTask(new TaskHeartbeat());
+    scheduleTask(new TaskSurveyData());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -213,7 +215,9 @@ void MozillaVPN::initialize() {
   }
 
   logger.log() << "We have a valid token";
+
   if (!m_private->m_user.fromSettings()) {
+    logger.log() << "No user data found";
     return;
   }
 
@@ -243,6 +247,10 @@ void MozillaVPN::initialize() {
 
   if (!m_private->m_captivePortal.fromSettings()) {
     // We do not care about CaptivePortal settings.
+  }
+
+  if (!m_private->m_surveyModel.fromSettings()) {
+    // We do not care about Survey settings.
   }
 
   if (!modelsInitialized()) {
@@ -294,15 +302,21 @@ void MozillaVPN::maybeStateMain() {
   }
 #endif
 
-#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+#if !defined(MVPN_ANDROID) && !defined(MVPN_IOS)
   if (!settingsHolder->hasPostAuthenticationShown() ||
       !settingsHolder->postAuthenticationShown()) {
-    settingsHolder->setPostAuthenticationShown(true);
     setState(StatePostAuthentication);
     return;
   }
 #endif
+
+  if (!settingsHolder->hasTelemetryPolicyShown() ||
+      !settingsHolder->telemetryPolicyShown()) {
+    setState(StateTelemetryPolicy);
+    return;
+  }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
@@ -315,6 +329,20 @@ void MozillaVPN::maybeStateMain() {
   if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
+}
+
+void MozillaVPN::getStarted() {
+  logger.log() << "Get started";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  if (!settingsHolder->hasTelemetryPolicyShown() ||
+      !settingsHolder->telemetryPolicyShown()) {
+    setState(StateTelemetryPolicy);
+    return;
+  }
+
+  authenticate();
 }
 
 void MozillaVPN::authenticate() {
@@ -350,11 +378,13 @@ void MozillaVPN::openLink(LinkType linkType) {
   logger.log() << "Opening link: " << linkType;
 
   QString url;
+  bool addEmailAddress = false;
 
   switch (linkType) {
     case LinkAccount:
       url = Constants::API_URL;
       url.append("/r/vpn/account");
+      addEmailAddress = true;
       break;
 
     case LinkContact:
@@ -391,17 +421,7 @@ void MozillaVPN::openLink(LinkType linkType) {
     case LinkUpdate:
       url = Constants::API_URL;
       url.append("/r/vpn/update/");
-#if defined(MVPN_LINUX)
-      url.append("linux");
-#elif defined(MVPN_MACOS)
-      url.append("macos");
-#elif defined(MVPN_IOS)
-      url.append("ios");
-#elif defined(MVPN_ANDROID)
-      url.append("android");
-#else
-      url.append("dummy");
-#endif
+      url.append(Constants::PLATFORM_NAME);
       break;
 
     case LinkSubscriptionBlocked:
@@ -414,7 +434,7 @@ void MozillaVPN::openLink(LinkType linkType) {
       return;
   }
 
-  UrlOpener::open(url);
+  UrlOpener::open(url, addEmailAddress);
 }
 
 void MozillaVPN::scheduleTask(Task* task) {
@@ -668,6 +688,17 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   // m_private->m_controller.subscriptionNeeded();
 }
 
+void MozillaVPN::surveyChecked(const QByteArray& json) {
+  logger.log() << "Survey checked";
+
+  if (!m_private->m_surveyModel.fromJson(json)) {
+    logger.log() << "Failed to parse the Survey JSON data";
+    return;
+  }
+
+  m_private->m_surveyModel.writeSettings();
+}
+
 void MozillaVPN::cancelAuthentication() {
   logger.log() << "Canceling authentication";
 
@@ -675,6 +706,8 @@ void MozillaVPN::cancelAuthentication() {
     // We cannot cancel tasks if we are not in authenticating state.
     return;
   }
+
+  emit triggerGleanSample(GleanSample::authenticationAborted);
 
   reset(true);
 }
@@ -839,9 +872,32 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
 void MozillaVPN::postAuthenticationCompleted() {
   logger.log() << "Post authentication completed";
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->setPostAuthenticationShown(true);
+
   // Super racy, but it could happen that we are already in update-required
   // state.
   if (m_state == StateUpdateRequired) {
+    return;
+  }
+
+  maybeStateMain();
+}
+
+void MozillaVPN::telemetryPolicyCompleted() {
+  logger.log() << "telemetry policy completed";
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->setTelemetryPolicyShown(true);
+
+  // Super racy, but it could happen that we are already in update-required
+  // state.
+  if (m_state == StateUpdateRequired) {
+    return;
+  }
+
+  if (!m_userAuthenticated) {
+    authenticate();
     return;
   }
 
@@ -963,6 +1019,12 @@ void MozillaVPN::serializeLogs(QTextStream* out,
         } else {
           *out << "No logs from the backend.";
         }
+        *out << Qt::endl;
+        *out << "==== SETTINGS ====" << Qt::endl;
+        *out << SettingsHolder::instance()->getReport();
+        *out << "==== DEVICE ====" << Qt::endl;
+        *out << Device::currentDeviceReport();
+        *out << Qt::endl;
 
         finalizeCallback();
       });

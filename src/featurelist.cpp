@@ -79,11 +79,3 @@ bool FeatureList::userDNSSupported() const {
   return false;
 #endif
 }
-
-bool FeatureList::gleanSupported() const {
-#ifdef MVPN_PRODUCTION_MODE
-  return false;
-#else
-  return true;
-#endif
-}

@@ -10,6 +10,7 @@
 #include "networkmanager.h"
 #include "settingsholder.h"
 
+#include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
@@ -19,6 +20,9 @@
 
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
+
+constexpr const char* IPINFO_URL_IPV4 = "https://%1/api/v1/vpn/ipinfo";
+constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
 
 namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
@@ -34,13 +38,32 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
 #endif
 
+  // Let's use "glean-enabled" as an indicator for DNT/GPC too.
+  if (!SettingsHolder::instance()->gleanEnabled()) {
+    // Do-Not-Track:
+    // https://datatracker.ietf.org/doc/html/draft-mayer-do-not-track-00
+    m_request.setRawHeader("DNT", "1");
+    // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
+    m_request.setRawHeader("Sec-GPC", "1");
+  }
+
   m_timer.setSingleShot(true);
 
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
+
+  NetworkManager::instance()->increaseNetworkRequestCount();
 }
 
-NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+NetworkRequest::~NetworkRequest() {
+  MVPN_COUNT_DTOR(NetworkRequest);
+
+  // During the shutdown, the QML NetworkManager can be released before the
+  // deletion of the pending network requests.
+  if (NetworkManager::exists()) {
+    NetworkManager::instance()->decreaseNetworkRequestCount();
+  }
+}
 
 // static
 NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
@@ -154,6 +177,23 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+  r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+  QUrl url(Constants::API_URL);
+  url.setPath("/api/v1/vpn/surveys");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   Q_ASSERT(parent);
 
@@ -184,7 +224,8 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
+NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+                                                const QHostAddress& address) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200);
@@ -193,11 +234,24 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   r->m_request.setRawHeader("Authorization", authorizationHeader);
 
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV6).arg(address.toString())));
+  } else {
+    Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
+    r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV4).arg(address.toString())));
+  }
+
   QUrl url(Constants::API_URL);
-  url.setPath("/api/v1/vpn/ipinfo");
-  r->m_request.setUrl(url);
+  r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
 
   r->getRequest();
+
+  // Only for this request, we ignore SSL errors, otherwise QT will try to
+  // validate the SSL certificate using the hostname and not the Host-header
+  // value.
+  Q_ASSERT(r->m_reply);
+  r->m_reply->ignoreSslErrors();
+
   return r;
 }
 

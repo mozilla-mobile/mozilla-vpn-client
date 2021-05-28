@@ -10,7 +10,7 @@ const FirefoxHelper = require('./firefox.js');
 describe('Captive portal', function() {
   let driver;
 
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -55,6 +55,11 @@ describe('Captive portal', function() {
 
     await vpn.clickOnElement('getStarted');
 
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -81,7 +86,7 @@ describe('Captive portal', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false));
+  it('authenticate', async () => await vpn.authenticate(driver, false, false));
 
   it('Captive portal in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

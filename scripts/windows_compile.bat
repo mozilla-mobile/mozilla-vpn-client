@@ -111,30 +111,28 @@ python scripts\importLanguages.py
 ECHO Generating glean samples...
 python scripts\generate_glean.py
 
-if "%WEBEXTENSION_BUILD%" == "T" (
-  qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to configure the project
-    EXIT 1
-  )
+qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to configure the project
+  EXIT 1
+)
 
-  IF NOT EXIST mozillavpnnp.vcxproj (
-    echo The VC project doesn't exist. Why?
-    EXIT 1
-  )
+IF NOT EXIST mozillavpnnp.vcxproj (
+  echo The VC project doesn't exist. Why?
+  EXIT 1
+)
 
-  ECHO Cleaning up the project...
-  MSBuild -t:Clean -p:Configuration=Release mozillavpnnp.vcxproj
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to clean up the project
-    EXIT 1
-  )
+ECHO Cleaning up the project...
+MSBuild -t:Clean -p:Configuration=Release mozillavpnnp.vcxproj
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
+  EXIT 1
+)
 
-  MSBuild -t:Build -p:Configuration=Release mozillavpnnp.vcxproj
-  IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to build the project
-    EXIT 1
-  )
+MSBuild -t:Build -p:Configuration=Release mozillavpnnp.vcxproj
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to build the project
+  EXIT 1
 )
 
 ECHO Creating the project with flags: %FLAGS%

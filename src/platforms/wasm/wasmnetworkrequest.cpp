@@ -104,7 +104,8 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   return r;
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
+NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+                                                const QHostAddress&) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200);
@@ -128,6 +129,14 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 }
 
 NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200);
+  createDummyRequest(r);
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200);

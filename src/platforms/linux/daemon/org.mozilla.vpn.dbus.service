@@ -2,3 +2,4 @@
 User=root
 Name=org.mozilla.vpn.dbus
 Exec=/usr/bin/mozillavpn linuxdaemon
+SystemdService=mozillavpn.service

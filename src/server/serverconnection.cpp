@@ -167,8 +167,9 @@ void ServerConnection::writeState() {
         stateStr = "authenticating";
         break;
       case MozillaVPN::StatePostAuthentication:
-        stateStr = "ready";
-        break;
+        [[fallthrough]];
+      case MozillaVPN::StateTelemetryPolicy:
+        [[fallthrough]];
       case MozillaVPN::StateMain:
         stateStr = "ready";
         break;

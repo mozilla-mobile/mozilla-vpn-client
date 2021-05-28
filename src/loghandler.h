@@ -64,6 +64,8 @@ class LogHandler final : public QObject {
 
   static void cleanupLogs();
 
+  static void setLocation(const QString& path);
+
  signals:
   void logEntryAdded(const QByteArray& log);
 
@@ -80,9 +82,10 @@ class LogHandler final : public QObject {
 
   void closeLogFile(const QMutexLocker& proofOfLock);
 
+  static void cleanupLogFile(const QMutexLocker& proofOfLock);
+
   const QStringList m_modules;
 
-  QString m_logFileName;
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;
 };

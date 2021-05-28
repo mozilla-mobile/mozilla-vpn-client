@@ -15,7 +15,6 @@ export PATH="${SELF%/*}:$PATH"
 
 WG_CONFIG=""
 INTERFACE=""
-ADDRESSES=( )
 DNS=( )
 CONFIG_FILE=""
 
@@ -42,7 +41,6 @@ parse_options() {
 		[[ $key == "[Interface]" ]] && interface_section=1
 		if [[ $interface_section -eq 1 ]]; then
 			case "$key" in
-			Address) ADDRESSES+=( ${value//,/ } ); continue ;;
 			DNS) for v in ${value//,/ }; do
 				[[ $v =~ (^[0-9.]+$)|(^.*:.*$) ]] && DNS+=( $v )
 			done; continue ;;
@@ -51,16 +49,6 @@ parse_options() {
 		WG_CONFIG+="$line"$'\n'
 	done < "$CONFIG_FILE"
 	shopt -u nocasematch
-}
-
-add_if() {
-	local ret
-	if ! ip link add "$INTERFACE" type wireguard; then
-		ret=$?
-		[[ -e /sys/module/wireguard ]] || ! command -v "${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" >/dev/null && exit $ret
-		echo "[!] Missing WireGuard kernel module. Falling back to slow userspace implementation." >&2
-		"${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" "$INTERFACE"
-	fi
 }
 
 del_if() {
@@ -81,18 +69,6 @@ del_if() {
 			ip -6 rule delete table main suppress_prefixlength 0
 		done
 	fi
-	ip link delete dev "$INTERFACE"
-}
-
-add_addr() {
-	local proto=-4
-	[[ $1 == *:* ]] && proto=-6
-	ip $proto address add "$1" dev "$INTERFACE"
-}
-
-set_mtu_up() {
-	# Using default MTU of 1420
-	ip link set mtu 1420 up dev "$INTERFACE"
 }
 
 resolvconf_iface_prefix() {
@@ -109,12 +85,12 @@ set_dns() {
 	# Iterate through values of DNS array and pipe "nameserver" string to 
 	# resolvconf command which adds nameserver rows for each dns entry to /etc/resolv.conf
 	# (maybe amongst other things)
-	printf 'nameserver %s\n' "${DNS[@]}" | resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
+	printf 'nameserver %s\n' "${DNS[@]}" | /bin/bash resolvconf -a "$(resolvconf_iface_prefix)$INTERFACE" -m 0 -x
 	HAVE_SET_DNS=1
 }
 
 unset_dns() {
-	resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
+	/bin/bash resolvconf -d "$(resolvconf_iface_prefix)$INTERFACE" -f
 }
 
 add_route() {
@@ -182,19 +158,9 @@ add_default() {
 	return 0
 }
 
-set_config() {
-	wg setconf "$INTERFACE" <(echo "$WG_CONFIG")
-}
-
 cmd_up() {
 	local i
 	trap 'del_if; exit' INT TERM EXIT
-	add_if
-	set_config
-	for i in "${ADDRESSES[@]}"; do
-		add_addr "$i"
-	done
-	set_mtu_up
 	set_dns
 	# Get the allowed ips from wg show (added to peer using set_conf)
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do

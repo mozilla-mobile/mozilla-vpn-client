@@ -172,7 +172,8 @@ void IOSController::checkStatus() {
 
   m_checkingStatus = true;
 
-  [impl checkStatusWithCallback:^(NSString* serverIpv4Gateway, NSString* configString) {
+  [impl checkStatusWithCallback:^(NSString* serverIpv4Gateway, NSString* deviceIpv4Address,
+                                  NSString* configString) {
     QString config = QString::fromNSString(configString);
 
     m_checkingStatus = false;
@@ -198,8 +199,10 @@ void IOSController::checkStatus() {
     }
 
     logger.log() << "ServerIpv4Gateway:" << QString::fromNSString(serverIpv4Gateway)
+                 << "DeviceIpv4Address:" << QString::fromNSString(deviceIpv4Address)
                  << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
-    emit statusUpdated(QString::fromNSString(serverIpv4Gateway), txBytes, rxBytes);
+    emit statusUpdated(QString::fromNSString(serverIpv4Gateway),
+                       QString::fromNSString(deviceIpv4Address), txBytes, rxBytes);
   }];
 }
 

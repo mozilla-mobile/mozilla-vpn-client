@@ -18,7 +18,8 @@ DummyPingSendWorker::~DummyPingSendWorker() {
   MVPN_COUNT_DTOR(DummyPingSendWorker);
 }
 
-void DummyPingSendWorker::sendPing(const QString& destination) {
-  logger.log() << "Dummy ping to:" << destination;
+void DummyPingSendWorker::sendPing(const QString& destination,
+                                   const QString& source) {
+  logger.log() << "Dummy ping to:" << destination << "from:" << source;
   emit pingSucceeded();
 }

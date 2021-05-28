@@ -26,11 +26,12 @@ class QmlEngineHolder final : public NetworkManager {
 
   QNetworkAccessManager* networkAccessManager() override;
 
-  void clearCache() override;
-
   QWindow* window() const;
   void showWindow();
   void hideWindow();
+
+ protected:
+  void clearCacheInternal() override;
 
  private:
   QQmlApplicationEngine m_engine;

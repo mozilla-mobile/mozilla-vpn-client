@@ -147,6 +147,14 @@ const vpnToggleDisconnected = {
     "focusBorder": darkFocusBorder,
 };
 
+const greenAlert = {
+    "defaultColor":  "#3FE1B0",
+    "buttonHovered": "#3AD4B3",
+    "buttonPressed": "#1CC5A0",
+    "focusOutline": "#333FE1B0",
+    "focusBorder": "#1CC5A0",
+};
+
 const cornerRadius = 4;
 const focusBorderWidth = 2;
 

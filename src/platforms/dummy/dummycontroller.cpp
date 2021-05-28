@@ -47,7 +47,7 @@ void DummyController::checkStatus() {
   m_txBytes += QRandomGenerator::global()->generate() % 100000;
   m_rxBytes += QRandomGenerator::global()->generate() % 100000;
 
-  emit statusUpdated("127.0.0.1", m_txBytes, m_rxBytes);
+  emit statusUpdated("127.0.0.1", "127.0.0.1", m_txBytes, m_rxBytes);
 }
 
 void DummyController::getBackendLogs(

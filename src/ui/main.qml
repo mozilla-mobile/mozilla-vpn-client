@@ -62,7 +62,7 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported, {
+        Glean.glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
           httpClient: {
@@ -78,11 +78,15 @@ Window {
                             resolve({status: xhr.status, result: 2 /* UploadResultStatus.Success */ });
                           }
                           xhr.send(body);
+
+                          if (typeof(VPNGleanTest) !== "undefined") {
+                              VPNGleanTest.requestDone(url, body);
+                          }
                       });
                   }
           },
-          // TODO: this should be removed
-          debug: {logPings: true}
+
+          debug: {logPings: !VPN.productionMode }
         });
     }
     Rectangle {
@@ -166,6 +170,15 @@ Window {
                     PropertyChanges {
                         target: loader
                         source: "states/StatePostAuthentication.qml"
+                    }
+
+                },
+                State {
+                    name: VPN.StateTelemetryPolicy
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateTelemetryPolicy.qml"
                     }
 
                 },
@@ -280,10 +293,13 @@ Window {
         }
     }
 
-    VPNSystemAlert {
-        id: alertBox
-
-        z: 2
+    Connections {
+        target: VPNSettings
+        function onGleanEnabledChanged() {
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+        }
     }
 
+    VPNSystemAlert {
+    }
 }

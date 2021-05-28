@@ -30,13 +30,16 @@ Rectangle {
         return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
+    function closeConnectionInfo() {
+        connectionInfo.close();
+    }
+
     state: VPNController.state
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.margins: 16
     radius: 8
-    height: 318
-    width: parent.width - 32
+    Layout.preferredHeight: 318
+    Layout.preferredWidth: parent.width - Theme.windowMargin
+    Layout.alignment: Qt.AlignHCenter
+
     antialiasing: true
     states: [
         State {
@@ -481,6 +484,7 @@ Rectangle {
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: connectionInfoImage
@@ -518,6 +522,7 @@ Rectangle {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: settingsImage
@@ -642,10 +647,12 @@ Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
     }
 
     VPNConnectionInfo {
         id: connectionInfo
+        visible: false
 
         Behavior on opacity {
             NumberAnimation {

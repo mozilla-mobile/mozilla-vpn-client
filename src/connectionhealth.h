@@ -38,7 +38,8 @@ class ConnectionHealth final : public QObject {
 
  private:
   void stop();
-  void start(const QString& serverIpv4Gateway);
+  void start(const QString& serverIpv4Gateway,
+             const QString& deviceIpv4Address);
 
   void pingSentAndReceived(qint64 msec);
 
@@ -55,6 +56,7 @@ class ConnectionHealth final : public QObject {
 
   bool m_suspended = false;
   QString m_currentGateway;
+  QString m_deviceAddress;
 };
 
 #endif  // CONNECTIONHEALTH_H

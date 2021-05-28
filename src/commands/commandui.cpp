@@ -67,6 +67,7 @@
 #include <QApplication>
 
 #ifdef QT_DEBUG
+#  include "gleantest.h"
 #  include <QLoggingCategory>
 #endif
 
@@ -123,6 +124,11 @@ int CommandUI::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
+
+#ifdef QT_DEBUG
+    // This is a collector of glean HTTP requests to see if we leak something.
+    GleanTest gleanTest;
+#endif
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
@@ -237,6 +243,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSurveyModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->surveyModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCurrentServer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->currentServer();
@@ -316,6 +330,16 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = IAPHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
+
+#ifdef QT_DEBUG
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGleanTest",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GleanTest::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

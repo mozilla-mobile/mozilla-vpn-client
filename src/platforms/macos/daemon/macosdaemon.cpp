@@ -98,6 +98,7 @@ QByteArray MacOSDaemon::getStatus() {
 
     obj.insert("status", true);
     obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
+    obj.insert("deviceIpv4Address", m_lastConfig.m_deviceIpv4Address);
     obj.insert("date", m_connectionDate.toString());
 
     obj.insert("txBytes", QJsonValue(double(txBytes)));

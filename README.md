@@ -51,11 +51,16 @@ See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or ar
 
 Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
-#### Initialize submodules
+#### Initialization
 
 ```
+# submodules
 git submodule init
 git submodule update
+# glean
+./scripts/generate_glean.py
+# translations
+python scripts/importLanguages.py
 ```
 
 #### Build
@@ -67,6 +72,8 @@ qmake CONFIG+=production
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
+
+For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug CONFIG+=inspector`.
 
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
@@ -155,7 +162,7 @@ The IOS procedure is similar to the macOS one:
   $ git submodule init
   $ git submodule update --remote
 1. Install python3 dependencies:
-  $ pip install glean_parser
+  $ pip3 install glean_parser
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`

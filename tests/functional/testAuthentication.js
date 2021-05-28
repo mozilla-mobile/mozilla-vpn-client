@@ -15,7 +15,7 @@ const exec = util.promisify(require('child_process').exec);
 describe('User authentication', function() {
   let driver;
 
-  this.timeout(200000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -45,6 +45,11 @@ describe('User authentication', function() {
 
   it('Start and abort the authentication (initial view)', async () => {
     await vpn.clickOnElement('getStarted');
+
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -125,7 +130,7 @@ describe('User authentication', function() {
   });
 
   it('Start and complete the authentication', async () => {
-    await vpn.authenticate(driver, false);
+    await vpn.authenticate(driver, false, false);
   });
 
   it('Post authentication view', async () => {

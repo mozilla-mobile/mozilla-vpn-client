@@ -6,21 +6,22 @@ package org.mozilla.firefox.vpn
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
-import com.wireguard.android.backend.*
-import com.wireguard.android.backend.GoBackend
+import android.system.OsConstants
+import com.wireguard.android.util.SharedLibraryLoader
 import com.wireguard.config.Config
-import java.lang.Exception
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    private val mBackend = GoBackend(this)
-    private val mTunnel = VPNTunnel("mvpn1", mBinder)
     private var mConfig: Config? = null
+    private var mConnectionTime: Long = 0
+
+    private var currentTunnelHandle = -1
 
     override fun onUnbind(intent: Intent?): Boolean {
-        if (state == Tunnel.State.DOWN) {
+        if (!isUp) {
             // If the Qt Client got closed while we were not connected
             // we do not need to stay as a foreground service.
             stopForeground(true)
@@ -36,6 +37,11 @@ class VPNService : android.net.VpnService() {
         Log.init(this)
         NotificationUtil.show(this)
         Log.v(tag, "Got Bind request")
+
+        SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
+        Log.i(tag, "loaded lib")
+        Log.e(tag, "Wireguard Version ${wgVersion()}")
+
         return mBinder
     }
 
@@ -46,20 +52,13 @@ class VPNService : android.net.VpnService() {
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.init(this)
-        this.startService(Intent(this, GoBackend.VpnService::class.java))
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
                 return super.onStartCommand(intent, flags, startId)
             }
-            if (intent.getBooleanExtra("startOnBoot", false)) {
-                Log.v(tag, "Starting VPN because 'start on boot is enabled'")
-            } else {
-                Log.v(tag, "Starting VPN because 'always on vpn' is enabled")
-            }
         }
-        // Go foreground if we need to connect
-        NotificationUtil.show(this)
+        // This start is from always-on
 
         if (this.mConfig == null) {
             // We don't have tunnel to turn on - Try to create one with last config the service got
@@ -67,12 +66,15 @@ class VPNService : android.net.VpnService() {
             val lastConfString = prefs.getString("lastConf", "")
             if (lastConfString.isNullOrEmpty()) {
                 // We have nothing to connect to -> Exit
-                Log.e(tag, "VPN service was triggered without defining a Server or having a tunnel")
+                Log.e(
+                    tag,
+                    "VPN service was triggered without defining a Server or having a tunnel"
+                )
                 return super.onStartCommand(intent, flags, startId)
             }
             this.mConfig = mBinder.buildConfigFromJSON(lastConfString)
         }
-        turnOn(this.mConfig)
+        turnOn(this.mConfig!!)
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -83,24 +85,40 @@ class VPNService : android.net.VpnService() {
         super.onRevoke()
     }
 
-    var statistic: Statistics? = null
-        get() {
-            return mBackend.getStatistics(this.mTunnel)
-        }
-    var state: Tunnel.State? = null
-        get() {
-            return mBackend.getState(this.mTunnel)
-        }
     var connectionTime: Long = 0
         get() {
-            return mTunnel.mConnectionTime
+            return mConnectionTime
         }
 
-    /*
-    * Checks if the VPN Permission is given. 
-    * If the permission is given, returns true
-    * Requests permission and returns false if not.
-    */
+    var isUp: Boolean
+        get() {
+            return currentTunnelHandle >= 0
+        }
+        private set(value) {
+            if (value) {
+                mBinder.dispatchEvent(VPNServiceBinder.EVENTS.connected, "")
+                mConnectionTime = System.currentTimeMillis()
+                return
+            }
+            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
+            mConnectionTime = 0
+        }
+    val totalRx: Int
+        get() {
+            val value = getConfigValue("rx_bytes") ?: return 0
+            return value.toInt()
+        }
+    val totalTx: Int
+        get() {
+            val value = getConfigValue("tx_bytes") ?: return 0
+            return value.toInt()
+        }
+
+     /*
+     * Checks if the VPN Permission is given. 
+     * If the permission is given, returns true
+     * Requests permission and returns false if not.
+     */
     fun checkPermissions(): Boolean {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
@@ -115,37 +133,99 @@ class VPNService : android.net.VpnService() {
     }
 
     fun turnOn(newConf: Config?) {
+        if (newConf == null) {
+            return
+        }
         if (!checkPermissions()) {
             Log.e(tag, "turn on was called without no permissions present!")
-            mTunnel.abort()
+            isUp = false
             return
         }
         Log.i(tag, "Permission okay")
-        NotificationUtil.show(this) // Go foreground
-        this.startService(Intent(this, GoBackend.VpnService::class.java))
-        if (newConf == null && mConfig == null) {
-            Log.e(tag, "Tried to start VPN with null config - abort")
-        }
-        if (newConf != null) {
-            mConfig = newConf
+        mConfig = newConf
+        if (currentTunnelHandle != -1) {
+            Log.e(tag, "Tunnel already up")
+            // Turn the tunnel down because this might be a switch
+            wgTurnOff(currentTunnelHandle)
         }
 
-        // wgBackend will "DOWN" the tunnel before connecting,
-        // we don't need the onchange event to be passed to the controller.
-        // so set the current expected state to be down.
-        mTunnel.mState = Tunnel.State.DOWN
-        try {
-            mBackend.setState(mTunnel, Tunnel.State.UP, mConfig)
-        } catch (e: Exception) {
-            Log.e(tag, "Exception while enabling the tunnel: ${e.message}")
-            mTunnel.abort()
+        val wgConfig: String = newConf!!.toWgUserspaceString()
+
+        val builder = Builder()
+        setupBuilder(newConf, builder)
+        builder.setSession("mvpn0")
+        builder.establish().use { tun ->
+            if (tun == null)return
+            Log.i(tag, "Go backend " + wgVersion())
+            currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
+        if (currentTunnelHandle < 0) {
+            Log.e(tag, "Activation Error Code -> $currentTunnelHandle")
+            isUp = false
+            return
+        }
+        protect(wgGetSocketV4(currentTunnelHandle))
+        protect(wgGetSocketV6(currentTunnelHandle))
+        isUp = true
+        NotificationUtil.show(this) // Go foreground
     }
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        mBackend.setState(mTunnel, Tunnel.State.DOWN, null)
+        wgTurnOff(currentTunnelHandle)
+        currentTunnelHandle = -1
         stopForeground(false)
+        isUp = false
+    }
+
+    /**
+     * Configures an Android VPN Service Tunnel
+     * with a given Wireguard Config
+     */
+    private fun setupBuilder(config: Config, builder: Builder) {
+        // Setup Split tunnel
+        for (excludedApplication in config.`interface`.excludedApplications)
+            builder.addDisallowedApplication(excludedApplication)
+
+        // Device IP
+        for (addr in config.`interface`.addresses) builder.addAddress(addr.address, addr.mask)
+        // DNS
+        for (addr in config.`interface`.dnsServers) builder.addDnsServer(addr.hostAddress)
+        // Add All routes the VPN may route tos
+        for (peer in config.peers) {
+            for (addr in peer.allowedIps) {
+                builder.addRoute(addr.address, addr.mask)
+            }
+        }
+        builder.allowFamily(OsConstants.AF_INET)
+        builder.allowFamily(OsConstants.AF_INET6)
+        builder.setMtu(config.`interface`.mtu.orElse(1280))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) builder.setMetered(false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) setUnderlyingNetworks(null)
+
+        builder.setBlocking(true)
+    }
+
+    /**
+     * Gets config value for {key} from the Current
+     * running Wireguard tunnel
+     */
+    private fun getConfigValue(key: String): String? {
+        if (!isUp) {
+            return null
+        }
+        val config = wgGetConfig(currentTunnelHandle) ?: return null
+        val lines = config.split("\n")
+        for (line in lines) {
+            val parts = line.split("=")
+            val k = parts.first()
+            val value = parts.last()
+            if (key == k) {
+                return value
+            }
+        }
+        return null
     }
 
     companion object {
@@ -157,5 +237,18 @@ class VPNService : android.net.VpnService() {
                 }
             )
         }
+
+        @JvmStatic
+        private external fun wgGetConfig(handle: Int): String?
+        @JvmStatic
+        private external fun wgGetSocketV4(handle: Int): Int
+        @JvmStatic
+        private external fun wgGetSocketV6(handle: Int): Int
+        @JvmStatic
+        private external fun wgTurnOff(handle: Int)
+        @JvmStatic
+        private external fun wgTurnOn(ifName: String, tunFd: Int, settings: String): Int
+        @JvmStatic
+        private external fun wgVersion(): String?
     }
 }

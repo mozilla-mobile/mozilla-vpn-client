@@ -11,6 +11,7 @@
 #include "../../src/models/servercountry.h"
 #include "../../src/models/servercountrymodel.h"
 #include "../../src/models/serverdata.h"
+#include "../../src/models/surveymodel.h"
 #include "../../src/models/user.h"
 #include "../../src/settingsholder.h"
 #include "helper.h"
@@ -1305,6 +1306,157 @@ void TestModels::ipAddressRangeBasic() {
   QCOMPARE(c.toString(), a.toString());
 
   a = a;
+}
+
+// SurveyModel
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::surveyModelFromJson_data() {
+  QTest::addColumn<QByteArray>("json");
+  QTest::addColumn<bool>("result");
+  QTest::addColumn<int>("surveys");
+  QTest::addColumn<QString>("surveyId");
+  QTest::addColumn<QString>("surveyUrl");
+  QTest::addColumn<int>("surveyTriggerTime");
+  QTest::addColumn<bool>("surveyTriggerable");
+
+  QTest::addRow("invalid") << QByteArray("") << false;
+  QTest::addRow("object") << QByteArray("{}") << false;
+
+  QJsonArray surveys;
+  QTest::addRow("good but empty")
+      << QJsonDocument(surveys).toJson() << true << 0 << ""
+      << "" << 0;
+
+  surveys.append(42);
+  QTest::addRow("invalid surveys") << QJsonDocument(surveys).toJson() << false;
+
+  QJsonObject d;
+  surveys.replace(0, d);
+  QTest::addRow("survey without id")
+      << QJsonDocument(surveys).toJson() << false;
+
+  d.insert("id", "A");
+  surveys.replace(0, d);
+  QTest::addRow("survey without id")
+      << QJsonDocument(surveys).toJson() << false;
+
+  d.insert("url", "http://vpn.mozilla.org");
+  surveys.replace(0, d);
+  QTest::addRow("survey without id")
+      << QJsonDocument(surveys).toJson() << false;
+
+  d.insert("trigger_time", 0);
+  surveys.replace(0, d);
+  QTest::addRow("good") << QJsonDocument(surveys).toJson() << true << 1 << "A"
+                        << "http://vpn.mozilla.org" << 0 << true;
+
+  d.insert("platforms", 12345);
+  surveys.replace(0, d);
+  QTest::addRow("bogus platforms") << QJsonDocument(surveys).toJson() << false;
+
+  QJsonArray platforms = {"ios", "android"};
+  d.insert("platforms", platforms);
+  surveys.replace(0, d);
+  QTest::addRow("unmatched platforms")
+      << QJsonDocument(surveys).toJson() << true << 1 << "A"
+      << "http://vpn.mozilla.org" << 0 << false;
+
+  platforms.append("dummy");
+  d.insert("platforms", platforms);
+  surveys.replace(0, d);
+  QTest::addRow("matched platforms")
+      << QJsonDocument(surveys).toJson() << true << 1 << "A"
+      << "http://vpn.mozilla.org" << 0 << true;
+
+  QJsonObject d2;
+  d2.insert("id", "B");
+  d2.insert("url", "http://vpn.mozilla.org");
+  d2.insert("trigger_time", 1234);
+
+  surveys.append(d2);
+  QTest::addRow("good - 2 surveys")
+      << QJsonDocument(surveys).toJson() << true << 2 << "A"
+      << "http://vpn.mozilla.org" << 0 << true;
+}
+
+void TestModels::surveyModelFromJson() {
+  QFETCH(QByteArray, json);
+  QFETCH(bool, result);
+
+  // fromJson
+  {
+    SurveyModel sm;
+
+    QCOMPARE(sm.fromJson(json), result);
+
+    if (!result) {
+      QCOMPARE(sm.surveys().length(), 0);
+    } else {
+      QFETCH(int, surveys);
+      QCOMPARE(sm.surveys().length(), surveys);
+
+      if (surveys > 0) {
+        QFETCH(QString, surveyId);
+        QCOMPARE(sm.surveys()[0].id(), surveyId);
+
+        QFETCH(QString, surveyUrl);
+        QCOMPARE(sm.surveys()[0].url(), surveyUrl);
+
+        QFETCH(int, surveyTriggerTime);
+        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+
+        Survey a(sm.surveys()[0]);
+        QCOMPARE(a.id(), surveyId);
+        QCOMPARE(a.url(), surveyUrl);
+        QCOMPARE(a.triggerTime(), surveyTriggerTime);
+
+        Survey b;
+        b = a;
+        QCOMPARE(b.id(), surveyId);
+        QCOMPARE(b.url(), surveyUrl);
+        QCOMPARE(b.triggerTime(), surveyTriggerTime);
+
+        b = b;
+      }
+
+      QVERIFY(sm.fromJson(json));
+    }
+  }
+
+  // fromSettings
+  {
+    SettingsHolder settingsHolder;
+    SettingsHolder::instance()->setSurveys(json);
+
+    SurveyModel sm;
+    QCOMPARE(sm.fromSettings(), result);
+
+    if (!result) {
+      QCOMPARE(sm.surveys().length(), 0);
+    } else {
+      QFETCH(int, surveys);
+      QCOMPARE(sm.surveys().length(), surveys);
+
+      if (surveys > 0) {
+        QFETCH(QString, surveyId);
+        QCOMPARE(sm.surveys()[0].id(), surveyId);
+
+        QFETCH(QString, surveyUrl);
+        QCOMPARE(sm.surveys()[0].url(), surveyUrl);
+
+        QFETCH(int, surveyTriggerTime);
+        QFETCH(bool, surveyTriggerable);
+        QCOMPARE(sm.surveys()[0].triggerTime(), surveyTriggerTime);
+        QCOMPARE(sm.surveys()[0].isTriggerable(), surveyTriggerable);
+
+        if (surveyTriggerable) {
+          settingsHolder.addConsumedSurvey(surveyId);
+          QVERIFY(!sm.surveys()[0].isTriggerable());
+        }
+      }
+    }
+  }
 }
 
 static TestModels s_testModels;

@@ -21,10 +21,7 @@ class FeatureList final : public QObject {
                  unsecuredNetworkNotificationSupported CONSTANT)
   Q_PROPERTY(bool captivePortalNotificationSupported READ
                  captivePortalNotificationSupported CONSTANT)
-
   Q_PROPERTY(bool userDNSSupported READ userDNSSupported CONSTANT)
-
-  Q_PROPERTY(bool gleanSupported READ gleanSupported CONSTANT)
 
 
  public:
@@ -44,9 +41,6 @@ class FeatureList final : public QObject {
   bool unsecuredNetworkNotificationSupported() const;
 
   bool userDNSSupported() const;
-
-  bool gleanSupported() const;
-
 };
 
 #endif  // FEATURELIST_H

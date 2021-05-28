@@ -83,10 +83,12 @@ class ControllerImpl : public QObject {
   void disconnected();
 
   // This method should be emitted after a checkStatus() call.
-  // "serverIpv4Gateway" is the current VPN tunnel gateway. "txBytes" and
-  // "rxBytes" contain the number of transmitted and received bytes since the
-  // last statusUpdated signal.
-  void statusUpdated(const QString& serverIpv4Gateway, uint64_t txBytes,
+  // "serverIpv4Gateway" is the current VPN tunnel gateway.
+  // "deviceIpv4Address" is the address of the VPN client.
+  // "txBytes" and "rxBytes" contain the number of transmitted and received
+  // bytes since the last statusUpdated signal.
+  void statusUpdated(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
 };
 
