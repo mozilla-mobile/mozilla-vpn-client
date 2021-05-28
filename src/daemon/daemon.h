@@ -5,6 +5,7 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
+#include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
 #include "wireguardutils.h"
@@ -42,7 +43,11 @@ class Daemon : public QObject {
   void backendFailure();
 
  protected:
-  virtual bool run(Op op, const InterfaceConfig& config) = 0;
+  virtual bool run(Op op, const InterfaceConfig& config) {
+    Q_UNUSED(op);
+    Q_UNUSED(config);
+    return true;
+  }
   virtual bool supportServerSwitching(const InterfaceConfig& config) const {
     Q_UNUSED(config);
     return false;
@@ -52,6 +57,8 @@ class Daemon : public QObject {
   virtual WireguardUtils* wgutils() { return nullptr; }
   virtual bool supportIPUtils() const { return false; }
   virtual IPUtils* iputils() { return nullptr; }
+  virtual bool supportDnsUtils() const { return false; }
+  virtual DnsUtils* dnsutils() { return nullptr; }
 
   bool m_connected = false;
   QDateTime m_connectionDate;
