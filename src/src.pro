@@ -729,7 +729,6 @@ else:win* {
         localsocketcontroller.cpp \
         platforms/windows/windowsapplistprovider.cpp  \
         platforms/windows/windowsappimageprovider.cpp \
-        platforms/windows/windowsfirewallhelper.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
@@ -757,7 +756,6 @@ else:win* {
         localsocketcontroller.h \
         platforms/windows/windowsapplistprovider.h \
         platforms/windows/windowsappimageprovider.h \ 
-        platforms/windows/windowsfirewallhelper.h \ 
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \

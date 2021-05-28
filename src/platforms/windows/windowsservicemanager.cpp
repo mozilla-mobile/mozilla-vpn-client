@@ -131,7 +131,6 @@ bool WindowsServiceManager::stopService() {
     startPolling(SERVICE_STOPPED, 10);
   } else {
     WindowsCommons::windowsLog("StopService failed");
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
   }
   return ok;
 }

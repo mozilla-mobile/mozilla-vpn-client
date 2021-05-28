@@ -20,20 +20,6 @@ class Daemon : public QObject {
     Down,
   };
 
-  struct Config {
-    QString m_privateKey;
-    QString m_deviceIpv4Address;
-    QString m_deviceIpv6Address;
-    QString m_serverIpv4Gateway;
-    QString m_serverIpv6Gateway;
-    QString m_serverPublicKey;
-    QString m_serverIpv4AddrIn;
-    QString m_serverIpv6AddrIn;
-    int m_serverPort = 0;
-    bool m_ipv6Enabled = false;
-    QList<IPAddressRange> m_allowedIPAddressRanges;
-    QList<QString> m_vpnDisabledApps;
-  };
 
   explicit Daemon(QObject* parent);
   ~Daemon();

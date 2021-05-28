@@ -60,6 +60,7 @@ MozillaVPN.vcxproj*
 
 #Windows 
 .deps
+
 tunnel.dll
 tunnel.h
 *.wixobj
@@ -75,6 +76,10 @@ qtloader.js
 
 # WebExtension native app
 extension/app/mozillavpnnp
+.npobj
+mozillavpnnp.vcxproj
+mozillavpnnp.vcxproj.filters
+mozillavpnnp.exe
 
 # glean
 glean/generated/*
@@ -82,3 +87,5 @@ glean/generated/*
 *.dll
 .vs/
 *.msi
+
+

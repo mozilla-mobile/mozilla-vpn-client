@@ -21,9 +21,6 @@
 #include <QJsonValue>
 #include <QStandardPaths>
 
-#ifdef MVPN_WINDOWS
- #include "platforms/windows/windowsfirewallhelper.h"
-#endif
 
 namespace {
 Logger logger(LOG_CONTROLLER, "LocalSocketController");

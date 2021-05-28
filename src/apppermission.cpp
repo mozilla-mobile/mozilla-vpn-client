@@ -122,8 +122,9 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     } else if (!keys.contains(blockedAppId)) {
         // In case the AppID is valid but not in our applist, we need to create an entry
         logger.log() << "Added missing appid" << blockedAppId;
-        m_applist.insert(blockedAppId, m_listprovider->getAppName(blockedAppId));
+        m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
     }
+  }
   }
   beginResetModel();
   logger.log() << "Recived new Applist -- Entrys: " << applist.size();
@@ -160,7 +161,7 @@ void AppPermission::addUnprotectedApp() {
   beginResetModel();
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   settingsHolder->addVpnDisabledApp(info.absoluteFilePath());
-  m_applist.insert(info.absoluteFilePath(), info.fileName());
+  m_applist.append(AppDescription(info.absoluteFilePath(), info.fileName()));
   endResetModel();
 };
 
