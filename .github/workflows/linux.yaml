@@ -37,6 +37,7 @@ jobs:
           ./scripts/linux_script.sh -s
           mkdir packages
           cp .tmp/*.deb packages
+          cp .tmp/mozillavpn-2.3.0/src/mozillavpn packages
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -70,6 +71,7 @@ jobs:
           export PATH=/opt/qt515/bin:$PATH
           ./scripts/linux_script.sh
           mkdir packages
+          cp .tmp/mozillavpn-2.3.0/src/mozillavpn packages
           cp .tmp/*.deb packages
 
       - name: Uploading
