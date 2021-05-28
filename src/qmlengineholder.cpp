@@ -7,6 +7,7 @@
 #include "logger.h"
 
 #include <QWindow>
+#include <QNetworkAccessManager>
 
 namespace {
 Logger logger(LOG_MAIN, "QmlEngineHolder");
@@ -33,8 +34,19 @@ QmlEngineHolder* QmlEngineHolder::instance() {
   return s_instance;
 }
 
+// static
+bool QmlEngineHolder::exists() { return !!s_instance; }
+
 QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
   return m_engine.networkAccessManager();
+}
+
+void QmlEngineHolder::clearCacheInternal() {
+  QNetworkAccessManager* nam = networkAccessManager();
+  Q_ASSERT(nam);
+
+  nam->clearAccessCache();
+  nam->clearConnectionCache();
 }
 
 QWindow* QmlEngineHolder::window() const {

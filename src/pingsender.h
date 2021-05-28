@@ -18,13 +18,13 @@ class PingSender final : public QObject {
   PingSender(QObject* parent, QThread* thread);
   ~PingSender();
 
-  void send(const QString& destination);
+  void send(const QString& destination, const QString& source);
 
  signals:
   void completed(PingSender* pingSender, qint64 msec);
 
   // internal only
-  void sendPing(const QString& destination);
+  void sendPing(const QString& destination, const QString& source);
 
  private slots:
   void pingFailed();

@@ -85,7 +85,7 @@ IAPHandler* s_instance = nullptr;
       case SKPaymentTransactionStatePurchased: {
         QString identifier = QString::fromNSString(transaction.transactionIdentifier);
         QDateTime date = QDateTime::fromNSDate(transaction.transactionDate);
-        logger.log() << "transaction restored or purchased - identifier: " << identifier
+        logger.log() << "transaction purchased - identifier: " << identifier
                      << "- date:" << date.toString();
 
         if (transaction.transactionState == SKPaymentTransactionStateRestored) {
@@ -251,7 +251,7 @@ void IAPHandler::registerProducts(const QStringList& products) {
   logger.log() << "Waiting for the products registration";
 }
 
-void IAPHandler::startSubscription(bool restore) {
+void IAPHandler::startSubscription() {
   Q_ASSERT(m_productsRegistrationState == eRegistered);
   Q_ASSERT(!m_productName.isEmpty());
 
@@ -269,15 +269,6 @@ void IAPHandler::startSubscription(bool restore) {
   }
 
   m_subscriptionState = eActive;
-
-  if (restore) {
-    logger.log() << "Restore the subscription";
-    SKReceiptRefreshRequest* refresh =
-        [[SKReceiptRefreshRequest alloc] initWithReceiptProperties:nil];
-    refresh.delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
-    [refresh start];
-    return;
-  }
 
   logger.log() << "Starting the subscription";
   SKProduct* product = static_cast<SKProduct*>(m_product);
@@ -344,7 +335,7 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   NetworkRequest* request = NetworkRequest::createForIOSPurchase(this, receipt);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error, const QByteArray& data) {
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.log() << "Purchase request failed" << error;
 
             if (m_subscriptionState != eActive) {
@@ -379,8 +370,7 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
             emit alreadySubscribed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this, ids](QNetworkReply*, const QByteArray&) {
+  connect(request, &NetworkRequest::requestCompleted, [this, ids](const QByteArray&) {
     logger.log() << "Purchase request completed";
     SettingsHolder::instance()->addSubscriptionTransactions(ids);
 
@@ -396,10 +386,5 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
 
 void IAPHandler::subscribe() {
   logger.log() << "Subscription required";
-  emit subscriptionStarted(false /* restore */);
-}
-
-void IAPHandler::restoreSubscription() {
-  logger.log() << "Restore subscription";
-  emit subscriptionStarted(true /* restore */);
+  emit subscriptionStarted();
 }

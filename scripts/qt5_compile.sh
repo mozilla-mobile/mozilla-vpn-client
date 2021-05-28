@@ -69,7 +69,7 @@ LINUX="
 MACOS="
   -appstore-compliant \
   -no-feature-qdbus \
-  -no-dbus
+  -no-speechd
 "
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -103,7 +103,6 @@ print Y "Wait..."
   -skip qtmultimedia \
   -skip qtserialport \
   -skip qtsensors \
-  -skip qtwebsockets \
   -skip qtgamepad \
   -skip qtwebchannel \
   -skip qtandroidextras \

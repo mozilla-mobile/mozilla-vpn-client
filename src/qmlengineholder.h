@@ -20,6 +20,8 @@ class QmlEngineHolder final : public NetworkManager {
 
   static QmlEngineHolder* instance();
 
+  static bool exists();
+
   QQmlApplicationEngine* engine() { return &m_engine; }
 
   QNetworkAccessManager* networkAccessManager() override;
@@ -27,6 +29,9 @@ class QmlEngineHolder final : public NetworkManager {
   QWindow* window() const;
   void showWindow();
   void hideWindow();
+
+ protected:
+  void clearCacheInternal() override;
 
  private:
   QQmlApplicationEngine m_engine;

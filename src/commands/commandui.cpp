@@ -6,6 +6,7 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
+#include "featurelist.h"
 #include "fontloader.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -25,29 +26,24 @@
 #endif
 
 #ifdef MVPN_MACOS
+#  include "platforms/macos/macosmenubar.h"
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
 #endif
 
-#ifdef Q_OS_MAC
-#  ifndef MVPN_IOS
-#    include "platforms/macos/macosmenubar.h"
-#  endif
-#endif
-
 #ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorserver.h"
+#  include "inspector/inspectorhttpserver.h"
+#  include "inspector/inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidwebview.h"
 #  include "platforms/android/androidappimageprovider.h"
-#  include "platforms/android/androidstartatbootwatcher.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
-#ifndef MVPN_WINDOWS
+#ifndef Q_OS_WIN
 #  include "signalhandler.h"
 #endif
 
@@ -65,9 +61,14 @@
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
+#ifdef MVPN_WEBEXTENSION
+#  include "server/serverhandler.h"
+#endif
+
 #include <QApplication>
 
 #ifdef QT_DEBUG
+#  include "gleantest.h"
 #  include <QLoggingCategory>
 #endif
 
@@ -125,6 +126,11 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#ifdef QT_DEBUG
+    // This is a collector of glean HTTP requests to see if we leak something.
+    GleanTest gleanTest;
+#endif
+
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
     if (!EventListener::checkOtherInstances()) {
@@ -135,7 +141,7 @@ int CommandUI::run(QStringList& tokens) {
     EventListener eventListener;
 #endif
 
-#ifndef MVPN_WINDOWS
+#ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
@@ -169,14 +175,6 @@ int CommandUI::run(QStringList& tokens) {
                      &WindowsStartAtBootWatcher::startAtBootChanged);
 #endif
 
-#ifdef MVPN_ANDROID
-    AndroidStartAtBootWatcher startAtBootWatcher(
-        SettingsHolder::instance()->startAtBoot());
-    QObject::connect(SettingsHolder::instance(),
-                     &SettingsHolder::startAtBootChanged, &startAtBootWatcher,
-                     &AndroidStartAtBootWatcher::startAtBootChanged);
-#endif
-
 #ifdef MVPN_LINUX
     // Dependencies - so far, only for linux.
     if (!LinuxDependencies::checkDependencies()) {
@@ -198,6 +196,14 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNFeatureList",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = FeatureList::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -238,6 +244,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->serverCountryModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNSurveyModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->surveyModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -327,6 +341,19 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
+#ifdef QT_DEBUG
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGleanTest",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GleanTest::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
+
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+                     &MozillaVPN::aboutToQuit);
+
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
@@ -342,27 +369,29 @@ int CommandUI::run(QStringList& tokens) {
         Qt::QueuedConnection);
     engine->load(url);
 
-    SystemTrayHandler systemTrayHandler(qApp);
-    systemTrayHandler.show();
+    SystemTrayHandler* systemTrayHandler =
+        SystemTrayHandler::create(&engineHolder);
+    Q_ASSERT(systemTrayHandler);
+
+    systemTrayHandler->show();
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &systemTrayHandler,
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
                      &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.currentServer(), &ServerData::changed,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateContextMenu);
+                     systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
                      &NotificationHandler::showNotification);
 
-#ifdef Q_OS_MAC
-#  ifndef MVPN_IOS
+#ifdef MVPN_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
@@ -372,42 +401,45 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-#  endif
 #endif
 
     QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
-                     &systemTrayHandler, &SystemTrayHandler::updateIcon);
-
-    QObject::connect(vpn.captivePortalDetection(),
-                     &CaptivePortalDetection::captivePortalDetected,
-                     [systemTrayHandler = &systemTrayHandler]() {
-                       systemTrayHandler->captivePortalNotificationRequested();
-                     });
+                     systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
       logger.log() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
       SystemTrayHandler::instance()->retranslate();
 
-#ifdef Q_OS_MAC
-#  ifndef MVPN_IOS
+#ifdef MVPN_MACOS
       MacOSMenuBar::instance()->retranslate();
-#  endif
 #endif
 
 #ifdef MVPN_WASM
       WasmWindowController::instance()->retranslate();
 #endif
+
+      MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
 #ifdef MVPN_INSPECTOR
-    InspectorServer inspectServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &inspectServer,
-                     &InspectorServer::close);
+    InspectorHttpServer inspectHttpServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectHttpServer, &InspectorHttpServer::close);
+
+    InspectorWebSocketServer inspectWebSocketServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &inspectWebSocketServer, &InspectorWebSocketServer::close);
 #endif
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+    ServerHandler serverHandler;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
+                     &ServerHandler::close);
 #endif
 
     // Let's go.

@@ -24,7 +24,8 @@ class ConnectionDataHolder final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ConnectionDataHolder)
 
-  Q_PROPERTY(QString ipAddress READ ipAddress NOTIFY ipAddressChanged)
+  Q_PROPERTY(QString ipv4Address READ ipv4Address NOTIFY ipv4AddressChanged)
+  Q_PROPERTY(QString ipv6Address READ ipv6Address NOTIFY ipv6AddressChanged)
   Q_PROPERTY(quint64 txBytes READ txBytes NOTIFY bytesChanged)
   Q_PROPERTY(quint64 rxBytes READ rxBytes NOTIFY bytesChanged)
 
@@ -38,7 +39,8 @@ class ConnectionDataHolder final : public QObject {
   Q_INVOKABLE void activate(const QVariant& txSeries, const QVariant& rxSeries,
                             const QVariant& axisX, const QVariant& axisY);
 
-  const QString& ipAddress() const { return m_ipAddress; }
+  const QString& ipv4Address() const { return m_ipv4Address; }
+  const QString& ipv6Address() const { return m_ipv6Address; }
 
   void reset();
 
@@ -63,7 +65,8 @@ class ConnectionDataHolder final : public QObject {
   // for testing.
   void ipAddressChecked();
 
-  void ipAddressChanged();
+  void ipv4AddressChanged();
+  void ipv6AddressChanged();
   void bytesChanged();
 
  private:
@@ -81,7 +84,8 @@ class ConnectionDataHolder final : public QObject {
 
   bool m_updatingIpAddress = false;
 
-  QString m_ipAddress;
+  QString m_ipv4Address;
+  QString m_ipv6Address;
   QTimer m_ipAddressTimer;
   QTimer m_checkStatusTimer;
 

@@ -1,0 +1,397 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these pings are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# Metrics in this file may make use of SDK reserved ping names. See
+# https://mozilla.github.io/glean/book/dev/core/internal/reserved-ping-names.html
+# for additional information.
+
+# All the samples are stored in a single category (`sample`) to simplify the
+# C++-JS integration which is currently based on QT signals. The samples are
+# "normalized" as const strings via a script (`scripts/generate_glean.py`), and
+# used in the C++ code to communicate with the JS code.
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+sample:
+  app_permissions_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the app permissions view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  app_permissions_view_warning:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the app permissions view but is unable
+      to make changes because the VPN is on.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_aborted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has aborted the authentication flow.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has completed the authentication flow.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_failure:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The authentication flow has terminated with an error
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_failure_by_geo:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The authentication flow has terminated with a geo-restriction error
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  authentication_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started the authentication flow.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  backend_failure_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has been shown the "Something went wrong…" error view.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_health_no_signal:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection has no signal
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_health_unstable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The connection is unstable
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  connection_info_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the connection info view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  get_help_clicked_initialize:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked "Get help" from the initial view.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  get_help_clicked_view_settings:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked "Get help" from the settings view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  manage_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the `manage account` button
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  max_device_reached:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Device limit reached
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  network_settings_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the network settings view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  network_settings_view_warning:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened network settings but is unable
+      to make changes because the VPN is on.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  notifications_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the notifications view
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  notifications_view_warning:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened notification settings and is unable
+      to make changes because the VPN is on.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  onboarding_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the onboarding flow
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  settings_view_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the settings
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  subscription_blocked_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed an error message after attempting to subscribe
+      with an Apple ID that already has a subscription.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never

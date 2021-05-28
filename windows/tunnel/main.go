@@ -15,12 +15,16 @@ import "C"
 
 import (
 	"log"
+	"net"
 	"path/filepath"
 
 	"C"
 
+	"golang.org/x/sys/windows"
+
 	"golang.zx2c4.com/wireguard/windows/conf"
 	"golang.zx2c4.com/wireguard/windows/tunnel"
+	"golang.zx2c4.com/wireguard/windows/tunnel/winipcfg"
 	"golang.zx2c4.com/wireguard/windows/tunnel/firewall"
 
 	"errors"
@@ -63,6 +67,38 @@ func WireGuardTunnelService(confFile string) bool {
 	}
 
 	return err == nil
+}
+
+func findPhysicalDefaultRoute() (winipcfg.LUID, net.IP, error) {
+	r, err := winipcfg.GetIPForwardTable2(windows.AF_INET)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	lowestMetric := ^uint32(0)
+
+	var nextHop net.IP
+	var luid winipcfg.LUID
+	for i := range r {
+		if r[i].DestinationPrefix.PrefixLength != 0 {
+			continue
+		}
+		ifrow, err := r[i].InterfaceLUID.Interface()
+		if err != nil || ifrow.OperStatus != winipcfg.IfOperStatusUp || ifrow.MediaType == winipcfg.NdisMediumIP {
+			continue
+		}
+		if r[i].Metric < lowestMetric {
+			lowestMetric = r[i].Metric
+			nextHop = r[i].NextHop.IP()
+			luid = r[i].InterfaceLUID
+		}
+	}
+
+	if len(nextHop) == 0 {
+		return 0, nil, errors.New("Unable to find default route")
+	}
+
+	return luid, nextHop, nil
 }
 
 func main() {}

@@ -3,11 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "systemtrayhandler.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
+
+#ifdef MVPN_LINUX
+#  include "platforms/linux/linuxsystemtrayhandler.h"
+#endif
+
+#ifdef MVPN_MACOS
+#  include "platforms/macos/macosutils.h"
+#endif
 
 #include <array>
 #include <QIcon>
@@ -19,6 +28,17 @@ Logger logger(LOG_MAIN, "SystemTrayHandler");
 
 SystemTrayHandler* s_instance = nullptr;
 }  // namespace
+
+// static
+SystemTrayHandler* SystemTrayHandler::create(QObject* parent) {
+#if defined(MVPN_LINUX)
+  if (LinuxSystemTrayHandler::requiredCustomImpl()) {
+    return new LinuxSystemTrayHandler(parent);
+  }
+#endif
+
+  return new SystemTrayHandler(parent);
+}
 
 // static
 SystemTrayHandler* SystemTrayHandler::instance() {
@@ -72,6 +92,9 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   connect(this, &QSystemTrayIcon::activated, this,
           &SystemTrayHandler::maybeActivated);
 
+  connect(this, &QSystemTrayIcon::messageClicked, this,
+          &SystemTrayHandler::messageClickHandle);
+
   retranslate();
 }
 
@@ -84,6 +107,11 @@ SystemTrayHandler::~SystemTrayHandler() {
 
 void SystemTrayHandler::updateContextMenu() {
   logger.log() << "Update context menu";
+
+  // If the QML Engine Holder has been released, we are shutting down.
+  if (!QmlEngineHolder::exists()) {
+    return;
+  }
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -159,19 +187,54 @@ void SystemTrayHandler::updateContextMenu() {
       //% "%1, %2"
       //: Location in the systray. %1 is the country, %2 is the city.
       qtTrId("vpn.systray.location")
-          .arg(vpn->currentServer()->country())
-          .arg(vpn->currentServer()->city()));
+          .arg(vpn->currentServer()->countryName())
+          .arg(vpn->currentServer()->cityName()));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
 }
 
-void SystemTrayHandler::captivePortalNotificationRequested() {
-  logger.log() << "Capitve portal notification shown";
-  //% "Captive portal detected"
-  QString title = qtTrId("vpn.systray.captivePortalAlert.title");
-  //% "VPN will automatically reconnect when ready"
-  QString message = qtTrId("vpn.systray.captivePortalAlert.message");
-  showMessage(title, message, NoIcon, 2000);
+void SystemTrayHandler::unsecuredNetworkNotification(
+    const QString& networkName) {
+  logger.log() << "Unsecured network notification shown";
+
+  //% "Unsecured Wi-Fi network detected"
+  QString title = qtTrId("vpn.systray.unsecuredNetwork.title");
+
+  //% "%1 is not secure. Click here to turn on VPN and secure your device."
+  //: %1 is the Wi-Fi network name
+  QString message =
+      qtTrId("vpn.systray.unsecuredNetwork2.message").arg(networkName);
+
+  showNotificationInternal(UnsecuredNetwork, title, message,
+                           Constants::UNSECURED_NETWORK_ALERT_MSEC);
+}
+
+void SystemTrayHandler::captivePortalBlockNotificationRequired() {
+  logger.log() << "Captive portal block notification shown";
+
+  //% "Guest Wi-Fi portal blocked"
+  QString title = qtTrId("vpn.systray.captivePortalBlock.title");
+
+  //% "The guest Wi-Fi network you’re connected to requires action. Click here"
+  //% " to turn off VPN to see the portal."
+  QString message = qtTrId("vpn.systray.captivePortalBlock2.message");
+
+  showNotificationInternal(CaptivePortalBlock, title, message,
+                           Constants::CAPTIVE_PORTAL_ALERT_MSEC);
+}
+
+void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
+  logger.log() << "Captive portal unblock notification shown";
+
+  //% "Guest Wi-Fi portal detected"
+  QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
+
+  //% "The guest Wi-Fi network you’re connected to may not be secure. Click"
+  //% " here to turn on VPN to secure your device."
+  QString message = qtTrId("vpn.systray.captivePortalUnblock2.message");
+
+  showNotificationInternal(CaptivePortalUnblock, title, message,
+                           Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void SystemTrayHandler::updateIcon(const QString& icon) {
@@ -184,8 +247,14 @@ void SystemTrayHandler::showHideWindow() {
   QmlEngineHolder* engine = QmlEngineHolder::instance();
   if (engine->window()->isVisible()) {
     engine->hideWindow();
+#ifdef MVPN_MACOS
+    MacOSUtils::hideDockIcon();
+#endif
   } else {
     engine->showWindow();
+#ifdef MVPN_MACOS
+    MacOSUtils::showDockIcon();
+#endif
   }
 }
 
@@ -221,11 +290,42 @@ void SystemTrayHandler::maybeActivated(
   logger.log() << "Activated";
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
-  if (reason == QSystemTrayIcon::DoubleClick) {
+  if (reason == QSystemTrayIcon::DoubleClick ||
+      reason == QSystemTrayIcon::Trigger) {
     QmlEngineHolder* engine = QmlEngineHolder::instance();
     engine->showWindow();
   }
 #else
   Q_UNUSED(reason);
 #endif
+}
+
+void SystemTrayHandler::messageClickHandle() {
+  logger.log() << "Message clicked";
+
+  if (m_lastMessage == None) {
+    logger.log() << "Random message clicked received";
+    return;
+  }
+
+  emit notificationClicked(m_lastMessage);
+  m_lastMessage = None;
+}
+
+void SystemTrayHandler::showNotification(const QString& title,
+                                         const QString& message,
+                                         int timerMsec) {
+  showNotificationInternal(None, title, message, timerMsec);
+}
+
+void SystemTrayHandler::showNotificationInternal(Message type,
+                                                 const QString& title,
+                                                 const QString& message,
+                                                 int timerMsec) {
+  m_lastMessage = type;
+
+  emit notificationShown(title, message);
+
+  QIcon icon(Constants::LOGO_URL);
+  showMessage(title, message, icon, timerMsec);
 }

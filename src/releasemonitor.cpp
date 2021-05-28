@@ -39,11 +39,8 @@ void ReleaseMonitor::runInternal() {
           &ReleaseMonitor::updateRequired);
   connect(updater, &Updater::updateRecommended, this,
           &ReleaseMonitor::updateRecommended);
-
-  connect(updater, &QObject::destroyed, [this] {
-    emit releaseChecked();
-    schedule();
-  });
+  connect(updater, &QObject::destroyed, this, &ReleaseMonitor::releaseChecked);
+  connect(updater, &QObject::destroyed, this, &ReleaseMonitor::schedule);
 }
 
 void ReleaseMonitor::schedule() {
@@ -82,12 +79,7 @@ void ReleaseMonitor::update() {
   connect(updater, &QObject::destroyed, [] {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-
     vpn->setUpdating(false);
-
-    if (vpn->alert() == MozillaVPN::NoAlert) {
-      vpn->errorHandle(ErrorHandler::BackendServiceError);
-    }
   });
 
   updater->start();

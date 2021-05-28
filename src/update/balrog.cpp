@@ -5,7 +5,7 @@
 #include "balrog.h"
 #include "constants.h"
 #include "errorhandler.h"
-#include "inspector/inspectorconnection.h"
+#include "inspector/inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -14,7 +14,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QNetworkReply>
 #include <QProcess>
 #include <QScopeGuard>
 #include <QSslCertificate>
@@ -32,22 +31,21 @@ typedef void (*logFunc)(int level, const char* msg);
 #  include "windows.h"
 #  include "platforms/windows/windowscommons.h"
 
-constexpr const char* BALROG_WINDOWS_UA64 = "WINNT_x86_64";
-constexpr const char* BALROG_WINDOWS_UA32 = "WINNT_x86_32";
+constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
 
 typedef void BalrogSetLogger(logFunc func);
-typedef unsigned char BalrogValidateSignature(gostring_t publicKey,
-                                              gostring_t signature,
-                                              gostring_t data);
+typedef unsigned char BalrogValidate(gostring_t x5uData, gostring_t updateData,
+                                     gostring_t signature, gostring_t rootHash,
+                                     gostring_t leafCertSubject);
 
 #elif defined(MVPN_MACOS)
 #  define EXPORT __attribute__((visibility("default")))
 
 extern "C" {
 EXPORT void balrogSetLogger(logFunc func);
-EXPORT unsigned char balrogValidateSignature(gostring_t publicKey,
-                                             gostring_t signature,
-                                             gostring_t data);
+EXPORT unsigned char balrogValidate(gostring_t x5uData, gostring_t updateData,
+                                    gostring_t signature, gostring_t rootHash,
+                                    gostring_t leafCertSubject);
 }
 
 constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
@@ -56,8 +54,6 @@ constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
 #  error Platform not supported yet
 #endif
 
-constexpr const char* BALROG_ROOT_CERT_FINGERPRINT =
-    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 constexpr const char* BALROG_CERT_SUBJECT_CN =
     "aus.content-signature.mozilla.org";
 
@@ -71,7 +67,7 @@ void balrogLogger(int level, const char* msg) {
 
 QString appVersion() {
 #ifdef MVPN_INSPECTOR
-  return InspectorConnection::appVersionForUpdate();
+  return InspectorWebSocketConnection::appVersionForUpdate();
 #else
   return APP_VERSION;
 #endif
@@ -93,10 +89,7 @@ Balrog::~Balrog() {
 // static
 QString Balrog::userAgent() {
 #if defined(MVPN_WINDOWS)
-  static bool h =
-      QSysInfo::currentCpuArchitecture().contains(QLatin1String("64"));
-
-  return h ? BALROG_WINDOWS_UA64 : BALROG_WINDOWS_UA32;
+  return BALROG_WINDOWS_UA;
 #elif defined(MVPN_MACOS)
   return BALROG_MACOS_UA;
 #else
@@ -112,28 +105,27 @@ void Balrog::start() {
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply* reply, const QByteArray& data) {
+          [this, request](const QByteArray& data) {
             logger.log() << "Request completed";
 
-            if (!fetchSignature(reply, data)) {
+            if (!fetchSignature(request, data)) {
               logger.log() << "Ignore failure.";
               deleteLater();
             }
           });
 }
 
-bool Balrog::fetchSignature(QNetworkReply* reply,
-                            const QByteArray& dataUpdate) {
-  Q_ASSERT(reply);
+bool Balrog::fetchSignature(NetworkRequest* initialRequest,
+                            const QByteArray& updateData) {
+  Q_ASSERT(initialRequest);
 
-  QByteArray header = reply->rawHeader("Content-Signature");
+  QByteArray header = initialRequest->rawHeader("Content-Signature");
   if (header.isEmpty()) {
     logger.log() << "Content-Signature missing";
     return false;
@@ -141,7 +133,6 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
 
   QByteArray x5u;
   QByteArray signatureBlob;
-  QCryptographicHash::Algorithm algorithm = QCryptographicHash::Sha256;
 
   for (const QByteArray& item : header.split(';')) {
     QByteArray entry = item.trimmed();
@@ -154,39 +145,30 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
     QByteArray key = entry.left(pos);
     if (key == "x5u") {
       x5u = entry.remove(0, pos + 1);
-    } else if (key == "p384ecdsa") {
-      algorithm = QCryptographicHash::Sha384;
-      signatureBlob = entry.remove(0, pos + 1);
-    } else if (key == "p256ecdsa") {
-      algorithm = QCryptographicHash::Sha256;
-      signatureBlob = entry.remove(0, pos + 1);
-    } else if (key == "p521ecdsa") {
-      algorithm = QCryptographicHash::Sha512;
+    } else {
       signatureBlob = entry.remove(0, pos + 1);
     }
   }
 
   if (x5u.isEmpty() || signatureBlob.isEmpty()) {
-    logger.log() << "No p256ecdsa/p384ecdsa or x5u found";
+    logger.log() << "No signatureBlob or x5u found";
     return false;
   }
 
-  logger.log() << "Fetching URL:" << x5u;
+  logger.log() << "Fetching x5u URL:" << x5u;
 
-  NetworkRequest* request = NetworkRequest::createForGetUrl(this, x5u, 200);
+  NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(this, x5u, 200);
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+  connect(x5uRequest, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Request failed" << error;
             deleteLater();
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this, signatureBlob, algorithm, dataUpdate](QNetworkReply*,
-                                                       const QByteArray& data) {
+  connect(x5uRequest, &NetworkRequest::requestCompleted,
+          [this, signatureBlob, updateData](const QByteArray& x5uData) {
             logger.log() << "Request completed";
-            if (!checkSignature(data, signatureBlob, algorithm, dataUpdate)) {
+            if (!checkSignature(x5uData, updateData, signatureBlob)) {
               deleteLater();
             }
           });
@@ -194,83 +176,18 @@ bool Balrog::fetchSignature(QNetworkReply* reply,
   return true;
 }
 
-bool Balrog::checkSignature(const QByteArray& signature,
-                            const QByteArray& signatureBlob,
-                            QCryptographicHash::Algorithm algorithm,
-                            const QByteArray& data) {
+bool Balrog::checkSignature(const QByteArray& x5uData,
+                            const QByteArray& updateData,
+                            const QByteArray& signatureBlob) {
   logger.log() << "Checking the signature";
-  QList<QSslCertificate> list;
-  QByteArray cert;
-  for (const QByteArray& line : signature.split('\n')) {
-    cert.append(line);
-    cert.append('\n');
 
-    if (line != "-----END CERTIFICATE-----") {
-      continue;
-    }
-
-    QSslCertificate ssl(cert, QSsl::Pem);
-    if (ssl.isNull()) {
-      logger.log() << "Invalid certificate" << cert;
-      return false;
-    }
-
-    list.append(ssl);
-    cert.clear();
-  }
-
-  if (list.isEmpty()) {
-    logger.log() << "No certificates found";
-    return false;
-  }
-
-  logger.log() << "Found certificates:" << list.length();
-
-  // TODO: do we care about OID extensions?
-
-  // Qt5.15 doesn't implement the certificate validation (yet?)
-#ifndef MVPN_MACOS
-  QList<QSslError> errors = QSslCertificate::verify(list);
-  for (const QSslError& error : errors) {
-    if (error.error() != QSslError::SelfSignedCertificateInChain) {
-      logger.log() << "Chain validation failed:" << error.errorString();
-      return false;
-    }
-  }
-#endif
-
-  logger.log() << "Validating root certificate";
-  const QSslCertificate& rootCert = list.constLast();
-  QByteArray rootCertHash = rootCert.digest(QCryptographicHash::Sha256).toHex();
-  if (rootCertHash != BALROG_ROOT_CERT_FINGERPRINT) {
-    logger.log() << "Invalid root certificate fingerprint";
-    return false;
-  }
-
-  const QSslCertificate& leaf = list.constFirst();
-  logger.log() << "Validating cert subject";
-  QStringList cnList = leaf.subjectInfo("CN");
-  if (cnList.isEmpty() || cnList[0] != BALROG_CERT_SUBJECT_CN) {
-    logger.log() << "Invalid CN:" << cnList;
-    return false;
-  }
-
-  logger.log() << "Validate public key";
-  QSslKey leafPublicKey = leaf.publicKey();
-  if (leafPublicKey.isNull()) {
-    logger.log() << "Empty public key";
-    return false;
-  }
-
-  logger.log() << "Validate the signature";
-  if (!validateSignature(leafPublicKey.toPem(), data, algorithm,
-                         signatureBlob)) {
+  if (!validateSignature(x5uData, updateData, signatureBlob)) {
     logger.log() << "Invalid signature";
     return false;
   }
 
   logger.log() << "Fetch resource";
-  if (!processData(data)) {
+  if (!processData(updateData)) {
     logger.log() << "Fetch has failed";
     return false;
   }
@@ -278,17 +195,13 @@ bool Balrog::checkSignature(const QByteArray& signature,
   return true;
 }
 
-bool Balrog::validateSignature(const QByteArray& publicKey,
-                               const QByteArray& data,
-                               QCryptographicHash::Algorithm algorithm,
-                               const QByteArray& signature) {
-  // The algortihm is detected by the length of the signature
-  Q_UNUSED(algorithm);
-
+bool Balrog::validateSignature(const QByteArray& x5uData,
+                               const QByteArray& updateData,
+                               const QByteArray& signatureBlob) {
 #if defined(MVPN_WINDOWS)
   static HMODULE balrogDll = nullptr;
   static BalrogSetLogger* balrogSetLogger = nullptr;
-  static BalrogValidateSignature* balrogValidateSignature = nullptr;
+  static BalrogValidate* balrogValidate = nullptr;
 
   if (!balrogDll) {
     // This process will be used by the wireguard tunnel. No need to call
@@ -309,12 +222,11 @@ bool Balrog::validateSignature(const QByteArray& publicKey,
     }
   }
 
-  if (!balrogValidateSignature) {
-    balrogValidateSignature = (BalrogValidateSignature*)GetProcAddress(
-        balrogDll, "balrogValidateSignature");
-    if (!balrogValidateSignature) {
-      WindowsCommons::windowsLog(
-          "Failed to get balrogValidateSignature function");
+  if (!balrogValidate) {
+    balrogValidate =
+        (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
+    if (!balrogValidate) {
+      WindowsCommons::windowsLog("Failed to get balrogValidate function");
       return false;
     }
   }
@@ -322,19 +234,28 @@ bool Balrog::validateSignature(const QByteArray& publicKey,
 
   balrogSetLogger(balrogLogger);
 
-  QByteArray publicKeyCopy = publicKey;
-  gostring_t publicKeyGo{publicKeyCopy.constData(),
-                         (size_t)publicKeyCopy.length()};
+  QByteArray x5uDataCopy = x5uData;
+  gostring_t x5uDataGo{x5uDataCopy.constData(), (size_t)x5uDataCopy.length()};
 
-  QByteArray signatureCopy = signature;
+  QByteArray signatureCopy = signatureBlob;
   gostring_t signatureGo{signatureCopy.constData(),
                          (size_t)signatureCopy.length()};
 
-  QByteArray dataCopy = data;
-  gostring_t dataGo{dataCopy.constData(), (size_t)dataCopy.length()};
+  QByteArray updateDataCopy = updateData;
+  gostring_t updateDataGo{updateDataCopy.constData(),
+                          (size_t)updateDataCopy.length()};
 
-  unsigned char verify =
-      balrogValidateSignature(publicKeyGo, signatureGo, dataGo);
+  QByteArray rootHashCopy = Constants::BALROG_ROOT_CERT_FINGERPRINT;
+  rootHashCopy = rootHashCopy.toUpper();
+  gostring_t rootHashGo{rootHashCopy.constData(),
+                        (size_t)rootHashCopy.length()};
+
+  QByteArray certSubjectCopy = BALROG_CERT_SUBJECT_CN;
+  gostring_t certSubjectGo{certSubjectCopy.constData(),
+                           (size_t)certSubjectCopy.length()};
+
+  unsigned char verify = balrogValidate(x5uDataGo, updateDataGo, signatureGo,
+                                        rootHashGo, certSubjectGo);
   if (!verify) {
     logger.log() << "Verification failed";
     return false;
@@ -374,32 +295,29 @@ bool Balrog::processData(const QByteArray& data) {
     NetworkRequest* request = NetworkRequest::createForGetUrl(this, url);
 
     connect(request, &NetworkRequest::requestFailed,
-            [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                   const QByteArray&) {
+            [this](QNetworkReply::NetworkError error, const QByteArray&) {
               logger.log() << "Request failed" << error;
               deleteLater();
             });
 
     connect(request, &NetworkRequest::requestHeaderReceived,
-            [this](QNetworkReply* reply) {
-              Q_ASSERT(reply);
+            [this](NetworkRequest* request) {
+              Q_ASSERT(request);
               logger.log() << "Request header received";
 
               // We want to proceed only if the status code is 200. The request
               // will be aborted, but the signal emitted.
-              QVariant statusCode =
-                  reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-              if (statusCode.isValid() && statusCode.toInt() == 200) {
+              if (request->statusCode() == 200) {
                 emit updateRecommended();
               }
 
               logger.log() << "Abort request for status code"
-                           << statusCode.toInt();
-              reply->abort();
+                           << request->statusCode();
+              request->abort();
             });
 
     connect(request, &NetworkRequest::requestCompleted,
-            [this](QNetworkReply*, const QByteArray&) {
+            [this](const QByteArray&) {
               logger.log() << "Request completed";
               deleteLater();
             });
@@ -430,17 +348,16 @@ bool Balrog::processData(const QByteArray& data) {
   // No timeout for this request.
   request->disableTimeout();
 
-  connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply* reply, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
-            logger.log() << "Request failed" << error;
-            propagateError(reply, error);
-            deleteLater();
-          });
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this, request](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.log() << "Request failed" << error;
+        propagateError(request, error);
+        deleteLater();
+      });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this, hashValue, hashFunction, url](QNetworkReply*,
-                                               const QByteArray& data) {
+          [this, hashValue, hashFunction, url](const QByteArray& data) {
             logger.log() << "Request completed";
 
             if (!computeHash(url, data, hashValue, hashFunction)) {
@@ -512,19 +429,22 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 }
 
 bool Balrog::install(const QString& filePath) {
-  logger.log() << "Install the pacakge:" << filePath;
+  logger.log() << "Install the package:" << filePath;
+
+  QString logFile = m_tmpDir.filePath("msiexec.log");
 
 #if defined(MVPN_WINDOWS)
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
-            << "/i" << filePath;
+            << "/i" << QDir::toNativeSeparators(filePath) << "/lv"
+            << QDir::toNativeSeparators(logFile);
 
   QProcess* process = new QProcess(this);
   process->start("msiexec.exe", arguments);
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-          [process](int exitCode, QProcess::ExitStatus) {
+          [this, process, logFile](int exitCode, QProcess::ExitStatus) {
             logger.log() << "Installation completed - exitCode:" << exitCode;
 
             logger.log() << "Stdout:" << Qt::endl
@@ -533,6 +453,18 @@ bool Balrog::install(const QString& filePath) {
             logger.log() << "Stderr:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardError())
                          << Qt::endl;
+
+            QFile log(logFile);
+            if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
+              logger.log() << "Unable to read the msiexec log file";
+            } else {
+              logger.log() << "Log file:" << Qt::endl << log.readAll();
+            }
+
+            if (exitCode != 0) {
+              deleteLater();
+              return;
+            }
 
             // We leak the object because the installer will restart the
             // app and we need to keep the temporary folder alive during the
@@ -573,17 +505,15 @@ bool Balrog::install(const QString& filePath) {
   return true;
 }
 
-void Balrog::propagateError(QNetworkReply* reply,
+void Balrog::propagateError(NetworkRequest* request,
                             QNetworkReply::NetworkError error) {
-  Q_ASSERT(reply);
+  Q_ASSERT(request);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QVariant statusCode =
-      reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
   // 451 Unavailable For Legal Reasons
-  if (statusCode.isValid() && statusCode.toInt() == 451) {
+  if (request->statusCode() == 451) {
     logger.log() << "Geo IP restriction detected";
     vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
     return;

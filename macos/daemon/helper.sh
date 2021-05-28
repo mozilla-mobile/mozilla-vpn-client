@@ -216,7 +216,7 @@ collect_new_service_dns() {
 		[[ $service == "*"* ]] && service="${service:1}"
 		found_services="$found_services;$service"
 		array_contains "$SERVICE_DNS" "$service" && continue
-		get_response="$(cmd networksetup -getdnsservers "$service")"
+		get_response="$(cmd networksetup -getdnsservers "$service" |tr '\n' '-')"
 		[[ $get_response == *" "* ]] && get_response="Empty"
 		[[ -n $get_response ]] && SERVICE_DNS="$SERVICE_DNS;$service=$get_response"
 		get_response="$(cmd networksetup -getsearchdomains "$service")"
@@ -335,13 +335,15 @@ del_dns() {
 	for service_value in $SERVICE_DNS; do
                 [[ -n "$service_value" ]] || continue
                 service=$(echo $service_value | cut -d= -f1)
-                value=$(echo $service_value | cut -d= -f2)
+                value=$(echo $service_value | cut -d= -f2 | sed "s/-/ /g")
+                IFS=' '
 		while read -r response; do
 			[[ $response == *Error* ]] && echo "$response" >&2
 		done < <(
-			cmd networksetup -setdnsservers "$service" "$value" || true
+			cmd networksetup -setdnsservers "$service" $value || true
 			cmd networksetup -setsearchdomains "$service" "$(array_value "$SERVICE_DNS_SEARCH" "$service")" || true
 		)
+                IFS=';'
 	done
         IFS=$oifs
 }
@@ -387,7 +389,7 @@ add_route() {
 		fi
 	else
 		[[ $TABLE == main || $TABLE == auto || -z $TABLE ]] || die "Darwin only supports TABLE=auto|main|off"
-		[[ $(route -n get "-$family" "$1" 2>/dev/null) =~ interface:\ $REAL_INTERFACE$'\n' ]] || cmd route -q -n add -$family "$1" -interface "$REAL_INTERFACE" >/dev/null
+		cmd route -q -n add -$family "$1" -interface "$REAL_INTERFACE" >/dev/null
 
 	fi
 }
@@ -399,6 +401,7 @@ set_config() {
 cmd_usage() {
 	cat >&2 <<-_EOF
 	Usage: $PROGRAM [ up | down ] [ CONFIG_FILE ]
+	Usage: $PROGRAM [ cleanup ] [ DNS, DNS... ]
 	_EOF
 }
 
@@ -429,6 +432,32 @@ cmd_down() {
 	del_if
 }
 
+cmd_cleanup() {
+  INTERFACE="$1"
+
+  { read -r _ && while read -r service; do
+    [[ $service == "*"* ]] && service="${service:1}"
+    get_response="$(cmd networksetup -getdnsservers "$service" |tr '\n' '-')"
+    [[ $get_response == *" "* ]] && continue
+
+    get_response="$(echo $get_response | tr '-' '\n')"
+    echo "$get_response" | grep "$2" &>/dev/null || continue
+    get_response="$(echo "$get_response" | grep -v "$2")"
+
+    if [[ "$3" ]]; then
+      get_response="$(echo "$get_response" | grep -v "$3" || echo "")"
+    fi
+
+    if [[ $get_response ]]; then
+      cmd networksetup -setdnsservers "$service" $get_response
+    else
+      cmd networksetup -setdnsservers "$service" "Empty"
+    fi
+  done; } < <(networksetup -listallnetworkservices)
+
+  del_if
+}
+
 # ~~ function override insertion point ~~
 
 if [[ $# -eq 1 && ( $1 == --help || $1 == -h || $1 == help ) ]]; then
@@ -441,6 +470,9 @@ elif [[ $# -eq 2 && $1 == down ]]; then
 	admin_check
 	parse_options "$2"
 	cmd_down
+elif [[ $1 == cleanup ]]; then
+	admin_check
+	cmd_cleanup "$2" "$3" "$4"
 else
 	cmd_usage
 	exit 1

@@ -122,6 +122,9 @@ else
   print Y "Importing translation files..."
   python3 scripts/importLanguages.py $([[ "$STAGE" ]] && echo "" || echo "-p") || die "Failed to import languages"
 
+  print Y "Generating glean samples..."
+  python3 scripts/generate_glean.py || die "Failed to generate glean samples"
+
   printn Y "Removing the debian template folder... "
   rm -rf linux/debian || die "Failed"
   print G "done."
@@ -134,14 +137,14 @@ fi
 print Y "Configuring the debian package for $RELEASE..."
 cp -r ../../linux/debian .  || die "Failed"
 
-mv debian/control.$RELEASE debian/control || die "Failed"
-
 if [[ "$STAGE" ]]; then
   print Y "Staging env configured"
   mv debian/rules.stage.$RELEASE debian/rules || die "Failed"
+  mv debian/control.stage.$RELEASE debian/control || die "Failed"
 else
   print Y "Production env configured"
   mv debian/rules.prod.$RELEASE debian/rules || die "Failed"
+  mv debian/control.prod.$RELEASE debian/control || die "Failed"
 fi
 
 rm debian/control.* || die "Failed"
@@ -153,6 +156,7 @@ sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
 sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
+sed -i -e "s/FULLVERSION/$FULLVERSION/g" debian/rules || die "Failed"
 debuild $EXTRA_DEBUILD_OPTS || die "Failed"
 
 if [[ "$DO_UPLOAD" == "1" ]]; then

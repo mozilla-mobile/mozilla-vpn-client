@@ -20,6 +20,8 @@ ToolTip {
     rightPadding: 6
     topPadding: 4
     bottomPadding: 4
+    closePolicy: ToolTip.CloseOnPressOutsideParent
+    timeout: 5000
 
     ParallelAnimation {
         id: fadeDown

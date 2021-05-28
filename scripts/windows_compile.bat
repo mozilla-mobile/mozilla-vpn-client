@@ -30,7 +30,17 @@ if "%1" NEQ "" (
   if "%1" == "-h" SET SHOW_HELP=T
   if "%1" == "-help" SET SHOW_HELP=T
   if "%1" NEQ "-p" (
-    if "%1" NEQ "--prod" SET SHOW_HELP=T
+    if "%1" NEQ "--prod" (
+      if "%1" NEQ "-t" (
+        if "%1" NEQ "--test" (
+          if "%1" NEQ "-w" (
+            if "%1" NEQ "--webextension" (
+              SET SHOW_HELP=T
+            )
+          )
+        )
+      )
+    )
   )
 )
 
@@ -38,6 +48,8 @@ if "%SHOW_HELP%" == "T" (
   ECHO "Options:"
   ECHO "  -h|--help            Help menu"
   ECHO "  -p|--prod            Production build"
+  ECHO "  -t|--test            Test mode"
+  ECHO "  -w|--webextension    Enable the webExtension support"
   EXIT 0
 )
 
@@ -45,13 +57,37 @@ SET PROD_BUILD=F
 if "%1"== "-p" SET PROD_BUILD=T
 if "%1"== "--prod" SET PROD_BUILD=T
 
-SET PROD_FLAGS=
+SET TEST_BUILD=F
+if "%1"== "-t" SET TEST_BUILD=T
+if "%1"== "--test" SET TEST_BUILD=T
+
+SET WEBEXTENSION_BUILD=F
+if "%1"== "-w" SET WEBEXTENSION_BUILD=T
+if "%1"== "--webextension" SET WEBEXTENSION_BUILD=T
+
+ECHO Extract version...
+FOR /F "tokens=2* delims==" %%A IN ('FINDSTR /IC:":VERSION" version.pri') DO call :SetVersion %%A
+
+SET FLAGS=BUILD_ID=%VERSION%
+
 if "%PROD_BUILD%" == "T" (
   ECHO Production build enabled
-  SET PROD_FLAGS="CONFIG+=production"
+  SET FLAGS=%FLAGS% CONFIG+=production
 ) else (
   ECHO Staging build enabled
-  SET PROD_FLAGS="CONFIG+=inspector"
+  SET FLAGS=%FLAGS% CONFIG+=inspector
+)
+
+if "%TEST_BUILD%" == "T" (
+  ECHO Test build enabled
+  SET FLAGS=%FLAGS% CONFIG+=DUMMY
+) else (
+  SET FLAGS=%FLAGS% CONFIG+=balrog
+)
+
+if "%WEBEXTENSION_BUILD%" == "T" (
+  ECHO Web-Extension support enabled
+  SET FLAGS=%FLAGS% CONFIG+=webextension
 )
 
 ECHO Checking required commands...
@@ -60,11 +96,47 @@ CALL :CheckCommand nmake
 CALL :CheckCommand cl
 CALL :CheckCommand qmake
 
+ECHO Copying the installer dependencies...
+CALL :CopyDependency libcrypto-1_1-x64.dll c:\MozillaVPNBuild\bin\libcrypto-1_1-x64.dll
+CALL :CopyDependency libssl-1_1-x64.dll c:\MozillaVPNBuild\bin\libssl-1_1-x64.dll
+CALL :CopyDependency libEGL.dll c:\MozillaVPNBuild\bin\libEGL.dll
+CALL :CopyDependency libGLESv2.dll c:\MozillaVPNBuild\bin\libGLESv2.dll
+CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
+CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
+
 ECHO Importing languages...
+git submodule update --remote --depth 1 i18n
 python scripts\importLanguages.py
 
-ECHO Creating the project...
-qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=balrog %PROD_FLAGS%
+ECHO Generating glean samples...
+python scripts\generate_glean.py
+
+qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to configure the project
+  EXIT 1
+)
+
+IF NOT EXIST mozillavpnnp.vcxproj (
+  echo The VC project doesn't exist. Why?
+  EXIT 1
+)
+
+ECHO Cleaning up the project...
+MSBuild -t:Clean -p:Configuration=Release mozillavpnnp.vcxproj
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
+  EXIT 1
+)
+
+MSBuild -t:Build -p:Configuration=Release mozillavpnnp.vcxproj
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to build the project
+  EXIT 1
+)
+
+ECHO Creating the project with flags: %FLAGS%
+qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release %FLAGS%
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
@@ -73,6 +145,13 @@ IF %ERRORLEVEL% NEQ 0 (
 
 IF NOT EXIST MozillaVPN.vcxproj (
   echo The VC project doesn't exist. Why?
+  EXIT 1
+)
+
+ECHO Compiling the balrog.dll...
+CALL balrog\build.cmd
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
   EXIT 1
 )
 
@@ -107,8 +186,29 @@ ECHO All done.
 EXIT 0
 
 :CheckCommand
-WHERE %~1 > nul
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO Command `%~1` has not been found.
-  EXIT 1
-)
+  WHERE %~1 > nul
+  IF %ERRORLEVEL% NEQ 0 (
+    ECHO Command `%~1` has not been found.
+    EXIT 1
+  )
+  goto :eof
+
+:CopyDependency
+  IF NOT EXIST %~1 (
+    COPY /y "%~2" "%~1" > nul
+    IF %ERRORLEVEL% NEQ 0 (
+      ECHO Failed to copy the dependency `%~1`.
+      EXIT 1
+    )
+  )
+  goto :eof
+
+:SetVersion
+  for /f "tokens=1* delims=." %%A IN ("%1") DO call :ComposeVersion %%A
+  goto :EOF
+
+:ComposeVersion
+  SET VERSION=%1
+  SET T=%TIME: =0%
+  SET VERSION=%VERSION%.%date:~-4%%date:~4,2%%date:~7,2%%T:~0,2%%T:~3,2%
+  goto :EOF

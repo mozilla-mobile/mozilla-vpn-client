@@ -6,8 +6,10 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 
+#include <QCollator>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -16,6 +18,23 @@
 namespace {
 Logger logger(LOG_MAIN, "Localizer");
 Localizer* s_instance = nullptr;
+
+struct StaticLanguage {
+  QString m_name;
+  QString m_localizedName;
+};
+
+// Some languages do not have the right localized/non-localized names in the QT
+// framework (and some are missing entirely). This static map is the fallback
+// when this happens.
+QMap<QString, StaticLanguage> s_languageMap{
+    {"co", StaticLanguage{"Corsu", ""}},
+    {"es_AR", StaticLanguage{"Spanish (Argentina)", "Español, Argentina"}},
+    {"es_MX", StaticLanguage{"Spanish (Mexico)", "Español, México"}},
+    {"en_GB", StaticLanguage{"English (United Kingdom)", ""}},
+    {"en_CA", StaticLanguage{"English (Canada)", ""}},
+};
+
 }  // namespace
 
 // static
@@ -35,11 +54,6 @@ Localizer::Localizer() {
     m_code = settingsHolder->languageCode();
   }
 
-  if (m_code.isEmpty()) {
-    QLocale locale = QLocale::system();
-    m_code = locale.bcp47Name();
-  }
-
   initialize();
 }
 
@@ -51,6 +65,29 @@ Localizer::~Localizer() {
 }
 
 void Localizer::initialize() {
+  QString systemCode = QLocale::system().bcp47Name();
+
+  // In previous versions, we did not have the support for the system language.
+  // If this is the first time we are here, we need to check if the current
+  // language matches with the system one.
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasSystemLanguageCodeMigrated() ||
+      !settingsHolder->systemLanguageCodeMigrated()) {
+    settingsHolder->setSystemLanguageCodeMigrated(true);
+
+    if (settingsHolder->hasLanguageCode() &&
+        settingsHolder->languageCode() == systemCode) {
+      settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
+      settingsHolder->setLanguageCode("");
+    }
+  }
+
+  // We always need a previous code.
+  if (!settingsHolder->hasPreviousLanguageCode() ||
+      settingsHolder->previousLanguageCode().isEmpty()) {
+    settingsHolder->setPreviousLanguageCode(systemCode);
+  }
+
   loadLanguage(m_code);
 
   QCoreApplication::installTranslator(&m_translator);
@@ -65,24 +102,48 @@ void Localizer::initialize() {
     Q_ASSERT(parts.length() == 2);
 
     QString code = parts[0].remove(0, 11);
-    m_languages.append(code);
+
+    Language language{code, languageName(code), localizedLanguageName(code)};
+    m_languages.append(language);
   }
+
+  // Sorting languages.
+  QCollator collator;
+  std::sort(m_languages.begin(), m_languages.end(),
+            std::bind(languageSort, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
 }
 
 void Localizer::loadLanguage(const QString& code) {
   logger.log() << "Loading language:" << code;
-  if (loadLanguageInternal(code)) {
-    return;
+  if (!loadLanguageInternal(code)) {
+    logger.log() << "Loading default language (fallback)";
+    loadLanguageInternal("en");
   }
 
-  logger.log() << "Loading default language (fallback)";
-  loadLanguageInternal("en");
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (code.isEmpty() && settingsHolder->hasLanguageCode()) {
+    QString previousCode = settingsHolder->languageCode();
+    if (!previousCode.isEmpty()) {
+      settingsHolder->setPreviousLanguageCode(previousCode);
+      emit previousCodeChanged();
+    }
+  }
+
+  SettingsHolder::instance()->setLanguageCode(code);
+
+  m_code = code;
+  emit codeChanged();
 }
 
 bool Localizer::loadLanguageInternal(const QString& code) {
   QLocale locale = QLocale(code);
   if (code.isEmpty()) {
-    locale = QLocale::system();
+    // On IOS, for some QT issues (to be investigated) we cannot use
+    // QLocale::system() directly because it would load the 'en' language
+    // instead of the system one. Let's recreate a new QLocale object using the
+    // bcp47 code.
+    locale = QLocale(QLocale::system().bcp47Name());
   }
 
   QLocale::setDefault(locale);
@@ -93,15 +154,18 @@ bool Localizer::loadLanguageInternal(const QString& code) {
     return false;
   }
 
-  SettingsHolder::instance()->setLanguageCode(code);
-
-  m_code = code;
-  emit codeChanged();
-
   return true;
 }
 
-QString Localizer::languageName(const QString& code) const {
+// static
+QString Localizer::languageName(const QString& code) {
+  if (s_languageMap.contains(code)) {
+    QString languageName = s_languageMap[code].m_name;
+    if (!languageName.isEmpty()) {
+      return languageName;
+    }
+  }
+
   QLocale locale(code);
   if (code.isEmpty()) {
     locale = QLocale::system();
@@ -111,10 +175,22 @@ QString Localizer::languageName(const QString& code) const {
     return "English (US)";
   }
 
-  return QLocale::languageToString(locale.language());
+  QString name = QLocale::languageToString(locale.language());
+
+  // Capitalize the string.
+  name.replace(0, 1, locale.toUpper(QString(name[0])));
+  return name;
 }
 
-QString Localizer::localizedLanguageName(const QString& code) const {
+// static
+QString Localizer::localizedLanguageName(const QString& code) {
+  if (s_languageMap.contains(code)) {
+    QString languageName = s_languageMap[code].m_localizedName;
+    if (!languageName.isEmpty()) {
+      return languageName;
+    }
+  }
+
   QLocale locale(code);
   if (code.isEmpty()) {
     locale = QLocale::system();
@@ -129,6 +205,8 @@ QString Localizer::localizedLanguageName(const QString& code) const {
     return languageName(code);
   }
 
+  // Capitalize the string.
+  name.replace(0, 1, locale.toUpper(QString(name[0])));
   return name;
 }
 
@@ -151,15 +229,77 @@ QVariant Localizer::data(const QModelIndex& index, int role) const {
 
   switch (role) {
     case LanguageRole:
-      return QVariant(languageName(m_languages.at(index.row())));
+      return QVariant(m_languages.at(index.row()).m_name);
 
     case LocalizedLanguageRole:
-      return QVariant(localizedLanguageName(m_languages.at(index.row())));
+      return QVariant(m_languages.at(index.row()).m_localizedName);
 
     case CodeRole:
-      return QVariant(m_languages.at(index.row()));
+      return QVariant(m_languages.at(index.row()).m_code);
 
     default:
       return QVariant();
   }
+}
+
+QStringList Localizer::languages() const {
+  QStringList languages;
+  for (const Language& language : m_languages) {
+    languages.append(language.m_code);
+  }
+
+  return languages;
+}
+
+bool Localizer::languageSort(const Localizer::Language& a,
+                             const Localizer::Language& b,
+                             QCollator* collator) {
+  Q_ASSERT(collator);
+  return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
+}
+
+QString Localizer::previousCode() const {
+  return SettingsHolder::instance()->previousLanguageCode();
+}
+
+// static
+void Localizer::macOSInstallerStrings() {
+  //% "Mozilla VPN for macOS"
+  qtTrId("macosinstaller.title");
+
+  //% "Unable to install"
+  qtTrId("macosinstaller.unsupported_version.title");
+
+  //% "Mozilla VPN requires Mac OS X 10.6 or later."
+  qtTrId("macosinstaller.unsupported_version.message");
+
+  //% "Previous Installation Detected"
+  qtTrId("macosinstaller.previous_build.title");
+
+  //% "A previous installation of Mozilla VPN exists at /Applications/Mozilla "
+  //% "VPN.app. This installer will remove the previous installation prior to "
+  //% "installing. Please back up any data before proceeding."
+  qtTrId("macosinstaller.previous_build.message");
+
+  //% "You will now be guided through the installation steps for the Mozilla "
+  //% "VPN. Thank you for choosing your VPN from the trusted pioneer of "
+  //% "internet privacy."
+  qtTrId("macosinstaller.welcome.message1");
+
+  //% "Click “Continue” to continue the setup."
+  qtTrId("macosinstaller.welcome.message2");
+
+  //% "Success!"
+  qtTrId("macosinstaller.conclusion.title");
+
+  //% "The Mozilla VPN is successfully installed. Go to your Applications "
+  //% "folder to open up the VPN and start taking control of your online "
+  //% "privacy."
+  qtTrId("macosinstaller.conclusion.message1");
+
+  //% "Trouble with this installation?"
+  qtTrId("macosinstaller.conclusion.message2");
+
+  //% "Get help."
+  qtTrId("macosinstaller.conclusion.message3");
 }

@@ -48,7 +48,7 @@ Daemon* Daemon::instance() {
   return s_daemon;
 }
 
-bool Daemon::activate(const Config& config) {
+bool Daemon::activate(const InterfaceConfig& config) {
   // There are 3 possible scenarios in which this method is called:
   //
   // 1. the VPN is off: the method tries to enable the VPN.
@@ -82,6 +82,31 @@ bool Daemon::activate(const Config& config) {
     return activate(config);
   }
 
+  if (supportWGUtils()) {
+    if (wgutils()->interfaceExists()) {
+      qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
+      return false;
+    }
+    // add_if
+    if (!wgutils()->addInterface()) {
+      return false;
+    }
+    // set conf
+    if (!wgutils()->configureInterface(config)) {
+      qWarning("Interface configuration failed. Removing `%s`.", WG_INTERFACE);
+      wgutils()->deleteInterface();
+      return false;
+    }
+  }
+  if (supportIPUtils()) {
+    if (!iputils()->addInterfaceIPs(config)) {
+      return false;
+    }
+    if (!iputils()->setMTUAndUp()) {
+      return false;
+    }
+  }
+
   m_lastConfig = config;
   m_connected = run(Up, m_lastConfig);
 
@@ -96,7 +121,7 @@ bool Daemon::activate(const Config& config) {
 }
 
 // static
-bool Daemon::parseConfig(const QJsonObject& obj, Config& config) {
+bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #define GETVALUESTR(name, where)                                \
   if (!obj.contains(name)) {                                    \
     logger.log() << name << " missing in the jsonConfig input"; \
@@ -237,9 +262,18 @@ bool Daemon::deactivate(bool emitSignals) {
     return true;
   }
 
-  m_connected = false;
+  if (supportWGUtils() && !wgutils()->interfaceExists()) {
+    qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
+             WG_INTERFACE);
+    return false;
+  }
 
+  m_connected = false;
   bool status = run(Down, m_lastConfig);
+
+  if (supportWGUtils() && !wgutils()->deleteInterface()) {
+    return false;
+  }
 
   logger.log() << "Status:" << status;
 
@@ -264,7 +298,7 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
-bool Daemon::switchServer(const Config& config) {
+bool Daemon::switchServer(const InterfaceConfig& config) {
   Q_UNUSED(config);
   qFatal("Have you forgotten to implement switchServer?");
   return false;

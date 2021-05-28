@@ -45,4 +45,7 @@ class TestModels final : public TestHelper {
   void userFromSettings();
 
   void ipAddressRangeBasic();
+
+  void surveyModelFromJson_data();
+  void surveyModelFromJson();
 };

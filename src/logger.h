@@ -14,6 +14,7 @@ constexpr const char* LOG_MAIN = "main";
 constexpr const char* LOG_MODEL = "model";
 constexpr const char* LOG_NETWORKING = "networking";
 constexpr const char* LOG_INSPECTOR = "inspector";
+constexpr const char* LOG_SERVER = "server";
 
 #ifdef MVPN_IOS
 constexpr const char* LOG_IAP = "iap";
@@ -35,8 +36,6 @@ constexpr const char* LOG_IOS = "ios";
 #if defined(MVPN_ANDROID) || defined(UNIT_TEST)
 constexpr const char* LOG_ANDROID = "android";
 #endif
-
-class QNetworkReply;
 
 class Logger {
  public:

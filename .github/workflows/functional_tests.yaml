@@ -1,0 +1,161 @@
+name: Functional tests
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+jobs:
+  test_list:
+    name: Generate Tasklist
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
+    steps:
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install jq -y
+      
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - id: testGen
+        shell: bash
+        run: |
+          var=$(ls tests/functional/test* | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=tests::$var"
+      - name: Check Tests
+        shell: bash
+        run: |
+          echo ${{ steps.testGen.outputs.tests }}
+
+  build_test_app:
+    name: Build Test Client
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Linux packages
+        run: |
+          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
+          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+          sudo apt update
+          sudo apt install git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats qt515graphicaleffects  qt515websockets qt515declarative -y
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Generating glean samples
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+          python3 scripts/generate_glean.py
+
+      - name: Importing translation files
+        shell: bash
+        run: |
+          # Manually add QT executables to path
+          export PATH=/opt/qt515/bin:$PATH
+          git submodule update --remote --depth 1 i18n
+          python3 scripts/importLanguages.py
+
+      - name: Compile
+        shell: bash
+        run: |
+          # Manually add QT executables to path
+          export PATH=/opt/qt515/bin:$PATH
+          qmake CONFIG+=DUMMY QMAKE_CXX=clang++ QMAKE_LINK=clang++ CONFIG+=debug CONFIG+=inspector QT+=svg
+          make -j8
+      - name: Check Content
+        run: |
+          ls -ial ./src/
+      - name: Save Build
+        uses: actions/cache@v2
+        with:
+          path: ./src/mozillavpn
+          key: ${{ github.sha }}
+
+
+  functionaltests:
+    name: Functional tests
+    needs: 
+      - build_test_app
+      - test_list
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      max-parallel: 3 #  To avoid max-device limit
+      matrix:
+        test: ${{ fromJson(needs.test_list.outputs.matrix) }}
+    steps:
+      - name: Install Linux packages
+        run: |
+          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
+          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+          sudo apt update
+          sudo apt install git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats qt515graphicaleffects  qt515websockets qt515declarative -y
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Save Build
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ./src/mozillavpn
+          key: ${{ github.sha }}
+      - name: Check Content
+        run: |
+          ls -ial ./src/
+      - name: Check Cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          echo "Build was not cached, exiting!"
+          exit -1
+      - name: Install xvfb
+        run: |
+          sudo apt install xvfb -y
+
+      - name: Install firefox
+        run: |
+          sudo apt install firefox -y
+
+      - name: Install geckodriver
+        run: |
+          sudo apt install wget -y
+          wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz -O geckodriver.tar.gz
+          tar xvf geckodriver.tar.gz
+
+      - name: Install node dependecies
+        run: |
+          npm install dotenv
+          npm install selenium-webdriver
+          npm install mocha
+          npm install websocket
+
+      - name: Run the test script
+        run: |
+          export PATH=.:$(npm bin):$PATH
+          export HEADLESS=yes
+          xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn ${{matrix.test}}
+        env:
+          ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
+          ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+
+      - name: Uploading screenshots
+        uses: actions/upload-artifact@v1
+        # Not every Job has screenshots, skip if none are present
+        if: hashFiles('/tmp/screencapture') != ''
+        with:
+            name: Screen capture
+            path: /tmp/screencapture
+

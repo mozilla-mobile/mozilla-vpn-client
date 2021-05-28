@@ -16,7 +16,7 @@ class DummyPingSendWorker final : public PingSendWorker {
   ~DummyPingSendWorker();
 
  public slots:
-  void sendPing(const QString& destination) override;
+  void sendPing(const QString& destination, const QString& source) override;
 };
 
 #endif  // DUMMYPINGSENDWORKER_H

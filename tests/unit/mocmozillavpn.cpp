@@ -28,6 +28,8 @@ void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
 
+void MozillaVPN::getStarted() {}
+
 void MozillaVPN::authenticate() {}
 
 void MozillaVPN::openLink(LinkType) {}
@@ -71,6 +73,8 @@ void MozillaVPN::changeServer(const QString&, const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
 
+void MozillaVPN::telemetryPolicyCompleted() {}
+
 void MozillaVPN::setUpdateRecommended(bool) {}
 
 void MozillaVPN::setUserAuthenticated(bool) {}
@@ -108,10 +112,6 @@ void MozillaVPN::cleanupLogs() {}
 
 void MozillaVPN::serializeLogs(QTextStream*, std::function<void()>&&) {}
 
-bool MozillaVPN::startOnBootSupported() const { return false; }
-
-bool MozillaVPN::protectSelectedAppsSupported() const { return false; }
-
 void MozillaVPN::activate() {}
 
 void MozillaVPN::deactivate() {}
@@ -119,8 +119,6 @@ void MozillaVPN::deactivate() {}
 void MozillaVPN::refreshDevices() {}
 
 void MozillaVPN::quit() {}
-
-bool MozillaVPN::localNetworkAccessSupported() const { return false; }
 
 void MozillaVPN::update() {}
 
@@ -131,3 +129,9 @@ MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
 }
 
 void MozillaVPN::controllerStateChanged() {}
+
+void MozillaVPN::backendServiceRestore() {}
+
+void MozillaVPN::heartbeatCompleted(bool) {}
+
+void MozillaVPN::triggerHeartbeat() {}

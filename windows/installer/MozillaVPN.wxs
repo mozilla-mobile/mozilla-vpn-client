@@ -6,17 +6,9 @@
 	Copyright (C) 2019 Edge Security LLC. All Rights Reserved.
 -->
 
-<?if $(var.Platform) = x64 ?>
-	<?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
-	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-	<?define WintunPlatform = "amd64" ?>
-<?elseif $(var.Platform) = x86 ?>
-	<?define UpgradeCode = "3e078a42-bcaf-407f-96ed-1b47f44565d8"?>
-	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
-	<?define WintunPlatform = "x86" ?>
-<?else?>
-	<?error Unknown platform ?>
-<?endif?>
+<?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
+<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?define WintunPlatform = "amd64" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 	<Product
@@ -56,7 +48,7 @@
 		-->
 		<MajorUpgrade
 			AllowDowngrades="no"
-			AllowSameVersionUpgrades="no"
+			AllowSameVersionUpgrades="yes"
 			DowngradeErrorMessage="A newer version of [ProductName] is already installed."
 			Schedule="afterInstallExecute" />
 
@@ -92,6 +84,9 @@
 				<File Source="../../mullvad-binary/x86_64-pc-windows-msvc/split-tunnel/win10/WdfCoinstaller01011.dll" />
 				
 
+				<File Source="../../extension/app/manifests/windows/mozillavpn.json" />
+				<File Source="../../mozillavpnnp.exe" />
+
 				<!-- Broker Service -->
 				<ServiceInstall
 					Type="ownProcess"
@@ -123,7 +118,18 @@
 		-->
 		<DirectoryRef Id="MozillaVPNFolder">
 			<Merge Id="WintunMergeModule" Language="0" DiskId="1" SourceFile=".deps/wintun-$(var.WintunPlatform)-0.8.1.msm" />
-			<Merge Id="VCRedistModule" SourceFile="c:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Redist/MSVC/14.28.29325/MergeModules/Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+		</DirectoryRef>
+
+		<DirectoryRef Id="MozillaVPNFolder">
+			<Component Id="RegistryEntries" Guid="71d1c1ef-2133-4cbf-954d-7f1e0e24dace">
+				<RegistryKey Root="HKLM" Key="Software\Mozilla\NativeMessagingHosts\mozillavpn">
+					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
+				</RegistryKey>
+				<RegistryKey Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\mozillavpn">
+					<RegistryValue Type="string" Value="[MozillaVPNFolder]\mozillavpn.json"/>
+				</RegistryKey>
+			</Component>
 		</DirectoryRef>
 
 		<!--
@@ -137,6 +143,9 @@
 		</Feature>
 		<Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
 			<MergeRef Id="VCRedistModule" />
+		</Feature>
+		<Feature Id="MozillaVPNRegistryEntries" Title="Native Messaging Registry Entries" Level="1">
+			<ComponentRef Id="RegistryEntries" />
 		</Feature>
 
 		<!--

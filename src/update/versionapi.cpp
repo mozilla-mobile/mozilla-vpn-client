@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "versionapi.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -29,11 +30,12 @@ void VersionApi::start() {
   NetworkRequest* request = NetworkRequest::createForVersions(this);
 
   connect(request, &NetworkRequest::requestFailed,
-          [](QNetworkReply*, QNetworkReply::NetworkError error,
-             const QByteArray&) { logger.log() << "Request failed" << error; });
+          [](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.log() << "Request failed" << error;
+          });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply*, const QByteArray& data) {
+          [this](const QByteArray& data) {
             logger.log() << "Request completed";
 
             if (!processData(data)) {
@@ -53,23 +55,7 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonObject obj = json.object();
 
-  QString platformKey =
-#if defined(MVPN_IOS)
-      "ios"
-#elif defined(MVPN_MACOS)
-      "macos"
-#elif defined(MVPN_LINUX)
-      "linux"
-#elif defined(MVPN_ANDROID)
-      "android"
-#elif defined(MVPN_WINDOWS)
-      "windows"
-#elif defined(UNIT_TEST) || defined(MVPN_DUMMY)
-      "dummy"
-#else
-#  error "Unsupported platform"
-#endif
-      ;
+  QString platformKey = Constants::PLATFORM_NAME;
 
   if (!obj.contains(platformKey)) {
     logger.log() << "No key" << platformKey;

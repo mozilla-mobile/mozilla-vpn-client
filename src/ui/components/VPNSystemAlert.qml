@@ -5,19 +5,19 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import Mozilla.VPN 1.0
+import "../themes/themes.js" as Theme
 
 VPNAlert {
     id: alertBox
 
-    visible: false
     state: VPN.alert
+
     states: [
         State {
             name: VPN.NoAlert
 
             PropertyChanges {
                 target: alertBox
-                opacity: 0
                 visible: false
             }
 
@@ -27,7 +27,6 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                opacity: 0
                 visible: false
             }
 
@@ -42,7 +41,6 @@ VPNAlert {
                 alertText: qsTrId("vpn.alert.authenticationError")
                 //% "Try again"
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -56,7 +54,6 @@ VPNAlert {
                 //% "Unable to connect"
                 alertText: qsTrId("vpn.alert.unableToConnect")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -70,23 +67,47 @@ VPNAlert {
                 //% "No internet connection"
                 alertText: qsTrId("vpn.alert.noInternet")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.ControllerErrorAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "backend-service"
+                //% "Background service error"
+                alertText: qsTrId("vpn.alert.backendServiceError")
+                //% "Restore"
+                //: Restore a service in case of error.
+                alertLinkText: qsTrId("vpn.alert.restore")
+                visible: true
+            }
+
+        },
+        State {
+            name: VPN.UnrecoverableErrorAlert
+
+            PropertyChanges {
+                target: alertBox
+                alertType: "backend-service"
+                alertText: qsTrId("vpn.alert.backendServiceError")
+                alertLinkText: ""
                 opacity: 1
                 visible: true
             }
 
         },
         State {
-            name: VPN.BackendServiceErrorAlert
+            name: VPN.RemoteServiceErrorAlert
 
             PropertyChanges {
                 target: alertBox
-                alertType: "background-service"
-                //% "Background service error"
-                alertText: qsTrId("vpn.alert.backgroundServiceError")
-                //% "Restore"
-                //: Restore a service in case of error.
-                alertLinkText: qsTrId("vpn.alert.restore")
-                opacity: 1
+                alertType: "backend-service"
+                //% "Remote service error"
+                alertText: qsTrId("vpn.alert.remoteServiceError")
+                alertLinkText: ""
                 visible: true
             }
 
@@ -100,7 +121,6 @@ VPNAlert {
                 //% "Subscription failed"
                 alertText: qsTrId("vpn.alert.subscriptionFailureError")
                 alertLinkText: qsTrId("vpn.alert.tryAgain")
-                opacity: 1
                 visible: true
             }
 
@@ -114,7 +134,6 @@ VPNAlert {
                 //% "Operation not allowed from current location"
                 alertText: qsTrId("vpn.alert.getIPRestrictionError")
                 alertLinkText: ""
-                opacity: 1
                 visible: true
             }
 
@@ -124,10 +143,11 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                //% "Signed out and device removed"
-                alertText: qsTrId("vpn.alert.deviceRemovedAndLogout")
-                opacity: 1
+                //% "Signed out and device disconnected"
+                alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
                 visible: true
+                alertColor: Theme.greenAlert
+                textColor: Theme.fontColorDark
             }
 
         }

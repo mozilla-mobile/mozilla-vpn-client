@@ -70,16 +70,14 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
                 this, pkceCodeSucces, pkceCodeVerifier);
 
         connect(request, &NetworkRequest::requestFailed,
-                [this, vpn](QNetworkReply*, QNetworkReply::NetworkError error,
-                            const QByteArray&) {
+                [vpn](QNetworkReply::NetworkError error, const QByteArray&) {
                   logger.log()
                       << "Failed to complete the authentication" << error;
                   vpn->errorHandle(ErrorHandler::toErrorType(error));
-                  emit completed();
                 });
 
         connect(request, &NetworkRequest::requestCompleted,
-                [this, vpn](QNetworkReply*, const QByteArray& data) {
+                [this, vpn](const QByteArray& data) {
                   logger.log() << "Authentication completed";
                   authenticationCompleted(vpn, data);
                 });
@@ -99,21 +97,11 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
   QString path("/api/v2/vpn/login/");
 
-#if defined(MVPN_IOS)
-  path.append("ios");
-#elif defined(MVPN_LINUX)
-  path.append("linux");
-#elif defined(MVPN_ANDROID)
-  path.append("android");
-#elif defined(MVPN_MACOS)
-  path.append("macos");
-#elif defined(MVPN_WINDOWS)
-  path.append("windows");
-#elif defined(MVPN_DUMMY)
+#if !defined(MVPN_DUMMY)
+  path.append(Constants::PLATFORM_NAME);
+#else
   // Let's use linux here.
   path.append("linux");
-#else
-#  error Not supported
 #endif
 
   QUrl url(Constants::API_URL);
@@ -133,14 +121,14 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue userObj = obj.value("user");
   if (!userObj.isObject()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
@@ -152,7 +140,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {
-    vpn->errorHandle(ErrorHandler::BackendServiceError);
+    vpn->errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 

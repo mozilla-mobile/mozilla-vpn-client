@@ -4,10 +4,10 @@
 
 #include "connectiondataholder.h"
 #include "constants.h"
+#include "ipfinder.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 #include "timersingleshot.h"
 
 #include <QJsonDocument>
@@ -20,17 +20,20 @@ namespace {
 Logger logger(LOG_NETWORKING, "ConnectionDataHolder");
 }
 
-//% "Loading"
-//: This refers to the current IP address, i.e. "IP: Loading".
 ConnectionDataHolder::ConnectionDataHolder()
-    : m_ipAddress(qtTrId("vpn.connectionInfo.loading")) {
+    //% "Loading"
+    //: This refers to the current IP address, i.e. "IP: Loading".
+    : m_ipv4Address(qtTrId("vpn.connectionInfo.loading")),
+      m_ipv6Address(qtTrId("vpn.connectionInfo.loading")) {
   MVPN_COUNT_CTOR(ConnectionDataHolder);
 
   connect(&m_ipAddressTimer, &QTimer::timeout, [this]() { updateIpAddress(); });
   connect(&m_checkStatusTimer, &QTimer::timeout, [this]() {
     MozillaVPN::instance()->controller()->getStatus(
-        [this](const QString& serverIpv4Gateway, uint64_t txBytes,
+        [this](const QString& serverIpv4Gateway,
+               const QString& deviceIpv4Address, uint64_t txBytes,
                uint64_t rxBytes) {
+          Q_UNUSED(deviceIpv4Address);
           if (!serverIpv4Gateway.isEmpty()) {
             add(txBytes, rxBytes);
           }
@@ -188,11 +191,14 @@ void ConnectionDataHolder::reset() {
   emit bytesChanged();
 
   if (m_txSeries) {
-    Q_ASSERT(m_txSeries->count() == Constants::CHARTS_MAX_POINTS);
-    Q_ASSERT(m_rxSeries->count() == Constants::CHARTS_MAX_POINTS);
-
-    for (int i = 0; i < Constants::CHARTS_MAX_POINTS; ++i) {
+    // In theory, m_txSeries and m_rxSeries should contain
+    // Constants::CHARTS_MAX_POINTS elements, but during the shutdown, strange
+    // things happen.
+    for (int i = 0; i < m_txSeries->count(); ++i) {
       m_txSeries->replace(i, i, 0);
+    }
+
+    for (int i = 0; i < m_rxSeries->count(); ++i) {
       m_rxSeries->replace(i, i, 0);
     }
   }
@@ -214,51 +220,44 @@ void ConnectionDataHolder::updateIpAddress() {
   }
   m_updatingIpAddress = true;
 
-  NetworkRequest* request = NetworkRequest::createForIpInfo(this);
-  connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
-            logger.log() << "IP address request failed" << error;
+  IPFinder* ipfinder = new IPFinder(this);
+  connect(
+      ipfinder, &IPFinder::completed,
+      [this](const QString& ipv4, const QString& ipv6, const QString& country) {
+        if (ipv4.isEmpty() && ipv6.isEmpty()) {
+          logger.log() << "IP address request failed";
+          m_updatingIpAddress = false;
+          emit ipAddressChecked();
+          return;
+        }
 
-            ErrorHandler::ErrorType errorType =
-                ErrorHandler::toErrorType(error);
-            if (errorType == ErrorHandler::AuthenticationError) {
-              MozillaVPN::instance()->errorHandle(errorType);
-            }
+        logger.log() << "IP address request completed";
+        if (m_checkStatusTimer.isActive() &&
+            country != MozillaVPN::instance()->currentServer()->countryCode()) {
+          // In case the country-we're reported in does not match the
+          // connected server we may retry only once.
+          logger.log() << "Reported ip not in the right country, retry!";
+          TimerSingleShot::create(this, 3000, [this]() { updateIpAddress(); });
+        }
 
-            m_updatingIpAddress = false;
-            emit ipAddressChecked();
-          });
+        if (!ipv4.isEmpty()) {
+          m_ipv4Address = ipv4;
+          emit ipv4AddressChanged();
+        }
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply*, const QByteArray& data) {
-            logger.log() << "IP address request completed";
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isObject()) {
-              QJsonObject obj = json.object();
+        if (!ipv4.isEmpty()) {
+          m_ipv6Address = ipv6;
+          emit ipv6AddressChanged();
+        }
 
-              QJsonValue country = obj.take("country");
-              if (m_checkStatusTimer.isActive() &&
-                  country.toString().toLower() !=
-                      MozillaVPN::instance()->currentServer()->countryCode()) {
-                // In case the country-we're reported in does not match the
-                // connected server we may retry only once.
-                logger.log() << "Reported ip not in the right country, retry!";
-                TimerSingleShot::create(this, 3000,
-                                        [this]() { updateIpAddress(); });
-              }
-              QJsonValue value = obj.value("ip");
-              if (value.isString()) {
-                m_ipAddress = value.toString();
-                logger.log() << "Set own Address: " << m_ipAddress << " in "
-                             << country.toString();
-                emit ipAddressChanged();
-              }
-            }
+        logger.log() << "Set own Address. ipv4:" << m_ipv4Address
+                     << "ipv6:" << m_ipv6Address << "in" << country;
 
-            m_updatingIpAddress = false;
-            emit ipAddressChecked();
-          });
+        m_updatingIpAddress = false;
+        emit ipAddressChecked();
+      });
+
+  ipfinder->start();
 }
 
 quint64 ConnectionDataHolder::txBytes() const { return bytes(0); }

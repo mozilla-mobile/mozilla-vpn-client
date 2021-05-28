@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QTimer>
 
+class QHostAddress;
 class QNetworkAccessManager;
 
 class NetworkRequest final : public QObject {
@@ -41,12 +42,17 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForVersions(QObject* parent);
 
-  static NetworkRequest* createForIpInfo(QObject* parent);
+  static NetworkRequest* createForIpInfo(QObject* parent,
+                                         const QHostAddress& address);
 
   static NetworkRequest* createForCaptivePortalDetection(
       QObject* parent, const QUrl& url, const QByteArray& host);
 
   static NetworkRequest* createForCaptivePortalLookup(QObject* parent);
+
+  static NetworkRequest* createForHeartbeat(QObject* parent);
+
+  static NetworkRequest* createForSurveyData(QObject* parent);
 
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);
@@ -56,6 +62,12 @@ class NetworkRequest final : public QObject {
 #endif
 
   void disableTimeout();
+
+  int statusCode() const;
+
+  QByteArray rawHeader(const QByteArray& headerName) const;
+
+  void abort();
 
  private:
   NetworkRequest(QObject* parent, int status);
@@ -67,17 +79,14 @@ class NetworkRequest final : public QObject {
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
 
-  int statusCode() const;
-
  private slots:
   void replyFinished();
   void timeout();
 
  signals:
-  void requestHeaderReceived(QNetworkReply* reply);
-  void requestFailed(QNetworkReply* reply, QNetworkReply::NetworkError error,
-                     const QByteArray& data);
-  void requestCompleted(QNetworkReply*, const QByteArray& data);
+  void requestHeaderReceived(NetworkRequest* request);
+  void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void requestCompleted(const QByteArray& data);
 
  private:
   QNetworkRequest m_request;

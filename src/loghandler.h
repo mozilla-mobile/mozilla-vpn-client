@@ -13,7 +13,9 @@ class QFile;
 class QMutexLocker;
 class QTextStream;
 
-class LogHandler final {
+class LogHandler final : public QObject {
+  Q_OBJECT
+
  public:
   struct Log {
     Log() = default;
@@ -62,6 +64,11 @@ class LogHandler final {
 
   static void cleanupLogs();
 
+  static void setLocation(const QString& path);
+
+ signals:
+  void logEntryAdded(const QByteArray& log);
+
  private:
   LogHandler(const QStringList& modules, const QMutexLocker& proofOfLock);
 
@@ -75,9 +82,10 @@ class LogHandler final {
 
   void closeLogFile(const QMutexLocker& proofOfLock);
 
+  static void cleanupLogFile(const QMutexLocker& proofOfLock);
+
   const QStringList m_modules;
 
-  QString m_logFileName;
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;
 };

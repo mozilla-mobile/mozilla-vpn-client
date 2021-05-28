@@ -20,6 +20,7 @@ class ServerCountryModel final : public QAbstractListModel {
  public:
   enum ServerCountryRoles {
     NameRole = Qt::UserRole + 1,
+    LocalizedNameRole,
     CodeRole,
     CitiesRole,
   };
@@ -49,6 +50,11 @@ class ServerCountryModel final : public QAbstractListModel {
 
   const QList<ServerCountry>& countries() const { return m_countries; }
 
+  void retranslate();
+
+  // For the web-extension
+  const QByteArray& rawJson() const { return m_rawJson; }
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -61,6 +67,8 @@ class ServerCountryModel final : public QAbstractListModel {
 
  private:
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
+
+  void sortCountries();
 
  private:
   QByteArray m_rawJson;

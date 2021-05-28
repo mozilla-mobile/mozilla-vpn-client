@@ -9,6 +9,7 @@
 	--gutters: .5rem;
 	--inputBackground: rgb(240, 240, 244);
 	--inputBackgroundFocus: rgb(223, 223, 227);
+	--inspectorInputHeight: 5rem;
 	--loaderOpacity: 1;
 	--Metropolis: "Metropolis", sans-serif;
 	--MozGradient: linear-gradient(-90deg, #ff9100 0%, #f10366 50%, #6173ff 100%);
@@ -52,6 +53,7 @@ h1 {
 
 p {
 	line-height: 1.5;
+	margin: .5rem;
 }
 
 header,
@@ -91,7 +93,8 @@ footer {
 	max-width: 2rem;
 }
 
-.logo path {
+.logo path,
+.fill-path {
 	fill: var(--svgFill);
 }
 
@@ -175,7 +178,6 @@ canvas {
 	box-shadow: var(--boxShadow);
 	border-radius: 2rem;
 	overflow: hidden;
-	padding: 1rem;
 	background-color: rgba(14, 13, 26, 0.05);
 	min-width: 400px;
 	height: 70vh;
@@ -254,19 +256,70 @@ canvas {
 	flex-direction: column;
 }
 
+.draggable {
+	resize: both;
+	position: absolute;
+}
+
+.draggable-header {
+	position: absolute;
+	cursor: grab;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 6rem;
+	opacity: .5;
+	z-index: 5;
+}
+
+.dragging {
+	cursor: grabbing !important;
+}
+
+.draggable-icon {
+	position: absolute;
+	right: 1.25rem;
+	top: 1.5rem;
+	margin: auto;
+}
+
+.log-wrapper {
+	border-radius: 1rem;
+	background-color: var(--inputBackground);
+	min-height: 20vh;
+	min-width: 30vw;
+	overflow: hidden;
+	z-index: 0;
+	left: 10vw;
+	box-shadow: var(--boxShadow);
+}
+
+#log {
+	overflow: scroll;
+	position: absolute;
+	left: 1rem;
+	right: 0rem;
+	top: 1.5rem;
+	bottom: 1rem;
+	font-size: 13px;
+}
+
 .websocket-footer {
 	margin: auto 0 0 0;
 }
 
 .controller {
 	background-color: var(--bgColor);
-	border-radius: 2rem;
+	border-radius: 1.5rem;
 	box-shadow: var(--boxShadow);
 	min-height: 300px;
 	height: 60vh;
-	min-width: 60vh;
-	position: relative;
+	width: 40vw;
+	position: absolute;
 	overflow: hidden;
+	font-size: 13px;
+	z-index: 1;
+
 }
 
 .controller, 
@@ -279,10 +332,10 @@ canvas {
 
 #content {
 	position: absolute;
-	top: 2rem;
-	left: 2rem;
-	right: 2rem;
-	bottom: 7rem;
+	top: 1.5rem;
+	left: 1.5rem;
+	right: 1.5rem;
+	bottom: calc(var(--inspectorInputHeight) - 1rem);
 	overflow: scroll;
 }
 
@@ -293,9 +346,9 @@ input {
 	background-color: var(--inputBackground);
 	width: 110%;
 	border: none;
-	height: 6rem;
+	height: var(--inspectorInputHeight);
 	padding: 1rem 10%;
-	font-size: 1.5rem;
+	font-size: 1rem;
 	color: var(--textColor);
 	caret-color: orange;
 	transition: opacity 0.2s ease, background-color 0.2s ease;
@@ -313,7 +366,7 @@ input:focus {
 	content: "";
 	display: block;
 	position: absolute;
-	bottom: calc(6rem - 4px);
+	bottom: calc(var(--inspectorInputHeight) - 4px);
 	z-index: 2;
 	opacity: .4;
 	transition: opacity 0.2s ease, background-color 0.2s ease;
@@ -393,7 +446,7 @@ input:focus {
 	:root {
 			 --bgColor: #4a4a55;
 			 --boxShadow: 0 12px 18px 2px rgba(34,0,51,.04),0 6px 22px 4px rgba(0, 0, 0, 0.12),0 6px 10px -4px rgba(14,13,26,.12);
-			 --inputBackground: rgba(69, 69, 80, 0.54);
+			 --inputBackground: #474752;
 			 --inputBackgroundFocus: rgb(62, 62, 74);
 			 --gradientBeforeBackground: #312f3780;
 			 --loaderOpacity: .4;
@@ -402,3 +455,20 @@ input:focus {
 			--svgFill: #ffffffc9;
 	}
 }
+
+.webSocketResponseType {
+  padding-right: 1em;
+  color: blue;
+}
+
+.webSocketResponseError {
+  padding-left: 1em;
+  padding-right: 1em;
+  color: red;
+}
+
+.webSocketResponseValue {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+

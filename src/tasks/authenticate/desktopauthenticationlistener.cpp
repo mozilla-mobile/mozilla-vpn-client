@@ -5,13 +5,13 @@
 #include "desktopauthenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "urlopener.h"
 
 #ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorconnection.h"
+#  include "inspector/inspectorwebsocketconnection.h"
 #endif
 
 #include <limits>
-#include <QDesktopServices>
 #include <QOAuthHttpServerReplyHandler>
 #include <QRandomGenerator>
 #include <QUrlQuery>
@@ -54,7 +54,6 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
             }
 
             QString code = values["code"].toString();
-            m_server->close();
 
             emit completed(code);
           });
@@ -81,7 +80,7 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
 
   if (!m_server->isListening()) {
     logger.log() << "Unable to listen for the authentication server.";
-    emit failed(ErrorHandler::BackendServiceError);
+    emit failed(ErrorHandler::UnrecoverableError);
     return;
   }
 
@@ -89,9 +88,6 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   query.addQueryItem("port", QString::number(m_server->port()));
 
   url.setQuery(query);
-  QDesktopServices::openUrl(url.toString());
 
-#ifdef MVPN_INSPECTOR
-  InspectorConnection::setLastUrl(url);
-#endif
+  UrlOpener::open(url.toString());
 }

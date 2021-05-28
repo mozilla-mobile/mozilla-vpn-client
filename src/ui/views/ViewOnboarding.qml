@@ -23,7 +23,7 @@ Item {
 
         currentIndex: 0
         height: onboardingPanel.panelHeight
-        width: onboardingPanel.width - Theme.windowMargin * 4
+        width: onboardingPanel.width
         anchors.horizontalCenter: onboardingPanel.horizontalCenter
 
         ListModel {
@@ -77,6 +77,7 @@ Item {
                     logo: image
                     logoTitle: headline
                     logoSubtitle: subtitle
+                    height: nextPanel.y
                     Component.onCompleted: fade.start()
 
                     PropertyAnimation on opacity {
@@ -106,6 +107,7 @@ Item {
 
     VPNButton {
         id: nextPanel
+        objectName: "onboardingNext"
 
         //% "Next"
         readonly property var textNext: qsTrId("vpn.onboarding.next")
@@ -116,7 +118,7 @@ Item {
         anchors.bottom: progressIndicator.top
         anchors.bottomMargin: 28
         radius: Theme.cornerRadius
-        onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.authenticate()
+        onClicked: swipeView.currentIndex < swipeView.count - 1 ? swipeView.currentIndex++ : VPN.getStarted()
     }
 
     PageIndicator {

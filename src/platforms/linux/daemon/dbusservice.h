@@ -6,6 +6,8 @@
 #define DBUSSERVICE_H
 
 #include "daemon/daemon.h"
+#include "iputilslinux.h"
+#include "wireguardutilslinux.h"
 
 class DbusAdaptor;
 
@@ -20,8 +22,6 @@ class DBusService final : public Daemon {
 
   void setAdaptor(DbusAdaptor* adaptor);
 
-  bool checkInterface();
-
   using Daemon::activate;
 
  public slots:
@@ -34,16 +34,25 @@ class DBusService final : public Daemon {
   QString getLogs();
 
  protected:
-  bool run(Op op, const Config& config) override;
+  bool run(Op op, const InterfaceConfig& config) override;
 
-  bool supportServerSwitching(const Config& config) const override;
+  bool supportServerSwitching(const InterfaceConfig& config) const override;
+  bool switchServer(const InterfaceConfig& config) override;
 
-  bool switchServer(const Config& config) override;
+  bool supportWGUtils() const override { return true; }
+  WireguardUtils* wgutils() override;
+  bool supportIPUtils() const override { return true; }
+  IPUtils* iputils() override;
 
   QByteArray getStatus() override;
 
  private:
+  bool removeInterfaceIfExists();
+
+ private:
   DbusAdaptor* m_adaptor = nullptr;
+  WireguardUtilsLinux* m_wgutils = nullptr;
+  IPUtilsLinux* m_iputils = nullptr;
 };
 
 #endif  // DBUSSERVICE_H

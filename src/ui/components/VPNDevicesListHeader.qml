@@ -12,11 +12,9 @@ Item {
     property var pendingDeviceRemoval: false
 
     width: deviceList.width
-    state: "deviceLimitNotReached"
     states: [
         State {
-            name: "deviceLimitReached"
-            when: vpnFlickable.state === "deviceLimit"
+            when: vpnFlickable.state === "deviceLimit" || vpnFlickable.wasmShowMaxDeviceWarning === true
 
             PropertyChanges {
                 target: listHeader
@@ -26,7 +24,6 @@ Item {
 
         },
         State {
-            name: "deviceLimitNotReached"
             when: vpnFlickable.state === "active"
 
             PropertyChanges {
@@ -76,8 +73,9 @@ Item {
         logo: "../resources/devicesLimit.svg"
         //% "Remove a device"
         logoTitle: qsTrId("vpn.devices.doDeviceRemoval")
-        //% "You’ve reached your limit. To install the VPN on this device, you’ll need to remove one."
-        logoSubtitle: qsTrId("vpn.devices.maxDevicesReached")
+        //% "You’ve reached the device limit. To turn on the VPN on this device, you’ll need to remove one."
+        logoSubtitle: qsTrId("vpn.devices.maxDevicesHeader")
+
     }
 
     Rectangle {

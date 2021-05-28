@@ -13,10 +13,13 @@ class ErrorHandler final {
     NoError,
     ConnectionFailureError,
     NoConnectionError,
+    VPNDependentConnectionError,
     AuthenticationError,
-    BackendServiceError,
+    ControllerError,
+    RemoteServiceError,
     SubscriptionFailureError,
     GeoIpRestrictionError,
+    UnrecoverableError,
     IgnoredError,
   };
 

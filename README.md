@@ -23,6 +23,12 @@ following dependencies:
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
 
+Python3 (pip) depedencies:
+
+- glean_parser
+- pyhumps
+- pyyaml
+
 #### QT5
 
 Qt5 can be installed in a number of ways:
@@ -45,11 +51,16 @@ See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or ar
 
 Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
-#### Initialize submodules
+#### Initialization
 
 ```
+# submodules
 git submodule init
 git submodule update
+# glean
+./scripts/generate_glean.py
+# translations
+python scripts/importLanguages.py
 ```
 
 #### Build
@@ -61,6 +72,8 @@ qmake CONFIG+=production
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
+
+For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug CONFIG+=inspector`.
 
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
@@ -106,6 +119,10 @@ The procedure to compile MozillaVPN for macOS is the following:
 1. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
+1. Install python3 dependencies:
+  $ pip3 install glean_parser
+  $ pip3 install pyhumps
+  $ pip3 install pyyaml
 1. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
   $ ./scripts/apple\_compile.sh macos
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -119,6 +136,7 @@ GROUP_ID_MACOS = <>
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login
+NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging
 
 # IOS configuration
 GROUP_ID_IOS = <>
@@ -143,6 +161,10 @@ The IOS procedure is similar to the macOS one:
 1. Update the submodules:
   $ git submodule init
   $ git submodule update --remote
+1. Install python3 dependencies:
+  $ pip3 install glean_parser
+  $ pip3 install pyhumps
+  $ pip3 install pyyaml
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`
   $ cp xcode.xconfig.template xcode.xconfig
 1. Modify xcode.xconfig to something like:
@@ -154,6 +176,7 @@ GROUP_ID_MACOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 LOGIN_ID_IOS = <>
+NATIVEMESSAGING_ID_MACOS = <>
 
 # IOS configuration
 GROUP_ID_IOS = <>
@@ -175,12 +198,19 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
   $ git submodule update --remote
 ```
 
-5. Build the apk
+5. Install python3 dependencies:
+```
+  $ pip3 install glean_parser
+  $ pip3 install pyhumps
+  $ pip3 install pyyaml
+```
+
+6. Build the apk
 ```bash 
   $  ./scripts/android_package.sh /path/to/Qt/5.15.x/ (debug|release)
 ```
-6. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
-7. Install with adb on device/emulator
+7. The apk will be located in ```.tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk```
+8. Install with adb on device/emulator
 ```bash
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
@@ -197,11 +227,20 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
+5. Install python3 dependencies (pip install glean_parser pyyaml pyhumps)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
+
+## Inspector
+
+To build the inspector `qmake CONFIG+=debug CONFIG+=inspector`. Or use appropriate script parameters.
+
+When running MozillaVPN, go to http://localhost:8766 to view the inspector.
+
+From the inspector, type `help` to see the list of available commands.
 
 ## Bug report
 
@@ -209,7 +248,9 @@ Please file bugs here: https://github.com/mozilla-mobile/mozilla-vpn-client/issu
 
 ## Status
 
-![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Unit%20Test%20Coverage/badge.svg)
-![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Linters%20(clang,%20l10n)/badge.svg)
-![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/Android/badge.svg)
-![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/workflows/MacOS/badge.svg)
+[![Unit Test Coverage](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_coverage.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/test_coverage.yaml)
+[![Functional tests](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/functional_tests.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/functional_tests.yaml)
+[![Linters (clang, l10n)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/linters.yaml)
+[![Android](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/android.yaml)
+[![MacOS](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/macos-build.yaml)
+[![Windows](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/mozilla-mobile/mozilla-vpn-client/actions/workflows/windows-build.yaml)

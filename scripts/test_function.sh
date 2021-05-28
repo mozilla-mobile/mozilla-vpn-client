@@ -6,8 +6,36 @@
 
 . $(dirname $0)/commons.sh
 
+export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm-0
+REPORT_FILE=/tmp/report.html
+
 print N "This script runs the functional tests"
 print N ""
+
+ID=0
+
+runTest() {
+  ID=$((ID+1))
+  export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm-$ID
+
+  print Y "Running the app..."
+  "$1" &>/tmp/VPN_LOG.txt &
+  PID=$!
+  print G "done."
+
+  print Y "Running the test: $2"
+  mocha $2 || ERROR=yes
+
+  wait $PID
+
+  if [ "$ERROR" = yes ]; then
+    echo "::group::Error Logs"
+    cat /tmp/VPN_LOG.txt
+    echo "::endgroup::"
+    print R "Nooo"
+    exit 1
+  fi
+}
 
 if [ "$1" == "" ] || ! [ -f "$1" ]; then
   print G "Usage:"
@@ -19,23 +47,47 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
   die "This script must be executed at the root of the repository."
 fi
 
+APP=$1
+
 printn Y "Retrieving mozillavpn version... "
-$1 -v 2>/dev/null || die "Failed."
+"$APP" -v 2>/dev/null || die "Failed."
 print G "done."
 
-for i in tests/functional/test*; do
-  print Y "Running the app..."
-  $1 &>/dev/null &
-  PID=$!
-  print G "done."
+shift
 
-  print Y "Running the test: $i"
-  mocha $i || ERROR=yes
+if [ $# -ne 0 ]; then
+  for i in $*; do
+    runTest "$APP" "$i"
+  done
+else
+  for i in tests/functional/test*; do
+    runTest "$APP" "$i"
+  done
+fi
 
-  wait $PID
-
-  if [ "$ERROR" = yes ]; then
-    print R "Nooo"
-    exit 1
+FILES=()
+for ((I=0; $I <= $ID; I=$I+1)); do
+  LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm-$I
+  if ! [ -f $LLVM_PROFILE_FILE ]; then
+    print Y "$LLVM_PROFILE_FILE: No report generated!"
+    continue
   fi
+
+  FILES[$I]="$LLVM_PROFILE_FILE"
 done
+
+if [ ${#FILES[*]} == 0 ]; then
+  print Y "No reports generated"
+  exit 0
+fi
+
+printn Y "Merge the profile data... "
+llvm-profdata-10 merge ${FILES[@]} -o /tmp/mozillavpn.llvm-final || die "Failed to merge the coverage report"
+print G "done."
+
+print Y "Report:"
+llvm-cov-10 report "$APP" -instr-profile=/tmp/mozillavpn.llvm-final src || die "Failed to create the report"
+
+printn Y "Generating the HTML report... "
+llvm-cov-10 show "$APP" -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
+print G $REPORT_FILE

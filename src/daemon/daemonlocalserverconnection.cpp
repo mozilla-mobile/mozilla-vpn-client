@@ -72,7 +72,7 @@ void DaemonLocalServerConnection::readData() {
 }
 
 void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
-  logger.log() << "Command received:" << data;
+  logger.log() << "Command received:" << data.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
@@ -89,7 +89,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   QString type = typeValue.toString();
   if (type == "activate") {
-    Daemon::Config config;
+    InterfaceConfig config;
     if (!Daemon::parseConfig(obj, config)) {
       logger.log() << "Invalid configuration";
       emit disconnected();

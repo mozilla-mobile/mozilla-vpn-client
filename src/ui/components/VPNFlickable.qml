@@ -15,24 +15,44 @@ Flickable {
     property bool hideScollBarOnStackTransition: false
 
     function ensureVisible(item) {
-        if (windowHeightExceedsContentHeight) {
+        let yPosition = item.mapToItem(contentItem, 0, 0).y;
+        if (windowHeightExceedsContentHeight || item.skipEnsureVisible || yPosition < 0) {
             return;
         }
 
-        let yPosition = item.mapToItem(contentItem, 0, 0).y;
+        const buffer = 20;
+        const itemHeight = Math.min(item.height, Theme.rowHeight) + buffer
         let ext = item.height + yPosition;
-        if (yPosition < contentY || yPosition > contentY + height || ext < contentY || ext > contentY + height) {
-            let destinationY = Math.max(0, Math.min(yPosition - height + item.height, contentHeight - height));
-            ensureVisAnimation.to = destinationY;
-            ensureVisAnimation.start();
+        let destinationY;
+
+
+        if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
+            destinationY = Math.min(yPosition - vpnFlickable.height + itemHeight, vpnFlickable.contentHeight - vpnFlickable.height);
         }
+
+        if (yPosition < vpnFlickable.contentY) {
+            const diff = vpnFlickable.contentY - yPosition;
+            if (diff < itemHeight) {
+                destinationY = vpnFlickable.contentY - (vpnFlickable.contentY - yPosition);
+                destinationY = (destinationY - buffer) > 0 ? (destinationY - buffer) : destinationY;
+            }
+
+        }
+        if (typeof(destinationY) === "undefined") return;
+
+        ensureVisAnimation.to = destinationY > 0 ? destinationY : 0;
+        ensureVisAnimation.start();
     }
 
     contentHeight: Math.max(window.safeContentHeight, flickContentHeight)
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
+
     Component.onCompleted: {
         opacity = 1;
+        if (Qt.platform.os === "windows") {
+            maximumFlickVelocity = 700;
+        }
     }
 
     NumberAnimation on contentY {

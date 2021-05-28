@@ -9,6 +9,8 @@ QT += qml
 QT += xml
 
 DEFINES += APP_VERSION=\\\"1234\\\"
+DEFINES += BUILD_ID=\\\"1234\\\"
+
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += UNIT_TEST
 
@@ -31,34 +33,45 @@ HEADERS += \
     ../../src/controller.h \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
+    ../../src/featurelist.h \
+    ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
+    ../../src/ipfinder.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
+    ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/server.h \
     ../../src/models/servercity.h \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/survey.h \
+    ../../src/models/surveymodel.h \
     ../../src/models/user.h \
     ../../src/mozillavpn.h \
     ../../src/networkmanager.h \
     ../../src/networkrequest.h \
+    ../../src/networkwatcher.h \
+    ../../src/networkwatcherimpl.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
     ../../src/pingsendworker.h \
     ../../src/platforms/android/androiddatamigration.h \
     ../../src/platforms/android/androidsharedprefs.h \
+    ../../src/platforms/dummy/dummynetworkwatcher.h \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
+    ../../src/serveri18n.h \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
     ../../src/statusicon.h \
+    ../../src/systemtrayhandler.h \
     ../../src/task.h \
     ../../src/tasks/accountandservers/taskaccountandservers.h \
     ../../src/tasks/adddevice/taskadddevice.h \
@@ -66,12 +79,15 @@ HEADERS += \
     ../../src/timersingleshot.h \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
+    ../../src/urlopener.h \
     helper.h \
     testandroidmigration.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testlocalizer.h \
     testlogger.h \
+    testipaddress.h \
+    testipfinder.h \
     testmodels.h \
     testnetworkmanager.h \
     testreleasemonitor.h \
@@ -87,41 +103,52 @@ SOURCES += \
     ../../src/connectiondataholder.cpp \
     ../../src/curve25519.cpp \
     ../../src/errorhandler.cpp \
+    ../../src/featurelist.cpp \
     ../../src/hacl-star/Hacl_Chacha20.c \
     ../../src/hacl-star/Hacl_Chacha20Poly1305_32.c \
     ../../src/hacl-star/Hacl_Curve25519_51.c \
     ../../src/hacl-star/Hacl_Poly1305_32.c \
+    ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
+    ../../src/ipfinder.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
+    ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/server.cpp \
     ../../src/models/servercity.cpp \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/survey.cpp \
+    ../../src/models/surveymodel.cpp \
     ../../src/models/user.cpp \
     ../../src/networkmanager.cpp \
+    ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
     ../../src/pingsender.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
     ../../src/platforms/android/androidsharedprefs.cpp \
+    ../../src/platforms/dummy/dummynetworkwatcher.cpp \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
+    ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
     ../../src/statusicon.cpp \
+    ../../src/systemtrayhandler.cpp \
     ../../src/tasks/accountandservers/taskaccountandservers.cpp \
     ../../src/tasks/adddevice/taskadddevice.cpp \
     ../../src/tasks/function/taskfunction.cpp \
     ../../src/timersingleshot.cpp \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
+    ../../src/urlopener.cpp \
     main.cpp \
     moccontroller.cpp \
     mocmozillavpn.cpp \
@@ -131,6 +158,8 @@ SOURCES += \
     testconnectiondataholder.cpp \
     testlocalizer.cpp \
     testlogger.cpp \
+    testipaddress.cpp \
+    testipfinder.cpp \
     testmodels.cpp \
     testnetworkmanager.cpp \
     testreleasemonitor.cpp \
@@ -174,7 +203,7 @@ MOC_DIR = .moc
 RCC_DIR = .rcc
 UI_DIR = .ui
 
-equals(QMAKE_CXX, clang++) {
+coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
 }

@@ -1,0 +1,137 @@
+name: Windows
+
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+jobs:
+  windows-staging:
+    name: Windows staging build
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/bakulf/qt_static_windows
+          cd qt_static_windows
+          cat x* > qt_static.tar.bz2
+          tar xf qt_static.tar.bz2
+          tar xf msm.tar.gz
+          mkdir /c/MozillaVPNBuild
+          cp -r * /c/MozillaVPNBuild
+          cp -r *.msm ..
+          cd ..
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+
+      - name: Adding msbuild to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Compilation script
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          ./scripts/windows_compile.bat
+
+      - name: Upload app
+        uses: actions/upload-artifact@v2
+        with:
+            name: staging
+            path: windows/installer/x64/MozillaVPN.msi
+
+  windows-production:
+    name: Windows production build
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git clone https://github.com/bakulf/qt_static_windows
+          cd qt_static_windows
+          cat x* > qt_static.tar.bz2
+          tar xf qt_static.tar.bz2
+          tar xf msm.tar.gz
+          mkdir /c/MozillaVPNBuild
+          cp -r * /c/MozillaVPNBuild
+          cd ..
+          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll .
+          cp /c/MozillaVPNBuild/bin/libEGL.dll .
+          cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
+          cp /c/MozillaVPNBuild/*.msm .
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+
+      - name: Adding msbuild to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Compilation script
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          ./scripts/windows_compile.bat -p
+
+      - name: Create the zip package for signature
+        shell: bash
+        run: |
+          mkdir unsigned
+          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll unsigned
+          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll unsigned
+          cp /c/MozillaVPNBuild/bin/libEGL.dll unsigned
+          cp /c/MozillaVPNBuild/bin/libGLESv2.dll unsigned
+          cp /c/MozillaVPNBuild/*.msm unsigned
+          cp windows/tunnel/x64/tunnel.dll unsigned
+          cp balrog/x64/balrog.dll unsigned
+          cp *.exe unsigned
+
+      - name: Upload app
+        uses: actions/upload-artifact@v2
+        with:
+            name: production
+            path: windows/installer/x64/MozillaVPN.msi
+
+      - name: Upload unsigned app
+        uses: actions/upload-artifact@v2
+        with:
+            name: unsigned
+            path: unsigned

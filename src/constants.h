@@ -10,6 +10,12 @@ namespace Constants {
 // should never happen.
 constexpr const char* SUBSCRIPTION_CURRENCY_VALUE_USD = "4.99$";
 
+// Number of msecs for the captive-portal block alert.
+constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
+
+// Number of msecs for the unsecured network alert.
+constexpr uint32_t UNSECURED_NETWORK_ALERT_MSEC = 4000;
+
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, what, releaseValue, debugValue, testingValue) \
     constexpr type what = testingValue;
@@ -42,6 +48,13 @@ CONSTEXPR(uint32_t, CAPTIVEPORTAL_REQUEST_TIMEOUT_MSEC, 10000, 4000, 0)
 // How fast the animated icon should move
 CONSTEXPR(uint32_t, STATUSICON_ANIMATION_MSEC, 200, 200, 0)
 
+// How often glean pings are sent
+CONSTEXPR(uint32_t, GLEAN_TIMEOUT_MSEC, 1200000, 1000, 0)
+
+// How often we check the surveys to be executed (no network requests are done
+// for this check)
+CONSTEXPR(uint32_t, SURVEY_TIMER_MSEC, 300000, 4000, 0)
+
 #undef CONSTEXPR
 
 #ifdef MVPN_PRODUCTION_MODE
@@ -57,9 +70,31 @@ PRODBETAEXPR(const char*, LOGO_URL, ":/ui/resources/logo-dock.png",
 PRODBETAEXPR(
     const char*, BALROG_URL,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
-    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
-    "update.json");
+    "https://stage.balrog.nonprod.cloudops.mozgcp.net/json/1/FirefoxVPN/%1/%2/"
+    "release-cdntest/update.json");
+PRODBETAEXPR(
+    const char*, BALROG_ROOT_CERT_FINGERPRINT,
+    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
+    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745");
 
 #undef PRODBETAEXPR
+
+constexpr const char* PLATFORM_NAME =
+#if defined(MVPN_IOS)
+    "ios"
+#elif defined(MVPN_MACOS)
+    "macos"
+#elif defined(MVPN_LINUX)
+    "linux"
+#elif defined(MVPN_ANDROID)
+    "android"
+#elif defined(MVPN_WINDOWS)
+    "windows"
+#elif defined(UNIT_TEST) || defined(MVPN_DUMMY)
+    "dummy"
+#else
+#  error "Unsupported platform"
+#endif
+    ;
 
 };  // namespace Constants

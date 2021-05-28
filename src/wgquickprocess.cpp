@@ -20,20 +20,6 @@ Logger logger(
 #endif
     ,
     "WgQuickProcess");
-
-QString scriptPath() {
-#if defined(MVPN_LINUX)
-  return "wg-quick";
-#elif defined(MVPN_MACOS_DAEMON)
-  QDir appPath(QCoreApplication::applicationDirPath());
-  appPath.cdUp();
-  appPath.cd("Resources");
-  appPath.cd("utils");
-  return appPath.filePath("helper.sh");
-#endif
-  return QString();
-}
-
 }  // namespace
 
 // static
@@ -96,6 +82,10 @@ bool WgQuickProcess::createConfigFile(
 
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
+
+#ifdef QT_DEBUG
+  logger.log() << content;
+#endif
 
   QFile file(configFile);
   if (!file.open(QIODevice::WriteOnly)) {
@@ -162,4 +152,19 @@ bool WgQuickProcess::run(
                << Qt::endl;
 
   return wgQuickProcess.exitCode() == 0;
+}
+
+// static
+QString WgQuickProcess::scriptPath() {
+#if defined(MVPN_LINUX)
+  QDir appPath(MVPN_DATA_PATH);
+  return appPath.filePath("helper.sh");
+#elif defined(MVPN_MACOS_DAEMON)
+  QDir appPath(QCoreApplication::applicationDirPath());
+  appPath.cdUp();
+  appPath.cd("Resources");
+  appPath.cd("utils");
+  return appPath.filePath("helper.sh");
+#endif
+  return QString();
 }

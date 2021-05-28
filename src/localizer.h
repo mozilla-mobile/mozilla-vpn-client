@@ -8,6 +8,7 @@
 #include <QAbstractListModel>
 #include <QTranslator>
 
+class QCollator;
 class SettingsHolder;
 
 class Localizer final : public QAbstractListModel {
@@ -15,7 +16,14 @@ class Localizer final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(Localizer)
 
   Q_PROPERTY(QString code READ code WRITE setCode NOTIFY codeChanged)
+  Q_PROPERTY(QString previousCode READ previousCode NOTIFY previousCodeChanged)
   Q_PROPERTY(bool hasLanguages READ hasLanguages CONSTANT)
+
+  struct Language {
+    QString m_code;
+    QString m_name;
+    QString m_localizedName;
+  };
 
  public:
   enum ServerCountryRoles {
@@ -36,8 +44,11 @@ class Localizer final : public QAbstractListModel {
   bool hasLanguages() const { return m_languages.length() > 1; }
 
   const QString& code() const { return m_code; }
-
   void setCode(const QString& code) { loadLanguage(code); }
+
+  QString previousCode() const;
+
+  QStringList languages() const;
 
   // QAbstractListModel methods
 
@@ -49,18 +60,26 @@ class Localizer final : public QAbstractListModel {
 
  signals:
   void codeChanged();
+  void previousCodeChanged();
 
  private:
-  QString languageName(const QString& code) const;
-  QString localizedLanguageName(const QString& code) const;
+  static QString languageName(const QString& code);
+  static QString localizedLanguageName(const QString& code);
+  static bool languageSort(const Language& a, const Language& b,
+                           QCollator* collator);
 
   bool loadLanguageInternal(const QString& code);
+
+  // This method is not used. It exists just to add the installer strings into
+  // the QT language files.
+  static void macOSInstallerStrings();
 
  private:
   QTranslator m_translator;
 
   QString m_code;
-  QStringList m_languages;
+
+  QList<Language> m_languages;
 };
 
 #endif  // LOCALIZER_H

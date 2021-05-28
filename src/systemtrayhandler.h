@@ -12,24 +12,54 @@
 class MozillaVPN;
 class QAction;
 
-class SystemTrayHandler final : public QSystemTrayIcon {
+class SystemTrayHandler : public QSystemTrayIcon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SystemTrayHandler)
 
  public:
+  enum Message {
+    None,
+    UnsecuredNetwork,
+    CaptivePortalBlock,
+    CaptivePortalUnblock,
+  };
+
+  static SystemTrayHandler* create(QObject* parent);
+
   static SystemTrayHandler* instance();
 
-  explicit SystemTrayHandler(QObject* parent);
-  ~SystemTrayHandler();
+  virtual ~SystemTrayHandler();
 
-  void captivePortalNotificationRequested();
+  void captivePortalBlockNotificationRequired();
+  void captivePortalUnblockNotificationRequired();
+
+  void unsecuredNetworkNotification(const QString& networkName);
+
+  void showNotification(const QString& title, const QString& message,
+                        int timerMsec);
 
   void retranslate();
+
+ signals:
+  void notificationShown(const QString& title, const QString& message);
+
+  void notificationClicked(Message message);
 
  public slots:
   void updateIcon(const QString& icon);
 
   void updateContextMenu();
+
+  void messageClickHandle();
+
+ protected:
+  explicit SystemTrayHandler(QObject* parent);
+
+  virtual void showNotificationInternal(Message type, const QString& title,
+                                        const QString& message, int timerMsec);
+
+ protected:
+  Message m_lastMessage = None;
 
  private:
   void showHideWindow();

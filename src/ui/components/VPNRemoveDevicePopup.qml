@@ -12,6 +12,9 @@ import "../themes/themes.js" as Theme
 Popup {
     id: popup
 
+    property var deviceName
+    property var wasmView
+
     leftInset: Theme.windowMargin
     rightInset: Theme.windowMargin
     topPadding: Theme.windowMargin * 2
@@ -34,6 +37,10 @@ Popup {
     onClosed: {
         // When closing the dialog, put the focus back on the
         // remove button that originally triggered the dialog.
+        if (wasmView) {
+            return;
+        }
+
         if (deviceList.focusedIconButton) {
             deviceList.focusedIconButton.forceActiveFocus();
         }
@@ -73,6 +80,13 @@ Popup {
             spacing: 0
             anchors.centerIn: contentRoot
             width: contentRoot.width - Theme.windowMargin * 2
+            opacity: 1
+
+            Behavior on opacity {
+                PropertyAnimation {
+                    duration: 200
+                }
+            }
 
 
             Image {
@@ -108,7 +122,7 @@ Popup {
                 color: Theme.fontColorDark
                 //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
-                text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(removePopup.deviceName)
+                text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(popup.deviceName)
             }
 
             GridLayout {
@@ -148,7 +162,14 @@ Popup {
                     buttonTextColor: Theme.white
                     colorScheme: Theme.redButton
                     onClicked: {
-                        VPN.removeDevice(removePopup.deviceName);
+                        VPN.removeDevice(popup.deviceName);
+                        if (vpnFlickable.state === "deviceLimit") {
+                            // there is no further action the user can take on the deviceList
+                            // so leave the modal open until the user is redirected back to the main view
+                            col.opacity = .5
+                            return;
+                        }
+
                         popup.close();
                     }
                 }

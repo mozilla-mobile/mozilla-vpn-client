@@ -5,6 +5,7 @@
 #include "testconnectiondataholder.h"
 #include "../../src/connectiondataholder.h"
 #include "../../src/constants.h"
+#include "../../src/settingsholder.h"
 #include "helper.h"
 
 #include <QSplineSeries>
@@ -12,6 +13,9 @@
 
 void TestConnectionDataHolder::checkIpAddressFailure() {
   ConnectionDataHolder cdh;
+
+  SettingsHolder settingsHolder;
+  settingsHolder.setIpv6Enabled(false);
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
@@ -48,7 +52,10 @@ void TestConnectionDataHolder::checkIpAddressSucceess_data() {
 
 void TestConnectionDataHolder::checkIpAddressSucceess() {
   ConnectionDataHolder cdh;
-  QSignalSpy spy(&cdh, &ConnectionDataHolder::ipAddressChanged);
+  QSignalSpy spy(&cdh, &ConnectionDataHolder::ipv4AddressChanged);
+
+  SettingsHolder settingsHolder;
+  settingsHolder.setIpv6Enabled(false);
 
   QFETCH(QByteArray, json);
   TestHelper::networkConfig.append(
@@ -59,7 +66,7 @@ void TestConnectionDataHolder::checkIpAddressSucceess() {
     cdh.disable();
 
     QFETCH(QString, ipAddress);
-    QCOMPARE(cdh.ipAddress(), ipAddress);
+    QCOMPARE(cdh.ipv4Address(), ipAddress);
 
     QFETCH(bool, signal);
     QCOMPARE(spy.count(), signal ? 1 : 0);
@@ -73,6 +80,9 @@ void TestConnectionDataHolder::checkIpAddressSucceess() {
 void TestConnectionDataHolder::chart() {
   ConnectionDataHolder cdh;
   QSignalSpy spy(&cdh, &ConnectionDataHolder::bytesChanged);
+
+  SettingsHolder settingsHolder;
+  settingsHolder.setIpv6Enabled(false);
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Success, QString("{'ip':'42'}").toUtf8()));

@@ -115,7 +115,11 @@ rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
+git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
 python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
+
+print Y "Generating glean samples..."
+python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
@@ -147,6 +151,7 @@ if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/android/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
+    BUILD_ID=$VERSIONCODE \
     CONFIG+=qtquickcompiler \
     CONFIG-=debug \
     CONFIG-=debug_and_release \
@@ -157,6 +162,7 @@ else
   printn Y "Use debug config \n"
   $QTPATH/android/bin/qmake -spec android-clang \
     VERSION=$SHORTVERSION \
+    BUILD_ID=$VERSIONCODE \
     CONFIG+=debug \
     CONFIG-=debug_and_release \
     CONFIG-=release \

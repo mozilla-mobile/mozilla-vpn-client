@@ -6,7 +6,11 @@
 #define CAPTIVEPORTALDETECTION_H
 
 #include <QObject>
-#include <QTimer>
+#include "captiveportalresult.h"
+
+class CaptivePortalDetectionImpl;
+class CaptivePortalMonitor;
+class CaptivePortalNotifier;
 
 class CaptivePortalDetection final : public QObject {
   Q_OBJECT
@@ -18,23 +22,34 @@ class CaptivePortalDetection final : public QObject {
 
   void initialize();
 
- private:
-  void handleSuccess();
-  void handleFailure();
-
- public slots:
-  void controllerStateChanged();
-
-  void settingsChanged();
-
+  // Methods exposed for the inspector.
   void detectCaptivePortal();
-
- signals:
   void captivePortalDetected();
 
+ public slots:
+  void stateChanged();
+  void settingsChanged();
+  void detectionCompleted(CaptivePortalResult detected);
+  void captivePortalGone();
+
+  void activationRequired();
+  void deactivationRequired();
+
  private:
-  QTimer m_timer;
+  CaptivePortalMonitor* captivePortalMonitor();
+  CaptivePortalNotifier* captivePortalNotifier();
+
+ private:
   bool m_active = false;
+  bool m_shouldRun = true;
+
+  // Don't use it directly. Use captivePortalMonitor().
+  CaptivePortalMonitor* m_captivePortalMonitor = nullptr;
+
+  // Don't use it directly. Use captivePortalNotifier().
+  CaptivePortalNotifier* m_captivePortalNotifier = nullptr;
+
+  QScopedPointer<CaptivePortalDetectionImpl> m_impl;
 };
 
 #endif  // CAPTIVEPORTALDETECTION_H

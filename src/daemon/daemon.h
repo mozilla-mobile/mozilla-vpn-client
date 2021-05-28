@@ -5,7 +5,9 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-#include "ipaddressrange.h"
+#include "interfaceconfig.h"
+#include "iputils.h"
+#include "wireguardutils.h"
 
 #include <QDateTime>
 
@@ -38,9 +40,9 @@ class Daemon : public QObject {
 
   static Daemon* instance();
 
-  static bool parseConfig(const QJsonObject& obj, Config& config);
+  static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
-  virtual bool activate(const Config& config);
+  virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals = true);
 
   // Explose a JSON object with the daemon status.
@@ -55,21 +57,20 @@ class Daemon : public QObject {
   void backendFailure();
 
  protected:
-  virtual bool run(Op op, const Config& config) = 0;
-
-  virtual bool supportServerSwitching(const Config& config) const {
+  virtual bool run(Op op, const InterfaceConfig& config) = 0;
+  virtual bool supportServerSwitching(const InterfaceConfig& config) const {
     Q_UNUSED(config);
     return false;
   }
+  virtual bool switchServer(const InterfaceConfig& config);
+  virtual bool supportWGUtils() const { return false; }
+  virtual WireguardUtils* wgutils() { return nullptr; }
+  virtual bool supportIPUtils() const { return false; }
+  virtual IPUtils* iputils() { return nullptr; }
 
-  virtual bool switchServer(const Config& config);
-
- protected:
   bool m_connected = false;
-
   QDateTime m_connectionDate;
-
-  Config m_lastConfig;
+  InterfaceConfig m_lastConfig;
 };
 
 #endif  // DAEMON_H

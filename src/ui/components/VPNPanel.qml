@@ -7,24 +7,26 @@ import QtQuick.Layouts 1.14
 import QtGraphicalEffects 1.14
 
 import "../themes/themes.js" as Theme
-ColumnLayout {
-    id: panel
-
+Item {
     property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
     property var logoSize: 76
     property var maskImage: false
-    property var imageIsVector: true
+    property var isSettingsView: false
 
-    width:  Math.min(parent.width * .8, Theme.maxHorizontalContentWidth - Theme.windowMargin * 4)
     anchors.horizontalCenter: parent.horizontalCenter
-    spacing: 0
+    width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
+    height: panel.height
 
     ColumnLayout {
-        id: contentWrapper
+        id: panel
 
-        Layout.alignment: Qt.AlignCenter
+        anchors.leftMargin: Theme.windowMargin * 1.5
+        anchors.rightMargin: Theme.windowMargin * 1.5
+        width: parent.width - Theme.windowMargin * 3
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
 
         Rectangle {
@@ -41,12 +43,12 @@ ColumnLayout {
                 anchors.bottom: logoWrapper.bottom
                 verticalAlignment: Image.AlignBottom
                 anchors.bottomMargin: 0
-                sourceSize.height: panel.imageIsVector ? logoSize : undefined
-                sourceSize.width: panel.imageIsVector ? logoSize : undefined
+                sourceSize.height: isSettingsView ? undefined : logoSize
+                sourceSize.width: isSettingsView  ? undefined : logoSize
                 fillMode: Image.PreserveAspectFit
                 layer.enabled: true
                 Component.onCompleted: {
-                    if (!panel.imageIsVector) {
+                    if (isSettingsView ) {
                         logo.height = logoSize;
                         logo.width = logoSize;
                         logo.smooth = true;
@@ -62,7 +64,7 @@ ColumnLayout {
                 }
 
                 layer.effect: OpacityMask {
-                    maskSource: panel.maskImage ? mask : undefined
+                    maskSource: maskImage ? mask : undefined
                 }
 
             }
@@ -72,9 +74,12 @@ ColumnLayout {
         VPNHeadline {
             id: logoTitle
 
+            Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: 24
-            Layout.fillWidth: true
+            Layout.topMargin:24
+            // In Settings, the headline wrapMode is set to 'WrapAtWordBoundaryOrAnywhere' to
+            // prevent very long, unbroken display names from throwing the layout
+            wrapMode: isSettingsView ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap
         }
 
         VPNSubtitle {
@@ -82,6 +87,9 @@ ColumnLayout {
 
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 12
+            Layout.leftMargin: Theme.windowMargin / 2
+            Layout.rightMargin: Theme.windowMargin / 2
+            Layout.maximumWidth: Theme.maxHorizontalContentWidth
             Layout.fillWidth: true
         }
 

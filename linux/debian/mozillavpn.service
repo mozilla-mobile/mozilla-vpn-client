@@ -1,0 +1,7 @@
+[Unit]
+Description=MozillaVPN D-Bus service
+
+[Service]
+Type=dbus
+BusName=org.mozilla.vpn.dbus
+ExecStart=/usr/bin/mozillavpn linuxdaemon

@@ -9,13 +9,22 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 VPNFlickable {
     id: vpnFlickable
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
+    Component.onCompleted: {
+        Glean.sample.networkSettingsViewOpened.record();
+        if (!vpnIsOff) {
+            Glean.sample.networkSettingsViewWarning.record();
+        }
+     }
+
     VPNMenu {
         id: menu
+        objectName: "settingsNetworkingBackButton"
 
         //% "Network settings"
         title: qsTrId("vpn.settings.networking")
@@ -24,6 +33,7 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: ipv6
+        objectName: "settingIpv6Enabled"
 
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
@@ -45,11 +55,12 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: localNetwork
+        objectName: "settingLocalNetworkAccess"
 
         anchors.top: ipv6.bottom
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
-        visible: VPN.localNetworkAccessSupported
+        visible: VPNFeatureList.localNetworkAccessSupported
 
         //% "Local network access"
         labelText: qsTrId("vpn.settings.lanAccess")
@@ -69,9 +80,9 @@ VPNFlickable {
         anchors.top: localNetwork.visible ? localNetwork.bottom : ipv6.bottom
         visible: !vpnFlickable.vpnIsOff
 
-        //% "VPN must be off to edit network settings"
+        //% "VPN must be off to edit these settings"
         //: Associated to a group of settings that require the VPN to be disconnected to change
-        errorMessage: qsTrId("vpn.turnOffAlert.vpnMustBeOff")
+        errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
     }
 
 }

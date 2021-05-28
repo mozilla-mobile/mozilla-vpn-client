@@ -43,14 +43,14 @@ int CommandLogout::run(QStringList& tokens) {
 
     const Device* currentDevice = vpn.deviceModel()->currentDevice(vpn.keys());
     if (currentDevice) {
-      TaskRemoveDevice* task = new TaskRemoveDevice(currentDevice->publicKey());
-      task->run(&vpn);
+      TaskRemoveDevice task(currentDevice->publicKey());
+      task.run(&vpn);
 
       QEventLoop loop;
-      QObject::connect(task, &Task::completed, [&] { loop.exit(); });
+      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
     } else {
-      vpn.reset();
+      vpn.reset(false);
     }
 
     return 0;

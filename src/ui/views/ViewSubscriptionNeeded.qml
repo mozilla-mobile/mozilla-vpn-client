@@ -13,6 +13,14 @@ import "../themes/themes.js" as Theme
 VPNFlickable {
     id: vpnFlickable
 
+    property var wasmView: false
+
+    Component.onCompleted: {
+        if (wasmView) {
+            vpnPanel.logoTitle = qsTrId("vpn.subscription.title").arg("5.99")
+        }
+    }
+
     width: window.width
     flickContentHeight: footerContent.height + spacer1.height + vpnPanel.height + featureListBackground.height + (Theme.windowMargin * 4)
 
@@ -190,14 +198,6 @@ VPNFlickable {
             color: "transparent"
             Layout.preferredHeight: Theme.windowMargin * 1.5
             Layout.fillWidth: true
-        }
-
-        VPNLinkButton {
-            //% "Restore purchases"
-            labelText: qsTrId("vpn.main.restorePurchases")
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredHeight: Theme.rowHeight
-            onClicked: VPNIAP.restoreSubscription()
         }
 
         Rectangle { // vertical spacer

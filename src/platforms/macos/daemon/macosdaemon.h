@@ -16,8 +16,10 @@ class MacOSDaemon final : public Daemon {
 
   QByteArray getStatus() override;
 
+  void maybeCleanup();
+
  protected:
-  bool run(Op op, const Config& config) override;
+  bool run(Op op, const InterfaceConfig& config) override;
 };
 
 #endif  // MACOSDAEMON_H

@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
+#include "timersingleshot.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalRequest");
@@ -30,13 +31,18 @@ void CaptivePortalRequest::run() {
   }
 
   QStringList ipv6Addresses;
+#if 0
+  // TODO https://github.com/mozilla-mobile/mozilla-vpn-client/issues/593
+  // The captive portal detection doesn't work in ipv6 because we do not
+  // support (yet) the IPAddress ipv6 filtering.
   if (settings->ipv6Enabled() && settings->hasCaptivePortalIpv6Addresses()) {
     ipv6Addresses = settings->captivePortalIpv6Addresses();
   }
+#endif
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {
-    emit completed(false);
+    onResult(NoPortal);
     return;
   }
 
@@ -58,44 +64,42 @@ void CaptivePortalRequest::run() {
 void CaptivePortalRequest::createRequest(const QUrl& url) {
   logger.log() << "request:" << url.toString();
 
-  ++m_pendingRequests;
-
   NetworkRequest* request = NetworkRequest::createForCaptivePortalDetection(
       this, url, CAPTIVEPORTAL_HOST);
 
   connect(request, &NetworkRequest::requestFailed,
-          [this](QNetworkReply*, QNetworkReply::NetworkError error,
-                 const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Captive portal request failed:" << error;
-            --m_pendingRequests;
-            maybeComplete();
+            onResult(Failure);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [this](QNetworkReply*, const QByteArray& data) {
+          [this, request](const QByteArray& data) {
             logger.log() << "Captive portal request completed:" << data;
-
-            --m_pendingRequests;
-            m_completed = true;
-            deleteLater();
-
-            if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-              logger.log() << "No captive portal!";
-              emit completed(false);
+            // Usually, captive-portal pages do a redirect to an internal page.
+            if (request->statusCode() != 200) {
+              logger.log() << "Captive portal detected. Expected 200, received:"
+                           << request->statusCode();
+              onResult(PortalDetected);
               return;
             }
 
-            logger.log() << "Captive portal detected!";
-            emit completed(true);
+            if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
+              logger.log() << "No captive portal!";
+              onResult(NoPortal);
+              return;
+            }
+
+            logger.log() << "Captive portal detected. Content does not match.";
+            onResult(PortalDetected);
           });
 }
 
-void CaptivePortalRequest::maybeComplete() {
-  logger.log() << "Failure - pendingRequests:" << m_pendingRequests;
-
-  if (!m_completed && m_pendingRequests == 0) {
-    m_completed = true;
-    emit completed(false);
-    deleteLater();
+void CaptivePortalRequest::onResult(CaptivePortalResult portalDetected) {
+  if (m_completed) {
+    return;
   }
+  m_completed = true;
+  deleteLater();
+  emit completed(portalDetected);
 }

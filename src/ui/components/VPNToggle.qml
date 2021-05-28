@@ -17,6 +17,7 @@ VPNButtonBase {
     Accessible.name: toolTipTitle
 
     function handleClick() {
+        toolTip.close();
         if (VPNController.state !== VPNController.StateOff) {
             return VPN.deactivate();
         }
@@ -33,6 +34,12 @@ VPNButtonBase {
     width: 60
     radius: 16
     hoverEnabled: false
+
+    onActiveFocusChanged: {
+        if (!focus && toolTip.visible) {
+            toolTip.close();
+        }
+    }
 
     states: [
         State {
@@ -184,27 +191,6 @@ VPNButtonBase {
                 toggleColor: Theme.vpnToggleConnected
             }
 
-        },
-        State {
-            name: VPNController.StateCaptivePortal
-
-            //TODO:
-            PropertyChanges {
-                target: cursor
-                anchors.leftMargin: 4
-            }
-
-            PropertyChanges {
-                target: toggle
-                color: "#E7E7E7"
-                border.color: Theme.white
-            }
-
-            PropertyChanges {
-                target: toggleButton
-                toggleColor: Theme.vpnToggleDisconnected
-            }
-
         }
     ]
     transitions: [
@@ -281,9 +267,10 @@ VPNButtonBase {
     }
 
     function toggleClickable() {
-        return VPNController.state === VPNController.StateOn ||
-               VPNController.state === VPNController.StateOff ||
-               (VPNController.state === VPNController.StateConfirming && connectionRetryOverX);
+        return VPN.state === VPN.StateMain &&
+               (VPNController.state === VPNController.StateOn ||
+                VPNController.state === VPNController.StateOff ||
+                (VPNController.state === VPNController.StateConfirming && connectionRetryOverX));
     }
 
     // Toggle background color changes on hover and press
@@ -327,6 +314,7 @@ VPNButtonBase {
     }
 
     VPNToolTip {
+        id: toolTip
         text: toolTipTitle
     }
 

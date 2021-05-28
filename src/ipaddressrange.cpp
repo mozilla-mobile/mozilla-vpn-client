@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ipaddressrange.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 
 IPAddressRange::IPAddressRange(const QString& ipAddress, uint32_t range,
@@ -27,3 +28,14 @@ IPAddressRange& IPAddressRange::operator=(const IPAddressRange& other) {
 }
 
 IPAddressRange::~IPAddressRange() { MVPN_COUNT_DTOR(IPAddressRange); }
+
+// static
+QList<IPAddressRange> IPAddressRange::fromIPAddressList(
+    const QList<IPAddress>& list) {
+  QList<IPAddressRange> result;
+  for (const IPAddress& ip : list) {
+    result.append(
+        IPAddressRange(ip.address().toString(), ip.prefixLength(), IPv4));
+  }
+  return result;
+}
