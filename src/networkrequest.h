@@ -95,6 +95,7 @@ class NetworkRequest final : public QObject {
   QNetworkReply* m_reply = nullptr;
   int m_status = 0;
   bool m_completed = false;
+  bool m_unregisterRequired = false;
 };
 
 #endif  // NETWORKREQUEST_H

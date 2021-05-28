@@ -52,7 +52,10 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
   connect(&m_timer, &QTimer::timeout, this, &NetworkRequest::timeout);
   connect(&m_timer, &QTimer::timeout, this, &QObject::deleteLater);
 
-  NetworkManager::instance()->increaseNetworkRequestCount();
+  if (NetworkManager::exists()) {
+    m_unregisterRequired = true;
+    NetworkManager::instance()->increaseNetworkRequestCount();
+  }
 }
 
 NetworkRequest::~NetworkRequest() {
@@ -60,7 +63,7 @@ NetworkRequest::~NetworkRequest() {
 
   // During the shutdown, the QML NetworkManager can be released before the
   // deletion of the pending network requests.
-  if (NetworkManager::exists()) {
+  if (m_unregisterRequired && NetworkManager::exists()) {
     NetworkManager::instance()->decreaseNetworkRequestCount();
   }
 }
