@@ -320,6 +320,7 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
+    include($$PWD/golang.pri)
 
     TARGET = mozillavpn
     QT += networkauth
@@ -362,23 +363,25 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/dnsutilslinux.cpp \
             platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
-            platforms/linux/daemon/wireguardutilslinux.cpp \
-            wgquickprocess.cpp
+            platforms/linux/daemon/wireguardutilslinux.cpp
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/interfaceconfig.h \
             daemon/daemon.h \
+            daemon/dnsutils.h \
             daemon/iputils.h \
             daemon/wireguardutils.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/dbustypeslinux.h \
+            platforms/linux/daemon/dnsutilslinux.h \
             platforms/linux/daemon/iputilslinux.h \
             platforms/linux/daemon/polkithelper.h \
-            platforms/linux/daemon/wireguardutilslinux.h \
-            wgquickprocess.h
+            platforms/linux/daemon/wireguardutilslinux.h
 
     isEmpty(USRPATH) {
         USRPATH=/usr
@@ -390,6 +393,8 @@ else:linux:!android {
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
+    GO_MODULES = ../linux/netfilter/netfilter.go
+    
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -437,11 +442,6 @@ else:linux:!android {
     systemd_service.files = ../linux/debian/mozillavpn.service
     systemd_service.path = /lib/systemd/system
     INSTALLS += systemd_service
-
-    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
-    helper.path = $${USRPATH}/share/mozillavpn
-    helper.files = ../linux/daemon/helper.sh
-    INSTALLS += helper
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
@@ -613,6 +613,7 @@ else:macos {
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/dnsutils.h \
                    daemon/iputils.h \
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
@@ -741,6 +742,7 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/dnsutils.h \
         daemon/iputils.h \
         daemon/wireguardutils.h \
         eventlistener.h \

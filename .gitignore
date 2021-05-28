@@ -23,6 +23,7 @@ mozillavpn-daemon
 *_plugin_import.cpp
 translations/*.qm
 translations/*.pri
+linux/netfilter/netfilter.[ah]
 .qm
 .tmp
 .env
