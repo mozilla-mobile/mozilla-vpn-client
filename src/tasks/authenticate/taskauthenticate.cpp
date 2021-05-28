@@ -11,6 +11,7 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QJSValue>
@@ -111,6 +112,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   query.addQueryItem("code_challenge",
                      QUrl::toPercentEncoding(pkceCodeChallenge));
   query.addQueryItem("code_challenge_method", "S256");
+  query.addQueryItem("user_agent", NetworkManager::userAgent());
 
   m_authenticationListener->start(vpn, url, query);
 }
