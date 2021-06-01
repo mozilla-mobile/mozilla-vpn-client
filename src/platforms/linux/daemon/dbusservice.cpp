@@ -41,9 +41,7 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtils* DBusService::wgutils() {
-  return m_wgutils;
-}
+WireguardUtils* DBusService::wgutils() { return m_wgutils; }
 
 IPUtils* DBusService::iputils() {
   if (!m_iputils) {
