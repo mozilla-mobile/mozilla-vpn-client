@@ -5,6 +5,8 @@
 #ifndef CAPTIVEPORTALREQUEST_H
 #define CAPTIVEPORTALREQUEST_H
 
+#include "captiveportalresult.h"
+
 #include <QObject>
 #include <QUrl>
 
@@ -19,14 +21,14 @@ class CaptivePortalRequest final : public QObject {
   void run();
 
  signals:
-  void completed(bool detected);
+  void completed(CaptivePortalResult detected);
 
  private:
   void createRequest(const QUrl& url);
-  void maybeComplete();
+  void nextStep();
+  void onResult(CaptivePortalResult portalDetected);
 
  private:
-  uint32_t m_pendingRequests = 0;
   bool m_completed = false;
 };
 

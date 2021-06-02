@@ -5,10 +5,10 @@ export DH_VERBOSE=1
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@ --warn-missing
+	dh $@ --with systemd --warn-missing
 
 override_dh_auto_configure:
-	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release
+	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=inspector BUILD_ID=FULLVERSION
 
 override_dh_installdocs:
 

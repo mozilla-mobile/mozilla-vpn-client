@@ -8,10 +8,10 @@ export LD_LIBRARY_PATH := $(QTDIR)/lib:$(LD_LIBRARY_PATH)
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@ --warn-missing
+	dh $@ --with systemd --warn-missing
 
 override_dh_auto_configure:
-	qmake CONFIG+=production CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release QT+=svg
+	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release QT+=svg CONFIG+=inspector BUILD_ID=FULLVERSION
 
 override_dh_installdocs:
 

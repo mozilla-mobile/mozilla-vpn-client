@@ -7,7 +7,7 @@ const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Initial view and onboarding', function() {
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -24,12 +24,12 @@ describe('Initial view and onboarding', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
-    assert(await vpn.getLastUrl() == '');
+    assert(await vpn.getLastUrl() === '');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') == 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
   it('Open the help menu', async () => {
@@ -42,11 +42,26 @@ describe('Initial view and onboarding', function() {
 
   it('Open some links', async () => {
     await vpn.waitForElement('getHelpBackList');
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
-    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+    await vpn.waitForElementProperty('getHelpBackList', 'visible', 'true');
 
-    // We don't test the view log.
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-0', 'visible', 'true');
+
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-1');
+    await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-1', 'visible', 'true');
+
+    await vpn.waitForElement('getHelpBackList/getHelpBackList-2');
+    await vpn.waitForElementProperty(
+        'getHelpBackList/getHelpBackList-2', 'visible', 'true');
+
+    await vpn.clickOnElement('getHelpBackList/getHelpBackList-0');
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.startsWith('file://') && url.includes('mozillavpn') &&
+          url.endsWith('.txt');
+    });
 
     await vpn.clickOnElement('getHelpBackList/getHelpBackList-1');
     await vpn.waitForCondition(async () => {
@@ -61,7 +76,7 @@ describe('Initial view and onboarding', function() {
     });
   });
 
-  it('Go back to the main view', async() => {
+  it('Go back to the main view', async () => {
     await vpn.clickOnElement('getHelpBack');
 
     await vpn.waitForElement('getHelpLink');
@@ -77,7 +92,7 @@ describe('Initial view and onboarding', function() {
 
     while (true) {
       assert(
-          await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+          await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
       await vpn.clickOnElement('learnMoreLink');
 
       await vpn.waitForElement('skipOnboarding');
@@ -90,7 +105,7 @@ describe('Initial view and onboarding', function() {
       for (let i = 0; i < onboardingView; ++i) {
         assert(await vpn.hasElement('onboardingNext'));
         assert(
-            await vpn.getElementProperty('onboardingNext', 'visible') ==
+            await vpn.getElementProperty('onboardingNext', 'visible') ===
             'true');
         await vpn.clickOnElement('onboardingNext');
 
@@ -100,8 +115,8 @@ describe('Initial view and onboarding', function() {
       }
 
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
-      if (await vpn.getElementProperty('onboardingNext', 'text') != 'Next') {
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
+      if (await vpn.getElementProperty('onboardingNext', 'text') !== 'Next') {
         break;
       }
 

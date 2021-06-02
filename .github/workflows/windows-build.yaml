@@ -3,10 +3,12 @@ name: Windows
 on:
   push:
     branches:
-     - main
+      - main
+      - 'releases/**'
   pull_request:
     branches:
       - main
+      - 'releases/**'
 
 jobs:
   windows-staging:
@@ -37,6 +39,13 @@ jobs:
           cp -r * /c/MozillaVPNBuild
           cp -r *.msm ..
           cd ..
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
 
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -86,6 +95,13 @@ jobs:
           cp /c/MozillaVPNBuild/bin/libGLESv2.dll .
           cp /c/MozillaVPNBuild/*.msm .
 
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install glean_parser
+          pip3 install pyhumps
+          pip3 install pyyaml
+
       - name: Adding msbuild to PATH
         uses: ilammy/msvc-dev-cmd@v1
 
@@ -95,8 +111,27 @@ jobs:
           export PATH=/c/MozillaVPNBuild/bin:$PATH
           ./scripts/windows_compile.bat -p
 
+      - name: Create the zip package for signature
+        shell: bash
+        run: |
+          mkdir unsigned
+          cp /c/MozillaVPNBuild/bin/libssl-1_1-x64.dll unsigned
+          cp /c/MozillaVPNBuild/bin/libcrypto-1_1-x64.dll unsigned
+          cp /c/MozillaVPNBuild/bin/libEGL.dll unsigned
+          cp /c/MozillaVPNBuild/bin/libGLESv2.dll unsigned
+          cp /c/MozillaVPNBuild/*.msm unsigned
+          cp windows/tunnel/x64/tunnel.dll unsigned
+          cp balrog/x64/balrog.dll unsigned
+          cp *.exe unsigned
+
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
             name: production
             path: windows/installer/x64/MozillaVPN.msi
+
+      - name: Upload unsigned app
+        uses: actions/upload-artifact@v2
+        with:
+            name: unsigned
+            path: unsigned

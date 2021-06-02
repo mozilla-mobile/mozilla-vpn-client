@@ -15,11 +15,11 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-void Controller::activate() {}
+bool Controller::activate() { return false; }
 
 void Controller::activateInternal() {}
 
-void Controller::deactivate() {}
+bool Controller::deactivate() { return false; }
 
 void Controller::connected() {}
 
@@ -39,7 +39,8 @@ int Controller::time() const { return 42; }
 
 void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 
-void Controller::statusUpdated(const QString&, uint64_t, uint64_t) {}
+void Controller::statusUpdated(const QString&, const QString&, uint64_t,
+                               uint64_t) {}
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const Server& server) {
@@ -54,12 +55,14 @@ Controller::State Controller::state() const {
 void Controller::updateRequired() {}
 
 void Controller::getStatus(
-    std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+    std::function<void(const QString& serverIpv4Gateway,
+                       const QString& deviceIpv4Address, uint64_t txBytes,
                        uint64_t rxBytes)>&& a_callback) {
-  std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  std::function<void(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
-  callback("127.0.0.1", 0, 0);
+  callback("127.0.0.1", "127.0.0.1", 0, 0);
 }
 
 void Controller::quit() {}
@@ -67,3 +70,7 @@ void Controller::quit() {}
 void Controller::connectionConfirmed() {}
 
 void Controller::connectionFailed() {}
+
+void Controller::heartbeatCompleted() {}
+
+void Controller::backendFailure() {}

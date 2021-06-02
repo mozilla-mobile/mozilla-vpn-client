@@ -20,8 +20,6 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
-  static bool canEnableStartOnBoot();
-
   static AndroidUtils* instance();
 
   void startAuthentication(AuthenticationListener* listener, const QUrl& url);

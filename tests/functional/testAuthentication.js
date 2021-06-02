@@ -15,7 +15,7 @@ const exec = util.promisify(require('child_process').exec);
 describe('User authentication', function() {
   let driver;
 
-  this.timeout(200000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -35,16 +35,21 @@ describe('User authentication', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
-    assert(await vpn.getLastUrl() == '');
+    assert(await vpn.getLastUrl() === '');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
-    assert(await vpn.getElementProperty('getStarted', 'visible') == 'true');
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await vpn.getElementProperty('getStarted', 'visible') === 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
   });
 
   it('Start and abort the authentication (initial view)', async () => {
     await vpn.clickOnElement('getStarted');
+
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
 
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
@@ -70,7 +75,7 @@ describe('User authentication', function() {
   });
 
   it('Start and abort the authentication (onboarding view)', async () => {
-    assert(await vpn.getElementProperty('learnMoreLink', 'visible') == 'true');
+    assert(await vpn.getElementProperty('learnMoreLink', 'visible') === 'true');
     await vpn.clickOnElement('learnMoreLink');
 
     await vpn.waitForElement('skipOnboarding');
@@ -83,11 +88,11 @@ describe('User authentication', function() {
     while (true) {
       assert(await vpn.hasElement('onboardingNext'));
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
 
       assert(
-          await vpn.getElementProperty('onboardingNext', 'visible') == 'true');
-      if (await vpn.getElementProperty('onboardingNext', 'text') == 'Next') {
+          await vpn.getElementProperty('onboardingNext', 'visible') === 'true');
+      if (await vpn.getElementProperty('onboardingNext', 'text') === 'Next') {
         await vpn.clickOnElement('onboardingNext');
 
         // This is needed just for humans. The UI is already in the other state
@@ -125,7 +130,7 @@ describe('User authentication', function() {
   });
 
   it('Start and complete the authentication', async () => {
-    await vpn.authenticate(driver, false);
+    await vpn.authenticate(driver, false, false);
   });
 
   it('Post authentication view', async () => {

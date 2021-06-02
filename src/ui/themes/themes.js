@@ -48,6 +48,8 @@ const vSpacing = 24;
 const listSpacing = 8;
 const maxTextWidth = 296;
 const windowMargin = 16;
+const desktopAppHeight = 520;
+const desktopAppWidth = 360;
 
 const darkFocusBorder = fontColor;
 const lightFocusBorder = "#d5d3e0";
@@ -143,6 +145,14 @@ const vpnToggleDisconnected = {
     "buttonPressed": fontColorDark,
     "focusOutline": "transparent",
     "focusBorder": darkFocusBorder,
+};
+
+const greenAlert = {
+    "defaultColor":  "#3FE1B0",
+    "buttonHovered": "#3AD4B3",
+    "buttonPressed": "#1CC5A0",
+    "focusOutline": "#333FE1B0",
+    "focusBorder": "#1CC5A0",
 };
 
 const cornerRadius = 4;

@@ -80,6 +80,13 @@ Popup {
             spacing: 0
             anchors.centerIn: contentRoot
             width: contentRoot.width - Theme.windowMargin * 2
+            opacity: 1
+
+            Behavior on opacity {
+                PropertyAnimation {
+                    duration: 200
+                }
+            }
 
 
             Image {
@@ -156,6 +163,13 @@ Popup {
                     colorScheme: Theme.redButton
                     onClicked: {
                         VPN.removeDevice(popup.deviceName);
+                        if (vpnFlickable.state === "deviceLimit") {
+                            // there is no further action the user can take on the deviceList
+                            // so leave the modal open until the user is redirected back to the main view
+                            col.opacity = .5
+                            return;
+                        }
+
                         popup.close();
                     }
                 }

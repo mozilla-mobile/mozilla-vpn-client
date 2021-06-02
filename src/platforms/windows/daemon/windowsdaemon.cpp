@@ -279,6 +279,7 @@ QByteArray WindowsDaemon::getStatus() {
 
   obj.insert("status", true);
   obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
+  obj.insert("deviceIpv4Address", m_lastConfig.m_deviceIpv4Address);
   obj.insert("date", m_connectionDate.toString());
   obj.insert("txBytes", QJsonValue(double(txBytes)));
   obj.insert("rxBytes", QJsonValue(double(rxBytes)));
@@ -382,7 +383,7 @@ bool WindowsDaemon::registerTunnelService(const QString& configFile) {
   return false;
 }
 
-bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
+bool WindowsDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
   logger.log() << (op == Daemon::Up ? "Activate" : "Deactivate") << "the vpn";
 
   if (op == Daemon::Down && m_state == Inactive) {
@@ -437,7 +438,8 @@ bool WindowsDaemon::run(Daemon::Op op, const Config& config) {
   return true;
 }
 
-bool WindowsDaemon::supportServerSwitching(const Config& config) const {
+bool WindowsDaemon::supportServerSwitching(
+    const InterfaceConfig& config) const {
   return m_lastConfig.m_privateKey == config.m_privateKey &&
          m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
          m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
@@ -445,7 +447,7 @@ bool WindowsDaemon::supportServerSwitching(const Config& config) const {
          m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
 }
 
-bool WindowsDaemon::switchServer(const Config& config) {
+bool WindowsDaemon::switchServer(const InterfaceConfig& config) {
   logger.log() << "Switching server";
 
   Q_ASSERT(m_connected);

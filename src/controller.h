@@ -8,7 +8,7 @@
 #include "models/server.h"
 #include "connectioncheck.h"
 
-#include <QDateTime>
+#include <QElapsedTimer>
 #include <QList>
 #include <QObject>
 #include <QTimer>
@@ -71,15 +71,19 @@ class Controller final : public QObject {
   void cleanupBackendLogs();
 
   void getStatus(
-      std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+      std::function<void(const QString& serverIpv4Gateway,
+                         const QString& deviceIpv4Address, uint64_t txBytes,
                          uint64_t rxBytes)>&& callback);
 
   int connectionRetry() const { return m_connectionRetry; }
 
- public slots:
-  void activate();
+  void backendFailure();
 
-  void deactivate();
+ public slots:
+  // These 2 methods activate/deactivate the VPN. Return true if a signal will
+  // be emitted at the end of the operation.
+  bool activate();
+  bool deactivate();
 
   Q_INVOKABLE void quit();
 
@@ -89,7 +93,8 @@ class Controller final : public QObject {
   void timerTimeout();
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
-  void statusUpdated(const QString& serverIpv4Gateway, uint64_t txBytes,
+  void statusUpdated(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
 
   void connectionConfirmed();
@@ -100,6 +105,7 @@ class Controller final : public QObject {
   void timeChanged();
   void readyToQuit();
   void readyToUpdate();
+  void readyToBackendFailure();
   void connectionRetryChanged();
 
  private:
@@ -113,12 +119,22 @@ class Controller final : public QObject {
 
   void resetConnectionCheck();
 
+  void heartbeatCompleted();
+
+  void resetConnectionTimer();
+
  private:
   State m_state = StateInitializing;
 
   QTimer m_timer;
 
-  QDateTime m_connectionDate;
+  QElapsedTimer m_connectionTimer;
+
+  // The connection could have been started before the execution of the app.
+  // This contains the number of seconds to add to m_connectionTimer to know the
+  // real starting time. We don't use QDateTime (or anything similar) because we
+  // need a monotonic timer.
+  uint32_t m_connectionTimerExtraSecs = 0;
 
   QScopedPointer<ControllerImpl> m_impl;
 
@@ -132,15 +148,24 @@ class Controller final : public QObject {
     Quit,
     Update,
     Disconnect,
+    BackendFailure,
   };
 
   NextStep m_nextStep = None;
 
   ConnectionCheck m_connectionCheck;
   int m_connectionRetry = 0;
-  bool m_expectDisconnection = false;
 
-  QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  enum ReconnectionStep {
+    NoReconnection,
+    ExpectDisconnection,
+    ExpectHeartbeat,
+  };
+
+  ReconnectionStep m_reconnectionStep = NoReconnection;
+
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
 };

@@ -12,6 +12,7 @@ buildscript {
         jsr305Version = '3.0.2'
         streamsupportVersion = '1.7.0'
         threetenabpVersion = '1.1.1'
+        groupName = 'org.mozilla.firefox.vpn'
     }
     repositories {
         google()
@@ -36,7 +37,6 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        jcenter()
     }
 }
 
@@ -50,7 +50,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'com.android.installreferrer:installreferrer:1.1'
-    implementation 'com.wireguard.android:tunnel:1.0.20200927'
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
+    implementation "androidx.security:security-identity-credential:1.0.0-alpha02"
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"
 }
 
@@ -88,6 +89,18 @@ android {
             jniLibs.srcDirs = ['libs']
        }
     }
+    // In case generate a new key anytime:
+    // $: keytool -genkey -v -keystore debug.keystore -storepass android \
+    //            -alias androiddebugkey -keypass android -keyalg RSA \ 
+    //            -keysize 2048 -validity 10000
+    signingConfigs {
+    debug {
+            storeFile rootProject.file('./debug.keystore')
+            storePassword('android')
+            keyAlias 'androiddebugkey'
+            keyPassword('android')
+        }
+    }
 
     lintOptions {
         abortOnError false
@@ -102,16 +115,31 @@ android {
         release {
             // That would enable treeshaking and remove java code that is just called from qt
             minifyEnabled false
+            externalNativeBuild {
+                cmake {
+                    arguments "-DANDROID_PACKAGE_NAME=${groupName}", "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}"
+                }
+            }
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
+            externalNativeBuild {
+                cmake {
+                    arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug", "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}"
+                }
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path 'tunnel/CMakeLists.txt'
         }
     }
 
     defaultConfig {
         resConfig "en"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode  System.getenv("VERSIONCODE").toInteger()
         versionName  System.getenv("SHORTVERSION")

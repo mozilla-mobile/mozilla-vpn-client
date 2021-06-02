@@ -14,6 +14,7 @@ constexpr const char* LOG_MAIN = "main";
 constexpr const char* LOG_MODEL = "model";
 constexpr const char* LOG_NETWORKING = "networking";
 constexpr const char* LOG_INSPECTOR = "inspector";
+constexpr const char* LOG_SERVER = "server";
 
 #ifdef MVPN_IOS
 constexpr const char* LOG_IAP = "iap";

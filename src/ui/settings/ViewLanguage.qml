@@ -4,6 +4,7 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
@@ -12,9 +13,11 @@ Item {
     id: container
 
     readonly property int defaultMargin: 18
+    property var useSystemLanguageEnabled: useSystemLanguageToggle.checked
 
     VPNMenu {
         id: menu
+        objectName: "settingsLanguagesBackButton"
 
         //% "Language"
         title: qsTrId("vpn.settings.language")
@@ -25,12 +28,18 @@ Item {
     FocusScope {
         id: focusScope
 
-        property var lastFocusedItemIdx
+        property var lastFocusedItemIdx: -1
 
         height: parent.height - menu.height
         anchors.top: menu.bottom
         width: parent.width
-        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        onActiveFocusChanged: {
+            if (focus && lastFocusedItemIdx !== -1) {
+              repeater.itemAt(lastFocusedItemIdx).forceActiveFocus();
+          } else if (focus) {
+                useSystemLanguageToggle.forceActiveFocus();
+            }
+        }
         Accessible.name: menu.title
         Accessible.role: Accessible.List
 
@@ -38,39 +47,117 @@ Item {
             id: radioButtonGroup
         }
 
+
         VPNFlickable {
             id: vpnFlickable
 
-            flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
+            objectName: "settingsLanguagesView"
+            flickContentHeight: row.y + row.implicitHeight + col.y + col.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
-            NumberAnimation on contentY {
-                id: scrollAnimation
+            RowLayout {
+                id: row
+                width: parent.width - (defaultMargin * 2)
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: defaultMargin
+                anchors.rightMargin: defaultMargin
+                anchors.top: parent.top
+                anchors.topMargin: 20
+                spacing: 12
 
-                duration: 200
-                easing.type: Easing.OutQuad
+                ColumnLayout {
+                    id: labelWrapper
+                    spacing: 4
+                    Layout.maximumWidth: parent.width - useSystemLanguageToggle.width - 16
+
+                    VPNInterLabel {
+                        id: label
+                        Layout.alignment: Qt.AlignLeft
+                        //% "Use system language"
+                        //: Title for the language switcher toggle.
+                        text: qsTrId("vpn.settings.systemLanguageTitle")
+                        color: Theme.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                        Layout.fillWidth: true
+                    }
+
+                    VPNTextBlock {
+                        id: labelDescription
+                        Layout.fillWidth: true
+                        //% "Mozilla VPN will use the default system language."
+                        //: Description for the language switcher toggle when
+                        //: "Use system language" is enabled.
+                        text: qsTrId("vpn.settings.systemLangaugeSubtitle")
+                    }
+                }
+
+                VPNSettingsToggle {
+                    id: useSystemLanguageToggle
+
+                    objectName: "settingsSystemLanguageToggle"
+                    toolTipTitle: {
+                        if (checked) {
+                           //% "Disable to select a different language"
+                           //: Tooltip for the language switcher toggle
+                           return qsTrId("vpn.settings.systemLanguageEnabled");
+                        }
+                        return qsTrId("vpn.settings.systemLanguageTitle");
+                    }
+                    onActiveFocusChanged: {
+                        if (focus) {
+                            forceFocus = true;
+                            focusScope.lastFocusedItemIdx = -1;
+                            vpnFlickable.ensureVisible(useSystemLanguageToggle);
+                      }
+                    }
+                    Layout.preferredHeight: 24
+                    Layout.preferredWidth: 45
+                    width: undefined
+                    height: undefined
+                    Keys.onDownPressed: if (!checked) repeater.itemAt(0).forceActiveFocus()
+                    checked: VPNLocalizer.code === ""
+                    onClicked: {
+                        checked = !checked;
+                        if (checked) {
+                            VPNLocalizer.code = "";
+                        } else {
+                            VPNLocalizer.code = VPNLocalizer.previousCode;
+                        }
+                    }
+                }
             }
 
             Rectangle {
-                id: verticalSpacer
-
-                height: Theme.windowMargin
-                width: parent.width
-                color: "transparent"
+                id: divider
+                height: 1
+                width: parent.width - 36
+                anchors.top: row.bottom
+                anchors.topMargin: defaultMargin
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: "#E7E7E7"
+                opacity: 1
             }
 
             Column {
                 id: col
 
+                objectName: "languageList"
+
                 spacing: 20
                 width: parent.width
-                anchors.top: verticalSpacer.bottom
+                anchors.top: divider.bottom
+                anchors.topMargin: 20
                 Component.onCompleted: {
 
-                    // Scroll vpnFlickable so that the current server city is
+                    if (useSystemLanguageEnabled) {
+                        return;
+                    }
+
+                    // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
-                    const yCenter = vpnFlickable.height / 2;
+                    const yCenter = (vpnFlickable.height - menu.height ) / 2
 
                     for (let idx = 0; idx < repeater.count; idx++) {
                         const repeaterItem = repeater.itemAt(idx);
@@ -79,39 +166,36 @@ Item {
                             continue;
                         }
 
-                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 1.5) - yCenter;
+                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 3) - yCenter;
                         const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
+
+                        // Prevent edge case negative scrolling
+                        if (destinationY < 0) {
+                            return;
+                        }
 
                         vpnFlickable.contentY = destinationY;
                         return;
                     }
                 }
 
-                function scrollDelegateIntoView(item) {
-                    if (window.height > vpnFlickable.contentHeight) {
-                        return;
-                    }
-                    const yPosition = item.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                    const approximateDelegateHeight = 60;
-                    const ext = approximateDelegateHeight + yPosition;
-
-                    if (yPosition < vpnFlickable.contentY || yPosition > vpnFlickable.contentY + vpnFlickable.height || ext < vpnFlickable.contentY || ext > vpnFlickable.contentY + vpnFlickable.height) {
-                        const destinationY = Math.max(0, Math.min(yPosition - vpnFlickable.height + approximateDelegateHeight, vpnFlickable.contentHeight - vpnFlickable.height));
-                        scrollAnimation.to = destinationY;
-                        scrollAnimation.start();
-                    }
-                }
-
                 Repeater {
                     id: repeater
+
                     model: VPNLocalizer
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
                         id: del
+                        objectName: "language-" + code
+                        enabled: !useSystemLanguageEnabled
+
+                        opacity: useSystemLanguageEnabled ? .5 : 1
                         radioButtonLabelText: localizedLanguage
-                        checked: VPNLocalizer.code === code
-                        onClicked: VPNLocalizer.code = code
+                        checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
+                        onClicked: {
+                            VPNLocalizer.code = code;
+                        }
                         anchors.left: parent.left
                         anchors.leftMargin: defaultMargin
                         width: parent.width - defaultMargin * 2
@@ -122,12 +206,20 @@ Item {
                             .arg(language)
                             .arg(localizedLanguage)
 
-                        activeFocusOnTab: true
-                        onActiveFocusChanged: col.scrollDelegateIntoView(del)
+                        activeFocusOnTab: !useSystemLanguageEnabled
+                        onActiveFocusChanged: {
+                            if (focus) {
+                                vpnFlickable.ensureVisible(del);
+                                focusScope.lastFocusedItemIdx = index;
+                            }
+                        }
                         Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : useSystemLanguageToggle.forceActiveFocus()
                         Keys.onBacktabPressed: {
-                            focusScope.lastFocusedItemIdx = index;
+                            if (index === 0) {
+                                useSystemLanguageToggle.forceActiveFocus();
+                                return;
+                            }
                             menu.forceActiveFocus();
                         }
 

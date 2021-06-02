@@ -42,7 +42,12 @@ void NotificationHandler::showNotification() {
   logger.log() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (vpn->state() != MozillaVPN::StateMain &&
+      // The Disconnected notification should be triggerable
+      // on StateInitialize, in case the user was connected during a log-out
+      // Otherwise existing notifications showing "connected" would update
+      !(vpn->state() == MozillaVPN::StateInitialize &&
+        vpn->controller()->state() == Controller::StateOff)) {
     return;
   }
 
@@ -64,8 +69,8 @@ void NotificationHandler::showNotification() {
         message = qtTrId("vpn.systray.statusSwtich.message")
                       .arg(m_switchingServerCountry)
                       .arg(m_switchingServerCity)
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
+                      .arg(vpn->currentServer()->countryName())
+                      .arg(vpn->currentServer()->cityName());
       } else {
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
@@ -73,8 +78,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
+                      .arg(vpn->currentServer()->countryName())
+                      .arg(vpn->currentServer()->cityName());
       }
       break;
 
@@ -88,8 +93,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(vpn->currentServer()->country())
-                      .arg(vpn->currentServer()->city());
+                      .arg(vpn->currentServer()->countryName())
+                      .arg(vpn->currentServer()->cityName());
       }
       break;
 
@@ -97,8 +102,8 @@ void NotificationHandler::showNotification() {
       m_connected = true;
 
       m_switching = true;
-      m_switchingServerCountry = vpn->currentServer()->country();
-      m_switchingServerCity = vpn->currentServer()->city();
+      m_switchingServerCountry = vpn->currentServer()->countryName();
+      m_switchingServerCity = vpn->currentServer()->cityName();
       break;
 
     default:

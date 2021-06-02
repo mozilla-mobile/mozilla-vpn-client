@@ -19,9 +19,23 @@ class NetworkManager : public QObject {
 
   static NetworkManager* instance();
 
+  static bool exists();
+
   static QByteArray userAgent();
 
   virtual QNetworkAccessManager* networkAccessManager() = 0;
+
+  void clearCache();
+
+  void increaseNetworkRequestCount();
+  void decreaseNetworkRequestCount();
+
+ protected:
+  virtual void clearCacheInternal() = 0;
+
+ private:
+  uint32_t m_requestCount = 0;
+  bool m_clearCacheNeeded = false;
 };
 
 #endif  // NETWORKMANAGER_H

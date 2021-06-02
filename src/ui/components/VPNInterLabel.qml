@@ -9,6 +9,7 @@ import "../themes/themes.js" as Theme
 // VPNInterLabel
 Text {
     horizontalAlignment: Text.AlignHCenter
+    verticalAlignment: Text.AlignVCenter
     font.pixelSize: Theme.fontSize
     font.family: Theme.fontInterFamily
     lineHeightMode: Text.FixedHeight

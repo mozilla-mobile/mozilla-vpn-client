@@ -52,18 +52,73 @@
     input.focus();
     input.addEventListener("keydown", event => {
       if (event.keyCode === 13 && ws) {
-        parseCommand(input.value);
+        ws.send(input.value);
         input.value = "";
       }
     })
 
-    // scroll controller to latest
+    // generic log function
     function t(msg) {
       const p = document.createElement("p");
       p.innerText = msg;
       content.appendChild(p);
-      const boundingRect = content.getBoundingClientRect();
-      content.scroll(0, (content.scrollHeight - boundingRect.height));
+      scrollDown(content);
+    }
+
+    // log function for notification
+    function tn(json) {
+      const type = document.createElement("span");
+      type.setAttribute("class", "webSocketResponseType");
+      type.innerText = json.type;
+
+      const p = document.createElement("p");
+      p.appendChild(type);
+
+      const title = document.createElement("pre");
+      title.setAttribute("class", "webSocketResponseValue");
+      title.innerText = json.title;
+      p.appendChild(title);
+
+      const message = document.createElement("pre");
+      message.setAttribute("class", "webSocketResponseValue");
+      message.innerText = json.message;
+      p.appendChild(message);
+
+      content.appendChild(p);
+      scrollDown(content);
+    }
+
+    function tj(json) {
+      const type = document.createElement("span");
+      type.setAttribute("class", "webSocketResponseType");
+      type.innerText = json.type;
+
+      const p = document.createElement("p");
+      p.appendChild(type);
+
+      if (json.error) {
+        const error = document.createElement("span");
+        error.setAttribute("class", "webSocketResponseError");
+        error.innerText = json.error;
+
+        p.appendChild(error);
+      }
+
+      if (json.value) {
+        const value = document.createElement("pre");
+        value.setAttribute("class", "webSocketResponseValue");
+        value.innerText = json.value;
+
+        p.appendChild(value);
+      }
+
+      content.appendChild(p);
+      scrollDown(content);
+    }
+
+    function scrollDown(what) {
+      const boundingRect = what.getBoundingClientRect();
+      what.scroll(0, (what.scrollHeight - boundingRect.height));
     }
 
     // scroll log to latest
@@ -71,8 +126,7 @@
       const p = document.createElement("p");
       p.innerText = msg;
       log.appendChild(p);
-      const boundingRect = log.getBoundingClientRect();
-      log.scroll(0, (log.scrollHeight - boundingRect.height));
+      scrollDown(log);
     }
 
     function command(e) {
@@ -87,86 +141,23 @@
         ws.onopen = () => { t("Connected!"); resolve(); }
         ws.onerror = () => { t("Connection failed"); }
         ws.onclose = () => { t("Disconnected"); }
-        ws.onmessage = data => { if (data.data[0] == "!") tl(data.data); else t(data.data); }
+        ws.onmessage = data => processMessage(data.data);
       });
     }
 
-    const commands = new Map();
-    commands.set("help", { func: cmd_help, desc: "The help menu" });
-    commands.set("reset", { func: () => ws.send("reset"), desc: "Reset the client" });
-    commands.set("quit", { func: () => ws.send("quit"), desc: "Quit the client" });
-    commands.set("has", { func: cmd_has, desc: "Returns if an object exists" });
-    commands.set("property", { func: cmd_property, desc: "Returns a property value of an object" });
-    commands.set("click", { func: cmd_click, desc: "Simulate a click on an object" });
-    commands.set("lasturl", { func: cmd_lasturl, desc: "Returns the last opened URL" });
-    commands.set("triggerUpdate", { func: cmd_triggerUpdate, desc: "Triggers an update forcing a particular version" });
-    commands.set("detectCaptivePortal", { func: () => ws.send("force_captive_portal_check"), desc: "Starts the captive portal detection" });
-    commands.set("triggerCaptivePortal", { func: () => ws.send("force_captive_portal_detection"), desc: "Triggers the captive portal detection" });
-    commands.set("triggerUnsecuredNetwork", { func: () => ws.send("force_unsecured_network"), desc: "Triggers the unsecured network detection" });
-
-    function parseCommand(input) {
-      input = input.trim();
-      const parts = input.split(" ");
-      const cmd = commands.get(parts[0]);
-      if (cmd) {
-        cmd.func(parts);
+    function processMessage(data) {
+      const json = JSON.parse(data);
+      if (json.type === "log") {
+        tl(json.value);
         return;
       }
 
-      t(parts[0] + " - Command not found");
-    }
-
-    function cmd_help() {
-      for (let [key, value] of commands) {
-        t(key + " - " + value.desc);
-      }
-    }
-
-    function cmd_reset() {
-      ws.send("reset");
-    }
-
-    function cmd_has(parts) {
-      if (parts.length != 2) {
-        t("Usage: has <objectName>");
-        t("Example: has getHelpLink");
+      if (json.type === "notification") {
+        tn(json);
         return;
       }
 
-      ws.send("has " + parts[1]);
-    }
-
-    function cmd_property(parts) {
-      if (parts.length != 3) {
-        t("Usage: property <objectName> <propertyName>");
-        t("Example: property getHelpLink visible");
-        return;
-      }
-
-      ws.send("property " + parts[1] + " " + parts[2]);
-    }
-
-    function cmd_click(parts) {
-      if (parts.length != 2) {
-        t("Usage: click <objectName>");
-        t("Example: click getHelpLink");
-        return;
-      }
-
-      ws.send("click " + parts[1]);
-    }
-
-    function cmd_lasturl(parts) {
-      ws.send("lasturl");
-    }
-
-    function cmd_triggerUpdate(parts) {
-      if (parts.length != 2) {
-        t("Usage: triggerUpdate <version>");
-        t("Example: triggerUpdate 1.0");
-        return;
-      }
-      ws.send("force_update_check " + parts[1]);
+      tj(json);
     }
 
     run();

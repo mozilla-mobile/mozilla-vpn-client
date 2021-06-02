@@ -20,10 +20,7 @@
         <file>ui/components/VPNHeadline.qml</file>
         <file>ui/components/VPNAlert.qml</file>
         <file>ui/components/VPNConnectionStability.qml</file>
-        <file>ui/components/VPNControllerServer.qml</file>
-        <file>ui/components/VPNControllerDevice.qml</file>
         <file>ui/components/VPNInterLabel.qml</file>
-        <file>ui/components/VPNStabilityLabelActions.qml</file>
         <file>ui/components/VPNIconAndLabel.qml</file>
         <file>ui/components/VPNClickableRow.qml</file>
         <file>ui/components/VPNTextBlock.qml</file>
@@ -53,6 +50,7 @@
         <file>ui/settings/ViewNetworkSettings.qml</file>
         <file>ui/settings/ViewAppPermissions.qml</file>
         <file>ui/settings/ViewNotifications.qml</file>
+        <file>ui/settings/ViewPrivacySecurity.qml</file>
         <file>ui/settings/ViewSettingsMenu.qml</file>
         <file>ui/states/StateSubscriptionNeeded.qml</file>
         <file>ui/states/StateSubscriptionValidation.qml</file>
@@ -61,8 +59,10 @@
         <file>ui/states/StateInitialize.qml</file>
         <file>ui/states/StateAuthenticating.qml</file>
         <file>ui/states/StatePostAuthentication.qml</file>
+        <file>ui/states/StateTelemetryPolicy.qml</file>
         <file>ui/states/StateUpdateRequired.qml</file>
         <file>ui/states/StateDeviceLimit.qml</file>
+        <file>ui/states/StateBackendFailure.qml</file>
         <file>ui/views/ViewMain.qml</file>
         <file>ui/views/ViewDevices.qml</file>
         <file>ui/views/ViewServers.qml</file>
@@ -407,5 +407,13 @@
         <file>ui/components/VPNWasmMenu.qml</file>
         <file>ui/components/VPNWasmMenuButton.qml</file>
         <file>ui/components/VPNWasmHeader.qml</file>
+        <file>ui/views/ViewErrorFullScreen.qml</file>
+        <file>ui/components/VPNControllerNav.qml</file>
+        <file>ui/components/VPNSettingsToggle.qml</file>
+        <file>ui/components/VPNDeviceListItem.qml</file>
+        <file>ui/components/VPNAlerts.qml</file>
+        <file>ui/resources/settings/lock.svg</file>
+        <file>ui/components/VPNIPAddress.qml</file>
+        <file>ui/resources/globe.svg</file>
     </qresource>
 </RCC>

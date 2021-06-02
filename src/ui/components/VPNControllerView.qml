@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 Rectangle {
     id: box
@@ -29,13 +30,16 @@ Rectangle {
         return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
+    function closeConnectionInfo() {
+        connectionInfo.close();
+    }
+
     state: VPNController.state
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.margins: 16
     radius: 8
-    height: 318
-    width: parent.width - 32
+    Layout.preferredHeight: 318
+    Layout.preferredWidth: parent.width - Theme.windowMargin
+    Layout.alignment: Qt.AlignHCenter
+
     antialiasing: true
     states: [
         State {
@@ -445,22 +449,32 @@ Rectangle {
 
     VPNAnimatedRings {
         id: animatedRingsWrapper
-        isCurrentyVisible: stackview.depth === 1
+        // Make sure we only do the render animation when
+        // The element is visible &&
+        // the application is not minimized
+        isCurrentyVisible: stackview.depth === 1 &&
+                           (Qt.application.state === Qt.ApplicationActive ||
+                            Qt.application.state === Qt.ApplicationInactive)
     }
 
     VPNMainImage {
         id: logo
 
         anchors.horizontalCenter: parent.horizontalCenter
-        y: 50
+        y: 48
         height: 80
         width: 80
     }
 
     VPNIconButton {
         id: connectionInfoButton
+        objectName: "connectionInfoButton"
 
-        onClicked: connectionInfo.open()
+        onClicked: {
+            Glean.sample.connectionInfoOpened.record();
+            connectionInfo.open()
+        }
+
         buttonColorScheme: Theme.iconButtonDarkBackground
         opacity: connectionInfoButton.visible ? 1 : 0
         anchors.top: parent.top
@@ -470,6 +484,7 @@ Rectangle {
         //% "Connection Information"
         accessibleName: qsTrId("vpn.controller.info")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: connectionInfoImage
@@ -492,8 +507,14 @@ Rectangle {
 
     VPNIconButton {
         id: settingsButton
+        objectName: "settingsButton"
+        opacity: 1
 
-        onClicked: stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+        onClicked: {
+            Glean.sample.settingsViewOpened.record();
+            stackview.push("../views/ViewSettings.qml", StackView.Immediate)
+        }
+
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: Theme.windowMargin / 2
@@ -501,6 +522,7 @@ Rectangle {
         //% "Settings"
         accessibleName: qsTrId("vpn.main.settings")
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
 
         VPNIcon {
             id: settingsImage
@@ -533,54 +555,104 @@ Rectangle {
         }
     }
 
-    VPNHeadline {
-        id: logoTitle
-        objectName: "controllerTitle"
+    ColumnLayout {
+        id: col
 
-        horizontalAlignment: Text.AlignHCenter
+        spacing: 0
+        width: box.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logo.bottom
-        anchors.topMargin: 24
-        font.pixelSize: 22
-        Accessible.ignored: connectionInfoVisible
-        Accessible.description: logoSubtitle.text
-    }
 
-    VPNInterLabel {
-        id: logoSubtitle
-        objectName: "controllerSubTitle"
+        function handleMultilineText() {
+            const titleIsWrapped = logoTitle.lineCount > 1;
+            const subTitleIsWrapped = (logoSubtitle.lineCount > 1 || (connectionStability.visible && connectionStability.numGridColumns === 1));
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoTitle.bottom
-        anchors.topMargin: Theme.windowMargin / 2
-        lineHeight: Theme.controllerInterLineHeight
-        width: box.width - Theme.windowMargin * 3
-        Accessible.ignored: true
-    }
+            if (titleIsWrapped && subTitleIsWrapped) {
+                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 12
+                bottomTextMargin.Layout.preferredHeight = 6;
+                return;
+            }
 
-    VPNConnectionStability {
-        id: connectionStability
+            if (subTitleIsWrapped) {
+                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 6
+                bottomTextMargin.Layout.preferredHeight = 2;
+                return;
+            }
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoTitle.bottom
-        anchors.topMargin: Theme.windowMargin / 2
-        visible: false
-        Accessible.ignored: connectionInfoVisible
+            if (titleIsWrapped) {
+                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 4
+                bottomTextMargin.Layout.preferredHeight = 8;
+                return;
+            }
+            bottomTextMargin.Layout.preferredHeight = 8;
+            topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight;
+        }
+
+        VPNVerticalSpacer {
+            property var _preferredHeight: logo.y + logo.height + 24
+
+            id: topTextMargin
+            Layout.preferredHeight: _preferredHeight
+        }
+
+        ColumnLayout {
+            Layout.minimumHeight: 32
+            Layout.fillWidth: true
+            spacing: 0
+
+            VPNHeadline {
+                id: logoTitle
+                objectName: "controllerTitle"
+
+                Layout.alignment: Qt.AlignCenter
+                Layout.fillWidth: true
+                Layout.minimumHeight: 32
+                lineHeight: 22
+                font.pixelSize: 22
+                Accessible.ignored: connectionInfoVisible
+                Accessible.description: logoSubtitle.text
+                onPaintedHeightChanged: col.handleMultilineText()
+            }
+        }
+
+        VPNVerticalSpacer {
+            id: bottomTextMargin
+            Layout.preferredHeight: 8
+            Layout.fillWidth: true
+        }
+
+        VPNInterLabel {
+            id: logoSubtitle
+            objectName: "controllerSubTitle"
+
+            lineHeight: Theme.controllerInterLineHeight
+            Layout.preferredWidth: parent.width
+            Accessible.ignored: true
+            onPaintedHeightChanged: col.handleMultilineText()
+        }
+
+        VPNConnectionStability {
+            id: connectionStability
+            visible: false
+            Accessible.ignored: connectionInfoVisible || !visible
+        }
+
     }
 
     VPNToggle {
         id: toggle
         objectName: "controllerToggle"
 
-        anchors.bottom: box.bottom
+        anchors.bottom: parent.bottom
         anchors.bottomMargin: 48
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Accessible.ignored: connectionInfoVisible
+        enabled: !connectionInfoVisible
     }
 
     VPNConnectionInfo {
         id: connectionInfo
+        visible: false
 
         Behavior on opacity {
             NumberAnimation {

@@ -13,6 +13,10 @@
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 
+#ifdef MVPN_WINDOWS
+#  include <Windows.h>
+#endif
+
 #include <QApplication>
 #include <QIcon>
 #include <QTextStream>
@@ -73,6 +77,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.log() << "MozillaVPN" << APP_VERSION;
+  logger.log() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -92,6 +97,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.log() << "MozillaVPN" << APP_VERSION;
+  logger.log() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -114,6 +120,11 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.log() << "MozillaVPN" << APP_VERSION;
+  logger.log() << "User-Agent:" << NetworkManager::userAgent();
+
+#ifdef MVPN_WINDOWS
+  SetProcessDPIAware();
+#endif
 
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

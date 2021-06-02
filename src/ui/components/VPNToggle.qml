@@ -17,6 +17,7 @@ VPNButtonBase {
     Accessible.name: toolTipTitle
 
     function handleClick() {
+        toolTip.close();
         if (VPNController.state !== VPNController.StateOff) {
             return VPN.deactivate();
         }
@@ -33,6 +34,12 @@ VPNButtonBase {
     width: 60
     radius: 16
     hoverEnabled: false
+
+    onActiveFocusChanged: {
+        if (!focus && toolTip.visible) {
+            toolTip.close();
+        }
+    }
 
     states: [
         State {
@@ -260,9 +267,10 @@ VPNButtonBase {
     }
 
     function toggleClickable() {
-        return VPNController.state === VPNController.StateOn ||
-               VPNController.state === VPNController.StateOff ||
-               (VPNController.state === VPNController.StateConfirming && connectionRetryOverX);
+        return VPN.state === VPN.StateMain &&
+               (VPNController.state === VPNController.StateOn ||
+                VPNController.state === VPNController.StateOff ||
+                (VPNController.state === VPNController.StateConfirming && connectionRetryOverX));
     }
 
     // Toggle background color changes on hover and press
@@ -306,6 +314,7 @@ VPNButtonBase {
     }
 
     VPNToolTip {
+        id: toolTip
         text: toolTipTitle
     }
 

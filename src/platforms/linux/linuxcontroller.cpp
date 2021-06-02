@@ -96,7 +96,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<bool> reply = *call;
   if (reply.isError()) {
     logger.log() << "Error received from the DBus service";
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+    MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
     emit disconnected();
     return;
   }
@@ -109,7 +109,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   }
 
   logger.log() << "DBus service says: error.";
-  MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+  MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 
@@ -148,6 +148,10 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
   Q_ASSERT(serverIpv4Gateway.isString());
 
+  Q_ASSERT(obj.contains("deviceIpv4Address"));
+  QJsonValue deviceIpv4Address = obj.value("deviceIpv4Address");
+  Q_ASSERT(deviceIpv4Address.isString());
+
   Q_ASSERT(obj.contains("txBytes"));
   QJsonValue txBytes = obj.value("txBytes");
   Q_ASSERT(txBytes.isDouble());
@@ -156,8 +160,8 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   QJsonValue rxBytes = obj.value("rxBytes");
   Q_ASSERT(rxBytes.isDouble());
 
-  emit statusUpdated(serverIpv4Gateway.toString(), txBytes.toDouble(),
-                     rxBytes.toDouble());
+  emit statusUpdated(serverIpv4Gateway.toString(), deviceIpv4Address.toString(),
+                     txBytes.toDouble(), rxBytes.toDouble());
 }
 
 void LinuxController::getBackendLogs(

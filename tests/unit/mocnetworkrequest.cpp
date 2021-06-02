@@ -68,7 +68,8 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   return new NetworkRequest(parent, 1234);
 }
 
-NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent) {
+NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
+                                                const QHostAddress&) {
   return new NetworkRequest(parent, 1234);
 }
 
@@ -91,6 +92,10 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
   return new NetworkRequest(parent, 1234);
 }
 #endif
+
+NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
+  return new NetworkRequest(parent, 1234);
+}
 
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 

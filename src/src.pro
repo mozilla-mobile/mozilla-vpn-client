@@ -6,12 +6,14 @@ include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
+!isEmpty(MVPN_EXTRA_USERAGENT) {
+    DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
+}
+
 QT += network
 QT += quick
 QT += widgets
 QT += charts
-
-CONFIG += c++1z
 
 TEMPLATE  = app
 
@@ -20,7 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
-            hacl-star/kremlin/minimal
+            hacl-star/kremlin/minimal \
+            ../glean/generated
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -38,6 +41,7 @@ SOURCES += \
         captiveportal/captiveportalmonitor.cpp \
         captiveportal/captiveportalnotifier.cpp \
         captiveportal/captiveportalrequest.cpp \
+        captiveportal/captiveportalmultirequest.cpp \
         closeeventhandler.cpp \
         command.cpp \
         commandlineparser.cpp \
@@ -65,22 +69,25 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         ipaddress.cpp \
         ipaddressrange.cpp \
+        ipfinder.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
         loghandler.cpp \
         logoutobserver.cpp \
         main.cpp \
-        models/helpmodel.cpp \
-        models/user.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/helpmodel.cpp \
         models/keys.cpp \
         models/server.cpp \
         models/servercity.cpp \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
+        models/survey.cpp \
+        models/surveymodel.cpp \
+        models/user.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -89,10 +96,12 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
         rfc1918.cpp \
         rfc4193.cpp \
+        serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
         statusicon.cpp \
@@ -103,7 +112,9 @@ SOURCES += \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
+        tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
+        tasks/surveydata/tasksurveydata.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -120,6 +131,8 @@ HEADERS += \
         captiveportal/captiveportalmonitor.h \
         captiveportal/captiveportalnotifier.h \
         captiveportal/captiveportalrequest.h \
+        captiveportal/captiveportalmultirequest.h \
+        captiveportal/captiveportalresult.h \
         closeeventhandler.h \
         command.h \
         commandlineparser.h \
@@ -145,6 +158,7 @@ HEADERS += \
         fontloader.h \
         ipaddress.h \
         ipaddressrange.h \
+        ipfinder.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -159,6 +173,8 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
+        models/survey.h \
+        models/surveymodel.h \
         models/user.h \
         mozillavpn.h \
         networkmanager.h \
@@ -170,10 +186,12 @@ HEADERS += \
         pingsender.h \
         pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
         rfc1918.h \
         rfc4193.h \
+        serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
         statusicon.h \
@@ -185,12 +203,27 @@ HEADERS += \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
+        tasks/heartbeat/taskheartbeat.h \
         tasks/removedevice/taskremovedevice.h \
+        tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \
         update/updater.h \
         update/versionapi.h \
         urlopener.h
+
+webextension {
+    message(Enabling the webextension support)
+
+    DEFINES += MVPN_WEBEXTENSION
+
+    SOURCES += \
+            server/serverconnection.cpp \
+            server/serverhandler.cpp
+    HEADERS += \
+            server/serverconnection.h \
+            server/serverhandler.h
+}
 
 inspector {
     message(Enabling the inspector)
@@ -224,6 +257,7 @@ unix {
 }
 
 RESOURCES += qml.qrc
+RESOURCES += ../glean/glean.qrc
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -248,11 +282,15 @@ balrog {
 DUMMY {
     message(Dummy build)
 
+    CONFIG += c++1z
+
     win* {
       CONFIG += embed_manifest_exe
       QT += svg
     } else {
-      QMAKE_CXXFLAGS *= -Werror
+      versionAtLeast(QT_VERSION, 5.15.1) {
+        QMAKE_CXXFLAGS *= -Werror
+      }
     }
 
     macos {
@@ -282,12 +320,13 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
-
-    QMAKE_CXXFLAGS *= -Werror
+    include($$PWD/golang.pri)
 
     TARGET = mozillavpn
     QT += networkauth
     QT += dbus
+
+    CONFIG += c++14
 
     DEFINES += MVPN_LINUX
     DEFINES += PROTOCOL_VERSION=\\\"$$DBUS_PROTOCOL_VERSION\\\"
@@ -300,7 +339,9 @@ else:linux:!android {
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxnetworkwatcher.cpp \
+            platforms/linux/linuxnetworkwatcherworker.cpp \
             platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
@@ -311,7 +352,9 @@ else:linux:!android {
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
+            platforms/linux/linuxnetworkwatcherworker.h \
             platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 
@@ -320,16 +363,25 @@ else:linux:!android {
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/dnsutilslinux.cpp \
+            platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
             platforms/linux/daemon/polkithelper.cpp \
-            wgquickprocess.cpp
+            platforms/linux/daemon/wireguardutilslinux.cpp
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
+            daemon/interfaceconfig.h \
             daemon/daemon.h \
+            daemon/dnsutils.h \
+            daemon/iputils.h \
+            daemon/wireguardutils.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/dbustypeslinux.h \
+            platforms/linux/daemon/dnsutilslinux.h \
+            platforms/linux/daemon/iputilslinux.h \
             platforms/linux/daemon/polkithelper.h \
-            wgquickprocess.h
+            platforms/linux/daemon/wireguardutilslinux.h
 
     isEmpty(USRPATH) {
         USRPATH=/usr
@@ -341,6 +393,8 @@ else:linux:!android {
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
+    GO_MODULES = ../linux/netfilter/netfilter.go
+    
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -364,6 +418,7 @@ else:linux:!android {
     icon48x48.files = ../linux/extra/icons/48x48/mozillavpn.png
     INSTALLS += icon48x48
 
+    DEFINES += MVPN_ICON_PATH=\\\"$${USRPATH}/share/icons/hicolor/64x64/apps/mozillavpn.png\\\"
     icon64x64.path = $${USRPATH}/share/icons/hicolor/64x64/apps
     icon64x64.files = ../linux/extra/icons/64x64/mozillavpn.png
     INSTALLS += icon64x64
@@ -384,10 +439,9 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
-    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
-    helper.path = $${USRPATH}/share/mozillavpn
-    helper.files = ../linux/daemon/helper.sh
-    INSTALLS += helper
+    systemd_service.files = ../linux/debian/mozillavpn.service
+    systemd_service.path = /lib/systemd/system
+    INSTALLS += systemd_service
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
@@ -397,10 +451,14 @@ else:linux:!android {
 else:android {
     message(Android build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
+
     # Android Deploy-to-Qt strips the info anyway
     # but we want to create an extra bundle with the info :)
     CONFIG += force_debug_info
+    CONFIG += c++14
 
     TARGET = mozillavpn
     QT += networkauth
@@ -421,7 +479,7 @@ else:android {
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
                 platforms/android/androidwebview.cpp \
-                platforms/android/androidstartatbootwatcher.cpp \
+                platforms/android/androidvpnactivity.cpp \
                 platforms/android/androiddatamigration.cpp \
                 platforms/android/androidappimageprovider.cpp \
                 platforms/android/androidapplistprovider.cpp \
@@ -433,7 +491,7 @@ else:android {
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
                 platforms/android/androidwebview.h \
-                platforms/android/androidstartatbootwatcher.h\
+                platforms/android/androidvpnactivity.h \
                 platforms/android/androiddatamigration.h\
                 platforms/android/androidappimageprovider.h \
                 platforms/android/androidapplistprovider.h \
@@ -477,11 +535,15 @@ else:android {
 else:macos {
     message(MacOSX build)
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = MozillaVPN
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.macos
     QT += networkauth
+
+    CONFIG += c++1z
 
     # For the loginitem
     LIBS += -framework ServiceManagement
@@ -547,9 +609,13 @@ else:macos {
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp
         HEADERS += \
+                   daemon/interfaceconfig.h \
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/dnsutils.h \
+                   daemon/iputils.h \
+                   daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
                    platforms/macos/daemon/macosdaemon.h \
@@ -575,6 +641,8 @@ else:ios {
     QMAKE_TARGET_BUNDLE_PREFIX = org.mozilla.ios
     QT += svg
     QT += gui-private
+
+    CONFIG += c++1z
 
     # For the authentication
     LIBS += -framework AuthenticationServices
@@ -634,6 +702,9 @@ else:win* {
 
     TARGET = MozillaVPN
 
+    CONFIG += c++1z
+    QMAKE_CXXFLAGS += -MP
+
     QT += networkauth
     QT += svg
 
@@ -657,8 +728,6 @@ else:win* {
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
         platforms/windows/windowsservicemanager.cpp \
-        platforms/windows/windowscaptiveportaldetection.cpp \
-        platforms/windows/windowscaptiveportaldetectionthread.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
@@ -670,9 +739,13 @@ else:win* {
         wgquickprocess.cpp
 
     HEADERS += \
+        daemon/interfaceconfig.h \
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/dnsutils.h \
+        daemon/iputils.h \
+        daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
         platforms/windows/daemon/windowsdaemon.h \
@@ -680,8 +753,6 @@ else:win* {
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
         platforms/windows/windowsservicemanager.h \
-        platforms/windows/windowscaptiveportaldetection.h \
-        platforms/windows/windowscaptiveportaldetectionthread.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
@@ -697,10 +768,14 @@ else:wasm {
     DEFINES += MVPN_DUMMY
     DEFINES += MVPN_WASM
 
-    QMAKE_CXXFLAGS *= -Werror
+    versionAtLeast(QT_VERSION, 5.15.1) {
+      QMAKE_CXXFLAGS *= -Werror
+    }
 
     TARGET = mozillavpn
     QT += svg
+
+    CONFIG += c++1z
 
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
@@ -731,10 +806,11 @@ else {
     error(Unsupported platform)
 }
 
+RESOURCES += $$PWD/../translations/servers.qrc
+
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
-}
-else{
+} else {
     message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
         ../translations/mozillavpn_en.ts
@@ -750,3 +826,14 @@ else{
 QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
+
+debug {
+    SOURCES += gleantest.cpp
+    HEADERS += gleantest.h
+}
+
+coverage {
+    message(Coverage enabled)
+    QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
+    QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
+}

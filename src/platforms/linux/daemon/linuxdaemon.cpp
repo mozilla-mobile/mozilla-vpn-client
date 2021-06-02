@@ -25,6 +25,7 @@ class CommandLinuxDaemon final : public Command {
 
   int run(QStringList& tokens) override {
     Q_ASSERT(!tokens.isEmpty());
+    LogHandler::setLocation("/var/log");
 
     return runCommandLineApp([&]() {
       DBusService* dbus = new DBusService(qApp);
@@ -39,10 +40,6 @@ class CommandLinuxDaemon final : public Command {
         logger.log() << "Connection failed - name:"
                      << connection.lastError().name()
                      << "message:" << connection.lastError().message();
-        return 1;
-      }
-
-      if (!dbus->checkInterface()) {
         return 1;
       }
 

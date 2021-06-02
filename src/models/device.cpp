@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QTextStream>
 
 #ifdef QT_DEBUG
 #  include <QRandomGenerator>
@@ -41,16 +42,21 @@ QString Device::currentDeviceName() {
       QSysInfo::productVersion();
 #endif
 
-  /*  If we want to generate a new device name at each execution, comment out
-this block: #ifdef QT_DEBUG static quint32 uniqueId = 0; if (uniqueId == 0) {
-      uniqueId = QRandomGenerator::global()->generate();
-  }
-
-  deviceName = QString("%1 %2").arg(deviceName).arg(uniqueId);
-#endif
-  */
-
   return deviceName;
+}
+
+// static
+QString Device::currentDeviceReport() {
+  QString buffer;
+  QTextStream out(&buffer);
+  out << "Name -> " << currentDeviceName() << Qt::endl;
+  out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "OS -> " << QSysInfo::productType() << Qt::endl;
+  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+  out << "APP Version -> " << APP_VERSION << Qt::endl;
+  out << "Build ID -> " << BUILD_ID << Qt::endl;
+
+  return buffer;
 }
 
 Device::Device() { MVPN_COUNT_CTOR(Device); }

@@ -54,7 +54,6 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
             }
 
             QString code = values["code"].toString();
-            m_server->close();
 
             emit completed(code);
           });
@@ -81,7 +80,7 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
 
   if (!m_server->isListening()) {
     logger.log() << "Unable to listen for the authentication server.";
-    emit failed(ErrorHandler::BackendServiceError);
+    emit failed(ErrorHandler::UnrecoverableError);
     return;
   }
 
