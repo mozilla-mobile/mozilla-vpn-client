@@ -77,11 +77,14 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
 #ifdef MVPN_WINDOWS
   QString path = "\\\\.\\pipe\\mozillavpn";
   if (!m_serviceManager.isRunning()) {
-    logger.log() << "Deamon is not running, wait until deamon is ready";
+
     // We will retry once the deamon is ready
-    m_serviceManager.startService();
-    return;
+    if(m_serviceManager.startService()){
+        logger.log() << "Deamon is not running, wait until deamon is ready";
+        return;
+    }
   }
+  logger.log() << "Deamon is running";
 
 #else
   QString path = "/var/run/mozillavpn/daemon.socket";

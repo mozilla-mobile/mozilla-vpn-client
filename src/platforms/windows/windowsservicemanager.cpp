@@ -1,11 +1,18 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "windowsservicemanager.h"
+
 #include "logger.h"
 #include "mozillavpn.h"
-#include <Windows.h>
-#include "Windows.h"
-#include "Winsvc.h"
-#include "windowsservicemanager.h"
 #include "windowscommons.h"
+
+
 #include <QTimer>
+#include <Windows.h>
+#include <Winsvc.h>
+
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsServiceManager");
@@ -20,25 +27,23 @@ WindowsServiceManager::WindowsServiceManager() {
                                    scm_rights);
   err = GetLastError();
   if (err != NULL) {
-    logger.log() << " OpenSCManager failed code: " << err;
+    WindowsCommons::windowsLog("OpenSCManager failed");
     return;
   }
-  logger.log() << "OpenSCManager access given - " << err;
+  logger.log() << "OpenSCManager access given";
 
   // Try to get an elevated handle
   m_service = OpenService(m_serviceManager,  // SCM database
                           m_serviceName,     // name of service
                           (GENERIC_READ | SERVICE_START | SERVICE_STOP));
-  err = GetLastError();
-  if (err != NULL) {
+  if (m_service == NULL) {
     WindowsCommons::windowsLog("OpenService failed");
     return;
   }
-  m_has_access = true;
   m_timer.setSingleShot(false);
   connect(&m_timer, &QTimer::timeout, this, &WindowsServiceManager::pollStatus);
 
-  logger.log() << "Service manager execute access granted";
+  logger.log() << "Service access granted";
 }
 
 WindowsServiceManager::~WindowsServiceManager() {
@@ -50,26 +55,19 @@ WindowsServiceManager::~WindowsServiceManager() {
   }
 }
 
-void WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
-  m_state_target = goal_state;
-  m_maxWaitTime = max_wait_sec;
-  m_currentWaitTime = 0;
-  m_timer.start(1000);
-}
-
 void WindowsServiceManager::pollStatus() {
-  if (!m_has_access) {
+  if (m_service == NULL) {
     logger.log() << "Need read access to poll service state";
     return;
   }
-  auto state = getStatus().dwCurrentState;
-  logger.log() << "Polling Status" << m_state_target
+  auto state = getStatus();
+  logger.log() << "Polling Status" << m_goalState
                << "wanted, has: " << state;
-  if ((state != m_state_target)) {
+  if ((state != m_goalState)) {
     if (m_currentWaitTime >= m_maxWaitTime) {
       m_timer.stop();
       logger.log() << "Waiting for Service failed";
-      MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
+      MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
       return;
     }
     m_currentWaitTime++;
@@ -86,34 +84,41 @@ void WindowsServiceManager::pollStatus() {
   }
 }
 
-SERVICE_STATUS_PROCESS WindowsServiceManager::getStatus() {
+void WindowsServiceManager::startPolling(DWORD goalState, int maxWaitSec) {
+  m_goalState = goalState;
+  m_maxWaitTime = maxWaitSec;
+  m_currentWaitTime = 0;
+  m_timer.start(1000);
+}
+
+DWORD WindowsServiceManager::getStatus() const {
   SERVICE_STATUS_PROCESS serviceStatus;
-  if (!m_has_access) {
-    logger.log() << "Need read access to get service state";
-    return serviceStatus;
+  if (m_service == NULL) {
+    logger.log() << "Need access to get service state";
+    return SERVICE_STOPPED;
   }
   DWORD dwBytesNeeded;  // Contains missing bytes if struct is too small?
-  QueryServiceStatusEx(m_service,                       // handle to service
+  bool ok = QueryServiceStatusEx(m_service,                       // handle to service
                        SC_STATUS_PROCESS_INFO,          // information level
                        (LPBYTE)&serviceStatus,          // address of structure
                        sizeof(SERVICE_STATUS_PROCESS),  // size of structure
                        &dwBytesNeeded);
-  return serviceStatus;
+  if(ok){
+    return serviceStatus.dwCurrentState;
+  }
+  return SERVICE_STOPPED;
 }
 
 bool WindowsServiceManager::startService() {
-  auto state = getStatus().dwCurrentState;
+  if (m_service == NULL) {
+    logger.log() << "Need access to start service";
+    return false;
+  }
+  auto state = getStatus();
   if (state != SERVICE_STOPPED && state != SERVICE_STOP_PENDING) {
     logger.log() << ("Service start not possible, as its running");
     emit serviceStarted();
     return true;
-  }
-  if (!m_has_access) {
-    logger.log() << "Need execute access to start service";
-    // Still start polling - windows should start the service
-    m_state_target = SERVICE_RUNNING;
-    pollStatus();
-    return false;
   }
   // In case he have execute rights, lets boot and wait for the service.
   bool ok = StartService(m_service,  // handle to service
@@ -124,17 +129,16 @@ bool WindowsServiceManager::startService() {
     startPolling(SERVICE_RUNNING, 10);
   } else {
     WindowsCommons::windowsLog("StartService failed");
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
   }
   return ok;
 }
 
 bool WindowsServiceManager::stopService() {
-  if (!m_has_access) {
-    logger.log() << "Need execute access to stop services";
+  if (m_service == NULL) {
+    logger.log() << "Need access to stop services";
     return false;
   }
-  auto state = getStatus().dwCurrentState;
+  auto state = getStatus();
   if (state != SERVICE_RUNNING && state != SERVICE_START_PENDING) {
     logger.log() << ("Service stop not possible, as its not running");
   }
@@ -145,7 +149,6 @@ bool WindowsServiceManager::stopService() {
     startPolling(SERVICE_STOPPED, 10);
   } else {
     WindowsCommons::windowsLog("StopService failed");
-    MozillaVPN::instance()->errorHandle(ErrorHandler::BackendServiceError);
   }
   return ok;
 }

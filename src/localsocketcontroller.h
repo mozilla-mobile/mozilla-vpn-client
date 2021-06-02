@@ -37,7 +37,6 @@ class LocalSocketController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
- public slots:
   void deamonReady();
 
  private:
