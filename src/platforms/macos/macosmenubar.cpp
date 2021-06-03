@@ -6,6 +6,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "qmlengineholder.h"
+#include "platforms/macos/macosutils.h"
 
 #include <QAction>
 #include <QMenu>
@@ -63,7 +65,10 @@ void MacOSMenuBar::initialize() {
   m_preferencesAction->setMenuRole(QAction::PreferencesRole);
   m_preferencesAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
-  m_closeAction = fileMenu->addAction("", vpn->controller(), &Controller::quit);
+  m_closeAction = fileMenu->addAction("close", []() {
+    QmlEngineHolder::instance()->hideWindow();
+    MacOSUtils::hideDockIcon();
+  });
   m_closeAction->setShortcut(QKeySequence::Close);
 
   m_helpMenu = m_menuBar->addMenu("");
