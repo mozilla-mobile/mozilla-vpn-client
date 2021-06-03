@@ -36,8 +36,8 @@ namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcherWorker");
 }
 
-static inline bool checkSecurityFlags(int securityFlags) {
-  return securityFlags == NM_802_11_AP_SEC_NONE ||
+static inline bool checkUnsecureFlags(int securityFlags) {
+  return (securityFlags == NM_802_11_AP_SEC_NONE) ||
          (securityFlags & NM_802_11_AP_SEC_PAIR_WEP40 ||
           securityFlags & NM_802_11_AP_SEC_PAIR_WEP104);
 }
@@ -147,8 +147,8 @@ void LinuxNetworkWatcherWorker::checkDevices() {
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
-    if (!checkSecurityFlags(ap.property("RsnFlags").toInt()) &&
-        !checkSecurityFlags(ap.property("WpaFlags").toInt())) {
+    if (checkUnsecureFlags(ap.property("RsnFlags").toInt()) ||
+        checkUnsecureFlags(ap.property("WpaFlags").toInt())) {
       QString ssid = ap.property("Ssid").toString();
       QString bssid = ap.property("HwAddress").toString();
 
