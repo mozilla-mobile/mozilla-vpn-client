@@ -111,7 +111,7 @@ python scripts\importLanguages.py
 ECHO Generating glean samples...
 python scripts\generate_glean.py
 
-qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release MVPN_EXTRA_USERAGENT=exp:vpn-landing-page-download-first:a
+qmake -tp vc extension\app\app.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release MVPN_EXTRA_USERAGENT=exp:vpn-landing-page-download-first:b
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
   EXIT 1
@@ -136,7 +136,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 ECHO Creating the project with flags: %FLAGS%
-qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release MVPN_EXTRA_USERAGENT=exp:vpn-landing-page-download-first:a %FLAGS%
+qmake -tp vc src/src.pro CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release MVPN_EXTRA_USERAGENT=exp:vpn-landing-page-download-first:b %FLAGS%
 
 IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to configure the project
