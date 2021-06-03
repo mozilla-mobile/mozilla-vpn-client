@@ -50,7 +50,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
+          pip3 install glean_parser==3.2.0
           pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
@@ -109,6 +109,7 @@ jobs:
           echo "APP_ID_IOS = baku.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = baku.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
           qmake \
+            MVPN_EXTRA_USERAGENT=exp:vpn-landing-page-download-first:a \
             VERSION=$SHORTVERSION \
             BUILD_ID=$FULLVERSION \
             -spec macx-xcode \
@@ -200,7 +201,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
+          pip3 install glean_parser==3.2.0
           pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
@@ -228,6 +229,7 @@ jobs:
           echo "APP_ID_IOS = org.mozilla.ios.FirefoxVPN" >> xcode.xconfig
           echo "NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension" >> xcode.xconfig
           qmake \
+            MVPN_EXTRA_USERAGENT=exp:vpn-landing-page-download-first:a \
             VERSION=$SHORTVERSION \
             BUILD_ID=$FULLVERSION \
             -spec macx-xcode \
