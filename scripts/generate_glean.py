@@ -41,7 +41,7 @@ def run_glean_parser(yaml):
   try:
     subprocess.call(["glean_parser", "translate", yaml, "-f", "javascript",
                      "-o", "glean/generated", "--option", "platform=qt",
-                     "--option", "namespace=RealGlean"])
+                     "--option", "namespace=RealGlean", "--option", "version=0.11"])
     return True
   except:
     print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
