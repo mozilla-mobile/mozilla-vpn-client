@@ -26,7 +26,7 @@ int CommandSelect::run(QStringList& tokens) {
       stream << "usage: " << tokens[0] << " <server_hostname>" << Qt::endl;
       stream << Qt::endl;
       stream << "The list of <server_hostname>s can be obtained using: '"
-             << tokens[0] << " servers'" << Qt::endl;
+             << tokens[0].split(" ").at(0) << " servers'" << Qt::endl;
       return 1;
     }
 
@@ -46,7 +46,7 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    vpn.changeServer(sd.countryCode(), sd.city());
+    vpn.changeServer(sd.countryCode(), sd.cityName());
     return 0;
   });
 }

@@ -30,6 +30,7 @@ constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
 constexpr const char* SETTINGS_PREVIOUSLANGUAGECODE = "previousLanguageCode";
 constexpr const char* SETTINGS_SYSTEMLANGUAGECODEMIGRATED =
     "systemLanguageCodeMigrated";
+constexpr const char* SETTINGS_INSTALLATIONTIME = "installationTime";
 constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
@@ -45,6 +46,8 @@ constexpr const char* SETTINGS_CURRENTSERVER_COUNTRYCODE =
 constexpr const char* SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char* SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
 constexpr const char* SETTINGS_DEVICES = "devices";
+constexpr const char* SETTINGS_SURVEYS = "surveys";
+constexpr const char* SETTINGS_CONSUMEDSURVEYS = "consumedSurveys";
 constexpr const char* SETTINGS_IAPPRODUCTS = "iapProducts";
 constexpr const char* SETTINGS_CAPTIVEPORTALIPV4ADDRESSES =
     "captivePortal/ipv4Addresses";
@@ -52,6 +55,7 @@ constexpr const char* SETTINGS_CAPTIVEPORTALIPV6ADDRESSES =
     "captivePortal/ipv6Addresses";
 constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
     "postAuthenticationShown";
+constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
 
@@ -71,8 +75,17 @@ constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
 #endif
 
+constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
+constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
+// Setting Keys That won't show up in a report;
+QVector<QString> SENSITIVE_SETTINGS({
+    SETTINGS_TOKEN, SETTINGS_PRIVATEKEY,
+    SETTINGS_SERVERS,  // Those 2 Are not sensitive but
+    SETTINGS_DEVICES   // are more noise then info
+});
 
 SettingsHolder* s_instance = nullptr;
 }  // namespace
@@ -102,6 +115,10 @@ SettingsHolder::SettingsHolder()
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  if (!hasInstallationTime()) {
+    setInstallationTime(QDateTime::currentDateTime());
+  }
 }
 
 SettingsHolder::~SettingsHolder() {
@@ -130,10 +147,28 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
   m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
   m_settings.remove(SETTINGS_DEVICES);
+  m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
 
   // We do not remove language, ipv6 and localnetwork settings.
+}
+
+// Returns a Report which settings are set
+// Used to Print in LogFiles:
+QString SettingsHolder::getReport() {
+  QString buff;
+  QTextStream out(&buff);
+  auto settingsKeys = m_settings.childKeys();
+  for (auto setting : settingsKeys) {
+    if (SENSITIVE_SETTINGS.contains(setting)) {
+      out << setting << " -> <Sensitive>" << Qt::endl;
+      continue;
+    }
+    out << setting << " -> " << m_settings.value(setting).toString()
+        << Qt::endl;
+  }
+  return buff;
 }
 
 #define GETSETDEFAULT(def, type, toType, key, has, get, set, signal)    \
@@ -180,6 +215,9 @@ GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
 GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
+GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
+              SETTINGS_GLEANENABLED, hasGleanEnabled, gleanEnabled,
+              setGleanEnabled, gleanEnabledChanged)
 GETSETDEFAULT(SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT, bool, toBool,
               SETTINGS_SERVERSWITCHNOTIFICATION, hasServerSwitchNotification,
               serverSwitchNotification, setServerSwitchNotification,
@@ -225,6 +263,10 @@ GETSET(QString, toString, SETTINGS_CURRENTSERVER_CITY, hasCurrentServerCity,
        currentServerCity, setCurrentServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices,
        setDevices)
+GETSET(QByteArray, toByteArray, SETTINGS_SURVEYS, hasSurveys, surveys,
+       setSurveys)
+GETSET(QStringList, toStringList, SETTINGS_CONSUMEDSURVEYS, hasConsumedSurveys,
+       consumedSurveys, setConsumedSurveys)
 GETSET(QStringList, toStringList, SETTINGS_IAPPRODUCTS, hasIapProducts,
        iapProducts, setIapProducts)
 GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV4ADDRESSES,
@@ -236,6 +278,8 @@ GETSET(QStringList, toStringList, SETTINGS_CAPTIVEPORTALIPV6ADDRESSES,
 GETSET(bool, toBool, SETTINGS_POSTAUTHENTICATIONSHOWN,
        hasPostAuthenticationShown, postAuthenticationShown,
        setPostAuthenticationShown);
+GETSET(bool, toBool, SETTINGS_TELEMETRYPOLICYSHOWN, hasTelemetryPolicyShown,
+       telemetryPolicyShown, setTelemetryPolicyShown);
 GETSET(QString, toString, SETTINGS_LANGUAGECODE, hasLanguageCode, languageCode,
        setLanguageCode);
 GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
@@ -243,6 +287,8 @@ GETSET(QString, toString, SETTINGS_PREVIOUSLANGUAGECODE,
 GETSET(bool, toBool, SETTINGS_SYSTEMLANGUAGECODEMIGRATED,
        hasSystemLanguageCodeMigrated, systemLanguageCodeMigrated,
        setSystemLanguageCodeMigrated);
+GETSET(QDateTime, toDateTime, SETTINGS_INSTALLATIONTIME, hasInstallationTime,
+       installationTime, setInstallationTime);
 
 #ifdef MVPN_ANDROID
 GETSET(bool, toBool, SETTINGS_NATIVEANDROIDSDATAMIGRATED,
@@ -305,4 +351,13 @@ void SettingsHolder::addVpnDisabledApp(const QString& appID) {
   }
   applist.append(appID);
   setVpnDisabledApps(applist);
+}
+
+void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
+  QStringList list;
+  if (hasConsumedSurveys()) {
+    list = consumedSurveys();
+  }
+  list.append(surveyId);
+  setConsumedSurveys(list);
 }

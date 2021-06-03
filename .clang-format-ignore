@@ -1,4 +1,7 @@
 ./3rdparty/*
-./android/modules/wireguard/*
+./android/tunnel/*
+./android/src/com/wireguard/*
 ./src/hacl-star/*
 ./extension/app/json.hpp
+./glean/glean.js
+./glean/generated

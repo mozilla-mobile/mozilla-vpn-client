@@ -5,6 +5,8 @@
 #ifndef SETTINGSHOLDER_H
 #define SETTINGSHOLDER_H
 
+#include <QDateTime>
+#include <QStringList>
 #include <QObject>
 #include <QSettings>
 
@@ -24,6 +26,8 @@ class SettingsHolder final : public QObject {
                  startAtBootChanged)
   Q_PROPERTY(bool protectSelectedApps READ protectSelectedApps WRITE
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
+  Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
+                 gleanEnabledChanged)
   Q_PROPERTY(
       bool serverSwitchNotification READ serverSwitchNotification WRITE
           setServerSwitchNotification NOTIFY serverSwitchNotificationChanged)
@@ -33,6 +37,8 @@ class SettingsHolder final : public QObject {
   ~SettingsHolder();
 
   static SettingsHolder* instance();
+
+  QString getReport();
 
   void clear();
 
@@ -68,6 +74,8 @@ class SettingsHolder final : public QObject {
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
   GETSET(QByteArray, hasDevices, devices, setDevices)
+  GETSET(QByteArray, hasSurveys, surveys, setSurveys)
+  GETSET(QStringList, hasConsumedSurveys, consumedSurveys, setConsumedSurveys)
   GETSET(QStringList, hasIapProducts, iapProducts, setIapProducts)
   GETSET(QStringList, hasCaptivePortalIpv4Addresses, captivePortalIpv4Addresses,
          setCaptivePortalIpv4Addresses)
@@ -75,15 +83,21 @@ class SettingsHolder final : public QObject {
          setCaptivePortalIpv6Addresses)
   GETSET(bool, hasPostAuthenticationShown, postAuthenticationShown,
          setPostAuthenticationShown);
+  GETSET(bool, hasTelemetryPolicyShown, telemetryPolicyShown,
+         setTelemetryPolicyShown);
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+  GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
+  GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
   GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
          setServerSwitchNotification);
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
   void addVpnDisabledApp(const QString& appID);
+
+  void addConsumedSurvey(const QString& surveyId);
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
@@ -115,6 +129,7 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
+  void gleanEnabledChanged(bool value);
   void serverSwitchNotificationChanged(bool value);
 
  private:

@@ -13,10 +13,6 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_WINDOWS
-#  include "platforms/windows/windowscaptiveportaldetection.h"
-#endif
-
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalDetection");
 }
@@ -48,6 +44,14 @@ void CaptivePortalDetection::stateChanged() {
       vpn->controller()->state() != Controller::StateConfirming) {
     logger.log() << "No captive portal detection required";
     m_impl.reset();
+    // Since we now reached a stable state, on the next time we have an
+    // instablity check for portal again.
+    m_shouldRun = true;
+    return;
+  }
+  if (!m_shouldRun) {
+    logger.log() << "Captive Portal detection was already done for this "
+                    "instability, skipping.";
     return;
   }
 
@@ -77,9 +81,7 @@ void CaptivePortalDetection::detectCaptivePortal() {
     return;
   }
 
-#if defined(MVPN_WINDOWS)
-  m_impl.reset(new WindowsCaptivePortalDetection());
-#elif defined(MVPN_LINUX) || defined(MVPN_MACOS)
+#if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   m_impl.reset(new CaptivePortalDetectionImpl());
 #else
   logger.log() << "This platform does not support captive portal detection yet";
@@ -104,16 +106,19 @@ void CaptivePortalDetection::settingsChanged() {
   }
 }
 
-void CaptivePortalDetection::detectionCompleted(bool detected) {
+void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
   logger.log() << "Detection completed:" << detected;
 
   m_impl.reset();
-
-  if (!detected) {
-    return;
+  m_shouldRun = false;
+  switch (detected) {
+    case CaptivePortalResult::NoPortal:
+    case CaptivePortalResult::Failure:
+      return;
+    case CaptivePortalResult::PortalDetected:
+      captivePortalDetected();
+      return;
   }
-
-  captivePortalDetected();
 }
 
 void CaptivePortalDetection::captivePortalDetected() {
@@ -150,7 +155,7 @@ void CaptivePortalDetection::deactivationRequired() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (vpn->controller()->state() == Controller::StateOn) {
+  if (vpn->controller()->state() != Controller::StateOff) {
     vpn->deactivate();
     captivePortalMonitor()->start();
   }

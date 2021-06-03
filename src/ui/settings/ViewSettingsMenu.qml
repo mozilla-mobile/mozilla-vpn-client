@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "/glean/load.js" as Glean
 
 VPNFlickable {
     id: vpnFlickable
@@ -61,7 +62,10 @@ VPNFlickable {
         anchors.top: vpnPanel.bottom
         anchors.topMargin: Theme.vSpacing
         anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: VPN.openLink(VPN.LinkAccount)
+        onClicked: {
+            Glean.sample.manageAccountClicked.record();
+            VPN.openLink(VPN.LinkAccount)
+        }
     }
 
     VPNCheckBoxRow {
@@ -104,7 +108,8 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height : manageAccountButton.y + manageAccountButton.height)
+        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
+                              manageAccountButton.y + manageAccountButton.height)
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -164,7 +169,19 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.main.getHelp")
             imageLeftSrc: "../resources/settings/getHelp.svg"
             imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push(getHelpComponent)
+            onClicked: {
+                Glean.sample.getHelpClickedViewSettings.record();
+                settingsStackView.push(getHelpComponent);
+            }
+        }
+        VPNSettingsItem {
+            objectName: "settingsPrivacySecurity"
+
+            //% "Privacy & Security"
+            settingTitle: qsTrId("vpn.main.privacySecurity")
+            imageLeftSrc: "../resources/settings/lock.svg"
+            imageRightSrc: "../resources/chevron.svg"
+            onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml")
         }
 
         Rectangle {

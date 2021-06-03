@@ -344,7 +344,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   Q_ASSERT(vpn);
 
   if (vpn->currentServer()->countryCode() == countryCode &&
-      vpn->currentServer()->city() == city) {
+      vpn->currentServer()->cityName() == city) {
     logger.log() << "No server change needed";
     return;
   }
@@ -360,7 +360,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 
   logger.log() << "Switching to a different server";
 
-  m_currentCity = vpn->currentServer()->city();
+  m_currentCity = vpn->currentServer()->cityName();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 
@@ -488,16 +488,18 @@ void Controller::cleanupBackendLogs() {
 }
 
 void Controller::getStatus(
-    std::function<void(const QString& serverIpv4Gateway, uint64_t txByte,
+    std::function<void(const QString& serverIpv4Gateway,
+                       const QString& deviceIpv4Address, uint64_t txByte,
                        uint64_t rxBytes)>&& a_callback) {
   logger.log() << "check status";
 
-  std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  std::function<void(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
   if (m_state != StateOn && m_state != StateConfirming) {
-    callback(QString(), 0, 0);
+    callback(QString(), QString(), 0, 0);
     return;
   }
 
@@ -511,17 +513,19 @@ void Controller::getStatus(
 }
 
 void Controller::statusUpdated(const QString& serverIpv4Gateway,
+                               const QString& deviceIpv4Address,
                                uint64_t txBytes, uint64_t rxBytes) {
   logger.log() << "Status updated";
-  QList<std::function<void(const QString& serverIpv4Gateway, uint64_t txBytes,
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       list;
 
   list.swap(m_getStatusCallbacks);
-  for (const std::function<void(const QString&serverIpv4Gateway,
-                                uint64_t txBytes, uint64_t rxBytes)>&func :
-       list) {
-    func(serverIpv4Gateway, txBytes, rxBytes);
+  for (const std::function<void(
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           uint64_t txBytes, uint64_t rxBytes)>&func : list) {
+    func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
 }
 
@@ -545,15 +549,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     for (const QString& address : captivePortalIpv4Addresses) {
       logger.log() << "Filtering out the captive portal address" << address;
       excludeIPv4s.append(IPAddress::create(address));
-    }
-
-    if (ipv6Enabled) {
-      const QStringList& captivePortalIpv6Addresses =
-          captivePortal->ipv6Addresses();
-      for (const QString& address : captivePortalIpv6Addresses) {
-        // TODO IPv6 is not supported by IPAddress yet.
-        allowedIPv6s.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
-      }
     }
   }
 

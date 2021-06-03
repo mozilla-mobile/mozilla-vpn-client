@@ -22,3 +22,13 @@ QNetworkAccessManager* SimpleNetworkManager::networkAccessManager() {
 
   return m_networkManager;
 }
+
+void SimpleNetworkManager::clearCacheInternal() {
+  if (!m_networkManager) {
+    return;
+  }
+
+  // We do not use credential access, but...
+  m_networkManager->clearAccessCache();
+  m_networkManager->clearConnectionCache();
+}

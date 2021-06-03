@@ -15,5 +15,5 @@ int main(int, char*[]) {
   Logger::log("VPN Client native messaging started");
 
   Handler h;
-  h.run();
+  return h.run();
 }

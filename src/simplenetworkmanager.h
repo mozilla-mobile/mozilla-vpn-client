@@ -18,6 +18,9 @@ class SimpleNetworkManager final : public NetworkManager {
 
   QNetworkAccessManager* networkAccessManager() override;
 
+ protected:
+  void clearCacheInternal() override;
+
  private:
   QNetworkAccessManager* m_networkManager = nullptr;
 };

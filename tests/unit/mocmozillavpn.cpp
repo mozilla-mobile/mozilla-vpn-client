@@ -28,6 +28,8 @@ void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
 
+void MozillaVPN::getStarted() {}
+
 void MozillaVPN::authenticate() {}
 
 void MozillaVPN::openLink(LinkType) {}
@@ -70,6 +72,8 @@ const QList<Server> MozillaVPN::servers() const { return QList<Server>(); }
 void MozillaVPN::changeServer(const QString&, const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
+
+void MozillaVPN::telemetryPolicyCompleted() {}
 
 void MozillaVPN::setUpdateRecommended(bool) {}
 

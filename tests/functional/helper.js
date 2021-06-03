@@ -175,6 +175,14 @@ module.exports = {
     }
   },
 
+  async getLastGleanRequest() {
+    const json = await this._writeCommand('last_glean_request');
+    assert(
+        json.type === 'last_glean_request' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+    return json.value || null;
+  },
+
   async getLastUrl() {
     const json = await this._writeCommand('lasturl');
     assert(
@@ -184,18 +192,17 @@ module.exports = {
   },
 
   async waitForCondition(condition) {
-    for (let i = 0; i < 50; ++i) {
+    while (true) {
       if (await condition()) return;
       await new Promise(resolve => setTimeout(resolve, 200));
     }
-    throw new Error('Timeout for waitForCondition');
   },
 
   wait() {
-    return new Promise(resolve => setTimeout(resolve, 500));
+    return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
-  async authenticate(driver, resetting = true) {
+  async authenticate(driver, resetting = true, telemetry = true) {
     if (resetting) await this.reset();
 
     await this.waitForElement('getHelpLink');
@@ -205,6 +212,13 @@ module.exports = {
         await this.getElementProperty('learnMoreLink', 'visible') === 'true');
 
     await this.clickOnElement('getStarted');
+
+    if (telemetry) {
+      await this.waitForElement('telemetryPolicyButton');
+      await this.waitForElementProperty(
+          'telemetryPolicyButton', 'visible', 'true');
+      await this.clickOnElement('telemetryPolicyButton');
+    }
 
     await this.waitForCondition(async () => {
       const url = await this.getLastUrl();

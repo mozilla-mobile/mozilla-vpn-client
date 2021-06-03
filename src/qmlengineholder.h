@@ -30,6 +30,9 @@ class QmlEngineHolder final : public NetworkManager {
   void showWindow();
   void hideWindow();
 
+ protected:
+  void clearCacheInternal() override;
+
  private:
   QQmlApplicationEngine m_engine;
 };

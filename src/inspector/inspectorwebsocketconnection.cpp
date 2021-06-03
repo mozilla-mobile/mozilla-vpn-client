@@ -12,6 +12,10 @@
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
+#ifdef QT_DEBUG
+#  include "gleantest.h"
+#endif
+
 #include <functional>
 
 #include <QBuffer>
@@ -193,7 +197,18 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     // server city
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
-        []() { return MozillaVPN::instance()->currentServer()->city(); }},
+        []() { return MozillaVPN::instance()->currentServer()->cityName(); }},
+
+    // glean-enabled
+    WebSocketSettingCommand{
+        "glean-enabled", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setGleanEnabled(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
+        }},
+
 };
 
 struct WebSocketCommand {
@@ -229,6 +244,14 @@ static QList<WebSocketCommand> s_commands{
 
                        vpn->reset(true);
                        vpn->hideAlert();
+
+                       SettingsHolder* settingsHolder =
+                           SettingsHolder::instance();
+                       Q_ASSERT(settingsHolder);
+
+                       // Extra cleanup for testing
+                       settingsHolder->setTelemetryPolicyShown(false);
+
                        return QJsonObject();
                      }},
 
@@ -540,6 +563,36 @@ static QList<WebSocketCommand> s_commands{
                        obj["value"] = countryArray;
                        return obj;
                      }},
+
+    WebSocketCommand{
+        "reset_surveys",
+        "Reset the list of triggered surveys and the installation time", 0,
+        [](const QList<QByteArray>&) {
+          SettingsHolder* settingsHolder = SettingsHolder::instance();
+          Q_ASSERT(settingsHolder);
+
+          settingsHolder->setInstallationTime(QDateTime::currentDateTime());
+          settingsHolder->setConsumedSurveys(QStringList());
+
+          return QJsonObject();
+        }},
+
+#ifdef QT_DEBUG
+    WebSocketCommand{"last_glean_request", "Retrieve the last glean request", 0,
+                     [](const QList<QByteArray>&) {
+                       GleanTest* gt = GleanTest::instance();
+
+                       QJsonObject glean;
+                       glean["url"] = QString(gt->lastUrl());
+                       glean["data"] = QString(gt->lastData());
+
+                       gt->reset();
+
+                       QJsonObject obj;
+                       obj["value"] = glean;
+                       return obj;
+                     }},
+#endif
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

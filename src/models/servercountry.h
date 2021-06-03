@@ -31,6 +31,8 @@ class ServerCountry final {
 
   const QList<Server> servers(const ServerData& data) const;
 
+  void sortCities();
+
  private:
   QString m_name;
   QString m_code;

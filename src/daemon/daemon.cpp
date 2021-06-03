@@ -82,9 +82,48 @@ bool Daemon::activate(const InterfaceConfig& config) {
     return activate(config);
   }
 
-  if (supportWGUtils() && wgutils()->interfaceExists()) {
-    qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
-    return false;
+  if (supportWGUtils()) {
+    if (wgutils()->interfaceExists()) {
+      qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
+      return false;
+    }
+    // add_if
+    if (!wgutils()->addInterface()) {
+      return false;
+    }
+    // set conf
+    if (!wgutils()->configureInterface(config)) {
+      qWarning("Interface configuration failed. Removing `%s`.", WG_INTERFACE);
+      wgutils()->deleteInterface();
+      return false;
+    }
+  }
+  if (supportDnsUtils()) {
+    QList<QHostAddress> resolvers;
+    resolvers.append(QHostAddress(config.m_serverIpv4Gateway));
+    if (config.m_ipv6Enabled) {
+      resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
+    }
+    if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
+      return false;
+    }
+  }
+  if (supportIPUtils()) {
+    if (!iputils()->addInterfaceIPs(config)) {
+      return false;
+    }
+    if (!iputils()->setMTUAndUp()) {
+      return false;
+    }
+  }
+  if (supportWGUtils()) {
+    // set routing
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      if (!wgutils()->addRoutePrefix(ip)) {
+        qWarning("Routing configuration failed. Removing `%s`.", WG_INTERFACE);
+        return false;
+      }
+    }
   }
 
   m_lastConfig = config;
@@ -227,6 +266,12 @@ bool Daemon::deactivate(bool emitSignals) {
     return true;
   }
 
+  if (supportDnsUtils()) {
+    if (!dnsutils()->restoreResolvers()) {
+      return false;
+    }
+  }
+
   if (supportWGUtils() && !wgutils()->interfaceExists()) {
     qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
              WG_INTERFACE);
@@ -235,6 +280,10 @@ bool Daemon::deactivate(bool emitSignals) {
 
   m_connected = false;
   bool status = run(Down, m_lastConfig);
+
+  if (supportWGUtils() && !wgutils()->deleteInterface()) {
+    return false;
+  }
 
   logger.log() << "Status:" << status;
 

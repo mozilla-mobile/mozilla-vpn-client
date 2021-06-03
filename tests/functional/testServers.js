@@ -18,7 +18,7 @@ describe('Server list', function() {
   let currentCountryCode;
   let currentCity;
 
-  this.timeout(1000000);
+  this.timeout(2000000);
 
   before(async () => {
     await vpn.connect();

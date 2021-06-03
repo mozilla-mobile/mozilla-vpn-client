@@ -187,8 +187,8 @@ void SystemTrayHandler::updateContextMenu() {
       //% "%1, %2"
       //: Location in the systray. %1 is the country, %2 is the city.
       qtTrId("vpn.systray.location")
-          .arg(vpn->currentServer()->country())
-          .arg(vpn->currentServer()->city()));
+          .arg(vpn->currentServer()->countryName())
+          .arg(vpn->currentServer()->cityName()));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
 }

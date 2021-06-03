@@ -9,6 +9,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 
+#include <QCollator>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -107,7 +108,10 @@ void Localizer::initialize() {
   }
 
   // Sorting languages.
-  std::sort(m_languages.begin(), m_languages.end(), languageSort);
+  QCollator collator;
+  std::sort(m_languages.begin(), m_languages.end(),
+            std::bind(languageSort, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
 }
 
 void Localizer::loadLanguage(const QString& code) {
@@ -248,20 +252,54 @@ QStringList Localizer::languages() const {
 }
 
 bool Localizer::languageSort(const Localizer::Language& a,
-                             const Localizer::Language& b) {
-  return a.m_localizedName < b.m_localizedName;
+                             const Localizer::Language& b,
+                             QCollator* collator) {
+  Q_ASSERT(collator);
+  return collator->compare(a.m_localizedName, b.m_localizedName) < 0;
 }
 
 QString Localizer::previousCode() const {
   return SettingsHolder::instance()->previousLanguageCode();
 }
 
-QString Localizer::translateServerCountry(const QString& countryCode,
-                                          const QString& countryName) {
-  return ServerI18N::translateCountryName(countryCode, countryName);
-}
+// static
+void Localizer::macOSInstallerStrings() {
+  //% "Mozilla VPN for macOS"
+  qtTrId("macosinstaller.title");
 
-QString Localizer::translateServerCity(const QString& countryCode,
-                                       const QString& cityName) {
-  return ServerI18N::translateCityName(countryCode, cityName);
+  //% "Unable to install"
+  qtTrId("macosinstaller.unsupported_version.title");
+
+  //% "Mozilla VPN requires Mac OS X 10.6 or later."
+  qtTrId("macosinstaller.unsupported_version.message");
+
+  //% "Previous Installation Detected"
+  qtTrId("macosinstaller.previous_build.title");
+
+  //% "A previous installation of Mozilla VPN exists at /Applications/Mozilla "
+  //% "VPN.app. This installer will remove the previous installation prior to "
+  //% "installing. Please back up any data before proceeding."
+  qtTrId("macosinstaller.previous_build.message");
+
+  //% "You will now be guided through the installation steps for the Mozilla "
+  //% "VPN. Thank you for choosing your VPN from the trusted pioneer of "
+  //% "internet privacy."
+  qtTrId("macosinstaller.welcome.message1");
+
+  //% "Click “Continue” to continue the setup."
+  qtTrId("macosinstaller.welcome.message2");
+
+  //% "Success!"
+  qtTrId("macosinstaller.conclusion.title");
+
+  //% "The Mozilla VPN is successfully installed. Go to your Applications "
+  //% "folder to open up the VPN and start taking control of your online "
+  //% "privacy."
+  qtTrId("macosinstaller.conclusion.message1");
+
+  //% "Trouble with this installation?"
+  qtTrId("macosinstaller.conclusion.message2");
+
+  //% "Get help."
+  qtTrId("macosinstaller.conclusion.message3");
 }

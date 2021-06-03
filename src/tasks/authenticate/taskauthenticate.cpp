@@ -11,6 +11,7 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QJSValue>
@@ -97,21 +98,11 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
   QString path("/api/v2/vpn/login/");
 
-#if defined(MVPN_IOS)
-  path.append("ios");
-#elif defined(MVPN_LINUX)
-  path.append("linux");
-#elif defined(MVPN_ANDROID)
-  path.append("android");
-#elif defined(MVPN_MACOS)
-  path.append("macos");
-#elif defined(MVPN_WINDOWS)
-  path.append("windows");
-#elif defined(MVPN_DUMMY)
+#if !defined(MVPN_DUMMY)
+  path.append(Constants::PLATFORM_NAME);
+#else
   // Let's use linux here.
   path.append("linux");
-#else
-#  error Not supported
 #endif
 
   QUrl url(Constants::API_URL);
@@ -121,6 +112,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   query.addQueryItem("code_challenge",
                      QUrl::toPercentEncoding(pkceCodeChallenge));
   query.addQueryItem("code_challenge_method", "S256");
+  query.addQueryItem("user_agent", NetworkManager::userAgent());
 
   m_authenticationListener->start(vpn, url, query);
 }
