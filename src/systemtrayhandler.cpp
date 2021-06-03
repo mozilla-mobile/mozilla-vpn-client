@@ -53,6 +53,10 @@ SystemTrayHandler::SystemTrayHandler(QObject* parent)
   Q_ASSERT(!s_instance);
   s_instance = this;
 
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+  return;
+#endif
+
   MozillaVPN* vpn = MozillaVPN::instance();
 
   setToolTip(qtTrId("vpn.main.productName"));
@@ -107,6 +111,10 @@ SystemTrayHandler::~SystemTrayHandler() {
 
 void SystemTrayHandler::updateContextMenu() {
   logger.log() << "Update context menu";
+
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+  return;
+#endif
 
   // If the QML Engine Holder has been released, we are shutting down.
   if (!QmlEngineHolder::exists()) {
@@ -260,6 +268,10 @@ void SystemTrayHandler::showHideWindow() {
 
 void SystemTrayHandler::retranslate() {
   logger.log() << "Retranslate";
+
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+  return;
+#endif
 
   //% "Disconnect"
   m_disconnectAction->setText(qtTrId("systray.disconnect"));
