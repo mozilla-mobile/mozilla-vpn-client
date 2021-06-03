@@ -28,9 +28,9 @@ class SettingsHolder final : public QObject {
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
   Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
                  gleanEnabledChanged)
-  Q_PROPERTY(
-      bool serverSwitchNotification READ serverSwitchNotification WRITE
+  Q_PROPERTY(bool serverSwitchNotification READ serverSwitchNotification WRITE
           setServerSwitchNotification NOTIFY serverSwitchNotificationChanged)
+  Q_PROPERTY(bool connectionChangeNotification READ connectionChangeNotification WRITE setConnectionChangeNotification NOTIFY connectionChangeNotificationChanged)
 
  public:
   SettingsHolder();
@@ -92,6 +92,7 @@ class SettingsHolder final : public QObject {
   GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
   GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
          setServerSwitchNotification);
+  GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification, setConnectionChangeNotification);
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
@@ -131,6 +132,7 @@ class SettingsHolder final : public QObject {
   void vpnDisabledAppsChanged(const QStringList& apps);
   void gleanEnabledChanged(bool value);
   void serverSwitchNotificationChanged(bool value);
+  void connectionChangeNotificationChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

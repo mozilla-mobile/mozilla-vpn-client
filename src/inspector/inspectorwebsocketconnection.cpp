@@ -178,6 +178,18 @@ static QList<WebSocketSettingCommand> s_settingCommands{
                      ? "true"
                      : "false";
         }},
+        // connection-change-notification
+    WebSocketSettingCommand{
+        "connection-change-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setConnectionChangeNotification(value ==
+                                                                  "true");
+        },
+        []() {
+          return SettingsHolder::instance()->connectionChangeNotification()
+                     ? "true"
+                     : "false";
+        }},
 
     // language
     WebSocketSettingCommand{

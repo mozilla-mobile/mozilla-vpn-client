@@ -90,6 +90,7 @@ VPNFlickable {
         VPNCheckBoxRow {
             id: switchServersAlert
             objectName: "switchServersAlert"
+            visible: VPNFeatureList.notificationControlSupported
 
             width: parent.width
 
@@ -102,6 +103,24 @@ VPNFlickable {
             showDivider: true
             onClicked: {
                 VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
+           }
+        }
+        VPNCheckBoxRow {
+            id: connectionChangeAlert
+            objectName: "connectionChangeAlert"
+            visible: VPNFeatureList.notificationControlSupported
+
+            width: parent.width
+
+            //% "Connection Change Notification"
+            labelText: qsTrId("vpn.settings.notification.connectionChange")
+            //% "Get notified when the Connection Status Changed"
+            subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
+
+            isChecked: (VPNSettings.connectionChangeNotification)
+            showDivider: true
+            onClicked: {
+                VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
            }
         }
     }

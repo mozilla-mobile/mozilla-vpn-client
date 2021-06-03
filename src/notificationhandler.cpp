@@ -78,6 +78,10 @@ void NotificationHandler::showNotification() {
                       .arg(vpn->currentServer()->countryName())
                       .arg(vpn->currentServer()->cityName());
       } else {
+        if(!SettingsHolder::instance()->connectionChangeNotification()){
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
         //% "Connected to %1, %2"
@@ -92,6 +96,10 @@ void NotificationHandler::showNotification() {
     case Controller::StateOff:
       if (m_connected) {
         m_connected = false;
+        if(!SettingsHolder::instance()->connectionChangeNotification()){
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
 
         //% "VPN Disconnected"
         title = qtTrId("vpn.systray.statusDisconnected.title");

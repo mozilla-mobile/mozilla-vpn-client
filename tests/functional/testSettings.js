@@ -129,6 +129,7 @@ describe('Settings', function() {
             'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
     */
     await checkSetting('switchServersAlert', 'server-switch-notification');
+    await checkSetting('connectionChangeAlert','connection-change-notification');
 
     await vpn.clickOnElement('settingsNotificationsBackButton');
     await vpn.wait();

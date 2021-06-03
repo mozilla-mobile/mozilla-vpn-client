@@ -70,3 +70,13 @@ bool FeatureList::unsecuredNetworkNotificationSupported() const {
   return false;
 #endif
 }
+
+
+bool FeatureList::notificationControlSupported() const{
+  #if defined(MVPN_ANDROID)
+    return false;
+  #else
+    return true;
+  #endif
+}
+
