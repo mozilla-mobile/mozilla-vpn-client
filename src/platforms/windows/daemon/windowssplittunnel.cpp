@@ -10,51 +10,8 @@
 #include <QFileInfo>
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
-
-
-std::vector<uint8_t> MakeConfiguration(const std::vector<std::wstring> &imageNames)
-{
-    size_t totalStringLength = 0;
-
-    for (const auto &imageName : imageNames)
-    {
-        totalStringLength += imageName.size() * sizeof(wchar_t);
-    }
-
-    size_t totalBufferSize = sizeof(CONFIGURATION_HEADER)
-        + (sizeof(CONFIGURATION_ENTRY) * imageNames.size())
-        + totalStringLength;
-
-    std::vector<uint8_t> buffer(totalBufferSize);
-
-    auto header = (CONFIGURATION_HEADER*)&buffer[0];
-    auto entry = (CONFIGURATION_ENTRY*)(header + 1);
-
-    auto stringDest = &buffer[0] + sizeof(CONFIGURATION_HEADER)
-        + (sizeof(CONFIGURATION_ENTRY) * imageNames.size());
-
-    SIZE_T stringOffset = 0;
-
-    for (const auto &imageName : imageNames)
-    {
-        auto stringLength = imageName.size() * sizeof(wchar_t);
-
-        entry->ImageNameLength = (USHORT)stringLength;
-        entry->ImageNameOffset = stringOffset;
-
-        memcpy(stringDest, imageName.c_str(), stringLength);
-
-        ++entry;
-        stringDest += stringLength;
-        stringOffset += stringLength;
-    }
-
-    header->NumEntries = imageNames.size();
-    header->TotalLength = totalBufferSize;
-
-    return buffer;
 }
-}
+
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent): QObject(parent)
 {
@@ -121,19 +78,6 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths)
     }
     logger.log() << "Pushing new Ruleset for Split-Tunnel " << state;
     auto config = generateAppConfiguration(appPaths);
-
-    logger.log() << "Basti config size:" << config.size();
-    std::vector<std::wstring> names;
-    //for(const auto& p: appPaths){
-       // names.push_back(p.toStdWString());
-    //}
-    const std::wstring path = L"\\Device\\HarddiskVolume2\\Program Files (x86)\\Mozilla Firefox\\firefox.exe";
-    names.push_back(path);
-    logger.log() <<"Applist sitze" <<names.size();
-
-
-    config = MakeConfiguration(names);
-    logger.log() << "Refrence impl config size:" << config.size();
 
     DWORD bytesReturned;
     auto ok = DeviceIoControl(m_driver,IOCTL_SET_CONFIGURATION,

@@ -19,9 +19,7 @@
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
         ignore=all
-[submodule "windows/split-tunnel"]
-	path = windows/split-tunnel
-	url = https://github.com/mullvad/win-split-tunnel
 [submodule "windows/mullvad-binary"]
 	path = windows/mullvad-binary
 	url = https://github.com/mullvad/mullvadvpn-app-binaries
+	branch = master
