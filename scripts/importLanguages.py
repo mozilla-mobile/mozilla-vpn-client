@@ -9,6 +9,7 @@ import argparse
 import xml.etree.ElementTree as ET
 import os
 import sys
+import shutil
 
 # Include only locales above this threshold (e.g. 70%) in production
 l10n_threshold = 0.70
@@ -18,6 +19,22 @@ parser.add_argument(
     '-p', '--prod', default=False, action="store_true", dest="isprod",
     help='Build only for production locales.')
 args = parser.parse_args()
+
+# Step 0
+# Locate the lupdate and lconvert tools
+lupdate = shutil.which('lupdate')
+if lupdate is None:
+    lupdate = shutil.which('lupdate-qt5')
+if lupdate is None:
+    print('Unable to locate lupdate tool.')
+    sys.exit(1)
+
+lconvert = shutil.which('lconvert')
+if lconvert is None:
+    lconvert = shutil.which('lconvert-qt5')
+if lconvert is None:
+    print('Unable to locate lconvert tool.')
+    sys.exit(1)
 
 # Step 1
 # Go through the i18n repo, check each XLIFF file and take
@@ -83,11 +100,11 @@ print('Updated translations.pri')
 
 # Step 3
 # Generate new ts files
-os.system('lupdate src/src.pro')
+os.system(f"{lupdate} src/src.pro")
 
 # Step 4
 # Now import translations into the files
 for l10n_file in l10n_files:
-    os.system(f"lconvert -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
+    os.system(f"{lconvert} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
 
 print(f'Imported {len(l10n_files)} locales')

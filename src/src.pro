@@ -440,7 +440,7 @@ else:linux:!android {
     INSTALLS += dbus_service
 
     systemd_service.files = ../linux/debian/mozillavpn.service
-    systemd_service.path = /lib/systemd/system
+    systemd_service.path = /usr/lib/systemd/system
     INSTALLS += systemd_service
 
     CONFIG += link_pkgconfig
