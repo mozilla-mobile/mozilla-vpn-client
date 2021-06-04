@@ -7,7 +7,9 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
-#include "platforms/macos/macosutils.h"
+#ifdef MVPN_MACOS
+#  include "platforms/macos/macosutils.h"
+#endif
 
 #include <QAction>
 #include <QMenu>
@@ -67,7 +69,9 @@ void MacOSMenuBar::initialize() {
 
   m_closeAction = fileMenu->addAction("close", []() {
     QmlEngineHolder::instance()->hideWindow();
+#ifdef MVPN_MACOS
     MacOSUtils::hideDockIcon();
+#endif
   });
   m_closeAction->setShortcut(QKeySequence::Close);
 
