@@ -43,7 +43,8 @@ curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5
 tar xvf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
 sudo apt build-dep qt5-default
-sudo apt install libxcb-xinerama0-dev
+sudo apt install clang llvm golang
+sudo apt install libxcb-xinerama0-dev libxcb-util-dev
 bash scripts/qt5_compile.sh qt qt
 ```
 
@@ -60,7 +61,7 @@ git submodule update
 # glean
 ./scripts/generate_glean.py
 # translations
-python scripts/importLanguages.py
+./scripts/importLanguages.py
 ```
 
 #### Build
