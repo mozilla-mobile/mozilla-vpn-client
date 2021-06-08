@@ -74,7 +74,8 @@ void LinuxController::activate(
   Q_UNUSED(vpnDisabledApps);
 
   logger.log() << "LinuxController activated";
-  connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges),
+  connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges,
+                           vpnDisabledApps),
           &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
 }
