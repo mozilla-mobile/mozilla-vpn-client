@@ -335,6 +335,8 @@ else:linux:!android {
             eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
+            platforms/linux/linuxappimageprovider.cpp \
+            platforms/linux/linuxapplistprovider.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
@@ -349,6 +351,8 @@ else:linux:!android {
             eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
+            platforms/linux/linuxappimageprovider.h \
+            platforms/linux/linuxapplistprovider.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
@@ -362,10 +366,12 @@ else:linux:!android {
     SOURCES += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
+            platforms/linux/daemon/apptracker.cpp \
             platforms/linux/daemon/dbusservice.cpp \
             platforms/linux/daemon/dnsutilslinux.cpp \
             platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
+            platforms/linux/daemon/pidtracker.cpp \
             platforms/linux/daemon/polkithelper.cpp \
             platforms/linux/daemon/wireguardutilslinux.cpp
 
@@ -376,10 +382,12 @@ else:linux:!android {
             daemon/dnsutils.h \
             daemon/iputils.h \
             daemon/wireguardutils.h \
+            platforms/linux/daemon/apptracker.h \
             platforms/linux/daemon/dbusservice.h \
             platforms/linux/daemon/dbustypeslinux.h \
             platforms/linux/daemon/dnsutilslinux.h \
             platforms/linux/daemon/iputilslinux.h \
+            platforms/linux/daemon/pidtracker.h \
             platforms/linux/daemon/polkithelper.h \
             platforms/linux/daemon/wireguardutilslinux.h
 

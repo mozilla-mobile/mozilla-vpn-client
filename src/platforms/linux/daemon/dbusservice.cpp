@@ -17,8 +17,22 @@ namespace {
 Logger logger(LOG_LINUX, "DBusService");
 }
 
+constexpr const char* APP_STATE_ACTIVE = "active";
+constexpr const char* APP_STATE_EXCLUDED = "excluded";
+constexpr const char* APP_STATE_BLOCKED = "blocked";
+
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
+
+  m_wgutils = new WireguardUtilsLinux(this);
+  m_apptracker = new AppTracker(this);
+  m_pidtracker = new PidTracker(this);
+
+  connect(m_apptracker, SIGNAL(appLaunched(const QString&, int)), this,
+          SLOT(appLaunched(const QString&, int)));
+  connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
+          SLOT(appTerminated(const QString&, int)));
+
   if (!removeInterfaceIfExists()) {
     qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
            WG_INTERFACE);
@@ -27,12 +41,7 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtils* DBusService::wgutils() {
-  if (!m_wgutils) {
-    m_wgutils = new WireguardUtilsLinux(this);
-  }
-  return m_wgutils;
-}
+WireguardUtils* DBusService::wgutils() { return m_wgutils; }
 
 IPUtils* DBusService::iputils() {
   if (!m_iputils) {
@@ -92,11 +101,19 @@ bool DBusService::activate(const QString& jsonConfig) {
     return false;
   }
 
+  if (obj.contains("vpnDisabledApps")) {
+    QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
+    for (const QJsonValue& app : disabledApps) {
+      firewallApp(app.toString(), APP_STATE_EXCLUDED);
+    }
+  }
+
   return Daemon::activate(config);
 }
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.log() << "Deactivate";
+  firewallClear();
   return Daemon::deactivate(emitSignals);
 }
 
@@ -138,4 +155,103 @@ bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
          m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
          m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
          m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+}
+
+void DBusService::appLaunched(const QString& name, int rootpid) {
+  logger.log() << "tracking:" << name << "PID:" << rootpid;
+  ProcessGroup* group = m_pidtracker->track(name, rootpid);
+  if (m_firewallApps.contains(name)) {
+    group->state = m_firewallApps[name];
+    group->moveToCgroup(getAppStateCgroup(group->state));
+  }
+}
+
+void DBusService::appTerminated(const QString& name, int rootpid) {
+  logger.log() << "terminate:" << name << "PID:" << rootpid;
+}
+
+/* Get the list of running applications that the firewall knows about. */
+QString DBusService::runningApps() {
+  QJsonArray result;
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    const ProcessGroup* group = *i;
+    QJsonObject appObject;
+    QJsonArray pidList;
+    appObject.insert("name", QJsonValue(group->name));
+    appObject.insert("rootpid", QJsonValue(group->rootpid));
+    appObject.insert("state", QJsonValue(group->state));
+
+    for (auto pid : group->kthreads.keys()) {
+      pidList.append(QJsonValue(pid));
+    }
+
+    appObject.insert("pids", pidList);
+    result.append(appObject);
+  }
+
+  return QJsonDocument(result).toJson(QJsonDocument::Compact);
+}
+
+/* Update the firewall for running applications matching the application ID. */
+bool DBusService::firewallApp(const QString& appName, const QString& state) {
+  logger.log() << "Setting" << appName << "to firewall state" << state;
+  m_firewallApps[appName] = state;
+  QString cgroup = getAppStateCgroup(state);
+
+  /* Change matching applications' state to excluded */
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    ProcessGroup* group = *i;
+    if (group->name != appName) {
+      continue;
+    }
+    group->state = state;
+    group->moveToCgroup(cgroup);
+  }
+
+  return true;
+}
+
+/* Update the firewall for the application matching the desired PID. */
+bool DBusService::firewallPid(int rootpid, const QString& state) {
+  ProcessGroup* group = m_pidtracker->group(rootpid);
+  if (!group) {
+    return false;
+  }
+
+  group->state = state;
+  group->moveToCgroup(getAppStateCgroup(group->state));
+
+  logger.log() << "Setting" << group->name << "PID:" << rootpid
+               << "to firewall state" << state;
+  return true;
+}
+
+/* Clear the firewall and return all applications to the active state */
+bool DBusService::firewallClear() {
+  const QString cgroup = getAppStateCgroup(APP_STATE_ACTIVE);
+
+  m_firewallApps.clear();
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    ProcessGroup* group = *i;
+    if (group->state == APP_STATE_ACTIVE) {
+      continue;
+    }
+
+    group->state = APP_STATE_ACTIVE;
+    group->moveToCgroup(cgroup);
+
+    logger.log() << "Setting" << group->name << "PID:" << group->rootpid
+                 << "to firewall state" << group->state;
+  }
+  return true;
+}
+
+QString DBusService::getAppStateCgroup(const QString& state) {
+  if (state == APP_STATE_EXCLUDED) {
+    return m_wgutils->getExcludeCgroup();
+  }
+  if (state == APP_STATE_BLOCKED) {
+    return m_wgutils->getBlockCgroup();
+  }
+  return m_wgutils->getDefaultCgroup();
 }
