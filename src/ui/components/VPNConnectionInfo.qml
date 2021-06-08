@@ -111,10 +111,16 @@ Item {
         width: parent.width - ((backButton.anchors.leftMargin + backButton.width) * 2)
 
         VPNIPAddress {
-            visible: VPNConnectionData.ipv4Address !== ""
+            //% "IPv4:"
+            //: The abbreviation for Internet Protocol. This is followed by the user’s IPv4 address.
+            property var ipv4label: qsTrId("vpn.connectionInfo.ipv4")
+
             //% "IP:"
             //: The abbreviation for Internet Protocol. This is followed by the user’s IP address.
-            ipVersionText: qsTrId("vpn.connectionInfo.ip")
+            property var iplabel: qsTrId("vpn.connectionInfo.ip2")
+
+            visible: VPNConnectionData.ipv4Address !== ""
+            ipVersionText: VPNConnectionData.ipv6Address === "" ? iplabel : ipv4label;
             ipAddressText: VPNConnectionData.ipv4Address
         }
 
