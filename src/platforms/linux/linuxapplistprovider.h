@@ -9,10 +9,10 @@
 #include <QObject>
 #include <QProcess>
 
-class LinuxAppListProvider : public AppListProvider {
+class LinuxAppListProvider final : public AppListProvider {
   Q_OBJECT
  public:
-  LinuxAppListProvider(QObject* parent);
+  explicit LinuxAppListProvider(QObject* parent);
   ~LinuxAppListProvider();
   void getApplicationList() override;
 
