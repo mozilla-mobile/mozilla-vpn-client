@@ -154,6 +154,7 @@ int CommandUI::run(QStringList& tokens) {
     // Create the QML engine and expose a few internal objects.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    engine->addImportPath("qrc:///glean");
     vpn.initialize();
 
 #ifdef MVPN_MACOS

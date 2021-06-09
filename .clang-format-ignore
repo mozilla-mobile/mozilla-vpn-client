@@ -3,5 +3,6 @@
 ./android/src/com/wireguard/*
 ./src/hacl-star/*
 ./extension/app/json.hpp
-./glean/glean.js
+./glean/org/mozilla/Glean/glean.js
+./glean/org/mozilla/Glean/glean.lib.js
 ./glean/generated

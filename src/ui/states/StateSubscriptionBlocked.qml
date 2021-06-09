@@ -7,7 +7,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import generated 0.15
 
 VPNStackView {
     id: stackview
@@ -35,6 +37,6 @@ VPNStackView {
             getHelpLinkVisible: false
             }
         );
-        Glean.sample.subscriptionBlockedViewed.record();
+        Sample.subscriptionBlockedViewed.record();
     }
 }

@@ -6,7 +6,9 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import Mozilla.VPN 1.0
 import "../components"
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import generated 0.15
 
 
 VPNStackView {
@@ -34,6 +36,6 @@ VPNStackView {
                 statusLinkVisible: true
             }
         );
-        Glean.sample.backendFailureViewed.record();
+        Sample.backendFailureViewed.record();
     }
 }

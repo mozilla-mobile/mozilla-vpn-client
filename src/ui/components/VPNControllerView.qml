@@ -8,7 +8,9 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import generated 0.15
 
 Rectangle {
     id: box
@@ -471,7 +473,7 @@ Rectangle {
         objectName: "connectionInfoButton"
 
         onClicked: {
-            Glean.sample.connectionInfoOpened.record();
+            Sample.connectionInfoOpened.record();
             connectionInfo.open()
         }
 
@@ -511,7 +513,7 @@ Rectangle {
         opacity: 1
 
         onClicked: {
-            Glean.sample.settingsViewOpened.record();
+            Sample.settingsViewOpened.record();
             stackview.push("../views/ViewSettings.qml", StackView.Immediate)
         }
 

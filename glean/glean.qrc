@@ -1,8 +1,10 @@
 <RCC>
     <qresource prefix="/glean">
-        <file>load.js</file>
-        <file>glean.js</file>
         <file>generated/pings.js</file>
         <file>generated/sample.js</file>
+        <file>generated/qmldir</file>
+        <file>org/mozilla/Glean/glean.js</file>
+        <file>org/mozilla/Glean/glean.lib.js</file>
+        <file>org/mozilla/Glean/qmldir</file>
     </qresource>
 </RCC>

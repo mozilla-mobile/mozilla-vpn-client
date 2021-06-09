@@ -37,20 +37,12 @@ output.write("""
 """);
 output.close();
 
-def run_glean_parser(yaml):
-  try:
-    subprocess.call(["glean_parser", "translate", yaml, "-f", "javascript",
-                     "-o", "glean/generated", "--option", "platform=qt",
-                     "--option", "namespace=RealGlean", "--option", "version=0.11"])
-    return True
-  except:
-    print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
-    return False
-
-print("Generating the ping JS module...")
-if not run_glean_parser("glean/pings.yaml"):
+print("Generating the JS modules...")
+try:
+  subprocess.call(["glean_parser", "translate", "glean/metrics.yaml", "glean/pings.yaml",
+                   "-f", "javascript", "-o", "glean/generated", "--option", "platform=qt",
+                   "--option", "version=0.15"])
+except:
+  print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
   exit(1)
 
-print("Generating the sample JS module...")
-if not run_glean_parser("glean/metrics.yaml"):
-  exit(1)
