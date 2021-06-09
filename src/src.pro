@@ -115,6 +115,7 @@ SOURCES += \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        tasks/sendfeedback/tasksendfeedback.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \

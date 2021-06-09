@@ -1,0 +1,42 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "tasksendfeedback.h"
+#include "errorhandler.h"
+#include "leakdetector.h"
+#include "logger.h"
+#include "models/user.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
+
+namespace {
+Logger logger(LOG_MAIN, "TaskSendFeedback");
+}
+
+TaskSendFeedback::TaskSendFeedback(const QString& feedbackText, const QString& logs, const qint8 rating, const QString& category)
+    : Task("TaskSendFeedback"), m_feedbackText(feedbackText.left(1000)), m_logs(logs.right(100000)), m_rating(rating), m_category(category) {
+  MVPN_COUNT_CTOR(TaskSendFeedback);
+}
+
+TaskSendFeedback::~TaskSendFeedback() { MVPN_COUNT_DTOR(TaskSendFeedback); }
+
+void TaskSendFeedback::run(MozillaVPN* vpn) {
+  logger.log() << "Sending the feedback";
+
+  NetworkRequest* request =
+      NetworkRequest::createForFeedback(this, m_feedbackText, m_logs, m_rating, m_category);
+
+  connect(request, &NetworkRequest::requestFailed,
+          [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.log() << "Failed to send feedback" << error;
+            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            emit completed();
+          });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray&) {
+            logger.log() << "Feedback sent";
+            emit completed();
+          });
+}
