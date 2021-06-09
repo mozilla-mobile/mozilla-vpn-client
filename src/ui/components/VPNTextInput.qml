@@ -1,35 +1,20 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.12
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 
 ColumnLayout {
-    property var labelText :"Heading"
-    property var subLabelText
     property var isEnabled: true
 
     property var valueChanged: ()=>{}
     property var value: ""
     property var valueInavlid: false
-
-    VPNInterLabel {
-        id: label
-        Layout.alignment: Qt.AlignLeft
-        Layout.fillWidth: true
-        text: labelText
-        color: Theme.fontColorDark
-        horizontalAlignment: Text.AlignLeft
-    }
-    VPNTextBlock {
-        id: subLabel
-
-        Layout.fillWidth: true
-        text: subLabelText
-        visible: !!subLabelText.length
-        wrapMode: Text.WordWrap
-    }
+    //% "The entered value is invalid"
+    //: Associated to an inputfield for a setting
+    property var error: qsTrId("vpn.settings.inputValue.invalid")
 
     Rectangle{
         width: parent.width
@@ -57,9 +42,6 @@ ColumnLayout {
         width: parent.width
         visible: valueInavlid
         leftMargin: 0
-
-        //% "The entered value is invalid"
-        //: Associated to an inputfield for a setting
-        errorMessage: qsTrId("vpn.settings.inputValue.invalid")
+        errorMessage: error
     }
 }

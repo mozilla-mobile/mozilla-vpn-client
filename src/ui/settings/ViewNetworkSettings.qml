@@ -82,13 +82,13 @@ VPNFlickable {
             objectName: "settingMozillaDNSEnabled"
             width: parent.width
 
-            //% "Use VPN DNS"
+            //% "Use Local DNS"
             labelText: qsTrId("vpn.settings.useGatewayDNS")
-            //% "Hide what websites you are visiting Mozillas Anonymous DNS-Service"
+            //% "Resolve Websites using a DNS in your local network"
             subLabelText: qsTrId("vpn.settings.useGatewayDNS.description")
-            isChecked: (VPNSettings.useGatewayDNS)
+            isChecked: (!VPNSettings.useGatewayDNS)
             isEnabled: vpnFlickable.vpnIsOff
-            showDivider: isChecked
+            showDivider: false
             onClicked: {
                 if (vpnFlickable.vpnIsOff) {
                     VPNSettings.useGatewayDNS = !VPNSettings.useGatewayDNS
@@ -98,17 +98,11 @@ VPNFlickable {
 
         VPNTextInput{
             id: ipInput
-            visible: !useGateWayDNS.isChecked && useGateWayDNS.visible
+            visible: (!VPNSettings.useGatewayDNS) && useGateWayDNS.visible
             isEnabled: vpnFlickable.vpnIsOff
             Layout.leftMargin: 55
             width: parent.width - Layout.leftMargin
             height: 30
-            //% "DNS Server to use:"
-            labelText: qsTrId("vpn.settings.userDNS.header")
-            //% "Enter a DNS Server in your local network to use"
-            subLabelText: qsTrId("vpn.settings.userDNS.description")
-
-
             valueChanged:(ip)=>{
               if(ip.length < 7){
                // If we have less then 7 characters it's impossible to have a valid ip
@@ -120,7 +114,6 @@ VPNFlickable {
               // Now bother user if the ip is invalid :)
               if(!VPNSettings.isValidUserDNS(ip)){
                 ipInput.valueInavlid = true;
-
                 return;
               }
               ipInput.valueInavlid = false;
