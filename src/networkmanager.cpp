@@ -36,6 +36,23 @@ NetworkManager* NetworkManager::instance() {
 bool NetworkManager::exists() { return !!s_instance; }
 
 // static
+QByteArray NetworkManager::osVersion() {
+  QByteArray osVersion;
+
+  {
+    QTextStream out(&osVersion);
+#ifdef MVPN_WASM
+    out << "WASM";
+#else
+    out << QSysInfo::productType().toLocal8Bit() << " "
+        << QSysInfo::productVersion().toLocal8Bit();
+#endif
+  }
+
+  return osVersion;
+}
+
+// static
 QByteArray NetworkManager::userAgent() {
   QByteArray userAgent;
 
@@ -45,12 +62,7 @@ QByteArray NetworkManager::userAgent() {
 
     // System data
     out << "sys:";
-#ifdef MVPN_WASM
-    out << "WASM";
-#else
-    out << QSysInfo::productType().toLocal8Bit() << " "
-        << QSysInfo::productVersion().toLocal8Bit();
-#endif
+    out << NetworkManager::osVersion();
 
 #ifdef MVPN_EXTRA_USERAGENT
     out << "; ";

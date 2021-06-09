@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
+#include "mozillavpn.h"
 
 #include <QHostAddress>
 #include <QJsonDocument>
@@ -291,6 +292,32 @@ NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
   r->m_request.setUrl(url);
 
   r->getRequest();
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForFeedback(QObject* parent, const QString& feedbackText, const QString& logs, const qint8 rating, const QString& category) {
+  NetworkRequest* r = new NetworkRequest(parent, 201);
+
+  // QUrl url(Constants::API_URL);
+  QUrl url("http://localhost:3000");
+  url.setPath("/api/v1/vpn/feedback");
+  r->m_request.setUrl(url);
+
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("feedbackText", QJsonValue(feedbackText));
+  obj.insert("logs", QJsonValue(logs));
+  obj.insert("versionString", QJsonValue(MozillaVPN::instance()->versionString()));
+  obj.insert("platformVersion", QJsonValue(QString(NetworkManager::osVersion())));
+  obj.insert("rating", QJsonValue(rating));
+  obj.insert("category", QJsonValue(category));
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;
 }
 
