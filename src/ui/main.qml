@@ -285,7 +285,7 @@ Window {
         }
 
         function onTriggerGleanSample(sample) {
-            Generated.sample[sample].record();
+            Sample[sample].record();
         }
 
         function onAboutToQuit() {
