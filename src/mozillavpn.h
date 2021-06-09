@@ -135,6 +135,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
+  Q_INVOKABLE void submitFeedback(const QString& feedbackText, const qint8 rating, const QString& category);
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }

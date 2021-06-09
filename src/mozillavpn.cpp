@@ -23,6 +23,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
+#include "tasks/sendfeedback/tasksendfeedback.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
@@ -657,6 +658,25 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
 
     maybeStateMain();
   }));
+}
+
+void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating, const QString& category) {
+  logger.log() << "Submit Feedback";
+
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+
+  serializeLogs(out, [this, out, buffer, feedbackText, rating, category]{
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+    delete out;
+    scheduleTask(new TaskSendFeedback(feedbackText, *buffer, rating, category));
+    delete buffer;
+  });
+
+
+  return;
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {
