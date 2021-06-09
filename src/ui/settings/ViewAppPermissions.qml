@@ -9,7 +9,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import telemetry 0.15
 
 
 Item {
@@ -31,9 +33,9 @@ Item {
         width: root.width
         Component.onCompleted: {
             VPNAppPermissions.requestApplist();
-            Glean.sample.appPermissionsViewOpened.record();
+            Sample.appPermissionsViewOpened.record();
             if (!vpnIsOff) {
-                Glean.sample.appPermissionsViewWarning.record();
+                Sample.appPermissionsViewWarning.record();
             }
          }
 

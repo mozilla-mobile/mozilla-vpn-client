@@ -23,7 +23,7 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/generated
+            ../glean/telemetry
 
 DEPENDPATH  += $${INCLUDEPATH}
 

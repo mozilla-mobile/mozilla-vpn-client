@@ -17,7 +17,7 @@ yaml_file = open("glean/metrics.yaml", 'r')
 yaml_content = yaml.safe_load(yaml_file)
 
 print("Generating the C++ header...")
-output = open("glean/generated/gleansample.h", "w")
+output = open("glean/telemetry/gleansample.h", "w")
 output.write("""/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -37,20 +37,12 @@ output.write("""
 """);
 output.close();
 
-def run_glean_parser(yaml):
-  try:
-    subprocess.call(["glean_parser", "translate", yaml, "-f", "javascript",
-                     "-o", "glean/generated", "--option", "platform=qt",
-                     "--option", "namespace=RealGlean", "--option", "version=0.11"])
-    return True
-  except:
-    print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
-    return False
-
-print("Generating the ping JS module...")
-if not run_glean_parser("glean/pings.yaml"):
+print("Generating the JS modules...")
+try:
+  subprocess.call(["glean_parser", "translate", "glean/metrics.yaml", "glean/pings.yaml",
+                   "-f", "javascript", "-o", "glean/telemetry", "--option", "platform=qt",
+                   "--option", "version=0.15"])
+except:
+  print("glean_parser failed. Is it installed? Try with:\n\tpip3 install glean_parser");
   exit(1)
 
-print("Generating the sample JS module...")
-if not run_glean_parser("glean/metrics.yaml"):
-  exit(1)
