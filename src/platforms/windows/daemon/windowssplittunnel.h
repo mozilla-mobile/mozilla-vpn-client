@@ -173,6 +173,8 @@ private:
     DRIVER_STATE getState();
 
 
+    // Initializes the WFP Sublayer
+    bool initSublayer();
 
     // Generates a Configuration for Each APP
     std::vector<uint8_t> generateAppConfiguration(const QStringList& appPaths);
