@@ -17,6 +17,6 @@ main:
   bugs:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1708637
   data_reviews:
-    - TBD
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
   notification_emails:
     - amarchesini@mozilla.com
