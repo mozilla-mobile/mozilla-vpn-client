@@ -1,6 +1,22 @@
 # Mozilla VPN
 
+>_One tap to privacy
+Surf, stream, game, and get work done while maintaining your privacy online. Whether you’re traveling, using public WiFi, or simply looking for more online security, we will always put your privacy first._ 
+
 See: https://vpn.mozilla.org
+
+## Getting Involved
+
+We encourage you to participate in this open source project. We love Pull Requests, Bug Reports, ideas, (security) code reviews or any other kind of positive contribution. 
+
+Before you attempt to make a contribution please read the [Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
+
+* [View current Issues](https://github.com/mozilla-mobile/mozilla-vpn-client/issues), [view current Pull Requests](https://github.com/mozilla-mobile/mozilla-vpn-client/pulls), or [file a security issue](https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20VPN).
+* Localization happens on [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
+* Matrix [#mozilla-vpn:mozilla.org channel](https://chat.mozilla.org/#/room/#mozilla-vpn:mozilla.org)
+* [View the Wiki](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki).
+* [View the Support Docs](https://support.mozilla.org/en-US/products/firefox-private-network-vpn)
+
 
 ## Dev instructions
 
