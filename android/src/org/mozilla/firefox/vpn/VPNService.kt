@@ -17,8 +17,21 @@ class VPNService : android.net.VpnService() {
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
     private var mConfig: Config? = null
     private var mConnectionTime: Long = 0
+    private var mAlreadyInitialised = false
 
     private var currentTunnelHandle = -1
+
+    fun init() {
+        if (mAlreadyInitialised) {
+            return
+        }
+        Log.init(this)
+        NotificationUtil.show(this)
+        SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
+        Log.i(tag, "loaded lib")
+        Log.e(tag, "Wireguard Version ${wgVersion()}")
+        mAlreadyInitialised = true
+    }
 
     override fun onUnbind(intent: Intent?): Boolean {
         if (!isUp) {
@@ -34,14 +47,8 @@ class VPNService : android.net.VpnService() {
      * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
-        Log.init(this)
-        NotificationUtil.show(this)
         Log.v(tag, "Got Bind request")
-
-        SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
-        Log.i(tag, "loaded lib")
-        Log.e(tag, "Wireguard Version ${wgVersion()}")
-
+        init()
         return mBinder
     }
 
@@ -51,7 +58,7 @@ class VPNService : android.net.VpnService() {
      * or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.init(this)
+        init()
         intent?.let {
             if (intent.getBooleanExtra("startOnly", false)) {
                 Log.i(tag, "Start only!")
