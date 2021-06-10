@@ -415,5 +415,10 @@
         <file>ui/resources/settings/lock.svg</file>
         <file>ui/components/VPNIPAddress.qml</file>
         <file>ui/resources/globe.svg</file>
+        <file>ui/settings/ViewGiveFeedback.qml</file>
+        <file>ui/components/VPNFeedbackRadioDelegate.qml</file>
+        <file>ui/components/forms/VPNComboBox.qml</file>
+        <file>ui/components/forms/VPNInputBackground.qml</file>
+        <file>ui/components/forms/VPNTextArea.qml</file>
     </qresource>
 </RCC>

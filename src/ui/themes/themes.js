@@ -180,3 +180,16 @@ const greyLink = {
     "focusBorder": "#000000"
 };
 
+const input = {
+    "backgroundColor": "#ffffff",
+    "borderColor": "#9E9E9E",
+    "highlight": "#E7E7E7",
+    "defaultColor" : "#ffffff",
+    "buttonHovered": blueHovered,
+    "buttonPressed": bluePressed,
+    "buttonDisabled": blueDisabled,
+    "focusBgColor": blue,
+    "focusOutline": blueFocusOutline,
+    "focusBorder": blueFocusBorder,
+
+};

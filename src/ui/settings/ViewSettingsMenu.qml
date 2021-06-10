@@ -161,8 +161,8 @@ VPNFlickable {
             //% "Give feedback"
             settingTitle: qsTrId("vpn.settings.giveFeedback")
             imageLeftSrc: "../resources/settings/feedback.svg"
-            imageRightSrc: "../resources/externalLink.svg"
-            onClicked: VPN.openLink(VPN.LinkFeedback)
+            imageRightSrc: "../resources/chevron.svg"
+            onClicked: settingsStackView.push("../settings/ViewGiveFeedback.qml")
         }
         VPNSettingsItem {
             objectName: "settingsGetHelp"
