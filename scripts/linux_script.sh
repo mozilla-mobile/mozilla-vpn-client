@@ -51,7 +51,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "groovy" ] && [ "$RELEASE" != "bionic" ] && die "We support RELEASE focal, groovy and bionic only"
+[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "groovy" ] && [ "$RELEASE" != "bionic" ] && [ "$RELEASE" != "hirsute" ] && die "We support RELEASE focal, groovy, bionic and hirsute only"
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
