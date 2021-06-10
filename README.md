@@ -25,7 +25,7 @@ following dependencies:
 
 Python3 (pip) depedencies:
 
-- glean_parser
+- glean_parser < 3.5
 - pyhumps
 - pyyaml
 
@@ -120,7 +120,7 @@ The procedure to compile MozillaVPN for macOS is the following:
   $ git submodule init
   $ git submodule update --remote
 1. Install python3 dependencies:
-  $ pip3 install glean_parser
+  $ pip3 install "glean_parser<3.5"
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 1. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
@@ -162,7 +162,7 @@ The IOS procedure is similar to the macOS one:
   $ git submodule init
   $ git submodule update --remote
 1. Install python3 dependencies:
-  $ pip install glean_parser
+  $ pip install "glean_parser<3.5"
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 1. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -200,7 +200,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 
 5. Install python3 dependencies:
 ```
-  $ pip3 install glean_parser
+  $ pip3 install "glean_parser<3.5"
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
@@ -227,7 +227,7 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
-5. Install python3 dependencies (pip install glean_parser pyyaml pyhumps)
+5. Install python3 dependencies (pip install "glean_parser<3.5" pyyaml pyhumps)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
