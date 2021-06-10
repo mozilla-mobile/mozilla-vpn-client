@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/bakulf/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
           cat x* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -186,7 +186,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/bakulf/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
           cat x* > qt_static.tar.gz
           tar xf qt_static.tar.gz
