@@ -163,7 +163,7 @@ Rectangle {
         width: animatedRingsWrapper.width
         anchors.fill: animatedRingsWrapper
         onRing1RadiusChanged: makeDirty()
-        renderTarget: (Qt.platform.os !== "ios") ? Canvas.FramebufferObject : Canvas.Image
+        renderTarget: Canvas.FramebufferObject
 
         contextType: "2d"
         onPaint: {
@@ -194,7 +194,12 @@ Rectangle {
                 drawRing(ctx, ring3Radius, ring3BorderWidth);
         }
 
-        Component.onCompleted: resetRingValues()
+        Component.onCompleted: {
+            if (Qt.platform.os === "ios") {
+                renderTarget = Canvas.Image
+            }
+            resetRingValues()
+        }
     }
 
     RadialGradient {
