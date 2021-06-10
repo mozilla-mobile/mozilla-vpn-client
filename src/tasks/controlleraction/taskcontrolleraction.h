@@ -20,6 +20,7 @@ class TaskControllerAction final : public Task {
   enum TaskAction {
     eActivate,
     eDeactivate,
+    eSilentSwitch,
   };
 
   explicit TaskControllerAction(TaskAction action);
@@ -29,6 +30,7 @@ class TaskControllerAction final : public Task {
 
  private slots:
   void stateChanged();
+  void silentSwitchDone();
 
  private:
   const TaskAction m_action;

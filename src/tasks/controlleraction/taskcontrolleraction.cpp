@@ -34,8 +34,13 @@ void TaskControllerAction::run(MozillaVPN* vpn) {
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
 
-  connect(controller, &Controller::stateChanged, this,
-          &TaskControllerAction::stateChanged);
+  if (m_action == eSilentSwitch) {
+    connect(controller, &Controller::silentSwitchDone, this,
+            &TaskControllerAction::silentSwitchDone);
+  } else {
+    connect(controller, &Controller::stateChanged, this,
+            &TaskControllerAction::stateChanged);
+  }
 
   bool expectSignal = false;
 
@@ -46,6 +51,10 @@ void TaskControllerAction::run(MozillaVPN* vpn) {
 
     case eDeactivate:
       expectSignal = controller->deactivate();
+      break;
+
+    case eSilentSwitch:
+      expectSignal = controller->silentSwitchServers();
       break;
   }
 
@@ -76,4 +85,10 @@ void TaskControllerAction::stateChanged() {
     m_timer.stop();
     emit completed();
   }
+}
+
+void TaskControllerAction::silentSwitchDone() {
+  logger.log() << "Operation completed";
+  m_timer.stop();
+  emit completed();
 }
