@@ -107,6 +107,8 @@ class MozillaVPN final : public QObject {
   State state() const;
   AlertType alert() const { return m_alert; }
 
+  const QString& serverPublicKey() const { return m_serverPublicKey; }
+
   bool productionMode() const {
 #ifdef MVPN_PRODUCTION_MODE
     return true;
@@ -187,6 +189,8 @@ class MozillaVPN final : public QObject {
 
   void changeServer(const QString& countryCode, const QString& city);
 
+  void silentSwitch();
+
   const QString versionString() const { return QString(APP_VERSION); }
 
   const QString buildNumber() const { return QString(BUILD_ID); }
@@ -219,6 +223,8 @@ class MozillaVPN final : public QObject {
   void setUpdating(bool updating);
 
   void heartbeatCompleted(bool success);
+
+  void setServerPublicKey(const QString& publicKey);
 
  private:
   void setState(State state);
@@ -328,6 +334,8 @@ class MozillaVPN final : public QObject {
 
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
+
+  QString m_serverPublicKey;
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;
