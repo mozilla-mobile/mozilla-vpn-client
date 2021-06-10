@@ -12,6 +12,10 @@
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
+#ifdef QT_DEBUG
+#  include "gleantest.h"
+#endif
+
 #include <functional>
 
 #include <QBuffer>
@@ -182,6 +186,17 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
         []() { return MozillaVPN::instance()->currentServer()->cityName(); }},
+
+    // glean-enabled
+    WebSocketSettingCommand{
+        "glean-enabled", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setGleanEnabled(value == "true");
+        },
+        []() {
+          return SettingsHolder::instance()->gleanEnabled() ? "true" : "false";
+        }},
+
 };
 
 struct WebSocketCommand {
@@ -217,6 +232,14 @@ static QList<WebSocketCommand> s_commands{
 
                        vpn->reset(true);
                        vpn->hideAlert();
+
+                       SettingsHolder* settingsHolder =
+                           SettingsHolder::instance();
+                       Q_ASSERT(settingsHolder);
+
+                       // Extra cleanup for testing
+                       settingsHolder->setTelemetryPolicyShown(false);
+
                        return QJsonObject();
                      }},
 
@@ -541,6 +564,23 @@ static QList<WebSocketCommand> s_commands{
 
           return QJsonObject();
         }},
+
+#ifdef QT_DEBUG
+    WebSocketCommand{"last_glean_request", "Retrieve the last glean request", 0,
+                     [](const QList<QByteArray>&) {
+                       GleanTest* gt = GleanTest::instance();
+
+                       QJsonObject glean;
+                       glean["url"] = QString(gt->lastUrl());
+                       glean["data"] = QString(gt->lastData());
+
+                       gt->reset();
+
+                       QJsonObject obj;
+                       obj["value"] = glean;
+                       return obj;
+                     }},
+#endif
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

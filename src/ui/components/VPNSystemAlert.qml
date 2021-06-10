@@ -5,11 +5,13 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import Mozilla.VPN 1.0
+import "../themes/themes.js" as Theme
 
 VPNAlert {
     id: alertBox
 
     state: VPN.alert
+
     states: [
         State {
             name: VPN.NoAlert
@@ -141,9 +143,11 @@ VPNAlert {
 
             PropertyChanges {
                 target: alertBox
-                //% "Signed out and device removed"
-                alertText: qsTrId("vpn.alert.deviceRemovedAndLogout")
+                //% "Signed out and device disconnected"
+                alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
                 visible: true
+                alertColor: Theme.greenAlert
+                textColor: Theme.fontColorDark
             }
 
         }

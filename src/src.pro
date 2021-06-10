@@ -6,6 +6,10 @@ include($$PWD/../version.pri)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
 
+!isEmpty(MVPN_EXTRA_USERAGENT) {
+    DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
+}
+
 QT += network
 QT += quick
 QT += widgets
@@ -19,7 +23,7 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/generated
+            ../glean/telemetry
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -65,6 +69,7 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         ipaddress.cpp \
         ipaddressrange.cpp \
+        ipfinder.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
@@ -153,6 +158,7 @@ HEADERS += \
         fontloader.h \
         ipaddress.h \
         ipaddressrange.h \
+        ipfinder.h \
         leakdetector.h \
         localizer.h \
         logger.h \
@@ -314,6 +320,7 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
+    include($$PWD/golang.pri)
 
     TARGET = mozillavpn
     QT += networkauth
@@ -328,6 +335,8 @@ else:linux:!android {
             eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
+            platforms/linux/linuxappimageprovider.cpp \
+            platforms/linux/linuxapplistprovider.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
@@ -342,6 +351,8 @@ else:linux:!android {
             eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
+            platforms/linux/linuxappimageprovider.h \
+            platforms/linux/linuxapplistprovider.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
@@ -355,21 +366,30 @@ else:linux:!android {
     SOURCES += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
+            platforms/linux/daemon/apptracker.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/dnsutilslinux.cpp \
+            platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
+            platforms/linux/daemon/pidtracker.cpp \
             platforms/linux/daemon/polkithelper.cpp \
-            platforms/linux/daemon/wireguardutilslinux.cpp \
-            wgquickprocess.cpp
+            platforms/linux/daemon/wireguardutilslinux.cpp
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/interfaceconfig.h \
             daemon/daemon.h \
+            daemon/dnsutils.h \
+            daemon/iputils.h \
             daemon/wireguardutils.h \
+            platforms/linux/daemon/apptracker.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/dbustypeslinux.h \
+            platforms/linux/daemon/dnsutilslinux.h \
+            platforms/linux/daemon/iputilslinux.h \
+            platforms/linux/daemon/pidtracker.h \
             platforms/linux/daemon/polkithelper.h \
-            platforms/linux/daemon/wireguardutilslinux.h \
-            wgquickprocess.h
+            platforms/linux/daemon/wireguardutilslinux.h
 
     isEmpty(USRPATH) {
         USRPATH=/usr
@@ -381,6 +401,8 @@ else:linux:!android {
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
+    GO_MODULES = ../linux/netfilter/netfilter.go
+    
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -425,10 +447,9 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
-    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
-    helper.path = $${USRPATH}/share/mozillavpn
-    helper.files = ../linux/daemon/helper.sh
-    INSTALLS += helper
+    systemd_service.files = ../linux/debian/mozillavpn.service
+    systemd_service.path = /usr/lib/systemd/system
+    INSTALLS += systemd_service
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
@@ -600,6 +621,8 @@ else:macos {
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/dnsutils.h \
+                   daemon/iputils.h \
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
@@ -688,6 +711,7 @@ else:win* {
     TARGET = MozillaVPN
 
     CONFIG += c++1z
+    QMAKE_CXXFLAGS += -MP
 
     QT += networkauth
     QT += svg
@@ -711,8 +735,6 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
-        platforms/windows/windowscaptiveportaldetection.cpp \
-        platforms/windows/windowscaptiveportaldetectionthread.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
@@ -728,6 +750,8 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/dnsutils.h \
+        daemon/iputils.h \
         daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
@@ -735,8 +759,6 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
-        platforms/windows/windowscaptiveportaldetection.h \
-        platforms/windows/windowscaptiveportaldetectionthread.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
@@ -794,8 +816,7 @@ RESOURCES += $$PWD/../translations/servers.qrc
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
-}
-else{
+} else {
     message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
         ../translations/mozillavpn_en.ts
@@ -812,7 +833,12 @@ QMAKE_LRELEASE_FLAGS += -idbased
 CONFIG += lrelease
 CONFIG += embed_translations
 
-equals(QMAKE_CXX, clang++):debug {
+debug {
+    SOURCES += gleantest.cpp
+    HEADERS += gleantest.h
+}
+
+coverage {
     message(Coverage enabled)
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping

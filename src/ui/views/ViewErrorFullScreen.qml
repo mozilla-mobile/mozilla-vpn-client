@@ -8,6 +8,9 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
+import org.mozilla.Glean 0.15
+import telemetry 0.15
+
 VPNFlickable {
     property var headlineText
     property var errorMessage: ""
@@ -17,17 +20,36 @@ VPNFlickable {
     property var buttonOnClick
     property var signOffLinkVisible: false
     property var getHelpLinkVisible: false
+    property var statusLinkVisible: false
     id: vpnFlickable
 
     Component.onCompleted: {
-        flickContentHeight = col.childrenRect.height + col.anchors.topMargin
+        flickContentHeight = col.childrenRect.height
+    }
+
+    VPNHeaderLink {
+        id: headerLink
+        objectName: "getHelpLink"
+
+        labelText: qsTrId("vpn.main.getHelp")
+        onClicked: stackview.push(getHelpComponent)
+    }
+
+    Component {
+        id: getHelpComponent
+
+        VPNGetHelp {
+            isSettingsView: false
+        }
+
     }
 
     ColumnLayout {
         id: col
-        width: vpnFlickable.width
+        width: Math.min(Theme.maxHorizontalContentWidth, vpnFlickable.width)
         anchors.top: parent.top
-        anchors.topMargin: vpnFlickable.height * 0.08
+        anchors.topMargin: headerLink.height + vpnFlickable.height * 0.08
+        anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 32
 
@@ -71,7 +93,7 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignHCenter
                 VPNTextBlock {
                     id: copyBlock1
-                    Layout.preferredWidth: Theme.maxTextWidth
+                    Layout.preferredWidth: col.width - (Theme.windowMargin * 3)
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
                     horizontalAlignment: Text.AlignHCenter
@@ -83,13 +105,22 @@ VPNFlickable {
                 VPNTextBlock {
                     id: copyBlock2
 
-                    Layout.preferredWidth: Theme.maxTextWidth
+                    Layout.preferredWidth: col.width - (Theme.windowMargin * 3)
                     horizontalAlignment: Text.AlignHCenter
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
                     font.pixelSize: Theme.fontSize
                     lineHeight: 22
                     text: errorMessage2
+                }
+
+                VPNLinkButton {
+                    //% "Check outage updates"
+                    labelText: qsTrId("vpn.errors.checkOutageUpdates")
+                    Layout.preferredWidth: col.width - (Theme.windowMargin * 3)
+                    onClicked: VPN.openLink("https://status.vpn.mozilla.org")
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: statusLinkVisible
                 }
             }
         }
@@ -110,20 +141,7 @@ VPNFlickable {
                 loaderVisible: false
                 onClicked: buttonOnClick()
             }
-
-            VPNFooterLink {
-                id: getHelpLink
-
-                visible: getHelpLinkVisible
-                Layout.preferredHeight: Theme.rowHeight
-                Layout.alignment: Qt.AlignHCenter
-                labelText: qsTrId("vpn.main.getHelp")
-                anchors.horizontalCenter: undefined
-                anchors.bottom: undefined
-                anchors.bottomMargin: undefined
-                onClicked: stackview.push(getHelpComponent)
-            }
-
+            
             VPNSignOut {
                 id: signOff
 
@@ -140,16 +158,9 @@ VPNFlickable {
             }
         }
 
-        Component {
-            id: getHelpComponent
-
-            VPNGetHelp {
-                isSettingsView: false
-            }
-        }
 
         VPNVerticalSpacer {
-            Layout.preferredHeight: Theme.windowMargin * 2
+            Layout.preferredHeight: fullscreenRequired() ? Theme.windowMargin : 1
         }
     }
 }

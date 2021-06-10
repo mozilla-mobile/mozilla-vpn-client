@@ -6,6 +6,7 @@
 #define SURVEY_H
 
 #include <QString>
+#include <QStringList>
 
 class QJsonValue;
 
@@ -28,6 +29,7 @@ class Survey final {
   QString m_id;
   QString m_url;
   uint32_t m_triggerTime;
+  QStringList m_platforms;
 };
 
 #endif  // SURVEY_H

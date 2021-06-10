@@ -8,43 +8,53 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "polkithelper.h"
-#include "wgquickprocess.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include "../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h"
-
-#if defined(__cplusplus)
-}
-#endif
-
 namespace {
 Logger logger(LOG_LINUX, "DBusService");
 }
 
+constexpr const char* APP_STATE_ACTIVE = "active";
+constexpr const char* APP_STATE_EXCLUDED = "excluded";
+constexpr const char* APP_STATE_BLOCKED = "blocked";
+
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MVPN_COUNT_CTOR(DBusService);
+
+  m_wgutils = new WireguardUtilsLinux(this);
+  m_apptracker = new AppTracker(this);
+  m_pidtracker = new PidTracker(this);
+
+  connect(m_apptracker, SIGNAL(appLaunched(const QString&, int)), this,
+          SLOT(appLaunched(const QString&, int)));
+  connect(m_pidtracker, SIGNAL(terminated(const QString&, int)), this,
+          SLOT(appTerminated(const QString&, int)));
+
+  if (!removeInterfaceIfExists()) {
+    qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
+           WG_INTERFACE);
+  }
 }
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtils* DBusService::wgutils() {
-  if (!m_wgutils) {
-    m_wgutils = new WireguardUtilsLinux(this);
+WireguardUtils* DBusService::wgutils() { return m_wgutils; }
+
+IPUtils* DBusService::iputils() {
+  if (!m_iputils) {
+    m_iputils = new IPUtilsLinux(this);
   }
-  return m_wgutils;
+  return m_iputils;
+}
+
+DnsUtils* DBusService::dnsutils() {
+  if (!m_dnsutils) {
+    m_dnsutils = new DnsUtilsLinux(this);
+  }
+  return m_dnsutils;
 }
 
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
@@ -52,20 +62,14 @@ void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   m_adaptor = adaptor;
 }
 
-bool DBusService::checkInterface() {
-  logger.log() << "Checking interface";
-
-  wg_device* device = nullptr;
-  if (wg_get_device(&device, WG_INTERFACE) == 0) {
+bool DBusService::removeInterfaceIfExists() {
+  if (wgutils()->interfaceExists()) {
     logger.log() << "Device already exists. Let's remove it.";
-    wg_free_device(device);
-
-    if (wg_del_device(WG_INTERFACE) != 0) {
+    if (!wgutils()->deleteInterface()) {
       logger.log() << "Failed to remove the device.";
       return false;
     }
   }
-
   return true;
 }
 
@@ -97,11 +101,19 @@ bool DBusService::activate(const QString& jsonConfig) {
     return false;
   }
 
+  if (obj.contains("vpnDisabledApps")) {
+    QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
+    for (const QJsonValue& app : disabledApps) {
+      firewallApp(app.toString(), APP_STATE_EXCLUDED);
+    }
+  }
+
   return Daemon::activate(config);
 }
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.log() << "Deactivate";
+  firewallClear();
   return Daemon::deactivate(emitSignals);
 }
 
@@ -109,34 +121,20 @@ QString DBusService::status() { return QString(getStatus()); }
 
 QByteArray DBusService::getStatus() {
   logger.log() << "Status request";
-
   QJsonObject json;
-
-  wg_device* device = nullptr;
-  if (wg_get_device(&device, WG_INTERFACE) != 0) {
+  if (!wgutils()->interfaceExists()) {
     logger.log() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
   }
-
-  uint64_t txBytes = 0;
-  uint64_t rxBytes = 0;
-
-  wg_peer* peer;
-  wg_for_each_peer(device, peer) {
-    txBytes += peer->tx_bytes;
-    rxBytes += peer->rx_bytes;
-  }
-
-  wg_free_device(device);
-
   json.insert("status", QJsonValue(true));
   json.insert("serverIpv4Gateway",
               QJsonValue(m_lastConfig.m_serverIpv4Gateway));
   json.insert("deviceIpv4Address",
               QJsonValue(m_lastConfig.m_deviceIpv4Address));
-  json.insert("txBytes", QJsonValue(double(txBytes)));
-  json.insert("rxBytes", QJsonValue(double(rxBytes)));
+  WireguardUtilsLinux::peerBytes pb = wgutils()->getThroughputForInterface();
+  json.insert("txBytes", QJsonValue(pb.txBytes));
+  json.insert("rxBytes", QJsonValue(pb.rxBytes));
 
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
@@ -146,157 +144,9 @@ QString DBusService::getLogs() {
   return Daemon::logs();
 }
 
-bool DBusService::run(Op op, const InterfaceConfig& config) {
-  QStringList addresses;
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-    addresses.append(ip.toString());
-  }
-
-  return WgQuickProcess::run(
-      op, config.m_privateKey, config.m_deviceIpv4Address,
-      config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
-      config.m_serverIpv6Gateway, config.m_serverPublicKey,
-      config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-      addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled);
-}
-
-static inline bool endpointStringToSockaddr(const QString& address, int port,
-                                            struct sockaddr* endpoint) {
-  QString portString = QString::number(port);
-
-  struct addrinfo hints;
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_DGRAM;
-  hints.ai_protocol = IPPROTO_UDP;
-
-  struct addrinfo* resolved = nullptr;
-  int retries = 15;
-
-  for (unsigned int timeout = 1000000;;
-       timeout = std::min((unsigned int)20000000, timeout * 6 / 5)) {
-    int rv = getaddrinfo(address.toLocal8Bit(), portString.toLocal8Bit(),
-                         &hints, &resolved);
-    if (!rv) {
-      break;
-    }
-
-    /* The set of return codes that are "permanent failures". All other
-     * possibilities are potentially transient.
-     *
-     * This is according to https://sourceware.org/glibc/wiki/NameResolver which
-     * states: "From the perspective of the application that calls getaddrinfo()
-     * it perhaps doesn't matter that much since EAI_FAIL, EAI_NONAME and
-     * EAI_NODATA are all permanent failure codes and the causes are all
-     * permanent failures in the sense that there is no point in retrying
-     * later."
-     *
-     * So this is what we do, except FreeBSD removed EAI_NODATA some time ago,
-     * so that's conditional.
-     */
-    if (rv == EAI_NONAME || rv == EAI_FAIL ||
-#ifdef EAI_NODATA
-        rv == EAI_NODATA ||
-#endif
-        (retries >= 0 && !retries--)) {
-      logger.log() << "Failed to resolve the address endpoint";
-      return false;
-    }
-
-    logger.log() << "Trying again in" << (timeout / 1000000.0) << "seconds";
-    usleep(timeout);
-  }
-
-  if ((resolved->ai_family == AF_INET &&
-       resolved->ai_addrlen == sizeof(struct sockaddr_in)) ||
-      (resolved->ai_family == AF_INET6 &&
-       resolved->ai_addrlen == sizeof(struct sockaddr_in6))) {
-    memcpy(endpoint, resolved->ai_addr, resolved->ai_addrlen);
-    freeaddrinfo(resolved);
-    return true;
-  }
-
-  logger.log() << "Invalid endpoint" << address;
-  freeaddrinfo(resolved);
-  return false;
-}
-
 bool DBusService::switchServer(const InterfaceConfig& config) {
   logger.log() << "Switching server";
-
-  wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
-  if (!device) {
-    logger.log() << "Allocation failure";
-    return false;
-  }
-
-  auto guard = qScopeGuard([&] { wg_free_device(device); });
-
-  strncpy(device->name, WG_INTERFACE, IFNAMSIZ - 1);
-  device->name[IFNAMSIZ - 1] = '\0';
-
-  wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
-  if (!peer) {
-    logger.log() << "Allocation failure";
-    return false;
-  }
-
-  peer->flags =
-      (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS);
-
-  device->first_peer = device->last_peer = peer;
-  device->flags = WGDEVICE_REPLACE_PEERS;
-
-  if (!endpointStringToSockaddr(config.m_serverIpv4AddrIn, config.m_serverPort,
-                                &peer->endpoint.addr)) {
-    return false;
-  }
-
-  wg_key_from_base64(peer->public_key, config.m_serverPublicKey.toLocal8Bit());
-
-  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-    wg_allowedip* allowedip =
-        static_cast<wg_allowedip*>(calloc(1, sizeof(*allowedip)));
-    if (!allowedip) {
-      logger.log() << "Allocation failure";
-      return false;
-    }
-
-    if (!peer->first_allowedip) {
-      peer->first_allowedip = allowedip;
-    } else {
-      peer->last_allowedip->next_allowedip = allowedip;
-    }
-
-    peer->last_allowedip = allowedip;
-    allowedip->cidr = ip.range();
-
-    bool ok = false;
-    if (ip.type() == IPAddressRange::IPv4) {
-      allowedip->family = AF_INET;
-      ok = inet_pton(AF_INET, ip.ipAddress().toLocal8Bit(), &allowedip->ip4) ==
-           1;
-    } else if (ip.type() == IPAddressRange::IPv6) {
-      allowedip->family = AF_INET6;
-      ok = inet_pton(AF_INET6, ip.ipAddress().toLocal8Bit(), &allowedip->ip6) ==
-           1;
-    } else {
-      logger.log() << "Invalid IPAddressRange type";
-      return false;
-    }
-
-    if (!ok) {
-      logger.log() << "Invalid IP address:" << ip.ipAddress();
-      return false;
-    }
-  }
-
-  if (wg_set_device(device) != 0) {
-    logger.log() << "Failed to set the new peer";
-    return false;
-  }
-
-  return true;
+  return wgutils()->configureInterface(config);
 }
 
 bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
@@ -305,4 +155,103 @@ bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
          m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
          m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
          m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+}
+
+void DBusService::appLaunched(const QString& name, int rootpid) {
+  logger.log() << "tracking:" << name << "PID:" << rootpid;
+  ProcessGroup* group = m_pidtracker->track(name, rootpid);
+  if (m_firewallApps.contains(name)) {
+    group->state = m_firewallApps[name];
+    group->moveToCgroup(getAppStateCgroup(group->state));
+  }
+}
+
+void DBusService::appTerminated(const QString& name, int rootpid) {
+  logger.log() << "terminate:" << name << "PID:" << rootpid;
+}
+
+/* Get the list of running applications that the firewall knows about. */
+QString DBusService::runningApps() {
+  QJsonArray result;
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    const ProcessGroup* group = *i;
+    QJsonObject appObject;
+    QJsonArray pidList;
+    appObject.insert("name", QJsonValue(group->name));
+    appObject.insert("rootpid", QJsonValue(group->rootpid));
+    appObject.insert("state", QJsonValue(group->state));
+
+    for (auto pid : group->kthreads.keys()) {
+      pidList.append(QJsonValue(pid));
+    }
+
+    appObject.insert("pids", pidList);
+    result.append(appObject);
+  }
+
+  return QJsonDocument(result).toJson(QJsonDocument::Compact);
+}
+
+/* Update the firewall for running applications matching the application ID. */
+bool DBusService::firewallApp(const QString& appName, const QString& state) {
+  logger.log() << "Setting" << appName << "to firewall state" << state;
+  m_firewallApps[appName] = state;
+  QString cgroup = getAppStateCgroup(state);
+
+  /* Change matching applications' state to excluded */
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    ProcessGroup* group = *i;
+    if (group->name != appName) {
+      continue;
+    }
+    group->state = state;
+    group->moveToCgroup(cgroup);
+  }
+
+  return true;
+}
+
+/* Update the firewall for the application matching the desired PID. */
+bool DBusService::firewallPid(int rootpid, const QString& state) {
+  ProcessGroup* group = m_pidtracker->group(rootpid);
+  if (!group) {
+    return false;
+  }
+
+  group->state = state;
+  group->moveToCgroup(getAppStateCgroup(group->state));
+
+  logger.log() << "Setting" << group->name << "PID:" << rootpid
+               << "to firewall state" << state;
+  return true;
+}
+
+/* Clear the firewall and return all applications to the active state */
+bool DBusService::firewallClear() {
+  const QString cgroup = getAppStateCgroup(APP_STATE_ACTIVE);
+
+  m_firewallApps.clear();
+  for (auto i = m_pidtracker->begin(); i != m_pidtracker->end(); i++) {
+    ProcessGroup* group = *i;
+    if (group->state == APP_STATE_ACTIVE) {
+      continue;
+    }
+
+    group->state = APP_STATE_ACTIVE;
+    group->moveToCgroup(cgroup);
+
+    logger.log() << "Setting" << group->name << "PID:" << group->rootpid
+                 << "to firewall state" << group->state;
+  }
+  return true;
+}
+
+QString DBusService::getAppStateCgroup(const QString& state) {
+  if (state == APP_STATE_EXCLUDED) {
+    return m_wgutils->getExcludeCgroup();
+  }
+  if (state == APP_STATE_BLOCKED) {
+    return m_wgutils->getBlockCgroup();
+  }
+  return m_wgutils->getDefaultCgroup();
 }

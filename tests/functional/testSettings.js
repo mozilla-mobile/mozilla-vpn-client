@@ -15,7 +15,7 @@ const exec = util.promisify(require('child_process').exec);
 describe('Settings', function() {
   let driver;
 
-  this.timeout(200000);
+  this.timeout(2000000);
 
   before(async () => {
     await vpn.connect();
@@ -371,6 +371,28 @@ describe('Settings', function() {
 
     await vpn.waitForElement('settingsGetHelp');
     await vpn.waitForElementProperty('settingsGetHelp', 'visible', 'true');
+  });
+
+  it('Checking the privacy&security settings', async () => {
+    await vpn.waitForElement('settingsPrivacySecurity');
+    await vpn.waitForElementProperty(
+        'settingsPrivacySecurity', 'visible', 'true');
+
+    await vpn.setElementProperty(
+        'settingsView', 'contentY', 'i',
+        parseInt(await vpn.getElementProperty('settingsPrivacySecurity', 'y')));
+    await vpn.wait();
+
+    await vpn.clickOnElement('settingsPrivacySecurity');
+    await vpn.wait();
+
+    await checkSetting('dataCollection', 'glean-enabled');
+
+    await vpn.clickOnElement('settingsPrivacySecurtyBackButton');
+    await vpn.wait();
+
+    await vpn.waitForElement('manageAccountButton');
+    await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
   it('Checking the logout', async () => {

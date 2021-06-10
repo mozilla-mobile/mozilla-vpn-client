@@ -7,6 +7,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
+import org.mozilla.Glean 0.15
+import telemetry 0.15
+
 RowLayout {
     property var numGridColumns: grid.columns
 

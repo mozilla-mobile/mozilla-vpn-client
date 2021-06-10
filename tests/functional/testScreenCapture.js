@@ -146,6 +146,16 @@ describe('Take screenshots for each view', function() {
     await vpn.clickOnElement('onboardingNext');
     await vpn.wait();
 
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.wait();
+
+    await screenCapture('telemetry_policy');
+
+    await vpn.clickOnElement('telemetryPolicyButton');
+    await vpn.wait();
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');

@@ -10,6 +10,10 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
+import org.mozilla.Glean 0.15
+import telemetry 0.15
+
+
 Item {
     id: root
 
@@ -28,8 +32,12 @@ Item {
         height: root.height - menu.height
         width: root.width
         Component.onCompleted: {
-           VPNAppPermissions.requestApplist();
-        }
+            VPNAppPermissions.requestApplist();
+            Sample.appPermissionsViewOpened.record();
+            if (!vpnIsOff) {
+                Sample.appPermissionsViewWarning.record();
+            }
+         }
 
         VPNCheckBoxAlert {
             id: vpnOnAlert

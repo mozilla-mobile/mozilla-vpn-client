@@ -23,6 +23,7 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
+#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -67,6 +68,7 @@
 #include <QApplication>
 
 #ifdef QT_DEBUG
+#  include "gleantest.h"
 #  include <QLoggingCategory>
 #endif
 
@@ -124,6 +126,11 @@ int CommandUI::run(QStringList& tokens) {
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
+#ifdef QT_DEBUG
+    // This is a collector of glean HTTP requests to see if we leak something.
+    GleanTest gleanTest;
+#endif
+
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
     // If there is another instance, the execution terminates here.
     if (!EventListener::checkOtherInstances()) {
@@ -147,6 +154,7 @@ int CommandUI::run(QStringList& tokens) {
     // Create the QML engine and expose a few internal objects.
     QmlEngineHolder engineHolder;
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    engine->addImportPath("qrc:///glean");
     vpn.initialize();
 
 #ifdef MVPN_MACOS
@@ -173,6 +181,10 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
+
+    // Register an Image Provider that will resolve "image://app/{id}" for qml
+    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
+    engine->addImageProvider(QString("app"), provider);
 #endif
 
 #ifdef MVPN_ANDROID
@@ -324,6 +336,16 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = IAPHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
+
+#ifdef QT_DEBUG
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNGleanTest",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GleanTest::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

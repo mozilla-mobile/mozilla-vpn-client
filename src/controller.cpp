@@ -622,15 +622,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       logger.log() << "Filtering out the captive portal address" << address;
       excludeIPv4s.append(IPAddress::create(address));
     }
-
-    if (ipv6Enabled) {
-      const QStringList& captivePortalIpv6Addresses =
-          captivePortal->ipv6Addresses();
-      for (const QString& address : captivePortalIpv6Addresses) {
-        // TODO IPv6 is not supported by IPAddress yet.
-        allowedIPv6s.append(IPAddressRange(address, 0, IPAddressRange::IPv6));
-      }
-    }
   }
 
   // filtering out the RFC1918 local area network

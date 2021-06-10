@@ -89,7 +89,7 @@ print Y "Wait..."
   --recheck-all \
   -opensource \
   -confirm-license \
-  -release \
+  -debug-and-release \
   -static \
   -strip \
   -silent \

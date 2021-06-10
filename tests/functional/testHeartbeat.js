@@ -22,7 +22,7 @@ describe('Backend failure', function() {
     await vpn.wait();
   }
 
-  this.timeout(100000);
+  this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
@@ -113,6 +113,11 @@ describe('Backend failure', function() {
 
     await vpn.clickOnElement('getStarted');
 
+    await vpn.waitForElement('telemetryPolicyButton');
+    await vpn.waitForElementProperty(
+        'telemetryPolicyButton', 'visible', 'true');
+    await vpn.clickOnElement('telemetryPolicyButton');
+
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.includes('/api/v2/vpn/login');
@@ -131,15 +136,15 @@ describe('Backend failure', function() {
     await vpn.wait();
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false));
+  it('authenticate', async () => await vpn.authenticate(driver, false, false));
 
   it('BackendFailure in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
 
     await backendFailureAndRestore();
 
-    await vpn.waitForElement('controllerTitle');
-    await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');
+    await vpn.waitForElement('postAuthenticationButton');
+    await vpn.clickOnElement('postAuthenticationButton');
   });
 
   it('BackendFailure in the Controller view', async () => {

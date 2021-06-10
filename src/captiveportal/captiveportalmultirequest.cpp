@@ -11,6 +11,7 @@
 #include "networkrequest.h"
 #include "settingsholder.h"
 #include "timersingleshot.h"
+#include "networkmanager.h"
 
 namespace {
 Logger logger(LOG_CAPTIVEPORTAL, "CaptivePortalMultiRequest");
@@ -37,6 +38,7 @@ void CaptivePortalMultiRequest::run() {
 }
 
 void CaptivePortalMultiRequest::createRequest() {
+  NetworkManager::instance()->clearCache();
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
   connect(request, &CaptivePortalRequest::completed,
           [this](CaptivePortalResult detected) {

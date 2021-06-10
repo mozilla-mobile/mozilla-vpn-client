@@ -8,7 +8,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import telemetry 0.15
 
 VPNFlickable {
     id: vpnFlickable
@@ -63,7 +65,7 @@ VPNFlickable {
         anchors.topMargin: Theme.vSpacing
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            Glean.sample.manageAccountClicked.record();
+            Sample.manageAccountClicked.record();
             VPN.openLink(VPN.LinkAccount)
         }
     }
@@ -84,27 +86,6 @@ VPNFlickable {
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
         visible: VPNFeatureList.startOnBootSupported
-    }
-
-    VPNCheckBoxRow {
-        id: gleanEnabledCheckBox
-        objectName: "settingGleanEnabled"
-
-        //% "Enable telemetry"
-        labelText: qsTrId("vpn.settings.glean")
-        subLabelText: ""
-        isChecked: VPNSettings.gleanEnabled
-        isEnabled: true
-        showDivider: true
-        anchors.top: VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.bottom : manageAccountButton.bottom
-        anchors.topMargin: Theme.hSpacing * 1.5
-        anchors.rightMargin: Theme.hSpacing
-        width: vpnFlickable.width - Theme.hSpacing
-        onClicked: {
-            VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
-        }
-        visible: VPNFeatureList.gleanSupported
     }
 
     Component {
@@ -129,9 +110,8 @@ VPNFlickable {
         id: settingsList
 
         spacing: Theme.listSpacing
-        y: Theme.vSpacing + (VPNFeatureList.gleanSupported ? gleanEnabledCheckBox.y + gleanEnabledCheckBox.height :
-                              (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
-                                manageAccountButton.y + manageAccountButton.height))
+        y: Theme.vSpacing + (VPNFeatureList.startOnBootSupported ? startAtBootCheckBox.y + startAtBootCheckBox.height :
+                              manageAccountButton.y + manageAccountButton.height)
         width: parent.width - Theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -150,7 +130,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/notifications.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-	    visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
+            visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
         }
         VPNSettingsItem {
             objectName: "settingsLanguages"
@@ -192,7 +172,19 @@ VPNFlickable {
             settingTitle: qsTrId("vpn.main.getHelp")
             imageLeftSrc: "../resources/settings/getHelp.svg"
             imageRightSrc: "../resources/chevron.svg"
-            onClicked: settingsStackView.push(getHelpComponent)
+            onClicked: {
+                Sample.getHelpClickedViewSettings.record();
+                settingsStackView.push(getHelpComponent);
+            }
+        }
+        VPNSettingsItem {
+            objectName: "settingsPrivacySecurity"
+
+            //% "Privacy & Security"
+            settingTitle: qsTrId("vpn.main.privacySecurity")
+            imageLeftSrc: "../resources/settings/lock.svg"
+            imageRightSrc: "../resources/chevron.svg"
+            onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml")
         }
 
         Rectangle {

@@ -10,9 +10,19 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
+import org.mozilla.Glean 0.15
+import telemetry 0.15
+
 VPNFlickable {
     id: vpnFlickable
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
+
+    Component.onCompleted: {
+        Sample.networkSettingsViewOpened.record();
+        if (!vpnIsOff) {
+            Sample.networkSettingsViewWarning.record();
+        }
+     }
 
     VPNMenu {
         id: menu

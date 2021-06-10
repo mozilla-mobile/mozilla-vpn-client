@@ -8,6 +8,9 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
+import org.mozilla.Glean 0.15
+import telemetry 0.15
+
 VPNStackView {
     id: stackview
 
@@ -15,9 +18,8 @@ VPNStackView {
         VPN.openLink(VPN.LinkSubscriptionsBlocked)
     }
 
-    Component.onCompleted:stackview.push(
-        "../views/ViewErrorFullScreen.qml",
-        {
+    Component.onCompleted: {
+        stackview.push("../views/ViewErrorFullScreen.qml", {
             //% "Error confirming subscription…"
             headlineText: qsTrId("vpn.subscriptionBlocked.title"),
 
@@ -33,6 +35,8 @@ VPNStackView {
             buttonOnClick: stackview.handleButtonClick,
             signOffLinkVisible: true,
             getHelpLinkVisible: false
-        }
-    )
+            }
+        );
+        Sample.subscriptionBlockedViewed.record();
+    }
 }

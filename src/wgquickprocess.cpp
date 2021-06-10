@@ -11,9 +11,7 @@
 
 namespace {
 Logger logger(
-#if defined(MVPN_LINUX)
-    LOG_LINUX
-#elif defined(MVPN_MACOS_DAEMON)
+#if defined(MVPN_MACOS_DAEMON)
     LOG_MACOS
 #elif defined(MVPN_WINDOWS)
     LOG_WINDOWS
@@ -156,10 +154,7 @@ bool WgQuickProcess::run(
 
 // static
 QString WgQuickProcess::scriptPath() {
-#if defined(MVPN_LINUX)
-  QDir appPath(MVPN_DATA_PATH);
-  return appPath.filePath("helper.sh");
-#elif defined(MVPN_MACOS_DAEMON)
+#if defined(MVPN_MACOS_DAEMON)
   QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
   appPath.cd("Resources");

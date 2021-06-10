@@ -4,6 +4,7 @@
 
 package org.mozilla.firefox.vpn.qt;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -13,6 +14,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.Manifest.permission;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -31,24 +33,6 @@ public class PackageManagerHelper {
   final static String TAG = "PackageManagerHelper";
   final static int MIN_CHROME_VERSION = 65;
 
-  // These system apps will not be hidden to the user (if installed):
-  final static List<String> SYSTEM_ALLOWLIST = Arrays.asList(new String[] {
-      "com.android.vending", // Google Play Store
-      "com.google.android.apps.chromecast.app", // Google Home
-      "com.google.android.apps.maps", // Google Maps
-      "com.google.android.apps.walletnfcrel", // Google Pay
-      "com.google.android.calendar", // Gcal
-      "com.google.android.gm", // Gmail
-      "com.google.android.music", // Gmusic
-      "com.google.android.videos", // Play video
-      "com.google.android.youtube", // Youtube
-      "com.google.android.projection.gearhead", // Android Auto
-      "com.google.android.apps.magazines", // Google news
-      "com.google.android.GoogleCamera", // Google Camera
-      "com.android.hotwordenrollment.xgoogle", // Google Assistant
-      "com.android.hotwordenrollment.okgoogle", // Google Assistant
-      "com.google.android.gms.location.history", // Google Location History
-  });
   final static List<String> CHROME_BROWSERS = Arrays.asList(
       new String[] {"com.google.android.webview", "com.android.webview", "com.google.chrome"});
 
@@ -56,12 +40,11 @@ public class PackageManagerHelper {
     JSONObject output = new JSONObject();
     PackageManager pm = ctx.getPackageManager();
     List<String> browsers = getBrowserIDs(pm);
-    List<PackageInfo> packs = pm.getInstalledPackages(0);
+    List<PackageInfo> packs = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS);
     for (int i = 0; i < packs.size(); i++) {
       PackageInfo p = packs.get(i);
       // Do not add ourselves and System Apps to the list, unless it might be a browser
-      if ((!isSystemPackage(p) || browsers.contains(p.packageName)
-              || SYSTEM_ALLOWLIST.contains(p.packageName))
+      if ((!isSystemPackage(p,pm) || browsers.contains(p.packageName))
           && !isSelf(p)) {
         String appid = p.packageName;
         String appName = p.applicationInfo.loadLabel(pm).toString();
@@ -84,12 +67,46 @@ public class PackageManagerHelper {
     return new ColorDrawable(Color.TRANSPARENT);
   }
 
-  private static boolean isSystemPackage(PackageInfo pkgInfo) {
-    return (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+  private static boolean isSystemPackage(PackageInfo pkgInfo, PackageManager pm) {
+    if( (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0){
+      // no system app
+      return false;
+    }
+    // For Systems Packages there are Cases where we want to add it anyway:
+    // Has the use Internet permission (otherwise makes no sense)
+    // Had at least 1 update (this means it's probably on any AppStore)
+    // Has a a launch activity (has a ui and is not just a system service)
+
+    if(!usesInternet(pkgInfo)){
+      return true;
+    }
+    if(!hadUpdate(pkgInfo)){
+      return true;
+    }
+    if(pm.getLaunchIntentForPackage(pkgInfo.packageName) == null){
+      // If there is no way to launch this from a homescreen, def a sys package
+      return true;
+    }
+    return false;
   }
   private static boolean isSelf(PackageInfo pkgInfo) {
     return pkgInfo.packageName.equals("org.mozilla.firefox.vpn")
         || pkgInfo.packageName.equals("org.mozilla.firefox.vpn.debug");
+  }
+  private static boolean usesInternet(PackageInfo pkgInfo){
+    if(pkgInfo.requestedPermissions == null){
+      return false;
+    }
+    for(int i=0; i < pkgInfo.requestedPermissions.length; i++) {
+      String permission = pkgInfo.requestedPermissions[i];
+      if(Manifest.permission.INTERNET.equals(permission)){
+        return true;
+      }
+    }
+    return false;
+  }
+  private static boolean hadUpdate(PackageInfo pkgInfo){
+    return pkgInfo.lastUpdateTime > pkgInfo.firstInstallTime;
   }
 
   // Returns List of all Packages that can classify themselves as browsers

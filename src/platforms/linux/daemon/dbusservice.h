@@ -6,6 +6,10 @@
 #define DBUSSERVICE_H
 
 #include "daemon/daemon.h"
+#include "apptracker.h"
+#include "iputilslinux.h"
+#include "dnsutilslinux.h"
+#include "pidtracker.h"
 #include "wireguardutilslinux.h"
 
 class DbusAdaptor;
@@ -21,8 +25,6 @@ class DBusService final : public Daemon {
 
   void setAdaptor(DbusAdaptor* adaptor);
 
-  bool checkInterface();
-
   using Daemon::activate;
 
  public slots:
@@ -34,20 +36,41 @@ class DBusService final : public Daemon {
   QString version();
   QString getLogs();
 
- protected:
-  bool run(Op op, const InterfaceConfig& config) override;
+  QString runningApps();
+  bool firewallApp(const QString& appName, const QString& state);
+  bool firewallPid(int rootpid, const QString& state);
+  bool firewallClear();
 
+ protected:
   bool supportServerSwitching(const InterfaceConfig& config) const override;
   bool switchServer(const InterfaceConfig& config) override;
 
   bool supportWGUtils() const override { return true; }
   WireguardUtils* wgutils() override;
+  bool supportIPUtils() const override { return true; }
+  IPUtils* iputils() override;
+  bool supportDnsUtils() const override { return true; }
+  DnsUtils* dnsutils() override;
 
   QByteArray getStatus() override;
 
  private:
+  bool removeInterfaceIfExists();
+  QString getAppStateCgroup(const QString& state);
+
+ private slots:
+  void appLaunched(const QString& name, int rootpid);
+  void appTerminated(const QString& name, int rootpid);
+
+ private:
   DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
+  IPUtilsLinux* m_iputils = nullptr;
+  DnsUtilsLinux* m_dnsutils = nullptr;
+
+  AppTracker* m_apptracker = nullptr;
+  PidTracker* m_pidtracker = nullptr;
+  QMap<QString, QString> m_firewallApps;
 };
 
 #endif  // DBUSSERVICE_H

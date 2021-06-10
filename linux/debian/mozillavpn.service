@@ -5,3 +5,6 @@ Description=MozillaVPN D-Bus service
 Type=dbus
 BusName=org.mozilla.vpn.dbus
 ExecStart=/usr/bin/mozillavpn linuxdaemon
+
+[Install]
+WantedBy=multi-user.target

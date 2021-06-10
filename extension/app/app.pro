@@ -55,7 +55,7 @@ linux:!android {
     error(Unsupported platform)
 }
 
-equals(QMAKE_CXX, clang++) {
+coverage {
     QMAKE_CXXFLAGS += -fprofile-instr-generate -fcoverage-mapping
     QMAKE_LFLAGS += -fprofile-instr-generate -fcoverage-mapping
 }
