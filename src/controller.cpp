@@ -210,7 +210,7 @@ bool Controller::silentSwitchServers() {
 
   if (servers.length() <= 1) {
     logger.log()
-        << "Cannot siltent switch servers because there is only one available";
+        << "Cannot silent switch servers because there is only one available";
     return false;
   }
 
