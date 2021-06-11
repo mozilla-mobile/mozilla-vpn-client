@@ -56,6 +56,7 @@ describe('Connectivity', function() {
   });
 
   it('connecting', async () => {
+    await vpn.setSetting('connection-change-notification', 'true');
     // TODO: investigate why the click doesn't work on github.
     // await vpn.clickOnElement('controllerToggle');
     await vpn.activate();
@@ -93,6 +94,7 @@ describe('Connectivity', function() {
   it('disconnecting', async () => {
     // TODO: investigate why the click doesn't work on github.
     // await vpn.clickOnElement('controllerToggle');
+    await vpn.setSetting('connection-change-notification', 'true');
     await vpn.deactivate();
 
     await vpn.waitForCondition(async () => {

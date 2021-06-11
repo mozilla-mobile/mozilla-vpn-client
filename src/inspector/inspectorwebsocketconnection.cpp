@@ -166,6 +166,30 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->localNetworkAccess() ? "true"
                                                                   : "false";
         }},
+    // server-switch-notification
+    WebSocketSettingCommand{
+        "server-switch-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setServerSwitchNotification(value ==
+                                                                  "true");
+        },
+        []() {
+          return SettingsHolder::instance()->serverSwitchNotification()
+                     ? "true"
+                     : "false";
+        }},
+        // connection-change-notification
+    WebSocketSettingCommand{
+        "connection-change-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setConnectionChangeNotification(value ==
+                                                                  "true");
+        },
+        []() {
+          return SettingsHolder::instance()->connectionChangeNotification()
+                     ? "true"
+                     : "false";
+        }},
 
     // language
     WebSocketSettingCommand{
