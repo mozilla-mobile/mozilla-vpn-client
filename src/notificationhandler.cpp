@@ -78,7 +78,7 @@ void NotificationHandler::showNotification() {
                       .arg(vpn->currentServer()->countryName())
                       .arg(vpn->currentServer()->cityName());
       } else {
-        if(!SettingsHolder::instance()->connectionChangeNotification()){
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
@@ -96,7 +96,7 @@ void NotificationHandler::showNotification() {
     case Controller::StateOff:
       if (m_connected) {
         m_connected = false;
-        if(!SettingsHolder::instance()->connectionChangeNotification()){
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
           return;
         }
