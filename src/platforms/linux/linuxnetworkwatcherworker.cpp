@@ -31,7 +31,7 @@
 #endif
 
 #define NM_802_11_AP_SEC_WEAK_CRYPTO \
-  NM_802_11_AP_SEC_PAIR_WEP40 | NM_802_11_AP_SEC_PAIR_WEP104
+  (NM_802_11_AP_SEC_PAIR_WEP40 | NM_802_11_AP_SEC_PAIR_WEP104)
 
 constexpr const char* DBUS_NETWORKMANAGER = "org.freedesktop.NetworkManager";
 
@@ -41,9 +41,10 @@ Logger logger(LOG_LINUX, "LinuxNetworkWatcherWorker");
 
 static inline bool checkUnsecureFlags(int rsnFlags, int wpaFlags) {
   // If neither WPA nor WPA2/RSN are supported, then the network is unencrypted
-  if (rsnFlags == NM_802_11_AP_SEC_NONE || wpaFlags == NM_802_11_AP_SEC_NONE) {
+  if (rsnFlags == NM_802_11_AP_SEC_NONE && wpaFlags == NM_802_11_AP_SEC_NONE) {
     return false;
   }
+
   // Consider the user of weak cryptography to be unsecure
   if ((rsnFlags & NM_802_11_AP_SEC_WEAK_CRYPTO) ||
       (wpaFlags & NM_802_11_AP_SEC_WEAK_CRYPTO)) {
@@ -160,7 +161,7 @@ void LinuxNetworkWatcherWorker::checkDevices() {
 
     int rsnFlags = ap.property("RsnFlags").toInt();
     int wpaFlags = ap.property("WpaFlags").toInt();
-    if (checkUnsecureFlags(rsnFlags, wpaFlags)) {
+    if (!checkUnsecureFlags(rsnFlags, wpaFlags)) {
       QString ssid = ap.property("Ssid").toString();
       QString bssid = ap.property("HwAddress").toString();
 
