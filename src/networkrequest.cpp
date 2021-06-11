@@ -298,8 +298,11 @@ NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
 NetworkRequest* NetworkRequest::createForFeedback(QObject* parent, const QString& feedbackText, const QString& logs, const qint8 rating, const QString& category) {
   NetworkRequest* r = new NetworkRequest(parent, 201);
 
-  // QUrl url(Constants::API_URL);
-  QUrl url("http://localhost:3000");
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+  r->m_request.setRawHeader("Authorization", authorizationHeader);
+
+  QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/feedback");
   r->m_request.setUrl(url);
 
@@ -307,12 +310,12 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent, const QString
                          "application/json");
 
   QJsonObject obj;
-  obj.insert("feedbackText", QJsonValue(feedbackText));
-  obj.insert("logs", QJsonValue(logs));
-  obj.insert("versionString", QJsonValue(MozillaVPN::instance()->versionString()));
-  obj.insert("platformVersion", QJsonValue(QString(NetworkManager::osVersion())));
-  obj.insert("rating", QJsonValue(rating));
-  obj.insert("category", QJsonValue(category));
+  obj.insert("feedbackText", feedbackText);
+  obj.insert("logs", logs);
+  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("platformVersion", QString(NetworkManager::osVersion()));
+  obj.insert("rating", rating);
+  obj.insert("category", category);
 
   QJsonDocument json;
   json.setObject(obj);

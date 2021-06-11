@@ -12,10 +12,13 @@
 
 namespace {
 Logger logger(LOG_MAIN, "TaskSendFeedback");
+
+constexpr uint32_t FEEDBACK_MESSAGE_MAX_LENGTH = 1000;
+constexpr uint32_t FEEDBACK_LOG_MAX_LENGTH = 100000;
 }
 
 TaskSendFeedback::TaskSendFeedback(const QString& feedbackText, const QString& logs, const qint8 rating, const QString& category)
-    : Task("TaskSendFeedback"), m_feedbackText(feedbackText.left(1000)), m_logs(logs.right(100000)), m_rating(rating), m_category(category) {
+    : Task("TaskSendFeedback"), m_feedbackText(feedbackText.left(FEEDBACK_MESSAGE_MAX_LENGTH)), m_logs(logs.right(FEEDBACK_LOG_MAX_LENGTH)), m_rating(rating), m_category(category) {
   MVPN_COUNT_CTOR(TaskSendFeedback);
 }
 

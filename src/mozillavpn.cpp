@@ -671,10 +671,10 @@ void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
     Q_ASSERT(buffer);
 
     delete out;
+    // buffer is getting copied by TaskSendFeedback so we can delete it afterwards
     scheduleTask(new TaskSendFeedback(feedbackText, *buffer, rating, category));
     delete buffer;
   });
-
 
   return;
 }

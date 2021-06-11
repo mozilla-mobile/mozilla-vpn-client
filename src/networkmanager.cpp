@@ -61,8 +61,7 @@ QByteArray NetworkManager::userAgent() {
     out << "MozillaVPN/" << APP_VERSION << " (";
 
     // System data
-    out << "sys:";
-    out << NetworkManager::osVersion();
+    out << "sys:" << NetworkManager::osVersion();
 
 #ifdef MVPN_EXTRA_USERAGENT
     out << "; ";
