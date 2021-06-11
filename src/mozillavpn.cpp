@@ -790,7 +790,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      // This type of error might be caused by switchting the VPN
+      // This type of error might be caused by switching the VPN
       // on, in which case it's okay to be ignored.
       // In Case the vpn is not connected - handle this like a
       // ConnectionFailureError
