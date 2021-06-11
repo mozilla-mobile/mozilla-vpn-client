@@ -221,6 +221,10 @@ class MozillaVPN final : public QObject {
 
   void heartbeatCompleted(bool success);
 
+  void createFeedbackToResend(const QString& feedbackText, const qint8 rating, const QString& category);
+
+  void resendFeedback();
+
  private:
   void setState(State state);
 
@@ -245,6 +249,9 @@ class MozillaVPN final : public QObject {
 
   void serializeLogs(QTextStream* out,
                      std::function<void()>&& finalizeCallback);
+
+  void createFeedbackTask(const QString& feedbackText, const qint8 rating, const QString& category, 
+                          std::function<void(Task*)>&& a_finalizeCallback);
 
 #ifdef MVPN_IOS
   void subscriptionStarted();
@@ -326,6 +333,7 @@ class MozillaVPN final : public QObject {
   // Task handling.
   Task* m_running_task = nullptr;
   QList<Task*> m_tasks;
+  QList<Task*> m_resendFeedbackTasks;
 
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;

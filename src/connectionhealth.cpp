@@ -104,6 +104,8 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
   // If a ping has been received, we have signal. Restart the timer.
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
 
+  MozillaVPN::instance()->resendFeedback();
+
   if (msec < PING_TIME_UNSTABLE_SEC * 1000) {
     setStability(Stable);
   } else {

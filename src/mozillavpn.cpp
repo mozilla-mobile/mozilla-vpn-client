@@ -660,23 +660,48 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
   }));
 }
 
-void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating, const QString& category) {
-  logger.log() << "Submit Feedback";
+void MozillaVPN::createFeedbackTask(const QString& feedbackText, const qint8 rating,
+      const QString& category, std::function<void(Task*)>&& a_finalizeCallback) {
+
+  logger.log() << "Create feedback task";
+
+  std::function<void(Task*)> finalizeCallback = std::move(a_finalizeCallback);
 
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [this, out, buffer, feedbackText, rating, category]{
+  serializeLogs(out, [finalizeCallback, out, buffer, feedbackText, rating, category]{
     Q_ASSERT(out);
     Q_ASSERT(buffer);
 
     delete out;
     // buffer is getting copied by TaskSendFeedback so we can delete it afterwards
-    scheduleTask(new TaskSendFeedback(feedbackText, *buffer, rating, category));
+    finalizeCallback(new TaskSendFeedback(feedbackText, *buffer, rating, category));
     delete buffer;
   });
 
   return;
+}
+
+void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating, const QString& category) {
+  logger.log() << "Submit Feedback";
+
+  createFeedbackTask(feedbackText, rating, category, [this](Task* task) { scheduleTask(task); });
+}
+
+void MozillaVPN::createFeedbackToResend(const QString& feedbackText, const qint8 rating, const QString& category) {
+  logger.log() << "Scheduling feedback to be resend";
+
+  createFeedbackTask(feedbackText, rating, category, [this](Task* task) { m_resendFeedbackTasks.append(task); });
+}
+
+void MozillaVPN::resendFeedback() {
+  logger.log() << "Resending feedback";
+
+  m_tasks.append(m_resendFeedbackTasks);
+  m_resendFeedbackTasks.clear();
+
+  maybeRunTask();
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {

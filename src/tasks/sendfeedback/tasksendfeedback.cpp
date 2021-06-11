@@ -10,11 +10,12 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
+constexpr uint32_t FEEDBACK_MESSAGE_MAX_LENGTH = 1000;
+
+constexpr uint32_t FEEDBACK_LOG_MAX_LENGTH = 100000;
+
 namespace {
 Logger logger(LOG_MAIN, "TaskSendFeedback");
-
-constexpr uint32_t FEEDBACK_MESSAGE_MAX_LENGTH = 1000;
-constexpr uint32_t FEEDBACK_LOG_MAX_LENGTH = 100000;
 }
 
 TaskSendFeedback::TaskSendFeedback(const QString& feedbackText, const QString& logs, const qint8 rating, const QString& category)
@@ -33,7 +34,7 @@ void TaskSendFeedback::run(MozillaVPN* vpn) {
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.log() << "Failed to send feedback" << error;
-            vpn->errorHandle(ErrorHandler::toErrorType(error));
+            vpn->createFeedbackToResend(m_feedbackText, m_rating, m_category);
             emit completed();
           });
 
