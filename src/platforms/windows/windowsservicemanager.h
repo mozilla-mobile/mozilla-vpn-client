@@ -30,16 +30,13 @@ class WindowsServiceManager final : public QObject {
   // Starts to poll for serviceStarted
   bool startService();
 
-  // Stops the service if execute rights are present.
   // Starts to poll for serviceStopped
-  bool stopService();
   void pollStatus();
 
  signals:
   // Gets Emitted after the Service moved From SERVICE_START_PENDING to
   // SERVICE_RUNNING
   void serviceStarted();
-  void serviceStopped();
 
  private:
   // Returns the State of the Process:

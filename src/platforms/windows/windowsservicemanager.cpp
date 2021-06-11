@@ -8,15 +8,14 @@
 #include "mozillavpn.h"
 #include "windowscommons.h"
 
-
 #include <QTimer>
 #include <Windows.h>
 #include <Winsvc.h>
 
-
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsServiceManager");
-}
+constexpr int POLL_TIME = 500;
+}  // namespace
 
 WindowsServiceManager::WindowsServiceManager() {
   DWORD err = NULL;
@@ -35,7 +34,7 @@ WindowsServiceManager::WindowsServiceManager() {
   // Try to get an elevated handle
   m_service = OpenService(m_serviceManager,  // SCM database
                           m_serviceName,     // name of service
-                          (GENERIC_READ | SERVICE_START | SERVICE_STOP));
+                          (GENERIC_READ | SERVICE_START));
   if (m_service == NULL) {
     WindowsCommons::windowsLog("OpenService failed");
     return;
@@ -61,8 +60,7 @@ void WindowsServiceManager::pollStatus() {
     return;
   }
   auto state = getStatus();
-  logger.log() << "Polling Status" << m_goalState
-               << "wanted, has: " << state;
+  logger.log() << "Polling Status" << m_goalState << "wanted, has: " << state;
   if ((state != m_goalState)) {
     if (m_currentWaitTime >= m_maxWaitTime) {
       m_timer.stop();
@@ -78,17 +76,13 @@ void WindowsServiceManager::pollStatus() {
     emit serviceStarted();
     return;
   }
-  if (state == SERVICE_STOPPED) {
-    emit serviceStopped();
-    return;
-  }
 }
 
 void WindowsServiceManager::startPolling(DWORD goalState, int maxWaitSec) {
   m_goalState = goalState;
   m_maxWaitTime = maxWaitSec;
   m_currentWaitTime = 0;
-  m_timer.start(1000);
+  m_timer.start(POLL_TIME);
 }
 
 DWORD WindowsServiceManager::getStatus() const {
@@ -98,12 +92,13 @@ DWORD WindowsServiceManager::getStatus() const {
     return SERVICE_STOPPED;
   }
   DWORD dwBytesNeeded;  // Contains missing bytes if struct is too small?
-  bool ok = QueryServiceStatusEx(m_service,                       // handle to service
-                       SC_STATUS_PROCESS_INFO,          // information level
-                       (LPBYTE)&serviceStatus,          // address of structure
-                       sizeof(SERVICE_STATUS_PROCESS),  // size of structure
-                       &dwBytesNeeded);
-  if(ok){
+  bool ok =
+      QueryServiceStatusEx(m_service,               // handle to service
+                           SC_STATUS_PROCESS_INFO,  // information level
+                           (LPBYTE)&serviceStatus,  // address of structure
+                           sizeof(SERVICE_STATUS_PROCESS),  // size of structure
+                           &dwBytesNeeded);
+  if (ok) {
     return serviceStatus.dwCurrentState;
   }
   return SERVICE_STOPPED;
@@ -129,26 +124,6 @@ bool WindowsServiceManager::startService() {
     startPolling(SERVICE_RUNNING, 10);
   } else {
     WindowsCommons::windowsLog("StartService failed");
-  }
-  return ok;
-}
-
-bool WindowsServiceManager::stopService() {
-  if (m_service == NULL) {
-    logger.log() << "Need access to stop services";
-    return false;
-  }
-  auto state = getStatus();
-  if (state != SERVICE_RUNNING && state != SERVICE_START_PENDING) {
-    logger.log() << ("Service stop not possible, as its not running");
-  }
-
-  bool ok = ControlService(m_service, SERVICE_CONTROL_STOP, NULL);
-  if (ok) {
-    logger.log() << ("Service stop requested");
-    startPolling(SERVICE_STOPPED, 10);
-  } else {
-    WindowsCommons::windowsLog("StopService failed");
   }
   return ok;
 }
