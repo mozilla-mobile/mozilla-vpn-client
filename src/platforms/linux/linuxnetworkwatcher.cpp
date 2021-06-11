@@ -6,6 +6,7 @@
 #include "linuxnetworkwatcherworker.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "timersingleshot.h"
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcher");
@@ -32,16 +33,19 @@ void LinuxNetworkWatcher::initialize() {
 
   m_worker = new LinuxNetworkWatcherWorker(&m_thread);
 
-  connect(this, &LinuxNetworkWatcher::initializeInThread, m_worker,
-          &LinuxNetworkWatcherWorker::initialize);
-
   connect(this, &LinuxNetworkWatcher::checkDevicesInThread, m_worker,
           &LinuxNetworkWatcherWorker::checkDevices);
 
   connect(m_worker, &LinuxNetworkWatcherWorker::unsecuredNetwork, this,
           &LinuxNetworkWatcher::unsecuredNetwork);
 
-  emit initializeInThread();
+  // Let's wait a few seconds to allow the UI to be fully loaded and shown.
+  // This is not strictly needed, but it's better for user experience because
+  // it makes the UI faster to appear, plus it gives a bit of delay between the
+  // UI to appear and the first notification.
+  TimerSingleShot::create(this, 2000, [this]() {
+    QMetaObject::invokeMethod(m_worker, "initialize", Qt::QueuedConnection);
+  });
 }
 
 void LinuxNetworkWatcher::start() {
