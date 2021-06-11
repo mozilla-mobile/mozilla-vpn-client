@@ -25,7 +25,8 @@ constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
 constexpr const char* SETTINGS_SERVERSWITCHNOTIFICATION =
     "serverSwitchNotification";
-constexpr const char* SETTINGS_CONNECTIONSWITCHNOTIFICATION= "connectionChangeNotification";
+constexpr const char* SETTINGS_CONNECTIONSWITCHNOTIFICATION =
+    "connectionChangeNotification";
 constexpr const char* SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char* SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
@@ -60,7 +61,6 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
-
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -225,8 +225,11 @@ GETSETDEFAULT(SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT, bool, toBool,
               SETTINGS_SERVERSWITCHNOTIFICATION, hasServerSwitchNotification,
               serverSwitchNotification, setServerSwitchNotification,
               serverSwitchNotificationChanged);
-GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT,bool,toBool, SETTINGS_CONNECTIONSWITCHNOTIFICATION,
-              hasConnectionChangeNotification, connectionChangeNotification, setConnectionChangeNotification, connectionChangeNotificationChanged);
+GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
+              SETTINGS_CONNECTIONSWITCHNOTIFICATION,
+              hasConnectionChangeNotification, connectionChangeNotification,
+              setConnectionChangeNotification,
+              connectionChangeNotificationChanged);
 
 #undef GETSETDEFAULT
 
