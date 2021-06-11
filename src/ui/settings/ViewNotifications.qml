@@ -98,7 +98,7 @@ VPNFlickable {
 
             //% "Server Switchting Notification"
             labelText: qsTrId("vpn.settings.notification.serverSwitch")
-            //% "Get notified when you successfully switched Servers"
+            //% "Get notified when you successfully switched servers"
             subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
 
             isChecked: (VPNSettings.serverSwitchNotification)
@@ -116,7 +116,7 @@ VPNFlickable {
 
             //% "Connection Change Notification"
             labelText: qsTrId("vpn.settings.notification.connectionChange")
-            //% "Get notified when the Connection Status Changed"
+            //% "Get notified when the connection status changes"
             subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
 
             isChecked: (VPNSettings.connectionChangeNotification)
