@@ -96,7 +96,7 @@ VPNFlickable {
 
             width: parent.width
 
-            //% "Server Switchting Notification"
+            //% "Server Switching Notification"
             labelText: qsTrId("vpn.settings.notification.serverSwitch")
             //% "Get notified when you successfully switched servers"
             subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
