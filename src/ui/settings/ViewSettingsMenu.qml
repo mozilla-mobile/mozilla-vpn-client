@@ -130,7 +130,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/settings/notifications.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewNotifications.qml")
-            visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported
+            visible: VPNFeatureList.captivePortalNotificationSupported || VPNFeatureList.unsecuredNetworkNotificationSupported || VPNFeatureList.notificationControlSupported
         }
         VPNSettingsItem {
             objectName: "settingsLanguages"
