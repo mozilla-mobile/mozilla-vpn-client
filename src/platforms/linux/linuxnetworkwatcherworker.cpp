@@ -30,16 +30,28 @@
 #  define NM_802_11_AP_SEC_PAIR_WEP104 0x00000002
 #endif
 
+#define NM_802_11_AP_SEC_WEAK_CRYPTO \
+  (NM_802_11_AP_SEC_PAIR_WEP40 | NM_802_11_AP_SEC_PAIR_WEP104)
+
 constexpr const char* DBUS_NETWORKMANAGER = "org.freedesktop.NetworkManager";
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcherWorker");
 }
 
-static inline bool checkUnsecureFlags(int securityFlags) {
-  return (securityFlags == NM_802_11_AP_SEC_NONE) ||
-         (securityFlags & NM_802_11_AP_SEC_PAIR_WEP40 ||
-          securityFlags & NM_802_11_AP_SEC_PAIR_WEP104);
+static inline bool checkUnsecureFlags(int rsnFlags, int wpaFlags) {
+  // If neither WPA nor WPA2/RSN are supported, then the network is unencrypted
+  if (rsnFlags == NM_802_11_AP_SEC_NONE && wpaFlags == NM_802_11_AP_SEC_NONE) {
+    return false;
+  }
+
+  // Consider the user of weak cryptography to be unsecure
+  if ((rsnFlags & NM_802_11_AP_SEC_WEAK_CRYPTO) ||
+      (wpaFlags & NM_802_11_AP_SEC_WEAK_CRYPTO)) {
+    return false;
+  }
+  // Otherwise, the network is secured with reasonable cryptography
+  return true;
 }
 
 LinuxNetworkWatcherWorker::LinuxNetworkWatcherWorker(QThread* thread) {
@@ -147,13 +159,17 @@ void LinuxNetworkWatcherWorker::checkDevices() {
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
-    if (checkUnsecureFlags(ap.property("RsnFlags").toInt()) ||
-        checkUnsecureFlags(ap.property("WpaFlags").toInt())) {
+    int rsnFlags = ap.property("RsnFlags").toInt();
+    int wpaFlags = ap.property("WpaFlags").toInt();
+    if (!checkUnsecureFlags(rsnFlags, wpaFlags)) {
       QString ssid = ap.property("Ssid").toString();
       QString bssid = ap.property("HwAddress").toString();
 
       // We have found 1 unsecured network. We don't need to check other wifi
       // network devices.
+      logger.log() << "Unsecured AP detected flags:"
+                   << QString("%1:%2").arg(rsnFlags).arg(wpaFlags)
+                   << "ssid:" << ssid;
       emit unsecuredNetwork(ssid, bssid);
       break;
     }
