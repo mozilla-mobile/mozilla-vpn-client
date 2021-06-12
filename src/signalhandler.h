@@ -6,15 +6,23 @@
 #define SIGNALHANDLER_H
 
 #include <QObject>
+#include <QSocketNotifier>
 
 class SignalHandler final : public QObject {
   Q_OBJECT
 
  public:
   SignalHandler();
+  ~SignalHandler();
+
+ private slots:
+  void pipeReadReady();
 
  private:
   static void saHandler(int signal);
+
+  int m_pipefds[2] = {-1, -1};
+  QSocketNotifier* m_notifier = nullptr;
 
  signals:
   void quitRequested();
