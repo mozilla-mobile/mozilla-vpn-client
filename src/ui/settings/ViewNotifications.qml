@@ -31,10 +31,12 @@ VPNFlickable {
         title: qsTrId("vpn.settings.notifications")
         isSettingsView: true
     }
-    ColumnLayout{
+
+    Column {
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
+        spacing: Theme.windowMargin
 
 
         VPNCheckBoxRow {
