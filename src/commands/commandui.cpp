@@ -121,6 +121,10 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
+    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
+    QmlEngineHolder engineHolder;
+    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
@@ -144,9 +148,6 @@ int CommandUI::run(QStringList& tokens) {
     // Font loader
     FontLoader::loadFonts();
 
-    // Create the QML engine and expose a few internal objects.
-    QmlEngineHolder engineHolder;
-    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
     vpn.initialize();
 
 #ifdef MVPN_MACOS
