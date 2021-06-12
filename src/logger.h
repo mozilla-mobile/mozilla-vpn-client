@@ -56,6 +56,7 @@ class Logger {
     Log& operator<<(const QStringList& t);
     Log& operator<<(const QByteArray& t);
     Log& operator<<(QTextStreamFunction t);
+    Log& operator<<(void* t);
 
    private:
     Logger* m_logger;
