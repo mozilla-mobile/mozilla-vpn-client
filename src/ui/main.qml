@@ -8,7 +8,9 @@ import QtQuick.Window 2.12
 import Mozilla.VPN 1.0
 import "./components"
 import "themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import telemetry 0.15
 
 Window {
     id: window
@@ -62,7 +64,7 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
+        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
           httpClient: {
@@ -279,17 +281,17 @@ Window {
         }
 
         function onSendGleanPings() {
-            Glean.sendPing();
+            Pings.main.submit();
         }
 
         function onTriggerGleanSample(sample) {
-            Glean.sample[sample].record();
+            Sample[sample].record();
         }
 
         function onAboutToQuit() {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
-            Glean.sendPing();
+            Pings.main.submit();
         }
     }
 

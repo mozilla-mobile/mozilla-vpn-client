@@ -8,16 +8,18 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import telemetry 0.15
 
 VPNFlickable {
     id: vpnFlickable
     property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
     Component.onCompleted: {
-        Glean.sample.notificationsViewOpened.record();
+        Sample.notificationsViewOpened.record();
         if (!vpnIsOff) {
-            Glean.sample.notificationsViewWarning.record();
+            Sample.notificationsViewWarning.record();
         }
      }
 
@@ -29,61 +31,100 @@ VPNFlickable {
         title: qsTrId("vpn.settings.notifications")
         isSettingsView: true
     }
-
-    VPNCheckBoxRow {
-        id: captivePortalAlert
-        objectName: "settingCaptivePortalAlert"
-
+    ColumnLayout{
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
-        visible: VPNFeatureList.captivePortalNotificationSupported
 
-        //% "Guest Wi-Fi portal alert"
-        labelText: qsTrId("vpn.settings.guestWifiAlert")
-        //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
-        subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
 
-        isChecked: (VPNSettings.captivePortalAlert)
-        isEnabled: vpnFlickable.vpnIsOff
-        showDivider: vpnFlickable.vpnIsOff
-        onClicked: {
-            if (vpnFlickable.vpnIsOff) {
-                VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
-            }
-       }
+        VPNCheckBoxRow {
+            id: captivePortalAlert
+            objectName: "settingCaptivePortalAlert"
+
+
+            width: parent.width
+            visible: VPNFeatureList.captivePortalNotificationSupported
+
+            //% "Guest Wi-Fi portal alert"
+            labelText: qsTrId("vpn.settings.guestWifiAlert")
+            //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
+            subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
+
+            isChecked: (VPNSettings.captivePortalAlert)
+            isEnabled: vpnFlickable.vpnIsOff
+            showDivider: vpnFlickable.vpnIsOff
+            onClicked: {
+                if (vpnFlickable.vpnIsOff) {
+                    VPNSettings.captivePortalAlert = !VPNSettings.captivePortalAlert
+                }
+           }
+        }
+        VPNCheckBoxRow {
+            id: unsecuredNetworkAlert
+            objectName: "settingUnsecuredNetworkAlert"
+
+            width: parent.width
+            visible: VPNFeatureList.unsecuredNetworkNotificationSupported
+
+            //% "Unsecured network alert"
+            labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
+            //% "Get notified if you connect to an unsecured Wi-Fi network"
+            subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
+
+            isChecked: (VPNSettings.unsecuredNetworkAlert)
+            isEnabled: vpnFlickable.vpnIsOff
+            showDivider: vpnFlickable.vpnIsOff
+            onClicked: {
+                if (vpnFlickable.vpnIsOff) {
+                    VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
+                }
+           }
+        }
+        VPNCheckBoxAlert {
+
+            visible: !vpnFlickable.vpnIsOff
+
+            //% "VPN must be off to edit these settings"
+            //: Associated to a group of settings that require the VPN to be disconnected to change
+            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+        }
+
+        VPNCheckBoxRow {
+            id: switchServersAlert
+            objectName: "switchServersAlert"
+            visible: VPNFeatureList.notificationControlSupported
+
+            width: parent.width
+
+            //% "Server Switching Notification"
+            labelText: qsTrId("vpn.settings.notification.serverSwitch")
+            //% "Get notified when you successfully switched servers"
+            subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
+
+            isChecked: (VPNSettings.serverSwitchNotification)
+            showDivider: true
+            onClicked: {
+                VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
+           }
+        }
+        VPNCheckBoxRow {
+            id: connectionChangeAlert
+            objectName: "connectionChangeAlert"
+            visible: VPNFeatureList.notificationControlSupported
+
+            width: parent.width
+
+            //% "Connection Change Notification"
+            labelText: qsTrId("vpn.settings.notification.connectionChange")
+            //% "Get notified when the connection status changes"
+            subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
+
+            isChecked: (VPNSettings.connectionChangeNotification)
+            showDivider: true
+            onClicked: {
+                VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
+           }
+        }
     }
 
-    VPNCheckBoxRow {
-        id: unsecuredNetworkAlert
-        objectName: "settingUnsecuredNetworkAlert"
-
-        anchors.top: VPNFeatureList.captivePortalNotificationSupported ? captivePortalAlert.bottom : menu.bottom
-        anchors.topMargin: Theme.windowMargin
-        width: parent.width - Theme.windowMargin
-        visible: VPNFeatureList.unsecuredNetworkNotificationSupported
-
-        //% "Unsecured network alert"
-        labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
-        //% "Get notified if you connect to an unsecured Wi-Fi network"
-        subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
-
-        isChecked: (VPNSettings.unsecuredNetworkAlert)
-        isEnabled: vpnFlickable.vpnIsOff
-        showDivider: vpnFlickable.vpnIsOff
-        onClicked: {
-            if (vpnFlickable.vpnIsOff) {
-                VPNSettings.unsecuredNetworkAlert = !VPNSettings.unsecuredNetworkAlert
-            }
-       }
-    }
-
-    VPNCheckBoxAlert {
-        anchors.top: VPNFeatureList.unsecuredNetworkNotificationSupported ? unsecuredNetworkAlert.bottom : captivePortalAlert.bottom
-        visible: !vpnFlickable.vpnIsOff
-
-        //% "VPN must be off to edit these settings"
-        //: Associated to a group of settings that require the VPN to be disconnected to change
-        errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-    }
 }

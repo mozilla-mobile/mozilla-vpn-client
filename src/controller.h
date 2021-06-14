@@ -64,6 +64,8 @@ class Controller final : public QObject {
 
   const QString& switchingCity() const { return m_switchingCity; }
 
+  bool silentSwitchServers();
+
   void updateRequired();
 
   void getBackendLogs(std::function<void(const QString& logs)>&& callback);
@@ -107,6 +109,7 @@ class Controller final : public QObject {
   void readyToUpdate();
   void readyToBackendFailure();
   void connectionRetryChanged();
+  void silentSwitchDone();
 
  private:
   void setState(State state);

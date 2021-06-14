@@ -107,6 +107,7 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
   if (msec < PING_TIME_UNSTABLE_SEC * 1000) {
     setStability(Stable);
   } else {
+    MozillaVPN::instance()->silentSwitch();
     setStability(Unstable);
   }
 }

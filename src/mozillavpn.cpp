@@ -331,6 +331,11 @@ void MozillaVPN::maybeStateMain() {
   }
 }
 
+void MozillaVPN::setServerPublicKey(const QString& publicKey) {
+  logger.log() << "Set server public key:" << publicKey;
+  m_serverPublicKey = publicKey;
+}
+
 void MozillaVPN::getStarted() {
   logger.log() << "Get started";
 
@@ -785,7 +790,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      // This type of error might be caused by switchting the VPN
+      // This type of error might be caused by switching the VPN
       // on, in which case it's okay to be ignored.
       // In Case the vpn is not connected - handle this like a
       // ConnectionFailureError
@@ -1139,6 +1144,12 @@ void MozillaVPN::deactivate() {
 
   deleteTasks();
   scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
+}
+
+void MozillaVPN::silentSwitch() {
+  logger.log() << "VPN tunnel silent server switch";
+
+  scheduleTask(new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
 
 void MozillaVPN::refreshDevices() {

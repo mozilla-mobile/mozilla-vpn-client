@@ -5,7 +5,6 @@
 #include "linuxnetworkwatcherworker.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "timersingleshot.h"
 
 #include <QtDBus/QtDBus>
 
@@ -30,16 +29,28 @@
 #  define NM_802_11_AP_SEC_PAIR_WEP104 0x00000002
 #endif
 
+#define NM_802_11_AP_SEC_WEAK_CRYPTO \
+  (NM_802_11_AP_SEC_PAIR_WEP40 | NM_802_11_AP_SEC_PAIR_WEP104)
+
 constexpr const char* DBUS_NETWORKMANAGER = "org.freedesktop.NetworkManager";
 
 namespace {
 Logger logger(LOG_LINUX, "LinuxNetworkWatcherWorker");
 }
 
-static inline bool checkUnsecureFlags(int securityFlags) {
-  return (securityFlags == NM_802_11_AP_SEC_NONE) ||
-         (securityFlags & NM_802_11_AP_SEC_PAIR_WEP40 ||
-          securityFlags & NM_802_11_AP_SEC_PAIR_WEP104);
+static inline bool checkUnsecureFlags(int rsnFlags, int wpaFlags) {
+  // If neither WPA nor WPA2/RSN are supported, then the network is unencrypted
+  if (rsnFlags == NM_802_11_AP_SEC_NONE && wpaFlags == NM_802_11_AP_SEC_NONE) {
+    return false;
+  }
+
+  // Consider the user of weak cryptography to be unsecure
+  if ((rsnFlags & NM_802_11_AP_SEC_WEAK_CRYPTO) ||
+      (wpaFlags & NM_802_11_AP_SEC_WEAK_CRYPTO)) {
+    return false;
+  }
+  // Otherwise, the network is secured with reasonable cryptography
+  return true;
 }
 
 LinuxNetworkWatcherWorker::LinuxNetworkWatcherWorker(QThread* thread) {
@@ -54,61 +65,54 @@ LinuxNetworkWatcherWorker::~LinuxNetworkWatcherWorker() {
 void LinuxNetworkWatcherWorker::initialize() {
   logger.log() << "initialize";
 
-  // Let's wait a few seconds to allow the UI to be fully loaded and shown.
-  // This is not strictly needed, but it's better for user experience because
-  // it makes the UI faster to appear, plus it gives a bit of delay between the
-  // UI to appear and the first notification.
-  TimerSingleShot::create(this, 2000, [this]() {
-    logger.log()
-        << "Retrieving the list of wifi network devices from NetworkManager";
+  logger.log()
+      << "Retrieving the list of wifi network devices from NetworkManager";
 
-    // To know the NeworkManager DBus methods and properties, read the official
-    // documentation:
-    // https://developer.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
+  // To know the NeworkManager DBus methods and properties, read the official
+  // documentation:
+  // https://developer.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
 
-    QDBusInterface nm(DBUS_NETWORKMANAGER, "/org/freedesktop/NetworkManager",
-                      DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
-    if (!nm.isValid()) {
-      logger.log()
-          << "Failed to connect to the network manager via system dbus";
-      return;
+  QDBusInterface nm(DBUS_NETWORKMANAGER, "/org/freedesktop/NetworkManager",
+                    DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
+  if (!nm.isValid()) {
+    logger.log() << "Failed to connect to the network manager via system dbus";
+    return;
+  }
+
+  QDBusMessage msg = nm.call("GetDevices");
+  QDBusArgument arg = msg.arguments().at(0).value<QDBusArgument>();
+  if (arg.currentType() != QDBusArgument::ArrayType) {
+    logger.log() << "Expected an array of devices";
+    return;
+  }
+
+  QList<QDBusObjectPath> paths = qdbus_cast<QList<QDBusObjectPath> >(arg);
+  for (const QDBusObjectPath& path : paths) {
+    QString devicePath = path.path();
+    QDBusInterface device(DBUS_NETWORKMANAGER, devicePath,
+                          "org.freedesktop.NetworkManager.Device",
+                          QDBusConnection::systemBus());
+    if (device.property("DeviceType").toInt() != NM_DEVICE_TYPE_WIFI) {
+      continue;
     }
 
-    QDBusMessage msg = nm.call("GetDevices");
-    QDBusArgument arg = msg.arguments().at(0).value<QDBusArgument>();
-    if (arg.currentType() != QDBusArgument::ArrayType) {
-      logger.log() << "Expected an array of devices";
-      return;
-    }
+    logger.log() << "Found a wifi device:" << devicePath;
+    m_devicePaths.append(devicePath);
 
-    QList<QDBusObjectPath> paths = qdbus_cast<QList<QDBusObjectPath> >(arg);
-    for (const QDBusObjectPath& path : paths) {
-      QString devicePath = path.path();
-      QDBusInterface device(DBUS_NETWORKMANAGER, devicePath,
-                            "org.freedesktop.NetworkManager.Device",
-                            QDBusConnection::systemBus());
-      if (device.property("DeviceType").toInt() != NM_DEVICE_TYPE_WIFI) {
-        continue;
-      }
+    // Here we monitor the changes.
+    QDBusConnection::systemBus().connect(
+        DBUS_NETWORKMANAGER, devicePath, "org.freedesktop.DBus.Properties",
+        "PropertiesChanged", this,
+        SLOT(propertyChanged(QString, QVariantMap, QStringList)));
+  }
 
-      logger.log() << "Found a wifi device:" << devicePath;
-      m_devicePaths.append(devicePath);
+  if (m_devicePaths.isEmpty()) {
+    logger.log() << "No wifi devices found";
+    return;
+  }
 
-      // Here we monitor the changes.
-      QDBusConnection::systemBus().connect(
-          DBUS_NETWORKMANAGER, devicePath, "org.freedesktop.DBus.Properties",
-          "PropertiesChanged", this,
-          SLOT(propertyChanged(QString, QVariantMap, QStringList)));
-    }
-
-    if (m_devicePaths.isEmpty()) {
-      logger.log() << "No wifi devices found";
-      return;
-    }
-
-    // We could be already be activated.
-    checkDevices();
-  });
+  // We could be already be activated.
+  checkDevices();
 }
 
 void LinuxNetworkWatcherWorker::propertyChanged(QString interface,
@@ -147,13 +151,17 @@ void LinuxNetworkWatcherWorker::checkDevices() {
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
-    if (checkUnsecureFlags(ap.property("RsnFlags").toInt()) ||
-        checkUnsecureFlags(ap.property("WpaFlags").toInt())) {
+    int rsnFlags = ap.property("RsnFlags").toInt();
+    int wpaFlags = ap.property("WpaFlags").toInt();
+    if (!checkUnsecureFlags(rsnFlags, wpaFlags)) {
       QString ssid = ap.property("Ssid").toString();
       QString bssid = ap.property("HwAddress").toString();
 
       // We have found 1 unsecured network. We don't need to check other wifi
       // network devices.
+      logger.log() << "Unsecured AP detected flags:"
+                   << QString("%1:%2").arg(rsnFlags).arg(wpaFlags)
+                   << "ssid:" << ssid;
       emit unsecuredNetwork(ssid, bssid);
       break;
     }

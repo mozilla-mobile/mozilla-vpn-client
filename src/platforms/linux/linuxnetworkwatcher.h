@@ -23,7 +23,6 @@ class LinuxNetworkWatcher final : public NetworkWatcherImpl {
   void start() override;
 
  signals:
-  void initializeInThread();
   void checkDevicesInThread();
 
  private:

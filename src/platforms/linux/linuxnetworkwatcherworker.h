@@ -19,12 +19,13 @@ class LinuxNetworkWatcherWorker final : public QObject {
   explicit LinuxNetworkWatcherWorker(QThread* thread);
   ~LinuxNetworkWatcherWorker();
 
-  void initialize();
-
   void checkDevices();
 
  signals:
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
+
+ public slots:
+  void initialize();
 
  private slots:
   void propertyChanged(QString interface, QVariantMap properties,

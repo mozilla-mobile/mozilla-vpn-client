@@ -18,6 +18,8 @@ constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = true;
 constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = true;
 constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
+constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
+constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
 const QString SETTINGS_USER_DNS_DEFAULT = "0.0.0.0";
@@ -25,6 +27,10 @@ const QString SETTINGS_USER_DNS_DEFAULT = "0.0.0.0";
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
+constexpr const char* SETTINGS_SERVERSWITCHNOTIFICATION =
+    "serverSwitchNotification";
+constexpr const char* SETTINGS_CONNECTIONSWITCHNOTIFICATION =
+    "connectionChangeNotification";
 constexpr const char* SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char* SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
@@ -226,6 +232,15 @@ GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
 GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
               SETTINGS_GLEANENABLED, hasGleanEnabled, gleanEnabled,
               setGleanEnabled, gleanEnabledChanged)
+GETSETDEFAULT(SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT, bool, toBool,
+              SETTINGS_SERVERSWITCHNOTIFICATION, hasServerSwitchNotification,
+              serverSwitchNotification, setServerSwitchNotification,
+              serverSwitchNotificationChanged);
+GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
+              SETTINGS_CONNECTIONSWITCHNOTIFICATION,
+              hasConnectionChangeNotification, connectionChangeNotification,
+              setConnectionChangeNotification,
+              connectionChangeNotificationChanged);
 
 #undef GETSETDEFAULT
 

@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 #if defined(MVPN_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
@@ -61,6 +62,11 @@ void NotificationHandler::showNotification() {
       if (m_switching) {
         m_switching = false;
 
+        if (!SettingsHolder::instance()->serverSwitchNotification()) {
+          // Dont show notification if it's turned off.
+          return;
+        }
+
         //% "VPN Switched Servers"
         title = qtTrId("vpn.systray.statusSwitch.title");
         //% "Switched from %1, %2 to %3, %4"
@@ -72,6 +78,10 @@ void NotificationHandler::showNotification() {
                       .arg(vpn->currentServer()->countryName())
                       .arg(vpn->currentServer()->cityName());
       } else {
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
         //% "Connected to %1, %2"
@@ -86,6 +96,10 @@ void NotificationHandler::showNotification() {
     case Controller::StateOff:
       if (m_connected) {
         m_connected = false;
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
 
         //% "VPN Disconnected"
         title = qtTrId("vpn.systray.statusDisconnected.title");
