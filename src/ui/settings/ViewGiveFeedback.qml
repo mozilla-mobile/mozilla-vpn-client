@@ -15,7 +15,7 @@ import "../themes/themes.js" as Theme
 Item {
     property var rating: 0
     id: feedbackRoot
-    anchors.fill: parent
+
 
     VPNMenu {
         id: menu
@@ -149,21 +149,12 @@ Item {
                     spacing: Theme.windowMargin
 
                     VPNBoldLabel {
-                        text: {
-                            switch (appRating) {
-                            case 1:
-                            case 2:
-                                "We’re sorry to hear you’ve had a poor experience! Please let us know how we can improve."
-                                break
-                            case 3:
-                                "We’d love to know what we can do to improve Mozilla VPN. Please share any specific feedback here."
-                                break
-                            case 4:
-                            case 5:
-                            default:
-                                "Do we have this string?"
-                            }
-                        }
+                        //% "We’re sorry to hear you’ve had a poor experience! Please let us know how we can improve."
+                        property string lowRatingResponse: qsTrId("vpn.feedbackForm.lowRatingResponse")
+
+                        //% "We’d love to know what we can do to improve Mozilla VPN. Please share any specific feedback here."
+                        property string averageToHighRatingResponse: qsTrId("vpn.feedbackForm.averageToHighRatingResponse")
+                        text: appRating >= 3 ? averageToHighRatingResponse : lowRatingResponse
                         lineHeight: 24
                         lineHeightMode: Text.FixedHeight
                         Layout.preferredWidth: parent.width
