@@ -6,11 +6,12 @@ import "../../themes/themes.js" as Theme
 
 Rectangle {
     property bool showInteractionStates: true
+    property variant itemToFocus: parent
 
     id: bg
     antialiasing: true
-    border.color: parent.activeFocus && showInteractionStates ? Theme.input.focusBorder : Theme.input.borderColor
-    border.width:  parent.activeFocus && showInteractionStates ? 2 : 1
+    border.color: itemToFocus.activeFocus && showInteractionStates ? Theme.input.focusBorder : Theme.input.borderColor
+    border.width:  itemToFocus.activeFocus && showInteractionStates ? 2 : 1
     color: Theme.input.backgroundColor
     radius: Theme.cornerRadius
     anchors.fill: parent
@@ -29,7 +30,7 @@ Rectangle {
         border.width: 4
         antialiasing: true
         z: -1
-        opacity: bg.parent.activeFocus && showInteractionStates ? 1 : 0
+        opacity: itemToFocus.activeFocus && showInteractionStates ? 1 : 0
         color: "transparent"
         Behavior on opacity {
             PropertyAnimation {
