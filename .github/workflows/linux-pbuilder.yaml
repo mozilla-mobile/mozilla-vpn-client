@@ -23,7 +23,7 @@ jobs:
       - name: Create base ${{ matrix.config.dist }} image
         run: |
           sudo apt-get install pbuilder debootstrap devscripts -y
-          sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz /opt/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --debootstrapopts --variant=buildd
+          sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --debootstrapopts --variant=buildd
 
       - name: Clone repository
         uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p packages/${{ matrix.config.dist }}
           cp .tmp/mozillavpn_*.dsc packages/${{ matrix.config.dist }}
-          sudo pbuilder build --basetgz /opt/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --buildresult packages/${{ matrix.config.dist }} .tmp/mozillavpn_*.dsc
+          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --buildresult packages/${{ matrix.config.dist }} .tmp/mozillavpn_*.dsc
 
       - name: Uploading
         uses: actions/upload-artifact@v1
