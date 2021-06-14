@@ -77,14 +77,14 @@ VPNFlickable {
            }
         }
         VPNCheckBoxRow {
-            id: useGateWayDNS
+            id: useLocalDNS
             visible: VPNFeatureList.userDNSSupported
             objectName: "settingMozillaDNSEnabled"
             width: parent.width
 
-            //% "Use Local DNS"
+            //% "Use local DNS"
             labelText: qsTrId("vpn.settings.useGatewayDNS")
-            //% "Resolve Websites using a DNS in your local network"
+            //% "Resolve websites using a DNS in your local network"
             subLabelText: qsTrId("vpn.settings.useGatewayDNS.description")
             isChecked: (!VPNSettings.useGatewayDNS)
             isEnabled: vpnFlickable.vpnIsOff
@@ -98,7 +98,7 @@ VPNFlickable {
 
         VPNTextInput{
             id: ipInput
-            visible: (!VPNSettings.useGatewayDNS) && useGateWayDNS.visible
+            visible: (!VPNSettings.useGatewayDNS) && useLocalDNS.visible
             isEnabled: vpnFlickable.vpnIsOff
             Layout.leftMargin: 55
             width: parent.width - Layout.leftMargin
@@ -133,13 +133,5 @@ VPNFlickable {
             //: Associated to a group of settings that require the VPN to be disconnected to change
             errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
         }
-
     }
-
-
-
-
-
-
-
 }
