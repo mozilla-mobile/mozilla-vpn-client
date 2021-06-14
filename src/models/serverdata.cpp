@@ -67,6 +67,10 @@ void ServerData::initializeInternal(const QString& countryCode,
   m_cityName = cityName;
 }
 
+QString ServerData::localizedCountryName() const {
+  return ServerI18N::translateCountryName(m_countryCode, m_countryName);
+}
+
 QString ServerData::localizedCityName() const {
   return ServerI18N::translateCityName(m_countryCode, m_cityName);
 }
