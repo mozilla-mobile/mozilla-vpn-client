@@ -36,6 +36,8 @@ class ServerData final : public QObject {
 
   const QString& countryName() const { return m_countryName; }
 
+  QString localizedCountryName() const;
+
   const QString& cityName() const { return m_cityName; }
 
   QString localizedCityName() const;

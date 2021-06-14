@@ -73,10 +73,10 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 and %3 are countries, %2
         //: and %4 are cities.
         message = qtTrId("vpn.systray.statusSwtich.message")
-                      .arg(m_switchingServerCountry)
-                      .arg(m_switchingServerCity)
-                      .arg(vpn->currentServer()->countryName())
-                      .arg(vpn->currentServer()->cityName());
+                      .arg(m_switchingLocalizedServerCountry)
+                      .arg(m_switchingLocalizedServerCity)
+                      .arg(vpn->currentServer()->localizedCountryName())
+                      .arg(vpn->currentServer()->localizedCityName());
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
@@ -88,8 +88,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(vpn->currentServer()->countryName())
-                      .arg(vpn->currentServer()->cityName());
+                      .arg(vpn->currentServer()->localizedCountryName())
+                      .arg(vpn->currentServer()->localizedCityName());
       }
       break;
 
@@ -107,8 +107,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(vpn->currentServer()->countryName())
-                      .arg(vpn->currentServer()->cityName());
+                      .arg(vpn->currentServer()->localizedCountryName())
+                      .arg(vpn->currentServer()->localizedCityName());
       }
       break;
 
@@ -116,8 +116,10 @@ void NotificationHandler::showNotification() {
       m_connected = true;
 
       m_switching = true;
-      m_switchingServerCountry = vpn->currentServer()->countryName();
-      m_switchingServerCity = vpn->currentServer()->cityName();
+      m_switchingLocalizedServerCountry =
+          vpn->currentServer()->localizedCountryName();
+      m_switchingLocalizedServerCity =
+          vpn->currentServer()->localizedCityName();
       break;
 
     default:
