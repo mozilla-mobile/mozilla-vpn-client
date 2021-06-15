@@ -19,7 +19,7 @@ INSPECTOR=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-i|--inspector] [-n|--networkextension] [-w|--webextension]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-n|--networkextension] [-w|--webextension]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
   print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
@@ -45,10 +45,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   -p | --prod)
     PROD=1
-    shift
-    ;;
-  -i | --inspector)
-    INSPECTOR=1
     shift
     ;;
   -n | --networkextension)
@@ -165,15 +161,6 @@ if [[ "$PROD" ]]; then
   print G yes
   PRODMODE="CONFIG+=production"
 else
-  print G no
-fi
-
-printn Y "Enabling inspector: "
-if [[ "$INSPECTOR" ]]; then
-  print G yes
-  INSPECTOR="CONFIG+=inspector"
-else
-  INSPECTOR=""
   print G no
 fi
 
