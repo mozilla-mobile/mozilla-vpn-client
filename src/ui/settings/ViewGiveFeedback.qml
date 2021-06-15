@@ -191,8 +191,6 @@ Item {
                 spacing: Theme.windowMargin
                 anchors.margins: Theme.windowMargin * 2
                 anchors.topMargin: 20
-//                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
-//                height: window.height - menu.height
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignTop
@@ -209,7 +207,6 @@ Item {
                         text: appRating >= 3 ? averageToHighRatingResponse : lowRatingResponse
                         lineHeight: 24
                         lineHeightMode: Text.FixedHeight
-//                        Layout.preferredWidth: parent.width - Theme.windowMargin * 4
                         wrapMode: Text.WordWrap
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
@@ -347,7 +344,7 @@ Item {
                 spacing: 24
                 VPNPanel {
                     logo: "../resources/heart-check.svg"
-                    //% Thank you!
+                    //% "Thank you!"
                     logoTitle: qsTrId("vpn.feedbackForm.thankyou")
                     //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
                     logoSubtitle: qsTrId("vpn.feedbackForm.thankyouSubtitle")
