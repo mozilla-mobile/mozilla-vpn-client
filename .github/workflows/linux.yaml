@@ -1,4 +1,4 @@
-name: Linux package (focal/bionic)
+name: Linux packages
 on:
   push:
     branches:
@@ -148,4 +148,44 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
             name: Production Build (bionic)
+            path: packages
+
+  hirsute:
+    name: Hirsute Packages
+    strategy:
+      matrix:
+        config:
+            - { name: "Staging", dist: hirsute, buildargs: "-s" }
+            - { name: "Production", dist: hirsute, buildargs: "" }
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create base ${{ matrix.config.dist }} image
+        run: |
+          sudo apt-get install pbuilder debootstrap debhelper devscripts -y
+          sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --debootstrapopts --variant=buildd
+
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install "glean_parser<3.5"
+          pip3 install pyhumps
+          pip3 install pyyaml
+
+      - name: Create package structure
+        shell: bash
+        run: |
+          sudo apt-get install qt5-default qttools5-dev-tools -y
+          ./scripts/linux_script.sh ${{ matrix.config.buildargs}} -r ${{ matrix.config.dist }} --source
+          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --buildresult .tmp .tmp/mozillavpn_*.dsc
+          mkdir packages
+          cp .tmp/*.deb packages
+      
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: ${{ matrix.config.name }} Build (${{ matrix.config.dist }})
             path: packages

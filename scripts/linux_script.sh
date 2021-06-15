@@ -16,7 +16,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage]"
+  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage] [--source]"
   print N ""
   print N "By default, the release is 'focal'"
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
@@ -43,6 +43,10 @@ while [[ $# -gt 0 ]]; do
   -v | --version)
     VERSION="$2"
     shift
+    shift
+    ;;
+  --source)
+    SOURCEONLY=1
     shift
     ;;
   *)
@@ -115,6 +119,10 @@ sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
 sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
 sed -i -e "s/FULLVERSION/$FULLVERSION/g" debian/rules || die "Failed"
-debuild -uc -us || die "Failed"
+if [ -z "$SOURCEONLY" ]; then
+  debuild -uc -us || die "Failed to build Debian package"
+else
+  dpkg-buildpackage --build=source --no-sign --no-check-builddeps || "Failed to build source package"
+fi
 
 print G "All done."
