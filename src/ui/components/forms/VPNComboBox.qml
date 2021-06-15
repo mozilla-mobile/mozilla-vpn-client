@@ -16,6 +16,7 @@ ComboBox {
     Layout.preferredWidth: parent.width
     Layout.preferredHeight: Theme.rowHeight
     currentIndex: -1
+    activeFocusOnTab: true
 
     background: VPNInputBackground {
         z: -1
@@ -26,10 +27,11 @@ ComboBox {
         anchors.right: combo.right
         anchors.rightMargin: Theme.windowMargin / 2
         source: "qrc:/ui/resources/chevron.svg"
-        rotation: comboPopup.visible ? 270 : 90
-        Behavior on rotation {
-            RotationAnimation {
-                duration: 50
+        opacity: comboPopup.visible || combo.focus ? 1 : .7
+        rotation: 90
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 100
             }
         }
     }
@@ -39,13 +41,14 @@ ComboBox {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
         anchors.left: parent.left
-        anchors.leftMargin: Theme.windowMargin / 2
+        anchors.leftMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin * 2
         elide: Text.ElideRight
         z: 1
     }
 
     delegate: ItemDelegate {
+        property var delegateKey
         id: comboDelegate
         width: parent.width
         height: Math.max(Theme.rowHeight, textItem.implicitHeight)
@@ -53,7 +56,7 @@ ComboBox {
         highlighted: combo.highlightedIndex === index
 
         contentItem: Rectangle {
-            width: parent.width
+            anchors.fill: parent
             height: comboDelegate.height
             color: hovered || combo.highlightedIndex === index ? Theme.input.highlight : Theme.input.backgroundColor
 
@@ -84,11 +87,10 @@ ComboBox {
 
     popup: Popup {
         id: comboPopup
-        y: combo.height + 10
+        y: combo.height + 12
         width: combo.width
         height: contentItem.implicitHeight + 2
         padding: 0
-
         opacity: visible ? 1 : 0
 
         Behavior on opacity {
@@ -103,14 +105,28 @@ ComboBox {
             anchors.fill: parent
             clip: true
             interactive: false
-            anchors.margins: 1
             model: combo.popup.visible ? combo.delegateModel : null
             ScrollIndicator.vertical: ScrollIndicator {}
         }
 
+
+
         background: VPNInputBackground {
-            anchors.bottomMargin: -8
-            anchors.topMargin: -8
+            anchors.bottomMargin: -4
+            anchors.topMargin: anchors.bottomMargin
+            border.color: "transparent"
+            DropShadow {
+                source: parent
+                anchors.fill: parent
+                samples: 16
+                transparentBorder: true
+                radius: 7.5
+                color: "#0C0C0D"
+                z: -1
+                opacity: .2
+                cached: true
+            }
+
         }
     }
 }

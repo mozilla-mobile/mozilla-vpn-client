@@ -46,7 +46,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                spacing: 20
+                spacing: 32
                 anchors.topMargin: 20
                 anchors.margins: Theme.windowMargin * 2
 
@@ -57,34 +57,49 @@ Item {
                     lineHeightMode: Text.FixedHeight
                     Layout.preferredWidth: parent.width
                     wrapMode: Text.WordWrap
-                    Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignHCenter
+                    verticalAlignment: Text.AlignBottom
                 }
 
                 RowLayout {
                     id: row
-                    Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: Theme.rowHeight
 
                     VPNFeedbackRadioDelegate {
                         iconSource: "../resources/connection-info-dark.svg"
                         Accessible.name: "So bad"
                         value: 1
                     }
+                    VPNVerticalSpacer {
+                       Layout.preferredHeight: 1
+                       Layout.fillWidth: true
+                    }
                     VPNFeedbackRadioDelegate {
                         iconSource: "../resources/connection-info-dark.svg"
                         Accessible.name: "Bad"
                         value: 2
+                    }
+                    VPNVerticalSpacer {
+                       Layout.preferredHeight: 1
+                       Layout.fillWidth: true
                     }
                     VPNFeedbackRadioDelegate {
                         iconSource: "../resources/connection-info-dark.svg"
                         Accessible.name: "Average"
                         value: 3
                     }
+                    VPNVerticalSpacer {
+                       Layout.preferredHeight: 1
+                       Layout.fillWidth: true
+                    }
                     VPNFeedbackRadioDelegate {
                         iconSource: "../resources/connection-info-dark.svg"
                         Accessible.name: "Good"
                         value: 4
+                    }
+                    VPNVerticalSpacer {
+                       Layout.preferredHeight: 1
+                       Layout.fillWidth: true
                     }
                     VPNFeedbackRadioDelegate {
                         iconSource: "../resources/connection-info-dark.svg"
@@ -146,7 +161,7 @@ Item {
                     Layout.alignment: Qt.AlignTop
                     Layout.preferredWidth: parent.width
                     Layout.fillWidth: true
-                    spacing: Theme.windowMargin
+                    spacing: 24
 
                     VPNBoldLabel {
                         //% "We’re sorry to hear you’ve had a poor experience! Please let us know how we can improve."
@@ -159,6 +174,7 @@ Item {
                         lineHeightMode: Text.FixedHeight
                         Layout.preferredWidth: parent.width
                         wrapMode: Text.WordWrap
+                        verticalAlignment: Text.AlignVCenter
                     }
 
                     VPNComboBox {
@@ -170,37 +186,30 @@ Item {
                             ListElement {
                                 //% "Product Bugs/Errors"
                                 name: qsTrId("vpn.feedbackForm.category1")
-//                                value: "Product Bugs/Errors"
                             }
                             ListElement {
                                 //% "Network Connection/Speed"
                                 name: qsTrId("vpn.feedbackForm.category2")
-//                                value: "Network Connection/Speed"
                             }
                             ListElement {
                                 //% "Product Quality"
                                 name:qsTrId("vpn.feedbackForm.categor3")
-//                                value: "Product Quality"
                             }
                             ListElement {
                                 //% "Access to service"
                                 name: qsTrId("vpn.feedbackForm.category4")
-//                                value: "Access to service"
                             }
                             ListElement {
                                 //% "Compatability"
                                 name: qsTrId("vpn.feedbackForm.category5")
-//                                value: "Compatability"
                             }
                             ListElement {
                                 //% "Ease of Use"
                                 name: qsTrId("vpn.feedbackForm.category6")
-//                                value: "Ease of Use"
                             }
                             ListElement {
                                 //% "Other"
                                 name: qsTrId("vpn.feedbackForm.category7")
-//                                value: "Other"
                             }
                         }
                     }
@@ -212,53 +221,82 @@ Item {
                     }
                 }
 
-                VPNVerticalSpacer {
-                    Layout.preferredHeight: 1
-                }
-
                 ColumnLayout {
                     Layout.preferredWidth: col.width
                     Layout.fillHeight: true
-                    spacing: Theme.windowMargin
+                    spacing: 24
 
                     VPNVerticalSpacer {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        Layout.minimumHeight: 16
+                        Layout.fillHeight: !window.fullscreenRequired()
                     }
 
-                    function sendFeedback() {
-                        console.log(appRating + " " + dropDown.currentValue + " " + textArea.text);
-                        feedbackStackView.push(thankYouView)
-                    }
 
-                    VPNButton {
-                         //% "Submit"
-                        text: qsTrId("vpn.feedbackform.submit")
-                        onClicked: parent.sendFeedback()
-                        Layout.preferredHeight: Theme.rowHeight
-                        Layout.preferredWidth: parent.width
-                        width: undefined
-                        height: undefined
-                        Behavior on opacity {
-                            PropertyAnimation {
-                                duration: 100
-                            }
+                    ColumnLayout {
+                        spacing: 0
+
+                        VPNTextBlock {
+                            width: undefined
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.width
+                            font.pixelSize: Theme.fontSize
+                            horizontalAlignment: Text.AlignHCenter
+                            //% "When you submit feedback, Mozilla VPN will send interaction data to Mozilla. This data isn't associated with your identity."
+                            text: qsTrId("vpn.feedback.privacyBlurb")
+                        }
+
+                        VPNLinkButton {
+                            //% "Mozilla VPN Privacy Notice"
+                            labelText: qsTrId("vpn.feedbackForm.privacyNoticeLink")
+
+                            Layout.alignment: Qt.AlignHCenter
+                            onClicked: parent.sendFeedback()
+                            Layout.preferredHeight: Theme.rowHeight
+
                         }
                     }
 
-                    VPNLinkButton {
-                        //% "Skip"
-                        labelText: qsTrId("vpn.feedbackForm.skip")
-                        Layout.preferredHeight: Theme.rowHeight
-                        Layout.alignment: Qt.AlignHCenter
-                        onClicked: parent.sendFeedback()
-                        implicitHeight: Theme.rowHeight * 2
 
+                    function sendFeedback() {
+                        console.log("app_rating: "+ appRating + " /   category_index: " + dropDown.currentIndex + "  " + "/   comments:" + textArea.userEntry);
+                        feedbackStackView.push(thankYouView)
+                    }
+
+                    ColumnLayout {
+                        spacing: Theme.windowMargin
+                        Layout.preferredWidth: parent.width
+
+                        VPNButton {
+                             //% "Submit"
+                            text: qsTrId("vpn.feedbackform.submit")
+                            onClicked: parent.sendFeedback()
+                            Layout.preferredHeight: Theme.rowHeight
+                            Layout.preferredWidth: parent.width
+                            width: undefined
+                            height: undefined
+                            Behavior on opacity {
+                                PropertyAnimation {
+                                    duration: 100
+                                }
+                            }
+                        }
+
+                        VPNLinkButton {
+                            //% "Skip"
+                            labelText: qsTrId("vpn.feedbackForm.skip")
+                            Layout.preferredHeight: Theme.rowHeight
+                            Layout.alignment: Qt.AlignHCenter
+                            onClicked: parent.sendFeedback()
+                            implicitHeight: Theme.rowHeight
+
+                        }
                     }
 
                     VPNVerticalSpacer {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        Layout.minimumHeight: Theme.rowHeight * 2
                         Layout.maximumHeight: Theme.rowHeight * 2
                     }
                 }

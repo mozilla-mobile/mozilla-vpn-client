@@ -12,21 +12,24 @@ import "../components"
 import "../components/forms"
 import "../themes/themes.js" as Theme
 
+
 RadioButton {
-    property var iconSource
     property var value
+    property alias iconSource: img.source
+
     id: radio
     checked: false
-    Layout.alignment: Qt.AlignCenter
-    implicitHeight: 20
-    implicitWidth: 20
+    implicitHeight: 30
+    implicitWidth: 30
     activeFocusOnTab: true
 
     indicator: VPNIcon {
         id: img
-        source: iconSource
         anchors.centerIn: parent
         antialiasing: true
+        sourceSize.height: 30
+        sourceSize.width: 30
+
     }
 
     ColorOverlay {
@@ -45,7 +48,7 @@ RadioButton {
         border.color: Theme.input.focusBorder
         color: "transparent"
         border.width: 2
-        anchors.margins: -4
+        anchors.margins: -2
         z: -1
         opacity: radio.activeFocus ? 1 : 0
         Behavior on opacity {
