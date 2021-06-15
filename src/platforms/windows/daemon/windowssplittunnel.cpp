@@ -35,10 +35,7 @@ WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent): QObject(parent)
     }else{
         logger.log() << "Driver is installed";
     }
-    auto driver_manager = WindowsServiceManager(DRIVER_SERVICE_NAME);
-    QObject::connect(&driver_manager, &WindowsServiceManager::serviceStarted,this,&WindowsSplitTunnel::initDriver);
-    driver_manager.startService();
-    return;
+    initDriver();
 }
 
 WindowsSplitTunnel::~WindowsSplitTunnel(){
@@ -54,6 +51,11 @@ void WindowsSplitTunnel::initDriver()
 
     if(m_driver == INVALID_HANDLE_VALUE){
         WindowsCommons::windowsLog("Failed to open Driver: ");
+
+        // If the handle is not present, try again after the serivce has started;
+        auto driver_manager = WindowsServiceManager(DRIVER_SERVICE_NAME);
+        QObject::connect(&driver_manager, &WindowsServiceManager::serviceStarted,this,&WindowsSplitTunnel::initDriver);
+        driver_manager.startService();
         return;
     }
 
