@@ -12,12 +12,13 @@ import "../"
 
 ComboBox {
     property var placeholderText: ""
+    textRole: "name"
+    valueRole: "value"
     id: combo
     Layout.preferredWidth: parent.width
     Layout.preferredHeight: Theme.rowHeight
     currentIndex: -1
     activeFocusOnTab: true
-
     background: VPNInputBackground {
         z: -1
     }
@@ -44,11 +45,9 @@ ComboBox {
         anchors.leftMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin * 2
         elide: Text.ElideRight
-        z: 1
     }
 
     delegate: ItemDelegate {
-        property var delegateKey
         id: comboDelegate
         width: parent.width
         height: Math.max(Theme.rowHeight, textItem.implicitHeight)
@@ -89,7 +88,6 @@ ComboBox {
         id: comboPopup
         y: combo.height + 12
         width: combo.width
-        height: contentItem.implicitHeight + 2
         padding: 0
         opacity: visible ? 1 : 0
 
@@ -104,20 +102,20 @@ ComboBox {
             implicitHeight: contentHeight
             anchors.fill: parent
             clip: true
-            interactive: false
             model: combo.popup.visible ? combo.delegateModel : null
             ScrollIndicator.vertical: ScrollIndicator {}
         }
 
 
-
         background: VPNInputBackground {
+            id: bg
+            anchors.fill: parent
             anchors.bottomMargin: -4
             anchors.topMargin: anchors.bottomMargin
             border.color: "transparent"
             DropShadow {
-                source: parent
-                anchors.fill: parent
+                source: bg
+                anchors.fill:bg
                 samples: 16
                 transparentBorder: true
                 radius: 7.5

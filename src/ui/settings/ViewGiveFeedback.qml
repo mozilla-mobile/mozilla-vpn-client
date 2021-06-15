@@ -66,50 +66,58 @@ Item {
                     RowLayout {
                         id: row
                         Layout.preferredHeight: Theme.rowHeight
+
                         VPNFeedbackRadioDelegate {
                             //% "Very poor"
                             Accessible.name: qsTrId("vpn.feedbackForm.veryPoor")
-                            iconSource: "../resources/connection-info-dark.svg"
+                            iconSource: "../resources/faces/veryPoor.svg"
                             value: 1
                         }
                         VPNVerticalSpacer {
                            Layout.preferredHeight: 1
                            Layout.fillWidth: true
                         }
+
                         VPNFeedbackRadioDelegate {
                             //% "Poor"
                             Accessible.name: qsTrId("vpn.feedbackForm.poor")
-                            iconSource: "../resources/connection-info-dark.svg"
+                            iconSource: "../resources/faces/poor.svg"
                             value: 2
                         }
+
                         VPNVerticalSpacer {
                            Layout.preferredHeight: 1
                            Layout.fillWidth: true
                         }
+
                         VPNFeedbackRadioDelegate {
                             //% "Average"
                             Accessible.name: qsTrId("vpn.feedbackForm.average")
-                            iconSource: "../resources/connection-info-dark.svg"
+                            iconSource: "../resources/faces/average.svg"
                             value: 3
                         }
+
                         VPNVerticalSpacer {
                            Layout.preferredHeight: 1
                            Layout.fillWidth: true
                         }
+
                         VPNFeedbackRadioDelegate {
                             //% "Good"
                             Accessible.name: qsTrId("vpn.feedbackForm.good")
-                            iconSource: "../resources/connection-info-dark.svg"
+                            iconSource: "../resources/faces/good.svg"
                             value: 4
                         }
+
                         VPNVerticalSpacer {
                            Layout.preferredHeight: 1
                            Layout.fillWidth: true
                         }
+
                         VPNFeedbackRadioDelegate {
                             //% "Very good"
                             Accessible.name: qsTrId("vpn.feedbackForm.veryGood")
-                            iconSource: "../resources/connection-info-dark.svg"
+                            iconSource: "../resources/faces/veryGood.svg"
                             value: 5
                         }
                     }
@@ -173,7 +181,7 @@ Item {
                 id: col
 
                 function sendFeedback() {
-                    console.log("app_rating: "+ appRating + " /   category_index: " + dropDown.currentIndex + "  " + "/   comments:" + textArea.userEntry);
+                    console.log("app_rating: "+ appRating + " /   category_index: " + dropDown.currentValue + "  " + "/   comments:" + textArea.userEntry);
                     feedbackStackView.push(thankYouView)
                 }
 
@@ -183,13 +191,13 @@ Item {
                 spacing: Theme.windowMargin
                 anchors.margins: Theme.windowMargin * 2
                 anchors.topMargin: 20
-                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
-                height: window.height - menu.height
+//                width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
+//                height: window.height - menu.height
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignTop
                     Layout.preferredWidth: parent.width
-                    Layout.fillWidth: true
+
                     spacing: 24
 
                     VPNBoldLabel {
@@ -201,9 +209,10 @@ Item {
                         text: appRating >= 3 ? averageToHighRatingResponse : lowRatingResponse
                         lineHeight: 24
                         lineHeightMode: Text.FixedHeight
-                        Layout.preferredWidth: parent.width
+//                        Layout.preferredWidth: parent.width - Theme.windowMargin * 4
                         wrapMode: Text.WordWrap
                         verticalAlignment: Text.AlignVCenter
+                        Layout.fillWidth: true
                     }
 
                     VPNComboBox {
@@ -212,33 +221,41 @@ Item {
                         placeholderText: qsTrId("vpn.feedbackForm.chooseCategory")
 
                         model: ListModel {
+
                             ListElement {
                                 //% "Product Bugs/Errors"
                                 name: qsTrId("vpn.feedbackForm.category1")
+                                value: "Product Bugs/Errors - del"
                             }
                             ListElement {
                                 //% "Network Connection/Speed"
                                 name: qsTrId("vpn.feedbackForm.category2")
+                                value: "Network Connection/Speed"
                             }
                             ListElement {
                                 //% "Product Quality"
                                 name:qsTrId("vpn.feedbackForm.categor3")
+                                value: "Network Connection/Speed"
                             }
                             ListElement {
                                 //% "Access to service"
                                 name: qsTrId("vpn.feedbackForm.category4")
+                                value: "Network Connection/Speed"
                             }
                             ListElement {
                                 //% "Compatability"
                                 name: qsTrId("vpn.feedbackForm.category5")
+                                value: "Network Connection/Speed"
                             }
                             ListElement {
                                 //% "Ease of Use"
                                 name: qsTrId("vpn.feedbackForm.category6")
+                                value: "Network Connection/Speed"
                             }
                             ListElement {
                                 //% "Other"
                                 name: qsTrId("vpn.feedbackForm.category7")
+                                value: "Network Connection/Speed"
                             }
                         }
                     }
@@ -250,7 +267,6 @@ Item {
                 }
 
                 ColumnLayout {
-                    Layout.preferredWidth: col.width
                     Layout.fillHeight: true
                     spacing: 24
 
@@ -259,17 +275,18 @@ Item {
                         Layout.minimumHeight: 16
                         Layout.fillHeight: !window.fullscreenRequired()
                     }
-                    ColumnLayout {
+
+                    Column {
                         spacing: 0
+                        Layout.fillWidth: true
+
 
                         VPNTextBlock {
-                            width: undefined
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: parent.width
                             font.pixelSize: Theme.fontSize
                             horizontalAlignment: Text.AlignHCenter
                             //% "When you submit feedback, Mozilla VPN will send interaction data to Mozilla. This data isn't associated with your identity."
                             text: qsTrId("vpn.feedback.privacyBlurb")
+                            width:parent.width
                         }
 
                         VPNLinkButton {
@@ -277,20 +294,19 @@ Item {
                             labelText: qsTrId("vpn.feedbackForm.privacyNoticeLink")
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
-                            Layout.preferredHeight: Theme.rowHeight
+                            width: parent.width
                         }
                     }
 
                     ColumnLayout {
                         spacing: Theme.windowMargin
-                        Layout.preferredWidth: parent.width
 
                         VPNButton {
                              //% "Submit"
                             text: qsTrId("vpn.feedbackform.submit")
                             onClicked: col.sendFeedback()
                             Layout.preferredHeight: Theme.rowHeight
-                            Layout.preferredWidth: parent.width
+                            Layout.fillWidth: true
                             width: undefined
                             height: undefined
                             Behavior on opacity {
@@ -306,6 +322,7 @@ Item {
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: col.sendFeedback()
                             implicitHeight: Theme.rowHeight
+
                         }
                     }
                     VPNVerticalSpacer {
@@ -324,7 +341,7 @@ Item {
         Item {
             ColumnLayout {
                 anchors.top: parent.top
-                anchors.topMargin: window.height * .13
+                anchors.topMargin: window.height * .10
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
                 spacing: 24

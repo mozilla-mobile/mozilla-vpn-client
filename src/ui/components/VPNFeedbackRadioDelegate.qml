@@ -38,7 +38,7 @@ RadioDelegate {
         id: colorOverlay
         anchors.fill: img
         source: img
-        color: radio.checked || radio.activeFocus ? Theme.blue : Theme.fontColor
+        color: radio.checked || radio.focus || radio.activeFocus ? Theme.blue : Theme.fontColor
         Behavior on color {
             PropertyAnimation {
                 duration: 100
@@ -57,28 +57,20 @@ RadioDelegate {
     }
 
 
-    background: VPNInputBackground {
-        id: bg
-        radius: 22
-        border.color: Theme.input.focusBorder
-        color: "transparent"
-        border.width: 2
-        opacity: radio.focus ? 1 : 0
-        z: 1
-
-        VPNFocusOutline {
+    background: VPNFocusOutline {
+            opacity: radio.checked || radio.activeFocus ? 1 : 0
             color: "transparent"
-            opacity: radio.checked && !radio.focus ? 1 : 0
+            border.width: 4
             border.color: Theme.blueFocusOutline
-            border.width: 3
-        }
+            anchors.margins: -3
+            radius: height
 
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: 100
+            Behavior on opacity {
+                PropertyAnimation {
+                    duration: 100
+                }
             }
         }
-    }
 
     VPNMouseArea {
         id: mouseArea
@@ -95,24 +87,20 @@ RadioDelegate {
                 target: colorOverlay
                 color: Theme.bluePressed
             }
-            PropertyChanges {
-                target: bg
-                border.color: Theme.bluePressed
-            }
         },
         State {
             name: uiState.stateDefault
 
             PropertyChanges {
                 target: colorOverlay
-                color: radio.checked ? Theme.blue : Theme.fontColor
+                color: radio.checked || radio.focus || radio.activeFocus ? Theme.blue : Theme.fontColor
             }
         },
         State {
             name: uiState.stateHovered
             PropertyChanges {
                 target: colorOverlay
-                color: Theme.fontColorDark
+                color: Theme.blue
             }
         }
     ]

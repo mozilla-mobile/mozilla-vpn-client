@@ -98,7 +98,7 @@ VPNButtonBase {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: fontSize
         font.family: fontName
-
+        wrapMode: Text.WordWrap
         Behavior on color {
             ColorAnimation {
                 duration: 200
