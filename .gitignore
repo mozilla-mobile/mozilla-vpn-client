@@ -24,6 +24,7 @@ mozillavpn-daemon
 translations/*.qm
 translations/*.pri
 linux/netfilter/netfilter.[ah]
+linux/netfilter/vendor/
 .qm
 .tmp
 .env
