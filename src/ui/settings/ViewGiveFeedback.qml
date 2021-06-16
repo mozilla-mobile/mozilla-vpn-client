@@ -281,7 +281,7 @@ Item {
                         VPNTextBlock {
                             font.pixelSize: Theme.fontSize
                             horizontalAlignment: Text.AlignHCenter
-                            //% "When you submit feedback, Mozilla VPN will send interaction data to Mozilla. This data isn't associated with your identity."
+                            //% "When you submit feedback, Mozilla VPN will send interaction data to Mozilla. This data isn’t associated with your identity."
                             text: qsTrId("vpn.feedback.privacyBlurb")
                             width:parent.width
                         }
