@@ -25,7 +25,6 @@ class FeatureList final : public QObject {
                  CONSTANT)
   Q_PROPERTY(bool userDNSSupported READ userDNSSupported CONSTANT)
 
-
  public:
   FeatureList() = default;
   ~FeatureList() = default;

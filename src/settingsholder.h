@@ -105,7 +105,6 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
 
-
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
   void addVpnDisabledApp(const QString& appID);
@@ -150,7 +149,6 @@ class SettingsHolder final : public QObject {
   void gleanEnabledChanged(bool value);
   void serverSwitchNotificationChanged(bool value);
   void connectionChangeNotificationChanged(bool value);
-
 
  private:
   explicit SettingsHolder(QObject* parent);
