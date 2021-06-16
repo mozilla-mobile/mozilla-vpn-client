@@ -15,7 +15,12 @@ class IAPHandler final : public QAbstractListModel {
   Q_DISABLE_COPY_MOVE(IAPHandler)
 
  public:
-  enum ProductType { ProductMonthly, ProductYearly, ProductUnknown = -1 };
+  enum ProductType {
+    ProductMonthly,
+    ProductHalfYearly,
+    ProductYearly,
+    ProductUnknown = -1
+  };
 
   static IAPHandler* createInstance();
 

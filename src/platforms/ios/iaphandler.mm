@@ -506,6 +506,7 @@ void IAPHandler::sortProductsAndCompleteRegistration() {
 // static
 IAPHandler::ProductType IAPHandler::productTypeToEnum(const QString& type) {
   if (type == "yearly") return ProductYearly;
+  if (type == "half-yearly") return ProductHalfYearly;
   if (type == "monthly") return ProductMonthly;
   return ProductUnknown;
 }
