@@ -10,9 +10,9 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
 
-VPNFlickable {
-    id: vpnFlickable
 
+Item {
+    id: root
     VPNMenu {
         id: menu
         objectName: "settingsPrivacySecurtyBackButton"
@@ -21,22 +21,37 @@ VPNFlickable {
         title: qsTrId("vpn.settings.privacySecurityTitle")
         isSettingsView: true
     }
-
-    VPNCheckBoxRow {
-        id: dataCollection
-        objectName: "dataCollection"
-
+    VPNFlickable {
+        id: vpnFlickable
         anchors.top: menu.bottom
-        anchors.topMargin: Theme.windowMargin
-        width: parent.width - Theme.windowMargin
+        anchors.left: root.left
+        anchors.right: root.right
+        height: root.height - menu.height
+        flickContentHeight: col.height
+        interactive: flickContentHeight > height
 
-        //% "Data collection and use"
-        labelText: qsTrId("vpn.settings.dataCollection")
-        //% "Allow Mozilla VPN to send technical data to Mozilla"
-        subLabelText: qsTrId("vpn.settings.dataCollection.description")
-        isChecked: VPNSettings.gleanEnabled
-        onClicked: {
-            VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
-       }
+        Column {
+            id: col
+            anchors.top: parent.top
+            anchors.topMargin: 18
+            anchors.left: parent.left
+            anchors.right: parent.right
+            spacing: Theme.windowMargin
+
+            VPNCheckBoxRow {
+                id: dataCollection
+                objectName: "dataCollection"
+                width: parent.width - Theme.windowMargin
+
+                //% "Data collection and use"
+                labelText: qsTrId("vpn.settings.dataCollection")
+                //% "Allow Mozilla VPN to send technical data to Mozilla"
+                subLabelText: qsTrId("vpn.settings.dataCollection.description")
+                isChecked: VPNSettings.gleanEnabled
+                onClicked: {
+                    VPNSettings.gleanEnabled = !VPNSettings.gleanEnabled
+               }
+            }
+        }
     }
 }
