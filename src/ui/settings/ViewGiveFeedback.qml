@@ -48,7 +48,7 @@ Item {
                 anchors.top: parent.top
                 spacing: Theme.windowMargin
                 anchors.margins: Theme.windowMargin * 2
-                anchors.topMargin: 20
+                anchors.topMargin: window.fullscreenRequired() ? Theme.contentTopMarginMobile : Theme.contentTopMarginDesktop
 
                 VPNBoldLabel {
                     //% "How would you describe your Mozilla VPN experience so far?"
@@ -190,7 +190,8 @@ Item {
                 anchors.top: parent.top
                 spacing: Theme.windowMargin
                 anchors.margins: Theme.windowMargin * 2
-                anchors.topMargin: 20
+                anchors.topMargin: window.fullscreenRequired() ? Theme.contentTopMarginMobile : Theme.contentTopMarginDesktop
+
 
                 ColumnLayout {
                     Layout.alignment: Qt.AlignTop

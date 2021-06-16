@@ -163,6 +163,8 @@ const removeDeviceAnimation = 300;
 const rowHeight = 40;
 const settingsMaxContentHeight = 740;
 const maxHorizontalContentWidth = 460;
+const contentTopMarginDesktop = 20;
+const contentTopMarginMobile = 48;
 
 const uiState = {
     "stateDefault": "state-default",
