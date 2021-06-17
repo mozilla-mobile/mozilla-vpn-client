@@ -76,6 +76,9 @@ qtloader.js
 
 # WebExtension native app
 extension/app/mozillavpnnp
+.npobj/*
+mozillavpnnp.exe
+mozillavpnnp.vcxproj*
 
 # glean
-glean/telemetry/*
+glean/generated/*
