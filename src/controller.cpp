@@ -254,9 +254,18 @@ bool Controller::silentSwitchServers() {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  QHostAddress dns = QHostAddress(server.ipv4Gateway());
+  if (FeatureList::instance()->userDNSSupported() &&
+      !settingsHolder->useGatewayDNS() &&
+      settingsHolder->userDNS().size() > 0 &&
+      settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
+    dns = QHostAddress(settingsHolder->userDNS());
+    logger.log() << "User DNS Set" << dns.toString();
+  }
+
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, stateToReason(StateSwitching));
+                   vpnDisabledApps, dns, stateToReason(StateSwitching));
   return true;
 }
 
