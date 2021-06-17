@@ -10,12 +10,13 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 
-ColumnLayout {
+Item {
     id: inputRoot
     property var isEnabled: true
     property var valueChanged: ()=>{}
     property var value: ""
     property var valueInavlid: false
+    property var leftPadding: 0
     //% "The entered value is invalid"
     //: Associated to an inputfield for a setting
     property var error: qsTrId("vpn.settings.inputValue.invalid")
@@ -65,9 +66,12 @@ ColumnLayout {
         NumberAnimation  { properties: "outerBorderOpacity"; easing.type: Easing.InOutQuad }
     }
     Item{
-        width: inputRoot.width
+        id: holder
+        anchors.top: inputRoot.top
+        anchors.left: inputRoot.left
+        anchors.leftMargin: leftPadding
+        width: inputRoot.width - leftPadding
         height: Theme.rowHeight+10
-        Layout.alignment: horizontalCenter
         Rectangle{
             radius: Theme.cornerRadius
             opacity: outerBorderOpacity
@@ -116,7 +120,11 @@ ColumnLayout {
 
     }
     VPNCheckBoxAlert {
-        width: parent.width
+        anchors.top: holder.bottom
+        anchors.topMargin: Theme.windowMargin
+        anchors.left: holder.left
+
+        width: holder.width
         visible: valueInavlid
         leftMargin: 0
         errorMessage: error

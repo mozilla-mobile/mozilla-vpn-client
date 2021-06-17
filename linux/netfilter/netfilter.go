@@ -24,7 +24,6 @@ import (
   "github.com/google/nftables"
   "github.com/google/nftables/binaryutil"
   "github.com/google/nftables/expr"
-
   linux "golang.org/x/sys/unix"
 )
 

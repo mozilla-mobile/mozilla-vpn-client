@@ -163,6 +163,8 @@ const removeDeviceAnimation = 300;
 const rowHeight = 40;
 const settingsMaxContentHeight = 740;
 const maxHorizontalContentWidth = 460;
+const contentTopMarginDesktop = 20;
+const contentTopMarginMobile = 48;
 
 const uiState = {
     "stateDefault": "state-default",
@@ -180,3 +182,16 @@ const greyLink = {
     "focusBorder": "#000000"
 };
 
+const input = {
+    "backgroundColor": "#ffffff",
+    "borderColor": "#9E9E9E",
+    "highlight": "#E7E7E7",
+    "defaultColor" : "#ffffff",
+    "buttonHovered": blueHovered,
+    "buttonPressed": bluePressed,
+    "buttonDisabled": blueDisabled,
+    "focusBgColor": blue,
+    "focusOutline": blueFocusOutline,
+    "focusBorder": blueFocusBorder,
+
+};
