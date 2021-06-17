@@ -26,7 +26,7 @@ constexpr uint32_t WINDOWS_TUNNEL_MONITOR_TIMEOUT_MSEC = 2000;
  *     char message[512];
  *   } ring[2048];
  * };
-*/
+ */
 
 constexpr uint32_t RINGLOG_POLL_MSEC = 250;
 constexpr uint32_t RINGLOG_MAGIC_HEADER = 0xbadbabe;
@@ -35,13 +35,14 @@ constexpr uint32_t RINGLOG_HEADER_SIZE = 8;
 constexpr uint32_t RINGLOG_MAX_ENTRIES = 2048;
 constexpr uint32_t RINGLOG_MESSAGE_SIZE = 512;
 constexpr uint32_t RINGLOG_TIMESTAMP_SIZE = 8;
-constexpr uint32_t RINGLOG_FILE_SIZE = RINGLOG_HEADER_SIZE +
-  ((RINGLOG_MESSAGE_SIZE + RINGLOG_TIMESTAMP_SIZE) * RINGLOG_MAX_ENTRIES);
+constexpr uint32_t RINGLOG_FILE_SIZE =
+    RINGLOG_HEADER_SIZE +
+    ((RINGLOG_MESSAGE_SIZE + RINGLOG_TIMESTAMP_SIZE) * RINGLOG_MAX_ENTRIES);
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsTunnelMonitor");
 Logger logdll(LOG_WINDOWS, "tunnel.dll");
-}
+}  // namespace
 
 WindowsTunnelMonitor::WindowsTunnelMonitor() {
   MVPN_COUNT_CTOR(WindowsTunnelMonitor);
@@ -49,7 +50,8 @@ WindowsTunnelMonitor::WindowsTunnelMonitor() {
   m_logEpochNsec = QDateTime::currentMSecsSinceEpoch() * 1000000;
 
   connect(&m_timer, &QTimer::timeout, this, &WindowsTunnelMonitor::timeout);
-  connect(&m_logtimer, &QTimer::timeout, this, &WindowsTunnelMonitor::processLogs);
+  connect(&m_logtimer, &QTimer::timeout, this,
+          &WindowsTunnelMonitor::processLogs);
 }
 
 WindowsTunnelMonitor::~WindowsTunnelMonitor() {
@@ -160,8 +162,8 @@ void WindowsTunnelMonitor::processMessage(int index) {
   Q_ASSERT(index >= 0);
   Q_ASSERT(index < RINGLOG_MAX_ENTRIES);
   size_t offset = index * (RINGLOG_TIMESTAMP_SIZE + RINGLOG_MESSAGE_SIZE);
-  uchar *data = m_logdata + RINGLOG_HEADER_SIZE + offset;
-  
+  uchar* data = m_logdata + RINGLOG_HEADER_SIZE + offset;
+
   quint64 timestamp;
   memcpy(&timestamp, data, 8);
   if (timestamp <= m_logEpochNsec) {

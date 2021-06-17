@@ -48,12 +48,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     return 1;
   }
 
-  typedef struct {
-    const char* p;
-    size_t n;
-  } gostring_t;
-
-  typedef bool WireGuardTunnelService(const ushort *settings);
+  typedef bool WireGuardTunnelService(const ushort* settings);
 
   WireGuardTunnelService* tunnelProc = (WireGuardTunnelService*)GetProcAddress(
       tunnelLib, "WireGuardTunnelService");
