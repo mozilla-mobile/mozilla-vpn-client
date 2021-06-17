@@ -23,6 +23,7 @@ class FeatureList final : public QObject {
                  captivePortalNotificationSupported CONSTANT)
   Q_PROPERTY(bool notificationControlSupported READ notificationControlSupported
                  CONSTANT)
+  Q_PROPERTY(bool userDNSSupported READ userDNSSupported CONSTANT)
 
  public:
   FeatureList() = default;
@@ -41,6 +42,8 @@ class FeatureList final : public QObject {
   bool unsecuredNetworkNotificationSupported() const;
 
   bool notificationControlSupported() const;
+
+  bool userDNSSupported() const;
 };
 
 #endif  // FEATURELIST_H

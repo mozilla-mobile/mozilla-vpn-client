@@ -20,6 +20,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStandardPaths>
+#include <QHostAddress>
 
 namespace {
 Logger logger(LOG_CONTROLLER, "LocalSocketController");
@@ -87,7 +88,8 @@ void LocalSocketController::daemonConnected() {
 void LocalSocketController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, Reason reason) {
+    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+    Reason reason) {
   Q_UNUSED(vpnDisabledApps);
   Q_UNUSED(reason);
 
@@ -109,6 +111,7 @@ void LocalSocketController::activate(
   json.insert("serverPort", QJsonValue((double)server.choosePort()));
   json.insert("ipv6Enabled",
               QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
+  json.insert("dnsServer", QJsonValue(dnsServer.toString()));
 
   QJsonArray allowedIPAddesses;
   for (const IPAddressRange& i : allowedIPAddressRanges) {

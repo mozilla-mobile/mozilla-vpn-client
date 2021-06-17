@@ -17,6 +17,7 @@
 #include <QAndroidJniObject>
 #include <QAndroidParcel>
 #include <QAndroidServiceConnection>
+#include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -134,7 +135,8 @@ void AndroidController::setFallbackConnectedNotification() {
 void AndroidController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, Reason reason) {
+    const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
+    Reason reason) {
   logger.log() << "Activation";
 
   logger.log() << "Prompting for VPN permission";
@@ -184,6 +186,7 @@ void AndroidController::activate(
   args["reason"] = (int)reason;
   args["allowedIPs"] = allowedIPs;
   args["excludedApps"] = excludedApps;
+  args["dns"] = dns.toString();
 
   QJsonDocument doc(args);
   QAndroidParcel sendData;

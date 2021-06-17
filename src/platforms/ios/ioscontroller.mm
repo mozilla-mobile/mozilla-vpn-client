@@ -15,6 +15,7 @@
 
 #include <QByteArray>
 #include <QFile>
+#include <QHostAddress>
 
 namespace {
 
@@ -98,7 +99,8 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 
 void IOSController::activate(const Server& server, const Device* device, const Keys* keys,
                              const QList<IPAddressRange>& allowedIPAddressRanges,
-                             const QList<QString>& vpnDisabledApps, Reason reason) {
+                             const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+                             Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
 
@@ -123,18 +125,18 @@ void IOSController::activate(const Server& server, const Device* device, const K
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 
-  [impl connectWithServerIpv4Gateway:server.ipv4Gateway().toNSString()
-                   serverIpv6Gateway:server.ipv6Gateway().toNSString()
-                     serverPublicKey:server.publicKey().toNSString()
-                    serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
-                          serverPort:server.choosePort()
-              allowedIPAddressRanges:allowedIPAddressRangesNS
-                         ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
-                              reason:reason
-                     failureCallback:^() {
-                       logger.log() << "IOSSWiftController - connection failed";
-                       emit disconnected();
-                     }];
+  [impl connectWithDnsServer:dnsServer.toString().toNSString()
+           serverIpv6Gateway:server.ipv6Gateway().toNSString()
+             serverPublicKey:server.publicKey().toNSString()
+            serverIpv4AddrIn:server.ipv4AddrIn().toNSString()
+                  serverPort:server.choosePort()
+      allowedIPAddressRanges:allowedIPAddressRangesNS
+                 ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
+                      reason:reason
+             failureCallback:^() {
+               logger.log() << "IOSSWiftController - connection failed";
+               emit disconnected();
+             }];
 }
 
 void IOSController::deactivate(Reason reason) {
