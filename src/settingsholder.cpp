@@ -7,8 +7,10 @@
 #include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "rfc1918.h"
 
 #include <QSettings>
+#include <QHostAddress>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
@@ -18,7 +20,9 @@ constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
 constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
+constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
+const QString SETTINGS_USER_DNS_DEFAULT = "0.0.0.0";
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
@@ -38,7 +42,9 @@ constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
 constexpr const char* SETTINGS_PUBLICKEY = "publicKey";
+constexpr const char* SETTINGS_USEGATEWAYDNS = "useGatewayDNS";
 constexpr const char* SETTINGS_USER_AVATAR = "user/avatar";
+constexpr const char* SETTINGS_USER_DNS = "user/dns";
 constexpr const char* SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char* SETTINGS_USER_EMAIL = "user/email";
 constexpr const char* SETTINGS_USER_MAXDEVICES = "user/maxDevices";
@@ -195,6 +201,11 @@ GETSETDEFAULT(FeatureList::instance()->localNetworkAccessSupported() &&
               bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
               localNetworkAccessChanged)
+GETSETDEFAULT(SETTINGS_USEGATEWAYDNS_DEFAULT, bool, toBool,
+              SETTINGS_USEGATEWAYDNS, hasUsegatewayDNS, useGatewayDNS,
+              setUseGatewayDNS, useGatewayDNSChanged)
+GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
+              hasUserDNS, userDNS, setUserDNS, userDNSChanged)
 GETSETDEFAULT(
     FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
         SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
@@ -368,4 +379,25 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
   }
   list.append(surveyId);
   setConsumedSurveys(list);
+}
+
+bool SettingsHolder::isValidUserDNS(const QString& dns) {
+  logger.log() << "checking -> " << dns;
+  QHostAddress address = QHostAddress(dns);
+
+  logger.log() << "is null " << address.isNull();
+
+  if (address.isNull()) {
+    return false;
+  }
+  /* Currently we need to limit this to LAN-DNS
+   * (at least on windows) since the killswitch makes
+   * sure that no dns traffic may happen to outside of lan
+   */
+
+  auto lanRange = RFC1918::ipv4();
+  for (auto network : lanRange) {
+    if (network.contains(address)) return true;
+  }
+  return false;
 }

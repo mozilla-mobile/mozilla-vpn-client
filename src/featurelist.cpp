@@ -109,3 +109,12 @@ bool FeatureList::notificationControlSupported() const {
   return true;
 #endif
 }
+
+bool FeatureList::userDNSSupported() const {
+#if defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_DUMMY) || \
+    defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
+  return true;
+#else
+  return false;
+#endif
+}

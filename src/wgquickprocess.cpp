@@ -27,7 +27,7 @@ bool WgQuickProcess::createConfigFile(
     const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
     const QString& serverPublicKey, const QString& serverIpv4AddrIn,
     const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-    int serverPort, bool ipv6Enabled) {
+    int serverPort, bool ipv6Enabled, const QString& dnsServer) {
   Q_UNUSED(serverIpv6AddrIn);
 
 #define VALIDATE(x) \
@@ -56,9 +56,13 @@ bool WgQuickProcess::createConfigFile(
   }
 
   content.append("\nDNS = ");
-  content.append(serverIpv4Gateway.toUtf8());
+  content.append(dnsServer.toUtf8());
 
-  if (ipv6Enabled) {
+  logger.log() << "USING DNS-->" << dnsServer.toUtf8();
+
+  // If the DNS is not the Gateway, it's a user defined DNS
+  // thus, not add any other :)
+  if (ipv6Enabled && dnsServer.toUtf8() == serverIpv4Gateway.toUtf8()) {
     content.append(", ");
     content.append(serverIpv6Gateway.toUtf8());
   }
@@ -107,7 +111,8 @@ bool WgQuickProcess::run(
     const QString& deviceIpv6Address, const QString& serverIpv4Gateway,
     const QString& serverIpv6Gateway, const QString& serverPublicKey,
     const QString& serverIpv4AddrIn, const QString& serverIpv6AddrIn,
-    const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled) {
+    const QString& allowedIPAddressRanges, int serverPort, bool ipv6Enabled,
+    const QString& dnsServer) {
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
     qWarning("Cannot create a temporary directory");
@@ -120,7 +125,8 @@ bool WgQuickProcess::run(
   if (!createConfigFile(configFile, privateKey, deviceIpv4Address,
                         deviceIpv6Address, serverIpv4Gateway, serverIpv6Gateway,
                         serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
-                        allowedIPAddressRanges, serverPort, ipv6Enabled)) {
+                        allowedIPAddressRanges, serverPort, ipv6Enabled,
+                        dnsServer)) {
     logger.log() << "Failed to create the config file";
     return false;
   }

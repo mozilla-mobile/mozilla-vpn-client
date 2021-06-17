@@ -42,7 +42,7 @@ Item {
             if (!vpnIsOff) {
                 Glean.sample.networkSettingsViewWarning.record();
             }
-         }
+        }
 
         Column {
             id: col
@@ -68,7 +68,7 @@ Item {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
                     }
-               }
+                }
             }
 
             VPNCheckBoxRow {
@@ -88,7 +88,55 @@ Item {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
                     }
-               }
+                }
+            }
+
+            VPNCheckBoxRow {
+                id: useLocalDNS
+                visible: VPNFeatureList.userDNSSupported
+                objectName: "settingMozillaDNSEnabled"
+                width: parent.width - Theme.windowMargin
+
+                //% "Use local DNS"
+                labelText: qsTrId("vpn.settings.useGatewayDNS")
+                //% "Resolve websites using a DNS in your local network"
+                subLabelText: qsTrId("vpn.settings.useGatewayDNS.description")
+                isChecked: (!VPNSettings.useGatewayDNS)
+                isEnabled: vpnFlickable.vpnIsOff
+                showDivider: false
+                onClicked: {
+                    if (vpnFlickable.vpnIsOff) {
+                        VPNSettings.useGatewayDNS = !VPNSettings.useGatewayDNS
+                    }
+                }
+            }
+            VPNTextInput{
+                id: ipInput
+
+                visible: (!VPNSettings.useGatewayDNS) && useLocalDNS.visible
+                isEnabled: vpnFlickable.vpnIsOff
+                leftPadding: 55
+
+                width: parent.width - Theme.windowMargin
+                height: 30
+                value: VPNSettings.userDNS
+                valueChanged:(ip)=>{
+                    if(ip.length == 0){
+                        // If nothing is entered, thats valid too. We will ignore the value later.
+                        ipInput.valueInavlid = false;
+                        VPNSettings.userDNS=ip
+                        return;
+                    }
+                    // Now bother user if the ip is invalid :)
+                    if(!VPNSettings.isValidUserDNS(ip)){
+                        ipInput.valueInavlid = true;
+                        return;
+                    }
+                    ipInput.valueInavlid = false;
+                    if(ip !== VPNSettings.userDNS){
+                        VPNSettings.userDNS=ip
+                    }
+                }
             }
 
             VPNCheckBoxAlert {

@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
+#include <QHostAddress>
 
 #include <QRandomGenerator>
 
@@ -20,7 +21,8 @@ DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 void DummyController::activate(
     const Server& server, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
-    const QList<QString>& vpnDisabledApps, Reason reason) {
+    const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
+    Reason reason) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
   Q_UNUSED(allowedIPAddressRanges);
@@ -28,6 +30,7 @@ void DummyController::activate(
   Q_UNUSED(vpnDisabledApps);
 
   logger.log() << "DummyController activated" << server.hostname();
+  logger.log() << "DummyController DNS" << dnsServer.toString();
 
   emit connected();
 }

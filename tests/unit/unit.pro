@@ -67,6 +67,7 @@ HEADERS += \
     ../../src/platforms/dummy/dummypingsendworker.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
+    ../../src/rfc1918.h \
     ../../src/serveri18n.h \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
@@ -137,6 +138,7 @@ SOURCES += \
     ../../src/platforms/dummy/dummypingsendworker.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
+    ../../src/rfc1918.cpp \
     ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \
