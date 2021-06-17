@@ -241,7 +241,7 @@ Item {
                                 value: "Network Connection/Speed"
                             }
                             ListElement {
-                                //% "Compatability"
+                                //% "Compatibility"
                                 name: qsTrId("vpn.feedbackForm.category5")
                                 value: "Network Connection/Speed"
                             }
