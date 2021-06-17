@@ -33,8 +33,8 @@ VPNFlickable {
         VPNPanel {
             logo: "../resources/updateRecommended.svg"
             logoTitle: qsTrId("vpn.settings.dataCollection")
-            //% "We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing data with Mozilla is optional."
-            logoSubtitle: qsTrId("vpn.telemetryPolicy.telemetryDisclaimer")
+            //% "We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional."
+            logoSubtitle: qsTrId("vpn.telemetryPolicy.updatedTelemetryDisclaimer")
             Layout.fillWidth: true
             anchors.horizontalCenter: undefined
             height: undefined
