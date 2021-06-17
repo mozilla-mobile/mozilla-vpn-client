@@ -32,8 +32,8 @@ Item {
         id: rect
 
         anchors.fill: parent
-        color:"#321C64"
-        radius: box.radius
+        color: boxBackground.color
+        radius: boxBackground.radius
 
     }
     ChartView {
