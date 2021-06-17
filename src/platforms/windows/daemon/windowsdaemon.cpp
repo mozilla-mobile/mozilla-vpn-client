@@ -494,7 +494,7 @@ bool WindowsDaemon::switchServer(const InterfaceConfig& config) {
   }
 
   QByteArray data;
-  while (true) {
+  while (!data.contains("\n\n")) {
     char buffer[512];
     DWORD read = 0;
     if (!ReadFile(pipe, buffer, sizeof(buffer), &read, nullptr)) {
