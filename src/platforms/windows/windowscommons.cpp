@@ -74,3 +74,24 @@ QString WindowsCommons::tunnelConfigFile() {
   logger.log() << "Failed to create the right paths";
   return QString();
 }
+
+QString WindowsCommons::tunnelLogFile() {
+  QStringList paths =
+      QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+
+  for (const QString& path : paths) {
+    QDir dir(path);
+    if (!dir.exists()) {
+      continue;
+    }
+
+    QDir vpnDir(dir.filePath(VPN_NAME));
+    if (!vpnDir.exists()) {
+      continue;
+    }
+
+    return vpnDir.filePath("log.bin");
+  }
+
+  return QString();
+}

@@ -74,6 +74,8 @@ MozillaVPN.lib
 MozillaVPN_resource.rc
 mozillavpnnp.exe
 mozillavpnnp.vcxproj*
+windows/installer/x64/
+windows/tunnel/x64/
 
 # WASM
 mozillavpn.js

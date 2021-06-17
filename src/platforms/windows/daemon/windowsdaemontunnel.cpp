@@ -14,12 +14,6 @@
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsDaemonTunnel");
-
-void tunnelLoggerFunc(int level, const char* msg) {
-  Q_UNUSED(level);
-  logger.log() << "tunnel.dll:" << msg;
-}
-
 }  // namespace
 
 WindowsDaemonTunnel::WindowsDaemonTunnel(QObject* parent)
@@ -59,16 +53,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     size_t n;
   } gostring_t;
 
-  typedef void (*logFunc)(int level, const char* msg);
-  typedef bool WireGuardTunnelService(gostring_t settings);
-  typedef void WireGuardTunnelLogger(logFunc func);
-
-  WireGuardTunnelLogger* tunnelLogger = (WireGuardTunnelLogger*)GetProcAddress(
-      tunnelLib, "WireGuardTunnelLogger");
-  if (!tunnelLogger) {
-    WindowsCommons::windowsLog("Failed to get WireGuardTunnelLogger function");
-    return 1;
-  }
+  typedef bool WireGuardTunnelService(const ushort *settings);
 
   WireGuardTunnelService* tunnelProc = (WireGuardTunnelService*)GetProcAddress(
       tunnelLib, "WireGuardTunnelService");
@@ -77,20 +62,13 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
     return 1;
   }
 
-  tunnelLogger(tunnelLoggerFunc);
-
   QString configFile = WindowsCommons::tunnelConfigFile();
   if (configFile.isEmpty()) {
     logger.log() << "Failed to retrieve the config file";
     return 1;
   }
 
-  QByteArray configFileData = configFile.toLocal8Bit();
-  gostring_t goConfigFile;
-  goConfigFile.p = configFileData.constData();
-  goConfigFile.n = configFileData.length();
-
-  if (!tunnelProc(goConfigFile)) {
+  if (!tunnelProc(configFile.utf16())) {
     logger.log() << "Failed to activate the tunnel service";
     return 1;
   }
