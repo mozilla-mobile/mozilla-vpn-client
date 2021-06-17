@@ -101,7 +101,44 @@ Item {
                 //: Associated to a group of settings that require the VPN to be disconnected to change
                 errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
             }
+
+            VPNCheckBoxRow {
+                id: switchServersAlert
+                objectName: "switchServersAlert"
+                visible: VPNFeatureList.notificationControlSupported
+
+                width: parent.width - Theme.windowMargin
+
+                //% "Server Switching Notification"
+                labelText: qsTrId("vpn.settings.notification.serverSwitch")
+                //% "Get notified when you successfully switched servers"
+                subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
+
+                isChecked: (VPNSettings.serverSwitchNotification)
+                showDivider: true
+                onClicked: {
+                    VPNSettings.serverSwitchNotification = !VPNSettings.serverSwitchNotification
+               }
+            }
+
+            VPNCheckBoxRow {
+                id: connectionChangeAlert
+                objectName: "connectionChangeAlert"
+                visible: VPNFeatureList.notificationControlSupported
+
+                width: parent.width - Theme.windowMargin
+
+                //% "Connection Change Notification"
+                labelText: qsTrId("vpn.settings.notification.connectionChange")
+                //% "Get notified when the connection status changes"
+                subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
+
+                isChecked: (VPNSettings.connectionChangeNotification)
+                showDivider: true
+                onClicked: {
+                    VPNSettings.connectionChangeNotification = !VPNSettings.connectionChangeNotification
+                }
+            }
         }
     }
-
 }
