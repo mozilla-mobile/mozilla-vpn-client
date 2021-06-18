@@ -28,10 +28,11 @@ SignalHandler::SignalHandler() {
     sigaddset(&mask, sig);
   }
 
-  if (pipe2(m_pipefds, O_NONBLOCK) != 0) {
+  if (pipe(m_pipefds) != 0) {
     logger.log() << "Unable to create signal wakeup pipe";
     return;
   }
+  fcntl(m_pipefds[0], F_SETFL, fcntl(m_pipefds[0], F_GETFL) | O_NONBLOCK);
   s_signalpipe = m_pipefds[1];
   m_notifier = new QSocketNotifier(m_pipefds[0], QSocketNotifier::Read, this);
   connect(m_notifier,

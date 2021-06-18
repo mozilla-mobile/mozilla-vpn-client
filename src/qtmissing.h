@@ -22,4 +22,4 @@ using ::endl;
 #    endif
 
 #  endif  // __has_include(...)
-#endif    // MISSING_H
+#endif  // MISSING_H
