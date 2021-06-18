@@ -97,7 +97,7 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool productionMode READ productionMode CONSTANT)
 
  public:
-  MozillaVPN();
+  MozillaVPN(QObject* parent = nullptr);
   ~MozillaVPN();
 
   static MozillaVPN* instance();
