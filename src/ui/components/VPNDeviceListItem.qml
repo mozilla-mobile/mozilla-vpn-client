@@ -12,34 +12,43 @@ import "../themes/themes.js" as Theme
 
 Item {
     id: device
-    Layout.preferredWidth: content.width
-    Layout.preferredHeight: deviceRow.height
+
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: deviceRow.implicitHeight + Theme.windowMargin
+    //% "%1 %2"
+    //: Example: "deviceName deviceDescription"
+    Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
+    Accessible.role: Accessible.ListItem
+    Accessible.ignored: root.isModalDialogOpened
+    activeFocusOnTab: true
+    onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(device)
 
     Rectangle {
         color: Theme.greyHovered
         opacity: device.focus || iconButton.focus ? 1 : 0
         anchors.fill: device
-        anchors.topMargin: -Theme.windowMargin / 1.5
-        anchors.bottomMargin: anchors.topMargin
+        anchors.topMargin: -8
+        anchors.bottomMargin: -20
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 50
+            }
+        }
     }
 
-    activeFocusOnTab: true
-    onFocusChanged: if (focus && typeof(vpnFlickable.ensureVisible) !== "undefined") vpnFlickable.ensureVisible(device)
-
-
     RowLayout {
+        property var deviceName: name
+
         id: deviceRow
 
-        property var deviceName: name
         spacing: 0
-        //% "%1 %2"
-        //: Example: "deviceName deviceDescription"
-        Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
-        Accessible.role: Accessible.ListItem
-        Accessible.ignored: root.isModalDialogOpened
-        focus: true
-        width: device.width
-        Layout.alignment: Qt.AlignHCenter
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.rightMargin: Theme.windowMargin
+        anchors.top: parent.top
+        anchors.topMargin: Theme.windowMargin
 
         SequentialAnimation {
             id: deviceRemovalTransition
@@ -111,15 +120,12 @@ Item {
             Layout.leftMargin: Theme.windowMargin
             Layout.rightMargin: Theme.windowMargin
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
-            Layout.topMargin: Theme.windowMargin / 2
         }
 
-        ColumnLayout {
+        Column{
             id: deviceInfo
 
-            Layout.alignment: Qt.AlignLeft
-            Layout.topMargin: Theme.windowMargin / 2
-            Layout.preferredWidth: deviceRow.Layout.preferredWidth - deviceIcon.Layout.rightMargin - deviceIcon.sourceSize.width - iconButton.width - Theme.windowMargin
+            Layout.fillWidth: true
             spacing: 0
 
             VPNInterLabel {
@@ -128,10 +134,9 @@ Item {
                 text: name
                 color: Theme.fontColorDark
                 elide: Text.ElideRight
-                Layout.alignment: Qt.AlignLeft
+                anchors.left: parent.left
                 horizontalAlignment: Text.AlignLeft
-                Layout.preferredWidth: deviceInfo.Layout.preferredWidth - Theme.windowMargin / 2
-                Layout.fillWidth: true
+                anchors.right: parent.right
                 Accessible.ignored: root.isModalDialogOpened
             }
 
@@ -163,10 +168,11 @@ Item {
                 }
 
                 text: deviceSubtitle()
-                color: currentOne ? Theme.blue : Theme.fontColor
-                Accessible.ignored: root.isModalDialogOpened
-            }
+                width: parent.width
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                verticalAlignment: Text.AlignVCenter
 
+            }
         }
 
         VPNIconButton {
@@ -178,8 +184,8 @@ Item {
 
             buttonColorScheme: Theme.removeDeviceBtn
             visible: !currentOne
+            Layout.topMargin: -8
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.rightMargin: Theme.windowMargin / 2
             Layout.preferredHeight: Theme.rowHeight
             Layout.preferredWidth: Theme.rowHeight
             onClicked: removePopup.initializeAndOpen(name, index)
@@ -211,4 +217,3 @@ Item {
     }
 
 }
-
