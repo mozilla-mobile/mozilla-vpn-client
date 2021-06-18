@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import QtCharts 2.0
-import QtQuick.Controls 2.14
+import QtQuick.Controls 2.4
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
