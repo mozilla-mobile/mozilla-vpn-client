@@ -33,11 +33,12 @@ After checking out the code:
 On linux, the compilation of MozillaVPN is relative easy. You need the
 following dependencies:
 
-- Qt5 >= 5.15.0
+- Qt5 >= 5.11
 - libpolkit-gobject-1-dev >=0.105
 - wireguard >=1.0.20200513
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
+- golang >= 1.13
 
 Python3 (pip) depedencies:
 
@@ -52,21 +53,17 @@ Qt5 can be installed in a number of ways:
 - use a linux package manager
 - compile Qt5 (dinamically or statically).
 
-To build QT5 statically on Ubuntu/Debian, go to the root directory of this project and follow these steps:
-
+On Ubuntu 20.04, Debian 10/buster, or later, the Qt development libraries can be installed from the
+package repositories with the following steps:
 ```
-curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
-tar xvf qt-everywhere-src-5.15.1.tar.xz
-mv qt-everywhere-src-5.15.1 qt
-sudo apt build-dep qt5-default
-sudo apt install clang llvm golang
-sudo apt install libxcb-xinerama0-dev libxcb-util-dev
-bash scripts/qt5_compile.sh qt qt
+sudo apt install qtbase5-dev qtbase5-dev-tools qttools5-dev-tools qt5-qmake-bin \
+                 qtdeclarative5-dev qtdeclarative5-dev-tools \
+                 libqt5charts5-dev libqt5networkauth5-dev libqt5svg5-dev libqt5websockets5-dev \
+                 qml-module-qtcharts qml-module-qtgraphicaleffects \
+                 qml-module-qtquick-controls qml-module-qtquick-controls2 \
+                 qml-module-qtquick-extras qml-module-qtquick-layouts qml-module-qtquick-window2 \
+                 qml-module-qtquick2 qml-module-qtqml-models2
 ```
-
-See https://wiki.qt.io/Building_Qt_5_from_Git#Linux.2FX11 if you get stuck or are on another distro.
-
-Finally, **add `$(pwd)/qt/qt/bin` to `PATH`.**
 
 #### Initialization
 
