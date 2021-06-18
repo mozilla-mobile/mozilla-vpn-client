@@ -75,7 +75,12 @@ PidTracker::PidTracker(QObject* parent) : QObject(parent) {
   }
 
   m_socket = new QSocketNotifier(m_nlsock, QSocketNotifier::Read, this);
-  connect(m_socket, SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
+  connect(m_socket,
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+          SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
+#else
+          SIGNAL(activated(int)),
+#endif
           SLOT(readData()));
 }
 
@@ -167,42 +172,44 @@ void PidTracker::readData() {
   socklen_t srclen = sizeof(src);
   ssize_t recvlen;
 
-  recvlen = recvfrom(m_nlsock, m_readBuf, sizeof(m_readBuf), MSG_DONTWAIT,
-                     (struct sockaddr*)&src, &srclen);
-  if (recvlen == ENOBUFS) {
-    logger.log()
-        << "Failed to read netlink socket: buffer full, message dropped";
-    return;
-  }
-  if (recvlen < 0) {
-    logger.log() << "Failed to read netlink socket:" << strerror(errno);
-    return;
-  }
-  if (srclen != sizeof(src)) {
-    logger.log() << "Failed to read netlink socket: invalid address length";
-    return;
-  }
+  for (;;) {
+    recvlen = recvfrom(m_nlsock, m_readBuf, sizeof(m_readBuf), MSG_DONTWAIT,
+                       (struct sockaddr*)&src, &srclen);
+    if (recvlen < 0) {
+      if (errno == ENOBUFS) {
+        continue;
+      }
+      if (errno != EAGAIN) {
+        logger.log() << "Failed to read netlink socket:" << strerror(errno);
+      }
+      return;
+    }
+    if (srclen != sizeof(src)) {
+      logger.log() << "Failed to read netlink socket: invalid address length";
+      return;
+    }
 
-  /* We are only interested in process-control messages from the kernel */
-  if ((src.nl_groups != CN_IDX_PROC) || (src.nl_pid != 0)) {
-    return;
-  }
-
-  /* Handle the process-control messages. */
-  struct nlmsghdr* msg;
-  for (msg = (struct nlmsghdr*)m_readBuf; NLMSG_OK(msg, recvlen);
-       msg = NLMSG_NEXT(msg, recvlen)) {
-    struct cn_msg* cnmsg = (struct cn_msg*)NLMSG_DATA(msg);
-    if (msg->nlmsg_type == NLMSG_NOOP) {
+    /* We are only interested in process-control messages from the kernel */
+    if ((src.nl_groups != CN_IDX_PROC) || (src.nl_pid != 0)) {
       continue;
     }
-    if ((msg->nlmsg_type == NLMSG_ERROR) ||
-        (msg->nlmsg_type == NLMSG_OVERRUN)) {
-      break;
-    }
-    handleProcEvent(cnmsg);
-    if (msg->nlmsg_type == NLMSG_DONE) {
-      break;
+
+    /* Handle the process-control messages. */
+    struct nlmsghdr* msg;
+    for (msg = (struct nlmsghdr*)m_readBuf; NLMSG_OK(msg, recvlen);
+         msg = NLMSG_NEXT(msg, recvlen)) {
+      struct cn_msg* cnmsg = (struct cn_msg*)NLMSG_DATA(msg);
+      if (msg->nlmsg_type == NLMSG_NOOP) {
+        continue;
+      }
+      if ((msg->nlmsg_type == NLMSG_ERROR) ||
+          (msg->nlmsg_type == NLMSG_OVERRUN)) {
+        break;
+      }
+      handleProcEvent(cnmsg);
+      if (msg->nlmsg_type == NLMSG_DONE) {
+        break;
+      }
     }
   }
 }

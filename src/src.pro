@@ -10,6 +10,11 @@ DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
     DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
 }
 
+!versionAtLeast(QT_VERSION, 5.14.0) {
+    QMAKE_CXXFLAGS += -include "qtmissing.h"
+    HEADERS += qtmissing.h
+}
+
 QT += network
 QT += quick
 QT += widgets

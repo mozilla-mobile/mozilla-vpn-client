@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "signal.h"
 
+#include <fcntl.h>
 #include <unistd.h>
 
 namespace {
@@ -27,14 +28,18 @@ SignalHandler::SignalHandler() {
     sigaddset(&mask, sig);
   }
 
-  if (pipe(m_pipefds) != 0) {
+  if (pipe2(m_pipefds, O_NONBLOCK) != 0) {
     logger.log() << "Unable to create signal wakeup pipe";
     return;
   }
   s_signalpipe = m_pipefds[1];
   m_notifier = new QSocketNotifier(m_pipefds[0], QSocketNotifier::Read, this);
   connect(m_notifier,
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
           SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
+#else
+          SIGNAL(activated(int)),
+#endif
           SLOT(pipeReadReady()));
 
   struct sigaction sa;
@@ -59,7 +64,7 @@ SignalHandler::~SignalHandler() {
 
 void SignalHandler::pipeReadReady() {
   int signal;
-  if (read(m_pipefds[0], &signal, sizeof(signal)) == sizeof(signal)) {
+  while (read(m_pipefds[0], &signal, sizeof(signal)) == sizeof(signal)) {
     logger.log() << "Signal" << signal;
     emit quitRequested();
   }
