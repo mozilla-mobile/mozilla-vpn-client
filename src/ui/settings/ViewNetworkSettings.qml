@@ -120,21 +120,40 @@ Item {
                 width: parent.width - Theme.windowMargin
                 height: 30
                 value: VPNSettings.userDNS
-                valueChanged:(ip)=>{
-                    if(ip.length == 0){
+                valueChanged: ip => {
+                    if (ip === "") {
                         // If nothing is entered, thats valid too. We will ignore the value later.
-                        ipInput.valueInavlid = false;
-                        VPNSettings.userDNS=ip
+                        ipInput.valueInvalid = false;
+                        VPNSettings.userDNS = ip
                         return;
                     }
+
+                    switch(VPNSettings.validateUserDNS(ip)) {
+                    case VPNSettings.UserDNSOK:
+                        ipInput.valueInvalid = false;
+                        if (ip !== VPNSettings.userDNS) {
+                            VPNSettings.userDNS = ip
+                        }
+                        break;
+
                     // Now bother user if the ip is invalid :)
-                    if(!VPNSettings.isValidUserDNS(ip)){
-                        ipInput.valueInavlid = true;
-                        return;
-                    }
-                    ipInput.valueInavlid = false;
-                    if(ip !== VPNSettings.userDNS){
-                        VPNSettings.userDNS=ip
+                    case VPNSettings.UserDNSInvalid:
+                        //% "Invalid IP address"
+                        ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
+                        ipInput.valueInvalid = true;
+                        break;
+
+                    case VPNSettings.UserDNSNotIPv4:
+                        //% "We currently support only ipv4 IP addresses"
+                        ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
+                        ipInput.valueInvalid = true;
+                        break;
+
+                    case VPNSettings.UserDNSOutOfRange:
+                        //% "Out of range IP address"
+                        ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
+                        ipInput.valueInvalid = true;
+                        break;
                     }
                 }
             }

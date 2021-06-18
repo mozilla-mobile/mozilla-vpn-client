@@ -11,8 +11,9 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "rfc1918.h"
-#include "rfc4193.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc4193.h"
+#include "rfc/rfc5735.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "timercontroller.h"
@@ -195,7 +196,8 @@ void Controller::activateInternal() {
   if (FeatureList::instance()->userDNSSupported() &&
       !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
+      settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
+          SettingsHolder::UserDNSOK) {
     dns = QHostAddress(settingsHolder->userDNS());
     logger.log() << "User DNS Set" << dns.toString();
   }
@@ -258,7 +260,8 @@ bool Controller::silentSwitchServers() {
   if (FeatureList::instance()->userDNSSupported() &&
       !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
+      settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
+          SettingsHolder::UserDNSOK) {
     dns = QHostAddress(settingsHolder->userDNS());
     logger.log() << "User DNS Set" << dns.toString();
   }
@@ -658,8 +661,12 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   } else if (FeatureList::instance()->userDNSSupported() &&
              !SettingsHolder::instance()->useGatewayDNS() &&
              SettingsHolder::instance()->userDNS().size() > 0 &&
-             SettingsHolder::instance()->isValidUserDNS(
-                 SettingsHolder::instance()->userDNS())) {
+             SettingsHolder::instance()->validateUserDNS(
+                 SettingsHolder::instance()->userDNS()) ==
+                 SettingsHolder::UserDNSOK &&
+             // No need to filter out loopback ip addresses
+             !RFC5735::ipv4LoopbackAddressBlock().contains(
+                 QHostAddress(SettingsHolder::instance()->userDNS()))) {
     // Filter out the Custom DNS Server, if the User has one.
     logger.log() << "Filtering out the DNS address"
                  << SettingsHolder::instance()->userDNS();

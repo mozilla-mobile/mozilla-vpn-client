@@ -15,7 +15,7 @@ Item {
     property var isEnabled: true
     property var valueChanged: ()=>{}
     property var value: ""
-    property var valueInavlid: false
+    property var valueInvalid: false
     property var leftPadding: 0
     //% "The entered value is invalid"
     //: Associated to an inputfield for a setting
@@ -29,7 +29,7 @@ Item {
     states: [
         State {
             name: "active"
-            when: isEnabled && !valueInavlid
+            when: isEnabled && !valueInvalid
             PropertyChanges {
                 target: inputRoot
                 innerBorderColor: Theme.fontColorDark
@@ -40,7 +40,7 @@ Item {
         },
         State{
             name: "error"
-            when: isEnabled && valueInavlid
+            when: isEnabled && valueInvalid
             PropertyChanges {
                 target: inputRoot
                 innerBorderColor: Theme.red
@@ -51,7 +51,7 @@ Item {
         },
         State{
             name: "focus"
-            when: isEnabled && !valueInavlid && input.activeFocus
+            when: isEnabled && !valueInvalid && input.activeFocus
             PropertyChanges {
                 target: inputRoot
                 innerBorderColor: Theme.blue
@@ -125,7 +125,7 @@ Item {
         anchors.left: holder.left
 
         width: holder.width
-        visible: valueInavlid
+        visible: valueInvalid
         leftMargin: 0
         errorMessage: error
     }
