@@ -23,9 +23,7 @@ PingHelper::PingHelper() {
   connect(&m_pingTimer, &QTimer::timeout, this, &PingHelper::nextPing);
 }
 
-PingHelper::~PingHelper() {
-  MVPN_COUNT_DTOR(PingHelper);
-}
+PingHelper::~PingHelper() { MVPN_COUNT_DTOR(PingHelper); }
 
 void PingHelper::start(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address) {
