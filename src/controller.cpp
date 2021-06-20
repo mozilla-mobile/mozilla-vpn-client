@@ -191,14 +191,8 @@ void Controller::activateInternal() {
 
   // Use the Gateway as DNS Server
   // If the user as entered a valid dns, use that instead
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureList::instance()->userDNSSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.log() << "User DNS Set" << dns.toString();
-  }
+  QHostAddress dns = QHostAddress(SettingsHolder::instance()->getDNS(server.ipv4Gateway()));
+  logger.log() << "DNS Set" << dns.toString();
 
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
@@ -253,16 +247,7 @@ bool Controller::silentSwitchServers() {
       settingsHolder->hasVpnDisabledApps()) {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
-
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureList::instance()->userDNSSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->isValidUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.log() << "User DNS Set" << dns.toString();
-  }
-
+  QHostAddress dns = QHostAddress(settingsHolder->getDNS(server.ipv4Gateway()));
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
                    vpnDisabledApps, dns, stateToReason(StateSwitching));
@@ -655,16 +640,15 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       logger.log() << "Filtering out the local area networks (rfc 4193)";
       allowedIPv6s.append(RFC4193::ipv6());
     }
-  } else if (FeatureList::instance()->userDNSSupported() &&
-             !SettingsHolder::instance()->useGatewayDNS() &&
-             SettingsHolder::instance()->userDNS().size() > 0 &&
-             SettingsHolder::instance()->isValidUserDNS(
-                 SettingsHolder::instance()->userDNS())) {
-    // Filter out the Custom DNS Server, if the User has one.
+  }
+  else if (FeatureList::instance()->userDNSSupported() &&
+      !SettingsHolder::instance()->useGatewayDNS() &&
+       SettingsHolder::instance()->dnsProvider() == SettingsHolder::DnsProvider::Custom) {
+    // If the user has a Custom DNS but LAN disabled, we need to filter it out :)
     logger.log() << "Filtering out the DNS address"
-                 << SettingsHolder::instance()->userDNS();
+                 << SettingsHolder::instance()->customDNS();
     excludeIPv4s.append(
-        IPAddress::create(SettingsHolder::instance()->userDNS()));
+        IPAddress::create(SettingsHolder::instance()->customDNS()));
   }
 
   QList<IPAddressRange> list;

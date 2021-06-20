@@ -34,17 +34,26 @@ class SettingsHolder final : public QObject {
   Q_PROPERTY(bool connectionChangeNotification READ connectionChangeNotification
                  WRITE setConnectionChangeNotification NOTIFY
                      connectionChangeNotificationChanged)
-
   Q_PROPERTY(bool useGatewayDNS READ useGatewayDNS WRITE setUseGatewayDNS NOTIFY
                  useGatewayDNSChanged)
   Q_PROPERTY(
-      QString userDNS READ userDNS WRITE setUserDNS NOTIFY userDNSChanged)
+      QString customDNS READ customDNS WRITE setcustomDNS NOTIFY customDNSChanged)
+  Q_PROPERTY(
+        int dnsProvider READ dnsProvider WRITE setDNSProvider NOTIFY dnsProviderChanged)
 
  public:
   SettingsHolder();
   ~SettingsHolder();
 
   static SettingsHolder* instance();
+
+  enum DnsProvider {
+    Custom=3,
+    BlockTracking=2,
+    BlockAds=1,
+    BlockAll=0,
+  };
+  Q_ENUM(DnsProvider)
 
   QString getReport();
 
@@ -97,7 +106,8 @@ class SettingsHolder final : public QObject {
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
   GETSET(bool, hasUsegatewayDNS, useGatewayDNS, setUseGatewayDNS)
-  GETSET(QString, hasUserDNS, userDNS, setUserDNS)
+  GETSET(QString, hascustomDNS, customDNS, setcustomDNS)
+  GETSET(int, hasDNSProvider, dnsProvider, setDNSProvider)
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
   GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
   GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
@@ -112,7 +122,8 @@ class SettingsHolder final : public QObject {
   void addConsumedSurvey(const QString& surveyId);
 
   Q_INVOKABLE
-  bool isValidUserDNS(const QString& dns);
+  bool isValidCustomDNS(const QString& dns);
+  QString getDNS(const QString& serverGateway);
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
@@ -145,7 +156,8 @@ class SettingsHolder final : public QObject {
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
   void useGatewayDNSChanged(bool value);
-  void userDNSChanged(QString value);
+  void customDNSChanged(QString value);
+  void dnsProviderChanged(int value);
   void gleanEnabledChanged(bool value);
   void serverSwitchNotificationChanged(bool value);
   void connectionChangeNotificationChanged(bool value);

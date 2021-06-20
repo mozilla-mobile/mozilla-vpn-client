@@ -83,3 +83,7 @@ mozillavpnnp.vcxproj*
 
 # glean
 glean/generated/*
+glean/telemetry/gleansample.h
+glean/telemetry/sample.js
+glean/telemetry/qmldir
+glean/telemetry/pings.js
