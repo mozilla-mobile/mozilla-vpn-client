@@ -21,15 +21,10 @@ PingHelper::PingHelper() {
   MVPN_COUNT_CTOR(PingHelper);
 
   connect(&m_pingTimer, &QTimer::timeout, this, &PingHelper::nextPing);
-
-  m_pingThread.start();
 }
 
 PingHelper::~PingHelper() {
   MVPN_COUNT_DTOR(PingHelper);
-
-  m_pingThread.quit();
-  m_pingThread.wait();
 }
 
 void PingHelper::start(const QString& serverIpv4Gateway,
@@ -55,7 +50,7 @@ void PingHelper::stop() {
 void PingHelper::nextPing() {
   logger.log() << "Sending a new ping. Total:" << m_pings.length();
 
-  PingSender* pingSender = new PingSender(this, &m_pingThread);
+  PingSender* pingSender = new PingSender(this);
   connect(pingSender, &PingSender::completed, this, &PingHelper::pingReceived);
   m_pings.append(pingSender);
   pingSender->send(m_gateway, m_source);

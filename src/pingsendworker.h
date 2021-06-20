@@ -10,6 +10,9 @@
 class PingSendWorker : public QObject {
   Q_OBJECT
 
+ public:
+  PingSendWorker(QObject* parent = nullptr) : QObject(parent) {}
+
  public slots:
   virtual void sendPing(const QString& destination, const QString& source) = 0;
 

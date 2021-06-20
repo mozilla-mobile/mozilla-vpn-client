@@ -19,36 +19,27 @@
 #  error "Unsupported platform"
 #endif
 
-#include <QThread>
-
 namespace {
 Logger logger(LOG_NETWORKING, "PingSender");
 }
 
-PingSender::PingSender(QObject* parent, QThread* thread) : QObject(parent) {
+PingSender::PingSender(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(PingSender);
 
   m_time.start();
 
   PingSendWorker* worker =
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
-      new LinuxPingSendWorker();
+      new LinuxPingSendWorker(this);
 #elif defined(MVPN_MACOS) || defined(MVPN_IOS)
-      new MacOSPingSendWorker();
+      new MacOSPingSendWorker(this);
 #elif defined(MVPN_WINDOWS)
-      new WindowsPingSendWorker();
+      new WindowsPingSendWorker(this);
 #else
-      new DummyPingSendWorker();
+      new DummyPingSendWorker(this);
 #endif
 
-  // No multi-thread supports for wasm builds.
-#ifndef MVPN_WASM
-  worker->moveToThread(thread);
-#endif
-
-  connect(thread, &QThread::finished, worker, &QObject::deleteLater);
   connect(this, &PingSender::sendPing, worker, &PingSendWorker::sendPing);
-  connect(this, &QObject::destroyed, worker, &QObject::deleteLater);
   connect(worker, &PingSendWorker::pingFailed, this, &PingSender::pingFailed);
   connect(worker, &PingSendWorker::pingSucceeded, this,
           &PingSender::pingSucceeded);

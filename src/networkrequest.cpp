@@ -360,7 +360,7 @@ void NetworkRequest::replyFinished() {
   QByteArray data = m_reply->readAll();
 
   if (m_reply->error() != QNetworkReply::NoError) {
-    logger.log() << "Network error:" << m_reply->error()
+    logger.log() << "Network error:" << m_reply->errorString()
                  << "status code:" << status << "- body:" << data;
     emit requestFailed(m_reply->error(), data);
     return;

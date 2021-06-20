@@ -18,10 +18,8 @@ namespace {
 Logger logger(LOG_MAIN, "WindowsCommons");
 }
 
-// A simple function to log windows error messages.
-void WindowsCommons::windowsLog(const QString& msg) {
+QString WindowsCommons::getErrorMessage() {
   DWORD errorId = GetLastError();
-
   LPSTR messageBuffer = nullptr;
   size_t size = FormatMessageA(
       FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
@@ -30,9 +28,15 @@ void WindowsCommons::windowsLog(const QString& msg) {
       (LPSTR)&messageBuffer, 0, nullptr);
 
   std::string message(messageBuffer, size);
-
-  logger.log() << msg << "-" << QString(message.c_str());
+  QString result(message.c_str());
   LocalFree(messageBuffer);
+  return result;
+}
+
+// A simple function to log windows error messages.
+void WindowsCommons::windowsLog(const QString& msg) {
+  QString errmsg = getErrorMessage();
+  logger.log() << msg << "-" << errmsg;
 }
 
 QString WindowsCommons::tunnelConfigFile() {
