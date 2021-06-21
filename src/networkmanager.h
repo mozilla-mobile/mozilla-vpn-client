@@ -21,6 +21,7 @@ class NetworkManager : public QObject {
 
   static bool exists();
 
+  static QByteArray osVersion();
   static QByteArray userAgent();
 
   virtual QNetworkAccessManager* networkAccessManager() = 0;

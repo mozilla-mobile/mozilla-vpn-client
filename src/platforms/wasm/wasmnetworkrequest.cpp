@@ -39,8 +39,11 @@ void createDummyRequest(NetworkRequest* r) { createDummyRequest(r, ""); }
 
 }  // namespace
 
-NetworkRequest::NetworkRequest(QObject* parent, int status)
+NetworkRequest::NetworkRequest(QObject* parent, int status,
+                               bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
+  Q_UNUSED(setAuthorizationHeader);
+
   MVPN_COUNT_CTOR(NetworkRequest);
 
   logger.log() << "Network request created";
@@ -53,7 +56,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     QObject* parent, const QString&, const QString&) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   createDummyRequest(r, ":/networkrequests/authentication.json");
   return r;
@@ -65,7 +68,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(QObject* parent,
                                                         const QString&) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 201);
+  NetworkRequest* r = new NetworkRequest(parent, 201, false);
   createDummyRequest(r);
   return r;
 }
@@ -75,7 +78,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
                                                        const QString&) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 204);
+  NetworkRequest* r = new NetworkRequest(parent, 204, false);
   createDummyRequest(r);
   return r;
 }
@@ -83,7 +86,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r, ":/networkrequests/servers.json");
   return r;
 }
@@ -91,7 +94,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
 }
@@ -99,7 +102,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
 NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r, ":/networkrequests/account.json");
   return r;
 }
@@ -108,7 +111,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
                                                 const QHostAddress&) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r, ":/networkrequests/ipinfo.json");
   return r;
 }
@@ -117,13 +120,13 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
     QObject* parent, const QUrl&, const QByteArray&) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
 }
@@ -131,7 +134,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
 }
@@ -139,7 +142,17 @@ NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
 NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
+                                                  const QString& feedbackText,
+                                                  const QString& logs,
+                                                  const qint8 rating,
+                                                  const QString& category) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);
   return r;
 }
