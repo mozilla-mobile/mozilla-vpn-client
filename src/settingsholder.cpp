@@ -7,7 +7,8 @@
 #include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "rfc1918.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc5735.h"
 
 #include <QSettings>
 #include <QHostAddress>
@@ -381,23 +382,34 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
   setConsumedSurveys(list);
 }
 
-bool SettingsHolder::isValidUserDNS(const QString& dns) {
+SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
+    const QString& dns) const {
   logger.log() << "checking -> " << dns;
   QHostAddress address = QHostAddress(dns);
 
   logger.log() << "is null " << address.isNull();
 
   if (address.isNull()) {
-    return false;
+    return UserDNSInvalid;
   }
-  /* Currently we need to limit this to LAN-DNS
-   * (at least on windows) since the killswitch makes
-   * sure that no dns traffic may happen to outside of lan
+
+  if (address.protocol() != QAbstractSocket::IPv4Protocol) {
+    return UserDNSNotIPv4;
+  }
+
+  /* Currently we need to limit this to loopback and LAN IP addresses since the
+   * killswitch makes sure that no dns traffic may happen to outside of lan
    */
 
-  auto lanRange = RFC1918::ipv4();
-  for (auto network : lanRange) {
-    if (network.contains(address)) return true;
+  if (RFC5735::ipv4LoopbackAddressBlock().contains(address)) {
+    return UserDNSOK;
   }
-  return false;
+
+  for (const IPAddress& network : RFC1918::ipv4()) {
+    if (network.contains(address)) {
+      return UserDNSOK;
+    }
+  }
+
+  return UserDNSOutOfRange;
 }

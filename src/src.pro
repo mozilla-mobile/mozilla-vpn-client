@@ -99,8 +99,9 @@ SOURCES += \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
-        rfc1918.cpp \
-        rfc4193.cpp \
+        rfc/rfc1918.cpp \
+        rfc/rfc4193.cpp \
+        rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
@@ -189,8 +190,9 @@ HEADERS += \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
-        rfc1918.h \
-        rfc4193.h \
+        rfc/rfc1918.h \
+        rfc/rfc4193.h \
+        rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
