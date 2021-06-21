@@ -4,7 +4,7 @@
 
 import QtQuick 2.5
 import Mozilla.VPN 1.0
-import QtQuick.Layouts 1.14
+import QtQuick.Layouts 1.11
 import "./../components"
 import "./../themes/themes.js" as Theme
 

@@ -2,6 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+!versionAtLeast(QT_VERSION, 5.14.0) {
+    QMAKE_CXXFLAGS += -include "../../src/qtmissing.h"
+    HEADERS += ../../src/qtmissing.h
+}
+
 QT += testlib
 QT += charts
 QT += network

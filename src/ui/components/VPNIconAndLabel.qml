@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
-import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.14
-import QtQuick.Layouts 1.14
+import QtQuick.Controls 2.4
+import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.11
 import "../themes/themes.js" as Theme
 
 // VPNIconAndLabel

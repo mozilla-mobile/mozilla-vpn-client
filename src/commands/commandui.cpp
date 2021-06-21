@@ -128,8 +128,8 @@ int CommandUI::run(QStringList& tokens) {
     QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
     engine->addImportPath("qrc:///glean");
 
-    MozillaVPN vpn;
-    vpn.setStartMinimized(minimizedOption.m_set);
+    MozillaVPN* vpn = new MozillaVPN(engine);
+    vpn->setStartMinimized(minimizedOption.m_set);
 
 #ifdef QT_DEBUG
     // This is a collector of glean HTTP requests to see if we leak something.
@@ -156,7 +156,7 @@ int CommandUI::run(QStringList& tokens) {
     // Font loader
     FontLoader::loadFonts();
 
-    vpn.initialize();
+    vpn->initialize();
 
 #ifdef MVPN_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher(
@@ -360,10 +360,10 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
                      &MozillaVPN::aboutToQuit);
 
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
+    QObject::connect(vpn->controller(), &Controller::readyToQuit, vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
@@ -387,16 +387,16 @@ int CommandUI::run(QStringList& tokens) {
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, systemTrayHandler,
+    QObject::connect(vpn, &MozillaVPN::stateChanged, systemTrayHandler,
                      &SystemTrayHandler::updateContextMenu);
 
-    QObject::connect(vpn.currentServer(), &ServerData::changed,
+    QObject::connect(vpn->currentServer(), &ServerData::changed,
                      systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged,
+    QObject::connect(vpn->controller(), &Controller::stateChanged,
                      systemTrayHandler, &SystemTrayHandler::updateContextMenu);
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged,
+    QObject::connect(vpn->controller(), &Controller::stateChanged,
                      notificationHandler,
                      &NotificationHandler::showNotification);
 
@@ -404,15 +404,15 @@ int CommandUI::run(QStringList& tokens) {
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
+    QObject::connect(vpn, &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
+    QObject::connect(vpn->controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
 
-    QObject::connect(vpn.statusIcon(), &StatusIcon::iconChanged,
+    QObject::connect(vpn->statusIcon(), &StatusIcon::iconChanged,
                      systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
@@ -433,11 +433,11 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_INSPECTOR
     InspectorHttpServer inspectHttpServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+    QObject::connect(vpn->controller(), &Controller::readyToQuit,
                      &inspectHttpServer, &InspectorHttpServer::close);
 
     InspectorWebSocketServer inspectWebSocketServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+    QObject::connect(vpn->controller(), &Controller::readyToQuit,
                      &inspectWebSocketServer, &InspectorWebSocketServer::close);
 #endif
 
@@ -447,8 +447,8 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     ServerHandler serverHandler;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
-                     &ServerHandler::close);
+    QObject::connect(vpn->controller(), &Controller::readyToQuit,
+                     &serverHandler, &ServerHandler::close);
 #endif
 
     // Let's go.

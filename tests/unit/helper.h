@@ -21,12 +21,14 @@ class TestHelper : public QObject {
  public:
   struct NetworkConfig {
     enum NetworkStatus {
+      Invalid,
       Success,
       Failure,
     };
     NetworkStatus m_status;
     QByteArray m_body;
 
+    NetworkConfig() { m_status = Invalid; }
     NetworkConfig(NetworkStatus status, const QByteArray& body)
         : m_status(status), m_body(body) {}
   };

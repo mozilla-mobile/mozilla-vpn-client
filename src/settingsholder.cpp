@@ -12,6 +12,7 @@
 
 #include <QSettings>
 #include <QHostAddress>
+#include <QVector>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;

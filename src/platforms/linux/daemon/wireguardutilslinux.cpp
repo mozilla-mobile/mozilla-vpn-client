@@ -82,7 +82,11 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
 
   m_notifier = new QSocketNotifier(m_nlsock, QSocketNotifier::Read, this);
   connect(m_notifier,
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
           SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
+#else
+          SIGNAL(activated(int)),
+#endif
           SLOT(nlsockReady()));
 
   /* Create control groups for split tunnelling */

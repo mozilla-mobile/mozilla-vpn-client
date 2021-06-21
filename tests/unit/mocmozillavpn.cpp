@@ -18,7 +18,7 @@ MozillaVPN* MozillaVPN::instance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() {}
+MozillaVPN::MozillaVPN(QObject* parent) : QObject(parent) {}
 
 MozillaVPN::~MozillaVPN() {}
 
