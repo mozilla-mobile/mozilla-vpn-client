@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.4
 import QtWebView 1.15
 
 import Mozilla.VPN 1.0

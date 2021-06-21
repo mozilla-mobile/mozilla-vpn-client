@@ -73,7 +73,8 @@ MozillaVPN* MozillaVPN::instance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() : m_private(new Private()) {
+MozillaVPN::MozillaVPN(QObject* parent)
+    : QObject(parent), m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
   logger.log() << "Creating MozillaVPN singleton";
