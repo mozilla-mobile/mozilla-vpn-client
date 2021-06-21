@@ -62,13 +62,20 @@ MozillaVPN.vcxproj*
 
 #Windows 
 .deps
+lib*.dll
+balrog.dll
 tunnel.dll
 tunnel.h
 *.wixobj
+*.msm
 MozillaVPN.exe
 MozillaVPN.exp
 MozillaVPN.lib
 MozillaVPN_resource.rc
+mozillavpnnp.exe
+mozillavpnnp.vcxproj*
+windows/installer/x64/
+windows/tunnel/x64/
 
 # WASM
 mozillavpn.js
