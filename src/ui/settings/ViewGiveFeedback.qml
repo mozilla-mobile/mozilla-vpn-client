@@ -13,8 +13,13 @@ import "../components/forms"
 import "../themes/themes.js" as Theme
 
 Item {
-    property var rating: 0
     id: feedbackRoot
+
+    function sendFeedback(appRating, category, message) {
+        console.log("app_rating: "+ appRating + " /   category_name: " + category + "  " + "/   comments:" + message);
+        // TODO: sending
+        feedbackStackView.push(thankYouView)
+    }
 
     VPNMenu {
         id: menu
@@ -144,6 +149,17 @@ Item {
                 //% "Continue"
                 text: qsTrId("vpn.feedbackForm.continue")
                 onClicked: {
+                    if (btnGroup.checkedButton.value === null) {
+                        // This should not happen.
+                        return;
+                    }
+
+                    if (btnGroup.checkedButton.value >= 5) {
+                        feedbackRoot.sendFeedback(btnGroup.checkedButton.value, 0, "");
+                        feedbackStackView.push(thankYouView);
+                        return;
+                    }
+
                     feedbackStackView.push(feedbackFormView, {
                                                "appRating": btnGroup.checkedButton.value
                                            })
@@ -180,11 +196,6 @@ Item {
             ColumnLayout {
                 id: col
 
-                function sendFeedback() {
-                    console.log("app_rating: "+ appRating + " /   category_index: " + dropDown.currentValue + "  " + "/   comments:" + textArea.userEntry);
-                    feedbackStackView.push(thankYouView)
-                }
-
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
@@ -218,45 +229,9 @@ Item {
                          //% "Choose a Category"
                         placeholderText: qsTrId("vpn.feedbackForm.chooseCategory")
 
-                        model: ListModel {
-
-                            ListElement {
-                                //% "Product Bugs/Errors"
-                                name: qsTrId("vpn.feedbackForm.category1")
-                                value: "Product Bugs/Errors - del"
-                            }
-                            ListElement {
-                                //% "Network Connection/Speed"
-                                name: qsTrId("vpn.feedbackForm.category2")
-                                value: "Network Connection/Speed"
-                            }
-                            ListElement {
-                                //% "Product Quality"
-                                name:qsTrId("vpn.feedbackForm.categor3")
-                                value: "Network Connection/Speed"
-                            }
-                            ListElement {
-                                //% "Access to service"
-                                name: qsTrId("vpn.feedbackForm.category4")
-                                value: "Network Connection/Speed"
-                            }
-                            ListElement {
-                                //% "Compatibility"
-                                name: qsTrId("vpn.feedbackForm.category5")
-                                value: "Network Connection/Speed"
-                            }
-                            ListElement {
-                                //% "Ease of Use"
-                                name: qsTrId("vpn.feedbackForm.category6")
-                                value: "Network Connection/Speed"
-                            }
-                            ListElement {
-                                //% "Other"
-                                name: qsTrId("vpn.feedbackForm.category7")
-                                value: "Network Connection/Speed"
-                            }
-                        }
+                        model: VPNFeedbackCategoryModel
                     }
+
                     VPNTextArea {
                         id: textArea
                         //% "Enter feedback…"
@@ -302,7 +277,9 @@ Item {
                         VPNButton {
                              //% "Submit"
                             text: qsTrId("vpn.feedbackform.submit")
-                            onClicked: col.sendFeedback()
+                            onClicked: feedbackRoot.sendFeedback(appRating, dropDown.currentValue, textArea.userEntry);
+                            enabled: dropDown.currentValue != null
+                            opacity: enabled ? 1 : .5
                             Layout.preferredHeight: Theme.rowHeight
                             Layout.fillWidth: true
                             width: undefined
@@ -318,7 +295,7 @@ Item {
                             labelText: qsTrId("vpn.feedbackForm.skip")
                             Layout.preferredHeight: Theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
-                            onClicked: col.sendFeedback()
+                            onClicked: feedbackRoot.sendFeedback(appRating, 0, "");
                             implicitHeight: Theme.rowHeight
 
                         }
