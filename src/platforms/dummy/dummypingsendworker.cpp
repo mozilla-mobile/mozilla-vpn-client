@@ -10,7 +10,8 @@ namespace {
 Logger logger(LOG_NETWORKING, "DummyPingSendWorker");
 }
 
-DummyPingSendWorker::DummyPingSendWorker() {
+DummyPingSendWorker::DummyPingSendWorker(QObject* parent)
+    : PingSendWorker(parent) {
   MVPN_COUNT_CTOR(DummyPingSendWorker);
 }
 

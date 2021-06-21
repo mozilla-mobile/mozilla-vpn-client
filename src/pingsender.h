@@ -8,14 +8,12 @@
 #include <QElapsedTimer>
 #include <QObject>
 
-class QThread;
-
 class PingSender final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(PingSender)
 
  public:
-  PingSender(QObject* parent, QThread* thread);
+  PingSender(QObject* parent);
   ~PingSender();
 
   void send(const QString& destination, const QString& source);

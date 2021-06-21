@@ -62,7 +62,8 @@ u_short in_cksum(u_short* addr, int len) {
 
 };  // namespace
 
-MacOSPingSendWorker::MacOSPingSendWorker() {
+MacOSPingSendWorker::MacOSPingSendWorker(QObject* parent)
+    : PingSendWorker(parent) {
   MVPN_COUNT_CTOR(MacOSPingSendWorker);
 }
 
