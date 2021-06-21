@@ -54,6 +54,12 @@ class NetworkRequest final : public QObject {
 
   static NetworkRequest* createForSurveyData(QObject* parent);
 
+  static NetworkRequest* createForFeedback(QObject* parent,
+                                           const QString& feedbackText,
+                                           const QString& logs,
+                                           const qint8 rating,
+                                           const QString& category);
+
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);
 
@@ -70,7 +76,7 @@ class NetworkRequest final : public QObject {
   void abort();
 
  private:
-  NetworkRequest(QObject* parent, int status);
+  NetworkRequest(QObject* parent, int status, bool setAuthorizationHeader);
 
   void deleteRequest();
   void getRequest();

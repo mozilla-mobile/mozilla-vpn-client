@@ -16,8 +16,7 @@ Item {
     id: feedbackRoot
 
     function sendFeedback(appRating, category, message) {
-        console.log("app_rating: "+ appRating + " /   category_name: " + category + "  " + "/   comments:" + message);
-        // TODO: sending
+        VPN.submitFeedback(message, appRating, category);
         feedbackStackView.push(thankYouView)
     }
 
