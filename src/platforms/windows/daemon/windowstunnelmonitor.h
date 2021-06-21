@@ -5,6 +5,7 @@
 #ifndef WINDOWSTUNNELMONITOR_H
 #define WINDOWSTUNNELMONITOR_H
 
+#include <QFile>
 #include <QObject>
 #include <QTimer>
 
@@ -16,6 +17,7 @@ class WindowsTunnelMonitor final : public QObject {
   WindowsTunnelMonitor();
   ~WindowsTunnelMonitor();
 
+  void resetLogs();
   void start();
   void stop();
 
@@ -24,9 +26,17 @@ class WindowsTunnelMonitor final : public QObject {
 
  private:
   void timeout();
+  void processLogs();
+  void processMessage(int index);
+  int nextLogIndex();
 
  private:
   QTimer m_timer;
+  QTimer m_logtimer;
+  QFile* m_logfile = nullptr;
+  uchar* m_logdata = nullptr;
+  int m_logindex = -1;
+  quint64 m_logEpochNsec = 0;
 };
 
 #endif  // WINDOWSTUNNELMONITOR_H

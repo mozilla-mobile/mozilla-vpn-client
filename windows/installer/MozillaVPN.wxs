@@ -73,6 +73,7 @@
 					<Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
 				</File>
 				<File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
+				<File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
 				<File Source="../../balrog/$(var.Platform)/balrog.dll" />
 				<File Source="../../libcrypto-1_1-x64.dll" />
 				<File Source="../../libssl-1_1-x64.dll" />
@@ -112,7 +113,6 @@
 			Merge modules
 		-->
 		<DirectoryRef Id="MozillaVPNFolder">
-			<Merge Id="WintunMergeModule" Language="0" DiskId="1" SourceFile=".deps/wintun-$(var.WintunPlatform)-0.8.1.msm" />
 			<Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
 		</DirectoryRef>
 
@@ -132,9 +132,6 @@
 		-->
 		<Feature Id="MozillaVPNFeature" Title="Mozilla VPN" Level="1">
 			<ComponentGroupRef Id="MozillaVPNComponents" />
-		</Feature>
-		<Feature Id="WintunFeature" Title="Wintun" Level="1">
-			<MergeRef Id="WintunMergeModule" />
 		</Feature>
 		<Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
 			<MergeRef Id="VCRedistModule" />

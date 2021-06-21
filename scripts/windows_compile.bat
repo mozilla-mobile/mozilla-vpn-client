@@ -101,8 +101,8 @@ CALL :CopyDependency libcrypto-1_1-x64.dll c:\MozillaVPNBuild\bin\libcrypto-1_1-
 CALL :CopyDependency libssl-1_1-x64.dll c:\MozillaVPNBuild\bin\libssl-1_1-x64.dll
 CALL :CopyDependency libEGL.dll c:\MozillaVPNBuild\bin\libEGL.dll
 CALL :CopyDependency libGLESv2.dll c:\MozillaVPNBuild\bin\libGLESv2.dll
-CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
-CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "c:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\14.28.29325\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
+CALL :CopyDependency Microsoft_VC142_CRT_x86.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x86.msm"
+CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModules\\Microsoft_VC142_CRT_x64.msm"
 
 ECHO Importing languages...
 git submodule update --remote --depth 1 i18n
@@ -154,6 +154,7 @@ IF %ERRORLEVEL% NEQ 0 (
   ECHO Failed to clean up the project
   EXIT 1
 )
+CALL :CopyDependency balrog.dll balrog\x64\balrog.dll
 
 ECHO Compiling the tunnel.dll...
 CALL windows\tunnel\build.cmd
