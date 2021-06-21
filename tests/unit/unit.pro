@@ -43,6 +43,7 @@ HEADERS += \
     ../../src/loghandler.h \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
+    ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/server.h \
@@ -119,6 +120,7 @@ SOURCES += \
     ../../src/loghandler.cpp \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
+    ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/server.cpp \

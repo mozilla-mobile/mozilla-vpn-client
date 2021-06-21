@@ -78,6 +78,7 @@ SOURCES += \
         main.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/server.cpp \
@@ -167,6 +168,7 @@ HEADERS += \
         logoutobserver.h \
         models/device.h \
         models/devicemodel.h \
+        models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/server.h \
