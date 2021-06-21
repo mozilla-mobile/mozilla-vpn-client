@@ -12,7 +12,7 @@ class DummyPingSendWorker final : public PingSendWorker {
   Q_DISABLE_COPY_MOVE(DummyPingSendWorker)
 
  public:
-  DummyPingSendWorker();
+  DummyPingSendWorker(QObject* parent = nullptr);
   ~DummyPingSendWorker();
 
  public slots:

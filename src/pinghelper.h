@@ -7,7 +7,6 @@
 
 #include <QList>
 #include <QObject>
-#include <QThread>
 #include <QTimer>
 
 class PingSender;
@@ -41,8 +40,6 @@ class PingHelper final : public QObject {
   QTimer m_pingTimer;
 
   QList<PingSender*> m_pings;
-
-  QThread m_pingThread;
 };
 
 #endif  // PINGHELPER_H

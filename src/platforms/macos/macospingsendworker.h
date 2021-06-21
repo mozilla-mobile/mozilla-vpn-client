@@ -14,7 +14,7 @@ class MacOSPingSendWorker final : public PingSendWorker {
   Q_DISABLE_COPY_MOVE(MacOSPingSendWorker)
 
  public:
-  MacOSPingSendWorker();
+  MacOSPingSendWorker(QObject* parent = nullptr);
   ~MacOSPingSendWorker();
 
  public slots:

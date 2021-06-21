@@ -19,7 +19,8 @@ namespace {
 Logger logger({LOG_LINUX, LOG_NETWORKING}, "LinuxPingSendWorker");
 }
 
-LinuxPingSendWorker::LinuxPingSendWorker() {
+LinuxPingSendWorker::LinuxPingSendWorker(QObject* parent)
+    : PingSendWorker(parent) {
   MVPN_COUNT_CTOR(LinuxPingSendWorker);
 }
 

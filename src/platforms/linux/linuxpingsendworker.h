@@ -16,7 +16,7 @@ class LinuxPingSendWorker final : public PingSendWorker {
   Q_DISABLE_COPY_MOVE(LinuxPingSendWorker)
 
  public:
-  LinuxPingSendWorker();
+  LinuxPingSendWorker(QObject* parent = nullptr);
   ~LinuxPingSendWorker();
 
  public slots:
