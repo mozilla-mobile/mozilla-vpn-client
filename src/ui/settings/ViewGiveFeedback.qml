@@ -210,7 +210,7 @@ Item {
                     spacing: 24
 
                     VPNBoldLabel {
-                        //% "We’re sorry to hear you’ve had a poor experience! Please let us know how we can improve."
+                        //% "We’re sorry to hear you’ve had a poor experience. Please let us know how we can improve."
                         property string lowRatingResponse: qsTrId("vpn.feedbackForm.lowRatingResponse")
 
                         //% "We’d love to know what we can do to improve Mozilla VPN. Please share any specific feedback here."
