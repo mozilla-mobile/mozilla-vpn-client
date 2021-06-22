@@ -95,7 +95,6 @@ SOURCES += \
         networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
-        pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
@@ -188,7 +187,6 @@ HEADERS += \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
-        pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
@@ -311,13 +309,13 @@ DUMMY {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsendworker.cpp \
+            platforms/dummy/dummypingsender.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsendworker.h \
+            platforms/dummy/dummypingsender.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 }
@@ -347,7 +345,7 @@ else:linux:!android {
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxnetworkwatcherworker.cpp \
-            platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/linuxpingsender.cpp \
             platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
@@ -362,7 +360,7 @@ else:linux:!android {
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxnetworkwatcherworker.h \
-            platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxpingsender.h \
             platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
@@ -512,10 +510,10 @@ else:android {
                 tasks/authenticate/desktopauthenticationlistener.h
 
     # Usable Linux Imports
-    SOURCES += platforms/linux/linuxpingsendworker.cpp \
+    SOURCES += platforms/linux/linuxpingsender.cpp \
                platforms/linux/linuxcryptosettings.cpp
 
-    HEADERS += platforms/linux/linuxpingsendworker.h
+    HEADERS += platforms/linux/linuxpingsender.h
 
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
@@ -567,7 +565,7 @@ else:macos {
 
     SOURCES += \
             platforms/macos/macosmenubar.cpp \
-            platforms/macos/macospingsendworker.cpp \
+            platforms/macos/macospingsender.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
@@ -579,7 +577,7 @@ else:macos {
 
     HEADERS += \
             platforms/macos/macosmenubar.h \
-            platforms/macos/macospingsendworker.h \
+            platforms/macos/macospingsender.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
@@ -670,7 +668,7 @@ else:ios {
 
     SOURCES += \
             platforms/ios/taskiosproducts.cpp \
-            platforms/macos/macospingsendworker.cpp
+            platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iaphandler.mm \
@@ -684,7 +682,7 @@ else:ios {
 
     HEADERS += \
             platforms/ios/taskiosproducts.h \
-            platforms/macos/macospingsendworker.h
+            platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iaphandler.h \
@@ -744,7 +742,7 @@ else:win* {
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowsnetworkwatcher.cpp \
-        platforms/windows/windowspingsendworker.cpp \
+        platforms/windows/windowspingsender.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
@@ -767,7 +765,7 @@ else:win* {
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
-        platforms/windows/windowspingsendworker.h \
+        platforms/windows/windowspingsender.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
@@ -791,7 +789,7 @@ else:wasm {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsendworker.cpp \
+            platforms/dummy/dummypingsender.cpp \
             platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
             platforms/wasm/wasmnetworkrequest.cpp \
@@ -801,7 +799,7 @@ else:wasm {
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsendworker.h \
+            platforms/dummy/dummypingsender.h \
             platforms/macos/macosmenubar.h \
             platforms/wasm/wasmauthenticationlistener.h \
             platforms/wasm/wasmnetworkwatcher.h \
