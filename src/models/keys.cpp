@@ -54,7 +54,7 @@ bool Keys::fromSettings() {
         return false;
       }
 
-      if (!device.isDevice(Device::currentDeviceName())) {
+      if (!device.isDeviceForMigration(Device::currentDeviceName())) {
         continue;
       }
 
