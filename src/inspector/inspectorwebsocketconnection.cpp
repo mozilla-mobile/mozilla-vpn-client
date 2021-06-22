@@ -549,39 +549,38 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
-    WebSocketCommand{"servers", "Returns a list of servers", 0,
-                     [](const QList<QByteArray>&) {
-                       QJsonObject obj;
+    WebSocketCommand{
+        "servers", "Returns a list of servers", 0,
+        [](const QList<QByteArray>&) {
+          QJsonObject obj;
 
-                       QJsonArray countryArray;
-                       ServerCountryModel* scm =
-                           MozillaVPN::instance()->serverCountryModel();
-                       for (const ServerCountry& country : scm->countries()) {
-                         QJsonArray cityArray;
-                         for (const ServerCity& city : country.cities()) {
-                           QJsonObject cityObj;
-                           cityObj["name"] = city.name();
-                           cityObj["localizedName"] =
-                               ServerI18N::translateCityName(country.code(),
-                                                             city.name());
-                           cityObj["code"] = city.code();
-                           cityArray.append(cityObj);
-                         }
+          QJsonArray countryArray;
+          ServerCountryModel* scm =
+              MozillaVPN::instance()->serverCountryModel();
+          for (const ServerCountry& country : scm->countries()) {
+            QJsonArray cityArray;
+            for (const ServerCity& city : country.cities()) {
+              QJsonObject cityObj;
+              cityObj["name"] = city.name();
+              cityObj["localizedName"] =
+                  ServerI18N::translateCityName(country.code(), city.name());
+              cityObj["code"] = city.code();
+              cityArray.append(cityObj);
+            }
 
-                         QJsonObject countryObj;
-                         countryObj["name"] = country.name();
-                         countryObj["localizedName"] =
-                             ServerI18N::translateCountryName(country.code(),
-                                                              country.name());
-                         countryObj["code"] = country.code();
-                         countryObj["cities"] = cityArray;
+            QJsonObject countryObj;
+            countryObj["name"] = country.name();
+            countryObj["localizedName"] = ServerI18N::translateCountryName(
+                country.code(), country.name());
+            countryObj["code"] = country.code();
+            countryObj["cities"] = cityArray;
 
-                         countryArray.append(countryObj);
-                       }
+            countryArray.append(countryObj);
+          }
 
-                       obj["value"] = countryArray;
-                       return obj;
-                     }},
+          obj["value"] = countryArray;
+          return obj;
+        }},
 
     WebSocketCommand{
         "reset_surveys",
