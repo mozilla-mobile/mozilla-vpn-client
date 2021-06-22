@@ -154,8 +154,9 @@ Item {
     VPNRemoveDevicePopup {
         id: removePopup
 
-        function initializeAndOpen(name) {
+        function initializeAndOpen(name, publicKey) {
             removePopup.deviceName = name;
+            removePopup.devicePublicKey = publicKey;
             removePopup.open();
         }
 

@@ -123,7 +123,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
-  Q_INVOKABLE void removeDevice(const QString& deviceName);
+  Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
@@ -179,7 +179,7 @@ class MozillaVPN final : public QObject {
   void deviceAdded(const QString& deviceName, const QString& publicKey,
                    const QString& privateKey);
 
-  void deviceRemoved(const QString& deviceName);
+  void deviceRemoved(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
 
@@ -268,14 +268,6 @@ class MozillaVPN final : public QObject {
 
   void completeActivation();
 
-  enum RemovalDeviceOption {
-    DeviceNotFound,
-    DeviceStillValid,
-    DeviceRemoved,
-  };
-
-  RemovalDeviceOption maybeRemoveCurrentDevice();
-
   void controllerStateChanged();
 
  public slots:
@@ -291,7 +283,7 @@ class MozillaVPN final : public QObject {
   void alertChanged();
   void updateRecommendedChanged();
   void userAuthenticationChanged();
-  void deviceRemoving(const QString& deviceName);
+  void deviceRemoving(const QString& publicKey);
   void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();

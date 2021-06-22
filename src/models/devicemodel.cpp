@@ -121,6 +121,7 @@ void DeviceModel::writeSettings() {
 QHash<int, QByteArray> DeviceModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[NameRole] = "name";
+  roles[PublicKeyRole] = "publicKey";
   roles[CurrentOneRole] = "currentOne";
   roles[CreatedAtRole] = "createdAt";
   return roles;
@@ -139,6 +140,9 @@ QVariant DeviceModel::data(const QModelIndex& index, int role) const {
     case NameRole:
       return QVariant(m_devices.at(index.row()).name());
 
+    case PublicKeyRole:
+      return QVariant(m_devices.at(index.row()).publicKey());
+
     case CurrentOneRole:
       return QVariant(m_devices.at(index.row())
                           .isCurrentDevice(MozillaVPN::instance()->keys()));
@@ -151,29 +155,9 @@ QVariant DeviceModel::data(const QModelIndex& index, int role) const {
   }
 }
 
-bool DeviceModel::hasDevice(const QString& deviceName) const {
-  for (const Device& device : m_devices) {
-    if (device.isDevice(deviceName)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-const Device* DeviceModel::device(const QString& deviceName) const {
-  for (const Device& device : m_devices) {
-    if (device.isDevice(deviceName)) {
-      return &device;
-    }
-  }
-
-  return nullptr;
-}
-
-void DeviceModel::removeDevice(const QString& deviceName) {
+void DeviceModel::removeDeviceFromPublicKey(const QString& publicKey) {
   for (int i = 0; i < m_devices.length(); ++i) {
-    if (m_devices.at(i).isDevice(deviceName)) {
+    if (m_devices.at(i).publicKey() == publicKey) {
       removeRow(i);
       emit changed();
       return;
@@ -195,6 +179,16 @@ bool DeviceModel::removeRows(int row, int count, const QModelIndex& parent) {
 const Device* DeviceModel::currentDevice(const Keys* keys) const {
   for (const Device& device : m_devices) {
     if (device.isCurrentDevice(keys)) {
+      return &device;
+    }
+  }
+
+  return nullptr;
+}
+
+const Device* DeviceModel::deviceFromPublicKey(const QString& publicKey) const {
+  for (const Device& device : m_devices) {
+    if (device.publicKey() == publicKey) {
       return &device;
     }
   }

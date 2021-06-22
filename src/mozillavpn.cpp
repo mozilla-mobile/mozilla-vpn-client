@@ -517,43 +517,16 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   completeActivation();
 }
 
-MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
-  logger.log() << "Maybe remove current device";
-
-  const Device* currentDevice =
-      m_private->m_deviceModel.device(Device::currentDeviceName());
-  if (!currentDevice) {
-    logger.log() << "No removal needed because the device doesn't exist yet";
-    return DeviceNotFound;
-  }
-
-  if (currentDevice->publicKey() == m_private->m_keys.publicKey() &&
-      !m_private->m_keys.privateKey().isEmpty()) {
-    logger.log() << "No removal needed because the private key is still fine.";
-    return DeviceStillValid;
-  }
-
-  logger.log() << "Removal needed";
-  scheduleTask(new TaskRemoveDevice(currentDevice->publicKey()));
-  return DeviceRemoved;
-}
-
 void MozillaVPN::completeActivation() {
   int deviceCount = m_private->m_deviceModel.activeDevices();
-
-  // If we already have a device with the same name, let's remove it.
-  RemovalDeviceOption option = maybeRemoveCurrentDevice();
-  if (option == DeviceRemoved) {
-    --deviceCount;
-  }
-
   if (deviceCount >= m_private->m_user.maxDevices()) {
     maybeStateMain();
     return;
   }
 
   // Here we add the current device.
-  if (option != DeviceStillValid) {
+  if (m_private->m_keys.privateKey().isEmpty() ||
+      !m_private->m_deviceModel.hasCurrentDevice(keys())) {
     scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
   }
 
@@ -590,10 +563,10 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   m_private->m_keys.storeKeys(privateKey, publicKey);
 }
 
-void MozillaVPN::deviceRemoved(const QString& deviceName) {
+void MozillaVPN::deviceRemoved(const QString& publicKey) {
   logger.log() << "Device removed";
 
-  m_private->m_deviceModel.removeDevice(deviceName);
+  m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
 bool MozillaVPN::setServerList(const QByteArray& serverData) {
@@ -623,15 +596,15 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 }
 
-void MozillaVPN::removeDevice(const QString& deviceName) {
-  logger.log() << "Remove device" << deviceName;
+void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
+  logger.log() << "Remove device";
 
-  // Let's inform the UI about what is going to happen.
-  emit deviceRemoving(deviceName);
-
-  const Device* device = m_private->m_deviceModel.device(deviceName);
+  const Device* device =
+      m_private->m_deviceModel.deviceFromPublicKey(publicKey);
   if (device) {
-    scheduleTask(new TaskRemoveDevice(device->publicKey()));
+    // Let's inform the UI about what is going to happen.
+    emit deviceRemoving(publicKey);
+    scheduleTask(new TaskRemoveDevice(publicKey));
   }
 
   if (m_state != StateDeviceLimit) {
