@@ -98,7 +98,8 @@ describe('Server list', function() {
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
         await vpn.waitForElementProperty(
             cityId, 'checked',
-            currentCountryCode === server.code && currentCity === city.name ?
+            currentCountryCode === server.code &&
+                    currentCity === city.localizedName ?
                 'true' :
                 'false');
       }
@@ -142,7 +143,7 @@ describe('Server list', function() {
         await vpn.wait();
 
         currentCountryCode = server.code;
-        currentCity = city.name;
+        currentCity = city.localizedName;
 
         // Back to the main view.
 
@@ -183,7 +184,7 @@ describe('Server list', function() {
     let currentCountry = '';
     for (let server of servers) {
       if (server.code === currentCountryCode) {
-        currentCountry = server.name;
+        currentCountry = server.localizedName;
         break;
       }
     }
@@ -230,8 +231,8 @@ describe('Server list', function() {
     const previousCity = currentCity;
 
     currentCountryCode = server.code;
-    currentCountry = server.name;
-    currentCity = city.name;
+    currentCountry = server.localizedName;
+    currentCity = city.localizedName;
 
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');

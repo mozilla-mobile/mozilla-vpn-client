@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
@@ -560,12 +561,18 @@ static QList<WebSocketCommand> s_commands{
                          for (const ServerCity& city : country.cities()) {
                            QJsonObject cityObj;
                            cityObj["name"] = city.name();
+                           cityObj["localizedName"] =
+                               ServerI18N::translateCityName(country.code(),
+                                                             city.name());
                            cityObj["code"] = city.code();
                            cityArray.append(cityObj);
                          }
 
                          QJsonObject countryObj;
                          countryObj["name"] = country.name();
+                         countryObj["localizedName"] =
+                             ServerI18N::translateCountryName(country.code(),
+                                                              country.name());
                          countryObj["code"] = country.code();
                          countryObj["cities"] = cityArray;
 
