@@ -357,6 +357,29 @@ void TestModels::deviceModelFromJson() {
   }
 }
 
+// Feedback Category
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::feedbackCategoryBasic() {
+  FeedbackCategoryModel fcm;
+
+  QHash<int, QByteArray> rn = fcm.roleNames();
+  QCOMPARE(rn.count(), 2);
+  QCOMPARE(rn[FeedbackCategoryModel::CategoryNameRole], "value");
+  QCOMPARE(rn[FeedbackCategoryModel::LocalizedNameRole], "name");
+
+  QVERIFY(fcm.rowCount(QModelIndex()) > 0);
+  for (int i = 0; i < fcm.rowCount(QModelIndex()); ++i) {
+    QModelIndex index = fcm.index(i, 0);
+    QVERIFY(!fcm.data(index, FeedbackCategoryModel::CategoryNameRole)
+                 .toString()
+                 .isEmpty());
+    QVERIFY(!fcm.data(index, FeedbackCategoryModel::LocalizedNameRole)
+                 .toString()
+                 .isEmpty());
+  }
+}
+
 // Keys
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

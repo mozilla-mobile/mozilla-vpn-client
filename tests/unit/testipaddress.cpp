@@ -6,6 +6,12 @@
 #include "../../src/ipaddress.h"
 #include "helper.h"
 
+void TestIpAddress::ctor() {
+  IPAddress ip;
+  QCOMPARE(ip, ip);
+  ip = ip;
+}
+
 void TestIpAddress::basic_data() {
   QTest::addColumn<QString>("input");
   QTest::addColumn<QString>("address");
