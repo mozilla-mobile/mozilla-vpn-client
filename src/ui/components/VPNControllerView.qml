@@ -377,7 +377,7 @@ Item {
                 target: logoSubtitle
                 //% "From %1 to %2"
                 //: Switches from location 1 to location 2
-                text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentCity).arg(VPNController.switchingCity)
+                text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentLocalizedCityName).arg(VPNController.switchingLocalizedCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
             }

@@ -67,6 +67,18 @@ describe('Server list', function() {
     servers = await vpn.servers();
     currentCountryCode = await vpn.getSetting('current-server-country-code');
     currentCity = await vpn.getSetting('current-server-city');
+
+    // Let's "convert" current-city to its localized name.
+    for (let server of servers) {
+      if (currentCountryCode === server.code) {
+        for (let city of server.cities) {
+          if (city.name == currentCity) {
+            currentCity = city.localizedName;
+            break;
+          }
+        }
+      }
+    }
   });
 
   it('check the countries and cities', async () => {

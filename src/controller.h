@@ -38,8 +38,10 @@ class Controller final : public QObject {
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(int time READ time NOTIFY timeChanged)
-  Q_PROPERTY(QString currentCity READ currentCity NOTIFY stateChanged)
-  Q_PROPERTY(QString switchingCity READ switchingCity NOTIFY stateChanged)
+  Q_PROPERTY(QString currentLocalizedCityName READ currentLocalizedCityName
+                 NOTIFY stateChanged)
+  Q_PROPERTY(QString switchingLocalizedCityName READ switchingLocalizedCityName
+                 NOTIFY stateChanged)
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
 
@@ -58,11 +60,11 @@ class Controller final : public QObject {
 
   int time() const;
 
-  const QString& currentCity() const { return m_currentCity; }
+  QString currentLocalizedCityName() const;
 
   const QString& switchingCountryCode() const { return m_switchingCountryCode; }
 
-  const QString& switchingCity() const { return m_switchingCity; }
+  QString switchingLocalizedCityName() const;
 
   bool silentSwitchServers();
 
@@ -140,6 +142,7 @@ class Controller final : public QObject {
 
   QScopedPointer<ControllerImpl> m_impl;
 
+  QString m_currentCountryCode;
   QString m_currentCity;
 
   QString m_switchingCountryCode;
