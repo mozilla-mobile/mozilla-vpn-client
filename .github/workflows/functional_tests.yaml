@@ -92,7 +92,7 @@ jobs:
       - build_test_app
       - test_list
     runs-on: ubuntu-20.04
-    timeout-minutes: 15
+    timeout-minutes: 60
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       max-parallel: 1 #  To avoid max-device limit
