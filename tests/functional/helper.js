@@ -262,6 +262,8 @@ module.exports = {
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
     await this.wait();
+
+    await this.maybeRemoveExistingDevices();
   },
 
   async logout() {
@@ -317,6 +319,30 @@ module.exports = {
         json.type === 'screen_capture' && !('error' in json),
         `Invalid answer: ${json.error}`);
     return json.value;
+  },
+
+  async maybeRemoveExistingDevices() {
+    const json = await this._writeCommand('devices');
+    assert(
+        json.type === 'devices' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+
+    if (json.value.find(device => device.currentDevice)) {
+      return;
+    }
+
+    const addJson = await this._writeCommand('reset_devices');
+    assert(
+        addJson.type === 'reset_devices' && !('error' in addJson),
+        `Invalid answer: ${addJson.error}`);
+
+    await this.waitForCondition(async () => {
+      const json = await this._writeCommand('devices');
+      assert(
+          json.type === 'devices' && !('error' in json),
+          `Invalid answer: ${json.error}`);
+      return json.value.find(device => device.currentDevice);
+    });
   },
 
   // Internal methods.

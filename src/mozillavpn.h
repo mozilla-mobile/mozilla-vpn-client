@@ -232,6 +232,8 @@ class MozillaVPN final : public QObject {
 
   void setServerPublicKey(const QString& publicKey);
 
+  void addCurrentDeviceAndRefreshData();
+
  private:
   void setState(State state);
 

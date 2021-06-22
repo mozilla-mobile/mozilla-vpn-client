@@ -605,6 +605,56 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 #endif
+
+    WebSocketCommand{"devices", "Retrieve the list of devices", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       DeviceModel* dm = vpn->deviceModel();
+                       Q_ASSERT(dm);
+
+                       QJsonArray deviceArray;
+                       for (const Device& device : dm->devices()) {
+                         QJsonObject deviceObj;
+                         deviceObj["name"] = device.name();
+                         deviceObj["publicKey"] = device.publicKey();
+                         deviceObj["currentDevice"] =
+                             device.isCurrentDevice(vpn->keys());
+                         deviceArray.append(deviceObj);
+                       }
+
+                       QJsonObject obj;
+                       obj["value"] = deviceArray;
+                       return obj;
+                     }},
+
+    WebSocketCommand{
+        "reset_devices",
+        "Remove all the existing devices and add the current one if needed", 0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          DeviceModel* dm = vpn->deviceModel();
+          Q_ASSERT(dm);
+
+          bool hasCurrentOne = false;
+          for (const Device& device : dm->devices()) {
+            if (device.isCurrentDevice(vpn->keys())) {
+              hasCurrentOne = true;
+              continue;
+            }
+
+            vpn->removeDeviceFromPublicKey(device.publicKey());
+          }
+
+          if (!hasCurrentOne) {
+            vpn->addCurrentDeviceAndRefreshData();
+          }
+
+          return QJsonObject();
+        }},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(
