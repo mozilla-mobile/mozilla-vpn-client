@@ -8,6 +8,8 @@ class TestIpAddress final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void ctor();
+
   void basic_data();
   void basic();
 
