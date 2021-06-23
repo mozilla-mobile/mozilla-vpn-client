@@ -3,9 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 !versionAtLeast(QT_VERSION, 5.14.0) {
-    message("Recommend minimum Qt 5.14, found Qt $${QT_VERSION}")
+    message("Cannot use Qt $${QT_VERSION}")
     
-    !linux {
+    !android {
         error("Use Qt 5.14 or newer")
     }
 }
