@@ -12,6 +12,7 @@ import "../themes/themes.js" as Theme
 Item {
     property var rBytes: VPNConnectionData.rxBytes
     property var tBytes: VPNConnectionData.txBytes
+    property var latencyMSec: VPNConnectionHealth.latency
 
     id: connectionInfo
     anchors.fill: box
@@ -137,6 +138,53 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 32
         anchors.horizontalCenter: parent.horizontalCenter
+
+        Column {
+            spacing: 6
+
+            Accessible.focusable: true
+            Accessible.role: Accessible.StaticText
+            //% "%1: %2 %3"
+            //: Used as accessibility description for the connection info:
+            //: %1 is the localized label for “Ping”, %2 is the rtt delay,
+            //: %3 is the localized unit. Example: “Ping: 123 ms”.
+            Accessible.name: qsTrId("vpn.connectionInfo.accessibleName")
+                .arg(pingRange.text)
+                .arg(pingLabel.text)
+                .arg(pingValue.text)
+
+            Text {
+                id: pingRange
+
+                font.pixelSize: 10
+                height: 16
+                //% "ms"
+                //: milliseconds
+                text: qsTrId("vpn.connectionInfo.ms");
+                font.family: Theme.fontInterFamily
+                color: "#FFFFFF"
+            }
+
+            Text {
+                id: pingLabel
+
+                font.pixelSize: 14
+                //% "Ping"
+                //: The current latency to the VPN server. The latency is shown on the next line.
+                text: qsTrId("vpn.connectionInfo.ping")
+                font.family: Theme.fontBoldFamily
+                color: "#FFFFFF"
+            }
+
+            Text {
+                id: pingValue
+
+                font.pixelSize: 16
+                text: connectionInfo.latencyMSec
+                font.family: Theme.fontInterFamily
+                color: "#FFFFFF"
+            }
+        }
 
         VPNGraphLegendMarker {
             //% "Download"
