@@ -299,6 +299,8 @@ describe('Server list', function() {
                       {
                         # wdt:P31 is "instance-of"
                         # wd:Q515 is "city"
+                        # wd:Q200250 is "metropolis"
+                        # wd:Q5119 is "capital"
                         { ?city wdt:P31 wd:Q515 ;
                                 wdt:P17 <${countryUrl}> ;
                                 { ?city rdfs:label "${
@@ -316,6 +318,16 @@ describe('Server list', function() {
           city.name}"@en . } UNION { ?city skos:altLabel "${city.name}"@en . }
                           ?metropolis wdt:P279 ?bigcity .
                           ?bigcity wdt:P279 wd:Q515 . }
+                        UNION
+                        { ?city wdt:P31 wd:Q200250 ;
+                                wdt:P17 <${countryUrl}> ;
+                                { ?city rdfs:label "${
+          city.name}"@en . } UNION { ?city skos:altLabel "${city.name}"@en . } }
+                        UNION
+                        { ?city wdt:P31 wd:Q5119 ;
+                                wdt:P17 <${countryUrl}> ;
+                                { ?city rdfs:label "${
+          city.name}"@en . } UNION { ?city skos:altLabel "${city.name}"@en . } }
                       }`;
 
       const url = wbk.sparqlQuery(sparql)
@@ -356,8 +368,18 @@ describe('Server list', function() {
     for (let lang of result.results.bindings) {
       const langCode = lang.cityName['xml:lang'];
       const value = lang.cityName['value'];
-      if (languages.has(langCode) && value != city.name) {
-        translation.languages[languages.get(langCode)] = lang.cityName['value'];
+
+      if (city.name === value) continue;
+
+      if (languages.has(langCode)) {
+        translation.languages[languages.get(langCode)] = value;
+      }
+
+      for (let language of languages) {
+        if (langCode === language[0]) continue;
+        if (translation.languages[language[1]]) continue;
+        if (!language[0].startsWith(langCode + '-')) continue;
+        translation.languages[language[1]] = value;
       }
     }
 
