@@ -15,8 +15,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Focal Staging", dist: focal, buildargs: "-s" }
-            - { name: "Focal Production", dist: focal, buildargs: "" }
             - { name: "Hirsute Staging", dist: hirsute, buildargs: "-s" }
             - { name: "Hirsute Production", dist: hirsute, buildargs: "" }
 
