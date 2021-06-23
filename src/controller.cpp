@@ -14,6 +14,7 @@
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc5735.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "timercontroller.h"
@@ -456,6 +457,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   logger.log() << "Switching to a different server";
 
   m_currentCity = vpn->currentServer()->cityName();
+  m_currentCountryCode = vpn->currentServer()->countryCode();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 
@@ -729,4 +731,12 @@ void Controller::heartbeatCompleted() {
 void Controller::resetConnectionTimer() {
   m_connectionTimerExtraSecs = 0;
   m_connectionTimer.start();
+}
+
+QString Controller::currentLocalizedCityName() const {
+  return ServerI18N::translateCityName(m_currentCountryCode, m_currentCity);
+}
+
+QString Controller::switchingLocalizedCityName() const {
+  return ServerI18N::translateCityName(m_switchingCountryCode, m_switchingCity);
 }

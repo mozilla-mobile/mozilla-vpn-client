@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
@@ -548,33 +549,38 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
-    WebSocketCommand{"servers", "Returns a list of servers", 0,
-                     [](const QList<QByteArray>&) {
-                       QJsonObject obj;
+    WebSocketCommand{
+        "servers", "Returns a list of servers", 0,
+        [](const QList<QByteArray>&) {
+          QJsonObject obj;
 
-                       QJsonArray countryArray;
-                       ServerCountryModel* scm =
-                           MozillaVPN::instance()->serverCountryModel();
-                       for (const ServerCountry& country : scm->countries()) {
-                         QJsonArray cityArray;
-                         for (const ServerCity& city : country.cities()) {
-                           QJsonObject cityObj;
-                           cityObj["name"] = city.name();
-                           cityObj["code"] = city.code();
-                           cityArray.append(cityObj);
-                         }
+          QJsonArray countryArray;
+          ServerCountryModel* scm =
+              MozillaVPN::instance()->serverCountryModel();
+          for (const ServerCountry& country : scm->countries()) {
+            QJsonArray cityArray;
+            for (const ServerCity& city : country.cities()) {
+              QJsonObject cityObj;
+              cityObj["name"] = city.name();
+              cityObj["localizedName"] =
+                  ServerI18N::translateCityName(country.code(), city.name());
+              cityObj["code"] = city.code();
+              cityArray.append(cityObj);
+            }
 
-                         QJsonObject countryObj;
-                         countryObj["name"] = country.name();
-                         countryObj["code"] = country.code();
-                         countryObj["cities"] = cityArray;
+            QJsonObject countryObj;
+            countryObj["name"] = country.name();
+            countryObj["localizedName"] = ServerI18N::translateCountryName(
+                country.code(), country.name());
+            countryObj["code"] = country.code();
+            countryObj["cities"] = cityArray;
 
-                         countryArray.append(countryObj);
-                       }
+            countryArray.append(countryObj);
+          }
 
-                       obj["value"] = countryArray;
-                       return obj;
-                     }},
+          obj["value"] = countryArray;
+          return obj;
+        }},
 
     WebSocketCommand{
         "reset_surveys",
@@ -605,6 +611,56 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 #endif
+
+    WebSocketCommand{"devices", "Retrieve the list of devices", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       DeviceModel* dm = vpn->deviceModel();
+                       Q_ASSERT(dm);
+
+                       QJsonArray deviceArray;
+                       for (const Device& device : dm->devices()) {
+                         QJsonObject deviceObj;
+                         deviceObj["name"] = device.name();
+                         deviceObj["publicKey"] = device.publicKey();
+                         deviceObj["currentDevice"] =
+                             device.isCurrentDevice(vpn->keys());
+                         deviceArray.append(deviceObj);
+                       }
+
+                       QJsonObject obj;
+                       obj["value"] = deviceArray;
+                       return obj;
+                     }},
+
+    WebSocketCommand{
+        "reset_devices",
+        "Remove all the existing devices and add the current one if needed", 0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          DeviceModel* dm = vpn->deviceModel();
+          Q_ASSERT(dm);
+
+          bool hasCurrentOne = false;
+          for (const Device& device : dm->devices()) {
+            if (device.isCurrentDevice(vpn->keys())) {
+              hasCurrentOne = true;
+              continue;
+            }
+
+            vpn->removeDeviceFromPublicKey(device.publicKey());
+          }
+
+          if (!hasCurrentOne) {
+            vpn->addCurrentDeviceAndRefreshData();
+          }
+
+          return QJsonObject();
+        }},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

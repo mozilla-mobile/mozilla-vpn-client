@@ -528,11 +528,11 @@ void MozillaVPN::completeActivation() {
   // Here we add the current device.
   if (m_private->m_keys.privateKey().isEmpty() ||
       !m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+    addCurrentDeviceAndRefreshData();
+  } else {
+    // Let's fetch the account and the servers.
+    scheduleTask(new TaskAccountAndServers());
   }
-
-  // Let's fetch the account and the servers.
-  scheduleTask(new TaskAccountAndServers());
 
 #ifdef MVPN_IOS
   scheduleTask(new TaskIOSProducts());
@@ -616,10 +616,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   // Here we add the current device.
-  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
-
-  // Let's fetch the devices again.
-  scheduleTask(new TaskAccountAndServers());
+  addCurrentDeviceAndRefreshData();
 
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
@@ -1300,3 +1297,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
 }
 
 void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
+
+void MozillaVPN::addCurrentDeviceAndRefreshData() {
+  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+  scheduleTask(new TaskAccountAndServers());
+}
