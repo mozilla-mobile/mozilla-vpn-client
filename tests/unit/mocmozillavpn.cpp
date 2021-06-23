@@ -133,3 +133,5 @@ void MozillaVPN::heartbeatCompleted(bool) {}
 void MozillaVPN::triggerHeartbeat() {}
 
 void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
+
+void MozillaVPN::addCurrentDeviceAndRefreshData() {}

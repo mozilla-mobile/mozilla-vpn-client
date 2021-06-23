@@ -74,3 +74,7 @@ void Controller::connectionFailed() {}
 void Controller::heartbeatCompleted() {}
 
 void Controller::backendFailure() {}
+
+QString Controller::currentLocalizedCityName() const { return ""; }
+
+QString Controller::switchingLocalizedCityName() const { return ""; }

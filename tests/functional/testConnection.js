@@ -24,7 +24,7 @@ describe('Connectivity', function() {
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
     await driver.quit();

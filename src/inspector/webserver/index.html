@@ -107,7 +107,7 @@
       if (json.value) {
         const value = document.createElement("pre");
         value.setAttribute("class", "webSocketResponseValue");
-        value.innerText = json.value;
+        value.innerText = typeof(json.value) === "object" ? JSON.stringify(json.value) : json.value;
 
         p.appendChild(value);
       }

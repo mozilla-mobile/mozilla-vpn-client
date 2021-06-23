@@ -24,7 +24,7 @@ describe('Settings', function() {
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
     await driver.quit();
@@ -304,21 +304,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
-  it('Checking the give feedback', async () => {
-    await vpn.waitForElement('settingsGiveFeedback');
-    await vpn.waitForElementProperty('settingsGiveFeedback', 'visible', 'true');
-
-    await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('settingsGiveFeedback', 'y')));
-    await vpn.wait();
-
-    await vpn.clickOnElement('settingsGiveFeedback');
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.endsWith('/r/vpn/client/feedback');
-    });
-  });
+  // TODO: checking the give feedback views
 
   it('Checking the get help', async () => {
     await vpn.waitForElement('settingsGetHelp');

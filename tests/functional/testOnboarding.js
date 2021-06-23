@@ -15,7 +15,7 @@ describe('Initial view and onboarding', function() {
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
     vpn.disconnect();
