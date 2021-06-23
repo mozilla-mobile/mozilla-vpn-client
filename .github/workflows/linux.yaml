@@ -10,6 +10,76 @@ on:
       - 'releases/**'
 
 jobs:
+  focal-staging:
+    name: Focal Staging
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Linux packages
+        run: |
+          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
+          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+          sudo apt update
+          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev devscripts debhelper cdbs quilt qt515graphicaleffects qt515imageformats  qt515quickcontrols2   libxcb-image0-dev libxcb-shape0-dev libxcb-sync0-dev libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-icccm4-dev libx11-xcb-dev libxcb-keysyms1-dev libasound2-dev libaudio-dev libcups2-dev libdbus-1-dev libglu1-mesa-dev  libmng-dev libtiff5-dev libxcursor-dev libxi-dev libxinerama-dev libxmu-dev libxrandr-dev libxv-dev libedit-dev libvulkan-dev qt515websockets -y
+
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install "glean_parser==3.5"
+          pip3 install pyhumps
+          pip3 install pyyaml
+
+      - name: Create package structure
+        shell: bash
+        run: |
+          export PATH=/opt/qt515/bin:$PATH
+          ./scripts/linux_script.sh -s -r focal
+          mkdir packages
+          cp .tmp/*.deb packages
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: Staging Build (focal)
+            path: packages
+
+  focal-production:
+    name: Focal Production
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Linux packages
+        run: |
+          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
+          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+          sudo apt update
+          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev devscripts debhelper cdbs quilt qt515graphicaleffects qt515imageformats  qt515quickcontrols2   libxcb-image0-dev libxcb-shape0-dev libxcb-sync0-dev libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-icccm4-dev libx11-xcb-dev libxcb-keysyms1-dev libasound2-dev libaudio-dev libcups2-dev libdbus-1-dev libglu1-mesa-dev  libmng-dev libtiff5-dev libxcursor-dev libxi-dev libxinerama-dev libxmu-dev libxrandr-dev libxv-dev libedit-dev libvulkan-dev qt515websockets -y
+
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install glean depedencies
+        shell: bash
+        run: |
+          pip3 install "glean_parser==3.5"
+          pip3 install pyhumps
+          pip3 install pyyaml
+
+      - name: Create package structure
+        shell: bash
+        run: |
+          export PATH=/opt/qt515/bin:$PATH
+          ./scripts/linux_script.sh -r focal
+          mkdir packages
+          cp .tmp/*.deb packages
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+            name: Production Build (focal)
+            path: packages
+
   bionic-staging:
     name: Bionic Staging
     runs-on: ubuntu-18.04
