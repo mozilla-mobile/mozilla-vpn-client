@@ -22,7 +22,7 @@ describe('Backend failure', function() {
     await vpn.wait();
   }
 
-  this.timeout(500000);
+  this.timeout(1000000);
 
   before(async () => {
     await vpn.connect();
@@ -31,7 +31,7 @@ describe('Backend failure', function() {
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
     await driver.quit();

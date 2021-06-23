@@ -263,7 +263,7 @@ module.exports = {
 
     await this.wait();
 
-    await this.maybeRemoveExistingDevices();
+    await this._maybeRemoveExistingDevices();
   },
 
   async logout() {
@@ -321,7 +321,39 @@ module.exports = {
     return json.value;
   },
 
-  async maybeRemoveExistingDevices() {
+  async dumpFailure() {
+    if (this.currentTest.state === 'failed') {
+      const data = await module.exports.screenCapture();
+      const buffer = Buffer.from(data, 'base64');
+      require('fs').writeFileSync('/tmp/img.png', buffer);
+      const {exec} = require('child_process');
+      exec('TERM=xterm-256color jp2a /tmp/img.png', (error, stdout, stderr) => {
+        if (error) console.log(error);
+        console.log(stderr);
+        console.log(stdout);
+      });
+    }
+  },
+
+  // Internal methods.
+
+  _writeCommand(command) {
+    return new Promise(resolve => {
+      waitReadCallback = resolve;
+      client.send(`${command}`);
+    });
+  },
+
+  _resolveWaitRead(json) {
+    if (waitReadCallback) {
+      const wr = waitReadCallback;
+      waitReadCallback = null;
+
+      wr(json);
+    }
+  },
+
+  async _maybeRemoveExistingDevices() {
     const json = await this._writeCommand('devices');
     assert(
         json.type === 'devices' && !('error' in json),
@@ -343,23 +375,5 @@ module.exports = {
           `Invalid answer: ${json.error}`);
       return json.value.find(device => device.currentDevice);
     });
-  },
-
-  // Internal methods.
-
-  _writeCommand(command) {
-    return new Promise(resolve => {
-      waitReadCallback = resolve;
-      client.send(`${command}`);
-    });
-  },
-
-  _resolveWaitRead(json) {
-    if (waitReadCallback) {
-      const wr = waitReadCallback;
-      waitReadCallback = null;
-
-      wr(json);
-    }
   },
 };

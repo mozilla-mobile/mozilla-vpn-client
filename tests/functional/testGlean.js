@@ -16,7 +16,7 @@ describe('Glean event logging', function() {
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
     vpn.disconnect();
