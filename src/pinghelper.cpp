@@ -89,6 +89,9 @@ void PingHelper::nextPing() {
   logger.log() << "Sending ping seq:" << m_sequence;
 #endif
 
+  // The ICMP sequence number is used to match replies with their originating
+  // request, and serves as an index into the circular buffer. Overflows of
+  // the sequence number acceptable.
   int index = m_sequence % PING_STATS_WINDOW;
   m_pingData[index].timestamp = QDateTime::currentMSecsSinceEpoch();
   m_pingData[index].latency = -1;
@@ -129,6 +132,7 @@ uint PingHelper::latency() const {
     return 0.0;
   }
 
+  // Add half the denominator to produce nearest-integer rounding.
   totalMsec += recvCount / 2;
   return totalMsec / recvCount;
 }
