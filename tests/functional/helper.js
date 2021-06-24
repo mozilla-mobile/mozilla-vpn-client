@@ -202,8 +202,10 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
-  async authenticate(driver, resetting = true, telemetry = true) {
+  async authenticate(resetting = true, telemetry = true) {
     if (resetting) await this.reset();
+
+    let driver = await FirefoxHelper.createDriver();
 
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
@@ -261,9 +263,11 @@ module.exports = {
         driver,
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
-    await this.wait();
+    await this.waitForElement('postAuthenticationButton');
 
     await this._maybeRemoveExistingDevices();
+
+    await driver.quit();
   },
 
   async logout() {

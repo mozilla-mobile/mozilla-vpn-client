@@ -96,6 +96,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool productionMode READ productionMode CONSTANT)
+  Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
+                 currentViewChanged)
 
  public:
   MozillaVPN();
@@ -234,6 +236,12 @@ class MozillaVPN final : public QObject {
 
   void addCurrentDeviceAndRefreshData();
 
+  const QString& currentView() const { return m_currentView; }
+  void setCurrentView(const QString& name) {
+    m_currentView = name;
+    emit currentViewChanged();
+  }
+
  private:
   void setState(State state);
 
@@ -303,6 +311,8 @@ class MozillaVPN final : public QObject {
 
   void logsReady(const QString& logs);
 
+  void currentViewChanged();
+
  private:
   bool m_initialized = false;
 
@@ -335,6 +345,7 @@ class MozillaVPN final : public QObject {
 
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
+  QString m_currentView;
 
   QString m_serverPublicKey;
 

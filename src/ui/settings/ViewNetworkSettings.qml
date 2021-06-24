@@ -38,9 +38,9 @@ Item {
         interactive: flickContentHeight > height
 
         Component.onCompleted: {
-            Glean.sample.networkSettingsViewOpened.record();
+            Sample.networkSettingsViewOpened.record();
             if (!vpnIsOff) {
-                Glean.sample.networkSettingsViewWarning.record();
+                Sample.networkSettingsViewWarning.record();
             }
         }
 

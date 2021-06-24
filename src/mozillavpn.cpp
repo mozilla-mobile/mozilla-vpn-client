@@ -468,9 +468,9 @@ void MozillaVPN::maybeRunTask() {
 }
 
 void MozillaVPN::taskCompleted() {
-  logger.log() << "Task completed";
-
   Q_ASSERT(m_running_task);
+
+  logger.log() << "Task completed:" << m_running_task->name();
   m_running_task->deleteLater();
   m_running_task->disconnect();
   m_running_task = nullptr;
