@@ -788,6 +788,9 @@ else:wasm {
 
     CONFIG += c++1z
 
+    # 32Mb
+    QMAKE_WASM_TOTAL_MEMORY=33554432
+
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
