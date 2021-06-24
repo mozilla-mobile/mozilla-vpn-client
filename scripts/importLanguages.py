@@ -103,8 +103,8 @@ print('Updated translations.pri')
 os.system(f"{lupdate} src/src.pro")
 
 # Step 4
-# Now import translations into the files
+# Now merge translations into the files
 for l10n_file in l10n_files:
-    os.system(f"{lconvert} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
+    os.system(f"{lconvert} -i {l10n_file['ts']} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
 
 print(f'Imported {len(l10n_files)} locales')
