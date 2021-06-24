@@ -283,6 +283,7 @@ void IAPHandler::registerProduct(const QJsonValue& value) {
   product.m_name = obj["id"].toString();
   product.m_price = Constants::SUBSCRIPTION_CURRENCY_VALUE_USD;
   product.m_type = productTypeToEnum(obj["type"].toString());
+  product.m_featuredProduct = obj["featured_product"].toBool();
   if (product.m_type == ProductUnknown) {
     logger.log() << "Unknown product type:" << obj["type"].toString();
     return;
@@ -468,6 +469,7 @@ QHash<int, QByteArray> IAPHandler::roleNames() const {
   roles[ProductIdentifierRole] = "productIdentifier";
   roles[ProductPriceRole] = "productPrice";
   roles[ProductTypeRole] = "productType";
+  roles[ProductFeaturedRole] = "productFeatured";
   return roles;
 }
 
@@ -487,6 +489,9 @@ QVariant IAPHandler::data(const QModelIndex& index, int role) const {
 
     case ProductTypeRole:
       return QVariant(m_registeredProducts.at(index.row()).m_type);
+
+    case ProductFeaturedRole:
+      return QVariant(m_registeredProducts.at(index.row()).m_featuredProduct);
 
     default:
       return QVariant();

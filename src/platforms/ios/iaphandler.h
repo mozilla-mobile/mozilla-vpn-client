@@ -30,6 +30,7 @@ class IAPHandler final : public QAbstractListModel {
     ProductIdentifierRole = Qt::UserRole + 1,
     ProductPriceRole,
     ProductTypeRole,
+    ProductFeaturedRole,
   };
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
 
@@ -91,6 +92,7 @@ class IAPHandler final : public QAbstractListModel {
     QString m_name;
     QString m_price;
     ProductType m_type = IAPHandler::ProductMonthly;
+    bool m_featuredProduct = false;
     void* m_product = nullptr;
   };
 
