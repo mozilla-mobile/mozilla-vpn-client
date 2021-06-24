@@ -105,8 +105,9 @@ void PingHelper::pingReceived(quint16 sequence) {
     m_pingData[index].latency = QDateTime::currentMSecsSinceEpoch() - sendTime;
     emit pingSentAndReceived(m_pingData[index].latency);
 #ifdef QT_DEBUG
-    logger.log() << "Ping answer received seq:" << sequence << "avg:"
-                 << latency() << "loss:" << QString("%1%").arg(loss() * 100.0)
+    logger.log() << "Ping answer received seq:" << sequence
+                 << "avg:" << latency()
+                 << "loss:" << QString("%1%").arg(loss() * 100.0)
                  << "stddev:" << stddev();
 #endif
   }
@@ -128,7 +129,7 @@ uint PingHelper::latency() const {
     return 0.0;
   }
 
-  totalMsec += recvCount/2;
+  totalMsec += recvCount / 2;
   return totalMsec / recvCount;
 }
 

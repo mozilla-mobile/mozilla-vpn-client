@@ -108,6 +108,8 @@ void ConnectionHealth::connectionStateChanged() {
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
 #ifdef QT_DEBUG
   logger.log() << "Ping answer received in msec:" << msec;
+#else
+  Q_UNUSED(msec);
 #endif
 
   // If a ping has been received, we have signal. Restart the timers.
