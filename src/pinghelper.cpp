@@ -7,11 +7,27 @@
 #include "logger.h"
 #include "pingsender.h"
 
+#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
+#  include "platforms/linux/linuxpingsender.h"
+#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
+#  include "platforms/macos/macospingsender.h"
+#elif defined(MVPN_WINDOWS)
+#  include "platforms/windows/windowspingsender.h"
+#elif defined(MVPN_DUMMY) || defined(UNIT_TEST)
+#  include "platforms/dummy/dummypingsender.h"
+#else
+#  error "Unsupported platform"
+#endif
+
+#include <QDateTime>
+
+#include <cmath>
+
 // Any X seconds, a new ping.
 constexpr uint32_t PING_TIMOUT_SEC = 1;
 
-// How many concurrent pings
-constexpr int PINGS_MAX = 20;
+// Maximum window size for ping statistics.
+constexpr int PING_STATS_WINDOW = 32;
 
 namespace {
 Logger logger(LOG_NETWORKING, "PingHelper");
@@ -19,6 +35,9 @@ Logger logger(LOG_NETWORKING, "PingHelper");
 
 PingHelper::PingHelper() {
   MVPN_COUNT_CTOR(PingHelper);
+
+  m_sequence = 0;
+  m_pingData.resize(PING_STATS_WINDOW);
 
   connect(&m_pingTimer, &QTimer::timeout, this, &PingHelper::nextPing);
 }
@@ -31,53 +50,145 @@ void PingHelper::start(const QString& serverIpv4Gateway,
 
   m_gateway = serverIpv4Gateway;
   m_source = deviceIpv4Address.section('/', 0, 0);
+  m_pingSender =
+#if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
+      new LinuxPingSender(m_source, this);
+#elif defined(MVPN_MACOS) || defined(MVPN_IOS)
+      new MacOSPingSender(m_source, this);
+#elif defined(MVPN_WINDOWS)
+      new WindowsPingSender(m_source, this);
+#else
+      new DummyPingSender(m_source, this);
+#endif
+  connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived);
+
+  // Reset the ping statistics
+  m_sequence = 0;
+  for (int i = 0; i < PING_STATS_WINDOW; i++) {
+    m_pingData[i].timestamp = -1;
+    m_pingData[i].latency = -1;
+    m_pingData[i].sequence = 0;
+  }
+
   m_pingTimer.start(PING_TIMOUT_SEC * 1000);
 }
 
 void PingHelper::stop() {
   logger.log() << "PingHelper deactivated";
 
-  m_pingTimer.stop();
-
-  for (PingSender* pingSender : m_pings) {
-    pingSender->deleteLater();
+  if (m_pingSender) {
+    delete m_pingSender;
+    m_pingSender = nullptr;
   }
-  m_pings.clear();
+
+  m_pingTimer.stop();
 }
 
 void PingHelper::nextPing() {
-  logger.log() << "Sending a new ping. Total:" << m_pings.length();
+#ifdef QT_DEBUG
+  logger.log() << "Sending ping seq:" << m_sequence;
+#endif
 
-  PingSender* pingSender = new PingSender(this);
-  connect(pingSender, &PingSender::completed, this, &PingHelper::pingReceived);
-  m_pings.append(pingSender);
-  pingSender->send(m_gateway, m_source);
+  // The ICMP sequence number is used to match replies with their originating
+  // request, and serves as an index into the circular buffer. Overflows of
+  // the sequence number acceptable.
+  int index = m_sequence % PING_STATS_WINDOW;
+  m_pingData[index].timestamp = QDateTime::currentMSecsSinceEpoch();
+  m_pingData[index].latency = -1;
+  m_pingData[index].sequence = m_sequence;
+  m_pingSender->sendPing(m_gateway, m_sequence);
 
-  while (m_pings.length() > PINGS_MAX) {
-    m_pings.at(0)->deleteLater();
-    m_pings.removeAt(0);
+  m_sequence++;
+}
+
+void PingHelper::pingReceived(quint16 sequence) {
+  int index = sequence % PING_STATS_WINDOW;
+  if (m_pingData[index].sequence == sequence) {
+    qint64 sendTime = m_pingData[index].timestamp;
+    m_pingData[index].latency = QDateTime::currentMSecsSinceEpoch() - sendTime;
+    emit pingSentAndReceived(m_pingData[index].latency);
+#ifdef QT_DEBUG
+    logger.log() << "Ping answer received seq:" << sequence
+                 << "avg:" << latency()
+                 << "loss:" << QString("%1%").arg(loss() * 100.0)
+                 << "stddev:" << stddev();
+#endif
   }
 }
 
-void PingHelper::pingReceived(PingSender* pingSender, qint64 msec) {
-  logger.log() << "Ping answer received in msec:" << msec;
+uint PingHelper::latency() const {
+  int recvCount = 0;
+  qint64 totalMsec = 0;
 
-  if (!m_pingTimer.isActive()) {
-    logger.log() << "Race condition. Let's ignore this ping";
-    return;
-  }
-
-  QMutableListIterator<PingSender*> i(m_pings);
-  while (i.hasNext()) {
-    PingSender* thisPingSender = i.next();
-    if (thisPingSender != pingSender) {
+  for (const PingSendData& data : m_pingData) {
+    if (data.latency < 0) {
       continue;
     }
-
-    i.remove();
-    break;
+    recvCount++;
+    totalMsec += data.latency;
   }
 
-  pingSender->deleteLater();
-  emit pingSentAndReceived(msec);
+  if (recvCount <= 0) {
+    return 0.0;
+  }
+
+  // Add half the denominator to produce nearest-integer rounding.
+  totalMsec += recvCount / 2;
+  return totalMsec / recvCount;
+}
+
+uint PingHelper::stddev() const {
+  int recvCount = 0;
+  qint64 totalVariance = 0;
+  uint average = PingHelper::latency();
+
+  for (const PingSendData& data : m_pingData) {
+    if (data.latency < 0) {
+      continue;
+    }
+    recvCount++;
+    totalVariance += (average - data.latency) * (average - data.latency);
+  }
+
+  if (recvCount <= 0) {
+    return 0.0;
+  }
+
+  return std::sqrt((double)totalVariance / recvCount);
+}
+
+uint PingHelper::maximum() const {
+  uint maxRtt = 0;
+
+  for (const PingSendData& data : m_pingData) {
+    if (data.latency < 0) {
+      continue;
+    }
+    if (data.latency > maxRtt) {
+      maxRtt = data.latency;
+    }
+  }
+  return maxRtt;
+}
+
+double PingHelper::loss() const {
+  int sendCount = 0;
+  int recvCount = 0;
+  // Don't count pings that are possibly still in flight as losses.
+  qint64 sendBefore =
+      QDateTime::currentMSecsSinceEpoch() - (PING_TIMOUT_SEC * 1000);
+
+  for (const PingSendData& data : m_pingData) {
+    if (data.latency > 0) {
+      recvCount++;
+      sendCount++;
+    } else if ((data.timestamp > 0) && (data.timestamp < sendBefore)) {
+      sendCount++;
+    }
+  }
+
+  if (sendCount <= 0) {
+    return 0.0;
+  }
+  return (double)(sendCount - recvCount) / sendCount;
 }

@@ -22,6 +22,8 @@ class ConnectionHealth final : public QObject {
 
   Q_PROPERTY(ConnectionStability stability READ stability()
                  NOTIFY stabilityChanged)
+  Q_PROPERTY(uint latency READ latency NOTIFY pingChanged)
+  Q_PROPERTY(double loss READ loss NOTIFY pingChanged)
 
  public:
   ConnectionHealth();
@@ -29,12 +31,16 @@ class ConnectionHealth final : public QObject {
 
   ConnectionStability stability() const { return m_stability; }
 
+  uint latency() const { return m_pingHelper.latency(); }
+  double loss() const { return m_pingHelper.loss(); }
+
  public slots:
   void connectionStateChanged();
   void applicationStateChanged(Qt::ApplicationState state);
 
  signals:
   void stabilityChanged();
+  void pingChanged();
 
  private:
   void stop();
@@ -45,12 +51,13 @@ class ConnectionHealth final : public QObject {
 
   void setStability(ConnectionStability stability);
 
-  void noSignalDetected();
+  void healthCheckup();
 
  private:
   ConnectionStability m_stability = Stable;
 
   QTimer m_noSignalTimer;
+  QTimer m_healthCheckTimer;
 
   PingHelper m_pingHelper;
 

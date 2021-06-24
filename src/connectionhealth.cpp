@@ -16,6 +16,9 @@ constexpr uint32_t PING_TIME_UNSTABLE_SEC = 1;
 // In seconds, the timeout to detect no-signal pings.
 constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 3;
 
+// Packet loss threshold for a connection to be considered unstable.
+constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
+
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
@@ -23,9 +26,10 @@ Logger logger(LOG_NETWORKING, "ConnectionHealth");
 ConnectionHealth::ConnectionHealth() {
   MVPN_COUNT_CTOR(ConnectionHealth);
 
-  connect(&m_noSignalTimer, &QTimer::timeout, this,
-          &ConnectionHealth::noSignalDetected);
   m_noSignalTimer.setSingleShot(true);
+
+  connect(&m_healthCheckTimer, &QTimer::timeout, this,
+          &ConnectionHealth::healthCheckup);
 
   connect(&m_pingHelper, &PingHelper::pingSentAndReceived, this,
           &ConnectionHealth::pingSentAndReceived);
@@ -58,6 +62,7 @@ void ConnectionHealth::start(const QString& serverIpv4Gateway,
   m_deviceAddress = deviceIpv4Address;
   m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
+  m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -68,6 +73,8 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   logger.log() << "Stability changed:" << stability;
 
   if (stability == Unstable) {
+    MozillaVPN::instance()->silentSwitch();
+
     emit MozillaVPN::instance()->triggerGleanSample(
         GleanSample::connectionHealthUnstable);
   } else if (stability == NoSignal) {
@@ -99,22 +106,38 @@ void ConnectionHealth::connectionStateChanged() {
 }
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
+#ifdef QT_DEBUG
   logger.log() << "Ping answer received in msec:" << msec;
+#else
+  Q_UNUSED(msec);
+#endif
 
-  // If a ping has been received, we have signal. Restart the timer.
+  // If a ping has been received, we have signal. Restart the timers.
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
+  m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
 
-  if (msec < PING_TIME_UNSTABLE_SEC * 1000) {
-    setStability(Stable);
-  } else {
-    MozillaVPN::instance()->silentSwitch();
-    setStability(Unstable);
-  }
+  healthCheckup();
+
+  emit pingChanged();
 }
 
-void ConnectionHealth::noSignalDetected() {
-  logger.log() << "No signal detected";
-  setStability(NoSignal);
+void ConnectionHealth::healthCheckup() {
+  // If the no-signal timer has elapsed, then we probably lost the connection.
+  if (!m_noSignalTimer.isActive()) {
+    setStability(NoSignal);
+  }
+  // If there are too many lost pings, then mark the connection as unstable.
+  else if (m_pingHelper.loss() > PING_LOSS_UNSTABLE_THRESHOLD) {
+    setStability(Unstable);
+  }
+  // If recent pings took to long, then mark the connection as unstable.
+  else if (m_pingHelper.maximum() > (PING_TIME_UNSTABLE_SEC * 1000)) {
+    setStability(Unstable);
+  }
+  // Otherwise, the connection is stable.
+  else {
+    setStability(Stable);
+  }
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
