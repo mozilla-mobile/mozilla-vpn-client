@@ -100,8 +100,8 @@ Item {
 
                 //% "Use local DNS"
                 labelText: qsTrId("vpn.settings.useGatewayDNS")
-                //% "Resolve websites using a DNS in your local network"
-                subLabelText: qsTrId("vpn.settings.useGatewayDNS.description")
+                //% "Resolve website domain names using a DNS in your local network"
+                subLabelText: qsTrId("vpn.settings.useGatewayDNS.resolveWebsiteDomainNames")
                 isChecked: (!VPNSettings.useGatewayDNS)
                 isEnabled: vpnFlickable.vpnIsOff
                 showDivider: false

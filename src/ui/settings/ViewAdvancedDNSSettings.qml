@@ -75,8 +75,8 @@ Item {
 
                 //% "Use local DNS"
                 labelText: qsTrId("vpn.advancedDNSSettings.localDNS")
-                //% "Resolve websites using a DNS in your local network"
-                subLabelText: qsTrId("vpn.advancedDNSSettings.localDNS.description")
+                //% "Resolve website domain names using a DNS in your local network"
+                subLabelText: qsTrId("vpn.advancedDNSSettings.localDNS.resolveWebsiteDomainNames")
                 isChecked: (!VPNSettings.useGatewayDNS)
                 showDivider: false
                 onClicked: {
