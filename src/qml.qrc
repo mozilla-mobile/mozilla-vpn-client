@@ -47,6 +47,7 @@
         <file>ui/components/VPNServerCountry.qml</file>
         <file>ui/themes/themes.js</file>
         <file>ui/settings/ViewLanguage.qml</file>
+        <file>ui/settings/ViewAdvancedDNSSettings.qml</file>
         <file>ui/settings/ViewNetworkSettings.qml</file>
         <file>ui/settings/ViewAppPermissions.qml</file>
         <file>ui/settings/ViewNotifications.qml</file>
