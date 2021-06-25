@@ -14,7 +14,7 @@ Item {
     id: inputRoot
     property var isEnabled: true
     property var valueChanged: ()=>{}
-    property var value: ""
+    property alias value: input.text
     property var valueInvalid: false
     property var leftPadding: 0
     //% "The entered value is invalid"

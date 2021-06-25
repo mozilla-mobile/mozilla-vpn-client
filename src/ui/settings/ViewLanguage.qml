@@ -47,7 +47,6 @@ Item {
             id: radioButtonGroup
         }
 
-
         VPNFlickable {
             id: vpnFlickable
 
@@ -139,6 +138,20 @@ Item {
                 opacity: 1
             }
 
+            VPNTextInput {
+                id: filterInput
+
+                width: parent.width - Theme.windowMargin
+                height: 30
+                leftPadding: 55
+                anchors.top: divider.bottom
+                anchors.topMargin: 20
+
+                valueChanged: input => {
+                    model.invalidate();
+                }
+            }
+
             Column {
                 id: col
 
@@ -146,7 +159,7 @@ Item {
 
                 spacing: 20
                 width: parent.width
-                anchors.top: divider.bottom
+                anchors.top: filterInput.bottom
                 anchors.topMargin: 20
                 Component.onCompleted: {
 
@@ -179,10 +192,21 @@ Item {
                     }
                 }
 
+                VPNFilterProxyModel {
+                    id: model
+                    source: VPNLocalizer
+                    // No filter
+                    filterCallback: obj => {
+                       const filterValue = filterInput.value.toLowerCase();
+                       return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
+                              obj.language.toLowerCase().includes(filterValue);
+                    }
+                }
+
                 Repeater {
                     id: repeater
 
-                    model: VPNLocalizer
+                    model: model
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
