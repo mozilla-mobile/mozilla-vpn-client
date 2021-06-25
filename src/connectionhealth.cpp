@@ -45,6 +45,7 @@ void ConnectionHealth::stop() {
 
   m_pingHelper.stop();
   m_noSignalTimer.stop();
+  m_healthCheckTimer.stop();
 
   setStability(Stable);
 }
