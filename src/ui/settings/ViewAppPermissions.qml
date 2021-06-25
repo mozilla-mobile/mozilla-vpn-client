@@ -82,16 +82,16 @@ Item {
                 VPNInterLabel {
                     Layout.alignment: Qt.AlignLeft
                     Layout.fillWidth: true
-                    //% "Protect specific apps"
-                    text: qsTrId("vpn.settings.protectSelectedApps")
+                    //% "Protect all apps with VPN"
+                    text: qsTrId("vpn.settings.protectAllApps")
                     color: Theme.fontColorDark
                     horizontalAlignment: Text.AlignLeft
                 }
 
                 VPNTextBlock {
                     Layout.fillWidth: true
-                    //% "Choose which apps should use the VPN"
-                    text: qsTrId("vpn.settings.protectSelectedApps.description")
+                    //% "VPN protects all apps by default. Turn off to choose which apps Mozilla VPN should not protect."
+                    text: qsTrId("vpn.settings.protectAllApps.description")
                     visible: !!text.length
                 }
             }
@@ -99,9 +99,9 @@ Item {
             VPNSettingsToggle {
                 Layout.preferredHeight: 24
                 Layout.preferredWidth: 45
-                checked: (VPNSettings.protectSelectedApps)
+                checked: (!VPNSettings.protectSelectedApps)
                 enabled: vpnFlickable.vpnIsOff
-                toolTipTitle: qsTrId("vpn.settings.protectSelectedApps")
+                toolTipTitle: qsTrId("vpn.settings.protectAllApps")
                 onClicked: {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.protectSelectedApps = !VPNSettings.protectSelectedApps
@@ -110,80 +110,15 @@ Item {
             }
         }
 
-        RowLayout {
-            id: allAppsProtectedHint
-
-            anchors.top: enableAppList.bottom
-            anchors.topMargin: Theme.windowMargin * 2
-
-            anchors.left: parent.left
-            anchors.leftMargin: 18
-            visible: !VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
-
-            Rectangle {
-                color: "transparent"
-                Layout.maximumHeight: infoMessage.lineHeight
-                Layout.preferredWidth: 14
-                Layout.rightMargin: 8
-                Layout.alignment: Qt.AlignTop
-                VPNIcon {
-                    id: warningIcon
-
-                    source: "../resources/connection-info.svg"
-                    sourceSize.height: 14
-                    sourceSize.width: 14
-                    Layout.alignment: Qt.AlignVCenter
-                }
-            }
-
-            VPNTextBlock {
-                id: infoMessage
-                //% "VPN protects all apps by default"
-                text: qsTrId("vpn.settings.protectSelectedApps.allAppsProtected")
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter
-                verticalAlignment: Text.AlignTop
-            }
-        }
-
-        VPNExpandableAppList{
+        VPNExpandableAppList {
             id: enabledList
             anchors.topMargin: 28
             anchors.top: enableAppList.bottom
 
-            //% "Protected"
+            //% "Exclude apps from VPN protection"
             //: Header for the list of apps protected by VPN
-            header: qsTrId("vpn.settings.protected")
-            //% "These apps will use the VPN"
-            //: Description for the list of apps protected by VPN
-            description: qsTrId("vpn.settings.protected.description")
-            listModel: VPNAppPermissions.enabledApps
-            onAction: ()=>{VPNAppPermissions.unprotectAll()}
-            //% "Unprotect All"
-            //: Label for the button to remove protection from all apps
-            //: currently protected.
-            actionText: qsTrId("vpn.settings.unprotectall")
-            dividerVisible: true
-        }
-
-        VPNExpandableAppList{
-            id: disabledList
-
-            anchors.top: enabledList.bottom
-            //% "Unprotected"
-            //: Header for the list of apps not protected by VPN
-            header: qsTrId("vpn.settings.unprotected")
-            //% "These apps will not use the VPN"
-            //: Description for the list of apps not protected by VPN
-            description: qsTrId("vpn.settings.unprotected.description")
-            listModel: VPNAppPermissions.disabledApps
-            onAction: ()=>{VPNAppPermissions.protectAll()}
-            //% "Protect All"
-            //: Label for the button to add protection to all apps
-            //: currently unprotected.
-            actionText: qsTrId("vpn.settings.protectall")
+            header: qsTrId("vpn.settings.excludeTitle")
+            listModel: VPNAppPermissions
         }
     }
-
 }
-
