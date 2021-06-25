@@ -23,6 +23,7 @@ const greyHovered = "#E6E6E6";
 const greyPressed = "#C2C2C2";
 const ink = "#321C64";
 const orange = "#FFA436";
+const purple60 = "#7542E5";
 const red = "#FF4F5E";
 const redHovered = "#E22850";
 const redPressed = "#C50042";
