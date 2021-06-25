@@ -147,7 +147,7 @@ Item {
                         break;
 
                     case VPNSettings.UserDNSNotIPv4:
-                        //% "We currently support only ipv4 IP addresses"
+                        //% "We currently support only IPv4 IP addresses"
                         ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
                         ipInput.valueInvalid = true;
                         break;
@@ -170,7 +170,8 @@ Item {
                 imageLeftSrc: "../resources/settings.svg"
                 imageRightSrc: "../resources/chevron.svg"
                 onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
-                visible: VPNFeatureList.userDNSSupported
+                visible: false
+                // TODO: visible: VPNFeatureList.userDNSSupported
                 // TODO: isEnabled: vpnFlickable.vpnIsOff
             }
 
