@@ -113,7 +113,7 @@ rm -rf linux/debian || die "Failed"
 print G "done."
 
 printn Y "Archiving the source code... "
-tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
+tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz -C .. mozillavpn-$SHORTVERSION || die "Failed"
 print G "done."
 
 if [[ "$RPM" == "Y" ]]; then
@@ -155,10 +155,10 @@ sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
 sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
 sed -i -e "s/FULLVERSION/$FULLVERSION/g" debian/rules || die "Failed"
-if [ -z "$SOURCEONLY" ]; then
-  debuild -uc -us || die "Failed to build Debian package"
-else
+if [ "$SOURCEONLY" == "Y" ]; then
   dpkg-buildpackage --build=source --no-sign --no-check-builddeps || "Failed to build source package"
+else
+  debuild -uc -us || die "Failed to build Debian package"
 fi
 
 print G "All done."

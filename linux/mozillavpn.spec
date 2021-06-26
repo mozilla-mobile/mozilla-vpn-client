@@ -31,15 +31,16 @@ A fast, secure and easy to use VPN. Built by the makers of Firefox.
 Read more on https://vpn.mozilla.org
 
 %prep
-qmake-qt5 %{_srcdir}/mozillavpn.pro CONFIG+=production QT+=svg
+%setup -q
 
 %build
+%{qmake_qt5} CONFIG+=production QT+=svg
 make -j$(nproc)
 
 %install
 make install INSTALL_ROOT=%{buildroot}
 install -d %{buildroot}/%{_licensedir}/%{name}
-install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
+install LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 
 %files
 %license %{_licensedir}/%{name}/LICENSE.md
