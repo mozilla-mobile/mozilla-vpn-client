@@ -193,3 +193,40 @@ jobs:
         with:
             name: ${{ matrix.config.name }} Build
             path: packages
+
+  rpmbuild:
+    name: RPM Packages
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:33
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Build Dependencies
+        run: |
+          yum -y install rpm-build rpmdevtools yum-utils
+          yum-builddep -y linux/mozillavpn.spec
+
+      - name: Prepare Source Package
+        shell: bash
+        run: |
+          pip3 install "glean_parser==3.5"
+          pip3 install pyhumps
+          pip3 install pyyaml
+          ./scripts/linux_script.sh -r fedora --source
+
+      - name: Building package
+        shell: bash 
+        run: rpmbuild --define "_topdir $(pwd)/.tmp" -ba .tmp/SPECS/mozillavpn.spec
+
+      - name: Uploading
+        uses: actions/upload-artifact@v2
+        with:
+            name: RPM Build
+            path: |
+              .tmp/RPMS/
+              .tmp/SOURCES/
+              .tmp/SPECS/mozillavpn.spec
+

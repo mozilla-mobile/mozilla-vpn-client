@@ -32,6 +32,7 @@ Read more on https://vpn.mozilla.org
 
 %prep
 %setup -q
+%undefine _lto_cflags
 
 %build
 %{qmake_qt5} CONFIG+=production QT+=svg
