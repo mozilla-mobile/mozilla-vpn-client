@@ -9,7 +9,9 @@
 VERSION=1
 RELEASE=focal
 STAGE=
-SOURCEONLY=
+SOURCEONLY=N
+RPM=N
+DEB=N
 
 if [ -f .env ]; then
   . .env
@@ -47,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --source)
-    SOURCEONLY=1
+    SOURCEONLY=Y
     shift
     ;;
   *)
@@ -56,7 +58,19 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "groovy" ] && [ "$RELEASE" != "bionic" ] && [ "$RELEASE" != "hirsute" ] && die "We support RELEASE focal, groovy, bionic and hirsute only"
+case "$RELEASE" in
+  bionic|focal|groovy|hirsute)
+    DEB=Y
+    ;;
+  
+  fedora)
+    RPM=Y
+    ;;
+
+  *)
+    die "We support RELEASE focal, groovy, bionic and hirsute only"
+    ;; 
+esac
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
@@ -93,7 +107,8 @@ print Y "Downloading Go dependencies..."
 (cd linux/netfilter && go mod vendor)
 print G "done."
 
-printn Y "Removing the debian template folder... "
+printn Y "Removing the packaging templates... "
+rm -f linux/mozillavpn.spec || die "Failed"
 rm -rf linux/debian || die "Failed"
 print G "done."
 
@@ -101,8 +116,24 @@ printn Y "Archiving the source code... "
 tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
 print G "done."
 
+if [[ "$RPM" == "Y" ]]; then
+  print Y "Configuring the source RPM..."
+  mkdir ../SOURCES ../SPECS
+  ln -s ../mozillavpn_$SHORTVERSION.orig.tar.gz ../SOURCES/
+  cat << EOF > ../SPECS/mozillavpn.spec
+Version: $SHORTVERSION
+Release: $VERSION
+Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
+$(grep -v -e "^Version:" -e "^Release" -e "^%define" ../../linux/mozillavpn.spec)
+EOF
+  rpmbuild --define "_topdir $(cd .. && pwd)" -bs ../SPECS/mozillavpn.spec || die "Failed"
+
+  print G "All done."
+  exit 0
+fi
+
 print Y "Configuring the debian package for $RELEASE..."
-cp -r ../../linux/debian .  || die "Failed"
+cp -r ../../linux/debian . || die "Failed"
 
 if [[ "$STAGE" ]]; then
   print Y "Staging env configured"
