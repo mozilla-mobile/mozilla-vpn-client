@@ -206,7 +206,7 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          yum -y install rpm-build rpmdevtools yum-utils
+          yum -y install rpm-build rpmdevtools yum-utils git
           yum-builddep -y linux/mozillavpn.spec
 
       - name: Prepare Source Package
