@@ -207,15 +207,15 @@ jobs:
       - name: Prepare Source Package
         shell: bash
         run: |
+          yum install -y golang python3-pip qt5-linguist
           pip3 install "glean_parser==3.5"
           pip3 install pyhumps
           pip3 install pyyaml
-          yum install -y golang qt5-linguist
           ./scripts/linux_script.sh -r fedora --source
 
       - name: Install Build Dependencies
         run: |
-          yum -y install rpm-build rpmdevtools yum-utils git
+          yum -y install rpm-build rpmdevtools yum-utils
           yum-builddep -y .tmp/SPECS/mozillavpn.spec
 
       - name: Building package
