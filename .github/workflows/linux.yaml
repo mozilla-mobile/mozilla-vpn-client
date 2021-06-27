@@ -201,7 +201,7 @@ jobs:
         run: |
           cd ${{matrix.config.dist}}-${{matrix.config.buildtype}}
           ln -s ../mozillavpn_*.orig.tar.gz
-          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz mozillavpn_*.dsc
+          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --buildresult $(pwd) mozillavpn_*.dsc
 
       - name: Uploading
         uses: actions/upload-artifact@v1
