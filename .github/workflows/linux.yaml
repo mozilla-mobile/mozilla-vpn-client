@@ -177,47 +177,37 @@ jobs:
 
   ubuntu-hirsute:
     name: Ubuntu packages
+    needs: source-bundle
     strategy:
       matrix:
         config:
-            - { name: "Hirsute Staging", dist: hirsute, buildargs: "-s" }
-            - { name: "Hirsute Production", dist: hirsute, buildargs: "" }
+            - { name: "Hirsute Staging", dist: hirsute, buildtype: "stage" }
+            - { name: "Hirsute Production", dist: hirsute, buildtype: "prod" }
 
     runs-on: ubuntu-latest
     steps:
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+      
       - name: Create base ${{ matrix.config.dist }} image
         run: |
           sudo apt-get install pbuilder debootstrap debhelper devscripts -y
           sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --debootstrapopts --variant=buildd
 
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
-
-      - name: Create package structure
-        shell: bash
-        run: |
-          sudo apt-get install qt5-default qttools5-dev-tools golang -y
-          ./scripts/linux_script.sh ${{ matrix.config.buildargs}} -r ${{ matrix.config.dist }} --source
-
       - name: Building package
         shell: bash
         run: |
-          mkdir -p packages/${{ matrix.config.dist }}
-          cp .tmp/mozillavpn_*.dsc packages/${{ matrix.config.dist }}
-          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --buildresult packages/${{ matrix.config.dist }} .tmp/mozillavpn_*.dsc
+          cd ${{matrix.config.dist}}-${{matrix.config.buildtype}}
+          ln -s ../mozillavpn_*.orig.tar.gz
+          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz mozillavpn_*.dsc
 
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
             name: ${{ matrix.config.name }} Build
-            path: packages
+            path: ${{matrix.config.dist}}-${{matrix.config.buildtype}}
 
   rpmbuild:
     name: RPM Packages
@@ -241,7 +231,7 @@ jobs:
 
       - name: Building package
         shell: bash 
-        run: rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -ba mozillavpn.spec
+        run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
 
       - name: Uploading
         uses: actions/upload-artifact@v2
