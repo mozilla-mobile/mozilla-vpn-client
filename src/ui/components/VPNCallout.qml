@@ -9,62 +9,34 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 RowLayout {
-    id: callout
+    property alias calloutCopy: callout.text
+    property alias calloutImage: img.source
 
-    property var calloutTitle
-    property var calloutSubtitle
-    property var calloutImage
-
-    Layout.minimumHeight: 40
-    spacing: 0
+    spacing: Theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
+    Layout.leftMargin: Math.min(window.width * .10, Theme.rowHeight)
+    Layout.rightMargin: Layout.leftMargin
 
     Rectangle {
-        Layout.minimumHeight: Theme.vSpacing
-        Layout.minimumWidth: Theme.vSpacing
-        Layout.maximumWidth: Theme.vSpacing
+        Layout.preferredHeight: 24
+        Layout.preferredWidth: 24
         color: "transparent"
-        Layout.alignment: Qt.AlignTop
-        Layout.topMargin: 2
-        Layout.leftMargin: Theme.windowMargin * 2
 
         VPNIcon {
-            source: calloutImage
+            id: img
             sourceSize.width: Theme.iconSize
             sourceSize.height: Theme.iconSize
             antialiasing: true
-            Layout.alignment: Qt.AlignCenter
+            anchors.centerIn: parent
         }
-
     }
 
-    Column {
-        id: calloutCopy
-
-        spacing: 2
-        Layout.leftMargin: Theme.windowMargin
-        Layout.rightMargin: Theme.windowMargin * 2
-        Layout.alignment: Qt.AlignLeft
+    VPNTextBlock {
+        id: callout
+        color: Theme.fontColorDark
         Layout.fillWidth: true
-
-        VPNTextBlock {
-            color: Theme.fontColorDark
-            Layout.fillWidth: true
-            width: calloutCopy.width
-            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
-            font.pixelSize: Theme.fontSize
-            text: calloutTitle
-        }
-
-        VPNTextBlock {
-            color: Theme.fontColor
-            font.pixelSize: Theme.fontSizeSmall
-            Layout.fillWidth: true
-            width: calloutCopy.width
-            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
-            text: calloutSubtitle
-        }
-
+        font.pixelSize: Theme.fontSize
+        verticalAlignment: Text.AlignVCenter
+        width: undefined
     }
-
 }

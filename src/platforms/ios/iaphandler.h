@@ -5,41 +5,59 @@
 #ifndef IAPHANDLER_H
 #define IAPHANDLER_H
 
-#include <QObject>
+#include <QAbstractListModel>
+#include <QList>
 
-class IAPHandler final : public QObject {
+class QJsonValue;
+
+class IAPHandler final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IAPHandler)
 
-  Q_PROPERTY(QString priceValue READ priceValue NOTIFY priceValueChanged)
-
  public:
+  enum ProductType {
+    ProductMonthly,
+    ProductHalfYearly,
+    ProductYearly,
+    ProductUnknown = -1
+  };
+
   static IAPHandler* createInstance();
 
   static IAPHandler* instance();
 
-  Q_INVOKABLE void subscribe();
+  enum ModelRoles {
+    ProductIdentifierRole = Qt::UserRole + 1,
+    ProductPriceRole,
+    ProductTypeRole,
+    ProductFeaturedRole,
+  };
+  Q_INVOKABLE void subscribe(const QString& productIdentifier);
 
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }
 
-  void registerProducts(const QStringList& products);
+  void registerProducts(const QByteArray& data);
 
-  void startSubscription();
+  void startSubscription(const QString& productIdentifier);
 
-  const QString& priceValue() const { return m_priceValue; }
+  // QAbstractListModel methods
+
+  QHash<int, QByteArray> roleNames() const override;
+
+  int rowCount(const QModelIndex&) const override;
+
+  QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
   void productsRegistered();
 
-  void subscriptionStarted();
+  void subscriptionStarted(const QString& productIdentifier);
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
   void alreadySubscribed();
-
-  void priceValueChanged();
 
  public slots:
   void stopSubscription();
@@ -53,6 +71,11 @@ class IAPHandler final : public QObject {
   IAPHandler(QObject* parent);
   ~IAPHandler();
 
+  void registerProduct(const QJsonValue& value);
+  void sortProductsAndCompleteRegistration();
+
+  static ProductType productTypeToEnum(const QString& type);
+
  private:
   enum {
     eNotRegistered,
@@ -60,16 +83,26 @@ class IAPHandler final : public QObject {
     eRegistered,
   } m_productsRegistrationState = eNotRegistered;
 
-  QString m_productName;
-  QString m_priceValue;
-
   enum State {
     eActive,
     eInactive,
   } m_subscriptionState = eInactive;
 
+  struct Product {
+    QString m_name;
+    QString m_price;
+    ProductType m_type = IAPHandler::ProductMonthly;
+    bool m_featuredProduct = false;
+    void* m_product = nullptr;
+  };
+
+  static bool sortProductsCallback(const IAPHandler::Product& a,
+                                   const IAPHandler::Product& b);
+
+  QList<Product> m_registeredProducts;
+  QHash<QString, Product> m_pendingProducts;
+
   void* m_delegate = nullptr;
-  void* m_product = nullptr;
 };
 
 #endif  // IAPHANDLER_H

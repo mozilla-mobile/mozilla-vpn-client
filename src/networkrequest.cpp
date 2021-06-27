@@ -312,7 +312,7 @@ NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(Constants::API_URL);
-  url.setPath("/api/v1/vpn/products/ios");
+  url.setPath("/api/v2/vpn/products/ios");
   r->m_request.setUrl(url);
 
   r->getRequest();
