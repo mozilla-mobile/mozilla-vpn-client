@@ -38,9 +38,9 @@ Item {
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
 
         Component.onCompleted: {
-            Glean.sample.notificationsViewOpened.record();
+            Sample.notificationsViewOpened.record();
             if (!vpnIsOff) {
-                Glean.sample.notificationsViewWarning.record();
+                Sample.notificationsViewWarning.record();
             }
          }
 

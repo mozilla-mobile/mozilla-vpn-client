@@ -6,13 +6,11 @@ const assert = require('assert');
 const fs = require('fs');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
 
 const dir = '/tmp/screencapture';
 
 describe('Take screenshots for each view', function() {
   let languages = [];
-  let driver;
   let servers;
 
   this.timeout(2000000);
@@ -43,8 +41,6 @@ describe('Take screenshots for each view', function() {
   before(async () => {
     await vpn.connect();
 
-    driver = await FirefoxHelper.createDriver();
-
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
@@ -55,7 +51,6 @@ describe('Take screenshots for each view', function() {
   afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -164,7 +159,7 @@ describe('Take screenshots for each view', function() {
     await screenCapture('authenticating');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

@@ -143,6 +143,8 @@ jobs:
           npm install websocket
 
       - name: Run the test script
+        id: runTests
+        continue-on-error: true
         run: |
           export PATH=.:$(npm bin):$PATH
           export HEADLESS=yes
@@ -150,6 +152,13 @@ jobs:
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+      
+      - name: Uploading logs
+        uses: actions/upload-artifact@v1
+        if: steps.runTests.outcome != 'success'
+        with:
+          name: Logs (${{matrix.test}})
+          path: /tmp/VPN_LOG.txt
 
       - name: Uploading screenshots
         uses: actions/upload-artifact@v1

@@ -5,7 +5,6 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
 
 const webdriver = require('selenium-webdriver'), By = webdriver.By,
       Keys = webdriver.Key, until = webdriver.until;
@@ -13,7 +12,6 @@ const webdriver = require('selenium-webdriver'), By = webdriver.By,
 const exec = util.promisify(require('child_process').exec);
 
 describe('Server list', function() {
-  let driver;
   let servers;
   let currentCountryCode;
   let currentCity;
@@ -22,7 +20,6 @@ describe('Server list', function() {
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
@@ -30,11 +27,10 @@ describe('Server list', function() {
   afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

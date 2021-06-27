@@ -5,16 +5,12 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
 
 describe('Unsecured network alert', function() {
-  let driver;
-
   this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
@@ -22,7 +18,6 @@ describe('Unsecured network alert', function() {
   afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -93,7 +88,7 @@ describe('Unsecured network alert', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false, false));
+  it('authenticate', async () => await vpn.authenticate(false, false));
 
   it('Unsecured network alert in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
