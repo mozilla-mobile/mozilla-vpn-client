@@ -111,7 +111,7 @@ $(grep -v -e "^Version:" -e "^Release" -e "^%define" ../linux/mozillavpn.spec)
 EOF
 }
 
-## For a given control file, build the DSC and debian tarball.
+## For a given release, build the DSC and debian tarball.
 build_deb_source() {
   local release=$1
   local buildtype=$2
@@ -150,10 +150,8 @@ if [ "$SOURCEONLY" == "Y" ]; then
     mv mozillavpn_$SHORTVERSION-$VERSION.dsc $release-$buildtype/ || die "Failed"
   done
 
-  if [ ! -z "$(which rpmbuild)" ]; then
-    print Y "Configuring the RPM spec..."
-    build_rpm_spec
-  fi
+  print Y "Configuring the RPM spec..."
+  build_rpm_spec
 ## Otherwise, build the desired release.
 else
   case "$RELEASE" in

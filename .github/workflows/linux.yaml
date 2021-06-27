@@ -1,4 +1,4 @@
-name: Linux package (focal/bionic/hirsute)
+name: Linux Packages
 on:
   push:
     branches:
@@ -206,7 +206,7 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
-            name: ${{ matrix.config.name }} Build
+            name: ${{matrix.config.name}} Build
             path: ${{matrix.config.dist}}-${{matrix.config.buildtype}}
 
   rpmbuild:
@@ -224,8 +224,6 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          echo "CWD is $(pwd)"
-          ls -al $(pwd)
           yum -y install rpm-build rpmdevtools yum-utils
           yum-builddep -y mozillavpn.spec
 
@@ -238,6 +236,6 @@ jobs:
         with:
             name: RPM Build
             path: |
-              RPMS/*.rpm
-              SRPMS/*.rpm
+              RPMS/
+              SRPMS/
 
