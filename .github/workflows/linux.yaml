@@ -237,7 +237,7 @@ jobs:
           echo "CWD is $(pwd)"
           ls -al $(pwd)
           yum -y install rpm-build rpmdevtools yum-utils
-          yum-builddep -y SPECS/mozillavpn.spec
+          yum-builddep -y mozillavpn.spec
 
       - name: Building package
         shell: bash 

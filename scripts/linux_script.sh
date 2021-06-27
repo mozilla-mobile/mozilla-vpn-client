@@ -158,7 +158,7 @@ if [ "$SOURCEONLY" == "Y" ]; then
 else
   case "$RELEASE" in
     bionic|focal|groovy|hirsute)
-      build_deb_source ../linux/debian/control.$BUILDTYPE.$RELEASE
+      build_deb_source $RELEASE $BUILDTYPE
 
       print Y "Building Debian packages for $RELEASE ($BUILDTYPE)"
       dpkg-buildpackage --build=binary --no-sign || die "Failed"
