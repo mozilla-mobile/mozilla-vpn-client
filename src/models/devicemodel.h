@@ -22,7 +22,7 @@ class DeviceModel final : public QAbstractListModel {
   DeviceModel();
   ~DeviceModel();
 
-  enum ServerCountryRoles {
+  enum ModelRoles {
     NameRole = Qt::UserRole + 1,
     PublicKeyRole,
     CurrentOneRole,
