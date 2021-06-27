@@ -43,6 +43,8 @@ async def run():
 
         async for msg in ws:
             reply = json.loads(msg)
+            if "error" in reply:
+                print(reply['error'], file=sys.stderr)
             await handle(ws, reply['type'], reply.get('value'))
 
 asyncio.get_event_loop().run_until_complete(run())

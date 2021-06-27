@@ -250,6 +250,7 @@ Window {
             Loader {
                 id: loader
 
+                asynchronous: true
                 anchors.fill: parent
             }
 

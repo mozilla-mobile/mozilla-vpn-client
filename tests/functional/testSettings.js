@@ -5,21 +5,14 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
 
 const exec = util.promisify(require('child_process').exec);
 
 describe('Settings', function() {
-  let driver;
-
   this.timeout(2000000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
@@ -27,7 +20,6 @@ describe('Settings', function() {
   afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -49,7 +41,7 @@ describe('Settings', function() {
     await vpn.wait();
   }
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
