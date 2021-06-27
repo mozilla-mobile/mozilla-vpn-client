@@ -161,7 +161,7 @@ else
       build_deb_source $RELEASE $BUILDTYPE
 
       print Y "Building Debian packages for $RELEASE ($BUILDTYPE)"
-      dpkg-buildpackage --build=binary --no-sign || die "Failed"
+      (cd $WORKDIR && dpkg-buildpackage --build=binary --no-sign) || die "Failed"
       ;;
     
     fedora)
@@ -179,6 +179,6 @@ else
 fi
 
 print Y "Cleaning up working directory..."
-rm -rf mozillavpn-$SHORTVERSION/ || die "Failed"
+rm -rf $WORKDIR || die "Failed"
 
 print G "All done."
