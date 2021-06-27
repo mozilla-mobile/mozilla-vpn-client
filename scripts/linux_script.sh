@@ -8,7 +8,7 @@
 
 VERSION=1
 RELEASE=focal
-STAGE=
+BUILDTYPE=prod
 SOURCEONLY=N
 RPM=N
 DEB=N
@@ -35,7 +35,7 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -s | --stage)
-    STAGE=1
+    BUILDTYPE=stage
     shift
     ;;
   -r | --release)
@@ -58,23 +58,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-case "$RELEASE" in
-  bionic|focal|groovy|hirsute)
-    DEB=Y
-    ;;
-  
-  fedora)
-    RPM=Y
-    ;;
-
-  *)
-    die "We support RELEASE focal, groovy, bionic and hirsute only"
-    ;; 
-esac
-
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
+WORKDIR=mozillavpn-$SHORTVERSION
 print G "$SHORTVERSION - $FULLVERSION"
 
 rm -rf .tmp || die "Failed to remove the temporary directory"
@@ -89,76 +76,109 @@ print G "done."
 print G "Creating the orig tarball"
 
 printn N "Creating the working directory... "
-mkdir -p .tmp/mozillavpn-$SHORTVERSION || die "Failed"
-cp -R * .tmp/mozillavpn-$SHORTVERSION 2>/dev/null || die "Failed"
-print G "done."
-
-printn Y "Changing directory... "
-cd .tmp/mozillavpn-$SHORTVERSION || die "Failed"
+mkdir -p .tmp/$WORKDIR || die "Failed"
+cp -R * .tmp/$WORKDIR 2>/dev/null || die "Failed"
+cd .tmp
 print G "done."
 
 print Y "Importing translation files..."
-python3 scripts/importLanguages.py $([[ "$STAGE" ]] && echo "" || echo "-p") || die "Failed to import languages"
+LANG_ARGS=$([ "$BUILDTYPE" == "stage" ] || echo "-p")
+(cd $WORKDIR && python3 scripts/importLanguages.py $LANG_ARGS) || die "Failed to import languages"
 
 print Y "Generating glean samples..."
-python3 scripts/generate_glean.py || die "Failed to generate glean samples"
+(cd $WORKDIR && python3 scripts/generate_glean.py) || die "Failed to generate glean samples"
 
 print Y "Downloading Go dependencies..."
-(cd linux/netfilter && go mod vendor)
+(cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."
 
 printn Y "Removing the packaging templates... "
-rm -f linux/mozillavpn.spec || die "Failed"
-rm -rf linux/debian || die "Failed"
+rm -f $WORKDIR/linux/mozillavpn.spec || die "Failed"
+rm -rf $WORKDIR/linux/debian || die "Failed"
 print G "done."
 
 printn Y "Archiving the source code... "
-tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz -C .. mozillavpn-$SHORTVERSION || die "Failed"
+tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $WORKDIR || die "Failed"
 print G "done."
 
-if [[ "$RPM" == "Y" ]]; then
-  print Y "Configuring the source RPM..."
-  mkdir ../SOURCES ../SPECS
-  ln -s ../mozillavpn_$SHORTVERSION.orig.tar.gz ../SOURCES/
-  cat << EOF > ../SPECS/mozillavpn.spec
+## Generate the spec file for building RPMs
+build_rpm_spec() {
+cat << EOF > mozillavpn.spec
 Version: $SHORTVERSION
 Release: $VERSION
 Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
-$(grep -v -e "^Version:" -e "^Release" -e "^%define" ../../linux/mozillavpn.spec)
+$(grep -v -e "^Version:" -e "^Release" -e "^%define" ../linux/mozillavpn.spec)
 EOF
-  rpmbuild --define "_topdir $(cd .. && pwd)" -bs ../SPECS/mozillavpn.spec || die "Failed"
+}
 
-  print G "All done."
-  exit 0
-fi
+## For a given control file, build the DSC and debian tarball.
+build_deb_source() {
+  local release=$1
+  local buildtype=$2
 
-print Y "Configuring the debian package for $RELEASE..."
-cp -r ../../linux/debian . || die "Failed"
+  print Y "Building sources for $release ($buildtype)..."
+  rm -rf $WORKDIR/debian || die "Failed"
+  cp -r ../linux/debian $WORKDIR || die "Failed"
 
-if [[ "$STAGE" ]]; then
-  print Y "Staging env configured"
-  mv debian/rules.stage.$RELEASE debian/rules || die "Failed"
-  mv debian/control.stage.$RELEASE debian/control || die "Failed"
-else
-  print Y "Production env configured"
-  mv debian/rules.prod.$RELEASE debian/rules || die "Failed"
-  mv debian/control.prod.$RELEASE debian/control || die "Failed"
-fi
+  mv $WORKDIR/debian/rules.$buildtype.$release $WORKDIR/debian/rules
+  mv $WORKDIR/debian/control.$buildtype.$release $WORKDIR/debian/control
+  rm $WORKDIR/debian/control.*
+  rm $WORKDIR/debian/rules.*
 
-rm debian/control.* || die "Failed"
-rm debian/rules.stage* || die "Failed"
-rm debian/rules.prod* || die "Failed"
+  mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/VERSION/$VERSION/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/RELEASE/$release/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/FULLVERSION/$FULLVERSION/g" $WORKDIR/debian/rules || die "Failed"
 
-mv debian/changelog.template debian/changelog || die "Failed"
-sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" debian/changelog || die "Failed"
-sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
-sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
-sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
-sed -i -e "s/FULLVERSION/$FULLVERSION/g" debian/rules || die "Failed"
+  dpkg-source --build $WORKDIR || die "Failed"
+}
+
+## For source-only, build all the source bundles we can.
 if [ "$SOURCEONLY" == "Y" ]; then
-  dpkg-buildpackage --build=source --no-sign --no-check-builddeps || "Failed to build source package"
+  print Y "Configuring the DEB sources..."
+  for control in ../linux/debian/control.*; do
+    filename=$(basename $control)
+    buildtype=$(echo $filename | cut -d'.' -f2)
+    release=$(echo $filename | cut -d'.' -f3)
+
+    build_deb_source $release $buildtype
+
+    mkdir $release-$buildtype/
+    mv mozillavpn_$SHORTVERSION-$VERSION.debian.tar.* $release-$buildtype/ || die "Failed"
+    mv mozillavpn_$SHORTVERSION-$VERSION.dsc $release-$buildtype/ || die "Failed"
+  done
+
+  if [ ! -z "$(which rpmbuild)" ]; then
+    print Y "Configuring the RPM spec..."
+    build_rpm_spec
+  fi
+## Otherwise, build the desired release.
 else
-  debuild -uc -us || die "Failed to build Debian package"
+  case "$RELEASE" in
+    bionic|focal|groovy|hirsute)
+      build_deb_source ../linux/debian/control.$BUILDTYPE.$RELEASE
+
+      print Y "Building Debian packages for $RELEASE ($BUILDTYPE)"
+      dpkg-buildpackage --build=binary --no-sign || die "Failed"
+      ;;
+    
+    fedora)
+      build_rpm_spec
+
+      print Y "Building RPM packages for $RELEASE ($BUILDTYPE)"
+      rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
+      RPM=Y
+      ;;
+
+    *)
+      die "We support RELEASE focal, groovy, bionic and hirsute only"
+      ;; 
+  esac
 fi
+
+print Y "Cleaning up working directory..."
+rm -rf mozillavpn-$SHORTVERSION/ || die "Failed"
 
 print G "All done."
