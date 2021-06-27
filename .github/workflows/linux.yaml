@@ -10,6 +10,31 @@ on:
       - 'releases/**'
 
 jobs:
+  source-bundle:
+    name: Source Bundle
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      
+      - name: Install source dependencies
+        shell: bash
+        run: |
+          sudo apt-get install qt5-default qttools5-dev-tools golang -y
+          pip3 install "glean_parser==3.5"
+          pip3 install pyhumps
+          pip3 install pyyaml
+      
+      - name: Build source bundle
+        shell: bash
+        run: ./scripts/linux_script.sh --source
+      
+      - name: Uploading
+        uses: actions/uload-artifact@v2
+        with:
+            name: Sources
+            path: .tmp
+      
   focal-staging:
     name: Focal Staging
     runs-on: ubuntu-20.04
@@ -196,38 +221,33 @@ jobs:
 
   rpmbuild:
     name: RPM Packages
+    needs: source-bundle
     runs-on: ubuntu-latest
     container:
       image: fedora:33
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Prepare Source Package
-        shell: bash
-        run: |
-          yum install -y golang python3-pip qt5-linguist
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
-          ./scripts/linux_script.sh -r fedora --source
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
 
       - name: Install Build Dependencies
         run: |
+          echo "CWD is $(pwd)"
+          ls -al $(pwd)
           yum -y install rpm-build rpmdevtools yum-utils
-          yum-builddep -y .tmp/SPECS/mozillavpn.spec
+          yum-builddep -y SPECS/mozillavpn.spec
 
       - name: Building package
         shell: bash 
-        run: rpmbuild --define "_topdir $(pwd)/.tmp" -ba .tmp/SPECS/mozillavpn.spec
+        run: rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -ba mozillavpn.spec
 
       - name: Uploading
         uses: actions/upload-artifact@v2
         with:
             name: RPM Build
             path: |
-              .tmp/RPMS/
-              .tmp/SOURCES/
-              .tmp/SPECS/mozillavpn.spec
+              RPMS/*.rpm
+              SRPMS/*.rpm
 
