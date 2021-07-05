@@ -26,7 +26,7 @@ LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
 
   m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
   if (m_socket < 0) {
-    logger.log() << "Socket creation error";
+    logger.log() << "Socket creation error: " << strerror(errno);
     return;
   }
 
