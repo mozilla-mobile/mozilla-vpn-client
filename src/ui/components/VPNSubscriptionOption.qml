@@ -112,9 +112,6 @@ RadioDelegate {
             spacing: 0
 
             VPNBoldLabel {
-                //TODO: Pull monthly price from model when available
-                property var productMonthlyPrice: "$X.YZ"
-
                 //: “/month” stands for “per month”. %1 is replaced by the monthly cost (including currency).
                 //% "%1/month"
                 text: qsTrId("vpn.subscription.price").arg(productMonthlyPrice)
@@ -164,14 +161,11 @@ RadioDelegate {
             spacing: 0
 
             VPNInterLabel {
-                // TODO: Compute savings and send to string
-                property var productSavings: "10%"
-
                 //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
-                //% "Save %1"
-                text: qsTrId("vpn.subscription.save").arg(productSavings)
+                //% "Save %1%"
+                text: qsTrId("vpn.subscription.savePercent").arg(productSavings)
 
-                visible: productType !== VPNIAP.ProductMonthly
+                visible: productSavings > 0
                 color: Theme.purple60
                 font.family: Theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
