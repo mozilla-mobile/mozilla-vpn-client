@@ -171,7 +171,7 @@ else
       ;;
 
     *)
-      die "We support RELEASE focal, groovy, bionic and hirsute only"
+      die "We support RELEASE focal, groovy, bionic, hirsute and fedora only"
       ;; 
   esac
 fi
