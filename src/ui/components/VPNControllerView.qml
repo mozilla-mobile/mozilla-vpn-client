@@ -8,9 +8,11 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
 
-Rectangle {
+import org.mozilla.Glean 0.15
+import telemetry 0.15
+
+Item {
     id: box
 
     readonly property alias connectionInfoVisible: connectionInfo.visible
@@ -35,18 +37,27 @@ Rectangle {
     }
 
     state: VPNController.state
-    radius: 8
     Layout.preferredHeight: 318
-    Layout.preferredWidth: parent.width - Theme.windowMargin
+    Layout.fillWidth: true
+    Layout.leftMargin: 8
+    Layout.rightMargin: 8
     Layout.alignment: Qt.AlignHCenter
 
-    antialiasing: true
+
+    Rectangle {
+        id: boxBackground
+        anchors.fill: parent
+        color: Theme.bgColor
+        radius: 8
+        antialiasing: true
+    }
+
     states: [
         State {
             name: VPNController.StateInitializing
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#FFFFFF"
             }
 
@@ -94,7 +105,7 @@ Rectangle {
             name: VPNController.StateOff
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#FFFFFF"
             }
 
@@ -141,7 +152,7 @@ Rectangle {
             name: VPNController.StateConnecting
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#321C64"
             }
 
@@ -195,7 +206,7 @@ Rectangle {
             name: VPNController.StateConfirming
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#321C64"
             }
 
@@ -250,7 +261,7 @@ Rectangle {
             name: VPNController.StateOn
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#321C64"
             }
 
@@ -297,7 +308,7 @@ Rectangle {
             name: VPNController.StateDisconnecting
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#FFFFFF"
             }
 
@@ -351,7 +362,7 @@ Rectangle {
             name: VPNController.StateSwitching
 
             PropertyChanges {
-                target: box
+                target: boxBackground
                 color: "#321C64"
             }
 
@@ -366,7 +377,7 @@ Rectangle {
                 target: logoSubtitle
                 //% "From %1 to %2"
                 //: Switches from location 1 to location 2
-                text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentCity).arg(VPNController.switchingCity)
+                text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentLocalizedCityName).arg(VPNController.switchingLocalizedCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
             }
@@ -405,7 +416,7 @@ Rectangle {
             to: VPNController.StateConnecting
 
             ColorAnimation {
-                target: box
+                target: boxBackground
                 property: "color"
                 duration: 200
             }
@@ -427,7 +438,7 @@ Rectangle {
             to: VPNController.StateDisconnecting
 
             ColorAnimation {
-                target: box
+                target: boxBackground
                 property: "color"
                 duration: 200
             }
@@ -471,7 +482,7 @@ Rectangle {
         objectName: "connectionInfoButton"
 
         onClicked: {
-            Glean.sample.connectionInfoOpened.record();
+            Sample.connectionInfoOpened.record();
             connectionInfo.open()
         }
 
@@ -511,7 +522,7 @@ Rectangle {
         opacity: 1
 
         onClicked: {
-            Glean.sample.settingsViewOpened.record();
+            Sample.settingsViewOpened.record();
             stackview.push("../views/ViewSettings.qml", StackView.Immediate)
         }
 
@@ -555,69 +566,56 @@ Rectangle {
         }
     }
 
-    ColumnLayout {
+    Column{
         id: col
 
         spacing: 0
-        width: box.width - Theme.windowMargin
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: box.left
+        anchors.right: box.right
+        anchors.top: logo.bottom
+        anchors.topMargin: 24
+        width: parent.width
 
         function handleMultilineText() {
+
             const titleIsWrapped = logoTitle.lineCount > 1;
-            const subTitleIsWrapped = (logoSubtitle.lineCount > 1 || (connectionStability.visible && connectionStability.numGridColumns === 1));
+            const subTitleIsWrapped = (logoSubtitle.visible && logoSubtitle.lineCount > 1 || (connectionStability.visible && connectionStability.gridFlow === Grid.TopToBottom));
 
             if (titleIsWrapped && subTitleIsWrapped) {
-                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 12
-                bottomTextMargin.Layout.preferredHeight = 6;
+                col.anchors.topMargin = 12
+                spacer.height = 6;
                 return;
             }
 
             if (subTitleIsWrapped) {
-                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 6
-                bottomTextMargin.Layout.preferredHeight = 2;
+                col.anchors.topMargin = 24
+                spacer.height = 4;
                 return;
             }
 
             if (titleIsWrapped) {
-                topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight - 4
-                bottomTextMargin.Layout.preferredHeight = 8;
+                col.anchors.topMargin = 16
+                spacer.height = 12;
                 return;
             }
-            bottomTextMargin.Layout.preferredHeight = 8;
-            topTextMargin.Layout.preferredHeight = topTextMargin._preferredHeight;
+            col.anchors.topMargin = 24
+            spacer.height = 16;
+        }
+
+        VPNHeadline {
+            id: logoTitle
+            objectName: "controllerTitle"
+            lineHeight: 22
+            font.pixelSize: 22
+            Accessible.ignored: connectionInfoVisible
+            Accessible.description: logoSubtitle.text
+            width: parent.width
+            onPaintedHeightChanged: if (visible) col.handleMultilineText()
         }
 
         VPNVerticalSpacer {
-            property var _preferredHeight: logo.y + logo.height + 24
-
-            id: topTextMargin
-            Layout.preferredHeight: _preferredHeight
-        }
-
-        ColumnLayout {
-            Layout.minimumHeight: 32
-            Layout.fillWidth: true
-            spacing: 0
-
-            VPNHeadline {
-                id: logoTitle
-                objectName: "controllerTitle"
-
-                Layout.alignment: Qt.AlignCenter
-                Layout.fillWidth: true
-                Layout.minimumHeight: 32
-                lineHeight: 22
-                font.pixelSize: 22
-                Accessible.ignored: connectionInfoVisible
-                Accessible.description: logoSubtitle.text
-                onPaintedHeightChanged: col.handleMultilineText()
-            }
-        }
-
-        VPNVerticalSpacer {
-            id: bottomTextMargin
-            Layout.preferredHeight: 8
-            Layout.fillWidth: true
+            id: spacer
+            height: 16
         }
 
         VPNInterLabel {
@@ -625,15 +623,18 @@ Rectangle {
             objectName: "controllerSubTitle"
 
             lineHeight: Theme.controllerInterLineHeight
-            Layout.preferredWidth: parent.width
             Accessible.ignored: true
-            onPaintedHeightChanged: col.handleMultilineText()
+            width: parent.width - Theme.windowMargin
+            anchors.horizontalCenter: parent.horizontalCenter
+            onPaintedHeightChanged: if (visible) col.handleMultilineText()
+            onVisibleChanged: if (visible) col.handleMultilineText()
         }
 
         VPNConnectionStability {
             id: connectionStability
-            visible: false
             Accessible.ignored: connectionInfoVisible || !visible
+            width: parent.width
+            implicitHeight: childrenRect.height
         }
 
     }

@@ -6,6 +6,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 #if defined(MVPN_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"
@@ -61,31 +62,44 @@ void NotificationHandler::showNotification() {
       if (m_switching) {
         m_switching = false;
 
+        if (!SettingsHolder::instance()->serverSwitchNotification()) {
+          // Dont show notification if it's turned off.
+          return;
+        }
+
         //% "VPN Switched Servers"
         title = qtTrId("vpn.systray.statusSwitch.title");
         //% "Switched from %1, %2 to %3, %4"
         //: Shown as message body in a notification. %1 and %3 are countries, %2
         //: and %4 are cities.
         message = qtTrId("vpn.systray.statusSwtich.message")
-                      .arg(m_switchingServerCountry)
-                      .arg(m_switchingServerCity)
-                      .arg(vpn->currentServer()->countryName())
-                      .arg(vpn->currentServer()->cityName());
+                      .arg(m_switchingLocalizedServerCountry)
+                      .arg(m_switchingLocalizedServerCity)
+                      .arg(vpn->currentServer()->localizedCountryName())
+                      .arg(vpn->currentServer()->localizedCityName());
       } else {
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
         //% "VPN Connected"
         title = qtTrId("vpn.systray.statusConnected.title");
         //% "Connected to %1, %2"
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(vpn->currentServer()->countryName())
-                      .arg(vpn->currentServer()->cityName());
+                      .arg(vpn->currentServer()->localizedCountryName())
+                      .arg(vpn->currentServer()->localizedCityName());
       }
       break;
 
     case Controller::StateOff:
       if (m_connected) {
         m_connected = false;
+        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+          // Notifications for ConnectionChange are disabled
+          return;
+        }
 
         //% "VPN Disconnected"
         title = qtTrId("vpn.systray.statusDisconnected.title");
@@ -93,8 +107,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(vpn->currentServer()->countryName())
-                      .arg(vpn->currentServer()->cityName());
+                      .arg(vpn->currentServer()->localizedCountryName())
+                      .arg(vpn->currentServer()->localizedCityName());
       }
       break;
 
@@ -102,8 +116,10 @@ void NotificationHandler::showNotification() {
       m_connected = true;
 
       m_switching = true;
-      m_switchingServerCountry = vpn->currentServer()->countryName();
-      m_switchingServerCity = vpn->currentServer()->cityName();
+      m_switchingLocalizedServerCountry =
+          vpn->currentServer()->localizedCountryName();
+      m_switchingLocalizedServerCity =
+          vpn->currentServer()->localizedCityName();
       break;
 
     default:

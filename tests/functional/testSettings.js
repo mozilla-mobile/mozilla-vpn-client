@@ -5,29 +5,21 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
 
 const exec = util.promisify(require('child_process').exec);
 
 describe('Settings', function() {
-  let driver;
-
   this.timeout(2000000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -49,7 +41,7 @@ describe('Settings', function() {
     await vpn.wait();
   }
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -128,6 +120,8 @@ describe('Settings', function() {
         await checkSetting(
             'settingUnsecuredNetworkAlert', 'unsecured-network-alert');
     */
+    await checkSetting('switchServersAlert', 'server-switch-notification');
+    await checkSetting('connectionChangeAlert','connection-change-notification');
 
     await vpn.clickOnElement('settingsNotificationsBackButton');
     await vpn.wait();
@@ -302,21 +296,7 @@ describe('Settings', function() {
     await vpn.waitForElementProperty('manageAccountButton', 'visible', 'true');
   });
 
-  it('Checking the give feedback', async () => {
-    await vpn.waitForElement('settingsGiveFeedback');
-    await vpn.waitForElementProperty('settingsGiveFeedback', 'visible', 'true');
-
-    await vpn.setElementProperty(
-        'settingsView', 'contentY', 'i',
-        parseInt(await vpn.getElementProperty('settingsGiveFeedback', 'y')));
-    await vpn.wait();
-
-    await vpn.clickOnElement('settingsGiveFeedback');
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
-      return url.endsWith('/r/vpn/client/feedback');
-    });
-  });
+  // TODO: checking the give feedback views
 
   it('Checking the get help', async () => {
     await vpn.waitForElement('settingsGetHelp');

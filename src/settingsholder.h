@@ -28,6 +28,17 @@ class SettingsHolder final : public QObject {
                  setProtectSelectedApps NOTIFY protectSelectedAppsChanged)
   Q_PROPERTY(bool gleanEnabled READ gleanEnabled WRITE setGleanEnabled NOTIFY
                  gleanEnabledChanged)
+  Q_PROPERTY(
+      bool serverSwitchNotification READ serverSwitchNotification WRITE
+          setServerSwitchNotification NOTIFY serverSwitchNotificationChanged)
+  Q_PROPERTY(bool connectionChangeNotification READ connectionChangeNotification
+                 WRITE setConnectionChangeNotification NOTIFY
+                     connectionChangeNotificationChanged)
+
+  Q_PROPERTY(bool useGatewayDNS READ useGatewayDNS WRITE setUseGatewayDNS NOTIFY
+                 useGatewayDNSChanged)
+  Q_PROPERTY(
+      QString userDNS READ userDNS WRITE setUserDNS NOTIFY userDNSChanged)
 
  public:
   SettingsHolder();
@@ -85,14 +96,31 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+  GETSET(bool, hasUsegatewayDNS, useGatewayDNS, setUseGatewayDNS)
+  GETSET(QString, hasUserDNS, userDNS, setUserDNS)
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
   GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
+  GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
+         setServerSwitchNotification);
+  GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
+         setConnectionChangeNotification);
 
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
   void addVpnDisabledApp(const QString& appID);
 
   void addConsumedSurvey(const QString& surveyId);
+
+  enum UserDNSValidationResult {
+    UserDNSOK,
+    UserDNSInvalid,
+    UserDNSNotIPv4,
+    UserDNSOutOfRange,
+  };
+  Q_ENUM(UserDNSValidationResult);
+
+  Q_INVOKABLE
+  UserDNSValidationResult validateUserDNS(const QString& dns) const;
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
@@ -124,7 +152,11 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
+  void useGatewayDNSChanged(bool value);
+  void userDNSChanged(QString value);
   void gleanEnabledChanged(bool value);
+  void serverSwitchNotificationChanged(bool value);
+  void connectionChangeNotificationChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

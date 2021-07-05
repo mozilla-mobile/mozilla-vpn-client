@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
+#include "mozillavpn.h"
 
 #include <QHostAddress>
 #include <QJsonDocument>
@@ -28,7 +29,8 @@ namespace {
 Logger logger(LOG_NETWORKING, "NetworkRequest");
 }
 
-NetworkRequest::NetworkRequest(QObject* parent, int status)
+NetworkRequest::NetworkRequest(QObject* parent, int status,
+                               bool setAuthorizationHeader)
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
 
@@ -45,6 +47,13 @@ NetworkRequest::NetworkRequest(QObject* parent, int status)
     m_request.setRawHeader("DNT", "1");
     // Global Privacy Control: https://globalprivacycontrol.github.io/gpc-spec/
     m_request.setRawHeader("Sec-GPC", "1");
+  }
+
+  if (setAuthorizationHeader) {
+    QByteArray authorizationHeader = "Bearer ";
+    authorizationHeader.append(
+        SettingsHolder::instance()->token().toLocal8Bit());
+    m_request.setRawHeader("Authorization", authorizationHeader);
   }
 
   m_timer.setSingleShot(true);
@@ -71,7 +80,7 @@ NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
                                                 int status) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, status);
+  NetworkRequest* r = new NetworkRequest(parent, status, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
@@ -87,7 +96,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
     const QString& pkceCodeVerifier) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
@@ -111,11 +120,8 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
     QObject* parent, const QString& deviceName, const QString& pubKey) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 201);
+  NetworkRequest* r = new NetworkRequest(parent, 201, true);
 
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
@@ -139,11 +145,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
                                                        const QString& pubKey) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 204);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 204, true);
 
   QString url(Constants::API_URL);
   url.append("/api/v1/vpn/device/");
@@ -163,11 +165,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/servers");
@@ -180,11 +178,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/surveys");
@@ -197,7 +191,7 @@ NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
 NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/versions");
@@ -210,11 +204,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
 NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/account");
@@ -228,11 +218,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
                                                 const QHostAddress& address) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   if (address.protocol() == QAbstractSocket::IPv6Protocol) {
     r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV6).arg(address.toString())));
@@ -259,7 +245,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
     QObject* parent, const QUrl& url, const QByteArray& host) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 0);
+  NetworkRequest* r = new NetworkRequest(parent, 0, false);
 
   r->m_request.setUrl(url);
   r->m_request.setRawHeader("Host", host);
@@ -269,11 +255,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 }
 
 NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/dns/detectportal");
@@ -284,7 +266,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 }
 
 NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
-  NetworkRequest* r = new NetworkRequest(parent, 200);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::API_URL);
   url.setPath("/__heartbeat__");
@@ -294,18 +276,43 @@ NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
+                                                  const QString& feedbackText,
+                                                  const QString& logs,
+                                                  const qint8 rating,
+                                                  const QString& category) {
+  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+
+  QUrl url(Constants::API_URL);
+  url.setPath("/api/v1/vpn/feedback");
+  r->m_request.setUrl(url);
+
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("feedbackText", feedbackText);
+  obj.insert("logs", logs);
+  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("platformVersion", QString(NetworkManager::osVersion()));
+  obj.insert("rating", rating);
+  obj.insert("category", category);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 200);
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(Constants::API_URL);
-  url.setPath("/api/v1/vpn/products/ios");
+  url.setPath("/api/v2/vpn/products/ios");
   r->m_request.setUrl(url);
 
   r->getRequest();
@@ -316,13 +323,9 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
 
-  NetworkRequest* r = new NetworkRequest(parent, 201);
+  NetworkRequest* r = new NetworkRequest(parent, 201, true);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  r->m_request.setRawHeader("Authorization", authorizationHeader);
 
   QUrl url(Constants::API_URL);
   url.setPath("/api/v1/vpn/purchases/ios");
@@ -360,7 +363,7 @@ void NetworkRequest::replyFinished() {
   QByteArray data = m_reply->readAll();
 
   if (m_reply->error() != QNetworkReply::NoError) {
-    logger.log() << "Network error:" << m_reply->error()
+    logger.log() << "Network error:" << m_reply->errorString()
                  << "status code:" << status << "- body:" << data;
     emit requestFailed(m_reply->error(), data);
     return;

@@ -23,6 +23,7 @@
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
 #  include "platforms/linux/linuxdependencies.h"
+#  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
 #ifdef MVPN_MACOS
@@ -123,6 +124,11 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
+    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
+    QmlEngineHolder engineHolder;
+    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
+    engine->addImportPath("qrc:///glean");
+
     MozillaVPN vpn;
     vpn.setStartMinimized(minimizedOption.m_set);
 
@@ -151,9 +157,6 @@ int CommandUI::run(QStringList& tokens) {
     // Font loader
     FontLoader::loadFonts();
 
-    // Create the QML engine and expose a few internal objects.
-    QmlEngineHolder engineHolder;
-    QQmlApplicationEngine* engine = QmlEngineHolder::instance()->engine();
     vpn.initialize();
 
 #ifdef MVPN_MACOS
@@ -180,6 +183,10 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
+
+    // Register an Image Provider that will resolve "image://app/{id}" for qml
+    QQuickImageProvider* provider = new LinuxAppImageProvider(qApp);
+    engine->addImageProvider(QString("app"), provider);
 #endif
 
 #ifdef MVPN_ANDROID
@@ -228,6 +235,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNDeviceModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->deviceModel();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = MozillaVPN::instance()->feedbackCategoryModel();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

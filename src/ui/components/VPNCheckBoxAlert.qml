@@ -9,12 +9,12 @@ import "../themes/themes.js" as Theme
 
 RowLayout {
     id: turnVPNOffAlert
-
+    property var leftMargin:  56
     visible: (VPNController.state !== VPNController.StateOff)
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.topMargin: 12
-    anchors.leftMargin: 56
+    anchors.leftMargin: leftMargin
     anchors.rightMargin: Theme.windowMargin
     spacing: 0
 

@@ -92,10 +92,10 @@ jobs:
       - build_test_app
       - test_list
     runs-on: ubuntu-20.04
-    timeout-minutes: 15
+    timeout-minutes: 60
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
-      max-parallel: 3 #  To avoid max-device limit
+      max-parallel: 1 #  To avoid max-device limit
       matrix:
         test: ${{ fromJson(needs.test_list.outputs.matrix) }}
     steps:
@@ -104,7 +104,7 @@ jobs:
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt update
-          sudo apt install git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats qt515graphicaleffects  qt515websockets qt515declarative -y
+          sudo apt install git qt515base qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev qt515quickcontrols2 qt515imageformats qt515graphicaleffects  qt515websockets qt515declarative jp2a -y
       - name: Clone repository
         uses: actions/checkout@v2
       - name: Save Build
@@ -143,6 +143,8 @@ jobs:
           npm install websocket
 
       - name: Run the test script
+        id: runTests
+        continue-on-error: true
         run: |
           export PATH=.:$(npm bin):$PATH
           export HEADLESS=yes
@@ -150,6 +152,13 @@ jobs:
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+      
+      - name: Uploading logs
+        uses: actions/upload-artifact@v1
+        if: steps.runTests.outcome != 'success'
+        with:
+          name: Logs (${{matrix.test}})
+          path: /tmp/VPN_LOG.txt
 
       - name: Uploading screenshots
         uses: actions/upload-artifact@v1

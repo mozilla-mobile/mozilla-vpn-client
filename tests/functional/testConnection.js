@@ -5,34 +5,26 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
 
 const exec = util.promisify(require('child_process').exec);
 
 describe('Connectivity', function() {
-  let driver;
-
   this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -56,6 +48,7 @@ describe('Connectivity', function() {
   });
 
   it('connecting', async () => {
+    await vpn.setSetting('connection-change-notification', 'true');
     // TODO: investigate why the click doesn't work on github.
     // await vpn.clickOnElement('controllerToggle');
     await vpn.activate();
@@ -93,6 +86,7 @@ describe('Connectivity', function() {
   it('disconnecting', async () => {
     // TODO: investigate why the click doesn't work on github.
     // await vpn.clickOnElement('controllerToggle');
+    await vpn.setSetting('connection-change-notification', 'true');
     await vpn.deactivate();
 
     await vpn.waitForCondition(async () => {

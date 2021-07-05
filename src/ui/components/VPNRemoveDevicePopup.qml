@@ -13,6 +13,7 @@ Popup {
     id: popup
 
     property var deviceName
+    property var devicePublicKey
     property var wasmView
 
     leftInset: Theme.windowMargin
@@ -162,7 +163,7 @@ Popup {
                     buttonTextColor: Theme.white
                     colorScheme: Theme.redButton
                     onClicked: {
-                        VPN.removeDevice(popup.deviceName);
+                        VPN.removeDeviceFromPublicKey(popup.devicePublicKey);
                         if (vpnFlickable.state === "deviceLimit") {
                             // there is no further action the user can take on the deviceList
                             // so leave the modal open until the user is redirected back to the main view

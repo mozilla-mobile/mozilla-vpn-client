@@ -11,8 +11,10 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "rfc1918.h"
-#include "rfc4193.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc4193.h"
+#include "rfc/rfc5735.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "timercontroller.h"
@@ -174,6 +176,8 @@ void Controller::activateInternal() {
   Server server = Server::weightChooser(servers);
   Q_ASSERT(server.initialized());
 
+  vpn->setServerPublicKey(server.publicKey());
+
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
   const QList<IPAddressRange> allowedIPAddressRanges =
@@ -187,9 +191,86 @@ void Controller::activateInternal() {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  // Use the Gateway as DNS Server
+  // If the user as entered a valid dns, use that instead
+  QHostAddress dns = QHostAddress(server.ipv4Gateway());
+  if (FeatureList::instance()->userDNSSupported() &&
+      !settingsHolder->useGatewayDNS() &&
+      settingsHolder->userDNS().size() > 0 &&
+      settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
+          SettingsHolder::UserDNSOK) {
+    dns = QHostAddress(settingsHolder->userDNS());
+    logger.log() << "User DNS Set" << dns.toString();
+  }
+
   Q_ASSERT(m_impl);
   m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, stateToReason(m_state));
+                   vpnDisabledApps, dns, stateToReason(m_state));
+}
+
+bool Controller::silentSwitchServers() {
+  logger.log() << "Silently switch servers";
+
+  if (m_state != StateOn) {
+    logger.log() << "Cannot silent switch if not on";
+    return false;
+  }
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(vpn);
+
+  QList<Server> servers = vpn->servers();
+  Q_ASSERT(!servers.isEmpty());
+
+  if (servers.length() <= 1) {
+    logger.log()
+        << "Cannot silent switch servers because there is only one available";
+    return false;
+  }
+
+  QList<Server>::iterator iterator = servers.begin();
+
+  while (iterator != servers.end()) {
+    if (iterator->publicKey() == vpn->serverPublicKey()) {
+      servers.erase(iterator);
+      break;
+    }
+    ++iterator;
+  }
+
+  Server server = Server::weightChooser(servers);
+  Q_ASSERT(server.initialized());
+  Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
+
+  vpn->setServerPublicKey(server.publicKey());
+
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+
+  const QList<IPAddressRange> allowedIPAddressRanges =
+      getAllowedIPAddressRanges(server);
+
+  QList<QString> vpnDisabledApps;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (settingsHolder->protectSelectedApps() &&
+      settingsHolder->hasVpnDisabledApps()) {
+    vpnDisabledApps = settingsHolder->vpnDisabledApps();
+  }
+
+  QHostAddress dns = QHostAddress(server.ipv4Gateway());
+  if (FeatureList::instance()->userDNSSupported() &&
+      !settingsHolder->useGatewayDNS() &&
+      settingsHolder->userDNS().size() > 0 &&
+      settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
+          SettingsHolder::UserDNSOK) {
+    dns = QHostAddress(settingsHolder->userDNS());
+    logger.log() << "User DNS Set" << dns.toString();
+  }
+
+  Q_ASSERT(m_impl);
+  m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
+                   vpnDisabledApps, dns, stateToReason(StateSwitching));
+  return true;
 }
 
 bool Controller::deactivate() {
@@ -216,6 +297,12 @@ bool Controller::deactivate() {
 void Controller::connected() {
   logger.log() << "Connected from state:" << m_state;
 
+  // We are currently silently switching servers
+  if (m_state == StateOn) {
+    m_connectionCheck.start();
+    return;
+  }
+
   // This is an unexpected connection. Let's use the Connecting state to animate
   // the UI.
   if (m_state != StateConnecting && m_state != StateSwitching &&
@@ -241,13 +328,18 @@ void Controller::connected() {
 void Controller::connectionConfirmed() {
   logger.log() << "Connection confirmed";
 
-  if (m_state != StateConfirming) {
+  if (m_state != StateConfirming && m_state != StateOn) {
     logger.log() << "Invalid confirmation received";
     return;
   }
 
   m_connectionRetry = 0;
   emit connectionRetryChanged();
+
+  if (m_state == StateOn) {
+    emit silentSwitchDone();
+    return;
+  }
 
   setState(StateOn);
   emit timeChanged();
@@ -263,9 +355,13 @@ void Controller::connectionConfirmed() {
 void Controller::connectionFailed() {
   logger.log() << "Connection failed!";
 
-  if (m_state != StateConfirming) {
+  if (m_state != StateConfirming && m_state != StateOn) {
     logger.log() << "Invalid confirmation received";
     return;
+  }
+
+  if (m_state == StateOn) {
+    emit silentSwitchDone();
   }
 
   if (m_nextStep != None || m_connectionRetry >= CONNECTION_MAX_RETRY) {
@@ -286,7 +382,7 @@ void Controller::disconnected() {
   logger.log() << "Disconnected from state:" << m_state;
 
   if (m_reconnectionStep == ExpectDisconnection) {
-    Q_ASSERT(m_state == StateConfirming);
+    Q_ASSERT(m_state == StateConfirming || m_state == StateOn);
     Q_ASSERT(m_connectionRetry > 0);
 
     // We are retrying the connection. Let's ignore this disconnect signal and
@@ -361,6 +457,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   logger.log() << "Switching to a different server";
 
   m_currentCity = vpn->currentServer()->cityName();
+  m_currentCountryCode = vpn->currentServer()->countryCode();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 
@@ -563,6 +660,20 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       logger.log() << "Filtering out the local area networks (rfc 4193)";
       allowedIPv6s.append(RFC4193::ipv6());
     }
+  } else if (FeatureList::instance()->userDNSSupported() &&
+             !SettingsHolder::instance()->useGatewayDNS() &&
+             SettingsHolder::instance()->userDNS().size() > 0 &&
+             SettingsHolder::instance()->validateUserDNS(
+                 SettingsHolder::instance()->userDNS()) ==
+                 SettingsHolder::UserDNSOK &&
+             // No need to filter out loopback ip addresses
+             !RFC5735::ipv4LoopbackAddressBlock().contains(
+                 QHostAddress(SettingsHolder::instance()->userDNS()))) {
+    // Filter out the Custom DNS Server, if the User has one.
+    logger.log() << "Filtering out the DNS address"
+                 << SettingsHolder::instance()->userDNS();
+    excludeIPv4s.append(
+        IPAddress::create(SettingsHolder::instance()->userDNS()));
   }
 
   QList<IPAddressRange> list;
@@ -620,4 +731,12 @@ void Controller::heartbeatCompleted() {
 void Controller::resetConnectionTimer() {
   m_connectionTimerExtraSecs = 0;
   m_connectionTimer.start();
+}
+
+QString Controller::currentLocalizedCityName() const {
+  return ServerI18N::translateCityName(m_currentCountryCode, m_currentCity);
+}
+
+QString Controller::switchingLocalizedCityName() const {
+  return ServerI18N::translateCityName(m_switchingCountryCode, m_switchingCity);
 }

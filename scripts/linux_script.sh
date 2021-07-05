@@ -9,6 +9,7 @@
 VERSION=1
 RELEASE=focal
 STAGE=
+SOURCEONLY=
 
 if [ -f .env ]; then
   . .env
@@ -16,7 +17,7 @@ fi
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage]"
+  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage] [--source]"
   print N ""
   print N "By default, the release is 'focal'"
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
@@ -45,13 +46,17 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --source)
+    SOURCEONLY=1
+    shift
+    ;;
   *)
     helpFunction
     ;;
   esac
 done
 
-[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "groovy" ] && [ "$RELEASE" != "bionic" ] && die "We support RELEASE focal, groovy and bionic only"
+[ "$RELEASE" != "focal" ] && [ "$RELEASE" != "groovy" ] && [ "$RELEASE" != "bionic" ] && [ "$RELEASE" != "hirsute" ] && die "We support RELEASE focal, groovy, bionic and hirsute only"
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
@@ -84,6 +89,10 @@ python3 scripts/importLanguages.py $([[ "$STAGE" ]] && echo "" || echo "-p") || 
 print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
 
+print Y "Downloading Go dependencies..."
+(cd linux/netfilter && go mod vendor)
+print G "done."
+
 printn Y "Removing the debian template folder... "
 rm -rf linux/debian || die "Failed"
 print G "done."
@@ -115,6 +124,10 @@ sed -i -e "s/VERSION/$VERSION/g" debian/changelog || die "Failed"
 sed -i -e "s/RELEASE/$RELEASE/g" debian/changelog || die "Failed"
 sed -i -e "s/DATE/$(date -R)/g" debian/changelog || die "Failed"
 sed -i -e "s/FULLVERSION/$FULLVERSION/g" debian/rules || die "Failed"
-debuild -uc -us || die "Failed"
+if [ -z "$SOURCEONLY" ]; then
+  debuild -uc -us || die "Failed to build Debian package"
+else
+  dpkg-buildpackage --build=source --no-sign --no-check-builddeps || "Failed to build source package"
+fi
 
 print G "All done."

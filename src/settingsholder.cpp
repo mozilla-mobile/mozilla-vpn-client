@@ -7,8 +7,11 @@
 #include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc5735.h"
 
 #include <QSettings>
+#include <QHostAddress>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
@@ -16,11 +19,19 @@ constexpr bool SETTINGS_UNSECUREDNETWORKALERT_DEFAULT = true;
 constexpr bool SETTINGS_CAPTIVEPORTALALERT_DEFAULT = true;
 constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
+constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
+constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
+constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
+const QString SETTINGS_USER_DNS_DEFAULT = "";
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
+constexpr const char* SETTINGS_SERVERSWITCHNOTIFICATION =
+    "serverSwitchNotification";
+constexpr const char* SETTINGS_CONNECTIONSWITCHNOTIFICATION =
+    "connectionChangeNotification";
 constexpr const char* SETTINGS_CAPTIVEPORTALALERT = "captivePortalAlert";
 constexpr const char* SETTINGS_STARTATBOOT = "startAtBoot";
 constexpr const char* SETTINGS_LANGUAGECODE = "languageCode";
@@ -32,7 +43,9 @@ constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
 constexpr const char* SETTINGS_PUBLICKEY = "publicKey";
+constexpr const char* SETTINGS_USEGATEWAYDNS = "useGatewayDNS";
 constexpr const char* SETTINGS_USER_AVATAR = "user/avatar";
+constexpr const char* SETTINGS_USER_DNS = "user/dns";
 constexpr const char* SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char* SETTINGS_USER_EMAIL = "user/email";
 constexpr const char* SETTINGS_USER_MAXDEVICES = "user/maxDevices";
@@ -189,6 +202,11 @@ GETSETDEFAULT(FeatureList::instance()->localNetworkAccessSupported() &&
               bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
               localNetworkAccessChanged)
+GETSETDEFAULT(SETTINGS_USEGATEWAYDNS_DEFAULT, bool, toBool,
+              SETTINGS_USEGATEWAYDNS, hasUsegatewayDNS, useGatewayDNS,
+              setUseGatewayDNS, useGatewayDNSChanged)
+GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
+              hasUserDNS, userDNS, setUserDNS, userDNSChanged)
 GETSETDEFAULT(
     FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
         SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
@@ -215,6 +233,15 @@ GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
 GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
               SETTINGS_GLEANENABLED, hasGleanEnabled, gleanEnabled,
               setGleanEnabled, gleanEnabledChanged)
+GETSETDEFAULT(SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT, bool, toBool,
+              SETTINGS_SERVERSWITCHNOTIFICATION, hasServerSwitchNotification,
+              serverSwitchNotification, setServerSwitchNotification,
+              serverSwitchNotificationChanged);
+GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
+              SETTINGS_CONNECTIONSWITCHNOTIFICATION,
+              hasConnectionChangeNotification, connectionChangeNotification,
+              setConnectionChangeNotification,
+              connectionChangeNotificationChanged);
 
 #undef GETSETDEFAULT
 
@@ -353,4 +380,36 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
   }
   list.append(surveyId);
   setConsumedSurveys(list);
+}
+
+SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
+    const QString& dns) const {
+  logger.log() << "checking -> " << dns;
+  QHostAddress address = QHostAddress(dns);
+
+  logger.log() << "is null " << address.isNull();
+
+  if (address.isNull()) {
+    return UserDNSInvalid;
+  }
+
+  if (address.protocol() != QAbstractSocket::IPv4Protocol) {
+    return UserDNSNotIPv4;
+  }
+
+  /* Currently we need to limit this to loopback and LAN IP addresses since the
+   * killswitch makes sure that no dns traffic may happen to outside of lan
+   */
+
+  if (RFC5735::ipv4LoopbackAddressBlock().contains(address)) {
+    return UserDNSOK;
+  }
+
+  for (const IPAddress& network : RFC1918::ipv4()) {
+    if (network.contains(address)) {
+      return UserDNSOK;
+    }
+  }
+
+  return UserDNSOutOfRange;
 }

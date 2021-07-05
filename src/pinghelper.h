@@ -7,8 +7,8 @@
 
 #include <QList>
 #include <QObject>
-#include <QThread>
 #include <QTimer>
+#include <QVector>
 
 class PingSender;
 
@@ -25,6 +25,10 @@ class PingHelper final : public QObject {
              const QString& deviceIpv4Address);
 
   void stop();
+  uint latency() const;
+  uint stddev() const;
+  uint maximum() const;
+  double loss() const;
 
  signals:
   void pingSentAndReceived(qint64 msec);
@@ -32,17 +36,28 @@ class PingHelper final : public QObject {
  private:
   void nextPing();
 
-  void pingReceived(PingSender* pingSender, qint64 msec);
+  void pingReceived(quint16 sequence);
 
  private:
   QString m_gateway;
   QString m_source;
+  quint16 m_sequence = 0;
+
+  class PingSendData {
+   public:
+    PingSendData() {
+      timestamp = -1;
+      latency = -1;
+      sequence = 0;
+    }
+    qint64 timestamp;
+    qint64 latency;
+    quint16 sequence;
+  };
+  QVector<PingSendData> m_pingData;
 
   QTimer m_pingTimer;
-
-  QList<PingSender*> m_pings;
-
-  QThread m_pingThread;
+  PingSender* m_pingSender = nullptr;
 };
 
 #endif  // PINGHELPER_H

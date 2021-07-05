@@ -55,7 +55,7 @@ bool MozillaVPN::setServerList(const QByteArray&) { return true; }
 
 void MozillaVPN::serversFetched(const QByteArray&) {}
 
-void MozillaVPN::removeDevice(const QString&) {}
+void MozillaVPN::removeDeviceFromPublicKey(const QString&) {}
 
 void MozillaVPN::accountChecked(const QByteArray&) {}
 
@@ -124,10 +124,6 @@ void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}
 
-MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
-  return DeviceNotFound;
-}
-
 void MozillaVPN::controllerStateChanged() {}
 
 void MozillaVPN::backendServiceRestore() {}
@@ -135,3 +131,7 @@ void MozillaVPN::backendServiceRestore() {}
 void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
+
+void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
+
+void MozillaVPN::addCurrentDeviceAndRefreshData() {}

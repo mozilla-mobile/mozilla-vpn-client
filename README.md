@@ -1,6 +1,22 @@
 # Mozilla VPN
 
+>_One tap to privacy
+Surf, stream, game, and get work done while maintaining your privacy online. Whether you’re traveling, using public WiFi, or simply looking for more online security, we will always put your privacy first._ 
+
 See: https://vpn.mozilla.org
+
+## Getting Involved
+
+We encourage you to participate in this open source project. We love Pull Requests, Bug Reports, ideas, (security) code reviews or any other kind of positive contribution. 
+
+Before you attempt to make a contribution please read the [Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
+
+* [View current Issues](https://github.com/mozilla-mobile/mozilla-vpn-client/issues), [view current Pull Requests](https://github.com/mozilla-mobile/mozilla-vpn-client/pulls), or [file a security issue](https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20VPN).
+* Localization happens on [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
+* Matrix [#mozilla-vpn:mozilla.org channel](https://chat.mozilla.org/#/room/#mozilla-vpn:mozilla.org)
+* [View the Wiki](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki).
+* [View the Support Docs](https://support.mozilla.org/en-US/products/firefox-private-network-vpn)
+
 
 ## Dev instructions
 
@@ -25,7 +41,7 @@ following dependencies:
 
 Python3 (pip) depedencies:
 
-- glean_parser
+- glean_parser==3.5
 - pyhumps
 - pyyaml
 
@@ -43,7 +59,8 @@ curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5
 tar xvf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
 sudo apt build-dep qt5-default
-sudo apt install libxcb-xinerama0-dev
+sudo apt install clang llvm golang
+sudo apt install libxcb-xinerama0-dev libxcb-util-dev
 bash scripts/qt5_compile.sh qt qt
 ```
 
@@ -60,7 +77,7 @@ git submodule update
 # glean
 ./scripts/generate_glean.py
 # translations
-python scripts/importLanguages.py
+./scripts/importLanguages.py
 ```
 
 #### Build
@@ -114,20 +131,30 @@ export QT_MACOS_BIN=`pwd`/qt/qt/bin
 The procedure to compile MozillaVPN for macOS is the following:
 
 1. Install XCodeProj:
+```
   $ [sudo] gem install xcodeproj
-1. Install go if you haven't done it before: https://golang.org/dl/
-1. Update the submodules:
+```
+2. Install go if you haven't done it before: https://golang.org/dl/
+3. Update the submodules:
+```
   $ git submodule init
   $ git submodule update --remote
-1. Install python3 dependencies:
-  $ pip3 install glean_parser
+```
+4. Install python3 dependencies:
+```
+  $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
-1. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
-  $ ./scripts/apple\_compile.sh macos
-1. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
+5. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+```
+  $ ./scripts/apple_compile.sh macos
+```
+6. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
   $ cp xcode.xconfig.template xcode.xconfig
-1. Modify xcode.xconfig to something like:
+```
+7. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -143,7 +170,7 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 ```
-1. Open Xcode and run/test/archive/ship the app
+8. Open Xcode and run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
 ```
@@ -157,17 +184,25 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 
 The IOS procedure is similar to the macOS one:
 1. Install XCodeProj:
+```
   $ [sudo] gem install xcodeproj
-1. Update the submodules:
+```
+2. Update the submodules:
+```
   $ git submodule init
   $ git submodule update --remote
-1. Install python3 dependencies:
-  $ pip3 install glean_parser
+```
+3. Install python3 dependencies:
+```
+  $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
-1. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
+4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
   $ cp xcode.xconfig.template xcode.xconfig
-1. Modify xcode.xconfig to something like:
+```
+5. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -183,9 +218,11 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
-1. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
-  $ ./scripts/apple\_compile.sh ios
-1. Open Xcode and run/test/archive/ship the app
+6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
+```
+  $ ./scripts/apple_compile.sh ios
+```
+7. Open Xcode and run/test/archive/ship the app
 
 ### Android 
 
@@ -200,7 +237,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 
 5. Install python3 dependencies:
 ```
-  $ pip3 install glean_parser
+  $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
@@ -227,7 +264,7 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
-5. Install python3 dependencies (pip install glean_parser pyyaml pyhumps)
+5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml pyhumps)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz

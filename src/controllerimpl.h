@@ -16,6 +16,7 @@ class Device;
 class Server;
 class QDateTime;
 class IPAddressRange;
+class QHostAddress;
 
 // This object is allocated when the VPN is about to be activated.
 // It's kept alive, basically forever, except in these scenarios, in which it's
@@ -49,7 +50,7 @@ class ControllerImpl : public QObject {
                         const Keys* keys,
                         const QList<IPAddressRange>& allowedIPAddressRanges,
                         const QList<QString>& vpnDisabledApps,
-                        Reason Reason) = 0;
+                        const QHostAddress& dnsServer, Reason Reason) = 0;
 
   // This method terminates the VPN tunnel. The VPN client is in
   // "disconnecting" state until the "disconnected" signal is received.

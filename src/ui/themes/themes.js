@@ -23,6 +23,7 @@ const greyHovered = "#E6E6E6";
 const greyPressed = "#C2C2C2";
 const ink = "#321C64";
 const orange = "#FFA436";
+const purple60 = "#7542E5";
 const red = "#FF4F5E";
 const redHovered = "#E22850";
 const redPressed = "#C50042";
@@ -163,6 +164,8 @@ const removeDeviceAnimation = 300;
 const rowHeight = 40;
 const settingsMaxContentHeight = 740;
 const maxHorizontalContentWidth = 460;
+const contentTopMarginDesktop = 20;
+const contentTopMarginMobile = 48;
 
 const uiState = {
     "stateDefault": "state-default",
@@ -180,3 +183,16 @@ const greyLink = {
     "focusBorder": "#000000"
 };
 
+const input = {
+    "backgroundColor": "#ffffff",
+    "borderColor": "#9E9E9E",
+    "highlight": "#E7E7E7",
+    "defaultColor" : "#ffffff",
+    "buttonHovered": blueHovered,
+    "buttonPressed": bluePressed,
+    "buttonDisabled": blueDisabled,
+    "focusBgColor": blue,
+    "focusOutline": blueFocusOutline,
+    "focusBorder": blueFocusBorder,
+
+};

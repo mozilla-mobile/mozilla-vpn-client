@@ -11,6 +11,8 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
+#include <mntent.h>
+
 constexpr const char* WG_QUICK = "wg-quick";
 
 namespace {
@@ -98,4 +100,28 @@ bool LinuxDependencies::checkDependencies() {
   }
 
   return true;
+}
+
+// static
+QString LinuxDependencies::findCgroupPath(const QString& type) {
+  struct mntent entry;
+  char buf[PATH_MAX];
+
+  FILE* fp = fopen("/etc/mtab", "r");
+  if (fp == NULL) {
+    return QString();
+  }
+
+  while (getmntent_r(fp, &entry, buf, sizeof(buf)) != NULL) {
+    if (strcmp(entry.mnt_type, "cgroup") != 0) {
+      continue;
+    }
+    if (hasmntopt(&entry, type.toLocal8Bit().constData()) != NULL) {
+      fclose(fp);
+      return QString(entry.mnt_dir);
+    }
+  }
+  fclose(fp);
+
+  return QString();
 }

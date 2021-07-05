@@ -10,11 +10,13 @@
 
 class WindowsCommons final {
  public:
+  static QString getErrorMessage();
   static void windowsLog(const QString& msg);
   static void windowsLog(const QString& msg, DWORD err);
 
 
   static QString tunnelConfigFile();
+  static QString tunnelLogFile();
 };
 
 #endif  // WINDOWSCOMMONS_H

@@ -9,6 +9,7 @@
 #include "loghandler.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "serveri18n.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
 
@@ -41,7 +42,7 @@ QString s_updateVersion;
 
 }  // namespace
 
-static QQuickItem* findObject(const QString& name) {
+static QObject* findObject(const QString& name) {
   QStringList parts = name.split("/");
   Q_ASSERT(!parts.isEmpty());
 
@@ -58,7 +59,11 @@ static QQuickItem* findObject(const QString& name) {
     }
   }
 
-  if (!parent || parts.length() == 1) {
+  if (!parent) {
+    if (parts.length() == 1) {
+      int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(parts[0]));
+      return engine->singletonInstance<QObject*>(id);
+    }
     return parent;
   }
 
@@ -166,6 +171,30 @@ static QList<WebSocketSettingCommand> s_settingCommands{
           return SettingsHolder::instance()->localNetworkAccess() ? "true"
                                                                   : "false";
         }},
+    // server-switch-notification
+    WebSocketSettingCommand{
+        "server-switch-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setServerSwitchNotification(value ==
+                                                                  "true");
+        },
+        []() {
+          return SettingsHolder::instance()->serverSwitchNotification()
+                     ? "true"
+                     : "false";
+        }},
+    // connection-change-notification
+    WebSocketSettingCommand{
+        "connection-change-notification", WebSocketSettingCommand::Boolean,
+        [](const QByteArray& value) {
+          SettingsHolder::instance()->setConnectionChangeNotification(value ==
+                                                                      "true");
+        },
+        []() {
+          return SettingsHolder::instance()->connectionChangeNotification()
+                     ? "true"
+                     : "false";
+        }},
 
     // language
     WebSocketSettingCommand{
@@ -260,7 +289,7 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-                       QQuickItem* item = findObject(arguments[1]);
+                       QObject* item = findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -289,7 +318,7 @@ static QList<WebSocketCommand> s_commands{
                          obj["error"] = "Unsupported type. Use: i, s";
                        }
 
-                       QQuickItem* item = findObject(arguments[1]);
+                       QObject* item = findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -307,9 +336,14 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-                       QQuickItem* item = findObject(arguments[1]);
-                       if (!item) {
+                       QObject* qmlobj = findObject(arguments[1]);
+                       if (!qmlobj) {
                          obj["error"] = "Object not found";
+                         return obj;
+                       }
+                       QQuickItem* item = qobject_cast<QQuickItem*>(qmlobj);
+                       if (!item) {
+                         obj["error"] = "Object is not clickable";
                          return obj;
                        }
 
@@ -487,6 +521,13 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
+    WebSocketCommand{"translate", "Translate a string", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       obj["value"] = qtTrId(arguments[1]);
+                       return obj;
+                     }},
+
     WebSocketCommand{"screen_capture", "Take a screen capture", 0,
                      [](const QList<QByteArray>&) {
                        QJsonObject obj;
@@ -524,33 +565,38 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
-    WebSocketCommand{"servers", "Returns a list of servers", 0,
-                     [](const QList<QByteArray>&) {
-                       QJsonObject obj;
+    WebSocketCommand{
+        "servers", "Returns a list of servers", 0,
+        [](const QList<QByteArray>&) {
+          QJsonObject obj;
 
-                       QJsonArray countryArray;
-                       ServerCountryModel* scm =
-                           MozillaVPN::instance()->serverCountryModel();
-                       for (const ServerCountry& country : scm->countries()) {
-                         QJsonArray cityArray;
-                         for (const ServerCity& city : country.cities()) {
-                           QJsonObject cityObj;
-                           cityObj["name"] = city.name();
-                           cityObj["code"] = city.code();
-                           cityArray.append(cityObj);
-                         }
+          QJsonArray countryArray;
+          ServerCountryModel* scm =
+              MozillaVPN::instance()->serverCountryModel();
+          for (const ServerCountry& country : scm->countries()) {
+            QJsonArray cityArray;
+            for (const ServerCity& city : country.cities()) {
+              QJsonObject cityObj;
+              cityObj["name"] = city.name();
+              cityObj["localizedName"] =
+                  ServerI18N::translateCityName(country.code(), city.name());
+              cityObj["code"] = city.code();
+              cityArray.append(cityObj);
+            }
 
-                         QJsonObject countryObj;
-                         countryObj["name"] = country.name();
-                         countryObj["code"] = country.code();
-                         countryObj["cities"] = cityArray;
+            QJsonObject countryObj;
+            countryObj["name"] = country.name();
+            countryObj["localizedName"] = ServerI18N::translateCountryName(
+                country.code(), country.name());
+            countryObj["code"] = country.code();
+            countryObj["cities"] = cityArray;
 
-                         countryArray.append(countryObj);
-                       }
+            countryArray.append(countryObj);
+          }
 
-                       obj["value"] = countryArray;
-                       return obj;
-                     }},
+          obj["value"] = countryArray;
+          return obj;
+        }},
 
     WebSocketCommand{
         "reset_surveys",
@@ -581,6 +627,56 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 #endif
+
+    WebSocketCommand{"devices", "Retrieve the list of devices", 0,
+                     [](const QList<QByteArray>&) {
+                       MozillaVPN* vpn = MozillaVPN::instance();
+                       Q_ASSERT(vpn);
+
+                       DeviceModel* dm = vpn->deviceModel();
+                       Q_ASSERT(dm);
+
+                       QJsonArray deviceArray;
+                       for (const Device& device : dm->devices()) {
+                         QJsonObject deviceObj;
+                         deviceObj["name"] = device.name();
+                         deviceObj["publicKey"] = device.publicKey();
+                         deviceObj["currentDevice"] =
+                             device.isCurrentDevice(vpn->keys());
+                         deviceArray.append(deviceObj);
+                       }
+
+                       QJsonObject obj;
+                       obj["value"] = deviceArray;
+                       return obj;
+                     }},
+
+    WebSocketCommand{
+        "reset_devices",
+        "Remove all the existing devices and add the current one if needed", 0,
+        [](const QList<QByteArray>&) {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+
+          DeviceModel* dm = vpn->deviceModel();
+          Q_ASSERT(dm);
+
+          bool hasCurrentOne = false;
+          for (const Device& device : dm->devices()) {
+            if (device.isCurrentDevice(vpn->keys())) {
+              hasCurrentOne = true;
+              continue;
+            }
+
+            vpn->removeDeviceFromPublicKey(device.publicKey());
+          }
+
+          if (!hasCurrentOne) {
+            vpn->addCurrentDeviceAndRefreshData();
+          }
+
+          return QJsonObject();
+        }},
 };
 
 InspectorWebSocketConnection::InspectorWebSocketConnection(

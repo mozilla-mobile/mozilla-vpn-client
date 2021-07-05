@@ -18,23 +18,25 @@ namespace {
 Logger logger(LOG_MAIN, "WindowsCommons");
 }
 
-// A simple function to log windows error messages.
-void WindowsCommons::windowsLog(const QString& msg, DWORD errorId) {
-    LPSTR messageBuffer = nullptr;
-    size_t size = FormatMessageA(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr, errorId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR)&messageBuffer, 0, nullptr);
+QString WindowsCommons::getErrorMessage() {
+  DWORD errorId = GetLastError();
+  LPSTR messageBuffer = nullptr;
+  size_t size = FormatMessageA(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, errorId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      (LPSTR)&messageBuffer, 0, nullptr);
 
-    std::string message(messageBuffer, size);
-
-    logger.log() << msg << "-" << QString(message.c_str());
-    LocalFree(messageBuffer);
+  std::string message(messageBuffer, size);
+  QString result(message.c_str());
+  LocalFree(messageBuffer);
+  return result;
 }
 
+// A simple function to log windows error messages.
 void WindowsCommons::windowsLog(const QString& msg) {
-    windowsLog(msg,GetLastError());
+  QString errmsg = getErrorMessage();
+  logger.log() << msg << "-" << errmsg;
 }
 
 QString WindowsCommons::tunnelConfigFile() {
@@ -74,5 +76,26 @@ QString WindowsCommons::tunnelConfigFile() {
   }
 
   logger.log() << "Failed to create the right paths";
+  return QString();
+}
+
+QString WindowsCommons::tunnelLogFile() {
+  QStringList paths =
+      QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+
+  for (const QString& path : paths) {
+    QDir dir(path);
+    if (!dir.exists()) {
+      continue;
+    }
+
+    QDir vpnDir(dir.filePath(VPN_NAME));
+    if (!vpnDir.exists()) {
+      continue;
+    }
+
+    return vpnDir.filePath("log.bin");
+  }
+
   return QString();
 }

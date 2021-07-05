@@ -23,6 +23,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
+#include "tasks/sendfeedback/tasksendfeedback.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
@@ -331,6 +332,11 @@ void MozillaVPN::maybeStateMain() {
   }
 }
 
+void MozillaVPN::setServerPublicKey(const QString& publicKey) {
+  logger.log() << "Set server public key:" << publicKey;
+  m_serverPublicKey = publicKey;
+}
+
 void MozillaVPN::getStarted() {
   logger.log() << "Get started";
 
@@ -462,9 +468,9 @@ void MozillaVPN::maybeRunTask() {
 }
 
 void MozillaVPN::taskCompleted() {
-  logger.log() << "Task completed";
-
   Q_ASSERT(m_running_task);
+
+  logger.log() << "Task completed:" << m_running_task->name();
   m_running_task->deleteLater();
   m_running_task->disconnect();
   m_running_task = nullptr;
@@ -511,48 +517,21 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   completeActivation();
 }
 
-MozillaVPN::RemovalDeviceOption MozillaVPN::maybeRemoveCurrentDevice() {
-  logger.log() << "Maybe remove current device";
-
-  const Device* currentDevice =
-      m_private->m_deviceModel.device(Device::currentDeviceName());
-  if (!currentDevice) {
-    logger.log() << "No removal needed because the device doesn't exist yet";
-    return DeviceNotFound;
-  }
-
-  if (currentDevice->publicKey() == m_private->m_keys.publicKey() &&
-      !m_private->m_keys.privateKey().isEmpty()) {
-    logger.log() << "No removal needed because the private key is still fine.";
-    return DeviceStillValid;
-  }
-
-  logger.log() << "Removal needed";
-  scheduleTask(new TaskRemoveDevice(currentDevice->publicKey()));
-  return DeviceRemoved;
-}
-
 void MozillaVPN::completeActivation() {
   int deviceCount = m_private->m_deviceModel.activeDevices();
-
-  // If we already have a device with the same name, let's remove it.
-  RemovalDeviceOption option = maybeRemoveCurrentDevice();
-  if (option == DeviceRemoved) {
-    --deviceCount;
-  }
-
   if (deviceCount >= m_private->m_user.maxDevices()) {
     maybeStateMain();
     return;
   }
 
   // Here we add the current device.
-  if (option != DeviceStillValid) {
-    scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+  if (m_private->m_keys.privateKey().isEmpty() ||
+      !m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    addCurrentDeviceAndRefreshData();
+  } else {
+    // Let's fetch the account and the servers.
+    scheduleTask(new TaskAccountAndServers());
   }
-
-  // Let's fetch the account and the servers.
-  scheduleTask(new TaskAccountAndServers());
 
 #ifdef MVPN_IOS
   scheduleTask(new TaskIOSProducts());
@@ -584,10 +563,10 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   m_private->m_keys.storeKeys(privateKey, publicKey);
 }
 
-void MozillaVPN::deviceRemoved(const QString& deviceName) {
+void MozillaVPN::deviceRemoved(const QString& publicKey) {
   logger.log() << "Device removed";
 
-  m_private->m_deviceModel.removeDevice(deviceName);
+  m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
 bool MozillaVPN::setServerList(const QByteArray& serverData) {
@@ -617,15 +596,15 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 }
 
-void MozillaVPN::removeDevice(const QString& deviceName) {
-  logger.log() << "Remove device" << deviceName;
+void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
+  logger.log() << "Remove device";
 
-  // Let's inform the UI about what is going to happen.
-  emit deviceRemoving(deviceName);
-
-  const Device* device = m_private->m_deviceModel.device(deviceName);
+  const Device* device =
+      m_private->m_deviceModel.deviceFromPublicKey(publicKey);
   if (device) {
-    scheduleTask(new TaskRemoveDevice(device->publicKey()));
+    // Let's inform the UI about what is going to happen.
+    emit deviceRemoving(publicKey);
+    scheduleTask(new TaskRemoveDevice(publicKey));
   }
 
   if (m_state != StateDeviceLimit) {
@@ -636,10 +615,7 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
   Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   // Here we add the current device.
-  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
-
-  // Let's fetch the devices again.
-  scheduleTask(new TaskAccountAndServers());
+  addCurrentDeviceAndRefreshData();
 
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
@@ -657,6 +633,26 @@ void MozillaVPN::removeDevice(const QString& deviceName) {
 
     maybeStateMain();
   }));
+}
+
+void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
+                                const QString& category) {
+  logger.log() << "Submit Feedback";
+
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+
+  serializeLogs(out, [this, out, buffer, feedbackText, rating, category] {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+    // buffer is getting copied by TaskSendFeedback so we can delete it
+    // afterwards
+    scheduleTask(new TaskSendFeedback(feedbackText, *buffer, rating, category));
+
+    delete buffer;
+    delete out;
+  });
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {
@@ -785,7 +781,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   switch (error) {
     case ErrorHandler::VPNDependentConnectionError:
-      // This type of error might be caused by switchting the VPN
+      // This type of error might be caused by switching the VPN
       // on, in which case it's okay to be ignored.
       // In Case the vpn is not connected - handle this like a
       // ConnectionFailureError
@@ -1141,6 +1137,12 @@ void MozillaVPN::deactivate() {
   scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
 }
 
+void MozillaVPN::silentSwitch() {
+  logger.log() << "VPN tunnel silent server switch";
+
+  scheduleTask(new TaskControllerAction(TaskControllerAction::eSilentSwitch));
+}
+
 void MozillaVPN::refreshDevices() {
   logger.log() << "Refresh devices";
 
@@ -1156,8 +1158,8 @@ void MozillaVPN::quit() {
 }
 
 #ifdef MVPN_IOS
-void MozillaVPN::subscriptionStarted() {
-  logger.log() << "Subscription started";
+void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
+  logger.log() << "Subscription started" << productIdentifier;
 
   setState(StateSubscriptionValidation);
 
@@ -1167,13 +1169,14 @@ void MozillaVPN::subscriptionStarted() {
   // again.
   if (!iap->hasProductsRegistered()) {
     scheduleTask(new TaskIOSProducts());
-    scheduleTask(
-        new TaskFunction([](MozillaVPN* vpn) { vpn->subscriptionStarted(); }));
+    scheduleTask(new TaskFunction([productIdentifier](MozillaVPN* vpn) {
+      vpn->subscriptionStarted(productIdentifier);
+    }));
 
     return;
   }
 
-  iap->startSubscription();
+  iap->startSubscription(productIdentifier);
 }
 
 void MozillaVPN::subscriptionCompleted() {
@@ -1294,3 +1297,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
 }
 
 void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
+
+void MozillaVPN::addCurrentDeviceAndRefreshData() {
+  scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
+  scheduleTask(new TaskAccountAndServers());
+}

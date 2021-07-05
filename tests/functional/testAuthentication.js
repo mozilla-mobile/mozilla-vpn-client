@@ -5,29 +5,21 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
-
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
 
 const exec = util.promisify(require('child_process').exec);
 
 describe('User authentication', function() {
-  let driver;
-
   this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -35,7 +27,7 @@ describe('User authentication', function() {
   it('reset the app', async () => await vpn.reset());
 
   it('wait for the main view', async () => {
-    assert(await vpn.getLastUrl() === '');
+    assert.strictEqual(await vpn.getLastUrl(), '');
 
     await vpn.waitForElement('getHelpLink');
     await vpn.waitForElementProperty('getHelpLink', 'visible', 'true');
@@ -130,7 +122,7 @@ describe('User authentication', function() {
   });
 
   it('Start and complete the authentication', async () => {
-    await vpn.authenticate(driver, false, false);
+    await vpn.authenticate(false, false);
   });
 
   it('Post authentication view', async () => {

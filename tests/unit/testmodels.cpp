@@ -30,7 +30,7 @@ void TestModels::deviceBasic() {
   QCOMPARE(device.publicKey(), "");
   QCOMPARE(device.ipv4Address(), "");
   QCOMPARE(device.ipv6Address(), "");
-  QVERIFY(!device.isDevice("name"));
+  QVERIFY(!device.isDeviceForMigration("name"));
 }
 
 void TestModels::deviceCurrentDeviceName() {
@@ -158,17 +158,17 @@ void TestModels::deviceFromJson() {
 void TestModels::deviceModelBasic() {
   DeviceModel dm;
   QVERIFY(!dm.initialized());
-  QVERIFY(!dm.hasDevice("foo"));
-  dm.removeDevice("foo");
-  QCOMPARE(dm.device("foo"), nullptr);
+  dm.removeDeviceFromPublicKey("foo");
+  QCOMPARE(dm.deviceFromPublicKey("foo"), nullptr);
   QCOMPARE(dm.activeDevices(), 0);
 
   Keys keys;
   QCOMPARE(dm.currentDevice(&keys), nullptr);
 
   QHash<int, QByteArray> rn = dm.roleNames();
-  QCOMPARE(rn.count(), 3);
+  QCOMPARE(rn.count(), 4);
   QCOMPARE(rn[DeviceModel::NameRole], "name");
+  QCOMPARE(rn[DeviceModel::PublicKeyRole], "publicKey");
   QCOMPARE(rn[DeviceModel::CurrentOneRole], "currentOne");
   QCOMPARE(rn[DeviceModel::CreatedAtRole], "createdAt");
 
@@ -188,6 +188,7 @@ void TestModels::deviceModelFromJson_data() {
   QTest::addColumn<bool>("result");
   QTest::addColumn<int>("devices");
   QTest::addColumn<QVariant>("deviceName");
+  QTest::addColumn<QVariant>("devicePublicKey");
   QTest::addColumn<QVariant>("currentOne");
   QTest::addColumn<QVariant>("createdAt");
 
@@ -202,8 +203,9 @@ void TestModels::deviceModelFromJson_data() {
 
   QJsonArray devices;
   obj.insert("devices", devices);
-  QTest::addRow("good but empty") << QJsonDocument(obj).toJson() << true << 0
-                                  << QVariant() << QVariant() << QVariant();
+  QTest::addRow("good but empty")
+      << QJsonDocument(obj).toJson() << true << 0 << QVariant() << QVariant()
+      << QVariant() << QVariant();
 
   devices.append(42);
   obj.insert("devices", devices);
@@ -219,7 +221,8 @@ void TestModels::deviceModelFromJson_data() {
   devices.replace(0, d);
   obj.insert("devices", devices);
   QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 1
-                        << QVariant("deviceName") << QVariant(false)
+                        << QVariant("deviceName") << QVariant("devicePubkey")
+                        << QVariant(false)
                         << QVariant(QDateTime::fromString("2017-07-24T15:46:29",
                                                           Qt::ISODate));
 
@@ -233,7 +236,8 @@ void TestModels::deviceModelFromJson_data() {
   obj.insert("devices", devices);
   QTest::addRow("good - 2 devices")
       << QJsonDocument(obj).toJson() << true << 2
-      << QVariant(Device::currentDeviceName()) << QVariant(true)
+      << QVariant(Device::currentDeviceName())
+      << QVariant("currentDevicePubkey") << QVariant(true)
       << QVariant(QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate));
 }
 
@@ -268,7 +272,9 @@ void TestModels::deviceModelFromJson() {
       QModelIndex index = dm.index(0, 0);
 
       QFETCH(QVariant, deviceName);
+      QFETCH(QVariant, devicePublicKey);
       QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
+      QCOMPARE(dm.data(index, DeviceModel::PublicKeyRole), devicePublicKey);
 
       // We cannot compare the currentOne with the DM because the Keys object
       // doesn't exist in the MozillaVPN mock object
@@ -284,13 +290,12 @@ void TestModels::deviceModelFromJson() {
       QCOMPARE(dm.activeDevices(), devices);
 
       if (devices > 0) {
-        QVERIFY(dm.hasDevice(deviceName.toString()));
-        QVERIFY(dm.device(deviceName.toString()) != nullptr);
+        QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
 
-        dm.removeDevice("FOO");
+        dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);
 
-        dm.removeDevice(deviceName.toString());
+        dm.removeDeviceFromPublicKey(devicePublicKey.toString());
         QCOMPARE(dm.activeDevices(), devices - 1);
       }
 
@@ -327,6 +332,7 @@ void TestModels::deviceModelFromJson() {
       QModelIndex index = dm.index(0, 0);
 
       QFETCH(QVariant, deviceName);
+      QFETCH(QVariant, devicePublicKey);
       QCOMPARE(dm.data(index, DeviceModel::NameRole), deviceName);
 
       // We cannot compare the currentOne with the DM because the Keys object
@@ -344,16 +350,38 @@ void TestModels::deviceModelFromJson() {
       keys.storeKeys("private", "currentDevicePubkey");
 
       if (devices > 0) {
-        QVERIFY(dm.hasDevice(deviceName.toString()));
-        QVERIFY(dm.device(deviceName.toString()) != nullptr);
+        QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
 
-        dm.removeDevice("FOO");
+        dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);
 
-        dm.removeDevice(deviceName.toString());
+        dm.removeDeviceFromPublicKey(devicePublicKey.toString());
         QCOMPARE(dm.activeDevices(), devices - 1);
       }
     }
+  }
+}
+
+// Feedback Category
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::feedbackCategoryBasic() {
+  FeedbackCategoryModel fcm;
+
+  QHash<int, QByteArray> rn = fcm.roleNames();
+  QCOMPARE(rn.count(), 2);
+  QCOMPARE(rn[FeedbackCategoryModel::CategoryNameRole], "value");
+  QCOMPARE(rn[FeedbackCategoryModel::LocalizedNameRole], "name");
+
+  QVERIFY(fcm.rowCount(QModelIndex()) > 0);
+  for (int i = 0; i < fcm.rowCount(QModelIndex()); ++i) {
+    QModelIndex index = fcm.index(i, 0);
+    QVERIFY(!fcm.data(index, FeedbackCategoryModel::CategoryNameRole)
+                 .toString()
+                 .isEmpty());
+    QVERIFY(!fcm.data(index, FeedbackCategoryModel::LocalizedNameRole)
+                 .toString()
+                 .isEmpty());
   }
 }
 

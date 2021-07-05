@@ -41,7 +41,7 @@ Rectangle {
 
     onStartAnimationChanged: animatedRings.makeDirty()
     anchors.fill: box
-    radius: box.radius
+    radius: boxBackground.radius
     color: "transparent"
     antialiasing: true
     visible: false
@@ -163,6 +163,7 @@ Rectangle {
         width: animatedRingsWrapper.width
         anchors.fill: animatedRingsWrapper
         onRing1RadiusChanged: makeDirty()
+        renderTarget: Canvas.FramebufferObject
 
         contextType: "2d"
         onPaint: {
@@ -194,11 +195,10 @@ Rectangle {
         }
 
         Component.onCompleted: {
-            if (Qt.platform.os !== "ios") {
-                renderTarget = Canvas.FramebufferObject
+            if (Qt.platform.os === "ios") {
+                renderTarget = Canvas.Image
             }
-
-            resetRingValues();
+            resetRingValues()
         }
     }
 

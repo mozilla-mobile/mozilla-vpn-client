@@ -5,11 +5,8 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
 
 describe('Backend failure', function() {
-  let driver;
-
   async function backendFailureAndRestore() {
     await vpn.forceHeartbeatFailure();
 
@@ -22,19 +19,17 @@ describe('Backend failure', function() {
     await vpn.wait();
   }
 
-  this.timeout(500000);
+  this.timeout(1000000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -136,7 +131,7 @@ describe('Backend failure', function() {
     await vpn.wait();
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false, false));
+  it('authenticate', async () => await vpn.authenticate(false, false));
 
   it('BackendFailure in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

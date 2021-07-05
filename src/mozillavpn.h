@@ -13,6 +13,7 @@
 #include "controller.h"
 #include "errorhandler.h"
 #include "models/devicemodel.h"
+#include "models/feedbackcategorymodel.h"
 #include "models/helpmodel.h"
 #include "models/keys.h"
 #include "models/servercountrymodel.h"
@@ -95,6 +96,8 @@ class MozillaVPN final : public QObject {
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
   Q_PROPERTY(bool productionMode READ productionMode CONSTANT)
+  Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
+                 currentViewChanged)
 
  public:
   MozillaVPN();
@@ -106,6 +109,8 @@ class MozillaVPN final : public QObject {
 
   State state() const;
   AlertType alert() const { return m_alert; }
+
+  const QString& serverPublicKey() const { return m_serverPublicKey; }
 
   bool productionMode() const {
 #ifdef MVPN_PRODUCTION_MODE
@@ -120,7 +125,7 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
-  Q_INVOKABLE void removeDevice(const QString& deviceName);
+  Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void hideUpdateRecommendedAlert() { setUpdateRecommended(false); }
   Q_INVOKABLE void postAuthenticationCompleted();
@@ -135,6 +140,8 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
+  Q_INVOKABLE void submitFeedback(const QString& feedbackText,
+                                  const qint8 rating, const QString& category);
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -153,6 +160,9 @@ class MozillaVPN final : public QObject {
   Controller* controller() { return &m_private->m_controller; }
   ServerData* currentServer() { return &m_private->m_serverData; }
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
+  FeedbackCategoryModel* feedbackCategoryModel() {
+    return &m_private->m_feedbackCategoryModel;
+  }
   Keys* keys() { return &m_private->m_keys; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
   NetworkWatcher* networkWatcher() { return &m_private->m_networkWatcher; }
@@ -171,7 +181,7 @@ class MozillaVPN final : public QObject {
   void deviceAdded(const QString& deviceName, const QString& publicKey,
                    const QString& privateKey);
 
-  void deviceRemoved(const QString& deviceName);
+  void deviceRemoved(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
 
@@ -186,6 +196,8 @@ class MozillaVPN final : public QObject {
   void abortAuthentication();
 
   void changeServer(const QString& countryCode, const QString& city);
+
+  void silentSwitch();
 
   const QString versionString() const { return QString(APP_VERSION); }
 
@@ -220,6 +232,16 @@ class MozillaVPN final : public QObject {
 
   void heartbeatCompleted(bool success);
 
+  void setServerPublicKey(const QString& publicKey);
+
+  void addCurrentDeviceAndRefreshData();
+
+  const QString& currentView() const { return m_currentView; }
+  void setCurrentView(const QString& name) {
+    m_currentView = name;
+    emit currentViewChanged();
+  }
+
  private:
   void setState(State state);
 
@@ -246,7 +268,7 @@ class MozillaVPN final : public QObject {
                      std::function<void()>&& finalizeCallback);
 
 #ifdef MVPN_IOS
-  void subscriptionStarted();
+  void subscriptionStarted(const QString& productIdentifier);
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
@@ -255,14 +277,6 @@ class MozillaVPN final : public QObject {
 #endif
 
   void completeActivation();
-
-  enum RemovalDeviceOption {
-    DeviceNotFound,
-    DeviceStillValid,
-    DeviceRemoved,
-  };
-
-  RemovalDeviceOption maybeRemoveCurrentDevice();
 
   void controllerStateChanged();
 
@@ -279,7 +293,7 @@ class MozillaVPN final : public QObject {
   void alertChanged();
   void updateRecommendedChanged();
   void userAuthenticationChanged();
-  void deviceRemoving(const QString& deviceName);
+  void deviceRemoving(const QString& publicKey);
   void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();
@@ -297,6 +311,8 @@ class MozillaVPN final : public QObject {
 
   void logsReady(const QString& logs);
 
+  void currentViewChanged();
+
  private:
   bool m_initialized = false;
 
@@ -309,6 +325,7 @@ class MozillaVPN final : public QObject {
     ConnectionHealth m_connectionHealth;
     Controller m_controller;
     DeviceModel m_deviceModel;
+    FeedbackCategoryModel m_feedbackCategoryModel;
     Keys m_keys;
     HelpModel m_helpModel;
     NetworkWatcher m_networkWatcher;
@@ -328,6 +345,9 @@ class MozillaVPN final : public QObject {
 
   State m_state = StateInitialize;
   AlertType m_alert = NoAlert;
+  QString m_currentView;
+
+  QString m_serverPublicKey;
 
   QTimer m_alertTimer;
   QTimer m_periodicOperationsTimer;

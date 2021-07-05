@@ -47,6 +47,7 @@
         <file>ui/components/VPNServerCountry.qml</file>
         <file>ui/themes/themes.js</file>
         <file>ui/settings/ViewLanguage.qml</file>
+        <file>ui/settings/ViewAdvancedDNSSettings.qml</file>
         <file>ui/settings/ViewNetworkSettings.qml</file>
         <file>ui/settings/ViewAppPermissions.qml</file>
         <file>ui/settings/ViewNotifications.qml</file>
@@ -416,5 +417,18 @@
         <file>ui/resources/settings/lock.svg</file>
         <file>ui/components/VPNIPAddress.qml</file>
         <file>ui/resources/globe.svg</file>
+        <file>ui/settings/ViewGiveFeedback.qml</file>
+        <file>ui/components/VPNFeedbackRadioDelegate.qml</file>
+        <file>ui/components/forms/VPNComboBox.qml</file>
+        <file>ui/components/forms/VPNInputBackground.qml</file>
+        <file>ui/components/forms/VPNTextArea.qml</file>
+        <file>ui/resources/heart-check.svg</file>
+        <file>ui/resources/faces/average.svg</file>
+        <file>ui/resources/faces/good.svg</file>
+        <file>ui/resources/faces/poor.svg</file>
+        <file>ui/resources/faces/veryGood.svg</file>
+        <file>ui/resources/faces/veryPoor.svg</file>
+        <file>ui/components/VPNTextInput.qml</file>
+        <file>ui/components/VPNSubscriptionOption.qml</file>
     </qresource>
 </RCC>

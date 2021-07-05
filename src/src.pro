@@ -23,7 +23,7 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/generated
+            ../glean/telemetry
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -78,6 +78,7 @@ SOURCES += \
         main.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
+        models/feedbackcategorymodel.cpp \
         models/helpmodel.cpp \
         models/keys.cpp \
         models/server.cpp \
@@ -94,13 +95,13 @@ SOURCES += \
         networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
-        pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
-        rfc1918.cpp \
-        rfc4193.cpp \
+        rfc/rfc1918.cpp \
+        rfc/rfc4193.cpp \
+        rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
         simplenetworkmanager.cpp \
@@ -115,6 +116,7 @@ SOURCES += \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        tasks/sendfeedback/tasksendfeedback.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -166,6 +168,7 @@ HEADERS += \
         logoutobserver.h \
         models/device.h \
         models/devicemodel.h \
+        models/feedbackcategorymodel.h \
         models/helpmodel.h \
         models/keys.h \
         models/server.h \
@@ -184,13 +187,13 @@ HEADERS += \
         notificationhandler.h \
         pinghelper.h \
         pingsender.h \
-        pingsendworker.h \
         platforms/dummy/dummyapplistprovider.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
-        rfc1918.h \
-        rfc4193.h \
+        rfc/rfc1918.h \
+        rfc/rfc4193.h \
+        rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
         simplenetworkmanager.h \
@@ -306,13 +309,13 @@ DUMMY {
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsendworker.cpp \
+            platforms/dummy/dummypingsender.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsendworker.h \
+            platforms/dummy/dummypingsender.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
 }
@@ -320,6 +323,7 @@ DUMMY {
 # Platform-specific: Linux
 else:linux:!android {
     message(Linux build)
+    include($$PWD/golang.pri)
 
     TARGET = mozillavpn
     QT += networkauth
@@ -334,12 +338,14 @@ else:linux:!android {
             eventlistener.cpp \
             platforms/linux/backendlogsobserver.cpp \
             platforms/linux/dbusclient.cpp \
+            platforms/linux/linuxappimageprovider.cpp \
+            platforms/linux/linuxapplistprovider.cpp \
             platforms/linux/linuxcontroller.cpp \
             platforms/linux/linuxcryptosettings.cpp \
             platforms/linux/linuxdependencies.cpp \
             platforms/linux/linuxnetworkwatcher.cpp \
             platforms/linux/linuxnetworkwatcherworker.cpp \
-            platforms/linux/linuxpingsendworker.cpp \
+            platforms/linux/linuxpingsender.cpp \
             platforms/linux/linuxsystemtrayhandler.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
@@ -348,11 +354,13 @@ else:linux:!android {
             eventlistener.h \
             platforms/linux/backendlogsobserver.h \
             platforms/linux/dbusclient.h \
+            platforms/linux/linuxappimageprovider.h \
+            platforms/linux/linuxapplistprovider.h \
             platforms/linux/linuxcontroller.h \
             platforms/linux/linuxdependencies.h \
             platforms/linux/linuxnetworkwatcher.h \
             platforms/linux/linuxnetworkwatcherworker.h \
-            platforms/linux/linuxpingsendworker.h \
+            platforms/linux/linuxpingsender.h \
             platforms/linux/linuxsystemtrayhandler.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
@@ -361,24 +369,30 @@ else:linux:!android {
     SOURCES += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c \
             daemon/daemon.cpp \
+            platforms/linux/daemon/apptracker.cpp \
             platforms/linux/daemon/dbusservice.cpp \
+            platforms/linux/daemon/dnsutilslinux.cpp \
             platforms/linux/daemon/iputilslinux.cpp \
             platforms/linux/daemon/linuxdaemon.cpp \
+            platforms/linux/daemon/pidtracker.cpp \
             platforms/linux/daemon/polkithelper.cpp \
-            platforms/linux/daemon/wireguardutilslinux.cpp \
-            wgquickprocess.cpp
+            platforms/linux/daemon/wireguardutilslinux.cpp
 
     HEADERS += \
             ../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h \
             daemon/interfaceconfig.h \
             daemon/daemon.h \
+            daemon/dnsutils.h \
             daemon/iputils.h \
             daemon/wireguardutils.h \
+            platforms/linux/daemon/apptracker.h \
             platforms/linux/daemon/dbusservice.h \
+            platforms/linux/daemon/dbustypeslinux.h \
+            platforms/linux/daemon/dnsutilslinux.h \
             platforms/linux/daemon/iputilslinux.h \
+            platforms/linux/daemon/pidtracker.h \
             platforms/linux/daemon/polkithelper.h \
-            platforms/linux/daemon/wireguardutilslinux.h \
-            wgquickprocess.h
+            platforms/linux/daemon/wireguardutilslinux.h
 
     isEmpty(USRPATH) {
         USRPATH=/usr
@@ -390,6 +404,8 @@ else:linux:!android {
     DBUS_ADAPTORS += platforms/linux/daemon/org.mozilla.vpn.dbus.xml
     DBUS_INTERFACES = platforms/linux/daemon/org.mozilla.vpn.dbus.xml
 
+    GO_MODULES = ../linux/netfilter/netfilter.go
+    
     target.path = $${USRPATH}/bin
     INSTALLS += target
 
@@ -435,13 +451,8 @@ else:linux:!android {
     INSTALLS += dbus_service
 
     systemd_service.files = ../linux/debian/mozillavpn.service
-    systemd_service.path = /lib/systemd/system
+    systemd_service.path = /usr/lib/systemd/system
     INSTALLS += systemd_service
-
-    DEFINES += MVPN_DATA_PATH=\\\"$${USRPATH}/share/mozillavpn\\\"
-    helper.path = $${USRPATH}/share/mozillavpn
-    helper.files = ../linux/daemon/helper.sh
-    INSTALLS += helper
 
     CONFIG += link_pkgconfig
     PKGCONFIG += polkit-gobject-1
@@ -499,10 +510,10 @@ else:android {
                 tasks/authenticate/desktopauthenticationlistener.h
 
     # Usable Linux Imports
-    SOURCES += platforms/linux/linuxpingsendworker.cpp \
+    SOURCES += platforms/linux/linuxpingsender.cpp \
                platforms/linux/linuxcryptosettings.cpp
 
-    HEADERS += platforms/linux/linuxpingsendworker.h
+    HEADERS += platforms/linux/linuxpingsender.h
 
     # We need to compile our own openssl :/
     exists(../3rdparty/openSSL/openssl.pri) {
@@ -554,7 +565,7 @@ else:macos {
 
     SOURCES += \
             platforms/macos/macosmenubar.cpp \
-            platforms/macos/macospingsendworker.cpp \
+            platforms/macos/macospingsender.cpp \
             platforms/macos/macosstartatbootwatcher.cpp \
             systemtraynotificationhandler.cpp \
             tasks/authenticate/desktopauthenticationlistener.cpp
@@ -566,7 +577,7 @@ else:macos {
 
     HEADERS += \
             platforms/macos/macosmenubar.h \
-            platforms/macos/macospingsendworker.h \
+            platforms/macos/macospingsender.h \
             platforms/macos/macosstartatbootwatcher.h \
             systemtraynotificationhandler.h \
             tasks/authenticate/desktopauthenticationlistener.h
@@ -613,6 +624,7 @@ else:macos {
                    daemon/daemon.h \
                    daemon/daemonlocalserver.h \
                    daemon/daemonlocalserverconnection.h \
+                   daemon/dnsutils.h \
                    daemon/iputils.h \
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
@@ -656,7 +668,7 @@ else:ios {
 
     SOURCES += \
             platforms/ios/taskiosproducts.cpp \
-            platforms/macos/macospingsendworker.cpp
+            platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iaphandler.mm \
@@ -670,7 +682,7 @@ else:ios {
 
     HEADERS += \
             platforms/ios/taskiosproducts.h \
-            platforms/macos/macospingsendworker.h
+            platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iaphandler.h \
@@ -739,7 +751,7 @@ else:win* {
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
         platforms/windows/windowsnetworkwatcher.cpp \
-        platforms/windows/windowspingsendworker.cpp \
+        platforms/windows/windowspingsender.cpp \
         platforms/windows/windowsstartatbootwatcher.cpp \
         tasks/authenticate/desktopauthenticationlistener.cpp \
         systemtraynotificationhandler.cpp \
@@ -750,6 +762,7 @@ else:win* {
         daemon/daemon.h \
         daemon/daemonlocalserver.h \
         daemon/daemonlocalserverconnection.h \
+        daemon/dnsutils.h \
         daemon/iputils.h \
         daemon/wireguardutils.h \
         eventlistener.h \
@@ -765,7 +778,7 @@ else:win* {
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
-        platforms/windows/windowspingsendworker.h \
+        platforms/windows/windowspingsender.h \
         tasks/authenticate/desktopauthenticationlistener.h \
         platforms/windows/windowsstartatbootwatcher.h \
         systemtraynotificationhandler.h \
@@ -786,10 +799,13 @@ else:wasm {
 
     CONFIG += c++1z
 
+    # 32Mb
+    QMAKE_WASM_TOTAL_MEMORY=33554432
+
     SOURCES += \
             platforms/dummy/dummycontroller.cpp \
             platforms/dummy/dummycryptosettings.cpp \
-            platforms/dummy/dummypingsendworker.cpp \
+            platforms/dummy/dummypingsender.cpp \
             platforms/macos/macosmenubar.cpp \
             platforms/wasm/wasmauthenticationlistener.cpp \
             platforms/wasm/wasmnetworkrequest.cpp \
@@ -799,7 +815,7 @@ else:wasm {
 
     HEADERS += \
             platforms/dummy/dummycontroller.h \
-            platforms/dummy/dummypingsendworker.h \
+            platforms/dummy/dummypingsender.h \
             platforms/macos/macosmenubar.h \
             platforms/wasm/wasmauthenticationlistener.h \
             platforms/wasm/wasmnetworkwatcher.h \

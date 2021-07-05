@@ -16,11 +16,10 @@ if exist .deps\prepared goto :build
 	rmdir /s /q .deps 2> NUL
 	mkdir .deps || goto :error
 	cd .deps || goto :error
-	call :download wintun-amd64-0.8.1.msm https://www.wintun.net/builds/wintun-amd64-0.8.1.msm af9644438a716f5a022052e3574ee0404c3e3309daff84889d656178fbc6b168 || goto :error
 	call :download wix-binaries.zip https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip 2c1888d5d1dba377fc7fa14444cf556963747ff9a0a289a3599cf09da03b9e2e || goto :error
 	echo [+] Extracting wix-binaries.zip
 	mkdir wix\bin || goto :error
-	unzip wix-binaries.zip -d wix\bin || goto :error
+	powershell -command "Expand-Archive" -Path wix-binaries.zip -DestinationPath wix\bin || exit /b 1
 	echo [+] Cleaning up wix-binaries.zip
 	del wix-binaries.zip || goto :error
 	copy /y NUL prepared > NUL || goto :error

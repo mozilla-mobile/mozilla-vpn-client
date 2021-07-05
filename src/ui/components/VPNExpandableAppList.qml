@@ -14,13 +14,8 @@ ColumnLayout {
     id: appListContainer
     property var listModel: undefined
     property var header: ""
-    property var description: ""
-    property var actionText: ""
-    property var onAction: ()=>{}
     property var isEnabled: vpnFlickable.vpnIsOff
     property var isListVisible : true && applist.count > 0
-    property var isActionEnabled: isEnabled && applist.count > 0
-    property var dividerVisible: false
 
     opacity: isEnabled && applist.count > 0 ? 1 : 0.5
     anchors.horizontalCenter: parent.horizontalCenter
@@ -40,7 +35,7 @@ ColumnLayout {
         handleMouseClick: function() { isListVisible = !isListVisible && applist.count > 0; }
         handleKeyClick: function() { isListVisible = !isListVisible && applist.count > 0; }
         canGrowVertical: true
-        accessibleName: description
+        accessibleName: header
         Layout.preferredWidth: parent.width - Theme.windowMargin
         Layout.alignment: Qt.AlignHCenter
         Layout.minimumHeight: Theme.rowHeight * 1.5
@@ -75,26 +70,13 @@ ColumnLayout {
                     rotation: isListVisible ? 0 :-90
                 }
 
-                RowLayout {
-                    Layout.alignment: Qt.AlignLeft
-                    spacing: 0
-
-                    VPNBoldLabel {
-                        id: label
-                        text: header
-                        Accessible.role: Accessible.Heading
-                        color: Theme.fontColorDark
-                        horizontalAlignment: Text.AlignLeft
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    }
-
-                    VPNTextBlock{
-                        text: " (%0)".arg(applist.count)
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignLeft
-                        Layout.alignment: Qt.AlignLeft
-                        Layout.fillWidth: true
-                    }
+                VPNBoldLabel {
+                    id: label
+                    text: header
+                    Accessible.role: Accessible.Heading
+                    color: Theme.fontColorDark
+                    horizontalAlignment: Text.AlignLeft
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 }
             }
 
@@ -103,32 +85,32 @@ ColumnLayout {
                 visible: isListVisible
             }
 
-            VPNTextBlock {
-                id: enabledAppSubtext
-                text: description // "These apps will (not) use vpn.."
-                Layout.fillWidth: true
-                Layout.maximumWidth: parent.width
-                width: undefined
-                visible: isListVisible
-                Layout.leftMargin: 44
-                wrapMode: Text.Wrap
-            }
-
         }
     }
 
-    VPNLinkButton{
-        Layout.alignment: Qt.AlignRight
-        fontSize: Theme.fontSizeSmall
+    RowLayout {
+        width: parent.width - Theme.windowMargin
+        anchors.rightMargin: 0
+        anchors.right: parent.right
+        spacing: Theme.windowMargin
 
-        // (Un)protect-All Button
-        labelText: actionText
-        onClicked: {
-            onAction();
-            isListVisible=false
+        VPNInterLabel {
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.fillWidth: true
+            //% "Select all"
+            text: qsTrId("vpn.appList.selectAll")
+            color: Theme.fontColorDark
+            horizontalAlignment: Text.AlignLeft
         }
-        enabled: isActionEnabled
-        visible: isListVisible
+
+        VPNCheckBox {
+           Layout.alignment: Qt.AlignTop
+           Layout.topMargin: 6
+           onClicked: () => VPNAppPermissions.unprotectAll();
+           // TODO checked: true
+           Layout.rightMargin: 4
+           enabled: appListContainer.isEnabled
+        }
     }
 
     VPNList {
@@ -218,23 +200,10 @@ ColumnLayout {
                Layout.alignment: Qt.AlignTop
                Layout.topMargin: 6
                onClicked: VPNAppPermissions.flip(appID)
-               checked: appIsEnabled
+               checked: !appIsEnabled
                Layout.rightMargin: 4
                enabled: appListContainer.isEnabled
             }
         }
     }
-    VPNVerticalSpacer {
-        Layout.preferredHeight: Theme.windowMargin * 3
-        Layout.fillWidth: true
-        visible: dividerVisible && isListVisible && applist.count > 0
-        Rectangle {
-            height: 1
-            width: parent.width - Theme.windowMargin * 2
-            color: "#e7e7e7"
-            visible: isListVisible && applist.count > 0
-            anchors.centerIn: parent
-        }
-    }
-
 }

@@ -28,7 +28,7 @@ class Device final {
 
   const QDateTime& createdAt() const { return m_createdAt; }
 
-  bool isDevice(const QString& deviceName) const {
+  bool isDeviceForMigration(const QString& deviceName) const {
     return m_deviceName == deviceName;
   }
 

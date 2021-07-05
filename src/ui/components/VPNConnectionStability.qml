@@ -6,82 +6,84 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
 
-RowLayout {
-    property var numGridColumns: grid.columns
+import org.mozilla.Glean 0.15
+import telemetry 0.15
 
-    function setColumns() {
-        grid.columns = grid.childrenRect.width > (window.width  - 48) ? 1 : 3;
-        col.handleMultilineText();
-    }
+Item {
+    property var gridFlow: grid.flow
     id: stability
 
-    Layout.preferredHeight: Theme.controllerInterLineHeight
-    Layout.alignment: Qt.AlignHCenter
-    spacing: 0
-    state: VPNConnectionHealth.stability
-    onStateChanged: setColumns();
-
-    states: [
-        State {
-            name: VPNConnectionHealth.Stable
-            PropertyChanges {
-                target: stability
-                visible: false
-                opacity: 0
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                visible: true
-            }
-
-        },
-        State {
-            name: VPNConnectionHealth.Unstable
-            PropertyChanges {
-                target: stability
-                visible: true
-                opacity: 1
-            }
-            PropertyChanges {
-                target: logoSubtitle
-                visible: false
-            }
-            PropertyChanges {
-                target: stabilityLabel
-                color: Theme.orange
-            }
-            PropertyChanges {
-                target: warningIcon
-                source: "../resources/warning-orange.svg"
-            }
-
-        },
-        State {
-            name: VPNConnectionHealth.NoSignal
-            extend: VPNConnectionHealth.Unstable
-            PropertyChanges {
-                target: stabilityLabel
-                color: Theme.red
-
-            }
-            PropertyChanges {
-                target: warningIcon
-                source: "../resources/warning.svg"
-            }
+    function setColumns() {
+        if (!visible) {
+            return;
         }
-    ]
-
+        grid.flow = grid.children[0].width > (window.width - Theme.windowMargin * 2) ? Grid.TopToBottom : Grid.LeftToRight;
+        col.handleMultilineText();
+    }
     GridLayout {
         id: grid
-        columnSpacing: 0
-        state: parent.state
-        Layout.alignment: Qt.AlignHCenter
-        Layout.fillWidth: true
-        Component.onCompleted: setColumns()
 
-        RowLayout {
+        columnSpacing: 8
+        columns: 3
+        layoutDirection: Qt.LeftToRight
+        anchors.horizontalCenter: parent.horizontalCenter
+        state: VPNConnectionHealth.stability
+        onStateChanged: stability.setColumns()
+
+        Component.onCompleted: {
+            flow = grid.children[0].width > window.width ? Grid.TopToBottom : Grid.LeftToRight
+        }
+
+        states: [
+            State {
+                name: VPNConnectionHealth.Stable
+                PropertyChanges {
+                    target: stability
+                    visible: false
+                    opacity: 0
+                }
+                PropertyChanges {
+                    target: logoSubtitle
+                    visible: true
+                }
+            },
+            State {
+                name: VPNConnectionHealth.Unstable
+
+                PropertyChanges {
+                    target: stability
+                    visible: true
+                    opacity: 1
+                }
+                PropertyChanges {
+                    target: logoSubtitle
+                    visible: false
+                }
+                PropertyChanges {
+                    target: stabilityLabel
+                    color: Theme.orange
+                }
+                PropertyChanges {
+                    target: warningIcon
+                    source: "../resources/warning-orange.svg"
+                }
+            },
+            State {
+                name: VPNConnectionHealth.NoSignal
+                extend: VPNConnectionHealth.Unstable
+                PropertyChanges {
+                    target: stabilityLabel
+                    color: Theme.red
+                }
+                PropertyChanges {
+                    target: warningIcon
+                    source: "../resources/warning.svg"
+                }
+            }
+        ]
+
+        Row {
             spacing: 6
             Layout.alignment: Qt.AlignHCenter
 
@@ -102,16 +104,18 @@ RowLayout {
             VPNInterLabel {
                 //% "Unstable"
                 //: This refers to the user’s internet connection.
-                readonly property var textUnstable: qsTrId("vpn.connectionStability.unstable")
+                readonly property var textUnstable: qsTrId(
+                                                        "vpn.connectionStability.unstable")
                 //% "No Signal"
-                readonly property var textNoSignal: qsTrId("vpn.connectionStability.noSignal")
-
+                readonly property var textNoSignal: qsTrId(
+                                                        "vpn.connectionStability.noSignal")
 
                 id: stabilityLabel
-
                 lineHeight: Theme.controllerInterLineHeight
-                onPaintedWidthChanged: setColumns();
-                text: VPNConnectionHealth.stability === VPNConnectionHealth.Unstable ? textUnstable : textNoSignal
+                onPaintedWidthChanged: stability.setColumns()
+                text: VPNConnectionHealth.stability
+                      === VPNConnectionHealth.Unstable ? textUnstable : textNoSignal
+                horizontalAlignment: Text.AlignLeft
             }
         }
 
@@ -119,11 +123,9 @@ RowLayout {
             color: "#FFFFFF"
             opacity: 0.8
             radius: 3
-            Layout.leftMargin: Theme.windowMargin / 2
-            Layout.rightMargin: Layout.leftMargin
-            Layout.preferredHeight: 4
-            Layout.preferredWidth: 4
-            visible: parent.columns === 3
+            height: 4
+            width: 4
+            visible: grid.flow === Grid.LeftToRight
         }
 
         VPNInterLabel {
@@ -133,10 +135,9 @@ RowLayout {
             text: qsTrId("vpn.connectionStability.checkConnection")
             color: "#FFFFFF"
             opacity: 0.8
-            horizontalAlignment: Text.AlignHCenter
             Layout.alignment: Qt.AlignCenter
-            onPaintedWidthChanged: setColumns();
-            lineHeight: grid.columns > 1 ? Theme.controllerInterLineHeight : 10
+            onPaintedWidthChanged: stability.setColumns()
+            lineHeight: grid.flow === Grid.LeftToRight ? Theme.controllerInterLineHeight : 10
         }
     }
 

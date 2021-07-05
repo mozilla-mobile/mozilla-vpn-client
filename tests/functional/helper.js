@@ -202,8 +202,10 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, 1000));
   },
 
-  async authenticate(driver, resetting = true, telemetry = true) {
+  async authenticate(resetting = true, telemetry = true) {
     if (resetting) await this.reset();
+
+    let driver = await FirefoxHelper.createDriver();
 
     await this.waitForElement('getHelpLink');
     await this.waitForElementProperty('getHelpLink', 'visible', 'true');
@@ -261,7 +263,11 @@ module.exports = {
         driver,
         'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net/vpn/client/login/success');
 
-    await this.wait();
+    await this.waitForElement('postAuthenticationButton');
+
+    await this._maybeRemoveExistingDevices();
+
+    await driver.quit();
   },
 
   async logout() {
@@ -319,6 +325,20 @@ module.exports = {
     return json.value;
   },
 
+  async dumpFailure() {
+    if (this.currentTest.state === 'failed') {
+      const data = await module.exports.screenCapture();
+      const buffer = Buffer.from(data, 'base64');
+      require('fs').writeFileSync('/tmp/img.png', buffer);
+      const {exec} = require('child_process');
+      exec('TERM=xterm-256color jp2a /tmp/img.png', (error, stdout, stderr) => {
+        if (error) console.log(error);
+        console.log(stderr);
+        console.log(stdout);
+      });
+    }
+  },
+
   // Internal methods.
 
   _writeCommand(command) {
@@ -335,5 +355,29 @@ module.exports = {
 
       wr(json);
     }
+  },
+
+  async _maybeRemoveExistingDevices() {
+    const json = await this._writeCommand('devices');
+    assert(
+        json.type === 'devices' && !('error' in json),
+        `Invalid answer: ${json.error}`);
+
+    if (json.value.find(device => device.currentDevice)) {
+      return;
+    }
+
+    const addJson = await this._writeCommand('reset_devices');
+    assert(
+        addJson.type === 'reset_devices' && !('error' in addJson),
+        `Invalid answer: ${addJson.error}`);
+
+    await this.waitForCondition(async () => {
+      const json = await this._writeCommand('devices');
+      assert(
+          json.type === 'devices' && !('error' in json),
+          `Invalid answer: ${json.error}`);
+      return json.value.find(device => device.currentDevice);
+    });
   },
 };

@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/bakulf/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
           cat x* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -50,7 +50,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
+          pip3 install "glean_parser==3.5"
           pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
@@ -186,7 +186,7 @@ jobs:
         shell: bash
         run: |
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/bakulf/qt_static_macos
+          git clone https://github.com/mozilla-mobile/qt_static_macos
           cd qt_static_macos
           cat x* > qt_static.tar.gz
           tar xf qt_static.tar.gz
@@ -200,7 +200,7 @@ jobs:
       - name: Generating glean samples
         shell: bash
         run: |
-          pip3 install glean_parser
+          pip3 install "glean_parser==3.5"
           pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
@@ -262,7 +262,9 @@ jobs:
           cp -r ./macos/pkg/scripts BUILD
           cp -r ./macos/pkg/Distribution BUILD
           cp -r ./macos/pkg/Resources BUILD
-          zip -r BUILD.zip BUILD
+          cd BUILD
+          zip -r BUILD.zip *
+          mv BUILD.zip ..
 
       - name: Upload app
         uses: actions/upload-artifact@v2

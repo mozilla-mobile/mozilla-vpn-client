@@ -7,7 +7,9 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
-import "/glean/load.js" as Glean
+
+import org.mozilla.Glean 0.15
+import telemetry 0.15
 
 VPNFlickable {
     property var headlineText

@@ -4,8 +4,14 @@
 
 #include "featurelist.h"
 
+#include <QProcessEnvironment>
+
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
+#endif
+
+#ifdef MVPN_LINUX
+#  include "platforms/linux/linuxdependencies.h"
 #endif
 
 namespace {
@@ -37,6 +43,31 @@ bool FeatureList::localNetworkAccessSupported() const {
 bool FeatureList::protectSelectedAppsSupported() const {
 #if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS)
   return true;
+#elif defined(MVPN_LINUX)
+  static bool initDone = false;
+  static bool splitTunnelSupported = false;
+  if (initDone) {
+    return splitTunnelSupported;
+  }
+  initDone = true;
+
+  /* Control groups v1 must be mounted for traffic classification */
+  if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
+    return false;
+  }
+
+  /* Application tracking is only supported on GTK-based desktops */
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (!pe.contains("XDG_CURRENT_DESKTOP")) {
+    return false;
+  }
+  QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
+  if (!desktop.contains("GNOME") && !desktop.contains("MATE") &&
+      !desktop.contains("Unity") && !desktop.contains("X-Cinnamon")) {
+    return false;
+  }
+  splitTunnelSupported = true;
+  return splitTunnelSupported;
 #else
   return false;
 #endif
@@ -65,6 +96,23 @@ bool FeatureList::captivePortalNotificationSupported() const {
 bool FeatureList::unsecuredNetworkNotificationSupported() const {
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS) || \
     defined(MVPN_WASM) || defined(MVPN_DUMMY)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool FeatureList::notificationControlSupported() const {
+#if defined(MVPN_ANDROID)
+  return false;
+#else
+  return true;
+#endif
+}
+
+bool FeatureList::userDNSSupported() const {
+#if defined(MVPN_ANDROID) || defined(MVPN_WASM) || defined(MVPN_DUMMY) || \
+    defined(MVPN_WINDOWS) || defined(MVPN_LINUX) || defined(MVPN_MACOS)
   return true;
 #else
   return false;

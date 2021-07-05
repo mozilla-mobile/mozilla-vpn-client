@@ -98,12 +98,31 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
+  if (supportDnsUtils()) {
+    QList<QHostAddress> resolvers;
+    resolvers.append(QHostAddress(config.m_serverIpv4Gateway));
+    if (config.m_ipv6Enabled) {
+      resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
+    }
+    if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
+      return false;
+    }
+  }
   if (supportIPUtils()) {
     if (!iputils()->addInterfaceIPs(config)) {
       return false;
     }
     if (!iputils()->setMTUAndUp()) {
       return false;
+    }
+  }
+  if (supportWGUtils()) {
+    // set routing
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      if (!wgutils()->addRoutePrefix(ip)) {
+        qWarning("Routing configuration failed. Removing `%s`.", WG_INTERFACE);
+        return false;
+      }
     }
   }
 
@@ -144,6 +163,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   GETVALUESTR("serverPublicKey", config.m_serverPublicKey);
   GETVALUESTR("serverIpv4AddrIn", config.m_serverIpv4AddrIn);
   GETVALUESTR("serverIpv6AddrIn", config.m_serverIpv6AddrIn);
+  GETVALUESTR("dnsServer", config.m_dnsServer);
 
 #undef GETVALUESTR
 
@@ -260,6 +280,12 @@ bool Daemon::deactivate(bool emitSignals) {
   if (!m_connected) {
     logger.log() << "Already disconnected";
     return true;
+  }
+
+  if (supportDnsUtils()) {
+    if (!dnsutils()->restoreResolvers()) {
+      return false;
+    }
   }
 
   if (supportWGUtils() && !wgutils()->interfaceExists()) {

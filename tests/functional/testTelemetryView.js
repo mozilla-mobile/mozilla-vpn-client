@@ -15,7 +15,7 @@ describe('Telemetry view', function() {
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
     vpn.disconnect();

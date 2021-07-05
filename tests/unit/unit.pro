@@ -43,6 +43,7 @@ HEADERS += \
     ../../src/loghandler.h \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
+    ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
     ../../src/models/server.h \
@@ -60,13 +61,14 @@ HEADERS += \
     ../../src/networkwatcherimpl.h \
     ../../src/pinghelper.h \
     ../../src/pingsender.h \
-    ../../src/pingsendworker.h \
     ../../src/platforms/android/androiddatamigration.h \
     ../../src/platforms/android/androidsharedprefs.h \
     ../../src/platforms/dummy/dummynetworkwatcher.h \
-    ../../src/platforms/dummy/dummypingsendworker.h \
+    ../../src/platforms/dummy/dummypingsender.h \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
+    ../../src/rfc/rfc1918.h \
+    ../../src/rfc/rfc5735.h \
     ../../src/serveri18n.h \
     ../../src/settingsholder.h \
     ../../src/simplenetworkmanager.h \
@@ -117,6 +119,7 @@ SOURCES += \
     ../../src/loghandler.cpp \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
+    ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
     ../../src/models/server.cpp \
@@ -130,13 +133,14 @@ SOURCES += \
     ../../src/networkmanager.cpp \
     ../../src/networkwatcher.cpp \
     ../../src/pinghelper.cpp \
-    ../../src/pingsender.cpp \
     ../../src/platforms/android/androiddatamigration.cpp \
     ../../src/platforms/android/androidsharedprefs.cpp \
     ../../src/platforms/dummy/dummynetworkwatcher.cpp \
-    ../../src/platforms/dummy/dummypingsendworker.cpp \
+    ../../src/platforms/dummy/dummypingsender.cpp \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
+    ../../src/rfc/rfc1918.cpp \
+    ../../src/rfc/rfc5735.cpp \
     ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \
     ../../src/simplenetworkmanager.cpp \

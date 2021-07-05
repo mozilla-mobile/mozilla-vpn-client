@@ -22,8 +22,9 @@ class DeviceModel final : public QAbstractListModel {
   DeviceModel();
   ~DeviceModel();
 
-  enum ServerCountryRoles {
+  enum ModelRoles {
     NameRole = Qt::UserRole + 1,
+    PublicKeyRole,
     CurrentOneRole,
     CreatedAtRole,
   };
@@ -36,11 +37,7 @@ class DeviceModel final : public QAbstractListModel {
 
   void writeSettings();
 
-  bool hasDevice(const QString& deviceName) const;
-
-  void removeDevice(const QString& deviceName);
-
-  const Device* device(const QString& deviceName) const;
+  void removeDeviceFromPublicKey(const QString& publicKey);
 
   int activeDevices() const { return m_devices.count(); }
 
@@ -49,6 +46,8 @@ class DeviceModel final : public QAbstractListModel {
   const Device* currentDevice(const Keys* keys) const;
 
   bool hasCurrentDevice(const Keys* keys) const;
+
+  const Device* deviceFromPublicKey(const QString& publicKey) const;
 
   // QAbstractListModel methods
 

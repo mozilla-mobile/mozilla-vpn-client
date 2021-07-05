@@ -5,7 +5,6 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
 
 const webdriver = require('selenium-webdriver'), By = webdriver.By,
       Keys = webdriver.Key, until = webdriver.until;
@@ -13,7 +12,6 @@ const webdriver = require('selenium-webdriver'), By = webdriver.By,
 const exec = util.promisify(require('child_process').exec);
 
 describe('Server list', function() {
-  let driver;
   let servers;
   let currentCountryCode;
   let currentCity;
@@ -22,19 +20,17 @@ describe('Server list', function() {
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
 
-  afterEach(() => {});
+  afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
@@ -67,6 +63,18 @@ describe('Server list', function() {
     servers = await vpn.servers();
     currentCountryCode = await vpn.getSetting('current-server-country-code');
     currentCity = await vpn.getSetting('current-server-city');
+
+    // Let's "convert" current-city to its localized name.
+    for (let server of servers) {
+      if (currentCountryCode === server.code) {
+        for (let city of server.cities) {
+          if (city.name == currentCity) {
+            currentCity = city.localizedName;
+            break;
+          }
+        }
+      }
+    }
   });
 
   it('check the countries and cities', async () => {
@@ -98,7 +106,8 @@ describe('Server list', function() {
         await vpn.waitForElementProperty(cityId, 'visible', 'true');
         await vpn.waitForElementProperty(
             cityId, 'checked',
-            currentCountryCode === server.code && currentCity === city.name ?
+            currentCountryCode === server.code &&
+                    currentCity === city.localizedName ?
                 'true' :
                 'false');
       }
@@ -142,7 +151,7 @@ describe('Server list', function() {
         await vpn.wait();
 
         currentCountryCode = server.code;
-        currentCity = city.name;
+        currentCity = city.localizedName;
 
         // Back to the main view.
 
@@ -162,6 +171,8 @@ describe('Server list', function() {
   });
 
   it('server switching', async () => {
+    await vpn.setSetting('server-switch-notification', 'true');
+    await vpn.setSetting('connection-change-notification', 'true');
     await vpn.waitForElement('serverListBackButton');
     await vpn.waitForElementProperty('serverListBackButton', 'visible', 'true');
     await vpn.clickOnElement('serverListBackButton');
@@ -181,7 +192,7 @@ describe('Server list', function() {
     let currentCountry = '';
     for (let server of servers) {
       if (server.code === currentCountryCode) {
-        currentCountry = server.name;
+        currentCountry = server.localizedName;
         break;
       }
     }
@@ -228,8 +239,8 @@ describe('Server list', function() {
     const previousCity = currentCity;
 
     currentCountryCode = server.code;
-    currentCountry = server.name;
-    currentCity = city.name;
+    currentCountry = server.localizedName;
+    currentCity = city.localizedName;
 
     await vpn.waitForElement('controllerTitle');
     await vpn.waitForElementProperty('controllerTitle', 'visible', 'true');

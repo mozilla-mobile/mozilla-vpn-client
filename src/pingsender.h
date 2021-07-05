@@ -8,30 +8,17 @@
 #include <QElapsedTimer>
 #include <QObject>
 
-class QThread;
-
-class PingSender final : public QObject {
+class PingSender : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(PingSender)
 
  public:
-  PingSender(QObject* parent, QThread* thread);
-  ~PingSender();
+  PingSender(QObject* parent = nullptr) : QObject(parent) {}
 
-  void send(const QString& destination, const QString& source);
+  virtual void sendPing(const QString& destination, quint16 sequence) = 0;
 
  signals:
-  void completed(PingSender* pingSender, qint64 msec);
-
-  // internal only
-  void sendPing(const QString& destination, const QString& source);
-
- private slots:
-  void pingFailed();
-  void pingSucceeded();
-
- private:
-  QElapsedTimer m_time;
+  void recvPing(quint16 sequence);
 };
 
 #endif  // PINGSENDER_H
