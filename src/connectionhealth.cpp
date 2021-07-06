@@ -20,7 +20,7 @@ constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 3;
 constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 
 // Jitter time threshold in ms for a connection to be considered unstable.
-constexpr uint32_t PING_JITTER_UNSTABLE_THRESHOLD = 30;
+constexpr uint32_t PING_JITTER_UNSTABLE_THRESHOLD = 35;
 
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
