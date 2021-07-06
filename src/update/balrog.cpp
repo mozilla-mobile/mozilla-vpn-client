@@ -5,7 +5,6 @@
 #include "balrog.h"
 #include "constants.h"
 #include "errorhandler.h"
-#include "inspector/inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -63,14 +62,6 @@ Logger logger(LOG_NETWORKING, "Balrog");
 void balrogLogger(int level, const char* msg) {
   Q_UNUSED(level);
   logger.log() << "BalrogGo:" << msg;
-}
-
-QString appVersion() {
-#ifdef MVPN_INSPECTOR
-  return InspectorWebSocketConnection::appVersionForUpdate();
-#else
-  return APP_VERSION;
-#endif
 }
 
 }  // namespace
