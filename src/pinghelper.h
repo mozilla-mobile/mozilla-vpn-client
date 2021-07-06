@@ -28,6 +28,7 @@ class PingHelper final : public QObject {
   uint latency() const;
   uint stddev() const;
   uint maximum() const;
+  uint jitter() const;
   double loss() const;
 
  signals:
