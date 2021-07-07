@@ -29,6 +29,8 @@ const redPressed = "#C50042";
 const redfocusOutline = "#66C50042";
 const white = "#FFFFFF"
 
+const errorFocusOutline = "#FFBDC5";
+
 const fontColor = "#6D6D6E";
 const fontColorDark = "#3D3D3D";
 const fontFamily = "Metropolis";
