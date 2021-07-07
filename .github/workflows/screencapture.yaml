@@ -1,4 +1,4 @@
-name: Screecapture
+name: Screencapture
 on:
   push:
     branches:

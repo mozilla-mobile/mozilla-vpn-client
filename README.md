@@ -131,20 +131,30 @@ export QT_MACOS_BIN=`pwd`/qt/qt/bin
 The procedure to compile MozillaVPN for macOS is the following:
 
 1. Install XCodeProj:
+```
   $ [sudo] gem install xcodeproj
-1. Install go if you haven't done it before: https://golang.org/dl/
-1. Update the submodules:
+```
+2. Install go if you haven't done it before: https://golang.org/dl/
+3. Update the submodules:
+```
   $ git submodule init
   $ git submodule update --remote
-1. Install python3 dependencies:
+```
+4. Install python3 dependencies:
+```
   $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
-1. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
-  $ ./scripts/apple\_compile.sh macos
-1. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
+5. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+```
+  $ ./scripts/apple_compile.sh macos
+```
+6. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
   $ cp xcode.xconfig.template xcode.xconfig
-1. Modify xcode.xconfig to something like:
+```
+7. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -160,7 +170,7 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 ```
-1. Open Xcode and run/test/archive/ship the app
+8. Open Xcode and run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
 ```
@@ -174,17 +184,25 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 
 The IOS procedure is similar to the macOS one:
 1. Install XCodeProj:
+```
   $ [sudo] gem install xcodeproj
-1. Update the submodules:
+```
+2. Update the submodules:
+```
   $ git submodule init
   $ git submodule update --remote
-1. Install python3 dependencies:
+```
+3. Install python3 dependencies:
+```
   $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
-1. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
+4. Copy `xcode.xconfig.template` to `xcode.xconfig`
+```
   $ cp xcode.xconfig.template xcode.xconfig
-1. Modify xcode.xconfig to something like:
+```
+5. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -200,9 +218,11 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
-1. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
-  $ ./scripts/apple\_compile.sh ios
-1. Open Xcode and run/test/archive/ship the app
+6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
+```
+  $ ./scripts/apple_compile.sh ios
+```
+7. Open Xcode and run/test/archive/ship the app
 
 ### Android 
 

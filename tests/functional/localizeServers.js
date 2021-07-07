@@ -10,13 +10,9 @@ const fetch = require('node-fetch');
 const WBK = require('wikibase-sdk');
 const fs = require('fs');
 
-const webdriver = require('selenium-webdriver'), By = webdriver.By,
-      Keys = webdriver.Key, until = webdriver.until;
-
 const exec = util.promisify(require('child_process').exec);
 
 describe('Server list', function() {
-  let driver;
   let servers;
   let currentCountryCode;
   let currentCity;
@@ -56,7 +52,6 @@ describe('Server list', function() {
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
     wbk = WBK({
       instance: 'https://www.wikidata.org',
       sparqlEndpoint: 'https://query.wikidata.org/sparql',
@@ -68,7 +63,6 @@ describe('Server list', function() {
   afterEach(() => {});
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -83,7 +77,7 @@ describe('Server list', function() {
     assert(!!serverTemplateFile);
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver));
+  it('authenticate', async () => await vpn.authenticate());
 
   it('Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');

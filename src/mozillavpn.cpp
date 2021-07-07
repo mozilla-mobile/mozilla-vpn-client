@@ -468,9 +468,9 @@ void MozillaVPN::maybeRunTask() {
 }
 
 void MozillaVPN::taskCompleted() {
-  logger.log() << "Task completed";
-
   Q_ASSERT(m_running_task);
+
+  logger.log() << "Task completed:" << m_running_task->name();
   m_running_task->deleteLater();
   m_running_task->disconnect();
   m_running_task = nullptr;
@@ -1158,8 +1158,8 @@ void MozillaVPN::quit() {
 }
 
 #ifdef MVPN_IOS
-void MozillaVPN::subscriptionStarted() {
-  logger.log() << "Subscription started";
+void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
+  logger.log() << "Subscription started" << productIdentifier;
 
   setState(StateSubscriptionValidation);
 
@@ -1169,13 +1169,14 @@ void MozillaVPN::subscriptionStarted() {
   // again.
   if (!iap->hasProductsRegistered()) {
     scheduleTask(new TaskIOSProducts());
-    scheduleTask(
-        new TaskFunction([](MozillaVPN* vpn) { vpn->subscriptionStarted(); }));
+    scheduleTask(new TaskFunction([productIdentifier](MozillaVPN* vpn) {
+      vpn->subscriptionStarted(productIdentifier);
+    }));
 
     return;
   }
 
-  iap->startSubscription();
+  iap->startSubscription(productIdentifier);
 }
 
 void MozillaVPN::subscriptionCompleted() {

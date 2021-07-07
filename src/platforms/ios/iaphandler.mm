@@ -12,9 +12,11 @@
 #include "settingsholder.h"
 
 #include <QCoreApplication>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QScopeGuard>
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
@@ -43,18 +45,31 @@ IAPHandler* s_instance = nullptr;
 
 - (void)productsRequest:(nonnull SKProductsRequest*)request
      didReceiveResponse:(nonnull SKProductsResponse*)response {
-  NSArray<SKProduct*>* products = response.products;
-  logger.log() << "Products registered";
+  logger.log() << "Registration completed";
 
-  if ([products count] != 1) {
-    NSString* identifier = [response.invalidProductIdentifiers firstObject];
-    QMetaObject::invokeMethod(m_handler, "unknownProductRegistered", Qt::QueuedConnection,
-                              Q_ARG(QString, QString::fromNSString(identifier)));
-  } else {
-    SKProduct* product = [[products firstObject] retain];
-    QMetaObject::invokeMethod(m_handler, "productRegistered", Qt::QueuedConnection,
-                              Q_ARG(void*, product));
+  if (response.invalidProductIdentifiers) {
+    NSArray<NSString*>* products = response.invalidProductIdentifiers;
+    logger.log() << "Registration failure" << [products count];
+
+    for (unsigned long i = 0, count = [products count]; i < count; ++i) {
+      NSString* identifier = [products objectAtIndex:i];
+      QMetaObject::invokeMethod(m_handler, "unknownProductRegistered", Qt::QueuedConnection,
+                                Q_ARG(QString, QString::fromNSString(identifier)));
+    }
   }
+
+  NSArray<SKProduct*>* products = response.products;
+  if (products) {
+    logger.log() << "Products registered" << [products count];
+
+    for (unsigned long i = 0, count = [products count]; i < count; ++i) {
+      SKProduct* product = [[products objectAtIndex:i] retain];
+      QMetaObject::invokeMethod(m_handler, "productRegistered", Qt::QueuedConnection,
+                                Q_ARG(void*, product));
+    }
+  }
+
+  QMetaObject::invokeMethod(m_handler, "productsRegistrationCompleted", Qt::QueuedConnection);
 
   [request release];
 }
@@ -197,8 +212,7 @@ IAPHandler* IAPHandler::instance() {
   return s_instance;
 }
 
-IAPHandler::IAPHandler(QObject* parent)
-    : QObject(parent), m_priceValue(Constants::SUBSCRIPTION_CURRENCY_VALUE_USD) {
+IAPHandler::IAPHandler(QObject* parent) : QAbstractListModel(parent) {
   MVPN_COUNT_CTOR(IAPHandler);
 
   Q_ASSERT(!s_instance);
@@ -222,57 +236,116 @@ IAPHandler::~IAPHandler() {
   m_delegate = nullptr;
 }
 
-void IAPHandler::registerProducts(const QStringList& products) {
+void IAPHandler::registerProducts(const QByteArray& data) {
   logger.log() << "Maybe register products";
 
-  Q_ASSERT(!products.isEmpty());
-  Q_ASSERT(products.length() == 1);
   Q_ASSERT(m_productsRegistrationState == eRegistered ||
            m_productsRegistrationState == eNotRegistered);
 
+  auto guard = qScopeGuard([&] { emit productsRegistered(); });
+
   if (m_productsRegistrationState == eRegistered) {
-    emit productsRegistered();
+    return;
+  }
+
+  Q_ASSERT(m_products.isEmpty());
+
+  QJsonDocument json = QJsonDocument::fromJson(data);
+  if (!json.isObject()) {
+    logger.log() << "Object expected";
+    return;
+  }
+
+  QJsonObject obj = json.object();
+  if (!obj.contains("products")) {
+    logger.log() << "products entry expected";
+    return;
+  }
+
+  QJsonArray products = obj["products"].toArray();
+  if (products.isEmpty()) {
+    logger.log() << "No products found";
     return;
   }
 
   m_productsRegistrationState = eRegistering;
 
-  m_productName = products.at(0);
-  logger.log() << "Registration product:" << m_productName;
+  for (const QJsonValue& value : products) {
+    addProduct(value);
+  }
+
+  if (m_products.isEmpty()) {
+    logger.log() << "No pending products (nothing has been registered). Unable to recover from "
+                    "this scenario.";
+    return;
+  }
+
+  NSSet<NSString*>* productIdentifiers = [NSSet<NSString*> set];
+  for (const Product& product : m_products) {
+    productIdentifiers = [productIdentifiers setByAddingObject:product.m_name.toNSString()];
+  }
+
+  logger.log() << "We are about to register" << [productIdentifiers count] << "products";
+
+  SKProductsRequest* productsRequest =
+      [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
 
   IAPHandlerDelegate* delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
-
-  NSSet<NSString*>* productId = [NSSet<NSString*> setWithObject:m_productName.toNSString()];
-  SKProductsRequest* productsRequest =
-      [[SKProductsRequest alloc] initWithProductIdentifiers:productId];
   productsRequest.delegate = delegate;
   [productsRequest start];
 
   logger.log() << "Waiting for the products registration";
+
+  guard.dismiss();
 }
 
-void IAPHandler::startSubscription() {
+void IAPHandler::addProduct(const QJsonValue& value) {
+  if (!value.isObject()) {
+    logger.log() << "Object expected for the single product";
+    return;
+  }
+
+  QJsonObject obj = value.toObject();
+
+  Product product;
+  product.m_name = obj["id"].toString();
+  product.m_type = productTypeToEnum(obj["type"].toString());
+  product.m_featuredProduct = obj["featured_product"].toBool();
+
+  if (product.m_type == ProductUnknown) {
+    logger.log() << "Unknown product type:" << obj["type"].toString();
+    return;
+  }
+
+  m_products.append(product);
+}
+
+IAPHandler::Product* IAPHandler::findProduct(const QString& productIdentifier) {
+  for (Product& p : m_products) {
+    if (p.m_name == productIdentifier) {
+      return &p;
+    }
+  }
+  return nullptr;
+}
+
+void IAPHandler::startSubscription(const QString& productIdentifier) {
   Q_ASSERT(m_productsRegistrationState == eRegistered);
-  Q_ASSERT(!m_productName.isEmpty());
+
+  Product* product = findProduct(productIdentifier);
+  Q_ASSERT(product);
+  Q_ASSERT(product->m_productNS);
 
   if (m_subscriptionState != eInactive) {
     logger.log() << "No multiple IAP!";
     return;
   }
 
-  if (!m_product) {
-    logger.log() << "No product registered";
-
-    // The product registration failed, for unknown reasons.
-    emit subscriptionFailed();
-    return;
-  }
-
   m_subscriptionState = eActive;
 
   logger.log() << "Starting the subscription";
-  SKProduct* product = static_cast<SKProduct*>(m_product);
-  SKPayment* payment = [SKPayment paymentWithProduct:product];
+  SKProduct* skProduct = static_cast<SKProduct*>(product->m_productNS);
+  SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
@@ -283,37 +356,95 @@ void IAPHandler::stopSubscription() {
 
 void IAPHandler::unknownProductRegistered(const QString& identifier) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
-  m_productsRegistrationState = eRegistered;
 
   logger.log() << "Product registration failed:" << identifier;
 
-  emit productsRegistered();
+  // Let's remove the unregistered product.
+  QList<Product>::iterator i = m_products.begin();
+  while (i != m_products.end()) {
+    if (i->m_name == identifier) {
+      i = m_products.erase(i);
+      break;
+    }
+    ++i;
+  }
 }
 
 void IAPHandler::productRegistered(void* a_product) {
   SKProduct* product = static_cast<SKProduct*>(a_product);
 
   Q_ASSERT(m_productsRegistrationState == eRegistering);
-  m_productsRegistrationState = eRegistered;
-
-  Q_ASSERT(!m_product);
-  m_product = product;
 
   logger.log() << "Product registered";
+
+  NSString* nsProductIdentifier = [product productIdentifier];
+  QString productIdentifier = QString::fromNSString(nsProductIdentifier);
+
+  Product* productData = findProduct(productIdentifier);
+  Q_ASSERT(productData);
+
+  logger.log() << "Id:" << productIdentifier;
   logger.log() << "Title:" << QString::fromNSString([product localizedTitle]);
   logger.log() << "Description:" << QString::fromNSString([product localizedDescription]);
 
-  NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
-  [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
-  [numberFormatter setNumberStyle:(NSNumberFormatterStyle)NSNumberFormatterCurrencyStyle];
-  [numberFormatter setLocale:product.priceLocale];
+  QString priceValue;
+  {
+    NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
+    [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+    [numberFormatter setNumberStyle:(NSNumberFormatterStyle)NSNumberFormatterCurrencyStyle];
+    [numberFormatter setLocale:product.priceLocale];
 
-  NSString* price = [numberFormatter stringFromNumber:product.price];
-  m_priceValue = QString::fromNSString(price);
-  logger.log() << "Price:" << m_priceValue;
-  [numberFormatter release];
+    NSString* price = [numberFormatter stringFromNumber:product.price];
+    priceValue = QString::fromNSString(price);
+    [numberFormatter release];
+  }
 
-  emit priceValueChanged();
+  logger.log() << "Price:" << priceValue;
+
+  QString monthlyPriceValue;
+  NSDecimalNumber* monthlyPriceNS = nullptr;
+  {
+    NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
+    [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+    [numberFormatter setNumberStyle:(NSNumberFormatterStyle)NSNumberFormatterCurrencyStyle];
+    [numberFormatter setLocale:product.priceLocale];
+
+    int32_t mounthCount = productTypeToMonthCount(productData->m_type);
+    Q_ASSERT(mounthCount >= 1);
+
+    if (mounthCount == 1) {
+      monthlyPriceNS = product.price;
+    } else {
+      NSDecimalNumber* divider = [[NSDecimalNumber alloc] initWithDouble:(double)mounthCount];
+      monthlyPriceNS = [product.price decimalNumberByDividingBy:divider];
+      [divider release];
+    }
+
+    NSString* price = [numberFormatter stringFromNumber:monthlyPriceNS];
+    monthlyPriceValue = QString::fromNSString(price);
+
+    [numberFormatter release];
+  }
+
+  logger.log() << "Monthly Price:" << monthlyPriceValue;
+
+  productData->m_price = priceValue;
+  productData->m_monthlyPrice = monthlyPriceValue;
+  productData->m_nonLocalizedMonthlyPrice = [monthlyPriceNS doubleValue];
+  productData->m_productNS = product;
+}
+
+void IAPHandler::productsRegistrationCompleted() {
+  logger.log() << "All the products has been registered";
+
+  beginResetModel();
+
+  computeSavings();
+
+  m_productsRegistrationState = eRegistered;
+
+  endResetModel();
+
   emit productsRegistered();
 }
 
@@ -384,7 +515,106 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   });
 }
 
-void IAPHandler::subscribe() {
+void IAPHandler::subscribe(const QString& productIdentifier) {
   logger.log() << "Subscription required";
-  emit subscriptionStarted();
+  emit subscriptionStarted(productIdentifier);
+}
+
+void IAPHandler::computeSavings() {
+  double monthlyPrice = 0;
+  // Let's find the price for the monthly payment.
+  for (const Product& product : m_products) {
+    if (product.m_type == ProductMonthly) {
+      monthlyPrice = product.m_nonLocalizedMonthlyPrice;
+      break;
+    }
+  }
+
+  if (monthlyPrice == 0) {
+    logger.log() << "No monthly payment found";
+    return;
+  }
+
+  // Compute the savings for all the other types.
+  for (Product& product : m_products) {
+    if (product.m_type == ProductMonthly) continue;
+
+    int savings = qRound(100.00 - ((product.m_nonLocalizedMonthlyPrice * 100.00) / monthlyPrice));
+    if (savings < 0 || savings > 100) continue;
+
+    product.m_savings = (int)savings;
+
+    logger.log() << "Saving" << product.m_savings << "for" << product.m_name;
+  }
+}
+
+QHash<int, QByteArray> IAPHandler::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[ProductIdentifierRole] = "productIdentifier";
+  roles[ProductPriceRole] = "productPrice";
+  roles[ProductMonthlyPriceRole] = "productMonthlyPrice";
+  roles[ProductTypeRole] = "productType";
+  roles[ProductFeaturedRole] = "productFeatured";
+  roles[ProductSavingsRole] = "productSavings";
+  return roles;
+}
+
+int IAPHandler::rowCount(const QModelIndex&) const {
+  if (m_productsRegistrationState != eRegistered) {
+    return 0;
+  }
+
+  return m_products.count();
+}
+
+QVariant IAPHandler::data(const QModelIndex& index, int role) const {
+  if (m_productsRegistrationState != eRegistered || !index.isValid()) {
+    return QVariant();
+  }
+
+  switch (role) {
+    case ProductIdentifierRole:
+      return QVariant(m_products.at(index.row()).m_name);
+
+    case ProductPriceRole:
+      return QVariant(m_products.at(index.row()).m_price);
+
+    case ProductMonthlyPriceRole:
+      return QVariant(m_products.at(index.row()).m_monthlyPrice);
+
+    case ProductTypeRole:
+      return QVariant(m_products.at(index.row()).m_type);
+
+    case ProductFeaturedRole:
+      return QVariant(m_products.at(index.row()).m_featuredProduct);
+
+    case ProductSavingsRole:
+      return QVariant(m_products.at(index.row()).m_savings);
+
+    default:
+      return QVariant();
+  }
+}
+
+// static
+IAPHandler::ProductType IAPHandler::productTypeToEnum(const QString& type) {
+  if (type == "yearly") return ProductYearly;
+  if (type == "half-yearly") return ProductHalfYearly;
+  if (type == "monthly") return ProductMonthly;
+  return ProductUnknown;
+}
+
+// static
+uint32_t IAPHandler::productTypeToMonthCount(ProductType type) {
+  switch (type) {
+    case ProductYearly:
+      return 12;
+    case ProductHalfYearly:
+      return 6;
+    case ProductMonthly:
+      return 1;
+    default:
+      Q_ASSERT(false);
+      return 1;
+  }
 }

@@ -42,7 +42,7 @@ QString s_updateVersion;
 
 }  // namespace
 
-static QQuickItem* findObject(const QString& name) {
+static QObject* findObject(const QString& name) {
   QStringList parts = name.split("/");
   Q_ASSERT(!parts.isEmpty());
 
@@ -59,7 +59,11 @@ static QQuickItem* findObject(const QString& name) {
     }
   }
 
-  if (!parent || parts.length() == 1) {
+  if (!parent) {
+    if (parts.length() == 1) {
+      int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(parts[0]));
+      return engine->singletonInstance<QObject*>(id);
+    }
     return parent;
   }
 
@@ -285,7 +289,7 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-                       QQuickItem* item = findObject(arguments[1]);
+                       QObject* item = findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -314,7 +318,7 @@ static QList<WebSocketCommand> s_commands{
                          obj["error"] = "Unsupported type. Use: i, s";
                        }
 
-                       QQuickItem* item = findObject(arguments[1]);
+                       QObject* item = findObject(arguments[1]);
                        if (!item) {
                          obj["error"] = "Object not found";
                          return obj;
@@ -332,9 +336,14 @@ static QList<WebSocketCommand> s_commands{
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-                       QQuickItem* item = findObject(arguments[1]);
-                       if (!item) {
+                       QObject* qmlobj = findObject(arguments[1]);
+                       if (!qmlobj) {
                          obj["error"] = "Object not found";
+                         return obj;
+                       }
+                       QQuickItem* item = qobject_cast<QQuickItem*>(qmlobj);
+                       if (!item) {
+                         obj["error"] = "Object is not clickable";
                          return obj;
                        }
 
@@ -509,6 +518,13 @@ static QList<WebSocketCommand> s_commands{
                        }
 
                        obj["value"] = languages;
+                       return obj;
+                     }},
+
+    WebSocketCommand{"translate", "Translate a string", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       obj["value"] = qtTrId(arguments[1]);
                        return obj;
                      }},
 

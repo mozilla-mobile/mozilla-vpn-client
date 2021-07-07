@@ -19,10 +19,10 @@ Item {
 
     VPNMenu {
         id: menu
-        objectName: "settingsNetworkingBackButton"
+        objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        //% "Network settings"
-        title: qsTrId("vpn.settings.networking")
+        //% "Advanced DNS Settings"
+        title: qsTrId("vpn.settings.advancedDNSSettings.title")
         isSettingsView: true
     }
 
@@ -38,10 +38,7 @@ Item {
         interactive: flickContentHeight > height
 
         Component.onCompleted: {
-            Sample.networkSettingsViewOpened.record();
-            if (!vpnIsOff) {
-                Sample.networkSettingsViewWarning.record();
-            }
+            Glean.sample.dnsSettingsViewOpened.record();
         }
 
         Column {
@@ -51,73 +48,48 @@ Item {
             anchors.topMargin: 18
             spacing: Theme.windowMargin
 
+            // TODO: this should be a radiobox
             VPNCheckBoxRow {
-                id: ipv6
-                objectName: "settingIpv6Enabled"
+                id: useGatewayDNS
+                objectName: "gatewayDNSEnabled"
                 width: parent.width - Theme.windowMargin
 
 
-                //% "IPv6"
-                labelText: qsTrId("vpn.settings.ipv6")
-                //% "Push the internet forward with the latest version of the Internet Protocol"
-                subLabelText: qsTrId("vpn.settings.ipv6.description")
-                isChecked: (VPNSettings.ipv6Enabled)
-                isEnabled: vpnFlickable.vpnIsOff
-                showDivider: vpnFlickable.vpnIsOff
+                //% "Use default DNS"
+                labelText: qsTrId("vpn.advancedDNSSettings.gateway")
+                //% "Automatically use Mozilla VPN-protected DNS"
+                subLabelText: qsTrId("vpn.advancedDNSSettings.gateway.description")
+                isChecked: VPNSettings.useGatewayDNS
                 onClicked: {
                     if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
+                        VPNSettings.useGatewayDNS = true
                     }
                 }
             }
 
-            VPNCheckBoxRow {
-                id: localNetwork
-                objectName: "settingLocalNetworkAccess"
-                width: parent.width - Theme.windowMargin
-                visible: VPNFeatureList.localNetworkAccessSupported
-
-                //% "Local network access"
-                labelText: qsTrId("vpn.settings.lanAccess")
-                //% "Access printers, streaming sticks and all other devices on your local network"
-                subLabelText: qsTrId("vpn.settings.lanAccess.description")
-                isChecked: (VPNSettings.localNetworkAccess)
-                isEnabled: vpnFlickable.vpnIsOff
-                showDivider: vpnFlickable.vpnIsOff
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
-                    }
-                }
-            }
-
-            // TODO: to be removed when advanced DNS view is ready.
+            // TODO: this should be a radiobox
             VPNCheckBoxRow {
                 id: useLocalDNS
-                visible: VPNFeatureList.userDNSSupported
                 objectName: "settingMozillaDNSEnabled"
                 width: parent.width - Theme.windowMargin
 
                 //% "Use local DNS"
-                labelText: qsTrId("vpn.settings.useGatewayDNS")
+                labelText: qsTrId("vpn.advancedDNSSettings.localDNS")
                 //% "Resolve website domain names using a DNS in your local network"
-                subLabelText: qsTrId("vpn.settings.useGatewayDNS.resolveWebsiteDomainNames")
+                subLabelText: qsTrId("vpn.advancedDNSSettings.localDNS.resolveWebsiteDomainNames")
                 isChecked: (!VPNSettings.useGatewayDNS)
-                isEnabled: vpnFlickable.vpnIsOff
                 showDivider: false
                 onClicked: {
                     if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.useGatewayDNS = !VPNSettings.useGatewayDNS
+                        VPNSettings.useGatewayDNS = false
                     }
                 }
             }
 
-            // TODO: to be removed when advanced DNS view is ready.
             VPNTextInput{
                 id: ipInput
 
-                visible: (!VPNSettings.useGatewayDNS) && useLocalDNS.visible
-                isEnabled: vpnFlickable.vpnIsOff
+                isEnabled: !VPNSettings.useGatewayDNS && vpnFlickable.vpnIsOff
                 leftPadding: 55
 
                 width: parent.width - Theme.windowMargin
@@ -161,20 +133,6 @@ Item {
                 }
             }
 
-            // TODO: this needs to be fixed.
-            VPNSettingsItem {
-                objectName: "advancedDNSSettings"
-
-                //% "Advanced DNS Settings"
-                settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
-                imageLeftSrc: "../resources/settings.svg"
-                imageRightSrc: "../resources/chevron.svg"
-                onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
-                visible: false
-                // TODO: visible: VPNFeatureList.userDNSSupported
-                // TODO: isEnabled: vpnFlickable.vpnIsOff
-            }
-
             VPNCheckBoxAlert {
                 visible: !vpnFlickable.vpnIsOff
 
@@ -185,3 +143,4 @@ Item {
         }
     }
 }
+

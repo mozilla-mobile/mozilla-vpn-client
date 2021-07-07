@@ -5,16 +5,12 @@
 const assert = require('assert');
 const util = require('util');
 const vpn = require('./helper.js');
-const FirefoxHelper = require('./firefox.js');
 
 describe('Captive portal', function() {
-  let driver;
-
   this.timeout(500000);
 
   before(async () => {
     await vpn.connect();
-    driver = await FirefoxHelper.createDriver();
   });
 
   beforeEach(() => {});
@@ -22,7 +18,6 @@ describe('Captive portal', function() {
   afterEach(vpn.dumpFailure);
 
   after(async () => {
-    await driver.quit();
     vpn.disconnect();
   });
 
@@ -86,7 +81,7 @@ describe('Captive portal', function() {
     await vpn.waitForElementProperty('getStarted', 'visible', 'true');
   });
 
-  it('authenticate', async () => await vpn.authenticate(driver, false, false));
+  it('authenticate', async () => await vpn.authenticate(false, false));
 
   it('Captive portal in the Post authentication view', async () => {
     await vpn.waitForElement('postAuthenticationButton');
