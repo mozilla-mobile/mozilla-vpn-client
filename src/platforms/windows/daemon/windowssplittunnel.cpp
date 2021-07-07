@@ -39,6 +39,7 @@ WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent): QObject(parent)
 }
 
 WindowsSplitTunnel::~WindowsSplitTunnel(){
+    CloseHandle(m_driver);
     uninstallDriver();
 }
 
@@ -206,9 +207,12 @@ DRIVER_STATE WindowsSplitTunnel::getState(){
 std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(const QStringList& appPaths){
     // Step 1: Calculate how much size the buffer will need
     size_t cummulated_string_size =0;
+    QStringList dosPaths;
     for(auto const& path : appPaths){
-       cummulated_string_size += path.toStdWString().size()* sizeof (wchar_t);
-       logger.log() << path;
+       auto dosPath = convertPath(path);
+       dosPaths.append(dosPath);
+       cummulated_string_size += dosPath.toStdWString().size()* sizeof (wchar_t);
+       logger.log() << dosPath;
     }
     size_t bufferSize = sizeof(CONFIGURATION_HEADER)
             + (sizeof(CONFIGURATION_ENTRY) * appPaths.size())
@@ -223,7 +227,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(const QStringL
 
     SIZE_T stringOffset = 0;
 
-    for (const auto &path : appPaths)
+    for (const QString &path : dosPaths)
     {
         auto wstr= path.toStdWString();
         auto cstr = wstr.c_str();
@@ -232,7 +236,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(const QStringL
         entry->ImageNameLength = (USHORT)stringLength;
         entry->ImageNameOffset = stringOffset;
 
-        memcpy(stringDest, cstr , wstr.size());
+        memcpy(stringDest, cstr ,stringLength);
 
         ++entry;
         stringDest += stringLength;
@@ -397,6 +401,11 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob(){
     return out;
 }
 
+void WindowsSplitTunnel::close(){
+    CloseHandle(m_driver);
+    m_driver = INVALID_HANDLE_VALUE;
+}
+
 
 ProcessInfo WindowsSplitTunnel::getProcessInfo(HANDLE process, const PROCESSENTRY32W& processMeta){
 
@@ -490,8 +499,6 @@ bool WindowsSplitTunnel::initSublayer(){
         FwpmEngineClose0(m_wfp);
         return false;
     }
-    return result;
-
     // Check if the Layer Already Exists
     FWPM_SUBLAYER0* maybeLayer;
     result = FwpmSubLayerGetByKey0(m_wfp,&ST_FW_WINFW_BASELINE_SUBLAYER_KEY,&maybeLayer);
@@ -534,4 +541,29 @@ bool WindowsSplitTunnel::initSublayer(){
     FwpmEngineClose0(m_wfp);
     logger.log() << "Initialised Sublayer";
     return true;
+}
+
+QString WindowsSplitTunnel::convertPath(const QString& path){
+    auto parts =  path.split("/");
+    QString driveLetter = parts.takeFirst();
+    if(!driveLetter.contains(":") || parts.size() == 0){
+      // device should contain : for e.g C:
+      return "";
+    }
+    QByteArray buffer(2048,0xFF);
+    auto ok =QueryDosDeviceW(qUtf16Printable(driveLetter),(wchar_t*) buffer.data(), buffer.size()/2);
+
+    if( ok == ERROR_INSUFFICIENT_BUFFER){
+        buffer.resize(buffer.size() *2);
+        ok = QueryDosDeviceW(qUtf16Printable(driveLetter),(wchar_t*)buffer.data(), buffer.size()/2);
+    }
+    if( ok == 0){
+        WindowsCommons::windowsLog("Err fetching dos path");
+        return "";
+    }
+    QString deviceName;
+    deviceName = QString::fromWCharArray((wchar_t*) buffer.data());
+    parts.prepend(deviceName);
+
+    return parts.join("\\");
 }

@@ -157,6 +157,9 @@ public:
     // Resets the Whole Driver
     void reset();
 
+    // Just close connection, leave state as is
+    void close();
+
 
     // Installes the Kernel Driver as Driver Service
     static SC_HANDLE installDriver();
@@ -185,6 +188,10 @@ private:
     void getAddress(int adapterIndex, IN_ADDR* out_ipv4, IN6_ADDR* out_ipv6);
     // Collects info about an Opened Process
     ProcessInfo getProcessInfo(HANDLE process, const PROCESSENTRY32W& processMeta);
+
+    // Converts a path to a Dos Path:
+    // e.g C:/a.exe -> /harddisk0/a.exe
+    QString convertPath(const QString& path);
 
 };
 
