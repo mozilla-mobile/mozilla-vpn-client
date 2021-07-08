@@ -136,6 +136,16 @@ The procedure to compile MozillaVPN for macOS is the following:
   $ [sudo] gem install xcodeproj
 ```
 2. Install go if you haven't done it before: https://golang.org/dl/
+
+Some developers have experienced that in step 8 (when you're in XCode) that XCode reports that 
+go isn't available and so you can't build the app and dependencies in XCode. 
+In this case, a workaround is to symlink go into XCode directory as follows:
+
+* Find the location of go binary `which go` example output `/usr/local/go/bin/go`
+* Symlink e.g. `sudo ln -s /usr/local/go/bin/go /Applications/Xcode.app/Contents/Developer/usr/bin/go` 
+
+This step needs to be updated each time XCode updates. 
+
 3. Update the submodules:
 ```
   $ git submodule init
@@ -186,25 +196,30 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 ### IOS
 
 The IOS procedure is similar to the macOS one:
+
 1. Install XCodeProj:
 ```
   $ [sudo] gem install xcodeproj
 ```
+
 2. Update the submodules:
 ```
   $ git submodule init
   $ git submodule update --remote
 ```
+
 3. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
+
 4. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```
   $ cp xcode.xconfig.template xcode.xconfig
 ```
+
 5. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
@@ -221,6 +236,7 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
+
 6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
 ```
   $ ./scripts/apple_compile.sh ios
