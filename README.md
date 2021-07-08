@@ -38,6 +38,7 @@ following dependencies:
 - wireguard >=1.0.20200513
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
+- golang >= 1.13
 
 Python3 (pip) depedencies:
 
@@ -52,14 +53,14 @@ Qt5 can be installed in a number of ways:
 - use a linux package manager
 - compile Qt5 (dinamically or statically).
 
-To build QT5 statically on Ubuntu/Debian, go to the root directory of this project and follow these steps:
+To build QT5 statically on Ubuntu/20.04, go to the root directory of this project and follow these steps:
 
 ```
 curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
 tar xvf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
 sudo apt build-dep qt5-default
-sudo apt install clang llvm golang
+sudo apt install clang llvm
 sudo apt install libxcb-xinerama0-dev libxcb-util-dev
 bash scripts/qt5_compile.sh qt qt
 ```
