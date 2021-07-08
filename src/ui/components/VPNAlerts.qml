@@ -14,15 +14,14 @@ ColumnLayout {
     Layout.maximumWidth: col.width - Theme.windowMargin
     Layout.alignment: Qt.AlignHCenter
     Layout.fillHeight: false
-    visible: VPNSurveyModel.hasSurvey || updateAlert.visible
+    visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended
 
     VPNAlert {
         id: updateAlert
 
-        state: VPN.updateRecommended ? "recommended" : ""
         alertType: "update"
         alertColor: Theme.blueButton
-        visible: state === "recommended"
+        visible: VPN.updateRecommended
         //% "New version is available."
         alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
