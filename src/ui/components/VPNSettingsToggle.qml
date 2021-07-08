@@ -16,6 +16,7 @@ CheckBox {
     property var toolTipTitle
 
     onClicked: toolTip.hide()
+    Keys.onSpacePressed: clicked()
 
     height: 24
     width: 45

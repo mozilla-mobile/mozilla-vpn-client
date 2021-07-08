@@ -1,4 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Publi
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 Item {
@@ -24,29 +25,18 @@ Item {
         isSettingsView: true
         onActiveFocusChanged: if (focus) forceFocus = true
     }
-
     FocusScope {
         id: focusScope
-
-        property var lastFocusedItemIdx: -1
 
         height: parent.height - menu.height
         anchors.top: menu.bottom
         width: parent.width
-        onActiveFocusChanged: {
-            if (focus && lastFocusedItemIdx !== -1) {
-              repeater.itemAt(lastFocusedItemIdx).forceActiveFocus();
-          } else if (focus) {
-                useSystemLanguageToggle.forceActiveFocus();
-            }
-        }
         Accessible.name: menu.title
         Accessible.role: Accessible.List
 
         ButtonGroup {
             id: radioButtonGroup
         }
-
 
         VPNFlickable {
             id: vpnFlickable
@@ -107,10 +97,10 @@ Item {
                     onActiveFocusChanged: {
                         if (focus) {
                             forceFocus = true;
-                            focusScope.lastFocusedItemIdx = -1;
                             vpnFlickable.ensureVisible(useSystemLanguageToggle);
                       }
                     }
+
                     Layout.preferredHeight: 24
                     Layout.preferredWidth: 45
                     width: undefined
@@ -139,14 +129,30 @@ Item {
                 opacity: 1
             }
 
+            VPNSearchBar {
+                id: filterInput
+                height: Theme.rowHeight
+                anchors.top: divider.bottom
+                anchors.topMargin: Theme.vSpacing
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: defaultMargin
+                anchors.rightMargin: defaultMargin
+                onTextChanged: text => {
+                    model.invalidate();
+                }
+                stateError: repeater.count === 0
+            }
+
             Column {
                 id: col
 
                 objectName: "languageList"
 
                 spacing: 20
-                width: parent.width
-                anchors.top: divider.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: filterInput.bottom
                 anchors.topMargin: 20
                 Component.onCompleted: {
 
@@ -157,7 +163,7 @@ Item {
                     // Scroll vpnFlickable so that the current language is
                     // vertically centered in the view
 
-                    const yCenter = (vpnFlickable.height - menu.height ) / 2
+                    const yCenter = (vpnFlickable.height - menu.height - filterInput.height) / 2
 
                     for (let idx = 0; idx < repeater.count; idx++) {
                         const repeaterItem = repeater.itemAt(idx);
@@ -166,7 +172,7 @@ Item {
                             continue;
                         }
 
-                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 3) - yCenter;
+                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 4) - yCenter;
                         const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
 
                         // Prevent edge case negative scrolling
@@ -179,10 +185,21 @@ Item {
                     }
                 }
 
+                VPNFilterProxyModel {
+                    id: model
+                    source: VPNLocalizer
+                    // No filter
+                    filterCallback: obj => {
+                       const filterValue = filterInput.text.toLowerCase();
+                       return obj.localizedLanguage.toLowerCase().includes(filterValue) ||
+                              obj.language.toLowerCase().includes(filterValue);
+                    }
+                }
+
                 Repeater {
                     id: repeater
 
-                    model: VPNLocalizer
+                    model: model
                     delegate: VPNRadioDelegate {
                         property bool isSelectedLanguage: checked
 
@@ -207,21 +224,10 @@ Item {
                             .arg(localizedLanguage)
 
                         activeFocusOnTab: !useSystemLanguageEnabled
-                        onActiveFocusChanged: {
-                            if (focus) {
-                                vpnFlickable.ensureVisible(del);
-                                focusScope.lastFocusedItemIdx = index;
-                            }
-                        }
+                        onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(del)
                         Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : useSystemLanguageToggle.forceActiveFocus()
-                        Keys.onBacktabPressed: {
-                            if (index === 0) {
-                                useSystemLanguageToggle.forceActiveFocus();
-                                return;
-                            }
-                            menu.forceActiveFocus();
-                        }
+                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : filterInput.forceActiveFocus()
+                        Keys.onBacktabPressed: filterInput.forceActiveFocus()
 
                         VPNRadioSublabel {
                             text: language
