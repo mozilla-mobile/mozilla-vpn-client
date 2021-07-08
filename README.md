@@ -135,16 +135,17 @@ The procedure to compile MozillaVPN for macOS is the following:
 ```
   $ [sudo] gem install xcodeproj
 ```
-2. Install go if you haven't done it before: https://golang.org/dl/
+2. Install go v1.16+ if you haven't done it before: https://golang.org/dl/
 
 Some developers have experienced that in step 8 (when you're in XCode) that XCode reports that 
 go isn't available and so you can't build the app and dependencies in XCode. 
 In this case, a workaround is to symlink go into XCode directory as follows:
 
+* Make sure go is 1.16+: `go version`
 * Find the location of go binary `which go` example output `/usr/local/go/bin/go`
 * Symlink e.g. `sudo ln -s /usr/local/go/bin/go /Applications/Xcode.app/Contents/Developer/usr/bin/go` 
 
-This step needs to be updated each time XCode updates. 
+This step needs to be updated each time XCode updates.
 
 3. Update the submodules:
 ```
