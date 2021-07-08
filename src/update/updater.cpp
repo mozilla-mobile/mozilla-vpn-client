@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "updater.h"
+#include "inspector/inspectorwebsocketconnection.h"
 #include "logger.h"
 #include "leakdetector.h"
 #include "versionapi.h"
@@ -41,4 +42,13 @@ Updater::Updater(QObject* parent) : QObject(parent) {
 Updater::~Updater() {
   MVPN_COUNT_DTOR(Updater);
   logger.log() << "Updater released";
+}
+
+// static
+QString Updater::appVersion() {
+#ifdef MVPN_INSPECTOR
+  return InspectorWebSocketConnection::appVersionForUpdate();
+#else
+  return APP_VERSION;
+#endif
 }

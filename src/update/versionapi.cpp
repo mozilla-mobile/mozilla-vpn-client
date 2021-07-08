@@ -72,7 +72,7 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QString latestVersion;
   QString minimumVersion;
-  QString currentVersion(APP_VERSION);
+  QString currentVersion(appVersion());
 
   QJsonValue latestValue = platformData.value("latest");
   if (!latestValue.isObject()) {
