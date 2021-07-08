@@ -75,8 +75,7 @@ PidTracker::PidTracker(QObject* parent) : QObject(parent) {
   }
 
   m_socket = new QSocketNotifier(m_nlsock, QSocketNotifier::Read, this);
-  connect(m_socket, SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
-          SLOT(readData()));
+  connect(m_socket, &QSocketNotifier::activated, this, &PidTracker::readData);
 }
 
 PidTracker::~PidTracker() {

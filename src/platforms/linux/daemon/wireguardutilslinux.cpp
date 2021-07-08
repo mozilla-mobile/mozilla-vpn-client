@@ -81,9 +81,8 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   }
 
   m_notifier = new QSocketNotifier(m_nlsock, QSocketNotifier::Read, this);
-  connect(m_notifier,
-          SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
-          SLOT(nlsockReady()));
+  connect(m_notifier, &QSocketNotifier::activated, this,
+          &WireguardUtilsLinux::nlsockReady);
 
   /* Create control groups for split tunnelling */
   m_cgroups = LinuxDependencies::findCgroupPath("net_cls");
