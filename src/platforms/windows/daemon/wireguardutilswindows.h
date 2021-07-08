@@ -1,0 +1,27 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ifndef WIREGUARDUTILSWINDOWS_H
+#define WIREGUARDUTILSWINDOWS_H
+
+#include "daemon/wireguardutils.h"
+#include <QObject>
+
+class WireguardUtilsWindows final : public WireguardUtils {
+  Q_OBJECT
+
+ public:
+  WireguardUtilsWindows(QObject* parent);
+  ~WireguardUtilsWindows();
+
+  bool interfaceExists() override;
+  bool addInterface() override;
+  bool configureInterface(const InterfaceConfig& config) override;
+  bool deleteInterface() override;
+  peerBytes getThroughputForInterface() override;
+  bool addRoutePrefix(const IPAddressRange& prefix) override;
+};
+
+#endif  // WIREGUARDUTILSWINDOWS_H
+

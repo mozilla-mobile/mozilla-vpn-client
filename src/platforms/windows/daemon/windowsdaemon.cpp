@@ -198,6 +198,8 @@ QString exitCodeToFailure(DWORD exitCode) {
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   MVPN_COUNT_CTOR(WindowsDaemon);
 
+  m_wgutils = new WireguardUtilsWindows(this);
+
   connect(&m_tunnelMonitor, &WindowsTunnelMonitor::backendFailure, this,
           &WindowsDaemon::monitorBackendFailure);
 }

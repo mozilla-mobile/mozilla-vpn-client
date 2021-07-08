@@ -744,6 +744,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelmonitor.cpp \
+        platforms/windows/daemon/wireguardutilswindows.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
@@ -768,6 +769,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelmonitor.h \
+        platforms/windows/daemon/wireguardutilswindows.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
