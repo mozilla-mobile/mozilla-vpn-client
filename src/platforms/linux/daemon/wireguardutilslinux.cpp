@@ -114,17 +114,17 @@ bool WireguardUtilsLinux::interfaceExists() {
   return currentInterfaces().contains(WG_INTERFACE);
 };
 
-bool WireguardUtilsLinux::addInterface() {
+bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   int returnCode = wg_add_device(WG_INTERFACE);
   if (returnCode != 0) {
     qWarning("Adding interface `%s` failed with return code: %d", WG_INTERFACE,
              returnCode);
     return false;
   }
-  return true;
+  return updateInterface(config);
 }
 
-bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
+bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
   /*
    * Set conf:
    * - sets name of device

@@ -25,13 +25,10 @@ class WindowsDaemon final : public Daemon {
   WireguardUtils* wgutils() override { return m_wgutils; }
 
  private:
-  bool run(Op op, const InterfaceConfig& config) override;
-
   bool supportServerSwitching(const InterfaceConfig& config) const override;
 
   bool switchServer(const InterfaceConfig& config) override;
 
-  bool registerTunnelService(const QString& configFile);
 
  private:
   void monitorBackendFailure();
