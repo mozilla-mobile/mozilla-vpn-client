@@ -147,15 +147,11 @@ The procedure to compile MozillaVPN for macOS is the following:
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
-5. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
-```
-  $ ./scripts/apple_compile.sh macos
-```
-6. Copy `xcode.xconfig.template` to `xcode.xconfig`
+5. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```
   $ cp xcode.xconfig.template xcode.xconfig
 ```
-7. Modify xcode.xconfig to something like:
+6. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -171,7 +167,13 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 ```
-8. Open Xcode and run/test/archive/ship the app
+7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+```
+  $ ./scripts/apple_compile.sh macos
+```
+You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
+
+8. Xcode should automatically open. You can then run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
 ```
@@ -223,6 +225,8 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
   $ ./scripts/apple_compile.sh ios
 ```
+You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
+
 7. Open Xcode and run/test/archive/ship the app
 
 ### Android 
