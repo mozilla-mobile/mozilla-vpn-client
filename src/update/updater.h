@@ -22,6 +22,9 @@ class Updater : public QObject {
  signals:
   void updateRequired();
   void updateRecommended();
+
+ protected:
+  static QString appVersion();
 };
 
 #endif  // UPDATER_H
