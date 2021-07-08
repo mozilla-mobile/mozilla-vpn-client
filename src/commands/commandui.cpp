@@ -7,6 +7,7 @@
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "featurelist.h"
+#include "filterproxymodel.h"
 #include "fontloader.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -359,6 +360,9 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 #endif
+
+    qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
+                                      "VPNFilterProxyModel");
 
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::aboutToQuit);

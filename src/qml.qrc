@@ -428,6 +428,8 @@
         <file>ui/resources/faces/veryGood.svg</file>
         <file>ui/resources/faces/veryPoor.svg</file>
         <file>ui/components/VPNTextInput.qml</file>
+        <file>ui/components/forms/VPNSearchBar.qml</file>
+        <file>ui/resources/search.svg</file>
         <file>ui/components/VPNSubscriptionOption.qml</file>
     </qresource>
 </RCC>
