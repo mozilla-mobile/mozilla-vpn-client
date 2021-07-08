@@ -449,7 +449,9 @@ bool Balrog::install(const QString& filePath) {
             if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
               logger.log() << "Unable to read the msiexec log file";
             } else {
-              logger.log() << "Log file:" << Qt::endl << log.readAll();
+              QTextStream logStream(&log);
+              logStream.setCodec("utf-16");
+              logger.log() << "Log file:" << Qt::endl << logStream.readAll();
             }
 
             if (exitCode != 0) {
