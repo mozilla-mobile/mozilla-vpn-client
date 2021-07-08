@@ -139,7 +139,7 @@ The procedure to compile MozillaVPN for macOS is the following:
 3. Update the submodules:
 ```
   $ git submodule init
-  $ git submodule update --remote
+  $ git submodule update
 ```
 4. Install python3 dependencies:
 ```
@@ -191,7 +191,7 @@ The IOS procedure is similar to the macOS one:
 2. Update the submodules:
 ```
   $ git submodule init
-  $ git submodule update --remote
+  $ git submodule update
 ```
 3. Install python3 dependencies:
 ```
@@ -233,7 +233,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 4. Update the submodules:
 ```bash 
   $ git submodule init
-  $ git submodule update --remote
+  $ git submodule update
 ```
 
 5. Install python3 dependencies:
