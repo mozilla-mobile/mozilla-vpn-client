@@ -150,8 +150,15 @@ QString translateItem(const QString& countryCode, const QString& cityName,
     if (!result.isEmpty()) {
       return result;
     }
+  } else {
+    // If the language code is not trimmed e.g "es" and we did not have a match
+    // so far, lets try itself as region e.g es -> es_ES, de -> de_DE
+    QString concat_code = languageCode + "_" + languageCode.toUpper();
+    result = s_items.value(itemKey(concat_code, countryCode, cityName));
+    if (!result.isEmpty()) {
+      return result;
+    }
   }
-
   return fallback;
 }
 
