@@ -54,7 +54,7 @@ Item {
             anchors.topMargin: Theme.windowMargin * 1
             visible: !vpnFlickable.vpnIsOff
             anchors.leftMargin: Theme.windowMargin
-            width: enableAppList.width
+            anchors.left: parent.left
             //% "VPN must be off to edit App Permissions"
             //: Associated to a group of settings that require the VPN to be disconnected to change
             errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
@@ -69,7 +69,7 @@ Item {
         Rectangle {
             id: rect
             anchors.fill: enableAppList
-            anchors.topMargin: -12
+            anchors.topMargin: -Theme.windowMargin
             anchors.bottomMargin: anchors.topMargin
             anchors.leftMargin: -Theme.windowMargin
             anchors.rightMargin: anchors.leftMargin
@@ -80,13 +80,16 @@ Item {
         RowLayout {
             id: enableAppList
             anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : parent.top
-            anchors.topMargin: Theme.windowMargin * 1.75
+            anchors.topMargin: Theme.windowMargin + (rect.anchors.topMargin *-1)
             anchors.horizontalCenter: parent.horizontalCenter
-            width: vpnFlickable.width - Theme.windowMargin * 3.75
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Theme.windowMargin * 2
+            anchors.rightMargin: Theme.windowMargin * 2
             spacing: Theme.windowMargin
 
             ColumnLayout {
-                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
                 VPNInterLabel {
                     Layout.alignment: Qt.AlignLeft
                     Layout.fillWidth: true
@@ -101,6 +104,7 @@ Item {
                     //% "VPN protects all apps by default. Turn off to choose which apps Mozilla VPN should not protect."
                     text: qsTrId("vpn.settings.protectAllApps.description")
                     visible: !!text.length
+                    width: undefined
                 }
             }
 
@@ -120,8 +124,9 @@ Item {
 
         VPNExpandableAppList {
             id: enabledList
-            anchors.topMargin: 36
+            anchors.topMargin: 30
             anchors.top: enableAppList.bottom
+            searchBarPlaceholder: searchApps
 
             //% "Exclude apps from VPN protection"
             //: Header for the list of apps protected by VPN

@@ -19,9 +19,10 @@ CheckBox {
 
     signal clicked()
 
-    height: 20
-    width: 20
-    Layout.alignment: Qt.AlignTop
+    Layout.preferredHeight: 20
+    Layout.preferredWidth: 20
+    Layout.margins: 2
+    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Component.onCompleted: state = uiState.stateDefault
     hoverEnabled: false
     onActiveFocusChanged: {

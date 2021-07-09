@@ -97,6 +97,12 @@ ColumnLayout {
         color: Theme.fontColorDark
         horizontalAlignment: Text.AlignLeft
         Layout.alignment: Qt.AlignLeft
+        Layout.topMargin: 4
+        verticalAlignment: Text.AlignVCenter
+        lineHeight: Theme.vSpacing
+        lineHeightMode: Text.FixedHeight
+        wrapMode: Text.WordWrap
+        Layout.preferredWidth: parent.width
     }
 
     VPNSearchBar {
@@ -121,24 +127,45 @@ ColumnLayout {
         }
     }
 
-// TODO
-//    VPNCheckBoxRow {
-//        labelText: "Select all"
-//        onClicked: () => VPNAppPermissions.unprotectAll();
-//        showDivider: false
-//    }
+    ColumnLayout {
+        spacing: 8
 
-    Repeater {
-        id: applist
-        model: model
-        delegate: VPNCheckBoxRow {
-            showDivider: false
-            labelText: appName
-            subLabelText: appId
-            showAppImage: true
-            onClicked: VPNAppPermissions.flip(appID)
-            isChecked: !appIsEnabled
-            isEnabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+// TODO: Sort out "Select all"
+//        RowLayout {
+//            visible: applist.count > 0
+//            spacing: Theme.windowMargin
+//            Layout.minimumHeight: Theme.rowHeight
+
+//            VPNCheckBox {
+//                onClicked: () => VPNAppPermissions.unprotectAll();
+//                Layout.alignment: Qt.AlignVCenter
+//            }
+
+//            VPNBoldLabel {
+//                //% "Select all"
+//                text: qsTrId("vpn.appList.selectAll")
+//                Layout.alignment: Qt.AlignVCenter
+
+//            }
+//        }
+
+        VPNVerticalSpacer {
+            Layout.preferredHeight: 1
+        }
+
+        Repeater {
+            id: applist
+            model: model
+            delegate: VPNCheckBoxRow {
+                showDivider: false
+                labelText: appName
+                subLabelText: appID
+                showAppImage: true
+                onClicked: VPNAppPermissions.flip(appID)
+                isChecked: !appIsEnabled
+                isEnabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+                Layout.minimumHeight: Theme.rowHeight * 1.5
+            }
         }
     }
 }

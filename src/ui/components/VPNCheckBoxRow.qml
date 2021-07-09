@@ -24,34 +24,39 @@ RowLayout {
 
     spacing: Theme.windowMargin
 
-    Rectangle {
-        Layout.preferredHeight:  Theme.vSpacing
-        Layout.preferredWidth: Theme.vSpacing
-        Layout.leftMargin: showAppImage ? 0 : leftMargin
-        Layout.alignment: Qt.AlignTop
-        color: "transparent"
-
-        VPNCheckBox {
-            id: checkBox
-
-            anchors.centerIn: parent
-            onClicked: checkBoxRow.clicked()
-            checked: isChecked
-            enabled: isEnabled
-            opacity: isEnabled ? 1 : 0.5
+    VPNCheckBox {
+        id: checkBox
+        onClicked: checkBoxRow.clicked()
+        checked: isChecked
+        enabled: isEnabled
+        opacity: isEnabled ? 1 : 0.5
+        Component.onCompleted: {
+            if (!showAppImage) {
+                Layout.leftMargin = leftMargin
+            }
         }
     }
 
-    Image {
-//      source: "image://app/"+appID
-        source: "../resources/connection-info.svg"
-//        visible: showAppImage && appID !== ""
+    Rectangle {
         visible: showAppImage
-        sourceSize.width: Theme.windowMargin * 2
-        sourceSize.height: Theme.windowMArgin * 2
+        width: Theme.windowMargin * 2
+        height: Theme.windowMargin * 2
+        color: "transparent"
+        radius: 4
         Layout.alignment: Qt.AlignTop
-        asynchronous: true
-        fillMode:  Image.PreserveAspectFit
+
+        Image {
+            sourceSize.width: Theme.windowMargin * 2
+            sourceSize.height: Theme.windowMArgin * 2
+            anchors.centerIn: parent
+            asynchronous: true
+            fillMode:  Image.PreserveAspectFit
+            Component.onCompleted: {
+                if (showAppImage && appID !== "") {
+                    source = "image://app/"+appID
+                }
+            }
+        }
     }
 
     ColumnLayout {
@@ -60,6 +65,7 @@ RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: 2
         spacing: 4
+        Layout.alignment: Qt.AlignTop
 
         VPNInterLabel {
             id: label
@@ -68,7 +74,6 @@ RowLayout {
             text: labelText
             color: Theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 15
         }
 
         VPNTextBlock {
@@ -77,7 +82,7 @@ RowLayout {
             Layout.fillWidth: true
             text: subLabelText
             visible: !!subLabelText.length
-            wrapMode: Text.WordWrap
+            wrapMode: showAppImage ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap
         }
 
         Rectangle {
