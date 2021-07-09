@@ -13,38 +13,62 @@ RowLayout {
     id: checkBoxRow
 
     property var labelText
-    property var subLabelText
+    property var subLabelText: ""
     property bool isChecked
     property bool isEnabled: true
     property bool showDivider: true
     property var leftMargin: 18
+    property bool showAppImage: false
 
     signal clicked()
-    spacing: 0
 
-    VPNCheckBox {
-        id: checkBox
+    spacing: Theme.windowMargin
 
-        Layout.leftMargin: leftMargin
-        onClicked: checkBoxRow.clicked()
-        checked: isChecked
-        enabled: isEnabled
-        opacity: isEnabled ? 1 : 0.5
+    Rectangle {
+        Layout.preferredHeight:  Theme.vSpacing
+        Layout.preferredWidth: Theme.vSpacing
+        Layout.leftMargin: showAppImage ? 0 : leftMargin
+        Layout.alignment: Qt.AlignTop
+        color: "transparent"
+
+        VPNCheckBox {
+            id: checkBox
+
+            anchors.centerIn: parent
+            onClicked: checkBoxRow.clicked()
+            checked: isChecked
+            enabled: isEnabled
+            opacity: isEnabled ? 1 : 0.5
+        }
+    }
+
+    Image {
+//      source: "image://app/"+appID
+        source: "../resources/connection-info.svg"
+//        visible: showAppImage && appID !== ""
+        visible: showAppImage
+        sourceSize.width: Theme.windowMargin * 2
+        sourceSize.height: Theme.windowMArgin * 2
+        Layout.alignment: Qt.AlignTop
+        asynchronous: true
+        fillMode:  Image.PreserveAspectFit
     }
 
     ColumnLayout {
         id: labelWrapper
 
         Layout.fillWidth: true
+        Layout.topMargin: 2
         spacing: 4
 
         VPNInterLabel {
             id: label
-            Layout.alignment: Qt.AlignLeft
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             text: labelText
             color: Theme.fontColorDark
             horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 15
         }
 
         VPNTextBlock {
@@ -59,7 +83,7 @@ RowLayout {
         Rectangle {
             id: divider
 
-            Layout.topMargin: 16
+            Layout.topMargin: Theme.windowMargin
             Layout.preferredHeight: 1
             Layout.fillWidth: true
             color: "#E7E7E7"

@@ -7,204 +7,138 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtGraphicalEffects 1.14
+
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "forms"
 
 ColumnLayout {
     id: appListContainer
 
-    property var listModel: undefined
     property var header: ""
-    property var isEnabled: vpnFlickable.vpnIsOff
-    property var isListVisible : true && applist.count > 0
+    property string searchBarPlaceholder: ""
 
-    opacity: isEnabled && applist.count > 0 ? 1 : 0.5
-    anchors.horizontalCenter: parent.horizontalCenter
-    visible: VPNSettings.protectSelectedApps
-    width: parent.width
-    spacing: 0
+    anchors.left: parent.left
+    anchors.right:parent.right
+    anchors.leftMargin: Theme.vSpacing
+    anchors.rightMargin: Theme.vSpacing
+    spacing: Theme.vSpacing
 
-    Behavior on y {
-        PropertyAnimation {
-            duration: 200
-        }
-    }
-
-    VPNClickableRow {
-        id: appRow
-        Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
-        handleMouseClick: function() { isListVisible = !isListVisible && applist.count > 0; }
-        handleKeyClick: function() { isListVisible = !isListVisible && applist.count > 0; }
-        canGrowVertical: true
-        accessibleName: header
-        Layout.preferredWidth: parent.width - Theme.windowMargin
-        Layout.alignment: Qt.AlignHCenter
-        Layout.minimumHeight: Theme.rowHeight * 1.5
-        enabled: vpnFlickable.vpnIsOff && applist.count > 0
-        anchors.left: undefined
-        anchors.right: undefined
-        anchors.rightMargin: undefined
-        anchors.leftMargin: undefined
-
-        ColumnLayout {
-            id: appRowHeader
-            width: appRow.Layout.preferredWidth
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 0
-            RowLayout {
-                spacing: 0
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-
-                Behavior on y {
-                    PropertyAnimation {
-                        duration: 100
-                    }
-                }
-                VPNIcon {
-                    id: toggleArrow
-                    Layout.leftMargin: 6
-                    Layout.rightMargin: 14
-                    Layout.alignment: Qt.AlignVCenter
-                    source: "../resources/arrow-toggle.svg"
-                    transformOrigin: Image.Center
-                    smooth: true
-                    rotation: isListVisible ? 0 :-90
-                }
-
-                VPNBoldLabel {
-                    id: label
-                    text: header
-                    Accessible.role: Accessible.Heading
-                    color: Theme.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                }
+    states: [
+        State {
+            name: "visibleAndEnabled"
+            when: VPNSettings.protectSelectedApps && vpnFlickable.vpnIsOff
+            PropertyChanges {
+                target: appListContainer
+                opacity: 1
+                visible: true
             }
 
-            VPNVerticalSpacer {
-                Layout.preferredHeight: 2
-                visible: isListVisible
+        },
+        State {
+            when: VPNSettings.protectSelectedApps && !vpnFlickable.vpnIsOff
+            PropertyChanges {
+                target: appListContainer
+                opacity: .5
+                visible: true
             }
-
+        },
+        State {
+            name: "hidden"
+            when: !VPNSettings.protectSelectedApps
+            PropertyChanges {
+                target: appListContainer
+                opacity: 0
+                visible: false
+            }
         }
+    ]
+
+    transitions: [
+        Transition {
+            to: "hidden"
+            SequentialAnimation {
+                PropertyAnimation {
+                    target: appListContainer
+                    property: "opacity"
+                    to: 0
+                    duration: 150
+                }
+                PropertyAction {
+                    target: appListContainer
+                    property: "visible"
+                    value: false
+                }
+            }
+        },
+        Transition {
+            to: "visibleAndEnabled"
+            SequentialAnimation {
+                PropertyAction {
+                    target: appListContainer
+                    property: "visible"
+                    value: true
+                }
+                PropertyAnimation {
+                    target: appListContainer
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 150
+                }
+            }
+        }
+    ]
+
+    VPNBoldLabel {
+        id: label
+        text: header
+        Accessible.role: Accessible.Heading
+        color: Theme.fontColorDark
+        horizontalAlignment: Text.AlignLeft
+        Layout.alignment: Qt.AlignLeft
     }
 
-    RowLayout {
-        width: parent.width - Theme.windowMargin
-        anchors.rightMargin: 0
-        anchors.right: parent.right
-        spacing: Theme.windowMargin
-
-        VPNInterLabel {
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.fillWidth: true
-            //% "Select all"
-            text: qsTrId("vpn.appList.selectAll")
-            color: Theme.fontColorDark
-            horizontalAlignment: Text.AlignLeft
-        }
-
-        VPNCheckBox {
-           Layout.alignment: Qt.AlignTop
-           Layout.topMargin: 6
-           onClicked: () => VPNAppPermissions.unprotectAll();
-           // TODO checked: true
-           Layout.rightMargin: 4
-           enabled: appListContainer.isEnabled
-        }
-    }
-
-    VPNList {
-        id: applist
-        model: listModel
+    VPNSearchBar {
+        id: filterInput
         Layout.fillWidth: true
-        spacing: 26
-        listName: header
-
-        Layout.preferredHeight: contentItem.childrenRect.height
-        Layout.topMargin: 4
-
-        visible: isListVisible && count > 0
-
-        PropertyAnimation on opacity {
-            duration: 200
+        Layout.preferredHeight: Theme.rowHeight
+        onTextChanged: text => {
+            model.invalidate();
         }
+        placeholderText: searchBarPlaceholder
+        stateError: applist.count === 0
+        enabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+    }
 
-        removeDisplaced: Transition {
-              NumberAnimation {
-                  properties: "x,y"
-                  duration: 200
-              }
-          }
-          remove: Transition {
-              PropertyAnimation {
-                  property: "opacity"
-                  from: 1
-                  to: 0
-                  duration: 200
-              }
-          }
-        addDisplaced: Transition {
-            NumberAnimation {
-                properties: "x,y"
-                duration: 200
-            }
+    VPNFilterProxyModel {
+        id: model
+        source: VPNAppPermissions
+        // No filter
+        filterCallback: obj => {
+           const filterValue = filterInput.text.toLowerCase();
+           return obj.appName.toLowerCase().includes(filterValue);
         }
-        add: Transition {
-            PropertyAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 200
-            }
-        }
-        delegate: RowLayout {
-            width: parent.width - Theme.windowMargin
-            anchors.rightMargin: 0
-            anchors.right: parent.right
-            spacing: Theme.windowMargin
+    }
 
-            Image {
-                source: "image://app/"+appID
-                visible: appID !== ""
-                sourceSize.width: Theme.windowMargin
-                sourceSize.height: Theme.windowMargin
-                Layout.alignment: Qt.AlignTop
-                Layout.leftMargin: 36
-                Layout.topMargin: 4
-                asynchronous: true
-                fillMode:  Image.PreserveAspectFit
-            }
+// TODO
+//    VPNCheckBoxRow {
+//        labelText: "Select all"
+//        onClicked: () => VPNAppPermissions.unprotectAll();
+//        showDivider: false
+//    }
 
-            ColumnLayout {
-                id: labelWrapper
-                Layout.alignment: Qt.AlignTop
-                spacing: 4
-
-                VPNInterLabel {
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                    Layout.fillWidth: true
-                    text: appName
-                    color: Theme.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
-                }
-
-                VPNTextBlock {
-                    Layout.fillWidth: true
-                    text: appID
-                    visible: !!text.length
-                }
-
-            }
-
-            VPNCheckBox {
-               Layout.alignment: Qt.AlignTop
-               Layout.topMargin: 6
-               onClicked: VPNAppPermissions.flip(appID)
-               checked: !appIsEnabled
-               Layout.rightMargin: 4
-               enabled: appListContainer.isEnabled
-            }
+    Repeater {
+        id: applist
+        model: model
+        delegate: VPNCheckBoxRow {
+            showDivider: false
+            labelText: appName
+            subLabelText: appId
+            showAppImage: true
+            onClicked: VPNAppPermissions.flip(appID)
+            isChecked: !appIsEnabled
+            isEnabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
         }
     }
 }

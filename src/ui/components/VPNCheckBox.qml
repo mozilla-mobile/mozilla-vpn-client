@@ -28,8 +28,8 @@ CheckBox {
         if (!activeFocus)
             mouseArea.changeState(uiState.stateDefault);
 
-        if (activeFocus && typeof (ensureVisible) !== "undefined")
-            ensureVisible(checkBox);
+        if (activeFocus && typeof(vpnFlickable.ensureVisible) !== "undefined")
+            vpnFlickable.ensureVisible(checkBox);
 
     }
     Keys.onPressed: {
@@ -84,7 +84,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked ? Theme.blueHovered : Theme.fontColorDark
+                border.color: checkBox.checked || checkBox.activeFocus ? Theme.blueHovered : Theme.fontColorDark
             }
 
             PropertyChanges {
@@ -167,10 +167,11 @@ CheckBox {
         antialiasing: true
         state: checkBox.state
 
-        VPNUIStates {
-            itemToFocus: checkBox
-            colorScheme: Theme.blueButton
-            visible: isEnabled
+        VPNFocusOutline {
+            visible: true
+            anchors.margins: -3
+            focusedComponent: checkBox
+            focusColorScheme: Theme.blueButton
         }
 
         Behavior on border.color {

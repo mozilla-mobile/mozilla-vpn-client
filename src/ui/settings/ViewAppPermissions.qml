@@ -34,9 +34,8 @@ Item {
 
     VPNFlickable {
         id: vpnFlickable
-        readonly property int defaultMargin: 18
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-        flickContentHeight: enableAppList.height + enableAppList.anchors.topMargin + (vpnOnAlert.visible ? vpnOnAlert.height : 0) + (disabledList.visible ? disabledList.height : 0) + (enabledList.visible ? enabledList.height : 0) + 100
+        flickContentHeight:  VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : enabledList.y
         anchors.top: menu.bottom
         height: root.height - menu.height
         width: root.width
@@ -81,9 +80,9 @@ Item {
         RowLayout {
             id: enableAppList
             anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : parent.top
-            anchors.topMargin: Theme.windowMargin * 1.5
+            anchors.topMargin: Theme.windowMargin * 1.75
             anchors.horizontalCenter: parent.horizontalCenter
-            width: vpnFlickable.width - Theme.windowMargin * 3.5
+            width: vpnFlickable.width - Theme.windowMargin * 3.75
             spacing: Theme.windowMargin
 
             ColumnLayout {
@@ -121,13 +120,12 @@ Item {
 
         VPNExpandableAppList {
             id: enabledList
-            anchors.topMargin: 28
+            anchors.topMargin: 36
             anchors.top: enableAppList.bottom
 
             //% "Exclude apps from VPN protection"
             //: Header for the list of apps protected by VPN
             header: qsTrId("vpn.settings.excludeTitle")
-            listModel: VPNAppPermissions
         }
     }
 }
