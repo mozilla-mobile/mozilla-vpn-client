@@ -110,7 +110,7 @@ print G "Creating the orig tarball"
 printn N "Creating the working directory... "
 cd .tmp
 mkdir $WORKDIR || die "Failed"
-rsync -av --exclude='.*' .. $WORKDIR || die "Failed"
+rsync -a --exclude='.*' .. $WORKDIR || die "Failed"
 print G "done."
 
 print Y "Generating glean samples..."
@@ -144,7 +144,7 @@ EOF
 build_deb_source() {
   local distro=$1
   local buildtype=$2
-  local buildrev=$(distro)${REVISION}
+  local buildrev=${distro}${REVISION}
 
   print Y "Building sources for $distro ($buildtype)..."
   rm -rf $WORKDIR/debian || die "Failed"
