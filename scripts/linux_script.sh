@@ -108,9 +108,9 @@ print G "done."
 print G "Creating the orig tarball"
 
 printn N "Creating the working directory... "
-mkdir -p .tmp/$WORKDIR || die "Failed"
-cp -R * .tmp/$WORKDIR 2>/dev/null || die "Failed"
 cd .tmp
+mkdir $WORKDIR || die "Failed"
+rsync -av --exclude='.*' .. $WORKDIR || die "Failed"
 print G "done."
 
 print Y "Importing translation files..."
@@ -130,7 +130,8 @@ rm -rf $WORKDIR/linux/debian || die "Failed"
 print G "done."
 
 printn Y "Archiving the source code... "
-tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $WORKDIR || die "Failed"
+TAR_OPTIONS="--mtime=$(git log -1 --format=%cI) --owner=root:0 --group=root:0 --sort=name"
+LC_ALL=C tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $TAR_OPTIONS $WORKDIR || die "Failed"
 print G "done."
 
 ## Generate the spec file for building RPMs
@@ -217,7 +218,7 @@ rm -rf $WORKDIR || die "Failed"
 if [ ! -z "$PPA_URL" ]; then
   print Y "Uploading sources to $PPA_URL"
   for dist in $(find . -type d -name '*-prod'); do
-    ln -s ../$TARBALL $dist/$TARBALL
+    ln -s ../mozillavpn_${SHORTVERSION}.orig.tar.gz $dist/mozillavpn_${SHORTVERSION}.orig.tar.gz
     dput "$PPA_URL" $dist/mozillavpn_${SHORTVERSION}-*_source.changes
   done
 fi
