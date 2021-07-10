@@ -16,25 +16,44 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-      
+
+      - name: Generate build revesion
+        shell: bash
+        env:
+          GITREF: ${{github.ref}}
+        run: |
+          if [[ "$GITREF" == "refs/heads/main" ]]; then
+            echo "REVISION=~github${{github.run_number}}" >> $GITHUB_ENV
+          elif [[ "$GITREF" =~ ^refs/pull/([0-9]+)/merge ]]; then
+            echo "REVISION=~pr${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          elif [[ "$GITREF" =~ ^refs/heads/releases/ ]]; then
+            git fetch --unshallow
+            echo "REVISION=$(git rev-list --count --first-parent origin/main..HEAD)" >> $GITHUB_ENV
+
+            FORCE_VERSION=$(echo "$GITREF" | cut -d'/' -f4)
+            sed -i "s/:VERSION*/:VERSION = $FORCE_VERSION/" version.pri
+          else
+            echo "REVISION=~unknown" >> $GITHUB_ENV
+          fi
+
       - name: Install source dependencies
         shell: bash
         run: |
-          sudo apt-get install qt5-default qttools5-dev-tools golang -y
+          sudo apt-get install qt5-default qttools5-dev-tools golang debhelper -y
           pip3 install "glean_parser==3.5"
           pip3 install pyhumps
           pip3 install pyyaml
       
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux_script.sh --source
+        run: ./scripts/linux_script.sh --source --version $REVISION
       
       - name: Uploading
         uses: actions/upload-artifact@v2
         with:
             name: Sources
             path: .tmp
-      
+
   focal-staging:
     name: Focal Staging
     runs-on: ubuntu-20.04

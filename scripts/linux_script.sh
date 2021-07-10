@@ -6,7 +6,7 @@
 
 . $(dirname $0)/commons.sh
 
-VERSION=1
+REVISION=1
 RELEASE=focal
 BUILDTYPE=prod
 SOURCEONLY=N
@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   -v | --version)
-    VERSION="$2"
+    REVISION="$2"
     shift
     shift
     ;;
@@ -62,7 +62,7 @@ printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
 WORKDIR=mozillavpn-$SHORTVERSION
-print G "$SHORTVERSION - $FULLVERSION"
+print G "$SHORTVERSION - $REVISION - $FULLVERSION"
 
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
@@ -105,34 +105,35 @@ print G "done."
 build_rpm_spec() {
 cat << EOF > mozillavpn.spec
 Version: $SHORTVERSION
-Release: $VERSION
+Release: $REVISION
 Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
 $(grep -v -e "^Version:" -e "^Release" -e "^%define" ../linux/mozillavpn.spec)
 EOF
 }
 
-## For a given release, build the DSC and debian tarball.
+## For a given distro, build the DSC and debian tarball.
 build_deb_source() {
-  local release=$1
+  local distro=$1
   local buildtype=$2
+  local buildrev=${distro}${REVISION}
 
-  print Y "Building sources for $release ($buildtype)..."
+  print Y "Building sources for $distro ($buildtype)..."
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
-  mv $WORKDIR/debian/rules.$buildtype.$release $WORKDIR/debian/rules
-  mv $WORKDIR/debian/control.$buildtype.$release $WORKDIR/debian/control
+  mv $WORKDIR/debian/rules.$buildtype.$distro $WORKDIR/debian/rules
+  mv $WORKDIR/debian/control.$buildtype.$distro $WORKDIR/debian/control
   rm $WORKDIR/debian/control.*
   rm $WORKDIR/debian/rules.*
 
   mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/VERSION/$VERSION/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/RELEASE/$release/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/VERSION/$buildrev/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/RELEASE/$distro/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/FULLVERSION/$FULLVERSION/g" $WORKDIR/debian/rules || die "Failed"
 
-  dpkg-source --build $WORKDIR || die "Failed"
+  (cd $WORKDIR && dpkg-buildpackage --build=source --no-sign --no-check-builddeps) || die "Failed"
 }
 
 ## For source-only, build all the source bundles we can.
@@ -141,13 +142,15 @@ if [ "$SOURCEONLY" == "Y" ]; then
   for control in ../linux/debian/control.*; do
     filename=$(basename $control)
     buildtype=$(echo $filename | cut -d'.' -f2)
-    release=$(echo $filename | cut -d'.' -f3)
+    distro=$(echo $filename | cut -d'.' -f3)
 
-    build_deb_source $release $buildtype
+    build_deb_source $distro $buildtype
 
-    mkdir $release-$buildtype/
-    mv mozillavpn_$SHORTVERSION-$VERSION.debian.tar.* $release-$buildtype/ || die "Failed"
-    mv mozillavpn_$SHORTVERSION-$VERSION.dsc $release-$buildtype/ || die "Failed"
+    mkdir $distro-$buildtype/
+    mv mozillavpn_${SHORTVERSION}-*_source.buildinfo $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*_source.changes $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.debian.tar.* $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.dsc $distro-$buildtype/ || die "Failed"
   done
 
   print Y "Configuring the RPM spec..."
