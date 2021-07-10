@@ -2,7 +2,8 @@
 
 export DH_VERBOSE=1
 export QTDIR := /opt/qt515
-export PATH := $(QTDIR)/bin:$(PATH)
+export GODIR := /usr/lib/go-1.13
+export PATH := $(QTDIR)/bin:$(GODIR)/bin:$(PATH)
 export LD_LIBRARY_PATH := $(QTDIR)/lib:$(LD_LIBRARY_PATH)
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
