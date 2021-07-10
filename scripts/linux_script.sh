@@ -113,10 +113,6 @@ mkdir $WORKDIR || die "Failed"
 rsync -av --exclude='.*' .. $WORKDIR || die "Failed"
 print G "done."
 
-print Y "Importing translation files..."
-LANG_ARGS=$([ "$BUILDTYPE" == "stage" ] || echo "-p")
-(cd $WORKDIR && python3 scripts/importLanguages.py $LANG_ARGS) || die "Failed to import languages"
-
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/generate_glean.py) || die "Failed to generate glean samples"
 

@@ -20,15 +20,15 @@ jobs:
       - name: Install source dependencies
         shell: bash
         run: |
-          sudo apt-get install qt5-default qttools5-dev-tools golang debhelper -y
+          sudo apt-get install golang debhelper -y
           pip3 install "glean_parser==3.5"
           pip3 install pyhumps
           pip3 install pyyaml
-      
+
       - name: Build source bundle
         shell: bash
         run: ./scripts/linux_script.sh --source
-      
+
       - name: Uploading
         uses: actions/upload-artifact@v2
         with:
@@ -265,4 +265,3 @@ jobs:
             path: |
               RPMS/
               SRPMS/
-
