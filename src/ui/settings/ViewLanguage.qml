@@ -129,31 +129,16 @@ Item {
                 opacity: 1
             }
 
-            VPNSearchBar {
-                id: filterInput
-                height: Theme.rowHeight
-                anchors.top: divider.bottom
-                anchors.topMargin: Theme.vSpacing
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: defaultMargin
-                anchors.rightMargin: defaultMargin
-                onTextChanged: text => {
-                    model.invalidate();
-                }
-                stateError: repeater.count === 0
-            }
-
             Column {
                 id: col
 
                 objectName: "languageList"
-
+                opacity: useSystemLanguageEnabled ? .5 : 1
                 spacing: 20
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: filterInput.bottom
-                anchors.topMargin: 20
+                anchors.top: divider.bottom
+                anchors.topMargin: Theme.vSpacing
                 Component.onCompleted: {
 
                     if (useSystemLanguageEnabled) {
@@ -185,6 +170,20 @@ Item {
                     }
                 }
 
+                VPNSearchBar {
+                    id: filterInput
+                    height: Theme.rowHeight
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: defaultMargin
+                    anchors.rightMargin: defaultMargin
+                    onTextChanged: text => {
+                        model.invalidate();
+                    }
+                    stateError: repeater.count === 0
+                    enabled: !useSystemLanguageEnabled
+                }
+
                 VPNFilterProxyModel {
                     id: model
                     source: VPNLocalizer
@@ -206,8 +205,6 @@ Item {
                         id: del
                         objectName: "language-" + code
                         enabled: !useSystemLanguageEnabled
-
-                        opacity: useSystemLanguageEnabled ? .5 : 1
                         radioButtonLabelText: localizedLanguage
                         checked: VPNLocalizer.code === code && !useSystemLanguageEnabled
                         onClicked: {
