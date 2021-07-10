@@ -92,9 +92,10 @@ done
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
-FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
-WORKDIR=mozillavpn-$SHORTVERSION
-print G "$SHORTVERSION - $REVISION - $FULLVERSION"
+FULLVERSION=${SHORTVERSION}.${REVISION}
+WORKDIR=mozillavpn-$FULLVERSION
+TARBALL=mozillavpn_$FULLVERSION.orig.tar.gz
+print G "$SHORTVERSION - $FULLVERSION"
 
 rm -rf .tmp || die "Failed to remove the temporary directory"
 mkdir .tmp || die "Failed to create the temporary directory"
@@ -130,7 +131,7 @@ rm -rf $WORKDIR/linux/debian || die "Failed"
 print G "done."
 
 printn Y "Archiving the source code... "
-tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $WORKDIR || die "Failed"
+tar cfz $TARBALL $WORKDIR || die "Failed"
 print G "done."
 
 ## Generate the spec file for building RPMs
@@ -138,7 +139,7 @@ build_rpm_spec() {
 cat << EOF > mozillavpn.spec
 Version: $SHORTVERSION
 Release: $REVISION
-Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
+Source0: $TARBALL
 $(grep -v -e "^Version:" -e "^Release" -e "^%define" ../linux/mozillavpn.spec)
 EOF
 }
@@ -147,7 +148,6 @@ EOF
 build_deb_source() {
   local distro=$1
   local buildtype=$2
-  local buildrev=${distro}${REVISION}
 
   print Y "Building sources for $distro ($buildtype)..."
   rm -rf $WORKDIR/debian || die "Failed"
@@ -159,8 +159,8 @@ build_deb_source() {
   rm $WORKDIR/debian/rules.*
 
   mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/VERSION/$buildrev/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/SHORTVERSION/$FULLVERSION/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/VERSION/$distro/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/RELEASE/$distro/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/FULLVERSION/$FULLVERSION/g" $WORKDIR/debian/rules || die "Failed"
@@ -179,10 +179,10 @@ if [ "$SOURCEONLY" == "Y" ]; then
     build_deb_source $distro $buildtype
 
     mkdir $distro-$buildtype/
-    mv mozillavpn_${SHORTVERSION}-*_source.buildinfo $distro-$buildtype/ || die "Failed"
-    mv mozillavpn_${SHORTVERSION}-*_source.changes $distro-$buildtype/ || die "Failed"
-    mv mozillavpn_${SHORTVERSION}-*.debian.tar.* $distro-$buildtype/ || die "Failed"
-    mv mozillavpn_${SHORTVERSION}-*.dsc $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${FULLVERSION}-${distro}_source.buildinfo $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${FULLVERSION}-${distro}_source.changes $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${FULLVERSION}-${distro}.debian.tar.* $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${FULLVERSION}-${distro}.dsc $distro-$buildtype/ || die "Failed"
   done
 
   print Y "Configuring the RPM spec..."
@@ -217,8 +217,8 @@ rm -rf $WORKDIR || die "Failed"
 if [ ! -z "$PPA_URL" ]; then
   print Y "Uploading sources to $PPA_URL"
   for dist in $(find . -type d -name '*-prod'); do
-    ln -s ../mozillavpn_${SHORTVERSION}.orig.tar.gz $dist/mozillavpn_${SHORTVERSION}.orig.tar.gz
-    dput "$PPA_URL" $dist/mozillavpn_${SHORTVERSION}-*_source.changes
+    ln -s ../$TARBALL $dist/$TARBALL
+    dput "$PPA_URL" $dist/mozillavpn_${FULLVERSION}-*_source.changes
   done
 fi
 
