@@ -10,6 +10,8 @@ REVISION=1
 RELEASE=focal
 BUILDTYPE=prod
 SOURCEONLY=N
+PPA_URL=
+DPKG_SIGN="--no-sign"
 RPM=N
 DEB=N
 
@@ -18,8 +20,19 @@ if [ -f .env ]; then
 fi
 
 helpFunction() {
-  print G "Usage:"
-  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage] [--source]"
+  print G "Usage: $0 [OPTIONS]"
+  print N ""
+  print N "Build options:"
+  print N "  -r, --release DIST     Build packages for distribution DIST"
+  print N "  -v, --version REV      Set package revision to REV"
+  print N "  -s, --stage            Build packages to use staging services"
+  print N "      --source           Build source packages only (no binary)"
+  print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
+  print N ""
+  print N "Signing options:"
+  print N "      --sign             Enable package signing (default: disabled)"
+  print N "  -k, --sign-key KEYID   Enable package using using GPG key of KEYID"
+  print N "      --no-sign          Disable package signing" 
   print N ""
   print N "By default, the release is 'focal'"
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
@@ -50,6 +63,25 @@ while [[ $# -gt 0 ]]; do
     ;;
   --source)
     SOURCEONLY=Y
+    shift
+    ;;
+  --ppa)
+    SOURCEONLY=Y
+    PPA_URL="$2"
+    shift
+    shift
+    ;;
+  --sign)
+    DPKG_SIGN=""
+    shift
+    ;;
+  -k | --sign-key)
+    DPKG_SIGN="--sign-key=$2"
+    shift
+    shift
+    ;;
+  --no-sign)
+    DPKG_SIGN="--no-sign"
     shift
     ;;
   *)
@@ -133,7 +165,7 @@ build_deb_source() {
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/FULLVERSION/$FULLVERSION/g" $WORKDIR/debian/rules || die "Failed"
 
-  (cd $WORKDIR && dpkg-buildpackage --build=source --no-sign --no-check-builddeps) || die "Failed"
+  (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
 ## For source-only, build all the source bundles we can.
@@ -162,7 +194,7 @@ else
       build_deb_source $RELEASE $BUILDTYPE
 
       print Y "Building Debian packages for $RELEASE ($BUILDTYPE)"
-      (cd $WORKDIR && dpkg-buildpackage --build=binary --no-sign) || die "Failed"
+      (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
       ;;
     
     fedora)
@@ -181,5 +213,13 @@ fi
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
+
+if [ ! -z "$PPA_URL" ]; then
+  print Y "Uploading sources to $PPA_URL"
+  for dist in $(find . -type d -name '*-prod'); do
+    ln -s ../mozillavpn_${SHORTVERSION}.orig.tar.gz $dist/mozillavpn_${SHORTVERSION}.orig.tar.gz
+    dput "$PPA_URL" $dist/mozillavpn_${SHORTVERSION}-*_source.changes
+  done
+fi
 
 print G "All done."
