@@ -6,10 +6,12 @@
 
 . $(dirname $0)/commons.sh
 
-VERSION=1
+REVISION=1
 RELEASE=focal
 BUILDTYPE=prod
 SOURCEONLY=N
+PPA_URL=
+DPKG_SIGN="--no-sign"
 RPM=N
 DEB=N
 
@@ -18,8 +20,19 @@ if [ -f .env ]; then
 fi
 
 helpFunction() {
-  print G "Usage:"
-  print N "\t$0 [-r|--release <release>] [-v|--version <id>] [-s|--stage] [--source]"
+  print G "Usage: $0 [OPTIONS]"
+  print N ""
+  print N "Build options:"
+  print N "  -r, --release DIST     Build packages for distribution DIST"
+  print N "  -v, --version REV      Set package revision to REV"
+  print N "  -s, --stage            Build packages to use staging services"
+  print N "      --source           Build source packages only (no binary)"
+  print N "      --ppa URL          Upload source packages to PPA at URL (implies: --source)"
+  print N ""
+  print N "Signing options:"
+  print N "      --sign             Enable package signing (default: disabled)"
+  print N "  -k, --sign-key KEYID   Enable package using using GPG key of KEYID"
+  print N "      --no-sign          Disable package signing" 
   print N ""
   print N "By default, the release is 'focal'"
   print N "The default version is 1, but you can recreate packages using the same code version changing the version id."
@@ -44,12 +57,31 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   -v | --version)
-    VERSION="$2"
+    REVISION="$2"
     shift
     shift
     ;;
   --source)
     SOURCEONLY=Y
+    shift
+    ;;
+  --ppa)
+    SOURCEONLY=Y
+    PPA_URL="$2"
+    shift
+    shift
+    ;;
+  --sign)
+    DPKG_SIGN=""
+    shift
+    ;;
+  -k | --sign-key)
+    DPKG_SIGN="--sign-key=$2"
+    shift
+    shift
+    ;;
+  --no-sign)
+    DPKG_SIGN="--no-sign"
     shift
     ;;
   *)
@@ -76,14 +108,10 @@ print G "done."
 print G "Creating the orig tarball"
 
 printn N "Creating the working directory... "
-mkdir -p .tmp/$WORKDIR || die "Failed"
-cp -R * .tmp/$WORKDIR 2>/dev/null || die "Failed"
 cd .tmp
+mkdir $WORKDIR || die "Failed"
+rsync -a --exclude='.*' .. $WORKDIR || die "Failed"
 print G "done."
-
-print Y "Importing translation files..."
-LANG_ARGS=$([ "$BUILDTYPE" == "stage" ] || echo "-p")
-(cd $WORKDIR && python3 scripts/importLanguages.py $LANG_ARGS) || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 (cd $WORKDIR && python3 scripts/generate_glean.py) || die "Failed to generate glean samples"
@@ -98,41 +126,43 @@ rm -rf $WORKDIR/linux/debian || die "Failed"
 print G "done."
 
 printn Y "Archiving the source code... "
-tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $WORKDIR || die "Failed"
+TAR_OPTIONS="--mtime=$(git log -1 --format=%cI) --owner=root:0 --group=root:0 --sort=name"
+LC_ALL=C tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $TAR_OPTIONS $WORKDIR || die "Failed"
 print G "done."
 
 ## Generate the spec file for building RPMs
 build_rpm_spec() {
 cat << EOF > mozillavpn.spec
 Version: $SHORTVERSION
-Release: $VERSION
+Release: $REVISION
 Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
 $(grep -v -e "^Version:" -e "^Release" -e "^%define" ../linux/mozillavpn.spec)
 EOF
 }
 
-## For a given release, build the DSC and debian tarball.
+## For a given distro, build the DSC and debian tarball.
 build_deb_source() {
-  local release=$1
+  local distro=$1
   local buildtype=$2
+  local buildrev=${distro}${REVISION}
 
-  print Y "Building sources for $release ($buildtype)..."
+  print Y "Building sources for $distro ($buildtype)..."
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
-  mv $WORKDIR/debian/rules.$buildtype.$release $WORKDIR/debian/rules
-  mv $WORKDIR/debian/control.$buildtype.$release $WORKDIR/debian/control
+  mv $WORKDIR/debian/rules.$buildtype.$distro $WORKDIR/debian/rules
+  mv $WORKDIR/debian/control.$buildtype.$distro $WORKDIR/debian/control
   rm $WORKDIR/debian/control.*
   rm $WORKDIR/debian/rules.*
 
   mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/VERSION/$VERSION/g" $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/RELEASE/$release/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/VERSION/$buildrev/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/RELEASE/$distro/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/FULLVERSION/$FULLVERSION/g" $WORKDIR/debian/rules || die "Failed"
 
-  dpkg-source --build $WORKDIR || die "Failed"
+  (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
 ## For source-only, build all the source bundles we can.
@@ -141,13 +171,15 @@ if [ "$SOURCEONLY" == "Y" ]; then
   for control in ../linux/debian/control.*; do
     filename=$(basename $control)
     buildtype=$(echo $filename | cut -d'.' -f2)
-    release=$(echo $filename | cut -d'.' -f3)
+    distro=$(echo $filename | cut -d'.' -f3)
 
-    build_deb_source $release $buildtype
+    build_deb_source $distro $buildtype
 
-    mkdir $release-$buildtype/
-    mv mozillavpn_$SHORTVERSION-$VERSION.debian.tar.* $release-$buildtype/ || die "Failed"
-    mv mozillavpn_$SHORTVERSION-$VERSION.dsc $release-$buildtype/ || die "Failed"
+    mkdir $distro-$buildtype/
+    mv mozillavpn_${SHORTVERSION}-*_source.buildinfo $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*_source.changes $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.debian.tar.* $distro-$buildtype/ || die "Failed"
+    mv mozillavpn_${SHORTVERSION}-*.dsc $distro-$buildtype/ || die "Failed"
   done
 
   print Y "Configuring the RPM spec..."
@@ -159,7 +191,7 @@ else
       build_deb_source $RELEASE $BUILDTYPE
 
       print Y "Building Debian packages for $RELEASE ($BUILDTYPE)"
-      (cd $WORKDIR && dpkg-buildpackage --build=binary --no-sign) || die "Failed"
+      (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
       ;;
     
     fedora)
@@ -178,5 +210,13 @@ fi
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
+
+if [ ! -z "$PPA_URL" ]; then
+  print Y "Uploading sources to $PPA_URL"
+  for dist in $(find . -type d -name '*-prod'); do
+    ln -s ../mozillavpn_${SHORTVERSION}.orig.tar.gz $dist/mozillavpn_${SHORTVERSION}.orig.tar.gz
+    dput "$PPA_URL" $dist/mozillavpn_${SHORTVERSION}-*_source.changes
+  done
+fi
 
 print G "All done."
