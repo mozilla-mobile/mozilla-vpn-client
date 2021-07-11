@@ -8,6 +8,7 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 	dh $@ --with systemd --warn-missing
 
 override_dh_auto_configure:
+	python3 scripts/importLanguages.py -p
 	qmake CONFIG+=production CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release BUILD_ID=FULLVERSION
 
 override_dh_installdocs:
