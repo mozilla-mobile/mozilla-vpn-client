@@ -16,8 +16,8 @@ Item {
         id: menu
         objectName: "getHelpBack"
 
-        //% "Get Help"
-        title: qsTrId("vpn.main.getHelp")
+        //% "Get help"
+        title: qsTrId("vpn.main.getHelp2")
         isSettingsView: true
     }
 
