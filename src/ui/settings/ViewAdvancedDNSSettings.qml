@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 import org.mozilla.Glean 0.15
@@ -41,104 +42,214 @@ Item {
             Glean.sample.dnsSettingsViewOpened.record();
         }
 
-        Column {
+        ButtonGroup {
+            id: radioButtonGroup
+        }
+
+        ColumnLayout {
             id: col
             width: parent.width
             anchors.top: parent.top
             anchors.topMargin: 18
-            spacing: Theme.windowMargin
+            anchors.left: parent.left
+            anchors.leftMargin: 18
+            anchors.right: parent.right
+            anchors.rightMargin: Theme.windowMargin
+            spacing: Theme.vSpacing
 
-            // TODO: this should be a radiobox
-            VPNCheckBoxRow {
-                id: useGatewayDNS
-                objectName: "gatewayDNSEnabled"
-                width: parent.width - Theme.windowMargin
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.windowMargin
+                Layout.rightMargin: Theme.windowMargin
 
+                VPNRadioButton {
+                    Layout.preferredWidth: Theme.vSpacing
+                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.alignment: Qt.AlignTop
+                    checked: VPNSettings.useGatewayDNS
+                    accessibleName: useDefaultLabel.text
 
-                //% "Use default DNS"
-                labelText: qsTrId("vpn.advancedDNSSettings.gateway")
-                //% "Automatically use Mozilla VPN-protected DNS"
-                subLabelText: qsTrId("vpn.advancedDNSSettings.gateway.description")
-                isChecked: VPNSettings.useGatewayDNS
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.useGatewayDNS = true
-                    }
-                }
-            }
-
-            // TODO: this should be a radiobox
-            VPNCheckBoxRow {
-                id: useLocalDNS
-                objectName: "settingMozillaDNSEnabled"
-                width: parent.width - Theme.windowMargin
-
-                //% "Use local DNS"
-                labelText: qsTrId("vpn.advancedDNSSettings.localDNS")
-                //% "Resolve website domain names using a DNS in your local network"
-                subLabelText: qsTrId("vpn.advancedDNSSettings.localDNS.resolveWebsiteDomainNames")
-                isChecked: (!VPNSettings.useGatewayDNS)
-                showDivider: false
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.useGatewayDNS = false
-                    }
-                }
-            }
-
-            VPNTextInput{
-                id: ipInput
-
-                isEnabled: !VPNSettings.useGatewayDNS && vpnFlickable.vpnIsOff
-                leftPadding: 55
-
-                width: parent.width - Theme.windowMargin
-                height: 30
-                value: VPNSettings.userDNS
-                valueChanged: ip => {
-                    if (ip === "") {
-                        // If nothing is entered, thats valid too. We will ignore the value later.
-                        ipInput.valueInvalid = false;
-                        VPNSettings.userDNS = ip
-                        return;
-                    }
-
-                    switch(VPNSettings.validateUserDNS(ip)) {
-                    case VPNSettings.UserDNSOK:
-                        ipInput.valueInvalid = false;
-                        if (ip !== VPNSettings.userDNS) {
-                            VPNSettings.userDNS = ip
+                    onClicked: {
+                        if (vpnFlickable.vpnIsOff) {
+                            VPNSettings.useGatewayDNS = true
                         }
-                        break;
+                    }
+                }
 
-                    // Now bother user if the ip is invalid :)
-                    case VPNSettings.UserDNSInvalid:
-                        //% "Invalid IP address"
-                        ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
-                        ipInput.valueInvalid = true;
-                        break;
+                Column {
+                    spacing: 4
+                    Layout.fillWidth: true
+                    VPNInterLabel {
+                        id: useDefaultLabel
+                        //% "Use default DNS"
+                        text: qsTrId("vpn.advancedDNSSettings.gateway")
+                        Layout.alignment: Qt.AlignTop
+                    }
 
-                    case VPNSettings.UserDNSNotIPv4:
-                        //% "We currently support only IPv4 IP addresses"
-                        ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
-                        ipInput.valueInvalid = true;
-                        break;
+                    VPNTextBlock {
 
-                    case VPNSettings.UserDNSOutOfRange:
-                        //% "Out of range IP address"
-                        ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
-                        ipInput.valueInvalid = true;
-                        break;
+                       //% "Automatically use Mozilla VPN-protected DNS"
+                       text: qsTrId("vpn.advancedDNSSettings.gateway.description")
+                       width: parent.width
                     }
                 }
             }
 
-            VPNCheckBoxAlert {
-                visible: !vpnFlickable.vpnIsOff
+            ColumnLayout {
+                spacing: Theme.windowMargin
 
-                //% "VPN must be off to edit these settings"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Theme.windowMargin
+                    Layout.rightMargin: Theme.windowMargin
+
+                    VPNRadioButton {
+                        Layout.preferredWidth: Theme.vSpacing
+                        Layout.preferredHeight: Theme.rowHeight
+                        Layout.alignment: Qt.AlignTop
+                        checked: !VPNSettings.useGatewayDNS
+                        onClicked: VPNSettings.useGatewayDNS = false
+                        accessibleName:  useLocalDNSLabel.text
+                    }
+
+                    Column {
+                        spacing: 4
+                        Layout.fillWidth: true
+                        VPNInterLabel {
+                            id: useLocalDNSLabel
+                            //% "Use local DNS"
+                            text: qsTrId("vpn.advancedDNSSettings.localDNS")
+                            Layout.alignment: Qt.AlignTop
+                        }
+
+                        VPNTextBlock {
+                           //% "Resolve website domain names using a DNS in your local network"
+                           text: qsTrId("vpn.advancedDNSSettings.localDNS.resolveWebsiteDomainNames")
+                           width: parent.width
+                        }
+                    }
+                }
+
+                VPNTextField {
+                    property bool valueInvalid: false
+                    property string error: "This is an error string"
+                    stateError: valueInvalid
+
+                    id: ipInput
+
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 40
+                    placeholderText: VPNSettings.userDNS
+                    enabled: !VPNSettings.useGatewayDNS
+                    opacity: enabled ? 1 : .5
+
+                    PropertyAnimation on opacity {
+                        duration: 200
+                    }
+
+                    onTextChanged: text => {
+                        if (ipInput.text === "") {
+                            // If nothing is entered, thats valid too. We will ignore the value later.
+                            ipInput.valueInvalid = false;
+                            VPNSettings.userDNS = ipInput.text
+                            return;
+                        }
+
+                        switch(VPNSettings.validateUserDNS(ipInput.text)) {
+                        case VPNSettings.UserDNSOK:
+                            ipInput.valueInvalid = false;
+                            if (text !== VPNSettings.userDNS) {
+                                VPNSettings.userDNS = ipInput.text
+                            }
+                            break;
+
+                        // Now bother user if the ip is invalid :)
+                        case VPNSettings.UserDNSInvalid:
+                            //% "Invalid IP address"
+                            ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
+                            ipInput.valueInvalid = true;
+                            break;
+
+                        case VPNSettings.UserDNSNotIPv4:
+                            //% "We currently support only IPv4 IP addresses"
+                            ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
+                            ipInput.valueInvalid = true;
+                            break;
+
+                        case VPNSettings.UserDNSOutOfRange:
+                            //% "Out of range IP address"
+                            ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
+                            ipInput.valueInvalid = true;
+                            break;
+                        }
+                    }
+                }
+                VPNCheckBoxAlert {
+                    id: errorAlert
+                    errorMessage: ipInput.error
+                    anchors.left: undefined
+                    anchors.right: undefined
+                    anchors.leftMargin: undefined
+                    anchors.rightMargin: undefined
+                    Layout.leftMargin: ipInput.Layout.leftMargin
+
+                    states: [
+                        State {
+                            name: "visible"
+                            when: ipInput.valueInvalid
+                            PropertyChanges {
+                                target: errorAlert
+                                visible: true
+                                opacity: 1
+                            }
+                        },
+                        State {
+                            name: "hidden"
+                            when: !ipInput.valueInvalid
+                            PropertyChanges {
+                                target: errorAlert
+                                visible: false
+                                opacity: 0
+                            }
+                        }
+                    ]
+
+                    transitions: [
+                        Transition {
+                            to: "hidden"
+                            SequentialAnimation {
+                                PropertyAnimation {
+                                    target: errorAlert
+                                    property: "opacity"
+                                    to: 0
+                                    duration: 100
+                                }
+                                PropertyAction {
+                                    target: errorAlert
+                                    property: "visible"
+                                    value: false
+                                }
+                            }
+                        },
+                        Transition {
+                            to: "visible"
+                            SequentialAnimation {
+                                PropertyAction {
+                                    target: errorAlert
+                                    property: "visible"
+                                    value: true
+                                }
+                                PropertyAnimation {
+                                    target: errorAlert
+                                    property: "opacity"
+                                    from: 0
+                                    to: 1
+                                    duration: 100
+                                }
+                            }
+                        }
+                    ]
+                }
             }
         }
     }

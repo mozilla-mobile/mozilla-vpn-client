@@ -431,5 +431,7 @@
         <file>ui/components/forms/VPNSearchBar.qml</file>
         <file>ui/resources/search.svg</file>
         <file>ui/components/VPNSubscriptionOption.qml</file>
+        <file>ui/components/forms/VPNTextField.qml</file>
+        <file>ui/components/forms/VPNRadioButton.qml</file>
     </qresource>
 </RCC>
