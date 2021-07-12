@@ -128,26 +128,7 @@ ColumnLayout {
     }
 
     ColumnLayout {
-        spacing: 8
-
-// TODO: Sort out "Select all"
-//        RowLayout {
-//            visible: applist.count > 0
-//            spacing: Theme.windowMargin
-//            Layout.minimumHeight: Theme.rowHeight
-
-//            VPNCheckBox {
-//                onClicked: () => VPNAppPermissions.unprotectAll();
-//                Layout.alignment: Qt.AlignVCenter
-//            }
-
-//            VPNBoldLabel {
-//                //% "Select all"
-//                text: qsTrId("vpn.appList.selectAll")
-//                Layout.alignment: Qt.AlignVCenter
-
-//            }
-//        }
+        spacing: Theme.windowMargin / 2
 
         VPNVerticalSpacer {
             Layout.preferredHeight: 1
