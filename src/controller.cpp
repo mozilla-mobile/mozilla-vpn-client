@@ -13,6 +13,7 @@
 #include "mozillavpn.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 #include "rfc/rfc5735.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
@@ -633,7 +634,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
   QList<IPAddress> excludeIPv4s;
-  QList<IPAddressRange> allowedIPv6s;
 
   // filtering out the captive portal endpoint
   if (FeatureList::instance()->captivePortalNotificationSupported() &&
@@ -654,12 +654,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.log() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
-
-    if (ipv6Enabled) {
-      // TODO IPv6 is not supported by IPAddress yet.
-      logger.log() << "Filtering out the local area networks (rfc 4193)";
-      allowedIPv6s.append(RFC4193::ipv6());
-    }
   } else if (FeatureList::instance()->userDNSSupported() &&
              !SettingsHolder::instance()->useGatewayDNS() &&
              SettingsHolder::instance()->userDNS().size() > 0 &&
@@ -694,12 +688,23 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
   }
 
+  // Allow access to IPv6 addresses, if enabled
   if (ipv6Enabled) {
-    if (allowedIPv6s.isEmpty()) {
-      logger.log() << "Catch all IPv6";
-      list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+    if (FeatureList::instance()->localNetworkAccessSupported() &&
+        SettingsHolder::instance()->localNetworkAccess()) {
+      list.append(RFC4193::ipv6global());
     } else {
-      list.append(allowedIPv6s);
+      // Note: The windows wireguard implementation has a bug where supplying
+      // a default route in IPv6 will enable firewall rules that break the
+      // captive portal check. As a workaround, limit the tunnel to all unicast
+      // addresses.
+      //
+      // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1225
+#ifdef MVPN_WINDOWS
+      list.append(RFC4291::ipv6unicast());
+#else
+      list.append(IPAddressRange("::", 0, IPAddressRange::IPv6));
+#endif
     }
   }
 
