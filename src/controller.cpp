@@ -303,6 +303,17 @@ void Controller::connected() {
     return;
   }
 
+#ifdef MVPN_ANDROID
+  // The OS probably has triggered this activation
+  // Since we can't be sure what wg-config the service has used
+  // doing a confirmation step is flaky. Let's go to "on"
+  if(m_state == StateOff){
+      setState(StateOn);
+      m_timer.start(TIMER_MSEC);
+      return;
+  }
+#endif
+
   // This is an unexpected connection. Let's use the Connecting state to animate
   // the UI.
   if (m_state != StateConnecting && m_state != StateSwitching &&
