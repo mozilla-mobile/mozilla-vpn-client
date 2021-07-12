@@ -113,6 +113,7 @@ Item {
                     valueChanged(this.text)
                 }
                 enabled: isEnabled
+                selectByMouse: true
             }
         }
 
