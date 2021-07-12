@@ -129,7 +129,7 @@ Item {
                         VPNInterLabel {
                             Layout.alignment: Qt.AlignLeft
                             horizontalAlignment: Qt.AlignLeft
-                            text: qsTrId("vpn.feedbackForm.poor")
+                            text: qsTrId("vpn.feedbackForm.veryPoor")
                             Layout.fillWidth: true
                             color: Theme.fontColor
                         }
