@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ipaddress.h"
+#include "bigintipv6addr.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -10,30 +11,58 @@
 
 namespace {
 Logger logger(LOG_NETWORKING, "IPAddress");
+
+quint32 s_allIpV4Ones = static_cast<quint32>(qPow(2, 32) - 1);
+
+BigIntIPv6Addr s_allIPv6Ones;
+bool s_ipv6Initialized = false;
+
+void maybeInitialize() {
+  if (s_ipv6Initialized) return;
+
+  s_ipv6Initialized = true;
+
+  Q_IPV6ADDR allOnes;
+  memset((void*)&allOnes, static_cast<quint8>(qPow(2, 8) - 1), sizeof(allOnes));
+
+  s_allIPv6Ones = BigIntIPv6Addr(allOnes);
 }
 
-static quint32 s_allOnes = static_cast<quint32>(qPow(2, 32) - 1);
+}  // namespace
 
 // static
 IPAddress IPAddress::create(const QString& ip) {
   if (ip.contains("/")) {
     QPair<QHostAddress, int> p = QHostAddress::parseSubnet(ip);
-    Q_ASSERT(p.first.protocol() == QAbstractSocket::IPv4Protocol);
 
-    if (p.second < 32) {
-      return IPAddress(p.first, p.second);
+    if (p.first.protocol() == QAbstractSocket::IPv4Protocol) {
+      if (p.second < 32) {
+        return IPAddress(p.first, p.second);
+      }
+      return IPAddress(p.first);
     }
 
-    return IPAddress(p.first);
+    if (p.first.protocol() == QAbstractSocket::IPv6Protocol) {
+      if (p.second < 128) {
+        return IPAddress(p.first, p.second);
+      }
+      return IPAddress(p.first);
+    }
+
+    Q_ASSERT(false);
   }
 
   return IPAddress(QHostAddress(ip));
 }
 
-IPAddress::IPAddress() { MVPN_COUNT_CTOR(IPAddress); }
+IPAddress::IPAddress() {
+  MVPN_COUNT_CTOR(IPAddress);
+  maybeInitialize();
+}
 
 IPAddress::IPAddress(const IPAddress& other) {
   MVPN_COUNT_CTOR(IPAddress);
+  maybeInitialize();
   *this = other;
 }
 
@@ -50,26 +79,65 @@ IPAddress& IPAddress::operator=(const IPAddress& other) {
 }
 
 IPAddress::IPAddress(const QHostAddress& address)
-    : m_address(address),
-      m_prefixLength(32),
-      m_netmask(QHostAddress(s_allOnes)),
-      m_hostmask(QHostAddress((quint32)(0))),
-      m_broadcastAddress(address) {
+    : m_address(address), m_broadcastAddress(address) {
   MVPN_COUNT_CTOR(IPAddress);
-  Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
+  maybeInitialize();
+
+  if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    m_prefixLength = 32;
+    m_netmask = QHostAddress(s_allIpV4Ones);
+    m_hostmask = QHostAddress((quint32)(0));
+  } else {
+    Q_ASSERT(address.protocol() == QAbstractSocket::IPv6Protocol);
+    m_prefixLength = 128;
+
+    m_netmask = QHostAddress(s_allIPv6Ones.value());
+
+    {
+      Q_IPV6ADDR ipv6;
+      memset((void*)&ipv6, 0, sizeof(ipv6));
+      m_hostmask = QHostAddress(ipv6);
+    }
+  }
 }
 
 IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
     : m_address(address), m_prefixLength(prefixLength) {
   MVPN_COUNT_CTOR(IPAddress);
-  Q_ASSERT(address.protocol() == QAbstractSocket::IPv4Protocol);
+  maybeInitialize();
 
-  Q_ASSERT(prefixLength >= 0 && prefixLength <= 32);
-  m_netmask = QHostAddress(s_allOnes ^ (s_allOnes >> prefixLength));
+  if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    Q_ASSERT(prefixLength >= 0 && prefixLength <= 32);
+    m_netmask = QHostAddress(s_allIpV4Ones ^ (s_allIpV4Ones >> prefixLength));
+    m_hostmask = QHostAddress(m_netmask.toIPv4Address() ^ s_allIpV4Ones);
+    m_broadcastAddress =
+        QHostAddress(address.toIPv4Address() | m_hostmask.toIPv4Address());
+  } else {
+    Q_ASSERT(address.protocol() == QAbstractSocket::IPv6Protocol);
+    Q_ASSERT(prefixLength >= 0 && prefixLength <= 128);
 
-  m_hostmask = QHostAddress(m_netmask.toIPv4Address() ^ s_allOnes);
-  m_broadcastAddress =
-      QHostAddress(address.toIPv4Address() | m_hostmask.toIPv4Address());
+    Q_IPV6ADDR netmask;
+    {
+      BigIntIPv6Addr tmp = (s_allIPv6Ones >> prefixLength);
+      for (int i = 0; i < 16; ++i)
+        netmask[i] = s_allIPv6Ones.value()[i] ^ tmp.value()[i];
+    }
+    m_netmask = QHostAddress(netmask);
+
+    {
+      Q_IPV6ADDR tmp;
+      for (int i = 0; i < 16; ++i)
+        tmp[i] = netmask[i] ^ s_allIPv6Ones.value()[i];
+      m_hostmask = QHostAddress(tmp);
+    }
+
+    {
+      Q_IPV6ADDR ipv6Address = address.toIPv6Address();
+      Q_IPV6ADDR ipv6Hostname = m_hostmask.toIPv6Address();
+      for (int i = 0; i < 16; ++i) ipv6Address[i] |= ipv6Hostname[i];
+      m_broadcastAddress = QHostAddress(ipv6Address);
+    }
+  }
 }
 
 IPAddress::~IPAddress() { MVPN_COUNT_DTOR(IPAddress); }
@@ -80,8 +148,20 @@ bool IPAddress::overlaps(const IPAddress& other) const {
 }
 
 bool IPAddress::contains(const QHostAddress& address) const {
-  return (m_address.toIPv4Address() <= address.toIPv4Address()) &&
-         (address.toIPv4Address() <= m_broadcastAddress.toIPv4Address());
+  if (address.protocol() != m_address.protocol()) {
+    return false;
+  }
+
+  if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    return (m_address.toIPv4Address() <= address.toIPv4Address()) &&
+           (address.toIPv4Address() <= m_broadcastAddress.toIPv4Address());
+  }
+
+  Q_ASSERT(address.protocol() == QAbstractSocket::IPv6Protocol);
+  return (BigIntIPv6Addr(m_address.toIPv6Address()) <=
+          BigIntIPv6Addr(address.toIPv6Address())) &&
+         (BigIntIPv6Addr(address.toIPv6Address()) <=
+          BigIntIPv6Addr(m_broadcastAddress.toIPv6Address()));
 }
 
 bool IPAddress::operator==(const IPAddress& other) const {
@@ -89,29 +169,93 @@ bool IPAddress::operator==(const IPAddress& other) const {
 }
 
 bool IPAddress::subnetOf(const IPAddress& other) const {
-  return other.m_address.toIPv4Address() <= m_address.toIPv4Address() &&
-         other.m_broadcastAddress.toIPv4Address() >=
-             m_broadcastAddress.toIPv4Address();
+  if (other.m_address.protocol() != m_address.protocol()) {
+    return false;
+  }
+
+  if (m_address.protocol() == QAbstractSocket::IPv4Protocol) {
+    return other.m_address.toIPv4Address() <= m_address.toIPv4Address() &&
+           other.m_broadcastAddress.toIPv4Address() >=
+               m_broadcastAddress.toIPv4Address();
+  }
+
+  Q_ASSERT(m_address.protocol() == QAbstractSocket::IPv6Protocol);
+  return BigIntIPv6Addr(other.m_address.toIPv6Address()) <=
+             BigIntIPv6Addr(m_address.toIPv6Address()) &&
+         BigIntIPv6Addr(other.m_broadcastAddress.toIPv6Address()) >=
+             BigIntIPv6Addr(m_broadcastAddress.toIPv6Address());
 }
 
 QList<IPAddress> IPAddress::subnets() const {
-  quint64 start = m_address.toIPv4Address();
-  quint64 end = quint64(m_broadcastAddress.toIPv4Address()) + 1;
-  quint64 step = ((quint64)m_hostmask.toIPv4Address() + 1) >> 1;
-
   QList<IPAddress> list;
 
-  if (m_prefixLength == 32) {
+  if (m_address.protocol() == QAbstractSocket::IPv4Protocol) {
+    if (m_prefixLength == 32) {
+      list.append(*this);
+      return list;
+    }
+
+    quint64 start = m_address.toIPv4Address();
+    quint64 end = quint64(m_broadcastAddress.toIPv4Address()) + 1;
+    quint64 step = ((quint64)m_hostmask.toIPv4Address() + 1) >> 1;
+
+    while (start < end) {
+      int newPrefixLength = m_prefixLength + 1;
+      if (newPrefixLength == 32) {
+        list.append(IPAddress(QHostAddress(start)));
+      } else {
+        list.append(IPAddress(QHostAddress(start), m_prefixLength + 1));
+      }
+      start += step;
+    }
+
+    return list;
+  }
+
+  Q_ASSERT(m_address.protocol() == QAbstractSocket::IPv6Protocol);
+
+  if (m_prefixLength == 128) {
     list.append(*this);
     return list;
   }
 
+  BigInt start(17);
+  {
+    Q_IPV6ADDR addr = m_address.toIPv6Address();
+    for (int i = 0; i < 16; ++i) {
+      start.setValueAt(addr[i], i + 1);
+    }
+  }
+
+  BigInt end(17);
+  {
+    Q_IPV6ADDR addr = m_broadcastAddress.toIPv6Address();
+    for (int i = 0; i < 16; ++i) {
+      end.setValueAt(addr[i], i + 1);
+    }
+    ++end;
+  }
+
+  BigInt step(17);
+  {
+    Q_IPV6ADDR addr = m_hostmask.toIPv6Address();
+    for (int i = 0; i < 16; ++i) {
+      step.setValueAt(addr[i], i + 1);
+    }
+    step = (++step) >> 1;
+  }
+
   while (start < end) {
     int newPrefixLength = m_prefixLength + 1;
-    if (newPrefixLength == 32) {
-      list.append(IPAddress(QHostAddress(start)));
+    Q_IPV6ADDR startIPv6;
+    for (int i = 0; i < 16; ++i) {
+      startIPv6[i] = start.valueAt(i + 1);
+    }
+
+    if (newPrefixLength == 128) {
+      list.append(IPAddress(QHostAddress(startIPv6)));
     } else {
-      list.append(IPAddress(QHostAddress(start), m_prefixLength + 1));
+      list.append(IPAddress(QHostAddress(startIPv6), m_prefixLength + 1));
     }
     start += step;
   }
