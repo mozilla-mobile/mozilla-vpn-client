@@ -28,7 +28,7 @@ Item {
 
     VPNMenu {
         id: menu
-        title: qsTrId("vpn.settings.appPermissions")
+        title: qsTrId("vpn.settings.appPermissions2")
         isSettingsView: true
     }
 
