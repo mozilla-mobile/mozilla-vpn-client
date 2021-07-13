@@ -27,7 +27,7 @@ VPNFlickable {
     VPNHeaderLink {
         id: headerLink
 
-        labelText: qsTrId("vpn.main.getHelp")
+        labelText: qsTrId("vpn.main.getHelp2")
         onClicked: stackview.push(getHelpComponent)
     }
 

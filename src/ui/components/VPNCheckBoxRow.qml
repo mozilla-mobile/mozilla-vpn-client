@@ -13,34 +13,63 @@ RowLayout {
     id: checkBoxRow
 
     property var labelText
-    property var subLabelText
+    property var subLabelText: ""
     property bool isChecked
     property bool isEnabled: true
     property bool showDivider: true
     property var leftMargin: 18
+    property bool showAppImage: false
 
     signal clicked()
-    spacing: 0
+
+    spacing: Theme.windowMargin
 
     VPNCheckBox {
         id: checkBox
-
-        Layout.leftMargin: leftMargin
         onClicked: checkBoxRow.clicked()
         checked: isChecked
         enabled: isEnabled
         opacity: isEnabled ? 1 : 0.5
+        Component.onCompleted: {
+            if (!showAppImage) {
+                Layout.leftMargin = leftMargin
+            }
+        }
+    }
+
+    Rectangle {
+        visible: showAppImage
+        width: Theme.windowMargin * 2
+        height: Theme.windowMargin * 2
+        color: "transparent"
+        radius: 4
+        Layout.alignment: Qt.AlignTop
+
+        Image {
+            sourceSize.width: Theme.windowMargin * 2
+            sourceSize.height: Theme.windowMArgin * 2
+            anchors.centerIn: parent
+            asynchronous: true
+            fillMode:  Image.PreserveAspectFit
+            Component.onCompleted: {
+                if (showAppImage && appID !== "") {
+                    source = "image://app/"+appID
+                }
+            }
+        }
     }
 
     ColumnLayout {
         id: labelWrapper
 
         Layout.fillWidth: true
+        Layout.topMargin: 2
         spacing: 4
+        Layout.alignment: Qt.AlignTop
 
         VPNInterLabel {
             id: label
-            Layout.alignment: Qt.AlignLeft
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             text: labelText
             color: Theme.fontColorDark
@@ -53,13 +82,13 @@ RowLayout {
             Layout.fillWidth: true
             text: subLabelText
             visible: !!subLabelText.length
-            wrapMode: Text.WordWrap
+            wrapMode: showAppImage ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap
         }
 
         Rectangle {
             id: divider
 
-            Layout.topMargin: 16
+            Layout.topMargin: Theme.windowMargin
             Layout.preferredHeight: 1
             Layout.fillWidth: true
             color: "#E7E7E7"

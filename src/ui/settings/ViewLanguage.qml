@@ -94,12 +94,6 @@ Item {
                         }
                         return qsTrId("vpn.settings.systemLanguageTitle");
                     }
-                    onActiveFocusChanged: {
-                        if (focus) {
-                            forceFocus = true;
-                            vpnFlickable.ensureVisible(useSystemLanguageToggle);
-                      }
-                    }
 
                     Layout.preferredHeight: 24
                     Layout.preferredWidth: 45
