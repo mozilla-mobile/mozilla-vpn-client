@@ -20,6 +20,7 @@ RadioDelegate {
     Layout.minimumHeight: 68
     Layout.preferredHeight: implicitContentHeight
     checked: productFeatured
+
     ButtonGroup.group: subscriptionOptions
     activeFocusOnTab: true
     onFocusChanged: {
@@ -27,9 +28,10 @@ RadioDelegate {
             vpnFlickable.ensureVisible(radioDelegate)
         }
     }
-    onClicked: {
+
+    onPressed: {
         if (checked) {
-            return VPNIAP.subscribe(productIdentifier)
+           return  VPNIAP.subscribe(subscriptionOptions.checkedButton.productId)
         }
     }
 
