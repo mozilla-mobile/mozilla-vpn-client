@@ -18,7 +18,7 @@ Item {
         id: headerLink
         objectName: "getHelpLink"
 
-        labelText: qsTrId("vpn.main.getHelp")
+        labelText: qsTrId("vpn.main.getHelp2")
         onClicked: {
             Sample.getHelpClickedInitialize.record();
             stackview.push(getHelpComponent);
