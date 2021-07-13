@@ -7,6 +7,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtGraphicalEffects 1.14
+import QtQuick.Dialogs 1.0
 
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
@@ -148,5 +149,46 @@ ColumnLayout {
                 Layout.minimumHeight: Theme.rowHeight * 1.5
             }
         }
+        VPNButton {
+            text: ""
+            Layout.fillWidth: true
+            onClicked: fileDialog.open()
+            contentItem: Text {
+                // for accessibility
+                text: addApplication
+                color: "transparent"
+            }
+
+            RowLayout {
+                anchors.centerIn: parent
+                VPNIcon {
+                    source: "../resources/plus.svg"
+                    sourceSize.height: Theme.windowMargin
+                    sourceSize.width: Theme.windowMargin
+                }
+                VPNBoldLabel {
+                    text: addApplication
+                    color: "white"
+                }
+            }
+        }
+    }
+
+
+    FileDialog {
+        id: fileDialog
+        folder: shortcuts.home
+        title: addApplication
+        selectMultiple: false
+        onAccepted: {
+            console.log(fileDialog.fileUrl);
+            fileDialog.close();
+        }
+        visible: false
+        onRejected: {
+            fileDialog.close();
+        }
+        // TODO
+        // nameFilters: [ "Image files (*.png)"]
     }
 }
