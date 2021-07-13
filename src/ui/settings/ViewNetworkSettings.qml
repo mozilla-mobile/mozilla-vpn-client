@@ -44,9 +44,10 @@ Item {
             }
         }
 
-        Column {
+        ColumnLayout {
             id: col
-            width: parent.width
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.top: parent.top
             anchors.topMargin: 18
             spacing: Theme.windowMargin
@@ -54,8 +55,7 @@ Item {
             VPNCheckBoxRow {
                 id: ipv6
                 objectName: "settingIpv6Enabled"
-                width: parent.width - Theme.windowMargin
-
+                Layout.rightMargin: Theme.windowMargin
 
                 //% "IPv6"
                 labelText: qsTrId("vpn.settings.ipv6")
@@ -74,8 +74,8 @@ Item {
             VPNCheckBoxRow {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
-                width: parent.width - Theme.windowMargin
                 visible: VPNFeatureList.localNetworkAccessSupported
+                Layout.rightMargin: Theme.windowMargin
 
                 //% "Local network access"
                 labelText: qsTrId("vpn.settings.lanAccess")
@@ -91,97 +91,32 @@ Item {
                 }
             }
 
-            // TODO: to be removed when advanced DNS view is ready.
-            VPNCheckBoxRow {
-                id: useLocalDNS
-                visible: VPNFeatureList.userDNSSupported
-                objectName: "settingMozillaDNSEnabled"
-                width: parent.width - Theme.windowMargin
-
-                //% "Use local DNS"
-                labelText: qsTrId("vpn.settings.useGatewayDNS")
-                //% "Resolve website domain names using a DNS in your local network"
-                subLabelText: qsTrId("vpn.settings.useGatewayDNS.resolveWebsiteDomainNames")
-                isChecked: (!VPNSettings.useGatewayDNS)
-                isEnabled: vpnFlickable.vpnIsOff
-                showDivider: false
-                onClicked: {
-                    if (vpnFlickable.vpnIsOff) {
-                        VPNSettings.useGatewayDNS = !VPNSettings.useGatewayDNS
-                    }
-                }
-            }
-
-            // TODO: to be removed when advanced DNS view is ready.
-            VPNTextInput{
-                id: ipInput
-
-                visible: (!VPNSettings.useGatewayDNS) && useLocalDNS.visible
-                isEnabled: vpnFlickable.vpnIsOff
-                leftPadding: 55
-
-                width: parent.width - Theme.windowMargin
-                height: 30
-                value: VPNSettings.userDNS
-                valueChanged: ip => {
-                    if (ip === "") {
-                        // If nothing is entered, thats valid too. We will ignore the value later.
-                        ipInput.valueInvalid = false;
-                        VPNSettings.userDNS = ip
-                        return;
-                    }
-
-                    switch(VPNSettings.validateUserDNS(ip)) {
-                    case VPNSettings.UserDNSOK:
-                        ipInput.valueInvalid = false;
-                        if (ip !== VPNSettings.userDNS) {
-                            VPNSettings.userDNS = ip
-                        }
-                        break;
-
-                    // Now bother user if the ip is invalid :)
-                    case VPNSettings.UserDNSInvalid:
-                        //% "Invalid IP address"
-                        ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
-                        ipInput.valueInvalid = true;
-                        break;
-
-                    case VPNSettings.UserDNSNotIPv4:
-                        //% "We currently support only IPv4 IP addresses"
-                        ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
-                        ipInput.valueInvalid = true;
-                        break;
-
-                    case VPNSettings.UserDNSOutOfRange:
-                        //% "Out of range IP address"
-                        ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
-                        ipInput.valueInvalid = true;
-                        break;
-                    }
-                }
-            }
-
-            // TODO: this needs to be fixed.
             VPNSettingsItem {
                 objectName: "advancedDNSSettings"
+                Layout.leftMargin: Theme.windowMargin / 2
+                Layout.rightMargin: Theme.windowMargin / 2
 
                 //% "Advanced DNS Settings"
                 settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
                 imageLeftSrc: "../resources/settings.svg"
                 imageRightSrc: "../resources/chevron.svg"
                 onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
-                visible: false
-                // TODO: visible: VPNFeatureList.userDNSSupported
-                // TODO: isEnabled: vpnFlickable.vpnIsOff
-            }
-
-            VPNCheckBoxAlert {
-                visible: !vpnFlickable.vpnIsOff
-
-                //% "VPN must be off to edit these settings"
-                //: Associated to a group of settings that require the VPN to be disconnected to change
-                errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+                visible: VPNFeatureList.userDNSSupported
+                enabled: vpnFlickable.vpnIsOff
+                opacity: enabled ? 1 : .5
             }
         }
+
+        VPNCheckBoxAlert {
+            visible: !vpnFlickable.vpnIsOff
+            anchors.top: col.bottom
+            anchors.topMargin: 4
+            anchors.leftMargin: 48
+
+            //% "VPN must be off to edit these settings"
+            //: Associated to a group of settings that require the VPN to be disconnected to change
+            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+        }
+
     }
 }
