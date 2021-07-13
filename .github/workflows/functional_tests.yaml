@@ -26,12 +26,16 @@ jobs:
       - id: testGen
         shell: bash
         run: |
-          var=$(ls tests/functional/test* | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=tests::$var"
+          echo -n "::set-output name=tests::"
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c
       - name: Check Tests
         shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
         run: |
-          echo ${{ steps.testGen.outputs.tests }}
+          echo $TEST_LIST | jq
 
   build_test_app:
     name: Build Test Client
@@ -142,22 +146,21 @@ jobs:
           npm install mocha
           npm install websocket
 
-      - name: Run the test script
+      - name: Running ${{matrix.test.name}} tests
         id: runTests
-        continue-on-error: true
         run: |
           export PATH=.:$(npm bin):$PATH
           export HEADLESS=yes
-          xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn ${{matrix.test}}
+          xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn ${{matrix.test.path}}
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
       
       - name: Uploading logs
         uses: actions/upload-artifact@v1
-        if: steps.runTests.outcome != 'success'
+        if: ${{ always() && steps.runTests.outcome != 'success' }}
         with:
-          name: Logs (${{matrix.test}})
+          name: ${{matrix.test.name}} Logs
           path: /tmp/VPN_LOG.txt
 
       - name: Uploading screenshots
