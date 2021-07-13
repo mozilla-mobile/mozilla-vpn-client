@@ -315,8 +315,8 @@ Item {
         Item {
             ColumnLayout {
                 anchors.top: parent.top
-                anchors.topMargin: window.height * .10
                 anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
                 spacing: 24
                 VPNPanel {
@@ -334,6 +334,9 @@ Item {
                    Layout.fillWidth: true
                    Layout.preferredHeight: Theme.rowHeight
                    onClicked: stackview.pop(StackView.Immediate)
+                   anchors.bottom: parent.bottom
+                   anchors.horizontalCenter: parent.horizontalCenter
+                   anchors.bottomMargin: Theme.windowMargin * 4
                 }
             }
         }
