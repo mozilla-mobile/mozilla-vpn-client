@@ -96,6 +96,7 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasProtectSelectedApps, protectSelectedApps,
          setProtectSelectedApps)
   GETSET(QStringList, hasVpnDisabledApps, vpnDisabledApps, setVpnDisabledApps)
+  GETSET(QStringList, hasMissingSplitTunnelApps, missingSplitTunnelApps, setMissingSplitTunnelApps)
   GETSET(bool, hasUsegatewayDNS, useGatewayDNS, setUseGatewayDNS)
   GETSET(QString, hasUserDNS, userDNS, setUserDNS)
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
@@ -108,6 +109,9 @@ class SettingsHolder final : public QObject {
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
   void addVpnDisabledApp(const QString& appID);
+
+  void addMissingSplitTunnelApp(const QString& appID);
+  void removeMissingSplitTunnelApp(const QString& appID);
 
   void addConsumedSurvey(const QString& surveyId);
 
@@ -152,6 +156,7 @@ class SettingsHolder final : public QObject {
   void startAtBootChanged(bool value);
   void protectSelectedAppsChanged(bool value);
   void vpnDisabledAppsChanged(const QStringList& apps);
+  void missingSplitTunnelAppsChanged(const QStringList& apps);
   void useGatewayDNSChanged(bool value);
   void userDNSChanged(QString value);
   void gleanEnabledChanged(bool value);

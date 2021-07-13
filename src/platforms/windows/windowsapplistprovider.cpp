@@ -5,6 +5,8 @@
 #include "windowsapplistprovider.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "settingsholder.h"
+
 #include <QSettings>
 #include <QFile>
 #include <QDir>
@@ -39,6 +41,19 @@ void WindowsAppListProvider::getApplicationList() {
   readLinkFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs", appList);
   readLinkFiles(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "\\..\\Microsoft\\Windows\\Start Menu\\Programs", appList);
   readLinkFiles(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), appList);
+
+  // Append Apps that on the "missing" list
+  if(SettingsHolder::instance()->hasMissingSplitTunnelApps()){
+      auto missingApps = SettingsHolder::instance()->missingSplitTunnelApps();
+      for(const QString& path: missingApps){
+          // Check if the Missing app Still exsits, otherwise delete from list
+          if(!isValidAppId(path)){
+              SettingsHolder::instance()->removeMissingSplitTunnelApp(path);
+          }
+          auto name = QFileInfo(path).baseName();
+          appList.insert(path,name);
+      }
+  }
 
   emit newAppList(appList);
 }
