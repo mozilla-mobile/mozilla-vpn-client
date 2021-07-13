@@ -16,9 +16,9 @@ CheckBox {
     property var toolTipTitle
 
     onClicked: toolTip.hide()
-    Keys.onSpacePressed: clicked()
+    onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(vpnSettingsToggle)
 
-    height: 24
+    height: Theme.vSpacing
     width: 45
     states: [
         State {
