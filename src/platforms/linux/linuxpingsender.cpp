@@ -10,7 +10,9 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <linux/filter.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -19,12 +21,52 @@ namespace {
 Logger logger({LOG_LINUX, LOG_NETWORKING}, "LinuxPingSender");
 }
 
+int LinuxPingSender::createSocket() {
+  // Try creating an ICMP socket. This would be the ideal choice, but it can
+  // fail depending on the kernel config (see: sys.net.ipv4.ping_group_range)
+  m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
+  if (m_socket >= 0) {
+    m_ident = 0;
+    return m_socket;
+  }
+  if ((errno != EPERM) && (errno != EACCES)) {
+    return -1;
+  }
+
+  // As a fallback, create a raw socket, which requires root permissions
+  // or CAP_NET_RAW to be granted to the VPN client.
+  m_socket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+  if (m_socket < 0) {
+    return -1;
+  }
+  m_ident = getpid() & 0xffff;
+
+  // Attach a BPF filter to discard everything but replies to our echo.
+  struct sock_filter bpf_prog[] = {
+      BPF_STMT(BPF_LDX | BPF_B | BPF_MSH, 0), /* Skip IP header. */
+      BPF_STMT(BPF_LD | BPF_H | BPF_IND, 4),  /* Load icmp echo ident */
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, m_ident, 1, 0), /* Ours? */
+      BPF_STMT(BPF_RET | BPF_K, 0), /* Unexpected identifier. Reject. */
+      BPF_STMT(BPF_LD | BPF_B | BPF_IND, 0), /* Load icmp type */
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, ICMP_ECHOREPLY, 1, 0), /* Echo? */
+      BPF_STMT(BPF_RET | BPF_K, 0),   /* Unexpected type. Reject. */
+      BPF_STMT(BPF_RET | BPF_K, ~0U), /* Packet passes the filter. */
+  };
+  struct sock_fprog filter = {
+      .len = sizeof(bpf_prog) / sizeof(struct sock_filter),
+      .filter = bpf_prog,
+  };
+  setsockopt(m_socket, SOL_SOCKET, SO_ATTACH_FILTER, &filter, sizeof(filter));
+
+  return m_socket;
+}
+
 LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
     : PingSender(parent) {
   MVPN_COUNT_CTOR(LinuxPingSender);
   logger.log() << "LinuxPingSender(" + source + ") created";
 
-  m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
+  m_socket = createSocket();
   if (m_socket < 0) {
     logger.log() << "Socket creation error: " << strerror(errno);
     return;
@@ -43,8 +85,13 @@ LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
   }
 
   m_notifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
-  connect(m_notifier, &QSocketNotifier::activated, this,
-          &LinuxPingSender::socketReady);
+  if (m_ident) {
+    connect(m_notifier, &QSocketNotifier::activated, this,
+            &LinuxPingSender::rawSocketReady);
+  } else {
+    connect(m_notifier, &QSocketNotifier::activated, this,
+            &LinuxPingSender::icmpSocketReady);
+  }
 }
 
 LinuxPingSender::~LinuxPingSender() {
@@ -65,7 +112,9 @@ void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
   struct icmphdr packet;
   memset(&packet, 0, sizeof(packet));
   packet.type = ICMP_ECHO;
+  packet.un.echo.id = htons(m_ident);
   packet.un.echo.sequence = htons(sequence);
+  packet.checksum = inetChecksum(&packet, sizeof(packet));
 
   int rc = sendto(m_socket, &packet, sizeof(packet), 0, (struct sockaddr*)&addr,
                   sizeof(addr));
@@ -74,10 +123,10 @@ void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
   }
 }
 
-void LinuxPingSender::socketReady() {
+void LinuxPingSender::icmpSocketReady() {
   socklen_t slen = 0;
   unsigned char data[2048];
-  int rc = recvfrom(m_socket, data, sizeof data, MSG_DONTWAIT, NULL, &slen);
+  int rc = recvfrom(m_socket, data, sizeof(data), MSG_DONTWAIT, NULL, &slen);
   if (rc <= 0) {
     logger.log() << "recvfrom failed:" << strerror(errno);
     return;
@@ -87,6 +136,38 @@ void LinuxPingSender::socketReady() {
   if (rc >= (int)sizeof(packet)) {
     memcpy(&packet, data, sizeof(packet));
     if (packet.type == ICMP_ECHOREPLY) {
+      emit recvPing(htons(packet.un.echo.sequence));
+    }
+  }
+}
+
+void LinuxPingSender::rawSocketReady() {
+  socklen_t slen = 0;
+  unsigned char data[2048];
+  int rc = recvfrom(m_socket, data, sizeof(data), MSG_DONTWAIT, NULL, &slen);
+  if (rc <= 0) {
+    logger.log() << "recvfrom failed:" << strerror(errno);
+    return;
+  }
+
+  // Check the IP header
+  const struct iphdr* ip = (struct iphdr*)data;
+  int iphdrlen = ip->ihl * 4;
+  if (rc < iphdrlen || iphdrlen < (int)sizeof(struct iphdr)) {
+    logger.log() << "malformed IP packet:" << strerror(errno);
+    return;
+  }
+
+  // Check the ICMP packet
+  struct icmphdr packet;
+  if (inetChecksum(data + iphdrlen, rc - iphdrlen) != 0) {
+    logger.log() << "invalid checksum";
+    return;
+  }
+  if (rc >= (iphdrlen + (int)sizeof(packet))) {
+    memcpy(&packet, data + iphdrlen, sizeof(packet));
+    quint16 id = htons(m_ident);
+    if ((packet.type == ICMP_ECHOREPLY) && (packet.un.echo.id == id)) {
       emit recvPing(htons(packet.un.echo.sequence));
     }
   }

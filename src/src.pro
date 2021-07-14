@@ -96,6 +96,7 @@ SOURCES += \
         networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
+        pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
