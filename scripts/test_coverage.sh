@@ -7,6 +7,8 @@
 . $(dirname $0)/commons.sh
 
 REPORT_FILE=/tmp/report.html
+LANGUAGE=en
+LANG=en
 
 print N "This script runs the unit tests and shows the test coverage."
 print N ""

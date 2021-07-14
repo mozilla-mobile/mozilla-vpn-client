@@ -24,8 +24,6 @@ uint64_t lastNonce = 0;
 
 // static
 bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
-  logger.log() << "Read the settings file";
-
   QByteArray version = device.read(1);
   if (version.length() != 1) {
     logger.log() << "Failed to read the version";
@@ -96,7 +94,6 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
       key, (uint8_t*)nonce.data(), version.length(), (uint8_t*)version.data(),
       ciphertext.length(), (uint8_t*)content.data(),
       (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
-  logger.log() << "Result:" << result;
   if (result != 0) {
     return false;
   }
@@ -115,7 +112,6 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
 
   Q_ASSERT(NONCE_SIZE > sizeof(lastNonce));
   memcpy(&lastNonce, nonce.data(), sizeof(lastNonce));
-  logger.log() << "Nonce:" << lastNonce;
 
   return true;
 }

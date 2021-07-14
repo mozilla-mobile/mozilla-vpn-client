@@ -129,8 +129,6 @@ SettingsHolder::SettingsHolder()
 {
   MVPN_COUNT_CTOR(SettingsHolder);
 
-  logger.log() << "Creating SettingsHolder instance";
-
   Q_ASSERT(!s_instance);
   s_instance = this;
 
