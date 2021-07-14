@@ -383,7 +383,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
 }
 
 bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
-  logger.log() << "Savel the file and install it";
+  logger.log() << "Save the file and install it";
 
   int pos = url.lastIndexOf("/");
   if (pos == -1) {
@@ -395,7 +395,8 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   logger.log() << "Filename:" << fileName;
 
   if (!m_tmpDir.isValid()) {
-    logger.log() << "Cannot create a temporary directory";
+    logger.log() << "Cannot create a temporary directory"
+                 << m_tmpDir.errorString();
     return false;
   }
 
