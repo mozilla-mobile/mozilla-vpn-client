@@ -114,7 +114,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   Localizer localizer;
   SimpleNetworkManager snm;
 
-  QIcon icon(Constants::logoUrl());
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
@@ -145,7 +145,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   Localizer localizer;
 
-  QIcon icon(Constants::logoUrl());
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
