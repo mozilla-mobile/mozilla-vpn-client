@@ -1238,6 +1238,8 @@ void MozillaVPN::update() {
 
   setUpdating(true);
 
+  // The windows installer will stop the client and daemon before installation
+  // so it's not necessary to disable the VPN to perform an upgrade.
 #ifndef MVPN_WINDOWS
   if (m_private->m_controller.state() != Controller::StateOff &&
       m_private->m_controller.state() != Controller::StateInitializing) {
