@@ -19,8 +19,8 @@ RadioDelegate {
     property var uiState: Theme.uiState
     id: radio
     checked: false
-    implicitHeight: heightWidth
-    implicitWidth: heightWidth
+    implicitHeight: Theme.rowHeight
+    implicitWidth: Theme.rowHeight
     activeFocusOnTab: true
     Component.onCompleted: {
         state = uiState.stateDefault
@@ -62,7 +62,7 @@ RadioDelegate {
             color: "transparent"
             border.width: 4
             border.color: Theme.blueFocusOutline
-            anchors.margins: -3
+            anchors.margins: 2
             radius: height
 
             Behavior on opacity {
