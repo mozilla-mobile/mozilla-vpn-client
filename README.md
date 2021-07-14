@@ -90,7 +90,7 @@ make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
 
-For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug CONFIG+=inspector`.
+For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug`.
 
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
@@ -292,9 +292,11 @@ Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/singl
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
 
-## Staging vs Production environment
+## Developer Options and staging environment
 
-To enable the staging environment, before running the application, create an empty file in your home directory, with this name: `.mozillavpn_in_staging.txt`
+To enable the staging environment, open the `Get Help` window, and click on the `Get Help` text 6 times within 10
+seconds to unlock the Developer Options menu. On this menu, you can enable on the `Staging Server` checkbox to
+switch to the staging environment. A full restart of the VPN will be required for this option to take effect.
 
 ## Inspector
 

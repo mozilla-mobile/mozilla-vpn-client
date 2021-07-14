@@ -157,10 +157,20 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << Qt::endl;
 }
 
+// static
+void LogHandler::enableDebug() {
+  QMutexLocker lock(&s_mutex);
+  maybeCreate(lock)->m_showDebug = true;
+}
+
 LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
                        const QMutexLocker& proofOfLock)
     : m_minLogLevel(minLogLevel), m_modules(modules) {
   Q_UNUSED(proofOfLock);
+
+#if defined(QT_DEBUG) || defined(MVPN_WASM)
+  m_showDebug = true;
+#endif
 
   if (!s_location.isEmpty()) {
     openLogFile(proofOfLock);
@@ -180,15 +190,18 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
     prettyOutput(*m_output, log);
   }
 
-  if (!Constants::inProduction()) {
-    QByteArray buffer;
-    {
-      QTextStream out(&buffer);
-      prettyOutput(out, log);
-    }
-
-    emit logEntryAdded(buffer);
+  if ((log.m_logLevel != LogLevel::Debug) || m_showDebug) {
+    QTextStream out(stderr);
+    prettyOutput(out, log);
   }
+
+  QByteArray buffer;
+  {
+    QTextStream out(&buffer);
+    prettyOutput(out, log);
+  }
+
+  emit logEntryAdded(buffer);
 
 #if defined(MVPN_ANDROID) && defined(QT_DEBUG)
   QByteArray buffer;
@@ -201,9 +214,6 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
   }
-#elif defined(QT_DEBUG) || defined(MVPN_WASM)
-  QTextStream out(stderr);
-  prettyOutput(out, log);
 #endif
 }
 
@@ -323,6 +333,7 @@ void LogHandler::openLogFile(const QMutexLocker& proofOfLock) {
   }
 
   m_output = new QTextStream(m_logFile);
+
 
   addLog(Log(Debug, QStringList{LOG_MAIN}, "LogHandler",
              QString("Log file: %1").arg(logFileName)),

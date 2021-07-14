@@ -170,6 +170,8 @@ MozillaVPN::~MozillaVPN() {
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
+bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
+
 void MozillaVPN::initialize() {
   logger.log() << "MozillaVPN Initialization";
 

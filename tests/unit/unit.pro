@@ -37,6 +37,7 @@ HEADERS += \
     ../../src/curve25519.h \
     ../../src/errorhandler.h \
     ../../src/featurelist.h \
+    ../../src/inspector/inspectorwebsocketconnection.h \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
@@ -165,6 +166,7 @@ SOURCES += \
     ../../src/urlopener.cpp \
     main.cpp \
     moccontroller.cpp \
+    mocinspectorwebsocketconnection.cpp \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testandroidmigration.cpp \

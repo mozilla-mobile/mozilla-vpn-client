@@ -11,6 +11,7 @@ namespace Constants {
 
 // Returns true if we are in a production environment.
 bool inProduction();
+void setStaging();
 
 // This value is the fallback in case apple is slower than the user. This
 // should never happen.
@@ -72,7 +73,7 @@ constexpr const char* API_STAGING_URL = "https://stage-vpn.guardian.nonprod.clou
 
 PRODBETAEXPR(const char*, logoUrl, ":/ui/resources/logo-dock.png",
              ":/ui/resources/logo-dock-beta.png")
-PRODBETAEXPR(const char*, FXA_URL, "https://api.accounts.firefox.com",
+PRODBETAEXPR(const char*, fxaUrl, "https://api.accounts.firefox.com",
              "https://api-accounts.stage.mozaws.net")
 PRODBETAEXPR(
     const char*, balrogUrl,

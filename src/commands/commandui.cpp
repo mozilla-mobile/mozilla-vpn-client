@@ -93,11 +93,14 @@ int CommandUI::run(QStringList& tokens) {
                                               "Start minimized.");
     CommandLineParser::Option startAtBootOption(
         "s", "start-at-boot", "Start at boot (if configured).");
+    CommandLineParser::Option testingOption("t", "testing",
+                                            "Enable testing mode.");
 
     QList<CommandLineParser::Option*> options;
     options.append(&hOption);
     options.append(&minimizedOption);
     options.append(&startAtBootOption);
+    options.append(&testingOption);
 
     CommandLineParser clp;
     if (clp.parse(tokens, options, false)) {
@@ -111,6 +114,10 @@ int CommandUI::run(QStringList& tokens) {
     if (hOption.m_set) {
       clp.showHelp(this, appName, options, false, false);
       return 0;
+    }
+
+    if (testingOption.m_set) {
+      Constants::setStaging();
     }
 
     logger.log() << "UI starting";
