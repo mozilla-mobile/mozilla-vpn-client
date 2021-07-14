@@ -280,7 +280,9 @@ Window {
         }
 
         function onSendGleanPings() {
-            Pings.main.submit();
+            if (VPNSettings.gleanEnabled && VPN.productionMode) {
+                Pings.main.submit();
+            }
         }
 
         function onTriggerGleanSample(sample) {
@@ -290,7 +292,9 @@ Window {
         function onAboutToQuit() {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
-            Pings.main.submit();
+            if (VPNSettings.gleanEnabled && VPN.productionMode) {
+              Pings.main.submit();
+            }
         }
     }
 
