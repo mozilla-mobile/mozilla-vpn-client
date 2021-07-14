@@ -16,6 +16,7 @@ TextField {
 
     Layout.preferredHeight: Theme.rowHeight
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
+    selectByMouse: true
 
     background: VPNInputBackground {
         showError: stateError

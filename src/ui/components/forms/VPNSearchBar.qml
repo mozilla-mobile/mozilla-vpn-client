@@ -19,6 +19,7 @@ TextField {
     leftInset: 48
     leftPadding: 48
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
+    selectByMouse: true
 
     VPNIcon {
         source: "qrc:/ui/resources/search.svg"
