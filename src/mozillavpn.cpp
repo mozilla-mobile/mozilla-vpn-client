@@ -1238,11 +1238,13 @@ void MozillaVPN::update() {
 
   setUpdating(true);
 
+#ifndef MVPN_WINDOWS
   if (m_private->m_controller.state() != Controller::StateOff &&
       m_private->m_controller.state() != Controller::StateInitializing) {
     deactivate();
     return;
   }
+#endif
 
   m_private->m_releaseMonitor.update();
 }
