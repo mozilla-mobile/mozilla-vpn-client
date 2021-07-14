@@ -8,8 +8,8 @@ quint16 PingSender::inetChecksum(const void* data, size_t len) {
   int nleft, sum;
   quint16* w;
   union {
-    u_short us;
-    u_char uc[2];
+    quint16 us;
+    quint8 uc[2];
   } last;
   quint16 answer;
 
@@ -29,7 +29,7 @@ quint16 PingSender::inetChecksum(const void* data, size_t len) {
 
   /* mop up an odd byte, if necessary */
   if (nleft == 1) {
-    last.uc[0] = *(u_char*)w;
+    last.uc[0] = *(quint8*)w;
     last.uc[1] = 0;
     sum += last.us;
   }
