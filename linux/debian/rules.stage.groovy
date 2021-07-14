@@ -3,13 +3,14 @@
 export DH_VERBOSE=1
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
 %:
 	dh $@ --with systemd --warn-missing
 
 override_dh_auto_configure:
 	python3 scripts/importLanguages.py
-	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=inspector BUILD_ID=FULLVERSION
+	qmake CONFIG-=debug CONFIG+=release CONFIG-=debug_and_release CONFIG+=inspector BUILD_ID=$(DEB_VERSION)
 
 override_dh_installdocs:
 
