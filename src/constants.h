@@ -71,8 +71,8 @@ CONSTEXPR(uint32_t, surveyTimerMsec, 300000, 4000, 0)
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL = "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
 
-PRODBETAEXPR(const char*, logoUrl, ":/ui/resources/logo-dock.png",
-             ":/ui/resources/logo-dock-beta.png")
+constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
+
 PRODBETAEXPR(
     const char*, balrogUrl,
     "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
