@@ -41,7 +41,6 @@ class WindowsDaemon final : public Daemon {
 
   State m_state = Inactive;
 
-  WindowsTunnelService m_tunnel;
   WireguardUtilsWindows* m_wgutils = nullptr;
 };
 

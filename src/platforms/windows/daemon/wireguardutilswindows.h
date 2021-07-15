@@ -6,6 +6,7 @@
 #define WIREGUARDUTILSWINDOWS_H
 
 #include "daemon/wireguardutils.h"
+#include "windowstunnelservice.h"
 
 #include <QObject>
 
@@ -18,7 +19,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   WireguardUtilsWindows(QObject* parent);
   ~WireguardUtilsWindows();
 
-  bool interfaceExists() override;
+  bool interfaceExists() override { return m_tunnel.isRunning(); }
   bool addInterface(const InterfaceConfig& config) override;
   bool updateInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
@@ -26,12 +27,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool addRoutePrefix(const IPAddressRange& prefix) override;
 
  private:
-  bool registerTunnelService(const QString& configFile);
-  bool stopAndDeleteTunnelService(SC_HANDLE service);
-
- private:
-  SC_HANDLE m_scm = nullptr;
-  SC_HANDLE m_service = nullptr;
+  WindowsTunnelService m_tunnel;
 };
 
 #endif  // WIREGUARDUTILSWINDOWS_H

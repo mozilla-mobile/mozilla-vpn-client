@@ -9,17 +9,21 @@
 #include <QObject>
 #include <QTimer>
 
+#include "Windows.h"
+
 class WindowsTunnelService final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(WindowsTunnelService)
 
  public:
-  WindowsTunnelService();
+  WindowsTunnelService(QObject* parent = nullptr);
   ~WindowsTunnelService();
 
   void resetLogs();
-  void start();
+  bool start(const QString& configFile);
   void stop();
+  bool isRunning();
+  HANDLE createPipe();
 
  signals:
   void backendFailure();
@@ -30,6 +34,11 @@ class WindowsTunnelService final : public QObject {
   void processMessage(int index);
   int nextLogIndex();
 
+  bool registerTunnelService(const QString& configFile);
+  bool stopAndDeleteTunnelService(SC_HANDLE service);
+  static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus);
+  static QString exitCodeToFailure(DWORD code);
+
  private:
   QTimer m_timer;
   QTimer m_logtimer;
@@ -37,6 +46,9 @@ class WindowsTunnelService final : public QObject {
   uchar* m_logdata = nullptr;
   int m_logindex = -1;
   quint64 m_logEpochNsec = 0;
+
+  SC_HANDLE m_scm = nullptr;
+  SC_HANDLE m_service = nullptr;
 };
 
 #endif  // WINDOWSTUNNELSERVICE_H
