@@ -122,7 +122,8 @@ bool WgQuickProcess::run(
     const QString& dnsServer) {
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
-    qWarning("Cannot create a temporary directory");
+    logger.log() << "Cannot create a temporary directory"
+                 << tmpDir.errorString();
     return false;
   }
 

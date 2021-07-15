@@ -25,6 +25,8 @@ INCLUDEPATH += \
             ../../src/hacl-star/kremlin/minimal
 
 HEADERS += \
+    ../../src/bigint.h \
+    ../../src/bigintipv6addr.h \
     ../../src/captiveportal/captiveportal.h \
     ../../src/command.h \
     ../../src/commandlineparser.h \
@@ -84,6 +86,8 @@ HEADERS += \
     ../../src/urlopener.h \
     helper.h \
     testandroidmigration.h \
+    testbigint.h \
+    testbigintipv6addr.h \
     testcommandlineparser.h \
     testconnectiondataholder.h \
     testlocalizer.h \
@@ -158,6 +162,8 @@ SOURCES += \
     mocmozillavpn.cpp \
     mocnetworkrequest.cpp \
     testandroidmigration.cpp \
+    testbigint.cpp \
+    testbigintipv6addr.cpp \
     testcommandlineparser.cpp \
     testconnectiondataholder.cpp \
     testlocalizer.cpp \

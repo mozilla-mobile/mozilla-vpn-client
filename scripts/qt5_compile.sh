@@ -67,6 +67,7 @@ LINUX="
 "
 
 MACOS="
+  -debug-and-release \
   -appstore-compliant \
   -no-feature-qdbus \
   -no-speechd
@@ -89,7 +90,6 @@ print Y "Wait..."
   --recheck-all \
   -opensource \
   -confirm-license \
-  -debug-and-release \
   -static \
   -strip \
   -silent \

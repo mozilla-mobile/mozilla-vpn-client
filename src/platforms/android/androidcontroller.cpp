@@ -147,6 +147,7 @@ void AndroidController::activate(
       appContext.object());
 
   m_server = server;
+  m_device = *device;
 
   // Serialise arguments for the VPNService
   QJsonObject jDevice;
@@ -304,7 +305,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       // Data is here a JSON String
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->statusUpdated(m_controller->m_server.ipv4Gateway(),
-                                       m_controller->m_server.ipv4AddrIn(),
+                                       m_controller->m_device.ipv4Address(),
                                        doc.object()["totalTX"].toInt(),
                                        doc.object()["totalRX"].toInt());
       break;

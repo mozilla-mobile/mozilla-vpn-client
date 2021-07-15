@@ -5,7 +5,6 @@
 #include "balrog.h"
 #include "constants.h"
 #include "errorhandler.h"
-#include "inspector/inspectorwebsocketconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -63,14 +62,6 @@ Logger logger(LOG_NETWORKING, "Balrog");
 void balrogLogger(int level, const char* msg) {
   Q_UNUSED(level);
   logger.log() << "BalrogGo:" << msg;
-}
-
-QString appVersion() {
-#ifdef MVPN_INSPECTOR
-  return InspectorWebSocketConnection::appVersionForUpdate();
-#else
-  return APP_VERSION;
-#endif
 }
 
 }  // namespace
@@ -392,7 +383,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
 }
 
 bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
-  logger.log() << "Savel the file and install it";
+  logger.log() << "Save the file and install it";
 
   int pos = url.lastIndexOf("/");
   if (pos == -1) {
@@ -404,7 +395,8 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   logger.log() << "Filename:" << fileName;
 
   if (!m_tmpDir.isValid()) {
-    logger.log() << "Cannot create a temporary directory";
+    logger.log() << "Cannot create a temporary directory"
+                 << m_tmpDir.errorString();
     return false;
   }
 
@@ -458,7 +450,9 @@ bool Balrog::install(const QString& filePath) {
             if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
               logger.log() << "Unable to read the msiexec log file";
             } else {
-              logger.log() << "Log file:" << Qt::endl << log.readAll();
+              QTextStream logStream(&log);
+              logStream.setCodec("utf-16");
+              logger.log() << "Log file:" << Qt::endl << logStream.readAll();
             }
 
             if (exitCode != 0) {

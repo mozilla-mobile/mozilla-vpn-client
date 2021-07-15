@@ -62,6 +62,7 @@ SOURCES += \
         curve25519.cpp \
         errorhandler.cpp \
         featurelist.cpp \
+        filterproxymodel.cpp \
         fontloader.cpp \
         hacl-star/Hacl_Chacha20.c \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
@@ -95,6 +96,7 @@ SOURCES += \
         networkwatcher.cpp \
         notificationhandler.cpp \
         pinghelper.cpp \
+        pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
@@ -127,6 +129,7 @@ HEADERS += \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
+        bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
         captiveportal/captiveportaldetectionimpl.h \
@@ -157,6 +160,7 @@ HEADERS += \
         curve25519.h \
         errorhandler.h \
         featurelist.h \
+        filterproxymodel.h \
         fontloader.h \
         ipaddress.h \
         ipaddressrange.h \
@@ -450,8 +454,8 @@ else:linux:!android {
     dbus_service.path = $${USRPATH}/share/dbus-1/system-services
     INSTALLS += dbus_service
 
-    systemd_service.files = ../linux/debian/mozillavpn.service
-    systemd_service.path = /usr/lib/systemd/system
+    systemd_service.files = ../linux/mozillavpn.service
+    systemd_service.path = $${USRPATH}/lib/systemd/system
     INSTALLS += systemd_service
 
     CONFIG += link_pkgconfig

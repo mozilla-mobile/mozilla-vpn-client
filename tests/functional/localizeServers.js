@@ -26,6 +26,7 @@ describe('Server list', function() {
 
   const countryIDs = new Map();
   countryIDs.set('Netherlands', 'http://www.wikidata.org/entity/Q55');
+  countryIDs.set('Luxembourg', 'http://www.wikidata.org/entity/Q32');
 
   const cityIDs = new Map();
   cityIDs.set('Frankfurt', 'http://www.wikidata.org/entity/Q1794');
@@ -35,6 +36,16 @@ describe('Server list', function() {
   cityIDs.set('Miami, FL', 'http://www.wikidata.org/entity/Q8652');
   cityIDs.set('Phoenix, AZ', 'http://www.wikidata.org/entity/Q16556');
   cityIDs.set('Salt Lake City, UT', 'http://www.wikidata.org/entity/Q23337');
+  cityIDs.set('Secaucus, NJ', 'http://www.wikidata.org/entity/Q1013249');
+  cityIDs.set('Sydney', 'http://www.wikidata.org/entity/Q3130');
+  cityIDs.set('Vancouver', 'http://www.wikidata.org/entity/Q24639');
+  cityIDs.set('Copenhagen', 'http://www.wikidata.org/entity/Q1748');
+  cityIDs.set('Dublin', 'http://www.wikidata.org/entity/Q1761');
+  cityIDs.set('Amsterdam', 'http://www.wikidata.org/entity/Q727');
+  cityIDs.set('Oslo', 'http://www.wikidata.org/entity/Q585');
+  cityIDs.set('Stockholm', 'http://www.wikidata.org/entity/Q1754');
+  cityIDs.set('Luxembourg', 'http://www.wikidata.org/entity/Q1842');
+  cityIDs.set('Paris', 'http://www.wikidata.org/entity/Q90');
 
   this.timeout(1000000);
 
@@ -234,6 +245,7 @@ describe('Server list', function() {
         throw new Error('Invalid SPARQL result (no results/bindings)');
 
       if (result.results.bindings.length === 0) {
+        console.log(sparql);
         throw new Error('No results');
       }
 
@@ -254,6 +266,7 @@ describe('Server list', function() {
       throw new Error('Invalid SPARQL result (no results/bindings)');
 
     if (result.results.bindings.length === 0) {
+      console.log(sparql);
       throw new Error('No results');
     }
 
@@ -262,8 +275,18 @@ describe('Server list', function() {
     for (let lang of result.results.bindings) {
       const langCode = lang.countryName['xml:lang'];
       const value = lang.countryName['value'];
-      if (languages.has(langCode) && value != server.name) {
+
+      if (value === server.name) continue;
+
+      if (languages.has(langCode)) {
         translation.languages[languages.get(langCode)] = value;
+      }
+
+      for (let language of languages) {
+        if (langCode === language[0]) continue;
+        if (translation.languages[language[1]]) continue;
+        if (!language[0].startsWith(langCode + '-')) continue;
+        translation.languages[language[1]] = value;
       }
     }
 
@@ -335,6 +358,7 @@ describe('Server list', function() {
         throw new Error('Invalid SPARQL result (no results/bindings)');
 
       if (result.results.bindings.length === 0) {
+        console.log(sparql);
         throw new Error('No results');
       }
 
@@ -356,6 +380,7 @@ describe('Server list', function() {
       throw new Error('Invalid SPARQL result (no results/bindings)');
 
     if (result.results.bindings.length === 0) {
+      console.log(sparql);
       throw new Error('No results');
     }
 

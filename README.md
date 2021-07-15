@@ -38,6 +38,7 @@ following dependencies:
 - wireguard >=1.0.20200513
 - wireguard-tools >=1.0.20200513
 - resolvconf >= 1.82
+- golang >= 1.13
 
 Python3 (pip) depedencies:
 
@@ -52,14 +53,14 @@ Qt5 can be installed in a number of ways:
 - use a linux package manager
 - compile Qt5 (dinamically or statically).
 
-To build QT5 statically on Ubuntu/Debian, go to the root directory of this project and follow these steps:
+To build QT5 statically on Ubuntu/20.04, go to the root directory of this project and follow these steps:
 
 ```
 curl -L https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz --output qt-everywhere-src-5.15.1.tar.xz
 tar xvf qt-everywhere-src-5.15.1.tar.xz
 mv qt-everywhere-src-5.15.1 qt
 sudo apt build-dep qt5-default
-sudo apt install clang llvm golang
+sudo apt install clang llvm
 sudo apt install libxcb-xinerama0-dev libxcb-util-dev
 bash scripts/qt5_compile.sh qt qt
 ```
@@ -134,11 +135,22 @@ The procedure to compile MozillaVPN for macOS is the following:
 ```
   $ [sudo] gem install xcodeproj
 ```
-2. Install go if you haven't done it before: https://golang.org/dl/
+2. Install go v1.16+ if you haven't done it before: https://golang.org/dl/
+
+Some developers have experienced that in step 8 (when you're in XCode) that XCode reports that 
+go isn't available and so you can't build the app and dependencies in XCode. 
+In this case, a workaround is to symlink go into XCode directory as follows:
+
+* Make sure go is 1.16+: `go version`
+* Find the location of go binary `which go` example output `/usr/local/go/bin/go`
+* Symlink e.g. `sudo ln -s /usr/local/go/bin/go /Applications/Xcode.app/Contents/Developer/usr/bin/go` 
+
+This step needs to be updated each time XCode updates.
+
 3. Update the submodules:
 ```
   $ git submodule init
-  $ git submodule update --remote
+  $ git submodule update
 ```
 4. Install python3 dependencies:
 ```
@@ -146,15 +158,11 @@ The procedure to compile MozillaVPN for macOS is the following:
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
-5. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
-```
-  $ ./scripts/apple_compile.sh macos
-```
-6. Copy `xcode.xconfig.template` to `xcode.xconfig`
+5. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```
   $ cp xcode.xconfig.template xcode.xconfig
 ```
-7. Modify xcode.xconfig to something like:
+6. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
 
@@ -170,7 +178,13 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
 ```
-8. Open Xcode and run/test/archive/ship the app
+7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
+```
+  $ ./scripts/apple_compile.sh macos
+```
+You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
+
+8. Xcode should automatically open. You can then run/test/archive/ship the app
 
 To build a Release style build (ready for signing), use:
 ```
@@ -183,25 +197,30 @@ The built up will show up in `Release/Mozilla VPN.app` (relative to the root of 
 ### IOS
 
 The IOS procedure is similar to the macOS one:
+
 1. Install XCodeProj:
 ```
   $ [sudo] gem install xcodeproj
 ```
+
 2. Update the submodules:
 ```
   $ git submodule init
-  $ git submodule update --remote
+  $ git submodule update
 ```
+
 3. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
   $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
+
 4. Copy `xcode.xconfig.template` to `xcode.xconfig`
 ```
   $ cp xcode.xconfig.template xcode.xconfig
 ```
+
 5. Modify xcode.xconfig to something like:
 ```
 DEVELOPMENT_TEAM = 43AQ936H96
@@ -218,10 +237,13 @@ GROUP_ID_IOS = <>
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 ```
+
 6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
 ```
   $ ./scripts/apple_compile.sh ios
 ```
+You may be interested in flags like -i for the inspector (see ./scripts/apple_compile.sh --help for more)
+
 7. Open Xcode and run/test/archive/ship the app
 
 ### Android 
@@ -232,7 +254,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 4. Update the submodules:
 ```bash 
   $ git submodule init
-  $ git submodule update --remote
+  $ git submodule update
 ```
 
 5. Install python3 dependencies:

@@ -135,9 +135,7 @@ void Controller::implInitialized(bool status, bool a_connected,
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
-    resetConnectionTimer();
-    m_connectionTimerExtraSecs =
-        connectionDate.secsTo(QDateTime::currentDateTime());
+    m_connectedTimeInUTC = connectionDate.toUTC();
     emit timeChanged();
     m_timer.start(TIMER_MSEC);
   }
@@ -165,7 +163,7 @@ bool Controller::activate() {
 void Controller::activateInternal() {
   logger.log() << "Activation internal";
 
-  resetConnectionTimer();
+  resetConnectedTime();
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -309,7 +307,7 @@ void Controller::connected() {
       m_state != StateConfirming) {
     setState(StateConnecting);
 
-    resetConnectionTimer();
+    resetConnectedTime();
 
     TimerSingleShot::create(this, TIME_ACTIVATION, [this]() {
       if (m_state == StateConnecting) {
@@ -563,7 +561,7 @@ void Controller::setState(State state) {
 }
 
 int Controller::time() const {
-  return (int)(m_connectionTimer.elapsed() / 1000) + m_connectionTimerExtraSecs;
+  return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
 }
 
 void Controller::getBackendLogs(
@@ -633,7 +631,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
   QList<IPAddress> excludeIPv4s;
-  QList<IPAddressRange> allowedIPv6s;
+  QList<IPAddress> excludeIPv6s;
 
   // filtering out the captive portal endpoint
   if (FeatureList::instance()->captivePortalNotificationSupported() &&
@@ -656,9 +654,8 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     excludeIPv4s.append(RFC1918::ipv4());
 
     if (ipv6Enabled) {
-      // TODO IPv6 is not supported by IPAddress yet.
       logger.log() << "Filtering out the local area networks (rfc 4193)";
-      allowedIPv6s.append(RFC4193::ipv6());
+      excludeIPv6s.append(RFC4193::ipv6());
     }
   } else if (FeatureList::instance()->userDNSSupported() &&
              !SettingsHolder::instance()->useGatewayDNS() &&
@@ -694,13 +691,21 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
   }
 
-  if (ipv6Enabled) {
-    if (allowedIPv6s.isEmpty()) {
-      logger.log() << "Catch all IPv6";
-      list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-    } else {
-      list.append(allowedIPv6s);
-    }
+  if (excludeIPv6s.isEmpty()) {
+    logger.log() << "Catch all IPv6";
+    list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+  } else {
+    QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+
+    logger.log() << "Exclude the server:" << server.ipv6AddrIn();
+    excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
+
+    allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
+    list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+
+    logger.log() << "Allow the server:" << server.ipv6Gateway();
+    list.append(
+        IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
   }
 
   return list;
@@ -728,9 +733,8 @@ void Controller::heartbeatCompleted() {
   }
 }
 
-void Controller::resetConnectionTimer() {
-  m_connectionTimerExtraSecs = 0;
-  m_connectionTimer.start();
+void Controller::resetConnectedTime() {
+  m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
 }
 
 QString Controller::currentLocalizedCityName() const {

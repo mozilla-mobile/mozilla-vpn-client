@@ -12,6 +12,7 @@
 #include <QList>
 #include <QObject>
 #include <QTimer>
+#include <QDateTime>
 
 #include <functional>
 
@@ -125,20 +126,14 @@ class Controller final : public QObject {
 
   void heartbeatCompleted();
 
-  void resetConnectionTimer();
+  void resetConnectedTime();
 
  private:
   State m_state = StateInitializing;
 
   QTimer m_timer;
 
-  QElapsedTimer m_connectionTimer;
-
-  // The connection could have been started before the execution of the app.
-  // This contains the number of seconds to add to m_connectionTimer to know the
-  // real starting time. We don't use QDateTime (or anything similar) because we
-  // need a monotonic timer.
-  uint32_t m_connectionTimerExtraSecs = 0;
+  QDateTime m_connectedTimeInUTC;
 
   QScopedPointer<ControllerImpl> m_impl;
 

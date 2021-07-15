@@ -31,14 +31,9 @@ void CaptivePortalRequest::run() {
   }
 
   QStringList ipv6Addresses;
-#if 0
-  // TODO https://github.com/mozilla-mobile/mozilla-vpn-client/issues/593
-  // The captive portal detection doesn't work in ipv6 because we do not
-  // support (yet) the IPAddress ipv6 filtering.
   if (settings->ipv6Enabled() && settings->hasCaptivePortalIpv6Addresses()) {
     ipv6Addresses = settings->captivePortalIpv6Addresses();
   }
-#endif
 
   // We do not have IPs to check.
   if (ipv4Addresses.isEmpty() && ipv6Addresses.isEmpty()) {
