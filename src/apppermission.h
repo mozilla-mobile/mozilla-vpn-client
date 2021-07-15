@@ -55,7 +55,6 @@ class AppPermission final : public QAbstractListModel {
   // Remove all Apps from the Disabled App List
   Q_INVOKABLE void unprotectAll();
 
-
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;

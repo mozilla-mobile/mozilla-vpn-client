@@ -23,7 +23,6 @@ constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
-const QStringList SETTINGS_MISSING_SPLIT_TUNNEL_APPS_DEFAULT = QStringList();
 const QString SETTINGS_USER_DNS_DEFAULT = "";
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
@@ -69,7 +68,6 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
-constexpr const char* SETTINGS_MISSING_SPLIT_TUNNEL_APPS = "missingSplitTunnelApps";
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -232,9 +230,6 @@ GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
 GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
-GETSETDEFAULT(SETTINGS_MISSING_SPLIT_TUNNEL_APPS_DEFAULT, QStringList, toStringList,
-              SETTINGS_MISSING_SPLIT_TUNNEL_APPS, hasMissingSplitTunnelApps, missingSplitTunnelApps,
-              setMissingSplitTunnelApps, missingSplitTunnelAppsChanged)
 GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
               SETTINGS_GLEANENABLED, hasGleanEnabled, gleanEnabled,
               setGleanEnabled, gleanEnabledChanged)
@@ -377,25 +372,6 @@ void SettingsHolder::addVpnDisabledApp(const QString& appID) {
   applist.append(appID);
   setVpnDisabledApps(applist);
 }
-
-void SettingsHolder::addMissingSplitTunnelApp(const QString& appID){
-    QStringList applist;
-    if (hasMissingSplitTunnelApps()) {
-      applist = missingSplitTunnelApps();
-    }
-    applist.append(appID);
-    setMissingSplitTunnelApps(applist);
-}
-
-void SettingsHolder::removeMissingSplitTunnelApp(const QString& appID){
-    QStringList applist;
-    if (hasMissingSplitTunnelApps()) {
-      applist = missingSplitTunnelApps();
-    }
-    applist.removeAll(appID);
-    setMissingSplitTunnelApps(applist);
-}
-
 
 void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
   QStringList list;

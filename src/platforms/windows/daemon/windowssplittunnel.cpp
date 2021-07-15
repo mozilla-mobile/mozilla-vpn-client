@@ -1,11 +1,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- 
+
 #include "windowssplittunnel.h"
 #include "../windowscommons.h"
 #include "../windowsservicemanager.h"
 #include "logger.h"
+
 #include <QNetworkInterface>
 #define PSAPI_VERSION 2
 #include <Windows.h>
@@ -15,13 +16,15 @@
 #include <iphlpapi.h>
 #include <QCoreApplication>
 #include <QFileInfo>
+#include <QScopeGuard>
+
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
 
-
+// ID for the Mullvad Split-Tunnel Firewall Sublayer
 DEFINE_GUID(ST_FW_WINFW_BASELINE_SUBLAYER_KEY,
     0xc78056ff, 0x2bc1, 0x4211, 0xaa, 0xdd, 0x7f, 0x35, 0x8d, 0xef, 0x20, 0x2d);
-
+// ID for the Mullvad Split-Tunnel Sublayer Provider
 DEFINE_GUID(ST_FW_PROVIDER_KEY,
     0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f, 0xa7, 0x99, 0x63, 0x56, 0xd9);
 }
@@ -33,6 +36,7 @@ WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent): QObject(parent)
          auto handle = installDriver();
          if(handle == INVALID_HANDLE_VALUE){
             WindowsCommons::windowsLog("Failed to install Driver");
+            return;
          }
          logger.log() << "Driver installed";
          CloseServiceHandle(handle);
@@ -100,6 +104,7 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths)
     auto state = getState();
     if(state != STATE_READY && state != STATE_RUNNING){
         logger.log() << "Driver is not in the right State to set Rules" << state;
+        return;
     }
 
     logger.log() << "Pushing new Ruleset for Split-Tunnel " << state;
@@ -491,7 +496,7 @@ bool WindowsSplitTunnel::initSublayer(){
     FWPM_SESSION0 session;
     memset(&session, 0, sizeof(session));
 
-    logger.log() << ("Opening the filter engine.\n");
+    logger.log() << "Opening the filter engine";
     result = FwpmEngineOpen0(
         NULL,
         RPC_C_AUTHN_WINNT,
@@ -500,23 +505,24 @@ bool WindowsSplitTunnel::initSublayer(){
         &m_wfp );
     if (result != ERROR_SUCCESS){
         logger.log() << "FwpmEngineOpen0 failed. Return value:.\n" << result;
-        FwpmEngineClose0(m_wfp);
         return false;
     }
+    auto cleanup = qScopeGuard([&] { 
+         FwpmEngineClose0(m_wfp);
+     });
     // Check if the Layer Already Exists
     FWPM_SUBLAYER0* maybeLayer;
     result = FwpmSubLayerGetByKey0(m_wfp,&ST_FW_WINFW_BASELINE_SUBLAYER_KEY,&maybeLayer);
     if(result == ERROR_SUCCESS){
         logger.log() << "The Sublayer Already Exists!";
-        FwpmEngineClose0(m_wfp);
+        FwpmFreeMemory0((void**) &maybeLayer); 
         return true;
-}
+    }
 
     //Step 1: Start Transaction
     result = FwpmTransactionBegin(m_wfp,NULL);
     if(result != ERROR_SUCCESS){
         logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
-         FwpmEngineClose0(m_wfp);
         return false;
     }
 
@@ -532,17 +538,14 @@ bool WindowsSplitTunnel::initSublayer(){
     result = FwpmSubLayerAdd0(m_wfp, &subLayer, NULL);
     if (result != ERROR_SUCCESS){
            logger.log() << "FwpmSubLayerAdd0 failed. Return value:.\n" << result;
-           FwpmEngineClose0(m_wfp);
            return false;
     }
     // Step 4: Commit!
     result = FwpmTransactionCommit0(m_wfp);
     if(result != ERROR_SUCCESS){
         logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
-        FwpmEngineClose0(m_wfp);
         return false;
     }
-    FwpmEngineClose0(m_wfp);
     logger.log() << "Initialised Sublayer";
     return true;
 }

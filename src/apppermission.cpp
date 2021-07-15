@@ -10,7 +10,6 @@
 #include <QApplication>
 #include <QVector>
 #include "settingsholder.h"
-#include <QFileDialog>
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
