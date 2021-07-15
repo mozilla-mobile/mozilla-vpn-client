@@ -170,12 +170,6 @@ Item {
                             ipInput.valueInvalid = true;
                             break;
 
-                        case VPNSettings.UserDNSNotIPv4:
-                            //% "We currently support only IPv4 IP addresses"
-                            ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
-                            ipInput.valueInvalid = true;
-                            break;
-
                         case VPNSettings.UserDNSOutOfRange:
                             //% "Out of range IP address"
                             ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
