@@ -63,13 +63,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     addresses.append(ip.toString());
   }
 
-  if (!WgQuickProcess::createConfigFile(
-          tunnelFile, config.m_privateKey, config.m_deviceIpv4Address,
-          config.m_deviceIpv6Address, config.m_serverIpv4Gateway,
-          config.m_serverIpv6Gateway, config.m_serverPublicKey,
-          config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
-          addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled,
-          config.m_dnsServer)) {
+  if (!WgQuickProcess::createConfigFile(tunnelFile, config)) {
     logger.log() << "Failed to create a config file";
     return false;
   }
