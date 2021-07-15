@@ -123,7 +123,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     logger.log() << "Failed to create a config file";
     return false;
   }
-  //m_tunnelMonitor.resetLogs();
+  //m_tunnel.resetLogs();
 
   if (!registerTunnelService(tunnelFile)) {
     logger.log() << "Failed to activate the tunnel service";
@@ -132,7 +132,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 
   logger.log() << "Registration completed";
 
-  //m_tunnelMonitor.start();
+  //m_tunnel.start();
   //m_state = Active;
   return true;
 }

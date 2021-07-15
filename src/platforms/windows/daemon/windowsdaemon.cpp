@@ -80,7 +80,7 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
 
   m_wgutils = new WireguardUtilsWindows(this);
 
-  connect(&m_tunnelMonitor, &WindowsTunnelMonitor::backendFailure, this,
+  connect(&m_tunnel, &WindowsTunnelService::backendFailure, this,
           &WindowsDaemon::monitorBackendFailure);
 }
 
@@ -239,7 +239,7 @@ bool WindowsDaemon::switchServer(const InterfaceConfig& config) {
 void WindowsDaemon::monitorBackendFailure() {
   logger.log() << "Tunnel service is down";
 
-  m_tunnelMonitor.stop();
+  m_tunnel.stop();
 
   emit backendFailure();
   deactivate();

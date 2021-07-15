@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "windowstunnelmonitor.h"
+#include "WindowsTunnelService.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
@@ -40,29 +40,29 @@ constexpr uint32_t RINGLOG_FILE_SIZE =
     ((RINGLOG_MESSAGE_SIZE + RINGLOG_TIMESTAMP_SIZE) * RINGLOG_MAX_ENTRIES);
 
 namespace {
-Logger logger(LOG_WINDOWS, "WindowsTunnelMonitor");
+Logger logger(LOG_WINDOWS, "WindowsTunnelService");
 Logger logdll(LOG_WINDOWS, "tunnel.dll");
 }  // namespace
 
-WindowsTunnelMonitor::WindowsTunnelMonitor() {
-  MVPN_COUNT_CTOR(WindowsTunnelMonitor);
+WindowsTunnelService::WindowsTunnelService() {
+  MVPN_COUNT_CTOR(WindowsTunnelService);
 
   m_logEpochNsec = QDateTime::currentMSecsSinceEpoch() * 1000000;
 
-  connect(&m_timer, &QTimer::timeout, this, &WindowsTunnelMonitor::timeout);
+  connect(&m_timer, &QTimer::timeout, this, &WindowsTunnelService::timeout);
   connect(&m_logtimer, &QTimer::timeout, this,
-          &WindowsTunnelMonitor::processLogs);
+          &WindowsTunnelService::processLogs);
 }
 
-WindowsTunnelMonitor::~WindowsTunnelMonitor() {
-  MVPN_COUNT_CTOR(WindowsTunnelMonitor);
+WindowsTunnelService::~WindowsTunnelService() {
+  MVPN_COUNT_CTOR(WindowsTunnelService);
 }
 
-void WindowsTunnelMonitor::resetLogs() {
+void WindowsTunnelService::resetLogs() {
   m_logEpochNsec = QDateTime::currentMSecsSinceEpoch() * 1000000;
 }
 
-void WindowsTunnelMonitor::start() {
+void WindowsTunnelService::start() {
   logger.log() << "Starting monitoring the tunnel service";
   m_timer.start(WINDOWS_TUNNEL_MONITOR_TIMEOUT_MSEC);
 
@@ -91,7 +91,7 @@ void WindowsTunnelMonitor::start() {
   m_logtimer.start(RINGLOG_POLL_MSEC);
 }
 
-void WindowsTunnelMonitor::stop() {
+void WindowsTunnelService::stop() {
   logger.log() << "Stopping monitoring the tunnel service";
   m_timer.stop();
   m_logtimer.stop();
@@ -104,7 +104,7 @@ void WindowsTunnelMonitor::stop() {
   }
 }
 
-void WindowsTunnelMonitor::timeout() {
+void WindowsTunnelService::timeout() {
   SC_HANDLE scm;
   SC_HANDLE service;
 
@@ -149,7 +149,7 @@ void WindowsTunnelMonitor::timeout() {
   emit backendFailure();
 }
 
-int WindowsTunnelMonitor::nextLogIndex() {
+int WindowsTunnelService::nextLogIndex() {
   if (!m_logdata) {
     return 0;
   }
@@ -158,7 +158,7 @@ int WindowsTunnelMonitor::nextLogIndex() {
   return value % RINGLOG_MAX_ENTRIES;
 }
 
-void WindowsTunnelMonitor::processMessage(int index) {
+void WindowsTunnelService::processMessage(int index) {
   Q_ASSERT(index >= 0);
   Q_ASSERT(index < RINGLOG_MAX_ENTRIES);
   size_t offset = index * (RINGLOG_TIMESTAMP_SIZE + RINGLOG_MESSAGE_SIZE);
@@ -175,7 +175,7 @@ void WindowsTunnelMonitor::processMessage(int index) {
   logdll.log() << QString::fromUtf8(message);
 }
 
-void WindowsTunnelMonitor::processLogs() {
+void WindowsTunnelService::processLogs() {
   /* On the first pass, scan all log messages. */
   if (m_logindex < 0) {
     m_logindex = nextLogIndex();

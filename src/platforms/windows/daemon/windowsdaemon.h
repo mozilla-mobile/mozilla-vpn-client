@@ -6,7 +6,7 @@
 #define WINDOWSDAEMON_H
 
 #include "daemon/daemon.h"
-#include "windowstunnelmonitor.h"
+#include "windowstunnelservice.h"
 #include "wireguardutilswindows.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
@@ -41,7 +41,7 @@ class WindowsDaemon final : public Daemon {
 
   State m_state = Inactive;
 
-  WindowsTunnelMonitor m_tunnelMonitor;
+  WindowsTunnelService m_tunnel;
   WireguardUtilsWindows* m_wgutils = nullptr;
 };
 

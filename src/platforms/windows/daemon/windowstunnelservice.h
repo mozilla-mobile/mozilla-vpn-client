@@ -2,20 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WINDOWSTUNNELMONITOR_H
-#define WINDOWSTUNNELMONITOR_H
+#ifndef WINDOWSTUNNELSERVICE_H
+#define WINDOWSTUNNELSERVICE_H
 
 #include <QFile>
 #include <QObject>
 #include <QTimer>
 
-class WindowsTunnelMonitor final : public QObject {
+class WindowsTunnelService final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(WindowsTunnelMonitor)
+  Q_DISABLE_COPY_MOVE(WindowsTunnelService)
 
  public:
-  WindowsTunnelMonitor();
-  ~WindowsTunnelMonitor();
+  WindowsTunnelService();
+  ~WindowsTunnelService();
 
   void resetLogs();
   void start();
@@ -39,4 +39,4 @@ class WindowsTunnelMonitor final : public QObject {
   quint64 m_logEpochNsec = 0;
 };
 
-#endif  // WINDOWSTUNNELMONITOR_H
+#endif  // WINDOWSTUNNELSERVICE_H
