@@ -30,54 +30,18 @@ WireguardUtilsWindows::~WireguardUtilsWindows() {
 
 WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
   peerBytes pb = {0,0};
-  HANDLE pipe = m_tunnel.createPipe();
-  if (pipe == INVALID_HANDLE_VALUE) {
-    return pb;
-  }
-  auto guard = qScopeGuard([&] {
-    CloseHandle(pipe);
-  });
+  QString reply = m_tunnel.uapiCommand("get=1");
 
-  QByteArray message = "get=1\n\n";
-  DWORD written;
-
-  if (!WriteFile(pipe, message.constData(), message.length(), &written,
-                 nullptr)) {
-    WindowsCommons::windowsLog("Failed to write into the pipe");
-    return pb;
-  }
-
-  QByteArray data;
-  while (!data.contains("\n\n")) {
-    char buffer[512];
-    DWORD read = 0;
-    if (!ReadFile(pipe, buffer, sizeof(buffer), &read, nullptr)) {
-      break;
-    }
-
-    data.append(buffer, read);
-  }
-
-  int steps = 0;
-  constexpr const int TxFound = 0x01;
-  constexpr const int RxFound = 0x02;
-
-  for (const QByteArray& line : data.split('\n')) {
+  for (const QString& line : reply.split('\n')) {
     if (!line.contains('=')) {
       continue;
     }
 
-    QList<QByteArray> parts = line.split('=');
+    QList<QString> parts = line.split('=');
     if (parts[0] == "tx_bytes") {
       pb.txBytes = parts[1].toDouble();
-      steps |= TxFound;
     } else if (parts[0] == "rx_bytes") {
       pb.rxBytes = parts[1].toDouble();
-      steps |= RxFound;
-    }
-
-    if (steps >= (TxFound | RxFound)) {
-      return pb;
     }
   }
   
@@ -125,15 +89,7 @@ bool WireguardUtilsWindows::deleteInterface() {
 
 // Dummy implementations for now
 bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
-  HANDLE pipe = m_tunnel.createPipe();
-  if (pipe == INVALID_HANDLE_VALUE) {
-    return false;
-  }
-  auto guard = qScopeGuard([&] {
-    CloseHandle(pipe);
-  });
-
-  QByteArray message;
+  QString message;
   {
     QTextStream out(&message);
     out << "set=1\n";
@@ -149,30 +105,10 @@ bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
     for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
       out << "allowed_ip=" << ip.toString() << "\n";
     }
-
-    out << "\n";
   }
 
-  DWORD written;
-  if (!WriteFile(pipe, message.constData(), message.length(), &written,
-                 nullptr)) {
-    WindowsCommons::windowsLog("Failed to write into the pipe");
-    return false;
-  }
-
-  QByteArray data;
-  while (!data.contains("\n\n")) {
-    char buffer[512];
-    DWORD read = 0;
-    if (!ReadFile(pipe, buffer, sizeof(buffer), &read, nullptr)) {
-      break;
-    }
-
-    data.append(buffer, read);
-  }
-
-  logger.log() << "DATA:" << data;
-  guard.dismiss();
+  QString reply = m_tunnel.uapiCommand(message);
+  logger.log() << "DATA:" << reply;
   return true;
 }
 

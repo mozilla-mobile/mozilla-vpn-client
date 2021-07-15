@@ -23,7 +23,7 @@ class WindowsTunnelService final : public QObject {
   bool start(const QString& configFile);
   void stop();
   bool isRunning();
-  HANDLE createPipe();
+  QString uapiCommand(const QString& command);
 
  signals:
   void backendFailure();
@@ -38,6 +38,7 @@ class WindowsTunnelService final : public QObject {
   bool stopAndDeleteTunnelService(SC_HANDLE service);
   static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus);
   static QString exitCodeToFailure(DWORD code);
+  HANDLE createPipe();
 
  private:
   QTimer m_timer;

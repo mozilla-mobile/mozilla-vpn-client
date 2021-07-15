@@ -390,6 +390,43 @@ HANDLE WindowsTunnelService::createPipe() {
   return pipe;
 }
 
+QString WindowsTunnelService::uapiCommand(const QString& command) {
+  // Create a pipe to the tunnel service.
+  HANDLE pipe = createPipe();
+  if (pipe == INVALID_HANDLE_VALUE) {
+    return QString();
+  }
+  auto guard = qScopeGuard([&] {
+    CloseHandle(pipe);
+  });
+
+  // Write the UAPI command into the pipe.
+  QByteArray message = command.toLocal8Bit();
+  DWORD written;
+  while (!message.endsWith("\n\n")) {
+    message.append('\n');
+  }
+  if (!WriteFile(pipe, message.constData(), message.length(), &written,
+                 nullptr)) {
+    WindowsCommons::windowsLog("Failed to write into the pipe");
+    return QString();
+  }
+
+  // Receive the response from the pipe.
+  QByteArray reply;
+  while (!reply.contains("\n\n")) {
+    char buffer[512];
+    DWORD read = 0;
+    if (!ReadFile(pipe, buffer, sizeof(buffer), &read, nullptr)) {
+      break;
+    }
+
+    reply.append(buffer, read);
+  }
+
+  return QString::fromUtf8(reply).trimmed();
+}
+
 // static
 bool WindowsTunnelService::waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
   int tries = 0;
