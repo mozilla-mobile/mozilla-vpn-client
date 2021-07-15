@@ -22,7 +22,6 @@ class AppListProvider : public QObject {
   // Impl should emit newAppList signal when done.
   virtual void getApplicationList() = 0;
 
-
   // Returns true if the AppId Exists and is valid
   virtual bool isValidAppId(const QString &appId) = 0;
   // Returns the Name of an AppId

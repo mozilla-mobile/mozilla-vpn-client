@@ -448,9 +448,6 @@ bool WindowsDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
       }
       m_splitTunnelManager.start();
       m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
-
-      // Close Connection to it for debugging
-      m_splitTunnelManager.close();
   }
 
   m_state = Active;

@@ -21,7 +21,6 @@ class Daemon : public QObject {
     Down,
   };
 
-
   explicit Daemon(QObject* parent);
   ~Daemon();
 

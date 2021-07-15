@@ -121,12 +121,12 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
         // In case the AppID is no longer valid we don't need to keep it
         logger.log() << "Removed obsolete appid" << blockedAppId;
         settingsHolder->removeVpnDisabledApp(blockedAppId);
-    } else if (!keys.contains(blockedAppId)) {
+      } else if (!keys.contains(blockedAppId)) {
         // In case the AppID is valid but not in our applist, we need to create an entry
         logger.log() << "Added missing appid" << blockedAppId;
         m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
+      }
     }
-  }
   }
   beginResetModel();
   logger.log() << "Recived new Applist -- Entrys: " << applist.size();
@@ -150,19 +150,3 @@ Q_INVOKABLE void AppPermission::unprotectAll() {
   SettingsHolder::instance()->setVpnDisabledApps(allAppIds);
   dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
 }
-
-void AppPermission::addUnprotectedApp() {
-  auto fileName =
-      QFileDialog::getOpenFileName(qApp->activeWindow(), tr("Add Application"), "/home",
-                                   tr("Executables (*.exe)"));
-  logger.log() << fileName;
-  auto info = QFileInfo(fileName);
-  if (!info.isExecutable()) {
-    return;
-  }
-  beginResetModel();
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  settingsHolder->addVpnDisabledApp(info.absoluteFilePath());
-  m_applist.append(AppDescription(info.absoluteFilePath(), info.fileName()));
-  endResetModel();
-};

@@ -55,8 +55,6 @@ class AppPermission final : public QAbstractListModel {
   // Remove all Apps from the Disabled App List
   Q_INVOKABLE void unprotectAll();
 
-  // Opens a Selector to add an app to the "unprotected" list. 
-  Q_INVOKABLE void addUnprotectedApp();
 
   // QAbstractListModel methods
 

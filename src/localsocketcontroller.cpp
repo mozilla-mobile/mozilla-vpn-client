@@ -22,7 +22,6 @@
 #include <QStandardPaths>
 #include <QHostAddress>
 
-
 namespace {
 Logger logger(LOG_CONTROLLER, "LocalSocketController");
 }

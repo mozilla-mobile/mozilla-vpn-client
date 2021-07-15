@@ -1,10 +1,15 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "windowsservicemanager.h"
+
 #include "logger.h"
 #include "mozillavpn.h"
-#include <Windows.h>
+#include "windowscommons.h"
+
 #include "Windows.h"
 #include "Winsvc.h"
-#include "windowsservicemanager.h"
-#include "windowscommons.h"
 #include <QTimer>
 
 namespace {
@@ -24,8 +29,6 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
     return;
   }
   logger.log() << "OpenSCManager access given - " << err;
-
-  //wcscpy_s(m_serviceName,wcslen(serviceName),serviceName);
 
   logger.log() << "Opening Service - " << QString::fromWCharArray(serviceName);
   // Try to get an elevated handle
