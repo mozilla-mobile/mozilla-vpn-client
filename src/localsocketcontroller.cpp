@@ -13,6 +13,10 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
+#ifdef MVPN_WINDOWS
+#  include "platforms/windows/windowsservicemanager.h"
+#endif
+
 #include <QDir>
 #include <QFileInfo>
 #include <QJsonArray>
@@ -38,6 +42,11 @@ LocalSocketController::LocalSocketController() {
           &LocalSocketController::errorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this,
           &LocalSocketController::readData);
+
+#ifdef MVPN_WINDOWS
+  connect(&m_serviceManager, &WindowsServiceManager::serviceStarted, this,
+          &LocalSocketController::deamonReady);
+#endif
 }
 
 LocalSocketController::~LocalSocketController() {
@@ -68,6 +77,16 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
 
 #ifdef MVPN_WINDOWS
   QString path = "\\\\.\\pipe\\mozillavpn";
+  if (!m_serviceManager.isRunning()) {
+
+    // We will retry once the deamon is ready
+    if(m_serviceManager.startService()){
+        logger.log() << "Deamon is not running, wait until deamon is ready";
+        return;
+    }
+  }
+  logger.log() << "Deamon is running";
+
 #else
   QString path = "/var/run/mozillavpn/daemon.socket";
   if (!QFileInfo::exists(path)) {
@@ -340,4 +359,10 @@ void LocalSocketController::write(const QJsonObject& json) {
   Q_ASSERT(m_socket);
   m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
+}
+
+void LocalSocketController::deamonReady() {
+  logger.log() << "Daemon is Ready - continue init";
+  Q_ASSERT(m_state == eInitializing);
+  initialize(nullptr, nullptr);
 }

@@ -92,7 +92,9 @@
 					Start="auto"
 					Arguments="windowsdaemon"
 					ErrorControl="normal"
-					Vital="yes" />
+					Vital="yes">
+					 <util:PermissionEx User="Users" ServiceQueryStatus="yes"  ServiceStart="yes" />
+				</ServiceInstall>
 
 				<util:ServiceConfig
 					ServiceName="MozillaVPNBroker"
