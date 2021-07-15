@@ -26,6 +26,9 @@ class WireguardUtilsWindows final : public WireguardUtils {
   peerBytes getThroughputForInterface() override;
   bool addRoutePrefix(const IPAddressRange& prefix) override;
 
+ signals:
+  void backendFailure();
+
  private:
   WindowsTunnelService m_tunnel;
 };

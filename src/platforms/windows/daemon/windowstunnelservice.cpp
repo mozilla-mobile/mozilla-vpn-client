@@ -304,11 +304,11 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
     return false;
   }
 
-  logger.log() << "The tunnel service exits with status code:"
+  logger.log() << "The tunnel service exited with status code:"
                << status.dwWin32ExitCode << "-"
                << exitCodeToFailure(status.dwWin32ExitCode);
 
-  //emit backendFailure();
+  emit backendFailure();
   return false;
 }
 

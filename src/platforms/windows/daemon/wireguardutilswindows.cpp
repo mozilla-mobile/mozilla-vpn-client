@@ -21,6 +21,9 @@ WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
     : WireguardUtils(parent), m_tunnel(this) {
   MVPN_COUNT_CTOR(WireguardUtilsWindows);
   logger.log() << "WireguardUtilsWindows created.";
+
+  connect(&m_tunnel, &WindowsTunnelService::backendFailure, this,
+          [&] { emit backendFailure(); });
 }
 
 WireguardUtilsWindows::~WireguardUtilsWindows() {

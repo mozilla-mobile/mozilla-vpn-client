@@ -28,9 +28,8 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
 
   m_wgutils = new WireguardUtilsWindows(this);
 
-  // TODO: FIXME!
-  //connect(&m_tunnel, &WindowsTunnelService::backendFailure, this,
-  //        &WindowsDaemon::monitorBackendFailure);
+  connect(m_wgutils, &WireguardUtilsWindows::backendFailure, this,
+          &WindowsDaemon::monitorBackendFailure);
 }
 
 WindowsDaemon::~WindowsDaemon() {
