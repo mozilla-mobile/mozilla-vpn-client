@@ -50,7 +50,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                spacing: Theme.windowMargin
+                spacing: Theme.windowMargin * 2
                 anchors.margins: Theme.windowMargin * 2
                 anchors.topMargin: window.fullscreenRequired() ? Theme.contentTopMarginMobile : Theme.contentTopMarginDesktop
 
@@ -129,7 +129,7 @@ Item {
                         VPNInterLabel {
                             Layout.alignment: Qt.AlignLeft
                             horizontalAlignment: Qt.AlignLeft
-                            text: qsTrId("vpn.feedbackForm.poor")
+                            text: qsTrId("vpn.feedbackForm.veryPoor")
                             Layout.fillWidth: true
                             color: Theme.fontColor
                         }
@@ -163,9 +163,19 @@ Item {
                                                "appRating": btnGroup.checkedButton.value
                                            })
                 }
-                anchors.bottom: parent.bottom
+
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottomMargin: Theme.windowMargin * 4
+                Component.onCompleted: {
+                    if (window.fullscreenRequired()) {
+                        anchors.bottom = parent.bottom;
+                        anchors.bottomMargin = Theme.windowMargin * 4;
+                        return;
+                    }
+                    anchors.top = col.bottom;
+                    anchors.topMargin = Theme.windowMargin * 2;
+
+                }
+
                 enabled: btnGroup.checkedButton !== null
                 opacity: enabled ? 1 : .5
                 width: col.width

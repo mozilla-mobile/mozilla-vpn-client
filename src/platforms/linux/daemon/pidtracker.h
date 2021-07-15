@@ -64,7 +64,7 @@ class PidTracker final : public QObject {
  private:
   int m_nlsock;
   char m_readBuf[2048];
-  QSocketNotifier* m_socket;
+  QSocketNotifier* m_socket = nullptr;
   QHash<int, ProcessGroup*> m_processTree;
   QList<ProcessGroup*> m_processGroups;
 };

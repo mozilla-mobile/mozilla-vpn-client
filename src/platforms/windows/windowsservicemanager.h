@@ -4,7 +4,7 @@
 
 #ifndef WINDOWSSERVICEMANAGER
 #define WINDOWSSERVICEMANAGER
-#include <Windows.h>
+
 #include "Windows.h"
 #include "Winsvc.h"
 #include <QTimer>

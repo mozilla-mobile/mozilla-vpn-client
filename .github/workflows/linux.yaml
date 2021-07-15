@@ -1,4 +1,4 @@
-name: Linux package (focal/bionic/hirsute)
+name: Linux Packages
 on:
   push:
     branches:
@@ -10,34 +10,57 @@ on:
       - 'releases/**'
 
 jobs:
-  focal-staging:
-    name: Focal Staging
+  source-bundle:
+    name: Source Bundle
     runs-on: ubuntu-20.04
     steps:
-      - name: Install Linux packages
-        run: |
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
-          sudo apt update
-          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev devscripts debhelper cdbs quilt qt515graphicaleffects qt515imageformats  qt515quickcontrols2   libxcb-image0-dev libxcb-shape0-dev libxcb-sync0-dev libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-icccm4-dev libx11-xcb-dev libxcb-keysyms1-dev libasound2-dev libaudio-dev libcups2-dev libdbus-1-dev libglu1-mesa-dev  libmng-dev libtiff5-dev libxcursor-dev libxi-dev libxinerama-dev libxmu-dev libxrandr-dev libxv-dev libedit-dev libvulkan-dev qt515websockets -y
-
-      - name: Clone repository
+      - name: Checkout sources
         uses: actions/checkout@v2
-
-      - name: Install glean depedencies
+      
+      - name: Install source dependencies
         shell: bash
         run: |
+          sudo apt-get install golang debhelper -y
           pip3 install "glean_parser==3.5"
           pip3 install pyhumps
           pip3 install pyyaml
 
+      - name: Build source bundle
+        shell: bash
+        run: ./scripts/linux_script.sh --source
+
+      - name: Uploading
+        uses: actions/upload-artifact@v2
+        with:
+            name: Sources
+            path: .tmp
+
+  focal-staging:
+    name: Focal Staging
+    needs: source-bundle
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+
+      - name: Install Dependencies
+        run: |
+          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
+          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+          sudo apt-get install debhelper devscripts equivs -y
+
+          for file in $(find focal-stage -type f); do ln -s $file; done
+          dpkg-source -x mozillavpn_*.dsc
+          sudo mk-build-deps -ir mozillavpn-*/debian/control
+
       - name: Create package structure
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-          ./scripts/linux_script.sh -s -r focal
+          (cd mozillavpn-* && dpkg-buildpackage --build=binary --no-sign)
           mkdir packages
-          cp .tmp/*.deb packages
+          cp *.deb packages
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -47,32 +70,30 @@ jobs:
 
   focal-production:
     name: Focal Production
+    needs: source-bundle
     runs-on: ubuntu-20.04
     steps:
-      - name: Install Linux packages
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+
+      - name: Install Dependencies
         run: |
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
-          sudo apt update
-          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev devscripts debhelper cdbs quilt qt515graphicaleffects qt515imageformats  qt515quickcontrols2   libxcb-image0-dev libxcb-shape0-dev libxcb-sync0-dev libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-icccm4-dev libx11-xcb-dev libxcb-keysyms1-dev libasound2-dev libaudio-dev libcups2-dev libdbus-1-dev libglu1-mesa-dev  libmng-dev libtiff5-dev libxcursor-dev libxi-dev libxinerama-dev libxmu-dev libxrandr-dev libxv-dev libedit-dev libvulkan-dev qt515websockets -y
+          sudo apt-get install debhelper devscripts equivs -y
 
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
+          for file in $(find focal-prod -type f); do ln -s $file; done
+          dpkg-source -x mozillavpn_*.dsc
+          sudo mk-build-deps -ir mozillavpn-*/debian/control
 
       - name: Create package structure
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-          ./scripts/linux_script.sh -r focal
+          (cd mozillavpn-* && dpkg-buildpackage --build=binary --no-sign)
           mkdir packages
-          cp .tmp/*.deb packages
+          cp *.deb packages
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -82,32 +103,30 @@ jobs:
 
   bionic-staging:
     name: Bionic Staging
+    needs: source-bundle
     runs-on: ubuntu-18.04
     steps:
-      - name: Install Linux packages
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+
+      - name: Install Dependencies
         run: |
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 18.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-bionic -y
-          sudo apt update
-          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev devscripts debhelper cdbs quilt qt515graphicaleffects qt515imageformats  qt515quickcontrols2   libxcb-image0-dev libxcb-shape0-dev libxcb-sync0-dev libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-icccm4-dev libx11-xcb-dev libxcb-keysyms1-dev libasound2-dev libaudio-dev libcups2-dev libdbus-1-dev libglu1-mesa-dev  libmng-dev libtiff5-dev libxcursor-dev libxi-dev libxinerama-dev libxmu-dev libxrandr-dev libxv-dev libedit-dev libvulkan-dev qt515websockets python3-setuptools -y
+          sudo apt-get install debhelper devscripts equivs -y
 
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
+          for file in $(find bionic-stage -type f); do ln -s $file; done
+          dpkg-source -x mozillavpn_*.dsc
+          sudo mk-build-deps -ir mozillavpn-*/debian/control
 
       - name: Create package structure
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-          ./scripts/linux_script.sh -s -r bionic
+          (cd mozillavpn-* && dpkg-buildpackage --build=binary --no-sign)
           mkdir packages
-          cp .tmp/*.deb packages
+          cp *.deb packages
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -117,32 +136,30 @@ jobs:
 
   bionic-production:
     name: Bionic Production
+    needs: source-bundle
     runs-on: ubuntu-18.04
     steps:
-      - name: Install Linux packages
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+
+      - name: Install Dependencies
         run: |
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 18.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-bionic -y
-          sudo apt update
-          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev devscripts debhelper cdbs quilt qt515graphicaleffects qt515imageformats  qt515quickcontrols2   libxcb-image0-dev libxcb-shape0-dev libxcb-sync0-dev libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-icccm4-dev libx11-xcb-dev libxcb-keysyms1-dev libasound2-dev libaudio-dev libcups2-dev libdbus-1-dev libglu1-mesa-dev  libmng-dev libtiff5-dev libxcursor-dev libxi-dev libxinerama-dev libxmu-dev libxrandr-dev libxv-dev libedit-dev libvulkan-dev qt515websockets python3-setuptools -y
+          sudo apt-get install debhelper devscripts equivs -y
 
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
+          for file in $(find bionic-prod -type f); do ln -s $file; done
+          dpkg-source -x mozillavpn_*.dsc
+          sudo mk-build-deps -ir mozillavpn-*/debian/control
 
       - name: Create package structure
         shell: bash
         run: |
-          export PATH=/opt/qt515/bin:$PATH
-          ./scripts/linux_script.sh -r bionic
+          (cd mozillavpn-* && dpkg-buildpackage --build=binary --no-sign)
           mkdir packages
-          cp .tmp/*.deb packages
+          cp *.deb packages
 
       - name: Uploading
         uses: actions/upload-artifact@v1
@@ -152,44 +169,66 @@ jobs:
 
   ubuntu-hirsute:
     name: Ubuntu packages
+    needs: source-bundle
     strategy:
       matrix:
         config:
-            - { name: "Hirsute Staging", dist: hirsute, buildargs: "-s" }
-            - { name: "Hirsute Production", dist: hirsute, buildargs: "" }
+            - { name: "Hirsute Staging", dist: hirsute, buildtype: "stage" }
+            - { name: "Hirsute Production", dist: hirsute, buildtype: "prod" }
 
     runs-on: ubuntu-latest
+    env:
+      BASETGZ: /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz
     steps:
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+      
       - name: Create base ${{ matrix.config.dist }} image
         run: |
           sudo apt-get install pbuilder debootstrap debhelper devscripts -y
-          sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --debootstrapopts --variant=buildd
-
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
-
-      - name: Create package structure
-        shell: bash
-        run: |
-          sudo apt-get install qt5-default qttools5-dev-tools golang -y
-          ./scripts/linux_script.sh ${{ matrix.config.buildargs}} -r ${{ matrix.config.dist }} --source
+          sudo pbuilder create --distribution ${{ matrix.config.dist }} --basetgz $BASETGZ --debootstrapopts --variant=buildd
 
       - name: Building package
         shell: bash
         run: |
-          mkdir -p packages/${{ matrix.config.dist }}
-          cp .tmp/mozillavpn_*.dsc packages/${{ matrix.config.dist }}
-          sudo pbuilder build --basetgz /var/cache/pbuilder/ubuntu-buildd-${{ matrix.config.dist }}.tgz --buildresult packages/${{ matrix.config.dist }} .tmp/mozillavpn_*.dsc
+          cd ${{matrix.config.dist}}-${{matrix.config.buildtype}}
+          ln -s ../mozillavpn_*.orig.tar.gz
+          sudo pbuilder build --basetgz $BASETGZ --buildresult $(pwd) mozillavpn_*.dsc
 
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
-            name: ${{ matrix.config.name }} Build
-            path: packages
+            name: ${{matrix.config.name}} Build
+            path: ${{matrix.config.dist}}-${{matrix.config.buildtype}}
+
+  rpmbuild:
+    name: RPM Packages
+    needs: source-bundle
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:33
+
+    steps:
+      - name: Download Source Package
+        uses: actions/download-artifact@v2
+        with:
+            name: Sources
+
+      - name: Install Build Dependencies
+        run: |
+          yum -y install rpm-build rpmdevtools yum-utils
+          yum-builddep -y mozillavpn.spec
+
+      - name: Building package
+        shell: bash 
+        run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
+
+      - name: Uploading
+        uses: actions/upload-artifact@v2
+        with:
+            name: RPM Build
+            path: |
+              RPMS/
+              SRPMS/

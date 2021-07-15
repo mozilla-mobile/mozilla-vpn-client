@@ -142,8 +142,8 @@ VPNFlickable {
             visible: VPNLocalizer.hasLanguages
         }
         VPNSettingsItem {
-            //% "App Permissions"
-            settingTitle: qsTrId("vpn.settings.appPermissions")
+            //% "App permissions"
+            settingTitle: qsTrId("vpn.settings.appPermissions2")
             imageLeftSrc: "../resources/settings/apps.svg"
             imageRightSrc: "../resources/chevron.svg"
             visible: VPNFeatureList.protectSelectedAppsSupported
@@ -169,7 +169,7 @@ VPNFlickable {
         VPNSettingsItem {
             objectName: "settingsGetHelp"
 
-            settingTitle: qsTrId("vpn.main.getHelp")
+            settingTitle: qsTrId("vpn.main.getHelp2")
             imageLeftSrc: "../resources/settings/getHelp.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: {

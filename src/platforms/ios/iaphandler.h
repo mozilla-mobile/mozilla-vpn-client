@@ -21,6 +21,7 @@ class IAPHandler final : public QAbstractListModel {
     ProductYearly,
     ProductUnknown = -1
   };
+  Q_ENUM(ProductType);
 
   static IAPHandler* createInstance();
 
@@ -29,8 +30,10 @@ class IAPHandler final : public QAbstractListModel {
   enum ModelRoles {
     ProductIdentifierRole = Qt::UserRole + 1,
     ProductPriceRole,
+    ProductMonthlyPriceRole,
     ProductTypeRole,
     ProductFeaturedRole,
+    ProductSavingsRole,
   };
   Q_INVOKABLE void subscribe(const QString& productIdentifier);
 
@@ -65,16 +68,19 @@ class IAPHandler final : public QAbstractListModel {
   // Called by the delegate
   void unknownProductRegistered(const QString& identifier);
   void productRegistered(void* product);
+  void productsRegistrationCompleted();
   void processCompletedTransactions(const QStringList& ids);
 
  private:
   IAPHandler(QObject* parent);
   ~IAPHandler();
 
-  void registerProduct(const QJsonValue& value);
-  void sortProductsAndCompleteRegistration();
+  void addProduct(const QJsonValue& value);
+  void computeSavings();
 
   static ProductType productTypeToEnum(const QString& type);
+
+  static uint32_t productTypeToMonthCount(ProductType type);
 
  private:
   enum {
@@ -91,16 +97,20 @@ class IAPHandler final : public QAbstractListModel {
   struct Product {
     QString m_name;
     QString m_price;
+    QString m_monthlyPrice;
+    // This is not exposed and it's not localized. It's used to compute the
+    // saving %.
+    double m_nonLocalizedMonthlyPrice = 0;
     ProductType m_type = IAPHandler::ProductMonthly;
     bool m_featuredProduct = false;
-    void* m_product = nullptr;
+    // This is the % compared with the montly subscription.
+    uint32_t m_savings = 0;
+    void* m_productNS = nullptr;
   };
 
-  static bool sortProductsCallback(const IAPHandler::Product& a,
-                                   const IAPHandler::Product& b);
+  Product* findProduct(const QString& productIdentifier);
 
-  QList<Product> m_registeredProducts;
-  QHash<QString, Product> m_pendingProducts;
+  QList<Product> m_products;
 
   void* m_delegate = nullptr;
 };

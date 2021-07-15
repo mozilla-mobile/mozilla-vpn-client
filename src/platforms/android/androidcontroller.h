@@ -6,6 +6,7 @@
 #define ANDROIDCONTROLLER_H
 
 #include "controllerimpl.h"
+#include "models/device.h"
 
 #include <QAndroidBinder>
 #include <QAndroidServiceConnection>
@@ -47,6 +48,7 @@ class AndroidController final : public ControllerImpl,
 
  private:
   Server m_server;
+  Device m_device;
   bool m_serviceConnected = false;
   std::function<void(const QString&)> m_logCallback;
 

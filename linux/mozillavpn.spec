@@ -8,22 +8,22 @@ Summary:   Mozilla VPN
 License:   MPLv2.0
 URL:       https://vpn.mozilla.org
 Packager:  Owen Kirby
-Requires:  qt5-qtbase
-Requires:  qt5-qtcharts
-Requires:  qt5-qtnetworkauth
-Requires:  qt5-qtquickcontrols2
-Requires:  qt5-qtsvg
+Requires:  qt5-qtbase >= 5.15
+Requires:  qt5-qtcharts >= 5.15
+Requires:  qt5-qtnetworkauth >= 5.15
+Requires:  qt5-qtquickcontrols2 >= 5.15
+Requires:  qt5-qtsvg >= 5.15
 Requires:  wireguard-tools
 
-BuildRequires: golang
+BuildRequires: golang >= 1.13
 BuildRequires: polkit-devel
-BuildRequires: qt5-qtbase-devel
-BuildRequires: qt5-qtcharts-devel
-BuildRequires: qt5-qtnetworkauth-devel
-BuildRequires: qt5-qtquickcontrols2-devel
-BuildRequires: qt5-qtsvg-devel
-BuildRequires: qt5-qttools-devel
-BuildRequires: qt5-qtwebsockets-devel
+BuildRequires: qt5-qtbase-devel >= 5.15
+BuildRequires: qt5-qtcharts-devel >= 5.15
+BuildRequires: qt5-qtnetworkauth-devel >= 5.15
+BuildRequires: qt5-qtdeclarative-devel >= 5.15
+BuildRequires: qt5-qtsvg-devel >= 5.15
+BuildRequires: qt5-qttools-devel >= 5.15
+BuildRequires: qt5-qtwebsockets-devel >= 5.15
 BuildRequires: systemd-rpm-macros
 
 %description
@@ -31,15 +31,18 @@ A fast, secure and easy to use VPN. Built by the makers of Firefox.
 Read more on https://vpn.mozilla.org
 
 %prep
-qmake-qt5 %{_srcdir}/mozillavpn.pro CONFIG+=production QT+=svg
+%setup -q
+%undefine _lto_cflags
 
 %build
+python3 scripts/importLanguages.py -p
+%{qmake_qt5} CONFIG+=production QT+=svg
 make -j$(nproc)
 
 %install
 make install INSTALL_ROOT=%{buildroot}
 install -d %{buildroot}/%{_licensedir}/%{name}
-install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
+install LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 
 %files
 %license %{_licensedir}/%{name}/LICENSE.md

@@ -130,7 +130,7 @@ Item {
                 VPNLinkButton {
                     id: getHelpLink
 
-                    labelText: qsTrId("vpn.main.getHelp")
+                    labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: stackview.push(getHelpComponent)
                     Layout.preferredHeight: Theme.rowHeight

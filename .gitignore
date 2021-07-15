@@ -89,12 +89,14 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 
 # glean
-glean/generated/*
-/glean/telemetry/*
-!/glean/telemetry/.keepme
 
 *.dll
 .vs/
 *.msi
 
+/glean/telemetry/*
+!/glean/telemetry/.keepme
+
+# For users compiling QT per the README
+/qt/
 

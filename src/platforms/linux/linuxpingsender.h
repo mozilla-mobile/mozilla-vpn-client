@@ -21,12 +21,17 @@ class LinuxPingSender final : public PingSender {
 
   void sendPing(const QString& dest, quint16 sequence) override;
 
+ private:
+  int createSocket();
+
  private slots:
-  void socketReady();
+  void rawSocketReady();
+  void icmpSocketReady();
 
  private:
   QSocketNotifier* m_notifier = nullptr;
   int m_socket = 0;
+  quint16 m_ident = 0;
 };
 
 #endif  // LINUXPINGSENDER_H

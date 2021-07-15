@@ -132,6 +132,11 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 NotificationUtil.saveFallBackMessage(data, mService)
                 return true
             }
+            IBinder.LAST_CALL_TRANSACTION -> {
+                Log.e(tag, "The OS Requested to shut down the VPN")
+                this.mService.turnOff()
+                return true
+            }
 
             else -> {
                 Log.e(tag, "Received invalid bind request \t Code -> $code")
