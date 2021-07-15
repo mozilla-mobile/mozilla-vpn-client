@@ -224,8 +224,12 @@ Item {
                         property string lowRatingResponse: qsTrId("vpn.feedbackForm.lowRatingResponse")
 
                         //% "We’d love to know what we can do to improve Mozilla VPN. Please share any specific feedback here."
-                        property string averageToHighRatingResponse: qsTrId("vpn.feedbackForm.averageToHighRatingResponse")
-                        text: appRating >= 3 ? averageToHighRatingResponse : lowRatingResponse
+                        property string averageRatingResponse: qsTrId("vpn.feedbackForm.averageRatingResponse")
+
+                        //% "We’re glad you’re enjoying Mozilla VPN! Please let us know how we can make your experience even better."
+                        property string goodRatingResponse: qsTrId("vpn.feedbackForm.goodRatingResponse")
+
+                        text: appRating < 3 ? lowRatingResponse : (appRating == 3 ? averageRatingResponse : goodRatingResponse)
                         lineHeight: 24
                         lineHeightMode: Text.FixedHeight
                         wrapMode: Text.WordWrap
