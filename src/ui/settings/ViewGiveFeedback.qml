@@ -316,7 +316,13 @@ Item {
             ColumnLayout {
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: parent.bottom
+                Component.onCompleted: {
+                    if (window.fullscreenRequired()) {
+                        anchors.bottom = parent.bottom;
+                        return;
+                    }
+                    anchors.topMargin = window.height * .10;
+                }
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
                 spacing: 24
                 VPNPanel {
@@ -334,9 +340,15 @@ Item {
                    Layout.fillWidth: true
                    Layout.preferredHeight: Theme.rowHeight
                    onClicked: stackview.pop(StackView.Immediate)
-                   anchors.bottom: parent.bottom
                    anchors.horizontalCenter: parent.horizontalCenter
-                   anchors.bottomMargin: Theme.windowMargin * 4
+                   Component.onCompleted: {
+                    if (window.fullscreenRequired()) {
+                        anchors.bottom = parent.bottom;
+                        anchors.bottomMargin = Theme.windowMargin * 4;
+                        return;
+                    }
+
+                   }
                 }
             }
         }
