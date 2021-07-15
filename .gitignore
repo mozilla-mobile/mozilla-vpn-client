@@ -90,6 +90,8 @@ mozillavpnnp.vcxproj*
 
 # glean
 glean/generated/*
+/glean/telemetry/*
+!/glean/telemetry/.keepme
 
 *.dll
 .vs/

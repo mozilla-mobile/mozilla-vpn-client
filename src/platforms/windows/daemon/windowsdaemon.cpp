@@ -417,6 +417,7 @@ bool WindowsDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
   }
+  bool splitTunnelEnabled = config.m_vpnDisabledApps.length() > 0;
 
   if (!WgQuickProcess::createConfigFile(
           tunnelFile, config.m_privateKey, config.m_deviceIpv4Address,
@@ -424,7 +425,7 @@ bool WindowsDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
           config.m_serverIpv6Gateway, config.m_serverPublicKey,
           config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn,
           addresses.join(", "), config.m_serverPort, config.m_ipv6Enabled,
-          config.m_dnsServer)) {
+          config.m_dnsServer,splitTunnelEnabled)) {
     logger.log() << "Failed to create a config file";
     return false;
   }
@@ -439,7 +440,7 @@ bool WindowsDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
 
   m_tunnelMonitor.start();
 
-  if(config.m_vpnDisabledApps.length() > 0){
+  if(splitTunnelEnabled){
       logger.log() << "Tunnel UP, Starting SplitTunneling";
       if(!WindowsSplitTunnel::isInstalled()){
           logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
@@ -447,6 +448,9 @@ bool WindowsDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
       }
       m_splitTunnelManager.start();
       m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
+
+      // Close Connection to it for debugging
+      m_splitTunnelManager.close();
   }
 
   m_state = Active;

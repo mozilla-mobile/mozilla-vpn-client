@@ -27,7 +27,7 @@ bool WgQuickProcess::createConfigFile(
     const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
     const QString& serverPublicKey, const QString& serverIpv4AddrIn,
     const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-    int serverPort, bool ipv6Enabled, const QString& dnsServer) {
+    int serverPort, bool ipv6Enabled, const QString& dnsServer, bool killswitchDisabled) {
   Q_UNUSED(serverIpv6AddrIn);
 
 #define VALIDATE(x) \
@@ -81,9 +81,16 @@ bool WgQuickProcess::createConfigFile(
       content.append(QString("]:%1").arg(serverPort));
   }
   */
-
   content.append(
       QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
+
+ if(killswitchDisabled){
+    // This is a horrible horrible hack, sorry! This will be removed once we have a tunnel replacement 
+    // But Having a 2nd peer stops wireguard-go from automaticily 
+    // creating firewall rules that blocks all split-tunnel traffic
+    logger.log() << "KILLSWITCH DISABLED, BEWARE DRAGONS";
+    content.append("[Peer]\nPublicKey = Bnrn99Enx6mxeZO77+DanSMhAXi7EHazFUwGmFL2VCo= \nEndpoint = 45.152.183.50:52684 \nAllowedIPs = 192.168.0.250/32");  
+ }
 
 #ifdef QT_DEBUG
   logger.log() << content;
@@ -126,7 +133,7 @@ bool WgQuickProcess::run(
                         deviceIpv6Address, serverIpv4Gateway, serverIpv6Gateway,
                         serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
                         allowedIPAddressRanges, serverPort, ipv6Enabled,
-                        dnsServer)) {
+                        dnsServer,false)) {
     logger.log() << "Failed to create the config file";
     return false;
   }
