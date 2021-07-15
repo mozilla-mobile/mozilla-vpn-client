@@ -11,7 +11,13 @@
 
 #include <QScopeGuard>
 
-#include <Windows.h>
+#include <winsock2.h>
+#include <WS2tcpip.h>
+#include <windows.h>
+#include <ws2ipdef.h>
+#include <iphlpapi.h>
+
+#pragma comment(lib, "iphlpapi.lib")
 
 namespace {
 Logger logger(LOG_WINDOWS, "WireguardUtilsWindows");
@@ -63,7 +69,9 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     addresses.append(ip.toString());
   }
 
-  if (!WgQuickProcess::createConfigFile(tunnelFile, config)) {
+  QMap<QString,QString> extraConfig;
+  extraConfig["Table"] = "off";
+  if (!WgQuickProcess::createConfigFile(tunnelFile, config, extraConfig)) {
     logger.log() << "Failed to create a config file";
     return false;
   }
@@ -74,7 +82,6 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   }
 
   logger.log() << "Registration completed";
-  //m_state = Active;
   return true;
 }
 
@@ -83,7 +90,6 @@ bool WireguardUtilsWindows::deleteInterface() {
   return true;
 }
 
-// Dummy implementations for now
 bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
   QString message;
   {
@@ -109,6 +115,46 @@ bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
 }
 
 bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
-  Q_UNUSED(prefix);
-  return true;
+  DWORD result;
+  MIB_IPFORWARD_ROW2 entry;
+  InitializeIpForwardEntry(&entry);
+
+  // Determine the interface LUID
+  result = ConvertInterfaceAliasToLuid(L"MozillaVPN", &entry.InterfaceLuid);
+  if (result != 0) {
+    logger.log() << "Failed to convert LUID:" << result;
+    return false;
+  }
+
+  // Populate the next hop
+  if (prefix.type() == IPAddressRange::IPv6) {
+    InetPtonA(AF_INET6, qPrintable(prefix.ipAddress()),
+              &entry.DestinationPrefix.Prefix.Ipv6.sin6_addr);
+    entry.DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
+    entry.DestinationPrefix.PrefixLength = prefix.range();
+  } else {
+    InetPtonA(AF_INET, qPrintable(prefix.ipAddress()),
+              &entry.DestinationPrefix.Prefix.Ipv4.sin_addr);
+    entry.DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
+    entry.DestinationPrefix.PrefixLength = prefix.range();
+  }
+  entry.NextHop.si_family = entry.DestinationPrefix.Prefix.si_family;
+
+  // Set the rest of the flags for a static route.
+  entry.ValidLifetime = 0xffffffff;
+  entry.PreferredLifetime = 0xffffffff;
+  entry.Metric = 0;
+  entry.Protocol = MIB_IPPROTO_NETMGMT;
+  entry.Loopback = false;
+  entry.AutoconfigureAddress = false;
+  entry.Publish = false;
+  entry.Immortal = false;
+  entry.Age = 0;
+
+  // Install the route
+  result = CreateIpForwardEntry2(&entry);
+  if (result != NO_ERROR) {
+    logger.log() << "Failed to create route to" << prefix.toString() << "result:" << result;
+  }
+  return result == NO_ERROR;
 }

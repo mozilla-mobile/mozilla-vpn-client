@@ -34,10 +34,7 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
 
 WindowsDaemon::~WindowsDaemon() {
   MVPN_COUNT_DTOR(WindowsDaemon);
-
   logger.log() << "Daemon released";
-
-  m_state = Inactive;
 }
 
 QByteArray WindowsDaemon::getStatus() {
@@ -79,6 +76,4 @@ void WindowsDaemon::monitorBackendFailure() {
 
   emit backendFailure();
   deactivate();
-
-  m_state = Inactive;
 }
