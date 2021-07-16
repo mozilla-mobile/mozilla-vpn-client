@@ -21,6 +21,8 @@ TextField {
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
     selectByMouse: true
 
+    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+
     VPNIcon {
         source: "qrc:/ui/resources/search.svg"
         anchors.verticalCenter: parent.verticalCenter
