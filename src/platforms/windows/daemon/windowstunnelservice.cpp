@@ -48,11 +48,14 @@ Logger logger(LOG_WINDOWS, "WindowsTunnelService");
 Logger logdll(LOG_WINDOWS, "tunnel.dll");
 }  // namespace
 
+static bool stopAndDeleteTunnelService(SC_HANDLE service);
+static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus);
+
 WindowsTunnelService::WindowsTunnelService(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(WindowsTunnelService);
 
   m_scm = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
-  if (!m_scm) {
+  if (m_scm == nullptr) {
     WindowsCommons::windowsLog("Failed to open SCManager");
   }
 
@@ -65,19 +68,14 @@ WindowsTunnelService::WindowsTunnelService(QObject* parent) : QObject(parent) {
 
 WindowsTunnelService::~WindowsTunnelService() {
   MVPN_COUNT_CTOR(WindowsTunnelService);
-  if (m_service) {
-    stopAndDeleteTunnelService(m_service);
-    CloseServiceHandle(m_service);
-  }
-  CloseServiceHandle(m_scm);
-}
-
-void WindowsTunnelService::resetLogs() {
-  m_logEpochNsec = QDateTime::currentMSecsSinceEpoch() * 1000000;
+  stop();
+  CloseServiceHandle((SC_HANDLE)m_scm);
 }
 
 bool WindowsTunnelService::start(const QString& configFile) {
   logger.log() << "Starting the tunnel service";
+  m_logEpochNsec = QDateTime::currentMSecsSinceEpoch() * 1000000;
+
   if (!registerTunnelService(configFile)) {
     return false;
   }
@@ -110,13 +108,13 @@ bool WindowsTunnelService::start(const QString& configFile) {
 }
 
 void WindowsTunnelService::stop() {
-  if (m_service != nullptr) {
-    stopAndDeleteTunnelService(m_service);
-    CloseServiceHandle(m_service);
+  SC_HANDLE service = (SC_HANDLE)m_service;
+  if (service) {
+    stopAndDeleteTunnelService(service);
+    CloseServiceHandle(service);
     m_service = nullptr;
   }
 
-  logger.log() << "Stopping monitoring the tunnel service";
   m_timer.stop();
   m_logtimer.stop();
 
@@ -134,44 +132,22 @@ bool WindowsTunnelService::isRunning() {
   }
 
   SERVICE_STATUS status;
-  if (!QueryServiceStatus(m_service, &status)) {
+  if (!QueryServiceStatus((SC_HANDLE)m_service, &status)) {
     return false;
   }
 
-  return (status.dwCurrentState == SERVICE_RUNNING);
+  return status.dwCurrentState == SERVICE_RUNNING;
 }
 
 void WindowsTunnelService::timeout() {
-  SC_HANDLE scm;
-  SC_HANDLE service;
-
-  auto guard = qScopeGuard([&] {
-    if (service) {
-      CloseServiceHandle(service);
-    }
-
-    if (scm) {
-      CloseServiceHandle(scm);
-    }
-  });
-
-  scm = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
-  if (!scm) {
-    WindowsCommons::windowsLog("Failed to open SCManager");
-    emit backendFailure();
-    return;
-  }
-
-  // Let's see if we have to delete a previous instance.
-  service = OpenService(scm, TUNNEL_SERVICE_NAME, SERVICE_ALL_ACCESS);
-  if (!service) {
+  if (m_service == nullptr) {
     logger.log() << "The service doesn't exist";
     emit backendFailure();
     return;
   }
 
   SERVICE_STATUS status;
-  if (!QueryServiceStatus(service, &status)) {
+  if (!QueryServiceStatus((SC_HANDLE)m_service, &status)) {
     WindowsCommons::windowsLog("Failed to retrieve the service status");
     emit backendFailure();
     return;
@@ -230,8 +206,8 @@ void WindowsTunnelService::processLogs() {
 bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
   logger.log() << "Register tunnel service";
 
-  SC_HANDLE service;
-
+  SC_HANDLE scm = (SC_HANDLE)m_scm;
+  SC_HANDLE service = nullptr;
   auto guard = qScopeGuard([&] {
     if (service) {
       CloseServiceHandle(service);
@@ -239,7 +215,7 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
   });
 
   // Let's see if we have to delete a previous instance.
-  service = OpenService(m_scm, TUNNEL_SERVICE_NAME, SERVICE_ALL_ACCESS);
+  service = OpenService(scm, TUNNEL_SERVICE_NAME, SERVICE_ALL_ACCESS);
   if (service) {
     logger.log() << "An existing service has been detected. Let's close it.";
     if (!stopAndDeleteTunnelService(service)) {
@@ -258,7 +234,7 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
 
   logger.log() << "Service name:" << servicePath;
 
-  service = CreateService(m_scm, TUNNEL_SERVICE_NAME, L"Mozilla VPN (tunnel)",
+  service = CreateService(scm, TUNNEL_SERVICE_NAME, L"Mozilla VPN (tunnel)",
                           SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
                           SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
                           (const wchar_t*)servicePath.utf16(), nullptr, 0,
@@ -312,7 +288,7 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
   return false;
 }
 
-bool WindowsTunnelService::stopAndDeleteTunnelService(SC_HANDLE service) {
+static bool stopAndDeleteTunnelService(SC_HANDLE service) {
   SERVICE_STATUS status;
   if (!QueryServiceStatus(service, &status)) {
     WindowsCommons::windowsLog("Failed to retrieve the service status");
@@ -345,60 +321,28 @@ bool WindowsTunnelService::stopAndDeleteTunnelService(SC_HANDLE service) {
   return true;
 }
 
-HANDLE WindowsTunnelService::createPipe() {
-  HANDLE pipe = INVALID_HANDLE_VALUE;
+QString WindowsTunnelService::uapiCommand(const QString& command) {
+  // Create a pipe to the tunnel service.
+  LPTSTR tunnelName = (LPTSTR)TEXT(TUNNEL_NAMED_PIPE);
+  HANDLE pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0,
+                           nullptr, OPEN_EXISTING, 0, nullptr);
+  if (pipe == INVALID_HANDLE_VALUE) {
+    return QString();
+  }
 
   auto guard = qScopeGuard([&] {
-    if (pipe != INVALID_HANDLE_VALUE) {
-      CloseHandle(pipe);
-    }
+    CloseHandle(pipe);
   });
-
-  LPTSTR tunnelName = (LPTSTR)TEXT(TUNNEL_NAMED_PIPE);
-
-  uint32_t tries = 0;
-  while (tries < 30) {
-    pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                      OPEN_EXISTING, 0, nullptr);
-
-    if (pipe != INVALID_HANDLE_VALUE) {
-      break;
-    }
-
-    if (GetLastError() != ERROR_PIPE_BUSY) {
-      WindowsCommons::windowsLog("Failed to create a named pipe");
-      return INVALID_HANDLE_VALUE;
-    }
-
-    logger.log() << "Pipes are busy. Let's wait";
-
-    if (!WaitNamedPipe(tunnelName, 1000)) {
-      WindowsCommons::windowsLog("Failed to wait for named pipes");
-      return INVALID_HANDLE_VALUE;
-    }
-
-    ++tries;
+  if (!WaitNamedPipe(tunnelName, 1000)) {
+    WindowsCommons::windowsLog("Failed to wait for named pipes");
+    return QString();
   }
 
   DWORD mode = PIPE_READMODE_BYTE;
   if (!SetNamedPipeHandleState(pipe, &mode, nullptr, nullptr)) {
     WindowsCommons::windowsLog("Failed to set the read-mode on pipe");
-    return INVALID_HANDLE_VALUE;
-  }
-
-  guard.dismiss();
-  return pipe;
-}
-
-QString WindowsTunnelService::uapiCommand(const QString& command) {
-  // Create a pipe to the tunnel service.
-  HANDLE pipe = createPipe();
-  if (pipe == INVALID_HANDLE_VALUE) {
     return QString();
   }
-  auto guard = qScopeGuard([&] {
-    CloseHandle(pipe);
-  });
 
   // Write the UAPI command into the pipe.
   QByteArray message = command.toLocal8Bit();
@@ -428,7 +372,7 @@ QString WindowsTunnelService::uapiCommand(const QString& command) {
 }
 
 // static
-bool WindowsTunnelService::waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
+static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
   int tries = 0;
   while (tries < 30) {
     SERVICE_STATUS status;
@@ -451,7 +395,7 @@ bool WindowsTunnelService::waitForServiceStatus(SC_HANDLE service, DWORD expecte
 }
 
 // static
-QString WindowsTunnelService::exitCodeToFailure(DWORD exitCode) {
+QString WindowsTunnelService::exitCodeToFailure(unsigned int exitCode) {
   // The order of this error code is taken from wireguard.
   switch (exitCode) {
     case 0:

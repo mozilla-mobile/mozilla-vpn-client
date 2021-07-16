@@ -74,7 +74,6 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
-  m_tunnel.resetLogs();
   if (!m_tunnel.start(tunnelFile)) {
     logger.log() << "Failed to activate the tunnel service";
     return false;

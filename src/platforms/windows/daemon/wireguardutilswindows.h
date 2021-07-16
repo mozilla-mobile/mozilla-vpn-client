@@ -10,8 +10,6 @@
 
 #include <QObject>
 
-#include <Windows.h>
-
 class WireguardUtilsWindows final : public WireguardUtils {
   Q_OBJECT
 
