@@ -37,6 +37,7 @@ Item {
 
         TextArea.flickable: TextArea {
             property var maxCharacterCount: 1000
+            property bool loseFocusOnOutsidePress: true
 
             id: textArea
 
