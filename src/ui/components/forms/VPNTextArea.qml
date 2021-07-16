@@ -51,6 +51,7 @@ Item {
             onTextChanged: if (length > maxCharacterCount) remove(maxCharacterCount, length)
             selectByMouse: true
             selectionColor: Theme.input.highlight
+            inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
 
             Text {
                 id: formattedPlaceholderText
