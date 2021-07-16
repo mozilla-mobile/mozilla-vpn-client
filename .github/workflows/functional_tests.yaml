@@ -99,7 +99,6 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
-      max-parallel: 1 #  To avoid max-device limit
       matrix:
         test: ${{ fromJson(needs.test_list.outputs.matrix) }}
     steps:
@@ -139,8 +138,9 @@ jobs:
           wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz -O geckodriver.tar.gz
           tar xvf geckodriver.tar.gz
 
-      - name: Install node dependecies
+      - name: Install dependecies
         run: |
+          pip3 install flask
           npm install dotenv
           npm install selenium-webdriver
           npm install mocha
@@ -151,6 +151,9 @@ jobs:
         run: |
           export PATH=.:$(npm bin):$PATH
           export HEADLESS=yes
+          export MVPN_API_BASE_URL=http://localhost:5000
+          ./tests/proxy/wsgi.py --mock-devices > /dev/null &
+
           xvfb-run -a ./scripts/test_function.sh ./src/mozillavpn ${{matrix.test.path}}
         env:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
