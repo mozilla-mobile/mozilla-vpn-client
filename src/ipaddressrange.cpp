@@ -12,6 +12,23 @@ IPAddressRange::IPAddressRange(const QString& ipAddress, uint32_t range,
   MVPN_COUNT_CTOR(IPAddressRange);
 }
 
+IPAddressRange::IPAddressRange(const QString& prefix) {
+  QStringList split = prefix.split('/');
+  m_ipAddress = split[0];
+  if (m_ipAddress.contains(':')) {
+    // Probably IPv6
+    m_type = IPv6;
+    m_range = 128;
+  } else {
+    // Assume IPv4
+    m_type = IPv4;
+    m_range = 32;
+  }
+  if (split.count() > 1) {
+    m_range = split[1].toUInt();
+  }
+}
+
 IPAddressRange::IPAddressRange(const IPAddressRange& other) {
   MVPN_COUNT_CTOR(IPAddressRange);
   *this = other;
