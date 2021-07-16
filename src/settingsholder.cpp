@@ -8,6 +8,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "rfc/rfc1918.h"
+#include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 #include "rfc/rfc5735.h"
 
 #include <QSettings>
@@ -393,23 +395,37 @@ SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
     return UserDNSInvalid;
   }
 
-  if (address.protocol() != QAbstractSocket::IPv4Protocol) {
-    return UserDNSNotIPv4;
-  }
-
   /* Currently we need to limit this to loopback and LAN IP addresses since the
    * killswitch makes sure that no dns traffic may happen to outside of lan
    */
 
-  if (RFC5735::ipv4LoopbackAddressBlock().contains(address)) {
-    return UserDNSOK;
-  }
-
-  for (const IPAddress& network : RFC1918::ipv4()) {
-    if (network.contains(address)) {
+  if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    if (RFC5735::ipv4LoopbackAddressBlock().contains(address)) {
       return UserDNSOK;
     }
+
+    for (const IPAddress& network : RFC1918::ipv4()) {
+      if (network.contains(address)) {
+        return UserDNSOK;
+      }
+    }
+
+    return UserDNSOutOfRange;
   }
 
-  return UserDNSOutOfRange;
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    if (RFC4291::ipv6LoopbackAddressBlock().contains(address)) {
+      return UserDNSOK;
+    }
+
+    for (const IPAddress& network : RFC4193::ipv6()) {
+      if (network.contains(address)) {
+        return UserDNSOK;
+      }
+    }
+
+    return UserDNSOutOfRange;
+  }
+
+  return UserDNSInvalid;
 }
