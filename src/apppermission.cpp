@@ -19,6 +19,8 @@
 #  include "platforms/dummy/dummyapplistprovider.h"
 #endif
 
+#include <QFileDialog>
+
 namespace {
 Logger logger(LOG_MAIN, "AppPermission");
 AppPermission* s_instance = nullptr;
@@ -87,7 +89,7 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
   }
 }
 
-Q_INVOKABLE void AppPermission::flip(const QString& appID) {
+void AppPermission::flip(const QString& appID) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   if (settingsHolder->hasVpnDisabledApp(appID)) {
     logger.log() << "Enabled --" << appID << " for VPN";
@@ -101,7 +103,7 @@ Q_INVOKABLE void AppPermission::flip(const QString& appID) {
   dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 
-Q_INVOKABLE void AppPermission::requestApplist() {
+void AppPermission::requestApplist() {
   logger.log() << "Request new AppList";
   m_listprovider->getApplicationList();
 }
@@ -128,11 +130,16 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   endResetModel();
 }
 
-Q_INVOKABLE void AppPermission::protectAll() {
+void AppPermission::protectAll() {
+  logger.log() << "Protected all";
+
   SettingsHolder::instance()->setVpnDisabledApps(QStringList());
   dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
 };
-Q_INVOKABLE void AppPermission::unprotectAll() {
+
+void AppPermission::unprotectAll() {
+  logger.log() << "Unprotected all";
+
   QStringList allAppIds;
   for (auto app : m_applist) {
     allAppIds.append(app.id);
@@ -140,3 +147,35 @@ Q_INVOKABLE void AppPermission::unprotectAll() {
   SettingsHolder::instance()->setVpnDisabledApps(allAppIds);
   dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
 };
+
+void AppPermission::openFilePicker() {
+  logger.log() << "File picker required";
+
+  QFileDialog fp(nullptr, qtTrId("vpn.protectSelectedApps.addApplication"));
+
+  QStringList locations =
+      QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+  if (!locations.isEmpty()) {
+    fp.setDirectory(locations.first());
+  }
+
+  fp.setFilter(QDir::Executable | QDir::Files | QDir::NoDotAndDotDot);
+  fp.setFileMode(QFileDialog::ExistingFile);
+
+  if (!fp.exec()) {
+    logger.log() << "File picker exection aborted";
+    return;
+  }
+
+  QStringList fileNames = fp.selectedFiles();
+  if (fileNames.isEmpty()) {
+    logger.log() << "File picker - no selection";
+    return;
+  }
+
+  logger.log() << "Selection:" << fileNames;
+  Q_ASSERT(fileNames.length() == 1);
+
+  Q_ASSERT(m_listprovider);
+  m_listprovider->addApplication(fileNames[0]);
+}
