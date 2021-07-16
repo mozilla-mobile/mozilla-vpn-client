@@ -114,17 +114,17 @@ bool WireguardUtilsLinux::interfaceExists() {
   return currentInterfaces().contains(WG_INTERFACE);
 };
 
-bool WireguardUtilsLinux::addInterface() {
+bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   int returnCode = wg_add_device(WG_INTERFACE);
   if (returnCode != 0) {
     qWarning("Adding interface `%s` failed with return code: %d", WG_INTERFACE,
              returnCode);
     return false;
   }
-  return true;
+  return updateInterface(config);
 }
 
-bool WireguardUtilsLinux::configureInterface(const InterfaceConfig& config) {
+bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
   /*
    * Set conf:
    * - sets name of device
@@ -289,6 +289,13 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
   size_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                          (struct sockaddr*)&nladdr, sizeof(nladdr));
   return (result == nlmsg->nlmsg_len);
+}
+
+void WireguardUtilsLinux::flushRoutes() {
+  // We should probably implement this to ward off potential corruption in the
+  // routing table after silent server switching. It doesn't *really* affect
+  // Linux since we use the firewall mark to direct packets, but in theory it
+  // could break the captive portal check.
 }
 
 // PRIVATE METHODS

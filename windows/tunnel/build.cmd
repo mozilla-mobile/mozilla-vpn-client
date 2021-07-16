@@ -16,7 +16,7 @@ if exist .deps\prepared goto :build
 	call :download go.zip https://download.wireguard.com/windows-toolchain/distfiles/go1.17beta1-windows_amd64_2021-06-11.zip 09601956a35ee4c2fa199da301c4b210fd365a46d286a7160388a1cdc07b7a6d || goto :error
 	rem Mirror of https://github.com/mstorsjo/llvm-mingw/releases/download/20201020/llvm-mingw-20201020-msvcrt-x86_64.zip
 	call :download llvm-mingw-msvcrt.zip https://download.wireguard.com/windows-toolchain/distfiles/llvm-mingw-20201020-msvcrt-x86_64.zip 2e46593245090df96d15e360e092f0b62b97e93866e0162dca7f93b16722b844 || goto :error
-	call :download wintun.zip https://www.wintun.net/builds/wintun-0.11.zip a5e212dcfd11ba172f8c2d9ee34ae1a68e15d8115a05912d95b1209ce0695408 || goto :error
+	call :download wintun.zip https://www.wintun.net/builds/wintun-0.12.zip eba90e26686ed86595ae0a6d4d3f4f022924b1758f5148a32a91c60cc6e604df || goto :error
 	copy /y NUL prepared > NUL || goto :error
 	cd .. || goto :error
 
