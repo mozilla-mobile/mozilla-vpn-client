@@ -146,7 +146,7 @@ QString DBusService::getLogs() {
 
 bool DBusService::switchServer(const InterfaceConfig& config) {
   logger.log() << "Switching server";
-  return wgutils()->configureInterface(config);
+  return wgutils()->updateInterface(config);
 }
 
 bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
