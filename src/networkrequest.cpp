@@ -17,6 +17,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QProcessEnvironment>
 #include <QUrl>
 
 // Timeout for the network requests.
@@ -75,6 +76,17 @@ NetworkRequest::~NetworkRequest() {
 }
 
 // static
+QString NetworkRequest::apiBaseUrl() {
+#ifndef MVPN_PRODUCTION_MODE
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains("MVPN_API_BASE_URL")) {
+    return pe.value("MVPN_API_BASE_URL");
+  }
+#endif
+  return Constants::API_URL;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
                                                 const QString& url,
                                                 int status) {
@@ -100,7 +112,7 @@ NetworkRequest* NetworkRequest::createForAuthenticationVerification(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v2/vpn/login/verify");
   r->m_request.setUrl(url);
 
@@ -125,7 +137,7 @@ NetworkRequest* NetworkRequest::createForDeviceCreation(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/device");
   r->m_request.setUrl(url);
 
@@ -147,7 +159,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
 
   NetworkRequest* r = new NetworkRequest(parent, 204, true);
 
-  QString url(Constants::API_URL);
+  QString url(apiBaseUrl());
   url.append("/api/v1/vpn/device/");
   url.append(QUrl::toPercentEncoding(pubKey));
 
@@ -167,7 +179,7 @@ NetworkRequest* NetworkRequest::createForServers(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/servers");
   r->m_request.setUrl(url);
 
@@ -180,7 +192,7 @@ NetworkRequest* NetworkRequest::createForSurveyData(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/surveys");
   r->m_request.setUrl(url);
 
@@ -193,7 +205,7 @@ NetworkRequest* NetworkRequest::createForVersions(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/versions");
   r->m_request.setUrl(url);
 
@@ -206,7 +218,7 @@ NetworkRequest* NetworkRequest::createForAccount(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/account");
   r->m_request.setUrl(url);
 
@@ -227,7 +239,7 @@ NetworkRequest* NetworkRequest::createForIpInfo(QObject* parent,
     r->m_request.setUrl(QUrl(QString(IPINFO_URL_IPV4).arg(address.toString())));
   }
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   r->m_request.setRawHeader("Host", url.host().toLocal8Bit());
 
   r->getRequest();
@@ -257,7 +269,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalDetection(
 NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/dns/detectportal");
   r->m_request.setUrl(url);
 
@@ -268,7 +280,7 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
 NetworkRequest* NetworkRequest::createForHeartbeat(QObject* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/__heartbeat__");
   r->m_request.setUrl(url);
 
@@ -283,7 +295,7 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
                                                   const QString& category) {
   NetworkRequest* r = new NetworkRequest(parent, 201, true);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/feedback");
   r->m_request.setUrl(url);
 
@@ -311,7 +323,7 @@ NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v2/vpn/products/ios");
   r->m_request.setUrl(url);
 
@@ -327,7 +339,7 @@ NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::API_URL);
+  QUrl url(apiBaseUrl());
   url.setPath("/api/v1/vpn/purchases/ios");
   r->m_request.setUrl(url);
 
