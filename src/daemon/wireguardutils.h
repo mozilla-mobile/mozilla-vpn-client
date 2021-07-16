@@ -30,6 +30,7 @@ class WireguardUtils : public QObject {
   virtual bool deleteInterface() = 0;
   virtual peerBytes getThroughputForInterface() = 0;
   virtual bool addRoutePrefix(const IPAddressRange& prefix) = 0;
+  virtual void flushRoutes() = 0;
 };
 
 #endif  // WIREGUARDUTILS_H

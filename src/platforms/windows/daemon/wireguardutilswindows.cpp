@@ -10,6 +10,7 @@
 #include "wgquickprocess.h"
 
 #include <QScopeGuard>
+#include <QFileInfo>
 
 #include <winsock2.h>
 #include <WS2tcpip.h>
@@ -81,6 +82,16 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
+  // Determine the interface LUID
+  NET_LUID luid;
+  QString ifAlias = QFileInfo(tunnelFile).baseName();
+  DWORD result = ConvertInterfaceAliasToLuid((wchar_t*)ifAlias.utf16(), &luid);
+  if (result != 0) {
+    logger.log() << "Failed to lookup LUID:" << result;
+    return false;
+  }
+  m_luid = luid.Value;
+
   logger.log() << "Registration completed";
   return true;
 }
@@ -91,6 +102,7 @@ bool WireguardUtilsWindows::deleteInterface() {
 }
 
 bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
+  // Update the interface config
   QString message;
   {
     QTextStream out(&message);
@@ -119,13 +131,6 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
   MIB_IPFORWARD_ROW2 entry;
   InitializeIpForwardEntry(&entry);
 
-  // Determine the interface LUID
-  result = ConvertInterfaceAliasToLuid(L"MozillaVPN", &entry.InterfaceLuid);
-  if (result != 0) {
-    logger.log() << "Failed to convert LUID:" << result;
-    return false;
-  }
-
   // Populate the next hop
   if (prefix.type() == IPAddressRange::IPv6) {
     InetPtonA(AF_INET6, qPrintable(prefix.ipAddress()),
@@ -138,6 +143,7 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
     entry.DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
     entry.DestinationPrefix.PrefixLength = prefix.range();
   }
+  entry.InterfaceLuid.Value = m_luid;
   entry.NextHop.si_family = entry.DestinationPrefix.Prefix.si_family;
 
   // Set the rest of the flags for a static route.
@@ -157,4 +163,26 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
     logger.log() << "Failed to create route to" << prefix.toString() << "result:" << result;
   }
   return result == NO_ERROR;
+}
+
+void WireguardUtilsWindows::flushRoutes() {
+  DWORD result;
+  PMIB_IPFORWARD_TABLE2 table;
+
+  // Fetch the routing table
+  result = GetIpForwardTable2(AF_UNSPEC, &table);
+  if (result != NO_ERROR) {
+    logger.log() << "Failed to fetch route table:" << result;
+    return;
+  }
+  auto guard = qScopeGuard([&] {
+    FreeMibTable(table);
+  });
+
+  // Delete any entries matching our LUID.
+  for (ULONG i = 0; i < table->NumEntries; i++) {
+    if (table->Table[i].InterfaceLuid.Value == m_luid) {
+      DeleteIpForwardEntry2(&table->Table[i]);
+    }
+  }
 }

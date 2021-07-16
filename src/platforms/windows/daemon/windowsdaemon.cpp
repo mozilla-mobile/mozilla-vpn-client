@@ -65,12 +65,6 @@ bool WindowsDaemon::supportServerSwitching(
          m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
 }
 
-bool WindowsDaemon::switchServer(const InterfaceConfig& config) {
-  logger.log() << "Switching server";
-  Q_ASSERT(m_connected);
-  return m_wgutils->updateInterface(config);
-}
-
 void WindowsDaemon::monitorBackendFailure() {
   logger.log() << "Tunnel service is down";
 

@@ -310,7 +310,28 @@ QString Daemon::logs() {
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
 bool Daemon::switchServer(const InterfaceConfig& config) {
-  Q_UNUSED(config);
-  qFatal("Have you forgotten to implement switchServer?");
-  return false;
+  // Generic server switching is not supported without wgutils.
+  if (!supportWGUtils()) {
+    qFatal("Have you forgotten to implement switchServer?");
+    return false;
+  }
+
+  logger.log() << "Switching server";
+
+  Q_ASSERT(m_connected);
+  wgutils()->flushRoutes();
+
+  if (!wgutils()->updateInterface(config)) {
+    logger.log() << "Server switch failed to update the wireguard interface";
+    return false;
+  }
+
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    if (!wgutils()->addRoutePrefix(ip)) {
+      logger.log() << "Server switch failed to update the routing table";
+      return false;
+    }
+  }
+
+  return true;
 }

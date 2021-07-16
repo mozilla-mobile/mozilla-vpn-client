@@ -27,9 +27,6 @@ class WindowsDaemon final : public Daemon {
  private:
   bool supportServerSwitching(const InterfaceConfig& config) const override;
 
-  bool switchServer(const InterfaceConfig& config) override;
-
-
  private:
   void monitorBackendFailure();
 

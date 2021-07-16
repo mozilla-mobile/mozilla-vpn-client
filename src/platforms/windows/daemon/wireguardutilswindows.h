@@ -23,11 +23,13 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool deleteInterface() override;
   peerBytes getThroughputForInterface() override;
   bool addRoutePrefix(const IPAddressRange& prefix) override;
+  void flushRoutes() override;
 
  signals:
   void backendFailure();
 
  private:
+  quint64 m_luid = 0;
   WindowsTunnelService m_tunnel;
 };
 
