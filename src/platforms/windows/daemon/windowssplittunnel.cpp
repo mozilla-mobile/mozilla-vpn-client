@@ -5,6 +5,7 @@
 #include "windowssplittunnel.h"
 #include "../windowscommons.h"
 #include "../windowsservicemanager.h"
+#include "windowsfirewall.h"
 #include "logger.h"
 
 #include <QNetworkInterface>
@@ -20,14 +21,6 @@
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
-
-// ID for the Mullvad Split-Tunnel Firewall Sublayer
-DEFINE_GUID(ST_FW_WINFW_BASELINE_SUBLAYER_KEY, 0xc78056ff, 0x2bc1, 0x4211, 0xaa,
-            0xdd, 0x7f, 0x35, 0x8d, 0xef, 0x20, 0x2d);
-// ID for the Mullvad Split-Tunnel Sublayer Provider
-DEFINE_GUID(ST_FW_PROVIDER_KEY, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
-            0xa7, 0x99, 0x63, 0x56, 0xd9);
-}  // namespace
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
   if (!isInstalled()) {
@@ -71,8 +64,8 @@ void WindowsSplitTunnel::initDriver() {
   logger.log() << "Connected to the Driver";
   // Reset Driver as it has wfp handles probably >:(
 
-  if (!initSublayer()) {
-    logger.log() << "Init sublayer failed :(";
+  if (!WindowsFirewall::instance()->init()) {
+    logger.log() << "Init WFP-Sublayer failed, driver won't be functional";
     return;
   }
 
@@ -80,10 +73,10 @@ void WindowsSplitTunnel::initDriver() {
 
   auto state = getState();
   if (state == STATE_UNKNOWN) {
-    logger.log() << "Cannot check if driver is initialized";
+    logger.log() << "Cannot check if driver is initialised";
   }
   if (state >= STATE_INITIALIZED) {
-    logger.log() << "Driver already initialized: " << state;
+    logger.log() << "Driver already initialised: " << state;
     return;
   }
   DWORD bytesReturned;
@@ -486,61 +479,6 @@ bool WindowsSplitTunnel::isInstalled() {
   CloseServiceHandle(serviceManager);
   CloseServiceHandle(servicehandle);
   return err != ERROR_SERVICE_DOES_NOT_EXIST;
-}
-
-bool WindowsSplitTunnel::initSublayer() {
-  DWORD result = ERROR_SUCCESS;
-  HANDLE m_wfp = INVALID_HANDLE_VALUE;
-  FWPM_SESSION0 session;
-  memset(&session, 0, sizeof(session));
-
-  logger.log() << "Opening the filter engine";
-  result = FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &m_wfp);
-  if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmEngineOpen0 failed. Return value:.\n" << result;
-    return false;
-  }
-  auto cleanup = qScopeGuard([&] { FwpmEngineClose0(m_wfp); });
-  // Check if the Layer Already Exists
-  FWPM_SUBLAYER0* maybeLayer;
-  result = FwpmSubLayerGetByKey0(m_wfp, &ST_FW_WINFW_BASELINE_SUBLAYER_KEY,
-                                 &maybeLayer);
-  if (result == ERROR_SUCCESS) {
-    logger.log() << "The Sublayer Already Exists!";
-    FwpmFreeMemory0((void**)&maybeLayer);
-    return true;
-  }
-
-  // Step 1: Start Transaction
-  result = FwpmTransactionBegin(m_wfp, NULL);
-  if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
-    return false;
-  }
-
-  // Step 3: Add Sublayer
-  FWPM_SUBLAYER0 subLayer;
-  memset(&subLayer, 0, sizeof(subLayer));
-  subLayer.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
-  subLayer.displayData.name = (PWSTR)L"MozillaVPN-SplitTunnel-Sublayer";
-  subLayer.displayData.description =
-      (PWSTR)L"Filters that enforce a good baseline";
-  // subLayer.providerKey= const_cast<GUID*>(&ST_FW_PROVIDER_KEY);
-  subLayer.weight = 0xFFFF;
-
-  result = FwpmSubLayerAdd0(m_wfp, &subLayer, NULL);
-  if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmSubLayerAdd0 failed. Return value:.\n" << result;
-    return false;
-  }
-  // Step 4: Commit!
-  result = FwpmTransactionCommit0(m_wfp);
-  if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
-    return false;
-  }
-  logger.log() << "Initialised Sublayer";
-  return true;
 }
 
 QString WindowsSplitTunnel::convertPath(const QString& path) {

@@ -757,6 +757,8 @@ else:win* {
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelservice.cpp \
         platforms/windows/daemon/wireguardutilswindows.cpp \
+        platforms/windows/daemon/windowsfirewall.cpp \
+        platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowsservicemanager.cpp \
         platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowscommons.cpp \
@@ -786,6 +788,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelservice.h \
         platforms/windows/daemon/wireguardutilswindows.h \
+        platforms/windows/daemon/windowsfirewall.h \
         platforms/windows/daemon/windowssplittunnel.h \
         platforms/windows/windowsservicemanager.h \
         platforms/windows/windowscommons.h \
