@@ -70,7 +70,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     addresses.append(ip.toString());
   }
 
-  QMap<QString,QString> extraConfig;
+  QMap<QString, QString> extraConfig;
   extraConfig["Table"] = "off";
   if (!WgQuickProcess::createConfigFile(tunnelFile, config, extraConfig)) {
     logger.log() << "Failed to create a config file";
