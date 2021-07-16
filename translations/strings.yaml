@@ -1,0 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+main:
+  selectLocation:
+    - Select location
+    - Select the Location of the VPN server
+
+category:
+  stringA: This is the english value for stringA
+  stringB:
+    - This is the english value for stringB
+    - This is a comment
+    - We can have multiple lines of comments.

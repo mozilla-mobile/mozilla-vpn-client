@@ -102,7 +102,8 @@ VPNFlickable {
 
             //% "Select location"
             //: Select the Location of the VPN server
-            titleText: qsTrId("vpn.servers.selectLocation")
+            titleText: VPNl18n.tr(VPNl18n.MainSelectLocation)
+
             //% "current location - %1"
             //: Accessibility description for current location of the VPN server
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.localizedCityName)
