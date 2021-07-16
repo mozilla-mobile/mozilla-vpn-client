@@ -291,6 +291,13 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
   return (result == nlmsg->nlmsg_len);
 }
 
+void WireguardUtilsLinux::flushRoutes() {
+  // We should probably implement this to ward off potential corruption in the
+  // routing table after silent server switching. It doesn't *really* affect
+  // Linux since we use the firewall mark to direct packets, but in theory it
+  // could break the captive portal check.
+}
+
 // PRIVATE METHODS
 QStringList WireguardUtilsLinux::currentInterfaces() {
   char* deviceNames = wg_list_device_names();

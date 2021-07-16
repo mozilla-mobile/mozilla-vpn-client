@@ -324,15 +324,13 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service) {
 QString WindowsTunnelService::uapiCommand(const QString& command) {
   // Create a pipe to the tunnel service.
   LPTSTR tunnelName = (LPTSTR)TEXT(TUNNEL_NAMED_PIPE);
-  HANDLE pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0,
-                           nullptr, OPEN_EXISTING, 0, nullptr);
+  HANDLE pipe = CreateFile(tunnelName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                           OPEN_EXISTING, 0, nullptr);
   if (pipe == INVALID_HANDLE_VALUE) {
     return QString();
   }
 
-  auto guard = qScopeGuard([&] {
-    CloseHandle(pipe);
-  });
+  auto guard = qScopeGuard([&] { CloseHandle(pipe); });
   if (!WaitNamedPipe(tunnelName, 1000)) {
     WindowsCommons::windowsLog("Failed to wait for named pipes");
     return QString();

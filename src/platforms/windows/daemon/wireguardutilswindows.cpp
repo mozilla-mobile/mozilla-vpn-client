@@ -22,7 +22,7 @@
 
 namespace {
 Logger logger(LOG_WINDOWS, "WireguardUtilsWindows");
-}; // namespace
+};  // namespace
 
 WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
     : WireguardUtils(parent), m_tunnel(this) {
@@ -39,7 +39,7 @@ WireguardUtilsWindows::~WireguardUtilsWindows() {
 }
 
 WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
-  peerBytes pb = {0,0};
+  peerBytes pb = {0, 0};
   QString reply = m_tunnel.uapiCommand("get=1");
 
   for (const QString& line : reply.split('\n')) {
@@ -54,7 +54,7 @@ WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
       pb.rxBytes = parts[1].toDouble();
     }
   }
-  
+
   return pb;
 }
 
@@ -160,7 +160,8 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
   // Install the route
   result = CreateIpForwardEntry2(&entry);
   if (result != NO_ERROR) {
-    logger.log() << "Failed to create route to" << prefix.toString() << "result:" << result;
+    logger.log() << "Failed to create route to" << prefix.toString()
+                 << "result:" << result;
   }
   return result == NO_ERROR;
 }
@@ -175,9 +176,7 @@ void WireguardUtilsWindows::flushRoutes() {
     logger.log() << "Failed to fetch route table:" << result;
     return;
   }
-  auto guard = qScopeGuard([&] {
-    FreeMibTable(table);
-  });
+  auto guard = qScopeGuard([&] { FreeMibTable(table); });
 
   // Delete any entries matching our LUID.
   for (ULONG i = 0; i < table->NumEntries; i++) {

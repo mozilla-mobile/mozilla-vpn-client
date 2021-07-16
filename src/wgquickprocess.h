@@ -29,10 +29,10 @@ class WgQuickProcess final {
       const QString& serverPublicKey, const QString& serverIpv4AddrIn,
       const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
       int serverPort, bool ipv6Enabled, const QString& dnsServer);
-  
+
   static bool createConfigFile(
       const QString& outputFile, const InterfaceConfig& config,
-      const QMap<QString,QString>& extra = QMap<QString,QString>());
+      const QMap<QString, QString>& extra = QMap<QString, QString>());
 
   static QString scriptPath();
 };

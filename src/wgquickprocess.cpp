@@ -23,7 +23,7 @@ Logger logger(
 // static
 bool WgQuickProcess::createConfigFile(const QString& outputFile,
                                       const InterfaceConfig& config,
-                                      const QMap<QString,QString>& extra) {
+                                      const QMap<QString, QString>& extra) {
 #define VALIDATE(x) \
   if (x.contains("\n")) return false;
 
@@ -56,7 +56,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "DNS = " << dnsServers.join(", ") << "\n";
 
   // If any extra config was provided, append it now.
-  for (const QString &key : extra.keys()) {
+  for (const QString& key : extra.keys()) {
     out << key << " = " << extra[key] << "\n";
   }
 
@@ -78,9 +78,9 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 
-//#ifdef QT_DEBUG
+#ifdef QT_DEBUG
   logger.log() << content;
-//#endif
+#endif
 
   QFile file(outputFile);
   if (!file.open(QIODevice::WriteOnly)) {

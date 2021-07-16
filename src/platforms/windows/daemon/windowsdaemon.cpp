@@ -45,7 +45,8 @@ QByteArray WindowsDaemon::getStatus() {
   obj.insert("connected", m_connected);
 
   if (m_connected) {
-    WireguardUtilsWindows::peerBytes pb = m_wgutils->getThroughputForInterface();
+    WireguardUtilsWindows::peerBytes pb =
+        m_wgutils->getThroughputForInterface();
     obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
     obj.insert("deviceIpv4Address", m_lastConfig.m_deviceIpv4Address);
     obj.insert("date", m_connectionDate.toString());
