@@ -2,6 +2,7 @@
 from flask import Flask
 from flask import request, redirect, Response
 import argparse
+import datetime
 import requests
 import re
 import urllib.parse
@@ -9,8 +10,10 @@ import json
 
 app = Flask(__name__)
 
+## Proxy configuration
 upstream = 'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
 log_patterns = []
+mock_devices = False
 
 def log_headers(headers):
     for (key, value) in headers:
@@ -28,7 +31,7 @@ def log_match(path):
             return True
     return False
 
-def forward_upstream(req, desturl=None, verbose=None):
+def forward_upstream(req, desturl=None, verbose=None, mangle=None):
     # Determine if we should make this verbose
     if verbose is None:
         verbose = log_match(req.path)
@@ -38,19 +41,8 @@ def forward_upstream(req, desturl=None, verbose=None):
     if verbose:
         log_headers(req.headers)
     if verbose and request.json:
-        print(f"REQUEST BODY -> {req.path}")
+        print(f"REQUEST JSON -> {req.path}")
         print('\t' + json.dumps(request.json, indent=3).replace('\n', '\n\t'))
-
-    # Parse the request headers  
-    exclude_upstream = [
-        'host'
-    ]
-    upstream_headers = {}
-    for (key, value) in req.headers:
-        if key == 'Host':
-            continue
-        else:
-            upstream_headers[key] = value
 
     # Determine the destination URL
     if desturl is None:
@@ -59,29 +51,41 @@ def forward_upstream(req, desturl=None, verbose=None):
         print(f"REQUEST TARGET -> {desturl}")
 
     # Forward the request to the staging service
+    upstream_exclude = [
+        'host'
+    ]
     upstream_request = requests.request(
         method=req.method,
         url=desturl,
-        headers={k: v for (k, v) in req.headers if k.lower() not in exclude_upstream},
+        headers={k: v for (k, v) in req.headers if k.lower() not in upstream_exclude},
         data=req.get_data(),
         cookies=req.cookies
     )
-    print(f"RESPONSE {req.method} -> {req.path} -> {upstream_request.status_code}")
-    if log_match(req.path):
-        log_headers(upstream_request.raw.headers.items())
 
-    # Filter out certain response headers
-    exclude_downstream = [
+    # Mangle the response
+    reply_exclude = [
         'content-encoding',
         'content-length',
         'transfer-encoding',
         'connection'
     ]
-    downstream_headers = [
-        (k,v) for (k,v) in upstream_request.raw.headers.items() if k.lower() not in exclude_downstream
+    reply_headers = [
+        (k, v) for (k,v) in upstream_request.raw.headers.items() if k.lower() not in reply_exclude
     ]
+    reply_content = upstream_request.content
+    if callable(mangle):
+        reply_content = mangle(upstream_request.content)
 
-    return Response(upstream_request.content, upstream_request.status_code, downstream_headers)
+    # Log the response we're going to send
+    print(f"RESPONSE {req.method} -> {req.path} -> {upstream_request.status_code}")
+    if verbose:
+        log_headers(reply_headers)
+    if verbose and upstream_request.content:
+        jscontent = json.loads(reply_content)
+        print(f"RESPONSE JSON -> {req.path}")
+        print('\t' + json.dumps(jscontent, indent=3).replace('\n', '\n\t'))
+
+    return Response(reply_content, upstream_request.status_code, reply_headers)
 
 #----------------------------------------------------------
 # Redirect authentication to the staging server
@@ -102,13 +106,56 @@ def redirect_login(text):
     return redirect(url)
 
 #----------------------------------------------------------
-# Workaround for /api/v1/device and URL escaping
+# Device and account mocking
 #----------------------------------------------------------
-@app.route('/api/v1/vpn/device/<path:pubkey>', methods=['DELETE'])
-def delete_device(pubkey):
-    # Flask insists on URL-decoding, so we must re-encode the public key.
-    destination=f"{upstream}/api/v1/vpn/device/{urllib.parse.quote(pubkey, safe='')}"
-    return forward_upstream(request, desturl=destination)
+mock_devices = False
+mock_device_set = {}
+
+def mangle_account(jsdata):
+    jsdata['devices'] = mock_device_set.values()
+    return jsdata
+
+@app.route('/api/v1/vpn/account')
+def get_account():
+    if not mock_devices:
+        return forward_upstream(request)
+    
+    return forward_upstream(request, mangle=mangle_account)
+
+@app.route('/api/v1/vpn/device', methods=['POST'])
+def post_new_device():
+    if not mock_devices:
+        return forward_upstream(request)
+
+    # Parse the request
+    try:
+        name = request.json['name']
+        pubkey = request.json['pubkey']
+        device = {
+            'name': name,
+            'pubkey': pubkey,
+            'ipv4_address': '10.67.123.45/32',
+            'ipv6_address': 'fc00:bbbb:bbbb:bb01::dead:beef/128',
+            'created_at': datetime.utcnow().isoformat() + 'Z'
+        }
+    except e:
+        return Response('', 400)
+
+    # Return a 201 if successful
+    return Response(mock_device_set[pubkey], 201)
+
+@app.route('/api/v1/vpn/device/<path:encpubkey>', methods=['DELETE'])
+def delete_device(encpubkey):
+    pubkey = urllib.parse.quote(encpubkey, safe='')
+    if not mock_devices:
+        # Flask insists on URL-decoding, so we must re-encode the public key.
+        return forward_upstream(request, desturl=f"{upstream}/api/v1/vpn/device/{pubkey}")
+
+    if not mock_device_set.contains(pubkey):
+        return Response('', 404)
+    
+    del mock_mock_device_set[pubkey]
+    return Response('', 201)
 
 #----------------------------------------------------------
 # Proxy anything we aren't handling to the staging server
@@ -122,6 +169,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Intercept and proxy VPN API requests')
     parser.add_argument('--verbose', metavar='PATTERN', action='append', default=[],
                         help='Enable verbose logging for paths matching PATTERN')
+    parser.add_argument('--mock-devices', action='store_true',
+                        help='Mock out the devices API')
 
     args = parser.parse_args()
     for pattern in args.verbose:
