@@ -45,45 +45,44 @@ bool WgQuickProcess::createConfigFile(
 #undef VALIDATE
 
   QByteArray content;
-  content.append("[Interface]\nPrivateKey = ");
-  content.append(privateKey.toUtf8());
-  content.append("\nAddress = ");
-  content.append(deviceIpv4Address.toUtf8());
 
-  if (ipv6Enabled) {
-    content.append(", ");
-    content.append(deviceIpv6Address.toUtf8());
+  {
+    QTextStream out(&content);
+    out << "[Interface]" << Qt::endl;
+    out << "PrivateKey = " << privateKey.toUtf8() << Qt::endl;
+
+    out << "Address = " << deviceIpv4Address.toUtf8();
+    if (ipv6Enabled) {
+      out << ", " << deviceIpv6Address.toUtf8();
+    }
+    out << Qt::endl;
+
+    logger.log() << "USING DNS-->" << dnsServer.toUtf8();
+    out << "DNS = " << dnsServer.toUtf8();
+
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if (ipv6Enabled && dnsServer.toUtf8() == serverIpv4Gateway.toUtf8()) {
+      out << ", " << serverIpv6Gateway.toUtf8();
+    }
+
+    out << Qt::endl << Qt::endl;
+
+    out << "[Peer]" << Qt::endl;
+    out << "PublicKey = " << serverPublicKey.toUtf8() << Qt::endl;
+    out << "Endpoint = " << serverIpv4AddrIn.toUtf8() << ":" << serverPort
+        << Qt::endl;
+
+    /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
+     * to be happy if there are 2 endpoints.
+    if (ipv6Enabled) {
+        out << "Endpoint = [" << serverIpv6AddrIn << "]:" << serverPort
+            << Qt::endl;
+    }
+    */
+
+    out << "AllowedIPs = " << allowedIPAddressRanges << Qt::endl;
   }
-
-  content.append("\nDNS = ");
-  content.append(dnsServer.toUtf8());
-
-  logger.log() << "USING DNS-->" << dnsServer.toUtf8();
-
-  // If the DNS is not the Gateway, it's a user defined DNS
-  // thus, not add any other :)
-  if (ipv6Enabled && dnsServer.toUtf8() == serverIpv4Gateway.toUtf8()) {
-    content.append(", ");
-    content.append(serverIpv6Gateway.toUtf8());
-  }
-
-  content.append("\n\n[Peer]\nPublicKey = ");
-  content.append(serverPublicKey.toUtf8());
-  content.append("\nEndpoint = ");
-  content.append(serverIpv4AddrIn.toUtf8());
-  content.append(QString(":%1").arg(serverPort).toUtf8());
-
-  /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
-   * to be happy if there are 2 endpoints.
-  if (ipv6Enabled) {
-      content.append("\nEndpoint = [");
-      content.append(serverIpv6AddrIn);
-      content.append(QString("]:%1").arg(serverPort));
-  }
-  */
-
-  content.append(
-      QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
 
 #ifdef QT_DEBUG
   logger.log() << content;
