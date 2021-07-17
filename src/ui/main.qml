@@ -64,11 +64,18 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPN.productionMode, {
+        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
           httpClient: {
                   post(url, body, headers) {
+                      if (typeof(VPNGleanTest) !== "undefined") {
+                          VPNGleanTest.requestDone(url, body);
+                      }
+                      if (!VPN.productionMode) {
+                          return Promise.reject('Glean disabled');
+                      }
+
                       return new Promise((resolve, reject) => {
                           const xhr = new XMLHttpRequest();
                           xhr.open("POST", url);
@@ -81,9 +88,6 @@ Window {
                           }
                           xhr.send(body);
 
-                          if (typeof(VPNGleanTest) !== "undefined") {
-                              VPNGleanTest.requestDone(url, body);
-                          }
                       });
                   }
           }
@@ -293,7 +297,7 @@ Window {
         }
 
         function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled && VPN.productionMode) {
+            if (VPNSettings.gleanEnabled) {
                 Pings.main.submit();
             }
         }
@@ -305,7 +309,7 @@ Window {
         function onAboutToQuit() {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled && VPN.productionMode) {
+            if (VPNSettings.gleanEnabled) {
               Pings.main.submit();
             }
         }
