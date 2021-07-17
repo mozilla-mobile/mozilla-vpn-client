@@ -8,12 +8,20 @@ import re
 import urllib.parse
 import json
 
+import logging
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
 app = Flask(__name__)
+app.logger.disabled = True
 
 ## Proxy configuration
 upstream = 'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
+
+#----------------------------------------------------------
+# Request handling and forwarding
+#----------------------------------------------------------
 log_patterns = []
-mock_devices = False
 
 def log_headers(headers):
     for (key, value) in headers:
