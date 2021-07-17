@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
 #include "platforms/android/androidauthenticationlistener.h"
 #include "qmlengineholder.h"
 
