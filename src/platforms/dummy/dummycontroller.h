@@ -40,6 +40,8 @@ class DummyController final : public ControllerImpl {
  private:
   int64_t m_txBytes = 0;
   int64_t m_rxBytes = 0;
+  bool m_connected = false;
+  QTimer m_delayTimer;
 };
 
 #endif  // DUMMYCONTROLLER_H
