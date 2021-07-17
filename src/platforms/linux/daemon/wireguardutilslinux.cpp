@@ -420,21 +420,21 @@ bool WireguardUtilsLinux::setAllowedIpsOnPeer(
     peer->last_allowedip = allowedip;
     allowedip->cidr = ip.range();
 
-    bool ok = false;
+    QString ipstring = ip.ipAddress();
     if (ip.type() == IPAddressRange::IPv4) {
       allowedip->family = AF_INET;
-      ok = inet_pton(AF_INET, ip.ipAddress().toLocal8Bit(), &allowedip->ip4) ==
-           1;
+      if (inet_pton(AF_INET, qPrintable(ipstring), &allowedip->ip4) != 1) {
+        logger.log() << "Invalid IPv4 address:" << ip.ipAddress();
+        return false;
+      }
     } else if (ip.type() == IPAddressRange::IPv6) {
       allowedip->family = AF_INET6;
-      ok = inet_pton(AF_INET6, ip.ipAddress().toLocal8Bit(), &allowedip->ip6) ==
-           1;
+      if (inet_pton(AF_INET6, qPrintable(ipstring), &allowedip->ip6) != 1) {
+        logger.log() << "Invalid IPv6 address:" << ip.ipAddress();
+        return false;
+      }
     } else {
       logger.log() << "Invalid IPAddressRange type";
-      return false;
-    }
-    if (!ok) {
-      logger.log() << "Invalid IP address:" << ip.ipAddress();
       return false;
     }
   }
