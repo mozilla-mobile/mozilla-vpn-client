@@ -147,17 +147,11 @@ jobs:
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
 
-      - name: Uploading logs
+      - name: Uploading artifacts
         uses: actions/upload-artifact@v1
         if: ${{ always() && steps.runTests.outcome != 'success' }}
         with:
           name: ${{matrix.test.name}} Logs
-          path: /tmp/VPN_LOG.txt
-
-      - name: Uploading screenshots
-        uses: actions/upload-artifact@v1
-        # Not every Job has screenshots, skip if none are present
-        if: hashFiles('/tmp/screencapture') != ''
-        with:
-            name: Screen capture
-            path: /tmp/screencapture
+          path: |
+            /tmp/VPN_LOG.txt
+            /tmp/screencapture
