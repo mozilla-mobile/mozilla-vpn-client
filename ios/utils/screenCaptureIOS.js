@@ -8,8 +8,6 @@ const util = require('util');
 const vpn = require('./helper.js');
 const FirefoxHelper = require('./firefox.js');
 
-const dir = '/tmp/screencapture';
-
 describe('Take screenshots for each view', function() {
   let languages = [];
   let driver;
@@ -29,6 +27,10 @@ describe('Take screenshots for each view', function() {
 
       const data = await vpn.screenCapture();
       const buffer = Buffer.from(data, 'base64');
+      const dir = process.env.ARTIFACT_DIR + '/screencapture'
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+      }
       fs.writeFileSync(`${dir}/${name}_${language}.png`, buffer);
     }
   }

@@ -330,7 +330,7 @@ module.exports = {
     if (this.currentTest.state === 'failed') {
       const data = await module.exports.screenCapture();
       const buffer = Buffer.from(data, 'base64');
-      const dir = '/tmp/screencapture';
+      const dir = process.env.ARTIFACT_DIR + '/screencapture'
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
       }

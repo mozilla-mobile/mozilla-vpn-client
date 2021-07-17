@@ -141,9 +141,11 @@ jobs:
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           export HEADLESS=yes
 
+          mkdir -p $ARTIFACT_DIR
           xvfb-run -a ./scripts/test_function.sh ./build/mozillavpn ${{matrix.test.path}}
         env:
           MVPN_API_BASE_URL: http://localhost:5000
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           ACCOUNT_EMAIL: ${{ secrets.ACCOUNT_EMAIL }}
           ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
 
@@ -152,6 +154,4 @@ jobs:
         if: ${{ always() && steps.runTests.outcome != 'success' }}
         with:
           name: ${{matrix.test.name}} Logs
-          path: |
-            /tmp/VPN_LOG.txt
-            /tmp/screencapture
+          path: ${{ runner.temp }}/artifacts

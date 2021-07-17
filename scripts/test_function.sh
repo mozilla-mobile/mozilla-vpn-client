@@ -14,12 +14,16 @@ print N ""
 
 ID=0
 
+if [ -z "$ARTIFACT_DIR" ]; then
+  export ARTIFACT_DIR=/tmp
+fi
+
 runTest() {
   ID=$((ID+1))
   export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm-$ID
 
   print Y "Running the app..."
-  "$1" &>/tmp/VPN_LOG.txt &
+  "$1" &> "$ARTIFACT_DIR/VPN_LOG.txt" &
   PID=$!
   print G "done."
 
@@ -30,7 +34,7 @@ runTest() {
 
   if [ "$ERROR" = yes ]; then
     echo "::group::Error Logs"
-    cat /tmp/VPN_LOG.txt
+    cat "$ARTIFACT_DIR/VPN_LOG.txt"
     echo "::endgroup::"
     print R "Nooo"
     exit 1
