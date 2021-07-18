@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from flask import Flask
 from flask import request, redirect, Response
+from datetime import datetime
 import argparse
-import datetime
 import requests
 import re
 import urllib.parse
@@ -13,7 +13,6 @@ log = logging.getLogger('werkzeug')
 log.disabled = True
 
 app = Flask(__name__)
-app.logger.disabled = True
 
 ## Proxy configuration
 upstream = 'https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net'
@@ -80,20 +79,30 @@ def forward_upstream(req, desturl=None, verbose=None, mangle=None):
     reply_headers = [
         (k, v) for (k,v) in upstream_request.raw.headers.items() if k.lower() not in reply_exclude
     ]
-    reply_content = upstream_request.content
-    if callable(mangle):
-        reply_content = mangle(upstream_request.content)
+    if callable(mangle) and upstream_request.content:
+        mangled_content = mangle(json.loads(upstream_request.content))
+        reply_content = json.dumps(mangled_content)
+    else:
+        reply_content = upstream_request.content
 
     # Log the response we're going to send
     print(f"RESPONSE {req.method} -> {req.path} -> {upstream_request.status_code}")
     if verbose:
         log_headers(reply_headers)
-    if verbose and upstream_request.content:
+    if verbose and reply_content:
         jscontent = json.loads(reply_content)
         print(f"RESPONSE JSON -> {req.path}")
         print('\t' + json.dumps(jscontent, indent=3).replace('\n', '\n\t'))
 
     return Response(reply_content, upstream_request.status_code, reply_headers)
+
+# Return an API error
+def api_error(errno, code=400, message='Bad Request'):
+    return Response(json.dumps({
+        'code': code,
+        'errno': errno,
+        'message': message
+    }), code, mimetype='application/json')
 
 #----------------------------------------------------------
 # Redirect authentication to the staging server
@@ -120,15 +129,15 @@ mock_devices = False
 mock_device_set = {}
 
 def mangle_account(jsdata):
-    jsdata['devices'] = mock_device_set.values()
+    jsdata['devices'] = [ device for device in mock_device_set.values() ]
     return jsdata
 
 @app.route('/api/v1/vpn/account')
 def get_account():
     if not mock_devices:
         return forward_upstream(request)
-    
-    return forward_upstream(request, mangle=mangle_account)
+    else:
+        return forward_upstream(request, mangle=mangle_account)
 
 @app.route('/api/v1/vpn/device', methods=['POST'])
 def post_new_device():
@@ -139,30 +148,29 @@ def post_new_device():
     try:
         name = request.json['name']
         pubkey = request.json['pubkey']
-        device = {
+        mock_device_set[pubkey] = {
             'name': name,
             'pubkey': pubkey,
             'ipv4_address': '10.67.123.45/32',
             'ipv6_address': 'fc00:bbbb:bbbb:bb01::dead:beef/128',
             'created_at': datetime.utcnow().isoformat() + 'Z'
         }
-    except e:
-        return Response('', 400)
+    except:
+        return api_error(errno=102, message="'pubkey' is not a valid WireGuard public key")
 
-    # Return a 201 if successful
-    return Response(mock_device_set[pubkey], 201)
+    return Response(json.dumps(mock_device_set[pubkey]), status=201, mimetype='application/json')
 
-@app.route('/api/v1/vpn/device/<path:encpubkey>', methods=['DELETE'])
-def delete_device(encpubkey):
-    pubkey = urllib.parse.quote(encpubkey, safe='')
+@app.route('/api/v1/vpn/device/<path:pubkey>', methods=['DELETE'])
+def delete_device(pubkey):
     if not mock_devices:
         # Flask insists on URL-decoding, so we must re-encode the public key.
-        return forward_upstream(request, desturl=f"{upstream}/api/v1/vpn/device/{pubkey}")
+        encpubkey = urllib.parse.quote(encpubkey, safe='')
+        return forward_upstream(request, desturl=f"{upstream}/api/v1/vpn/device/{encpubkey}")
 
-    if not mock_device_set.contains(pubkey):
-        return Response('', 404)
+    if pubkey not in mock_device_set:
+        return api_error(errno=122, code=404, message='Device not found')
     
-    del mock_mock_device_set[pubkey]
+    del mock_device_set[pubkey]
     return Response('', 201)
 
 #----------------------------------------------------------
@@ -181,6 +189,7 @@ if __name__ == '__main__':
                         help='Mock out the devices API')
 
     args = parser.parse_args()
+    mock_devices = args.mock_devices
     for pattern in args.verbose:
         log_patterns.append(re.compile(pattern))
 
