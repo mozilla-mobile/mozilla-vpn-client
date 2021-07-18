@@ -330,11 +330,13 @@ module.exports = {
     if (this.currentTest.state === 'failed') {
       const data = await module.exports.screenCapture();
       const buffer = Buffer.from(data, 'base64');
-      const dir = process.env.ARTIFACT_DIR + '/screencapture'
+      const dir = process.env.ARTIFACT_DIR + '/screencapture';
+      const title = this.currentTest.title.toLowerCase();
+      const filename = title.replace(/[^a-z0-9]/g, '_');
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
       }
-      fs.writeFileSync(`${dir}/failure.png`, buffer);
+      fs.writeFileSync(`${dir}/${filename}.png`, buffer);
     }
   },
 
