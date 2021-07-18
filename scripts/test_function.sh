@@ -28,8 +28,9 @@ runTest() {
   print G "done."
 
   print Y "Running the test: $2"
-  mocha -b $2 || ERROR=yes
+  mocha --bail $2 || ERROR=yes
 
+  kill $PID 2>/dev/null || true
   wait $PID
 
   if [ "$ERROR" = yes ]; then
