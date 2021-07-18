@@ -28,7 +28,7 @@ runTest() {
   print G "done."
 
   print Y "Running the test: $2"
-  mocha $2 || ERROR=yes
+  mocha -b $2 || ERROR=yes
 
   wait $PID
 
