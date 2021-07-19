@@ -833,11 +833,11 @@ exists($$PWD/../translations/translations.pri) {
 } else {
     message(Languages were not imported - using fallback english)
     TRANSLATIONS += \
-        ../translations/mozillavpn_en.ts
+        ../translations/en/mozillavpn_en.ts
 
-    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/mozillavpn_en.ts
+    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/en/mozillavpn_en.ts
     ts.CONFIG += no_check_exist
-    ts.output = $$PWD/../translations/mozillavpn_en.ts
+    ts.output = $$PWD/../translations/en/mozillavpn_en.ts
     ts.input = .
     QMAKE_EXTRA_TARGETS += ts
     PRE_TARGETDEPS += ts

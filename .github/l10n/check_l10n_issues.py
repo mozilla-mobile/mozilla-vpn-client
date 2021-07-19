@@ -21,7 +21,7 @@ with open(os.path.join(script_folder, "exceptions.json")) as f:
     exceptions = json.load(f)
 
 # Load the .ts file
-ts_file = os.path.join(vpn_root_folder, "translations", "mozillavpn_en.ts")
+ts_file = os.path.join(vpn_root_folder, "translations", "en", "mozillavpn_en.ts")
 tree = etree.parse(ts_file)
 root = tree.getroot()
 
