@@ -57,7 +57,8 @@ for locale in os.listdir('i18n'):
     if locale == 'en':
         print(f'OK\t- en added (reference locale)')
         l10n_files.append({
-            'ts': os.path.join('translations', f'mozillavpn_en.ts'),
+            'locale': 'en',
+            'ts': os.path.join('translations', f'en/mozillavpn_en.ts'),
             'xliff': xliff_path
         })
         continue
@@ -80,29 +81,59 @@ for locale in os.listdir('i18n'):
         print(f'KO\t- {locale} is translated at {round(completeness*100, 2)}%, at least {l10n_threshold*100}% is needed')
         continue  # Not enough translations next file please
 
-    baseName = f'mozillavpn_{locale}'
     print(f'OK\t- {locale} added ({round(completeness*100, 2)}% translated)')
     l10n_files.append({
-        'ts': os.path.join('translations', f'{baseName}.ts'),
+        'locale': locale,
+        'ts': os.path.join('translations', f'{locale}/mozillavpn_{locale}.ts'),
         'xliff': xliff_path
     })
 
 # Step 2
+# Create folders and localization files for the languages
+for file in l10n_files:
+    dirname = os.path.dirname(file['ts'])
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    locversion = os.path.join(dirname, 'locversion.plist')
+    with open(locversion, 'w') as locversion_file:
+        locversion_file.write(f"""<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\"
+\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+    <key>LprojCompatibleVersion</key>
+    <string>123</string>
+    <key>LprojLocale</key>
+    <string>{file['locale']}</string>
+    <key>LprojRevisionLevel</key>
+    <string>1</string>
+    <key>LprojVersion</key>
+    <string>123</string>
+</dict>
+</plist>""")
+
+# Step 3
 # Write PRI file to import the locales that are ready
 with open('translations/translations.pri', 'w') as pri_file:
     output = []
     output.append('TRANSLATIONS += \\ ')
     for file in l10n_files:
         output.append(f"../{file['ts']} \\ ")
-    output.append('\n \n##End')
+    output.append('\n\n##End')
+
+    for file in l10n_files:
+        output.append(f"LANGUAGES_FILES_{file['locale']}.files += ../translations/{file['locale']}/locversion.plist")
+        output.append(f"LANGUAGES_FILES_{file['locale']}.path = Contents/Resources/{file['locale']}.lproj")
+        output.append(f"QMAKE_BUNDLE_DATA += LANGUAGES_FILES_{file['locale']}")
     pri_file.write('\n'.join(output))
+
 print('Updated translations.pri')
 
-# Step 3
+# Step 4
 # Generate new ts files
 os.system(f"{lupdate} src/src.pro")
 
-# Step 4
+# Step 5
 # Now merge translations into the files
 for l10n_file in l10n_files:
     os.system(f"{lconvert} -i {l10n_file['ts']} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
