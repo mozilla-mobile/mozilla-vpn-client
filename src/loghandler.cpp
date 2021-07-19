@@ -328,7 +328,6 @@ void LogHandler::openLogFile(const QMutexLocker& proofOfLock) {
 
   m_output = new QTextStream(m_logFile);
 
-
   addLog(Log(Debug, QStringList{LOG_MAIN}, "LogHandler",
              QString("Log file: %1").arg(logFileName)),
          proofOfLock);
