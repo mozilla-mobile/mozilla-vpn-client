@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "loghandler.h"
+#include "constants.h"
 #include "logger.h"
 
 #include <QDate>
@@ -46,11 +47,11 @@ void LogHandler::messageQTHandler(QtMsgType type,
 }
 
 // static
-void LogHandler::messageHandler(const QStringList& modules,
+void LogHandler::messageHandler(QtMsgType type, const QStringList& modules,
                                 const QString& className,
                                 const QString& message) {
   QMutexLocker lock(&s_mutex);
-  maybeCreate(lock)->addLog(Log(modules, className, message), lock);
+  maybeCreate(lock)->addLog(Log(type, modules, className, message), lock);
 }
 
 // static
@@ -129,10 +130,20 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << Qt::endl;
 }
 
+// static
+void LogHandler::enableDebug() {
+  QMutexLocker lock(&s_mutex);
+  maybeCreate(lock)->m_showDebug = true;
+}
+
 LogHandler::LogHandler(const QStringList& modules,
                        const QMutexLocker& proofOfLock)
     : m_modules(modules) {
   Q_UNUSED(proofOfLock);
+
+#if defined(QT_DEBUG) || defined(MVPN_WASM)
+  m_showDebug = true;
+#endif
 
   if (!s_location.isEmpty()) {
     openLogFile(proofOfLock);
@@ -148,27 +159,24 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
     prettyOutput(*m_output, log);
   }
 
-#if defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
+  if ((log.m_type != QtMsgType::QtDebugMsg) || m_showDebug) {
+    QTextStream out(stderr);
+    prettyOutput(out, log);
+  }
+
   QByteArray buffer;
   {
     QTextStream out(&buffer);
     prettyOutput(out, log);
   }
 
-#  if defined(MVPN_INSPECTOR)
   emit logEntryAdded(buffer);
-#  endif
-
-#endif  // defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
 
 #if defined(MVPN_ANDROID) && defined(QT_DEBUG)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
   }
-#elif defined(QT_DEBUG) || defined(MVPN_WASM)
-  QTextStream out(stderr);
-  prettyOutput(out, log);
 #endif
 }
 
@@ -283,7 +291,7 @@ void LogHandler::openLogFile(const QMutexLocker& proofOfLock) {
 
   m_output = new QTextStream(m_logFile);
 
-  addLog(Log(QStringList{LOG_MAIN}, "LogHandler",
+  addLog(Log(QtMsgType::QtInfoMsg, QStringList{LOG_MAIN}, "LogHandler",
              QString("Log file: %1").arg(logFileName)),
          proofOfLock);
 }

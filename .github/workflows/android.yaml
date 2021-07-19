@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: Release, args: --prod, apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true  }
-            - { name: Debug, args: --debug, apk: .tmp/src/android-build/mozillavpn.apk, sym: false}
+            - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true  }
+            - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false}
 
     runs-on: ubuntu-20.04
       

@@ -14,12 +14,6 @@ import shutil
 # Include only locales above this threshold (e.g. 70%) in production
 l10n_threshold = 0.70
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    '-p', '--prod', default=False, action="store_true", dest="isprod",
-    help='Build only for production locales.')
-args = parser.parse_args()
-
 # Step 0
 # Locate the lupdate and lconvert tools
 lupdate = shutil.which('lupdate')
@@ -76,8 +70,8 @@ for locale in os.listdir('i18n'):
 
     completeness = translations/(sources*1.0)
 
-    # Ignore locale with less than 70% of completeness for production builds
-    if args.isprod and completeness < l10n_threshold:
+    # Ignore locale with less than 70% of completeness
+    if completeness < l10n_threshold:
         print(f'KO\t- {locale} is translated at {round(completeness*100, 2)}%, at least {l10n_threshold*100}% is needed')
         continue  # Not enough translations next file please
 

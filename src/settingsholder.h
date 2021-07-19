@@ -40,6 +40,11 @@ class SettingsHolder final : public QObject {
   Q_PROPERTY(
       QString userDNS READ userDNS WRITE setUserDNS NOTIFY userDNSChanged)
 
+  Q_PROPERTY(bool developerUnlock READ developerUnlock WRITE setDeveloperUnlock
+                 NOTIFY developerUnlockChanged)
+  Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
+                 stagingServerChanged)
+
  public:
   SettingsHolder();
   ~SettingsHolder();
@@ -99,6 +104,8 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasUsegatewayDNS, useGatewayDNS, setUseGatewayDNS)
   GETSET(QString, hasUserDNS, userDNS, setUserDNS)
   GETSET(bool, hasGleanEnabled, gleanEnabled, setGleanEnabled)
+  GETSET(bool, hasDeveloperUnlock, developerUnlock, setDeveloperUnlock)
+  GETSET(bool, hasStagingServer, stagingServer, setStagingServer)
   GETSET(QDateTime, hasInstallationTime, installationTime, setInstallationTime)
   GETSET(bool, hasServerSwitchNotification, serverSwitchNotification,
          setServerSwitchNotification);
@@ -156,6 +163,8 @@ class SettingsHolder final : public QObject {
   void gleanEnabledChanged(bool value);
   void serverSwitchNotificationChanged(bool value);
   void connectionChangeNotificationChanged(bool value);
+  void developerUnlockChanged(bool value);
+  void stagingServerChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

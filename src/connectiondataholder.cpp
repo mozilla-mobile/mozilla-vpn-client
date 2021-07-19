@@ -46,7 +46,7 @@ ConnectionDataHolder::~ConnectionDataHolder() {
 }
 
 void ConnectionDataHolder::enable() {
-  m_ipAddressTimer.start(Constants::IPADDRESS_TIMER_MSEC);
+  m_ipAddressTimer.start(Constants::ipAddressTimerMsec());
 }
 
 void ConnectionDataHolder::disable() { m_ipAddressTimer.stop(); }
@@ -60,8 +60,8 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes) {
     return;
   }
 
-  Q_ASSERT(m_txSeries->count() == Constants::CHARTS_MAX_POINTS);
-  Q_ASSERT(m_rxSeries->count() == Constants::CHARTS_MAX_POINTS);
+  Q_ASSERT(m_txSeries->count() == Constants::chartsMaxPoints());
+  Q_ASSERT(m_rxSeries->count() == Constants::chartsMaxPoints());
 
   // This is the first time we receive data. We need at least 2 calls in order
   // to count the delta.
@@ -83,12 +83,12 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes) {
   m_maxBytes = std::max(m_maxBytes, std::max(txBytes, rxBytes));
   m_data.append(QPair<uint64_t, uint64_t>(txBytes, rxBytes));
 
-  while (m_data.length() > Constants::CHARTS_MAX_POINTS) {
+  while (m_data.length() > Constants::chartsMaxPoints()) {
     m_data.removeAt(0);
   }
 
   int i = 0;
-  for (; i < Constants::CHARTS_MAX_POINTS - m_data.length(); ++i) {
+  for (; i < Constants::chartsMaxPoints() - m_data.length(); ++i) {
     m_txSeries->replace(i, i, 0);
     m_rxSeries->replace(i, i, 0);
   }
@@ -151,12 +151,12 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
   }
 
   // Let's be sure we have all the x/y points.
-  while (m_txSeries->count() < Constants::CHARTS_MAX_POINTS) {
+  while (m_txSeries->count() < Constants::chartsMaxPoints()) {
     m_txSeries->append(m_txSeries->count(), 0);
     m_rxSeries->append(m_rxSeries->count(), 0);
   }
 
-  m_checkStatusTimer.start(Constants::CHECKSTATUS_TIMER_MSEC);
+  m_checkStatusTimer.start(Constants::checkStatusTimerMsec());
 }
 
 void ConnectionDataHolder::deactivate() {

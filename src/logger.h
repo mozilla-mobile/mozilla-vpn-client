@@ -47,7 +47,7 @@ class Logger {
 
   class Log {
    public:
-    Log(Logger* logger);
+    Log(Logger* logger, QtMsgType type = QtMsgType::QtDebugMsg);
     ~Log();
 
     Log& operator<<(uint64_t t);
@@ -60,6 +60,7 @@ class Logger {
 
    private:
     Logger* m_logger;
+    QtMsgType m_type;
 
     struct Data {
       Data() : m_ts(&m_buffer, QIODevice::WriteOnly) {}
@@ -72,6 +73,9 @@ class Logger {
   };
 
   Log log();
+  Log info();
+  Log debug();
+  Log warning();
 
  private:
   QStringList m_modules;

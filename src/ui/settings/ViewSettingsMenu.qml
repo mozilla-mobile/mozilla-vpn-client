@@ -89,15 +89,6 @@ VPNFlickable {
     }
 
     Component {
-        id: getHelpComponent
-
-        VPNGetHelp {
-            isSettingsView: true
-        }
-
-    }
-
-    Component {
         id: aboutUsComponent
 
         VPNAboutUs {
@@ -174,7 +165,7 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: {
                 Sample.getHelpClickedViewSettings.record();
-                settingsStackView.push(getHelpComponent);
+                settingsStackView.push("../views/ViewGetHelp.qml", {isSettingsView: true})
             }
         }
         VPNSettingsItem {

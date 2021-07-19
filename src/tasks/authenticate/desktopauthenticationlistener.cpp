@@ -7,10 +7,6 @@
 #include "logger.h"
 #include "urlopener.h"
 
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorwebsocketconnection.h"
-#endif
-
 #include <limits>
 #include <QOAuthHttpServerReplyHandler>
 #include <QRandomGenerator>

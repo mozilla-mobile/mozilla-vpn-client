@@ -45,10 +45,6 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorwebsocketconnection.h"
-#endif
-
 #include <QApplication>
 #include <QClipboard>
 #include <QDir>
@@ -156,7 +152,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 #endif
 
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
-  m_gleanTimer.start(Constants::GLEAN_TIMEOUT_MSEC);
+  m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 }
 
@@ -172,6 +168,8 @@ MozillaVPN::~MozillaVPN() {
 }
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
+
+bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
 
 void MozillaVPN::initialize() {
   logger.log() << "MozillaVPN Initialization";
@@ -914,9 +912,9 @@ void MozillaVPN::setUserAuthenticated(bool state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.log() << "Start scheduling account and servers"
-               << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
+               << Constants::scheduleAccountAndServersTimerMsec();
   m_periodicOperationsTimer.start(
-      Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
+      Constants::scheduleAccountAndServersTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
