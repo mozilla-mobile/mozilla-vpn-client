@@ -691,21 +691,23 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
   }
 
-  if (excludeIPv6s.isEmpty()) {
-    logger.log() << "Catch all IPv6";
-    list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
-  } else {
-    QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
+  if (ipv6Enabled) {
+    if (excludeIPv6s.isEmpty()) {
+      logger.log() << "Catch all IPv6";
+      list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
+    } else {
+      QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
 
-    logger.log() << "Exclude the server:" << server.ipv6AddrIn();
-    excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
+      logger.log() << "Exclude the server:" << server.ipv6AddrIn();
+      excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
 
-    allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-    list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
+      allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
+      list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 
-    logger.log() << "Allow the server:" << server.ipv6Gateway();
-    list.append(
-        IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+      logger.log() << "Allow the server:" << server.ipv6Gateway();
+      list.append(
+          IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+    }
   }
 
   return list;
