@@ -6,8 +6,8 @@ import QtQuick 2.0
 import "../themes/themes.js" as Theme
 
 VPNFooterLink {
-    //% "Sign Out"
-    labelText: qsTrId("vpn.main.signOut")
+    //% "Sign out"
+    labelText: qsTrId("vpn.main.signOut2")
     fontName: Theme.fontBoldFamily
     linkColor: Theme.redButton
 }
