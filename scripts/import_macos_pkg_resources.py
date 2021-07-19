@@ -91,16 +91,15 @@ if not os.path.isdir('translations'):
 # For each translation, lets see if it's completed. If yes, let's create the
 # corresponding `Resources` folder.
 for translation in os.listdir('translations'):
-    translationFile = os.path.join('translations', translation)
+    translationDir = os.path.join('translations', translation)
+    if not os.path.isdir(translationDir):
+        continue
+
+    translationFile = os.path.join(translationDir, f"mozillavpn_{translation}.ts")
     if not os.path.isfile(translationFile):
         continue
 
-    if not translation.startswith('mozillavpn_') or not translation.endswith('.ts'):
-        continue
-
-    locale = translation.split(".")[0]
-    locale = locale.split("mozillavpn_")[1]
-    if locale == 'en':
+    if translation == 'en':
        continue
 
     try:
@@ -118,10 +117,10 @@ for translation in os.listdir('translations'):
     if not fullTranslated:
         continue
 
-    translate(root, locale)
+    translate(root, translation)
 
 # Finally, the English translation.
-translationFile = os.path.join('translations', 'mozillavpn_en.ts')
+translationFile = os.path.join('translations', 'en', 'mozillavpn_en.ts')
 if not os.path.isfile(translationFile):
     exit(f"Translation '{translationFile}' is missing! Have you imported the languages?")
 
