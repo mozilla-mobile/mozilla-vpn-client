@@ -324,12 +324,13 @@ Item {
         id: thankYouView
         Item {
             ColumnLayout {
+                id: col
                 anchors.top: parent.top
                 anchors.topMargin: window.height * .10
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
-                spacing: 24
                 VPNPanel {
+                    id: panel
                     logo: "../resources/heart-check.svg"
                     //% "Thank you!"
                     logoTitle: qsTrId("vpn.feedbackForm.thankyou")
@@ -338,13 +339,22 @@ Item {
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
-                VPNButton {
-                    //% "Done"
-                   text: qsTrId("vpn.feedbackform.done")
-                   Layout.fillWidth: true
-                   Layout.preferredHeight: Theme.rowHeight
-                   onClicked: stackview.pop(StackView.Immediate)
-                }
+            }
+            VPNButton {
+                //% "Done"
+               text: qsTrId("vpn.feedbackform.done")
+               anchors.top: col.bottom
+               anchors.topMargin: Theme.vSpacing
+               anchors.horizontalCenter: parent.horizontalCenter
+               onClicked: stackview.pop(StackView.Immediate)
+               Component.onCompleted: {
+                 if (window.fullscreenRequired()) {
+                     anchors.top = undefined;
+                     anchors.topMargin = undefined;
+                     anchors.bottom= parent.bottom
+                     anchors.bottomMargin = Theme.windowMargin * 4
+                 }
+               }
             }
         }
     }
