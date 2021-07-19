@@ -12,6 +12,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QScopeGuard>
 #include <QTimer>
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
@@ -81,6 +82,16 @@ bool Daemon::activate(const InterfaceConfig& config) {
     Q_ASSERT(!m_connected);
     return activate(config);
   }
+  Q_ASSERT(!m_connected);
+  auto cleanup= qScopeGuard([&] {
+    // In case the Activation failed, remove any interface, if present
+    if(m_connected || !supportWGUtils() || !wgutils()->interfaceExists() ){
+      return;
+    }
+    logger.log() << "Activation failed, removing the interface!";
+    wgutils()->deleteInterface();
+    wgutils()->flushRoutes();
+  });
 
   if (supportWGUtils()) {
     if (wgutils()->interfaceExists()) {

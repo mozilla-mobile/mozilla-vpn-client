@@ -654,8 +654,11 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     excludeIPv4s.append(RFC1918::ipv4());
 
     if (ipv6Enabled) {
+      #ifndef MVPN_WINDOWS
+      // TODO: Does not seem to work on windows so far :(
       logger.log() << "Filtering out the local area networks (rfc 4193)";
       excludeIPv6s.append(RFC4193::ipv6());
+      #endif 
     }
   } else if (FeatureList::instance()->userDNSSupported() &&
              !SettingsHolder::instance()->useGatewayDNS() &&

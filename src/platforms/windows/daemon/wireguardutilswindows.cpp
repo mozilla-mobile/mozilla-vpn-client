@@ -159,11 +159,12 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
 
   // Install the route
   result = CreateIpForwardEntry2(&entry);
-  if (result != NO_ERROR) {
+  bool ok = result == NO_ERROR || result == ERROR_OBJECT_ALREADY_EXISTS;
+  if (!ok) {
     logger.log() << "Failed to create route to" << prefix.toString()
                  << "result:" << result;
   }
-  return result == NO_ERROR;
+  return ok;
 }
 
 void WireguardUtilsWindows::flushRoutes() {
