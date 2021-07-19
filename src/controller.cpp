@@ -631,7 +631,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
   QList<IPAddress> excludeIPv4s;
-  QList<IPAddress> excludeIPv6s;
+  QList<IPAddressRange> allowedIPv6s;
 
   // filtering out the captive portal endpoint
   if (FeatureList::instance()->captivePortalNotificationSupported() &&
@@ -654,8 +654,9 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     excludeIPv4s.append(RFC1918::ipv4());
 
     if (ipv6Enabled) {
+      // TODO IPv6 is not supported by IPAddress yet.
       logger.log() << "Filtering out the local area networks (rfc 4193)";
-      excludeIPv6s.append(RFC4193::ipv6());
+      allowedIPv6s.append(RFC4193::ipv6());
     }
   } else if (FeatureList::instance()->userDNSSupported() &&
              !SettingsHolder::instance()->useGatewayDNS() &&
@@ -692,21 +693,11 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   if (ipv6Enabled) {
-    if (excludeIPv6s.isEmpty()) {
+    if (allowedIPv6s.isEmpty()) {
       logger.log() << "Catch all IPv6";
       list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     } else {
-      QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
-
-      logger.log() << "Exclude the server:" << server.ipv6AddrIn();
-      excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
-
-      allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
-      list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
-
-      logger.log() << "Allow the server:" << server.ipv6Gateway();
-      list.append(
-          IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
+      list.append(allowedIPv6s);
     }
   }
 
