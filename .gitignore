@@ -45,6 +45,7 @@ xcode.xconfig
 *.ts
 tests/unit/tests
 tests/nativemessaging/tests
+tests/proxy/__pycache__/
 build
 Debug/
 !android/src/debug/

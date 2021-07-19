@@ -8,7 +8,7 @@ const util = require('util');
 const vpn = require('./helper.js');
 
 describe('Glean event logging', function() {
-  this.timeout(500000);
+  this.timeout(60000);
 
   before(async () => {
     await vpn.connect();

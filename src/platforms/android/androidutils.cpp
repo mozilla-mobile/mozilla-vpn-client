@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
 #include "platforms/android/androidauthenticationlistener.h"
 #include "qmlengineholder.h"
 
@@ -87,7 +88,7 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
 
   logger.log() << "AndroidWebView is about to load" << url;
 
-  QString apiUrl = Constants::API_URL;
+  QString apiUrl = NetworkRequest::apiBaseUrl();
   if (!url.startsWith(apiUrl)) {
     return false;
   }

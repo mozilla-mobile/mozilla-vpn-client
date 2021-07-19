@@ -9,7 +9,7 @@ const vpn = require('./helper.js');
 const exec = util.promisify(require('child_process').exec);
 
 describe('Devices', function() {
-  this.timeout(500000);
+  this.timeout(300000);
 
   before(async () => {
     await vpn.connect();

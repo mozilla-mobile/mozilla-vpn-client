@@ -8,7 +8,7 @@ const util = require('util');
 const vpn = require('./helper.js');
 const FirefoxHelper = require('./firefox.js');
 
-const dir = '/tmp/screencapture';
+const dir = process.env.ARTIFACT_DIR + '/screencapture';
 
 describe('Take screenshots for each view', function() {
   let languages = [];
