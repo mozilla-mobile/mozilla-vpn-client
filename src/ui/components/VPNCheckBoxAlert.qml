@@ -8,18 +8,18 @@ import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
 RowLayout {
-    id: turnVPNOffAlert
     property var leftMargin:  56
-    property var alertColor: Theme.red
+    property var alertColor: Theme.checkBoxWarning
+    property var errorMessage: "..."
+
+    id: turnVPNOffAlert
+
     visible: (VPNController.state !== VPNController.StateOff)
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.topMargin: 12
-    anchors.leftMargin: leftMargin
     anchors.rightMargin: Theme.windowMargin
     spacing: 0
-
-    property var errorMessage: "..."
+    anchors.leftMargin: Theme.windowMargin
 
     Rectangle {
         color: "transparent"

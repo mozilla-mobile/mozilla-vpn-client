@@ -54,13 +54,9 @@ Item {
             spacing: Theme.windowMargin
 
             VPNCheckBoxAlert {
-                visible: !vpnFlickable.vpnIsOff
-
                 //% "VPN must be off to edit these settings"
                 //: Associated to a group of settings that require the VPN to be disconnected to change
                 errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
-                anchors.leftMargin: Theme.windowMargin
-                alertColor: Theme.checkBoxWarning
             }
 
             VPNCheckBoxRow {

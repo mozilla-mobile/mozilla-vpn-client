@@ -49,15 +49,11 @@ Item {
 
         VPNCheckBoxAlert {
             id: vpnOnAlert
-
-            anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin * 1
-            visible: !vpnFlickable.vpnIsOff
-            anchors.leftMargin: Theme.windowMargin
-            anchors.left: parent.left
             //% "VPN must be off to edit App Permissions"
             //: Associated to a group of settings that require the VPN to be disconnected to change
             errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+            anchors.top: parent.top
+            anchors.topMargin: Theme.windowMargin
         }
 
         VPNDropShadow {
