@@ -25,6 +25,8 @@ class WindowsDaemon final : public Daemon {
   bool supportWGUtils() const override { return true; }
   WireguardUtils* wgutils() override { return m_wgutils; }
 
+  bool run(Op op, const InterfaceConfig& config) override;
+
  private:
   bool supportServerSwitching(const InterfaceConfig& config) const override;
 

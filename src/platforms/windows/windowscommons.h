@@ -14,7 +14,6 @@ class WindowsCommons final {
   static void windowsLog(const QString& msg);
   static void windowsLog(const QString& msg, DWORD err);
 
-
   static QString tunnelConfigFile();
   static QString tunnelLogFile();
 };

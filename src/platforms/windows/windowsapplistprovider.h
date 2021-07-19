@@ -10,7 +10,7 @@
 #include "applistprovider.h"
 #include <QObject>
 
-class WindowsAppListProvider final : public AppListProvider{
+class WindowsAppListProvider final : public AppListProvider {
   Q_OBJECT
  public:
   WindowsAppListProvider(QObject* parent);
@@ -19,8 +19,9 @@ class WindowsAppListProvider final : public AppListProvider{
   QString getAppName(const QString& appId) override;
 
   bool isValidAppId(const QString& appId) override;
+
  private:
-  void readLinkFiles(const QString &path,QMap<QString,QString> &out);
+  void readLinkFiles(const QString& path, QMap<QString, QString>& out);
   static QStringList getUninstallerList();
 
   bool isUninstaller(const QFileInfo& file);

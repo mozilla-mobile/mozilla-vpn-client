@@ -80,10 +80,10 @@ void WindowsSplitTunnel::initDriver()
 
     auto state = getState();
     if(state == STATE_UNKNOWN){
-        logger.log() << "Cannot check if driver is initialised";
+        logger.log() << "Cannot check if driver is initialized";
     }
     if(state >= STATE_INITIALIZED){
-        logger.log() << "Driver already initialised: " << state;
+        logger.log() << "Driver already initialized: " << state;
         return;
     }
     DWORD bytesReturned;
@@ -95,7 +95,7 @@ void WindowsSplitTunnel::initDriver()
 
         return;
     }
-    logger.log() << "Driver initialised" << getState();
+    logger.log() << "Driver initialized" << getState();
 }
 
 

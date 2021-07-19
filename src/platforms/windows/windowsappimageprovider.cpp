@@ -18,12 +18,9 @@
 #include <QSysInfo>
 #include <QtWin>
 
-
-
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsAppImageProvider");
 }
-
 
 WindowsAppImageProvider::WindowsAppImageProvider(QObject* parent)
     : QQuickImageProvider(QQuickImageProvider::Pixmap), QObject(parent) {
@@ -34,33 +31,34 @@ WindowsAppImageProvider::~WindowsAppImageProvider() {
   MVPN_COUNT_DTOR(WindowsAppImageProvider);
 }
 
-
 QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,
-                                      const QSize& requestedSize){
-    Q_UNUSED(requestedSize);
-    logger.log() << "Request Image for " << path;
+                                               const QSize& requestedSize) {
+  Q_UNUSED(requestedSize);
+  logger.log() << "Request Image for " << path;
 
-    const QString nativePath = QDir::toNativeSeparators(path);
-    const auto *sourceFileC = reinterpret_cast<const wchar_t *>(nativePath.utf16());
-    const UINT iconCount = ExtractIconEx(sourceFileC, -1, nullptr, nullptr, 0);
-    if (!iconCount) {
-      WindowsCommons::windowsLog(path +" does not appear to contain icons.");
-        return QPixmap();
-    }
-    QScopedArrayPointer<HICON> icons(new HICON[iconCount]);
-    const auto extractedIconCount = ExtractIconEx(sourceFileC, 0, icons.data(), nullptr, iconCount);
-    if (!extractedIconCount) {
-         WindowsCommons::windowsLog(path + " Failed to extract icon");
-        return QPixmap();
-    }
+  const QString nativePath = QDir::toNativeSeparators(path);
+  const auto* sourceFileC =
+      reinterpret_cast<const wchar_t*>(nativePath.utf16());
+  const UINT iconCount = ExtractIconEx(sourceFileC, -1, nullptr, nullptr, 0);
+  if (!iconCount) {
+    WindowsCommons::windowsLog(path + " does not appear to contain icons.");
+    return QPixmap();
+  }
+  QScopedArrayPointer<HICON> icons(new HICON[iconCount]);
+  const auto extractedIconCount =
+      ExtractIconEx(sourceFileC, 0, icons.data(), nullptr, iconCount);
+  if (!extractedIconCount) {
+    WindowsCommons::windowsLog(path + " Failed to extract icon");
+    return QPixmap();
+  }
 
-    auto pixmap = QtWin::fromHICON(icons[0]);
-    if (pixmap.isNull()) {
-        WindowsCommons::windowsLog(path +" Failed to convert icon");
-        return QPixmap();
-    }
-    if (size) *size = pixmap.size();
-    return pixmap;
+  auto pixmap = QtWin::fromHICON(icons[0]);
+  if (pixmap.isNull()) {
+    WindowsCommons::windowsLog(path + " Failed to convert icon");
+    return QPixmap();
+  }
+  if (size) *size = pixmap.size();
+  return pixmap;
 }
 
 /*

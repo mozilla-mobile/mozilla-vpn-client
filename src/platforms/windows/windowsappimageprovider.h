@@ -8,17 +8,14 @@
 #include <QObject>
 #include <QQuickImageProvider>
 
-
 class WindowsAppImageProvider final : public QQuickImageProvider,
                                       public QObject {
  public:
   WindowsAppImageProvider(QObject* parent);
   ~WindowsAppImageProvider();
   QPixmap requestPixmap(const QString& id, QSize* size,
-                      const QSize& requestedSize) override;
+                        const QSize& requestedSize) override;
   static bool hasImage(const QString& path);
-
 };
-
 
 #endif  // WINDOWSAPPIMAGEPROVIDER_H

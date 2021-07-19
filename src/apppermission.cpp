@@ -118,12 +118,13 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     // Check the Disabled-List
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     foreach (QString blockedAppId, settingsHolder->vpnDisabledApps()) {
-    if (!m_listprovider->isValidAppId(blockedAppId)) {
+      if (!m_listprovider->isValidAppId(blockedAppId)) {
         // In case the AppID is no longer valid we don't need to keep it
         logger.log() << "Removed obsolete appid" << blockedAppId;
         settingsHolder->removeVpnDisabledApp(blockedAppId);
       } else if (!keys.contains(blockedAppId)) {
-        // In case the AppID is valid but not in our applist, we need to create an entry
+        // In case the AppID is valid but not in our applist, we need to create
+        // an entry
         logger.log() << "Added missing appid" << blockedAppId;
         m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
       }

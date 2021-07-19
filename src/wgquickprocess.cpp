@@ -150,7 +150,7 @@ bool WgQuickProcess::run(
                         deviceIpv6Address, serverIpv4Gateway, serverIpv6Gateway,
                         serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
                         allowedIPAddressRanges, serverPort, ipv6Enabled,
-                        dnsServer,false)) {
+                        dnsServer)) {
     logger.log() << "Failed to create the config file";
     return false;
   }

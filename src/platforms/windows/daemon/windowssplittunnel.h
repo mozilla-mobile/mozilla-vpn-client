@@ -8,7 +8,6 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#pragma once
 
 // Note: include order matters here.
 #include <ws2tcpip.h>
@@ -147,7 +146,7 @@ class WindowsSplitTunnel final : public QObject
     Q_OBJECT
     Q_DISABLE_COPY_MOVE(WindowsSplitTunnel)
 public:
-    WindowsSplitTunnel(QObject* parent);
+    explicit WindowsSplitTunnel(QObject* parent);
     ~WindowsSplitTunnel();
 
 

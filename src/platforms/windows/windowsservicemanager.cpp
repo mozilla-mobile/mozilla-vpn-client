@@ -33,7 +33,7 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
   logger.log() << "Opening Service - " << QString::fromWCharArray(serviceName);
   // Try to get an elevated handle
   m_service = OpenService(m_serviceManager,  // SCM database
-                          serviceName,     // name of service
+                          serviceName,       // name of service
                           (GENERIC_READ | SERVICE_START | SERVICE_STOP));
   err = GetLastError();
   if (err != NULL) {
@@ -65,12 +65,12 @@ bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
     }
 
     if (status.dwCurrentState == goal_state) {
-        if (status.dwCurrentState == SERVICE_RUNNING) {
-          emit serviceStarted();
-        }
-        if (status.dwCurrentState == SERVICE_STOPPED) {
-          emit serviceStopped();
-        }
+      if (status.dwCurrentState == SERVICE_RUNNING) {
+        emit serviceStarted();
+      }
+      if (status.dwCurrentState == SERVICE_STOPPED) {
+        emit serviceStopped();
+      }
       return true;
     }
 
@@ -81,7 +81,6 @@ bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
   }
   return false;
 }
-
 
 SERVICE_STATUS_PROCESS WindowsServiceManager::getStatus() {
   SERVICE_STATUS_PROCESS serviceStatus;
@@ -137,4 +136,3 @@ bool WindowsServiceManager::stopService() {
   }
   return ok;
 }
-

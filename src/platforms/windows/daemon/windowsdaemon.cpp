@@ -24,7 +24,7 @@ namespace {
 Logger logger(LOG_WINDOWS, "WindowsDaemon");
 }
 
-WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
+WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
   MVPN_COUNT_CTOR(WindowsDaemon);
 
   m_wgutils = new WireguardUtilsWindows(this);
@@ -36,6 +36,27 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
 WindowsDaemon::~WindowsDaemon() {
   MVPN_COUNT_DTOR(WindowsDaemon);
   logger.log() << "Daemon released";
+}
+
+bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
+  bool splitTunnelEnabled = config.m_vpnDisabledApps.length() > 0;
+
+  if (op == Down) {
+    if (splitTunnelEnabled) {
+      m_splitTunnelManager.stop();
+    }
+    return true;
+  }
+  if (splitTunnelEnabled) {
+    logger.log() << "Tunnel UP, Starting SplitTunneling";
+    if (!WindowsSplitTunnel::isInstalled()) {
+      logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
+      WindowsSplitTunnel::installDriver();
+    }
+    m_splitTunnelManager.start();
+    m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
+  }
+  return true;
 }
 
 QByteArray WindowsDaemon::getStatus() {

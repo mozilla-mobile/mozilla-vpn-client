@@ -67,6 +67,9 @@ tunnel.dll
 tunnel.h
 *.wixobj
 *.msm
+*.dll
+.vs/
+*.msi
 MozillaVPN.exe
 MozillaVPN.exp
 MozillaVPN.lib
@@ -88,11 +91,6 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 
 # glean
-
-*.dll
-.vs/
-*.msi
-
 /glean/telemetry/*
 !/glean/telemetry/.keepme
 
