@@ -22,8 +22,8 @@ Item {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        //% "Advanced DNS Settings"
-        title: qsTrId("vpn.settings.advancedDNSSettings.title")
+        //% "Advanced DNS settings"
+        title: qsTrId("vpn.settings.advancedDNSSettings.title2")
         isSettingsView: true
     }
 
