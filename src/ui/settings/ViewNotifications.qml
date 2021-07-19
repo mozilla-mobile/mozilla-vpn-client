@@ -109,8 +109,8 @@ Item {
 
                 width: parent.width - Theme.windowMargin
 
-                //% "Server Switching Notification"
-                labelText: qsTrId("vpn.settings.notification.serverSwitch")
+                //% "Server switching notification"
+                labelText: qsTrId("vpn.settings.notification.serverSwitch2")
                 //% "Get notified when you successfully switched servers"
                 subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
 
@@ -128,8 +128,8 @@ Item {
 
                 width: parent.width - Theme.windowMargin
 
-                //% "Connection Change Notification"
-                labelText: qsTrId("vpn.settings.notification.connectionChange")
+                //% "Connection change notification"
+                labelText: qsTrId("vpn.settings.notification.connectionChange2")
                 //% "Get notified when the connection status changes"
                 subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
 

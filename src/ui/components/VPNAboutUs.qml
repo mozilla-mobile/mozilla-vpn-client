@@ -19,16 +19,16 @@ Item {
         ListElement {
             linkId: "tos"
 
-            //% "Terms of Service"
-            linkTitle: qsTrId("vpn.aboutUs.tos")
+            //% "Terms of service"
+            linkTitle: qsTrId("vpn.aboutUs.tos2")
             openUrl: VPN.LinkTermsOfService
         }
 
         ListElement {
             linkId: "privacy"
 
-            //% "Privacy Notice"
-            linkTitle: qsTrId("vpn.aboutUs.privacyNotice")
+            //% "Privacy notice"
+            linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
             openUrl: VPN.LinkPrivacyNotice
         }
         ListElement {
@@ -81,9 +81,9 @@ Item {
         VPNBoldLabel {
             id: releaseLabel
 
-            //% "Release Version"
+            //% "Release version"
             //: Refers to the installed version. For example: "Release Version: 1.23"
-            text: qsTrId("vpn.aboutUs.releaseVersion")
+            text: qsTrId("vpn.aboutUs.releaseVersion2")
             anchors.top: mozillaText.bottom
             anchors.topMargin: 16
         }
