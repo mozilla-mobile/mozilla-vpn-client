@@ -10,11 +10,24 @@
 
 #include <QRandomGenerator>
 
+constexpr uint32_t DUMMY_CONNECTION_DELAY_MSEC = 1500;
+
 namespace {
 Logger logger(LOG_CONTROLLER, "DummyController");
 }
 
-DummyController::DummyController() { MVPN_COUNT_CTOR(DummyController); }
+DummyController::DummyController() : m_delayTimer(this) {
+  MVPN_COUNT_CTOR(DummyController);
+
+  m_delayTimer.setSingleShot(true);
+  connect(&m_delayTimer, &QTimer::timeout, this, [&] {
+    if (m_connected) {
+      emit connected();
+    } else {
+      emit disconnected();
+    }
+  });
+}
 
 DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 
@@ -32,7 +45,8 @@ void DummyController::activate(
   logger.log() << "DummyController activated" << server.hostname();
   logger.log() << "DummyController DNS" << dnsServer.toString();
 
-  emit connected();
+  m_connected = true;
+  m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
 }
 
 void DummyController::deactivate(Reason reason) {
@@ -40,7 +54,8 @@ void DummyController::deactivate(Reason reason) {
 
   logger.log() << "DummyController deactivated";
 
-  emit disconnected();
+  m_connected = false;
+  m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
 }
 
 void DummyController::checkStatus() {

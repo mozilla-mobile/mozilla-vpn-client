@@ -75,6 +75,8 @@ class NetworkRequest final : public QObject {
 
   void abort();
 
+  static QString apiBaseUrl();
+
  private:
   NetworkRequest(QObject* parent, int status, bool setAuthorizationHeader);
 
