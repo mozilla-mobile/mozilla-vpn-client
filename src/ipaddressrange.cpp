@@ -13,6 +13,7 @@ IPAddressRange::IPAddressRange(const QString& ipAddress, uint32_t range,
 }
 
 IPAddressRange::IPAddressRange(const QString& prefix) {
+  MVPN_COUNT_CTOR(IPAddressRange);
   QStringList split = prefix.split('/');
   m_ipAddress = split[0];
   if (m_ipAddress.contains(':')) {
@@ -51,8 +52,7 @@ QList<IPAddressRange> IPAddressRange::fromIPAddressList(
     const QList<IPAddress>& list) {
   QList<IPAddressRange> result;
   for (const IPAddress& ip : list) {
-    result.append(
-        IPAddressRange(ip.address().toString(), ip.prefixLength(), IPv4));
+    result.append(IPAddressRange(ip.toString()));
   }
   return result;
 }
