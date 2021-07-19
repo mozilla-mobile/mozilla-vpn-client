@@ -38,6 +38,13 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      - name: Importing translation files
+        shell: bash
+        run: |
+          # Manually add QT executables to path
+          export PATH=/opt/qt515/bin:$PATH
+          python3 scripts/importLanguages.py -p
+
       - name: Compile
         shell: bash
         run: |
