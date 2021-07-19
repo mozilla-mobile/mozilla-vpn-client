@@ -21,8 +21,6 @@ dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
-translations/*.qm
-translations/*.pri
 linux/netfilter/netfilter.[ah]
 linux/netfilter/vendor/
 .qm
@@ -95,3 +93,10 @@ mozillavpnnp.vcxproj*
 
 # For users compiling QT per the README
 /qt/
+
+# Language files
+translations/*/*.ts
+translations/*/*.qm
+translations/*/locversion.plist
+translations/*.pri
+macos/pkg/Resources/*.lproj
