@@ -95,15 +95,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
   if (supportDnsUtils()) {
     QList<QHostAddress> resolvers;
-    resolvers.append(QHostAddress(config.m_dnsServer));
-
-    // If the DNS is not the Gateway, it's a user defined DNS
-    // thus, not add any other :)
-    if (config.m_ipv6Enabled &&
-        config.m_dnsServer == config.m_serverIpv4Gateway) {
+    resolvers.append(QHostAddress(config.m_serverIpv4Gateway));
+    if (config.m_ipv6Enabled) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
-
     if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
       return false;
     }
