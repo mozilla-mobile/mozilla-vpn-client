@@ -17,10 +17,11 @@ class WireguardUtilsLinux final : public WireguardUtils {
   WireguardUtilsLinux(QObject* parent);
   ~WireguardUtilsLinux();
   bool interfaceExists() override;
-  bool addInterface() override;
-  bool configureInterface(const InterfaceConfig& config) override;
+  bool addInterface(const InterfaceConfig& config) override;
+  bool updateInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
   bool addRoutePrefix(const IPAddressRange& prefix) override;
+  void flushRoutes() override;
   peerBytes getThroughputForInterface() override;
 
   QString getDefaultCgroup() const { return m_cgroups; }

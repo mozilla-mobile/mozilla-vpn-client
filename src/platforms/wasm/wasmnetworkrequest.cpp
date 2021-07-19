@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "networkrequest.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -50,6 +51,9 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
+
+// static
+QString NetworkRequest::apiBaseUrl() { return QString(Constants::API_URL); }
 
 // static
 NetworkRequest* NetworkRequest::createForAuthenticationVerification(

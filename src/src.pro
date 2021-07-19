@@ -103,6 +103,7 @@ SOURCES += \
         releasemonitor.cpp \
         rfc/rfc1918.cpp \
         rfc/rfc4193.cpp \
+        rfc/rfc4291.cpp \
         rfc/rfc5735.cpp \
         serveri18n.cpp \
         settingsholder.cpp \
@@ -197,6 +198,7 @@ HEADERS += \
         releasemonitor.h \
         rfc/rfc1918.h \
         rfc/rfc4193.h \
+        rfc/rfc4291.h \
         rfc/rfc5735.h \
         serveri18n.h \
         settingsholder.h \
@@ -264,7 +266,12 @@ unix {
 }
 
 RESOURCES += qml.qrc
-RESOURCES += ../glean/glean.qrc
+
+exists($$PWD/../glean/telemetry/gleansample.h) {
+    RESOURCES += $$PWD/../glean/glean.qrc
+} else {
+    error(Glean generated files are missing. Please run `python3 ./scripts/generate_glean.py`)
+}
 
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
@@ -524,7 +531,7 @@ else:android {
        include(../3rdparty/openSSL/openssl.pri)
     } else{
        message(Have you imported the 3rd-party git submodules? Read the README.md)
-       error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build )
+       error(Did not found openSSL in 3rdparty/openSSL - Exiting Android Build)
     }
 
     # For the android build we need to unset those
@@ -748,9 +755,10 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
-        platforms/windows/daemon/windowssplittunnel.cpp \
+        platforms/windows/daemon/windowstunnelservice.cpp \
+        platforms/windows/daemon/wireguardutilswindows.cpp \
         platforms/windows/windowsservicemanager.cpp \
-        platforms/windows/daemon/windowstunnelmonitor.cpp \
+        platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
@@ -776,9 +784,10 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
+        platforms/windows/daemon/windowstunnelservice.h \
+        platforms/windows/daemon/wireguardutilswindows.h \
         platforms/windows/daemon/windowssplittunnel.h \
         platforms/windows/windowsservicemanager.h \
-        platforms/windows/daemon/windowstunnelmonitor.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
@@ -840,16 +849,7 @@ RESOURCES += $$PWD/../translations/servers.qrc
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 } else {
-    message(Languages were not imported - using fallback english)
-    TRANSLATIONS += \
-        ../translations/mozillavpn_en.ts
-
-    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/mozillavpn_en.ts
-    ts.CONFIG += no_check_exist
-    ts.output = $$PWD/../translations/mozillavpn_en.ts
-    ts.input = .
-    QMAKE_EXTRA_TARGETS += ts
-    PRE_TARGETDEPS += ts
+    error(Languages were not imported. Please run `python3 ./scripts/importLanguages.py`)
 }
 
 QMAKE_LRELEASE_FLAGS += -idbased

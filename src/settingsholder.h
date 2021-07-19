@@ -114,7 +114,6 @@ class SettingsHolder final : public QObject {
   enum UserDNSValidationResult {
     UserDNSOK,
     UserDNSInvalid,
-    UserDNSNotIPv4,
     UserDNSOutOfRange,
   };
   Q_ENUM(UserDNSValidationResult);

@@ -9,7 +9,7 @@ import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
 import "./../../components"
 
-TextField {
+VPNTextField {
     // TODO Add strings for Accessible.description, Accessible.name
 
     property bool stateError: false
@@ -20,6 +20,8 @@ TextField {
     leftPadding: 48
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
     selectByMouse: true
+
+    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
 
     VPNIcon {
         source: "qrc:/ui/resources/search.svg"

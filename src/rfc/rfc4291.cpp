@@ -2,12 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.0
-import "../themes/themes.js" as Theme
+#include "rfc4291.h"
 
-VPNFooterLink {
-    //% "Sign out"
-    labelText: qsTrId("vpn.main.signOut2")
-    fontName: Theme.fontBoldFamily
-    linkColor: Theme.redButton
+// static
+IPAddress RFC4291::ipv6LoopbackAddressBlock() {
+  return IPAddress::create("::1/128");
 }

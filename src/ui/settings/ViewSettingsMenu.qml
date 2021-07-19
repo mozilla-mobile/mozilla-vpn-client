@@ -74,8 +74,8 @@ VPNFlickable {
         id: startAtBootCheckBox
         objectName: "settingStartAtBoot"
 
-        //% "Launch VPN app on Startup"
-        labelText: qsTrId("vpn.settings.runOnBoot")
+        //% "Launch VPN app on startup"
+        labelText: qsTrId("vpn.settings.runOnBoot2")
         subLabelText: ""
         isChecked: VPNSettings.startAtBoot
         isEnabled: true
@@ -180,8 +180,8 @@ VPNFlickable {
         VPNSettingsItem {
             objectName: "settingsPrivacySecurity"
 
-            //% "Privacy & Security"
-            settingTitle: qsTrId("vpn.main.privacySecurity")
+            //% "Privacy & security"
+            settingTitle: qsTrId("vpn.main.privacySecurity2")
             imageLeftSrc: "../resources/settings/lock.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewPrivacySecurity.qml")

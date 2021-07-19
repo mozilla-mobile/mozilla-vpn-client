@@ -19,6 +19,7 @@ class IPAddressRange final {
 
   static QList<IPAddressRange> fromIPAddressList(const QList<IPAddress>& list);
 
+  IPAddressRange(const QString& prefix);
   IPAddressRange(const QString& ipAddress, uint32_t range, IPAddressType type);
   IPAddressRange(const IPAddressRange& other);
   IPAddressRange& operator=(const IPAddressRange& other);

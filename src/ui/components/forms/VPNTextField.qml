@@ -12,6 +12,8 @@ import "./../../components"
 TextField {
     // TODO Add strings for Accessible.description, Accessible.name
     property bool stateError: false
+    property bool loseFocusOnOutsidePress: true
+
     id: textField
 
     Layout.preferredHeight: Theme.rowHeight

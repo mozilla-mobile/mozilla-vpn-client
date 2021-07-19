@@ -70,6 +70,8 @@ HEADERS += \
     ../../src/qmlengineholder.h \
     ../../src/releasemonitor.h \
     ../../src/rfc/rfc1918.h \
+    ../../src/rfc/rfc4193.h \
+    ../../src/rfc/rfc4291.h \
     ../../src/rfc/rfc5735.h \
     ../../src/serveri18n.h \
     ../../src/settingsholder.h \
@@ -144,6 +146,8 @@ SOURCES += \
     ../../src/qmlengineholder.cpp \
     ../../src/releasemonitor.cpp \
     ../../src/rfc/rfc1918.cpp \
+    ../../src/rfc/rfc4193.cpp \
+    ../../src/rfc/rfc4291.cpp \
     ../../src/rfc/rfc5735.cpp \
     ../../src/serveri18n.cpp \
     ../../src/settingsholder.cpp \

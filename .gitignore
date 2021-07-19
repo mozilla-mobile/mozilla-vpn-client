@@ -21,8 +21,6 @@ dbus_adaptor.*
 dbus_interface.*
 mozillavpn-daemon
 *_plugin_import.cpp
-translations/*.qm
-translations/*.pri
 linux/netfilter/netfilter.[ah]
 linux/netfilter/vendor/
 .qm
@@ -45,6 +43,7 @@ xcode.xconfig
 *.ts
 tests/unit/tests
 tests/nativemessaging/tests
+tests/proxy/__pycache__/
 build
 Debug/
 !android/src/debug/
@@ -99,3 +98,10 @@ mozillavpnnp.vcxproj*
 
 # For users compiling QT per the README
 /qt/
+
+# Language files
+translations/*/*.ts
+translations/*/*.qm
+translations/*/locversion.plist
+translations/*.pri
+macos/pkg/Resources/*.lproj

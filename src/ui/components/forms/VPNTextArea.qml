@@ -5,6 +5,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+import "../"
 import "../../themes/themes.js" as Theme
 
 Item {
@@ -37,27 +38,35 @@ Item {
 
         TextArea.flickable: TextArea {
             property var maxCharacterCount: 1000
+            property bool loseFocusOnOutsidePress: true
 
             id: textArea
-
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeSmall
             font.family: Theme.fontInterFamily
             color: Theme.fontColor
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            textMargin: Theme.windowMargin
+            textMargin: Theme.windowMargin * .75
             padding: 0
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
             onTextChanged: if (length > maxCharacterCount) remove(maxCharacterCount, length)
             selectByMouse: true
             selectionColor: Theme.input.highlight
+            inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
 
-            Text {
+            VPNTextBlock {
                 id: formattedPlaceholderText
-                anchors.fill:parent
-                anchors.margins: Theme.windowMargin
+                anchors.fill: textArea
+                anchors.leftMargin: Theme.windowMargin
+                anchors.rightMargin: Theme.windowMargin
+                anchors.topMargin: Theme.windowMargin * .75
                 color:  Theme.fontColor
-                visible: !textArea.text && !textArea.focus
+                visible: textArea.text.length < 1
+                opacity: textArea.focus ? .7 : 1
+
+                PropertyAnimation on opacity {
+                    duration: 100
+                }
             }
         }
     }

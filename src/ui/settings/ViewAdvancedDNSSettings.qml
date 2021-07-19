@@ -22,8 +22,8 @@ Item {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        //% "Advanced DNS Settings"
-        title: qsTrId("vpn.settings.advancedDNSSettings.title")
+        //% "Advanced DNS settings"
+        title: qsTrId("vpn.settings.advancedDNSSettings.title2")
         isSettingsView: true
     }
 
@@ -167,12 +167,6 @@ Item {
                         case VPNSettings.UserDNSInvalid:
                             //% "Invalid IP address"
                             ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
-                            ipInput.valueInvalid = true;
-                            break;
-
-                        case VPNSettings.UserDNSNotIPv4:
-                            //% "We currently support only IPv4 IP addresses"
-                            ipInput.error = qsTrId("vpn.settings.userDNS.notIPv4")
                             ipInput.valueInvalid = true;
                             break;
 

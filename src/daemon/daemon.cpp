@@ -87,23 +87,23 @@ bool Daemon::activate(const InterfaceConfig& config) {
       qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
       return false;
     }
-    // add_if
-    if (!wgutils()->addInterface()) {
-      return false;
-    }
-    // set conf
-    if (!wgutils()->configureInterface(config)) {
-      qWarning("Interface configuration failed. Removing `%s`.", WG_INTERFACE);
-      wgutils()->deleteInterface();
+    // add_if and configure
+    if (!wgutils()->addInterface(config)) {
+      qWarning("Interface creation failed. Removing `%s`.", WG_INTERFACE);
       return false;
     }
   }
   if (supportDnsUtils()) {
     QList<QHostAddress> resolvers;
-    resolvers.append(QHostAddress(config.m_serverIpv4Gateway));
-    if (config.m_ipv6Enabled) {
+    resolvers.append(QHostAddress(config.m_dnsServer));
+
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if (config.m_ipv6Enabled &&
+        config.m_dnsServer == config.m_serverIpv4Gateway) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
+
     if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
       return false;
     }
@@ -325,7 +325,28 @@ QString Daemon::logs() {
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
 bool Daemon::switchServer(const InterfaceConfig& config) {
-  Q_UNUSED(config);
-  qFatal("Have you forgotten to implement switchServer?");
-  return false;
+  // Generic server switching is not supported without wgutils.
+  if (!supportWGUtils()) {
+    qFatal("Have you forgotten to implement switchServer?");
+    return false;
+  }
+
+  logger.log() << "Switching server";
+
+  Q_ASSERT(m_connected);
+  wgutils()->flushRoutes();
+
+  if (!wgutils()->updateInterface(config)) {
+    logger.log() << "Server switch failed to update the wireguard interface";
+    return false;
+  }
+
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    if (!wgutils()->addRoutePrefix(ip)) {
+      logger.log() << "Server switch failed to update the routing table";
+      return false;
+    }
+  }
+
+  return true;
 }

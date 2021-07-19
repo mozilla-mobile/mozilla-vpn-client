@@ -29,7 +29,8 @@ class CaptivePortalRequest final : public QObject {
   void onResult(CaptivePortalResult portalDetected);
 
  private:
-  bool m_completed = false;
+  int m_running = 0;
+  int m_success = 0;
 };
 
 #endif  // CAPTIVEPORTALREQUEST_H

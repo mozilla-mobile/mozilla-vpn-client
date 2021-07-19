@@ -224,8 +224,12 @@ Item {
                         property string lowRatingResponse: qsTrId("vpn.feedbackForm.lowRatingResponse")
 
                         //% "We’d love to know what we can do to improve Mozilla VPN. Please share any specific feedback here."
-                        property string averageToHighRatingResponse: qsTrId("vpn.feedbackForm.averageToHighRatingResponse")
-                        text: appRating >= 3 ? averageToHighRatingResponse : lowRatingResponse
+                        property string averageRatingResponse: qsTrId("vpn.feedbackForm.averageRatingResponse")
+
+                        //% "We’re glad you’re enjoying Mozilla VPN! Please let us know how we can make your experience even better."
+                        property string goodRatingResponse: qsTrId("vpn.feedbackForm.goodRatingResponse")
+
+                        text: appRating < 3 ? lowRatingResponse : (appRating == 3 ? averageRatingResponse : goodRatingResponse)
                         lineHeight: 24
                         lineHeightMode: Text.FixedHeight
                         wrapMode: Text.WordWrap
@@ -324,12 +328,13 @@ Item {
         id: thankYouView
         Item {
             ColumnLayout {
+                id: col
                 anchors.top: parent.top
                 anchors.topMargin: window.height * .10
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: Math.min(Theme.maxHorizontalContentWidth, parent.width - Theme.windowMargin * 4)
-                spacing: 24
                 VPNPanel {
+                    id: panel
                     logo: "../resources/heart-check.svg"
                     //% "Thank you!"
                     logoTitle: qsTrId("vpn.feedbackForm.thankyou")
@@ -338,13 +343,22 @@ Item {
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
-                VPNButton {
-                    //% "Done"
-                   text: qsTrId("vpn.feedbackform.done")
-                   Layout.fillWidth: true
-                   Layout.preferredHeight: Theme.rowHeight
-                   onClicked: stackview.pop(StackView.Immediate)
-                }
+            }
+            VPNButton {
+                //% "Done"
+               text: qsTrId("vpn.feedbackform.done")
+               anchors.top: col.bottom
+               anchors.topMargin: Theme.vSpacing
+               anchors.horizontalCenter: parent.horizontalCenter
+               onClicked: stackview.pop(StackView.Immediate)
+               Component.onCompleted: {
+                 if (window.fullscreenRequired()) {
+                     anchors.top = undefined;
+                     anchors.topMargin = undefined;
+                     anchors.bottom= parent.bottom
+                     anchors.bottomMargin = Theme.windowMargin * 4
+                 }
+               }
             }
         }
     }

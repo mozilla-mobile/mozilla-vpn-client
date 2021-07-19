@@ -21,88 +21,74 @@ Logger logger(
 }  // namespace
 
 // static
-bool WgQuickProcess::createConfigFile(
-    const QString& configFile, const QString& privateKey,
-    const QString& deviceIpv4Address, const QString& deviceIpv6Address,
-    const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
-    const QString& serverPublicKey, const QString& serverIpv4AddrIn,
-    const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
-    int serverPort, bool ipv6Enabled, const QString& dnsServer, bool killswitchDisabled) {
-  Q_UNUSED(serverIpv6AddrIn);
-
+bool WgQuickProcess::createConfigFile(const QString& outputFile,
+                                      const InterfaceConfig& config,
+                                      const QMap<QString, QString>& extra) {
 #define VALIDATE(x) \
   if (x.contains("\n")) return false;
 
-  VALIDATE(privateKey);
-  VALIDATE(deviceIpv4Address);
-  VALIDATE(deviceIpv6Address);
-  VALIDATE(serverIpv4Gateway);
-  VALIDATE(serverIpv6Gateway);
-  VALIDATE(serverPublicKey);
-  VALIDATE(serverIpv4AddrIn);
-  VALIDATE(serverIpv6AddrIn);
-  VALIDATE(allowedIPAddressRanges);
+  VALIDATE(config.m_privateKey);
+  VALIDATE(config.m_deviceIpv4Address);
+  VALIDATE(config.m_deviceIpv6Address);
+  VALIDATE(config.m_serverIpv4Gateway);
+  VALIDATE(config.m_serverIpv6Gateway);
+  VALIDATE(config.m_serverPublicKey);
+  VALIDATE(config.m_serverIpv4AddrIn);
+  VALIDATE(config.m_serverIpv6AddrIn);
 #undef VALIDATE
 
-  QByteArray content;
-  content.append("[Interface]\nPrivateKey = ");
-  content.append(privateKey.toUtf8());
-  content.append("\nAddress = ");
-  content.append(deviceIpv4Address.toUtf8());
+  QString content;
+  QTextStream out(&content);
+  out << "[Interface]\n";
+  out << "PrivateKey = " << config.m_privateKey << "\n";
 
-  if (ipv6Enabled) {
-    content.append(", ");
-    content.append(deviceIpv6Address.toUtf8());
+  QStringList addresses(config.m_deviceIpv4Address);
+  QStringList dnsServers(config.m_dnsServer);
+  if (config.m_ipv6Enabled) {
+    addresses.append(config.m_deviceIpv6Address);
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
+      dnsServers.append(config.m_serverIpv6Gateway);
+    }
+  }
+  out << "Address = " << addresses.join(", ") << "\n";
+  out << "DNS = " << dnsServers.join(", ") << "\n";
+
+  // If any extra config was provided, append it now.
+  for (const QString& key : extra.keys()) {
+    out << key << " = " << extra[key] << "\n";
   }
 
-  content.append("\nDNS = ");
-  content.append(dnsServer.toUtf8());
-
-  logger.log() << "USING DNS-->" << dnsServer.toUtf8();
-
-  // If the DNS is not the Gateway, it's a user defined DNS
-  // thus, not add any other :)
-  if (ipv6Enabled && dnsServer.toUtf8() == serverIpv4Gateway.toUtf8()) {
-    content.append(", ");
-    content.append(serverIpv6Gateway.toUtf8());
-  }
-
-  content.append("\n\n[Peer]\nPublicKey = ");
-  content.append(serverPublicKey.toUtf8());
-  content.append("\nEndpoint = ");
-  content.append(serverIpv4AddrIn.toUtf8());
-  content.append(QString(":%1").arg(serverPort).toUtf8());
+  out << "\n[Peer]\n";
+  out << "PublicKey = " << config.m_serverPublicKey << "\n";
+  out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"
+      << config.m_serverPort << "\n";
 
   /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
    * to be happy if there are 2 endpoints.
   if (ipv6Enabled) {
-      content.append("\nEndpoint = [");
-      content.append(serverIpv6AddrIn);
-      content.append(QString("]:%1").arg(serverPort));
+    out << "Endpoint = [" << config.m_serverIpv6AddrIn << "]:"
+        << config.m_serverPort << "\n";
   }
   */
-  content.append(
-      QString("\nAllowedIPs = %1\n").arg(allowedIPAddressRanges).toUtf8());
-
- if(killswitchDisabled){
-    // This is a horrible horrible hack, sorry! This will be removed once we have a tunnel replacement 
-    // But Having a 2nd peer stops wireguard-go from automaticily 
-    // creating firewall rules that blocks all split-tunnel traffic
-    logger.log() << "KILLSWITCH DISABLED, BEWARE DRAGONS";
-    content.append("[Peer]\nPublicKey = Bnrn99Enx6mxeZO77+DanSMhAXi7EHazFUwGmFL2VCo= \nEndpoint = 45.152.183.50:52684 \nAllowedIPs = 192.168.0.250/32");  
- }
+  QStringList ranges;
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    ranges.append(ip.toString());
+  }
+  out << "AllowedIPs = " << ranges.join(", ") << "\n";
 
 #ifdef QT_DEBUG
   logger.log() << content;
 #endif
 
-  QFile file(configFile);
+  QFile file(outputFile);
   if (!file.open(QIODevice::WriteOnly)) {
     qWarning("Unable to create a file in the temporary folder");
     return false;
   }
 
-  qint64 written = file.write(content);
+  qint64 written = file.write(content.toUtf8());
   if (written != content.length()) {
     qWarning("Unable to write the whole configuration file");
     return false;
@@ -110,6 +96,36 @@ bool WgQuickProcess::createConfigFile(
 
   file.close();
   return true;
+}
+
+// static
+bool WgQuickProcess::createConfigFile(
+    const QString& outputFile, const QString& privateKey,
+    const QString& deviceIpv4Address, const QString& deviceIpv6Address,
+    const QString& serverIpv4Gateway, const QString& serverIpv6Gateway,
+    const QString& serverPublicKey, const QString& serverIpv4AddrIn,
+    const QString& serverIpv6AddrIn, const QString& allowedIPAddressRanges,
+    int serverPort, bool ipv6Enabled, const QString& dnsServer) {
+  Q_UNUSED(serverIpv6AddrIn);
+
+  InterfaceConfig config;
+  config.m_privateKey = privateKey;
+  config.m_deviceIpv4Address = deviceIpv4Address;
+  config.m_deviceIpv6Address = deviceIpv6Address;
+  config.m_serverIpv4Gateway = serverIpv4Gateway;
+  config.m_serverIpv6Gateway = serverIpv6Gateway;
+  config.m_serverPublicKey = serverPublicKey;
+  config.m_serverIpv4AddrIn = serverIpv4AddrIn;
+  config.m_serverIpv6AddrIn = serverIpv6AddrIn;
+  config.m_dnsServer = dnsServer;
+  config.m_serverPort = serverPort;
+  config.m_ipv6Enabled = ipv6Enabled;
+
+  for (const QString& range : allowedIPAddressRanges.split(',')) {
+    config.m_allowedIPAddressRanges.append(IPAddressRange(range));
+  }
+
+  return createConfigFile(outputFile, config);
 }
 
 // static
