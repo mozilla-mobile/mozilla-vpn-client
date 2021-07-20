@@ -75,14 +75,11 @@
 				<File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
 				<File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
 				<File Source="../../balrog/$(var.Platform)/balrog.dll" />
-				<File Source="../../libcrypto-1_1-x64.dll" />
-				<File Source="../../libssl-1_1-x64.dll" />
-				<File Source="../../libEGL.dll" />
-				<File Source="../../libGLESv2.dll" />
-				<File Source="../../mullvad-binary/x86_64-pc-windows-msvc/split-tunnel/win10/mullvad-split-tunnel.cat" />
-				<File Source="../../mullvad-binary/x86_64-pc-windows-msvc/split-tunnel/win10/mullvad-split-tunnel.inf" />
-				<File Source="../../mullvad-binary/x86_64-pc-windows-msvc/split-tunnel/win10/mullvad-split-tunnel.sys" />
-				<File Source="../../mullvad-binary/x86_64-pc-windows-msvc/split-tunnel/win10/WdfCoinstaller01011.dll" />
+
+				<File Source="../split-tunnel/mullvad-split-tunnel.cat" />
+				<File Source="../split-tunnel/mullvad-split-tunnel.inf" />
+				<File Source="../split-tunnel/mullvad-split-tunnel.sys" />
+				<File Source="../split-tunnel/WdfCoinstaller01011.dll" />
 				
 
 				<File Source="../../extension/app/manifests/windows/mozillavpn.json" />
