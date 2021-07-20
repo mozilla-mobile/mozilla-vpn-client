@@ -836,7 +836,16 @@ RESOURCES += $$PWD/../translations/servers.qrc
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 } else {
-    error(Languages were not imported. Please run `python3 ./scripts/importLanguages.py`)
+    message(Languages were not imported - using fallback English)
+    TRANSLATIONS += \
+        ../translations/en/mozillavpn_en.ts
+
+    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/en/mozillavpn_en.ts
+    ts.CONFIG += no_check_exist
+    ts.output = $$PWD/../translations/en/mozillavpn_en.ts
+    ts.input = .
+    QMAKE_EXTRA_TARGETS += ts
+    PRE_TARGETDEPS += ts
 }
 
 QMAKE_LRELEASE_FLAGS += -idbased
