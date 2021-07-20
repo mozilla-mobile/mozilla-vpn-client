@@ -118,3 +118,11 @@ bool FeatureList::userDNSSupported() const {
   return false;
 #endif
 }
+
+bool FeatureList::multihopSupported() const {
+#if defined(MVPN_LINUX)
+  return true;
+#else
+  return false;
+#endif
+}

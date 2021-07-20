@@ -58,18 +58,18 @@ bool Daemon::activate(const InterfaceConfig& config) {
   //    method calls switchServer().
   //
   // At the end, if the activation succeds, the `connected` signal is emitted.
+  logger.log() << "Activating interface" << config.m_ifname;
 
-  if (m_connected) {
+  if (m_connections.contains(config.m_hopindex)) {
     if (supportServerSwitching(config)) {
       logger.log() << "Already connected. Server switching supported.";
 
-      m_lastConfig = config;
+      m_connections[config.m_hopindex] = ConnectionState(config);
       if (!switchServer(config)) {
         return false;
       }
 
-      m_connectionDate = QDateTime::currentDateTime();
-      emit connected();
+      emit connected(config.m_hopindex);
       return true;
     }
 
@@ -78,13 +78,14 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
 
-    Q_ASSERT(!m_connected);
+    Q_ASSERT(!m_connections.contains(config.m_hopindex));
     return activate(config);
   }
 
   if (supportWGUtils()) {
-    if (wgutils()->interfaceExists()) {
-      qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
+    if (wgutils()->interfaceExists(config.m_ifname)) {
+      logger.log() << "Wireguard interface" << config.m_ifname
+                   << "already exists.";
       return false;
     }
     // add_if and configure
@@ -93,7 +94,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
   }
-  if (supportDnsUtils()) {
+  if ((config.m_hopindex == 0) && supportDnsUtils()) {
     QList<QHostAddress> resolvers;
     resolvers.append(QHostAddress(config.m_dnsServer));
 
@@ -104,7 +105,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
 
-    if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
+    if (!dnsutils()->updateResolvers(config.m_ifname, resolvers)) {
       return false;
     }
   }
@@ -112,34 +113,30 @@ bool Daemon::activate(const InterfaceConfig& config) {
     if (!iputils()->addInterfaceIPs(config)) {
       return false;
     }
-    if (!iputils()->setMTUAndUp()) {
+    if (!iputils()->setMTUAndUp(config)) {
       return false;
     }
   }
   if (supportWGUtils()) {
     // set routing
     for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-      if (!wgutils()->addRoutePrefix(ip)) {
-        qWarning("Routing configuration failed. Removing `%s`.", WG_INTERFACE);
+      if (!wgutils()->addRoutePrefix(ip, config.m_ifname)) {
+        logger.log() << "Routing configuration failed for" << config.m_ifname;
         return false;
       }
     }
   }
 
-  m_lastConfig = config;
-  m_connected = run(Up, m_lastConfig);
-
-  logger.log() << "Connection status:" << m_connected;
-
-  if (m_connected) {
-    m_connectionDate = QDateTime::currentDateTime();
-    emit connected();
+  bool status = run(Up, config);
+  logger.log() << "Connection" << config.m_ifname << "status:" << status;
+  if (status) {
+    m_connections[config.m_hopindex] = ConnectionState(config);
+    emit connected(config.m_hopindex);
   }
 
-  return m_connected;
+  return status;
 }
 
-// static
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #define GETVALUESTR(name, where)                                \
   if (!obj.contains(name)) {                                    \
@@ -203,6 +200,18 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 #undef GETVALUEBOOL
 
+  if (!obj.contains("hopindex")) {
+    config.m_hopindex = 0;
+  } else {
+    QJsonValue value = obj.value("hopindex");
+    if (!value.isDouble()) {
+      logger.log() << "hopindex is not a number";
+      return false;
+    }
+    config.m_hopindex = value.toInt();
+  }
+  config.m_ifname = interfaceName(config.m_hopindex);
+
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
     logger.log() << JSON_ALLOWEDIPADDRESSRANGES
                  << "missing in the jsonconfig input";
@@ -259,41 +268,49 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   return true;
 }
 
-bool Daemon::deactivate(bool emitSignals) {
-  logger.log() << "Deactivate";
+bool Daemon::deactivate(int hopindex, bool emitSignals) {
+  QString ifname = interfaceName(hopindex);
+  logger.log() << "Deactivating interface" << ifname;
 
-  if (!m_connected) {
-    logger.log() << "Already disconnected";
-    return true;
+  if (!m_connections.contains(hopindex)) {
+    logger.log() << "Wireguard interface" << ifname << "does not exist.";
+    return false;
   }
 
-  if (supportDnsUtils()) {
+  const InterfaceConfig& config = m_connections.value(hopindex).m_config;
+  bool status = run(Down, config);
+
+  if ((hopindex == 0) && supportDnsUtils()) {
     if (!dnsutils()->restoreResolvers()) {
       return false;
     }
   }
 
-  if (supportWGUtils() && !wgutils()->interfaceExists()) {
-    qWarning("Wireguard interface `%s` does not exist. Cannot proceed.",
-             WG_INTERFACE);
-    return false;
+  if (supportWGUtils()) {
+    if (!wgutils()->interfaceExists(config.m_ifname)) {
+      logger.log() << "Wireguard interface" << config.m_ifname
+                   << "does not exist.";
+      return false;
+    }
+    if (!wgutils()->deleteInterface(config.m_ifname)) {
+      return false;
+    }
   }
-
-  m_connected = false;
-  bool status = run(Down, m_lastConfig);
-
-  if (supportWGUtils() && !wgutils()->deleteInterface()) {
-    return false;
-  }
-
-  logger.log() << "Status:" << status;
+  m_connections.remove(hopindex);
 
   // No notification for server switching.
   if (emitSignals && status) {
-    emit disconnected();
+    emit disconnected(hopindex);
   }
 
   return status;
+}
+
+bool Daemon::deactivateAll(bool emitSignals) {
+  for (int hopindex : m_connections.keys()) {
+    deactivate(hopindex, emitSignals);
+  }
+  return true;
 }
 
 QString Daemon::logs() {
@@ -316,10 +333,10 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     return false;
   }
 
-  logger.log() << "Switching server";
+  logger.log() << "Switching server for interface" << config.m_ifname;
 
-  Q_ASSERT(m_connected);
-  wgutils()->flushRoutes();
+  Q_ASSERT(m_connections.contains(config.m_hopindex));
+  wgutils()->flushRoutes(config.m_ifname);
 
   if (!wgutils()->updateInterface(config)) {
     logger.log() << "Server switch failed to update the wireguard interface";
@@ -327,7 +344,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   }
 
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->addRoutePrefix(ip)) {
+    if (!wgutils()->addRoutePrefix(ip, config.m_ifname)) {
       logger.log() << "Server switch failed to update the routing table";
       return false;
     }
