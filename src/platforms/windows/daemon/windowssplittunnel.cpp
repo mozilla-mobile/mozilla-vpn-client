@@ -331,6 +331,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob(){
         WindowsCommons::windowsLog("Creating Process snapshot failed");
         return std::vector<uint8_t>(0);
     }
+    auto cleanup = qScopeGuard([&] { CloseHandle(snapshot_handle); });
     // Load the First Entry, later iterate over all
     PROCESSENTRY32W currentProcess;
     currentProcess.dwSize = sizeof(PROCESSENTRY32W);
@@ -351,6 +352,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob(){
         }
         ProcessInfo info = getProcessInfo(process_handle,currentProcess);
         processes.insert(info.ProcessId,info);
+        CloseHandle(process_handle);
 
     }while (FALSE != (Process32NextW(snapshot_handle, &currentProcess)));
 
