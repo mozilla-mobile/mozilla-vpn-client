@@ -25,7 +25,6 @@ Item {
         accessibleIgnored: isModalDialogOpened
     }
 
-
     VPNFlickable {
         id: vpnFlickable
 
@@ -100,7 +99,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 delegate: VPNDeviceListItem {}
-                }
+            }
 
 
             VPNVerticalSpacer {

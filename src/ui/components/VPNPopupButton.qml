@@ -35,11 +35,11 @@ VPNButtonBase {
     contentItem: VPNInterLabel {
         id: buttonText
 
+        font.family: Theme.fontBoldFamily
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
-
     }
 
 }

@@ -47,6 +47,7 @@ const labelLineHeight = 22;
 const cityListTopMargin = 18;
 const controllerInterLineHeight = 18;
 const hSpacing = 20;
+const hSpacingSmall = 10;
 const vSpacing = 24;
 const listSpacing = 8;
 const maxTextWidth = 296;
@@ -109,14 +110,13 @@ const linkButton = {
     "focusBorder": darkFocusBorder,
 };
 
-const popupButtonCancel = {
-    "defaultColor": grey,
-    "buttonHovered": "#CCCCCC",
+const greyButton = {
+    "defaultColor": "#CECECF",
+    "buttonHovered": greyHovered,
     "buttonPressed": greyPressed,
-    "focusOutline": greyPressed,
+    "focusOutline": greyHovered,
     "focusBorder": darkFocusBorder
 };
-
 
 const redButton = {
     "defaultColor" : red,

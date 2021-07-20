@@ -8,7 +8,7 @@ import QtQuick.Layouts 1.14
 import QtGraphicalEffects 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
-
+//
 Popup {
     id: popup
 
@@ -55,7 +55,7 @@ Popup {
     background: Rectangle {
         id: popupBackground
 
-        color: "#E1E1E1"
+        color: Theme.bgColor
         radius: 8
 
         RectangularGlow {
@@ -128,9 +128,9 @@ Popup {
 
             GridLayout {
                 Layout.fillWidth: true
-                Layout.minimumHeight: Theme.windowMargin * 2
+                Layout.minimumHeight: Theme.rowHeight
                 Layout.topMargin: Theme.windowMargin
-                columnSpacing: 8
+                columnSpacing: Theme.hSpacingSmall
                 columns: {
                     const cancelText = qsTrId("vpn.devices.cancelDeviceRemoval");
                     const removeText = qsTrId("vpn.devices.removeDeviceButton");
@@ -145,8 +145,8 @@ Popup {
 
                     //% "Cancel"
                     buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
-                    buttonTextColor: "#262626"
-                    colorScheme: Theme.popupButtonCancel
+                    buttonTextColor: Theme.fontColorDark
+                    colorScheme: Theme.greyButton
                     onClicked: {
                         popup.close();
                     }
