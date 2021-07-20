@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "settingsholder.h"
+#include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
 #include "leakdetector.h"
@@ -23,7 +24,7 @@ constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
-const QString SETTINGS_USER_DNS_DEFAULT = "";
+constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
@@ -412,4 +413,8 @@ SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
   }
 
   return UserDNSOutOfRange;
+}
+
+QString SettingsHolder::placeholderUserDNS() const {
+  return Constants::PLACEHOLDER_USER_DNS;
 }

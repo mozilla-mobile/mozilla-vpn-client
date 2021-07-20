@@ -139,7 +139,8 @@ Item {
 
                     Layout.fillWidth: true
                     Layout.leftMargin: 40
-                    placeholderText: VPNSettings.userDNS
+                    placeholderText: VPNSettings.placeholderUserDNS
+                    text: VPNSettings.userDNS
                     enabled: !VPNSettings.useGatewayDNS
                     opacity: enabled ? 1 : .5
 
