@@ -75,7 +75,10 @@
 				<File Source="../../tunnel/$(var.Platform)/tunnel.dll" />
 				<File Source="../../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
 				<File Source="../../balrog/$(var.Platform)/balrog.dll" />
-
+				<File Source="../../libcrypto-1_1-x64.dll" />
+				<File Source="../../libssl-1_1-x64.dll" />
+				<File Source="../../libEGL.dll" />
+				<File Source="../../libGLESv2.dll" />
 				<File Source="../split-tunnel/mullvad-split-tunnel.cat" />
 				<File Source="../split-tunnel/mullvad-split-tunnel.inf" />
 				<File Source="../split-tunnel/mullvad-split-tunnel.sys" />

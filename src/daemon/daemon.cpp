@@ -256,20 +256,20 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     }
   }
 
- {  // Read Split Tunnel Apps
-      QJsonValue value = obj.value("vpnDisabledApps");
-      if (!value.isArray()) {
-        logger.log() << "vpnDisabledApps is not an array";
+  {  // Read Split Tunnel Apps
+    QJsonValue value = obj.value("vpnDisabledApps");
+    if (!value.isArray()) {
+      logger.log() << "vpnDisabledApps is not an array";
+      return false;
+    }
+    QJsonArray array = value.toArray();
+    for (QJsonValue i : array) {
+      if (!i.isString()) {
+        logger.log() << "vpnDisabledApps must contain only strings";
         return false;
       }
-      QJsonArray array = value.toArray();
-      for (QJsonValue i : array) {
-        if (!i.isString()) {
-          logger.log() << "vpnDisabledApps must contain only strings";
-          return false;
-        }
-        config.m_vpnDisabledApps.append(i.toString());
-      }
+      config.m_vpnDisabledApps.append(i.toString());
+    }
   }
   return true;
 }

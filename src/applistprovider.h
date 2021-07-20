@@ -30,7 +30,7 @@ class AppListProvider : public QObject {
     return true;
   }
   // Returns the Name of an AppId
-  virtual QString getAppName(const QString& appId) = 0;
+  virtual QString getAppName(const QString& appId) { return appId; };
  signals:
   // Should be emitted when the new Application List is Ready
   // QMap key should be the identifier that the controller can
