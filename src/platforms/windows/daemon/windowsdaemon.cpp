@@ -7,15 +7,15 @@
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsservicemanager.h"
-#include "windowsfirewall.h"
 #include "wgquickprocess.h"
+#include "windowsfirewall.h"
 
 #include <QCoreApplication>
-#include <QNetworkInterface>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QLocalSocket>
+#include <QNetworkInterface>
 #include <QScopeGuard>
 #include <QTextStream>
 #include <QtGlobal>

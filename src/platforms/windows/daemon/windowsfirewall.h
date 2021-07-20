@@ -2,15 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WindowsFirewall_H
-#define WindowsFirewall_H
+#ifndef WINDOWSFIREWALL_H
+#define WINDOWSFIREWALL_H
 
 #include "../../daemon/interfaceconfig.h"
 
 #include <windows.h>
 #include <QString>
 #include <QObject>
-#include <QHostAddress>
+class QHostAddress;
 
 class WindowsFirewall final : public QObject {
  public:
@@ -38,4 +38,4 @@ class WindowsFirewall final : public QObject {
   bool blockAll(uint8_t weight);
 };
 
-#endif  // WindowsFirewall_H
+#endif  // WINDOWSFIREWALL_H

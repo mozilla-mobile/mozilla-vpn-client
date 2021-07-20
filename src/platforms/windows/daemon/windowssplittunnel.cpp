@@ -21,6 +21,7 @@
 
 namespace {
 Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
+}
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
   if (!isInstalled()) {
@@ -73,10 +74,10 @@ void WindowsSplitTunnel::initDriver() {
 
   auto state = getState();
   if (state == STATE_UNKNOWN) {
-    logger.log() << "Cannot check if driver is initialised";
+    logger.log() << "Cannot check if driver is initialized";
   }
   if (state >= STATE_INITIALIZED) {
-    logger.log() << "Driver already initialised: " << state;
+    logger.log() << "Driver already initialized: " << state;
     return;
   }
   DWORD bytesReturned;

@@ -64,7 +64,7 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
   memset(&session, 0, sizeof(session));
   session.flags = FWPM_SESSION_FLAG_DYNAMIC;
 
-  logger.log() << ("Opening the filter engine.");
+  logger.log() << "Opening the filter engine.";
 
   result =
       FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &engineHandle);
@@ -73,13 +73,15 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
     WindowsCommons::windowsLog("FwpmEngineOpen0 failed");
     return;
   }
-  logger.log() << ("Filter engine opened successfully.");
+  logger.log() << "Filter engine opened successfully.";
   m_sessionHandle = engineHandle;
 }
 
 WindowsFirewall::~WindowsFirewall() {
   MVPN_COUNT_DTOR(WindowsFirewall);
-  CloseHandle(m_sessionHandle);
+  if (m_sessionHandle != INVALID_HANDLE_VALUE) {
+    CloseHandle(m_sessionHandle);
+  }
 }
 
 bool WindowsFirewall::init() {
@@ -134,7 +136,6 @@ bool WindowsFirewall::init() {
   subLayer.displayData.name = (PWSTR)L"MozillaVPN-SplitTunnel-Sublayer";
   subLayer.displayData.description =
       (PWSTR)L"Filters that enforce a good baseline";
-  // subLayer.providerKey= const_cast<GUID*>(&ST_FW_PROVIDER_KEY);
   subLayer.weight = 0xFFFF;
 
   result = FwpmSubLayerAdd0(wfp, &subLayer, NULL);
@@ -527,6 +528,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
                << ":" << port;
   if (targetIP.protocol() == QAbstractSocket::IPv6Protocol) {
     // TODO: Implement it :)
+    // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1370
     logger.log() << "Allow Traffic to not implemented for v6 adresses yet";
     return false;
   }
@@ -704,6 +706,7 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     m_activeRules.append(filterID);
   }
   // TODO: Allow v6 DHCP
+  // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1370
 
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
