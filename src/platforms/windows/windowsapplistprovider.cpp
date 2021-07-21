@@ -48,7 +48,23 @@ void WindowsAppListProvider::getApplicationList() {
       QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
       appList);
 
+  if (SettingsHolder::instance()->hasMissingApps()) {
+    auto missingAppList = SettingsHolder::instance()->missingApps();
+    for (const auto& appPath : missingAppList) {
+      // Check if the App Still exists, otherwise clean up.
+      if (!isValidAppId(appPath)) {
+        SettingsHolder::instance()->removeMissingApp(appPath);
+      }
+      appList.insert(appPath, getAppName(appPath));
+    }
+  }
+
   emit newAppList(appList);
+}
+
+void WindowsAppListProvider::addApplication(const QString& appPath) {
+  SettingsHolder::instance()->addMissingApp(appPath);
+  getApplicationList();
 }
 
 QString WindowsAppListProvider::getAppName(const QString& appId) {
