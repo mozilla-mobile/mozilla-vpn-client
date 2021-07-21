@@ -59,8 +59,8 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     m_splitTunnelManager.start();
     m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
   }
-  auto vpnIndex = QNetworkInterface::allInterfaces().at(0).index();
-  WindowsFirewall::instance()->enableKillSwitch(vpnIndex, config);
+  WindowsFirewall::instance()->enableKillSwitch(
+      WindowsCommons::VPNAdapterIndex(), config);
   return true;
 }
 

@@ -16,6 +16,11 @@ class WindowsCommons final {
 
   static QString tunnelConfigFile();
   static QString tunnelLogFile();
+
+  // Returns the Interface Index of the VPN Adapter
+  static int VPNAdapterIndex();
+  // Returns the Interface Index that could Route to 1.1.1.1
+  static int CurrentGatewayIndex();
 };
 
 #endif  // WINDOWSCOMMONS_H

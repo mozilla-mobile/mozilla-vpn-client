@@ -24,6 +24,9 @@ Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
 }
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
+  // Take a snapshot what adapter is currently routing to the internet
+  // which will later recieve the splitted traffic
+  m_InternetAdapterIndex = WindowsCommons::CurrentGatewayIndex();
   if (!isInstalled()) {
     logger.log() << "Driver is not Installed, doing so";
     auto handle = installDriver();
@@ -255,27 +258,13 @@ std::vector<uint8_t> WindowsSplitTunnel::generateIPConfiguration() {
   std::vector<uint8_t> out(sizeof(IP_ADDRESSES_CONFIG));
 
   auto config = reinterpret_cast<IP_ADDRESSES_CONFIG*>(&out[0]);
-  /* How to Choose the Right Adapter:
-   * Windows will has their own thing Called metric to rate each connection
-   * and use the lowest-cost network adapter possible.
-   *
-   * So the VPN-Adapter starts with a metric of 0, making it the most optimal
-   * route making it always the default. So as the "outside" Connection we want
-   * the 2nd best metric.
-   *
-   * We can't get the exact number without using powershell but lucky us:
-   * From msdn (GetAdaptersAddresses):
-   * >Starting with Windows 10, the order in which adapters appear in
-   * >the list is determined by the IPv4 or IPv6 route metric.
-   *
-   * So  QNetworkInterface::allInterfaces() is perfectly sorted for us.
-   */
 
   auto ifaces = QNetworkInterface::allInterfaces();
   // Always the VPN
-  getAddress(ifaces.at(0).index(), &config->TunnelIpv4, &config->TunnelIpv6);
+  getAddress(WindowsCommons::VPNAdapterIndex(), &config->TunnelIpv4,
+             &config->TunnelIpv6);
   // 2nd best route
-  getAddress(ifaces.at(1).index(), &config->InternetIpv4,
+  getAddress(m_InternetAdapterIndex, &config->InternetIpv4,
              &config->InternetIpv6);
   return out;
 }

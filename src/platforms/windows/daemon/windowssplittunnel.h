@@ -150,6 +150,7 @@ class WindowsSplitTunnel final : public QObject {
   void initDriver();
 
  private:
+  int m_InternetAdapterIndex = -1;
   HANDLE m_driver = INVALID_HANDLE_VALUE;
   constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
   constexpr static const auto DRIVER_FILENAME = "mullvad-split-tunnel.sys";
