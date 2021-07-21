@@ -10,7 +10,7 @@ import "../themes/themes.js" as Theme
 RowLayout {
     property var leftMargin:  56
     property var alertColor: Theme.checkBoxWarning
-    property var errorMessage: "..."
+    property var errorMessage
 
     id: turnVPNOffAlert
 
