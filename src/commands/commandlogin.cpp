@@ -10,8 +10,17 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/passwordauth/taskpasswordauth.h"
+
+#ifdef MVPN_WINDOWS
+#  include <windows.h>
+#else
+#  include <termios.h>
+#  include <unistd.h>
+#endif
 
 #include <QEventLoop>
+#include <QScopeGuard>
 #include <QTextStream>
 
 CommandLogin::CommandLogin(QObject* parent)
@@ -23,19 +32,55 @@ CommandLogin::~CommandLogin() { MVPN_COUNT_DTOR(CommandLogin); }
 
 int CommandLogin::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runGuiApp([&]() {
-    if (tokens.length() > 1) {
-      QList<CommandLineParser::Option*> options;
-      return CommandLineParser::unknownOption(this, tokens[1], tokens[0],
-                                              options, false);
-    }
+  QString appName = tokens[0];
 
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option verboseOption("v", "verbose", "Verbose mode.");
+  CommandLineParser::Option passwordOption("p", "password",
+                                           "Login using e-mail and password");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&verboseOption);
+  options.append(&passwordOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (!tokens.isEmpty()) {
+    return clp.unknownOption(this, appName, tokens[0], options, false);
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  // Authenticate with FxA e-mail and password
+  if (passwordOption.m_set)
+    return runCommandLineApp([&]() {
+      QString email = getInput("Username:");
+      QString password = getPassword("Password:");
+
+      MozillaVPN vpn;
+      TaskPasswordAuth task(email, password);
+      task.run(&vpn);
+
+      QEventLoop loop;
+      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
+      loop.exec();
+      return 0;
+    });
+
+  // Authenticate with a browser session
+  return runGuiApp([&] {
     if (SettingsHolder::instance()->hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
       return 1;
     }
-
     MozillaVPN vpn;
     vpn.authenticate();
 
@@ -57,6 +102,40 @@ int CommandLogin::run(QStringList& tokens) {
 
     return 0;
   });
+}
+
+// static
+QString CommandLogin::getInput(const QString& prompt) {
+  QTextStream stream(stdout);
+  stream << prompt << " ";
+  stream.flush();
+
+  return QTextStream(stdin).readLine();
+}
+
+// static
+QString CommandLogin::getPassword(const QString& prompt) {
+  // Disable the console echo while typing the password
+#ifdef MVPN_WINDOWS
+  HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+  DWORD mode;
+  GetConsoleMode(hStdin, &mode);
+  SetConsoleMode(hStdin, mode & ~ENABLE_ECHO_INPUT);
+  auto guard = qScopeGuard([&] { SetConsoleMode(hStdin, mode); });
+#else
+  struct termios tty;
+  struct termios noecho;
+  tcgetattr(STDIN_FILENO, &tty);
+  memcpy(&noecho, &tty, sizeof(struct termios));
+  noecho.c_lflag &= ~ECHO;
+  tcsetattr(STDIN_FILENO, TCSANOW, &noecho);
+  auto guard = qScopeGuard([&] { tcsetattr(STDIN_FILENO, TCSANOW, &tty); });
+#endif
+
+  QString result = getInput(prompt);
+  QTextStream stream(stdout);
+  stream << Qt::endl;
+  return result;
 }
 
 static Command::RegistrationProxy<CommandLogin> s_commandLogin;

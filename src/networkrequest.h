@@ -60,6 +60,15 @@ class NetworkRequest final : public QObject {
                                            const qint8 rating,
                                            const QString& category);
 
+  static NetworkRequest* createForFxaLogin(QObject* parent,
+                                           const QString& email,
+                                           const QByteArray& authpw,
+                                           const QMap<QString, QString>& qdata);
+
+  static NetworkRequest* createForFxaAuthz(QObject* parent,
+                                           const QByteArray& token,
+                                           const QMap<QString, QString>& qdata);
+
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);
 
