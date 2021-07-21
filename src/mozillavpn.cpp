@@ -374,7 +374,10 @@ void MozillaVPN::authenticate() {
 }
 
 void MozillaVPN::abortAuthentication() {
-  logger.log() << "Abort authentication";
+  if(m_state == StateInitialize){
+    return;
+  }
+  logger.log() << "Abort authentication from:" << m_state;
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
 
@@ -844,7 +847,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
     } else {
       emit triggerGleanSample(GleanSample::authenticationFailure);
     }
-    setState(StateInitialize);
+    abortAuthentication();
     return;
   }
 
