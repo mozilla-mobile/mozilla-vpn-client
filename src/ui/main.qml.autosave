@@ -154,6 +154,14 @@ Window {
             removePopupTest.initializeAndOpen("mozilla-52lvdm", "0mg+hjUa7NgqchO1MiWo/xMKE87zjibI6rPd4V+hzn4=");
         }
     }
+    
+    Button {
+        text: "modal"
+        z: 1
+        onClicked: {
+            removePopupTest.initializeAndOpen("mozilla-52lvdm", "0mg+hjUa7NgqchO1MiWo/xMKE87zjibI6rPd4V+hzn4=");
+        }
+    }
 
     VPNWasmHeader {
         id: wasmMenuHeader

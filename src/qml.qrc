@@ -357,7 +357,6 @@
         <file>ui/resources/settings/notifications.svg</file>
         <file>ui/resources/settings/networkSettings.svg</file>
         <file>ui/resources/devicesLimit.svg</file>
-        <file>ui/resources/removeDevice.png</file>
         <file>ui/resources/settings-white.svg</file>
         <file>ui/resources/shield-off.svg</file>
         <file>ui/resources/shield-on.svg</file>
@@ -433,5 +432,6 @@
         <file>ui/components/forms/VPNTextField.qml</file>
         <file>ui/components/forms/VPNRadioButton.qml</file>
         <file>ui/resources/plus.svg</file>
+        <file>ui/resources/devicesRemove.svg</file>
     </qresource>
 </RCC>

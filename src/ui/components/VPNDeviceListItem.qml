@@ -122,7 +122,7 @@ Item {
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
         }
 
-        Column{
+        Column {
             id: deviceInfo
 
             Layout.fillWidth: true
@@ -183,12 +183,15 @@ Item {
             property bool startRotation: false
 
             buttonColorScheme: Theme.removeDeviceBtn
-            visible: !currentOne
+            visible: currentOne
             Layout.topMargin: -8
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
             Layout.preferredHeight: Theme.rowHeight
             Layout.preferredWidth: Theme.rowHeight
-            onClicked: removePopup.initializeAndOpen(name, publicKey)
+            onClicked: {
+                console.log(name, publicKey);
+                removePopup.initializeAndOpen(name, publicKey);
+            }
             //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
             //% "Remove %1"
             accessibleName: qsTrId("vpn.devices.removeA11Y").arg(deviceRow.deviceName)

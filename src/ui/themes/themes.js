@@ -47,11 +47,12 @@ const labelLineHeight = 22;
 const cityListTopMargin = 18;
 const controllerInterLineHeight = 18;
 const hSpacing = 20;
-const hSpacingSmall = 10;
 const vSpacing = 24;
+const vSpacingSmall = 12;
 const listSpacing = 8;
 const maxTextWidth = 296;
 const windowMargin = 16;
+const popupMargin = 24;
 const desktopAppHeight = 520;
 const desktopAppWidth = 360;
 

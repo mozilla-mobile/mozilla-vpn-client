@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>ui/resources/logo-dock-beta.png</file>
+        <file>ui/components/VPNMetropolisLabel.qml</file>
     </qresource>
 </RCC>
