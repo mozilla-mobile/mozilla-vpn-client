@@ -40,8 +40,8 @@ WindowsDaemon::~WindowsDaemon() {
   logger.log() << "Daemon released";
 }
 void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
-  // Before Creating the interface we need to check which adapter
-  // routes to the Server endpoint
+  // Before creating the interface we need to check which adapter
+  // routes to the server endpoint
   auto serveraddr = QHostAddress(config.m_serverIpv4AddrIn);
   m_inetAdapterIndex = WindowsCommons::AdapterIndexTo(serveraddr);
 }
