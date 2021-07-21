@@ -136,16 +136,6 @@ Window {
         }
     }
 
-    VPNRemoveDevicePopup {
-        id: removePopupTest
-
-        function initializeAndOpen(name, publicKey) {
-            removePopupTest.deviceName = name;
-            removePopupTest.devicePublicKey = publicKey;
-            removePopupTest.open();
-        }
-    }
-
     VPNWasmHeader {
         id: wasmMenuHeader
         visible: false
