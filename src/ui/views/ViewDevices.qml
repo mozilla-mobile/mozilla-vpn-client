@@ -154,7 +154,6 @@ Item {
         id: removePopup
 
         function initializeAndOpen(name, publicKey) {
-            console.log(name, publicKey);
             removePopup.deviceName = name;
             removePopup.devicePublicKey = publicKey;
             removePopup.open();

@@ -53,7 +53,6 @@ Popup {
     }
 
     onClosed: {
-        console.log("state", popup.state);
         // When closing the dialog, put the focus back on the
         // remove button that originally triggered the dialog.
         if (wasmView) {
