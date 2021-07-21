@@ -39,6 +39,12 @@ WindowsDaemon::~WindowsDaemon() {
   MVPN_COUNT_DTOR(WindowsDaemon);
   logger.log() << "Daemon released";
 }
+void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
+  // Before creating the interface we need to check which adapter
+  // routes to the server endpoint
+  auto serveraddr = QHostAddress(config.m_serverIpv4AddrIn);
+  m_inetAdapterIndex = WindowsCommons::AdapterIndexTo(serveraddr);
+}
 
 bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   bool splitTunnelEnabled = config.m_vpnDisabledApps.length() > 0;
@@ -56,11 +62,11 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
       logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
       WindowsSplitTunnel::installDriver();
     }
-    m_splitTunnelManager.start();
+    m_splitTunnelManager.start(m_inetAdapterIndex);
     m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
   }
-  auto vpnIndex = QNetworkInterface::allInterfaces().at(0).index();
-  WindowsFirewall::instance()->enableKillSwitch(vpnIndex, config);
+  WindowsFirewall::instance()->enableKillSwitch(
+      WindowsCommons::VPNAdapterIndex(), config);
   return true;
 }
 

@@ -34,6 +34,10 @@ class Daemon : public QObject {
   // Explose a JSON object with the daemon status.
   virtual QByteArray getStatus() = 0;
 
+  // Callback before any Activating measure is done
+  virtual void prepareActivation(const InterfaceConfig& config){
+      Q_UNUSED(config)};
+
   QString logs();
   void cleanLogs();
 

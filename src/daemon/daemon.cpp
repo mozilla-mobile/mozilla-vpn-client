@@ -82,6 +82,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
     return activate(config);
   }
 
+  prepareActivation(config);
+
   if (supportWGUtils()) {
     if (wgutils()->interfaceExists()) {
       qWarning("Wireguard interface `%s` already exists.", WG_INTERFACE);
