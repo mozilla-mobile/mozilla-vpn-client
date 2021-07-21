@@ -183,7 +183,7 @@ Item {
             property bool startRotation: false
 
             buttonColorScheme: Theme.removeDeviceBtn
-            visible: currentOne
+            visible: !currentOne
             Layout.topMargin: -8
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
             Layout.preferredHeight: Theme.rowHeight

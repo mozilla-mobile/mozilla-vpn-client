@@ -146,24 +146,6 @@ Window {
         }
     }
 
-    Loader {
-        active: true
-        asynchronous: true
-        sourceComponent: Rectangle
-
-        Component.onCompleted: {
-            removePopupTest.initializeAndOpen("mozilla-52lvdm", "0mg+hjUa7NgqchO1MiWo/xMKE87zjibI6rPd4V+hzn4=");
-        }
-    }
-
-    Button {
-        text: "Popup"
-        onClicked: {
-            removePopupTest.initializeAndOpen("mozilla-52lvdm", "0mg+hjUa7NgqchO1MiWo/xMKE87zjibI6rPd4V+hzn4=");
-        }
-        z: 1
-    }
-
     VPNWasmHeader {
         id: wasmMenuHeader
         visible: false
