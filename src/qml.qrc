@@ -433,5 +433,7 @@
         <file>ui/components/forms/VPNTextField.qml</file>
         <file>ui/components/forms/VPNRadioButton.qml</file>
         <file>ui/resources/plus.svg</file>
+        <file>ui/components/VPNToggleCard.qml</file>
+
     </qresource>
 </RCC>
