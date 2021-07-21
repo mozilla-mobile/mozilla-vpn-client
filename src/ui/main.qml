@@ -52,6 +52,7 @@ Window {
 
         console.log("closing.");
     }
+
     Component.onCompleted: {
         if (VPN.startMinimized) {
             this.showMinimized();
@@ -153,6 +154,14 @@ Window {
         Component.onCompleted: {
             removePopupTest.initializeAndOpen("mozilla-52lvdm", "0mg+hjUa7NgqchO1MiWo/xMKE87zjibI6rPd4V+hzn4=");
         }
+    }
+
+    Button {
+        text: "Popup"
+        onClicked: {
+            removePopupTest.initializeAndOpen("mozilla-52lvdm", "0mg+hjUa7NgqchO1MiWo/xMKE87zjibI6rPd4V+hzn4=");
+        }
+        z: 1
     }
 
     VPNWasmHeader {
