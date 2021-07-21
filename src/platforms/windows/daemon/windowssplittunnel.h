@@ -132,7 +132,7 @@ class WindowsSplitTunnel final : public QObject {
   void setRules(const QStringList& appPaths);
 
   // Fetches and Pushed needed info to move to engaged mode
-  void start();
+  void start(int inetAdapterIndex);
   // Deletes Rules and puts the driver into passive mode
   void stop();
   // Resets the Whole Driver
@@ -150,7 +150,6 @@ class WindowsSplitTunnel final : public QObject {
   void initDriver();
 
  private:
-  int m_InternetAdapterIndex = -1;
   HANDLE m_driver = INVALID_HANDLE_VALUE;
   constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
   constexpr static const auto DRIVER_FILENAME = "mullvad-split-tunnel.sys";
@@ -163,7 +162,7 @@ class WindowsSplitTunnel final : public QObject {
   // Generates a Configuration for Each APP
   std::vector<uint8_t> generateAppConfiguration(const QStringList& appPaths);
   // Generates a Configuration which IP's are VPN and which network
-  std::vector<uint8_t> generateIPConfiguration();
+  std::vector<uint8_t> generateIPConfiguration(int inetAdapterIndex);
   std::vector<uint8_t> generateProcessBlob();
 
   void getAddress(int adapterIndex, IN_ADDR* out_ipv4, IN6_ADDR* out_ipv6);

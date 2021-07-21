@@ -105,8 +105,9 @@ QString WindowsCommons::tunnelLogFile() {
 }
 
 // static
-int WindowsCommons::CurrentGatewayIndex() {
-  QHostAddress dst("1.1.1.1");
+int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
+  logger.log() << "Getting Current Internet Adapter that routes to"
+               << dst.toString();
   quint32_be ipBigEndian;
   quint32 ip = dst.toIPv4Address();
   qToBigEndian(ip, &ipBigEndian);
@@ -115,7 +116,6 @@ int WindowsCommons::CurrentGatewayIndex() {
   if (result != NO_ERROR) {
     return -1;
   }
-  logger.log() << "Getting Current Internet Adapter";
   auto adapter =
       QNetworkInterface::interfaceFromIndex(routeInfo.dwForwardIfIndex);
   logger.log() << "Internet Adapter:" << adapter.name();
