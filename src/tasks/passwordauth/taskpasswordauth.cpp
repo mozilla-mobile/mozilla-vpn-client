@@ -180,5 +180,6 @@ void TaskPasswordAuth::fxaLoginComplete(const QByteArray& data) {
 // TODO: Implement Me!
 void TaskPasswordAuth::fxaAuthzComplete(const QByteArray& data) {
   Q_UNUSED(data);
+  logger.log() << "FxA Authz:" << QString(data);
   authFailed(ErrorHandler::ErrorType::SubscriptionFailureError);
 }

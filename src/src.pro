@@ -68,6 +68,7 @@ SOURCES += \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        hawkauth.cpp \
         hkdf.cpp \
         ipaddress.cpp \
         ipaddressrange.cpp \
@@ -165,6 +166,7 @@ HEADERS += \
         featurelist.h \
         filterproxymodel.h \
         fontloader.h \
+        hawkauth.h \
         hkdf.h \
         ipaddress.h \
         ipaddressrange.h \
