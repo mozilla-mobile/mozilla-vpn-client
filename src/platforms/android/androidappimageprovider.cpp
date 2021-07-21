@@ -48,7 +48,7 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
   size->setHeight(height);
   size->setWidth(width);
 
-  if (requestedSize.isValid()) {
+  if (requestedSize.height() > 0 && requestedSize.width() > 0) {
     width = requestedSize.width();
     height = requestedSize.height();
   }
