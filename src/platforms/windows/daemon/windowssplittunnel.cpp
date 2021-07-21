@@ -116,7 +116,7 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
   logger.log() << "New Configuration applied: " << getState();
 }
 
-void WindowsSplitTunnel::start() {
+void WindowsSplitTunnel::start(int inetAdapterIndex) {
   // To Start we need to send 2 things:
   // Network info (what is vpn what is network)
   logger.log() << "Starting SplitTunnel";
@@ -153,7 +153,7 @@ void WindowsSplitTunnel::start() {
   }
   logger.log() << "Driver is  ready || new State:" << getState();
 
-  auto config = generateIPConfiguration();
+  auto config = generateIPConfiguration(inetAdapterIndex);
   auto ok = DeviceIoControl(m_driver, IOCTL_REGISTER_IP_ADDRESSES, &config[0],
                             (DWORD)config.size(), nullptr, 0, &bytesReturned,
                             nullptr);
@@ -251,32 +251,18 @@ std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(
   return outBuffer;
 }
 
-std::vector<uint8_t> WindowsSplitTunnel::generateIPConfiguration() {
+std::vector<uint8_t> WindowsSplitTunnel::generateIPConfiguration(
+    int inetAdapterIndex) {
   std::vector<uint8_t> out(sizeof(IP_ADDRESSES_CONFIG));
 
   auto config = reinterpret_cast<IP_ADDRESSES_CONFIG*>(&out[0]);
-  /* How to Choose the Right Adapter:
-   * Windows will has their own thing Called metric to rate each connection
-   * and use the lowest-cost network adapter possible.
-   *
-   * So the VPN-Adapter starts with a metric of 0, making it the most optimal
-   * route making it always the default. So as the "outside" Connection we want
-   * the 2nd best metric.
-   *
-   * We can't get the exact number without using powershell but lucky us:
-   * From msdn (GetAdaptersAddresses):
-   * >Starting with Windows 10, the order in which adapters appear in
-   * >the list is determined by the IPv4 or IPv6 route metric.
-   *
-   * So  QNetworkInterface::allInterfaces() is perfectly sorted for us.
-   */
 
   auto ifaces = QNetworkInterface::allInterfaces();
   // Always the VPN
-  getAddress(ifaces.at(0).index(), &config->TunnelIpv4, &config->TunnelIpv6);
+  getAddress(WindowsCommons::VPNAdapterIndex(), &config->TunnelIpv4,
+             &config->TunnelIpv6);
   // 2nd best route
-  getAddress(ifaces.at(1).index(), &config->InternetIpv4,
-             &config->InternetIpv6);
+  getAddress(inetAdapterIndex, &config->InternetIpv4, &config->InternetIpv6);
   return out;
 }
 void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
