@@ -434,5 +434,6 @@
         <file>ui/components/forms/VPNRadioButton.qml</file>
         <file>ui/resources/plus.svg</file>
         <file>ui/resources/warning-dark-orange.svg</file>
+        <file>ui/components/VPNToggleCard.qml</file>
     </qresource>
 </RCC>
