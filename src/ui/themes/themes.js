@@ -116,7 +116,7 @@ const greyButton = {
     "buttonHovered": greyHovered,
     "buttonPressed": greyPressed,
     "focusOutline": greyHovered,
-    "focusBorder": darkFocusBorder
+    "focusBorder": greyPressed,
 };
 
 const redButton = {

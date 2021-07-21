@@ -182,6 +182,7 @@ Popup {
                     onClicked: {
                         popup.close();
                     }
+                    KeyNavigation.right: removeBtn
                 }
 
                 VPNPopupButton {
