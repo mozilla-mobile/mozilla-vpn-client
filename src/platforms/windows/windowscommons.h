@@ -7,6 +7,7 @@
 
 #include <QString>
 #include <Windows.h>
+class QHostAddress;
 
 class WindowsCommons final {
  public:
@@ -16,6 +17,11 @@ class WindowsCommons final {
 
   static QString tunnelConfigFile();
   static QString tunnelLogFile();
+
+  // Returns the Interface Index of the VPN Adapter
+  static int VPNAdapterIndex();
+  // Returns the Interface Index that could Route to dst
+  static int AdapterIndexTo(const QHostAddress& dst);
 };
 
 #endif  // WINDOWSCOMMONS_H
