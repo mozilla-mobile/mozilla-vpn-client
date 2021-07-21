@@ -52,6 +52,7 @@
 #ifdef MVPN_WINDOWS
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
+#  include "platforms/windows/windowsappimageprovider.h"
 #endif
 
 #ifdef MVPN_IOS
@@ -192,6 +193,11 @@ int CommandUI::run(QStringList& tokens) {
 #ifdef MVPN_ANDROID
     // Register an Image Provider that will resolve "image://app/{id}" for qml
     QQuickImageProvider* provider = new AndroidAppImageProvider(qApp);
+    engine->addImageProvider(QString("app"), provider);
+#endif
+#ifdef MVPN_WINDOWS
+    // Register an Image Provider that will resolve "image://app/{id}" for qml
+    QQuickImageProvider* provider = new WindowsAppImageProvider(qApp);
     engine->addImageProvider(QString("app"), provider);
 #endif
 

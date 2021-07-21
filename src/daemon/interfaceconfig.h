@@ -23,6 +23,7 @@ struct InterfaceConfig {
   int m_serverPort = 0;
   bool m_ipv6Enabled = false;
   QList<IPAddressRange> m_allowedIPAddressRanges;
+  QList<QString> m_vpnDisabledApps;
 };
 
 #endif  // INTERFACECONFIG_H

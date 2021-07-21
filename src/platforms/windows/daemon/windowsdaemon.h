@@ -8,6 +8,7 @@
 #include "daemon/daemon.h"
 #include "windowstunnelservice.h"
 #include "wireguardutilswindows.h"
+#include "windowssplittunnel.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$MozillaVPN"
 
@@ -24,6 +25,8 @@ class WindowsDaemon final : public Daemon {
   bool supportWGUtils() const override { return true; }
   WireguardUtils* wgutils() override { return m_wgutils; }
 
+  bool run(Op op, const InterfaceConfig& config) override;
+
  private:
   bool supportServerSwitching(const InterfaceConfig& config) const override;
 
@@ -39,6 +42,7 @@ class WindowsDaemon final : public Daemon {
   State m_state = Inactive;
 
   WireguardUtilsWindows* m_wgutils = nullptr;
+  WindowsSplitTunnel m_splitTunnelManager;
 };
 
 #endif  // WINDOWSDAEMON_H
