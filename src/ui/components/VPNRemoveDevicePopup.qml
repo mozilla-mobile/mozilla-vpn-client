@@ -153,14 +153,18 @@ Popup {
 
             GridLayout {
                 id: buttonsContainer
-                columnSpacing: 16
-                rowSpacing: 16
+
+                property int gridSpacing: 16
+
+                columnSpacing: gridSpacing
+                rowSpacing: gridSpacing
+
                 columns: {
                     const cancelButtonText = qsTrId("vpn.devices.cancelDeviceRemoval");
                     const removeButtonText = qsTrId("vpn.devices.removeDeviceButton");
                     const showStacked = cancelButtonText.length > 8 || removeButtonText.length > 8;
 
-                    return showStackedButtons ? 1 : 2;
+                    return showStacked ? 1 : 2;
                 }
 
                 Layout.fillWidth: true
