@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"
@@ -320,7 +321,7 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
 NetworkRequest* NetworkRequest::createForFxaLogin(
     QObject* parent, const QString& email, const QByteArray& authpw,
     const QMap<QString, QString>& qdata) {
-  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url("https://api-accounts.stage.mozaws.net");
   url.setPath("/v1/account/login");
@@ -353,7 +354,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
     QObject* parent, const QByteArray& session,
     const QMap<QString, QString>& qdata) {
   Q_UNUSED(session);
-  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url("https://api-accounts.stage.mozaws.net");
   url.setPath("/v1/oauth/authorization");
@@ -369,7 +370,9 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
 
-  // TODO: Generate the hawk authentication header
+  HawkAuth hawk = HawkAuth(session);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
 
   r->postRequest(payload);
   return r;
