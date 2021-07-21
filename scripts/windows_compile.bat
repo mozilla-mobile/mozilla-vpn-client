@@ -167,6 +167,13 @@ IF %ERRORLEVEL% NEQ 0 (
   EXIT 1
 )
 
+ECHO Fetching Split-Tunnel Driver...
+CALL PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './windows/split-tunnel/get.ps1'"
+IF %ERRORLEVEL% NEQ 0 (
+  ECHO Failed to clean up the project
+  EXIT 1
+)
+
 ECHO Cleaning up the project...
 MSBuild -t:Clean -p:Configuration=Release MozillaVPN.vcxproj
 IF %ERRORLEVEL% NEQ 0 (
