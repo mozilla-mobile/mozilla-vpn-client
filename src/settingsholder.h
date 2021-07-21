@@ -136,6 +136,11 @@ class SettingsHolder final : public QObject {
 #ifdef MVPN_WINDOWS
   GETSET(bool, hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
          setNativeWindowsDataMigrated)
+  GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
+
+  void removeMissingApp(const QString& appID);
+  void addMissingApp(const QString& appID);
+
 #endif
 
 #ifdef MVPN_ANDROID

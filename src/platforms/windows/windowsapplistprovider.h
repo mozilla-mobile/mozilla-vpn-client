@@ -20,6 +20,8 @@ class WindowsAppListProvider final : public AppListProvider {
 
   bool isValidAppId(const QString& appId) override;
 
+  void addApplication(const QString& appPath) override;
+
  private:
   void readLinkFiles(const QString& path, QMap<QString, QString>& out);
   static QStringList getUninstallerList();

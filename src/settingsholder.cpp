@@ -84,6 +84,8 @@ constexpr const char* SETTINGS_NATIVEANDROIDSDATAMIGRATED =
 #ifdef MVPN_WINDOWS
 constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
+
+constexpr const char* SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS = "winMissingApps";
 #endif
 
 constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
@@ -346,6 +348,29 @@ void SettingsHolder::addSubscriptionTransactions(
 GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
        hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
        setNativeWindowsDataMigrated)
+
+GETSET(QStringList, toStringList, SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS,
+       hasMissingApps, missingApps, setMissingApps)
+
+void SettingsHolder::removeMissingApp(const QString& appID) {
+  QStringList applist;
+  if (hasMissingApps()) {
+    applist = missingApps();
+  }
+  applist.removeAll(appID);
+  setMissingApps(applist);
+}
+void SettingsHolder::addMissingApp(const QString& appID) {
+  QStringList applist;
+  if (hasMissingApps()) {
+    applist = missingApps();
+  }
+  if (applist.contains(appID)) {
+    return;
+  }
+  applist.append(appID);
+  setMissingApps(applist);
+}
 #endif
 
 #undef GETSET
