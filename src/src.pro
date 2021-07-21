@@ -68,6 +68,7 @@ SOURCES += \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        hkdf.cpp \
         ipaddress.cpp \
         ipaddressrange.cpp \
         ipfinder.cpp \
@@ -119,6 +120,7 @@ SOURCES += \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
+        tasks/passwordauth/taskpasswordauth.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
@@ -163,6 +165,7 @@ HEADERS += \
         featurelist.h \
         filterproxymodel.h \
         fontloader.h \
+        hkdf.h \
         ipaddress.h \
         ipaddressrange.h \
         ipfinder.h \
@@ -214,6 +217,7 @@ HEADERS += \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/removedevice/taskremovedevice.h \
+        tasks/passwordauth/taskpasswordauth.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \

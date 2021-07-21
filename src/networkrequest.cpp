@@ -317,6 +317,64 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    QObject* parent, const QString& email, const QByteArray& authpw,
+    const QMap<QString, QString>& qdata) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, true);
+
+  QUrl url("https://api-accounts.stage.mozaws.net");
+  url.setPath("/v1/account/login");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", email);
+  obj.insert("authPW", QString(authpw.toHex()));
+  obj.insert("reason", "signin");
+  obj.insert("service", qdata["client_id"]);
+  obj.insert("skipErrorCase", true);
+  obj.insert("verificationMethod", "email-otp");
+
+  QJsonObject metrics;
+  metrics.insert("deviceId", qdata["device_id"]);
+  metrics.insert("flowBeginTime", qdata["flow_begin_time"].toDouble());
+  metrics.insert("flowId", qdata["flow_id"]);
+  obj.insert("metricsContext", metrics);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForFxaAuthz(
+    QObject* parent, const QByteArray& session,
+    const QMap<QString, QString>& qdata) {
+  Q_UNUSED(session);
+  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+
+  QUrl url("https://api-accounts.stage.mozaws.net");
+  url.setPath("/v1/oauth/authorization");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("client_id", qdata["client_id"]);
+  obj.insert("state", qdata["state"]);
+  obj.insert("scope", qdata["scope"]);
+  obj.insert("access_type", qdata["access_type"]);
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+  // TODO: Generate the hawk authentication header
+
+  r->postRequest(payload);
+  return r;
+}
+
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
@@ -369,8 +427,9 @@ void NetworkRequest::replyFinished() {
 
   int status = statusCode();
 
+  QString expect = m_status ? QString::number(m_status) : "any";
   logger.log() << "Network reply received - status:" << status
-               << "- expected:" << m_status;
+               << "- expected:" << expect;
 
   QByteArray data = m_reply->readAll();
 
