@@ -111,7 +111,8 @@ void PingHelper::pingReceived(quint16 sequence) {
     logger.log() << "Ping answer received seq:" << sequence
                  << "avg:" << latency()
                  << "loss:" << QString("%1%").arg(loss() * 100.0)
-                 << "stddev:" << stddev();
+                 << "stddev:" << stddev()
+                 << "jitter:" << jitter();
 #endif
   }
 }
@@ -155,6 +156,33 @@ uint PingHelper::stddev() const {
   }
 
   return std::sqrt((double)totalVariance / recvCount);
+}
+
+uint PingHelper::jitter() const {
+  int jitterCount = 0;
+  qint64 totalJitter = 0;
+  qint64 prevLatency = -1;
+
+  for (const PingSendData& data : m_pingData) {
+    if (data.latency < 0) {
+      continue;
+    }
+
+    if(prevLatency < 0) {
+      prevLatency = data.latency;
+      continue;
+    }
+
+    jitterCount++;
+    totalJitter += qAbs(prevLatency - data.latency);
+    prevLatency = data.latency;
+  }
+
+  if (jitterCount <= 0) {
+    return 0;
+  }
+
+  return totalJitter / jitterCount;
 }
 
 uint PingHelper::maximum() const {

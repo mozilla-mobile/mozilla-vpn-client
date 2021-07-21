@@ -19,6 +19,9 @@ constexpr uint32_t PING_TIME_NOSIGNAL_SEC = 3;
 // Packet loss threshold for a connection to be considered unstable.
 constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 
+// Jitter time threshold in ms for a connection to be considered unstable.
+constexpr uint32_t PING_JITTER_UNSTABLE_THRESHOLD = 30;
+
 namespace {
 Logger logger(LOG_NETWORKING, "ConnectionHealth");
 }
@@ -133,6 +136,10 @@ void ConnectionHealth::healthCheckup() {
   }
   // If recent pings took to long, then mark the connection as unstable.
   else if (m_pingHelper.maximum() > (PING_TIME_UNSTABLE_SEC * 1000)) {
+    setStability(Unstable);
+  }
+  // If the jitter between pings is to big, then mark the connection as unstable.
+  else if (m_pingHelper.jitter() > PING_JITTER_UNSTABLE_THRESHOLD) {
     setStability(Unstable);
   }
   // Otherwise, the connection is stable.
