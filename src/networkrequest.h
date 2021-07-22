@@ -96,6 +96,7 @@ class NetworkRequest final : public QObject {
 
   void handleReply(QNetworkReply* reply);
   void handleHeaderReceived();
+  void handleRedirect(const QUrl& url);
 
  private slots:
   void replyFinished();
@@ -104,6 +105,7 @@ class NetworkRequest final : public QObject {
  signals:
   void requestHeaderReceived(NetworkRequest* request);
   void requestFailed(QNetworkReply::NetworkError error, const QByteArray& data);
+  void requestRedirected(NetworkRequest* request, const QUrl& url);
   void requestCompleted(const QByteArray& data);
 
  private:
