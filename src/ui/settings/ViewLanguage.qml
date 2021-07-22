@@ -29,6 +29,8 @@ Item {
 
         height: parent.height - menu.height
         anchors.top: menu.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
         width: parent.width
         Accessible.name: menu.title
         Accessible.role: Accessible.List
@@ -41,7 +43,7 @@ Item {
             id: vpnFlickable
 
             objectName: "settingsLanguagesView"
-            flickContentHeight: toggleCard.y + toggleCard.implicitHeight + col.y + col.implicitHeight + (Theme.rowHeight * 2)
+            flickContentHeight: col.y + col.implicitHeight + (Theme.rowHeight * 2)
             anchors.fill: parent
 
             VPNToggleCard {
@@ -111,7 +113,7 @@ Item {
                             continue;
                         }
 
-                        const selectedItemYPosition = repeaterItem.y + (Theme.toggleCardHeight * 4) - yCenter;
+                        const selectedItemYPosition = repeaterItem.y + (Theme.rowHeight * 4) - yCenter;
                         const destinationY = (selectedItemYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : selectedItemYPosition;
 
                         // Prevent edge case negative scrolling
