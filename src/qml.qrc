@@ -434,6 +434,7 @@
         <file>ui/components/forms/VPNRadioButton.qml</file>
         <file>ui/resources/plus.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
-
+        <file>ui/resources/avatar-default.png</file>
+        <file>ui/components/VPNAvatar.qml</file>
     </qresource>
 </RCC>
