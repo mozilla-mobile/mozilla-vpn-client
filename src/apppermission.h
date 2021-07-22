@@ -13,6 +13,8 @@
 class AppPermission final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppPermission)
+  Q_PROPERTY(bool hasAllAppsUnprotected READ hasAllAppsUnprotected NOTIFY
+                 allAppsUnprotectedChanged);
 
  public:
   ~AppPermission();
@@ -46,6 +48,8 @@ class AppPermission final : public QAbstractListModel {
 
   static AppPermission* instance();
 
+  bool hasAllAppsUnprotected() const;
+
   // Enables/Disabled the Given App ID for the vpn
   Q_INVOKABLE void flip(const QString& appID);
   // Is called from QML if the List is opened
@@ -65,8 +69,11 @@ class AppPermission final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
 
   QVariant data(const QModelIndex& index, int role) const override;
+
  signals:
   void readyChanged();
+  void allAppsUnprotectedChanged();
+
  private slots:
   void receiveAppList(const QMap<QString, QString>& applist);
 

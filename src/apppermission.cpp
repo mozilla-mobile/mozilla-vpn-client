@@ -46,6 +46,9 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
 
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::vpnDisabledAppsChanged,
+          this, &AppPermission::allAppsUnprotectedChanged);
 }
 AppPermission::~AppPermission() {
   MVPN_COUNT_DTOR(AppPermission);
@@ -189,3 +192,19 @@ void AppPermission::openFilePicker() {
   Q_ASSERT(m_listprovider);
   m_listprovider->addApplication(fileNames[0]);
 }
+
+bool AppPermission::hasAllAppsUnprotected() const {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->protectSelectedApps()) {
+    return false;
+  }
+
+  QStringList unprotectedApps = settingsHolder->vpnDisabledApps();
+  for (const AppDescription& app : m_applist) {
+    if (!unprotectedApps.contains(app.id)) {
+      return false;
+    }
+  }
+
+  return true;
+};

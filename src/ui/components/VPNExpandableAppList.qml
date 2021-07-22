@@ -127,6 +127,25 @@ ColumnLayout {
         }
     }
 
+    VPNCheckBoxRow {
+        property bool manualUnchecked: false
+
+        showDivider: false
+        labelText: "Select All"
+        showAppImage: false
+        onClicked: {
+            if (isChecked) {
+                manualUnchecked = true
+                return;
+            }
+
+            VPNAppPermissions.unprotectAll();
+            manualUnchecked = false
+        }
+        isChecked: VPNAppPermissions.hasAllAppsUnprotected && !manualUnchecked
+        isEnabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
+    }
+
     ColumnLayout {
         spacing: Theme.windowMargin / 2
 
@@ -148,6 +167,7 @@ ColumnLayout {
                 Layout.minimumHeight: Theme.rowHeight * 1.5
             }
         }
+
         VPNButton {
             text: ""
             Layout.fillWidth: true
