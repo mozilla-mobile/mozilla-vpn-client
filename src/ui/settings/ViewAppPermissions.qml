@@ -35,10 +35,12 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-        flickContentHeight:  VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : enabledList.y
+        flickContentHeight:  VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height
         anchors.top: menu.bottom
         height: root.height - menu.height
-        width: root.width
+        anchors.left: parent.left
+        anchors.right: parent.right
+        interactive: (VPNSettings.protectSelectedApps)
         Component.onCompleted: {
             VPNAppPermissions.requestApplist();
             Sample.appPermissionsViewOpened.record();
