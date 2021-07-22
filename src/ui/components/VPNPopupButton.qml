@@ -18,6 +18,7 @@ VPNButtonBase {
     enabled: popup.visible
     Layout.fillWidth: true
     Layout.fillHeight: true
+    Layout.preferredHeight: Theme.rowHeight
     Accessible.name: buttonText.text
     state: "state-default"
 
@@ -32,7 +33,7 @@ VPNButtonBase {
         targetEl: button
     }
 
-    contentItem: VPNInterLabel {
+    contentItem: VPNMetropolisLabel {
         id: buttonText
 
         font.family: Theme.fontBoldFamily
