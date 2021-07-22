@@ -104,7 +104,7 @@ Popup {
                 sourceSize: Qt.size(116, 80)
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: 72
+                Layout.preferredHeight: 80
             }
 
             VPNMetropolisLabel {
@@ -134,21 +134,13 @@ Popup {
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignHCenter
-                Layout.bottomMargin: Theme.vSpacingSmall
+                Layout.bottomMargin: Theme.vSpacing
                 Layout.fillWidth: true
                 lineHeight: 22
 
                 //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(popup.deviceName)
-            }
-
-            Rectangle {
-                id: buttonSeparator
-
-                color: Theme.greyHovered
-                Layout.fillWidth: true
-                height: 1
             }
 
             GridLayout {
@@ -158,34 +150,13 @@ Popup {
 
                 columnSpacing: gridSpacing
                 rowSpacing: gridSpacing
-                columns: {
-                    const cancelButtonText = qsTrId("vpn.devices.cancelDeviceRemoval");
-                    const removeButtonText = qsTrId("vpn.devices.removeDeviceButton");
-                    const showStacked = cancelButtonText.length > 8 || removeButtonText.length > 8;
-
-                    return showStacked ? 1 : 2;
-                }
+                columns: 1
 
                 Layout.fillWidth: true
                 Layout.minimumHeight: 40
                 Layout.leftMargin: Theme.popupMargin
                 Layout.rightMargin: Theme.popupMargin
-                Layout.topMargin: Theme.popupMargin
-
-                VPNPopupButton {
-                    id: cancelBtn
-                    Accessible.defaultButton: true
-
-                    //% "Cancel"
-                    buttonText: qsTrId("vpn.devices.cancelDeviceRemoval");
-                    buttonTextColor: Theme.fontColorDark
-                    colorScheme: Theme.greyButton
-                    focus: true
-                    onClicked: {
-                        popup.close();
-                    }
-                    KeyNavigation.right: removeBtn
-                }
+                Layout.topMargin: gridSpacing / 2
 
                 VPNPopupButton {
                     id: removeBtn
@@ -206,6 +177,23 @@ Popup {
 
                         popup.close();
                     }
+                    isCancelBtn: false
+                }
+
+                VPNPopupButton {
+                    id: cancelBtn
+                    Accessible.defaultButton: true
+
+                    //% "Cancel"
+                    buttonText: qsTrId("vpn.devices.cancelDeviceRemoval");
+                    buttonTextColor: Theme.blue
+                    colorScheme: Theme.linkButton
+                    focus: true
+                    onClicked: {
+                        popup.close();
+                    }
+                    isCancelBtn: true
+                    KeyNavigation.up: removeBtn
                 }
 
             }

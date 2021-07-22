@@ -14,6 +14,7 @@ VPNButtonBase {
     property alias buttonTextColor: buttonText.color
     property var colorScheme
     property var uiState:Theme.uiState
+    property var isCancelBtn
 
     enabled: popup.visible
     Layout.fillWidth: true
@@ -33,15 +34,14 @@ VPNButtonBase {
         targetEl: button
     }
 
-    contentItem: VPNMetropolisLabel {
+    contentItem: VPNInterLabel {
         id: buttonText
 
-        font.family: Theme.fontBoldFamily
+        font.family: isCancelBtn ? Theme.fontInterFamily : Theme.fontBoldFamily
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
     }
-
 }
 

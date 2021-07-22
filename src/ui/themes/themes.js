@@ -108,7 +108,7 @@ const linkButton = {
     "buttonHovered": bgColorTransparent,
     "buttonPressed": bgColorTransparent,
     "focusOutline": bgColorTransparent,
-    "focusBorder": darkFocusBorder,
+    "focusBorder": blueFocusBorder,
 };
 
 const greyButton = {
