@@ -26,6 +26,7 @@
 void TestModels::deviceBasic() {
   Device device;
   QCOMPARE(device.name(), "");
+  QCOMPARE(device.uniqueId(), "");
   QCOMPARE(device.createdAt(), QDateTime());
   QCOMPARE(device.publicKey(), "");
   QCOMPARE(device.ipv4Address(), "");
@@ -41,6 +42,7 @@ void TestModels::deviceFromJson_data() {
   QTest::addColumn<QByteArray>("json");
   QTest::addColumn<bool>("result");
   QTest::addColumn<QString>("name");
+  QTest::addColumn<QString>("uniqueId");
   QTest::addColumn<QString>("publicKey");
   QTest::addColumn<QDateTime>("createdAt");
   QTest::addColumn<QString>("ipv4Address");
@@ -49,24 +51,35 @@ void TestModels::deviceFromJson_data() {
   QJsonObject obj;
   obj.insert("test", "");
   QTest::addRow("null") << QJsonDocument(obj).toJson() << false << ""
+                        << ""
                         << "" << QDateTime() << ""
                         << "";
 
   QJsonObject d;
   obj.insert("test", d);
   QTest::addRow("empty") << QJsonDocument(obj).toJson() << false << ""
+                         << ""
                          << "" << QDateTime() << ""
                          << "";
 
   d.insert("name", "deviceName");
   obj.insert("test", d);
   QTest::addRow("name") << QJsonDocument(obj).toJson() << false << ""
+                        << ""
+                        << "" << QDateTime() << ""
+                        << "";
+
+  d.insert("unique_id", "uniqueId");
+  obj.insert("test", d);
+  QTest::addRow("name") << QJsonDocument(obj).toJson() << false << ""
+                        << ""
                         << "" << QDateTime() << ""
                         << "";
 
   d.insert("pubkey", "devicePubkey");
   obj.insert("test", d);
   QTest::addRow("pubKey") << QJsonDocument(obj).toJson() << false << ""
+                          << ""
                           << "" << QDateTime() << ""
                           << "";
 
@@ -74,6 +87,7 @@ void TestModels::deviceFromJson_data() {
   obj.insert("test", d);
   QTest::addRow("createdAt (invalid)")
       << QJsonDocument(obj).toJson() << false << ""
+      << ""
       << "" << QDateTime() << ""
       << "";
 
@@ -81,18 +95,21 @@ void TestModels::deviceFromJson_data() {
   obj.insert("test", d);
   QTest::addRow("createdAt (invalid string)")
       << QJsonDocument(obj).toJson() << false << ""
+      << ""
       << "" << QDateTime() << ""
       << "";
 
   d.insert("created_at", "2017-07-24T15:46:29");
   obj.insert("test", d);
   QTest::addRow("createdAt") << QJsonDocument(obj).toJson() << false << ""
+                             << ""
                              << "" << QDateTime() << ""
                              << "";
 
   d.insert("ipv4_address", "deviceIpv4");
   obj.insert("test", d);
   QTest::addRow("ipv4Address") << QJsonDocument(obj).toJson() << false << ""
+                               << ""
                                << "" << QDateTime() << ""
                                << "";
 
@@ -100,6 +117,17 @@ void TestModels::deviceFromJson_data() {
   obj.insert("test", d);
   QTest::addRow("ipv6Address")
       << QJsonDocument(obj).toJson() << true << "deviceName"
+      << "uniqueId"
+      << "devicePubkey"
+      << QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate)
+      << "deviceIpv4"
+      << "deviceIpv6";
+
+  d.remove("unique_id");
+  obj.insert("test", d);
+  QTest::addRow("no unique_id")
+      << QJsonDocument(obj).toJson() << true << "deviceName"
+      << ""
       << "devicePubkey"
       << QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate)
       << "deviceIpv4"
@@ -122,6 +150,9 @@ void TestModels::deviceFromJson() {
   QFETCH(QString, name);
   QCOMPARE(device.name(), name);
 
+  QFETCH(QString, uniqueId);
+  QCOMPARE(device.uniqueId(), uniqueId);
+
   QFETCH(QString, publicKey);
   QCOMPARE(device.publicKey(), publicKey);
 
@@ -136,6 +167,7 @@ void TestModels::deviceFromJson() {
 
   Device deviceB(device);
   QCOMPARE(deviceB.name(), device.name());
+  QCOMPARE(deviceB.uniqueId(), device.uniqueId());
   QCOMPARE(deviceB.createdAt(), device.createdAt());
   QCOMPARE(deviceB.publicKey(), device.publicKey());
   QCOMPARE(deviceB.ipv4Address(), device.ipv4Address());
@@ -144,6 +176,7 @@ void TestModels::deviceFromJson() {
   Device deviceC;
   deviceC = device;
   QCOMPARE(deviceC.name(), device.name());
+  QCOMPARE(deviceC.uniqueId(), device.uniqueId());
   QCOMPARE(deviceC.createdAt(), device.createdAt());
   QCOMPARE(deviceC.publicKey(), device.publicKey());
   QCOMPARE(deviceC.ipv4Address(), device.ipv4Address());
@@ -160,6 +193,7 @@ void TestModels::deviceModelBasic() {
   QVERIFY(!dm.initialized());
   dm.removeDeviceFromPublicKey("foo");
   QCOMPARE(dm.deviceFromPublicKey("foo"), nullptr);
+  QCOMPARE(dm.deviceFromUniqueId(), nullptr);
   QCOMPARE(dm.activeDevices(), 0);
 
   Keys keys;
@@ -213,6 +247,7 @@ void TestModels::deviceModelFromJson_data() {
 
   QJsonObject d;
   d.insert("name", "deviceName");
+  d.insert("unique_id", Device::uniqueDeviceId());
   d.insert("pubkey", "devicePubkey");
   d.insert("created_at", "2017-07-24T15:46:29");
   d.insert("ipv4_address", "deviceIpv4");
@@ -227,6 +262,7 @@ void TestModels::deviceModelFromJson_data() {
                                                           Qt::ISODate));
 
   d.insert("name", Device::currentDeviceName());
+  d.insert("unique_id", "43");
   d.insert("pubkey", "currentDevicePubkey");
   d.insert("created_at", "2017-07-24T15:46:29");
   d.insert("ipv4_address", "deviceIpv4");
@@ -291,6 +327,7 @@ void TestModels::deviceModelFromJson() {
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
+        QVERIFY(dm.deviceFromUniqueId() != nullptr);
 
         dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);
@@ -351,6 +388,7 @@ void TestModels::deviceModelFromJson() {
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
+        QVERIFY(dm.deviceFromUniqueId() != nullptr);
 
         dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);

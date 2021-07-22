@@ -59,6 +59,8 @@ QString Device::currentDeviceReport() {
   return buffer;
 }
 
+QString Device::uniqueDeviceId() { return QSysInfo::machineUniqueId(); }
+
 Device::Device() { MVPN_COUNT_CTOR(Device); }
 
 Device::Device(const Device& other) {
@@ -70,6 +72,7 @@ Device& Device::operator=(const Device& other) {
   if (this == &other) return *this;
 
   m_deviceName = other.m_deviceName;
+  m_uniqueId = other.m_uniqueId;
   m_createdAt = other.m_createdAt;
   m_publicKey = other.m_publicKey;
   m_ipv4Address = other.m_ipv4Address;
@@ -91,6 +94,9 @@ bool Device::fromJson(const QJsonValue& json) {
   if (!name.isString()) {
     return false;
   }
+
+  QJsonValue uniqueId = obj.value("unique_id");
+  // No checks here.
 
   QJsonValue pubKey = obj.value("pubkey");
   if (!pubKey.isString()) {
@@ -118,6 +124,7 @@ bool Device::fromJson(const QJsonValue& json) {
   }
 
   m_deviceName = name.toString();
+  m_uniqueId = uniqueId.isString() ? uniqueId.toString() : "";
   m_createdAt = date;
   m_publicKey = pubKey.toString();
   m_ipv4Address = ipv4Address.toString();
