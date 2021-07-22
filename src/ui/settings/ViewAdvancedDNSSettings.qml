@@ -192,7 +192,10 @@ Item {
                     anchors.right: undefined
                     anchors.leftMargin: undefined
                     anchors.rightMargin: undefined
+                    anchors.top: undefined
+                    anchors.topMargin: undefined
                     Layout.leftMargin: ipInput.Layout.leftMargin
+                    alertColor: Theme.red
 
                     states: [
                         State {
