@@ -18,6 +18,8 @@
 #include <QUrl>
 #include <QUrlQuery>
 
+constexpr int AUTH_REDIRECT_LIMIT = 5;
+
 namespace {
 Logger logger(LOG_MAIN, "TaskPasswordAuth");
 }
@@ -49,6 +51,7 @@ void TaskPasswordAuth::run(MozillaVPN* vpn) {
   // Generate a PCKE verification code.
   static QByteArray range(
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~");
+  m_verifier.clear();
   for (uint16_t i = 0; i < 128; ++i) {
     m_verifier.append(range.at(generator->generate() % range.length()));
   }
@@ -66,6 +69,7 @@ void TaskPasswordAuth::run(MozillaVPN* vpn) {
   url.setPath("/api/v2/vpn/login/android");
   url.setQuery(query);
 
+  m_redirectlimit = AUTH_REDIRECT_LIMIT;
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(this, url.toString());
 
@@ -98,38 +102,19 @@ void TaskPasswordAuth::netRequestFailed(QNetworkReply::NetworkError error,
 // Once we have required the login parameters from the redirect, we will need to
 // log into FxA to acquire a session token.
 void TaskPasswordAuth::vpnLoginRedirect(NetworkRequest* request) {
-  // Parse out the FxA authentication details from the redirected URL.
-  QUrl url(request->rawHeader("Location"));
-  QUrlQuery query(url);
-
   // Follow redirects until we get a 200 response
   if (request->statusCode() == 302) {
-    QUrl url(request->rawHeader("Location"));
-    if (!url.isValid()) {
-      authFailed(ErrorHandler::ErrorType::RemoteServiceError);
-      return;
-    }
-
-    // Parse and retain the login query string arguments.
-    m_querydata.clear();
-    for (auto pair : QUrlQuery(url).queryItems()) {
-      m_querydata[pair.first] = pair.second;
-    }
-
-    // TODO: We probably want some limit on the maximum number of redirects.
-    logger.log() << "Login redirected to" << url.toString();
-
-    NetworkRequest* next =
-        NetworkRequest::createForGetUrl(this, url.toString());
-    connect(next, &NetworkRequest::requestFailed, this,
-            &TaskPasswordAuth::netRequestFailed);
-    connect(next, &NetworkRequest::requestHeaderReceived, this,
-            &TaskPasswordAuth::vpnLoginRedirect);
+    followRedirect(request, &TaskPasswordAuth::vpnLoginRedirect);
     return;
   }
 
   // On a 200-OK response, move on to the FxA login/authentication API.
   if (request->statusCode() == 200) {
+    m_querydata.clear();
+    for (auto pair : QUrlQuery(request->url()).queryItems()) {
+      m_querydata[pair.first] = pair.second;
+    }
+
     // TODO check the auth params for correctness...
     NetworkRequest* next = NetworkRequest::createForFxaLogin(
         this, m_username, m_authpw, m_querydata);
@@ -177,9 +162,143 @@ void TaskPasswordAuth::fxaLoginComplete(const QByteArray& data) {
           &TaskPasswordAuth::fxaAuthzComplete);
 }
 
-// TODO: Implement Me!
 void TaskPasswordAuth::fxaAuthzComplete(const QByteArray& data) {
-  Q_UNUSED(data);
-  logger.log() << "FxA Authz:" << QString(data);
-  authFailed(ErrorHandler::ErrorType::SubscriptionFailureError);
+  QJsonDocument json = QJsonDocument::fromJson(data);
+  if (json.isNull()) {
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+
+  QJsonObject obj = json.object();
+  QJsonValue code = obj.value("code");
+  if (!code.isString()) {
+    logger.log() << "FxA Authz: code not found";
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+  QJsonValue state = obj.value("state");
+  if (!state.isString()) {
+    logger.log() << "FxA Authz: state not found";
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+  QJsonValue redirect = obj.value("redirect");
+  if (!redirect.isString()) {
+    logger.log() << "FxA Authz: redirect not found";
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+
+  m_redirectlimit = AUTH_REDIRECT_LIMIT;
+  NetworkRequest* next =
+      NetworkRequest::createForGetUrl(this, redirect.toString());
+
+  connect(next, &NetworkRequest::requestFailed, this,
+          &TaskPasswordAuth::netRequestFailed);
+  connect(next, &NetworkRequest::requestHeaderReceived, this,
+          &TaskPasswordAuth::fxaAuthzRedirect);
+}
+
+void TaskPasswordAuth::fxaAuthzRedirect(NetworkRequest* request) {
+  logger.log() << "FxA Authz: redirect returned" << request->statusCode();
+
+  // Follow redirects until we get a 200 response
+  if ((request->statusCode() >= 300) && (request->statusCode() < 400)) {
+    logger.log() << "Authorization redirected to" << request->url().toString();
+    followRedirect(request, &TaskPasswordAuth::fxaAuthzRedirect);
+    return;
+  }
+
+  // On a 200 response, we receive the OAuth code from the query string
+  if (request->statusCode() == 200) {
+    QString code = QUrlQuery(request->url()).queryItemValue("code");
+    if (code.isEmpty()) {
+      authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+      return;
+    }
+
+    // TODO: And finally, we need to submit the OAuth code to receive the token.
+    NetworkRequest* next = NetworkRequest::createForAuthenticationVerification(
+        this, code, m_verifier);
+    connect(next, &NetworkRequest::requestFailed, this,
+            &TaskPasswordAuth::netRequestFailed);
+    connect(next, &NetworkRequest::requestCompleted, this,
+            &TaskPasswordAuth::vpnVerifyComplete);
+    return;
+  }
+
+  // If anything else occurs, we failed.
+  authFailed(ErrorHandler::RemoteServiceError);
+}
+
+void TaskPasswordAuth::vpnVerifyComplete(const QByteArray& data) {
+  logger.log() << "Authentication completed";
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  QJsonDocument json = QJsonDocument::fromJson(data);
+  if (json.isNull()) {
+    authFailed(ErrorHandler::RemoteServiceError);
+    return;
+  }
+
+  QJsonObject obj = json.object();
+  QJsonValue userObj = obj.value("user");
+  if (!userObj.isObject()) {
+    authFailed(ErrorHandler::RemoteServiceError);
+    return;
+  }
+
+#ifdef QT_DEBUG
+  logger.log()
+      << "User data:"
+      << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
+#endif
+
+  QJsonValue tokenValue = obj.value("token");
+  if (!tokenValue.isString()) {
+    authFailed(ErrorHandler::RemoteServiceError);
+    return;
+  }
+
+  QJsonDocument userDoc;
+  userDoc.setObject(userObj.toObject());
+
+  vpn->authenticationCompleted(userDoc.toJson(QJsonDocument::Compact),
+                               tokenValue.toString());
+
+  emit completed();
+}
+
+void TaskPasswordAuth::followRedirect(
+    const NetworkRequest* request,
+    void (TaskPasswordAuth::*callback)(NetworkRequest*)) {
+  Q_ASSERT(request->statusCode() >= 300);
+  Q_ASSERT(request->statusCode() < 400);
+
+  QString location = QString(request->rawHeader("Location"));
+  QUrl target = request->url().resolved(location);
+  if (location.isEmpty() || !target.isValid()) {
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+  QString reqscheme = request->url().scheme();
+  if ((reqscheme == "https") && (target.scheme() != reqscheme)) {
+    logger.log() << "Connection downgrade encountered during redirect";
+    logger.log() << "Origin:" << request->url().toString();
+    logger.log() << "Target:" << target.toString();
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+  if (m_redirectlimit == 0) {
+    logger.log() << "Connection redirection limit reached";
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+    return;
+  }
+  m_redirectlimit--;
+
+  NetworkRequest* next =
+      NetworkRequest::createForGetUrl(this, target.toString());
+  connect(next, &NetworkRequest::requestFailed, this,
+          &TaskPasswordAuth::netRequestFailed);
+  connect(next, &NetworkRequest::requestHeaderReceived, this, callback);
 }

@@ -23,14 +23,19 @@ class TaskPasswordAuth final : public Task {
   void vpnLoginRedirect(NetworkRequest* request);
   void fxaLoginComplete(const QByteArray& data);
   void fxaAuthzComplete(const QByteArray& data);
+  void fxaAuthzRedirect(NetworkRequest* request);
   void vpnVerifyComplete(const QByteArray& data);
 
   void authFailed(ErrorHandler::ErrorType error);
   void netRequestFailed(QNetworkReply::NetworkError error,
                         const QByteArray& data);
 
+  void followRedirect(const NetworkRequest* request,
+                      void (TaskPasswordAuth::*)(NetworkRequest*));
+
  private:
   QString m_username;
+  int m_redirectlimit = 0;
   QMap<QString, QString> m_querydata;
   QByteArray m_authpw;
   QByteArray m_session;
