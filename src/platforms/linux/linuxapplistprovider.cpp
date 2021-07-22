@@ -48,7 +48,7 @@ void LinuxAppListProvider::fetchEntries(const QString& dataDir,
       continue;
     }
 
-    map[fileinfo.canonicalFilePath()] = entry.value("Name").toString();
+    map[fileinfo.absoluteFilePath()] = entry.value("Name").toString();
   }
 }
 
