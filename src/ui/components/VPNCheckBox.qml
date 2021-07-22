@@ -59,9 +59,9 @@ CheckBox {
             }
 
             PropertyChanges {
-                target: checkmark
-                opacity: checkBox.checked ? 1 : 0
-                checkmarkColor: checkBox.checked ? Theme.blue : "#DBDBDB"
+                target: checkmarkBg
+
+                color: !!checkBox.checked ? Theme.blue : Theme.bgColor
             }
 
         },
@@ -74,9 +74,9 @@ CheckBox {
             }
 
             PropertyChanges {
-                target: checkmark
-                opacity: 1
-                checkmarkColor: checkBox.checked ? Theme.bluePressed : Theme.greyPressed
+                target: checkmarkBg
+
+                color: checkBox.checked ? Theme.bluePressed : Theme.greyPressed
             }
 
         },
@@ -89,9 +89,9 @@ CheckBox {
             }
 
             PropertyChanges {
-                target: checkmark
-                opacity: 1
-                checkmarkColor: checkBox.checked ? Theme.blueHovered : "#DBDBDB"
+                target: checkmarkBg
+
+                color: checkBox.checked ? Theme.blueHovered : "#DBDBDB"
             }
 
         }
@@ -100,8 +100,6 @@ CheckBox {
     Item {
         id: checkmark
 
-        property var checkmarkColor: "#DBDBDB"
-
         height: 20
         width: 20
         anchors.fill: checkBoxIndicator
@@ -109,7 +107,7 @@ CheckBox {
         Rectangle {
             id: checkmarkBg
 
-            color: checkmark.checkmarkColor
+            color: checkBox.checked ? Theme.blue : Theme.bgColor
             height: 20
             width: 20
             antialiasing: true
@@ -162,7 +160,7 @@ CheckBox {
         height: 20
         width: 20
         color: Theme.bgColor
-        border.color: Theme.fontColor
+        border.color: checkBox.checked ? Theme.blue : Theme.fontColor
         border.width: 2
         radius: 4
         antialiasing: true
