@@ -34,8 +34,8 @@ Item {
         fillMode: Image.PreserveAspectFit
         smooth: true
         source: "../resources/avatar-default.png"
-        sourceSize.height: imageSourceSize
-        sourceSize.width: imageSourceSize
+        sourceSize.height: avatarSourceSize
+        sourceSize.width: avatarSourceSize
         visible: avatar.status !== Image.Ready
     }
 
