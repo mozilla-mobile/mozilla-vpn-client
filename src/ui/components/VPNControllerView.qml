@@ -43,13 +43,6 @@ Item {
     Layout.rightMargin: 8
     Layout.alignment: Qt.AlignHCenter
 
-    Loader {
-        sourceComponent: Rectangle {}
-        onLoaded: {
-            stackview.push("../views/ViewSettings.qml", StackView.Immediate);
-        }
-    }
-
     Rectangle {
         id: boxBackground
         anchors.fill: parent

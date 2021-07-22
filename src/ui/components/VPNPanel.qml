@@ -33,11 +33,11 @@ Item {
 
             Layout.preferredHeight: Math.max(logoSize, 76)
             Layout.fillWidth: true
-        }
 
-        VPNAvatar {
-            avatarUrl: logo
-            anchors.fill: avatarWrapper
+            VPNAvatar {
+                avatarUrl: logo
+                anchors.fill: avatarWrapper
+            }
         }
 
         VPNHeadline {

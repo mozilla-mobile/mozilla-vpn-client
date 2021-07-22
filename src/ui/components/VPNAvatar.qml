@@ -8,21 +8,21 @@ import QtGraphicalEffects 1.14
 Item {
     id: logoRoot
 
-    property string avatarUrl: ""  
+    property string avatarUrl: ""
 
     Image {
         id: avatar
 
+        anchors.centerIn: parent
         asynchronous: true
+        height: logoRoot.height
         fillMode: Image.PreserveAspectFit
-        source: avatarUrl
-        smooth: true
         layer.enabled: true
         layer.effect: OpacityMask {
             maskSource: avatarMask
         }
-        anchors.centerIn: parent
-        height: logoRoot.height
+        smooth: true
+        source: avatarUrl
     }
 
     Image {
@@ -31,8 +31,8 @@ Item {
         property int avatarSourceSize: 320
 
         anchors.fill: parent
-        smooth: true
         fillMode: Image.PreserveAspectFit
+        smooth: true
         source: "../resources/avatar-default.png"
         sourceSize.height: imageSourceSize
         sourceSize.width: imageSourceSize
@@ -43,8 +43,8 @@ Item {
         id: avatarMask
 
         height: avatar.height
-        width: avatar.height
         radius: avatar.width / 2
         visible: false
+        width: avatar.height
     }
 }
