@@ -81,6 +81,7 @@ class NetworkRequest final : public QObject {
   int statusCode() const;
 
   QByteArray rawHeader(const QByteArray& headerName) const;
+  QUrl url() const { return m_reply ? m_reply->url() : m_request.url(); }
 
   void abort();
 
