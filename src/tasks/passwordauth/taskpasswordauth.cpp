@@ -18,8 +18,6 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-constexpr int AUTH_REDIRECT_LIMIT = 5;
-
 namespace {
 Logger logger(LOG_MAIN, "TaskPasswordAuth");
 }
@@ -65,22 +63,23 @@ void TaskPasswordAuth::run(MozillaVPN* vpn) {
   query.addQueryItem("code_challenge_method", "S256");
   query.addQueryItem("user_agent", NetworkManager::userAgent());
 
+  // Login using the android auth flow to convince the API to supply the OAuth
+  // code as a query parameter during redirection instead of invoking a browser
   QUrl url = NetworkRequest::apiBaseUrl();
   url.setPath("/api/v2/vpn/login/android");
   url.setQuery(query);
 
-  m_redirectlimit = AUTH_REDIRECT_LIMIT;
   NetworkRequest* request =
-      NetworkRequest::createForGetUrl(this, url.toString());
+      NetworkRequest::createForGetUrl(this, url.toString(), 200);
 
   connect(request, &NetworkRequest::requestFailed, this,
           &TaskPasswordAuth::netRequestFailed);
   connect(request, &NetworkRequest::requestHeaderReceived, this,
-          &TaskPasswordAuth::vpnLoginRedirect);
+          &TaskPasswordAuth::vpnLoginHeaders);
 }
 
 void TaskPasswordAuth::authFailed(ErrorHandler::ErrorType error) {
-  logger.log() << "Failed to add the device" << error;
+  logger.log() << "Authenticatin failed" << error;
   MozillaVPN::instance()->errorHandle(error);
   emit completed();
 }
@@ -95,46 +94,31 @@ void TaskPasswordAuth::netRequestFailed(QNetworkReply::NetworkError error,
 // to request a login, and they will redirect the client to FxA to handle the
 // actual sign-in process.
 //
-// After making the login request, follow redirects until we get a 200-OK
-// status. At which point we will need to gather some parameters from the
-// query string being passed to FxA.
-//
-// Once we have required the login parameters from the redirect, we will need to
-// log into FxA to acquire a session token.
-void TaskPasswordAuth::vpnLoginRedirect(NetworkRequest* request) {
-  // Follow redirects until we get a 200 response
-  if (request->statusCode() == 302) {
-    followRedirect(request, &TaskPasswordAuth::vpnLoginRedirect);
-    return;
+// After making the login request, we will gather the authentication parameters
+// from query string provided in the redirection. We can use them to perform
+// authentication manually using the FxA API instead of needing a browser.
+void TaskPasswordAuth::vpnLoginHeaders(NetworkRequest* request) {
+  // Parse the authentication parameters from the redirected query string.
+  m_querydata.clear();
+  for (auto pair : QUrlQuery(request->url()).queryItems()) {
+    m_querydata[pair.first] = pair.second;
   }
 
-  // On a 200-OK response, move on to the FxA login/authentication API.
-  if (request->statusCode() == 200) {
-    m_querydata.clear();
-    for (auto pair : QUrlQuery(request->url()).queryItems()) {
-      m_querydata[pair.first] = pair.second;
-    }
-
-    // TODO check the auth params for correctness...
-    NetworkRequest* next = NetworkRequest::createForFxaLogin(
-        this, m_username, m_authpw, m_querydata);
-    if (!next) {
-      authFailed(ErrorHandler::ErrorType::RemoteServiceError);
-      return;
-    }
-    connect(next, &NetworkRequest::requestFailed, this,
-            &TaskPasswordAuth::netRequestFailed);
-    connect(next, &NetworkRequest::requestCompleted, this,
-            &TaskPasswordAuth::fxaLoginComplete);
+  // TODO check the auth params for correctness...
+  NetworkRequest* next = NetworkRequest::createForFxaLogin(
+      this, m_username, m_authpw, m_querydata);
+  if (!next) {
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
     return;
   }
-
-  // If anything else occurs, we failed.
-  authFailed(ErrorHandler::ErrorType::RemoteServiceError);
+  connect(next, &NetworkRequest::requestFailed, this,
+          &TaskPasswordAuth::netRequestFailed);
+  connect(next, &NetworkRequest::requestCompleted, this,
+          &TaskPasswordAuth::fxaLoginComplete);
 }
 
-// Once we have acquired a session token from FxA, we can authorize
-// the VPN client using that session token.
+// After logging into FxA, we should receive a session token, which can
+// then be used to authorize the VPN client.
 void TaskPasswordAuth::fxaLoginComplete(const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
@@ -151,7 +135,9 @@ void TaskPasswordAuth::fxaLoginComplete(const QByteArray& data) {
   }
   m_session = QByteArray::fromHex(token.toString().toUtf8());
   logger.log() << "FxA User ID:" << obj.value("uid").toString();
+#ifdef QT_DEBUG
   logger.log() << "FxA Session Token:" << QString(m_session.toHex());
+#endif
 
   // Request authorization
   NetworkRequest* next =
@@ -162,6 +148,9 @@ void TaskPasswordAuth::fxaLoginComplete(const QByteArray& data) {
           &TaskPasswordAuth::fxaAuthzComplete);
 }
 
+// After authorization has completed, FxA will provide us with an authorization
+// code, and a redirection target. We need to follow the redirection target in
+// order to pass our authorization onto the VPN service.
 void TaskPasswordAuth::fxaAuthzComplete(const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
@@ -189,46 +178,33 @@ void TaskPasswordAuth::fxaAuthzComplete(const QByteArray& data) {
     return;
   }
 
-  m_redirectlimit = AUTH_REDIRECT_LIMIT;
   NetworkRequest* next =
-      NetworkRequest::createForGetUrl(this, redirect.toString());
+      NetworkRequest::createForGetUrl(this, redirect.toString(), 200);
 
   connect(next, &NetworkRequest::requestFailed, this,
           &TaskPasswordAuth::netRequestFailed);
   connect(next, &NetworkRequest::requestHeaderReceived, this,
-          &TaskPasswordAuth::fxaAuthzRedirect);
+          &TaskPasswordAuth::fxaAuthzHeaders);
 }
 
-void TaskPasswordAuth::fxaAuthzRedirect(NetworkRequest* request) {
-  logger.log() << "FxA Authz: redirect returned" << request->statusCode();
-
-  // Follow redirects until we get a 200 response
-  if ((request->statusCode() >= 300) && (request->statusCode() < 400)) {
-    logger.log() << "Authorization redirected to" << request->url().toString();
-    followRedirect(request, &TaskPasswordAuth::fxaAuthzRedirect);
-    return;
-  }
-
+// Because we used the android auth flow, the VPN services will provide us
+// with the OAuth code in the query string after yet-another redirection. To
+// turn it into an OAuth token, we simply need to POST to the verification
+// endpoint.
+void TaskPasswordAuth::fxaAuthzHeaders(NetworkRequest* request) {
   // On a 200 response, we receive the OAuth code from the query string
-  if (request->statusCode() == 200) {
-    QString code = QUrlQuery(request->url()).queryItemValue("code");
-    if (code.isEmpty()) {
-      authFailed(ErrorHandler::ErrorType::RemoteServiceError);
-      return;
-    }
-
-    // TODO: And finally, we need to submit the OAuth code to receive the token.
-    NetworkRequest* next = NetworkRequest::createForAuthenticationVerification(
-        this, code, m_verifier);
-    connect(next, &NetworkRequest::requestFailed, this,
-            &TaskPasswordAuth::netRequestFailed);
-    connect(next, &NetworkRequest::requestCompleted, this,
-            &TaskPasswordAuth::vpnVerifyComplete);
+  QString code = QUrlQuery(request->url()).queryItemValue("code");
+  if (code.isEmpty()) {
+    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
     return;
   }
 
-  // If anything else occurs, we failed.
-  authFailed(ErrorHandler::RemoteServiceError);
+  NetworkRequest* next = NetworkRequest::createForAuthenticationVerification(
+      this, code, m_verifier);
+  connect(next, &NetworkRequest::requestFailed, this,
+          &TaskPasswordAuth::netRequestFailed);
+  connect(next, &NetworkRequest::requestCompleted, this,
+          &TaskPasswordAuth::vpnVerifyComplete);
 }
 
 void TaskPasswordAuth::vpnVerifyComplete(const QByteArray& data) {
@@ -267,38 +243,4 @@ void TaskPasswordAuth::vpnVerifyComplete(const QByteArray& data) {
                                tokenValue.toString());
 
   emit completed();
-}
-
-void TaskPasswordAuth::followRedirect(
-    const NetworkRequest* request,
-    void (TaskPasswordAuth::*callback)(NetworkRequest*)) {
-  Q_ASSERT(request->statusCode() >= 300);
-  Q_ASSERT(request->statusCode() < 400);
-
-  QString location = QString(request->rawHeader("Location"));
-  QUrl target = request->url().resolved(location);
-  if (location.isEmpty() || !target.isValid()) {
-    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
-    return;
-  }
-  QString reqscheme = request->url().scheme();
-  if ((reqscheme == "https") && (target.scheme() != reqscheme)) {
-    logger.log() << "Connection downgrade encountered during redirect";
-    logger.log() << "Origin:" << request->url().toString();
-    logger.log() << "Target:" << target.toString();
-    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
-    return;
-  }
-  if (m_redirectlimit == 0) {
-    logger.log() << "Connection redirection limit reached";
-    authFailed(ErrorHandler::ErrorType::RemoteServiceError);
-    return;
-  }
-  m_redirectlimit--;
-
-  NetworkRequest* next =
-      NetworkRequest::createForGetUrl(this, target.toString());
-  connect(next, &NetworkRequest::requestFailed, this,
-          &TaskPasswordAuth::netRequestFailed);
-  connect(next, &NetworkRequest::requestHeaderReceived, this, callback);
 }

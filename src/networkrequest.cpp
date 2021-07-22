@@ -23,6 +23,7 @@
 
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
+constexpr int REQUEST_MAX_REDIRECTS = 4;
 
 constexpr const char* IPINFO_URL_IPV4 = "https://%1/api/v1/vpn/ipinfo";
 constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
@@ -41,6 +42,9 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 #ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
 #endif
+  m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
+  m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::SameOriginRedirectPolicy);
 
   // Let's use "glean-enabled" as an indicator for DNT/GPC too.
   if (!SettingsHolder::instance()->gleanEnabled()) {
@@ -96,6 +100,8 @@ NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
   NetworkRequest* r = new NetworkRequest(parent, status, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::NoLessSafeRedirectPolicy);
 
   r->m_request.setUrl(url);
 
@@ -456,8 +462,21 @@ void NetworkRequest::replyFinished() {
 }
 
 void NetworkRequest::handleHeaderReceived() {
+  // Suppress this signal if a redirect is about to happen.
+  bool isRedirect = (statusCode() >= 300) && (statusCode() < 400);
+  auto redirectAttibute = QNetworkRequest::RedirectPolicyAttribute;
+  int policy = m_request.attribute(redirectAttibute).toInt();
+  if (isRedirect && (policy != QNetworkRequest::ManualRedirectPolicy)) {
+    return;
+  }
+
   logger.log() << "Network header received";
   emit requestHeaderReceived(this);
+}
+
+void NetworkRequest::handleRedirect(const QUrl& url) {
+  logger.log() << "Network request redirected";
+  emit requestRedirected(this, url);
 }
 
 void NetworkRequest::timeout() {
@@ -504,6 +523,8 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::replyFinished);
   connect(m_reply, &QNetworkReply::metaDataChanged, this,
           &NetworkRequest::handleHeaderReceived);
+  connect(m_reply, &QNetworkReply::redirected, this,
+          &NetworkRequest::handleRedirect);
   connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
 }
 
