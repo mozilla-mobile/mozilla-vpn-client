@@ -263,6 +263,15 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
 bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
                                        const InterfaceConfig& config) {
   logger.log() << "Enableling Killswitch Using Adapter:" << vpnAdapterIndex;
+
+  IPAddressRange v4CatchAll("0.0.0.0", 0, IPAddressRange::IPv4);
+  IPAddressRange v6CatchAll("::0", 0, IPAddressRange::IPv6);
+  if (!config.m_allowedIPAddressRanges.contains(v4CatchAll) &&
+      !config.m_allowedIPAddressRanges.contains(v6CatchAll)) {
+    logger.log() << "Allowed IP is not CatchAll, skip-activating Killswitch";
+    return true;
+  }
+
   if (!blockAll(LOW_WEIGHT)) {
     logger.log() << "Ruleset failed: blockAll";
     disableKillSwitch();
