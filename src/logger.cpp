@@ -11,13 +11,17 @@ Logger::Logger(const QString& module, const QString& className)
 Logger::Logger(const QStringList& modules, const QString& className)
     : m_modules(modules), m_className(className) {}
 
-Logger::Log Logger::log() { return Log(this); }
+Logger::Log Logger::error() { return Log(this, LogLevel::Error); }
+Logger::Log Logger::warning() { return Log(this, LogLevel::Warning); }
+Logger::Log Logger::log() { return Log(this, LogLevel::Info); }
+Logger::Log Logger::debug() { return Log(this, LogLevel::Debug); }
 
-Logger::Log::Log(Logger* logger) : m_logger(logger), m_data(new Data()) {}
+Logger::Log::Log(Logger* logger, LogLevel logLevel)
+    : m_logger(logger), m_logLevel(logLevel), m_data(new Data()) {}
 
 Logger::Log::~Log() {
-  LogHandler::messageHandler(m_logger->modules(), m_logger->className(),
-                             m_data->m_buffer.trimmed());
+  LogHandler::messageHandler(m_logLevel, m_logger->modules(),
+                             m_logger->className(), m_data->m_buffer.trimmed());
   delete m_data;
 }
 
