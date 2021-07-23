@@ -30,7 +30,11 @@ void MozillaVPN::setState(State) {}
 
 void MozillaVPN::getStarted() {}
 
-void MozillaVPN::authenticate() {}
+void MozillaVPN::authenticate(const QString& username,
+                              const QString& password) {
+  Q_UNUSED(username);
+  Q_UNUSED(password);
+}
 
 void MozillaVPN::openLink(LinkType) {}
 

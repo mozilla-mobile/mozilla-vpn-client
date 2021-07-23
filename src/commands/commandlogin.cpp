@@ -58,31 +58,22 @@ int CommandLogin::run(QStringList& tokens) {
     return 0;
   }
 
-  // Authenticate with FxA e-mail and password
-  if (passwordOption.m_set)
-    return runCommandLineApp([&]() {
-      QString email = getInput("Username:");
-      QString password = getPassword("Password:");
+  QString email;
+  QString password;
+  if (passwordOption.m_set) {
+    email = getInput("Username:");
+    password = getPassword("Password:");
+  }
 
-      MozillaVPN vpn;
-      TaskPasswordAuth task(email, password);
-      task.run(&vpn);
-
-      QEventLoop loop;
-      QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
-      loop.exec();
-      return 0;
-    });
-
-  // Authenticate with a browser session
-  return runGuiApp([&] {
+  return runCommandLineApp([&] {
     if (SettingsHolder::instance()->hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
       return 1;
     }
+
     MozillaVPN vpn;
-    vpn.authenticate();
+    vpn.authenticate(email, password);
 
     QEventLoop loop;
     QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
