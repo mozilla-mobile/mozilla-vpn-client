@@ -276,9 +276,14 @@ Item {
                 target: logoSubtitle
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active") + "  •  " + formatTime(VPNController.time)
+                text: qsTrId("vpn.controller.active") + "  •  "
                 color: "#FFFFFF"
                 opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: connectionTime
+                visible: true
             }
 
             PropertyChanges {
@@ -566,7 +571,7 @@ Item {
         }
     }
 
-    Column{
+    Column {
         id: col
 
         spacing: 0
@@ -618,16 +623,26 @@ Item {
             height: 16
         }
 
-        VPNInterLabel {
-            id: logoSubtitle
-            objectName: "controllerSubTitle"
-
-            lineHeight: Theme.controllerInterLineHeight
-            Accessible.ignored: true
-            width: parent.width - Theme.windowMargin
+        Row {
             anchors.horizontalCenter: parent.horizontalCenter
-            onPaintedHeightChanged: if (visible) col.handleMultilineText()
-            onVisibleChanged: if (visible) col.handleMultilineText()
+
+            VPNInterLabel {
+                id: logoSubtitle
+                objectName: "controllerSubTitle"
+
+                lineHeight: Theme.controllerInterLineHeight
+                Accessible.ignored: true
+                onPaintedHeightChanged: if (visible) col.handleMultilineText()
+                onVisibleChanged: if (visible) col.handleMultilineText()
+            }
+
+            VPNSemiMonoLabel {
+                id: connectionTime
+
+                anchors.verticalCenter: parent.verticalCenter
+                text: formatTime(VPNController.time)
+                visible: false
+            }
         }
 
         VPNConnectionStability {
@@ -636,7 +651,6 @@ Item {
             width: parent.width
             implicitHeight: childrenRect.height
         }
-
     }
 
     VPNToggle {
