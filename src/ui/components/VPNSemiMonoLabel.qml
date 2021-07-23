@@ -5,9 +5,12 @@ Item {
 
     property string text: ""
     property int fontSize: 15
+    property string fontColor: "black"
+    property real fontOpacity: 1.0
 
     implicitHeight: labelRow.height
     implicitWidth: labelRow.width
+    opacity: fontOpacity
 
     Row {
         id: labelRow
@@ -19,12 +22,11 @@ Item {
                 id: digitContainer
 
                 height: fontSize * 1.2
-                width: fontSize * 0.75;
 
                 Component.onCompleted: {
                     digitContainer.width = Qt.binding(function getCharWidth() {
-                        const narrowCharacters = ":";
-                        const defaultWidth = fontSize * 0.7;
+                        const narrowCharacters = [" ", "\t", "\n", ":"];
+                        const defaultWidth = fontSize * 0.62;
                         const narrowWidth = fontSize * 0.4;
 
                         digitContainer.width = narrowCharacters.includes(modelData) ? narrowWidth : defaultWidth;
@@ -35,10 +37,9 @@ Item {
                     id: digit
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    color: "#FFFFFF"
+                    color: fontColor
                     font.pixelSize: fontSize
                     font.letterSpacing: 0
-                    opacity: 0.8
                     text: modelData
                 }
             }

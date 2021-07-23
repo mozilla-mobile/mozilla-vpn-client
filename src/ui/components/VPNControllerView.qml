@@ -76,6 +76,11 @@ Item {
             }
 
             PropertyChanges {
+                target: connectionTime
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -120,6 +125,11 @@ Item {
                 text: qsTrId("vpn.controller.activationSloagan")
                 color: Theme.fontColor
                 opacity: 1
+            }
+
+            PropertyChanges {
+                target: connectionTime
+                visible: false
             }
 
             PropertyChanges {
@@ -172,6 +182,11 @@ Item {
             }
 
             PropertyChanges {
+                target: connectionTime
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
@@ -219,11 +234,16 @@ Item {
             PropertyChanges {
                 target: logoSubtitle
                 text: VPNController.connectionRetry > 1 ?
-                          //% "Attempting to confirm connection"
-                          qsTrId("vpn.controller.attemptingToConfirm") :
-                          qsTrId("vpn.controller.activating")
+                    //% "Attempting to confirm connection"
+                    qsTrId("vpn.controller.attemptingToConfirm") :
+                    qsTrId("vpn.controller.activating")
                 color: "#FFFFFF"
                 opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: connectionTime
+                visible: false
             }
 
             PropertyChanges {
@@ -276,13 +296,15 @@ Item {
                 target: logoSubtitle
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active") + "  •  "
+                text: qsTrId("vpn.controller.active")
                 color: "#FFFFFF"
                 opacity: 0.8
             }
 
             PropertyChanges {
                 target: connectionTime
+                fontColor: "#FFFFFF"
+                fontOpacity: 0.8
                 visible: true
             }
 
@@ -330,6 +352,12 @@ Item {
                 text: qsTrId("vpn.controller.deactivating")
                 color: Theme.fontColor
                 opacity: 1
+            }
+
+            PropertyChanges {
+                target: connectionTime
+                color: Theme.fontColor
+                visible: false
             }
 
             PropertyChanges {
@@ -385,6 +413,13 @@ Item {
                 text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentLocalizedCityName).arg(VPNController.switchingLocalizedCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
+            }
+
+            PropertyChanges {
+                target: connectionTime
+                color: Theme.fontColor
+                fontOpacity: 0
+                visible: false
             }
 
             PropertyChanges {
@@ -640,7 +675,7 @@ Item {
                 id: connectionTime
 
                 anchors.verticalCenter: parent.verticalCenter
-                text: formatTime(VPNController.time)
+                text: " • " + formatTime(VPNController.time)
                 visible: false
             }
         }
