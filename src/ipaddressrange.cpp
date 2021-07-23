@@ -47,9 +47,8 @@ IPAddressRange& IPAddressRange::operator=(const IPAddressRange& other) {
 bool IPAddressRange::operator==(const IPAddressRange& other) {
   if (this == &other) return true;
 
-  return m_ipAddress == other.m_ipAddress &&
-  m_range == other.m_range &&
-  m_type == other.m_type;
+  return m_ipAddress == other.m_ipAddress && m_range == other.m_range &&
+         m_type == other.m_type;
 }
 
 IPAddressRange::~IPAddressRange() { MVPN_COUNT_DTOR(IPAddressRange); }
