@@ -57,9 +57,10 @@ void TaskPasswordAuth::run(MozillaVPN* vpn) {
   // Generate the PKCE challenge.
   QByteArray challenge =
       QCryptographicHash::hash(m_verifier, QCryptographicHash::Sha256);
+  QString url_challenge = QUrl::toPercentEncoding(challenge.toBase64());
 
   QUrlQuery query;
-  query.addQueryItem("code_challenge", challenge.toBase64());
+  query.addQueryItem("code_challenge", url_challenge);
   query.addQueryItem("code_challenge_method", "S256");
   query.addQueryItem("user_agent", NetworkManager::userAgent());
 
