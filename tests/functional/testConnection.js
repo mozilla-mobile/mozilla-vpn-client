@@ -71,7 +71,7 @@ describe('Connectivity', function() {
     });
 
     assert((await vpn.getElementProperty('controllerSubTitle', 'text'))
-               .startsWith('Secure and private '));
+               .startsWith('Secure and private'));
 
     await vpn.waitForCondition(() => {
       return vpn.lastNotification().title === 'VPN Connected';
