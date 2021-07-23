@@ -114,14 +114,14 @@ SOURCES += \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
-        tasks/authenticate/taskauthenticate.cpp \
+        tasks/authenticate/taskbrowserauth.cpp \
+        tasks/authenticate/taskpasswordauth.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
-        tasks/passwordauth/taskpasswordauth.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
@@ -213,13 +213,13 @@ HEADERS += \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
-        tasks/authenticate/taskauthenticate.h \
+        tasks/authenticate/taskbrowserauth.h \
+        tasks/authenticate/taskpasswordauth.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/removedevice/taskremovedevice.h \
-        tasks/passwordauth/taskpasswordauth.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \
