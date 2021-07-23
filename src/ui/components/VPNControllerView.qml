@@ -356,7 +356,6 @@ Item {
 
             PropertyChanges {
                 target: connectionTime
-                color: Theme.fontColor
                 visible: false
             }
 
@@ -417,8 +416,6 @@ Item {
 
             PropertyChanges {
                 target: connectionTime
-                color: Theme.fontColor
-                fontOpacity: 0
                 visible: false
             }
 
