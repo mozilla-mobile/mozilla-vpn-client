@@ -80,7 +80,9 @@ LogHandler* LogHandler::maybeCreate(const QMutexLocker& proofOfLock) {
     QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
     if (pe.contains("MOZVPN_LEVEL")) {
       QString level = pe.value("MOZVPN_LEVEL");
-      if (level == "warning")
+      if (level == "info")
+        minLogLevel = Info;
+      else if (level == "warning")
         minLogLevel = Warning;
       else if (level == "error")
         minLogLevel = Error;
