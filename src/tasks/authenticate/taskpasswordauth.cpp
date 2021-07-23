@@ -33,9 +33,9 @@ TaskPasswordAuth::TaskPasswordAuth(const QString& username,
   QByteArray pbkdf = QPasswordDigestor::deriveKeyPbkdf2(
       QCryptographicHash::Sha256, password.toUtf8(), salt.toUtf8(), 1000, 32);
 
-  HKDF hkdf = HKDF(QCryptographicHash::Sha256);
-  hkdf.addData(pbkdf);
-  m_authpw = hkdf.result(32, "identity.mozilla.com/picl/v1/authPW");
+  HKDF hash(QCryptographicHash::Sha256);
+  hash.addData(pbkdf);
+  m_authpw = hash.result(32, "identity.mozilla.com/picl/v1/authPW");
 }
 
 TaskPasswordAuth::~TaskPasswordAuth() { MVPN_COUNT_DTOR(TaskPasswordAuth); }
@@ -79,8 +79,8 @@ void TaskPasswordAuth::run(MozillaVPN* vpn) {
 }
 
 void TaskPasswordAuth::authFailed(ErrorHandler::ErrorType error) {
-  logger.log() << "Authenticatin failed" << error;
-  MozillaVPN::instance()->errorHandle(error);
+  logger.log() << "Authentication failed" << error;
+  MozillaVPN::instance()->errorHandle(ErrorHandler::AuthenticationError);
   emit completed();
 }
 

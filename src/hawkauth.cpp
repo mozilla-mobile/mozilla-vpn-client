@@ -19,10 +19,10 @@ HawkAuth::HawkAuth(const QByteArray& id, const QByteArray& key) {
 }
 
 HawkAuth::HawkAuth(const QByteArray& session) {
-  HKDF h = HKDF(QCryptographicHash::Sha256);
-  h.addData(session);
+  HKDF hash(QCryptographicHash::Sha256);
+  hash.addData(session);
   QByteArray keydata =
-      h.result(64, "identity.mozilla.com/picl/v1/sessionToken");
+      hash.result(64, "identity.mozilla.com/picl/v1/sessionToken");
 
   m_id = keydata.left(32);
   m_key = keydata.right(32);
