@@ -356,7 +356,9 @@ Item {
 
             PropertyChanges {
                 target: connectionTime
-                visible: false
+                fontColor: Theme.fontColor
+                fontOpacity: 1
+                visible: true
             }
 
             PropertyChanges {
@@ -657,6 +659,7 @@ Item {
 
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
+            visible: !connectionStability.visible
 
             VPNInterLabel {
                 id: logoSubtitle
@@ -674,6 +677,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: " • " + formatTime(VPNController.time)
                 visible: false
+                Accessible.ignored: true
             }
         }
 
