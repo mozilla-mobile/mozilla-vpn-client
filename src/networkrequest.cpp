@@ -329,7 +329,7 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
     const QMap<QString, QString>& qdata) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url("https://api-accounts.stage.mozaws.net");
+  QUrl url(Constants::FXA_URL);
   url.setPath("/v1/account/login");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -362,7 +362,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   Q_UNUSED(session);
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url("https://api-accounts.stage.mozaws.net");
+  QUrl url(Constants::FXA_URL);
   url.setPath("/v1/oauth/authorization");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
