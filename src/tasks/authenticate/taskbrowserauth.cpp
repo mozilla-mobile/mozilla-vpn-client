@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "taskauthenticate.h"
+#include "taskbrowserauth.h"
 #include "authenticationlistener.h"
 #include "constants.h"
 #include "errorhandler.h"
@@ -23,7 +23,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "TaskAuthenticate");
+Logger logger(LOG_MAIN, "TaskBrowserAuth");
 
 QByteArray generatePkceCodeVerifier() {
   QRandomGenerator* generator = QRandomGenerator::system();
@@ -41,15 +41,15 @@ QByteArray generatePkceCodeVerifier() {
 
 }  // anonymous namespace
 
-TaskAuthenticate::TaskAuthenticate() : Task("TaskAuthenticate") {
-  MVPN_COUNT_CTOR(TaskAuthenticate);
+TaskBrowserAuth::TaskBrowserAuth() : Task("TaskBrowserAuth") {
+  MVPN_COUNT_CTOR(TaskBrowserAuth);
 }
 
-TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
+TaskBrowserAuth::~TaskBrowserAuth() { MVPN_COUNT_DTOR(TaskBrowserAuth); }
 
-void TaskAuthenticate::run(MozillaVPN* vpn) {
+void TaskBrowserAuth::run(MozillaVPN* vpn) {
   Q_ASSERT(vpn);
-  logger.log() << "TaskAuthenticate::Run";
+  logger.log() << "TaskBrowserAuth::Run";
 
   Q_ASSERT(!m_authenticationListener);
 
@@ -117,8 +117,8 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   m_authenticationListener->start(vpn, url, query);
 }
 
-void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
-                                               const QByteArray& data) {
+void TaskBrowserAuth::authenticationCompleted(MozillaVPN* vpn,
+                                              const QByteArray& data) {
   logger.log() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);

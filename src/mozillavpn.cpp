@@ -17,12 +17,12 @@
 #include "settingsholder.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
-#include "tasks/authenticate/taskauthenticate.h"
+#include "tasks/authenticate/taskbrowserauth.h"
+#include "tasks/authenticate/taskpasswordauth.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "tasks/passwordauth/taskpasswordauth.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
@@ -374,7 +374,7 @@ void MozillaVPN::authenticate(const QString& username,
 
   scheduleTask(new TaskHeartbeat());
   if (username.isNull() || password.isNull()) {
-    scheduleTask(new TaskAuthenticate());
+    scheduleTask(new TaskBrowserAuth());
   } else {
     scheduleTask(new TaskPasswordAuth(username, password));
   }

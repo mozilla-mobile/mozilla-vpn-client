@@ -9,8 +9,8 @@
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "tasks/authenticate/taskauthenticate.h"
-#include "tasks/passwordauth/taskpasswordauth.h"
+#include "tasks/authenticate/taskbrowserauth.h"
+#include "tasks/authenticate/taskpasswordauth.h"
 
 #ifdef MVPN_WINDOWS
 #  include <windows.h>
