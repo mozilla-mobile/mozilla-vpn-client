@@ -161,6 +161,26 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    QObject* parent, const QString& email, const QByteArray& authpw,
+    const QMap<QString, QString>& qdata) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+NetworkRequest* NetworkRequest::createForFxaAuthz(
+    QObject* parent, const QByteArray& session,
+    const QMap<QString, QString>& qdata) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
 void NetworkRequest::replyFinished() {}
 
 void NetworkRequest::timeout() {}
