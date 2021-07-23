@@ -82,9 +82,17 @@ int CommandLogin::run(QStringList& tokens) {
           vpn.state() == MozillaVPN::StateMain) {
         loop.exit();
       }
+      if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+        loop.exit();
+      }
     });
     loop.exec();
 
+    if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {
+      QTextStream stream(stdout);
+      stream << "Authentication failed" << Qt::endl;
+      return 1;
+    }
     if (!vpn.deviceModel()->hasCurrentDevice(vpn.keys())) {
       QTextStream stream(stdout);
       stream << "Device limit reached" << Qt::endl;

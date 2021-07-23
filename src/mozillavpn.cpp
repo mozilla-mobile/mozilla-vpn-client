@@ -807,9 +807,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::AuthenticationError:
-      if (m_userAuthenticated) {
-        alert = AuthenticationFailedAlert;
-      }
+      alert = AuthenticationFailedAlert;
       break;
 
     case ErrorHandler::ControllerError:
