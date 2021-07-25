@@ -19,16 +19,21 @@ class WireguardUtilsWindows final : public WireguardUtils {
 
   bool interfaceExists() override { return m_tunnel.isRunning(); }
   bool addInterface(const InterfaceConfig& config) override;
-  bool updateInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
+
+  bool updatePeer(const InterfaceConfig& config) override;
+  bool deletePeer(const QString& pubkey) override;
+
   peerBytes getThroughputForInterface() override;
-  bool updateRoutePrefix(const IPAddressRange& prefix) override;
-  void flushRoutes() override;
+  bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
 
  signals:
   void backendFailure();
 
  private:
+  void buildMibForwardRow(const IPAddressRange& prefix, void* row);
+
   quint64 m_luid = 0;
   WindowsTunnelService m_tunnel;
 };

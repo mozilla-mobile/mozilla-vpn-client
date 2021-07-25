@@ -73,16 +73,18 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
 QByteArray WindowsDaemon::getStatus() {
   logger.debug() << "Status request";
 
+  bool connected = m_connections.contains(0);
   QJsonObject obj;
   obj.insert("type", "status");
-  obj.insert("connected", m_connected);
+  obj.insert("connected", connected);
 
-  if (m_connected) {
+  if (connected) {
+    const ConnectionState& state = m_connections.value(0).m_config;
     WireguardUtilsWindows::peerBytes pb =
         m_wgutils->getThroughputForInterface();
-    obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
-    obj.insert("deviceIpv4Address", m_lastConfig.m_deviceIpv4Address);
-    obj.insert("date", m_connectionDate.toString());
+    obj.insert("serverIpv4Gateway", state.m_config.m_serverIpv4Gateway);
+    obj.insert("deviceIpv4Address", state.m_config.m_deviceIpv4Address);
+    obj.insert("date", state.m_date.toString());
     obj.insert("txBytes", QJsonValue(pb.txBytes));
     obj.insert("rxBytes", QJsonValue(pb.rxBytes));
   }
@@ -92,11 +94,17 @@ QByteArray WindowsDaemon::getStatus() {
 
 bool WindowsDaemon::supportServerSwitching(
     const InterfaceConfig& config) const {
-  return m_lastConfig.m_privateKey == config.m_privateKey &&
-         m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+  if (!m_connections.contains(config.m_hopindex)) {
+    return false;
+  }
+  const InterfaceConfig& current =
+      m_connections.value(config.m_hopindex).m_config;
+
+  return current.m_privateKey == config.m_privateKey &&
+         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
+         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
+         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
+         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
 }
 
 void WindowsDaemon::monitorBackendFailure() {

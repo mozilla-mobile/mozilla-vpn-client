@@ -314,14 +314,14 @@ WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
 
 bool WireguardUtilsLinux::updateRoutePrefix(const IPAddressRange& prefix,
                                             int hopindex) {
-  logger.log() << "Adding route to" << prefix.toString();
+  logger.debug() << "Adding route to" << prefix.toString();
   int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
   return rtmSendRoute(RTM_NEWROUTE, flags, prefix, hopindex);
 }
 
 bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddressRange& prefix,
                                             int hopindex) {
-  logger.log() << "Removing route to" << prefix.toString();
+  logger.debug() << "Removing route to" << prefix.toString();
   int flags = NLM_F_REQUEST | NLM_F_ACK;
   return rtmSendRoute(RTM_DELROUTE, flags, prefix, hopindex);
 }

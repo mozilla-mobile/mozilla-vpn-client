@@ -146,7 +146,7 @@ bool FeatureList::inAppPurchaseSupported() const {
 }
 
 bool FeatureList::multihopSupported() const {
-#if defined(MVPN_LINUX)
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS)
   return true;
 #else
   return false;

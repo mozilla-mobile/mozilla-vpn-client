@@ -75,10 +75,8 @@ void LinuxController::activate(
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
-  m_hopcount = serverList.count();
-
   // Activate connections starting from the outermost tunnel
-  for (int hopindex = m_hopcount - 1; hopindex > 0; hopindex--) {
+  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
     const Server& hop = serverList[hopindex];
     const Server& next = serverList[hopindex - 1];
     QList<IPAddressRange> hopAddressRanges = {
@@ -108,10 +106,8 @@ void LinuxController::deactivate(Reason reason) {
     return;
   }
 
-  for (int hopindex = 0; hopindex < m_hopcount; hopindex++) {
-    connect(m_dbus->deactivate(hopindex), &QDBusPendingCallWatcher::finished,
-            this, &LinuxController::operationCompleted);
-  }
+  connect(m_dbus->deactivate(), &QDBusPendingCallWatcher::finished, this,
+          &LinuxController::operationCompleted);
 }
 
 void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {

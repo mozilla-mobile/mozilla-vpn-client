@@ -42,24 +42,42 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "[Interface]\n";
   out << "PrivateKey = " << config.m_privateKey << "\n";
 
-  QStringList addresses(config.m_deviceIpv4Address);
-  QStringList dnsServers(config.m_dnsServer);
-  if (config.m_ipv6Enabled) {
+  QStringList addresses;
+  if (!config.m_deviceIpv4Address.isNull()) {
+    addresses.append(config.m_deviceIpv4Address);
+  }
+  if (!config.m_deviceIpv6Address.isNull()) {
     addresses.append(config.m_deviceIpv6Address);
-    // If the DNS is not the Gateway, it's a user defined DNS
-    // thus, not add any other :)
-    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
-      dnsServers.append(config.m_serverIpv6Gateway);
-    }
+  }
+  if (addresses.isEmpty()) {
+    logger.log() << "Failed to create WG quick config with no addresses";
+    return false;
   }
   out << "Address = " << addresses.join(", ") << "\n";
-  out << "DNS = " << dnsServers.join(", ") << "\n";
+
+  if (!config.m_dnsServer.isNull()) {
+    QStringList dnsServers(config.m_dnsServer);
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if ((config.m_ipv6Enabled) &&
+        (config.m_dnsServer == config.m_serverIpv4Gateway)) {
+      dnsServers.append(config.m_deviceIpv6Address);
+    }
+    out << "DNS = " << dnsServers.join(", ") << "\n";
+  }
 
   // If any extra config was provided, append it now.
   for (const QString& key : extra.keys()) {
     out << key << " = " << extra[key] << "\n";
   }
 
+  // For windows, we don't want to include the peer configuration since they
+  // will be passed later as a UAPI command. and we need to fiddle with the
+  // interface in between creation and peer bringup.
+  //
+  // This function should go away as soon as we fixup the Mac implementation
+  // anyways.
+#ifndef MVPN_WINDOWS
   out << "\n[Peer]\n";
   out << "PublicKey = " << config.m_serverPublicKey << "\n";
   out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"
@@ -77,6 +95,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
     ranges.append(ip.toString());
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
+#endif
 
 #ifdef QT_DEBUG
   logger.debug() << content;

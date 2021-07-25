@@ -43,7 +43,6 @@ class LinuxController final : public ControllerImpl {
   void hopDisconnected(int hopindex);
 
  private:
-  int m_hopcount;
   DBusClient* m_dbus = nullptr;
 };
 

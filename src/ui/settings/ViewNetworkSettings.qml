@@ -101,8 +101,7 @@ Item {
             VPNCheckBoxRow {
                 id: multihopTunnel
                 objectName: "settingMultihopTunnel"
-
-                visible: VPNFeatureList.multihopTunnelSupported
+                visible: VPNFeatureList.multihopSupported
                 Layout.rightMargin: Theme.windowMargin
 
                 //% "Multihop tunnel"

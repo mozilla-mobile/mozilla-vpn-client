@@ -26,11 +26,10 @@ class Daemon : public QObject {
 
   static Daemon* instance();
 
-  bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
+  static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
   virtual bool activate(const InterfaceConfig& config);
-  virtual bool deactivate(int hopindex, bool emitSignals = true);
-  virtual bool deactivateAll(bool emitSignals = true);
+  virtual bool deactivate(bool emitSignals = true);
 
   // Explose a JSON object with the daemon status.
   virtual QByteArray getStatus() = 0;
