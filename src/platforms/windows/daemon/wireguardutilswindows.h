@@ -22,7 +22,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool updateInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
   peerBytes getThroughputForInterface() override;
-  bool addRoutePrefix(const IPAddressRange& prefix) override;
+  bool updateRoutePrefix(const IPAddressRange& prefix) override;
   void flushRoutes() override;
 
  signals:

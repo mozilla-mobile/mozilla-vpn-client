@@ -82,7 +82,6 @@ void LinuxController::activate(
     const Server& hop = serverList[hopindex];
     const Server& next = serverList[hopindex - 1];
     QList<IPAddressRange> hopAddressRanges = {
-        IPAddressRange(hop.ipv4Gateway()), IPAddressRange(hop.ipv6Gateway()),
         IPAddressRange(next.ipv4AddrIn()), IPAddressRange(next.ipv6AddrIn())};
     logger.debug() << "LinuxController hopindex" << hopindex << "activated";
     connect(m_dbus->activate(hop, device, keys, hopindex, hopAddressRanges,

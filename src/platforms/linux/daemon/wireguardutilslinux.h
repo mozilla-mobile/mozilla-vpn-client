@@ -16,14 +16,16 @@ class WireguardUtilsLinux final : public WireguardUtils {
  public:
   WireguardUtilsLinux(QObject* parent);
   ~WireguardUtilsLinux();
-  bool interfaceExists(const QString& ifname) override;
+  bool interfaceExists() override;
   bool addInterface(const InterfaceConfig& config) override;
-  bool updateInterface(const InterfaceConfig& config) override;
-  bool deleteInterface(const QString& ifname) override;
-  bool addRoutePrefix(const IPAddressRange& prefix,
-                      const QString& ifname) override;
-  void flushRoutes(const QString& ifname) override;
-  peerBytes getThroughputForInterface(const QString& ifname) override;
+  bool deleteInterface() override;
+
+  bool updatePeer(const InterfaceConfig& config) override;
+  bool deletePeer(const QString& pubkey) override;
+
+  bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  peerBytes getThroughputForInterface() override;
 
   QString getDefaultCgroup() const { return m_cgroups; }
   QString getExcludeCgroup() const;
@@ -31,13 +33,11 @@ class WireguardUtilsLinux final : public WireguardUtils {
 
  private:
   QStringList currentInterfaces();
-  bool setPeerEndpoint(struct sockaddr* peerEndpoint, const QString& address,
-                       int port);
+  bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);
   bool addPeerPrefix(struct wg_peer* peer, const IPAddressRange& prefix);
-  bool buildPeerForDevice(struct wg_device* device,
-                          const InterfaceConfig& conf);
-  bool setRouteRules(int action, int flags, int addrfamily);
-  bool setRoutePrefix(int action, int flags, const IPAddressRange& prefix);
+  bool rtmSendRule(int action, int flags, int addrfamily);
+  bool rtmSendRoute(int action, int flags, const IPAddressRange& prefix,
+                    int hopindex);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool buildAllowedIp(struct wg_allowedip*,
                              const IPAddressRange& prefix);

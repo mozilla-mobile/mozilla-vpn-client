@@ -43,7 +43,6 @@ class DBusService final : public Daemon {
 
  protected:
   bool supportServerSwitching(const InterfaceConfig& config) const override;
-  bool switchServer(const InterfaceConfig& config) override;
 
   bool supportWGUtils() const override { return true; }
   WireguardUtils* wgutils() override;
@@ -52,7 +51,6 @@ class DBusService final : public Daemon {
   bool supportDnsUtils() const override { return true; }
   DnsUtils* dnsutils() override;
 
-  QString interfaceName(int hopindex) override;
   QByteArray getStatus() override;
 
  private:

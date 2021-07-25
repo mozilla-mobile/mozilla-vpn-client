@@ -126,7 +126,7 @@ bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
+bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix) {
   DWORD result;
   MIB_IPFORWARD_ROW2 entry;
   InitializeIpForwardEntry(&entry);

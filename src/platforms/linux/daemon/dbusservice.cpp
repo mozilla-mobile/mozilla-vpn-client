@@ -57,23 +57,15 @@ DnsUtils* DBusService::dnsutils() {
   return m_dnsutils;
 }
 
-QString DBusService::interfaceName(int hopindex) {
-  if (hopindex == 0) {
-    return WG_INTERFACE;
-  } else {
-    return QString("mozhop%1").arg(hopindex);
-  }
-}
-
 void DBusService::setAdaptor(DbusAdaptor* adaptor) {
   Q_ASSERT(!m_adaptor);
   m_adaptor = adaptor;
 }
 
 bool DBusService::removeInterfaceIfExists() {
-  if (wgutils()->interfaceExists(WG_INTERFACE)) {
+  if (wgutils()->interfaceExists()) {
     logger.warning() << "Device already exists. Let's remove it.";
-    if (!wgutils()->deleteInterface(WG_INTERFACE)) {
+    if (!wgutils()->deleteInterface()) {
       logger.error() << "Failed to remove the device.";
       return false;
     }
@@ -137,7 +129,7 @@ QByteArray DBusService::getStatus() {
   }
 
   const InterfaceConfig& config = m_connections.value(0).m_config;
-  if (!wgutils()->interfaceExists(config.m_ifname)) {
+  if (!wgutils()->interfaceExists()) {
     logger.error() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
@@ -146,8 +138,7 @@ QByteArray DBusService::getStatus() {
   json.insert("status", QJsonValue(true));
   json.insert("serverIpv4Gateway", QJsonValue(config.m_serverIpv4Gateway));
   json.insert("deviceIpv4Address", QJsonValue(config.m_deviceIpv4Address));
-  WireguardUtilsLinux::peerBytes pb =
-      wgutils()->getThroughputForInterface(config.m_ifname);
+  WireguardUtilsLinux::peerBytes pb = wgutils()->getThroughputForInterface();
   json.insert("txBytes", QJsonValue(pb.txBytes));
   json.insert("rxBytes", QJsonValue(pb.rxBytes));
 
@@ -157,11 +148,6 @@ QByteArray DBusService::getStatus() {
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
   return Daemon::logs();
-}
-
-bool DBusService::switchServer(const InterfaceConfig& config) {
-  logger.debug() << "Switching server for" << config.m_ifname;
-  return wgutils()->updateInterface(config);
 }
 
 bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {

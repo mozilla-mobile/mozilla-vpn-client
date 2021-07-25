@@ -24,14 +24,18 @@ class WireguardUtils : public QObject {
   explicit WireguardUtils(QObject* parent) : QObject(parent){};
   virtual ~WireguardUtils() = default;
 
-  virtual bool interfaceExists(const QString& ifname) = 0;
+  virtual bool interfaceExists() = 0;
   virtual bool addInterface(const InterfaceConfig& config) = 0;
-  virtual bool updateInterface(const InterfaceConfig& config) = 0;
-  virtual bool deleteInterface(const QString& ifname) = 0;
-  virtual peerBytes getThroughputForInterface(const QString& ifname) = 0;
-  virtual bool addRoutePrefix(const IPAddressRange& prefix,
-                              const QString& ifname) = 0;
-  virtual void flushRoutes(const QString& ifname) = 0;
+  virtual bool deleteInterface() = 0;
+
+  virtual bool updatePeer(const InterfaceConfig& config) = 0;
+  virtual bool deletePeer(const QString& pubkey) = 0;
+
+  virtual peerBytes getThroughputForInterface() = 0;
+  virtual bool updateRoutePrefix(const IPAddressRange& prefix,
+                                 int hopindex) = 0;
+  virtual bool deleteRoutePrefix(const IPAddressRange& prefix,
+                                 int hopindex) = 0;
 };
 
 #endif  // WIREGUARDUTILS_H

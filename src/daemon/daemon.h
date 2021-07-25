@@ -28,7 +28,6 @@ class Daemon : public QObject {
 
   bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
-  virtual QString interfaceName(int hopindex) = 0;
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(int hopindex, bool emitSignals = true);
   virtual bool deactivateAll(bool emitSignals = true);
