@@ -23,6 +23,7 @@ class IPAddressRange final {
   IPAddressRange(const QString& ipAddress, uint32_t range, IPAddressType type);
   IPAddressRange(const IPAddressRange& other);
   IPAddressRange& operator=(const IPAddressRange& other);
+  bool operator==(const IPAddressRange& other);
   ~IPAddressRange();
 
   const QString& ipAddress() const { return m_ipAddress; }

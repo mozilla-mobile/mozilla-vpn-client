@@ -6,9 +6,13 @@
 #include "logger.h"
 
 #include <QDir>
+#include <QtEndian>
+#include <QHostAddress>
 #include <QStandardPaths>
+#include <QNetworkInterface>
 
 #include <Windows.h>
+#include <iphlpapi.h>
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
 
@@ -98,4 +102,34 @@ QString WindowsCommons::tunnelLogFile() {
   }
 
   return QString();
+}
+
+// static
+int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
+  logger.log() << "Getting Current Internet Adapter that routes to"
+               << dst.toString();
+  quint32_be ipBigEndian;
+  quint32 ip = dst.toIPv4Address();
+  qToBigEndian(ip, &ipBigEndian);
+  _MIB_IPFORWARDROW routeInfo;
+  auto result = GetBestRoute(ipBigEndian, 0, &routeInfo);
+  if (result != NO_ERROR) {
+    return -1;
+  }
+  auto adapter =
+      QNetworkInterface::interfaceFromIndex(routeInfo.dwForwardIfIndex);
+  logger.log() << "Internet Adapter:" << adapter.name();
+  return routeInfo.dwForwardIfIndex;
+}
+
+// static
+int WindowsCommons::VPNAdapterIndex() {
+  // For someReason QNetworkInterface::fromName(MozillaVPN) does not work >:(
+  auto adapterList = QNetworkInterface::allInterfaces();
+  for (const auto& adapter : adapterList) {
+    if (adapter.humanReadableName().contains("MozillaVPN")) {
+      return adapter.index();
+    }
+  }
+  return -1;
 }

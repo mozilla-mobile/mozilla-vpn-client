@@ -20,6 +20,7 @@ class WindowsDaemon final : public Daemon {
   ~WindowsDaemon();
 
   QByteArray getStatus() override;
+  void prepareActivation(const InterfaceConfig& config) override;
 
  protected:
   bool supportWGUtils() const override { return true; }
@@ -40,6 +41,7 @@ class WindowsDaemon final : public Daemon {
   };
 
   State m_state = Inactive;
+  int m_inetAdapterIndex = -1;
 
   WireguardUtilsWindows* m_wgutils = nullptr;
   WindowsSplitTunnel m_splitTunnelManager;

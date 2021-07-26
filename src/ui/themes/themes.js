@@ -30,6 +30,8 @@ const redPressed = "#C50042";
 const redfocusOutline = "#66C50042";
 const white = "#FFFFFF"
 
+const checkBoxWarning = "#C45A27";
+
 const errorFocusOutline = "#FFBDC5";
 
 const fontColor = "#6D6D6E";

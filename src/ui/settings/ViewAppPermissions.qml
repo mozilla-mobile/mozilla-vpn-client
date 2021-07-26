@@ -35,10 +35,12 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-        flickContentHeight:  VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : enabledList.y
+        flickContentHeight:  VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height
         anchors.top: menu.bottom
         height: root.height - menu.height
-        width: root.width
+        anchors.left: parent.left
+        anchors.right: parent.right
+        interactive: (VPNSettings.protectSelectedApps)
         Component.onCompleted: {
             VPNAppPermissions.requestApplist();
             Sample.appPermissionsViewOpened.record();
@@ -49,15 +51,15 @@ Item {
 
         VPNCheckBoxAlert {
             id: vpnOnAlert
-
-            anchors.top: parent.top
-            anchors.topMargin: Theme.windowMargin
+            
             visible: !vpnFlickable.vpnIsOff
             anchors.leftMargin: Theme.windowMargin
             anchors.left: parent.left
             //% "VPN must be off to edit App Permissions"
             //: Associated to a group of settings that require the VPN to be disconnected to change
             errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+            anchors.top: parent.top
+            anchors.topMargin: Theme.windowMargin
         }
 
         VPNToggleCard {

@@ -18,7 +18,7 @@ class BigInt final {
     memset(m_value.data(), 0, bytes);
   }
 
-  BigInt(const BigInt& other) { *this = other; }
+  BigInt(const BigInt& other) { m_value = other.m_value; }
 
   const uint8_t* value() const { return m_value.data(); }
 
@@ -27,23 +27,14 @@ class BigInt final {
   // Assign operator.
 
   BigInt& operator=(const BigInt& other) {
-    Q_ASSERT(other.size() == size());
-    memcpy(m_value.data(), other.m_value.data(), size());
+    m_value = other.m_value;
     return *this;
   }
 
   // Comparison operators.
 
   bool operator==(const BigInt& other) const {
-    Q_ASSERT(size() == other.size());
-
-    for (int i = 0; i < size(); ++i) {
-      if (m_value[i] != other.m_value[i]) {
-        return false;
-      }
-    }
-
-    return true;
+    return m_value == other.m_value;
   }
 
   bool operator!=(const BigInt& other) const { return !(*this == other); }
