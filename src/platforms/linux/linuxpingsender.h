@@ -30,6 +30,7 @@ class LinuxPingSender final : public PingSender {
 
  private:
   QSocketNotifier* m_notifier = nullptr;
+  QString m_source;
   int m_socket = 0;
   quint16 m_ident = 0;
 };
