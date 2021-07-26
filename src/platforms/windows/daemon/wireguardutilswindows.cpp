@@ -46,9 +46,6 @@ WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
     if (!line.contains('=')) {
       continue;
     }
-    if (!line.startsWith("allowed_ip=")) {
-      logger.log() << "DEBUG:" << line;
-    }
 
     QList<QString> parts = line.split('=');
     if (parts[0] == "tx_bytes") {

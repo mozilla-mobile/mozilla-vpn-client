@@ -42,44 +42,6 @@ type interfaceWatcher struct {
 	storedEvents            []interfaceWatcherEvent
 }
 
-func hasDefaultRoute(family winipcfg.AddressFamily, peers []conf.Peer) bool {
-	var (
-		foundV401    bool
-		foundV41281  bool
-		foundV600001 bool
-		foundV680001 bool
-		foundV400    bool
-		foundV600    bool
-		v40          = [4]byte{}
-		v60          = [16]byte{}
-		v48          = [4]byte{0x80}
-		v68          = [16]byte{0x80}
-	)
-	for _, peer := range peers {
-		for _, allowedip := range peer.AllowedIPs {
-			if allowedip.Cidr == 1 && len(allowedip.IP) == 16 && allowedip.IP.Equal(v60[:]) {
-				foundV600001 = true
-			} else if allowedip.Cidr == 1 && len(allowedip.IP) == 16 && allowedip.IP.Equal(v68[:]) {
-				foundV680001 = true
-			} else if allowedip.Cidr == 1 && len(allowedip.IP) == 4 && allowedip.IP.Equal(v40[:]) {
-				foundV401 = true
-			} else if allowedip.Cidr == 1 && len(allowedip.IP) == 4 && allowedip.IP.Equal(v48[:]) {
-				foundV41281 = true
-			} else if allowedip.Cidr == 0 && len(allowedip.IP) == 16 && allowedip.IP.Equal(v60[:]) {
-				foundV600 = true
-			} else if allowedip.Cidr == 0 && len(allowedip.IP) == 4 && allowedip.IP.Equal(v40[:]) {
-				foundV400 = true
-			}
-		}
-	}
-	if family == windows.AF_INET {
-		return foundV400 || (foundV401 && foundV41281)
-	} else if family == windows.AF_INET6 {
-		return foundV600 || (foundV600001 && foundV680001)
-	}
-	return false
-}
-
 func (iw *interfaceWatcher) setup(family winipcfg.AddressFamily) {
 	var changeCallbacks *[]winipcfg.ChangeCallback
 	var ipversion string
@@ -99,13 +61,6 @@ func (iw *interfaceWatcher) setup(family winipcfg.AddressFamily) {
 		*changeCallbacks = nil
 	}
 	var err error
-
-	log.Printf("Monitoring default %s routes", ipversion)
-	*changeCallbacks, err = monitorDefaultRoutes(family, iw.binder, iw.conf.Interface.MTU == 0, hasDefaultRoute(family, iw.conf.Peers), iw.tun)
-	if err != nil {
-		iw.errors <- interfaceWatcherError{services.ErrorBindSocketsToDefaultRoutes, err}
-		return
-	}
 
 	log.Printf("Setting device %s addresses", ipversion)
 	err = configureInterface(family, iw.conf, iw.tun)
