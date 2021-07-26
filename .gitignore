@@ -67,6 +67,9 @@ tunnel.dll
 tunnel.h
 *.wixobj
 *.msm
+*.dll
+.vs/
+*.msi
 MozillaVPN.exe
 MozillaVPN.exp
 MozillaVPN.lib
@@ -75,6 +78,9 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 windows/installer/x64/
 windows/tunnel/x64/
+windows/split-tunnel/*
+!windows/split-tunnel/get.ps1
+
 
 # WASM
 mozillavpn.js

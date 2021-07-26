@@ -50,6 +50,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'com.android.installreferrer:installreferrer:1.1'
+    implementation 'com.android.billingclient:billing-ktx:4.0.0'
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
     implementation "androidx.security:security-identity-credential:1.0.0-alpha02"
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.0.10"

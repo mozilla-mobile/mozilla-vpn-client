@@ -6,13 +6,16 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
+#include "platforms/windows/windowsservicemanager.h"
 #include "wgquickprocess.h"
+#include "windowsfirewall.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QLocalSocket>
+#include <QNetworkInterface>
 #include <QScopeGuard>
 #include <QTextStream>
 #include <QtGlobal>
@@ -23,7 +26,7 @@ namespace {
 Logger logger(LOG_WINDOWS, "WindowsDaemon");
 }
 
-WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
+WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
   MVPN_COUNT_CTOR(WindowsDaemon);
 
   m_wgutils = new WireguardUtilsWindows(this);
@@ -35,6 +38,36 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
 WindowsDaemon::~WindowsDaemon() {
   MVPN_COUNT_DTOR(WindowsDaemon);
   logger.log() << "Daemon released";
+}
+void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
+  // Before creating the interface we need to check which adapter
+  // routes to the server endpoint
+  auto serveraddr = QHostAddress(config.m_serverIpv4AddrIn);
+  m_inetAdapterIndex = WindowsCommons::AdapterIndexTo(serveraddr);
+}
+
+bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
+  bool splitTunnelEnabled = config.m_vpnDisabledApps.length() > 0;
+
+  if (op == Down) {
+    if (splitTunnelEnabled) {
+      m_splitTunnelManager.stop();
+    }
+    WindowsFirewall::instance()->disableKillSwitch();
+    return true;
+  }
+  if (splitTunnelEnabled) {
+    logger.log() << "Tunnel UP, Starting SplitTunneling";
+    if (!WindowsSplitTunnel::isInstalled()) {
+      logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
+      WindowsSplitTunnel::installDriver();
+    }
+    m_splitTunnelManager.start(m_inetAdapterIndex);
+    m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
+  }
+  WindowsFirewall::instance()->enableKillSwitch(
+      WindowsCommons::VPNAdapterIndex(), config);
+  return true;
 }
 
 QByteArray WindowsDaemon::getStatus() {

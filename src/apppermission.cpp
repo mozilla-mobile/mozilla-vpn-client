@@ -15,6 +15,8 @@
 #  include "platforms/android/androidapplistprovider.h"
 #elif defined(MVPN_LINUX)
 #  include "platforms/linux/linuxapplistprovider.h"
+#elif defined(MVPN_WINDOWS)
+#  include "platforms/windows/windowsapplistprovider.h"
 #else
 #  include "platforms/dummy/dummyapplistprovider.h"
 #endif
@@ -36,6 +38,8 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
       new AndroidAppListProvider(this);
 #elif defined(MVPN_LINUX)
       new LinuxAppListProvider(this);
+#elif defined(MVPN_WINDOWS)
+      new WindowsAppListProvider(this);
 #else
       new DummyAppListProvider(this);
 #endif
@@ -113,10 +117,16 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   if (!m_applist.isEmpty()) {
     // Check the Disabled-List
     SettingsHolder* settingsHolder = SettingsHolder::instance();
-    foreach (QString blockedAppID, settingsHolder->vpnDisabledApps()) {
-      if (!keys.contains(blockedAppID)) {
-        logger.log() << "Removed obsolete appid" << blockedAppID;
-        settingsHolder->removeVpnDisabledApp(blockedAppID);
+    foreach (QString blockedAppId, settingsHolder->vpnDisabledApps()) {
+      if (!m_listprovider->isValidAppId(blockedAppId)) {
+        // In case the AppID is no longer valid we don't need to keep it
+        logger.log() << "Removed obsolete appid" << blockedAppId;
+        settingsHolder->removeVpnDisabledApp(blockedAppId);
+      } else if (!keys.contains(blockedAppId)) {
+        // In case the AppID is valid but not in our applist, we need to create
+        // an entry
+        logger.log() << "Added missing appid" << blockedAppId;
+        m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
       }
     }
   }
@@ -146,7 +156,7 @@ void AppPermission::unprotectAll() {
   }
   SettingsHolder::instance()->setVpnDisabledApps(allAppIds);
   dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
-};
+}
 
 void AppPermission::openFilePicker() {
   logger.log() << "File picker required";

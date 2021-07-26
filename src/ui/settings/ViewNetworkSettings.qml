@@ -44,18 +44,26 @@ Item {
             }
         }
 
-        ColumnLayout {
+        Column {
             id: col
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.topMargin: 18
+            anchors.topMargin: Theme.windowMargin
             spacing: Theme.windowMargin
+
+            VPNCheckBoxAlert {
+                id: alert
+                //% "VPN must be off to edit these settings"
+                //: Associated to a group of settings that require the VPN to be disconnected to change
+                errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
+            }
 
             VPNCheckBoxRow {
                 id: ipv6
                 objectName: "settingIpv6Enabled"
-                Layout.rightMargin: Theme.windowMargin
+                width: parent.width - Theme.windowMargin
+                showDivider: isEnabled
 
                 //% "IPv6"
                 labelText: qsTrId("vpn.settings.ipv6")
@@ -63,7 +71,6 @@ Item {
                 subLabelText: qsTrId("vpn.settings.ipv6.description")
                 isChecked: (VPNSettings.ipv6Enabled)
                 isEnabled: vpnFlickable.vpnIsOff
-                showDivider: vpnFlickable.vpnIsOff
                 onClicked: {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.ipv6Enabled = !VPNSettings.ipv6Enabled
@@ -75,7 +82,8 @@ Item {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
                 visible: VPNFeatureList.localNetworkAccessSupported
-                Layout.rightMargin: Theme.windowMargin
+                width: parent.width - Theme.windowMargin
+                showDivider: isEnabled
 
                 //% "Local network access"
                 labelText: qsTrId("vpn.settings.lanAccess")
@@ -83,7 +91,6 @@ Item {
                 subLabelText: qsTrId("vpn.settings.lanAccess.description")
                 isChecked: (VPNSettings.localNetworkAccess)
                 isEnabled: vpnFlickable.vpnIsOff
-                showDivider: vpnFlickable.vpnIsOff
                 onClicked: {
                     if (vpnFlickable.vpnIsOff) {
                         VPNSettings.localNetworkAccess = !VPNSettings.localNetworkAccess
@@ -93,8 +100,11 @@ Item {
 
             VPNSettingsItem {
                 objectName: "advancedDNSSettings"
-                Layout.leftMargin: Theme.windowMargin / 2
-                Layout.rightMargin: Theme.windowMargin / 2
+                anchors.left: parent.left
+                anchors.right: parent.right
+                Layout.fillWidth: undefined
+                Layout.preferredHeight: undefined
+                width: parent.width - Theme.windowMargin
 
                 //% "Advanced DNS Settings"
                 settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
@@ -105,17 +115,6 @@ Item {
                 enabled: vpnFlickable.vpnIsOff
                 opacity: enabled ? 1 : .5
             }
-        }
-
-        VPNCheckBoxAlert {
-            visible: !vpnFlickable.vpnIsOff
-            anchors.top: col.bottom
-            anchors.topMargin: 4
-            anchors.leftMargin: 48
-
-            //% "VPN must be off to edit these settings"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.vpnMustBeOff")
         }
 
     }

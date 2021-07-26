@@ -93,4 +93,6 @@ constexpr const char* PLATFORM_NAME =
 #endif
     ;
 
+constexpr const char* PLACEHOLDER_USER_DNS = "127.0.0.1";
+
 };  // namespace Constants
