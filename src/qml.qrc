@@ -435,5 +435,6 @@
         <file>ui/resources/plus.svg</file>
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
+        <file>ui/components/VPNSemiMonoLabel.qml</file>
     </qresource>
 </RCC>

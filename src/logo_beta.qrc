@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
         <file>ui/resources/logo-dock-beta.png</file>
-        <file>ui/components/VPNSemiMonoLabel.qml</file>
     </qresource>
 </RCC>
