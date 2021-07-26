@@ -35,6 +35,8 @@ UI_DIR = .ui
 SOURCES += \
         apppermission.cpp \
         authenticationlistener.cpp \
+        authenticationinapp/authenticationinapp.cpp \
+        authenticationinapp/authenticationinapplistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportaldetectionimpl.cpp \
@@ -114,8 +116,7 @@ SOURCES += \
         systemtrayhandler.cpp \
         tasks/accountandservers/taskaccountandservers.cpp \
         tasks/adddevice/taskadddevice.cpp \
-        tasks/authenticate/taskbrowserauth.cpp \
-        tasks/authenticate/taskpasswordauth.cpp \
+        tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
@@ -133,6 +134,8 @@ HEADERS += \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
+        authenticationinapp/authenticationinapp.h \
+        authenticationinapp/authenticationinapplistener.h \
         bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -213,8 +216,7 @@ HEADERS += \
         task.h \
         tasks/accountandservers/taskaccountandservers.h \
         tasks/adddevice/taskadddevice.h \
-        tasks/authenticate/taskbrowserauth.h \
-        tasks/authenticate/taskpasswordauth.h \
+        tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \

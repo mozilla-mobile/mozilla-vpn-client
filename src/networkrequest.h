@@ -12,6 +12,7 @@
 
 class QHostAddress;
 class QNetworkAccessManager;
+class QurlQuery;
 
 class NetworkRequest final : public QObject {
   Q_OBJECT
@@ -60,14 +61,36 @@ class NetworkRequest final : public QObject {
                                            const qint8 rating,
                                            const QString& category);
 
+  static NetworkRequest* createForFxaAccountStatus(QObject* parent,
+                                                   const QString& emailAddress);
+
+  static NetworkRequest* createForFxaAccountCreation(QObject* parent,
+                                                     const QString& email,
+                                                     const QByteArray& authpw,
+                                                     const QUrlQuery& query);
+
   static NetworkRequest* createForFxaLogin(QObject* parent,
                                            const QString& email,
                                            const QByteArray& authpw,
-                                           const QMap<QString, QString>& qdata);
+                                           const QString& verificationCode,
+                                           const QUrlQuery& query);
+
+  static NetworkRequest* createForFxaSendUnblockCode(
+      QObject* parent, const QString& emailAddress);
+
+  static NetworkRequest* createForFxaSessionVerifyCode(
+      QObject* parent, const QByteArray& sessionToken, const QString& code,
+      const QUrlQuery& query);
+
+  static NetworkRequest* createForFxaSessionResendCode(
+      QObject* parent, const QByteArray& sessionToken);
 
   static NetworkRequest* createForFxaAuthz(QObject* parent,
-                                           const QByteArray& token,
-                                           const QMap<QString, QString>& qdata);
+                                           const QByteArray& sessionToken,
+                                           const QUrlQuery& query);
+
+  static NetworkRequest* createForFxaSessionDestroy(
+      QObject* parent, const QByteArray& sessionToken);
 
 #ifdef MVPN_IOS
   static NetworkRequest* createForIOSProducts(QObject* parent);

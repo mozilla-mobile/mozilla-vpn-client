@@ -177,7 +177,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateAuthenticating.qml"
+                        source: VPNFeatureList.authenticationInApp ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
                     }
 
                 },

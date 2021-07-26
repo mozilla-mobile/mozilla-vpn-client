@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlogin.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "tasks/authenticate/taskbrowserauth.h"
-#include "tasks/authenticate/taskpasswordauth.h"
+#include "tasks/authenticate/taskauthenticate.h"
 
 #ifdef MVPN_WINDOWS
 #  include <windows.h>
@@ -58,13 +58,6 @@ int CommandLogin::run(QStringList& tokens) {
     return 0;
   }
 
-  QString email;
-  QString password;
-  if (passwordOption.m_set) {
-    email = getInput("Username:");
-    password = getPassword("Password:");
-  }
-
   return runCommandLineApp([&] {
     if (SettingsHolder::instance()->hasToken()) {
       QTextStream stream(stdout);
@@ -73,9 +66,105 @@ int CommandLogin::run(QStringList& tokens) {
     }
 
     MozillaVPN vpn;
-    vpn.authenticate(email, password);
+
+    if (!passwordOption.m_set) {
+      vpn.authenticate(MozillaVPN::AuthenticationInBrowser);
+    } else {
+      vpn.authenticate(MozillaVPN::AuthenticationInApp);
+    }
 
     QEventLoop loop;
+
+    if (passwordOption.m_set) {
+      AuthenticationInApp* aip = AuthenticationInApp::instance();
+
+      QObject::connect(aip, &AuthenticationInApp::stateChanged, [&] {
+        switch (AuthenticationInApp::instance()->state()) {
+          case AuthenticationInApp::StateInitializing:
+            break;
+
+          case AuthenticationInApp::StateStart: {
+            QString email = getInput("Username:");
+            QString password = getPassword("Password:");
+            AuthenticationInApp::instance()->signInOrUp(email, password);
+          } break;
+
+          case AuthenticationInApp::StateAccountStatus: {
+            QTextStream stream(stdout);
+            stream << "Checking the account..." << Qt::endl;
+          } break;
+
+          case AuthenticationInApp::StateSignIn: {
+            QTextStream stream(stdout);
+            stream << "Sign in..." << Qt::endl;
+          } break;
+
+          case AuthenticationInApp::StateSignUp: {
+            QTextStream stream(stdout);
+            stream << "Sign up is not supported in CLI mode." << Qt::endl;
+            loop.exit();
+          } break;
+
+          case AuthenticationInApp::StateEmailVerification: {
+            QString code = getInput("Email verification needed. Code:");
+            AuthenticationInApp::instance()->verifyEmailCode(code);
+          } break;
+
+          case AuthenticationInApp::StateAccountVerification: {
+            AuthenticationInApp::instance()->resendVerificationAccountCode();
+            QString code = getInput("Account verification needed. Code:");
+            AuthenticationInApp::instance()->verifyAccountCode(code);
+          } break;
+        }
+      });
+
+      QObject::connect(
+          aip, &AuthenticationInApp::errorOccurred,
+          [&](AuthenticationInApp::ErrorType error) {
+            QTextStream stream(stdout);
+            switch (error) {
+              case AuthenticationInApp::ErrorAccountAlreadyExists:
+                [[fallthrough]];
+              case AuthenticationInApp::ErrorEmailAlreadyExists:
+                stream << "Account already exists" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorUnknownAccount:
+                stream << "Unknown account" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorIncorrectPassword:
+                stream << "Incorrect password!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidParameter:
+                stream << "Invalid parameter!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidEmailCode:
+                stream << "Invalid email code!" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorEmailTypeNotSupported:
+                stream << "Email type not supported" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin:
+                stream << "This email can not be used to login" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorFailedToSendEmail:
+                stream << "Failed to send email" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorTooManyRequests:
+                stream << "Too many requests. Slow down, please." << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidPhoneNumber:
+                stream << "Invalid phone number?!?" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidRegion:
+                stream << "Invalid region" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorServerUnavailable:
+                stream << "The server is down" << Qt::endl;
+                break;
+            }
+          });
+    }
+
     QObject::connect(&vpn, &MozillaVPN::stateChanged, [&] {
       if (vpn.state() == MozillaVPN::StatePostAuthentication ||
           vpn.state() == MozillaVPN::StateTelemetryPolicy ||
@@ -86,6 +175,7 @@ int CommandLogin::run(QStringList& tokens) {
         loop.exit();
       }
     });
+
     loop.exec();
 
     if (vpn.alert() == MozillaVPN::AuthenticationFailedAlert) {

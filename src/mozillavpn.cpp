@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "featurelist.h"
 #include "gleansample.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -17,8 +18,7 @@
 #include "settingsholder.h"
 #include "tasks/accountandservers/taskaccountandservers.h"
 #include "tasks/adddevice/taskadddevice.h"
-#include "tasks/authenticate/taskbrowserauth.h"
-#include "tasks/authenticate/taskpasswordauth.h"
+#include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
@@ -353,31 +353,34 @@ void MozillaVPN::getStarted() {
   authenticate();
 }
 
-void MozillaVPN::authenticate(const QString& username,
-                              const QString& password) {
+void MozillaVPN::authenticate(
+    MozillaVPN::AuthenticationType authenticationType) {
   logger.log() << "Authenticate";
 
   setState(StateAuthenticating);
 
   hideAlert();
 
+  if (authenticationType == DefaultAuthentication) {
+    authenticationType = FeatureList::instance()->authenticationInApp()
+                             ? AuthenticationInApp
+                             : AuthenticationInBrowser;
+  }
+
   if (m_userAuthenticated) {
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
         lo, &LogoutObserver::ready, this,
-        [&] { authenticate(username, password); }, Qt::QueuedConnection);
+        [&] { authenticate(authenticationType); }, Qt::QueuedConnection);
     return;
   }
 
   emit triggerGleanSample(GleanSample::authenticationStarted);
 
   scheduleTask(new TaskHeartbeat());
-  if (username.isNull() || password.isNull()) {
-    scheduleTask(new TaskBrowserAuth());
-  } else {
-    scheduleTask(new TaskPasswordAuth(username, password));
-  }
+
+  scheduleTask(new TaskAuthenticate(authenticationType));
 }
 
 void MozillaVPN::abortAuthentication() {

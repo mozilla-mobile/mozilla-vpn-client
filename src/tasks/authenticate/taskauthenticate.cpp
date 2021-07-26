@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "taskbrowserauth.h"
+#include "taskauthenticate.h"
 #include "authenticationlistener.h"
 #include "constants.h"
 #include "errorhandler.h"
@@ -23,7 +23,7 @@
 
 namespace {
 
-Logger logger(LOG_MAIN, "TaskBrowserAuth");
+Logger logger(LOG_MAIN, "TaskAuthenticate");
 
 QByteArray generatePkceCodeVerifier() {
   QRandomGenerator* generator = QRandomGenerator::system();
@@ -41,15 +41,18 @@ QByteArray generatePkceCodeVerifier() {
 
 }  // anonymous namespace
 
-TaskBrowserAuth::TaskBrowserAuth() : Task("TaskBrowserAuth") {
-  MVPN_COUNT_CTOR(TaskBrowserAuth);
+TaskAuthenticate::TaskAuthenticate(
+    MozillaVPN::AuthenticationType authenticationType)
+    : Task("TaskAuthenticate"), m_authenticationType(authenticationType) {
+  MVPN_COUNT_CTOR(TaskAuthenticate);
+  Q_ASSERT(authenticationType != MozillaVPN::DefaultAuthentication);
 }
 
-TaskBrowserAuth::~TaskBrowserAuth() { MVPN_COUNT_DTOR(TaskBrowserAuth); }
+TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
-void TaskBrowserAuth::run(MozillaVPN* vpn) {
+void TaskAuthenticate::run(MozillaVPN* vpn) {
   Q_ASSERT(vpn);
-  logger.log() << "TaskBrowserAuth::Run";
+  logger.log() << "TaskAuthenticate::Run";
 
   Q_ASSERT(!m_authenticationListener);
 
@@ -59,7 +62,8 @@ void TaskBrowserAuth::run(MozillaVPN* vpn) {
           .toBase64();
   Q_ASSERT(pkceCodeChallenge.length() == 44);
 
-  m_authenticationListener = AuthenticationListener::create(this);
+  m_authenticationListener =
+      AuthenticationListener::create(this, m_authenticationType);
 
   connect(
       m_authenticationListener, &AuthenticationListener::completed,
@@ -98,12 +102,18 @@ void TaskBrowserAuth::run(MozillaVPN* vpn) {
 
   QString path("/api/v2/vpn/login/");
 
+  if (m_authenticationType == MozillaVPN::AuthenticationInApp) {
+    // hack!
+    path.append("android");
+  } else {
+    Q_ASSERT(m_authenticationType == MozillaVPN::AuthenticationInBrowser);
 #if !defined(MVPN_DUMMY)
-  path.append(Constants::PLATFORM_NAME);
+    path.append(Constants::PLATFORM_NAME);
 #else
-  // Let's use linux here.
-  path.append("linux");
+    // Let's use linux here.
+    path.append("linux");
 #endif
+  }
 
   QUrl url(NetworkRequest::apiBaseUrl());
   url.setPath(path);
@@ -117,8 +127,8 @@ void TaskBrowserAuth::run(MozillaVPN* vpn) {
   m_authenticationListener->start(vpn, url, query);
 }
 
-void TaskBrowserAuth::authenticationCompleted(MozillaVPN* vpn,
-                                              const QByteArray& data) {
+void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
+                                               const QByteArray& data) {
   logger.log() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);

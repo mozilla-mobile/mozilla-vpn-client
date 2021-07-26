@@ -2,21 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef TASKBROWSERAUTH_H
-#define TASKBROWSERAUTH_H
+#ifndef TASKAUTHENTICATE_H
+#define TASKAUTHENTICATE_H
 
 #include "task.h"
+#include "mozillavpn.h"
 
 class QByteArray;
 class AuthenticationListener;
 
-class TaskBrowserAuth final : public Task {
+class TaskAuthenticate final : public Task {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(TaskBrowserAuth)
+  Q_DISABLE_COPY_MOVE(TaskAuthenticate)
 
  public:
-  TaskBrowserAuth();
-  ~TaskBrowserAuth();
+  explicit TaskAuthenticate(MozillaVPN::AuthenticationType authenticationType);
+  ~TaskAuthenticate();
 
   void run(MozillaVPN* vpn) override;
 
@@ -25,6 +26,8 @@ class TaskBrowserAuth final : public Task {
 
  private:
   AuthenticationListener* m_authenticationListener = nullptr;
+  MozillaVPN::AuthenticationType m_authenticationType =
+      MozillaVPN::AuthenticationInBrowser;
 };
 
-#endif  // TASKBROWSERAUTH_H
+#endif  // TASKAUTHENTICATE_H

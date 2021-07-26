@@ -120,10 +120,16 @@ class MozillaVPN final : public QObject {
 #endif
   }
 
+  enum AuthenticationType {
+    DefaultAuthentication,
+    AuthenticationInBrowser,
+    AuthenticationInApp,
+  };
+
   // Exposed QML methods:
   Q_INVOKABLE void getStarted();
-  Q_INVOKABLE void authenticate(const QString& username = QString(),
-                                const QString& password = QString());
+  Q_INVOKABLE void authenticate(
+      AuthenticationType authenticationType = DefaultAuthentication);
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
