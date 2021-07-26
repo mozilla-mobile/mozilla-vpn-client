@@ -111,10 +111,10 @@ bool DBusService::activate(const QString& jsonConfig) {
   return Daemon::activate(config);
 }
 
-bool DBusService::deactivate(int hopindex, bool emitSignals) {
+bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
   firewallClear();
-  return Daemon::deactivate(hopindex, emitSignals);
+  return Daemon::deactivate(emitSignals);
 }
 
 QString DBusService::status() { return QString(getStatus()); }

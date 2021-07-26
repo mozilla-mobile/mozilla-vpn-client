@@ -9,7 +9,6 @@
       <arg name="jsonConfig" type="s" direction="in"/>
     </method>
     <method name="deactivate">
-      <arg name="hopindex" type="i" direction="in"/>
       <arg type="b" direction="out"/>
     </method>
     <method name="status">

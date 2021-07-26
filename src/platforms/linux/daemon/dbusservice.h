@@ -30,7 +30,7 @@ class DBusService final : public Daemon {
  public slots:
   bool activate(const QString& jsonConfig);
 
-  bool deactivate(int hopindex, bool emitSignals = true) override;
+  bool deactivate(bool emitSignals = true) override;
   QString status();
 
   QString version();

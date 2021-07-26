@@ -91,9 +91,9 @@ QDBusPendingCallWatcher* DBusClient::activate(
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBusClient::deactivate(int hopindex) {
+QDBusPendingCallWatcher* DBusClient::deactivate() {
   logger.debug() << "Deactivate via DBus";
-  QDBusPendingReply<bool> reply = m_dbus->deactivate(hopindex);
+  QDBusPendingReply<bool> reply = m_dbus->deactivate();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
                    &QDBusPendingCallWatcher::deleteLater);
