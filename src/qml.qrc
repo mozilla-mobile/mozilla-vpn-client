@@ -433,5 +433,6 @@
         <file>ui/components/forms/VPNRadioButton.qml</file>
         <file>ui/resources/plus.svg</file>
         <file>ui/resources/devicesRemove.svg</file>
+        <file>ui/components/VPNMetropolisLabel.qml</file>
     </qresource>
 </RCC>
