@@ -19,6 +19,9 @@ class PingSender : public QObject {
 
   static quint16 inetChecksum(const void* data, size_t length);
 
+ protected:
+  void genericSendPing(const QStringList& args, qint16 sequence);
+
  signals:
   void recvPing(quint16 sequence);
 };

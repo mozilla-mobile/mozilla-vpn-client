@@ -62,7 +62,7 @@ int LinuxPingSender::createSocket() {
 }
 
 LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
-    : PingSender(parent) {
+    : PingSender(parent), m_source(source) {
   MVPN_COUNT_CTOR(LinuxPingSender);
   logger.log() << "LinuxPingSender(" + source + ") created";
 
@@ -102,6 +102,17 @@ LinuxPingSender::~LinuxPingSender() {
 }
 
 void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
+  // Use the generic ping sender if we failed to open an ICMP socket.
+  if (m_socket < 0) {
+    QStringList args;
+    args << "-c"
+         << "1";
+    args << "-I" << m_source;
+    args << dest;
+    genericSendPing(args, sequence);
+    return;
+  }
+
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
