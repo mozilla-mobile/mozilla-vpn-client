@@ -76,11 +76,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionTime
-                visible: false
-            }
-
-            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -125,11 +120,6 @@ Item {
                 text: qsTrId("vpn.controller.activationSloagan")
                 color: Theme.fontColor
                 opacity: 1
-            }
-
-            PropertyChanges {
-                target: connectionTime
-                visible: false
             }
 
             PropertyChanges {
@@ -182,11 +172,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionTime
-                visible: false
-            }
-
-            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
@@ -234,16 +219,11 @@ Item {
             PropertyChanges {
                 target: logoSubtitle
                 text: VPNController.connectionRetry > 1 ?
-                    //% "Attempting to confirm connection"
-                    qsTrId("vpn.controller.attemptingToConfirm") :
-                    qsTrId("vpn.controller.activating")
+                          //% "Attempting to confirm connection"
+                          qsTrId("vpn.controller.attemptingToConfirm") :
+                          qsTrId("vpn.controller.activating")
                 color: "#FFFFFF"
                 opacity: 0.8
-            }
-
-            PropertyChanges {
-                target: connectionTime
-                visible: false
             }
 
             PropertyChanges {
@@ -296,16 +276,9 @@ Item {
                 target: logoSubtitle
                 //% "Secure and private"
                 //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active")
+                text: qsTrId("vpn.controller.active") + "  •  " + formatTime(VPNController.time)
                 color: "#FFFFFF"
                 opacity: 0.8
-            }
-
-            PropertyChanges {
-                target: connectionTime
-                fontColor: "#FFFFFF"
-                fontOpacity: 0.8
-                visible: true
             }
 
             PropertyChanges {
@@ -352,13 +325,6 @@ Item {
                 text: qsTrId("vpn.controller.deactivating")
                 color: Theme.fontColor
                 opacity: 1
-            }
-
-            PropertyChanges {
-                target: connectionTime
-                fontColor: Theme.fontColor
-                fontOpacity: 1
-                visible: true
             }
 
             PropertyChanges {
@@ -414,11 +380,6 @@ Item {
                 text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentLocalizedCityName).arg(VPNController.switchingLocalizedCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
-            }
-
-            PropertyChanges {
-                target: connectionTime
-                visible: false
             }
 
             PropertyChanges {
@@ -605,7 +566,7 @@ Item {
         }
     }
 
-    Column {
+    Column{
         id: col
 
         spacing: 0
@@ -657,28 +618,16 @@ Item {
             height: 16
         }
 
-        Row {
+        VPNInterLabel {
+            id: logoSubtitle
+            objectName: "controllerSubTitle"
+
+            lineHeight: Theme.controllerInterLineHeight
+            Accessible.ignored: true
+            width: parent.width - Theme.windowMargin
             anchors.horizontalCenter: parent.horizontalCenter
-            visible: !connectionStability.visible
-
-            VPNInterLabel {
-                id: logoSubtitle
-                objectName: "controllerSubTitle"
-
-                lineHeight: Theme.controllerInterLineHeight
-                Accessible.ignored: true
-                onPaintedHeightChanged: if (visible) col.handleMultilineText()
-                onVisibleChanged: if (visible) col.handleMultilineText()
-            }
-
-            VPNSemiMonoLabel {
-                id: connectionTime
-
-                anchors.verticalCenter: parent.verticalCenter
-                text: " • " + formatTime(VPNController.time)
-                visible: false
-                Accessible.ignored: true
-            }
+            onPaintedHeightChanged: if (visible) col.handleMultilineText()
+            onVisibleChanged: if (visible) col.handleMultilineText()
         }
 
         VPNConnectionStability {
@@ -687,6 +636,7 @@ Item {
             width: parent.width
             implicitHeight: childrenRect.height
         }
+
     }
 
     VPNToggle {
