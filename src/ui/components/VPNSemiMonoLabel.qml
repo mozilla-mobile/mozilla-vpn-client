@@ -3,51 +3,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.14
+import Mozilla.VPN 1.0
 
-Item {
-    id: semiMonoLabel
+import "../themes/themes.js" as Theme
 
-    property string text: ""
-    property int fontSize: 15
-    property string fontColor: "black"
-    property real fontOpacity: 1.0
+RowLayout {
+    property real defaultWidth: Theme.fontSize * 0.25
+    property real narrowWidth: Theme.fontSize * 0.05
+    property var narrowCharacters: [" ", "\t", "\n", ":"]
 
-    implicitHeight: labelRow.height
-    implicitWidth: labelRow.width
-    opacity: fontOpacity
+    Repeater {
+        model: formatTime(VPNController.time).split("")
 
-    Row {
-        id: labelRow
+        Text {
+            id: digit
 
-        Repeater {
-            model: text.split("")
+            color: Theme.white
+            horizontalAlignment: Text.AlignHCenter
+            font.letterSpacing: 0
+            font.pixelSize: Theme.fontSize
+            text: modelData
 
-            Item {
-                id: digitContainer
-
-                height: fontSize * 1.2
-
-                Component.onCompleted: {
-                    digitContainer.width = Qt.binding(function getCharWidth() {
-                        const narrowCharacters = [" ", "\t", "\n", ":"];
-                        const defaultWidth = fontSize * 0.62;
-                        const narrowWidth = fontSize * 0.4;
-
-                        digitContainer.width = narrowCharacters.includes(modelData) ? narrowWidth : defaultWidth;
-                    });
-                }
-
-                Text {
-                    id: digit
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: fontColor
-                    font.pixelSize: fontSize
-                    font.letterSpacing: 0
-                    text: modelData
-                }
-            }
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.preferredWidth: narrowCharacters.includes(modelData) ? narrowWidth : defaultWidth
+            Layout.preferredHeight: Theme.controllerInterLineHeight
         }
     }
-
 }
