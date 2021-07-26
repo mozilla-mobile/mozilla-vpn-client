@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "settingsholder.h"
+#include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
 #include "leakdetector.h"
@@ -25,7 +26,7 @@ constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
-const QString SETTINGS_USER_DNS_DEFAULT = "";
+constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
@@ -85,6 +86,8 @@ constexpr const char* SETTINGS_NATIVEANDROIDSDATAMIGRATED =
 #ifdef MVPN_WINDOWS
 constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
+
+constexpr const char* SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS = "winMissingApps";
 #endif
 
 constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
@@ -347,6 +350,29 @@ void SettingsHolder::addSubscriptionTransactions(
 GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
        hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
        setNativeWindowsDataMigrated)
+
+GETSET(QStringList, toStringList, SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS,
+       hasMissingApps, missingApps, setMissingApps)
+
+void SettingsHolder::removeMissingApp(const QString& appID) {
+  QStringList applist;
+  if (hasMissingApps()) {
+    applist = missingApps();
+  }
+  applist.removeAll(appID);
+  setMissingApps(applist);
+}
+void SettingsHolder::addMissingApp(const QString& appID) {
+  QStringList applist;
+  if (hasMissingApps()) {
+    applist = missingApps();
+  }
+  if (applist.contains(appID)) {
+    return;
+  }
+  applist.append(appID);
+  setMissingApps(applist);
+}
 #endif
 
 #undef GETSET
@@ -428,4 +454,8 @@ SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
   }
 
   return UserDNSInvalid;
+}
+
+QString SettingsHolder::placeholderUserDNS() const {
+  return Constants::PLACEHOLDER_USER_DNS;
 }

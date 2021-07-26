@@ -39,6 +39,7 @@ class SettingsHolder final : public QObject {
                  useGatewayDNSChanged)
   Q_PROPERTY(
       QString userDNS READ userDNS WRITE setUserDNS NOTIFY userDNSChanged)
+  Q_PROPERTY(QString placeholderUserDNS READ placeholderUserDNS CONSTANT)
 
  public:
   SettingsHolder();
@@ -134,6 +135,11 @@ class SettingsHolder final : public QObject {
 #ifdef MVPN_WINDOWS
   GETSET(bool, hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
          setNativeWindowsDataMigrated)
+  GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
+
+  void removeMissingApp(const QString& appID);
+  void addMissingApp(const QString& appID);
+
 #endif
 
 #ifdef MVPN_ANDROID
@@ -142,6 +148,8 @@ class SettingsHolder final : public QObject {
 #endif
 
 #undef GETSET
+
+  QString placeholderUserDNS() const;
 
  signals:
   void ipv6EnabledChanged(bool value);

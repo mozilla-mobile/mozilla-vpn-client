@@ -210,7 +210,7 @@ jobs:
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py
+          python3 scripts/importLanguages.py -p
 
       - name: Configuring the build
         shell: bash
@@ -262,12 +262,8 @@ jobs:
           cp -r ./macos/pkg/scripts BUILD
           cp -r ./macos/pkg/Distribution BUILD
           cp -r ./macos/pkg/Resources BUILD
-          cd BUILD
-          zip -r BUILD.zip *
-          mv BUILD.zip ..
-
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
             name: Release tarball
-            path: BUILD.zip
+            path: BUILD

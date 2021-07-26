@@ -139,7 +139,8 @@ Item {
 
                     Layout.fillWidth: true
                     Layout.leftMargin: 40
-                    placeholderText: VPNSettings.userDNS
+                    placeholderText: VPNSettings.placeholderUserDNS
+                    text: VPNSettings.userDNS
                     enabled: !VPNSettings.useGatewayDNS
                     opacity: enabled ? 1 : .5
 
@@ -185,7 +186,10 @@ Item {
                     anchors.right: undefined
                     anchors.leftMargin: undefined
                     anchors.rightMargin: undefined
+                    anchors.top: undefined
+                    anchors.topMargin: undefined
                     Layout.leftMargin: ipInput.Layout.leftMargin
+                    alertColor: Theme.red
 
                     states: [
                         State {

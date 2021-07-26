@@ -33,7 +33,7 @@ Item {
         Column {
             id: col
             anchors.top: parent.top
-            anchors.topMargin: 18
+            anchors.topMargin: Theme.windowMargin
             anchors.left: parent.left
             anchors.right: parent.right
             spacing: Theme.windowMargin

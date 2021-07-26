@@ -729,9 +729,14 @@ else:win* {
 
     QT += networkauth
     QT += svg
+    QT += winextras
 
     CONFIG += embed_manifest_exe
     DEFINES += MVPN_WINDOWS
+    DEFINES += WIN32_LEAN_AND_MEAN #Solves Redifinition Errors Of Winsock
+    LIBS += Fwpuclnt.lib #Windows Filtering Plattform
+    LIBS += Rpcrt4.lib
+    LIBS += Advapi32.lib
 
     production {
         RC_ICONS = ui/resources/logo.ico
@@ -745,11 +750,17 @@ else:win* {
         daemon/daemonlocalserverconnection.cpp \
         eventlistener.cpp \
         localsocketcontroller.cpp \
+        platforms/windows/windowsapplistprovider.cpp  \
+        platforms/windows/windowsappimageprovider.cpp \
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
         platforms/windows/daemon/windowstunnelservice.cpp \
         platforms/windows/daemon/wireguardutilswindows.cpp \
+        platforms/windows/daemon/windowsfirewall.cpp \
+        platforms/windows/daemon/windowssplittunnel.cpp \
+        platforms/windows/windowsservicemanager.cpp \
+        platforms/windows/daemon/windowssplittunnel.cpp \
         platforms/windows/windowscommons.cpp \
         platforms/windows/windowscryptosettings.cpp \
         platforms/windows/windowsdatamigration.cpp \
@@ -770,11 +781,16 @@ else:win* {
         daemon/wireguardutils.h \
         eventlistener.h \
         localsocketcontroller.h \
+        platforms/windows/windowsapplistprovider.h \
+        platforms/windows/windowsappimageprovider.h \ 
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
         platforms/windows/daemon/windowstunnelservice.h \
         platforms/windows/daemon/wireguardutilswindows.h \
+        platforms/windows/daemon/windowsfirewall.h \
+        platforms/windows/daemon/windowssplittunnel.h \
+        platforms/windows/windowsservicemanager.h \
         platforms/windows/windowscommons.h \
         platforms/windows/windowsdatamigration.h \
         platforms/windows/windowsnetworkwatcher.h \
@@ -836,7 +852,16 @@ RESOURCES += $$PWD/../translations/servers.qrc
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
 } else {
-    error(Languages were not imported. Please run `python3 ./scripts/importLanguages.py`)
+    message(Languages were not imported - using fallback English)
+    TRANSLATIONS += \
+        ../translations/en/mozillavpn_en.ts
+
+    ts.commands += lupdate $$PWD -no-obsolete -ts $$PWD/../translations/en/mozillavpn_en.ts
+    ts.CONFIG += no_check_exist
+    ts.output = $$PWD/../translations/en/mozillavpn_en.ts
+    ts.input = .
+    QMAKE_EXTRA_TARGETS += ts
+    PRE_TARGETDEPS += ts
 }
 
 QMAKE_LRELEASE_FLAGS += -idbased

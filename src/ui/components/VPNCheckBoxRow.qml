@@ -47,7 +47,7 @@ RowLayout {
 
         Image {
             sourceSize.width: Theme.windowMargin * 2
-            sourceSize.height: Theme.windowMArgin * 2
+            sourceSize.height: Theme.windowMargin * 2
             anchors.centerIn: parent
             asynchronous: true
             fillMode:  Image.PreserveAspectFit
