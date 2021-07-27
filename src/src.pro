@@ -10,6 +10,15 @@ DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
     DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
 }
 
+CCACHE_BIN = $$system(which ccache)
+!isEmpty(CCACHE_BIN) {
+    message(Using ccache)
+    load(ccache)
+    QMAKE_CXXFLAGS +=-g -fdebug-prefix-map=$(shell pwd)=.
+
+
+}
+
 QT += network
 QT += quick
 QT += widgets
