@@ -22,10 +22,10 @@ class WireguardUtilsLinux final : public WireguardUtils {
 
   bool updatePeer(const InterfaceConfig& config) override;
   bool deletePeer(const QString& pubkey) override;
+  peerStatus getPeerStatus(const QString& pubkey) override;
 
   bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
   bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
-  peerBytes getThroughputForInterface() override;
 
   QString getDefaultCgroup() const { return m_cgroups; }
   QString getExcludeCgroup() const;

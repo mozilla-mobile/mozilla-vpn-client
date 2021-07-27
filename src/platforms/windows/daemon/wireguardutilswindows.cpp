@@ -38,24 +38,37 @@ WireguardUtilsWindows::~WireguardUtilsWindows() {
   logger.debug() << "WireguardUtilsWindows destroyed.";
 }
 
-WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
-  peerBytes pb = {0, 0};
+WireguardUtils::peerStatus WireguardUtilsWindows::getPeerStatus(
+    const QString& pubkey) {
+  peerStatus status = {0, 0};
+  QString hexkey = QByteArray::fromBase64(pubkey.toUtf8()).toHex();
   QString reply = m_tunnel.uapiCommand("get=1");
+  bool match = false;
 
   for (const QString& line : reply.split('\n')) {
-    if (!line.contains('=')) {
+    int eq = line.indexOf('=');
+    if (eq <= 0) {
+      continue;
+    }
+    QString name = line.left(eq);
+    QString value = line.mid(eq + 1);
+
+    if (name == "public_key") {
+      match = (value == hexkey);
+      continue;
+    } else if (!match) {
       continue;
     }
 
-    QList<QString> parts = line.split('=');
-    if (parts[0] == "tx_bytes") {
-      pb.txBytes = parts[1].toDouble();
-    } else if (parts[0] == "rx_bytes") {
-      pb.rxBytes = parts[1].toDouble();
+    if (name == "tx_bytes") {
+      status.txBytes = value.toDouble();
+    }
+    if (name == "rx_bytes") {
+      status.rxBytes = value.toDouble();
     }
   }
 
-  return pb;
+  return status;
 }
 
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
