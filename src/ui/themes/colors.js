@@ -3,23 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
- * Helper functions
- */
-const percentToHex = percent => {
-  const int8Bit = Math.round(percent * 255);
-  const hexAlphaValue = int8Bit.toString(16).padStart(2, '0');
-
-  return hexAlphaValue.toUpperCase();
-};
-
-const addTransparency = (hexColor, percent) => {
-  const hexValue = hexColor.substring(1);
-  const hexAlphaValue = percentToHex(percent);
-
-  return `#${hexAlphaValue}${hexValue}`;
-};
-
-/**
  * Primary palette
  */
 // Purple
@@ -133,6 +116,23 @@ const pink10 = '#FFB4DB';
 const pink5 = '#FFDEF0';
 
 /**
+ * Helper functions
+ */
+ const percentToHex = percent => {
+  const int8Bit = Math.round(percent * 255);
+  const hexAlphaValue = int8Bit.toString(16).padStart(2, '0');
+
+  return hexAlphaValue.toUpperCase();
+};
+
+const addTransparency = (hexColor, percent) => {
+  const hexValue = hexColor.substring(1);
+  const hexAlphaValue = percentToHex(percent);
+
+  return `#${hexAlphaValue}${hexValue}`;
+};
+
+/**
  * Main palette
  */
 const primary = purple90;
@@ -189,4 +189,79 @@ const warning = {
   active: yellowActive,
   hover: yellowHover,
   focus: yellowFocus,
+};
+
+/**
+ * Gradients
+ */
+const customGradientColorPurple = '#9D62FC';
+const customGradientColorPink = '#FD3296';
+const customGradientColorBlue = '#5B6DF8';
+
+// Pink gradient
+const gradientPink = {
+  type: 'radial',
+  stops: [
+    {
+      position: 0.0,
+      color: customGradientColorPurple,
+    },
+    {
+      position: 0.0,
+      color: customGradientColorPink,
+    },
+  ],
+};
+
+// Blue gradient
+const gradientBlue = {
+  type: 'radial',
+  stops: [
+    {
+      position: 0.0,
+      color: violet50,
+    },
+    {
+      position: 0.371,
+      color: purple50,
+    },
+    {
+      position: 0.614,
+      color: customGradientColorBlue,
+    },
+    {
+      position: 1.0,
+      color: blue40,
+    },
+  ],
+};
+
+// Orange gradient
+const gradientOrange = {
+  type: 'radial',
+  stops: [
+    {
+      position: 0.0,
+      color: red60,
+    },
+    {
+      position: 1.0,
+      color: yellow50,
+    },
+  ],
+};
+
+// Green gradient
+const gradientGreen = {
+  type: 'radial',
+  stops: [
+    {
+      position: 0.0,
+      color: blue50,
+    },
+    {
+      position: 1.0,
+      color: green50,
+    },
+  ],
 };
