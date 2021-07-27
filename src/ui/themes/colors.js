@@ -3,6 +3,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
+ * Helper functions
+ */
+const percentToHex = percent => {
+  const int8Bit = Math.round(percent * 255);
+  const hexAlphaValue = int8Bit.toString(16).padStart(2, '0');
+
+  return hexAlphaValue.toUpperCase();
+};
+
+const addTransparency = (hexColor, percent) => {
+  const hexValue = hexColor.substring(1);
+  const hexAlphaValue = percentToHex(percent);
+
+  return `#${hexAlphaValue}${hexValue}`;
+};
+
+/**
  * Primary palette
  */
 // Purple
@@ -28,6 +45,17 @@ const green30 = '#88FFD1';
 const green20 = '#B3FFE3';
 const green10 = '#D1FFEE';
 const green5 = '#E3FFF3';
+
+// Grey
+const black = '#000000';
+const grey60 = '#0C0C0D';
+const grey50 = '#3D3D3D';
+const grey40 = '#6D6D6E';
+const grey30 = '#9E9E9E';
+const grey20 = '#CECECF';
+const grey10 = '#E7E7E7';
+const grey5 = '#F9F9FA';
+const white = '#FFFFFF';
 
 /**
  * Secondary palette
@@ -104,18 +132,6 @@ const pink20 = '#FF8AC5';
 const pink10 = '#FFB4DB';
 const pink5 = '#FFDEF0';
 
-// Grey
-const grey60 = '#0C0C0D';
-const grey50 = '#3D3D3D';
-const grey40 = '#6D6D6E';
-const grey30 = '#9E9E9E';
-const grey20 = '#CECECF';
-const grey10 = '#E7E7E7';
-const grey5 = '#F9F9FA';
-
-const black = '#000000';
-const white = '#FFFFFF';
-
 /**
  * Main palette
  */
@@ -130,22 +146,22 @@ const light = grey5;
 const blue = blue50;
 const blueActive = blue70;
 const blueHover = blue60;
-const blueFocus = `${blue}66`;
+const blueFocus = addTransparency(blue, 0.4);
 
 const green = green50;
 const greenActive = green70;
 const greenHover = green60;
-const greenFocus = `${green}33`;
+const greenFocus = addTransparency(green, 0.2);
 
 const red = red50;
 const redActive = red70;
 const redHover = red60;
-const redFocus = `${red}1A`;
+const redFocus = addTransparency(red, 0.1);
 
 const yellow = yellow50;
 const yellowActive = yellow70;
 const yellowHover = yellow60;
-const yellowFocus = `${yellow}1A`;
+const yellowFocus = addTransparency(yellow, 0.1);
 
 const informational = {
   default: blue,
