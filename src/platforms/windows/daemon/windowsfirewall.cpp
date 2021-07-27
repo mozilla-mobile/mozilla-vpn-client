@@ -7,6 +7,7 @@
 #include "leakdetector.h"
 #include "../windowscommons.h"
 #include "../../daemon/interfaceconfig.h"
+#include "../../ipaddressrange.h"
 
 #include <QApplication>
 #include <QObject>
@@ -262,60 +263,37 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
 
 bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
                                        const InterfaceConfig& config) {
-  logger.log() << "Enableling Killswitch Using Adapter:" << vpnAdapterIndex;
+  // Checks if the FW_Rule was enabled succesfully,
+  // disables the whole killswitch and returns false if not.
+  #define FW_OK(rule,name)                               \
+    if(!rule){                                        \
+      logger.log() << "Rule failed:" << name << "\n"; \
+      disableKillSwitch();\
+      return false;\
+    }\
+    logger.log() << "Rule enabled:" << name << "\n";
+
+
+  logger.log() << "Enableing Killswitch Using Adapter:" << vpnAdapterIndex;
 
   IPAddressRange v4CatchAll("0.0.0.0", 0, IPAddressRange::IPv4);
   IPAddressRange v6CatchAll("::0", 0, IPAddressRange::IPv6);
-  if (!config.m_allowedIPAddressRanges.contains(v4CatchAll) &&
-      !config.m_allowedIPAddressRanges.contains(v6CatchAll)) {
-    logger.log() << "Allowed IP is not CatchAll, skip-activating Killswitch";
-    return true;
-  }
+  bool hasCatchAllIP = config.m_allowedIPAddressRanges.contains(v4CatchAll) || config.m_allowedIPAddressRanges.contains(v6CatchAll);
 
-  if (!blockAll(LOW_WEIGHT)) {
-    logger.log() << "Ruleset failed: blockAll";
-    disableKillSwitch();
-    return false;
-  };
-  logger.log() << "Ruleset applied: blockAll";
-
-  if (!allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowTrafficOfAdapter";
-    disableKillSwitch();
-    return false;
+  if(hasCatchAllIP){
+    FW_OK(blockAll(LOW_WEIGHT),"Block all")
+  }else{
+    FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),"Block all");
   }
-  logger.log() << "Ruleset applied: allowTrafficOfAdapter";
-
-  if (!allowDHCPTraffic(MED_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowDHCPTraffic";
-    disableKillSwitch();
-    return false;
-  }
-  logger.log() << "Ruleset applied: allowDHCPTraffic";
-
-  if (!allowHyperVTraffic(MED_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowHyperVTraffic";
-    disableKillSwitch();
-    return false;
-  }
-  logger.log() << "Ruleset applied: allowHyperVTraffic";
-
-  if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowTrafficForAppOnAll";
-    disableKillSwitch();
-    return false;
-  }
-  logger.log() << "Ruleset applied: allowTrafficForAppOnAll: MozillaVPN";
-
-  if (!allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowTrafficTo DNS Server";
-    disableKillSwitch();
-    return false;
-  }
-  logger.log() << "Ruleset applied: allowTrafficTo: DNS-Server";
+  FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT), "Allow Traffic to VPN Adapter");
+  FW_OK(allowDHCPTraffic(MED_WEIGHT),"Allow DHCP Traffic");
+  FW_OK(allowHyperVTraffic(MED_WEIGHT),"Allow Hyper-V Traffic");
+  FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT),"Allow Traffic for MozillaVPN.exe");
+  FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT),"Allow DNS Traffic");
 
   logger.log() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
+  #undef FW_OK;
 }
 
 bool WindowsFirewall::disableKillSwitch() {
@@ -614,6 +592,12 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
     logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
+  return true;
+}
+
+bool WindowsFirewall::allowTrafficTo(const IPAddressRange& range ,uint8_t weight){
+
+
   return true;
 }
 

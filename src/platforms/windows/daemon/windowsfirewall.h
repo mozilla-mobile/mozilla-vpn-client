@@ -11,6 +11,7 @@
 #include <QString>
 #include <QObject>
 class QHostAddress;
+class IpAdressRange;
 
 class WindowsFirewall final : public QObject {
  public:
@@ -31,6 +32,7 @@ class WindowsFirewall final : public QObject {
   QString getCurrentPath();
   bool allowTrafficForAppOnAdapter(const QString& exePath, int networkIndex);
   bool allowTrafficForAppOnAll(const QString& exePath, int weight);
+  bool blockTrafficTo(const QList<IPAddressRange> range ,uint8_t weight);
   bool allowTrafficTo(const QHostAddress& targetIP, uint port, int weight);
   bool allowTrafficOfAdapter(int networkAdapter, uint8_t weight);
   bool allowDHCPTraffic(uint8_t weight);
