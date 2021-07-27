@@ -122,7 +122,7 @@ Item {
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
         }
 
-        Column{
+        Column {
             id: deviceInfo
 
             Layout.fillWidth: true

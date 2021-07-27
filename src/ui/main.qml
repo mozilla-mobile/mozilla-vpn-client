@@ -52,6 +52,7 @@ Window {
 
         console.log("closing.");
     }
+
     Component.onCompleted: {
         if (VPN.startMinimized) {
             this.showMinimized();
