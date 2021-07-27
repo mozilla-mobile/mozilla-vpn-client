@@ -298,11 +298,6 @@ Item {
             }
 
             PropertyChanges {
-                target: logoSubtitleOn
-                visible: true
-            }
-
-            PropertyChanges {
                 target: settingsButton
                 buttonColorScheme: Theme.iconButtonDarkBackground
             }
@@ -666,15 +661,12 @@ Item {
 
           anchors.horizontalCenter: parent.horizontalCenter
           opacity: 0.8
-          visible: false
 
           VPNInterLabel {
             objectName: "secureAndPrivateSubtitle"
 
             color: Theme.white
             lineHeight: Theme.controllerInterLineHeight
-            onPaintedHeightChanged: if (visible) col.handleMultilineText()
-            onVisibleChanged: if (visible) col.handleMultilineText()
             Accessible.ignored: true
 
             //% "Secure and private"
