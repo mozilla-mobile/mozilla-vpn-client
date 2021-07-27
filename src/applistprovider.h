@@ -17,6 +17,11 @@ class AppListProvider : public QObject {
   AppListProvider(QObject* parent) : QObject(parent) {}
 
   virtual ~AppListProvider() = default;
+  enum NotificationType{
+    Success,
+    MissingApp
+  };
+  Q_ENUM(NotificationType);
 
   // Requests a fresh Application List
   // Impl should emit newAppList signal when done.
@@ -37,6 +42,8 @@ class AppListProvider : public QObject {
   // use on activation.
   // QMap Value should be a User readable Name of the app
   void newAppList(QMap<QString, QString> applist);
+
+  void notification(AppListProvider::NotificationType type, const QString& message);
 };
 
 #endif  // APPLISTPROVIDER_H

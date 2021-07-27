@@ -8,6 +8,7 @@
 #include "settingsholder.h"
 
 #include <QSettings>
+#include <QString>
 #include <QFile>
 #include <QDir>
 #include <QDirIterator>
@@ -47,18 +48,6 @@ void WindowsAppListProvider::getApplicationList() {
   readLinkFiles(
       QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
       appList);
-
-  if (SettingsHolder::instance()->hasMissingApps()) {
-    auto missingAppList = SettingsHolder::instance()->missingApps();
-    for (const auto& appPath : missingAppList) {
-      // Check if the App Still exists, otherwise clean up.
-      if (!isValidAppId(appPath)) {
-        SettingsHolder::instance()->removeMissingApp(appPath);
-      }
-      appList.insert(appPath, getAppName(appPath));
-    }
-  }
-
   emit newAppList(appList);
 }
 
