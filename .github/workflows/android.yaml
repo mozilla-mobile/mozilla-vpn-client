@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: Release, args: --prod, apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true  }
-            - { name: Debug, args: --debug, apk: .tmp/src/android-build/mozillavpn.apk, sym: false}
+            - { name: Release, args: --prod, apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
+            - { name: Debug, args: --debug, apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
 
     runs-on: ubuntu-20.04
       
@@ -60,6 +60,13 @@ jobs:
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
           bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 ${{ matrix.config.args }}
+      - name: Sign Android
+        if: ${{ matrix.config.sign }} 
+        env:
+          AUTOGRAPH_TOKEN: ${{ secrets.AUTOGRAPH_KEY }}
+        run: |
+          bash ./scripts/android_sign.sh ${{ matrix.config.apk }}
+          rm ${{ matrix.config.apk }}/*unsigned.apk
 
       - name: Upload APK${{ matrix.config.args }}
         uses: actions/upload-artifact@v1
