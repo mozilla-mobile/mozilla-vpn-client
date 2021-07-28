@@ -125,11 +125,9 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   out << "public_key=" << QString(publicKey.toHex()) << "\n";
   if (!config.m_serverIpv4AddrIn.isNull()) {
     out << "endpoint=" << config.m_serverIpv4AddrIn << ":";
-  }
-  else if (!config.m_serverIpv6AddrIn.isNull()) {
+  } else if (!config.m_serverIpv6AddrIn.isNull()) {
     out << "endpoint=[" << config.m_serverIpv6AddrIn << "]:";
-  }
-  else {
+  } else {
     logger.log() << "Failed to create peer with no endpoints";
     return false;
   }
@@ -191,7 +189,8 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddressRange& prefix,
   entry->Age = 0;
 }
 
-bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix, int hopindex) {
+bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix,
+                                              int hopindex) {
   Q_UNUSED(hopindex);
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
@@ -208,7 +207,8 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix, int 
   return result == NO_ERROR;
 }
 
-bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) {
+bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddressRange& prefix,
+                                              int hopindex) {
   Q_UNUSED(hopindex);
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);

@@ -114,13 +114,13 @@ void LocalSocketController::activate(
     hopJson.insert("serverIpv6AddrIn", QJsonValue(hop.ipv6AddrIn()));
     hopJson.insert("serverPort", QJsonValue((double)hop.choosePort()));
     hopJson.insert("ipv6Enabled",
-                QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
+                   QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
 
     QJsonArray hopAddressRanges;
-    hopAddressRanges.append(QJsonObject({{"address", next.ipv4AddrIn()},
-      {"range", 32}, {"isIpv6", false}}));
-    hopAddressRanges.append(QJsonObject({{"address", next.ipv6AddrIn()},
-      {"range", 128}, {"isIpv6", true}}));
+    hopAddressRanges.append(QJsonObject(
+        {{"address", next.ipv4AddrIn()}, {"range", 32}, {"isIpv6", false}}));
+    hopAddressRanges.append(QJsonObject(
+        {{"address", next.ipv6AddrIn()}, {"range", 128}, {"isIpv6", true}}));
     hopJson.insert("allowedIPAddressRanges", hopAddressRanges);
 
     write(hopJson);
