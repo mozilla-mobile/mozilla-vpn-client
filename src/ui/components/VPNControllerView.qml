@@ -298,6 +298,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: true
+            }
+
+            PropertyChanges {
                 target: settingsButton
                 buttonColorScheme: Theme.iconButtonDarkBackground
             }
