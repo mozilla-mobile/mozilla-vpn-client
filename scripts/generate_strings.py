@@ -165,6 +165,10 @@ const char* const L18nStrings::_ids[] = {
                     output.write(f"    //: {comment}\n")
                 output.write(f"    QT_TRID_NOOP(\"{string['stringId']}\"),\n\n")
 
+            # This is done to make windows compiler happy
+            if len(stringIds) == 0:
+                output.write(f"    \"vpn.dummy.ignore\",\n\n")
+
             output.write("};")
 
 
