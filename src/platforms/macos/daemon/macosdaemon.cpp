@@ -56,9 +56,10 @@ QByteArray MacOSDaemon::getStatus() {
 
   QJsonObject obj;
   obj.insert("type", "status");
-  obj.insert("connected", m_connected);
+  obj.insert("connected", m_connections.contains(0));
 
-  if (m_connected) {
+  if (m_connections.contains(0)) {
+    const ConnectionState& state = m_connections.value(0);
     uint64_t txBytes = 0;
     uint64_t rxBytes = 0;
 
@@ -97,9 +98,9 @@ QByteArray MacOSDaemon::getStatus() {
     }
 
     obj.insert("status", true);
-    obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
-    obj.insert("deviceIpv4Address", m_lastConfig.m_deviceIpv4Address);
-    obj.insert("date", m_connectionDate.toString());
+    obj.insert("serverIpv4Gateway", state.m_config.m_serverIpv4Gateway);
+    obj.insert("deviceIpv4Address", state.m_config.m_deviceIpv4Address);
+    obj.insert("date", state.m_date.toString());
 
     obj.insert("txBytes", QJsonValue(double(txBytes)));
     obj.insert("rxBytes", QJsonValue(double(rxBytes)));
