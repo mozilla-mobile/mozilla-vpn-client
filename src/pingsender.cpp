@@ -4,6 +4,8 @@
 
 #include "pingsender.h"
 
+#include <QProcess>
+
 quint16 PingSender::inetChecksum(const void* data, size_t len) {
   int nleft, sum;
   quint16* w;
@@ -39,4 +41,26 @@ quint16 PingSender::inetChecksum(const void* data, size_t len) {
   sum += (sum >> 16);                 /* add carry */
   answer = ~sum;                      /* truncate to 16 bits */
   return (answer);
+}
+
+// Send a ping by launching the "ping" command.
+void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
+  QProcess* process = new QProcess(this);
+  process->setProcessChannelMode(QProcess::MergedChannels);
+  process->start("ping", args, QIODevice::ReadOnly);
+
+  connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
+          this, [this, sequence](int exitCode, QProcess::ExitStatus) {
+            if (exitCode == 0) emit recvPing(sequence);
+          });
+  connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
+          process, &QObject::deleteLater);
+
+  // Ensure any lingering pings are cleaned up when the PingSender is destroyed
+  connect(this, &QObject::destroyed, process, [process] {
+    process->terminate();
+    if (!process->waitForFinished(100)) {
+      process->kill();
+    }
+  });
 }
