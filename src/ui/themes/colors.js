@@ -267,3 +267,41 @@ const gradientGreen = {
     },
   ],
 };
+
+/**
+ * Inputs
+ */
+const input = {
+  default: {
+    background: white,
+    border: grey30,
+    placeholder: grey40,
+    text: grey50,
+  },
+  hover: {
+    background: white,
+    border: grey40,
+    placeholder: grey40,
+    text: grey50,
+  },
+  focus: {
+    background: white,
+    border: informational.default,
+    highlight: informational.focus,
+    placeholder: grey40,
+    text: grey50,
+  },
+  error: {
+    background: white,
+    border: error.default,
+    highlight: error.focus,
+    placeholder: grey40,
+    text: grey50,
+  },
+  disabled: {
+    background: white,
+    border: grey20,
+    placeholder: grey20,
+    text: grey20,
+  },
+};

@@ -11,8 +11,7 @@ import "./../../components"
 
 VPNTextField {
     // TODO Add strings for Accessible.description, Accessible.name
-
-    property bool stateError: false
+    property bool hasError: false
 
     id: searchBar
 
@@ -31,11 +30,11 @@ VPNTextField {
     }
 
     background: VPNInputBackground {
-        showError: stateError
+        showError: hasError
     }
 
     Keys.onPressed: {
-        if (focus && stateError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
+        if (focus && hasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
             event.accepted = true;
         }
     }

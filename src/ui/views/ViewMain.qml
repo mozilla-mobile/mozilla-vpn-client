@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
@@ -44,6 +45,18 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
+    VPNTextField {
+        id: testInput
+
+        hasError: testInput.text.length > 0
+        enabled: true
+        placeholderText: VPNSettings.placeholderUserDNS
+        text: VPNSettings.userDNS
+
+        x: 30
+        y: 30
+        z: 1
+    }
 
     GridLayout {
         id: col

@@ -134,7 +134,7 @@ Item {
                     onTextChanged: text => {
                         model.invalidate();
                     }
-                    stateError: repeater.count === 0
+                    hasError: repeater.count === 0
                     enabled: !useSystemLanguageEnabled
                 }
 

@@ -198,5 +198,4 @@ const input = {
     "focusBgColor": blue,
     "focusOutline": blueFocusOutline,
     "focusBorder": blueFocusBorder,
-
 };

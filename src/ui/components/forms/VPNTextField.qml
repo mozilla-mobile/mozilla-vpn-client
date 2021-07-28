@@ -7,21 +7,73 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Colors
 import "./../../components"
 
 TextField {
     // TODO Add strings for Accessible.description, Accessible.name
-    property bool stateError: false
-    property bool loseFocusOnOutsidePress: true
+    property bool hasError: false
+    property bool loseFocusOnBlur: true
 
     id: textField
 
-    Layout.preferredHeight: Theme.rowHeight
+    state: ""
+    states: [
+        State {
+            name: "hover"
+            when: hovered && !activeFocus
+
+            PropertyChanges {
+                target: textField
+                color: Colors.input.hover.text
+                placeholderTextColor: Colors.input.hover.placeholder
+            }
+        },
+        State {
+            name: "focus"
+            when: activeFocus && !hasError
+
+            PropertyChanges {
+                target: textField
+                color: Colors.input.focus.text
+                placeholderTextColor: Colors.input.focus.placeholder
+            }
+        },
+        State {
+            name: "error"
+            when: hasError && activeFocus
+
+            PropertyChanges {
+                target: textField
+                color: Colors.input.error.text
+                placeholderTextColor: Colors.input.error.placeholder
+            }
+        },
+        State {
+            name: "disabled"
+            when: !enabled
+
+            PropertyChanges {
+                target: textField
+                color: Colors.input.disabled.text
+                placeholderTextColor: Colors.input.disabled.placeholder
+            }
+        }
+    ]
+    background: VPNInputBackground {
+        showError: hasError
+    }
+
+    color: Colors.input.default.text
+    placeholderTextColor: Colors.input.default.placeholder
+
+    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
     selectByMouse: true
-    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+    Layout.preferredHeight: Theme.rowHeight
 
-    background: VPNInputBackground {
-        showError: stateError
+    Button {
+        text: textField.state
+        y: 40
     }
 }
