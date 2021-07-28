@@ -35,6 +35,8 @@ UI_DIR = .ui
 SOURCES += \
         apppermission.cpp \
         authenticationlistener.cpp \
+        authenticationinapp/authenticationinapp.cpp \
+        authenticationinapp/authenticationinapplistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportaldetectionimpl.cpp \
@@ -68,6 +70,8 @@ SOURCES += \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        hawkauth.cpp \
+        hkdf.cpp \
         ipaddress.cpp \
         ipaddressrange.cpp \
         ipfinder.cpp \
@@ -130,6 +134,8 @@ HEADERS += \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
+        authenticationinapp/authenticationinapp.h \
+        authenticationinapp/authenticationinapplistener.h \
         bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -163,6 +169,8 @@ HEADERS += \
         featurelist.h \
         filterproxymodel.h \
         fontloader.h \
+        hawkauth.h \
+        hkdf.h \
         ipaddress.h \
         ipaddressrange.h \
         ipfinder.h \

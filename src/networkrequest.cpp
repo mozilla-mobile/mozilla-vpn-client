@@ -5,6 +5,7 @@
 #include "networkrequest.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
+#include "hawkauth.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"
@@ -13,15 +14,18 @@
 
 #include <QHostAddress>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QProcessEnvironment>
 #include <QUrl>
+#include <QUrlQuery>
 
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
+constexpr int REQUEST_MAX_REDIRECTS = 4;
 
 constexpr const char* IPINFO_URL_IPV4 = "https://%1/api/v1/vpn/ipinfo";
 constexpr const char* IPINFO_URL_IPV6 = "https://[%1]/api/v1/vpn/ipinfo";
@@ -40,6 +44,9 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 #ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
 #endif
+  m_request.setMaximumRedirectsAllowed(REQUEST_MAX_REDIRECTS);
+  m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::SameOriginRedirectPolicy);
 
   // Let's use "glean-enabled" as an indicator for DNT/GPC too.
   if (!SettingsHolder::instance()->gleanEnabled()) {
@@ -95,6 +102,8 @@ NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
   NetworkRequest* r = new NetworkRequest(parent, status, false);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
+  r->m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                            QNetworkRequest::NoLessSafeRedirectPolicy);
 
   r->m_request.setUrl(url);
 
@@ -317,6 +326,223 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   return r;
 }
 
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountStatus(
+    QObject* parent, const QString& emailAddress) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/account/status");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("email", emailAddress);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAccountCreation(
+    QObject* parent, const QString& email, const QByteArray& authpw,
+    const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/account/create");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", email);
+  obj.insert("authPW", QString(authpw.toHex()));
+  obj.insert("service", query.queryItemValue("client_id"));
+  obj.insert("verificationMethod", "email-otp");
+
+  QJsonObject metrics;
+  metrics.insert("deviceId", query.queryItemValue("device_id"));
+  metrics.insert("flowBeginTime",
+                 query.queryItemValue("flow_begin_time").toDouble());
+  metrics.insert("flowId", query.queryItemValue("flow_id"));
+  obj.insert("metricsContext", metrics);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    QObject* parent, const QString& email, const QByteArray& authpw,
+    const QString& verificationCode, const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/account/login");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", email);
+  obj.insert("authPW", QString(authpw.toHex()));
+  obj.insert("reason", "signin");
+  obj.insert("service", query.queryItemValue("client_id"));
+  obj.insert("skipErrorCase", true);
+  obj.insert("verificationMethod", "email-otp");
+
+  if (!verificationCode.isEmpty()) {
+    obj.insert("unblockCode", verificationCode);
+  }
+
+  QJsonObject metrics;
+  metrics.insert("deviceId", query.queryItemValue("device_id"));
+  metrics.insert("flowBeginTime",
+                 query.queryItemValue("flow_begin_time").toDouble());
+  metrics.insert("flowId", query.queryItemValue("flow_id"));
+  obj.insert("metricsContext", metrics);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
+    QObject* parent, const QString& emailAddress) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/account/login/send_unblock_code");
+  r->m_request.setUrl(url);
+
+  QJsonObject obj;
+  obj.insert("email", emailAddress);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyCode(
+    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/session/verify_code");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("code", code);
+  obj.insert("service", query.queryItemValue("client_id"));
+
+  QJsonArray scopes;
+  scopes.append(query.queryItemValue("scope"));
+  obj.insert("scopes", scopes);
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
+    QObject* parent, const QByteArray& sessionToken) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/session/resend_code");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QByteArray payload =
+      QJsonDocument(QJsonObject()).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaAuthz(
+    QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/oauth/authorization");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("client_id", query.queryItemValue("client_id"));
+  obj.insert("state", query.queryItemValue("state"));
+  obj.insert("scope", query.queryItemValue("scope"));
+  obj.insert("access_type", query.queryItemValue("access_type"));
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
+    QObject* parent, const QByteArray& sessionToken) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/session/destroy");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QByteArray payload =
+      QJsonDocument(QJsonObject()).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
 #ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
   Q_ASSERT(parent);
@@ -369,8 +595,9 @@ void NetworkRequest::replyFinished() {
 
   int status = statusCode();
 
+  QString expect = m_status ? QString::number(m_status) : "any";
   logger.log() << "Network reply received - status:" << status
-               << "- expected:" << m_status;
+               << "- expected:" << expect;
 
   QByteArray data = m_reply->readAll();
 
@@ -394,8 +621,21 @@ void NetworkRequest::replyFinished() {
 }
 
 void NetworkRequest::handleHeaderReceived() {
+  // Suppress this signal if a redirect is about to happen.
+  bool isRedirect = (statusCode() >= 300) && (statusCode() < 400);
+  auto redirectAttibute = QNetworkRequest::RedirectPolicyAttribute;
+  int policy = m_request.attribute(redirectAttibute).toInt();
+  if (isRedirect && (policy != QNetworkRequest::ManualRedirectPolicy)) {
+    return;
+  }
+
   logger.log() << "Network header received";
   emit requestHeaderReceived(this);
+}
+
+void NetworkRequest::handleRedirect(const QUrl& url) {
+  logger.log() << "Network request redirected";
+  emit requestRedirected(this, url);
 }
 
 void NetworkRequest::timeout() {
@@ -442,6 +682,8 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
           &NetworkRequest::replyFinished);
   connect(m_reply, &QNetworkReply::metaDataChanged, this,
           &NetworkRequest::handleHeaderReceived);
+  connect(m_reply, &QNetworkReply::redirected, this,
+          &NetworkRequest::handleRedirect);
   connect(m_reply, &QNetworkReply::finished, this, &QObject::deleteLater);
 }
 
