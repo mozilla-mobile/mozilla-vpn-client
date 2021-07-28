@@ -3,8 +3,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This script must be executed at the root of the repository.
-
 import humps
 import os
 import yaml
@@ -17,10 +15,16 @@ def stop(stringId):
 
 
 def generateStrings():
-    if not os.path.isfile("translations/strings.yaml"):
+
+    translations_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.pardir, "translations")
+    )
+    yaml_path = os.path.join(translations_path, "strings.yaml")
+
+    if not os.path.isfile(yaml_path):
         exit("Unable to find translations/strings.yaml")
 
-    with open("translations/strings.yaml", "r") as yaml_file:
+    with open(yaml_path, "r") as yaml_file:
         yaml_content = yaml.safe_load(yaml_file)
 
         stringIds = []
@@ -87,7 +91,9 @@ def generateStrings():
                         }
                     )
 
-        with open("translations/generated/l18nstrings.h", "w") as output:
+        with open(
+            os.path.join(translations_path, "generated", "l18nstrings.h"), "w"
+        ) as output:
             output.write(
                 """/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -132,7 +138,9 @@ class L18nStrings final : public QObject {
 """
             )
 
-        with open("translations/generated/l18nstrings_p.cpp", "w") as output:
+        with open(
+            os.path.join(translations_path, "generated", "l18nstrings_p.cpp"), "w"
+        ) as output:
             output.write(
                 """/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
