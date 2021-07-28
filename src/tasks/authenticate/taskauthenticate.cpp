@@ -41,8 +41,11 @@ QByteArray generatePkceCodeVerifier() {
 
 }  // anonymous namespace
 
-TaskAuthenticate::TaskAuthenticate() : Task("TaskAuthenticate") {
+TaskAuthenticate::TaskAuthenticate(
+    MozillaVPN::AuthenticationType authenticationType)
+    : Task("TaskAuthenticate"), m_authenticationType(authenticationType) {
   MVPN_COUNT_CTOR(TaskAuthenticate);
+  Q_ASSERT(authenticationType != MozillaVPN::DefaultAuthentication);
 }
 
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
@@ -59,7 +62,8 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
           .toBase64();
   Q_ASSERT(pkceCodeChallenge.length() == 44);
 
-  m_authenticationListener = AuthenticationListener::create(this);
+  m_authenticationListener =
+      AuthenticationListener::create(this, m_authenticationType);
 
   connect(
       m_authenticationListener, &AuthenticationListener::completed,
@@ -98,12 +102,18 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
   QString path("/api/v2/vpn/login/");
 
+  if (m_authenticationType == MozillaVPN::AuthenticationInApp) {
+    // hack!
+    path.append("android");
+  } else {
+    Q_ASSERT(m_authenticationType == MozillaVPN::AuthenticationInBrowser);
 #if !defined(MVPN_DUMMY)
-  path.append(Constants::PLATFORM_NAME);
+    path.append(Constants::PLATFORM_NAME);
 #else
-  // Let's use linux here.
-  path.append("linux");
+    // Let's use linux here.
+    path.append("linux");
 #endif
+  }
 
   QUrl url(NetworkRequest::apiBaseUrl());
   url.setPath(path);
