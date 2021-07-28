@@ -3,16 +3,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import humps
 import os
 import yaml
-
 
 def stop(stringId):
     exit(
         f"Each key must be a string or a list with 1 or more items. Fix string ID `{stringId}`"
     )
 
+def pascalize(string):
+    output = ''
+    for chunk in string.split('_'):
+        output += chunk[0].upper()
+        output += chunk[1:]
+    return output
 
 def generateStrings():
 
@@ -84,7 +88,7 @@ def generateStrings():
 
                     stringIds.append(
                         {
-                            "enumId": humps.pascalize(f"{category}_{key}"),
+                            "enumId": pascalize(f"{category}_{key}"),
                             "stringId": stringId,
                             "value": value,
                             "comments": comments,
