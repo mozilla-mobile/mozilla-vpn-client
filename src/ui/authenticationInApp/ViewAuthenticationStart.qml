@@ -26,24 +26,13 @@ Item {
         placeholderText: "a@b.c" // TODO
     }
 
-    VPNTextField {
-        id: passwordInput
-
+    VPNButton {
         anchors.top: emailInput.bottom
         anchors.bottomMargin: 24
-        width: parent.width
-        echoMode: TextInput.Password
-
-        placeholderText: "secure password" // TODO
-    }
-
-    VPNButton {
-        anchors.top: passwordInput.bottom
-        anchors.bottomMargin: 24
-        text: "SignIn" // TODO
+        text: "Continue" // TODO
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPNAuthInApp.signInOrUp(emailInput.text, passwordInput.text); // TODO: email check?
+        onClicked: VPNAuthInApp.checkAccount(emailInput.text); // TODO: email check?
     }
 }

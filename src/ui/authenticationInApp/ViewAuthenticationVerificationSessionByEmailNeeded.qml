@@ -9,12 +9,12 @@ import "../components/forms"
 
 Item {
     // TODO
-    // we are here if the user is completing the account creation flow.
+    // we are here if the user is completing the session activation flow.
     // FxA has sent an email with a 6-digit code. The code must be received by
     // this view and then passed to the C++ layer using:
-    // `verifyAccountCode(code)`.
+    // `verifySessionEmailCode(code)`.
     // The code expires after 5 minutes. If the user needs a new code, call:
-    // `resendVerificationAccountCode()`.
+    // `resendVerificationSessionCodeEmail()`.
     //
     // After this step we can go to:
     // - all done \o/
@@ -26,7 +26,7 @@ Item {
     // In theory, this part should be tested on iOS or on Android when we will
     // have IAP there too.
 
-    Component.onCompleted: console.log("ACCOUNT VERIFICATION")
+    Component.onCompleted: console.log("SESSION VERIFICATION BY EMAIL")
 
     Text {
         id: msg
@@ -50,7 +50,7 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPNAuthInApp.verifyAccountCode(codeInput.text);
+        onClicked: VPNAuthInApp.verifySessionEmailCode(codeInput.text);
     }
 
     VPNButton {
@@ -60,6 +60,6 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPNAuthInApp.resendVerificationAccountCode();
+        onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
     }
 }

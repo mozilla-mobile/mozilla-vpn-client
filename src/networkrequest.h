@@ -78,7 +78,11 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForFxaSendUnblockCode(
       QObject* parent, const QString& emailAddress);
 
-  static NetworkRequest* createForFxaSessionVerifyCode(
+  static NetworkRequest* createForFxaSessionVerifyByEmailCode(
+      QObject* parent, const QByteArray& sessionToken, const QString& code,
+      const QUrlQuery& query);
+
+  static NetworkRequest* createForFxaSessionVerifyByTotpCode(
       QObject* parent, const QByteArray& sessionToken, const QString& code,
       const QUrlQuery& query);
 

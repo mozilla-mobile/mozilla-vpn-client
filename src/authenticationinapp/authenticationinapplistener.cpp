@@ -83,15 +83,10 @@ void AuthenticationInAppListener::start(MozillaVPN* vpn, QUrl& url,
           });
 }
 
-void AuthenticationInAppListener::signInOrUp(const QString& emailAddress,
-                                             const QString& password) {
+void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
   logger.log() << "Authentication starting:" << emailAddress;
 
-  AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateAccountStatus, this);
-
   m_emailAddress = emailAddress;
-  m_password = password;
 
   NetworkRequest* request =
       NetworkRequest::createForFxaAccountStatus(this, m_emailAddress);
@@ -117,19 +112,22 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
   logger.log() << "Account checked:" << exists;
 
   if (exists) {
-    signIn();
+    AuthenticationInApp::instance()->requestState(
+        AuthenticationInApp::StateSignIn, this);
     return;
   }
 
-  signUp();
+  AuthenticationInApp::instance()->requestState(
+      AuthenticationInApp::StateSignUp, this);
 }
 
-QByteArray AuthenticationInAppListener::generateAuthPw() const {
+QByteArray AuthenticationInAppListener::generateAuthPw(
+    const QString& password) const {
   // Process the user's password into an FxA auth token
   QString salt = QString("identity.mozilla.com/picl/v1/quickStretch:%1")
                      .arg(m_emailAddress);
   QByteArray pbkdf = QPasswordDigestor::deriveKeyPbkdf2(
-      QCryptographicHash::Sha256, m_password.toUtf8(), salt.toUtf8(), 1000, 32);
+      QCryptographicHash::Sha256, password.toUtf8(), salt.toUtf8(), 1000, 32);
 
   HKDF hash(QCryptographicHash::Sha256);
   hash.addData(pbkdf);
@@ -137,16 +135,15 @@ QByteArray AuthenticationInAppListener::generateAuthPw() const {
   return hash.result(32, "identity.mozilla.com/picl/v1/authPW");
 }
 
+void AuthenticationInAppListener::setPassword(const QString& password) {
+  m_authPw = generateAuthPw(password);
+}
+
 void AuthenticationInAppListener::signIn(const QString& verificationCode) {
   logger.log() << "Sign in";
 
-  AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateSignIn, this);
-
-  QByteArray authpw = generateAuthPw();
-
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      this, m_emailAddress, authpw, verificationCode, m_urlQuery);
+      this, m_emailAddress, m_authPw, verificationCode, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -162,20 +159,16 @@ void AuthenticationInAppListener::signIn(const QString& verificationCode) {
             QJsonObject obj = json.object();
 
             signInCompleted(obj["sessionToken"].toString(),
-                            obj["verified"].toBool());
+                            obj["verified"].toBool(),
+                            obj["verificationMethod"].toString());
           });
 }
 
 void AuthenticationInAppListener::signUp() {
   logger.log() << "Sign up";
 
-  AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateSignUp, this);
-
-  QByteArray authpw = generateAuthPw();
-
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
-      this, m_emailAddress, authpw, m_urlQuery);
+      this, m_emailAddress, m_authPw, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -191,7 +184,8 @@ void AuthenticationInAppListener::signUp() {
             QJsonObject obj = json.object();
 
             signInCompleted(obj["sessionToken"].toString(),
-                            obj["verified"].toBool());
+                            obj["verified"].toBool(),
+                            obj["verificationMethod"].toString());
           });
 }
 
@@ -222,12 +216,13 @@ void AuthenticationInAppListener::verifyEmailCode(const QString& code) {
   signIn(code);
 }
 
-void AuthenticationInAppListener::verifyAccountCode(const QString& code) {
-  logger.log() << "Sign in (verify account code received)";
+void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
+  logger.log() << "Sign in (verify session code by email received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
-  NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyCode(
-      this, m_sessionToken, code, m_urlQuery);
+  NetworkRequest* request =
+      NetworkRequest::createForFxaSessionVerifyByEmailCode(this, m_sessionToken,
+                                                           code, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -238,11 +233,11 @@ void AuthenticationInAppListener::verifyAccountCode(const QString& code) {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.log() << "Verification completed" << data;
-            signIn();
+            finalizeSignIn();
           });
 }
 
-void AuthenticationInAppListener::resendVerificationAccountCode() {
+void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
   logger.log() << "Resend verification code";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
@@ -260,8 +255,29 @@ void AuthenticationInAppListener::resendVerificationAccountCode() {
       [](const QByteArray& data) { logger.log() << "Code resent" << data; });
 }
 
-void AuthenticationInAppListener::signInCompleted(const QString& sessionToken,
-                                                  bool accountVerified) {
+void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
+  logger.log() << "Sign in (verify session code by totp received)";
+  Q_ASSERT(!m_sessionToken.isEmpty());
+
+  NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
+      this, m_sessionToken, code, m_urlQuery);
+
+  connect(request, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+            logger.log() << "Failed to verify the session code" << error;
+            processRequestFailure(error, data);
+          });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray& data) {
+            logger.log() << "Verification completed" << data;
+            finalizeSignIn();
+          });
+}
+
+void AuthenticationInAppListener::signInCompleted(
+    const QString& sessionToken, bool accountVerified,
+    const QString& verificationMethod) {
   logger.log() << "Session generated";
 
 #ifdef QT_DEBUG
@@ -272,10 +288,27 @@ void AuthenticationInAppListener::signInCompleted(const QString& sessionToken,
   m_sessionToken = QByteArray::fromHex(sessionToken.toUtf8());
 
   if (!accountVerified) {
-    AuthenticationInApp::instance()->requestState(
-        AuthenticationInApp::StateAccountVerification, this);
+    if (verificationMethod == "totp-2fa") {
+      AuthenticationInApp::instance()->requestState(
+          AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
+      return;
+    }
+
+    if (verificationMethod == "email-otp") {
+      AuthenticationInApp::instance()->requestState(
+          AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+      return;
+    }
+
+    logger.log() << "Unsupported verification method:" << verificationMethod;
     return;
   }
+
+  finalizeSignIn();
+}
+
+void AuthenticationInAppListener::finalizeSignIn() {
+  Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
       NetworkRequest::createForFxaAuthz(this, m_sessionToken, m_urlQuery);
@@ -420,12 +453,6 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
       aip->requestState(AuthenticationInApp::StateStart, this);
       break;
 
-    case 160:  // This request requires two step authentication enabled on
-               // your account.
-      logger.log() << "two step authentication not supported yet!";
-      // TODO
-      break;
-
     case 151:  // Failed to send email
       aip->requestErrorPropagation(AuthenticationInApp::ErrorFailedToSendEmail,
                                    this);
@@ -523,6 +550,9 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
     case 158:  // Recovery key not found.
       [[fallthrough]];
     case 159:  // Recovery key is not valid.
+      [[fallthrough]];
+    case 160:  // This request requires two step authentication enabled on
+               // your account.
       [[fallthrough]];
     case 161:  // Recovery key already exists.
       [[fallthrough]];
