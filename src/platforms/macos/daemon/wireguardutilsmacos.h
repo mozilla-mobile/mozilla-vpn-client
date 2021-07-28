@@ -20,6 +20,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool interfaceExists() override {
     return m_tunnel.state() == QProcess::Running;
   }
+  QString interfaceName() override { return m_ifname; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
 

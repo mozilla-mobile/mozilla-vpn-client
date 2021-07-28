@@ -6,9 +6,12 @@
 #define MACOSDAEMON_H
 
 #include "daemon.h"
+#include "iputilsmacos.h"
 #include "wireguardutilsmacos.h"
 
 class MacOSDaemon final : public Daemon {
+  friend class IPUtilsMacos;
+
  public:
   MacOSDaemon();
   ~MacOSDaemon();
@@ -23,9 +26,12 @@ class MacOSDaemon final : public Daemon {
   bool run(Op op, const InterfaceConfig& config) override;
   bool supportWGUtils() const override { return true; }
   WireguardUtils* wgutils() override { return m_wgutils; }
+  bool supportIPUtils() const override { return true; }
+  IPUtils* iputils() override { return m_iputils; }
 
  private:
   WireguardUtilsMacos* m_wgutils = nullptr;
+  IPUtilsMacos* m_iputils = nullptr;
 };
 
 #endif  // MACOSDAEMON_H

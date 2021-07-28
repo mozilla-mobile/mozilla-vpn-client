@@ -104,38 +104,6 @@ del_routes() {
 	done
 }
 
-up_if() {
-	cmd ifconfig "$REAL_INTERFACE" up
-}
-
-add_addr() {
-	if [[ $1 == *:* ]]; then
-		cmd ifconfig "$REAL_INTERFACE" inet6 "$1" alias
-	else
-		cmd ifconfig "$REAL_INTERFACE" inet "$1" "${1%%/*}" alias
-	fi
-}
-
-set_mtu() {
-	# TODO: use better set_mtu algorithm from freebsd.bash
-	local mtu=0 current_mtu=-1 destination netif defaultif
-	if [[ -n $MTU ]]; then
-		cmd ifconfig "$REAL_INTERFACE" mtu "$MTU"
-		return
-	fi
-	while read -r destination _ _ _ _ netif _; do
-		if [[ $destination == default ]]; then
-			defaultif="$netif"
-			break
-		fi
-	done < <(netstat -nr -f inet)
-	[[ -n $defaultif && $(ifconfig "$defaultif") =~ mtu\ ([0-9]+) ]] && mtu="${BASH_REMATCH[1]}"
-	[[ $mtu -gt 0 ]] || mtu=1500
-	mtu=$(( mtu - 80 ))
-	[[ $(ifconfig "$REAL_INTERFACE") =~ mtu\ ([0-9]+) ]] && current_mtu="${BASH_REMATCH[1]}"
-	[[ $mtu -eq $current_mtu ]] || cmd ifconfig "$REAL_INTERFACE" mtu "$mtu"
-}
-
 collect_gateways() {
 	local destination gateway
 
@@ -393,11 +361,6 @@ cmd_up() {
 	local i
 	get_real_interface || die "\`$INTERFACE' does not exist"
 	trap 'del_routes; exit' INT TERM EXIT
-	for i in "${ADDRESSES[@]}"; do
-		add_addr "$i"
-	done
-	set_mtu
-	up_if
 	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$REAL_INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do
 		add_route "$i"
 	done

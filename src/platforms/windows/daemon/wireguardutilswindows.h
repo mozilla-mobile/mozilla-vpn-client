@@ -18,6 +18,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   ~WireguardUtilsWindows();
 
   bool interfaceExists() override { return m_tunnel.isRunning(); }
+  QString interfaceName() override { return "MozillaVPN"; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
 

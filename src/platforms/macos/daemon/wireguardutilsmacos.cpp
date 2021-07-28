@@ -166,8 +166,6 @@ WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
   QString reply = uapiCommand("get=1");
   bool match = false;
 
-  logger.log() << "Getting status from getPeerStatus()";
-
   for (const QString& line : reply.split('\n')) {
     int eq = line.indexOf('=');
     if (eq <= 0) {
