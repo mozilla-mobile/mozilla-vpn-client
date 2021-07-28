@@ -37,6 +37,8 @@ class WireguardUtilsMacos final : public WireguardUtils {
   void tunnelStdoutReady();
 
  private:
+  QString uapiCommand(const QString& command);
+  static int uapiErrno(const QString& command);
   static QString waitForTunnelName(const QString& filename);
 
   QString m_ifname;

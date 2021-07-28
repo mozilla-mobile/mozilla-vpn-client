@@ -6,9 +6,13 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#include <QByteArray>
 #include <QDir>
 #include <QFile>
+#include <QLocalSocket>
 #include <QTimer>
+
+#include <errno.h>
 
 constexpr const int WG_TUN_PROC_TIMEOUT = 5000;
 
@@ -74,9 +78,19 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
     m_tunnel.kill();
     return false;
   }
-
   logger.log() << "Created wireguard interface" << m_ifname;
-  return true;
+
+  // Send a UAPI command to configure the interface
+  QString message("set=1\n");
+  QByteArray privateKey = QByteArray::fromBase64(config.m_privateKey.toUtf8());
+  QTextStream out(&message);
+  out << "private_key=" << QString(privateKey.toHex()) << "\n";
+  out << "replace_peers=true\n";
+  int err = uapiErrno(uapiCommand(message));
+  if (err != 0) {
+    logger.log() << "Interface configuration failed:" << strerror(err);
+  }
+  return (err == 0);
 }
 
 bool WireguardUtilsMacos::deleteInterface() {
@@ -99,17 +113,85 @@ bool WireguardUtilsMacos::deleteInterface() {
 
 // dummy implementations for now
 bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
-  Q_UNUSED(config);
-  return true;
+  QByteArray publicKey =
+      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
+
+  // Update/create the peer config
+  QString message;
+  QTextStream out(&message);
+  out << "set=1\n";
+  out << "public_key=" << QString(publicKey.toHex()) << "\n";
+  if (!config.m_serverIpv4AddrIn.isNull()) {
+    out << "endpoint=" << config.m_serverIpv4AddrIn << ":";
+  } else if (!config.m_serverIpv6AddrIn.isNull()) {
+    out << "endpoint=[" << config.m_serverIpv6AddrIn << "]:";
+  } else {
+    logger.log() << "Failed to create peer with no endpoints";
+    return false;
+  }
+  out << config.m_serverPort << "\n";
+
+  out << "replace_allowed_ips=true\n";
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    out << "allowed_ip=" << ip.toString() << "\n";
+  }
+
+  int err = uapiErrno(uapiCommand(message));
+  if (err != 0) {
+    logger.log() << "Peer configuration failed:" << strerror(err);
+  }
+  return (err == 0);
 }
+
 bool WireguardUtilsMacos::deletePeer(const QString& pubkey) {
-  Q_UNUSED(pubkey);
-  return true;
+  QByteArray publicKey = QByteArray::fromBase64(qPrintable(pubkey));
+
+  QString message;
+  QTextStream out(&message);
+  out << "set=1\n";
+  out << "public_key=" << QString(publicKey.toHex()) << "\n";
+  out << "remove=true\n";
+
+  int err = uapiErrno(uapiCommand(message));
+  if (err != 0) {
+    logger.log() << "Peer deletion failed:" << strerror(err);
+  }
+  return (err == 0);
 }
+
 WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
     const QString& pubkey) {
-  Q_UNUSED(pubkey);
-  return peerStatus();
+  peerStatus status = {0, 0};
+  QString hexkey = QByteArray::fromBase64(pubkey.toUtf8()).toHex();
+  QString reply = uapiCommand("get=1");
+  bool match = false;
+
+  logger.log() << "Getting status from getPeerStatus()";
+
+  for (const QString& line : reply.split('\n')) {
+    int eq = line.indexOf('=');
+    if (eq <= 0) {
+      continue;
+    }
+    QString name = line.left(eq);
+    QString value = line.mid(eq + 1);
+
+    if (name == "public_key") {
+      match = (value == hexkey);
+      continue;
+    } else if (!match) {
+      continue;
+    }
+
+    if (name == "tx_bytes") {
+      status.txBytes = value.toDouble();
+    }
+    if (name == "rx_bytes") {
+      status.rxBytes = value.toDouble();
+    }
+  }
+
+  return status;
 }
 
 bool WireguardUtilsMacos::updateRoutePrefix(const IPAddressRange& prefix,
@@ -126,6 +208,52 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
   return true;
 }
 
+QString WireguardUtilsMacos::uapiCommand(const QString& command) {
+  QLocalSocket socket;
+  QString wgSocketFile = QString("/var/run/wireguard/%1.sock").arg(m_ifname);
+  socket.connectToServer(wgSocketFile, QIODevice::ReadWrite);
+  if (!socket.waitForConnected(WG_TUN_PROC_TIMEOUT)) {
+    logger.log() << "QLocalSocket::waitForConnected() failed:"
+                 << socket.errorString();
+    return QString();
+  }
+
+  // Send the message to the UAPI socket.
+  QByteArray message = command.toLocal8Bit();
+  while (!message.endsWith("\n\n")) {
+    message.append('\n');
+  }
+  socket.write(message);
+  if (!socket.waitForBytesWritten(WG_TUN_PROC_TIMEOUT)) {
+    logger.log() << "QLocalSocket::waitForBytesWritten() failed";
+    return QString();
+  }
+
+  QByteArray reply;
+  while (!reply.contains("\n\n")) {
+    if (!socket.waitForReadyRead(WG_TUN_PROC_TIMEOUT)) {
+      logger.log() << "QLocalSocket::waitForReadyRead() failed";
+      return QString();
+    }
+    reply.append(socket.readAll());
+  }
+  return QString::fromUtf8(reply).trimmed();
+}
+
+// static
+int WireguardUtilsMacos::uapiErrno(const QString& reply) {
+  for (const QString& line : reply.split("\n")) {
+    int eq = line.indexOf('=');
+    if (eq <= 0) {
+      continue;
+    }
+    if (line.left(eq) == "errno") {
+      return line.mid(eq + 1).toInt();
+    }
+  }
+  return EINVAL;
+}
+
 // static
 QString WireguardUtilsMacos::waitForTunnelName(const QString& filename) {
   QTimer timeout;
@@ -139,5 +267,5 @@ QString WireguardUtilsMacos::waitForTunnelName(const QString& filename) {
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     return QString();
   }
-  return QString::fromLocal8Bit(file.readLine());
+  return QString::fromLocal8Bit(file.readLine()).trimmed();
 }

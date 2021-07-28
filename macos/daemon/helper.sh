@@ -382,10 +382,6 @@ add_route() {
 	fi
 }
 
-set_config() {
-	cmd wg setconf "$REAL_INTERFACE" <(echo "$WG_CONFIG")
-}
-
 cmd_usage() {
 	cat >&2 <<-_EOF
 	Usage: $PROGRAM [ up | down ] [ CONFIG_FILE ]
@@ -397,7 +393,6 @@ cmd_up() {
 	local i
 	get_real_interface || die "\`$INTERFACE' does not exist"
 	trap 'del_routes; exit' INT TERM EXIT
-	set_config
 	for i in "${ADDRESSES[@]}"; do
 		add_addr "$i"
 	done

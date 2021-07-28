@@ -56,56 +56,20 @@ MacOSDaemon* MacOSDaemon::instance() {
 QByteArray MacOSDaemon::getStatus() {
   logger.debug() << "Status request";
 
+  bool connected = m_connections.contains(0);
   QJsonObject obj;
   obj.insert("type", "status");
-  obj.insert("connected", m_connections.contains(0));
+  obj.insert("connected", connected);
 
-  if (m_connections.contains(0)) {
-    const ConnectionState& state = m_connections.value(0);
-    uint64_t txBytes = 0;
-    uint64_t rxBytes = 0;
-
-    QDir appPath(QCoreApplication::applicationDirPath());
-    appPath.cdUp();
-    appPath.cd("Resources");
-    appPath.cd("utils");
-    QString wgPath = appPath.filePath("wg");
-
-    QStringList arguments{"show", "all", "transfer"};
-    logger.debug() << "Start:" << wgPath << " - arguments:" << arguments;
-
-    QProcess wgProcess;
-    wgProcess.start(wgPath, arguments);
-
-    if (!wgProcess.waitForFinished(-1)) {
-      logger.error() << "Error occurred" << wgProcess.errorString();
-    } else {
-      QByteArray output = wgProcess.readAllStandardOutput();
-
-      logger.debug() << "wg-quick stdout:" << Qt::endl
-                     << qUtf8Printable(output) << Qt::endl;
-      logger.debug() << "wg-quick stderr:" << Qt::endl
-                     << qUtf8Printable(wgProcess.readAllStandardError())
-                     << Qt::endl;
-
-      QStringList lines = QString(output).split("\n");
-      for (const QString& line : lines) {
-        QStringList parts = line.split("\t");
-
-        if (parts.length() == 4) {
-          rxBytes = parts[2].toLongLong();
-          txBytes = parts[3].toLongLong();
-        }
-      }
-    }
-
-    obj.insert("status", true);
+  if (connected) {
+    const ConnectionState& state = m_connections.value(0).m_config;
+    WireguardUtils::peerStatus status =
+        m_wgutils->getPeerStatus(state.m_config.m_serverPublicKey);
     obj.insert("serverIpv4Gateway", state.m_config.m_serverIpv4Gateway);
     obj.insert("deviceIpv4Address", state.m_config.m_deviceIpv4Address);
     obj.insert("date", state.m_date.toString());
-
-    obj.insert("txBytes", QJsonValue(double(txBytes)));
-    obj.insert("rxBytes", QJsonValue(double(rxBytes)));
+    obj.insert("txBytes", QJsonValue(status.txBytes));
+    obj.insert("rxBytes", QJsonValue(status.rxBytes));
   }
 
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
