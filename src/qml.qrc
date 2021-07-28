@@ -357,7 +357,6 @@
         <file>ui/resources/settings/notifications.svg</file>
         <file>ui/resources/settings/networkSettings.svg</file>
         <file>ui/resources/devicesLimit.svg</file>
-        <file>ui/resources/removeDevice.png</file>
         <file>ui/resources/settings-white.svg</file>
         <file>ui/resources/shield-off.svg</file>
         <file>ui/resources/shield-on.svg</file>
@@ -433,8 +432,19 @@
         <file>ui/components/forms/VPNTextField.qml</file>
         <file>ui/components/forms/VPNRadioButton.qml</file>
         <file>ui/resources/plus.svg</file>
+        <file>ui/resources/devicesRemove.svg</file>
+        <file>ui/components/VPNMetropolisLabel.qml</file>
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
         <file>ui/themes/colors.js</file>
+        <file>ui/states/StateAuthenticationInApp.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationInApp.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationInitializing.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationStart.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationAccountStatus.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationSignIn.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationSignUp.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationEmailVerification.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationAccountVerification.qml</file>
     </qresource>
 </RCC>

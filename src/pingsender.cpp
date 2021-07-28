@@ -50,10 +50,11 @@ void PingSender::genericSendPing(const QStringList& args, qint16 sequence) {
   process->start("ping", args, QIODevice::ReadOnly);
 
   connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
-          this, [this, process, sequence](int exitCode, QProcess::ExitStatus) {
+          this, [this, sequence](int exitCode, QProcess::ExitStatus) {
             if (exitCode == 0) emit recvPing(sequence);
-            process->deleteLater();
           });
+  connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
+          process, &QObject::deleteLater);
 
   // Ensure any lingering pings are cleaned up when the PingSender is destroyed
   connect(this, &QObject::destroyed, process, [process] {
