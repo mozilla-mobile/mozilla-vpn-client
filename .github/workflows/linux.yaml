@@ -227,7 +227,7 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          pip3 install pyyaml
+          pip install pyyaml
           yum -y install rpm-build rpmdevtools yum-utils
           yum-builddep -y mozillavpn.spec
 
