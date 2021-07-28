@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 import os
 import sys
 import shutil
+import generate_strings
 
 # Include only locales above this threshold (e.g. 70%) in production
 l10n_threshold = 0.70
@@ -20,8 +21,11 @@ parser.add_argument(
     help='Build only for production locales.')
 args = parser.parse_args()
 
+def title(a, b):
+    print(f"\033[96m\033[1m{a}\033[0m: \033[97m{b}\033[0m")
+
 # Step 0
-# Locate the lupdate and lconvert tools
+title("Step 0", "Locate the lupdate and lconvert tools...")
 lupdate = shutil.which('lupdate')
 if lupdate is None:
     lupdate = shutil.which('lupdate-qt5')
@@ -40,6 +44,7 @@ if lconvert is None:
 # Go through the i18n repo, check each XLIFF file and take
 # note which locale is complete above the minimum threshold.
 # Adds path of .xliff and .ts to l10n_files.
+title("Step 1", "Validate the XLIFF file...")
 l10n_files = []
 for locale in os.listdir('i18n'):
     # Skip non folders
@@ -89,7 +94,7 @@ for locale in os.listdir('i18n'):
     })
 
 # Step 2
-# Create folders and localization files for the languages
+title("Step 2", "Create folders and localization files for the languages...")
 for file in l10n_files:
     dirname = os.path.dirname(file['ts'])
     if not os.path.exists(dirname):
@@ -113,7 +118,7 @@ for file in l10n_files:
 </plist>""")
 
 # Step 3
-# Write PRI file to import the locales that are ready
+title("Step 3", "Write PRI file to import the locales that are ready...")
 with open('translations/translations.pri', 'w') as pri_file:
     output = []
     output.append('TRANSLATIONS += \\ ')
@@ -127,14 +132,16 @@ with open('translations/translations.pri', 'w') as pri_file:
         output.append(f"QMAKE_BUNDLE_DATA += LANGUAGES_FILES_{file['locale']}")
     pri_file.write('\n'.join(output))
 
-print('Updated translations.pri')
-
 # Step 4
-# Generate new ts files
-os.system(f"{lupdate} src/src.pro")
+title("Step 4", "Generate the Js/C++ string definitions...")
+generate_strings.generateStrings()
 
 # Step 5
-# Now merge translations into the files
+title("Step 5", "Generate new ts files...")
+os.system(f"{lupdate} src/src.pro")
+
+# Step 6
+title("Step 5", "Now merge translations into the files...")
 for l10n_file in l10n_files:
     os.system(f"{lconvert} -i {l10n_file['ts']} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
 
