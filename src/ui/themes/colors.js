@@ -118,7 +118,7 @@ const pink5 = '#FFDEF0';
 /**
  * Helper functions
  */
- const percentToHex = percent => {
+const percentToHex = percent => {
   const int8Bit = Math.round(percent * 255);
   const hexAlphaValue = int8Bit.toString(16).padStart(2, '0');
 

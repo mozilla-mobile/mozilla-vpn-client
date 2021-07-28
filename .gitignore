@@ -58,6 +58,7 @@ macos/gobridge/wireguard-go-version.h
 .vscode/
 MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
+*.autosave
 
 #Windows 
 .deps
