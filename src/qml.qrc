@@ -436,6 +436,7 @@
         <file>ui/components/VPNMetropolisLabel.qml</file>
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
+        <file>ui/themes/colors.js</file>
         <file>ui/components/VPNSemiMonoLabel.qml</file>
         <file>ui/states/StateAuthenticationInApp.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationInApp.qml</file>
