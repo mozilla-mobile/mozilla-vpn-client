@@ -443,7 +443,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaSessionVerifyCode(
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     QObject* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -485,6 +485,36 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
 
   QByteArray payload =
       QJsonDocument(QJsonObject()).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
+    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::FXA_URL);
+  url.setPath("/v1/session/verify/totp");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("code", code);
+  obj.insert("service", query.queryItemValue("client_id"));
+
+  QJsonArray scopes;
+  scopes.append(query.queryItemValue("scope"));
+  obj.insert("scopes", scopes);
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
 
   HawkAuth hawk = HawkAuth(sessionToken);
   QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();

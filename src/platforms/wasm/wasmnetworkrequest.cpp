@@ -241,7 +241,21 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaSessionVerifyCode(
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
+    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    const QUrlQuery& query) {
+  Q_ASSERT(parent);
+  Q_UNUSED(sessionToken);
+  Q_UNUSED(code);
+  Q_UNUSED(query);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     QObject* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   Q_ASSERT(parent);

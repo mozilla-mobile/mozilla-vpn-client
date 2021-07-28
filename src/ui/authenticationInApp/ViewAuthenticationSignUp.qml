@@ -11,8 +11,33 @@ Item {
     // TODO
     // We show this view when the user is creating an account.
     // Things are happening in background. The next steps are:
-    // - AccountVerification
+    // - Verification by email needed
     // - errors
 
     Component.onCompleted: console.log("SIGN UP")
+
+    VPNTextField {
+        id: passwordInput
+
+        anchors.top: parent.top
+        anchors.bottomMargin: 24
+        width: parent.width
+
+        echoMode: TextInput.Password
+
+        placeholderText: "secure password" // TODO
+    }
+
+    VPNButton {
+        anchors.top: passwordInput.bottom
+        anchors.bottomMargin: 24
+        text: "Sign Up" // TODO
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 5
+        onClicked: {
+          VPNAuthInApp.setPassword(passwordInput.text);
+          VPNAuthInApp.signUp();
+        }
+    }
 }
