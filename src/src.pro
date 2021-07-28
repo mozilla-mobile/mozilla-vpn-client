@@ -23,7 +23,8 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/telemetry
+            ../glean/telemetry \
+            ../translations/generated
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -75,6 +76,7 @@ SOURCES += \
         ipaddress.cpp \
         ipaddressrange.cpp \
         ipfinder.cpp \
+        l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
@@ -856,6 +858,13 @@ else {
 }
 
 RESOURCES += $$PWD/../translations/servers.qrc
+
+exists($$PWD/../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)
