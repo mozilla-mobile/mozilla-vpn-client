@@ -79,13 +79,6 @@ get_real_interface() {
 	return 0
 }
 
-add_if() {
-	export WG_TUN_NAME_FILE="/var/run/wireguard/$INTERFACE.name"
-	mkdir -p "/var/run/wireguard/"
-	cmd "${WG_QUICK_USERSPACE_IMPLEMENTATION:-wireguard-go}" utun
-	get_real_interface
-}
-
 del_routes() {
 	[[ -n $REAL_INTERFACE ]] || return 0
 	local todelete=( ) destination gateway netif
@@ -109,11 +102,6 @@ del_routes() {
 			cmd route -q -n delete -inet "$destination" >/dev/null || true
 		fi
 	done
-}
-
-del_if() {
-	[[ -z $REAL_INTERFACE ]] || cmd rm -f "/var/run/wireguard/$REAL_INTERFACE.sock"
-	cmd rm -f "/var/run/wireguard/$INTERFACE.name"
 }
 
 up_if() {
@@ -407,9 +395,8 @@ cmd_usage() {
 
 cmd_up() {
 	local i
-	get_real_interface && die "\`$INTERFACE' already exists as \`$REAL_INTERFACE'"
-	trap 'del_if; del_routes; exit' INT TERM EXIT
-	add_if
+	get_real_interface || die "\`$INTERFACE' does not exist"
+	trap 'del_routes; exit' INT TERM EXIT
 	set_config
 	for i in "${ADDRESSES[@]}"; do
 		add_addr "$i"
@@ -429,7 +416,6 @@ cmd_down() {
 	if ! get_real_interface || [[ " $(wg show interfaces) " != *" $REAL_INTERFACE "* ]]; then
 		die "\`$INTERFACE' is not a WireGuard interface"
 	fi
-	del_if
 }
 
 cmd_cleanup() {
@@ -454,8 +440,6 @@ cmd_cleanup() {
       cmd networksetup -setdnsservers "$service" "Empty"
     fi
   done; } < <(networksetup -listallnetworkservices)
-
-  del_if
 }
 
 # ~~ function override insertion point ~~
