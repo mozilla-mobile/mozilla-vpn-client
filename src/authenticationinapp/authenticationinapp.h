@@ -21,8 +21,6 @@ class AuthenticationInApp final : public QObject {
     // The client_id and other params has been received. We are ready to
     // receive email address and password.
     StateStart,
-    // We are checking the account.
-    StateAccountStatus,
     // Sign in
     StateSignIn,
     // Sign up
@@ -34,9 +32,12 @@ class AuthenticationInApp final : public QObject {
     // The authentication requires an account verification (6-digit code)
     // This is similar to the previous step, but it happens when the account
     // has not been verified yet.
-    // The code expires after 5 minutes. Call `resendVerificationAccountCode`
+    // The code expires after 5 minutes. Call
+    // `resendVerificationSessionCodeEmail`
     // to have a new code.
-    StateAccountVerification,
+    StateVerificationSessionByEmailNeeded,
+    // The two-factor authentication session verification.
+    StateVerificationSessionByTotpNeeded,
   };
   Q_ENUM(State);
 
@@ -67,17 +68,29 @@ class AuthenticationInApp final : public QObject {
 
   State state() const { return m_state; }
 
-  Q_INVOKABLE void signInOrUp(const QString& emailAddress,
-                              const QString& password);
+  // Everything starts from here.
+  Q_INVOKABLE void checkAccount(const QString& emailAddress);
+
+  Q_INVOKABLE void setPassword(const QString& password);
+
+  // Sign In/Up.
+  Q_INVOKABLE void signIn();
+  Q_INVOKABLE void signUp();
 
   // This needs to be called when we are in StateEmailVerification state.
   Q_INVOKABLE void verifyEmailCode(const QString& code);
 
-  // This needs to be called when we are in StateAccountVerification state.
-  Q_INVOKABLE void verifyAccountCode(const QString& code);
+  // This needs to be called when we are in
+  // StateVerificationSessionByEmailNeeded state.
+  Q_INVOKABLE void verifySessionEmailCode(const QString& code);
 
-  // This needs to be called when we are in StateAccountVerification state.
-  Q_INVOKABLE void resendVerificationAccountCode();
+  // This needs to be called when we are in
+  // StateVerificationSessionByEmailNeeded state.
+  Q_INVOKABLE void resendVerificationSessionCodeEmail();
+
+  // This needs to be called when we are in
+  // StateVerificationSessionByTotpNeeded state.
+  Q_INVOKABLE void verifySessionTotpCode(const QString& code);
 
   void registerListener(AuthenticationInAppListener* listener);
 

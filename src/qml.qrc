@@ -442,10 +442,10 @@
         <file>ui/authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationInitializing.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationStart.qml</file>
-        <file>ui/authenticationInApp/ViewAuthenticationAccountStatus.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationSignIn.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationSignUp.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationEmailVerification.qml</file>
-        <file>ui/authenticationInApp/ViewAuthenticationAccountVerification.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
     </qresource>
 </RCC>

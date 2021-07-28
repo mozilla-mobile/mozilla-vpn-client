@@ -119,4 +119,4 @@ bool FeatureList::userDNSSupported() const {
 #endif
 }
 
-bool FeatureList::authenticationInApp() const { return false; }
+bool FeatureList::authenticationInApp() const { return true; }

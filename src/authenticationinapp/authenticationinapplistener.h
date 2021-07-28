@@ -20,30 +20,34 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 
   void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
 
-  void signInOrUp(const QString& emailAddress, const QString& password);
+  void checkAccount(const QString& emailAddress);
+  void setPassword(const QString& password);
+  void signIn(const QString& verificationCode = QString());
+  void signUp();
   void verifyEmailCode(const QString& code);
-  void verifyAccountCode(const QString& code);
-  void resendVerificationAccountCode();
+  void verifySessionEmailCode(const QString& code);
+  void resendVerificationSessionCodeEmail();
+  void verifySessionTotpCode(const QString& code);
 
  private:
   void processErrorCode(int errorCode);
   void processRequestFailure(QNetworkReply::NetworkError error,
                              const QByteArray& data);
 
-  QByteArray generateAuthPw() const;
+  QByteArray generateAuthPw(const QString& password) const;
 
-  void signIn(const QString& verificationCode = QString());
-  void signUp();
   void accountChecked(bool exists);
-  void signInCompleted(const QString& sessionToken, bool accountVerified);
+  void signInCompleted(const QString& sessionToken, bool accountVerified,
+                       const QString& verificationMethod);
   void emailVerificationNeeded();
+  void finalizeSignIn();
 
  private:
   QString m_codeChallenge;
   QUrlQuery m_urlQuery;
 
   QString m_emailAddress;
-  QString m_password;
+  QByteArray m_authPw;
 
   QByteArray m_sessionToken;
 };

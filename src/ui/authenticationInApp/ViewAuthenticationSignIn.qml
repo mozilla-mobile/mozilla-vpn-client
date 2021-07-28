@@ -20,4 +20,29 @@ Item {
     // - errors... for instance: the password is wrong. See the ErrorType enum.
 
     Component.onCompleted: console.log("SIGN IN")
+
+    VPNTextField {
+        id: passwordInput
+
+        anchors.top: parent.top
+        anchors.bottomMargin: 24
+        width: parent.width
+
+        echoMode: TextInput.Password
+
+        placeholderText: "secure password" // TODO
+    }
+
+    VPNButton {
+        anchors.top: passwordInput.bottom
+        anchors.bottomMargin: 24
+        text: "Sign In" // TODO
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 5
+        onClicked: {
+          VPNAuthInApp.setPassword(passwordInput.text);
+          VPNAuthInApp.signIn();
+        }
+    }
 }

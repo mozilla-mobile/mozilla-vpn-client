@@ -37,14 +37,6 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateAccountStatus
-            PropertyChanges {
-                target: loader
-                source: "ViewAuthenticationAccountStatus.qml"
-            }
-        },
-
-        State {
             name: VPNAuthInApp.StateSignIn
             PropertyChanges {
                 target: loader
@@ -69,10 +61,18 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateAccountVerification
+            name: VPNAuthInApp.StateVerificationSessionByEmailNeeded
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationAccountVerification.qml"
+                source: "ViewAuthenticationVerificationSessionByEmailNeeded.qml"
+            }
+        },
+
+        State {
+            name: VPNAuthInApp.StateVerificationSessionByTotpNeeded
+            PropertyChanges {
+                target: loader
+                source: "ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
         }
     ]

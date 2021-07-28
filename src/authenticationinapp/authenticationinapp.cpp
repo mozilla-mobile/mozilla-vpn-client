@@ -52,14 +52,40 @@ void AuthenticationInApp::registerListener(
   });
 }
 
-void AuthenticationInApp::signInOrUp(const QString& emailAddress,
-                                     const QString& password) {
+void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   Q_ASSERT(m_state == StateStart);
   Q_ASSERT(m_listener);
 
   logger.log() << "Authentication starting:" << emailAddress;
 
-  m_listener->signInOrUp(emailAddress, password);
+  m_listener->checkAccount(emailAddress);
+}
+
+void AuthenticationInApp::setPassword(const QString& password) {
+  Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  logger.log() << "Setting the password";
+
+  m_listener->setPassword(password);
+}
+
+void AuthenticationInApp::signIn() {
+  Q_ASSERT(m_state == StateSignIn);
+  Q_ASSERT(m_listener);
+
+  logger.log() << "Sign In";
+
+  m_listener->signIn();
+}
+
+void AuthenticationInApp::signUp() {
+  Q_ASSERT(m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  logger.log() << "Sign Up";
+
+  m_listener->signUp();
 }
 
 void AuthenticationInApp::verifyEmailCode(const QString& code) {
@@ -68,16 +94,22 @@ void AuthenticationInApp::verifyEmailCode(const QString& code) {
   m_listener->verifyEmailCode(code);
 }
 
-void AuthenticationInApp::verifyAccountCode(const QString& code) {
-  Q_ASSERT(m_state == StateAccountVerification);
+void AuthenticationInApp::verifySessionEmailCode(const QString& code) {
+  Q_ASSERT(m_state == StateVerificationSessionByEmailNeeded);
   Q_ASSERT(m_listener);
-  m_listener->verifyAccountCode(code);
+  m_listener->verifySessionEmailCode(code);
 }
 
-void AuthenticationInApp::resendVerificationAccountCode() {
-  Q_ASSERT(m_state == StateAccountVerification);
+void AuthenticationInApp::resendVerificationSessionCodeEmail() {
+  Q_ASSERT(m_state == StateVerificationSessionByEmailNeeded);
   Q_ASSERT(m_listener);
-  m_listener->resendVerificationAccountCode();
+  m_listener->resendVerificationSessionCodeEmail();
+}
+
+void AuthenticationInApp::verifySessionTotpCode(const QString& code) {
+  Q_ASSERT(m_state == StateVerificationSessionByTotpNeeded);
+  Q_ASSERT(m_listener);
+  m_listener->verifySessionTotpCode(code);
 }
 
 void AuthenticationInApp::requestState(State state,
