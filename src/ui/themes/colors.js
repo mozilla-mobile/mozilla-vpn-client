@@ -281,7 +281,7 @@ const input = {
   hover: {
     background: white,
     border: grey40,
-    placeholder: grey40,
+    placeholder: grey50,
     text: grey50,
   },
   focus: {

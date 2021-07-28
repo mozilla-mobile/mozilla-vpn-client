@@ -51,7 +51,7 @@ VPNFlickable {
         hasError: testInput.text.length > 0
         enabled: true
         placeholderText: VPNSettings.placeholderUserDNS
-        text: VPNSettings.userDNS
+        text: testInput.text
 
         x: 30
         y: 30

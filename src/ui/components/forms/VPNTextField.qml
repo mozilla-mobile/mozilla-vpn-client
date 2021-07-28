@@ -61,9 +61,8 @@ TextField {
         }
     ]
     background: VPNInputBackground {
-        showError: hasError
+        showError: textField.state === "error"
     }
-
     color: Colors.input.default.text
     placeholderTextColor: Colors.input.default.placeholder
 
@@ -72,8 +71,8 @@ TextField {
     selectByMouse: true
     Layout.preferredHeight: Theme.rowHeight
 
-    Button {
+    Text {
         text: textField.state
-        y: 40
+        y: 35
     }
 }
