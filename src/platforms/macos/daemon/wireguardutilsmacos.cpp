@@ -15,6 +15,7 @@
 #include <errno.h>
 
 constexpr const int WG_TUN_PROC_TIMEOUT = 5000;
+constexpr const char* WG_RUNTIME_DIR = "/var/run/wireguard";
 
 namespace {
 Logger logger(LOG_MACOS, "WireguardUtilsMacos");
@@ -28,6 +29,8 @@ WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
 
   connect(&m_tunnel, SIGNAL(readyReadStandardOutput()), this,
           SLOT(tunnelStdoutReady()));
+  connect(&m_tunnel, SIGNAL(errorOccurred(QProcess::ProcessError)), this,
+          SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
 }
 
 WireguardUtilsMacos::~WireguardUtilsMacos() {
@@ -45,6 +48,11 @@ void WireguardUtilsMacos::tunnelStdoutReady() {
   }
 }
 
+void WireguardUtilsMacos::tunnelErrorOccurred(QProcess::ProcessError error) {
+  logger.log() << "Tunnel process encountered an error:" << error;
+  emit backendFailure();
+}
+
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
   if (m_tunnel.state() != QProcess::NotRunning) {
@@ -52,8 +60,13 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
-  QString wgNameFile = QString("/var/run/wireguard/%1.name").arg(WG_INTERFACE);
+  QDir wgRuntimeDir(WG_RUNTIME_DIR);
+  if (!wgRuntimeDir.exists()) {
+    wgRuntimeDir.mkpath(".");
+  }
+
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  QString wgNameFile = wgRuntimeDir.filePath(QString(WG_INTERFACE) + ".name");
   pe.insert("WG_TUN_NAME_FILE", wgNameFile);
 #ifdef QT_DEBUG
   pe.insert("LOG_LEVEL", "debug");
@@ -106,8 +119,8 @@ bool WireguardUtilsMacos::deleteInterface() {
   }
 
   // Garbage collect.
-  QString wgNameFile = QString("/var/run/wireguard/%1.name").arg(WG_INTERFACE);
-  QFile::remove(wgNameFile);
+  QDir wgRuntimeDir(WG_RUNTIME_DIR);
+  QFile::remove(wgRuntimeDir.filePath(QString(WG_INTERFACE) + ".name"));
   return true;
 }
 
@@ -208,7 +221,8 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {
   QLocalSocket socket;
-  QString wgSocketFile = QString("/var/run/wireguard/%1.sock").arg(m_ifname);
+  QDir wgRuntimeDir(WG_RUNTIME_DIR);
+  QString wgSocketFile = wgRuntimeDir.filePath(m_ifname + ".sock");
   socket.connectToServer(wgSocketFile, QIODevice::ReadWrite);
   if (!socket.waitForConnected(WG_TUN_PROC_TIMEOUT)) {
     logger.log() << "QLocalSocket::waitForConnected() failed:"
@@ -252,18 +266,29 @@ int WireguardUtilsMacos::uapiErrno(const QString& reply) {
   return EINVAL;
 }
 
-// static
 QString WireguardUtilsMacos::waitForTunnelName(const QString& filename) {
   QTimer timeout;
   timeout.setSingleShot(true);
   timeout.start(WG_TUN_PROC_TIMEOUT);
 
   QFile file(filename);
-  while (!file.exists() && timeout.isActive()) {
+  while ((m_tunnel.state() == QProcess::Running) && timeout.isActive()) {
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      continue;
+    }
+    QString ifname = QString::fromLocal8Bit(file.readLine()).trimmed();
+    file.close();
+
+    // Test-connect to the UAPI socket.
+    QLocalSocket sock;
+    QDir wgRuntimeDir(WG_RUNTIME_DIR);
+    QString sockName = wgRuntimeDir.filePath(ifname + ".sock");
+    sock.connectToServer(sockName, QIODevice::ReadWrite);
+    if (sock.waitForConnected(100)) {
+      return ifname;
+    }
   }
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    return QString();
-  }
-  return QString::fromLocal8Bit(file.readLine()).trimmed();
+
+  return QString();
 }

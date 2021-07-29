@@ -275,6 +275,17 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
+  // Deactivate the main interface.
+  if (m_connections.contains(0)) {
+    const ConnectionState& state = m_connections.value(0);
+    if (!run(Down, state.m_config)) {
+      return false;
+    }
+    if (emitSignals) {
+      emit disconnected(0);
+    }
+  }
+
   // Cleanup DNS
   if (supportDnsUtils() && !dnsutils()->restoreResolvers()) {
     return false;
@@ -298,17 +309,6 @@ bool Daemon::deactivate(bool emitSignals) {
     // Delete the interface
     if (!wgutils()->deleteInterface()) {
       return false;
-    }
-  }
-
-  // Deactivate the main interface.
-  if (m_connections.contains(0)) {
-    const ConnectionState& state = m_connections.value(0);
-    if (!run(Down, state.m_config)) {
-      return false;
-    }
-    if (emitSignals) {
-      emit disconnected(0);
     }
   }
 

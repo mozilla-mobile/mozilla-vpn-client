@@ -36,11 +36,12 @@ class WireguardUtilsMacos final : public WireguardUtils {
 
  private slots:
   void tunnelStdoutReady();
+  void tunnelErrorOccurred(QProcess::ProcessError error);
 
  private:
   QString uapiCommand(const QString& command);
   static int uapiErrno(const QString& command);
-  static QString waitForTunnelName(const QString& filename);
+  QString waitForTunnelName(const QString& filename);
 
   QString m_ifname;
   QProcess m_tunnel;

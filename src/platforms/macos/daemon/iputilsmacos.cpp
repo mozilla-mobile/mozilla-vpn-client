@@ -89,21 +89,36 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
 bool IPUtilsMacos::addIP4AddressToDevice(const InterfaceConfig& config) {
   Q_UNUSED(config);
   QString ifname = MacOSDaemon::instance()->wgutils()->interfaceName();
-  struct ifreq ifr;
-  struct sockaddr_in* ifrAddr = (struct sockaddr_in*)&ifr.ifr_addr;
+  struct ifaliasreq ifr;
+  struct sockaddr_in* ifrAddr = (struct sockaddr_in*)&ifr.ifra_addr;
+  struct sockaddr_in* ifrMask = (struct sockaddr_in*)&ifr.ifra_mask;
+  struct sockaddr_in* ifrBcast = (struct sockaddr_in*)&ifr.ifra_broadaddr;
 
   // Name the interface and set family
-  strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
-  ifr.ifr_addr.sa_family = AF_INET;
+  memset(&ifr, 0, sizeof(ifr));
+  strncpy(ifr.ifra_name, qPrintable(ifname), IFNAMSIZ);
 
   // Get the device address to add to interface
   QPair<QHostAddress, int> parsedAddr =
       QHostAddress::parseSubnet(config.m_deviceIpv4Address);
   QByteArray _deviceAddr = parsedAddr.first.toString().toLocal8Bit();
   char* deviceAddr = _deviceAddr.data();
+  ifrAddr->sin_family = AF_INET;
+  ifrAddr->sin_len = sizeof(struct sockaddr_in);
   inet_pton(AF_INET, deviceAddr, &ifrAddr->sin_addr);
 
-  // Create IPv4 socket to perform the ioctl operations on
+  // Set the netmask to /32
+  ifrMask->sin_family = AF_INET;
+  ifrMask->sin_len = sizeof(struct sockaddr_in);
+  memset(&ifrMask->sin_addr, 0xff, sizeof(ifrMask->sin_addr));
+
+  // Set the broadcast address.
+  ifrBcast->sin_family = AF_INET;
+  ifrBcast->sin_len = sizeof(struct sockaddr_in);
+  ifrBcast->sin_addr.s_addr =
+      (ifrAddr->sin_addr.s_addr | ~ifrMask->sin_addr.s_addr);
+
+  // Create an IPv4 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
     logger.log() << "Failed to create ioctl socket.";
@@ -112,7 +127,7 @@ bool IPUtilsMacos::addIP4AddressToDevice(const InterfaceConfig& config) {
   auto guard = qScopeGuard([&] { close(sockfd); });
 
   // Set ifr to interface
-  int ret = ioctl(sockfd, SIOCSIFADDR, &ifr);
+  int ret = ioctl(sockfd, SIOCAIFADDR, &ifr);
   if (ret) {
     logger.log() << "Failed to set IPv4: " << deviceAddr
                  << "error:" << strerror(errno);
@@ -127,13 +142,14 @@ bool IPUtilsMacos::addIP6AddressToDevice(const InterfaceConfig& config) {
   struct in6_aliasreq ifr6;
 
   // Name the interface and set family
+  memset(&ifr6, 0, sizeof(ifr6));
   strncpy(ifr6.ifra_name, qPrintable(ifname), IFNAMSIZ);
   ifr6.ifra_addr.sin6_family = AF_INET6;
   ifr6.ifra_addr.sin6_len = sizeof(ifr6.ifra_addr);
   ifr6.ifra_lifetime.ia6t_vltime = ifr6.ifra_lifetime.ia6t_pltime = 0xffffffff;
   ifr6.ifra_prefixmask.sin6_family = AF_INET6;
   ifr6.ifra_prefixmask.sin6_len = sizeof(ifr6.ifra_prefixmask);
-  memset(&ifr6.ifra_prefixmask.sin6_addr, 0xff, 8); /* 8 * 8 = 64 bit */
+  memset(&ifr6.ifra_prefixmask.sin6_addr, 0xff, sizeof(struct in6_addr));
 
   // Get the device address to add to interface
   QPair<QHostAddress, int> parsedAddr =
