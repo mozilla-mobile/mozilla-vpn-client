@@ -31,10 +31,4 @@ TextField {
         id: textFieldState
         container: textField
     }
-
-    Button {
-        text: textFieldState.state
-        y: 45
-        z: 2
-    }
 }

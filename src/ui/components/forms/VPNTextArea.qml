@@ -72,12 +72,6 @@ Item {
                 id: textAreaStates
                 container: textArea
             }
-
-            Button {
-                text: textAreaStates.state
-                y: 45
-                z: 2
-            }
         }
     }
 
