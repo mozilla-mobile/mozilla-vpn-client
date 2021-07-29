@@ -37,6 +37,7 @@ Item {
             property var maxCharacterCount: 1000
             property bool loseFocusOnBlur: true
             property bool hasError: false
+            property bool showInteractionStates: true
 
             id: textArea
             textFormat: Text.PlainText
@@ -52,10 +53,6 @@ Item {
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
             enabled: root.enabled
-            background: VPNInputBackground {
-                itemToFocus: textArea
-                z: -1
-            }
 
             VPNTextBlock {
                 id: formattedPlaceholderText
@@ -84,6 +81,10 @@ Item {
         }
     }
 
+    VPNInputBackground {
+        itemToFocus: textArea
+        z: -1
+    }
 
     Text {
         anchors.top: parent.bottom

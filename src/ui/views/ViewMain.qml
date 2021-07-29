@@ -45,37 +45,6 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-
-        VPNTextField {
-            id: textField
-            placeholderText: "TextField"
-            hasError: textField.text.length > 1
-            enabled: true
-
-            Layout.fillWidth: true
-        }
-
-        VPNTextArea {
-            id: textArea
-            placeholderText: "TextArea"
-            enabled: true
-
-            Layout.fillWidth: true
-        }
-
-        VPNSearchBar {
-            id: searchBar
-            placeholderText: "TextArea"
-            hasError: searchBar.text.length > 1
-            enabled: true
-
-            Layout.fillWidth: true
-        }
-        z: 1
-    }
-
     GridLayout {
         id: col
         width: parent.width - Theme.windowMargin
