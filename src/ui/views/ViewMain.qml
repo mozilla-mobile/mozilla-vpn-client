@@ -8,7 +8,6 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
-import "../components/forms"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
@@ -38,33 +37,6 @@ VPNFlickable {
             }
         }
     ]
-    
-    ColumnLayout {
-        anchors.fill: parent
-
-        VPNTextField {
-            id: textField
-            placeholderText: "TextField"
-            hasError: textField.text.length > 1
-            enabled: false
-        }
-
-        VPNTextArea {
-            id: textArea
-            placeholderText: "TextArea"
-            hasError: textField.text.length > 1
-            enabled: true
-        }
-
-        VPNSearchBar {
-            id: searchBar
-            Layout.fillWidth: true
-
-            hasError: searchBar.text.length > 1
-            enabled: true
-        }
-        z: 1
-    }
 
     MouseArea {
         anchors.fill: parent
