@@ -359,6 +359,8 @@ else:linux:!android {
     QT += networkauth
     QT += dbus
 
+    LIBS += -lgo
+
     CONFIG += c++14
 
     DEFINES += MVPN_LINUX
