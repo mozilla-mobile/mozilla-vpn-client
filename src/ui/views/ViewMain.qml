@@ -45,16 +45,30 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
-    VPNTextField {
-        id: testInput
+    ColumnLayout {
+        anchors.fill: parent
 
-        hasError: testInput.text.length > 0
-        enabled: true
-        placeholderText: VPNSettings.placeholderUserDNS
-        text: testInput.text
+        VPNTextField {
+            id: textField
+            placeholderText: "TextField"
+            hasError: textField.text.length > 1
+            enabled: false
+        }
 
-        x: 30
-        y: 30
+        VPNTextArea {
+            id: textArea
+            placeholderText: "TextArea"
+            hasError: textField.text.length > 1
+            enabled: true
+        }
+
+        VPNSearchBar {
+            id: searchBar
+            Layout.fillWidth: true
+
+            hasError: searchBar.text.length > 1
+            enabled: true
+        }
         z: 1
     }
 

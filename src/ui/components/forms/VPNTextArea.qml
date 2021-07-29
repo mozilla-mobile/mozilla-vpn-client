@@ -11,6 +11,8 @@ import "../../themes/themes.js" as Theme
 Item {
     property alias placeholderText: formattedPlaceholderText.text
     property var userEntry: textArea.text
+    property bool enabled: true
+    property bool hasError: false
 
     id: root
     Layout.preferredHeight: Theme.rowHeight * 3
@@ -53,6 +55,7 @@ Item {
             selectByMouse: true
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+            enabled: root.enabled
 
             VPNTextBlock {
                 id: formattedPlaceholderText
@@ -68,6 +71,7 @@ Item {
                     duration: 100
                 }
             }
+
         }
     }
 

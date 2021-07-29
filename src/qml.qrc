@@ -436,5 +436,6 @@
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
         <file>ui/themes/colors.js</file>
+        <file>ui/components/forms/VPNInputStates.qml</file>
     </qresource>
 </RCC>

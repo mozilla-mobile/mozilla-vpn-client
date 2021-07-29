@@ -153,17 +153,17 @@ const blueFocus = addTransparency(blue, 0.4);
 const green = green50;
 const greenActive = green70;
 const greenHover = green60;
-const greenFocus = addTransparency(green, 0.2);
+const greenFocus = green20;
 
 const red = red50;
 const redActive = red70;
 const redHover = red60;
-const redFocus = addTransparency(red, 0.1);
+const redFocus = red10;
 
 const yellow = yellow50;
 const yellowActive = yellow70;
 const yellowHover = yellow60;
-const yellowFocus = addTransparency(yellow, 0.1);
+const yellowFocus = orange10;
 
 const informational = {
   default: blue,

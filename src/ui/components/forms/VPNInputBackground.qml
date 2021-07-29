@@ -7,33 +7,31 @@ import "../../themes/colors.js" as Color
 import "../../components"
 
 Rectangle {
-    property bool showInteractionStates: true
-    property bool showError: false
     property variant itemToFocus: parent
 
-    id: bg
+    id: inputBorder
 
     anchors.fill: parent
     antialiasing: true
-    border.color: itemToFocus.activeFocus && showInteractionStates ? showError ? Color.input.error.border : Color.input.focus.border : Color.input.default.border
-    border.width: itemToFocus.activeFocus && showInteractionStates ? 2 : 1
-    color: Theme.input.backgroundColor
+    border.color: Color.input.default.border
     radius: Theme.cornerRadius
 
     Behavior on border.color {
         ColorAnimation {
-            duration: 100
+            duration: 50
         }
     }
 
     Rectangle {
+        id: highlight
+
         anchors.fill: parent
         anchors.margins: border.width * -1
         antialiasing: true
-        border.color: showError ? Color.input.error.highlight : Color.input.focus.highlight
+        border.color: itemToFocus && itemToFocus.hasError ? Color.input.error.highlight : Color.input.focus.highlight
         border.width: 4
         color: "transparent"
-        opacity: itemToFocus.activeFocus && showInteractionStates ? 1 : 0
+        opacity: itemToFocus && itemToFocus.activeFocus && itemToFocus.showInteractionStates ? 1 : 0
         radius: parent.radius + anchors.margins * -1
         z: -1
 

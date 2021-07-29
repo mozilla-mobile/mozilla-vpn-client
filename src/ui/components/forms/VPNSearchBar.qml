@@ -15,6 +15,7 @@ VPNTextField {
 
     id: searchBar
 
+    background: VPNInputBackground {}
     leftInset: 48
     leftPadding: 48
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
@@ -26,11 +27,7 @@ VPNTextField {
         anchors.leftMargin: 20
         sourceSize.height: Theme.windowMargin
         sourceSize.width: Theme.windowMargin
-        opacity: parent.focus ? 1 : .8
-    }
-
-    background: VPNInputBackground {
-        showError: hasError
+        opacity: parent.focus ? 1 : 0.8
     }
 
     Keys.onPressed: {
