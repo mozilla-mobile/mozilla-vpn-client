@@ -6,4 +6,4 @@
 #  Created by mozilla on 29.07.21.
 #  
 
-echo "test"
+./scripts/apple_compile.sh ios
