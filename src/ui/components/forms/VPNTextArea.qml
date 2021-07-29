@@ -15,6 +15,7 @@ Item {
     property bool enabled: true
 
     id: root
+
     Layout.preferredHeight: Theme.rowHeight * 3
     Layout.preferredWidth: parent.width
     Layout.maximumHeight: Theme.rowHeight * 3
@@ -26,7 +27,6 @@ Item {
         anchors.fill: parent
         contentWidth: width
         contentHeight: textArea.implicitHeight
-        clip: true
 
         ScrollBar.vertical: ScrollBar {
             policy: flickable.contentHeight > root.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
@@ -40,6 +40,7 @@ Item {
             property bool showInteractionStates: true
 
             id: textArea
+            clip: true
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeSmall
             font.family: Theme.fontInterFamily
@@ -53,6 +54,10 @@ Item {
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
             enabled: root.enabled
+            background: VPNInputBackground {
+                itemToFocus: textArea
+                z: -1
+            }
 
             VPNTextBlock {
                 id: formattedPlaceholderText
@@ -73,11 +78,6 @@ Item {
                 container: textArea
             }
         }
-    }
-
-    VPNInputBackground {
-        itemToFocus: textArea
-        z: -1
     }
 
     Text {
