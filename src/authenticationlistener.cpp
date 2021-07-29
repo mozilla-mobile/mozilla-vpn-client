@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "authenticationlistener.h"
+#include "authenticationinapp/authenticationinapplistener.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -21,16 +22,26 @@ Logger logger(LOG_MAIN, "AuthenticationListener");
 }  // anonymous namespace
 
 // static
-AuthenticationListener* AuthenticationListener::create(QObject* parent) {
+AuthenticationListener* AuthenticationListener::create(
+    QObject* parent, MozillaVPN::AuthenticationType authenticationType) {
+  switch (authenticationType) {
+    case MozillaVPN::AuthenticationInBrowser:
 #if defined(MVPN_ANDROID)
-  return new AndroidAuthenticationListener(parent);
+      return new AndroidAuthenticationListener(parent);
 #elif defined(MVPN_IOS)
-  return new IOSAuthenticationListener(parent);
+      return new IOSAuthenticationListener(parent);
 #elif defined(MVPN_WASM)
-  return new WasmAuthenticationListener(parent);
+      return new WasmAuthenticationListener(parent);
 #else
-  return new DesktopAuthenticationListener(parent);
+      return new DesktopAuthenticationListener(parent);
 #endif
+    case MozillaVPN::AuthenticationInApp:
+      return new AuthenticationInAppListener(parent);
+
+    case MozillaVPN::DefaultAuthentication:
+    default:
+      Q_ASSERT(false);
+  }
 }
 
 AuthenticationListener::AuthenticationListener(QObject* parent)

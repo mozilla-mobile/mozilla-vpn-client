@@ -17,6 +17,7 @@ Requires:  wireguard-tools
 
 BuildRequires: golang >= 1.13
 BuildRequires: polkit-devel
+BuildRequires: python3-yaml
 BuildRequires: qt5-qtbase-devel >= 5.15
 BuildRequires: qt5-qtcharts-devel >= 5.15
 BuildRequires: qt5-qtnetworkauth-devel >= 5.15

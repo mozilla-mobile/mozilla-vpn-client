@@ -44,7 +44,7 @@ Item {
                     opacity: 0
                 }
                 PropertyChanges {
-                    target: logoSubtitle
+                    target: logoSubtitleOn
                     visible: true
                 }
             },
@@ -57,7 +57,7 @@ Item {
                     opacity: 1
                 }
                 PropertyChanges {
-                    target: logoSubtitle
+                    target: logoSubtitleOn
                     visible: false
                 }
                 PropertyChanges {

@@ -129,6 +129,10 @@ else
   rm -rf linux/debian || die "Failed"
   print G "done."
 
+  print Y "Downloading Go dependencies..."
+  (cd linux/netfilter && go mod vendor)
+  print G "done."
+
   printn Y "Archiving the source code... "
   tar cfz ../mozillavpn_$SHORTVERSION.orig.tar.gz . || die "Failed"
   print G "done."
