@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
-import "../../themes/colors.js" as Colors
+import "../../themes/colors.js" as Color
 import "./../../components"
 
 TextField {
@@ -21,7 +21,7 @@ TextField {
     background: VPNInputBackground {
         id: textFieldBackground
     }
-    color: Colors.input.default.text
+    color: Color.input.default.text
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
     selectByMouse: true

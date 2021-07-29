@@ -52,22 +52,26 @@ VPNFlickable {
             id: textField
             placeholderText: "TextField"
             hasError: textField.text.length > 1
-            enabled: false
+            enabled: true
+
+            Layout.fillWidth: true
         }
 
         VPNTextArea {
             id: textArea
             placeholderText: "TextArea"
-            hasError: textField.text.length > 1
             enabled: true
+
+            Layout.fillWidth: true
         }
 
         VPNSearchBar {
             id: searchBar
-            Layout.fillWidth: true
-
+            placeholderText: "TextArea"
             hasError: searchBar.text.length > 1
             enabled: true
+
+            Layout.fillWidth: true
         }
         z: 1
     }

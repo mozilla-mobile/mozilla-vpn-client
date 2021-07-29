@@ -7,23 +7,18 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import "../"
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Color
 
 Item {
     property alias placeholderText: formattedPlaceholderText.text
     property var userEntry: textArea.text
     property bool enabled: true
-    property bool hasError: false
 
     id: root
     Layout.preferredHeight: Theme.rowHeight * 3
     Layout.preferredWidth: parent.width
     Layout.maximumHeight: Theme.rowHeight * 3
     Layout.minimumHeight: Theme.rowHeight * 3
-
-    VPNInputBackground {
-        itemToFocus: textArea
-        z: -1
-    }
 
     Flickable {
         id: flickable
@@ -41,12 +36,13 @@ Item {
         TextArea.flickable: TextArea {
             property var maxCharacterCount: 1000
             property bool loseFocusOnBlur: true
+            property bool hasError: false
 
             id: textArea
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeSmall
             font.family: Theme.fontInterFamily
-            color: Theme.fontColor
+            color: Color.input.default.text
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             textMargin: Theme.windowMargin * .75
             padding: 0
@@ -56,6 +52,10 @@ Item {
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
             enabled: root.enabled
+            background: VPNInputBackground {
+                itemToFocus: textArea
+                z: -1
+            }
 
             VPNTextBlock {
                 id: formattedPlaceholderText
@@ -63,15 +63,24 @@ Item {
                 anchors.leftMargin: Theme.windowMargin
                 anchors.rightMargin: Theme.windowMargin
                 anchors.topMargin: Theme.windowMargin * .75
-                color:  Theme.fontColor
+                color: textAreaStates.state === "emptyHovered" ? Color.input.hover.placeholder : Color.input.default.placeholder
                 visible: textArea.text.length < 1
-                opacity: textArea.focus ? .7 : 1
 
                 PropertyAnimation on opacity {
                     duration: 100
                 }
             }
 
+            VPNInputStates {
+                id: textAreaStates
+                container: textArea
+            }
+
+            Button {
+                text: textAreaStates.state
+                y: 45
+                z: 2
+            }
         }
     }
 
@@ -85,5 +94,6 @@ Item {
         anchors.right: parent.right
         color: Theme.fontColor
     }
+
 }
 
