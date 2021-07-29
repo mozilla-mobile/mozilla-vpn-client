@@ -41,6 +41,7 @@ AuthenticationListener* AuthenticationListener::create(
     case MozillaVPN::DefaultAuthentication:
     default:
       Q_ASSERT(false);
+      return nullptr;
   }
 }
 
