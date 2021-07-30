@@ -43,7 +43,6 @@ Item {
 
             anchors.bottom: parent.bottom
             anchors.top: parent.top
-            anchors.topMargin: 0
             anchors.bottomMargin: window.fullscreenRequired() ? Theme.windowMargin * 4 + feebackContinueButton.height : 0
 
             ButtonGroup {
