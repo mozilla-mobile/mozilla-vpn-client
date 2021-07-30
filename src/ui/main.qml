@@ -178,7 +178,13 @@ Window {
 
                     PropertyChanges {
                         target: loader
+                        source: "states/StateInitialize.qml"
+                    }
+
+                    PropertyChanges {
+                        target: authLoader
                         source: VPNFeatureList.authenticationInApp ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
+                        visible: true
                     }
 
                 },
@@ -324,5 +330,12 @@ Window {
     }
 
     VPNSystemAlert {
+    }
+
+    Loader {
+        id: authLoader
+
+        asynchronous: true
+        anchors.fill: parent
     }
 }

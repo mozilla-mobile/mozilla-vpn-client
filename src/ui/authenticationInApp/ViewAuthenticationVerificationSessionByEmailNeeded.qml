@@ -4,10 +4,13 @@
 
 import QtQuick 2.5
 import Mozilla.VPN 1.0
+import QtQuick.Layouts 1.14
+import "../themes/themes.js" as Theme
 import "../components"
 import "../components/forms"
 
 Item {
+
     // TODO
     // we are here if the user is completing the session activation flow.
     // FxA has sent an email with a 6-digit code. The code must be received by
@@ -28,38 +31,72 @@ Item {
 
     Component.onCompleted: console.log("SESSION VERIFICATION BY EMAIL")
 
-    Text {
-        id: msg
-        text: "Email verification needed. Code:"
-        anchors.top: parent.top
-    }
+    ColumnLayout {
+        id: col
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Theme.windowMargin
 
-    VPNTextField {
-        id: codeInput
+        VPNHeadline {
+            text: "Email verification code"
+            Layout.fillWidth: true
+        }
 
-        anchors.top: msg.bottom
-        anchors.bottomMargin: 24
-        width: parent.width
-    }
+        VPNTextBlock {
+            text: "Enter 6-digit code"
+            horizontalAlignment: Text.AlignHCenter
+            Layout.bottomMargin: Theme.vSpacing
+            Layout.alignment: Qt.AlignHCenter
+            width: undefined
+            Layout.fillWidth: true
+        }
 
-    VPNButton {
-        id: codeButton
-        anchors.top: codeInput.bottom
-        anchors.bottomMargin: 24
-        text: "Verify" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.verifySessionEmailCode(codeInput.text);
-    }
+        RowLayout {
+            id: inputRow
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: Theme.windowMargin
+            Layout.fillWidth: true
+            spacing: 4
 
-    VPNButton {
-        anchors.top: codeButton.bottom
-        anchors.bottomMargin: 24
-        text: "Send new code" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail();
+            Repeater {
+                model: 6
+                delegate: VPNTextField {
+                    id: index
+
+                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredWidth: Theme.rowHeight
+                    leftPadding: 16
+                    validator:  RegExpValidator {
+                        regExp: /[0-9]{1}/
+                    }
+                    onTextChanged: {
+                        if (length === 1) {
+                            codeButton.code[modelData] = text
+                            nextItemInFocusChain().forceActiveFocus();
+                        }
+                    }
+                    background: VPNInputBackground {
+                        border.color: itemToFocus.activeFocus && showInteractionStates ? showError ? Theme.red : Theme.input.focusBorder : Theme.greyHovered                   }
+                }
+            }
+        }
+        VPNButton {
+            property var code: ["0", "0", "0", "0", "0", "0"]
+            id: codeButton
+
+            text: "Verify" // TODO
+            Layout.fillWidth: true
+            onClicked: VVPNAuthInApp.verifySessionEmailCode(codeButton.code);
+        }
+
+        VPNButton {
+
+            //UI TODO : Show modal after the new code is sent saying something like
+            // "We just sent a code to usersEmailInCaseTheyForgot@domain.com"
+            Layout.fillWidth: true
+            text: "Send new code" // TODO
+            onClicked: VPNAuthInApp.resendVerificationSessionCodeEmail()
+        }
     }
 }

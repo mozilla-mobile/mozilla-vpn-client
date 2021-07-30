@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import QtQuick 2.5
+import QtQuick.Controls 2.15
 import "../../themes/themes.js" as Theme
 import "../../components"
 
@@ -12,8 +13,8 @@ Rectangle {
 
     id: bg
     antialiasing: true
-    border.color: itemToFocus.activeFocus && showInteractionStates ? showError ? Theme.red : Theme.input.focusBorder : Theme.input.borderColor
-    border.width:  itemToFocus.activeFocus && showInteractionStates ? 2 : 1
+    border.color: itemToFocus.activeFocus && showInteractionStates || showError ? showError ?   Theme.red : Theme.input.focusBorder : Theme.input.borderColor
+    border.width:  itemToFocus.activeFocus && showInteractionStates || showInteractionStates && showError ? 2 : 1
     color: Theme.input.backgroundColor
     radius: Theme.cornerRadius
     anchors.fill: parent

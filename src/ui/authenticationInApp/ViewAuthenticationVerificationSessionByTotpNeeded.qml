@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../components/forms"
@@ -24,28 +25,63 @@ Item {
 
     Component.onCompleted: console.log("SESSION VERIFICATION BY TOTP")
 
-    Text {
-        id: msg
-        text: "TOTP verification needed. Code:"
-        anchors.top: parent.top
-    }
+    ColumnLayout {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: Theme.vSpacing
+        anchors.rightMargin: Theme.vSpacing
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Theme.windowMargin
 
-    VPNTextField {
-        id: codeInput
+        VPNHeadline {
+            text: "TOTP verification needed. Code:"
 
-        anchors.top: msg.bottom
-        anchors.bottomMargin: 24
-        width: parent.width
-    }
+        }
 
-    VPNButton {
-        id: codeButton
-        anchors.top: codeInput.bottom
-        anchors.bottomMargin: 24
-        text: "Verify" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.verifySessionTotpCode(codeInput.text);
+        VPNTextBlock {
+            text: "Enter 6-digit code"
+            horizontalAlignment: Text.AlignHCenter
+            Layout.bottomMargin: Theme.vSpacing
+            Layout.alignment: Qt.AlignHCenter
+
+        }
+        RowLayout {
+            id: inputRow
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: Theme.windowMargin
+            spacing: 4
+            Repeater {
+
+                model: 6
+                delegate: VPNTextField {
+                    id: index
+
+                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredWidth: Theme.rowHeight
+                    leftPadding: 16
+                    validator:  RegExpValidator {
+                        regExp: /[0-9]{1}/
+                    }
+                    onTextChanged: {
+                        if (length === 1) {
+                            codeButton.code[modelData] = text
+                            nextItemInFocusChain().forceActiveFocus();
+                        }
+                    }
+
+                    background: VPNInputBackground {
+                        border.color: itemToFocus.activeFocus && showInteractionStates ? showError ? Theme.red : Theme.input.focusBorder : Theme.white                    }
+                }
+            }
+        }
+
+        VPNButton {
+            property var code: ["0", "0", "0", "0", "0", "0"]
+            id: codeButton
+            text: "Verify" // TODO
+            Layout.fillWidth: true
+            onClicked: VPNAuthInApp.verifySessionTotpCode(codeButton.code.join(''));
+        }
+
     }
 }

@@ -19,6 +19,7 @@ Item {
         objectName: "getHelpLink"
 
         labelText: qsTrId("vpn.main.getHelp2")
+        enabled: VPN.state !== VPN.StateAuthenticating
         onClicked: {
             Sample.getHelpClickedInitialize.record();
             stackview.push(getHelpComponent);
@@ -54,6 +55,8 @@ Item {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
+        focus: VPN.state !== VPN.StateAuthenticating
+        enabled: VPN.state !== VPN.StateAuthenticating
         onClicked: VPN.getStarted()
 
     }
@@ -64,6 +67,7 @@ Item {
 
         //% "Learn more"
         labelText: qsTrId("vpn.main.learnMore")
+        enabled: VPN.state !== VPN.StateAuthenticating
         onClicked: {
             Sample.onboardingOpened.record();
             stackview.push("ViewOnboarding.qml");

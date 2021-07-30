@@ -3,9 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../components/forms"
+
+import "../themes/themes.js" as Theme
 
 Item {
     // TODO
@@ -21,27 +24,58 @@ Item {
 
     Component.onCompleted: console.log("EMAIL VERIFICATION")
 
-    Text {
-        id: msg
-        text: "Email verification needed. Code:"
-        anchors.top: parent.top
+    ColumnLayout {
+        id: col
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -Theme.vSpacing
+        spacing: Theme.windowMargin
+
+        VPNHeadline {
+            id: msg
+            text: "Email verification needed. Code:"
+            Layout.fillWidth: true
+        }
+
+        RowLayout {
+            id: inputRow
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: Theme.windowMargin
+            Layout.fillWidth: true
+            spacing: 4
+            Repeater {
+                model: 6
+                delegate: VPNTextField {
+                    id: index
+
+                    Layout.preferredHeight: Theme.rowHeight
+                    Layout.preferredWidth: Theme.rowHeight
+                    leftPadding: 16
+                    validator:  RegExpValidator {
+                        regExp: /[0-9]{1}/
+                    }
+                    onTextChanged: {
+                        if (length === 1) {
+                            codeButton.code[modelData] = text
+                            nextItemInFocusChain().forceActiveFocus();
+                        }
+                    }
+
+                    background: VPNInputBackground {
+                        border.color: itemToFocus.activeFocus && showInteractionStates ? showError ? Theme.red : Theme.input.focusBorder : Theme.greyHovered                   }
+                }
+            }
+        }
+
+        VPNButton {
+            property var code: ["0", "0", "0", "0", "0", "0"]
+            id: codeButton
+            text: "Verify" // TODO
+            onClicked: VPNAuthInApp.verifyEmailCode(codeButton.code.join());
+            Layout.fillWidth: true
+        }
+
     }
 
-    VPNTextField {
-        id: codeInput
-
-        anchors.top: msg.bottom
-        anchors.bottomMargin: 24
-        width: parent.width
-    }
-
-    VPNButton {
-        anchors.top: codeInput.bottom
-        anchors.bottomMargin: 24
-        text: "Verify" // TODO
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: 5
-        onClicked: VPNAuthInApp.verifyEmailCode(codeInput.text);
-    }
 }

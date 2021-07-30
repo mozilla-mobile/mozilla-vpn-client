@@ -3,19 +3,72 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../components/forms"
 
+import "../themes/themes.js" as Theme
+
 Item {
     id: viewAuthenticationInApp
+    anchors.fill: parent
 
-    Loader {
-        id: loader
-
-        asynchronous: true
+    Rectangle {
         anchors.fill: parent
+        color: "#000000"
+        opacity: .3
     }
+
+    Item {
+        anchors.fill: parent
+        anchors.margins: Theme.vSpacing * 1.5
+
+        VPNDropShadow {
+            source: bgColor
+            anchors.fill: bgColor
+            samples: 20
+            transparentBorder: true
+            radius: 12.5
+            color: "#000000"
+            z: -1
+            opacity:.2
+            cached: true
+        }
+
+        Rectangle {
+            id: bgColor
+            anchors.fill: loader
+            anchors.margins: -Theme.windowMargin
+            color: Theme.bgColor
+            radius: Theme.cornerRadius
+        }
+
+        VPNIconButton {
+            id: close
+            accessibleName: "Cancel authentication" //TODO
+            z: 10
+            onClicked: VPN.cancelAuthentication()
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: -Theme.windowMargin/2
+            anchors.leftMargin: -Theme.windowMargin/2
+            VPNIcon {
+                source: "../resources/close-dark.svg"
+                sourceSize.height: Theme.windowMargin
+                sourceSize.width: Theme.windowMargin
+                anchors.centerIn: parent
+            }
+        }
+
+        Loader {
+            id: loader
+            anchors.fill: parent
+            asynchronous: true
+        }
+    }
+
+
 
     state: VPNAuthInApp.state
 
@@ -25,6 +78,10 @@ Item {
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationInitializing.qml"
+            }
+            PropertyChanges {
+                target: close
+                visible: false
             }
         },
 
