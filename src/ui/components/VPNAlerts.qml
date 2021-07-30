@@ -16,31 +16,41 @@ ColumnLayout {
     Layout.fillHeight: false
     visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended
 
-    VPNAlert {
+    VPNToastBase {
         id: updateAlert
-
-        alertType: "update"
-        alertColor: Theme.blueButton
+        isLayout: true
+        alertType: alertTypes.info
         visible: VPN.updateRecommended
         //% "New version is available."
         alertText: qsTrId("vpn.updates.newVersionAvailable")
         //% "Update now"
-        alertLinkText: qsTrId("vpn.updates.updateNow")
-        isLayout: true
+        alertActionText: qsTrId("vpn.updates.updateNow")
+
+        onActionPressed: ()=>{
+            stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
+        }
+        onClosePressed: ()=>{
+             VPN.hideUpdateRecommendedAlert();
+        }
     }
 
-    VPNAlert {
+    VPNToastBase {
         id: surveyAlert
-
         isLayout: true
-        alertType: "survey"
+        alertType: alertTypes.success
+
         //% "We’d love your feedback!"
         alertText: qsTrId("vpn.systray.survey.wouldLoveYourFeedback")
         //% "Take Survey"
-        alertLinkText: qsTrId("vpn.systray.survey.takeSurvey")
-        alertColor: Theme.greenAlert
-        textColor: Theme.fontColorDark
+        alertActionText: qsTrId("vpn.systray.survey.takeSurvey")
         visible: VPNSurveyModel.hasSurvey
+
+        onActionPressed: ()=>{
+            VPNSurveyModel.openCurrentSurvey();
+        }
+        onClosePressed: ()=>{
+            VPNSurveyModel.dismissCurrentSurvey();
+        }
     }
 
 }

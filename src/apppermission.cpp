@@ -98,9 +98,16 @@ void AppPermission::flip(const QString& appID) {
   if (settingsHolder->hasVpnDisabledApp(appID)) {
     logger.log() << "Enabled --" << appID << " for VPN";
     settingsHolder->removeVpnDisabledApp(appID);
+    //% "%0 is now Unprotected"
+    QString message = qtTrId("splittunnel.flip.uprotected").arg(m_listprovider->getAppName(appID));
+    emit notification(Success,message);
+    
   } else {
     logger.log() << "Disabled --" << appID << " for VPN";
     settingsHolder->addVpnDisabledApp(appID);
+    //% "%1 is now Protected"
+    QString message = qtTrId("splittunnel.flip.protected").arg(m_listprovider->getAppName(appID));
+    emit notification(Success,message);
   }
 
   int index = m_applist.indexOf(AppDescription(appID));
@@ -113,7 +120,24 @@ void AppPermission::requestApplist() {
 }
 
 void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
-  auto keys = applist.keys();
+  QMap<QString,QString> applistCopy = applist;
+  QList<QString> removedMissingApps;
+  // Add Missing apps, cleanup ones that we can't find anymore. 
+  // If that happens 
+  if (SettingsHolder::instance()->hasMissingApps()) {
+    auto missingAppList = SettingsHolder::instance()->missingApps();
+    for (const auto& appPath : missingAppList) {
+      // Check if the App Still exists, otherwise clean up.
+      if (!m_listprovider->isValidAppId(appPath)) {
+        SettingsHolder::instance()->removeMissingApp(appPath);
+        removedMissingApps.append(m_listprovider->getAppName(appPath));
+      }
+      applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
+    }
+  }
+
+
+  auto keys = applistCopy.keys();
   if (!m_applist.isEmpty()) {
     // Check the Disabled-List
     SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -122,22 +146,40 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
         // In case the AppID is no longer valid we don't need to keep it
         logger.log() << "Removed obsolete appid" << blockedAppId;
         settingsHolder->removeVpnDisabledApp(blockedAppId);
+        removedMissingApps.append(m_listprovider->getAppName(blockedAppId));
       } else if (!keys.contains(blockedAppId)) {
         // In case the AppID is valid but not in our applist, we need to create
         // an entry
         logger.log() << "Added missing appid" << blockedAppId;
-        m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
+        m_applist.append(AppDescription(blockedAppId, applistCopy[blockedAppId]));
       }
     }
   }
   beginResetModel();
-  logger.log() << "Recived new Applist -- Entrys: " << applist.size();
+  logger.log() << "Recived new Applist -- Entrys: " << applistCopy.size();
   m_applist.clear();
   for (auto id : keys) {
-    m_applist.append(AppDescription(id, applist[id]));
+    m_applist.append(AppDescription(id, applistCopy[id]));
   }
   std::sort(m_applist.begin(), m_applist.end());
   endResetModel();
+
+  // In Case we removed Missing Apps during cleanup,
+  // Notify the user
+  if(removedMissingApps.count() == 0){
+    return;
+  }
+  if(removedMissingApps.count() == 1){
+    //% "%1 missing from list."
+    //: App enabled the Split-Tunnel settings %1 is the name of the apps missing
+    QString message = qtTrId("splittunnel.missing.one").arg(removedMissingApps.first());
+    emit notification(MissingApp,message);
+    return;
+  }
+  //% "%1 Apps missing from list."
+  //: Apps in the Split-Tunnel settings %1 is the amount of apps missing
+  QString message = qtTrId("splittunnel.missing.multiple").arg(removedMissingApps.count());
+  emit notification(MissingApp,message);
 }
 
 void AppPermission::protectAll() {
@@ -188,4 +230,8 @@ void AppPermission::openFilePicker() {
 
   Q_ASSERT(m_listprovider);
   m_listprovider->addApplication(fileNames[0]);
+
+  //% "Success! You added the %1 to this list."
+  QString message = qtTrId("splittunnel.added.one").arg(m_listprovider->getAppName(fileNames[0]));
+  emit notification(Success,message);
 }

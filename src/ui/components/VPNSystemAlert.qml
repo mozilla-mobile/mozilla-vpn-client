@@ -7,149 +7,129 @@ import QtQuick.Controls 2.5
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-VPNAlert {
+VPNToastBase {
     id: alertBox
+    alertType: alertTypes.error
 
-    state: VPN.alert
+    Item {
+        state: VPN.alert
+        states: [
+            State {
+                name: VPN.NoAlert
+                PropertyChanges {
+                    target: alertBox
+                    visible: false
+                }
+            },
+            State {
+                name: VPN.updateRecommended
+                PropertyChanges {
+                    target: alertBox
+                    visible: false
+                }
+            },
+            State {
+                name: VPN.AuthenticationFailedAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "Authentication error"
+                    alertText: qsTrId("vpn.alert.authenticationError")
+                    //% "Try again"
+                    alertActionText: qsTrId("vpn.alert.tryAgain")
+                    visible: true
 
-    states: [
-        State {
-            name: VPN.NoAlert
-
-            PropertyChanges {
-                target: alertBox
-                visible: false
+                    onActionPressed: ()=>{
+                        VPN.authenticate();
+                    }
+                }
+            },
+            State {
+                name: VPN.ConnectionFailedAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "Unable to connect"
+                    alertText: qsTrId("vpn.alert.unableToConnect")
+                    alertLinkText: qsTrId("vpn.alert.tryAgain")
+                    visible: true
+                }
+            },
+            State {
+                name: VPN.NoConnectionAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "No internet connection"
+                    alertText: qsTrId("vpn.alert.noInternet")
+                    alertActionText: qsTrId("vpn.alert.tryAgain")
+                    visible: true
+                }
+            },
+            State {
+                name: VPN.ControllerErrorAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "Background service error"
+                    alertText: qsTrId("vpn.alert.backendServiceError")
+                    //% "Restore"
+                    //: Restore a service in case of error.
+                    alertActionText: qsTrId("vpn.alert.restore")
+                    visible: true
+                    onActionPressed: ()=>{
+                        VPN.backendServiceRestore();
+                    }
+                }
+            },
+            State {
+                name: VPN.UnrecoverableErrorAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertText: qsTrId("vpn.alert.backendServiceError")
+                    visible: true
+                    onActionPressed: ()=>{
+                        VPN.backendServiceRestore();
+                    }
+                }
+            },
+            State {
+                name: VPN.RemoteServiceErrorAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "Remote service error"
+                    alertText: qsTrId("vpn.alert.remoteServiceError")
+                    visible: true
+                    onActionPressed: ()=>{
+                        VPN.backendServiceRestore();
+                    }
+                }
+            },
+            State {
+                name: VPN.SubscriptionFailureAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "Subscription failed"
+                    alertText: qsTrId("vpn.alert.subscriptionFailureError")
+                    alertActionText: qsTrId("vpn.alert.tryAgain")
+                    visible: true
+                }
+            },
+            State {
+                name: VPN.GeoIpRestrictionAlert
+                PropertyChanges {
+                    target: alertBox
+                    //% "Operation not allowed from current location"
+                    alertText: qsTrId("vpn.alert.getIPRestrictionError")
+                    visible: true
+                }
+            },
+            State {
+                name: VPN.LogoutAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertType: alertTypes.success
+                    //% "Signed out and device disconnected"
+                    alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
+                    visible: true
+                }
             }
-
-        },
-        State {
-            name: VPN.updateRecommended
-
-            PropertyChanges {
-                target: alertBox
-                visible: false
-            }
-
-        },
-        State {
-            name: VPN.AuthenticationFailedAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "authentication-failed"
-                //% "Authentication error"
-                alertText: qsTrId("vpn.alert.authenticationError")
-                //% "Try again"
-                alertLinkText: qsTrId("vpn.alert.tryAgain")
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.ConnectionFailedAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "connection-failed"
-                //% "Unable to connect"
-                alertText: qsTrId("vpn.alert.unableToConnect")
-                alertLinkText: qsTrId("vpn.alert.tryAgain")
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.NoConnectionAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "no-connection"
-                //% "No internet connection"
-                alertText: qsTrId("vpn.alert.noInternet")
-                alertLinkText: qsTrId("vpn.alert.tryAgain")
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.ControllerErrorAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "backend-service"
-                //% "Background service error"
-                alertText: qsTrId("vpn.alert.backendServiceError")
-                //% "Restore"
-                //: Restore a service in case of error.
-                alertLinkText: qsTrId("vpn.alert.restore")
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.UnrecoverableErrorAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "backend-service"
-                alertText: qsTrId("vpn.alert.backendServiceError")
-                alertLinkText: ""
-                opacity: 1
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.RemoteServiceErrorAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "backend-service"
-                //% "Remote service error"
-                alertText: qsTrId("vpn.alert.remoteServiceError")
-                alertLinkText: ""
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.SubscriptionFailureAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "subscription-failed"
-                //% "Subscription failed"
-                alertText: qsTrId("vpn.alert.subscriptionFailureError")
-                alertLinkText: qsTrId("vpn.alert.tryAgain")
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.GeoIpRestrictionAlert
-
-            PropertyChanges {
-                target: alertBox
-                alertType: "geoip-restriction"
-                //% "Operation not allowed from current location"
-                alertText: qsTrId("vpn.alert.getIPRestrictionError")
-                alertLinkText: ""
-                visible: true
-            }
-
-        },
-        State {
-            name: VPN.LogoutAlert
-
-            PropertyChanges {
-                target: alertBox
-                //% "Signed out and device disconnected"
-                alertText: qsTrId("vpn.alert.deviceDisconnectedAndLogout")
-                visible: true
-                alertColor: Theme.greenAlert
-                textColor: Theme.fontColorDark
-            }
-
-        }
-    ]
+        ]
+    }
 }

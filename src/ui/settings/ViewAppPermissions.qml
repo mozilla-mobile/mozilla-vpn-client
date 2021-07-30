@@ -42,25 +42,61 @@ Item {
         anchors.right: parent.right
         interactive: (VPNSettings.protectSelectedApps)
         Component.onCompleted: {
+            console.log("Component ready");
             VPNAppPermissions.requestApplist();
             Sample.appPermissionsViewOpened.record();
             if (!vpnIsOff) {
                 Sample.appPermissionsViewWarning.record();
             }
-         }
+        }
 
-        VPNCheckBoxAlert {
-            id: vpnOnAlert
-            
-            visible: !vpnFlickable.vpnIsOff
-            anchors.leftMargin: Theme.windowMargin
-            anchors.left: parent.left
-            //% "VPN must be off to edit App Permissions"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+        Item{
+            id:messageBox
+            visible: toast.visible || vpnOnAlert.visible
             anchors.top: parent.top
             anchors.topMargin: Theme.windowMargin
+            width: toggleCard.width
+            height:(vpnOnAlert.visible? vpnOnAlert.height:0)+(toast.visible? toast.height:0)
+
+            VPNCheckBoxAlert {
+                anchors.fill: parent
+                anchors.leftMargin: Theme.windowMargin
+                anchors.left: parent.left
+                id: vpnOnAlert
+                visible: !vpnFlickable.vpnIsOff
+                //% "VPN must be off to edit App Permissions"
+                //: Associated to a group of settings that require the VPN to be disconnected to change
+                errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+            }
+
+            VPNToastBase{
+                property bool notificationPresent: false
+                id: toast
+                anchors.fill: parent
+                width: 300
+                height: Theme.rowHeight
+                visible: Qt.binding(function() {return notificationPresent})
+                isLayout:true
+                alertType: alertTypes.warning
+                alertText: "Apps Missing"
+                alertActionText: "Add them all!"
+                onActionPressed: ()=>{VPNAppPermissions.openFilePicker();}
+
+                Connections {
+                    target: VPNAppPermissions
+                    function onNotification(type,message) {
+                        // TODO: Make this better
+                        console.log("Got notification: "+type + "  message:"+message);
+                        toast.alertText=Qt.binding(function() { return message });
+                        notificationPresent=true;
+                        console.log("toast.visible: "+toast.visible);
+                        console.log("toast.alertText: "+toast.alertText);
+                    }
+                }
+            }
+
         }
+
 
         VPNToggleCard {
             id: toggleCard
@@ -69,7 +105,7 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             height: childrenRect.height
-            anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : parent.top
+            anchors.top: messageBox.visible ? messageBox.bottom : parent.top
 
             //% "Protect all apps with VPN"
             labelText: qsTrId("vpn.settings.protectAllApps")
