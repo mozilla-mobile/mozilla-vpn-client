@@ -93,6 +93,9 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   }
   logger.log() << "Created wireguard interface" << m_ifname;
 
+  // Start the routing table monitor.
+  m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
+
   // Send a UAPI command to configure the interface
   QString message("set=1\n");
   QByteArray privateKey = QByteArray::fromBase64(config.m_privateKey.toUtf8());
@@ -107,6 +110,11 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
 }
 
 bool WireguardUtilsMacos::deleteInterface() {
+  if (m_rtmonitor) {
+    delete m_rtmonitor;
+    m_rtmonitor = nullptr;
+  }
+
   if (m_tunnel.state() == QProcess::NotRunning) {
     return false;
   }
@@ -207,16 +215,20 @@ WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
 
 bool WireguardUtilsMacos::updateRoutePrefix(const IPAddressRange& prefix,
                                             int hopindex) {
-  Q_UNUSED(prefix);
   Q_UNUSED(hopindex);
-  return true;
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->insertRoute(prefix);
 }
 
 bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
                                             int hopindex) {
-  Q_UNUSED(prefix);
   Q_UNUSED(hopindex);
-  return true;
+  if (!m_rtmonitor) {
+    return false;
+  }
+  return m_rtmonitor->deleteRoute(prefix);
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {

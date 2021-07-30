@@ -646,6 +646,7 @@ else:macos {
                    platforms/macos/daemon/iputilsmacos.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp \
+                   platforms/macos/daemon/macosroutemonitor.cpp \
                    platforms/macos/daemon/wireguardutilsmacos.cpp
         HEADERS += \
                    daemon/interfaceconfig.h \
@@ -660,6 +661,7 @@ else:macos {
                    platforms/macos/daemon/iputilsmacos.h \
                    platforms/macos/daemon/macosdaemon.h \
                    platforms/macos/daemon/macosdaemonserver.h \
+                   platforms/macos/daemon/macosroutemonitor.h \
                    platforms/macos/daemon/wireguardutilsmacos.h
     }
 

@@ -6,6 +6,7 @@
 #define WIREGUARDUTILSMACOS_H
 
 #include "daemon/wireguardutils.h"
+#include "macosroutemonitor.h"
 
 #include <QObject>
 #include <QProcess>
@@ -45,6 +46,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
 
   QString m_ifname;
   QProcess m_tunnel;
+  MacosRouteMonitor* m_rtmonitor = nullptr;
 };
 
 #endif  // WIREGUARDUTILSMACOS_H
