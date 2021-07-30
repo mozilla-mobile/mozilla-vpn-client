@@ -4,14 +4,12 @@
 
 #include "taskauthenticate.h"
 #include "authenticationlistener.h"
-#include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include "networkmanager.h"
 
 #include <QCryptographicHash>
 #include <QJSValue>
@@ -20,6 +18,8 @@
 #include <QRandomGenerator>
 #include <QUrl>
 #include <QUrlQuery>
+
+constexpr const char* CODE_CHALLENGE_METHOD = "S256";
 
 namespace {
 
@@ -51,7 +51,6 @@ TaskAuthenticate::TaskAuthenticate(
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
 void TaskAuthenticate::run(MozillaVPN* vpn) {
-  Q_ASSERT(vpn);
   logger.log() << "TaskAuthenticate::Run";
 
   Q_ASSERT(!m_authenticationListener);
@@ -100,31 +99,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
             emit completed();
           });
 
-  QString path("/api/v2/vpn/login/");
-
-  if (m_authenticationType == MozillaVPN::AuthenticationInApp) {
-    // hack!
-    path.append("android");
-  } else {
-    Q_ASSERT(m_authenticationType == MozillaVPN::AuthenticationInBrowser);
-#if !defined(MVPN_DUMMY)
-    path.append(Constants::PLATFORM_NAME);
-#else
-    // Let's use linux here.
-    path.append("linux");
-#endif
-  }
-
-  QUrl url(NetworkRequest::apiBaseUrl());
-  url.setPath(path);
-
-  QUrlQuery query;
-  query.addQueryItem("code_challenge",
-                     QUrl::toPercentEncoding(pkceCodeChallenge));
-  query.addQueryItem("code_challenge_method", "S256");
-  query.addQueryItem("user_agent", NetworkManager::userAgent());
-
-  m_authenticationListener->start(vpn, url, query);
+  m_authenticationListener->start(pkceCodeChallenge, CODE_CHALLENGE_METHOD);
 }
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,

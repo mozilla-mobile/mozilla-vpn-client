@@ -63,10 +63,12 @@ DesktopAuthenticationListener::~DesktopAuthenticationListener() {
   MVPN_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
-void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
-                                          QUrlQuery& query) {
+void DesktopAuthenticationListener::start(const QString& codeChallenge,
+                                          const QString& codeChallengeMethod) {
   logger.log() << "DesktopAuthenticationListener initialize";
-  Q_UNUSED(vpn);
+
+  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
+                                   codeChallenge, codeChallengeMethod));
 
   if (!m_server->isListening()) {
     QVector<quint16> triedPorts;
@@ -85,8 +87,9 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   }
 
   logger.log() << "Port:" << m_server->port();
-  query.addQueryItem("port", QString::number(m_server->port()));
 
+  QUrlQuery query(url.query());
+  query.addQueryItem("port", QString::number(m_server->port()));
   url.setQuery(query);
 
   UrlOpener::open(url.toString());

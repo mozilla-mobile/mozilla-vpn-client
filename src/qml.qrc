@@ -447,5 +447,6 @@
         <file>ui/authenticationInApp/ViewAuthenticationEmailVerification.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
     </qresource>
 </RCC>

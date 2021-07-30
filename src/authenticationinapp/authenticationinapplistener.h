@@ -18,7 +18,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge,
+             const QString& codeChallengeMethod) override;
 
   void checkAccount(const QString& emailAddress);
   void setPassword(const QString& password);
@@ -37,13 +38,15 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QByteArray generateAuthPw(const QString& password) const;
 
   void accountChecked(bool exists);
-  void signInCompleted(const QString& sessionToken, bool accountVerified,
-                       const QString& verificationMethod);
+  void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
+                           const QString& verificationMethod);
   void emailVerificationNeeded();
-  void finalizeSignIn();
+  void finalizeSignInOrUp();
 
  private:
   QString m_codeChallenge;
+  QString m_codeChallengeMethod;
+
   QUrlQuery m_urlQuery;
 
   QString m_emailAddress;
