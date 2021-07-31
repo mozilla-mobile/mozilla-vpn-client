@@ -38,6 +38,9 @@ class AuthenticationInApp final : public QObject {
     StateVerificationSessionByEmailNeeded,
     // The two-factor authentication session verification.
     StateVerificationSessionByTotpNeeded,
+    // If we are unable to continue the authentication in-app, the fallback is
+    // the browser flow.
+    StateFallbackInBrowser,
   };
   Q_ENUM(State);
 

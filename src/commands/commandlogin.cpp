@@ -118,6 +118,13 @@ int CommandLogin::run(QStringList& tokens) {
                 getInput("Session verification by TOTP needed. Code:");
             AuthenticationInApp::instance()->verifySessionTotpCode(code);
           } break;
+
+          case AuthenticationInApp::StateFallbackInBrowser: {
+            QTextStream stream(stdout);
+            stream << "Unable to continue with the flow. Please, continue the "
+                      "login in browser.";
+            loop.exit();
+          } break;
         }
       });
 
