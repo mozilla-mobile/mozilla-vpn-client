@@ -17,7 +17,7 @@ TextField {
     id: textField
 
     Layout.preferredHeight: Theme.rowHeight
-    onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
+    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
     selectByMouse: true
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
 
