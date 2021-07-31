@@ -74,6 +74,14 @@ Item {
                 target: loader
                 source: "ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
+        },
+
+        State {
+            name: VPNAuthInApp.StateFallbackInBrowser
+            PropertyChanges {
+                target: loader
+                source: "ViewAuthenticationFallbackInBrowser.qml"
+            }
         }
     ]
 }

@@ -312,6 +312,11 @@ balrog {
     HEADERS += update/balrog.h
 }
 
+AIP {
+    message(Authentication in-app enabled)
+    DEFINES += MVPN_AIP
+}
+
 DUMMY {
     message(Dummy build)
 

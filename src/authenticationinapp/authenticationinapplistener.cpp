@@ -4,6 +4,7 @@
 
 #include "authenticationinapplistener.h"
 #include "authenticationinapp.h"
+#include "featurelist.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "hkdf.h"
@@ -34,20 +35,20 @@ AuthenticationInAppListener::~AuthenticationInAppListener() {
   }
 }
 
-void AuthenticationInAppListener::start(MozillaVPN* vpn, QUrl& url,
-                                        QUrlQuery& query) {
+void AuthenticationInAppListener::start(const QString& codeChallenge,
+                                        const QString& codeChallengeMethod) {
   logger.log() << "AuthenticationInAppListener initialize";
-  Q_UNUSED(vpn);
 
-  url.setQuery(query);
+  m_codeChallenge = codeChallenge;
+  m_codeChallengeMethod = codeChallengeMethod;
 
   AuthenticationInApp* aip = AuthenticationInApp::instance();
   Q_ASSERT(aip);
 
   aip->registerListener(this);
 
-  m_codeChallenge = query.queryItemValue("code_challenge", QUrl::FullyDecoded);
-  Q_ASSERT(!m_codeChallenge.isEmpty());
+  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
+                                   codeChallenge, codeChallengeMethod));
 
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(this, url.toString());
@@ -117,8 +118,25 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
     return;
   }
 
+  if (FeatureList::instance()->accountCreationInAppSupported()) {
+    AuthenticationInApp::instance()->requestState(
+        AuthenticationInApp::StateSignUp, this);
+    return;
+  }
+
   AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateSignUp, this);
+      AuthenticationInApp::StateFallbackInBrowser, this);
+
+  AuthenticationListener* fallbackListener =
+      create(this, MozillaVPN::AuthenticationInBrowser);
+  fallbackListener->start(m_codeChallenge, m_codeChallengeMethod);
+
+  connect(fallbackListener, &AuthenticationListener::completed, this,
+          &AuthenticationListener::completed);
+  connect(fallbackListener, &AuthenticationListener::failed, this,
+          &AuthenticationListener::failed);
+  connect(fallbackListener, &AuthenticationListener::abortedByUser, this,
+          &AuthenticationListener::abortedByUser);
 }
 
 QByteArray AuthenticationInAppListener::generateAuthPw(
@@ -158,9 +176,9 @@ void AuthenticationInAppListener::signIn(const QString& verificationCode) {
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
 
-            signInCompleted(obj["sessionToken"].toString(),
-                            obj["verified"].toBool(),
-                            obj["verificationMethod"].toString());
+            signInOrUpCompleted(obj["sessionToken"].toString(),
+                                obj["verified"].toBool(),
+                                obj["verificationMethod"].toString());
           });
 }
 
@@ -183,9 +201,9 @@ void AuthenticationInAppListener::signUp() {
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
 
-            signInCompleted(obj["sessionToken"].toString(),
-                            obj["verified"].toBool(),
-                            obj["verificationMethod"].toString());
+            signInOrUpCompleted(obj["sessionToken"].toString(),
+                                obj["verified"].toBool(),
+                                obj["verificationMethod"].toString());
           });
 }
 
@@ -233,7 +251,7 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.log() << "Verification completed" << data;
-            finalizeSignIn();
+            finalizeSignInOrUp();
           });
 }
 
@@ -271,11 +289,11 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.log() << "Verification completed" << data;
-            finalizeSignIn();
+            finalizeSignInOrUp();
           });
 }
 
-void AuthenticationInAppListener::signInCompleted(
+void AuthenticationInAppListener::signInOrUpCompleted(
     const QString& sessionToken, bool accountVerified,
     const QString& verificationMethod) {
   logger.log() << "Session generated";
@@ -304,10 +322,10 @@ void AuthenticationInAppListener::signInCompleted(
     return;
   }
 
-  finalizeSignIn();
+  finalizeSignInOrUp();
 }
 
-void AuthenticationInAppListener::finalizeSignIn() {
+void AuthenticationInAppListener::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
