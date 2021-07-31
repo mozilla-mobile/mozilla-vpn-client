@@ -52,6 +52,13 @@ Item {
                 color: "transparent"
             }
 
+            NumberAnimation on contentY {
+                        id: scrollAnimation
+
+                        duration: 200
+                        easing.type: Easing.OutQuad
+                    }
+
             Column {
                 id: serverList
                 objectName: "serverCountryList"
