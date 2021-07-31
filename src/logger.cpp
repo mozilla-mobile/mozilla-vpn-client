@@ -48,3 +48,12 @@ Logger::Log& Logger::Log::operator<<(QTextStreamFunction t) {
   m_data->m_ts << t;
   return *this;
 }
+
+// static
+QString Logger::sensitive(const QString& input) {
+#ifdef QT_DEBUG
+  return input;
+#else
+  return QString(input.length(), 'X');
+#endif
+}
