@@ -250,8 +250,10 @@ void ConnectionDataHolder::updateIpAddress() {
           emit ipv6AddressChanged();
         }
 
-        logger.log() << "Set own Address. ipv4:" << m_ipv4Address
-                     << "ipv6:" << m_ipv6Address << "in" << country;
+        logger.log() << "Set own Address. ipv4:"
+                     << logger.sensitive(m_ipv4Address)
+                     << "ipv6:" << logger.sensitive(m_ipv6Address) << "in"
+                     << logger.sensitive(country);
 
         m_updatingIpAddress = false;
         emit ipAddressChecked();

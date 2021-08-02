@@ -80,6 +80,10 @@ class Logger {
   Log warning();
   Log debug();
 
+  // Use this to log sensitive data such as IP address, session tokens, and so
+  // on.
+  QString sensitive(const QString& input);
+
  private:
   QStringList m_modules;
   QString m_className;
