@@ -101,8 +101,7 @@ Item {
                     onTextChanged: () => {
                         countriesModel.invalidate();
                     }
-                    //% "Search countries"
-                    placeholderText: qsTrId("vpn.servers.searchPlaceholder")
+                    placeholderText: VPNl18n.tr(VPNl18n.ServerViewSearchPlaceholder)
                     stateError: countriesRepeater.count === 0
 
                     RowLayout {
@@ -122,8 +121,7 @@ Item {
                         VPNInterLabel {
                             id: warningLabel
                             color: Color.error.default
-                            //% "No results. Try a different search"
-                            text: qsTrId("vpn.servers.searchResultsEmptyLabel")
+                            text: VPNl18n.tr(VPNl18n.ServerViewSearchNoResultsLabel)
                             font.pixelSize: Theme.fontSizeSmall
                         }
                     }
