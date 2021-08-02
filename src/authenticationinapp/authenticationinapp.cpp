@@ -56,7 +56,7 @@ void AuthenticationInApp::checkAccount(const QString& emailAddress) {
   Q_ASSERT(m_state == StateStart);
   Q_ASSERT(m_listener);
 
-  logger.log() << "Authentication starting:" << emailAddress;
+  logger.debug() << "Authentication starting:" << emailAddress;
 
   m_listener->checkAccount(emailAddress);
 }
@@ -65,7 +65,7 @@ void AuthenticationInApp::setPassword(const QString& password) {
   Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
   Q_ASSERT(m_listener);
 
-  logger.log() << "Setting the password";
+  logger.debug() << "Setting the password";
 
   m_listener->setPassword(password);
 }
@@ -74,7 +74,7 @@ void AuthenticationInApp::signIn() {
   Q_ASSERT(m_state == StateSignIn);
   Q_ASSERT(m_listener);
 
-  logger.log() << "Sign In";
+  logger.debug() << "Sign In";
 
   m_listener->signIn();
 }
@@ -83,7 +83,7 @@ void AuthenticationInApp::signUp() {
   Q_ASSERT(m_state == StateSignUp);
   Q_ASSERT(m_listener);
 
-  logger.log() << "Sign Up";
+  logger.debug() << "Sign Up";
 
   m_listener->signUp();
 }

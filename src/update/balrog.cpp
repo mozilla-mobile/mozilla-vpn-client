@@ -61,7 +61,7 @@ Logger logger(LOG_NETWORKING, "Balrog");
 
 void balrogLogger(int level, const char* msg) {
   Q_UNUSED(level);
-  logger.log() << "BalrogGo:" << msg;
+  logger.debug() << "BalrogGo:" << msg;
 }
 
 }  // namespace
@@ -69,12 +69,12 @@ void balrogLogger(int level, const char* msg) {
 Balrog::Balrog(QObject* parent, bool downloadAndInstall)
     : Updater(parent), m_downloadAndInstall(downloadAndInstall) {
   MVPN_COUNT_CTOR(Balrog);
-  logger.log() << "Balrog created";
+  logger.debug() << "Balrog created";
 }
 
 Balrog::~Balrog() {
   MVPN_COUNT_DTOR(Balrog);
-  logger.log() << "Balrog released";
+  logger.debug() << "Balrog released";
 }
 
 // static
@@ -91,7 +91,7 @@ QString Balrog::userAgent() {
 void Balrog::start() {
   QString url =
       QString(Constants::BALROG_URL).arg(appVersion()).arg(userAgent());
-  logger.log() << "URL:" << url;
+  logger.debug() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
 
@@ -103,7 +103,7 @@ void Balrog::start() {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, request](const QByteArray& data) {
-            logger.log() << "Request completed";
+            logger.debug() << "Request completed";
 
             if (!fetchSignature(request, data)) {
               logger.warning() << "Ignore failure.";
@@ -146,7 +146,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
     return false;
   }
 
-  logger.log() << "Fetching x5u URL:" << x5u;
+  logger.debug() << "Fetching x5u URL:" << x5u;
 
   NetworkRequest* x5uRequest = NetworkRequest::createForGetUrl(this, x5u, 200);
 
@@ -158,7 +158,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 
   connect(x5uRequest, &NetworkRequest::requestCompleted,
           [this, signatureBlob, updateData](const QByteArray& x5uData) {
-            logger.log() << "Request completed";
+            logger.debug() << "Request completed";
             if (!checkSignature(x5uData, updateData, signatureBlob)) {
               deleteLater();
             }
@@ -170,14 +170,14 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 bool Balrog::checkSignature(const QByteArray& x5uData,
                             const QByteArray& updateData,
                             const QByteArray& signatureBlob) {
-  logger.log() << "Checking the signature";
+  logger.debug() << "Checking the signature";
 
   if (!validateSignature(x5uData, updateData, signatureBlob)) {
     logger.error() << "Invalid signature";
     return false;
   }
 
-  logger.log() << "Fetch resource";
+  logger.debug() << "Fetch resource";
   if (!processData(updateData)) {
     logger.error() << "Fetch has failed";
     return false;
@@ -294,7 +294,7 @@ bool Balrog::processData(const QByteArray& data) {
     connect(request, &NetworkRequest::requestHeaderReceived,
             [this](NetworkRequest* request) {
               Q_ASSERT(request);
-              logger.log() << "Request header received";
+              logger.debug() << "Request header received";
 
               // We want to proceed only if the status code is 200. The request
               // will be aborted, but the signal emitted.
@@ -309,7 +309,7 @@ bool Balrog::processData(const QByteArray& data) {
 
     connect(request, &NetworkRequest::requestCompleted,
             [this](const QByteArray&) {
-              logger.log() << "Request completed";
+              logger.debug() << "Request completed";
               deleteLater();
             });
 
@@ -349,7 +349,7 @@ bool Balrog::processData(const QByteArray& data) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, hashValue, hashFunction, url](const QByteArray& data) {
-            logger.log() << "Request completed";
+            logger.debug() << "Request completed";
 
             if (!computeHash(url, data, hashValue, hashFunction)) {
               logger.error() << "Ignore failure.";
@@ -363,7 +363,7 @@ bool Balrog::processData(const QByteArray& data) {
 bool Balrog::computeHash(const QString& url, const QByteArray& data,
                          const QString& hashValue,
                          const QString& hashFunction) {
-  logger.log() << "Compute the hash";
+  logger.debug() << "Compute the hash";
 
   if (hashFunction != "sha512") {
     logger.error() << "Invalid hash function";
@@ -383,7 +383,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
 }
 
 bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
-  logger.log() << "Save the file and install it";
+  logger.debug() << "Save the file and install it";
 
   int pos = url.lastIndexOf("/");
   if (pos == -1) {
@@ -392,7 +392,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   }
 
   QString fileName = url.right(url.length() - pos - 1);
-  logger.log() << "Filename:" << fileName;
+  logger.debug() << "Filename:" << fileName;
 
   if (!m_tmpDir.isValid()) {
     logger.error() << "Cannot create a temporary directory"
@@ -421,7 +421,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 }
 
 bool Balrog::install(const QString& filePath) {
-  logger.log() << "Install the package:" << filePath;
+  logger.debug() << "Install the package:" << filePath;
 
   QString logFile = m_tmpDir.filePath("msiexec.log");
 
@@ -437,12 +437,12 @@ bool Balrog::install(const QString& filePath) {
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
           [this, process, logFile](int exitCode, QProcess::ExitStatus) {
-            logger.log() << "Installation completed - exitCode:" << exitCode;
+            logger.debug() << "Installation completed - exitCode:" << exitCode;
 
-            logger.log() << "Stdout:" << Qt::endl
+            logger.debug() << "Stdout:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardOutput())
                          << Qt::endl;
-            logger.log() << "Stderr:" << Qt::endl
+            logger.debug() << "Stderr:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardError())
                          << Qt::endl;
 
@@ -452,7 +452,7 @@ bool Balrog::install(const QString& filePath) {
             } else {
               QTextStream logStream(&log);
               logStream.setCodec("utf-16");
-              logger.log() << "Log file:" << Qt::endl << logStream.readAll();
+              logger.debug() << "Log file:" << Qt::endl << logStream.readAll();
             }
 
             if (exitCode != 0) {
@@ -475,12 +475,12 @@ bool Balrog::install(const QString& filePath) {
   connect(process,
           QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
           [this, process](int exitCode, QProcess::ExitStatus) {
-            logger.log() << "Installation completed - exitCode:" << exitCode;
+            logger.debug() << "Installation completed - exitCode:" << exitCode;
 
-            logger.log() << "Stdout:" << Qt::endl
+            logger.debug() << "Stdout:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardOutput())
                          << Qt::endl;
-            logger.log() << "Stderr:" << Qt::endl
+            logger.debug() << "Stderr:" << Qt::endl
                          << qUtf8Printable(process->readAllStandardError())
                          << Qt::endl;
 
@@ -508,7 +508,7 @@ void Balrog::propagateError(NetworkRequest* request,
 
   // 451 Unavailable For Legal Reasons
   if (request->statusCode() == 451) {
-    logger.log() << "Geo IP restriction detected";
+    logger.debug() << "Geo IP restriction detected";
     vpn->errorHandle(ErrorHandler::GeoIpRestrictionError);
     return;
   }

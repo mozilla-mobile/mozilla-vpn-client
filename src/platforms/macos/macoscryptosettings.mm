@@ -22,7 +22,7 @@ QByteArray key;
 
 // static
 void CryptoSettings::resetKey() {
-  logger.log() << "Reset the key in the keychain";
+  logger.debug() << "Reset the key in the keychain";
 
   NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -48,7 +48,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
   if (!initialized) {
     initialized = true;
 
-    logger.log() << "Retrieving the key from the keychain";
+    logger.debug() << "Retrieving the key from the keychain";
 
     NSData* service = [SERVICE dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -70,7 +70,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
     if (status == noErr) {
       key = QByteArray::fromNSData(keyData);
 
-      logger.log() << "Key found with length:" << key.length();
+      logger.debug() << "Key found with length:" << key.length();
       if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
         memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
         return true;
@@ -121,16 +121,16 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
 // static
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
-  logger.log() << "Get supported settings method";
+  logger.debug() << "Get supported settings method";
 
 #if defined(MVPN_IOS) || defined(MVPN_MACOS_NETWORKEXTENSION) || defined(MVPN_MACOS_DAEMON)
   uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
   if (getKey(key)) {
-    logger.log() << "Encryption supported!";
+    logger.debug() << "Encryption supported!";
     return CryptoSettings::EncryptionChachaPolyV1;
   }
 #endif
 
-  logger.log() << "No encryption";
+  logger.debug() << "No encryption";
   return CryptoSettings::NoEncryption;
 }

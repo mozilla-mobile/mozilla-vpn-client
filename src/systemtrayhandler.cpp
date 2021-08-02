@@ -110,7 +110,7 @@ SystemTrayHandler::~SystemTrayHandler() {
 }
 
 void SystemTrayHandler::updateContextMenu() {
-  logger.log() << "Update context menu";
+  logger.debug() << "Update context menu";
 
 #if defined(MVPN_IOS) || defined(MVPN_ANDROID)
   return;
@@ -203,7 +203,7 @@ void SystemTrayHandler::updateContextMenu() {
 
 void SystemTrayHandler::unsecuredNetworkNotification(
     const QString& networkName) {
-  logger.log() << "Unsecured network notification shown";
+  logger.debug() << "Unsecured network notification shown";
 
   //% "Unsecured Wi-Fi network detected"
   QString title = qtTrId("vpn.systray.unsecuredNetwork.title");
@@ -218,7 +218,7 @@ void SystemTrayHandler::unsecuredNetworkNotification(
 }
 
 void SystemTrayHandler::captivePortalBlockNotificationRequired() {
-  logger.log() << "Captive portal block notification shown";
+  logger.debug() << "Captive portal block notification shown";
 
   //% "Guest Wi-Fi portal blocked"
   QString title = qtTrId("vpn.systray.captivePortalBlock.title");
@@ -232,7 +232,7 @@ void SystemTrayHandler::captivePortalBlockNotificationRequired() {
 }
 
 void SystemTrayHandler::captivePortalUnblockNotificationRequired() {
-  logger.log() << "Captive portal unblock notification shown";
+  logger.debug() << "Captive portal unblock notification shown";
 
   //% "Guest Wi-Fi portal detected"
   QString title = qtTrId("vpn.systray.captivePortalUnblock.title");
@@ -267,7 +267,7 @@ void SystemTrayHandler::showHideWindow() {
 }
 
 void SystemTrayHandler::retranslate() {
-  logger.log() << "Retranslate";
+  logger.debug() << "Retranslate";
 
 #if defined(MVPN_IOS) || defined(MVPN_ANDROID)
   return;
@@ -299,7 +299,7 @@ void SystemTrayHandler::retranslate() {
 
 void SystemTrayHandler::maybeActivated(
     QSystemTrayIcon::ActivationReason reason) {
-  logger.log() << "Activated";
+  logger.debug() << "Activated";
 
 #if defined(MVPN_WINDOWS) || defined(MVPN_LINUX)
   if (reason == QSystemTrayIcon::DoubleClick ||
@@ -313,7 +313,7 @@ void SystemTrayHandler::maybeActivated(
 }
 
 void SystemTrayHandler::messageClickHandle() {
-  logger.log() << "Message clicked";
+  logger.debug() << "Message clicked";
 
   if (m_lastMessage == None) {
     logger.warning() << "Random message clicked received";

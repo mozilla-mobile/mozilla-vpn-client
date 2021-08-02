@@ -99,7 +99,7 @@ void LinuxSystemTrayHandler::showNotificationInternal(Message type,
 }
 
 void LinuxSystemTrayHandler::actionInvoked(uint actionId, QString action) {
-  logger.log() << "Notification clicked" << actionId << action;
+  logger.debug() << "Notification clicked" << actionId << action;
 
   if (action == ACTION_ID && m_lastNotificationId == actionId) {
     messageClickHandle();

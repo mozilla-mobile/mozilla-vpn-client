@@ -70,7 +70,7 @@ Controller::~Controller() { MVPN_COUNT_DTOR(Controller); }
 Controller::State Controller::state() const { return m_state; }
 
 void Controller::initialize() {
-  logger.log() << "Initializing the controller";
+  logger.debug() << "Initializing the controller";
 
   if (m_state != StateInitializing) {
     setState(StateInitializing);
@@ -113,7 +113,7 @@ void Controller::initialize() {
 
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
-  logger.log() << "Controller activated with status:" << status
+  logger.debug() << "Controller activated with status:" << status
                << "connected:" << a_connected
                << "connectionDate:" << connectionDate.toString();
 
@@ -142,10 +142,10 @@ void Controller::implInitialized(bool status, bool a_connected,
 }
 
 bool Controller::activate() {
-  logger.log() << "Activation" << m_state;
+  logger.debug() << "Activation" << m_state;
 
   if (m_state != StateOff && m_state != StateSwitching) {
-    logger.log() << "Already connected";
+    logger.debug() << "Already connected";
     return false;
   }
 
@@ -161,7 +161,7 @@ bool Controller::activate() {
 }
 
 void Controller::activateInternal() {
-  logger.log() << "Activation internal";
+  logger.debug() << "Activation internal";
 
   resetConnectedTime();
 
@@ -198,7 +198,7 @@ void Controller::activateInternal() {
       settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
           SettingsHolder::UserDNSOK) {
     dns = QHostAddress(settingsHolder->userDNS());
-    logger.log() << "User DNS Set" << dns.toString();
+    logger.debug() << "User DNS Set" << dns.toString();
   }
 
   Q_ASSERT(m_impl);
@@ -207,7 +207,7 @@ void Controller::activateInternal() {
 }
 
 bool Controller::silentSwitchServers() {
-  logger.log() << "Silently switch servers";
+  logger.debug() << "Silently switch servers";
 
   if (m_state != StateOn) {
     logger.warning() << "Cannot silent switch if not on";
@@ -262,7 +262,7 @@ bool Controller::silentSwitchServers() {
       settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
           SettingsHolder::UserDNSOK) {
     dns = QHostAddress(settingsHolder->userDNS());
-    logger.log() << "User DNS Set" << dns.toString();
+    logger.debug() << "User DNS Set" << dns.toString();
   }
 
   Q_ASSERT(m_impl);
@@ -272,7 +272,7 @@ bool Controller::silentSwitchServers() {
 }
 
 bool Controller::deactivate() {
-  logger.log() << "Deactivation" << m_state;
+  logger.debug() << "Deactivation" << m_state;
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateConfirming) {
@@ -293,7 +293,7 @@ bool Controller::deactivate() {
 }
 
 void Controller::connected() {
-  logger.log() << "Connected from state:" << m_state;
+  logger.debug() << "Connected from state:" << m_state;
 
   // We are currently silently switching servers
   if (m_state == StateOn) {
@@ -324,7 +324,7 @@ void Controller::connected() {
 }
 
 void Controller::connectionConfirmed() {
-  logger.log() << "Connection confirmed";
+  logger.debug() << "Connection confirmed";
 
   if (m_state != StateConfirming && m_state != StateOn) {
     logger.error() << "Invalid confirmation received";
@@ -351,7 +351,7 @@ void Controller::connectionConfirmed() {
 }
 
 void Controller::connectionFailed() {
-  logger.log() << "Connection failed!";
+  logger.debug() << "Connection failed!";
 
   if (m_state != StateConfirming && m_state != StateOn) {
     logger.error() << "Invalid confirmation received";
@@ -377,7 +377,7 @@ void Controller::connectionFailed() {
 }
 
 void Controller::disconnected() {
-  logger.log() << "Disconnected from state:" << m_state;
+  logger.debug() << "Disconnected from state:" << m_state;
 
   if (m_reconnectionStep == ExpectDisconnection) {
     Q_ASSERT(m_state == StateConfirming || m_state == StateOn);
@@ -439,12 +439,12 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 
   if (vpn->currentServer()->countryCode() == countryCode &&
       vpn->currentServer()->cityName() == city) {
-    logger.log() << "No server change needed";
+    logger.debug() << "No server change needed";
     return;
   }
 
   if (m_state == StateOff) {
-    logger.log() << "Change server";
+    logger.debug() << "Change server";
     vpn->changeServer(countryCode, city);
     return;
   }
@@ -452,7 +452,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
   m_timer.stop();
   resetConnectionCheck();
 
-  logger.log() << "Switching to a different server";
+  logger.debug() << "Switching to a different server";
 
   m_currentCity = vpn->currentServer()->cityName();
   m_currentCountryCode = vpn->currentServer()->countryCode();
@@ -465,7 +465,7 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 }
 
 void Controller::quit() {
-  logger.log() << "Quitting";
+  logger.debug() << "Quitting";
 
   if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToQuit();
@@ -513,7 +513,7 @@ void Controller::updateRequired() {
 }
 
 void Controller::logout() {
-  logger.log() << "Logout";
+  logger.debug() << "Logout";
 
   MozillaVPN::instance()->logout();
 
@@ -552,7 +552,7 @@ bool Controller::processNextStep() {
 }
 
 void Controller::setState(State state) {
-  logger.log() << "Setting state:" << state;
+  logger.debug() << "Setting state:" << state;
 
   if (m_state != state) {
     m_state = state;
@@ -586,7 +586,7 @@ void Controller::getStatus(
     std::function<void(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address, uint64_t txByte,
                        uint64_t rxBytes)>&& a_callback) {
-  logger.log() << "check status";
+  logger.debug() << "check status";
 
   std::function<void(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
@@ -610,7 +610,7 @@ void Controller::getStatus(
 void Controller::statusUpdated(const QString& serverIpv4Gateway,
                                const QString& deviceIpv4Address,
                                uint64_t txBytes, uint64_t rxBytes) {
-  logger.log() << "Status updated";
+  logger.debug() << "Status updated";
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
@@ -626,7 +626,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     const Server& server) {
-  logger.log() << "Computing the allowed ip addresses";
+  logger.debug() << "Computing the allowed ip addresses";
 
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
@@ -642,7 +642,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
         captivePortal->ipv4Addresses();
 
     for (const QString& address : captivePortalIpv4Addresses) {
-      logger.log() << "Filtering out the captive portal address" << address;
+      logger.debug() << "Filtering out the captive portal address" << address;
       excludeIPv4s.append(IPAddress::create(address));
     }
   }
@@ -650,11 +650,11 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   // filtering out the RFC1918 local area network
   if (FeatureList::instance()->localNetworkAccessSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
-    logger.log() << "Filtering out the local area networks (rfc 1918)";
+    logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
 
     if (ipv6Enabled) {
-      logger.log() << "Filtering out the local area networks (rfc 4193)";
+      logger.debug() << "Filtering out the local area networks (rfc 4193)";
       excludeIPv6s.append(RFC4193::ipv6());
     }
   } else if (FeatureList::instance()->userDNSSupported() &&
@@ -667,7 +667,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
              !RFC5735::ipv4LoopbackAddressBlock().contains(
                  QHostAddress(SettingsHolder::instance()->userDNS()))) {
     // Filter out the Custom DNS Server, if the User has one.
-    logger.log() << "Filtering out the DNS address"
+    logger.debug() << "Filtering out the DNS address"
                  << SettingsHolder::instance()->userDNS();
     excludeIPv4s.append(
         IPAddress::create(SettingsHolder::instance()->userDNS()));
@@ -676,35 +676,35 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   QList<IPAddressRange> list;
 
   if (excludeIPv4s.isEmpty()) {
-    logger.log() << "Catch all IPv4";
+    logger.debug() << "Catch all IPv4";
     list.append(IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
   } else {
     QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
 
-    logger.log() << "Exclude the server:" << server.ipv4AddrIn();
+    logger.debug() << "Exclude the server:" << server.ipv4AddrIn();
     excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
 
     allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
     list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
-    logger.log() << "Allow the server:" << server.ipv4Gateway();
+    logger.debug() << "Allow the server:" << server.ipv4Gateway();
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
   }
 
   if (ipv6Enabled) {
     if (excludeIPv6s.isEmpty()) {
-      logger.log() << "Catch all IPv6";
+      logger.debug() << "Catch all IPv6";
       list.append(IPAddressRange("::0", 0, IPAddressRange::IPv6));
     } else {
       QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
 
-      logger.log() << "Exclude the server:" << server.ipv6AddrIn();
+      logger.debug() << "Exclude the server:" << server.ipv6AddrIn();
       excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
 
       allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
       list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 
-      logger.log() << "Allow the server:" << server.ipv6Gateway();
+      logger.debug() << "Allow the server:" << server.ipv6Gateway();
       list.append(
           IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
     }

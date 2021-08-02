@@ -27,7 +27,7 @@ Daemon* s_daemon = nullptr;
 Daemon::Daemon(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Daemon);
 
-  logger.log() << "Daemon created";
+  logger.debug() << "Daemon created";
 
   Q_ASSERT(s_daemon == nullptr);
   s_daemon = this;
@@ -36,7 +36,7 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 Daemon::~Daemon() {
   MVPN_COUNT_DTOR(Daemon);
 
-  logger.log() << "Daemon released";
+  logger.debug() << "Daemon released";
 
   Q_ASSERT(s_daemon == this);
   s_daemon = nullptr;
@@ -61,7 +61,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   if (m_connected) {
     if (supportServerSwitching(config)) {
-      logger.log() << "Already connected. Server switching supported.";
+      logger.debug() << "Already connected. Server switching supported.";
 
       m_lastConfig = config;
       if (!switchServer(config)) {
@@ -131,7 +131,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   m_lastConfig = config;
   m_connected = run(Up, m_lastConfig);
 
-  logger.log() << "Connection status:" << m_connected;
+  logger.debug() << "Connection status:" << m_connected;
 
   if (m_connected) {
     m_connectionDate = QDateTime::currentDateTime();
@@ -145,7 +145,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #define GETVALUESTR(name, where)                                \
   if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
+    logger.debug() << name << " missing in the jsonConfig input"; \
     return false;                                               \
   }                                                             \
   {                                                             \
@@ -171,7 +171,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 #define GETVALUEINT(name, where)                                \
   if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
+    logger.debug() << name << " missing in the jsonConfig input"; \
     return false;                                               \
   }                                                             \
   {                                                             \
@@ -189,7 +189,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 #define GETVALUEBOOL(name, where)                               \
   if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
+    logger.debug() << name << " missing in the jsonConfig input"; \
     return false;                                               \
   }                                                             \
   {                                                             \
@@ -277,7 +277,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
-  logger.log() << "Deactivate";
+  logger.debug() << "Deactivate";
 
   if (!m_connected) {
     logger.error() << "Already disconnected";
@@ -303,7 +303,7 @@ bool Daemon::deactivate(bool emitSignals) {
     return false;
   }
 
-  logger.log() << "Status:" << status;
+  logger.debug() << "Status:" << status;
 
   // No notification for server switching.
   if (emitSignals && status) {
@@ -333,7 +333,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     return false;
   }
 
-  logger.log() << "Switching server";
+  logger.debug() << "Switching server";
 
   Q_ASSERT(m_connected);
   wgutils()->flushRoutes();

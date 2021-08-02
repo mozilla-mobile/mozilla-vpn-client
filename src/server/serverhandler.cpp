@@ -19,7 +19,7 @@ constexpr int SERVER_PORT = 8754;
 ServerHandler::ServerHandler() {
   MVPN_COUNT_CTOR(ServerHandler);
 
-  logger.log() << "Creating the server";
+  logger.debug() << "Creating the server";
 
   if (!listen(QHostAddress::LocalHost, SERVER_PORT)) {
     logger.error() << "Failed to listen on port" << SERVER_PORT;

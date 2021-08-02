@@ -25,7 +25,7 @@ WasmAuthenticationListener::~WasmAuthenticationListener() {
 
 void WasmAuthenticationListener::start(const QString& codeChallenge,
                                        const QString& codeChallengeMethod) {
-  logger.log() << "WasmAuthenticationListener initialize";
+  logger.debug() << "WasmAuthenticationListener initialize";
   Q_UNUSED(codeChallenge);
   Q_UNUSED(codeChallengeMethod);
 

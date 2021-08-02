@@ -61,7 +61,7 @@ SignalHandler::~SignalHandler() {
 void SignalHandler::pipeReadReady() {
   int signal;
   if (read(m_pipefds[0], &signal, sizeof(signal)) == sizeof(signal)) {
-    logger.log() << "Signal" << signal;
+    logger.debug() << "Signal" << signal;
     emit quitRequested();
   }
 }

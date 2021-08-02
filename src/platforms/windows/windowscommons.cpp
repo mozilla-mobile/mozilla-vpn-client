@@ -62,7 +62,7 @@ QString WindowsCommons::tunnelConfigFile() {
       continue;
     }
 
-    logger.log() << "Found the current wireguard configuration:"
+    logger.debug() << "Found the current wireguard configuration:"
                  << wireguardFile;
     return wireguardFile;
   }
@@ -72,7 +72,7 @@ QString WindowsCommons::tunnelConfigFile() {
 
     QDir vpnDir(dir.filePath(VPN_NAME));
     if (!vpnDir.exists() && !dir.mkdir(VPN_NAME)) {
-      logger.log() << "Failed to create path Mozilla under" << path;
+      logger.debug() << "Failed to create path Mozilla under" << path;
       continue;
     }
 
@@ -106,7 +106,7 @@ QString WindowsCommons::tunnelLogFile() {
 
 // static
 int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
-  logger.log() << "Getting Current Internet Adapter that routes to"
+  logger.debug() << "Getting Current Internet Adapter that routes to"
                << dst.toString();
   quint32_be ipBigEndian;
   quint32 ip = dst.toIPv4Address();
@@ -118,7 +118,7 @@ int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
   }
   auto adapter =
       QNetworkInterface::interfaceFromIndex(routeInfo.dwForwardIfIndex);
-  logger.log() << "Internet Adapter:" << adapter.name();
+  logger.debug() << "Internet Adapter:" << adapter.name();
   return routeInfo.dwForwardIfIndex;
 }
 

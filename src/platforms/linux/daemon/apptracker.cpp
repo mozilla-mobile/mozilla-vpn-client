@@ -27,7 +27,7 @@ Logger logger(LOG_LINUX, "AppTracker");
 
 AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(AppTracker);
-  logger.log() << "AppTracker created.";
+  logger.debug() << "AppTracker created.";
 
   QDBusConnection m_conn = QDBusConnection::systemBus();
   m_conn.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
@@ -45,7 +45,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
 
 AppTracker::~AppTracker() {
   MVPN_COUNT_DTOR(AppTracker);
-  logger.log() << "AppTracker destroyed.";
+  logger.debug() << "AppTracker destroyed.";
 }
 
 void AppTracker::userListCompleted(QDBusPendingCallWatcher* watcher) {
@@ -61,7 +61,7 @@ void AppTracker::userListCompleted(QDBusPendingCallWatcher* watcher) {
 }
 
 void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
-  logger.log() << "User created uid:" << userid << "at:" << path.path();
+  logger.debug() << "User created uid:" << userid << "at:" << path.path();
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
@@ -76,7 +76,7 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
 
   /* For correctness we should ask systemd for the user's runtime directory. */
   QString busPath = "unix:path=/run/user/" + QString::number(userid) + "/bus";
-  logger.log() << "Connection to" << busPath;
+  logger.debug() << "Connection to" << busPath;
   QDBusConnection connection =
       QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
 
@@ -91,7 +91,7 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
 }
 
 void AppTracker::userRemoved(uint uid, const QDBusObjectPath& path) {
-  logger.log() << "User removed uid:" << uid << "at:" << path.path();
+  logger.debug() << "User removed uid:" << uid << "at:" << path.path();
   QDBusConnection::disconnectFromBus("user-" + QString::number(uid));
 }
 

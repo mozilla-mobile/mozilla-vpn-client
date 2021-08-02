@@ -53,7 +53,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   }
 
   QString status = reply.argumentAt<0>();
-  logger.log() << "Status:" << status;
+  logger.debug() << "Status:" << status;
 
   QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
   Q_ASSERT(json.isObject());
@@ -74,7 +74,7 @@ void LinuxController::activate(
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
-  logger.log() << "LinuxController activated";
+  logger.debug() << "LinuxController activated";
   connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges,
                            vpnDisabledApps, dnsServer),
           &QDBusPendingCallWatcher::finished, this,
@@ -82,10 +82,10 @@ void LinuxController::activate(
 }
 
 void LinuxController::deactivate(Reason reason) {
-  logger.log() << "LinuxController deactivated";
+  logger.debug() << "LinuxController deactivated";
 
   if (reason == ReasonSwitching) {
-    logger.log() << "No disconnect for quick server switching";
+    logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;
   }
@@ -105,7 +105,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
 
   bool status = reply.argumentAt<0>();
   if (status) {
-    logger.log() << "DBus service says: all good.";
+    logger.debug() << "DBus service says: all good.";
     // we will receive the connected/disconnected() signal;
     return;
   }
@@ -116,7 +116,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
 }
 
 void LinuxController::checkStatus() {
-  logger.log() << "Check status";
+  logger.debug() << "Check status";
 
   QDBusPendingCallWatcher* watcher = m_dbus->status();
   connect(watcher, &QDBusPendingCallWatcher::finished, this,
@@ -131,7 +131,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   }
 
   QString status = reply.argumentAt<0>();
-  logger.log() << "Status:" << status;
+  logger.debug() << "Status:" << status;
 
   QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
   Q_ASSERT(json.isObject());

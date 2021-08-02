@@ -35,7 +35,7 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
 
   auto jniString = QAndroidJniObject::fromString(id);
 
-  logger.log() << " Request image";
+  logger.debug() << " Request image";
 
   QAndroidJniObject drawable = QAndroidJniObject::callStaticObjectMethod(
       "org/mozilla/firefox/vpn/qt/PackageManagerHelper", "getAppIcon",
@@ -54,7 +54,7 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
   }
 
   QImage out = toImage(drawable, QRect(0, 0, width, height));
-  logger.log() << "Created image w" << out.size().width() << "  h "
+  logger.debug() << "Created image w" << out.size().width() << "  h "
                << out.size().height();
   return out;
 }

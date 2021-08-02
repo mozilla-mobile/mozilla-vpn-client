@@ -30,7 +30,7 @@ MacOSDaemon* s_daemon = nullptr;
 MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
   MVPN_COUNT_CTOR(MacOSDaemon);
 
-  logger.log() << "Daemon created";
+  logger.debug() << "Daemon created";
 
   Q_ASSERT(s_daemon == nullptr);
   s_daemon = this;
@@ -39,7 +39,7 @@ MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
 MacOSDaemon::~MacOSDaemon() {
   MVPN_COUNT_DTOR(MacOSDaemon);
 
-  logger.log() << "Daemon released";
+  logger.debug() << "Daemon released";
 
   Q_ASSERT(s_daemon == this);
   s_daemon = nullptr;
@@ -52,7 +52,7 @@ MacOSDaemon* MacOSDaemon::instance() {
 }
 
 QByteArray MacOSDaemon::getStatus() {
-  logger.log() << "Status request";
+  logger.debug() << "Status request";
 
   QJsonObject obj;
   obj.insert("type", "status");
@@ -69,7 +69,7 @@ QByteArray MacOSDaemon::getStatus() {
     QString wgPath = appPath.filePath("wg");
 
     QStringList arguments{"show", "all", "transfer"};
-    logger.log() << "Start:" << wgPath << " - arguments:" << arguments;
+    logger.debug() << "Start:" << wgPath << " - arguments:" << arguments;
 
     QProcess wgProcess;
     wgProcess.start(wgPath, arguments);
@@ -79,9 +79,9 @@ QByteArray MacOSDaemon::getStatus() {
     } else {
       QByteArray output = wgProcess.readAllStandardOutput();
 
-      logger.log() << "wg-quick stdout:" << Qt::endl
+      logger.debug() << "wg-quick stdout:" << Qt::endl
                    << qUtf8Printable(output) << Qt::endl;
-      logger.log() << "wg-quick stderr:" << Qt::endl
+      logger.debug() << "wg-quick stderr:" << Qt::endl
                    << qUtf8Printable(wgProcess.readAllStandardError())
                    << Qt::endl;
 
@@ -136,7 +136,7 @@ bool MacOSDaemon::run(Daemon::Op op, const InterfaceConfig& config) {
 }
 
 void MacOSDaemon::maybeCleanup() {
-  logger.log() << "Cleanup";
+  logger.debug() << "Cleanup";
 
   QString app = WgQuickProcess::scriptPath();
 
@@ -158,7 +158,7 @@ void MacOSDaemon::maybeCleanup() {
     arguments.append(serverIpv6Gateway.toUtf8());
   }
 
-  logger.log() << "Start:" << app << " - arguments:" << arguments;
+  logger.debug() << "Start:" << app << " - arguments:" << arguments;
 
   QProcess wgQuickProcess;
   wgQuickProcess.start(app, arguments);
@@ -168,12 +168,12 @@ void MacOSDaemon::maybeCleanup() {
     return;
   }
 
-  logger.log() << "Execution finished" << wgQuickProcess.exitCode();
+  logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
 
-  logger.log() << "wg-quick stdout:" << Qt::endl
+  logger.debug() << "wg-quick stdout:" << Qt::endl
                << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
                << Qt::endl;
-  logger.log() << "wg-quick stderr:" << Qt::endl
+  logger.debug() << "wg-quick stderr:" << Qt::endl
                << qUtf8Printable(wgQuickProcess.readAllStandardError())
                << Qt::endl;
 }

@@ -57,7 +57,7 @@ void LinuxAppImageProvider::addFallbackPaths(const QString& iconDir,
   QDirIterator iter(iconDir, QDir::Dirs | QDir::NoDotAndDotDot);
   while (iter.hasNext()) {
     QFileInfo fileinfo(iter.next());
-    logger.log() << "Adding QIcon fallback:" << fileinfo.absoluteFilePath();
+    logger.debug() << "Adding QIcon fallback:" << fileinfo.absoluteFilePath();
     searchPaths << fileinfo.absoluteFilePath();
   }
 }
@@ -73,7 +73,7 @@ QImage LinuxAppImageProvider::requestImage(const QString& id, QSize* size,
   QPixmap pixmap = icon.pixmap(requestedSize);
   size->setHeight(pixmap.height());
   size->setWidth(pixmap.width());
-  logger.log() << "Loaded icon" << icon.name() << "size:" << pixmap.width()
+  logger.debug() << "Loaded icon" << icon.name() << "size:" << pixmap.width()
                << "x" << pixmap.height();
 
   return pixmap.toImage();

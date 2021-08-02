@@ -21,7 +21,7 @@ CaptivePortal::CaptivePortal() { MVPN_COUNT_CTOR(CaptivePortal); }
 CaptivePortal::~CaptivePortal() { MVPN_COUNT_DTOR(CaptivePortal); }
 
 bool CaptivePortal::fromJson(const QByteArray& data) {
-  logger.log() << "Captive portal from Json";
+  logger.debug() << "Captive portal from Json";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isArray()) {

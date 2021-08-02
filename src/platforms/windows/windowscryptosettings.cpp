@@ -21,7 +21,7 @@ QByteArray s_key;
 }  // namespace
 
 void CryptoSettings::resetKey() {
-  logger.log() << "Reset the key in the keychain";
+  logger.debug() << "Reset the key in the keychain";
 
   if (s_initialized) {
     CredDeleteW(CRED_KEY, CRED_TYPE_GENERIC, 0);
@@ -31,7 +31,7 @@ void CryptoSettings::resetKey() {
 
 bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
   if (!s_initialized) {
-    logger.log() << "Get key";
+    logger.debug() << "Get key";
 
     s_initialized = true;
 
@@ -40,7 +40,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       if (CredReadW(CRED_KEY, CRED_TYPE_GENERIC, 0, &cred)) {
         s_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
-        logger.log() << "Key found with length:" << s_key.length();
+        logger.debug() << "Key found with length:" << s_key.length();
 
         if (s_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
           memcpy(key, s_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
@@ -52,7 +52,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       }
     }
 
-    logger.log() << "Key not found. Let's create it.";
+    logger.debug() << "Key not found. Let's create it.";
     s_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
     QRandomGenerator* rg = QRandomGenerator::system();
     for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
@@ -82,7 +82,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
     return true;
   }
 
-  logger.log() << "Invalid key";
+  logger.debug() << "Invalid key";
   return false;
 }
 

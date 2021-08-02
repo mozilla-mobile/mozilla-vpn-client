@@ -51,7 +51,7 @@ TaskAuthenticate::TaskAuthenticate(
 TaskAuthenticate::~TaskAuthenticate() { MVPN_COUNT_DTOR(TaskAuthenticate); }
 
 void TaskAuthenticate::run(MozillaVPN* vpn) {
-  logger.log() << "TaskAuthenticate::Run";
+  logger.debug() << "TaskAuthenticate::Run";
 
   Q_ASSERT(!m_authenticationListener);
 
@@ -67,7 +67,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   connect(
       m_authenticationListener, &AuthenticationListener::completed,
       [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
-        logger.log() << "Authentication completed with code:" << pkceCodeSucces;
+        logger.debug() << "Authentication completed with code:" << pkceCodeSucces;
 
         NetworkRequest* request =
             NetworkRequest::createForAuthenticationVerification(
@@ -82,7 +82,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
         connect(request, &NetworkRequest::requestCompleted,
                 [this, vpn](const QByteArray& data) {
-                  logger.log() << "Authentication completed";
+                  logger.debug() << "Authentication completed";
                   authenticationCompleted(vpn, data);
                 });
       });
@@ -104,7 +104,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
 
 void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
                                                const QByteArray& data) {
-  logger.log() << "Authentication completed";
+  logger.debug() << "Authentication completed";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (json.isNull()) {
@@ -120,7 +120,7 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
   }
 
 #ifdef QT_DEBUG
-  logger.log()
+  logger.debug()
       << "User data:"
       << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
 #endif

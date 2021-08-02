@@ -60,7 +60,7 @@ void TaskAccountAndServers::run(MozillaVPN* vpn) {
 
     connect(request, &NetworkRequest::requestCompleted,
             [this, vpn](const QByteArray& data) {
-              logger.log() << "Servers obtained";
+              logger.debug() << "Servers obtained";
               vpn->serversFetched(data);
               m_serversCompleted = true;
               maybeCompleted();

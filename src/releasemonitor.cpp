@@ -24,12 +24,12 @@ ReleaseMonitor::ReleaseMonitor() {
 ReleaseMonitor::~ReleaseMonitor() { MVPN_COUNT_DTOR(ReleaseMonitor); }
 
 void ReleaseMonitor::runSoon() {
-  logger.log() << "ReleaseManager - Scheduling a quick timer";
+  logger.debug() << "ReleaseManager - Scheduling a quick timer";
   TimerSingleShot::create(this, 0, [this] { runInternal(); });
 }
 
 void ReleaseMonitor::runInternal() {
-  logger.log() << "ReleaseMonitor started";
+  logger.debug() << "ReleaseMonitor started";
 
   Updater* updater = Updater::create(this, false);
   Q_ASSERT(updater);
@@ -44,7 +44,7 @@ void ReleaseMonitor::runInternal() {
 }
 
 void ReleaseMonitor::schedule() {
-  logger.log() << "ReleaseMonitor scheduling";
+  logger.debug() << "ReleaseMonitor scheduling";
   m_timer.start(Constants::RELEASE_MONITOR_MSEC);
 }
 
@@ -55,12 +55,12 @@ void ReleaseMonitor::updateRequired() {
 }
 
 void ReleaseMonitor::updateRecommended() {
-  logger.log() << "Update recommended";
+  logger.debug() << "Update recommended";
   MozillaVPN::instance()->setUpdateRecommended(true);
 }
 
 void ReleaseMonitor::update() {
-  logger.log() << "Update";
+  logger.debug() << "Update";
 
   Updater* updater = Updater::create(this, true);
   if (!updater) {

@@ -32,7 +32,7 @@ void migrateUserDefaultData() {
   if (userData) {
     QByteArray json = QByteArray::fromNSData(userData);
     if (!json.isEmpty()) {
-      logger.log() << "User data to be migrated";
+      logger.debug() << "User data to be migrated";
       vpn->accountChecked(json);
     }
   }
@@ -40,7 +40,7 @@ void migrateUserDefaultData() {
   NSData* deviceData = [sud dataForKey:@"device"];
   if (deviceData) {
     QByteArray json = QByteArray::fromNSData(deviceData);
-    logger.log() << "Device data to be migrated";
+    logger.debug() << "Device data to be migrated";
     // Nothing has to be done here because the device data is part of the user data.
   }
 
@@ -48,7 +48,7 @@ void migrateUserDefaultData() {
   if (serversData) {
     QByteArray json = QByteArray::fromNSData(serversData);
     if (!json.isEmpty()) {
-      logger.log() << "Server list data to be migrated";
+      logger.debug() << "Server list data to be migrated";
 
       // We need to wrap the server list in a object to make it similar to the REST API response.
       QJsonDocument serverList = QJsonDocument::fromJson(json);
@@ -72,7 +72,7 @@ void migrateUserDefaultData() {
   NSData* selectedCityData = [sud dataForKey:@"selectedCity"];
   if (selectedCityData) {
     QByteArray json = QByteArray::fromNSData(selectedCityData);
-    logger.log() << "SelectedCity data to be migrated" << json;
+    logger.debug() << "SelectedCity data to be migrated" << json;
     // Nothing has to be done here because the device data is part of the user data.
 
     QJsonDocument doc = QJsonDocument::fromJson(json);
@@ -96,7 +96,7 @@ void migrateUserDefaultData() {
 
     ServerData serverData;
     if (vpn->serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
-      logger.log() << "ServerCity found";
+      logger.debug() << "ServerCity found";
       serverData.writeSettings();
     }
   }
@@ -123,7 +123,7 @@ void migrateKeychainData() {
 
   QByteArray data = QByteArray::fromNSData(dataNS);
 #ifdef QT_DEBUG
-  logger.log() << "Credentials:" << data;
+  logger.debug() << "Credentials:" << data;
 #endif
 
   QJsonDocument json = QJsonDocument::fromJson(data);
@@ -167,7 +167,7 @@ void migrateKeychainData() {
 
 // static
 void IOSDataMigration::migrate() {
-  logger.log() << "IOS Data Migration";
+  logger.debug() << "IOS Data Migration";
 
   migrateKeychainData();
   migrateUserDefaultData();

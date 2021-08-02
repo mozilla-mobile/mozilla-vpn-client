@@ -20,7 +20,7 @@ InspectorWebSocketServer::InspectorWebSocketServer()
     : QWebSocketServer("", QWebSocketServer::NonSecureMode) {
   MVPN_COUNT_CTOR(InspectorWebSocketServer);
 
-  logger.log() << "Creating the inspector websocket server";
+  logger.debug() << "Creating the inspector websocket server";
 
   if (!listen(QHostAddress::Any, INSPECT_PORT)) {
     logger.error() << "Failed to listen on port" << INSPECT_PORT;

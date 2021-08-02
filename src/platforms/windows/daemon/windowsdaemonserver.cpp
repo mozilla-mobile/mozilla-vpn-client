@@ -57,7 +57,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   QString appName = tokens[0];
 
-  logger.log() << "Daemon is starting";
+  logger.debug() << "Daemon is starting";
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -84,7 +84,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   QTimer stopEventTimer;
   connect(&stopEventTimer, &QTimer::timeout, [&]() {
     if (WaitForSingleObject(s_serviceStopEvent, 0) == WAIT_OBJECT_0) {
-      logger.log() << "Stop event message received";
+      logger.debug() << "Stop event message received";
 
       s_serviceStatus.dwControlsAccepted = 0;
       s_serviceStatus.dwCurrentState = SERVICE_STOPPED;
@@ -109,7 +109,7 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
   Q_UNUSED(argc);
   Q_UNUSED(argv);
 
-  logger.log() << "Service has started";
+  logger.debug() << "Service has started";
 
   s_statusHandle = RegisterServiceCtrlHandler(SERVICE_NAME, serviceCtrlHandler);
   if (!s_statusHandle) {
@@ -156,7 +156,7 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
 
 // static
 void WINAPI ServiceThread::serviceCtrlHandler(DWORD code) {
-  logger.log() << "Message received";
+  logger.debug() << "Message received";
 
   if (code != SERVICE_CONTROL_STOP) {
     return;

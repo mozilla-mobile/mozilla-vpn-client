@@ -115,13 +115,13 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    logger.log() << "UI starting";
+    logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set) {
-      logger.log() << "Maybe start at boot";
+      logger.debug() << "Maybe start at boot";
 
       if (!SettingsHolder::instance()->startAtBoot()) {
-        logger.log() << "We don't need to start at boot.";
+        logger.debug() << "We don't need to start at boot.";
         return 0;
       }
     }
@@ -443,7 +443,7 @@ int CommandUI::run(QStringList& tokens) {
                      systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
-      logger.log() << "Retranslating";
+      logger.debug() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
       SystemTrayHandler::instance()->retranslate();
 

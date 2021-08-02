@@ -52,7 +52,7 @@ void ConnectionDataHolder::enable() {
 void ConnectionDataHolder::disable() { m_ipAddressTimer.stop(); }
 
 void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes) {
-  logger.log() << "New connection data:" << txBytes << rxBytes;
+  logger.debug() << "New connection data:" << txBytes << rxBytes;
 
   Q_ASSERT(!!m_txSeries == !!m_rxSeries);
 
@@ -107,7 +107,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
                                     const QVariant& a_rxSeries,
                                     const QVariant& a_axisX,
                                     const QVariant& a_axisY) {
-  logger.log() << "Activated";
+  logger.debug() << "Activated";
   updateIpAddress();
 
   QtCharts::QSplineSeries* txSeries =
@@ -160,7 +160,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
 }
 
 void ConnectionDataHolder::deactivate() {
-  logger.log() << "Deactivated";
+  logger.debug() << "Deactivated";
 
   reset();
   m_axisX = nullptr;
@@ -180,7 +180,7 @@ void ConnectionDataHolder::computeAxes() {
 }
 
 void ConnectionDataHolder::reset() {
-  logger.log() << "Resetting the data";
+  logger.debug() << "Resetting the data";
 
   m_initialized = false;
   m_txBytes = 0;
@@ -207,7 +207,7 @@ void ConnectionDataHolder::reset() {
 }
 
 void ConnectionDataHolder::updateIpAddress() {
-  logger.log() << "Updating IP address";
+  logger.debug() << "Updating IP address";
   auto state = MozillaVPN::instance()->controller()->state();
   // Only start the check if we're actually connected/connecting
   if (state != Controller::StateOn && state != Controller::StateConfirming) {
@@ -231,7 +231,7 @@ void ConnectionDataHolder::updateIpAddress() {
           return;
         }
 
-        logger.log() << "IP address request completed";
+        logger.debug() << "IP address request completed";
         if (m_checkStatusTimer.isActive() &&
             country != MozillaVPN::instance()->currentServer()->countryCode()) {
           // In case the country-we're reported in does not match the
@@ -250,7 +250,7 @@ void ConnectionDataHolder::updateIpAddress() {
           emit ipv6AddressChanged();
         }
 
-        logger.log() << "Set own Address. ipv4:"
+        logger.debug() << "Set own Address. ipv4:"
                      << logger.sensitive(m_ipv4Address)
                      << "ipv6:" << logger.sensitive(m_ipv6Address) << "in"
                      << logger.sensitive(country);
@@ -276,7 +276,7 @@ quint64 ConnectionDataHolder::bytes(bool index) const {
 }
 
 void ConnectionDataHolder::stateChanged() {
-  logger.log() << "state changed";
+  logger.debug() << "state changed";
 
   MozillaVPN* vpn = MozillaVPN::instance();
 

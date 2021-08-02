@@ -32,13 +32,13 @@ const QString MIGRATION_FILE = "org.mozilla.firefox.vpn_preferences.xml";
 
 // static
 void AndroidDataMigration::migrate() {
-  logger.log() << "Android Data Migration -- Start";
+  logger.debug() << "Android Data Migration -- Start";
 
   auto files = AndroidSharedPrefs::GetPrefFiles();
   if (!files.contains(MIGRATION_FILE)) {
-    logger.log() << "Migration" << MIGRATION_FILE
+    logger.debug() << "Migration" << MIGRATION_FILE
                  << "was not file found - skip";
-    logger.log() << "Migration files: " << files;
+    logger.debug() << "Migration files: " << files;
     return;
   };
 
@@ -67,7 +67,7 @@ void AndroidDataMigration::importDeviceInfo() {
   }
 
   MozillaVPN::instance()->deviceAdded(name, pubKey, privateKey);
-  logger.log() << "pref_current_device value was migrated";
+  logger.debug() << "pref_current_device value was migrated";
 }
 
 void AndroidDataMigration::importDeviceInfoInternal(const QByteArray& json,
@@ -98,7 +98,7 @@ void AndroidDataMigration::importUserInfo() {
   }
 
   MozillaVPN::instance()->accountChecked(json);
-  logger.log() << "user_info value was imported";
+  logger.debug() << "user_info value was imported";
 }
 
 QByteArray AndroidDataMigration::importUserInfoInternal(
@@ -131,7 +131,7 @@ void AndroidDataMigration::importLoginToken() {
   }
   MozillaVPN::instance()->setToken(loginToken.toString());
 
-  logger.log() << "auth_token value was imported";
+  logger.debug() << "auth_token value was imported";
 }
 
 void AndroidDataMigration::importServerList() {
@@ -164,7 +164,7 @@ void AndroidDataMigration::importServerList() {
     return;
   }
 
-  logger.log() << "Import JSON \n" << json;
+  logger.debug() << "Import JSON \n" << json;
 
   bool ok = MozillaVPN::instance()->setServerList(json);
   if (!ok) {
@@ -172,7 +172,7 @@ void AndroidDataMigration::importServerList() {
     return;
   }
 
-  logger.log() << "pref_servers value was imported";
+  logger.debug() << "pref_servers value was imported";
 }
 
 QByteArray AndroidDataMigration::importServerListInternal(

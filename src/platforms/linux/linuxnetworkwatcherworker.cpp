@@ -63,9 +63,9 @@ LinuxNetworkWatcherWorker::~LinuxNetworkWatcherWorker() {
 }
 
 void LinuxNetworkWatcherWorker::initialize() {
-  logger.log() << "initialize";
+  logger.debug() << "initialize";
 
-  logger.log()
+  logger.debug()
       << "Retrieving the list of wifi network devices from NetworkManager";
 
   // To know the NeworkManager DBus methods and properties, read the official
@@ -96,7 +96,7 @@ void LinuxNetworkWatcherWorker::initialize() {
       continue;
     }
 
-    logger.log() << "Found a wifi device:" << devicePath;
+    logger.debug() << "Found a wifi device:" << devicePath;
     m_devicePaths.append(devicePath);
 
     // Here we monitor the changes.
@@ -120,10 +120,10 @@ void LinuxNetworkWatcherWorker::propertyChanged(QString interface,
                                                 QStringList list) {
   Q_UNUSED(list);
 
-  logger.log() << "Properties changed for interface" << interface;
+  logger.debug() << "Properties changed for interface" << interface;
 
   if (!properties.contains("ActiveAccessPoint")) {
-    logger.log() << "Access point did not changed. Ignoring the changes";
+    logger.debug() << "Access point did not changed. Ignoring the changes";
     return;
   }
 
@@ -131,7 +131,7 @@ void LinuxNetworkWatcherWorker::propertyChanged(QString interface,
 }
 
 void LinuxNetworkWatcherWorker::checkDevices() {
-  logger.log() << "Checking devices";
+  logger.debug() << "Checking devices";
 
   for (const QString& devicePath : m_devicePaths) {
     QDBusInterface wifiDevice(DBUS_NETWORKMANAGER, devicePath,

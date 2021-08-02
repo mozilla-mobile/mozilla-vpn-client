@@ -51,7 +51,7 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, vpn](const QByteArray& data) {
-            logger.log() << "Heartbeat content received:" << data;
+            logger.debug() << "Heartbeat content received:" << data;
 
             QJsonObject json = QJsonDocument::fromJson(data).object();
             QJsonValue mullvad = json.value("mullvadOK");

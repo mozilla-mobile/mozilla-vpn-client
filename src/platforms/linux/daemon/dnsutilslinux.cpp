@@ -23,7 +23,7 @@ Logger logger(LOG_LINUX, "DnsUtilsLinux");
 
 DnsUtilsLinux::DnsUtilsLinux(QObject* parent) : DnsUtils(parent) {
   MVPN_COUNT_CTOR(DnsUtilsLinux);
-  logger.log() << "DnsUtilsLinux created.";
+  logger.debug() << "DnsUtilsLinux created.";
 
   QDBusConnection conn = QDBusConnection::systemBus();
   m_resolver = new QDBusInterface(DBUS_RESOLVE_SERVICE, DBUS_RESOLVE_PATH,
@@ -45,7 +45,7 @@ DnsUtilsLinux::~DnsUtilsLinux() {
     m_resolver->asyncCall(QStringLiteral("RevertLink"), m_ifindex);
   }
 
-  logger.log() << "DnsUtilsLinux destroyed.";
+  logger.debug() << "DnsUtilsLinux destroyed.";
 }
 
 bool DnsUtilsLinux::updateResolvers(const QString& ifname,
@@ -100,7 +100,7 @@ void DnsUtilsLinux::setLinkDNS(int ifindex,
   for (auto ip : resolvers) {
     resolverList.append(ip);
     if (ifname) {
-      logger.log() << "Adding DNS resolver" << ip.toString() << "via" << ifname;
+      logger.debug() << "Adding DNS resolver" << ip.toString() << "via" << ifname;
     }
   }
 
@@ -121,7 +121,7 @@ void DnsUtilsLinux::setLinkDomains(int ifindex,
   const char* ifname = if_indextoname(ifindex, ifnamebuf);
   if (ifname) {
     for (auto d : domains) {
-      logger.log() << "Setting DNS domain:" << d.domain << "via" << ifname
+      logger.debug() << "Setting DNS domain:" << d.domain << "via" << ifname
                    << (d.search ? "search" : "");
     }
   }

@@ -59,7 +59,7 @@ void CaptivePortalRequest::run() {
 }
 
 void CaptivePortalRequest::createRequest(const QUrl& url) {
-  logger.log() << "request:" << url.toString();
+  logger.debug() << "request:" << url.toString();
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalDetection(
       this, url, CAPTIVEPORTAL_HOST);
@@ -72,22 +72,22 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, request](const QByteArray& data) {
-            logger.log() << "Captive portal request completed:" << data;
+            logger.debug() << "Captive portal request completed:" << data;
             // Usually, captive-portal pages do a redirect to an internal page.
             if (request->statusCode() != 200) {
-              logger.log() << "Captive portal detected. Expected 200, received:"
+              logger.debug() << "Captive portal detected. Expected 200, received:"
                            << request->statusCode();
               onResult(PortalDetected);
               return;
             }
 
             if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-              logger.log() << "No captive portal!";
+              logger.debug() << "No captive portal!";
               onResult(NoPortal);
               return;
             }
 
-            logger.log() << "Captive portal detected. Content does not match.";
+            logger.debug() << "Captive portal detected. Content does not match.";
             onResult(PortalDetected);
           });
 

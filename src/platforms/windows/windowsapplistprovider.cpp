@@ -83,7 +83,7 @@ bool WindowsAppListProvider::isValidAppId(const QString& appId) {
  */
 void WindowsAppListProvider::readLinkFiles(const QString& path,
                                            QMap<QString, QString>& out) {
-  logger.log() << "Read -> " << path;
+  logger.debug() << "Read -> " << path;
   QDirIterator it(path, QStringList() << "*.lnk", QDir::Files,
                   QDirIterator::Subdirectories);
   const auto oldCount = out.count();
@@ -96,32 +96,32 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
     QFileInfo target(link.symLinkTarget());
     if (!target.isExecutable()) {
       // 1:  We only care for .exe
-      logger.log() << "Skip -> " << link.baseName()
+      logger.debug() << "Skip -> " << link.baseName()
                    << target.absoluteFilePath();
       continue;
     }
     if (target.path().toUpper().startsWith("C:/WINDOWS")) {
       // 2: Don't include windows links like cmd/ps
-      logger.log() << "Skip -> " << link.baseName()
+      logger.debug() << "Skip -> " << link.baseName()
                    << target.absoluteFilePath();
       continue;
     }
     if (isUninstaller(target)) {
       // 3: Don't include obvious uninstallers
-      logger.log() << "Skip -> " << link.baseName()
+      logger.debug() << "Skip -> " << link.baseName()
                    << target.absoluteFilePath();
       continue;
     }
     if (!WindowsAppImageProvider::hasImage(target.absoluteFilePath())) {
       // 4: Don't include apps without an icon
-      logger.log() << "Skip -> " << link.baseName()
+      logger.debug() << "Skip -> " << link.baseName()
                    << target.absoluteFilePath();
       continue;
     }
-    logger.log() << "Add -> " << link.baseName() << target.absoluteFilePath();
+    logger.debug() << "Add -> " << link.baseName() << target.absoluteFilePath();
     out.insert(target.absoluteFilePath(), link.baseName());
   }
-  logger.log() << " Added: " << out.count() - oldCount;
+  logger.debug() << " Added: " << out.count() - oldCount;
 }
 
 QStringList WindowsAppListProvider::getUninstallerList() {
@@ -160,7 +160,7 @@ bool WindowsAppListProvider::isUninstaller(const QFileInfo& file) {
   // Not all uninstallers register themselfs there and instead
   // just add an uninstaller .lnk into the programm menu
   // lets ignore .exe with the format ABCuninstaller.exe
-  logger.log() << file.fileName().toLower();
+  logger.debug() << file.fileName().toLower();
   if (file.fileName().toLower().contains("uninstall")) {
     return true;
   };

@@ -100,7 +100,7 @@ void TimerController::timeout() {
 }
 
 void TimerController::maybeDone(bool isConnected) {
-  logger.log() << "TimerController - Operation completed:" << m_state
+  logger.debug() << "TimerController - Operation completed:" << m_state
                << isConnected;
 
   if (m_state == Connecting) {

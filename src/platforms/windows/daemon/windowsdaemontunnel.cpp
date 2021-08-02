@@ -28,7 +28,7 @@ WindowsDaemonTunnel::~WindowsDaemonTunnel() {
 int WindowsDaemonTunnel::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
 
-  logger.log() << "Tunnel daemon service is starting";
+  logger.debug() << "Tunnel daemon service is starting";
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 

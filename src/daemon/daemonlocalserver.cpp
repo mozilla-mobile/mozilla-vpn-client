@@ -34,7 +34,7 @@ bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);
 
   QString path = daemonPath();
-  logger.log() << "Server path:" << path;
+  logger.debug() << "Server path:" << path;
 
   if (QFileInfo::exists(path)) {
     QFile::remove(path);
@@ -46,7 +46,7 @@ bool DaemonLocalServer::initialize() {
   }
 
   connect(&m_server, &QLocalServer::newConnection, [&] {
-    logger.log() << "New connection received";
+    logger.debug() << "New connection received";
 
     if (!m_server.hasPendingConnections()) {
       return;
@@ -75,7 +75,7 @@ QString DaemonLocalServer::daemonPath() const {
   }
 
   if (dir.exists("mozillavpn")) {
-    logger.log() << "/var/run/mozillavpn seems to be usable";
+    logger.debug() << "/var/run/mozillavpn seems to be usable";
     return VAR_PATH;
   }
 

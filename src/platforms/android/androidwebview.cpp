@@ -44,7 +44,7 @@ void AndroidWebView::onPageStarted(JNIEnv* env, jobject thiz, jstring url,
   Q_UNUSED(icon);
 
   QString pageUrl = env->GetStringUTFChars(url, 0);
-  logger.log() << "Page started:" << pageUrl;
+  logger.debug() << "Page started:" << pageUrl;
 
   dispatchToMainThread([pageUrl] {
     Q_ASSERT(s_instance);
@@ -73,7 +73,7 @@ void AndroidWebView::onError(JNIEnv* env, jobject thiz, jint errorCode,
 AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
   MVPN_COUNT_CTOR(AndroidWebView);
 
-  logger.log() << "AndroidWebView created";
+  logger.debug() << "AndroidWebView created";
 
   // We do not support multiple android webviews. No needs for now.
   Q_ASSERT(!s_instance);
@@ -135,7 +135,7 @@ AndroidWebView::AndroidWebView(QQuickItem* parent) : QQuickItem(parent) {
 AndroidWebView::~AndroidWebView() {
   MVPN_COUNT_DTOR(AndroidWebView);
 
-  logger.log() << "AndroidWebView destroyed";
+  logger.debug() << "AndroidWebView destroyed";
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -162,7 +162,7 @@ QUrl AndroidWebView::url() const {
 }
 
 void AndroidWebView::setUrl(const QUrl& url) {
-  logger.log() << "Set URL:" << url.toString();
+  logger.debug() << "Set URL:" << url.toString();
 
   if (!m_object.isValid()) {
     logger.error() << "Invalid object. Failed the loading.";
@@ -216,7 +216,7 @@ void AndroidWebView::propagateError(ErrorHandler::ErrorType error) {
 }
 
 void AndroidWebView::onWindowChanged(QQuickWindow* window) {
-  logger.log() << "window changed";
+  logger.debug() << "window changed";
 
   QQuickWindow* oldParent = qobject_cast<QQuickWindow*>(m_window->parent());
   if (oldParent) {
@@ -248,7 +248,7 @@ void AndroidWebView::onWindowChanged(QQuickWindow* window) {
 }
 
 void AndroidWebView::onVisibleChanged() {
-  logger.log() << "visible changed";
+  logger.debug() << "visible changed";
   m_window->setVisible(isVisible());
 }
 

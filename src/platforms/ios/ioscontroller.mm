@@ -29,7 +29,7 @@ IOSControllerImpl* impl = nullptr;
 IOSController::IOSController() {
   MVPN_COUNT_CTOR(IOSController);
 
-  logger.log() << "created";
+  logger.debug() << "created";
 
   Q_ASSERT(!impl);
 }
@@ -37,7 +37,7 @@ IOSController::IOSController() {
 IOSController::~IOSController() {
   MVPN_COUNT_DTOR(IOSController);
 
-  logger.log() << "deallocated";
+  logger.debug() << "deallocated";
 
   if (impl) {
     [impl dealloc];
@@ -49,7 +49,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
   Q_ASSERT(!impl);
   Q_UNUSED(device);
 
-  logger.log() << "Initializing Swift Controller";
+  logger.debug() << "Initializing Swift Controller";
 
   static bool creating = false;
   // No nested creation!
@@ -63,7 +63,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       deviceIpv4Address:device->ipv4Address().toNSString()
       deviceIpv6Address:device->ipv6Address().toNSString()
       closure:^(ConnectionState state, NSDate* date) {
-        logger.log() << "Creation completed with connection state:" << state;
+        logger.debug() << "Creation completed with connection state:" << state;
         creating = false;
 
         switch (state) {
@@ -87,7 +87,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
         }
       }
       callback:^(BOOL a_connected) {
-        logger.log() << "State changed: " << a_connected;
+        logger.debug() << "State changed: " << a_connected;
         if (a_connected) {
           emit connected();
           return;
@@ -107,7 +107,7 @@ void IOSController::activate(const Server& server, const Device* device, const K
   // This feature is not supported on macos/ios yet.
   Q_ASSERT(vpnDisabledApps.isEmpty());
 
-  logger.log() << "IOSController activating" << server.hostname();
+  logger.debug() << "IOSController activating" << server.hostname();
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
@@ -140,10 +140,10 @@ void IOSController::activate(const Server& server, const Device* device, const K
 }
 
 void IOSController::deactivate(Reason reason) {
-  logger.log() << "IOSController deactivated";
+  logger.debug() << "IOSController deactivated";
 
   if (reason != ReasonNone) {
-    logger.log() << "We do not need to disable the VPN for switching or connection check.";
+    logger.debug() << "We do not need to disable the VPN for switching or connection check.";
     emit disconnected();
     return;
   }
@@ -158,7 +158,7 @@ void IOSController::deactivate(Reason reason) {
 }
 
 void IOSController::checkStatus() {
-  logger.log() << "Checking status";
+  logger.debug() << "Checking status";
 
   if (m_checkingStatus) {
     logger.warning() << "We are still waiting for the previous status.";
@@ -198,7 +198,7 @@ void IOSController::checkStatus() {
       }
     }
 
-    logger.log() << "ServerIpv4Gateway:" << QString::fromNSString(serverIpv4Gateway)
+    logger.debug() << "ServerIpv4Gateway:" << QString::fromNSString(serverIpv4Gateway)
                  << "DeviceIpv4Address:" << QString::fromNSString(deviceIpv4Address)
                  << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
     emit statusUpdated(QString::fromNSString(serverIpv4Gateway),

@@ -96,10 +96,10 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
 void AppPermission::flip(const QString& appID) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   if (settingsHolder->hasVpnDisabledApp(appID)) {
-    logger.log() << "Enabled --" << appID << " for VPN";
+    logger.debug() << "Enabled --" << appID << " for VPN";
     settingsHolder->removeVpnDisabledApp(appID);
   } else {
-    logger.log() << "Disabled --" << appID << " for VPN";
+    logger.debug() << "Disabled --" << appID << " for VPN";
     settingsHolder->addVpnDisabledApp(appID);
   }
 
@@ -108,7 +108,7 @@ void AppPermission::flip(const QString& appID) {
 }
 
 void AppPermission::requestApplist() {
-  logger.log() << "Request new AppList";
+  logger.debug() << "Request new AppList";
   m_listprovider->getApplicationList();
 }
 
@@ -120,18 +120,18 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     foreach (QString blockedAppId, settingsHolder->vpnDisabledApps()) {
       if (!m_listprovider->isValidAppId(blockedAppId)) {
         // In case the AppID is no longer valid we don't need to keep it
-        logger.log() << "Removed obsolete appid" << blockedAppId;
+        logger.debug() << "Removed obsolete appid" << blockedAppId;
         settingsHolder->removeVpnDisabledApp(blockedAppId);
       } else if (!keys.contains(blockedAppId)) {
         // In case the AppID is valid but not in our applist, we need to create
         // an entry
-        logger.log() << "Added missing appid" << blockedAppId;
+        logger.debug() << "Added missing appid" << blockedAppId;
         m_applist.append(AppDescription(blockedAppId, applist[blockedAppId]));
       }
     }
   }
   beginResetModel();
-  logger.log() << "Recived new Applist -- Entrys: " << applist.size();
+  logger.debug() << "Recived new Applist -- Entrys: " << applist.size();
   m_applist.clear();
   for (auto id : keys) {
     m_applist.append(AppDescription(id, applist[id]));
@@ -141,14 +141,14 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
 }
 
 void AppPermission::protectAll() {
-  logger.log() << "Protected all";
+  logger.debug() << "Protected all";
 
   SettingsHolder::instance()->setVpnDisabledApps(QStringList());
   dataChanged(createIndex(0, 0), createIndex(m_applist.size(), 0));
 };
 
 void AppPermission::unprotectAll() {
-  logger.log() << "Unprotected all";
+  logger.debug() << "Unprotected all";
 
   QStringList allAppIds;
   for (auto app : m_applist) {
@@ -159,7 +159,7 @@ void AppPermission::unprotectAll() {
 }
 
 void AppPermission::openFilePicker() {
-  logger.log() << "File picker required";
+  logger.debug() << "File picker required";
 
   QFileDialog fp(nullptr, qtTrId("vpn.protectSelectedApps.addApplication"));
 
@@ -183,7 +183,7 @@ void AppPermission::openFilePicker() {
     return;
   }
 
-  logger.log() << "Selection:" << fileNames;
+  logger.debug() << "Selection:" << fileNames;
   Q_ASSERT(fileNames.length() == 1);
 
   Q_ASSERT(m_listprovider);

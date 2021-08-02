@@ -28,7 +28,7 @@ QString MacOSUtils::computerName() {
 
 // static
 void MacOSUtils::enableLoginItem(bool startAtBoot) {
-  logger.log() << "Enabling login-item";
+  logger.debug() << "Enabling login-item";
 
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   NSString* loginItemAppId =
@@ -36,7 +36,7 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
   CFStringRef cfs = (__bridge CFStringRef)loginItemAppId;
 
   Boolean ok = SMLoginItemSetEnabled(cfs, startAtBoot ? YES : NO);
-  logger.log() << "Result: " << ok;
+  logger.debug() << "Result: " << ok;
 }
 
 namespace {
@@ -45,7 +45,7 @@ bool dockClickHandler(id self, SEL cmd, ...) {
   Q_UNUSED(self);
   Q_UNUSED(cmd);
 
-  logger.log() << "Dock icon clicked.";
+  logger.debug() << "Dock icon clicked.";
   QmlEngineHolder::instance()->showWindow();
   return FALSE;
 }
@@ -56,19 +56,19 @@ bool dockClickHandler(id self, SEL cmd, ...) {
 void MacOSUtils::setDockClickHandler() {
   NSApplication* app = [NSApplication sharedApplication];
   if (!app) {
-    logger.log() << "No sharedApplication";
+    logger.debug() << "No sharedApplication";
     return;
   }
 
   id delegate = [app delegate];
   if (!delegate) {
-    logger.log() << "No delegate";
+    logger.debug() << "No delegate";
     return;
   }
 
   Class delegateClass = [delegate class];
   if (!delegateClass) {
-    logger.log() << "No delegate class";
+    logger.debug() << "No delegate class";
     return;
   }
 

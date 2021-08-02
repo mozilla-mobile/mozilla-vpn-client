@@ -64,7 +64,7 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
   memset(&session, 0, sizeof(session));
   session.flags = FWPM_SESSION_FLAG_DYNAMIC;
 
-  logger.log() << "Opening the filter engine.";
+  logger.debug() << "Opening the filter engine.";
 
   result =
       FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &engineHandle);
@@ -73,7 +73,7 @@ WindowsFirewall::WindowsFirewall(QObject* parent) : QObject(parent) {
     WindowsCommons::windowsLog("FwpmEngineOpen0 failed");
     return;
   }
-  logger.log() << "Filter engine opened successfully.";
+  logger.debug() << "Filter engine opened successfully.";
   m_sessionHandle = engineHandle;
 }
 
@@ -104,7 +104,7 @@ bool WindowsFirewall::init() {
   FWPM_SESSION0 session;
   memset(&session, 0, sizeof(session));
 
-  logger.log() << "Opening the filter engine";
+  logger.debug() << "Opening the filter engine";
   result = FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &wfp);
   if (result != ERROR_SUCCESS) {
     logger.error() << "FwpmEngineOpen0 failed. Return value:.\n" << result;
@@ -117,7 +117,7 @@ bool WindowsFirewall::init() {
   result = FwpmSubLayerGetByKey0(wfp, &ST_FW_WINFW_BASELINE_SUBLAYER_KEY,
                                  &maybeLayer);
   if (result == ERROR_SUCCESS) {
-    logger.log() << "The Sublayer Already Exists!";
+    logger.debug() << "The Sublayer Already Exists!";
     FwpmFreeMemory0((void**)&maybeLayer);
     return true;
   }
@@ -149,14 +149,14 @@ bool WindowsFirewall::init() {
     logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
-  logger.log() << "Initialised Sublayer";
+  logger.debug() << "Initialised Sublayer";
   m_init = true;
   return true;
 }
 
 bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
                                                   int network) {
-  logger.log() << "Adding hard Permit for " << exePath
+  logger.debug() << "Adding hard Permit for " << exePath
                << " Accessing Device: " << network;
   DWORD result = ERROR_SUCCESS;
 
@@ -256,19 +256,19 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
     }
   }
 
-  logger.log() << "Ruleset applied for: " << exePath;
+  logger.debug() << "Ruleset applied for: " << exePath;
   return true;
 }
 
 bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
                                        const InterfaceConfig& config) {
-  logger.log() << "Enableling Killswitch Using Adapter:" << vpnAdapterIndex;
+  logger.debug() << "Enableling Killswitch Using Adapter:" << vpnAdapterIndex;
 
   IPAddressRange v4CatchAll("0.0.0.0", 0, IPAddressRange::IPv4);
   IPAddressRange v6CatchAll("::0", 0, IPAddressRange::IPv6);
   if (!config.m_allowedIPAddressRanges.contains(v4CatchAll) &&
       !config.m_allowedIPAddressRanges.contains(v6CatchAll)) {
-    logger.log() << "Allowed IP is not CatchAll, skip-activating Killswitch";
+    logger.debug() << "Allowed IP is not CatchAll, skip-activating Killswitch";
     return true;
   }
 
@@ -277,44 +277,44 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
     disableKillSwitch();
     return false;
   };
-  logger.log() << "Ruleset applied: blockAll";
+  logger.debug() << "Ruleset applied: blockAll";
 
   if (!allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT)) {
     logger.error() << "Ruleset failed: allowTrafficOfAdapter";
     disableKillSwitch();
     return false;
   }
-  logger.log() << "Ruleset applied: allowTrafficOfAdapter";
+  logger.debug() << "Ruleset applied: allowTrafficOfAdapter";
 
   if (!allowDHCPTraffic(MED_WEIGHT)) {
     logger.error() << "Ruleset failed: allowDHCPTraffic";
     disableKillSwitch();
     return false;
   }
-  logger.log() << "Ruleset applied: allowDHCPTraffic";
+  logger.debug() << "Ruleset applied: allowDHCPTraffic";
 
   if (!allowHyperVTraffic(MED_WEIGHT)) {
     logger.error() << "Ruleset failed: allowHyperVTraffic";
     disableKillSwitch();
     return false;
   }
-  logger.log() << "Ruleset applied: allowHyperVTraffic";
+  logger.debug() << "Ruleset applied: allowHyperVTraffic";
 
   if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT)) {
     logger.error() << "Ruleset failed: allowTrafficForAppOnAll";
     disableKillSwitch();
     return false;
   }
-  logger.log() << "Ruleset applied: allowTrafficForAppOnAll: MozillaVPN";
+  logger.debug() << "Ruleset applied: allowTrafficForAppOnAll: MozillaVPN";
 
   if (!allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT)) {
     logger.error() << "Ruleset failed: allowTrafficTo DNS Server";
     disableKillSwitch();
     return false;
   }
-  logger.log() << "Ruleset applied: allowTrafficTo: DNS-Server";
+  logger.debug() << "Ruleset applied: allowTrafficTo: DNS-Server";
 
-  logger.log() << "Killswitch on! Rules:" << m_activeRules.length();
+  logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
 }
 
@@ -341,13 +341,13 @@ bool WindowsFirewall::disableKillSwitch() {
     return false;
   }
   m_activeRules.clear();
-  logger.log() << "Firewall Disabled!";
+  logger.debug() << "Firewall Disabled!";
   return true;
 }
 
 bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
                                               int weight) {
-  logger.log() << "Adding hard Permit for " << exePath
+  logger.debug() << "Adding hard Permit for " << exePath
                << " Accessing All Devices: ";
   DWORD result = ERROR_SUCCESS;
   Q_ASSERT(weight <= 15);
@@ -476,7 +476,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
   if (result != ERROR_SUCCESS) {
     WindowsCommons::windowsLog(
         "Failed: Permit outbound IPv4 traffic on adapter");
-    logger.log() << "Result code " << result;
+    logger.debug() << "Result code " << result;
     return false;
   }
   m_activeRules.append(filterID);
@@ -490,7 +490,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
   if (result != ERROR_SUCCESS) {
     WindowsCommons::windowsLog(
         "Failed: Permit inbound IPv4 traffic on adapter");
-    logger.log() << "Result code " << result;
+    logger.debug() << "Result code " << result;
     return false;
   }
   m_activeRules.append(filterID);
@@ -504,7 +504,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
   if (result != ERROR_SUCCESS) {
     WindowsCommons::windowsLog(
         "Failed: Permit outbound IPv6 traffic on adapter");
-    logger.log() << "Result code " << result;
+    logger.debug() << "Result code " << result;
     return false;
   }
   m_activeRules.append(filterID);
@@ -533,7 +533,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
 
 bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
                                      int weight) {
-  logger.log() << "Requesting to allow Traffic to: " << targetIP.toString()
+  logger.debug() << "Requesting to allow Traffic to: " << targetIP.toString()
                << ":" << port;
   if (targetIP.protocol() == QAbstractSocket::IPv6Protocol) {
     // TODO: Implement it :)
@@ -775,7 +775,7 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
 
   result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "Permit Hyper-V => Hyper-V inbound failed " << result;
+    logger.debug() << "Permit Hyper-V => Hyper-V inbound failed " << result;
     return false;
   }
   m_activeRules.append(filterID);

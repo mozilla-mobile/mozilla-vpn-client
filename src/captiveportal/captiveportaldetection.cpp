@@ -30,7 +30,7 @@ void CaptivePortalDetection::initialize() {
 }
 
 void CaptivePortalDetection::stateChanged() {
-  logger.log() << "Controller/Stability state changed";
+  logger.debug() << "Controller/Stability state changed";
 
   if (!m_active) {
     return;
@@ -50,7 +50,7 @@ void CaptivePortalDetection::stateChanged() {
     return;
   }
   if (!m_shouldRun) {
-    logger.log() << "Captive Portal detection was already done for this "
+    logger.debug() << "Captive Portal detection was already done for this "
                     "instability, skipping.";
     return;
   }
@@ -59,7 +59,7 @@ void CaptivePortalDetection::stateChanged() {
 }
 
 void CaptivePortalDetection::detectCaptivePortal() {
-  logger.log() << "Start the captive portal detection";
+  logger.debug() << "Start the captive portal detection";
 
   // Quick return in case this method is called by the inspector even when the
   // feature is disabled.
@@ -97,7 +97,7 @@ void CaptivePortalDetection::detectCaptivePortal() {
 }
 
 void CaptivePortalDetection::settingsChanged() {
-  logger.log() << "Settings has changed";
+  logger.debug() << "Settings has changed";
   m_active = SettingsHolder::instance()->captivePortalAlert();
 
   if (!m_active) {
@@ -107,7 +107,7 @@ void CaptivePortalDetection::settingsChanged() {
 }
 
 void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
-  logger.log() << "Detection completed:" << detected;
+  logger.debug() << "Detection completed:" << detected;
 
   m_impl.reset();
   m_shouldRun = false;
@@ -122,7 +122,7 @@ void CaptivePortalDetection::detectionCompleted(CaptivePortalResult detected) {
 }
 
 void CaptivePortalDetection::captivePortalDetected() {
-  logger.log() << "Captive portal detected!";
+  logger.debug() << "Captive portal detected!";
 
   // Quick return in case this method is called by the inspector even when the
   // feature is disabled.
@@ -140,7 +140,7 @@ void CaptivePortalDetection::captivePortalDetected() {
 }
 
 void CaptivePortalDetection::captivePortalGone() {
-  logger.log() << "Portal gone";
+  logger.debug() << "Portal gone";
 
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() == MozillaVPN::StateMain &&
@@ -151,7 +151,7 @@ void CaptivePortalDetection::captivePortalGone() {
 }
 
 void CaptivePortalDetection::deactivationRequired() {
-  logger.log() << "The user wants to deactivate the vpn";
+  logger.debug() << "The user wants to deactivate the vpn";
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -162,7 +162,7 @@ void CaptivePortalDetection::deactivationRequired() {
 }
 
 void CaptivePortalDetection::activationRequired() {
-  logger.log() << "User wants to activate the vpn";
+  logger.debug() << "User wants to activate the vpn";
 
   MozillaVPN* vpn = MozillaVPN::instance();
 

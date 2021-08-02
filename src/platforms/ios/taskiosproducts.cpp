@@ -31,7 +31,7 @@ void TaskIOSProducts::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "IOS product request completed" << data;
+            logger.debug() << "IOS product request completed" << data;
 
             IAPHandler* ipaHandler = IAPHandler::instance();
             Q_ASSERT(ipaHandler);

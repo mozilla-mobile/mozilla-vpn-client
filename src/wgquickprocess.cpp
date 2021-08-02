@@ -79,7 +79,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 
 #ifdef QT_DEBUG
-  logger.log() << content;
+  logger.debug() << content;
 #endif
 
   QFile file(outputFile);
@@ -160,7 +160,7 @@ bool WgQuickProcess::run(
   arguments.append(configFile);
 
   QString app = scriptPath();
-  logger.log() << "Start:" << app << " - arguments:" << arguments;
+  logger.debug() << "Start:" << app << " - arguments:" << arguments;
 
   QProcess wgQuickProcess;
   wgQuickProcess.start(app, arguments);
@@ -170,12 +170,12 @@ bool WgQuickProcess::run(
     return false;
   }
 
-  logger.log() << "Execution finished" << wgQuickProcess.exitCode();
+  logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
 
-  logger.log() << "wg-quick stdout:" << Qt::endl
+  logger.debug() << "wg-quick stdout:" << Qt::endl
                << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
                << Qt::endl;
-  logger.log() << "wg-quick stderr:" << Qt::endl
+  logger.debug() << "wg-quick stderr:" << Qt::endl
                << qUtf8Printable(wgQuickProcess.readAllStandardError())
                << Qt::endl;
 

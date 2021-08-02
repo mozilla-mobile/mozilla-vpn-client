@@ -115,9 +115,9 @@ void Localizer::initialize() {
 }
 
 void Localizer::loadLanguage(const QString& code) {
-  logger.log() << "Loading language:" << code;
+  logger.debug() << "Loading language:" << code;
   if (!loadLanguageInternal(code)) {
-    logger.log() << "Loading default language (fallback)";
+    logger.debug() << "Loading default language (fallback)";
     loadLanguageInternal("en");
   }
 

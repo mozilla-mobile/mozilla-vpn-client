@@ -35,10 +35,10 @@ SurveyModel::SurveyModel() {
 SurveyModel::~SurveyModel() { MVPN_COUNT_DTOR(SurveyModel); }
 
 bool SurveyModel::fromJson(const QByteArray& s) {
-  logger.log() << "Surveys from json";
+  logger.debug() << "Surveys from json";
 
   if (!s.isEmpty() && m_rawJson == s) {
-    logger.log() << "Nothing has changed";
+    logger.debug() << "Nothing has changed";
     return true;
   }
 
@@ -54,7 +54,7 @@ bool SurveyModel::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  logger.log() << "Reading the survey list from settings";
+  logger.debug() << "Reading the survey list from settings";
 
   if (!settingsHolder->hasSurveys()) {
     return false;
@@ -97,7 +97,7 @@ bool SurveyModel::fromJsonInternal(const QByteArray& json) {
 }
 
 void SurveyModel::maybeShowSurvey() {
-  logger.log() << "Checking surveys";
+  logger.debug() << "Checking surveys";
 
   if (!m_currentSurveyId.isEmpty()) {
     return;

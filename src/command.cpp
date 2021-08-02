@@ -76,8 +76,8 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.log() << "MozillaVPN" << APP_VERSION;
-  logger.log() << "User-Agent:" << NetworkManager::userAgent();
+  logger.debug() << "MozillaVPN" << APP_VERSION;
+  logger.debug() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -96,8 +96,8 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.log() << "MozillaVPN" << APP_VERSION;
-  logger.log() << "User-Agent:" << NetworkManager::userAgent();
+  logger.debug() << "MozillaVPN" << APP_VERSION;
+  logger.debug() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -119,8 +119,8 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.log() << "MozillaVPN" << APP_VERSION;
-  logger.log() << "User-Agent:" << NetworkManager::userAgent();
+  logger.debug() << "MozillaVPN" << APP_VERSION;
+  logger.debug() << "User-Agent:" << NetworkManager::userAgent();
 
 #ifdef MVPN_WINDOWS
   SetProcessDPIAware();

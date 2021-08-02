@@ -63,7 +63,7 @@ IOSAuthenticationListener::~IOSAuthenticationListener() {
 
 void IOSAuthenticationListener::start(const QString& codeChallenge,
                                       const QString& codeChallengeMethod) {
-  logger.log() << "IOSAuthenticationListener initialize";
+  logger.debug() << "IOSAuthenticationListener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
                                    codeChallengeMethod));
@@ -72,7 +72,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
   url.setQuery(query);
 
 #ifdef QT_DEBUG
-  logger.log() << "Authentication URL:" << url.toString();
+  logger.debug() << "Authentication URL:" << url.toString();
 #endif
 
   if (session) {
@@ -105,7 +105,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
         }
 
         QUrl callbackUrl = QUrl::fromNSURL(callbackURL);
-        logger.log() << "Authentication completed";
+        logger.debug() << "Authentication completed";
 
         Q_ASSERT(callbackUrl.hasQuery());
 

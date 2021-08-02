@@ -64,7 +64,7 @@ int LinuxPingSender::createSocket() {
 LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
     : PingSender(parent), m_source(source) {
   MVPN_COUNT_CTOR(LinuxPingSender);
-  logger.log() << "LinuxPingSender(" + source + ") created";
+  logger.debug() << "LinuxPingSender(" + source + ") created";
 
   m_socket = createSocket();
   if (m_socket < 0) {

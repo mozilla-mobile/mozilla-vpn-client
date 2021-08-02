@@ -126,7 +126,7 @@ SettingsHolder::SettingsHolder()
 {
   MVPN_COUNT_CTOR(SettingsHolder);
 
-  logger.log() << "Creating SettingsHolder instance";
+  logger.debug() << "Creating SettingsHolder instance";
 
   Q_ASSERT(!s_instance);
   s_instance = this;
@@ -148,7 +148,7 @@ SettingsHolder::~SettingsHolder() {
 }
 
 void SettingsHolder::clear() {
-  logger.log() << "Clean up the settings";
+  logger.debug() << "Clean up the settings";
 
   m_settings.remove(SETTINGS_TOKEN);
   m_settings.remove(SETTINGS_SERVERS);
@@ -195,7 +195,7 @@ QString SettingsHolder::getReport() {
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::set(const type& value) {                         \
-    logger.log() << "Setting" << key << "to" << value;                  \
+    logger.debug() << "Setting" << key << "to" << value;                  \
     m_settings.setValue(key, value);                                    \
     emit signal(value);                                                 \
   }
@@ -257,7 +257,7 @@ GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::set(const type& value) {                         \
-    logger.log() << "Setting" << key;                                   \
+    logger.debug() << "Setting" << key;                                   \
     m_settings.setValue(key, value);                                    \
   }
 
@@ -412,10 +412,10 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
 
 SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
     const QString& dns) const {
-  logger.log() << "checking -> " << dns;
+  logger.debug() << "checking -> " << dns;
   QHostAddress address = QHostAddress(dns);
 
-  logger.log() << "is null " << address.isNull();
+  logger.debug() << "is null " << address.isNull();
 
   if (address.isNull()) {
     return UserDNSInvalid;

@@ -25,16 +25,16 @@ Logger logger(LOG_WINDOWS, "WindowsSplitTunnel");
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
   if (!isInstalled()) {
-    logger.log() << "Driver is not Installed, doing so";
+    logger.debug() << "Driver is not Installed, doing so";
     auto handle = installDriver();
     if (handle == INVALID_HANDLE_VALUE) {
       WindowsCommons::windowsLog("Failed to install Driver");
       return;
     }
-    logger.log() << "Driver installed";
+    logger.debug() << "Driver installed";
     CloseServiceHandle(handle);
   } else {
-    logger.log() << "Driver is installed";
+    logger.debug() << "Driver is installed";
   }
   initDriver();
 }
@@ -45,7 +45,7 @@ WindowsSplitTunnel::~WindowsSplitTunnel() {
 }
 
 void WindowsSplitTunnel::initDriver() {
-  logger.log() << "Try to open Split Tunnel Driver";
+  logger.debug() << "Try to open Split Tunnel Driver";
   // Open the Driver Symlink
   m_driver = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE, 0,
                          nullptr, OPEN_EXISTING, 0, nullptr);
@@ -62,7 +62,7 @@ void WindowsSplitTunnel::initDriver() {
     return;
   }
 
-  logger.log() << "Connected to the Driver";
+  logger.debug() << "Connected to the Driver";
   // Reset Driver as it has wfp handles probably >:(
 
   if (!WindowsFirewall::instance()->init()) {
@@ -74,10 +74,10 @@ void WindowsSplitTunnel::initDriver() {
 
   auto state = getState();
   if (state == STATE_UNKNOWN) {
-    logger.log() << "Cannot check if driver is initialized";
+    logger.debug() << "Cannot check if driver is initialized";
   }
   if (state >= STATE_INITIALIZED) {
-    logger.log() << "Driver already initialized: " << state;
+    logger.debug() << "Driver already initialized: " << state;
     return;
   }
   DWORD bytesReturned;
@@ -90,7 +90,7 @@ void WindowsSplitTunnel::initDriver() {
 
     return;
   }
-  logger.log() << "Driver initialized" << getState();
+  logger.debug() << "Driver initialized" << getState();
 }
 
 void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
@@ -100,7 +100,7 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
     return;
   }
 
-  logger.log() << "Pushing new Ruleset for Split-Tunnel " << state;
+  logger.debug() << "Pushing new Ruleset for Split-Tunnel " << state;
   auto config = generateAppConfiguration(appPaths);
 
   DWORD bytesReturned;
@@ -113,17 +113,17 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
     logger.error() << "Failed to set Config err code " << err;
     return;
   }
-  logger.log() << "New Configuration applied: " << getState();
+  logger.debug() << "New Configuration applied: " << getState();
 }
 
 void WindowsSplitTunnel::start(int inetAdapterIndex) {
   // To Start we need to send 2 things:
   // Network info (what is vpn what is network)
-  logger.log() << "Starting SplitTunnel";
+  logger.debug() << "Starting SplitTunnel";
   DWORD bytesReturned;
 
   if (getState() == STATE_STARTED) {
-    logger.log() << "Driver needs Init Call";
+    logger.debug() << "Driver needs Init Call";
     DWORD bytesReturned;
     auto ok = DeviceIoControl(m_driver, IOCTL_INITIALIZE, nullptr, 0, nullptr,
                               0, &bytesReturned, nullptr);
@@ -135,7 +135,7 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
 
   // Process Info (what is running already)
   if (getState() == STATE_INITIALIZED) {
-    logger.log() << "State is Init, requires process config";
+    logger.debug() << "State is Init, requires process config";
     auto config = generateProcessBlob();
     auto ok = DeviceIoControl(m_driver, IOCTL_REGISTER_PROCESSES, &config[0],
                               (DWORD)config.size(), nullptr, 0, &bytesReturned,
@@ -144,14 +144,14 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
       logger.error() << "Failed to set Process Config";
       return;
     }
-    logger.log() << "Set Process Config ok || new State:" << getState();
+    logger.debug() << "Set Process Config ok || new State:" << getState();
   }
 
   if (getState() == STATE_INITIALIZED) {
     logger.warning() << "Driver is still not ready after process list send";
     return;
   }
-  logger.log() << "Driver is  ready || new State:" << getState();
+  logger.debug() << "Driver is  ready || new State:" << getState();
 
   auto config = generateIPConfiguration(inetAdapterIndex);
   auto ok = DeviceIoControl(m_driver, IOCTL_REGISTER_IP_ADDRESSES, &config[0],
@@ -161,7 +161,7 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
     logger.error() << "Failed to set Network Config";
     return;
   }
-  logger.log() << "New Network Config Applied || new State:" << getState();
+  logger.debug() << "New Network Config Applied || new State:" << getState();
 }
 
 void WindowsSplitTunnel::stop() {
@@ -172,7 +172,7 @@ void WindowsSplitTunnel::stop() {
     logger.error() << "Stopping Split tunnel not successfull";
     return;
   }
-  logger.log() << "Stopping Split tunnel successfull";
+  logger.debug() << "Stopping Split tunnel successfull";
 }
 
 void WindowsSplitTunnel::reset() {
@@ -183,12 +183,12 @@ void WindowsSplitTunnel::reset() {
     logger.error() << "Reset Split tunnel not successfull";
     return;
   }
-  logger.log() << "Reset Split tunnel successfull";
+  logger.debug() << "Reset Split tunnel successfull";
 }
 
 DRIVER_STATE WindowsSplitTunnel::getState() {
   if (m_driver == INVALID_HANDLE_VALUE) {
-    logger.log() << "Can't query State from non Opened Driver";
+    logger.debug() << "Can't query State from non Opened Driver";
     return STATE_UNKNOWN;
   }
   DWORD bytesReturned;
@@ -215,7 +215,7 @@ std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(
     auto dosPath = convertPath(path);
     dosPaths.append(dosPath);
     cummulated_string_size += dosPath.toStdWString().size() * sizeof(wchar_t);
-    logger.log() << dosPath;
+    logger.debug() << dosPath;
   }
   size_t bufferSize = sizeof(CONFIGURATION_HEADER) +
                       (sizeof(CONFIGURATION_ENTRY) * appPaths.size()) +
@@ -269,18 +269,18 @@ void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
                                     IN6_ADDR* out_ipv6) {
   QNetworkInterface target =
       QNetworkInterface::interfaceFromIndex(adapterIndex);
-  logger.log() << "Getting adapter info for:" << target.humanReadableName();
+  logger.debug() << "Getting adapter info for:" << target.humanReadableName();
 
   // take the first v4/v6 Adress and convert to in_addr
   for (auto address : target.addressEntries()) {
     if (address.ip().protocol() == QAbstractSocket::IPv4Protocol) {
       auto adrr = address.ip().toString();
       std::wstring wstr = adrr.toStdWString();
-      logger.log() << "IpV4" << adrr;
+      logger.debug() << "IpV4" << adrr;
       PCWSTR w_str_ip = wstr.c_str();
       auto ok = InetPtonW(AF_INET, w_str_ip, out_ipv4);
       if (ok != 1) {
-        logger.log() << "Ipv4 Conversation error" << WSAGetLastError();
+        logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
       }
       break;
     }
@@ -289,7 +289,7 @@ void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     if (address.ip().protocol() == QAbstractSocket::IPv6Protocol) {
       auto adrr = address.ip().toString();
       std::wstring wstr = adrr.toStdWString();
-      logger.log() << "IpV6" << adrr;
+      logger.debug() << "IpV6" << adrr;
       PCWSTR w_str_ip = wstr.c_str();
       auto ok = InetPtonW(AF_INET6, w_str_ip, out_ipv6);
       if (ok != 1) {
@@ -333,11 +333,11 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob() {
 
   auto process_list = processes.values();
   if (process_list.isEmpty()) {
-    logger.log() << "Process Snapshot list was empty";
+    logger.debug() << "Process Snapshot list was empty";
     return std::vector<uint8_t>(0);
   }
 
-  logger.log() << "Reading Processes NUM: " << process_list.size();
+  logger.debug() << "Reading Processes NUM: " << process_list.size();
   // Determine the Size of the outBuffer:
   size_t totalStringSize = 0;
 
@@ -444,7 +444,7 @@ bool WindowsSplitTunnel::uninstallDriver() {
       OpenService(serviceManager, DRIVER_SERVICE_NAME, GENERIC_READ);
   auto result = DeleteService(servicehandle);
   if (result) {
-    logger.log() << "Split Tunnel Driver Removed";
+    logger.debug() << "Split Tunnel Driver Removed";
   }
   return result;
 }

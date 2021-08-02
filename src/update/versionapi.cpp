@@ -18,12 +18,12 @@ Logger logger(LOG_NETWORKING, "VersionApi");
 
 VersionApi::VersionApi(QObject* parent) : Updater(parent) {
   MVPN_COUNT_CTOR(VersionApi);
-  logger.log() << "VersionApi created";
+  logger.debug() << "VersionApi created";
 }
 
 VersionApi::~VersionApi() {
   MVPN_COUNT_DTOR(VersionApi);
-  logger.log() << "VersionApi released";
+  logger.debug() << "VersionApi released";
 }
 
 void VersionApi::start() {
@@ -36,10 +36,10 @@ void VersionApi::start() {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Request completed";
+            logger.debug() << "Request completed";
 
             if (!processData(data)) {
-              logger.log() << "Ignore failure.";
+              logger.debug() << "Ignore failure.";
             }
           });
 
@@ -58,7 +58,7 @@ bool VersionApi::processData(const QByteArray& data) {
   QString platformKey = Constants::PLATFORM_NAME;
 
   if (!obj.contains(platformKey)) {
-    logger.log() << "No key" << platformKey;
+    logger.debug() << "No key" << platformKey;
     return false;
   }
 
@@ -102,18 +102,18 @@ bool VersionApi::processData(const QByteArray& data) {
     }
   }
 
-  logger.log() << "Latest version:" << latestVersion;
-  logger.log() << "Minimum version:" << minimumVersion;
-  logger.log() << "Current version:" << currentVersion;
+  logger.debug() << "Latest version:" << latestVersion;
+  logger.debug() << "Minimum version:" << minimumVersion;
+  logger.debug() << "Current version:" << currentVersion;
 
   if (compareVersions(currentVersion, minimumVersion) == -1) {
-    logger.log() << "update required";
+    logger.debug() << "update required";
     emit updateRequired();
     return true;
   }
 
   if (compareVersions(currentVersion, latestVersion) == -1) {
-    logger.log() << "Update recommended.";
+    logger.debug() << "Update recommended.";
     emit updateRecommended();
   }
   return true;

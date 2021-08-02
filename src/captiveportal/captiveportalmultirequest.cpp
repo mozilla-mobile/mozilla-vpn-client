@@ -42,7 +42,7 @@ void CaptivePortalMultiRequest::createRequest() {
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
   connect(request, &CaptivePortalRequest::completed,
           [this](CaptivePortalResult detected) {
-            logger.log() << "Captive portal detection:" << detected;
+            logger.debug() << "Captive portal detection:" << detected;
             onResult(detected);
           });
 

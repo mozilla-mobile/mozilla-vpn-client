@@ -23,7 +23,7 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
 }
 
 void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
-  logger.log() << "Resolving the captive portal detector URL";
+  logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
   connect(request, &NetworkRequest::requestFailed,
@@ -35,7 +35,7 @@ void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, vpn](const QByteArray& data) {
-            logger.log() << "Lookup completed";
+            logger.debug() << "Lookup completed";
             if (vpn->captivePortal()->fromJson(data)) {
               vpn->captivePortal()->writeSettings();
             }

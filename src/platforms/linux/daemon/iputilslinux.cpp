@@ -22,12 +22,12 @@ Logger logger(LOG_LINUX, "IPUtilsLinux");
 
 IPUtilsLinux::IPUtilsLinux(QObject* parent) : IPUtils(parent) {
   MVPN_COUNT_CTOR(IPUtilsLinux);
-  logger.log() << "IPUtilsLinux created.";
+  logger.debug() << "IPUtilsLinux created.";
 }
 
 IPUtilsLinux::~IPUtilsLinux() {
   MVPN_COUNT_DTOR(IPUtilsLinux);
-  logger.log() << "IPUtilsLinux destroyed.";
+  logger.debug() << "IPUtilsLinux destroyed.";
 }
 
 bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {

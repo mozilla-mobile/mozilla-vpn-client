@@ -33,7 +33,7 @@ class CommandLinuxDaemon final : public Command {
       dbus->setAdaptor(adaptor);
 
       QDBusConnection connection = QDBusConnection::systemBus();
-      logger.log() << "Connecting to DBus...";
+      logger.debug() << "Connecting to DBus...";
 
       if (!connection.registerService("org.mozilla.vpn.dbus") ||
           !connection.registerObject("/", dbus)) {
@@ -49,7 +49,7 @@ class CommandLinuxDaemon final : public Command {
         qApp->quit();
       });
 
-      logger.log() << "Ready!";
+      logger.debug() << "Ready!";
       return qApp->exec();
     });
   }

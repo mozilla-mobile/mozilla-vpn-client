@@ -57,7 +57,7 @@ Logger logger(LOG_LINUX, "WireguardUtilsLinux");
 
 void NetfilterLogger(int level, const char* msg) {
   Q_UNUSED(level);
-  logger.log() << "NetfilterGo:" << msg;
+  logger.debug() << "NetfilterGo:" << msg;
 }
 }  // namespace
 
@@ -96,7 +96,7 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
     }
   }
 
-  logger.log() << "WireguardUtilsLinux created.";
+  logger.debug() << "WireguardUtilsLinux created.";
 }
 
 WireguardUtilsLinux::~WireguardUtilsLinux() {
@@ -105,7 +105,7 @@ WireguardUtilsLinux::~WireguardUtilsLinux() {
   if (m_nlsock >= 0) {
     close(m_nlsock);
   }
-  logger.log() << "WireguardUtilsLinux destroyed.";
+  logger.debug() << "WireguardUtilsLinux destroyed.";
 }
 
 bool WireguardUtilsLinux::interfaceExists() {
@@ -535,7 +535,7 @@ void WireguardUtilsLinux::nlsockReady() {
     }
     struct nlmsgerr* err = (struct nlmsgerr*)NLMSG_DATA(nlmsg);
     if (err->error != 0) {
-      logger.log() << "Netlink request failed:" << strerror(-err->error);
+      logger.debug() << "Netlink request failed:" << strerror(-err->error);
     }
     nlmsg = NLMSG_NEXT(nlmsg, len);
   }
@@ -544,7 +544,7 @@ void WireguardUtilsLinux::nlsockReady() {
 // static
 bool WireguardUtilsLinux::setupCgroupClass(const QString& path,
                                            unsigned long classid) {
-  logger.log() << "Creating control group:" << path;
+  logger.debug() << "Creating control group:" << path;
   int flags = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   int err = mkdir(qPrintable(path), flags);
   if ((err < 0) && (errno != EEXIST)) {

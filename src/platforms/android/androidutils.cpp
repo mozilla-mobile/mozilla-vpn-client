@@ -68,7 +68,7 @@ AndroidUtils::~AndroidUtils() {
 
 void AndroidUtils::startAuthentication(AuthenticationListener* listener,
                                        const QUrl& url) {
-  logger.log() << "Open the authentication view";
+  logger.debug() << "Open the authentication view";
 
   Q_ASSERT(!m_listener);
   m_listener = listener;
@@ -82,11 +82,11 @@ void AndroidUtils::startAuthentication(AuthenticationListener* listener,
 }
 
 bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
-  logger.log() << "Maybe complete authentication - url:" << url;
+  logger.debug() << "Maybe complete authentication - url:" << url;
 
   Q_ASSERT(m_listener);
 
-  logger.log() << "AndroidWebView is about to load" << url;
+  logger.debug() << "AndroidWebView is about to load" << url;
 
   QString apiUrl = NetworkRequest::apiBaseUrl();
   if (!url.startsWith(apiUrl)) {

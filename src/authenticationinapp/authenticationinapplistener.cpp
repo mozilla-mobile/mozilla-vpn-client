@@ -37,7 +37,7 @@ AuthenticationInAppListener::~AuthenticationInAppListener() {
 
 void AuthenticationInAppListener::start(const QString& codeChallenge,
                                         const QString& codeChallengeMethod) {
-  logger.log() << "AuthenticationInAppListener initialize";
+  logger.debug() << "AuthenticationInAppListener initialize";
 
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
@@ -55,7 +55,7 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 
   connect(request, &NetworkRequest::requestRedirected,
           [this](NetworkRequest* request, const QUrl& url) {
-            logger.log() << "Redirect received";
+            logger.debug() << "Redirect received";
             m_urlQuery = QUrlQuery(url.query());
 
             if (!m_urlQuery.hasQueryItem("client_id")) {
@@ -100,7 +100,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Account status checked" << data;
+            logger.debug() << "Account status checked" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -110,7 +110,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 }
 
 void AuthenticationInAppListener::accountChecked(bool exists) {
-  logger.log() << "Account checked:" << exists;
+  logger.debug() << "Account checked:" << exists;
 
   if (exists) {
     AuthenticationInApp::instance()->requestState(
@@ -158,7 +158,7 @@ void AuthenticationInAppListener::setPassword(const QString& password) {
 }
 
 void AuthenticationInAppListener::signIn(const QString& verificationCode) {
-  logger.log() << "Sign in";
+  logger.debug() << "Sign in";
 
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
       this, m_emailAddress, m_authPw, verificationCode, m_urlQuery);
@@ -171,7 +171,7 @@ void AuthenticationInAppListener::signIn(const QString& verificationCode) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Sign in completed" << data;
+            logger.debug() << "Sign in completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -183,7 +183,7 @@ void AuthenticationInAppListener::signIn(const QString& verificationCode) {
 }
 
 void AuthenticationInAppListener::signUp() {
-  logger.log() << "Sign up";
+  logger.debug() << "Sign up";
 
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
       this, m_emailAddress, m_authPw, m_urlQuery);
@@ -196,7 +196,7 @@ void AuthenticationInAppListener::signUp() {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Sign up completed" << data;
+            logger.debug() << "Sign up completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -208,7 +208,7 @@ void AuthenticationInAppListener::signUp() {
 }
 
 void AuthenticationInAppListener::emailVerificationNeeded() {
-  logger.log() << "Email varification needed";
+  logger.debug() << "Email varification needed";
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateEmailVerification, this);
 
@@ -222,11 +222,11 @@ void AuthenticationInAppListener::emailVerificationNeeded() {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-          [](const QByteArray& data) { logger.log() << "Email send" << data; });
+          [](const QByteArray& data) { logger.debug() << "Email send" << data; });
 }
 
 void AuthenticationInAppListener::verifyEmailCode(const QString& code) {
-  logger.log() << "Sign in (verify email code received)";
+  logger.debug() << "Sign in (verify email code received)";
   Q_ASSERT(m_sessionToken.isEmpty());
 
   AuthenticationInApp::instance()->requestState(
@@ -235,7 +235,7 @@ void AuthenticationInAppListener::verifyEmailCode(const QString& code) {
 }
 
 void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
-  logger.log() << "Sign in (verify session code by email received)";
+  logger.debug() << "Sign in (verify session code by email received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
@@ -250,13 +250,13 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Verification completed" << data;
+            logger.debug() << "Verification completed" << data;
             finalizeSignInOrUp();
           });
 }
 
 void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
-  logger.log() << "Resend verification code";
+  logger.debug() << "Resend verification code";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
@@ -270,11 +270,11 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
 
   connect(
       request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.log() << "Code resent" << data; });
+      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
 }
 
 void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
-  logger.log() << "Sign in (verify session code by totp received)";
+  logger.debug() << "Sign in (verify session code by totp received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
@@ -288,7 +288,7 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Verification completed" << data;
+            logger.debug() << "Verification completed" << data;
             finalizeSignInOrUp();
           });
 }
@@ -296,10 +296,10 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 void AuthenticationInAppListener::signInOrUpCompleted(
     const QString& sessionToken, bool accountVerified,
     const QString& verificationMethod) {
-  logger.log() << "Session generated";
+  logger.debug() << "Session generated";
 
 #ifdef QT_DEBUG
-  logger.log() << "FxA Session Token:" << sessionToken;
+  logger.debug() << "FxA Session Token:" << sessionToken;
 #endif
 
   // Let's store it to delete it at the DTOR.
@@ -339,7 +339,7 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Oauth code creation completed" << data;
+            logger.debug() << "Oauth code creation completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isNull()) {

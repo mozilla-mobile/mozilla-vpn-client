@@ -36,12 +36,12 @@ Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
 
 Updater::Updater(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Updater);
-  logger.log() << "Updater created";
+  logger.debug() << "Updater created";
 }
 
 Updater::~Updater() {
   MVPN_COUNT_DTOR(Updater);
-  logger.log() << "Updater released";
+  logger.debug() << "Updater released";
 }
 
 // static

@@ -17,7 +17,7 @@ CloseEventHandler::CloseEventHandler() { MVPN_COUNT_CTOR(CloseEventHandler); }
 CloseEventHandler::~CloseEventHandler() { MVPN_COUNT_DTOR(CloseEventHandler); }
 
 bool CloseEventHandler::eventHandled() {
-  logger.log() << "Close event handled";
+  logger.debug() << "Close event handled";
 
 #if defined(MVPN_ANDROID)
   for (int i = m_layers.length() - 1; i >= 0; --i) {
@@ -69,7 +69,7 @@ bool CloseEventHandler::eventHandled() {
 }
 
 void CloseEventHandler::addStackView(const QVariant& stackView) {
-  logger.log() << "Add stack view";
+  logger.debug() << "Add stack view";
 
   QQuickItem* item = qobject_cast<QQuickItem*>(stackView.value<QObject*>());
   Q_ASSERT(item);
@@ -79,7 +79,7 @@ void CloseEventHandler::addStackView(const QVariant& stackView) {
 }
 
 void CloseEventHandler::addView(const QVariant& view) {
-  logger.log() << "Add view";
+  logger.debug() << "Add view";
 
   QQuickItem* item = qobject_cast<QQuickItem*>(view.value<QObject*>());
   Q_ASSERT(item);
@@ -89,7 +89,7 @@ void CloseEventHandler::addView(const QVariant& view) {
 }
 
 void CloseEventHandler::removeItem(QObject* item) {
-  logger.log() << "Remove item";
+  logger.debug() << "Remove item";
   Q_ASSERT(item);
 
 #ifdef QT_DEBUG

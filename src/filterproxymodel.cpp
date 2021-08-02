@@ -42,7 +42,7 @@ void FilterProxyModel::setSource(QAbstractListModel* sourceModel) {
 bool FilterProxyModel::filterAcceptsRow(
     int source_row, const QModelIndex& source_parent) const {
   if (m_filterCallback.isNull()) {
-    logger.log() << "No filter callback set!";
+    logger.debug() << "No filter callback set!";
     return true;
   }
 

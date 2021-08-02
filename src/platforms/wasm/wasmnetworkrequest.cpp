@@ -47,7 +47,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 
   MVPN_COUNT_CTOR(NetworkRequest);
 
-  logger.log() << "Network request created";
+  logger.debug() << "Network request created";
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
