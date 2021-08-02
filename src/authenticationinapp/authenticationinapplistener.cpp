@@ -85,7 +85,7 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 }
 
 void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
-  logger.debug() << "Authentication starting:" << logger.sensitivedebug(emailAddress);
+  logger.debug() << "Authentication starting:" << logger.sensitive(emailAddress);
 
   m_emailAddress = emailAddress;
 
