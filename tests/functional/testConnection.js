@@ -70,7 +70,7 @@ describe('Connectivity', function() {
           'VPN is on';
     });
 
-    assert((await vpn.getElementProperty('controllerSubTitle', 'text'))
+    assert((await vpn.getElementProperty('secureAndPrivateSubtitle', 'text'))
                .startsWith('Secure and private '));
 
     await vpn.waitForCondition(() => {

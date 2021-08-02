@@ -14,10 +14,12 @@ VPNButtonBase {
     property alias buttonTextColor: buttonText.color
     property var colorScheme
     property var uiState:Theme.uiState
+    property var isCancelBtn
 
     enabled: popup.visible
     Layout.fillWidth: true
     Layout.fillHeight: true
+    Layout.preferredHeight: Theme.rowHeight
     Accessible.name: buttonText.text
     state: "state-default"
 
@@ -35,12 +37,11 @@ VPNButtonBase {
     contentItem: VPNInterLabel {
         id: buttonText
 
+        font.family: isCancelBtn ? Theme.fontInterFamily : Theme.fontBoldFamily
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
-
     }
-
 }
 

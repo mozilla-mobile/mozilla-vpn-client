@@ -61,11 +61,13 @@ IOSAuthenticationListener::~IOSAuthenticationListener() {
   MVPN_COUNT_DTOR(IOSAuthenticationListener);
 }
 
-void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) {
-  Q_UNUSED(vpn);
-
+void IOSAuthenticationListener::start(const QString& codeChallenge,
+                                      const QString& codeChallengeMethod) {
   logger.log() << "IOSAuthenticationListener initialize";
 
+  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
+                                   codeChallengeMethod));
+  QUrlQuery query(url.query());
   query.addQueryItem("platform", "ios");
   url.setQuery(query);
 

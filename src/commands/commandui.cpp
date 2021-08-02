@@ -3,12 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandui.h"
+#include "apppermission.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
 #include "featurelist.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
+#include "l18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -18,8 +21,6 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
-
-#include "apppermission.h"
 
 #ifdef MVPN_LINUX
 #  include "eventlistener.h"
@@ -366,6 +367,22 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 #endif
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNAuthInApp",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = AuthenticationInApp::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNl18n",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = L18nStrings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
 
     qmlRegisterType<FilterProxyModel>("Mozilla.VPN", 1, 0,
                                       "VPNFilterProxyModel");

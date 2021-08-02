@@ -10,6 +10,15 @@ DEFINES += BUILD_ID=\\\"$$BUILD_ID\\\"
     DEFINES += MVPN_EXTRA_USERAGENT=\\\"$$MVPN_EXTRA_USERAGENT\\\"
 }
 
+CCACHE_BIN = $$system(which ccache)
+!isEmpty(CCACHE_BIN) {
+    message(Using ccache)
+    load(ccache)
+    QMAKE_CXXFLAGS +=-g -fdebug-prefix-map=$(shell pwd)=.
+
+
+}
+
 QT += network
 QT += quick
 QT += widgets
@@ -23,7 +32,8 @@ INCLUDEPATH += \
             hacl-star \
             hacl-star/kremlin \
             hacl-star/kremlin/minimal \
-            ../glean/telemetry
+            ../glean/telemetry \
+            ../translations/generated
 
 DEPENDPATH  += $${INCLUDEPATH}
 
@@ -35,6 +45,8 @@ UI_DIR = .ui
 SOURCES += \
         apppermission.cpp \
         authenticationlistener.cpp \
+        authenticationinapp/authenticationinapp.cpp \
+        authenticationinapp/authenticationinapplistener.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportaldetectionimpl.cpp \
@@ -68,9 +80,12 @@ SOURCES += \
         hacl-star/Hacl_Chacha20Poly1305_32.c \
         hacl-star/Hacl_Curve25519_51.c \
         hacl-star/Hacl_Poly1305_32.c \
+        hawkauth.cpp \
+        hkdf.cpp \
         ipaddress.cpp \
         ipaddressrange.cpp \
         ipfinder.cpp \
+        l18nstringsimpl.cpp \
         leakdetector.cpp \
         localizer.cpp \
         logger.cpp \
@@ -130,6 +145,8 @@ HEADERS += \
         apppermission.h \
         applistprovider.h \
         authenticationlistener.h \
+        authenticationinapp/authenticationinapp.h \
+        authenticationinapp/authenticationinapplistener.h \
         bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -163,6 +180,8 @@ HEADERS += \
         featurelist.h \
         filterproxymodel.h \
         fontloader.h \
+        hawkauth.h \
+        hkdf.h \
         ipaddress.h \
         ipaddressrange.h \
         ipfinder.h \
@@ -291,6 +310,11 @@ balrog {
 
     SOURCES += update/balrog.cpp
     HEADERS += update/balrog.h
+}
+
+AIP {
+    message(Authentication in-app enabled)
+    DEFINES += MVPN_AIP
 }
 
 DUMMY {
@@ -848,6 +872,13 @@ else {
 }
 
 RESOURCES += $$PWD/../translations/servers.qrc
+
+exists($$PWD/../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 exists($$PWD/../translations/translations.pri) {
     include($$PWD/../translations/translations.pri)

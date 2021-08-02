@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "featurelist.h"
 #include "gleansample.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -352,25 +353,34 @@ void MozillaVPN::getStarted() {
   authenticate();
 }
 
-void MozillaVPN::authenticate() {
+void MozillaVPN::authenticate(
+    MozillaVPN::AuthenticationType authenticationType) {
   logger.log() << "Authenticate";
 
   setState(StateAuthenticating);
 
   hideAlert();
 
+  if (authenticationType == DefaultAuthentication) {
+    authenticationType = FeatureList::instance()->authenticationInApp()
+                             ? AuthenticationInApp
+                             : AuthenticationInBrowser;
+  }
+
   if (m_userAuthenticated) {
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
-    connect(lo, &LogoutObserver::ready, this, &MozillaVPN::authenticate,
-            Qt::QueuedConnection);
+    connect(
+        lo, &LogoutObserver::ready, this,
+        [&] { authenticate(authenticationType); }, Qt::QueuedConnection);
     return;
   }
 
   emit triggerGleanSample(GleanSample::authenticationStarted);
 
   scheduleTask(new TaskHeartbeat());
-  scheduleTask(new TaskAuthenticate());
+
+  scheduleTask(new TaskAuthenticate(authenticationType));
 }
 
 void MozillaVPN::abortAuthentication() {
@@ -800,9 +810,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       break;
 
     case ErrorHandler::AuthenticationError:
-      if (m_userAuthenticated) {
-        alert = AuthenticationFailedAlert;
-      }
+      alert = AuthenticationFailedAlert;
       break;
 
     case ErrorHandler::ControllerError:

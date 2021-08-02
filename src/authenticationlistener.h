@@ -6,21 +6,25 @@
 #define AUTHENTICATIONLISTENER_H
 
 #include "errorhandler.h"
+#include "mozillavpn.h"
 
 #include <QObject>
-
-class MozillaVPN;
-class QUrl;
-class QUrlQuery;
+#include <QUrl>
 
 class AuthenticationListener : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AuthenticationListener)
 
  public:
-  static AuthenticationListener* create(QObject* parent);
+  static AuthenticationListener* create(
+      QObject* parent, MozillaVPN::AuthenticationType authenticationType);
 
-  virtual void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) = 0;
+  virtual void start(const QString& codeChallenge,
+                     const QString& codeChallengeMethod) = 0;
+
+  static QUrl createAuthenticationUrl(
+      MozillaVPN::AuthenticationType authenticationType,
+      const QString& codeChallenge, const QString& codeChallengeMethod);
 
  signals:
   void completed(const QString& code);

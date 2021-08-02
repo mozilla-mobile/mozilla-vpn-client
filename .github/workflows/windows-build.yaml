@@ -121,7 +121,12 @@ jobs:
           cp /c/MozillaVPNBuild/bin/libGLESv2.dll unsigned
           cp /c/MozillaVPNBuild/*.msm unsigned
           cp windows/tunnel/x64/tunnel.dll unsigned
+          cp windows/tunnel/.deps/wintun/bin/amd64/wintun.dll unsigned
           cp balrog/x64/balrog.dll unsigned
+          cp windows/split-tunnel/mullvad-split-tunnel.cat unsigned
+          cp windows/split-tunnel/mullvad-split-tunnel.inf unsigned
+          cp windows/split-tunnel/mullvad-split-tunnel.sys unsigned
+          cp windows/split-tunnel/WdfCoinstaller01011.dll unsigned
           cp *.exe unsigned
 
       - name: Upload app

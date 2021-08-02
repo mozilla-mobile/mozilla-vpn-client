@@ -27,13 +27,12 @@ AndroidAuthenticationListener::~AndroidAuthenticationListener() {
   MVPN_COUNT_DTOR(AndroidAuthenticationListener);
 }
 
-void AndroidAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
-                                          QUrlQuery& query) {
-  Q_UNUSED(vpn);
-
+void AndroidAuthenticationListener::start(const QString& codeChallenge,
+                                          const QString& codeChallengeMethod) {
   logger.log() << "Authenticationlistener initialize";
 
-  url.setQuery(query);
+  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
+                                   codeChallenge, codeChallengeMethod));
 
   QAndroidJniObject activity = QtAndroid::androidActivity();
   jboolean supported = QAndroidJniObject::callStaticMethod<jboolean>(
@@ -45,7 +44,7 @@ void AndroidAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   }
   DesktopAuthenticationListener* legacyAuth;
   legacyAuth = new DesktopAuthenticationListener(this);
-  legacyAuth->start(vpn, url, query);
+  legacyAuth->start(codeChallenge, codeChallengeMethod);
 
   connect(legacyAuth, &AuthenticationListener::completed, this,
           &AndroidAuthenticationListener::completed);

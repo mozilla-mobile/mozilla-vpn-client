@@ -39,6 +39,7 @@ android/*/.cxx/
 !android/*/*/Makefile 
 xcode.xconfig
 .gradle/
+.gradle_cache/
 
 *.ts
 tests/unit/tests
@@ -58,6 +59,7 @@ macos/gobridge/wireguard-go-version.h
 .vscode/
 MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
+*.autosave
 
 #Windows 
 .deps
@@ -105,4 +107,6 @@ translations/*/*.ts
 translations/*/*.qm
 translations/*/locversion.plist
 translations/*.pri
+translations/generated/*.cpp
+translations/generated/*.h
 macos/pkg/Resources/*.lproj
