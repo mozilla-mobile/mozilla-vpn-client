@@ -45,26 +45,6 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        z: 1
-
-        VPNTextField {
-            Layout.fillWidth: true
-        }
-
-//        VPNTextArea {
-//            placeholderText: "test"
-
-//            Layout.fillWidth: true
-//        }
-
-//        VPNComboBox {
-//            id: dropDown
-//            placeholderText: qsTrId("vpn.feedbackForm.chooseCategory")
-//            model: VPNFeedbackCategoryModel
-//        }
-    }
 
     GridLayout {
         id: col

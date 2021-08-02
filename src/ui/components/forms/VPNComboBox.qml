@@ -12,6 +12,7 @@ import "../"
 
 ComboBox {
     property var placeholderText: ""
+    property bool showInteractionStates: true
     textRole: "name"
     valueRole: "value"
     id: combo
@@ -129,7 +130,8 @@ ComboBox {
     }
 
     VPNInputStates {
-        id: comboBoxState
-        targetItem: combo
+        id: comboStates
+        itemToTarget: combo
     }
+
 }
