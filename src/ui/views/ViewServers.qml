@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 Item {
@@ -28,14 +29,13 @@ Item {
         height: parent.height - menu.height
         anchors.top: menu.bottom
         width: parent.width
-        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        onActiveFocusChanged: if (focus && lastFocusedItemIdx) countriesRepeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
         Accessible.name: menu.title
         Accessible.role: Accessible.List
 
         ButtonGroup {
             id: radioButtonGroup
         }
-
 
         VPNFlickable {
             id: vpnFlickable
@@ -47,17 +47,17 @@ Item {
             Rectangle {
                 id: verticalSpacer
 
-                height: Theme.windowMargin / 2
+                height: Theme.vSpacing
                 width: parent.width
                 color: "transparent"
             }
 
             NumberAnimation on contentY {
-                        id: scrollAnimation
+                id: scrollAnimation
 
-                        duration: 200
-                        easing.type: Easing.OutQuad
-                    }
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
 
             Column {
                 id: serverList
@@ -73,8 +73,8 @@ Item {
 
                     const serverListYCenter = vpnFlickable.height / 2;
 
-                    for (let idx = 0; idx < repeater.count; idx++) {
-                        const countryItem = repeater.itemAt(idx);
+                    for (let idx = 0; idx < countriesRepeater.count; idx++) {
+                        const countryItem = countriesRepeater.itemAt(idx);
                         const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
                         if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
                             continue;
@@ -88,9 +88,41 @@ Item {
                     }
                 }
 
+                VPNSearchBar {
+                    id: serverSearchInput
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: Theme.vSpacing
+                    anchors.rightMargin: Theme.vSpacing
+                    enabled: true
+                    height: Theme.rowHeight
+                    onTextChanged: () => {
+                        countriesModel.invalidate();
+                    }
+                    placeholderText: "Search countries"
+                    stateError: countriesRepeater.count === 0
+                }
+
+                VPNFilterProxyModel {
+                    id: countriesModel
+                    source: VPNServerCountryModel
+                    filterCallback: country => {
+                        const searchString = serverSearchInput.text.toLowerCase();
+                        const includesSearchString = nameString => (
+                            nameString.toLowerCase().includes(searchString)
+                        );
+                        const includesName = includesSearchString(country.name);
+                        const includesLocalizedName = includesSearchString(country.localizedName);
+                        const matchesCountryCode = country.code.toLowerCase() === searchString;
+
+                        return includesName || includesLocalizedName || matchesCountryCode;
+                    }
+                }
+
                 Repeater {
-                    id: repeater
-                    model: VPNServerCountryModel
+                    id: countriesRepeater
+                    model: countriesModel
                     delegate: VPNServerCountry{}
                 }
             }
