@@ -23,13 +23,6 @@ class AppPermission final : public QAbstractListModel {
     AppEnabledRole,
   };
 
-  enum NotificationType{
-    Success,
-    MissingApp
-  };
-  Q_ENUM(NotificationType);
-
-
   class AppDescription {
    public:
     AppDescription(const QString& appId, const QString& appName = "") {
@@ -74,7 +67,7 @@ class AppPermission final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
  signals:
   void readyChanged();
-  void notification(AppPermission::NotificationType type, const QString& message);
+  void notification(const QString& type, const QString& message, const QString& actionMessage = "");
  private slots:
   void receiveAppList(const QMap<QString, QString>& applist);
 

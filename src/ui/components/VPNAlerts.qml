@@ -16,7 +16,7 @@ ColumnLayout {
     Layout.fillHeight: false
     visible: VPNSurveyModel.hasSurvey || VPN.updateRecommended
 
-    VPNToastBase {
+    VPNAlert {
         id: updateAlert
         isLayout: true
         alertType: alertTypes.info
@@ -34,7 +34,7 @@ ColumnLayout {
         }
     }
 
-    VPNToastBase {
+    VPNAlert {
         id: surveyAlert
         isLayout: true
         alertType: alertTypes.success

@@ -28,6 +28,9 @@ Rectangle {
     property var alertActionText: ""
     // Auto Hide the Alert after X secounds (0 == infinte)
     property var duration: 0
+    // Delete itself after closing
+    property var destructive: false
+
 
     color: style.alertColor
     Behavior on color {
@@ -55,6 +58,10 @@ Rectangle {
             y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
+        }
+        if(toastBox.duration > 0){
+            console.log("Toasbox timer start")
+            autoHideTimer.start()
         }
     }
 
@@ -132,7 +139,7 @@ Rectangle {
     ]
 
     Timer {
-          interval: duration
+          interval: toastBox.duration
           id: autoHideTimer
           running: false
           repeat: false
@@ -311,6 +318,11 @@ Rectangle {
         }
 
     }
+    function remove(){
+        if(toastBox.destructive){
+            toastBox.destroy(100)
+        }
+    }
 
     SequentialAnimation {
         property var closeTarget
@@ -333,12 +345,7 @@ Rectangle {
             property: "visible"
             value: "false"
         }
+        ScriptAction { script: remove();}
     }
 
 }
-
-/*##^##
-Designer {
-    D{i:0;formeditorColor:"#ffffff";width:480}
-}
-##^##*/

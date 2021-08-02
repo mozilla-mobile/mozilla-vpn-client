@@ -7,7 +7,7 @@ import QtQuick.Controls 2.5
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
 
-VPNToastBase {
+VPNAlert {
     id: alertBox
     alertType: alertTypes.error
 

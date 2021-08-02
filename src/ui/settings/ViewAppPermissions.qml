@@ -50,12 +50,15 @@ Item {
             }
         }
 
-        Item{
+        ColumnLayout{
             id:messageBox
-            visible: toast.visible || vpnOnAlert.visible
+            visible: true
             anchors.top: parent.top
             anchors.topMargin: Theme.windowMargin
-            width: toggleCard.width
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            width: toggleCard.width-16
+
             height:(vpnOnAlert.visible? vpnOnAlert.height:0)+(toast.visible? toast.height:0)
 
             VPNCheckBoxAlert {
@@ -69,29 +72,21 @@ Item {
                 errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
             }
 
-            VPNToastBase{
-                property bool notificationPresent: false
-                id: toast
-                anchors.fill: parent
-                width: 300
-                height: Theme.rowHeight
-                visible: Qt.binding(function() {return notificationPresent})
-                isLayout:true
-                alertType: alertTypes.warning
-                alertText: "Apps Missing"
-                alertActionText: "Add them all!"
-                onActionPressed: ()=>{VPNAppPermissions.openFilePicker();}
-
-                Connections {
-                    target: VPNAppPermissions
-                    function onNotification(type,message) {
-                        // TODO: Make this better
-                        console.log("Got notification: "+type + "  message:"+message);
-                        toast.alertText=Qt.binding(function() { return message });
-                        notificationPresent=true;
-                        console.log("toast.visible: "+toast.visible);
-                        console.log("toast.alertText: "+toast.alertText);
-                    }
+            Connections {
+                target: VPNAppPermissions
+                function onNotification(type,message,action) {
+                    console.log("Got notification: "+type + "  message:"+message);
+                    var component = Qt.createComponent("../components/VPNAlert.qml");
+                    component.createObject(messageBox, {
+                                               isLayout:true,
+                                               visible:true,
+                                               alertText: message,
+                                               alertType: type,
+                                               alertActionText: action,
+                                               duration:type === "warning"? 0: 2000,
+                                               destructive:true,
+                                               onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
+                                           });
                 }
             }
 

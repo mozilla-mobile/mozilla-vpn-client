@@ -100,14 +100,14 @@ void AppPermission::flip(const QString& appID) {
     settingsHolder->removeVpnDisabledApp(appID);
     //% "%0 is now Unprotected"
     QString message = qtTrId("splittunnel.flip.uprotected").arg(m_listprovider->getAppName(appID));
-    emit notification(Success,message);
+    emit notification("success",message);
     
   } else {
     logger.log() << "Disabled --" << appID << " for VPN";
     settingsHolder->addVpnDisabledApp(appID);
     //% "%1 is now Protected"
     QString message = qtTrId("splittunnel.flip.protected").arg(m_listprovider->getAppName(appID));
-    emit notification(Success,message);
+    emit notification("success",message);
   }
 
   int index = m_applist.indexOf(AppDescription(appID));
@@ -131,8 +131,9 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
       if (!m_listprovider->isValidAppId(appPath)) {
         SettingsHolder::instance()->removeMissingApp(appPath);
         removedMissingApps.append(m_listprovider->getAppName(appPath));
+      }else{
+          applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
       }
-      applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
     }
   }
 
@@ -169,17 +170,20 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   if(removedMissingApps.count() == 0){
     return;
   }
+  //% "Add apps manually"
+  //: "Refers to the Apps that are Missing from the Split Tunnel list"
+  QString action = qtTrId("splittunnel.missing.action");
   if(removedMissingApps.count() == 1){
     //% "%1 missing from list."
     //: App enabled the Split-Tunnel settings %1 is the name of the apps missing
     QString message = qtTrId("splittunnel.missing.one").arg(removedMissingApps.first());
-    emit notification(MissingApp,message);
+    emit notification("warning",message,action);
     return;
   }
   //% "%1 Apps missing from list."
   //: Apps in the Split-Tunnel settings %1 is the amount of apps missing
   QString message = qtTrId("splittunnel.missing.multiple").arg(removedMissingApps.count());
-  emit notification(MissingApp,message);
+  emit notification("warning",message,action);
 }
 
 void AppPermission::protectAll() {
@@ -233,5 +237,5 @@ void AppPermission::openFilePicker() {
 
   //% "Success! You added the %1 to this list."
   QString message = qtTrId("splittunnel.added.one").arg(m_listprovider->getAppName(fileNames[0]));
-  emit notification(Success,message);
+  emit notification("success",message);
 }
