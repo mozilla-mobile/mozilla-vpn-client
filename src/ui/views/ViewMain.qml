@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
+import "../components/forms"
 import "../themes/themes.js" as Theme
 
 VPNFlickable {
@@ -44,6 +45,26 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
+    ColumnLayout {
+        anchors.fill: parent
+        z: 1
+
+        VPNTextField {
+            Layout.fillWidth: true
+        }
+
+//        VPNTextArea {
+//            placeholderText: "test"
+
+//            Layout.fillWidth: true
+//        }
+
+//        VPNComboBox {
+//            id: dropDown
+//            placeholderText: qsTrId("vpn.feedbackForm.chooseCategory")
+//            model: VPNFeedbackCategoryModel
+//        }
+    }
 
     GridLayout {
         id: col

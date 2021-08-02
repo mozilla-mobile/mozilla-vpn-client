@@ -2,124 +2,124 @@ import QtQuick 2.0
 import "../../themes/colors.js" as Color
 
 Item {
-    property Item container;
+    property variant targetItem
 
     states: [
         State {
             name: "empty"
-            when: container.text.length === 0
-                && container.enabled
-                && !container.activeFocus
-                && !container.hasError
-                && !container.hovered
+            when: targetItem.text.length === 0
+                && targetItem.enabled
+                && !targetItem.activeFocus
+                && !targetItem.hasError
+                && !targetItem.hovered
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.default.text
                 placeholderTextColor: Color.input.default.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.default.border
                 border.width: 1
             }
         },
         State {
             name: "emptyHovered"
-            when: container.hovered
-                && container.text.length === 0
-                && !container.activeFocus
-                && !container.hasError
+            when: targetItem.hovered
+                && targetItem.text.length === 0
+                && !targetItem.activeFocus
+                && !targetItem.hasError
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.hover.text
                 placeholderTextColor: Color.input.hover.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.hover.border
                 border.width: 1
             }
         },
         State {
             name: "focused"
-            when: container.activeFocus && !container.hasError
+            when: targetItem.activeFocus && !targetItem.hasError
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.focus.text
                 placeholderTextColor: Color.input.focus.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.focus.border
                 border.width: 2
             }
         },
         State {
             name: "filled"
-            when: container.text.length > 0 && !container.hasError
+            when: targetItem.text.length > 0 && !targetItem.hasError
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.default.text
                 placeholderTextColor: Color.input.default.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.default.border
                 border.width: 1
             }
         },
         State {
             name: "errorFocused"
-            when: container.activeFocus && container.hasError
+            when: targetItem.activeFocus && targetItem.hasError
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.error.text
                 placeholderTextColor: Color.input.error.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.error.border
                 border.width: 2
             }
         },
         State {
             name: "errorFilled"
-            when: container.text.length > 0 && container.hasError
+            when: targetItem.text.length > 0 && targetItem.hasError
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.error.text
                 placeholderTextColor: Color.input.error.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.error.border
                 border.width: 1
             }
         },
         State {
             name: "disabled"
-            when: !container.enabled
+            when: !targetItem.enabled
 
             PropertyChanges {
-                target: textField
+                target: targetItem
                 color: Color.input.disabled.text
                 placeholderTextColor: Color.input.disabled.placeholder
             }
 
             PropertyChanges {
-                target: container.background
+                target: targetItem.background
                 border.color: Color.input.disabled.border
                 border.width: 1
             }

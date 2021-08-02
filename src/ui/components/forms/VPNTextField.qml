@@ -29,6 +29,6 @@ TextField {
 
     VPNInputStates {
         id: textFieldState
-        container: textField
+        targetItem: textField
     }
 }

@@ -127,4 +127,9 @@ ComboBox {
 
         }
     }
+
+    VPNInputStates {
+        id: comboBoxState
+        targetItem: combo
+    }
 }

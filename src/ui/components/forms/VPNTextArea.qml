@@ -75,7 +75,7 @@ Item {
 
             VPNInputStates {
                 id: textAreaStates
-                container: textArea
+                targetItem: textArea
             }
         }
     }
