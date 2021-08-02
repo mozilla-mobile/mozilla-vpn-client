@@ -22,7 +22,7 @@ InspectorHttpServer::InspectorHttpServer() {
   logger.log() << "Creating the inspector http server";
 
   if (!listen(QHostAddress::Any, INSPECT_PORT)) {
-    logger.log() << "Failed to listen on port" << INSPECT_PORT;
+    logger.error() << "Failed to listen on port" << INSPECT_PORT;
     return;
   }
 

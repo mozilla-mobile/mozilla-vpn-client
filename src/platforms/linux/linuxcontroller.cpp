@@ -47,7 +47,7 @@ void LinuxController::initialize(const Device* device, const Keys* keys) {
 void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     emit initialized(false, false, QDateTime());
     return;
   }
@@ -97,7 +97,7 @@ void LinuxController::deactivate(Reason reason) {
 void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<bool> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
     emit disconnected();
     return;
@@ -110,7 +110,7 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
     return;
   }
 
-  logger.log() << "DBus service says: error.";
+  logger.error() << "DBus service says: error.";
   MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
@@ -126,7 +126,7 @@ void LinuxController::checkStatus() {
 void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     return;
   }
 
@@ -142,7 +142,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(statusValue.isBool());
 
   if (!statusValue.toBool()) {
-    logger.log() << "Unable to retrieve the status from the interface.";
+    logger.error() << "Unable to retrieve the status from the interface.";
     return;
   }
 

@@ -66,7 +66,7 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Captive portal request failed:" << error;
+            logger.error() << "Captive portal request failed:" << error;
             onResult(Failure);
           });
 

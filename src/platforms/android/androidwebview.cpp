@@ -62,7 +62,7 @@ void AndroidWebView::onError(JNIEnv* env, jobject thiz, jint errorCode,
   Q_UNUSED(url);
 
   QString errorDescription = env->GetStringUTFChars(description, 0);
-  logger.log() << "Network failure:" << errorDescription;
+  logger.error() << "Network failure:" << errorDescription;
 
   dispatchToMainThread([errorDescription] {
     Q_ASSERT(s_instance);
@@ -153,7 +153,7 @@ AndroidWebView::~AndroidWebView() {
 
 QUrl AndroidWebView::url() const {
   if (!m_object.isValid()) {
-    logger.log() << "Invalid object. Returning an empty URL";
+    logger.warning() << "Invalid object. Returning an empty URL";
     return QUrl();
   }
 
@@ -165,7 +165,7 @@ void AndroidWebView::setUrl(const QUrl& url) {
   logger.log() << "Set URL:" << url.toString();
 
   if (!m_object.isValid()) {
-    logger.log() << "Invalid object. Failed the loading.";
+    logger.error() << "Invalid object. Failed the loading.";
     return;
   }
 

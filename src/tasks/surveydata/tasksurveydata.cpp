@@ -26,7 +26,7 @@ void TaskSurveyData::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Failed to fetch survey data" << error;
+            logger.error() << "Failed to fetch survey data" << error;
             emit completed();
           });
 

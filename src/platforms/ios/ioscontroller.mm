@@ -110,7 +110,7 @@ void IOSController::activate(const Server& server, const Device* device, const K
   logger.log() << "IOSController activating" << server.hostname();
 
   if (!impl) {
-    logger.log() << "Controller not correctly initialized";
+    logger.error() << "Controller not correctly initialized";
     emit disconnected();
     return;
   }
@@ -134,7 +134,7 @@ void IOSController::activate(const Server& server, const Device* device, const K
                  ipv6Enabled:SettingsHolder::instance()->ipv6Enabled()
                       reason:reason
              failureCallback:^() {
-               logger.log() << "IOSSWiftController - connection failed";
+               logger.error() << "IOSSWiftController - connection failed";
                emit disconnected();
              }];
 }
@@ -149,7 +149,7 @@ void IOSController::deactivate(Reason reason) {
   }
 
   if (!impl) {
-    logger.log() << "Controller not correctly initialized";
+    logger.error() << "Controller not correctly initialized";
     emit disconnected();
     return;
   }
@@ -161,12 +161,12 @@ void IOSController::checkStatus() {
   logger.log() << "Checking status";
 
   if (m_checkingStatus) {
-    logger.log() << "We are still waiting for the previous status.";
+    logger.warning() << "We are still waiting for the previous status.";
     return;
   }
 
   if (!impl) {
-    logger.log() << "Controller not correctly initialized";
+    logger.error() << "Controller not correctly initialized";
     return;
   }
 

@@ -77,7 +77,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
       }
     }
 
-    logger.log() << "Key not found. Let's create it. Error:" << status;
+    logger.warning() << "Key not found. Let's create it. Error:" << status;
     key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
     QRandomGenerator* rg = QRandomGenerator::system();
     for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
@@ -99,7 +99,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
     status = SecItemAdd((CFDictionaryRef)query, NULL);
 
     if (status != noErr) {
-      logger.log() << "Failed to store the key. Error:" << status;
+      logger.error() << "Failed to store the key. Error:" << status;
       key = QByteArray();
     }
 
@@ -111,7 +111,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
     return true;
   }
 
-  logger.log() << "Invalid key";
+  logger.error() << "Invalid key";
 #else
   Q_UNUSED(output);
 #endif

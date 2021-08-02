@@ -38,7 +38,7 @@ EventListener::EventListener() {
 #endif
 
   if (!m_server.listen(UI_PIPE)) {
-    logger.log() << "Failed to listen the daemon path";
+    logger.error() << "Failed to listen the daemon path";
     return;
   }
 
@@ -94,7 +94,7 @@ bool EventListener::checkOtherInstances() {
   }
 #else
   if (!QFileInfo::exists(UI_PIPE)) {
-    logger.log() << "No other instances found - no unix socket";
+    logger.warning() << "No other instances found - no unix socket";
     return true;
   }
 #endif
@@ -104,7 +104,7 @@ bool EventListener::checkOtherInstances() {
   QLocalSocket socket;
   socket.connectToServer(UI_PIPE);
   if (!socket.waitForConnected(1000)) {
-    logger.log() << "Connection failed.";
+    logger.error() << "Connection failed.";
     return true;
   }
 

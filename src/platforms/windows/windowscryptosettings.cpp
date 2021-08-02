@@ -47,7 +47,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
           return true;
         }
       } else if (GetLastError() != ERROR_NOT_FOUND) {
-        logger.log() << "Failed to retrieve the key";
+        logger.error() << "Failed to retrieve the key";
         return false;
       }
     }
@@ -71,7 +71,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       cred.Persist = CRED_PERSIST_ENTERPRISE;
 
       if (!CredWriteW(&cred, 0)) {
-        logger.log() << "Failed to write the key";
+        logger.error() << "Failed to write the key";
         return false;
       }
     }

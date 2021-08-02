@@ -50,7 +50,7 @@ void ConnectionCheck::stop() {
 }
 
 void ConnectionCheck::timeout() {
-  logger.log() << "Request timeout";
+  logger.warning() << "Request timeout";
   emit failure();
 }
 

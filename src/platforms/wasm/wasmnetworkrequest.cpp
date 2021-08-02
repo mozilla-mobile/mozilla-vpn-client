@@ -22,7 +22,7 @@ void createDummyRequest(NetworkRequest* r, const QString& resource) {
     if (!resource.isEmpty()) {
       QFile file(resource);
       if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        logger.log() << "Failed to open" << resource;
+        logger.error() << "Failed to open" << resource;
         return;
       }
 

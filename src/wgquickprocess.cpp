@@ -138,7 +138,7 @@ bool WgQuickProcess::run(
     const QString& dnsServer) {
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
-    logger.log() << "Cannot create a temporary directory"
+    logger.error() << "Cannot create a temporary directory"
                  << tmpDir.errorString();
     return false;
   }
@@ -151,7 +151,7 @@ bool WgQuickProcess::run(
                         serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
                         allowedIPAddressRanges, serverPort, ipv6Enabled,
                         dnsServer)) {
-    logger.log() << "Failed to create the config file";
+    logger.error() << "Failed to create the config file";
     return false;
   }
 
@@ -166,7 +166,7 @@ bool WgQuickProcess::run(
   wgQuickProcess.start(app, arguments);
 
   if (!wgQuickProcess.waitForFinished(-1)) {
-    logger.log() << "Error occurred:" << wgQuickProcess.errorString();
+    logger.error() << "Error occurred:" << wgQuickProcess.errorString();
     return false;
   }
 

@@ -24,7 +24,7 @@ void TaskIOSProducts::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "IOS product request failed" << error;
+            logger.error() << "IOS product request failed" << error;
             vpn->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });

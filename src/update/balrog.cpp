@@ -97,7 +97,7 @@ void Balrog::start() {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
+            logger.error() << "Request failed" << error;
             deleteLater();
           });
 
@@ -106,7 +106,7 @@ void Balrog::start() {
             logger.log() << "Request completed";
 
             if (!fetchSignature(request, data)) {
-              logger.log() << "Ignore failure.";
+              logger.warning() << "Ignore failure.";
               deleteLater();
             }
           });
@@ -118,7 +118,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 
   QByteArray header = initialRequest->rawHeader("Content-Signature");
   if (header.isEmpty()) {
-    logger.log() << "Content-Signature missing";
+    logger.error() << "Content-Signature missing";
     return false;
   }
 
@@ -129,7 +129,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
     QByteArray entry = item.trimmed();
     int pos = entry.indexOf('=');
     if (pos == -1) {
-      logger.log() << "Invalid entry:" << item;
+      logger.error() << "Invalid entry:" << item;
       return false;
     }
 
@@ -142,7 +142,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
   }
 
   if (x5u.isEmpty() || signatureBlob.isEmpty()) {
-    logger.log() << "No signatureBlob or x5u found";
+    logger.error() << "No signatureBlob or x5u found";
     return false;
   }
 
@@ -152,7 +152,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 
   connect(x5uRequest, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
+            logger.error() << "Request failed" << error;
             deleteLater();
           });
 
@@ -173,13 +173,13 @@ bool Balrog::checkSignature(const QByteArray& x5uData,
   logger.log() << "Checking the signature";
 
   if (!validateSignature(x5uData, updateData, signatureBlob)) {
-    logger.log() << "Invalid signature";
+    logger.error() << "Invalid signature";
     return false;
   }
 
   logger.log() << "Fetch resource";
   if (!processData(updateData)) {
-    logger.log() << "Fetch has failed";
+    logger.error() << "Fetch has failed";
     return false;
   }
 
@@ -248,7 +248,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   unsigned char verify = balrogValidate(x5uDataGo, updateDataGo, signatureGo,
                                         rootHashGo, certSubjectGo);
   if (!verify) {
-    logger.log() << "Verification failed";
+    logger.error() << "Verification failed";
     return false;
   }
 
@@ -258,7 +258,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
 bool Balrog::processData(const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "A valid JSON object expected";
+    logger.error() << "A valid JSON object expected";
     return false;
   }
 
@@ -279,7 +279,7 @@ bool Balrog::processData(const QByteArray& data) {
     // content, we don't push for a recommended update.
     QString url = obj.value("url").toString();
     if (url.isEmpty()) {
-      logger.log() << "Invalid URL in the JSON document";
+      logger.error() << "Invalid URL in the JSON document";
       return false;
     }
 
@@ -287,7 +287,7 @@ bool Balrog::processData(const QByteArray& data) {
 
     connect(request, &NetworkRequest::requestFailed,
             [this](QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.log() << "Request failed" << error;
+              logger.error() << "Request failed" << error;
               deleteLater();
             });
 
@@ -302,7 +302,7 @@ bool Balrog::processData(const QByteArray& data) {
                 emit updateRecommended();
               }
 
-              logger.log() << "Abort request for status code"
+              logger.warning() << "Abort request for status code"
                            << request->statusCode();
               request->abort();
             });
@@ -318,19 +318,19 @@ bool Balrog::processData(const QByteArray& data) {
 
   QString url = obj.value("url").toString();
   if (url.isEmpty()) {
-    logger.log() << "Invalid URL in the JSON document";
+    logger.error() << "Invalid URL in the JSON document";
     return false;
   }
 
   QString hashFunction = obj.value("hashFunction").toString();
   if (hashFunction.isEmpty()) {
-    logger.log() << "No hashFunction item";
+    logger.error() << "No hashFunction item";
     return false;
   }
 
   QString hashValue = obj.value("hashValue").toString();
   if (hashValue.isEmpty()) {
-    logger.log() << "No hashValue item";
+    logger.error() << "No hashValue item";
     return false;
   }
 
@@ -342,7 +342,7 @@ bool Balrog::processData(const QByteArray& data) {
   connect(
       request, &NetworkRequest::requestFailed,
       [this, request](QNetworkReply::NetworkError error, const QByteArray&) {
-        logger.log() << "Request failed" << error;
+        logger.error() << "Request failed" << error;
         propagateError(request, error);
         deleteLater();
       });
@@ -352,7 +352,7 @@ bool Balrog::processData(const QByteArray& data) {
             logger.log() << "Request completed";
 
             if (!computeHash(url, data, hashValue, hashFunction)) {
-              logger.log() << "Ignore failure.";
+              logger.error() << "Ignore failure.";
               deleteLater();
             }
           });
@@ -366,7 +366,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
   logger.log() << "Compute the hash";
 
   if (hashFunction != "sha512") {
-    logger.log() << "Invalid hash function";
+    logger.error() << "Invalid hash function";
     return false;
   }
 
@@ -375,7 +375,7 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
   QByteArray hashHex = hash.result().toHex();
 
   if (hashHex != hashValue) {
-    logger.log() << "Hash doesn't match";
+    logger.error() << "Hash doesn't match";
     return false;
   }
 
@@ -387,7 +387,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   int pos = url.lastIndexOf("/");
   if (pos == -1) {
-    logger.log() << "The URL seems to be without /.";
+    logger.error() << "The URL seems to be without /.";
     return false;
   }
 
@@ -395,7 +395,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   logger.log() << "Filename:" << fileName;
 
   if (!m_tmpDir.isValid()) {
-    logger.log() << "Cannot create a temporary directory"
+    logger.error() << "Cannot create a temporary directory"
                  << m_tmpDir.errorString();
     return false;
   }
@@ -405,13 +405,13 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   QFile file(tmpFile);
   if (!file.open(QIODevice::ReadWrite)) {
-    logger.log() << "Unable to create a file in the temporary folder";
+    logger.error() << "Unable to create a file in the temporary folder";
     return false;
   }
 
   qint64 written = file.write(data);
   if (written != data.length()) {
-    logger.log() << "Unable to write the whole configuration file";
+    logger.error() << "Unable to write the whole configuration file";
     return false;
   }
 
@@ -448,7 +448,7 @@ bool Balrog::install(const QString& filePath) {
 
             QFile log(logFile);
             if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
-              logger.log() << "Unable to read the msiexec log file";
+              logger.warning() << "Unable to read the msiexec log file";
             } else {
               QTextStream logStream(&log);
               logStream.setCodec("utf-16");

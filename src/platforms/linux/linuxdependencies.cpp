@@ -59,7 +59,7 @@ bool checkDaemonVersion() {
 
         QDBusPendingReply<QString> reply = *call;
         if (reply.isError()) {
-          logger.log() << "DBus message received - error";
+          logger.error() << "DBus message received - error";
           *value = false;
           return;
         }

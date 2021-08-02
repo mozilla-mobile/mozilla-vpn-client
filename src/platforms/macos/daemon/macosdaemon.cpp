@@ -75,7 +75,7 @@ QByteArray MacOSDaemon::getStatus() {
     wgProcess.start(wgPath, arguments);
 
     if (!wgProcess.waitForFinished(-1)) {
-      logger.log() << "Error occurred" << wgProcess.errorString();
+      logger.error() << "Error occurred" << wgProcess.errorString();
     } else {
       QByteArray output = wgProcess.readAllStandardOutput();
 
@@ -164,7 +164,7 @@ void MacOSDaemon::maybeCleanup() {
   wgQuickProcess.start(app, arguments);
 
   if (!wgQuickProcess.waitForFinished(-1)) {
-    logger.log() << "Error occurred:" << wgQuickProcess.errorString();
+    logger.error() << "Error occurred:" << wgQuickProcess.errorString();
     return;
   }
 

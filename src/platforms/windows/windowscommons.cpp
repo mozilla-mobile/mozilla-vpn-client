@@ -40,7 +40,7 @@ QString WindowsCommons::getErrorMessage() {
 // A simple function to log windows error messages.
 void WindowsCommons::windowsLog(const QString& msg) {
   QString errmsg = getErrorMessage();
-  logger.log() << msg << "-" << errmsg;
+  logger.error() << msg << "-" << errmsg;
 }
 
 QString WindowsCommons::tunnelConfigFile() {
@@ -79,7 +79,7 @@ QString WindowsCommons::tunnelConfigFile() {
     return vpnDir.filePath(QString("%1.conf").arg(VPN_NAME));
   }
 
-  logger.log() << "Failed to create the right paths";
+  logger.error() << "Failed to create the right paths";
   return QString();
 }
 

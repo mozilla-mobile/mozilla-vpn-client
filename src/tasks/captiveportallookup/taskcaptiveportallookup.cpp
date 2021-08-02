@@ -28,7 +28,7 @@ void TaskCaptivePortalLookup::run(MozillaVPN* vpn) {
   NetworkRequest* request = NetworkRequest::createForCaptivePortalLookup(this);
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Failed to obtain captive poral IPs" << error;
+            logger.error() << "Failed to obtain captive poral IPs" << error;
             vpn->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });

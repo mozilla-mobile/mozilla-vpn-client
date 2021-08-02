@@ -49,7 +49,7 @@ IAPHandler* s_instance = nullptr;
 
   if (response.invalidProductIdentifiers) {
     NSArray<NSString*>* products = response.invalidProductIdentifiers;
-    logger.log() << "Registration failure" << [products count];
+    logger.error() << "Registration failure" << [products count];
 
     for (unsigned long i = 0, count = [products count]; i < count; ++i) {
       NSString* identifier = [products objectAtIndex:i];
@@ -86,7 +86,7 @@ IAPHandler* s_instance = nullptr;
   for (SKPaymentTransaction* transaction in transactions) {
     switch (transaction.transactionState) {
       case SKPaymentTransactionStateFailed:
-        logger.log() << "transaction failed";
+        logger.error() << "transaction failed";
 
         if (transaction.error.code == SKErrorPaymentCancelled) {
           canceledTransactions = true;
@@ -118,7 +118,7 @@ IAPHandler* s_instance = nullptr;
 
         SettingsHolder* settingsHolder = SettingsHolder::instance();
         if (settingsHolder->hasSubscriptionTransaction(identifier)) {
-          logger.log() << "This transaction has already been processed. Let's ignore it.";
+          logger.warning() << "This transaction has already been processed. Let's ignore it.";
         } else {
           completedTransactionIds.append(identifier);
         }
@@ -132,7 +132,7 @@ IAPHandler* s_instance = nullptr;
         logger.log() << "transaction deferred";
         break;
       default:
-        logger.log() << "transaction unknwon state";
+        logger.warning() << "transaction unknwon state";
         break;
     }
   }
@@ -147,7 +147,7 @@ IAPHandler* s_instance = nullptr;
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (failedTransactions) {
-    logger.log() << "Subscription failed";
+    logger.error() << "Subscription failed";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
   } else if (completedTransactionIds.isEmpty()) {
@@ -190,7 +190,7 @@ IAPHandler* s_instance = nullptr;
 }
 
 - (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
-  logger.log() << "Failed to refresh the receipt"
+  logger.error() << "Failed to refresh the receipt"
                << QString::fromNSString(error.localizedDescription);
   QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
   QMetaObject::invokeMethod(m_handler, "subscriptionFailed", Qt::QueuedConnection);
@@ -264,7 +264,7 @@ void IAPHandler::registerProducts(const QByteArray& data) {
 
   QJsonArray products = obj["products"].toArray();
   if (products.isEmpty()) {
-    logger.log() << "No products found";
+    logger.error() << "No products found";
     return;
   }
 
@@ -275,7 +275,7 @@ void IAPHandler::registerProducts(const QByteArray& data) {
   }
 
   if (m_products.isEmpty()) {
-    logger.log() << "No pending products (nothing has been registered). Unable to recover from "
+    logger.error() << "No pending products (nothing has been registered). Unable to recover from "
                     "this scenario.";
     return;
   }
@@ -313,7 +313,7 @@ void IAPHandler::addProduct(const QJsonValue& value) {
   product.m_featuredProduct = obj["featured_product"].toBool();
 
   if (product.m_type == ProductUnknown) {
-    logger.log() << "Unknown product type:" << obj["type"].toString();
+    logger.error() << "Unknown product type:" << obj["type"].toString();
     return;
   }
 
@@ -337,7 +337,7 @@ void IAPHandler::startSubscription(const QString& productIdentifier) {
   Q_ASSERT(product->m_productNS);
 
   if (m_subscriptionState != eInactive) {
-    logger.log() << "No multiple IAP!";
+    logger.warning() << "No multiple IAP!";
     return;
   }
 
@@ -357,7 +357,7 @@ void IAPHandler::stopSubscription() {
 void IAPHandler::unknownProductRegistered(const QString& identifier) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
 
-  logger.log() << "Product registration failed:" << identifier;
+  logger.error() << "Product registration failed:" << identifier;
 
   // Let's remove the unregistered product.
   QList<Product>::iterator i = m_products.begin();
@@ -452,13 +452,13 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
   logger.log() << "process completed transactions";
 
   if (m_subscriptionState != eActive) {
-    logger.log() << "Random transaction to be completed. Let's ignore it";
+    logger.warning() << "Random transaction to be completed. Let's ignore it";
     return;
   }
 
   QString receipt = IOSUtils::IAPReceipt();
   if (receipt.isEmpty()) {
-    logger.log() << "Empty receipt found";
+    logger.warning() << "Empty receipt found";
     emit subscriptionFailed();
     return;
   }
@@ -467,10 +467,10 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Purchase request failed" << error;
+            logger.error() << "Purchase request failed" << error;
 
             if (m_subscriptionState != eActive) {
-              logger.log() << "We have been canceled in the meantime";
+              logger.warning() << "We have been canceled in the meantime";
               return;
             }
 
@@ -506,7 +506,7 @@ void IAPHandler::processCompletedTransactions(const QStringList& ids) {
     SettingsHolder::instance()->addSubscriptionTransactions(ids);
 
     if (m_subscriptionState != eActive) {
-      logger.log() << "We have been canceled in the meantime";
+      logger.warning() << "We have been canceled in the meantime";
       return;
     }
 
@@ -531,7 +531,7 @@ void IAPHandler::computeSavings() {
   }
 
   if (monthlyPrice == 0) {
-    logger.log() << "No monthly payment found";
+    logger.error() << "No monthly payment found";
     return;
   }
 

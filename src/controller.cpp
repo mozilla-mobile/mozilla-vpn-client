@@ -210,7 +210,7 @@ bool Controller::silentSwitchServers() {
   logger.log() << "Silently switch servers";
 
   if (m_state != StateOn) {
-    logger.log() << "Cannot silent switch if not on";
+    logger.warning() << "Cannot silent switch if not on";
     return false;
   }
 
@@ -221,7 +221,7 @@ bool Controller::silentSwitchServers() {
   Q_ASSERT(!servers.isEmpty());
 
   if (servers.length() <= 1) {
-    logger.log()
+    logger.warning()
         << "Cannot silent switch servers because there is only one available";
     return false;
   }
@@ -276,7 +276,7 @@ bool Controller::deactivate() {
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateConfirming) {
-    logger.log() << "Already disconnected";
+    logger.warning() << "Already disconnected";
     return false;
   }
 
@@ -327,7 +327,7 @@ void Controller::connectionConfirmed() {
   logger.log() << "Connection confirmed";
 
   if (m_state != StateConfirming && m_state != StateOn) {
-    logger.log() << "Invalid confirmation received";
+    logger.error() << "Invalid confirmation received";
     return;
   }
 
@@ -354,7 +354,7 @@ void Controller::connectionFailed() {
   logger.log() << "Connection failed!";
 
   if (m_state != StateConfirming && m_state != StateOn) {
-    logger.log() << "Invalid confirmation received";
+    logger.error() << "Invalid confirmation received";
     return;
   }
 
@@ -481,7 +481,7 @@ void Controller::quit() {
 }
 
 void Controller::backendFailure() {
-  logger.log() << "backend failure";
+  logger.error() << "backend failure";
 
   if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToBackendFailure();
@@ -497,7 +497,7 @@ void Controller::backendFailure() {
 }
 
 void Controller::updateRequired() {
-  logger.log() << "Update required";
+  logger.warning() << "Update required";
 
   if (m_state == StateOff) {
     emit readyToUpdate();

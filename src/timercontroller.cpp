@@ -80,7 +80,7 @@ void TimerController::deactivate(Reason reason) {
 }
 
 void TimerController::timeout() {
-  logger.log() << "TimerController - Timeout:" << m_state;
+  logger.warning() << "TimerController - Timeout:" << m_state;
 
   Q_ASSERT(m_state != None);
 

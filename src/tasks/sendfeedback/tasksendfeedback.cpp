@@ -40,7 +40,7 @@ void TaskSendFeedback::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Failed to send feedback" << error;
+            logger.error() << "Failed to send feedback" << error;
             emit completed();
           });
 

@@ -99,7 +99,7 @@ bool WindowsTunnelService::start(const QString& configFile) {
   memcpy(&magic, m_logdata, 4);
   logger.log() << "Opening tunnel log file" << logFileName;
   if (magic != RINGLOG_MAGIC_HEADER) {
-    logger.log() << "Unexpected magic header:" << QString::number(magic, 16);
+    logger.error() << "Unexpected magic header:" << QString::number(magic, 16);
     return true;
   }
 
@@ -141,7 +141,7 @@ bool WindowsTunnelService::isRunning() {
 
 void WindowsTunnelService::timeout() {
   if (m_service == nullptr) {
-    logger.log() << "The service doesn't exist";
+    logger.error() << "The service doesn't exist";
     emit backendFailure();
     return;
   }
@@ -272,7 +272,7 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
     return true;
   }
 
-  logger.log() << "Failed to run the tunnel service";
+  logger.error() << "Failed to run the tunnel service";
 
   SERVICE_STATUS status;
   if (!QueryServiceStatus(service, &status)) {
@@ -306,7 +306,7 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service) {
     }
 
     if (!waitForServiceStatus(service, SERVICE_STOPPED)) {
-      logger.log() << "Unable to stop the service";
+      logger.error() << "Unable to stop the service";
       return false;
     }
   }
@@ -383,7 +383,7 @@ static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
       return true;
     }
 
-    logger.log() << "The service is not in the right status yet.";
+    logger.warning() << "The service is not in the right status yet.";
 
     Sleep(1000);
     ++tries;

@@ -23,7 +23,7 @@ InspectorWebSocketServer::InspectorWebSocketServer()
   logger.log() << "Creating the inspector websocket server";
 
   if (!listen(QHostAddress::Any, INSPECT_PORT)) {
-    logger.log() << "Failed to listen on port" << INSPECT_PORT;
+    logger.error() << "Failed to listen on port" << INSPECT_PORT;
     return;
   }
 
@@ -47,7 +47,7 @@ void InspectorWebSocketServer::newConnectionReceived() {
   if (address != QHostAddress("::ffff:127.0.0.1") &&
       address != QHostAddress::LocalHost &&
       address != QHostAddress::LocalHostIPv6) {
-    logger.log() << "Accepting connection from localhost only";
+    logger.warning() << "Accepting connection from localhost only";
     child->close();
     return;
   }

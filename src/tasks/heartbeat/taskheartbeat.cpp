@@ -26,7 +26,7 @@ void TaskHeartbeat::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this, request, vpn](QNetworkReply::NetworkError, const QByteArray&) {
-            logger.log() << "Failed to talk with the server";
+            logger.error() << "Failed to talk with the server";
 
             int statusCode = request->statusCode();
 

@@ -64,9 +64,9 @@ void DBusService::setAdaptor(DbusAdaptor* adaptor) {
 
 bool DBusService::removeInterfaceIfExists() {
   if (wgutils()->interfaceExists()) {
-    logger.log() << "Device already exists. Let's remove it.";
+    logger.warning() << "Device already exists. Let's remove it.";
     if (!wgutils()->deleteInterface()) {
-      logger.log() << "Failed to remove the device.";
+      logger.error() << "Failed to remove the device.";
       return false;
     }
   }
@@ -83,13 +83,13 @@ bool DBusService::activate(const QString& jsonConfig) {
 
   if (!PolkitHelper::instance()->checkAuthorization(
           "org.mozilla.vpn.activate")) {
-    logger.log() << "Polkit rejected";
+    logger.error() << "Polkit rejected";
     return false;
   }
 
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {
-    logger.log() << "Invalid input";
+    logger.error() << "Invalid input";
     return false;
   }
 
@@ -97,7 +97,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 
   InterfaceConfig config;
   if (!parseConfig(obj, config)) {
-    logger.log() << "Invalid configuration";
+    logger.error() << "Invalid configuration";
     return false;
   }
 
@@ -123,7 +123,7 @@ QByteArray DBusService::getStatus() {
   logger.log() << "Status request";
   QJsonObject json;
   if (!wgutils()->interfaceExists()) {
-    logger.log() << "Unable to get device";
+    logger.error() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
   }

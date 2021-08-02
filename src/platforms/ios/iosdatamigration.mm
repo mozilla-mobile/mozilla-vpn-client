@@ -53,7 +53,7 @@ void migrateUserDefaultData() {
       // We need to wrap the server list in a object to make it similar to the REST API response.
       QJsonDocument serverList = QJsonDocument::fromJson(json);
       if (!serverList.isArray()) {
-        logger.log() << "Server list should be an array!";
+        logger.error() << "Server list should be an array!";
         return;
       }
 
@@ -63,7 +63,7 @@ void migrateUserDefaultData() {
       QJsonDocument doc;
       doc.setObject(countriesObj);
       if (!vpn->setServerList(doc.toJson())) {
-        logger.log() << "Server list cannot be imported";
+        logger.error() << "Server list cannot be imported";
         return;
       }
     }
@@ -77,20 +77,20 @@ void migrateUserDefaultData() {
 
     QJsonDocument doc = QJsonDocument::fromJson(json);
     if (!doc.isObject()) {
-      logger.log() << "SelectedCity should be an object";
+      logger.error() << "SelectedCity should be an object";
       return;
     }
 
     QJsonObject obj = doc.object();
     QJsonValue code = obj.value("flagCode");
     if (!code.isString()) {
-      logger.log() << "SelectedCity code should be a string";
+      logger.error() << "SelectedCity code should be a string";
       return;
     }
 
     QJsonValue name = obj.value("code");
     if (!name.isString()) {
-      logger.log() << "SelectedCity name should be a string";
+      logger.error() << "SelectedCity name should be a string";
       return;
     }
 
@@ -117,7 +117,7 @@ void migrateKeychainData() {
   [query release];
 
   if (status != noErr) {
-    logger.log() << "No credentials found";
+    logger.error() << "No credentials found";
     return;
   }
 
@@ -128,33 +128,33 @@ void migrateKeychainData() {
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "JSON object expected";
+    logger.error() << "JSON object expected";
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue deviceKeyValue = obj.value("deviceKeys");
   if (!deviceKeyValue.isObject()) {
-    logger.log() << "JSON object should have a deviceKeys object";
+    logger.error() << "JSON object should have a deviceKeys object";
     return;
   }
 
   QJsonObject deviceKeyObj = deviceKeyValue.toObject();
   QJsonValue publicKey = deviceKeyObj.value("publicKey");
   if (!publicKey.isString()) {
-    logger.log() << "JSON deviceKey object should contain a publicKey value as string";
+    logger.error() << "JSON deviceKey object should contain a publicKey value as string";
     return;
   }
 
   QJsonValue privateKey = deviceKeyObj.value("privateKey");
   if (!privateKey.isString()) {
-    logger.log() << "JSON deviceKey object should contain a privateKey value as string";
+    logger.error() << "JSON deviceKey object should contain a privateKey value as string";
     return;
   }
 
   QJsonValue token = obj.value("verificationToken");
   if (!token.isString()) {
-    logger.log() << "JSON object should contain a verificationToken value s string";
+    logger.error() << "JSON object should contain a verificationToken value s string";
     return;
   }
 

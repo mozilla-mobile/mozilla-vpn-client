@@ -209,7 +209,7 @@ void AndroidController::deactivate(Reason reason) {
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate
     emit disconnected();
-    logger.log() << "deactivation skipped for Switching";
+    logger.warning() << "deactivation skipped for Switching";
     return;
   }
 
@@ -318,7 +318,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     default:
-      logger.log() << "Transact: Invalid!";
+      logger.warning() << "Transact: Invalid!";
       break;
   }
 
@@ -364,7 +364,7 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
                              }
                              // If the request got rejected abort the current
                              // connection.
-                             logger.log() << "VPN PROMPT RESULT - Rejected";
+                             logger.warning() << "VPN PROMPT RESULT - Rejected";
                              emit controller->disconnected();
                            });
   return;

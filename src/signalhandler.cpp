@@ -29,7 +29,7 @@ SignalHandler::SignalHandler() {
   }
 
   if (pipe(m_pipefds) != 0) {
-    logger.log() << "Unable to create signal wakeup pipe";
+    logger.error() << "Unable to create signal wakeup pipe";
     return;
   }
   fcntl(m_pipefds[0], F_SETFL, fcntl(m_pipefds[0], F_GETFL) | O_NONBLOCK);

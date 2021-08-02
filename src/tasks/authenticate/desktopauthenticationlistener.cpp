@@ -81,7 +81,7 @@ void DesktopAuthenticationListener::start(const QString& codeChallenge,
   }
 
   if (!m_server->isListening()) {
-    logger.log() << "Unable to listen for the authentication server.";
+    logger.error() << "Unable to listen for the authentication server.";
     emit failed(ErrorHandler::UnrecoverableError);
     return;
   }

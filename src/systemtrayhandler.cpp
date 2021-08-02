@@ -316,7 +316,7 @@ void SystemTrayHandler::messageClickHandle() {
   logger.log() << "Message clicked";
 
   if (m_lastMessage == None) {
-    logger.log() << "Random message clicked received";
+    logger.warning() << "Random message clicked received";
     return;
   }
 

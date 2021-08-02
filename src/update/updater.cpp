@@ -30,7 +30,7 @@ Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
     return new VersionApi(parent);
   }
 
-  logger.log() << "No download and install supported for this platform.";
+  logger.warning() << "No download and install supported for this platform.";
   return nullptr;
 }
 

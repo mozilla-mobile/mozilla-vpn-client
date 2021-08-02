@@ -49,7 +49,7 @@ void CaptivePortalNotifier::notificationClicked(
       break;
 
     default:
-      logger.log() << "Ignore message";
+      logger.warning() << "Ignore message";
       break;
   }
 }

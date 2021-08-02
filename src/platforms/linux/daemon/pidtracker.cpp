@@ -32,7 +32,7 @@ PidTracker::PidTracker(QObject* parent) : QObject(parent) {
 
   m_nlsock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
   if (m_nlsock < 0) {
-    logger.log() << "Failed to create netlink socket:" << strerror(errno);
+    logger.error() << "Failed to create netlink socket:" << strerror(errno);
     return;
   }
 
@@ -42,7 +42,7 @@ PidTracker::PidTracker(QObject* parent) : QObject(parent) {
   nladdr.nl_pid = getpid();
   nladdr.nl_pad = 0;
   if (bind(m_nlsock, (struct sockaddr*)&nladdr, sizeof(nladdr)) < 0) {
-    logger.log() << "Failed to bind netlink socket:" << strerror(errno);
+    logger.error() << "Failed to bind netlink socket:" << strerror(errno);
     close(m_nlsock);
     m_nlsock = -1;
     return;
@@ -68,7 +68,7 @@ PidTracker::PidTracker(QObject* parent) : QObject(parent) {
   memcpy(cnmsg->data, &mcast_op, sizeof(mcast_op));
 
   if (send(m_nlsock, nlmsg, sizeof(buf), 0) != sizeof(buf)) {
-    logger.log() << "Failed to send netlink message:" << strerror(errno);
+    logger.error() << "Failed to send netlink message:" << strerror(errno);
     close(m_nlsock);
     m_nlsock = -1;
     return;
@@ -96,7 +96,7 @@ PidTracker::~PidTracker() {
 ProcessGroup* PidTracker::track(const QString& name, int rootpid) {
   ProcessGroup* group = m_processTree.value(rootpid, nullptr);
   if (group) {
-    logger.log() << "Ignoring attempt to track duplicate PID";
+    logger.warning() << "Ignoring attempt to track duplicate PID";
     return group;
   }
   group = new ProcessGroup(name, rootpid);
@@ -169,16 +169,16 @@ void PidTracker::readData() {
   recvlen = recvfrom(m_nlsock, m_readBuf, sizeof(m_readBuf), MSG_DONTWAIT,
                      (struct sockaddr*)&src, &srclen);
   if (recvlen == ENOBUFS) {
-    logger.log()
+    logger.error()
         << "Failed to read netlink socket: buffer full, message dropped";
     return;
   }
   if (recvlen < 0) {
-    logger.log() << "Failed to read netlink socket:" << strerror(errno);
+    logger.error() << "Failed to read netlink socket:" << strerror(errno);
     return;
   }
   if (srclen != sizeof(src)) {
-    logger.log() << "Failed to read netlink socket: invalid address length";
+    logger.error() << "Failed to read netlink socket: invalid address length";
     return;
   }
 

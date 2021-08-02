@@ -22,7 +22,7 @@ ServerHandler::ServerHandler() {
   logger.log() << "Creating the server";
 
   if (!listen(QHostAddress::LocalHost, SERVER_PORT)) {
-    logger.log() << "Failed to listen on port" << SERVER_PORT;
+    logger.error() << "Failed to listen on port" << SERVER_PORT;
     return;
   }
 

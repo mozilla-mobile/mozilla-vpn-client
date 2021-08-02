@@ -42,7 +42,7 @@ void CaptivePortalDetection::stateChanged() {
   if ((vpn->controller()->state() != Controller::StateOn ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
       vpn->controller()->state() != Controller::StateConfirming) {
-    logger.log() << "No captive portal detection required";
+    logger.warning() << "No captive portal detection required";
     m_impl.reset();
     // Since we now reached a stable state, on the next time we have an
     // instablity check for portal again.
@@ -77,14 +77,14 @@ void CaptivePortalDetection::detectCaptivePortal() {
   // VPN.
   if (vpn->controller()->state() != Controller::StateOn &&
       vpn->controller()->state() != Controller::StateConfirming) {
-    logger.log() << "The VPN is not online. Ignore request.";
+    logger.warning() << "The VPN is not online. Ignore request.";
     return;
   }
 
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   m_impl.reset(new CaptivePortalDetectionImpl());
 #else
-  logger.log() << "This platform does not support captive portal detection yet";
+  logger.warning() << "This platform does not support captive portal detection yet";
   return;
 #endif
 

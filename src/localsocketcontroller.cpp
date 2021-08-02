@@ -46,7 +46,7 @@ LocalSocketController::~LocalSocketController() {
 
 void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
-  logger.log() << "Error occurred:" << error;
+  logger.error() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
     emit initialized(false, false, QDateTime());
@@ -234,14 +234,14 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
 
   QJsonDocument json = QJsonDocument::fromJson(command);
   if (!json.isObject()) {
-    logger.log() << "Invalid JSON - object expected";
+    logger.error() << "Invalid JSON - object expected";
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue typeValue = obj.value("type");
   if (!typeValue.isString()) {
-    logger.log() << "Invalid JSON - no type";
+    logger.error() << "Invalid JSON - no type";
     return;
   }
 
@@ -252,7 +252,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
 
     QJsonValue connected = obj.value("connected");
     if (!connected.isBool()) {
-      logger.log() << "Invalid JSON for status - connected expected";
+      logger.error() << "Invalid JSON for status - connected expected";
       return;
     }
 
@@ -260,13 +260,13 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     if (connected.toBool()) {
       QJsonValue date = obj.value("date");
       if (!date.isString()) {
-        logger.log() << "Invalid JSON for status - date expected";
+        logger.error() << "Invalid JSON for status - date expected";
         return;
       }
 
       datetime = QDateTime::fromString(date.toString());
       if (!datetime.isValid()) {
-        logger.log() << "Invalid JSON for status - date is invalid";
+        logger.error() << "Invalid JSON for status - date is invalid";
         return;
       }
     }
@@ -276,32 +276,32 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (m_state != eReady) {
-    logger.log() << "Unexpected command";
+    logger.error() << "Unexpected command";
     return;
   }
 
   if (type == "status") {
     QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
     if (!serverIpv4Gateway.isString()) {
-      logger.log() << "Unexpected serverIpv4Gateway value";
+      logger.error() << "Unexpected serverIpv4Gateway value";
       return;
     }
 
     QJsonValue deviceIpv4Address = obj.value("deviceIpv4Address");
     if (!deviceIpv4Address.isString()) {
-      logger.log() << "Unexpected deviceIpv4Address value";
+      logger.error() << "Unexpected deviceIpv4Address value";
       return;
     }
 
     QJsonValue txBytes = obj.value("txBytes");
     if (!txBytes.isDouble()) {
-      logger.log() << "Unexpected txBytes value";
+      logger.error() << "Unexpected txBytes value";
       return;
     }
 
     QJsonValue rxBytes = obj.value("rxBytes");
     if (!rxBytes.isDouble()) {
-      logger.log() << "Unexpected rxBytes value";
+      logger.error() << "Unexpected rxBytes value";
       return;
     }
 
@@ -339,7 +339,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     return;
   }
 
-  logger.log() << "Invalid command received:" << command;
+  logger.warning() << "Invalid command received:" << command;
 }
 
 void LocalSocketController::write(const QJsonObject& json) {

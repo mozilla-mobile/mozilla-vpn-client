@@ -73,7 +73,7 @@ void MacOSNetworkWatcher::start() {
 
   CWWiFiClient* client = CWWiFiClient.sharedWiFiClient;
   if (!client) {
-    logger.log() << "Unable to retrieve the CWWiFiClient shared instance";
+    logger.error() << "Unable to retrieve the CWWiFiClient shared instance";
     return;
   }
 

@@ -66,7 +66,7 @@ void WindowsSplitTunnel::initDriver() {
   // Reset Driver as it has wfp handles probably >:(
 
   if (!WindowsFirewall::instance()->init()) {
-    logger.log() << "Init WFP-Sublayer failed, driver won't be functional";
+    logger.error() << "Init WFP-Sublayer failed, driver won't be functional";
     return;
   }
 
@@ -85,8 +85,8 @@ void WindowsSplitTunnel::initDriver() {
                             &bytesReturned, nullptr);
   if (!ok) {
     auto err = GetLastError();
-    logger.log() << "Driver init failed err -" << err;
-    logger.log() << "State:" << getState();
+    logger.error() << "Driver init failed err -" << err;
+    logger.error() << "State:" << getState();
 
     return;
   }
@@ -96,7 +96,7 @@ void WindowsSplitTunnel::initDriver() {
 void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
   auto state = getState();
   if (state != STATE_READY && state != STATE_RUNNING) {
-    logger.log() << "Driver is not in the right State to set Rules" << state;
+    logger.warning() << "Driver is not in the right State to set Rules" << state;
     return;
   }
 
@@ -110,7 +110,7 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
   if (!ok) {
     auto err = GetLastError();
     WindowsCommons::windowsLog("Set Config Failed:");
-    logger.log() << "Failed to set Config err code " << err;
+    logger.error() << "Failed to set Config err code " << err;
     return;
   }
   logger.log() << "New Configuration applied: " << getState();
@@ -128,7 +128,7 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
     auto ok = DeviceIoControl(m_driver, IOCTL_INITIALIZE, nullptr, 0, nullptr,
                               0, &bytesReturned, nullptr);
     if (!ok) {
-      logger.log() << "Driver init failed";
+      logger.error() << "Driver init failed";
       return;
     }
   }
@@ -141,14 +141,14 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                               (DWORD)config.size(), nullptr, 0, &bytesReturned,
                               nullptr);
     if (!ok) {
-      logger.log() << "Failed to set Process Config";
+      logger.error() << "Failed to set Process Config";
       return;
     }
     logger.log() << "Set Process Config ok || new State:" << getState();
   }
 
   if (getState() == STATE_INITIALIZED) {
-    logger.log() << "Driver is still not ready after process list send";
+    logger.warning() << "Driver is still not ready after process list send";
     return;
   }
   logger.log() << "Driver is  ready || new State:" << getState();
@@ -158,7 +158,7 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                             (DWORD)config.size(), nullptr, 0, &bytesReturned,
                             nullptr);
   if (!ok) {
-    logger.log() << "Failed to set Network Config";
+    logger.error() << "Failed to set Network Config";
     return;
   }
   logger.log() << "New Network Config Applied || new State:" << getState();
@@ -169,7 +169,7 @@ void WindowsSplitTunnel::stop() {
   auto ok = DeviceIoControl(m_driver, IOCTL_CLEAR_CONFIGURATION, nullptr, 0,
                             nullptr, 0, &bytesReturned, nullptr);
   if (!ok) {
-    logger.log() << "Stopping Split tunnel not successfull";
+    logger.error() << "Stopping Split tunnel not successfull";
     return;
   }
   logger.log() << "Stopping Split tunnel successfull";
@@ -180,7 +180,7 @@ void WindowsSplitTunnel::reset() {
   auto ok = DeviceIoControl(m_driver, IOCTL_ST_RESET, nullptr, 0, nullptr, 0,
                             &bytesReturned, nullptr);
   if (!ok) {
-    logger.log() << "Reset Split tunnel not successfull";
+    logger.error() << "Reset Split tunnel not successfull";
     return;
   }
   logger.log() << "Reset Split tunnel successfull";
@@ -293,7 +293,7 @@ void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
       PCWSTR w_str_ip = wstr.c_str();
       auto ok = InetPtonW(AF_INET6, w_str_ip, out_ipv6);
       if (ok != 1) {
-        logger.log() << "Ipv6 Conversation error" << WSAGetLastError();
+        logger.error() << "Ipv6 Conversation error" << WSAGetLastError();
       }
       break;
     }
@@ -416,7 +416,7 @@ SC_HANDLE WindowsSplitTunnel::installDriver() {
   LPCWSTR displayName = L"Mozilla Split Tunnel Service";
   QFileInfo driver(qApp->applicationDirPath() + "/" + DRIVER_FILENAME);
   if (!driver.exists()) {
-    logger.log() << "Split Tunnel Driver File not found "
+    logger.error() << "Split Tunnel Driver File not found "
                  << driver.absoluteFilePath();
     return (SC_HANDLE)INVALID_HANDLE_VALUE;
   }

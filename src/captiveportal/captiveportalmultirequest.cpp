@@ -31,7 +31,7 @@ void CaptivePortalMultiRequest::run() {
   // If we can't confirm in 30s that we are not behind
   // a captive-portal, handle this like no portal exists
   TimerSingleShot::create(this, 30 * 1000, [this]() {
-    logger.log() << "CaptivePortal max timeout reached, exiting detection";
+    logger.error() << "CaptivePortal max timeout reached, exiting detection";
     onResult(NoPortal);
   });
   createRequest();
@@ -54,7 +54,7 @@ void CaptivePortalMultiRequest::onResult(CaptivePortalResult portalDetected) {
     return;
   }
   if (portalDetected == CaptivePortalResult::Failure) {
-    logger.log() << "Captive portal detect failed, retry!";
+    logger.warning() << "Captive portal detect failed, retry!";
     TimerSingleShot::create(this, 500, [this]() { createRequest(); });
     return;
   }

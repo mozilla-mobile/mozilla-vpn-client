@@ -86,11 +86,11 @@ WindowsFirewall::~WindowsFirewall() {
 
 bool WindowsFirewall::init() {
   if (m_init) {
-    logger.log() << "Alread initialised FW_WFP layer";
+    logger.warning() << "Alread initialised FW_WFP layer";
     return true;
   }
   if (m_sessionHandle == INVALID_HANDLE_VALUE) {
-    logger.log() << "Cant Init Sublayer with invalid wfp handle";
+    logger.error() << "Cant Init Sublayer with invalid wfp handle";
     return false;
   }
   // If we were not able to aquire a handle, this will fail anyway.
@@ -107,7 +107,7 @@ bool WindowsFirewall::init() {
   logger.log() << "Opening the filter engine";
   result = FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &wfp);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmEngineOpen0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmEngineOpen0 failed. Return value:.\n" << result;
     return false;
   }
   auto cleanup = qScopeGuard([&] { FwpmEngineClose0(wfp); });
@@ -125,7 +125,7 @@ bool WindowsFirewall::init() {
   // Step 1: Start Transaction
   result = FwpmTransactionBegin(wfp, NULL);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
 
@@ -140,13 +140,13 @@ bool WindowsFirewall::init() {
 
   result = FwpmSubLayerAdd0(wfp, &subLayer, NULL);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmSubLayerAdd0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmSubLayerAdd0 failed. Return value:.\n" << result;
     return false;
   }
   // Step 4: Commit!
   result = FwpmTransactionCommit0(wfp);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   logger.log() << "Initialised Sublayer";
@@ -209,7 +209,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS) {
-      logger.log() << "Failed to set rule " << name << "\n" << result;
+      logger.error() << "Failed to set rule " << name << "\n" << result;
       return false;
     }
   }
@@ -223,7 +223,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS) {
-      logger.log() << "Failed to set rule " << name << "\n" << result;
+      logger.error() << "Failed to set rule " << name << "\n" << result;
       return false;
     }
   }
@@ -237,7 +237,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS) {
-      logger.log() << "Failed to set rule " << name << "\n" << result;
+      logger.error() << "Failed to set rule " << name << "\n" << result;
       return false;
     }
   }
@@ -251,7 +251,7 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS) {
-      logger.log() << "Failed to set rule " << name << "\n" << result;
+      logger.error() << "Failed to set rule " << name << "\n" << result;
       return false;
     }
   }
@@ -273,42 +273,42 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
   }
 
   if (!blockAll(LOW_WEIGHT)) {
-    logger.log() << "Ruleset failed: blockAll";
+    logger.error() << "Ruleset failed: blockAll";
     disableKillSwitch();
     return false;
   };
   logger.log() << "Ruleset applied: blockAll";
 
   if (!allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowTrafficOfAdapter";
+    logger.error() << "Ruleset failed: allowTrafficOfAdapter";
     disableKillSwitch();
     return false;
   }
   logger.log() << "Ruleset applied: allowTrafficOfAdapter";
 
   if (!allowDHCPTraffic(MED_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowDHCPTraffic";
+    logger.error() << "Ruleset failed: allowDHCPTraffic";
     disableKillSwitch();
     return false;
   }
   logger.log() << "Ruleset applied: allowDHCPTraffic";
 
   if (!allowHyperVTraffic(MED_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowHyperVTraffic";
+    logger.error() << "Ruleset failed: allowHyperVTraffic";
     disableKillSwitch();
     return false;
   }
   logger.log() << "Ruleset applied: allowHyperVTraffic";
 
   if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowTrafficForAppOnAll";
+    logger.error() << "Ruleset failed: allowTrafficForAppOnAll";
     disableKillSwitch();
     return false;
   }
   logger.log() << "Ruleset applied: allowTrafficForAppOnAll: MozillaVPN";
 
   if (!allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT)) {
-    logger.log() << "Ruleset failed: allowTrafficTo DNS Server";
+    logger.error() << "Ruleset failed: allowTrafficTo DNS Server";
     disableKillSwitch();
     return false;
   }
@@ -326,7 +326,7 @@ bool WindowsFirewall::disableKillSwitch() {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
 
@@ -337,7 +337,7 @@ bool WindowsFirewall::disableKillSwitch() {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   m_activeRules.clear();
@@ -372,7 +372,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
 
@@ -407,7 +407,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS) {
-      logger.log() << "Failed to set rule " << name << "\n" << result;
+      logger.error() << "Failed to set rule " << name << "\n" << result;
       return false;
     }
   }
@@ -421,7 +421,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
     result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
 
     if (result != ERROR_SUCCESS) {
-      logger.log() << "Failed to set rule " << name << "\n" << result;
+      logger.error() << "Failed to set rule " << name << "\n" << result;
       return false;
     }
   }
@@ -429,7 +429,7 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   return true;
@@ -445,7 +445,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
 
@@ -525,7 +525,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   return true;
@@ -538,7 +538,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
   if (targetIP.protocol() == QAbstractSocket::IPv6Protocol) {
     // TODO: Implement it :)
     // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1370
-    logger.log() << "Allow Traffic to not implemented for v6 adresses yet";
+    logger.warning() << "Allow Traffic to not implemented for v6 adresses yet";
     return false;
   }
 
@@ -554,7 +554,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
   // Allow Traffic to IP with PORT using any protocol
@@ -611,7 +611,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
 
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   return true;
@@ -626,7 +626,7 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
   // Allow outbound DHCPv4
@@ -720,7 +720,7 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   return true;
@@ -735,7 +735,7 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
 
@@ -764,7 +764,7 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
 
   result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "Permit Hyper-V => Hyper-V outbound failed " << result;
+    logger.error() << "Permit Hyper-V => Hyper-V outbound failed " << result;
     return false;
   }
   m_activeRules.append(filterID);
@@ -783,7 +783,7 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   return true;
@@ -799,7 +799,7 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
     return false;
   }
 
@@ -855,7 +855,7 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
     return false;
   }
   return true;

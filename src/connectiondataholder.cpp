@@ -211,7 +211,7 @@ void ConnectionDataHolder::updateIpAddress() {
   auto state = MozillaVPN::instance()->controller()->state();
   // Only start the check if we're actually connected/connecting
   if (state != Controller::StateOn && state != Controller::StateConfirming) {
-    logger.log() << "Skip Updating IP address, not connected";
+    logger.warning() << "Skip Updating IP address, not connected";
     return;
   }
 
@@ -225,7 +225,7 @@ void ConnectionDataHolder::updateIpAddress() {
       ipfinder, &IPFinder::completed,
       [this](const QString& ipv4, const QString& ipv6, const QString& country) {
         if (ipv4.isEmpty() && ipv6.isEmpty()) {
-          logger.log() << "IP address request failed";
+          logger.error() << "IP address request failed";
           m_updatingIpAddress = false;
           emit ipAddressChecked();
           return;
@@ -236,7 +236,7 @@ void ConnectionDataHolder::updateIpAddress() {
             country != MozillaVPN::instance()->currentServer()->countryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
-          logger.log() << "Reported ip not in the right country, retry!";
+          logger.warning() << "Reported ip not in the right country, retry!";
           TimerSingleShot::create(this, 3000, [this]() { updateIpAddress(); });
         }
 

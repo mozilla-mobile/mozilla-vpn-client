@@ -52,7 +52,7 @@ bool DnsUtilsLinux::updateResolvers(const QString& ifname,
                                     const QList<QHostAddress>& resolvers) {
   m_ifindex = if_nametoindex(qPrintable(ifname));
   if (m_ifindex <= 0) {
-    logger.log() << "Unable to resolve ifindex for" << ifname;
+    logger.error() << "Unable to resolve ifindex for" << ifname;
     return false;
   }
 
@@ -87,7 +87,7 @@ bool DnsUtilsLinux::restoreResolvers() {
 void DnsUtilsLinux::dnsCallCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
   }
   delete call;
 }
@@ -169,7 +169,7 @@ void DnsUtilsLinux::updateLinkDomains() {
 void DnsUtilsLinux::dnsDomainsReceived(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QVariant> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error retrieving the DNS  domains from the DBus service";
+    logger.error() << "Error retrieving the DNS  domains from the DBus service";
     delete call;
     return;
   }

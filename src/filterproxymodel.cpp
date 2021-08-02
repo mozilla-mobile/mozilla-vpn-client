@@ -17,7 +17,7 @@ QJSValue FilterProxyModel::filterCallback() const { return m_filterCallback; }
 
 void FilterProxyModel::setFilterCallback(QJSValue filterCallback) {
   if (!filterCallback.isCallable()) {
-    logger.log()
+    logger.error()
         << "FilterProxyModel.filterCallback must be a JS callable value";
     return;
   }
@@ -54,7 +54,7 @@ bool FilterProxyModel::filterAcceptsRow(
   }
 
   if (!QmlEngineHolder::exists()) {
-    logger.log() << "Something bad is happening. Are we shutting down?";
+    logger.error() << "Something bad is happening. Are we shutting down?";
     return false;
   }
 

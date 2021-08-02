@@ -49,7 +49,7 @@ void ReleaseMonitor::schedule() {
 }
 
 void ReleaseMonitor::updateRequired() {
-  logger.log() << "update required";
+  logger.warning() << "update required";
   MozillaVPN::instance()->setUpdateRecommended(false);
   MozillaVPN::instance()->controller()->updateRequired();
 }
@@ -64,7 +64,7 @@ void ReleaseMonitor::update() {
 
   Updater* updater = Updater::create(this, true);
   if (!updater) {
-    logger.log() << "No updater supported for this platform. Fallback";
+    logger.warning() << "No updater supported for this platform. Fallback";
 
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);

@@ -103,7 +103,7 @@ void InspectorHttpConnection::processHeaders() {
       QFile file(p.m_file);
 
       if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        logger.log() << "Unable to read file" << p.m_file;
+        logger.error() << "Unable to read file" << p.m_file;
         break;
       }
 

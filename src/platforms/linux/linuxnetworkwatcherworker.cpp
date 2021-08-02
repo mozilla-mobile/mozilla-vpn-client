@@ -75,14 +75,14 @@ void LinuxNetworkWatcherWorker::initialize() {
   QDBusInterface nm(DBUS_NETWORKMANAGER, "/org/freedesktop/NetworkManager",
                     DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
   if (!nm.isValid()) {
-    logger.log() << "Failed to connect to the network manager via system dbus";
+    logger.error() << "Failed to connect to the network manager via system dbus";
     return;
   }
 
   QDBusMessage msg = nm.call("GetDevices");
   QDBusArgument arg = msg.arguments().at(0).value<QDBusArgument>();
   if (arg.currentType() != QDBusArgument::ArrayType) {
-    logger.log() << "Expected an array of devices";
+    logger.error() << "Expected an array of devices";
     return;
   }
 
@@ -107,7 +107,7 @@ void LinuxNetworkWatcherWorker::initialize() {
   }
 
   if (m_devicePaths.isEmpty()) {
-    logger.log() << "No wifi devices found";
+    logger.warning() << "No wifi devices found";
     return;
   }
 
@@ -143,7 +143,7 @@ void LinuxNetworkWatcherWorker::checkDevices() {
                                   .value<QDBusObjectPath>()
                                   .path();
     if (accessPointPath.isEmpty()) {
-      logger.log() << "No access point found";
+      logger.warning() << "No access point found";
       continue;
     }
 
@@ -159,7 +159,7 @@ void LinuxNetworkWatcherWorker::checkDevices() {
 
       // We have found 1 unsecured network. We don't need to check other wifi
       // network devices.
-      logger.log() << "Unsecured AP detected flags:"
+      logger.warning() << "Unsecured AP detected flags:"
                    << QString("%1:%2").arg(rsnFlags).arg(wpaFlags)
                    << "ssid:" << ssid;
       emit unsecuredNetwork(ssid, bssid);

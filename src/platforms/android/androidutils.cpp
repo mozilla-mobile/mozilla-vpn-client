@@ -118,7 +118,7 @@ bool AndroidUtils::maybeCompleteAuthentication(const QString& url) {
 }
 
 void AndroidUtils::abortAuthentication() {
-  logger.log() << "Aborting authentication";
+  logger.warning() << "Aborting authentication";
 
   Q_ASSERT(m_listener);
   emit m_listener->abortedByUser();

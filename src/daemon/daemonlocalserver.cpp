@@ -41,7 +41,7 @@ bool DaemonLocalServer::initialize() {
   }
 
   if (!m_server.listen(path)) {
-    logger.log() << "Failed to listen the daemon path";
+    logger.error() << "Failed to listen the daemon path";
     return false;
   }
 
@@ -70,7 +70,7 @@ QString DaemonLocalServer::daemonPath() const {
 #elif defined(MVPN_MACOS)
   QDir dir("/var/run");
   if (!dir.exists()) {
-    logger.log() << "/var/run doesn't exist. Fallback /tmp.";
+    logger.warning() << "/var/run doesn't exist. Fallback /tmp.";
     return TMP_PATH;
   }
 
@@ -80,12 +80,12 @@ QString DaemonLocalServer::daemonPath() const {
   }
 
   if (!dir.mkdir("mozillavpn")) {
-    logger.log() << "Failed to create /var/run/mozillavpn";
+    logger.warning() << "Failed to create /var/run/mozillavpn";
     return TMP_PATH;
   }
 
   if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
-    logger.log()
+    logger.warning()
         << "Failed to set the right permissions to /var/run/mozillavpn";
     return TMP_PATH;
   }

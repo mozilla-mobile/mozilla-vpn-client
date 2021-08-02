@@ -92,7 +92,7 @@ void LinuxSystemTrayHandler::showNotificationInternal(Message type,
   QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId, appIcon,
                                   title, message, actions, hints, timerMsec);
   if (!reply.isValid()) {
-    logger.log() << "Failed to show the notification";
+    logger.warning() << "Failed to show the notification";
   }
 
   m_lastNotificationId = reply;

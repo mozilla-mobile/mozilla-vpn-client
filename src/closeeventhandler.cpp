@@ -26,7 +26,7 @@ bool CloseEventHandler::eventHandled() {
     if (layer.m_type == Layer::eStackView) {
       QVariant property = layer.m_layer->property("depth");
       if (!property.isValid()) {
-        logger.log() << "Invalid depth property!!";
+        logger.warning() << "Invalid depth property!!";
         continue;
       }
 
@@ -42,7 +42,7 @@ bool CloseEventHandler::eventHandled() {
     Q_ASSERT(layer.m_type == Layer::eView);
     QVariant property = layer.m_layer->property("visible");
     if (!property.isValid()) {
-      logger.log() << "Invalid visible property!!";
+      logger.warning() << "Invalid visible property!!";
       continue;
     }
 
@@ -60,7 +60,7 @@ bool CloseEventHandler::eventHandled() {
   return false;
 #elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
     defined(MVPN_DUMMY)
-  logger.log() << "We should not be here! Why "
+  logger.error() << "We should not be here! Why "
                   "CloseEventHandler::eventHandled() is called on desktop?!?";
   return true;
 #else

@@ -25,7 +25,7 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
                                    scm_rights);
   err = GetLastError();
   if (err != NULL) {
-    logger.log() << " OpenSCManager failed code: " << err;
+    logger.error() << " OpenSCManager failed code: " << err;
     return;
   }
   logger.log() << "OpenSCManager access given - " << err;
@@ -100,7 +100,7 @@ SERVICE_STATUS_PROCESS WindowsServiceManager::getStatus() {
 bool WindowsServiceManager::startService() {
   auto state = getStatus().dwCurrentState;
   if (state != SERVICE_STOPPED && state != SERVICE_STOP_PENDING) {
-    logger.log() << ("Service start not possible, as its running");
+    logger.warning() << ("Service start not possible, as its running");
     emit serviceStarted();
     return true;
   }
@@ -119,12 +119,12 @@ bool WindowsServiceManager::startService() {
 
 bool WindowsServiceManager::stopService() {
   if (!m_has_access) {
-    logger.log() << "Need execute access to stop services";
+    logger.error() << "Need execute access to stop services";
     return false;
   }
   auto state = getStatus().dwCurrentState;
   if (state != SERVICE_RUNNING && state != SERVICE_START_PENDING) {
-    logger.log() << ("Service stop not possible, as its not running");
+    logger.warning() << ("Service stop not possible, as its not running");
   }
 
   bool ok = ControlService(m_service, SERVICE_CONTROL_STOP, NULL);

@@ -76,14 +76,14 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "Invalid input";
+    logger.error() << "Invalid input";
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue typeValue = obj.value("type");
   if (!typeValue.isString()) {
-    logger.log() << "No type command. Ignoring request.";
+    logger.warning() << "No type command. Ignoring request.";
     return;
   }
 
@@ -91,13 +91,13 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   if (type == "activate") {
     InterfaceConfig config;
     if (!Daemon::parseConfig(obj, config)) {
-      logger.log() << "Invalid configuration";
+      logger.error() << "Invalid configuration";
       emit disconnected();
       return;
     }
 
     if (!Daemon::instance()->activate(config)) {
-      logger.log() << "Failed to activate the interface";
+      logger.error() << "Failed to activate the interface";
       emit disconnected();
     }
     return;

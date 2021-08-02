@@ -66,11 +66,11 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
   if (seteuid(userid) < 0) {
-    logger.log() << "Failed to set effective UID";
+    logger.warning() << "Failed to set effective UID";
   }
   auto guard = qScopeGuard([&] {
     if (seteuid(realuid) < 0) {
-      logger.log() << "Failed to restore effective UID";
+      logger.warning() << "Failed to restore effective UID";
     }
   });
 
@@ -86,7 +86,7 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
       SLOT(gtkLaunchEvent(const QByteArray&, const QString&, qlonglong,
                           const QStringList&, const QVariantMap&)));
   if (!isConnected) {
-    logger.log() << "Failed to connect to GTK Launched signal";
+    logger.warning() << "Failed to connect to GTK Launched signal";
   }
 }
 

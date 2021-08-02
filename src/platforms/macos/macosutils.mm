@@ -75,10 +75,10 @@ void MacOSUtils::setDockClickHandler() {
   SEL shouldHandle = sel_registerName("applicationShouldHandleReopen:hasVisibleWindows:");
   if (class_getInstanceMethod(delegateClass, shouldHandle)) {
     if (!class_replaceMethod(delegateClass, shouldHandle, (IMP)dockClickHandler, "B@:")) {
-      logger.log() << "Failed to replace the dock click handler";
+      logger.error() << "Failed to replace the dock click handler";
     }
   } else if (!class_addMethod(delegateClass, shouldHandle, (IMP)dockClickHandler, "B@:")) {
-    logger.log() << "Failed to register the dock click handler";
+    logger.error() << "Failed to register the dock click handler";
   }
 }
 

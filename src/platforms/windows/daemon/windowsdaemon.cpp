@@ -59,7 +59,7 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   if (splitTunnelEnabled) {
     logger.log() << "Tunnel UP, Starting SplitTunneling";
     if (!WindowsSplitTunnel::isInstalled()) {
-      logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
+      logger.warning() << "Split Tunnel Driver not Installed yet, fixing this.";
       WindowsSplitTunnel::installDriver();
     }
     m_splitTunnelManager.start(m_inetAdapterIndex);
@@ -100,7 +100,7 @@ bool WindowsDaemon::supportServerSwitching(
 }
 
 void WindowsDaemon::monitorBackendFailure() {
-  logger.log() << "Tunnel service is down";
+  logger.warning() << "Tunnel service is down";
 
   emit backendFailure();
   deactivate();

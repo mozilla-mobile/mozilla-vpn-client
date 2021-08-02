@@ -61,7 +61,7 @@ WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   QString tunnelFile = WindowsCommons::tunnelConfigFile();
   if (tunnelFile.isEmpty()) {
-    logger.log() << "Failed to choose the tunnel config file";
+    logger.error() << "Failed to choose the tunnel config file";
     return false;
   }
 
@@ -73,12 +73,12 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   QMap<QString, QString> extraConfig;
   extraConfig["Table"] = "off";
   if (!WgQuickProcess::createConfigFile(tunnelFile, config, extraConfig)) {
-    logger.log() << "Failed to create a config file";
+    logger.error() << "Failed to create a config file";
     return false;
   }
 
   if (!m_tunnel.start(tunnelFile)) {
-    logger.log() << "Failed to activate the tunnel service";
+    logger.error() << "Failed to activate the tunnel service";
     return false;
   }
 
@@ -87,7 +87,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   QString ifAlias = QFileInfo(tunnelFile).baseName();
   DWORD result = ConvertInterfaceAliasToLuid((wchar_t*)ifAlias.utf16(), &luid);
   if (result != 0) {
-    logger.log() << "Failed to lookup LUID:" << result;
+    logger.error() << "Failed to lookup LUID:" << result;
     return false;
   }
   m_luid = luid.Value;
@@ -160,7 +160,7 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
   // Install the route
   result = CreateIpForwardEntry2(&entry);
   if (result != NO_ERROR) {
-    logger.log() << "Failed to create route to" << prefix.toString()
+    logger.error() << "Failed to create route to" << prefix.toString()
                  << "result:" << result;
   }
   return result == NO_ERROR;
@@ -173,7 +173,7 @@ void WireguardUtilsWindows::flushRoutes() {
   // Fetch the routing table
   result = GetIpForwardTable2(AF_UNSPEC, &table);
   if (result != NO_ERROR) {
-    logger.log() << "Failed to fetch route table:" << result;
+    logger.error() << "Failed to fetch route table:" << result;
     return;
   }
   auto guard = qScopeGuard([&] { FreeMibTable(table); });

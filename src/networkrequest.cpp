@@ -632,7 +632,7 @@ void NetworkRequest::replyFinished() {
   QByteArray data = m_reply->readAll();
 
   if (m_reply->error() != QNetworkReply::NoError) {
-    logger.log() << "Network error:" << m_reply->errorString()
+    logger.error() << "Network error:" << m_reply->errorString()
                  << "status code:" << status << "- body:" << data;
     emit requestFailed(m_reply->error(), data);
     return;
@@ -641,7 +641,7 @@ void NetworkRequest::replyFinished() {
   // This is an extra check for succeeded requests (status code 200 vs 201, for
   // instance). The real network status check is done in the previous if-stmt.
   if (m_status && status != m_status) {
-    logger.log() << "Status code unexpected - status code:" << status
+    logger.error() << "Status code unexpected - status code:" << status
                  << "- expected:" << m_status;
     emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
@@ -676,7 +676,7 @@ void NetworkRequest::timeout() {
   m_completed = true;
   m_reply->abort();
 
-  logger.log() << "Network request timeout";
+  logger.error() << "Network request timeout";
   emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
@@ -733,7 +733,7 @@ void NetworkRequest::disableTimeout() { m_timer.stop(); }
 
 QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
   if (!m_reply) {
-    logger.log() << "INTERNAL ERROR! NetworkRequest::rawHeader called before "
+    logger.error() << "INTERNAL ERROR! NetworkRequest::rawHeader called before "
                     "starting the request";
     return QByteArray();
   }
@@ -743,7 +743,7 @@ QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
 
 void NetworkRequest::abort() {
   if (!m_reply) {
-    logger.log() << "INTERNAL ERROR! NetworkRequest::abort called before "
+    logger.error() << "INTERNAL ERROR! NetworkRequest::abort called before "
                     "starting the request";
     return;
   }

@@ -31,7 +31,7 @@ void VersionApi::start() {
 
   connect(request, &NetworkRequest::requestFailed,
           [](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
+            logger.error() << "Request failed" << error;
           });
 
   connect(request, &NetworkRequest::requestCompleted,
@@ -49,7 +49,7 @@ void VersionApi::start() {
 bool VersionApi::processData(const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "A valid JSON object expected";
+    logger.error() << "A valid JSON object expected";
     return false;
   }
 
@@ -64,7 +64,7 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonValue platformDataValue = obj.value(platformKey);
   if (!platformDataValue.isObject()) {
-    logger.log() << "Platform object not available";
+    logger.error() << "Platform object not available";
     return false;
   }
 
@@ -76,13 +76,13 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonValue latestValue = platformData.value("latest");
   if (!latestValue.isObject()) {
-    logger.log() << "Platform.latest object not available";
+    logger.warning() << "Platform.latest object not available";
   } else {
     QJsonObject latestData = latestValue.toObject();
 
     QJsonValue latestVersionValue = latestData.value("version");
     if (!latestVersionValue.isString()) {
-      logger.log() << "Platform.latest.version string not available";
+      logger.warning() << "Platform.latest.version string not available";
     } else {
       latestVersion = latestVersionValue.toString();
     }
@@ -90,13 +90,13 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonValue minimumValue = platformData.value("minimum");
   if (!minimumValue.isObject()) {
-    logger.log() << "Platform.minimum object not available";
+    logger.warning() << "Platform.minimum object not available";
   } else {
     QJsonObject minimumData = minimumValue.toObject();
 
     QJsonValue minimumVersionValue = minimumData.value("version");
     if (!minimumVersionValue.isString()) {
-      logger.log() << "Platform.minimum.version string not available";
+      logger.warning() << "Platform.minimum.version string not available";
     } else {
       minimumVersion = minimumVersionValue.toString();
     }
