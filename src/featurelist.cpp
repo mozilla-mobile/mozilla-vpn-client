@@ -130,7 +130,7 @@ bool FeatureList::authenticationInApp() const {
 bool FeatureList::accountCreationInAppSupported() const {
 #if defined(MVPN_IOS)
   // Soon-ish, android will have IAP. But not now yet.
-  return true
+  return true;
 #else
   return false;
 #endif
