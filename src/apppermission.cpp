@@ -98,16 +98,10 @@ void AppPermission::flip(const QString& appID) {
   if (settingsHolder->hasVpnDisabledApp(appID)) {
     logger.log() << "Enabled --" << appID << " for VPN";
     settingsHolder->removeVpnDisabledApp(appID);
-    //% "%0 is now Unprotected"
-    QString message = qtTrId("splittunnel.flip.uprotected").arg(m_listprovider->getAppName(appID));
-    emit notification("success",message);
     
   } else {
     logger.log() << "Disabled --" << appID << " for VPN";
     settingsHolder->addVpnDisabledApp(appID);
-    //% "%1 is now Protected"
-    QString message = qtTrId("splittunnel.flip.protected").arg(m_listprovider->getAppName(appID));
-    emit notification("success",message);
   }
 
   int index = m_applist.indexOf(AppDescription(appID));

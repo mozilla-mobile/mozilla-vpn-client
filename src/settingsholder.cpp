@@ -377,9 +377,6 @@ void SettingsHolder::addMissingApp(const QString& appID) {
 }
 #undef GETSET
 
-
-
-
 bool SettingsHolder::hasVpnDisabledApp(const QString& appID) {
   QStringList applist;
   if (hasVpnDisabledApps()) {

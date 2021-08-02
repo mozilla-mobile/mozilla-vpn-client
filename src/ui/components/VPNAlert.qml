@@ -10,7 +10,7 @@ import QtGraphicalEffects 1.0
 
 
 Rectangle {
-    id: toastBox
+    id: alertBox
     // Defines what type of alert this is
     property var alertType: stateNames.info
     // Contains all accepted values for alertType
@@ -46,7 +46,6 @@ Rectangle {
     Layout.fillWidth: isLayout
 
     onVisibleChanged: {
-        console.log("VISIBLE CHANGED ")
         if (visible) {
             showAlert.start();
         }
@@ -59,7 +58,7 @@ Rectangle {
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
         }
-        if(toastBox.duration > 0){
+        if(alertBox.duration > 0){
             console.log("Toasbox timer start")
             autoHideTimer.start()
         }
@@ -68,13 +67,12 @@ Rectangle {
     // Private Properties, will be changed depnding on alertType
     QtObject {
         id: style
-        // From Nebula Figma
         readonly property string darkCloseIcon: "../resources/close-dark.svg"
         readonly property string whiteCloseIcon: "../resources/close-white.svg"
         property var alertColor: "black";
-        property var alertFocusColor: "gray";
+        property var alertHoverColor: "gray";
         property var alertClickColor: "white";
-        property var fontColor: "#FFFFFF"
+        property var fontColor: "yellow"
         property var fontSize: 13
         property var lineHeight: 21
         property var borderRadius: 4
@@ -97,9 +95,9 @@ Rectangle {
             PropertyChanges {
                 target: style;
                 alertColor: Theme.blue
-                alertFocusColor: Theme.blueHovered
+                alertHoverColor: Theme.blueHovered
                 alertClickColor: Theme.bluePressed
-                fontColor: Theme.white
+                fontColor: "#FFFFFF"
                 closeIcon: whiteCloseIcon
             }
         },
@@ -107,10 +105,10 @@ Rectangle {
             name: stateNames.success
             PropertyChanges {
                 target: style;
-                alertColor: Theme.greenAlert.buttonHovered
-                alertFocusColor: Theme.greenAlert.buttonHovered
+                alertColor: Theme.greenAlert.defaultColor
+                alertHoverColor: Theme.greenAlert.buttonHovered
                 alertClickColor: Theme.greenAlert.buttonPressed
-                fontColor: Theme.black
+                fontColor: Theme.fontColorDark
                 closeIcon: darkCloseIcon
             }
         },
@@ -119,7 +117,7 @@ Rectangle {
             PropertyChanges {
                 target: style;
                 alertColor: Theme.red
-                alertFocusColor: Theme.redHovered
+                alertHoverColor: Theme.redHovered
                 alertClickColor: Theme.redPressed
                 fontColor: "#FFFFFF"
                 closeIcon: whiteCloseIcon
@@ -130,7 +128,7 @@ Rectangle {
             PropertyChanges {
                 target: style;
                 alertColor: Theme.orange
-                alertFocusColor: Theme.orangeHovered
+                alertHoverColor: Theme.orangeHovered
                 alertClickColor: Theme.organgePressed
                 fontColor: Theme.fontColorDark
                 closeIcon: darkCloseIcon
@@ -139,7 +137,7 @@ Rectangle {
     ]
 
     Timer {
-          interval: toastBox.duration
+          interval: alertBox.duration
           id: autoHideTimer
           running: false
           repeat: false
@@ -162,13 +160,13 @@ Rectangle {
 
     VPNButtonBase {
         id: alertAction
-        anchors.fill: toastBox
+        anchors.fill: alertBox
         radius: Theme.cornerRadius
         onClicked: {
             if(alertActionText != ""){
               // Only Trigger an Action,
               // if we have an actionable text
-              toastBox.onActionPressed();
+              alertBox.onActionPressed();
               closeAlert.start();
             }
         }
@@ -184,7 +182,7 @@ Rectangle {
             Label {
                 id: label
                  anchors.centerIn: parent
-                 text: alertText + " " + "<b><u>" + alertActionText + "</b></u>"
+                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
                  horizontalAlignment: Text.AlignHCenter
                  font.pixelSize: Theme.fontSizeSmall
                  color: style.fontColor
@@ -199,21 +197,21 @@ Rectangle {
         states: [
             State {
                 name: Theme.uiState.stateDefault
-                PropertyChanges {target: toastBox; color: style.alertColor }
+                PropertyChanges {target: alertBox; color: style.alertColor }
             },
             State {
                 name: Theme.uiState.statePressed
-                PropertyChanges {target: toastBox; color: style.alertClickColor }
+                PropertyChanges {target: alertBox; color: style.alertClickColor }
             },
             State {
                 name: Theme.uiState.stateHovered
-                PropertyChanges {target: toastBox; color: style.alertFocusColor }
+                PropertyChanges {target: alertBox; color: style.alertHoverColor }
             }
         ]
     }
 
     VPNFocusOutline {
-        focusColorScheme: style.alertFocusColor
+        focusColorScheme: style.alertHoverColor
         focusedComponent: closeButton
         anchors.fill: closeButton
         setMargins: -3
@@ -226,16 +224,16 @@ Rectangle {
 
         id: closeButton
 
-        height: toastBox.height
+        height: alertBox.height
         width: Theme.rowHeight
         clip: true
-        anchors.right: toastBox.right
+        anchors.right: alertBox.right
         anchors.rightMargin: 0
         radius: Theme.cornerRadius
         Accessible.name: "Close"
         onClicked: {
             closeAlert.start();
-            toastBox.onClosePressed();
+            alertBox.onClosePressed();
         }
 
         VPNFocusBorder {
@@ -267,7 +265,7 @@ Rectangle {
         }
 
         Image {
-            id: toastBoxClose
+            id: alertBoxClose
             source: style.closeIcon
             sourceSize.width: 12
             sourceSize.height: 12
@@ -287,14 +285,14 @@ Rectangle {
             },
             State {
                 name: Theme.uiState.stateHovered
-                PropertyChanges {target: backgroundRect; color: style.alertFocusColor }
+                PropertyChanges {target: backgroundRect; color: style.alertHoverColor }
             }
         ]
 
     }
 
     VPNFocusBorder {
-        anchors.fill: toastBox
+        anchors.fill: alertBox
         border.color: style.focusBorder
         opacity: alertAction.activeFocus ? 1 : 0
         radius: Theme.cornerRadius
@@ -304,14 +302,14 @@ Rectangle {
         id: showAlert
 
         PropertyAnimation {
-            target: toastBox
+            target: alertBox
             property: isLayout ? "Layout.minimumHeight" : "height"
             to: style.alertHeight
             duration: 60
         }
 
         PropertyAnimation {
-            target: toastBox
+            target: alertBox
             property: "opacity"
             to: 1
             duration: 100
@@ -319,8 +317,8 @@ Rectangle {
 
     }
     function remove(){
-        if(toastBox.destructive){
-            toastBox.destroy(100)
+        if(alertBox.destructive){
+            alertBox.destroy(100)
         }
     }
 
@@ -329,20 +327,20 @@ Rectangle {
         id: closeAlert
 
         PropertyAnimation {
-            target: toastBox
+            target: alertBox
             property: "opacity"
             to: 0
             duration: 60
         }
 
         PropertyAnimation {
-            target: toastBox
+            target: alertBox
             property: isLayout ? "Layout.minimumHeight" : "height"
             to: 0
             duration: 60
         }
         PropertyAction {
-            target: toastBox
+            target: alertBox
             property: "visible"
             value: "false"
         }
