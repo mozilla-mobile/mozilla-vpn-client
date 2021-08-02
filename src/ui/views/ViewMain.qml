@@ -44,22 +44,6 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
-    Component {
-        id: redSquare
-        Rectangle {
-            color: "red"
-            width: 10
-            height: 10
-        }
-    }
-
-    Loader {
-        id: testLoader
-        source: ""
-        onStatusChanged: if (testLoader.status === Loader.Ready) {
-            stackview.push("ViewServers.qml");
-        }
-    }
 
     GridLayout {
         id: col
