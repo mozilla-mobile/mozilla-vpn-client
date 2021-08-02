@@ -14,7 +14,7 @@ TextField {
     // TODO Add strings for Accessible.description, Accessible.name
     property bool hasError: false
     property bool showInteractionStates: true
-    property bool loseFocusOnBlur: true
+    property bool forceBlurOnOutsidePress: true
 
     id: textField
 

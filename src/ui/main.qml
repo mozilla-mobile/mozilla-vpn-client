@@ -100,7 +100,7 @@ Window {
         propagateComposedEvents: true
         z: 10
         onPressed: {
-            if (window.activeFocusItem && window.activeFocusItem.loseFocusOnOutsidePress) {
+            if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
                 window.activeFocusItem.focus = false;
             }
             mouse.accepted = false;
