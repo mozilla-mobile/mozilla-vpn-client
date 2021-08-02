@@ -10,6 +10,7 @@ import Mozilla.VPN 1.0
 import "../components"
 import "../components/forms"
 import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 Item {
     id: root
@@ -102,6 +103,28 @@ Item {
                     }
                     placeholderText: "Search countries"
                     stateError: countriesRepeater.count === 0
+
+                    RowLayout {
+                        id: searchWarning
+                        anchors.top: serverSearchInput.bottom
+                        anchors.topMargin: Theme.listSpacing
+                        visible: serverSearchInput.stateError
+
+                        VPNIcon {
+                            id: warningIcon
+
+                            source: "../resources/warning.svg"
+                            sourceSize.height: 14
+                            sourceSize.width: 14
+                        }
+
+                        VPNInterLabel {
+                            id: warningLabel
+                            color: Color.error.default
+                            text: "No results. Try a different search"
+                            font.pixelSize: Theme.fontSizeSmall
+                        }
+                    }
                 }
 
                 VPNFilterProxyModel {

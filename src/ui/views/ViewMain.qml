@@ -57,7 +57,7 @@ VPNFlickable {
         id: testLoader
         source: ""
         onStatusChanged: if (testLoader.status === Loader.Ready) {
-            console.log("looaododed")
+            stackview.push("ViewServers.qml");
         }
     }
 
