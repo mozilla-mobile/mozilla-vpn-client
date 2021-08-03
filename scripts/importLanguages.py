@@ -19,6 +19,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '-p', '--prod', default=False, action="store_true", dest="isprod",
     help='Build only for production locales.')
+parser.add_argument(
+    '-m', '--macos', default=False, action="store_true", dest="ismacos",
+    help='Include the MacOS bundle data')
 args = parser.parse_args()
 
 def title(a, b):
@@ -126,10 +129,12 @@ with open('translations/translations.pri', 'w') as pri_file:
         output.append(f"../{file['ts']} \\ ")
     output.append('\n\n##End')
 
-    for file in l10n_files:
-        output.append(f"LANGUAGES_FILES_{file['locale']}.files += ../translations/{file['locale']}/locversion.plist")
-        output.append(f"LANGUAGES_FILES_{file['locale']}.path = Contents/Resources/{file['locale']}.lproj")
-        output.append(f"QMAKE_BUNDLE_DATA += LANGUAGES_FILES_{file['locale']}")
+    if args.ismacos:
+        for file in l10n_files:
+            output.append(f"LANGUAGES_FILES_{file['locale']}.files += ../translations/{file['locale']}/locversion.plist")
+            output.append(f"LANGUAGES_FILES_{file['locale']}.path = Contents/Resources/{file['locale']}.lproj")
+            output.append(f"QMAKE_BUNDLE_DATA += LANGUAGES_FILES_{file['locale']}")
+
     pri_file.write('\n'.join(output))
 
 # Step 4
