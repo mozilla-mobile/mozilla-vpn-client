@@ -25,16 +25,15 @@ class AuthenticationInApp final : public QObject {
     StateSignIn,
     // Sign up
     StateSignUp,
-    // The authentication requires an email verification (6-digit code)
-    // At this point, the user is not sign-in/up. We are waiting for this extra
-    // step to complete the authentication.
-    StateEmailVerification,
-    // The authentication requires an account verification (6-digit code)
-    // This is similar to the previous step, but it happens when the account
-    // has not been verified yet.
-    // The code expires after 5 minutes. Call
-    // `resendVerificationSessionCodeEmail`
-    // to have a new code.
+    // The authentication requires an unblock code (6-digit code) At this
+    // point, the user needs to check their mailbox and pass the 6-digit
+    // unblock code. Then, the signIn() can continue.  The code expires after 5
+    // minutes. Call `resendUnblockCodeEmail` to have a new code.
+    StateUnblockCodeNeeded,
+    // The authentication requires an account verification (6-digit code) This
+    // is similar to the previous step, but it happens when the account has not
+    // been verified yet.  The code expires after 5 minutes. Call
+    // `resendVerificationSessionCodeEmail` to have a new code.
     StateVerificationSessionByEmailNeeded,
     // The two-factor authentication session verification.
     StateVerificationSessionByTotpNeeded,
@@ -80,8 +79,11 @@ class AuthenticationInApp final : public QObject {
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();
 
-  // This needs to be called when we are in StateEmailVerification state.
-  Q_INVOKABLE void verifyEmailCode(const QString& code);
+  // This needs to be called when we are in StateUnblockCodeNeeded state.
+  Q_INVOKABLE void setUnblockCodeAndContinue(const QString& unblockCode);
+
+  // This can be called when we are in StateUnblockCodeNeeded state.
+  Q_INVOKABLE void resendUnblockCodeEmail();
 
   // This needs to be called when we are in
   // StateVerificationSessionByEmailNeeded state.

@@ -53,10 +53,10 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateEmailVerification
+            name: VPNAuthInApp.StateUnblockCodeNeeded
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationEmailVerification.qml"
+                source: "ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 

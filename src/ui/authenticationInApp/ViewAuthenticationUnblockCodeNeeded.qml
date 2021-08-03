@@ -11,15 +11,15 @@ Item {
     // TODO
     // If we are here, we were trying to complete the authentication flow using
     // an existing account. That account has not been verified yet. The user
-    // needs to insert the 6-digit code.
-    // After this step, call `verifyEmailCode()` with the code. If the code is
+    // needs to insert the 6-digit code. The code expires after 5 minutes. Use
+    // `resendUnblockCodeEmail` if needed.
+    // After this step, call `setUnblockCodeAndContinue()` with the code. If the code is
     // not valid, an error will be signaled.
     // The next steps are:
     // - Sign-in again.
     // - errors.
-    // TODO: resend the verify-email-code. (please keep this TODO!)
 
-    Component.onCompleted: console.log("EMAIL VERIFICATION")
+    Component.onCompleted: console.log("UNBLOCK CODE NEEDED");
 
     Text {
         id: msg
@@ -36,12 +36,23 @@ Item {
     }
 
     VPNButton {
+        id: continueButton
         anchors.top: codeInput.bottom
         anchors.bottomMargin: 24
         text: "Verify" // TODO
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 5
-        onClicked: VPNAuthInApp.verifyEmailCode(codeInput.text);
+        onClicked: VPNAuthInApp.setUnblockCodeAndContinue(codeInput.text);
+    }
+
+    VPNButton {
+        anchors.top: continueButton.bottom
+        anchors.bottomMargin: 24
+        text: "Send email again" // TODO
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 5
+        onClicked: VPNAuthInApp.resendUnblockCodeEmail();
     }
 }
