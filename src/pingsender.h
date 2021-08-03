@@ -20,7 +20,11 @@ class PingSender : public QObject {
   static quint16 inetChecksum(const void* data, size_t length);
 
  protected:
+  // QProcess is not supported on iOS. Because of this we cannot use the `ping`
+  // app as fallback on this platform.
+#ifndef MVPN_IOS
   void genericSendPing(const QStringList& args, qint16 sequence);
+#endif
 
  signals:
   void recvPing(quint16 sequence);
