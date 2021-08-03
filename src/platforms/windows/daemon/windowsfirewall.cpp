@@ -588,6 +588,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
   filter.weight.type = FWP_UINT8;
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+  filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;  // Hard Permit!
 
   uint64_t filterID = 0;
   auto name = std::wstring(L"Permit outbound Traffic to Fixed IPv4");
