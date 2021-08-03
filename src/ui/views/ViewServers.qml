@@ -101,7 +101,7 @@ Item {
                     onTextChanged: () => {
                         countriesModel.invalidate();
                     }
-                    placeholderText: VPNl18n.tr(VPNl18n.ServerViewSearchPlaceholder)
+                    placeholderText: VPNl18n.tr(VPNl18n.ServersViewSearchPlaceholder)
                     stateError: countriesRepeater.count === 0
 
                     RowLayout {
@@ -121,7 +121,7 @@ Item {
                         VPNInterLabel {
                             id: warningLabel
                             color: Color.error.default
-                            text: VPNl18n.tr(VPNl18n.ServerViewSearchNoResultsLabel)
+                            text: VPNl18n.tr(VPNl18n.ServersViewSearchNoResultsLabel)
                             font.pixelSize: Theme.fontSizeSmall
                         }
                     }
