@@ -8,6 +8,7 @@
 #include "../windowscommons.h"
 #include "../../daemon/interfaceconfig.h"
 #include "../../ipaddressrange.h"
+#include "../../ipaddress.h"
 
 #include <QApplication>
 #include <QObject>
@@ -26,6 +27,8 @@
 #include <initguid.h>
 #include <guiddef.h>
 #include <qaccessible.h>
+
+#define IPV6_ADDRESS_SIZE 16
 
 // ID for the Firewall Sublayer
 DEFINE_GUID(ST_FW_WINFW_BASELINE_SUBLAYER_KEY, 0xc78056ff, 0x2bc1, 0x4211, 0xaa,
@@ -293,7 +296,8 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
 
   logger.log() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
-  #undef FW_OK;
+  #undef FW_OK
+
 }
 
 bool WindowsFirewall::disableKillSwitch() {
@@ -595,12 +599,6 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
   return true;
 }
 
-bool WindowsFirewall::allowTrafficTo(const IPAddressRange& range ,uint8_t weight){
-
-
-  return true;
-}
-
 bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
   // Start Transaction
   auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
@@ -845,9 +843,97 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
   return true;
 }
 
+
+bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight){
+  IPAddress addr = IPAddress::create(range.toString());
+
+  auto lower = addr.address();
+  auto upper = addr.broadcastAddress();
+
+  // Start Transaction
+  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
+  auto cleanup = qScopeGuard([&] {
+    if (result != ERROR_SUCCESS) {
+      FwpmTransactionAbort0(m_sessionHandle);
+    }
+  });
+  if (result != ERROR_SUCCESS) {
+    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    return false;
+  }
+  const bool isV4 = addr.type() == QAbstractSocket::IPv4Protocol;
+  const GUID layerKeyOut= isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+  const GUID layerKeyIn = isV4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4 : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+
+  uint64_t filterID = 0;
+   
+  // Assemble the Filter base
+  FWPM_FILTER0 filter;
+  memset(&filter, 0, sizeof(filter));
+  filter.action.type = FWP_ACTION_BLOCK;
+  filter.weight.type = FWP_UINT8;
+  filter.weight.uint8 = weight;
+  filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+
+
+  FWPM_FILTER_CONDITION0 cond[1] = { 0 };
+  FWP_RANGE0 ipRange;
+  toFWPValue(ipRange.valueLow,lower);
+  toFWPValue(ipRange.valueHigh,upper);
+  
+  cond[0].fieldKey =FWPM_CONDITION_IP_REMOTE_ADDRESS;
+  cond[0].matchType = FWP_MATCH_RANGE;
+  cond[0].conditionValue.type = FWP_RANGE_TYPE;
+  cond[0].conditionValue.rangeValue = &ipRange;
+
+  filter.numFilterConditions=1;
+  filter.filterCondition = cond;
+
+  { // Set outbound rule for iprange 
+    QString name = QString("Block Outbound traffic to %1 ").arg(range.toString());  
+    std::wstring wname = name.toStdWString();
+    filter.displayData.name = (PWSTR) wname.c_str();
+    filter.layerKey = layerKeyOut;
+
+    if (result != ERROR_SUCCESS) {
+      return false;
+    }
+    m_activeRules.append(filterID);
+  }
+  { // Set inbound rule for iprange 
+    QString name = QString("Block Inbound traffic to %1 ").arg(range.toString());  
+    std::wstring wname = name.toStdWString();
+    filter.displayData.name = (PWSTR) wname.c_str();
+    filter.layerKey = layerKeyIn;
+
+    if (result != ERROR_SUCCESS) {
+      return false;
+    }
+    m_activeRules.append(filterID);
+  }
+ 
+  // Commit!
+  result = FwpmTransactionCommit0(m_sessionHandle);
+  if (result != ERROR_SUCCESS) {
+    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    return false;
+  }
+  return true;
+}
+
+bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList ,uint8_t weight){
+  for(auto range:rangeList){
+    if(!blockTrafficTo(range,weight)){
+      return false;
+    }
+  }
+  return true;
+}
+
 // Returns the Path of the Current Executable this runs in
 QString WindowsFirewall::getCurrentPath() {
-  QByteArray buffer(2048, 0xFF);
+  const unsigned char initValue = 0xff;
+  QByteArray buffer(2048, initValue);
   auto ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
 
   if (ok == ERROR_INSUFFICIENT_BUFFER) {
@@ -858,6 +944,20 @@ QString WindowsFirewall::getCurrentPath() {
     WindowsCommons::windowsLog("Err fetching dos path");
     return "";
   }
-  QString::fromWCharArray((wchar_t*)buffer.data());
+
   return QString::fromLocal8Bit(buffer);
+}
+
+
+void WindowsFirewall::toFWPValue(FWP_VALUE0_& value,const QHostAddress& addr){
+  const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
+  if(isV4){
+    value.type = FWP_UINT32;
+    value.uint32 = addr.toIPv4Address();
+  }
+  value.type = FWP_BYTE_ARRAY16_TYPE;
+  auto v6bytes = addr.toIPv6Address();
+  RtlCopyMemory(&v6bytes,
+                value.byteArray16,
+                IPV6_ADDRESS_SIZE);
 }

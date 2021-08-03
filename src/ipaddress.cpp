@@ -142,6 +142,10 @@ IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
 
 IPAddress::~IPAddress() { MVPN_COUNT_DTOR(IPAddress); }
 
+QAbstractSocket::NetworkLayerProtocol IPAddress::type() const{
+  return m_address.protocol();
+}
+
 bool IPAddress::overlaps(const IPAddress& other) const {
   return other.contains(m_address) || other.contains(m_broadcastAddress) ||
          contains(other.m_address) || contains(other.m_broadcastAddress);
