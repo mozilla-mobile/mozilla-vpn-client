@@ -13,6 +13,7 @@
 class QHostAddress;
 class IpAdressRange;
 struct FWP_VALUE0_;
+struct FWP_CONDITION_VALUE0_;
 
 class WindowsFirewall final : public QObject {
  public:
@@ -31,7 +32,8 @@ class WindowsFirewall final : public QObject {
   QList<uint64_t> m_activeRules;
 
   QString getCurrentPath();
-  void toFWPValue(FWP_VALUE0_& value,const QHostAddress& addr);
+  void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value);
+  void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_ & value);
   bool allowTrafficForAppOnAdapter(const QString& exePath, int networkIndex);
   bool allowTrafficForAppOnAll(const QString& exePath, int weight);
   bool blockTrafficTo(const QList<IPAddressRange>& range ,uint8_t weight);

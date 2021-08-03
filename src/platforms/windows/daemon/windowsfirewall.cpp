@@ -517,12 +517,10 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
                                      int weight) {
   logger.log() << "Requesting to allow Traffic to: " << targetIP.toString()
                << ":" << port;
-  if (targetIP.protocol() == QAbstractSocket::IPv6Protocol) {
-    // TODO: Implement it :)
-    // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1370
-    logger.log() << "Allow Traffic to not implemented for v6 adresses yet";
-    return false;
-  }
+
+  bool isIPv4 = targetIP.protocol() == QAbstractSocket::IPv4Protocol;
+  GUID layerOut = isIPv4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+  GUID layoutIn = isIPv4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4 : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
 
   quint32_be ipBigEndian;
   quint32 ip = targetIP.toIPv4Address();
@@ -558,8 +556,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
 
   conds[3].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
   conds[3].matchType = FWP_MATCH_EQUAL;
-  conds[3].conditionValue.type = FWP_UINT32;
-  conds[3].conditionValue.uint32 = ipBigEndian;
+  importAddress(targetIP,conds[3].conditionValue);
 
   // Assemble the Filter base
   FWPM_FILTER0 filter;
@@ -572,25 +569,24 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
   uint64_t filterID = 0;
-  auto name = std::wstring(L"Permit outbound Traffic to Fixed IPv4");
+  auto name = std::wstring(L"Permit outbound Traffic to Fixed IP");
   filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
+  filter.layerKey = layerOut;
   result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
     return false;
   }
   m_activeRules.append(filterID);
 
-  name = std::wstring(L"Permit inbound Traffic from Fixed IPv4");
+  name = std::wstring(L"Permit inbound Traffic from Fixed IP");
   filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
+  filter.layerKey = layoutIn;
 
   result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
     return false;
   }
   m_activeRules.append(filterID);
-
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
     logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
@@ -659,7 +655,6 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
   // Allow inbound DHCPv4
   {
     FWPM_FILTER_CONDITION0 conds[3];
-    // Condition: Request must be targeting the TUN interface
     conds[0].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
     conds[0].matchType = FWP_MATCH_EQUAL;
     conds[0].conditionValue.type = FWP_UINT8;
@@ -696,8 +691,87 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     }
     m_activeRules.append(filterID);
   }
-  // TODO: Allow v6 DHCP
-  // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1370
+
+    // Allow outbound DHCPv6
+  {
+    FWPM_FILTER_CONDITION0 conds[3];
+    // Condition: Request must be targeting the TUN interface
+    conds[0].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
+    conds[0].matchType = FWP_MATCH_EQUAL;
+    conds[0].conditionValue.type = FWP_UINT8;
+    conds[0].conditionValue.uint8 = (IPPROTO_UDP);
+
+    conds[1].fieldKey = FWPM_CONDITION_IP_LOCAL_PORT;
+    conds[1].matchType = FWP_MATCH_EQUAL;
+    conds[1].conditionValue.type = FWP_UINT16;
+    conds[1].conditionValue.uint16 = (68);
+
+    conds[2].fieldKey = FWPM_CONDITION_IP_REMOTE_PORT;
+    conds[2].matchType = FWP_MATCH_EQUAL;
+    conds[2].conditionValue.type = FWP_UINT16;
+    conds[2].conditionValue.uint16 = 67;
+
+    // Assemble the Filter base
+    FWPM_FILTER0 filter;
+    memset(&filter, 0, sizeof(filter));
+    filter.filterCondition = conds;
+    filter.numFilterConditions = 3;
+    filter.action.type = FWP_ACTION_PERMIT;
+    filter.weight.type = FWP_UINT8;
+    filter.weight.uint8 = weight;
+    filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+
+    uint64_t filterID = 0;
+    auto name = std::wstring(L"Permit outbound DHCPv6");
+    filter.displayData.name = (PWSTR)name.c_str();
+    filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+
+    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
+    if (result != ERROR_SUCCESS) {
+      return false;
+    }
+    m_activeRules.append(filterID);
+  }
+
+    // Allow inbound DHCPv6
+  {
+    FWPM_FILTER_CONDITION0 conds[3];
+    conds[0].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
+    conds[0].matchType = FWP_MATCH_EQUAL;
+    conds[0].conditionValue.type = FWP_UINT8;
+    conds[0].conditionValue.uint8 = (IPPROTO_UDP);
+
+    conds[1].fieldKey = FWPM_CONDITION_IP_LOCAL_PORT;
+    conds[1].matchType = FWP_MATCH_EQUAL;
+    conds[1].conditionValue.type = FWP_UINT16;
+    conds[1].conditionValue.uint16 = (68);
+
+    conds[2].fieldKey = FWPM_CONDITION_IP_REMOTE_PORT;
+    conds[2].matchType = FWP_MATCH_EQUAL;
+    conds[2].conditionValue.type = FWP_UINT16;
+    conds[2].conditionValue.uint16 = 67;
+
+    // Assemble the Filter base
+    FWPM_FILTER0 filter;
+    memset(&filter, 0, sizeof(filter));
+    filter.filterCondition = conds;
+    filter.numFilterConditions = 3;
+    filter.action.type = FWP_ACTION_PERMIT;
+    filter.weight.type = FWP_UINT8;
+    filter.weight.uint8 = weight;
+    filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+
+    uint64_t filterID = 0;
+    auto name = std::wstring(L"Permit inbound DHCPv6");
+    filter.displayData.name = (PWSTR)name.c_str();
+    filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+
+    result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
+    if (result != ERROR_SUCCESS) {
+      return false;
+    }
+    m_activeRules.append(filterID);
+  }
 
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
@@ -845,6 +919,7 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
 
 
 bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight){
+  logger.log() << "Blocking traffic to " << range.toString();
   IPAddress addr = IPAddress::create(range.toString());
 
   auto lower = addr.address();
@@ -878,8 +953,8 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
 
   FWPM_FILTER_CONDITION0 cond[1] = { 0 };
   FWP_RANGE0 ipRange;
-  toFWPValue(ipRange.valueLow,lower);
-  toFWPValue(ipRange.valueHigh,upper);
+  importAddress(lower,ipRange.valueLow);
+  importAddress(upper,ipRange.valueHigh);
   
   cond[0].fieldKey =FWPM_CONDITION_IP_REMOTE_ADDRESS;
   cond[0].matchType = FWP_MATCH_RANGE;
@@ -924,6 +999,7 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
 bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList ,uint8_t weight){
   for(auto range:rangeList){
     if(!blockTrafficTo(range,weight)){
+      logger.log() << "Setting Range of" << range.toString() << "failed";
       return false;
     }
   }
@@ -949,11 +1025,25 @@ QString WindowsFirewall::getCurrentPath() {
 }
 
 
-void WindowsFirewall::toFWPValue(FWP_VALUE0_& value,const QHostAddress& addr){
+void WindowsFirewall::importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value){
   const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
   if(isV4){
     value.type = FWP_UINT32;
     value.uint32 = addr.toIPv4Address();
+    return;
+  }
+  value.type = FWP_BYTE_ARRAY16_TYPE;
+  auto v6bytes = addr.toIPv6Address();
+  RtlCopyMemory(&v6bytes,
+                value.byteArray16,
+                IPV6_ADDRESS_SIZE);
+}
+void WindowsFirewall::importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_ & value){
+  const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
+  if(isV4){
+    value.type = FWP_UINT32;
+    value.uint32 = addr.toIPv4Address();
+    return;
   }
   value.type = FWP_BYTE_ARRAY16_TYPE;
   auto v6bytes = addr.toIPv6Address();
