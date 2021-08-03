@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Controls 2.14
 import "../../themes/colors.js" as Color
 
 Item {
@@ -7,8 +8,7 @@ Item {
     states: [
         State {
             name: "empty"
-            when: itemToTarget.text
-                && itemToTarget.text.length === 0
+            when: itemToTarget.text === ""
                 && itemToTarget.enabled
                 && !itemToTarget.activeFocus
                 && !itemToTarget.hasError
@@ -29,7 +29,7 @@ Item {
         State {
             name: "emptyHovered"
             when: itemToTarget.hovered
-                && (itemToTarget.text && itemToTarget.text.length === 0)
+                && itemToTarget.text === ""
                 && !itemToTarget.activeFocus
                 && !itemToTarget.hasError
 

@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Color
 import "../"
 
 ComboBox {
@@ -39,6 +40,7 @@ ComboBox {
     }
 
     contentItem: VPNTextBlock {
+        id: contentItem
         text: currentIndex === -1 ? placeholderText : currentText
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
@@ -129,9 +131,70 @@ ComboBox {
         }
     }
 
-    VPNInputStates {
-        id: comboStates
-        itemToTarget: combo
-    }
+    states: [
+        State {
+            name: "empty"
+            when: combo.currentIndex === -1
+                  && !combo.hovered
+                  && !comboPopup.visible
 
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.default.placeholder
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.default.border
+                border.width: 1
+            }
+        },
+        State {
+            name: "emptyHovered"
+            when: combo.hovered
+                  && combo.currentIndex === -1
+                  && !comboPopup.visible
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.hover.text
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.hover.border
+                border.width: 1
+            }
+        },
+        State {
+            name: "focused"
+            when: comboPopup.visible || combo.focus
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.focus.text
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.focus.border
+                border.width: 2
+            }
+        },
+        State {
+            name: "filled"
+            when: combo.currentIndex >= 0 && !comboPopup.visible
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.default.text
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.default.border
+                border.width: 1
+            }
+        }
+    ]
 }
