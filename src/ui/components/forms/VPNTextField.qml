@@ -23,7 +23,7 @@ TextField {
     }
     color: Color.input.default.text
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
-    onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
+    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
     selectByMouse: true
     Layout.preferredHeight: Theme.rowHeight
 

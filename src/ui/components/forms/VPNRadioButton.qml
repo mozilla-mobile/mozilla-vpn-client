@@ -27,8 +27,8 @@ RadioDelegate {
     onFocusChanged: {
         if (!radioControl.focus)
             return mouseArea.changeState(uiState.stateDefault);
-        if (typeof (ensureVisible) !== "undefined")
-            ensureVisible(radioControl);
+        if (typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
+            vpnFlickable.ensureVisible(radioControl);
     }
 
     Keys.onPressed: {

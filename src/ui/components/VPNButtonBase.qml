@@ -44,7 +44,7 @@ RoundButton {
         if (!activeFocus)
             return visualStateItem.state = uiState.stateDefault;
 
-        if (vpnFlickable && typeof (vpnFlickable.ensureVisible) !== "undefined")
+        if (typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
             return vpnFlickable.ensureVisible(visualStateItem);
     }
 
