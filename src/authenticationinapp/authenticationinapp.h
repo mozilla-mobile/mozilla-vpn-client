@@ -16,7 +16,7 @@ class AuthenticationInApp final : public QObject {
 
  public:
   enum State {
-    // The AIP has not started yet
+    // The Authencation-In-App has not started yet
     StateInitializing,
     // The client_id and other params has been received. We are ready to
     // receive email address and password.
@@ -107,6 +107,10 @@ class AuthenticationInApp final : public QObject {
   void stateChanged();
 
   void errorOccurred(ErrorType error);
+
+#ifdef UNIT_TEST
+  void unitTestFinalUrl(const QUrl& url);
+#endif
 
  private:
   explicit AuthenticationInApp(QObject* parent);

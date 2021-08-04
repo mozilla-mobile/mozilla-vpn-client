@@ -37,6 +37,10 @@ print Y "Running the native-messaging tests..."
 ./tests/nativemessaging/tests ./extension/app/mozillavpnnp || die "Failed to run tests"
 print G "done."
 
+print Y "Running the auth tests..."
+./tests/auth/tests || die "Failed to run tests"
+print G "done."
+
 printn Y "Merge the profile data... "
 llvm-profdata-10 merge /tmp/mozillavpn.llvm -o /tmp/mozillavpn.llvm-final || die "Failed to merge the coverage report"
 print G "done."
