@@ -49,7 +49,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py -p
+          python3 scripts/importLanguages.py
 
       - name: Check for l10n errors
         run: |

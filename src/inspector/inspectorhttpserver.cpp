@@ -16,7 +16,7 @@ Logger logger(LOG_INSPECTOR, "InspectorHttpServer");
 
 constexpr int INSPECT_PORT = 8766;
 
-InspectorHttpServer::InspectorHttpServer() {
+InspectorHttpServer::InspectorHttpServer(QObject* parent) : QTcpServer(parent) {
   MVPN_COUNT_CTOR(InspectorHttpServer);
 
   logger.debug() << "Creating the inspector http server";

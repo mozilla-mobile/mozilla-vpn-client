@@ -15,7 +15,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QPasswordDigestor>
+#include <QtNetwork>  // for qpassworddigestor.h
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInAppListener");

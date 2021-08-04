@@ -90,7 +90,7 @@ QString Balrog::userAgent() {
 
 void Balrog::start() {
   QString url =
-      QString(Constants::BALROG_URL).arg(appVersion()).arg(userAgent());
+      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = NetworkRequest::createForGetUrl(this, url, 200);
@@ -236,7 +236,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   gostring_t updateDataGo{updateDataCopy.constData(),
                           (size_t)updateDataCopy.length()};
 
-  QByteArray rootHashCopy = Constants::BALROG_ROOT_CERT_FINGERPRINT;
+  QByteArray rootHashCopy = Constants::balrogRootCertFingerprint();
   rootHashCopy = rootHashCopy.toUpper();
   gostring_t rootHashGo{rootHashCopy.constData(),
                         (size_t)rootHashCopy.length()};

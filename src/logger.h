@@ -78,6 +78,7 @@ class Logger {
   Log info();
   Log error();
   Log warning();
+  Log info();
   Log debug();
 
   // Use this to log sensitive data such as IP address, session tokens, and so

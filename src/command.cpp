@@ -74,7 +74,11 @@ bool Command::loadModels() {
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  // Our logging system.
+  SettingsHolder settingsHolder;
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::enableDebug();
+  }
   qInstallMessageHandler(LogHandler::messageQTHandler);
   logger.info() << "MozillaVPN" << APP_VERSION;
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
@@ -84,7 +88,6 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  SettingsHolder settingsHolder;
   Localizer localizer;
   SimpleNetworkManager snm;
 
@@ -94,17 +97,21 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  // Our logging system.
+  SettingsHolder settingsHolder;
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::enableDebug();
+  }
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.debug() << "MozillaVPN" << APP_VERSION;
-  logger.debug() << "User-Agent:" << NetworkManager::userAgent();
+  
+  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  SettingsHolder settingsHolder;
   Localizer localizer;
   SimpleNetworkManager snm;
 
@@ -117,10 +124,15 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
-  // Our logging system.
+  SettingsHolder settingsHolder;
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::enableDebug();
+  }
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.debug() << "MozillaVPN" << APP_VERSION;
-  logger.debug() << "User-Agent:" << NetworkManager::userAgent();
+
+  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
 #ifdef MVPN_WINDOWS
   SetProcessDPIAware();
@@ -133,7 +145,6 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
-  SettingsHolder settingsHolder;
   Localizer localizer;
 
   QIcon icon(Constants::LOGO_URL);
