@@ -102,6 +102,9 @@ mozillavpnnp.vcxproj*
 # For users compiling QT per the README
 /qt/
 
+# Scripts
+scripts/__pycache__
+
 # Language files
 translations/*/*.ts
 translations/*/*.qm

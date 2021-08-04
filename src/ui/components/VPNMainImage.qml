@@ -317,8 +317,9 @@ Rectangle {
     }
 
     OpacityMask {
-           anchors.fill: globe
-           source: gradient
-           maskSource: globe
-       }
+       anchors.fill: globe
+       source: gradient
+       maskSource: globe
+       cached: true
+   }
 }
