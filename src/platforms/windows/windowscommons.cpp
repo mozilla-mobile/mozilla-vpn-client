@@ -133,3 +133,20 @@ int WindowsCommons::VPNAdapterIndex() {
   }
   return -1;
 }
+
+// Static
+QString WindowsCommons::getCurrentPath() {
+  QByteArray buffer(2048, 0xFF);
+  auto ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
+
+  if (ok == ERROR_INSUFFICIENT_BUFFER) {
+    buffer.resize(buffer.size() * 2);
+    ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
+  }
+  if (ok == 0) {
+    WindowsCommons::windowsLog("Err fetching dos path");
+    return "";
+  }
+  QString::fromWCharArray((wchar_t*)buffer.data());
+  return QString::fromLocal8Bit(buffer);
+}

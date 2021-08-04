@@ -72,7 +72,7 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForFxaLogin(QObject* parent,
                                            const QString& email,
                                            const QByteArray& authpw,
-                                           const QString& verificationCode,
+                                           const QString& unblockCode,
                                            const QUrlQuery& query);
 
   static NetworkRequest* createForFxaSendUnblockCode(

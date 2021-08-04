@@ -43,13 +43,20 @@ Item {
     Layout.rightMargin: 8
     Layout.alignment: Qt.AlignHCenter
 
-
     Rectangle {
         id: boxBackground
-        anchors.fill: parent
+        anchors.fill: box
         color: Theme.bgColor
         radius: 8
         antialiasing: true
+    }
+
+    VPNDropShadow {
+        anchors.fill: boxBackground
+        source: boxBackground
+        cached: true
+        transparentBorder: true
+        z: -1
     }
 
     states: [

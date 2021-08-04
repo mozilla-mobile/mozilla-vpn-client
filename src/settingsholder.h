@@ -112,15 +112,8 @@ class SettingsHolder final : public QObject {
 
   void addConsumedSurvey(const QString& surveyId);
 
-  enum UserDNSValidationResult {
-    UserDNSOK,
-    UserDNSInvalid,
-    UserDNSOutOfRange,
-  };
-  Q_ENUM(UserDNSValidationResult);
-
   Q_INVOKABLE
-  UserDNSValidationResult validateUserDNS(const QString& dns) const;
+  bool validateUserDNS(const QString& dns) const;
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
