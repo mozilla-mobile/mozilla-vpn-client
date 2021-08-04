@@ -102,6 +102,9 @@ LinuxPingSender::~LinuxPingSender() {
 }
 
 void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
+  // QProcess is not supported on iOS. Because of this we cannot use the `ping`
+  // app as fallback on this platform.
+#ifndef MVPN_IOS
   // Use the generic ping sender if we failed to open an ICMP socket.
   if (m_socket < 0) {
     QStringList args;
@@ -112,6 +115,7 @@ void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
     genericSendPing(args, sequence);
     return;
   }
+#endif
 
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));

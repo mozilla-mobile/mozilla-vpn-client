@@ -300,7 +300,7 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
   }
   logger.debug() << "Ruleset applied: allowHyperVTraffic";
 
-  if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT)) {
+  if (!allowTrafficForAppOnAll(WindowsCommons::getCurrentPath(), MAX_WEIGHT)) {
     logger.error() << "Ruleset failed: allowTrafficForAppOnAll";
     disableKillSwitch();
     return false;
@@ -588,6 +588,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
   filter.weight.type = FWP_UINT8;
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+  filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;  // Hard Permit!
 
   uint64_t filterID = 0;
   auto name = std::wstring(L"Permit outbound Traffic to Fixed IPv4");
@@ -859,21 +860,4 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
     return false;
   }
   return true;
-}
-
-// Returns the Path of the Current Executable this runs in
-QString WindowsFirewall::getCurrentPath() {
-  QByteArray buffer(2048, 0xFF);
-  auto ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
-
-  if (ok == ERROR_INSUFFICIENT_BUFFER) {
-    buffer.resize(buffer.size() * 2);
-    ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
-  }
-  if (ok == 0) {
-    WindowsCommons::windowsLog("Err fetching dos path");
-    return "";
-  }
-  QString::fromWCharArray((wchar_t*)buffer.data());
-  return QString::fromLocal8Bit(buffer);
 }

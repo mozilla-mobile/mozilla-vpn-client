@@ -60,7 +60,7 @@ jobs:
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py
+          python3 scripts/importLanguages.py -m
 
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -210,7 +210,7 @@ jobs:
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -p
+          python3 scripts/importLanguages.py -p -m
 
       - name: Configuring the build
         shell: bash
