@@ -12,7 +12,7 @@ class InspectorHttpServer final : public QTcpServer {
   Q_DISABLE_COPY_MOVE(InspectorHttpServer)
 
  public:
-  InspectorHttpServer();
+  explicit InspectorHttpServer(QObject* parent);
   ~InspectorHttpServer();
 
  private:

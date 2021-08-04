@@ -73,8 +73,8 @@ Window {
                       if (typeof(VPNGleanTest) !== "undefined") {
                           VPNGleanTest.requestDone(url, body);
                       }
-                      if (!VPN.productionMode) {
-                          return Promise.reject('Glean disabled');
+                      if (VPN.stagingMode) {
+                          return Promise.reject('Glean disabled in staging mode');
                       }
 
                       return new Promise((resolve, reject) => {
