@@ -9,8 +9,7 @@
 
 void AndroidAdjustHelper::trackEvent(const QString& event) {
   QAndroidJniObject javaMessage = QAndroidJniObject::fromString(event);
-  QAndroidJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/VPNAdjustHelper",
-                                            "trackEvent",
-                                            "(Ljava/lang/String;)V",
-                                            javaMessage.object<jstring>());
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/qt/VPNAdjustHelper", "trackEvent",
+      "(Ljava/lang/String;)V", javaMessage.object<jstring>());
 }

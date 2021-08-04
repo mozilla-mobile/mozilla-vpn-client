@@ -9,15 +9,14 @@ import com.adjust.sdk.AdjustEvent;
 
 import org.mozilla.firefox.vpn.BuildConfig;
 
-public class VPNAdjustHelper
-{
-    public VPNAdjustHelper() {}
+public class VPNAdjustHelper {
+  
+  private VPNAdjustHelper() {}
 
-    public static void trackEvent(String event) {
-      if(BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
-        AdjustEvent adjustEvent = new AdjustEvent(event);
-        Adjust.trackEvent(adjustEvent);
-      }
+  public static void trackEvent(String event) {
+    if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
+      AdjustEvent adjustEvent = new AdjustEvent(event);
+      Adjust.trackEvent(adjustEvent);
     }
+  }
 }
-

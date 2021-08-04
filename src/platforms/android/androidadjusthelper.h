@@ -8,12 +8,10 @@
 #include <QString>
 
 class AndroidAdjustHelper {
+ public:
+  AndroidAdjustHelper() = default;
 
-  public:
-    AndroidAdjustHelper() = default;
-
-    static void trackEvent(const QString& event);
-
+  static void trackEvent(const QString& event);
 };
 
-#endif // ANDROIDADJUSTHELPER_H
+#endif  // ANDROIDADJUSTHELPER_H
