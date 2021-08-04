@@ -17,8 +17,7 @@ VPNFlickable {
 
     VPNMenu {
         id: menu
-        //% "Developer Options"
-        title: qsTrId("vpn.settings.developer")
+        title: VPNl18n.tr(VPNl18n.SettingsDevTitle)
         isSettingsView: false
     }
 
@@ -30,10 +29,8 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        //% "Show Developer Options"
-        labelText: qsTrId("vpn.settings.developer.show")
-        //% "Show or hide the developer options menu"
-        subLabelText: qsTrId("vpn.settings.developer.description")
+        labelText:  VPNl18n.tr(VPNl18n.SettingsDevShowOptionTitle)
+        subLabelText: VPNl18n.tr(VPNl18n.SettingsDevShowOptionSubtitle)
 
         isChecked: VPNSettings.developerUnlock
         onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
@@ -47,10 +44,8 @@ VPNFlickable {
         anchors.topMargin: Theme.windowMargin
         width: parent.width - Theme.windowMargin
 
-        //% "Use Staging Servers"
-        labelText: qsTrId("vpn.settings.staging")
-        //% "Staging services are used to test features before they go live to production"
-        subLabelText: qsTrId("vpn.settings.staging.description")
+        labelText: VPNl18n.tr(VPNl18n.SettingsDevUseStagingTitle)
+        subLabelText: VPNl18n.tr(VPNl18n.SettingsDevUseStagingSubtitle)
 
         isChecked: (VPNSettings.stagingServer)
         isEnabled: vpnFlickable.vpnIsOff
@@ -66,7 +61,6 @@ VPNFlickable {
         anchors.top: stagingServer.bottom
         visible: VPN.stagingMode != VPNSettings.stagingServer
 
-        //% "VPN must be restarted to take effect"
-        errorMessage: qsTrId("vpn.settings.restartRequired")
+        errorMessage: VPNl18n.tr(VPNl18n.SettingsDevRestartRequired)
     }
 }

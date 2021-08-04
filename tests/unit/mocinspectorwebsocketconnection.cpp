@@ -4,11 +4,11 @@
 
 #include "../../src/inspector/inspectorwebsocketconnection.h"
 
-InspectorWebSocketConnection::InspectorWebSocketConnection(
-    QObject* parent, QWebSocket* connection) {}
+InspectorWebSocketConnection::InspectorWebSocketConnection(QObject*,
+                                                           QWebSocket*) {}
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() = default;
 
-void InspectorWebSocketConnection::setLastUrl(const QUrl& url) {}
+void InspectorWebSocketConnection::setLastUrl(const QUrl&) {}
 
 bool InspectorWebSocketConnection::stealUrls() { return false; }

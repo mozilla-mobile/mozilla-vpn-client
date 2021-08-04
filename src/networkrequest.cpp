@@ -504,7 +504,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/session/verify/totp");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
