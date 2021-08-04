@@ -75,7 +75,6 @@ class Logger {
   };
 
   // This will be deprecated soon. Don't use it!
-  Log info();
   Log error();
   Log warning();
   Log info();
