@@ -133,6 +133,21 @@ ComboBox {
 
     states: [
         State {
+            name: "focused"
+            when: comboPopup.visible || combo.focus
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.focus.text
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.focus.border
+                border.width: 2
+            }
+        },
+        State {
             name: "empty"
             when: combo.currentIndex === -1
                   && !combo.hovered
@@ -164,21 +179,6 @@ ComboBox {
                 target: combo.background
                 border.color: Color.input.hover.border
                 border.width: 1
-            }
-        },
-        State {
-            name: "focused"
-            when: comboPopup.visible || combo.focus
-
-            PropertyChanges {
-                target: combo.contentItem
-                color: Color.input.focus.text
-            }
-
-            PropertyChanges {
-                target: combo.background
-                border.color: Color.input.focus.border
-                border.width: 2
             }
         },
         State {
