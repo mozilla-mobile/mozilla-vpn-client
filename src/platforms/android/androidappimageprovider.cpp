@@ -55,7 +55,7 @@ QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
 
   QImage out = toImage(drawable, QRect(0, 0, width, height));
   logger.debug() << "Created image w" << out.size().width() << "  h "
-               << out.size().height();
+                 << out.size().height();
   return out;
 }
 

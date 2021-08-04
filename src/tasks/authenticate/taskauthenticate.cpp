@@ -67,7 +67,8 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   connect(
       m_authenticationListener, &AuthenticationListener::completed,
       [this, vpn, pkceCodeVerifier](const QString& pkceCodeSucces) {
-        logger.debug() << "Authentication completed with code:" << pkceCodeSucces;
+        logger.debug() << "Authentication completed with code:"
+                       << pkceCodeSucces;
 
         NetworkRequest* request =
             NetworkRequest::createForAuthenticationVerification(
@@ -119,11 +120,9 @@ void TaskAuthenticate::authenticationCompleted(MozillaVPN* vpn,
     return;
   }
 
-#ifdef QT_DEBUG
-  logger.debug()
-      << "User data:"
-      << QJsonDocument(userObj.toObject()).toJson(QJsonDocument::Compact);
-#endif
+  logger.debug() << "User data:"
+                 << logger.sensitive(QJsonDocument(userObj.toObject())
+                                         .toJson(QJsonDocument::Compact));
 
   QJsonValue tokenValue = obj.value("token");
   if (!tokenValue.isString()) {

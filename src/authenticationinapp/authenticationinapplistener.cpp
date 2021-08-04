@@ -37,7 +37,7 @@ AuthenticationInAppListener::~AuthenticationInAppListener() {
 
 void AuthenticationInAppListener::start(const QString& codeChallenge,
                                         const QString& codeChallengeMethod) {
-  logger.debug() << "AuthenticationInAppListener initialize";
+  logger.debug() << "AuthenticationInAppListener initialized";
 
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
@@ -85,7 +85,8 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 }
 
 void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
-  logger.debug() << "Authentication starting:" << logger.sensitive(emailAddress);
+  logger.debug() << "Authentication starting:"
+                 << logger.sensitive(emailAddress);
 
   m_emailAddress = emailAddress;
 
@@ -221,8 +222,9 @@ void AuthenticationInAppListener::emailVerificationNeeded() {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [](const QByteArray& data) { logger.debug() << "Email send" << data; });
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [](const QByteArray& data) { logger.debug() << "Email send" << data; });
 }
 
 void AuthenticationInAppListener::verifyEmailCode(const QString& code) {
@@ -298,9 +300,7 @@ void AuthenticationInAppListener::signInOrUpCompleted(
     const QString& verificationMethod) {
   logger.debug() << "Session generated";
 
-#ifdef QT_DEBUG
-  logger.debug() << "FxA Session Token:" << sessionToken;
-#endif
+  logger.debug() << "FxA Session Token:" << logger.sensitive(sessionToken);
 
   // Let's store it to delete it at the DTOR.
   m_sessionToken = QByteArray::fromHex(sessionToken.toUtf8());

@@ -627,7 +627,7 @@ void NetworkRequest::replyFinished() {
 
   QString expect = m_status ? QString::number(m_status) : "any";
   logger.debug() << "Network reply received - status:" << status
-               << "- expected:" << expect;
+                 << "- expected:" << expect;
 
   QByteArray data = m_reply->readAll();
 

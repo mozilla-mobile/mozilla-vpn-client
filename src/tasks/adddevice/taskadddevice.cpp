@@ -40,7 +40,7 @@ TaskAddDevice::TaskAddDevice(const QString& deviceName)
 TaskAddDevice::~TaskAddDevice() { MVPN_COUNT_DTOR(TaskAddDevice); }
 
 void TaskAddDevice::run(MozillaVPN* vpn) {
-  logger.debug() << "Adding the device" <<  logger.sensitive(m_deviceName);
+  logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);
 
   QByteArray privateKey = generatePrivateKey();
   QByteArray publicKey = Curve25519::generatePublicKey(privateKey);

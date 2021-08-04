@@ -157,7 +157,7 @@ bool WindowsFirewall::init() {
 bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
                                                   int network) {
   logger.debug() << "Adding hard Permit for " << exePath
-               << " Accessing Device: " << network;
+                 << " Accessing Device: " << network;
   DWORD result = ERROR_SUCCESS;
 
   // Get the AppID for the Executable;
@@ -348,7 +348,7 @@ bool WindowsFirewall::disableKillSwitch() {
 bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
                                               int weight) {
   logger.debug() << "Adding hard Permit for " << exePath
-               << " Accessing All Devices: ";
+                 << " Accessing All Devices: ";
   DWORD result = ERROR_SUCCESS;
   Q_ASSERT(weight <= 15);
 
@@ -534,7 +534,7 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
 bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
                                      int weight) {
   logger.debug() << "Requesting to allow Traffic to: " << targetIP.toString()
-               << ":" << port;
+                 << ":" << port;
   if (targetIP.protocol() == QAbstractSocket::IPv6Protocol) {
     // TODO: Implement it :)
     // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1370

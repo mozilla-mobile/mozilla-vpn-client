@@ -68,7 +68,7 @@ bool checkDaemonVersion() {
         *value = version == PROTOCOL_VERSION;
 
         logger.debug() << "DBus message received - daemon version:" << version
-                     << " - current version:" << PROTOCOL_VERSION;
+                       << " - current version:" << PROTOCOL_VERSION;
       });
 
   while (!completed) {

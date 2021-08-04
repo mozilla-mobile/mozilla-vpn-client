@@ -19,7 +19,7 @@ TaskControllerAction::TaskControllerAction(
   MVPN_COUNT_CTOR(TaskControllerAction);
 
   logger.debug() << "TaskControllerAction created for"
-               << (action == eActivate ? "activation" : "deactivation");
+                 << (action == eActivate ? "activation" : "deactivation");
 
   connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::completed);
 }

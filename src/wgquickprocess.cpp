@@ -173,11 +173,11 @@ bool WgQuickProcess::run(
   logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
 
   logger.debug() << "wg-quick stdout:" << Qt::endl
-               << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
-               << Qt::endl;
+                 << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
+                 << Qt::endl;
   logger.debug() << "wg-quick stderr:" << Qt::endl
-               << qUtf8Printable(wgQuickProcess.readAllStandardError())
-               << Qt::endl;
+                 << qUtf8Printable(wgQuickProcess.readAllStandardError())
+                 << Qt::endl;
 
   return wgQuickProcess.exitCode() == 0;
 }

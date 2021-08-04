@@ -128,7 +128,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
     return;
   }
 
-  logger.debug() << "Invalid command:" << type;
+  logger.warning() << "Invalid command:" << type;
 }
 
 void DaemonLocalServerConnection::connected() {

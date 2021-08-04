@@ -172,7 +172,7 @@ void LinuxPingSender::rawSocketReady() {
   // Check the ICMP packet
   struct icmphdr packet;
   if (inetChecksum(data + iphdrlen, rc - iphdrlen) != 0) {
-    logger.error() << "invalid checksum";
+    logger.warning() << "invalid checksum";
     return;
   }
   if (rc >= (iphdrlen + (int)sizeof(packet))) {

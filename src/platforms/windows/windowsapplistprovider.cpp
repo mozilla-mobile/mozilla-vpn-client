@@ -97,25 +97,25 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
     if (!target.isExecutable()) {
       // 1:  We only care for .exe
       logger.debug() << "Skip -> " << link.baseName()
-                   << target.absoluteFilePath();
+                     << target.absoluteFilePath();
       continue;
     }
     if (target.path().toUpper().startsWith("C:/WINDOWS")) {
       // 2: Don't include windows links like cmd/ps
       logger.debug() << "Skip -> " << link.baseName()
-                   << target.absoluteFilePath();
+                     << target.absoluteFilePath();
       continue;
     }
     if (isUninstaller(target)) {
       // 3: Don't include obvious uninstallers
       logger.debug() << "Skip -> " << link.baseName()
-                   << target.absoluteFilePath();
+                     << target.absoluteFilePath();
       continue;
     }
     if (!WindowsAppImageProvider::hasImage(target.absoluteFilePath())) {
       // 4: Don't include apps without an icon
       logger.debug() << "Skip -> " << link.baseName()
-                   << target.absoluteFilePath();
+                     << target.absoluteFilePath();
       continue;
     }
     logger.debug() << "Add -> " << link.baseName() << target.absoluteFilePath();

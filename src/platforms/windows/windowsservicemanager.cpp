@@ -30,7 +30,8 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
   }
   logger.debug() << "OpenSCManager access given - " << err;
 
-  logger.debug() << "Opening Service - " << QString::fromWCharArray(serviceName);
+  logger.debug() << "Opening Service - "
+                 << QString::fromWCharArray(serviceName);
   // Try to get an elevated handle
   m_service = OpenService(m_serviceManager,  // SCM database
                           serviceName,       // name of service
@@ -75,7 +76,7 @@ bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
     }
 
     logger.debug() << "Polling Status" << m_state_target
-                 << "wanted, has: " << status.dwCurrentState;
+                   << "wanted, has: " << status.dwCurrentState;
     Sleep(1000);
     ++tries;
   }

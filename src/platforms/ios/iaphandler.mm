@@ -101,7 +101,7 @@ IAPHandler* s_instance = nullptr;
         QString identifier = QString::fromNSString(transaction.transactionIdentifier);
         QDateTime date = QDateTime::fromNSDate(transaction.transactionDate);
         logger.debug() << "transaction purchased - identifier: " << identifier
-                     << "- date:" << date.toString();
+                       << "- date:" << date.toString();
 
         if (transaction.transactionState == SKPaymentTransactionStateRestored) {
           SKPaymentTransaction* originalTransaction = transaction.originalTransaction;
@@ -110,7 +110,7 @@ IAPHandler* s_instance = nullptr;
                 QString::fromNSString(originalTransaction.transactionIdentifier);
             QDateTime originalDate = QDateTime::fromNSDate(originalTransaction.transactionDate);
             logger.debug() << "original transaction identifier: " << originalIdentifier
-                         << "- date:" << originalDate.toString();
+                           << "- date:" << originalDate.toString();
           }
         }
 

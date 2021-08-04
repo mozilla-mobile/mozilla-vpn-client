@@ -109,9 +109,9 @@ void PingHelper::pingReceived(quint16 sequence) {
     emit pingSentAndReceived(m_pingData[index].latency);
 #ifdef QT_DEBUG
     logger.debug() << "Ping answer received seq:" << sequence
-                 << "avg:" << latency()
-                 << "loss:" << QString("%1%").arg(loss() * 100.0)
-                 << "stddev:" << stddev();
+                   << "avg:" << latency()
+                   << "loss:" << QString("%1%").arg(loss() * 100.0)
+                   << "stddev:" << stddev();
 #endif
   }
 }

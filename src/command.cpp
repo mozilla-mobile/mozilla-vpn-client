@@ -76,8 +76,8 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
   // Our logging system.
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  logger.debug() << "MozillaVPN" << APP_VERSION;
-  logger.debug() << "User-Agent:" << NetworkManager::userAgent();
+  logger.info() << "MozillaVPN" << APP_VERSION;
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 

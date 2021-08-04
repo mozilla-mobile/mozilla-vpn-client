@@ -143,18 +143,18 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
 // static
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
-#define GETVALUESTR(name, where)                                \
-  if (!obj.contains(name)) {                                    \
+#define GETVALUESTR(name, where)                                  \
+  if (!obj.contains(name)) {                                      \
     logger.debug() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isString()) {                                    \
-      logger.error() << name << " is not a string";             \
-      return false;                                             \
-    }                                                           \
-    where = value.toString();                                   \
+    return false;                                                 \
+  }                                                               \
+  {                                                               \
+    QJsonValue value = obj.value(name);                           \
+    if (!value.isString()) {                                      \
+      logger.error() << name << " is not a string";               \
+      return false;                                               \
+    }                                                             \
+    where = value.toString();                                     \
   }
 
   GETVALUESTR("privateKey", config.m_privateKey);
@@ -169,36 +169,36 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 #undef GETVALUESTR
 
-#define GETVALUEINT(name, where)                                \
-  if (!obj.contains(name)) {                                    \
+#define GETVALUEINT(name, where)                                  \
+  if (!obj.contains(name)) {                                      \
     logger.debug() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isDouble()) {                                    \
-      logger.error() << name << " is not a number";             \
-      return false;                                             \
-    }                                                           \
-    where = value.toInt();                                      \
+    return false;                                                 \
+  }                                                               \
+  {                                                               \
+    QJsonValue value = obj.value(name);                           \
+    if (!value.isDouble()) {                                      \
+      logger.error() << name << " is not a number";               \
+      return false;                                               \
+    }                                                             \
+    where = value.toInt();                                        \
   }
 
   GETVALUEINT("serverPort", config.m_serverPort);
 
 #undef GETVALUEINT
 
-#define GETVALUEBOOL(name, where)                               \
-  if (!obj.contains(name)) {                                    \
+#define GETVALUEBOOL(name, where)                                 \
+  if (!obj.contains(name)) {                                      \
     logger.debug() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isBool()) {                                      \
-      logger.error() << name << " is not a boolean";            \
-      return false;                                             \
-    }                                                           \
-    where = value.toBool();                                     \
+    return false;                                                 \
+  }                                                               \
+  {                                                               \
+    QJsonValue value = obj.value(name);                           \
+    if (!value.isBool()) {                                        \
+      logger.error() << name << " is not a boolean";              \
+      return false;                                               \
+    }                                                             \
+    where = value.toBool();                                       \
   }
 
   GETVALUEBOOL("ipv6Enabled", config.m_ipv6Enabled);

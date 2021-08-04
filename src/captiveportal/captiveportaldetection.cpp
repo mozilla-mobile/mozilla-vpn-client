@@ -51,7 +51,7 @@ void CaptivePortalDetection::stateChanged() {
   }
   if (!m_shouldRun) {
     logger.debug() << "Captive Portal detection was already done for this "
-                    "instability, skipping.";
+                      "instability, skipping.";
     return;
   }
 

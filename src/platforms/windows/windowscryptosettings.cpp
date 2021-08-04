@@ -82,7 +82,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
     return true;
   }
 
-  logger.debug() << "Invalid key";
+  logger.warning() << "Invalid key";
   return false;
 }
 

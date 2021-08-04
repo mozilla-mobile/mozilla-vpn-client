@@ -107,7 +107,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
                                     const QVariant& a_rxSeries,
                                     const QVariant& a_axisX,
                                     const QVariant& a_axisY) {
-  logger.debug() << "Activated";
+  logger.info() << "Activated";
   updateIpAddress();
 
   QtCharts::QSplineSeries* txSeries =
@@ -160,7 +160,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
 }
 
 void ConnectionDataHolder::deactivate() {
-  logger.debug() << "Deactivated";
+  logger.info() << "Deactivated";
 
   reset();
   m_axisX = nullptr;
@@ -251,9 +251,9 @@ void ConnectionDataHolder::updateIpAddress() {
         }
 
         logger.debug() << "Set own Address. ipv4:"
-                     << logger.sensitive(m_ipv4Address)
-                     << "ipv6:" << logger.sensitive(m_ipv6Address) << "in"
-                     << logger.sensitive(country);
+                       << logger.sensitive(m_ipv4Address)
+                       << "ipv6:" << logger.sensitive(m_ipv6Address) << "in"
+                       << logger.sensitive(country);
 
         m_updatingIpAddress = false;
         emit ipAddressChecked();

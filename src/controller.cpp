@@ -114,8 +114,8 @@ void Controller::initialize() {
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
   logger.debug() << "Controller activated with status:" << status
-               << "connected:" << a_connected
-               << "connectionDate:" << connectionDate.toString();
+                 << "connected:" << a_connected
+                 << "connectionDate:" << connectionDate.toString();
 
   Q_ASSERT(m_state == StateInitializing);
 
@@ -668,7 +668,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
                  QHostAddress(SettingsHolder::instance()->userDNS()))) {
     // Filter out the Custom DNS Server, if the User has one.
     logger.debug() << "Filtering out the DNS address"
-                 << SettingsHolder::instance()->userDNS();
+                   << SettingsHolder::instance()->userDNS();
     excludeIPv4s.append(
         IPAddress::create(SettingsHolder::instance()->userDNS()));
   }

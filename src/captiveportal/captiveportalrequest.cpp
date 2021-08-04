@@ -66,30 +66,31 @@ void CaptivePortalRequest::createRequest(const QUrl& url) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Captive portal request failed:" << error;
+            logger.warning() << "Captive portal request failed:" << error;
             onResult(Failure);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this, request](const QByteArray& data) {
-            logger.debug() << "Captive portal request completed:" << data;
-            // Usually, captive-portal pages do a redirect to an internal page.
-            if (request->statusCode() != 200) {
-              logger.debug() << "Captive portal detected. Expected 200, received:"
-                           << request->statusCode();
-              onResult(PortalDetected);
-              return;
-            }
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [this, request](const QByteArray& data) {
+        logger.debug() << "Captive portal request completed:" << data;
+        // Usually, captive-portal pages do a redirect to an internal page.
+        if (request->statusCode() != 200) {
+          logger.debug() << "Captive portal detected. Expected 200, received:"
+                         << request->statusCode();
+          onResult(PortalDetected);
+          return;
+        }
 
-            if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-              logger.debug() << "No captive portal!";
-              onResult(NoPortal);
-              return;
-            }
+        if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
+          logger.debug() << "No captive portal!";
+          onResult(NoPortal);
+          return;
+        }
 
-            logger.debug() << "Captive portal detected. Content does not match.";
-            onResult(PortalDetected);
-          });
+        logger.debug() << "Captive portal detected. Content does not match.";
+        onResult(PortalDetected);
+      });
 
   m_running++;
 }

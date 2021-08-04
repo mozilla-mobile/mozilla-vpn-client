@@ -922,7 +922,7 @@ void MozillaVPN::setUserAuthenticated(bool state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-               << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
+                 << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
   m_periodicOperationsTimer.start(
       Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
 }

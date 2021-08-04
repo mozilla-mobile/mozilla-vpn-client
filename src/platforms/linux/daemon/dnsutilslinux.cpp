@@ -100,7 +100,8 @@ void DnsUtilsLinux::setLinkDNS(int ifindex,
   for (auto ip : resolvers) {
     resolverList.append(ip);
     if (ifname) {
-      logger.debug() << "Adding DNS resolver" << ip.toString() << "via" << ifname;
+      logger.debug() << "Adding DNS resolver" << ip.toString() << "via"
+                     << ifname;
     }
   }
 
@@ -122,7 +123,7 @@ void DnsUtilsLinux::setLinkDomains(int ifindex,
   if (ifname) {
     for (auto d : domains) {
       logger.debug() << "Setting DNS domain:" << d.domain << "via" << ifname
-                   << (d.search ? "search" : "");
+                     << (d.search ? "search" : "");
     }
   }
 

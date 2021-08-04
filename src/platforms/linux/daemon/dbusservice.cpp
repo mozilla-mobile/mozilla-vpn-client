@@ -222,7 +222,7 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
   group->moveToCgroup(getAppStateCgroup(group->state));
 
   logger.debug() << "Setting" << group->name << "PID:" << rootpid
-               << "to firewall state" << state;
+                 << "to firewall state" << state;
   return true;
 }
 
@@ -241,7 +241,7 @@ bool DBusService::firewallClear() {
     group->moveToCgroup(cgroup);
 
     logger.debug() << "Setting" << group->name << "PID:" << group->rootpid
-                 << "to firewall state" << group->state;
+                   << "to firewall state" << group->state;
   }
   return true;
 }

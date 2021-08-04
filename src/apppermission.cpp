@@ -131,7 +131,7 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     }
   }
   beginResetModel();
-  logger.debug() << "Recived new Applist -- Entrys: " << applist.size();
+  logger.debug() << "Received new Applist -- Entrys: " << applist.size();
   m_applist.clear();
   for (auto id : keys) {
     m_applist.append(AppDescription(id, applist[id]));

@@ -281,8 +281,8 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
   }
 
   logger.debug() << "The tunnel service exited with status code:"
-               << status.dwWin32ExitCode << "-"
-               << exitCodeToFailure(status.dwWin32ExitCode);
+                 << status.dwWin32ExitCode << "-"
+                 << exitCodeToFailure(status.dwWin32ExitCode);
 
   emit backendFailure();
   return false;
@@ -296,7 +296,7 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service) {
   }
 
   logger.debug() << "The current service is stopped:"
-               << (status.dwCurrentState == SERVICE_STOPPED);
+                 << (status.dwCurrentState == SERVICE_STOPPED);
 
   if (status.dwCurrentState != SERVICE_STOPPED) {
     logger.debug() << "The service is not stopped yet.";

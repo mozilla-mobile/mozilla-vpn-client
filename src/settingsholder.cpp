@@ -195,7 +195,7 @@ QString SettingsHolder::getReport() {
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::set(const type& value) {                         \
-    logger.debug() << "Setting" << key << "to" << value;                  \
+    logger.debug() << "Setting" << key << "to" << value;                \
     m_settings.setValue(key, value);                                    \
     emit signal(value);                                                 \
   }
@@ -257,7 +257,7 @@ GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::set(const type& value) {                         \
-    logger.debug() << "Setting" << key;                                   \
+    logger.debug() << "Setting" << key;                                 \
     m_settings.setValue(key, value);                                    \
   }
 

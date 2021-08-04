@@ -80,10 +80,10 @@ QByteArray MacOSDaemon::getStatus() {
       QByteArray output = wgProcess.readAllStandardOutput();
 
       logger.debug() << "wg-quick stdout:" << Qt::endl
-                   << qUtf8Printable(output) << Qt::endl;
+                     << qUtf8Printable(output) << Qt::endl;
       logger.debug() << "wg-quick stderr:" << Qt::endl
-                   << qUtf8Printable(wgProcess.readAllStandardError())
-                   << Qt::endl;
+                     << qUtf8Printable(wgProcess.readAllStandardError())
+                     << Qt::endl;
 
       QStringList lines = QString(output).split("\n");
       for (const QString& line : lines) {
@@ -171,9 +171,9 @@ void MacOSDaemon::maybeCleanup() {
   logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
 
   logger.debug() << "wg-quick stdout:" << Qt::endl
-               << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
-               << Qt::endl;
+                 << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
+                 << Qt::endl;
   logger.debug() << "wg-quick stderr:" << Qt::endl
-               << qUtf8Printable(wgQuickProcess.readAllStandardError())
-               << Qt::endl;
+                 << qUtf8Printable(wgQuickProcess.readAllStandardError())
+                 << Qt::endl;
 }

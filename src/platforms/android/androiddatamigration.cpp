@@ -37,7 +37,7 @@ void AndroidDataMigration::migrate() {
   auto files = AndroidSharedPrefs::GetPrefFiles();
   if (!files.contains(MIGRATION_FILE)) {
     logger.debug() << "Migration" << MIGRATION_FILE
-                 << "was not file found - skip";
+                   << "was not file found - skip";
     logger.debug() << "Migration files: " << files;
     return;
   };

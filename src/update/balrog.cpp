@@ -152,7 +152,7 @@ bool Balrog::fetchSignature(NetworkRequest* initialRequest,
 
   connect(x5uRequest, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Request failed" << error;
+            logger.warning() << "Request failed" << error;
             deleteLater();
           });
 
@@ -440,11 +440,11 @@ bool Balrog::install(const QString& filePath) {
             logger.debug() << "Installation completed - exitCode:" << exitCode;
 
             logger.debug() << "Stdout:" << Qt::endl
-                         << qUtf8Printable(process->readAllStandardOutput())
-                         << Qt::endl;
+                           << qUtf8Printable(process->readAllStandardOutput())
+                           << Qt::endl;
             logger.debug() << "Stderr:" << Qt::endl
-                         << qUtf8Printable(process->readAllStandardError())
-                         << Qt::endl;
+                           << qUtf8Printable(process->readAllStandardError())
+                           << Qt::endl;
 
             QFile log(logFile);
             if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -478,11 +478,11 @@ bool Balrog::install(const QString& filePath) {
             logger.debug() << "Installation completed - exitCode:" << exitCode;
 
             logger.debug() << "Stdout:" << Qt::endl
-                         << qUtf8Printable(process->readAllStandardOutput())
-                         << Qt::endl;
+                           << qUtf8Printable(process->readAllStandardOutput())
+                           << Qt::endl;
             logger.debug() << "Stderr:" << Qt::endl
-                         << qUtf8Printable(process->readAllStandardError())
-                         << Qt::endl;
+                           << qUtf8Printable(process->readAllStandardError())
+                           << Qt::endl;
 
             if (exitCode != 0) {
               deleteLater();

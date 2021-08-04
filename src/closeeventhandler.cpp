@@ -61,7 +61,7 @@ bool CloseEventHandler::eventHandled() {
 #elif defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
     defined(MVPN_DUMMY)
   logger.error() << "We should not be here! Why "
-                  "CloseEventHandler::eventHandled() is called on desktop?!?";
+                    "CloseEventHandler::eventHandled() is called on desktop?!?";
   return true;
 #else
 #  error Unsupported platform
