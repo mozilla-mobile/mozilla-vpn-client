@@ -44,7 +44,6 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
-
     GridLayout {
         id: col
         width: parent.width - Theme.windowMargin
@@ -76,13 +75,18 @@ VPNFlickable {
             }
         }
 
+        VPNCollapsibleCard {
+            z: 1
+
+            title: "Collapsible card component"
+        }
+
         VPNAlerts {
             id: notifications
         }
 
         VPNControllerView {
             id: box
-
         }
 
         VPNControllerNav {

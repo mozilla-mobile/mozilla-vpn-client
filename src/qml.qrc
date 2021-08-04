@@ -448,5 +448,6 @@
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
+        <file>ui/components/VPNCollapsibleCard.qml</file>
     </qresource>
 </RCC>
