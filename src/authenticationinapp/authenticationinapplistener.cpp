@@ -157,11 +157,11 @@ void AuthenticationInAppListener::setPassword(const QString& password) {
   m_authPw = generateAuthPw(password);
 }
 
-void AuthenticationInAppListener::signIn(const QString& verificationCode) {
+void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   logger.log() << "Sign in";
 
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
-      this, m_emailAddress, m_authPw, verificationCode, m_urlQuery);
+      this, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -207,31 +207,36 @@ void AuthenticationInAppListener::signUp() {
           });
 }
 
-void AuthenticationInAppListener::emailVerificationNeeded() {
-  logger.log() << "Email varification needed";
+void AuthenticationInAppListener::unblockCodeNeeded() {
+  logger.log() << "Unblock code needed";
   AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateEmailVerification, this);
+      AuthenticationInApp::StateUnblockCodeNeeded, this);
+  sendUnblockCodeEmail();
+}
+
+void AuthenticationInAppListener::setUnblockCodeAndContinue(
+    const QString& unblockCode) {
+  logger.log() << "Sign in (unblock code received)";
+  Q_ASSERT(m_sessionToken.isEmpty());
+  signIn(unblockCode);
+}
+
+void AuthenticationInAppListener::sendUnblockCodeEmail() {
+  logger.log() << "Resend unblock code";
+  Q_ASSERT(m_sessionToken.isEmpty());
 
   NetworkRequest* request =
       NetworkRequest::createForFxaSendUnblockCode(this, m_emailAddress);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to send the email verification" << error;
+            logger.log() << "Failed to resend the unblock code" << error;
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [](const QByteArray& data) { logger.log() << "Email send" << data; });
-}
-
-void AuthenticationInAppListener::verifyEmailCode(const QString& code) {
-  logger.log() << "Sign in (verify email code received)";
-  Q_ASSERT(m_sessionToken.isEmpty());
-
-  AuthenticationInApp::instance()->requestState(
-      AuthenticationInApp::StateSignIn, this);
-  signIn(code);
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [](const QByteArray& data) { logger.log() << "Code resent" << data; });
 }
 
 void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
@@ -623,7 +628,7 @@ void AuthenticationInAppListener::processRequestFailure(
     if (errorCode == 125) {
       QString verificationMethod = obj["verificationMethod"].toString();
       if (verificationMethod == "email-captcha") {
-        emailVerificationNeeded();
+        unblockCodeNeeded();
         return;
       }
 

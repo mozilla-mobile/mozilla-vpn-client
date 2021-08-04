@@ -14,8 +14,8 @@ Item {
     // There 3 possible next-steps:
     // - authentication completed (VPN.state will change, the authentication is
     //   completed)
-    // - email verification needed. This can happen for security reasons. We go
-    //   to EmailVerification. The user needs to insert the 6-digit code.
+    // - unblock code needed. This can happen for security reasons. We go
+    //   to UnblockCodeNeeded. The user needs to insert the 6-digit code.
     //   Then we go back to SignIn state.
     // - errors... for instance: the password is wrong. See the ErrorType enum.
 

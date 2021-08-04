@@ -88,10 +88,17 @@ void AuthenticationInApp::signUp() {
   m_listener->signUp();
 }
 
-void AuthenticationInApp::verifyEmailCode(const QString& code) {
-  Q_ASSERT(m_state == StateEmailVerification);
+void AuthenticationInApp::setUnblockCodeAndContinue(
+    const QString& unblockCode) {
+  Q_ASSERT(m_state == StateUnblockCodeNeeded);
   Q_ASSERT(m_listener);
-  m_listener->verifyEmailCode(code);
+  m_listener->setUnblockCodeAndContinue(unblockCode);
+}
+
+void AuthenticationInApp::resendUnblockCodeEmail() {
+  Q_ASSERT(m_state == StateUnblockCodeNeeded);
+  Q_ASSERT(m_listener);
+  m_listener->sendUnblockCodeEmail();
 }
 
 void AuthenticationInApp::verifySessionEmailCode(const QString& code) {
