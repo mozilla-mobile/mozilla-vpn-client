@@ -12,7 +12,7 @@ on:
 
 jobs:
   macos:
-    name: MacOS packages for testing
+    name: MacOS packages
     runs-on: macos-latest
 
     steps:
@@ -204,7 +204,7 @@ jobs:
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -p -m
+          python3 scripts/importLanguages.py -m
 
       - name: Configuring the build
         shell: bash

@@ -89,11 +89,7 @@ CALL :CopyDependency Microsoft_VC142_CRT_x64.msm "%VCToolsRedistDir%\\MergeModul
 
 ECHO Importing languages...
 git submodule update --remote --depth 1 i18n
-if "%PROD_BUILD%" == "T" (
-  python scripts\importLanguages.py -p
-) else (
-  python scripts\importLanguages.py
-)
+python scripts\importLanguages.py
 
 ECHO Generating glean samples...
 python scripts\generate_glean.py

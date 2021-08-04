@@ -112,7 +112,6 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: "Groovy", dist: groovy }
             - { name: "Hirsute", dist: hirsute }
 
     runs-on: ubuntu-latest

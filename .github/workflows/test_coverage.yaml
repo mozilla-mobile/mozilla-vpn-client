@@ -43,14 +43,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py -p
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py -p
+          python3 scripts/importLanguages.py
 
       - name: Compile
         shell: bash
