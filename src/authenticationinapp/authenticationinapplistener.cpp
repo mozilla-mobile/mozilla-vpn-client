@@ -217,13 +217,13 @@ void AuthenticationInAppListener::unblockCodeNeeded() {
 
 void AuthenticationInAppListener::setUnblockCodeAndContinue(
     const QString& unblockCode) {
-  logger.log() << "Sign in (unblock code received)";
+  logger.debug() << "Sign in (unblock code received)";
   Q_ASSERT(m_sessionToken.isEmpty());
   signIn(unblockCode);
 }
 
 void AuthenticationInAppListener::sendUnblockCodeEmail() {
-  logger.log() << "Resend unblock code";
+  logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
   NetworkRequest* request =

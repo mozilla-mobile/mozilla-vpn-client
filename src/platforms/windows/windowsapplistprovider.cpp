@@ -104,7 +104,7 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
     }
     if (target.fileName() == self.fileName()) {
       // 2: Dont Include ourselves :)
-      logger.log() << "Skip -> " << link.baseName()
+      logger.debug() << "Skip -> " << link.baseName()
                    << target.absoluteFilePath();
       continue;
     }
