@@ -16,8 +16,8 @@ Logger logger(LOG_INSPECTOR, "InspectorWebSocketServer");
 
 constexpr int INSPECT_PORT = 8765;
 
-InspectorWebSocketServer::InspectorWebSocketServer()
-    : QWebSocketServer("", QWebSocketServer::NonSecureMode) {
+InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
+    : QWebSocketServer("", QWebSocketServer::NonSecureMode, parent) {
   MVPN_COUNT_CTOR(InspectorWebSocketServer);
 
   logger.log() << "Creating the inspector websocket server";
