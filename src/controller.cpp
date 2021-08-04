@@ -195,7 +195,8 @@ void Controller::activateInternal() {
   if (FeatureList::instance()->userDNSSupported() &&
       !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
+      settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
+          SettingsHolder::UserDNSOK) {
     dns = QHostAddress(settingsHolder->userDNS());
     logger.debug() << "User DNS Set" << dns.toString();
   }
@@ -258,7 +259,8 @@ bool Controller::silentSwitchServers() {
   if (FeatureList::instance()->userDNSSupported() &&
       !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
+      settingsHolder->validateUserDNS(settingsHolder->userDNS()) ==
+          SettingsHolder::UserDNSOK) {
     dns = QHostAddress(settingsHolder->userDNS());
     logger.debug() << "User DNS Set" << dns.toString();
   }
@@ -655,8 +657,15 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
       logger.debug() << "Filtering out the local area networks (rfc 4193)";
       excludeIPv6s.append(RFC4193::ipv6());
     }
-  }
-  if (shouldExcludeDns()) {
+  } else if (FeatureList::instance()->userDNSSupported() &&
+             !SettingsHolder::instance()->useGatewayDNS() &&
+             SettingsHolder::instance()->userDNS().size() > 0 &&
+             SettingsHolder::instance()->validateUserDNS(
+                 SettingsHolder::instance()->userDNS()) ==
+                 SettingsHolder::UserDNSOK &&
+             // No need to filter out loopback ip addresses
+             !RFC5735::ipv4LoopbackAddressBlock().contains(
+                 QHostAddress(SettingsHolder::instance()->userDNS()))) {
     // Filter out the Custom DNS Server, if the User has one.
     logger.debug() << "Filtering out the DNS address"
                    << SettingsHolder::instance()->userDNS();
@@ -702,40 +711,6 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   return list;
-}
-
-bool Controller::shouldExcludeDns() {
-  auto settings = SettingsHolder::instance();
-  if (!FeatureList::instance()->userDNSSupported()) {
-    return false;
-  }
-  if (settings->useGatewayDNS()) {
-    return false;
-  }
-  auto dns = settings->userDNS();
-  if (!settings->validateUserDNS(dns)) {
-    return false;
-  }
-  // No need to filter out loopback ip addresses
-  if (RFC5735::ipv4LoopbackAddressBlock().contains(QHostAddress(dns))) {
-    return false;
-  }
-  bool isLocalDNS = RFC1918::contains(QHostAddress(dns));
-  // In case we cant use lan access, no need to exclude anyway.
-  if (!FeatureList::instance()->localNetworkAccessSupported()) {
-    return false;
-  }
-
-  // TODO: Uncomment this once mullvad is ready to route custom dns
-  // currently we want all custom dns to not use the vpn because of this.
-  // if(!isLocalDNS){
-  //  return false;
-  //}
-  if (isLocalDNS && settings->localNetworkAccess()) {
-    // DNS is lan, but we already excluded local-ip's, all good.
-    return false;
-  }
-  return true;
 }
 
 void Controller::resetConnectionCheck() {

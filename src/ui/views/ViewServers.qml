@@ -8,9 +8,7 @@ import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 import Mozilla.VPN 1.0
 import "../components"
-import "../components/forms"
 import "../themes/themes.js" as Theme
-import "../themes/colors.js" as Color
 
 Item {
     id: root
@@ -30,13 +28,14 @@ Item {
         height: parent.height - menu.height
         anchors.top: menu.bottom
         width: parent.width
-        onActiveFocusChanged: if (focus && lastFocusedItemIdx) countriesRepeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
+        onActiveFocusChanged: if (focus && lastFocusedItemIdx) repeater.itemAt(lastFocusedItemIdx).forceActiveFocus()
         Accessible.name: menu.title
         Accessible.role: Accessible.List
 
         ButtonGroup {
             id: radioButtonGroup
         }
+
 
         VPNFlickable {
             id: vpnFlickable
@@ -48,17 +47,17 @@ Item {
             Rectangle {
                 id: verticalSpacer
 
-                height: Theme.vSpacing
+                height: Theme.windowMargin / 2
                 width: parent.width
                 color: "transparent"
             }
 
             NumberAnimation on contentY {
-                id: scrollAnimation
+                        id: scrollAnimation
 
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
+                        duration: 200
+                        easing.type: Easing.OutQuad
+                    }
 
             Column {
                 id: serverList
@@ -74,8 +73,8 @@ Item {
 
                     const serverListYCenter = vpnFlickable.height / 2;
 
-                    for (let idx = 0; idx < countriesRepeater.count; idx++) {
-                        const countryItem = countriesRepeater.itemAt(idx);
+                    for (let idx = 0; idx < repeater.count; idx++) {
+                        const countryItem = repeater.itemAt(idx);
                         const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
                         if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
                             continue;
@@ -89,63 +88,9 @@ Item {
                     }
                 }
 
-                VPNSearchBar {
-                    id: serverSearchInput
-
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: Theme.vSpacing
-                    anchors.rightMargin: Theme.vSpacing
-                    enabled: true
-                    height: Theme.rowHeight
-                    onTextChanged: () => {
-                        countriesModel.invalidate();
-                    }
-                    placeholderText: VPNl18n.tr(VPNl18n.ServersViewSearchPlaceholder)
-                    stateError: countriesRepeater.count === 0
-
-                    RowLayout {
-                        id: searchWarning
-                        anchors.top: serverSearchInput.bottom
-                        anchors.topMargin: Theme.listSpacing
-                        visible: serverSearchInput.stateError
-
-                        VPNIcon {
-                            id: warningIcon
-
-                            source: "../resources/warning.svg"
-                            sourceSize.height: 14
-                            sourceSize.width: 14
-                        }
-
-                        VPNInterLabel {
-                            id: warningLabel
-                            color: Color.error.default
-                            text: VPNl18n.tr(VPNl18n.ServersViewSearchNoResultsLabel)
-                            font.pixelSize: Theme.fontSizeSmall
-                        }
-                    }
-                }
-
-                VPNFilterProxyModel {
-                    id: countriesModel
-                    source: VPNServerCountryModel
-                    filterCallback: country => {
-                        const searchString = serverSearchInput.text.toLowerCase();
-                        const includesSearchString = nameString => (
-                            nameString.toLowerCase().includes(searchString)
-                        );
-                        const includesName = includesSearchString(country.name);
-                        const includesLocalizedName = includesSearchString(country.localizedName);
-                        const matchesCountryCode = country.code.toLowerCase() === searchString;
-
-                        return includesName || includesLocalizedName || matchesCountryCode;
-                    }
-                }
-
                 Repeater {
-                    id: countriesRepeater
-                    model: countriesModel
+                    id: repeater
+                    model: VPNServerCountryModel
                     delegate: VPNServerCountry{}
                 }
             }

@@ -444,7 +444,7 @@
         <file>ui/authenticationInApp/ViewAuthenticationStart.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationSignIn.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationSignUp.qml</file>
-        <file>ui/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
+        <file>ui/authenticationInApp/ViewAuthenticationEmailVerification.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>

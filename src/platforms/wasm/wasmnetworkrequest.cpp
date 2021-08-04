@@ -215,15 +215,13 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
-                                                  const QString& email,
-                                                  const QByteArray& authpw,
-                                                  const QString& unblockCode,
-                                                  const QUrlQuery& query) {
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    QObject* parent, const QString& email, const QByteArray& authpw,
+    const QString& verificationCode, const QUrlQuery& query) {
   Q_ASSERT(parent);
   Q_UNUSED(email);
   Q_UNUSED(authpw);
-  Q_UNUSED(unblockCode);
+  Q_UNUSED(verificationCode);
   Q_UNUSED(query);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);

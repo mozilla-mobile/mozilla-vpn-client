@@ -8,12 +8,10 @@
 #include "ipaddress.h"
 
 #include <QList>
-#include <QHostAddress>
 
 class RFC1918 final {
  public:
   static QList<IPAddress> ipv4();
-  static bool contains(const QHostAddress& ip);
 };
 
 #endif  // RFC1918_H

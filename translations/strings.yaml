@@ -48,7 +48,3 @@
 # Remember! When you change this file, you must run the
 # `./scripts/generate_strings.py` script to regenerate the string files.
 #
-
-serversView:
-  searchPlaceholder: Search countries
-  searchNoResultsLabel: No results. Try a different search

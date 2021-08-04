@@ -6,7 +6,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
-#include "windowscommons.h"
 
 #include <QSettings>
 #include <QFile>
@@ -84,7 +83,6 @@ bool WindowsAppListProvider::isValidAppId(const QString& appId) {
  */
 void WindowsAppListProvider::readLinkFiles(const QString& path,
                                            QMap<QString, QString>& out) {
-  QFileInfo self(WindowsCommons::getCurrentPath());
   logger.debug() << "Read -> " << path;
   QDirIterator it(path, QStringList() << "*.lnk", QDir::Files,
                   QDirIterator::Subdirectories);
@@ -102,26 +100,20 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
                      << target.absoluteFilePath();
       continue;
     }
-    if (target.fileName() == self.fileName()) {
-      // 2: Dont Include ourselves :)
-      logger.log() << "Skip -> " << link.baseName()
-                   << target.absoluteFilePath();
-      continue;
-    }
     if (target.path().toUpper().startsWith("C:/WINDOWS")) {
-      // 3: Don't include windows links like cmd/ps
+      // 2: Don't include windows links like cmd/ps
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;
     }
     if (isUninstaller(target)) {
-      // 4: Don't include obvious uninstallers
+      // 3: Don't include obvious uninstallers
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;
     }
     if (!WindowsAppImageProvider::hasImage(target.absoluteFilePath())) {
-      // 5: Don't include apps without an icon
+      // 4: Don't include apps without an icon
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;

@@ -410,10 +410,50 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
   setConsumedSurveys(list);
 }
 
-bool SettingsHolder::validateUserDNS(const QString& dns) const {
+SettingsHolder::UserDNSValidationResult SettingsHolder::validateUserDNS(
+    const QString& dns) const {
   logger.debug() << "checking -> " << dns;
   QHostAddress address = QHostAddress(dns);
-  return address.isNull();
+
+  logger.debug() << "is null " << address.isNull();
+
+  if (address.isNull()) {
+    return UserDNSInvalid;
+  }
+
+  /* Currently we need to limit this to loopback and LAN IP addresses since the
+   * killswitch makes sure that no dns traffic may happen to outside of lan
+   */
+
+  if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    if (RFC5735::ipv4LoopbackAddressBlock().contains(address)) {
+      return UserDNSOK;
+    }
+
+    for (const IPAddress& network : RFC1918::ipv4()) {
+      if (network.contains(address)) {
+        return UserDNSOK;
+      }
+    }
+
+    return UserDNSOutOfRange;
+  }
+
+  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+    if (RFC4291::ipv6LoopbackAddressBlock().contains(address)) {
+      return UserDNSOK;
+    }
+
+    for (const IPAddress& network : RFC4193::ipv6()) {
+      if (network.contains(address)) {
+        return UserDNSOK;
+      }
+    }
+
+    return UserDNSOutOfRange;
+  }
+
+  return UserDNSInvalid;
 }
 
 QString SettingsHolder::placeholderUserDNS() const {

@@ -155,16 +155,27 @@ Item {
                             VPNSettings.userDNS = ipInput.text
                             return;
                         }
-                        if(VPNSettings.validateUserDNS(ipInput.text)){
+
+                        switch(VPNSettings.validateUserDNS(ipInput.text)) {
+                        case VPNSettings.UserDNSOK:
                             ipInput.valueInvalid = false;
                             if (text !== VPNSettings.userDNS) {
                                 VPNSettings.userDNS = ipInput.text
                             }
-                        }else{
-                            // Now bother user if the ip is invalid :)
+                            break;
+
+                        // Now bother user if the ip is invalid :)
+                        case VPNSettings.UserDNSInvalid:
                             //% "Invalid IP address"
                             ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
                             ipInput.valueInvalid = true;
+                            break;
+
+                        case VPNSettings.UserDNSOutOfRange:
+                            //% "Out of range IP address"
+                            ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
+                            ipInput.valueInvalid = true;
+                            break;
                         }
                     }
                 }

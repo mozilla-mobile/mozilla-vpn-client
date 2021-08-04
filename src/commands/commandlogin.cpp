@@ -100,9 +100,9 @@ int CommandLogin::run(QStringList& tokens) {
             loop.exit();
           } break;
 
-          case AuthenticationInApp::StateUnblockCodeNeeded: {
-            QString code = getInput("Check your email. Unblock code:");
-            AuthenticationInApp::instance()->setUnblockCodeAndContinue(code);
+          case AuthenticationInApp::StateEmailVerification: {
+            QString code = getInput("Email verification needed. Code:");
+            AuthenticationInApp::instance()->verifyEmailCode(code);
           } break;
 
           case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {

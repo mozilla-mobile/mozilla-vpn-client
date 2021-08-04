@@ -382,11 +382,9 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
-                                                  const QString& email,
-                                                  const QByteArray& authpw,
-                                                  const QString& unblockCode,
-                                                  const QUrlQuery& query) {
+NetworkRequest* NetworkRequest::createForFxaLogin(
+    QObject* parent, const QString& email, const QByteArray& authpw,
+    const QString& verificationCode, const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::FXA_URL);
@@ -403,8 +401,8 @@ NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
   obj.insert("skipErrorCase", true);
   obj.insert("verificationMethod", "email-otp");
 
-  if (!unblockCode.isEmpty()) {
-    obj.insert("unblockCode", unblockCode);
+  if (!verificationCode.isEmpty()) {
+    obj.insert("unblockCode", verificationCode);
   }
 
   QJsonObject metrics;

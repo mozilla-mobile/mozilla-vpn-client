@@ -23,12 +23,11 @@ class AuthenticationInAppListener final : public AuthenticationListener {
 
   void checkAccount(const QString& emailAddress);
   void setPassword(const QString& password);
-  void setUnblockCodeAndContinue(const QString& unblockCode);
-  void signIn(const QString& unblockCode = QString());
+  void signIn(const QString& verificationCode = QString());
   void signUp();
+  void verifyEmailCode(const QString& code);
   void verifySessionEmailCode(const QString& code);
   void resendVerificationSessionCodeEmail();
-  void sendUnblockCodeEmail();
   void verifySessionTotpCode(const QString& code);
 
  private:
@@ -41,7 +40,7 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void accountChecked(bool exists);
   void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
                            const QString& verificationMethod);
-  void unblockCodeNeeded();
+  void emailVerificationNeeded();
   void finalizeSignInOrUp();
 
  private:

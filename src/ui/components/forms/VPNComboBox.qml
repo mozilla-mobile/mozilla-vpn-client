@@ -97,35 +97,6 @@ ComboBox {
             }
         }
 
-        background: Item {
-            Rectangle {
-                id: shadowMask
-                anchors.fill: bg
-                visible: false
-                color: "black"
-                radius: Theme.cornerRadius
-            }
-
-            DropShadow {
-                source: shadowMask
-                anchors.fill: shadowMask
-                samples: 16
-                transparentBorder: true
-                radius: 7.5
-                color: "#0C0C0D"
-                z: -1
-                opacity: .1
-                cached: true
-            }
-            VPNInputBackground {
-                id: bg
-                anchors.fill: parent
-                anchors.bottomMargin: -4
-                anchors.topMargin: anchors.bottomMargin
-                border.color: "transparent"
-            }
-        }
-
         contentItem: ListView {
             id: listView
             implicitHeight: contentHeight
@@ -133,6 +104,27 @@ ComboBox {
             clip: true
             model: combo.popup.visible ? combo.delegateModel : null
             ScrollIndicator.vertical: ScrollIndicator {}
+        }
+
+
+        background: VPNInputBackground {
+            id: bg
+            anchors.fill: parent
+            anchors.bottomMargin: -4
+            anchors.topMargin: anchors.bottomMargin
+            border.color: "transparent"
+            DropShadow {
+                source: bg
+                anchors.fill:bg
+                samples: 16
+                transparentBorder: true
+                radius: 7.5
+                color: "#0C0C0D"
+                z: -1
+                opacity: .2
+                cached: true
+            }
+
         }
     }
 }
