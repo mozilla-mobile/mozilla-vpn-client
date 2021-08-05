@@ -1,18 +1,22 @@
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
+
+import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 Rectangle {
     id: root
 
+    property int animationDuration: 150
     property bool expanded: false
     property string title: ""
-    property real cardContentHeight: 50
 
-    color: "pink"
-    implicitHeight: column.height
+    color: "lightgray"
+    implicitHeight: cardWrapper.height
     implicitWidth: parent.width
-    radius: 5
+    radius: Theme.cornerRadius
+
 
     states: [
         State {
@@ -20,13 +24,13 @@ Rectangle {
             when: root.expanded
 
             PropertyChanges {
-                target: stateIndicator
-                color: "green"
+                target: cardContent
+                height: cardContent.implicitHeight
             }
 
             PropertyChanges {
-                target: cardContent
-                height: cardContent.implicitHeight
+                target: chevron
+                rotation: -90
             }
         },
         State {
@@ -34,70 +38,151 @@ Rectangle {
             when: !root.expanded
 
             PropertyChanges {
-                target: stateIndicator
-                color: "red"
+                target: cardContent
+                height: 0
             }
 
             PropertyChanges {
-                target: cardContent
-                height: 0
+                target: chevron
+                rotation: 90
             }
         }
     ]
 
-    Column {
-        id: column
+    ColumnLayout {
+        id: cardWrapper
+        spacing: 0
+        width: root.width
 
         // Card header
-        Item {
+        RowLayout {
             id: accordionHeader
 
-            implicitHeight: accordionTitle.height
-            implicitWidth: root.width
+            spacing: 8
+
+            Layout.bottomMargin: 8
+            Layout.topMargin: 8
+            Layout.leftMargin: 8
+            Layout.rightMargin: 16
+            Layout.fillWidth: true
+
+            Rectangle {
+               id: icon
+               width: 40
+               height: 40
+            }
 
             Text {
                 id: accordionTitle
 
+//                bottomPadding: 8
                 color: "black"
+                font.family: Theme.fontBoldFamily
+                font.pixelSize: Theme.fontSize
+                lineHeightMode: Text.FixedHeight
+                lineHeight: Theme.labelLineHeight
                 text: root.title
-                width: root.width
+//                text: root.title
+//                topPadding: 8
+                verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.Wrap
+                Layout.fillWidth: true
+                Layout.preferredWidth: cardWrapper.width
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "yellow"
+                    z: -1
+                }
             }
 
             Rectangle {
                id: stateIndicator
 
-               anchors {
-                   right: accordionHeader.right
-                   verticalCenter: accordionHeader.verticalCenter
+               color: stateIndicator.state === Theme.uiState.stateHovered ? Color.grey10 : Color.white
+               height: 40
+               radius: Theme.cornerRadius - 1
+               width: 40
+
+               Behavior on color {
+                    ColorAnimation {
+                        duration: animationDuration
+                    }
                }
-               width: 16
-               height: 16
-               radius: width / 2
+
+               VPNChevron {
+                   id: chevron
+
+                   anchors {
+                       verticalCenter: parent.verticalCenter
+                       horizontalCenter: parent.horizontalCenter
+                   }
+
+                   Behavior on rotation {
+                        NumberAnimation {
+                            duration: animationDuration
+                        }
+                   }
+               }
+
+               VPNMouseArea {
+                   anchors.fill: stateIndicator
+                   hoverEnabled: true
+                   targetEl: stateIndicator
+               }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: Theme.cornerRadius
+                color: "pink"
+                z: -1
             }
 
             MouseArea {
-                anchors.fill: parent
+                anchors.fill: accordionHeader
                 onClicked: toggleCard()
             }
         }
 
         // Card content
-        Text {
-            id: cardContent
+        Column {
+            id: column
 
-            color: "black"
-            clip: true
-            width: column.width
+            Layout.preferredWidth: accordionTitle.width
+            Layout.leftMargin: icon.width + accordionHeader.spacing * 2
+            Layout.alignment: Qt.AlignTop
 
-            Behavior on height {
-                 NumberAnimation {
-                     duration: 200
-                 }
+            Text {
+                id: cardContent
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+                bottomPadding: 8
+                clip: true
+                color: "black"
+                font.pixelSize: Theme.fontSizeSmall
+
+                Behavior on height {
+                     NumberAnimation {
+                         duration: animationDuration
+                     }
+                }
+
+                text: "Test text content Test text content Test text content Test text content"
+                wrapMode: Text.Wrap
+                Rectangle {
+                    anchors.fill: parent
+                    radius: Theme.cornerRadius
+
+                    color: "pink"
+                    z: -1
+                }
             }
-
-            text: "Test text content"
         }
+
     }
 
     function toggleCard() {
