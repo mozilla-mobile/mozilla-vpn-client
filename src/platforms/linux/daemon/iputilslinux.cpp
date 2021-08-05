@@ -46,6 +46,8 @@ bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
 }
 
 bool IPUtilsLinux::setMTUAndUp(const InterfaceConfig& config) {
+  Q_UNUSED(config);
+
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
@@ -62,7 +64,7 @@ bool IPUtilsLinux::setMTUAndUp(const InterfaceConfig& config) {
   // FIXME: We need to know how many layers deep this particular
   // interface is into a tunnel to work effectively. Otherwise
   // we will run into fragmentation issues.
-  ifr.ifr_mtu = 1420;
+  ifr.ifr_mtu = ETH_MTU - WG_MTU_OVERHEAD;
   int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
   if (ret) {
     logger.error() << "Failed to set MTU -- Return code: " << ret;

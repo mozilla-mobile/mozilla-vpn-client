@@ -52,13 +52,9 @@ class Daemon : public QObject {
     Q_UNUSED(config);
     return true;
   }
-  virtual bool supportServerSwitching(const InterfaceConfig& config) const {
-    Q_UNUSED(config);
-    return false;
-  }
+  virtual bool supportServerSwitching(const InterfaceConfig& config) const;
   virtual bool switchServer(const InterfaceConfig& config);
-  virtual bool supportWGUtils() const { return false; }
-  virtual WireguardUtils* wgutils() { return nullptr; }
+  virtual WireguardUtils* wgutils() const = 0;
   virtual bool supportIPUtils() const { return false; }
   virtual IPUtils* iputils() { return nullptr; }
   virtual bool supportDnsUtils() const { return false; }

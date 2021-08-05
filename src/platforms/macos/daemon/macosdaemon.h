@@ -24,8 +24,7 @@ class MacOSDaemon final : public Daemon {
 
  protected:
   bool run(Op op, const InterfaceConfig& config) override;
-  bool supportWGUtils() const override { return true; }
-  WireguardUtils* wgutils() override { return m_wgutils; }
+  WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportIPUtils() const override { return true; }
   IPUtils* iputils() override { return m_iputils; }
 

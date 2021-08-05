@@ -49,6 +49,8 @@ Daemon* Daemon::instance() {
 }
 
 bool Daemon::activate(const InterfaceConfig& config) {
+  Q_ASSERT(wgutils() != nullptr);
+
   // There are 3 possible scenarios in which this method is called:
   //
   // 1. the VPN is off: the method tries to enable the VPN.
@@ -84,19 +86,17 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   prepareActivation(config);
 
-  if (supportWGUtils()) {
-    // Bring up the wireguard interface if not already done.
-    if (!wgutils()->interfaceExists()) {
-      if (!wgutils()->addInterface(config)) {
-        logger.error() << "Interface creation failed.";
-        return false;
-      }
-    }
-    // Add the peer to this interface.
-    if (!wgutils()->updatePeer(config)) {
-      logger.error() << "Peer creation failed.";
+  // Bring up the wireguard interface if not already done.
+  if (!wgutils()->interfaceExists()) {
+    if (!wgutils()->addInterface(config)) {
+      logger.error() << "Interface creation failed.";
       return false;
     }
+  }
+  // Add the peer to this interface.
+  if (!wgutils()->updatePeer(config)) {
+    logger.error() << "Peer creation failed.";
+    return false;
   }
 
   if ((config.m_hopindex == 0) && supportDnsUtils()) {
@@ -125,12 +125,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
 
   // set routing
-  if (supportWGUtils()) {
-    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-      if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
-        logger.debug() << "Routing configuration failed for" << ip.toString();
-        return false;
-      }
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
+      logger.debug() << "Routing configuration failed for" << ip.toString();
+      return false;
     }
   }
 
@@ -281,6 +279,8 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
+  Q_ASSERT(wgutils() != nullptr);
+
   // Deactivate the main interface.
   if (m_connections.contains(0)) {
     const ConnectionState& state = m_connections.value(0);
@@ -297,25 +297,23 @@ bool Daemon::deactivate(bool emitSignals) {
     return false;
   }
 
-  if (supportWGUtils()) {
-    if (!wgutils()->interfaceExists()) {
-      logger.warning() << "Wireguard interface does not exist.";
-      return false;
-    }
+  if (!wgutils()->interfaceExists()) {
+    logger.warning() << "Wireguard interface does not exist.";
+    return false;
+  }
 
-    // Cleanup routing
-    for (const ConnectionState& state : m_connections.values()) {
-      const InterfaceConfig& config = state.m_config;
-      logger.debug() << "Deleting routes for hop" << config.m_hopindex;
-      for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-        wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
-      }
+  // Cleanup routing
+  for (const ConnectionState& state : m_connections.values()) {
+    const InterfaceConfig& config = state.m_config;
+    logger.debug() << "Deleting routes for hop" << config.m_hopindex;
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
     }
+  }
 
-    // Delete the interface
-    if (!wgutils()->deleteInterface()) {
-      return false;
-    }
+  // Delete the interface
+  if (!wgutils()->deleteInterface()) {
+    return false;
   }
 
   m_connections.clear();
@@ -335,12 +333,22 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
-bool Daemon::switchServer(const InterfaceConfig& config) {
-  // Generic server switching is not supported without wgutils.
-  if (!supportWGUtils()) {
-    qFatal("Have you forgotten to implement switchServer?");
+bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
+  if (!m_connections.contains(config.m_hopindex)) {
     return false;
   }
+  const InterfaceConfig& current =
+      m_connections.value(config.m_hopindex).m_config;
+
+  return current.m_privateKey == config.m_privateKey &&
+         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
+         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
+         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
+         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+}
+
+bool Daemon::switchServer(const InterfaceConfig& config) {
+  Q_ASSERT(wgutils() != nullptr);
 
   logger.debug() << "Switching server for hop" << config.m_hopindex;
 

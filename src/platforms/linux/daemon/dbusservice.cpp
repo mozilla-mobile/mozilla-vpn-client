@@ -41,8 +41,6 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtils* DBusService::wgutils() { return m_wgutils; }
-
 IPUtils* DBusService::iputils() {
   if (!m_iputils) {
     m_iputils = new IPUtilsLinux(this);
@@ -63,9 +61,9 @@ void DBusService::setAdaptor(DbusAdaptor* adaptor) {
 }
 
 bool DBusService::removeInterfaceIfExists() {
-  if (wgutils()->interfaceExists()) {
+  if (m_wgutils->interfaceExists()) {
     logger.warning() << "Device already exists. Let's remove it.";
-    if (!wgutils()->deleteInterface()) {
+    if (!m_wgutils->deleteInterface()) {
       logger.error() << "Failed to remove the device.";
       return false;
     }
@@ -129,7 +127,7 @@ QByteArray DBusService::getStatus() {
   }
 
   const InterfaceConfig& config = m_connections.value(0).m_config;
-  if (!wgutils()->interfaceExists()) {
+  if (!m_wgutils->interfaceExists()) {
     logger.error() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
@@ -139,7 +137,7 @@ QByteArray DBusService::getStatus() {
   json.insert("serverIpv4Gateway", QJsonValue(config.m_serverIpv4Gateway));
   json.insert("deviceIpv4Address", QJsonValue(config.m_deviceIpv4Address));
   WireguardUtilsLinux::peerStatus status =
-      wgutils()->getPeerStatus(config.m_serverPublicKey);
+      m_wgutils->getPeerStatus(config.m_serverPublicKey);
   json.insert("txBytes", QJsonValue(status.txBytes));
   json.insert("rxBytes", QJsonValue(status.rxBytes));
 
@@ -149,20 +147,6 @@ QByteArray DBusService::getStatus() {
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
   return Daemon::logs();
-}
-
-bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
-  if (!m_connections.contains(config.m_hopindex)) {
-    return false;
-  }
-  const InterfaceConfig& current =
-      m_connections.value(config.m_hopindex).m_config;
-
-  return current.m_privateKey == config.m_privateKey &&
-         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
 }
 
 void DBusService::appLaunched(const QString& name, int rootpid) {
