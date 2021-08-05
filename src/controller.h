@@ -6,6 +6,7 @@
 #define CONTROLLER_H
 
 #include "models/server.h"
+#include "models/controllercapabilities.h"
 #include "connectioncheck.h"
 
 #include <QElapsedTimer>
@@ -84,6 +85,8 @@ class Controller final : public QObject {
 
   void backendFailure();
 
+  const ControllerCapabilities& getCapabilities(){ return m_capabilities;}
+
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
@@ -97,10 +100,12 @@ class Controller final : public QObject {
   void disconnected();
   void timerTimeout();
   void implInitialized(bool status, bool connected,
-                       const QDateTime& connectionDate);
+                       const QDateTime& connectionDate,
+                       ControllerCapabilities capabilities);
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
+  void controllerCapabilitiesUpdated(ControllerCapabilities aCapabilities);
 
   void connectionConfirmed();
   void connectionFailed();
@@ -113,6 +118,7 @@ class Controller final : public QObject {
   void readyToBackendFailure();
   void connectionRetryChanged();
   void silentSwitchDone();
+  void controllerCapabilitiesChanged();
 
  private:
   void setState(State state);
@@ -142,6 +148,8 @@ class Controller final : public QObject {
 
   QString m_switchingCountryCode;
   QString m_switchingCity;
+
+  ControllerCapabilities m_capabilities;
 
   enum NextStep {
     None,

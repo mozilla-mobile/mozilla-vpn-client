@@ -494,3 +494,12 @@ QString WindowsSplitTunnel::convertPath(const QString& path) {
 
   return parts.join("\\");
 }
+
+ControllerCapabilities::SupportLevel WindowsSplitTunnel::getSupportStatus(){
+  if(getState() != DRIVER_STATE::STATE_UNKNOWN){
+    // Driver is Ready.
+    return ControllerCapabilities::SupportLevel::Supported;
+  }
+  // Something went wrong while activation. :c
+  return ControllerCapabilities::SupportLevel::Deactivated;
+}

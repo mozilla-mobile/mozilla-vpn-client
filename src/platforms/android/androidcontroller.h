@@ -49,6 +49,7 @@ class AndroidController final : public ControllerImpl,
  private:
   Server m_server;
   Device m_device;
+  ControllerCapabilities m_capabilities;
   bool m_serviceConnected = false;
   std::function<void(const QString&)> m_logCallback;
 

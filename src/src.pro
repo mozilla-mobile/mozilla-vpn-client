@@ -92,6 +92,7 @@ SOURCES += \
         loghandler.cpp \
         logoutobserver.cpp \
         main.cpp \
+        models/controllercapabilities.cpp \
         models/device.cpp \
         models/devicemodel.cpp \
         models/feedbackcategorymodel.cpp \
@@ -190,6 +191,7 @@ HEADERS += \
         logger.h \
         loghandler.h \
         logoutobserver.h \
+        models/controllercapabilities.h \
         models/device.h \
         models/devicemodel.h \
         models/feedbackcategorymodel.h \

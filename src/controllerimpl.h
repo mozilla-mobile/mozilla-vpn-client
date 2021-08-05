@@ -76,7 +76,8 @@ class ControllerImpl : public QObject {
   // known.
   // If "status" is set to false, the backend service is considered unavailable.
   void initialized(bool status, bool connected,
-                   const QDateTime& connectionDate);
+                   const QDateTime& connectionDate,
+                   ControllerCapabilities capabilities);
 
   // These 2 signals can be dispatched at any time.
   void connected();
@@ -90,6 +91,10 @@ class ControllerImpl : public QObject {
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
+
+  // This signal is emitted when the Controller feature set changed. 
+  // For example a feature subsystem is failing, so the feature is no longer available.
+  void controllerCapabilitiesUpdated(ControllerCapabilities capabilities);
 };
 
 #endif  // CONTROLLERIMPL_H

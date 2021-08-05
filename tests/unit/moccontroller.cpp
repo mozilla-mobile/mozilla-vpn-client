@@ -13,7 +13,7 @@ Controller::~Controller() = default;
 
 void Controller::initialize() {}
 
-void Controller::implInitialized(bool, bool, const QDateTime&) {}
+void Controller::implInitialized(bool, bool, const QDateTime&, ControllerCapabilities) {}
 
 bool Controller::activate() { return false; }
 

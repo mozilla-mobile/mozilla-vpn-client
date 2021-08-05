@@ -5,6 +5,7 @@
 #include "windowsdaemon.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/controllercapabilities.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsservicemanager.h"
 #include "wgquickprocess.h"
@@ -87,6 +88,9 @@ QByteArray WindowsDaemon::getStatus() {
     obj.insert("rxBytes", QJsonValue(pb.rxBytes));
   }
 
+  ControllerCapabilities features;
+  features.m_SplitTunnel = m_splitTunnelManager.getSupportStatus();
+  obj.insert("capabilities",features.serialize());
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 

@@ -5,6 +5,8 @@
 #ifndef WINDOWSSPLITTUNNEL_H
 #define WINDOWSSPLITTUNNEL_H
 
+#include "models/controllercapabilities.h"
+
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -145,6 +147,8 @@ class WindowsSplitTunnel final : public QObject {
   static SC_HANDLE installDriver();
   static bool uninstallDriver();
   static bool isInstalled();
+
+  ControllerCapabilities::SupportLevel getSupportStatus();
 
  private slots:
   void initDriver();

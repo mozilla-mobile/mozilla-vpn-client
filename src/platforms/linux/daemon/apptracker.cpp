@@ -6,6 +6,7 @@
 #include "dbustypeslinux.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/linux/linuxdependencies.h"
 
 #include <QtDBus/QtDBus>
 #include <QDBusConnection>
@@ -106,4 +107,23 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
   if (!appIdName.isEmpty()) {
     emit appLaunched(appIdName, pid);
   }
+}
+
+ControllerCapabilities::SupportLevel AppTracker::getSupportStatus(){
+  /* Control groups v1 must be mounted for traffic classification */
+  if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
+    return ControllerCapabilities::SupportLevel::Unsupported;
+  }
+
+  /* Application tracking is only supported on GTK-based desktops */
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (!pe.contains("XDG_CURRENT_DESKTOP")) {
+    return ControllerCapabilities::SupportLevel::Unsupported;
+  }
+  QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
+  if (!desktop.contains("GNOME") && !desktop.contains("MATE") &&
+      !desktop.contains("Unity") && !desktop.contains("X-Cinnamon")) {
+    return ControllerCapabilities::SupportLevel::Unsupported;
+  }
+  return ControllerCapabilities::SupportLevel::Supported;
 }

@@ -5,6 +5,8 @@
 #ifndef APPTRACKER_H
 #define APPTRACKER_H
 
+#include "models/controllercapabilities.h"
+
 #include <QDBusPendingCallWatcher>
 #include <QDBusObjectPath>
 
@@ -15,6 +17,8 @@ class AppTracker final : public QObject {
  public:
   explicit AppTracker(QObject* parent);
   ~AppTracker();
+
+  ControllerCapabilities::SupportLevel getSupportStatus();
 
  signals:
   void appLaunched(const QString& name, int rootpid);

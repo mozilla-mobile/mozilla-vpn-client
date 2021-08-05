@@ -8,6 +8,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "polkithelper.h"
+#include "models/controllercapabilities.h"
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -135,6 +136,11 @@ QByteArray DBusService::getStatus() {
   WireguardUtilsLinux::peerBytes pb = wgutils()->getThroughputForInterface();
   json.insert("txBytes", QJsonValue(pb.txBytes));
   json.insert("rxBytes", QJsonValue(pb.rxBytes));
+
+  ControllerCapabilities features;
+  features.m_SplitTunnel = m_apptracker.getSupportStatus();
+  obj.insert("capabilities",features.serialize());
+
 
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
