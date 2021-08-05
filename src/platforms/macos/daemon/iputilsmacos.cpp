@@ -51,6 +51,7 @@ bool IPUtilsMacos::addInterfaceIPs(const InterfaceConfig& config) {
 bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   Q_UNUSED(config);
   QString ifname = MacOSDaemon::instance()->wgutils()->interfaceName();
+  struct ifreq ifr;
 
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
@@ -60,18 +61,20 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
 
-  // Setup the interface to interact with
-  struct ifreq ifr;
-  strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
-
   // MTU
-  // FIXME: We need to know how many layers deep this particular
-  // interface is into a tunnel to work effectively. Otherwise
-  // we will run into fragmentation issues.
+  strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
   ifr.ifr_mtu = ETH_MTU - WG_MTU_OVERHEAD;
   int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
   if (ret) {
-    logger.log() << "Failed to set MTU -- Return code: " << ret;
+    logger.log() << "Failed to set MTU:" << strerror(errno);
+    return false;
+  }
+
+  // Get the interface flags
+  strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
+  ret = ioctl(sockfd, SIOCGIFFLAGS, &ifr);
+  if (ret) {
+    logger.log() << "Failed to get interface flags:" << strerror(errno);
     return false;
   }
 
@@ -79,7 +82,7 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
   ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
   if (ret) {
-    logger.log() << "Failed to set device up -- Return code: " << ret;
+    logger.log() << "Failed to set device up:" << strerror(errno);
     return false;
   }
 
