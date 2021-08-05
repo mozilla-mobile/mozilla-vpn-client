@@ -52,3 +52,6 @@
 serversView:
   searchPlaceholder: Search countries
   searchNoResultsLabel: No results. Try a different search
+
+feedbackForm:
+  chooseCategory: Choose a category
