@@ -10,9 +10,9 @@
 
 class QJsonValue;
 
-class IAPHandler final : public QAbstractListModel {
+class IOSIAPHandler final : public QAbstractListModel {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(IAPHandler)
+  Q_DISABLE_COPY_MOVE(IOSIAPHandler)
 
  public:
   enum ProductType {
@@ -23,9 +23,9 @@ class IAPHandler final : public QAbstractListModel {
   };
   Q_ENUM(ProductType);
 
-  static IAPHandler* createInstance();
+  static IOSIAPHandler* createInstance();
 
-  static IAPHandler* instance();
+  static IOSIAPHandler* instance();
 
   enum ModelRoles {
     ProductIdentifierRole = Qt::UserRole + 1,
@@ -72,8 +72,8 @@ class IAPHandler final : public QAbstractListModel {
   void processCompletedTransactions(const QStringList& ids);
 
  private:
-  IAPHandler(QObject* parent);
-  ~IAPHandler();
+  IOSIAPHandler(QObject* parent);
+  ~IOSIAPHandler();
 
   void addProduct(const QJsonValue& value);
   void computeSavings();
@@ -101,7 +101,7 @@ class IAPHandler final : public QAbstractListModel {
     // This is not exposed and it's not localized. It's used to compute the
     // saving %.
     double m_nonLocalizedMonthlyPrice = 0;
-    ProductType m_type = IAPHandler::ProductMonthly;
+    ProductType m_type = IOSIAPHandler::ProductMonthly;
     bool m_featuredProduct = false;
     // This is the % compared with the montly subscription.
     uint32_t m_savings = 0;

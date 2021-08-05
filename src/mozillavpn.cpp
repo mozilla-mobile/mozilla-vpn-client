@@ -29,7 +29,7 @@
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
-#  include "platforms/ios/iaphandler.h"
+#  include "platforms/ios/iosiaphandler.h"
 #  include "platforms/ios/iosdatamigration.h"
 #  include "platforms/ios/taskiosproducts.h"
 #endif
@@ -139,16 +139,16 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
           &ConnectionDataHolder::stateChanged);
 
 #ifdef MVPN_IOS
-  IAPHandler* iap = IAPHandler::createInstance();
-  connect(iap, &IAPHandler::subscriptionStarted, this,
+  IOSIAPHandler* iap = IOSIAPHandler::createInstance();
+  connect(iap, &IOSIAPHandler::subscriptionStarted, this,
           &MozillaVPN::subscriptionStarted);
-  connect(iap, &IAPHandler::subscriptionFailed, this,
+  connect(iap, &IOSIAPHandler::subscriptionFailed, this,
           &MozillaVPN::subscriptionFailed);
-  connect(iap, &IAPHandler::subscriptionCanceled, this,
+  connect(iap, &IOSIAPHandler::subscriptionCanceled, this,
           &MozillaVPN::subscriptionCanceled);
-  connect(iap, &IAPHandler::subscriptionCompleted, this,
+  connect(iap, &IOSIAPHandler::subscriptionCompleted, this,
           &MozillaVPN::subscriptionCompleted);
-  connect(iap, &IAPHandler::alreadySubscribed, this,
+  connect(iap, &IOSIAPHandler::alreadySubscribed, this,
           &MozillaVPN::alreadySubscribed);
 #endif
 
@@ -725,7 +725,7 @@ void MozillaVPN::logout() {
   deleteTasks();
 
 #ifdef MVPN_IOS
-  IAPHandler::instance()->stopSubscription();
+  IOSIAPHandler::instance()->stopSubscription();
 #endif
 
   // update-required state is the only one we want to keep when logging out.
@@ -1170,7 +1170,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   setState(StateSubscriptionValidation);
 
-  IAPHandler* iap = IAPHandler::instance();
+  IOSIAPHandler* iap = IOSIAPHandler::instance();
 
   // If IPA is not ready yet (race condition), let's register the products
   // again.

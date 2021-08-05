@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "taskiosproducts.h"
-#include "iaphandler.h"
+#include "iosiaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -33,10 +33,10 @@ void TaskIOSProducts::run(MozillaVPN* vpn) {
           [this](const QByteArray& data) {
             logger.debug() << "IOS product request completed" << data;
 
-            IAPHandler* ipaHandler = IAPHandler::instance();
+            IOSIAPHandler* ipaHandler = IOSIAPHandler::instance();
             Q_ASSERT(ipaHandler);
 
-            connect(ipaHandler, &IAPHandler::productsRegistered, this,
+            connect(ipaHandler, &IOSIAPHandler::productsRegistered, this,
                     &TaskIOSProducts::completed);
             ipaHandler->registerProducts(data);
           });

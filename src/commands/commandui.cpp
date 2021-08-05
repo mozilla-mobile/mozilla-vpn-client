@@ -55,7 +55,7 @@
 #endif
 
 #ifdef MVPN_IOS
-#  include "platforms/ios/iaphandler.h"
+#  include "platforms/ios/iosiaphandler.h"
 #endif
 
 #ifdef MVPN_WASM
@@ -357,7 +357,7 @@ int CommandUI::run(QStringList& tokens) {
 #ifdef MVPN_IOS
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = IAPHandler::instance();
+          QObject* obj = IOSIAPHandler::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

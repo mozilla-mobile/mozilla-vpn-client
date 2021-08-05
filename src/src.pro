@@ -684,7 +684,7 @@ else:ios {
             platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
-            platforms/ios/iaphandler.mm \
+            platforms/ios/iosiaphandler.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
@@ -698,7 +698,7 @@ else:ios {
             platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
-            platforms/ios/iaphandler.h \
+            platforms/ios/iosiaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
