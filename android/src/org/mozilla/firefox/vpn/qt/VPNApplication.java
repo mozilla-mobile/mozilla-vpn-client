@@ -20,7 +20,7 @@ public class VPNApplication extends org.qtproject.qt5.android.bindings.QtApplica
         String appToken = BuildConfig.ADJUST_SDK_TOKEN;
         String environment = BuildConfig.DEBUG ? AdjustConfig.ENVIRONMENT_SANDBOX : AdjustConfig.ENVIRONMENT_PRODUCTION;
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
-        config.setLogLevel(LogLevel.VERBOSE);
+        config.setLogLevel(LogLevel.DEBUG);
         Adjust.onCreate(config);
       }
   }
