@@ -23,10 +23,10 @@ DeviceModel::DeviceModel() { MVPN_COUNT_CTOR(DeviceModel); }
 DeviceModel::~DeviceModel() { MVPN_COUNT_DTOR(DeviceModel); }
 
 bool DeviceModel::fromJson(const Keys* keys, const QByteArray& s) {
-  logger.log() << "DeviceModel from json";
+  logger.debug() << "DeviceModel from json";
 
   if (!s.isEmpty() && m_rawJson == s) {
-    logger.log() << "Nothing has changed";
+    logger.debug() << "Nothing has changed";
     return true;
   }
 
@@ -42,7 +42,7 @@ bool DeviceModel::fromSettings(const Keys* keys) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  logger.log() << "Reading the device list from settings";
+  logger.debug() << "Reading the device list from settings";
 
   if (!settingsHolder->hasDevices()) {
     return false;

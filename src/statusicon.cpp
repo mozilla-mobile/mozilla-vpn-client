@@ -55,7 +55,7 @@ void StatusIcon::animateIcon() {
 }
 
 void StatusIcon::stateChanged() {
-  logger.log() << "Show notification";
+  logger.debug() << "Show notification";
 
   m_animatedIconTimer.stop();
 

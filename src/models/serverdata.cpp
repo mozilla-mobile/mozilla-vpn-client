@@ -31,7 +31,7 @@ bool ServerData::fromSettings() {
                      settingsHolder->currentServerCountry(),
                      settingsHolder->currentServerCity());
 
-  logger.log() << m_countryCode << m_countryName << m_cityName;
+  logger.debug() << m_countryCode << m_countryName << m_cityName;
   return true;
 }
 
@@ -46,7 +46,7 @@ void ServerData::writeSettings() {
 
 void ServerData::initialize(const ServerCountry& country,
                             const ServerCity& city) {
-  logger.log() << "Country:" << country.name() << "City:" << city.name();
+  logger.debug() << "Country:" << country.name() << "City:" << city.name();
 
   initializeInternal(country.code(), country.name(), city.name());
   emit changed();

@@ -21,6 +21,6 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 
 void AndroidNotificationHandler::notify(const QString& title,
                                         const QString& message, int timerSec) {
-  logger.log() << "Send notification - " << message;
+  logger.debug() << "Send notification - " << message;
   AndroidController::instance()->setNotificationText(title, message, timerSec);
 }
