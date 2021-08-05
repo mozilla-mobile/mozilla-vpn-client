@@ -254,9 +254,7 @@ Item {
 
                     VPNComboBox {
                         id: dropDown
-                         //% "Choose a Category"
-                        placeholderText: qsTrId("vpn.feedbackForm.chooseCategory")
-
+                        placeholderText: VPNl18n.tr(VPNl18n.FeedbackFormChooseCategory)
                         model: VPNFeedbackCategoryModel
                     }
 
