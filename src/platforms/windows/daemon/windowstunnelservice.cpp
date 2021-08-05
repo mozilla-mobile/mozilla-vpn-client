@@ -185,7 +185,7 @@ void WindowsTunnelService::processMessage(int index) {
 
   QByteArray message((const char*)data + RINGLOG_TIMESTAMP_SIZE,
                      RINGLOG_MESSAGE_SIZE);
-  logdll.log() << QString::fromUtf8(message);
+  logdll.info() << QString::fromUtf8(message);
 }
 
 void WindowsTunnelService::processLogs() {

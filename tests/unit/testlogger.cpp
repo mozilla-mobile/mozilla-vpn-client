@@ -9,11 +9,11 @@
 
 void TestLogger::logger() {
   Logger l("test", "class");
-  l.log() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
+  l.info() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
           << QStringList{"A", "B"} << Qt::endl;
 
   Logger l2(QStringList{"a", "b"}, "class");
-  l2.log() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
+  l2.info() << "Hello world" << 42 << 'a' << QString("OK") << QByteArray("Array")
            << QStringList{"A", "B"} << Qt::endl;
 }
 
