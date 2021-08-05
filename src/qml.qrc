@@ -347,6 +347,7 @@
         <file>ui/resources/fonts/Metropolis.otf</file>
         <file>ui/resources/fonts/Metropolis-SemiBold.otf</file>
         <file>ui/resources/spinner.svg</file>
+        <file>ui/resources/tip.svg</file>
         <file>ui/resources/warning.svg</file>
         <file>ui/resources/warning-orange.svg</file>
         <file>ui/resources/settings/getHelp.svg</file>

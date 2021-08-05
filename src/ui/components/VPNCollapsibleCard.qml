@@ -11,7 +11,7 @@ Rectangle {
     property int animationDuration: 150
     property bool expanded: false
     property string title: ""
-
+    property string iconSrc: ""
     color: "lightgray"
     implicitHeight: cardWrapper.height
     implicitWidth: parent.width
@@ -60,16 +60,17 @@ Rectangle {
 
             spacing: 8
 
-            Layout.bottomMargin: 8
+//            Layout.bottomMargin: 8
             Layout.topMargin: 8
             Layout.leftMargin: 8
             Layout.rightMargin: 16
             Layout.fillWidth: true
 
-            Rectangle {
-               id: icon
-               width: 40
-               height: 40
+            VPNIcon {
+                id: icon
+
+                source: iconSrc
+                visible: iconSrc !== ""
             }
 
             Text {
@@ -150,6 +151,7 @@ Rectangle {
             id: column
 
             Layout.preferredWidth: accordionTitle.width
+            Layout.bottomMargin: 8
             Layout.leftMargin: icon.width + accordionHeader.spacing * 2
             Layout.alignment: Qt.AlignTop
 
@@ -160,7 +162,6 @@ Rectangle {
                     left: parent.left
                     right: parent.right
                 }
-                bottomPadding: 8
                 clip: true
                 color: "black"
                 font.pixelSize: Theme.fontSizeSmall

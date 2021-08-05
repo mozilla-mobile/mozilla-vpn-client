@@ -79,6 +79,7 @@ VPNFlickable {
             z: 1
 
             title: "Collapsible card component"
+            iconSrc: "../resources/tip.svg"
         }
 
         VPNAlerts {
