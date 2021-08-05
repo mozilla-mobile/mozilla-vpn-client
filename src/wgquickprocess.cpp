@@ -77,7 +77,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   //
   // This function should go away as soon as we fixup the Mac implementation
   // anyways.
-#ifndef MVPN_WINDOWS
+#if !defined(MVPN_WINDOWS) && !defined(MVPN_MACOS_DAEMON)
   out << "\n[Peer]\n";
   out << "PublicKey = " << config.m_serverPublicKey << "\n";
   out << "Endpoint = " << config.m_serverIpv4AddrIn.toUtf8() << ":"
@@ -182,21 +182,27 @@ bool WgQuickProcess::run(
   logger.debug() << "Start:" << app << " - arguments:" << arguments;
 
   QProcess wgQuickProcess;
-  wgQuickProcess.start(app, arguments);
+  wgQuickProcess.setProcessChannelMode(QProcess::MergedChannels);
+  QObject::connect(&wgQuickProcess, &QProcess::readyReadStandardOutput,
+                   &wgQuickProcess, [&] {
+                     for (;;) {
+                       QByteArray line = wgQuickProcess.readLine();
+                       if (line.length() == 0) break;
+                       logger.log() << QString(line).trimmed();
+                     }
+                   });
 
-  if (!wgQuickProcess.waitForFinished(-1)) {
+  wgQuickProcess.start(app, arguments);
+  if (!wgQuickProcess.waitForStarted(-1)) {
     logger.error() << "Error occurred:" << wgQuickProcess.errorString();
     return false;
   }
+  while ((wgQuickProcess.state() == QProcess::Running) ||
+         (wgQuickProcess.bytesAvailable() > 0)) {
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+  }
 
   logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
-
-  logger.debug() << "wg-quick stdout:" << Qt::endl
-                 << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
-                 << Qt::endl;
-  logger.debug() << "wg-quick stderr:" << Qt::endl
-                 << qUtf8Printable(wgQuickProcess.readAllStandardError())
-                 << Qt::endl;
 
   return wgQuickProcess.exitCode() == 0;
 }

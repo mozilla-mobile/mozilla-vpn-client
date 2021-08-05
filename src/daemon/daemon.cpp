@@ -207,8 +207,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     logger.error() << JSON_ALLOWEDIPADDRESSRANGES
                    << "missing in the jsonconfig input";
     return false;
-  }
-  {
+  } else {
     QJsonValue value = obj.value(JSON_ALLOWEDIPADDRESSRANGES);
     if (!value.isArray()) {
       logger.error() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
@@ -254,6 +253,13 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
           address.toString(), range.toInt(),
           isIpv6.toBool() ? IPAddressRange::IPv6 : IPAddressRange::IPv4));
     }
+
+    // Sort allowed IPs by decreasing prefix length.
+    std::sort(config.m_allowedIPAddressRanges.begin(),
+              config.m_allowedIPAddressRanges.end(),
+              [&](const IPAddressRange& a, const IPAddressRange& b) -> bool {
+                return a.range() > b.range();
+              });
   }
 
   if (obj.contains("vpnDisabledApps")) {

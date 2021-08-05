@@ -12,6 +12,7 @@
 #include <QObject>
 #include <QSocketNotifier>
 
+struct if_msghdr;
 struct rt_msghdr;
 struct sockaddr;
 
@@ -24,12 +25,17 @@ class MacosRouteMonitor final : public QObject {
 
   bool insertRoute(const IPAddressRange& prefix);
   bool deleteRoute(const IPAddressRange& prefix);
+  int interfaceFlags() { return m_ifflags; }
 
  private:
-  void handleRtmAdd(const struct rt_msghdr* rtm, const QByteArray& payload);
-  void handleRtmDelete(const struct rt_msghdr* rtm, const QByteArray& payload);
-  void handleRtmChange(const struct rt_msghdr* rtm, const QByteArray& payload);
-  QList<QByteArray> parseAddrList(const QByteArray& data);
+  void handleRtmAdd(const struct rt_msghdr* msg, const QByteArray& payload);
+  void handleRtmDelete(const struct rt_msghdr* msg, const QByteArray& payload);
+  void handleRtmChange(const struct rt_msghdr* msg, const QByteArray& payload);
+  void handleIfaceInfo(const struct if_msghdr* msg, const QByteArray& payload);
+  bool rtmSendRoute(int action, const IPAddressRange& prefix);
+  static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr,
+                            const void* sa);
+  static QList<QByteArray> parseAddrList(const QByteArray& data);
 
  private slots:
   void rtsockReady();
@@ -39,7 +45,9 @@ class MacosRouteMonitor final : public QObject {
   static QString addrToString(const QByteArray& data);
 
   QString m_ifname;
+  int m_ifflags = 0;
   int m_rtsock = -1;
+  int m_rtseq = 0;
   QSocketNotifier* m_notifier = nullptr;
 };
 

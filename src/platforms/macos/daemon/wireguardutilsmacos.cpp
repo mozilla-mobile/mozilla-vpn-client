@@ -233,8 +233,13 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddressRange& prefix,
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {
   QLocalSocket socket;
+  QTimer uapiTimeout;
   QDir wgRuntimeDir(WG_RUNTIME_DIR);
   QString wgSocketFile = wgRuntimeDir.filePath(m_ifname + ".sock");
+
+  uapiTimeout.setSingleShot(true);
+  uapiTimeout.start(WG_TUN_PROC_TIMEOUT);
+
   socket.connectToServer(wgSocketFile, QIODevice::ReadWrite);
   if (!socket.waitForConnected(WG_TUN_PROC_TIMEOUT)) {
     logger.log() << "QLocalSocket::waitForConnected() failed:"
@@ -248,19 +253,17 @@ QString WireguardUtilsMacos::uapiCommand(const QString& command) {
     message.append('\n');
   }
   socket.write(message);
-  if (!socket.waitForBytesWritten(WG_TUN_PROC_TIMEOUT)) {
-    logger.log() << "QLocalSocket::waitForBytesWritten() failed";
-    return QString();
-  }
 
   QByteArray reply;
   while (!reply.contains("\n\n")) {
-    if (!socket.waitForReadyRead(WG_TUN_PROC_TIMEOUT)) {
-      logger.log() << "QLocalSocket::waitForReadyRead() failed";
+    if (!uapiTimeout.isActive()) {
+      logger.log() << "UAPI command timed out";
       return QString();
     }
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     reply.append(socket.readAll());
   }
+
   return QString::fromUtf8(reply).trimmed();
 }
 

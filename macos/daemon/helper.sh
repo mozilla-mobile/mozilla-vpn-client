@@ -79,31 +79,6 @@ get_real_interface() {
 	return 0
 }
 
-del_routes() {
-	[[ -n $REAL_INTERFACE ]] || return 0
-	local todelete=( ) destination gateway netif
-	while read -r destination _ _ _ _ netif _; do
-		[[ $netif == "$REAL_INTERFACE" ]] && todelete+=( "$destination" )
-	done < <(netstat -nr -f inet)
-	for destination in "${todelete[@]}"; do
-		cmd route -q -n delete -inet "$destination" >/dev/null || true
-	done
-	todelete=( )
-	while read -r destination gateway _ netif; do
-		[[ $netif == "$REAL_INTERFACE" || ( $netif == lo* && $gateway == "$REAL_INTERFACE" ) ]] && todelete+=( "$destination" )
-	done < <(netstat -nr -f inet6)
-	for destination in "${todelete[@]}"; do
-		cmd route -q -n delete -inet6 "$destination" >/dev/null || true
-	done
-	for destination in "${ENDPOINTS[@]}"; do
-		if [[ $destination == *:* ]]; then
-			cmd route -q -n delete -inet6 "$destination" >/dev/null || true
-		else
-			cmd route -q -n delete -inet "$destination" >/dev/null || true
-		fi
-	done
-}
-
 collect_gateways() {
 	local destination gateway
 
@@ -193,57 +168,6 @@ collect_new_service_dns() {
         IFS=$oifs
 }
 
-set_endpoint_direct_route() {
-	local old_endpoints endpoint old_gateway4 old_gateway6 remove_all_old=0 added=( )
-	old_endpoints=( "${ENDPOINTS[@]}" )
-	old_gateway4="$GATEWAY4"
-	old_gateway6="$GATEWAY6"
-	collect_gateways
-	collect_endpoints
-
-	[[ $old_gateway4 != "$GATEWAY4" || $old_gateway6 != "$GATEWAY6" ]] && remove_all_old=1
-
-	if [[ $remove_all_old -eq 1 ]]; then
-		for endpoint in "${ENDPOINTS[@]}"; do
-			[[ " ${old_endpoints[*]} " == *" $endpoint "* ]] || old_endpoints+=( "$endpoint" )
-		done
-	fi
-
-	for endpoint in "${old_endpoints[@]}"; do
-		[[ $remove_all_old -eq 0 && " ${ENDPOINTS[*]} " == *" $endpoint "* ]] && continue
-		if [[ $endpoint == *:* && $AUTO_ROUTE6 -eq 1 ]]; then
-			cmd route -q -n delete -inet6 "$endpoint" >/dev/null 2>&1 || true
-		elif [[ $AUTO_ROUTE4 -eq 1 ]]; then
-			cmd route -q -n delete -inet "$endpoint" >/dev/null 2>&1 || true
-		fi
-	done
-
-	for endpoint in "${ENDPOINTS[@]}"; do
-		if [[ $remove_all_old -eq 0 && " ${old_endpoints[*]} " == *" $endpoint "* ]]; then
-			added+=( "$endpoint" )
-			continue
-		fi
-		if [[ $endpoint == *:* && $AUTO_ROUTE6 -eq 1 ]]; then
-			if [[ -n $GATEWAY6 ]]; then
-				cmd route -q -n add -inet6 "$endpoint" -gateway "$GATEWAY6" >/dev/null || true
-			else
-				# Prevent routing loop
-				cmd route -q -n add -inet6 "$endpoint" ::1 -blackhole >/dev/null || true
-			fi
-			added+=( "$endpoint" )
-		elif [[ $AUTO_ROUTE4 -eq 1 ]]; then
-			if [[ -n $GATEWAY4 ]]; then
-				cmd route -q -n add -inet "$endpoint" -gateway "$GATEWAY4" >/dev/null || true
-			else
-				# Prevent routing loop
-				cmd route -q -n add -inet "$endpoint" 127.0.0.1 -blackhole >/dev/null || true
-			fi
-			added+=( "$endpoint" )
-		fi
-	done
-	ENDPOINTS=( "${added[@]}" )
-}
-
 set_dns() {
 	collect_new_service_dns
 	local service response
@@ -304,52 +228,6 @@ del_dns() {
         IFS=$oifs
 }
 
-monitor_daemon() {
-	echo "[+] Backgrounding route monitor" >&2
-	(trap 'del_routes; del_dns; exit 0' INT TERM EXIT
-	exec >/dev/null 2>&1
-	local event pid=$BASHPID
-	[[ -n "$DNS" ]] && trap set_dns ALRM
-	# TODO: this should also check to see if the endpoint actually changes
-	# in response to incoming packets, and then call set_endpoint_direct_route
-	# then too. That function should be able to gracefully cleanup if the
-	# endpoints change.
-	while read -r event; do
-		[[ $event == RTM_* ]] || continue
-		ifconfig "$REAL_INTERFACE" >/dev/null 2>&1 || break
-		[[ $AUTO_ROUTE4 -eq 1 || $AUTO_ROUTE6 -eq 1 ]] && set_endpoint_direct_route
-		[[ -z $MTU ]] && set_mtu
-		if [[ -n "$DNS" ]]; then
-			set_dns
-			sleep 2 && kill -ALRM $pid 2>/dev/null &
-		fi
-	done < <(route -n monitor)) &
-	disown
-}
-
-add_route() {
-	[[ $TABLE != off ]] || return 0
-
-	local family=inet
-	[[ $1 == *:* ]] && family=inet6
-
-	if [[ $1 == */0 && ( -z $TABLE || $TABLE == auto ) ]]; then
-		if [[ $1 == *:* ]]; then
-			AUTO_ROUTE6=1
-			cmd route -q -n add -inet6 ::/1 -interface "$REAL_INTERFACE" >/dev/null
-			cmd route -q -n add -inet6 8000::/1 -interface "$REAL_INTERFACE" >/dev/null
-		else
-			AUTO_ROUTE4=1
-			cmd route -q -n add -inet 0.0.0.0/1 -interface "$REAL_INTERFACE" >/dev/null
-			cmd route -q -n add -inet 128.0.0.0/1 -interface "$REAL_INTERFACE" >/dev/null
-		fi
-	else
-		[[ $TABLE == main || $TABLE == auto || -z $TABLE ]] || die "Darwin only supports TABLE=auto|main|off"
-		cmd route -q -n add -$family "$1" -interface "$REAL_INTERFACE" >/dev/null
-
-	fi
-}
-
 cmd_usage() {
 	cat >&2 <<-_EOF
 	Usage: $PROGRAM [ up | down ] [ CONFIG_FILE ]
@@ -360,13 +238,7 @@ cmd_usage() {
 cmd_up() {
 	local i
 	get_real_interface || die "\`$INTERFACE' does not exist"
-	trap 'del_routes; exit' INT TERM EXIT
-	for i in $(while read -r _ i; do for i in $i; do [[ $i =~ ^[0-9a-z:.]+/[0-9]+$ ]] && echo "$i"; done; done < <(wg show "$REAL_INTERFACE" allowed-ips) | sort -nr -k 2 -t /); do
-		add_route "$i"
-	done
-	[[ $AUTO_ROUTE4 -eq 1 || $AUTO_ROUTE6 -eq 1 ]] && set_endpoint_direct_route
 	[[ -n "$DNS" ]] && set_dns
-	monitor_daemon
 	trap - INT TERM EXIT
 }
 
