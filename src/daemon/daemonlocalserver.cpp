@@ -34,19 +34,19 @@ bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);
 
   QString path = daemonPath();
-  logger.log() << "Server path:" << path;
+  logger.debug() << "Server path:" << path;
 
   if (QFileInfo::exists(path)) {
     QFile::remove(path);
   }
 
   if (!m_server.listen(path)) {
-    logger.log() << "Failed to listen the daemon path";
+    logger.error() << "Failed to listen the daemon path";
     return false;
   }
 
   connect(&m_server, &QLocalServer::newConnection, [&] {
-    logger.log() << "New connection received";
+    logger.debug() << "New connection received";
 
     if (!m_server.hasPendingConnections()) {
       return;
@@ -70,22 +70,22 @@ QString DaemonLocalServer::daemonPath() const {
 #elif defined(MVPN_MACOS)
   QDir dir("/var/run");
   if (!dir.exists()) {
-    logger.log() << "/var/run doesn't exist. Fallback /tmp.";
+    logger.warning() << "/var/run doesn't exist. Fallback /tmp.";
     return TMP_PATH;
   }
 
   if (dir.exists("mozillavpn")) {
-    logger.log() << "/var/run/mozillavpn seems to be usable";
+    logger.debug() << "/var/run/mozillavpn seems to be usable";
     return VAR_PATH;
   }
 
   if (!dir.mkdir("mozillavpn")) {
-    logger.log() << "Failed to create /var/run/mozillavpn";
+    logger.warning() << "Failed to create /var/run/mozillavpn";
     return TMP_PATH;
   }
 
   if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
-    logger.log()
+    logger.warning()
         << "Failed to set the right permissions to /var/run/mozillavpn";
     return TMP_PATH;
   }

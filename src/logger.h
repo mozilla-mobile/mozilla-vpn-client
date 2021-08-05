@@ -74,8 +74,6 @@ class Logger {
     Data* m_data;
   };
 
-  // This will be deprecated soon. Don't use it!
-  Log log();
   Log error();
   Log warning();
   Log info();

@@ -20,7 +20,7 @@ Logger logger(LOG_ANDROID, "AndroidAuthenticationListener");
 AndroidAuthenticationListener::AndroidAuthenticationListener(QObject* parent)
     : AuthenticationListener(parent) {
   MVPN_COUNT_CTOR(AndroidAuthenticationListener);
-  logger.log() << "Android authentication listener";
+  logger.debug() << "Android authentication listener";
 }
 
 AndroidAuthenticationListener::~AndroidAuthenticationListener() {
@@ -29,7 +29,7 @@ AndroidAuthenticationListener::~AndroidAuthenticationListener() {
 
 void AndroidAuthenticationListener::start(const QString& codeChallenge,
                                           const QString& codeChallengeMethod) {
-  logger.log() << "Authenticationlistener initialize";
+  logger.debug() << "Authenticationlistener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
                                    codeChallenge, codeChallengeMethod));

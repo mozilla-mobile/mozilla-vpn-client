@@ -19,10 +19,10 @@ constexpr int INSPECT_PORT = 8766;
 InspectorHttpServer::InspectorHttpServer(QObject* parent) : QTcpServer(parent) {
   MVPN_COUNT_CTOR(InspectorHttpServer);
 
-  logger.log() << "Creating the inspector http server";
+  logger.debug() << "Creating the inspector http server";
 
   if (!listen(QHostAddress::Any, INSPECT_PORT)) {
-    logger.log() << "Failed to listen on port" << INSPECT_PORT;
+    logger.error() << "Failed to listen on port" << INSPECT_PORT;
     return;
   }
 
@@ -46,7 +46,7 @@ void InspectorHttpServer::newConnectionReceived() {
   if (address != QHostAddress("::ffff:127.0.0.1") &&
       address != QHostAddress::LocalHost &&
       address != QHostAddress::LocalHostIPv6) {
-    logger.log() << "Accepting connection from localhost only";
+    logger.debug() << "Accepting connection from localhost only";
     child->close();
     return;
   }

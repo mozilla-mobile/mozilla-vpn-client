@@ -22,7 +22,7 @@ void createDummyRequest(NetworkRequest* r, const QString& resource) {
     if (!resource.isEmpty()) {
       QFile file(resource);
       if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        logger.log() << "Failed to open" << resource;
+        logger.error() << "Failed to open" << resource;
         return;
       }
 
@@ -47,7 +47,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 
   MVPN_COUNT_CTOR(NetworkRequest);
 
-  logger.log() << "Network request created";
+  logger.debug() << "Network request created";
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
