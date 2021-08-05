@@ -47,7 +47,8 @@ void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
   m_lookupId = -1;
 
   if (hostInfo.error() != QHostInfo::NoError) {
-    logger.error() << "Unable to perform a DNS Lookup:" << hostInfo.errorString();
+    logger.error() << "Unable to perform a DNS Lookup:"
+                   << hostInfo.errorString();
     emit completed(QString(), QString(), QString());
     deleteLater();
     return;

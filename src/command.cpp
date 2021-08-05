@@ -103,7 +103,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
     LogHandler::enableDebug();
   }
   qInstallMessageHandler(LogHandler::messageQTHandler);
-  
+
   logger.info() << "MozillaVPN" << APP_VERSION;
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 

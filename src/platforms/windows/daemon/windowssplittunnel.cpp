@@ -96,7 +96,8 @@ void WindowsSplitTunnel::initDriver() {
 void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
   auto state = getState();
   if (state != STATE_READY && state != STATE_RUNNING) {
-    logger.warning() << "Driver is not in the right State to set Rules" << state;
+    logger.warning() << "Driver is not in the right State to set Rules"
+                     << state;
     return;
   }
 
@@ -417,7 +418,7 @@ SC_HANDLE WindowsSplitTunnel::installDriver() {
   QFileInfo driver(qApp->applicationDirPath() + "/" + DRIVER_FILENAME);
   if (!driver.exists()) {
     logger.error() << "Split Tunnel Driver File not found "
-                 << driver.absoluteFilePath();
+                   << driver.absoluteFilePath();
     return (SC_HANDLE)INVALID_HANDLE_VALUE;
   }
   auto path = driver.absolutePath() + "/" + DRIVER_FILENAME;

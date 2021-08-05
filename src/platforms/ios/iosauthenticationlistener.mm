@@ -89,10 +89,10 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
 
         if (error) {
           logger.error() << "Authentication failed:"
-                       << QString::fromNSString([error localizedDescription]);
+                         << QString::fromNSString([error localizedDescription]);
           logger.error() << "Code:" << [error code];
           logger.error() << "Suggestion:"
-                       << QString::fromNSString([error localizedRecoverySuggestion]);
+                         << QString::fromNSString([error localizedRecoverySuggestion]);
           logger.error() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
 
           if ([error code] == ASWebAuthenticationSessionErrorCodeCanceledLogin) {

@@ -139,7 +139,7 @@ bool WgQuickProcess::run(
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
     logger.error() << "Cannot create a temporary directory"
-                 << tmpDir.errorString();
+                   << tmpDir.errorString();
     return false;
   }
 

@@ -125,7 +125,8 @@ bool WindowsFirewall::init() {
   // Step 1: Start Transaction
   result = FwpmTransactionBegin(wfp, NULL);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
 
@@ -146,7 +147,8 @@ bool WindowsFirewall::init() {
   // Step 4: Commit!
   result = FwpmTransactionCommit0(wfp);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   logger.debug() << "Initialised Sublayer";
@@ -326,7 +328,8 @@ bool WindowsFirewall::disableKillSwitch() {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
 
@@ -337,7 +340,8 @@ bool WindowsFirewall::disableKillSwitch() {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   m_activeRules.clear();
@@ -372,7 +376,8 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
 
@@ -429,7 +434,8 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   return true;
@@ -445,7 +451,8 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
 
@@ -525,7 +532,8 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   return true;
@@ -554,7 +562,8 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   // Allow Traffic to IP with PORT using any protocol
@@ -612,7 +621,8 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
 
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   return true;
@@ -627,7 +637,8 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   // Allow outbound DHCPv4
@@ -721,7 +732,8 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   return true;
@@ -736,7 +748,8 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
 
@@ -784,7 +797,8 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   return true;
@@ -800,7 +814,8 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
+                   << result;
     return false;
   }
 
@@ -856,7 +871,8 @@ bool WindowsFirewall::blockAll(uint8_t weight) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
+                   << result;
     return false;
   }
   return true;

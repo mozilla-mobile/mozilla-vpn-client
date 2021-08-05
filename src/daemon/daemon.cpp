@@ -207,7 +207,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
     logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                 << "missing in the jsonconfig input";
+                   << "missing in the jsonconfig input";
     return false;
   }
   {
@@ -221,7 +221,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     for (QJsonValue i : array) {
       if (!i.isObject()) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "must contain only objects";
+                       << "must contain only objects";
         return false;
       }
 
@@ -230,21 +230,21 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
       QJsonValue address = ipObj.value("address");
       if (!address.isString()) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "objects must have a string address";
+                       << "objects must have a string address";
         return false;
       }
 
       QJsonValue range = ipObj.value("range");
       if (!range.isDouble()) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "object must have a numberic range";
+                       << "object must have a numberic range";
         return false;
       }
 
       QJsonValue isIpv6 = ipObj.value("isIpv6");
       if (!isIpv6.isBool()) {
         logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "object must have a boolean isIpv6";
+                       << "object must have a boolean isIpv6";
         return false;
       }
 

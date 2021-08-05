@@ -75,7 +75,8 @@ void LinuxNetworkWatcherWorker::initialize() {
   QDBusInterface nm(DBUS_NETWORKMANAGER, "/org/freedesktop/NetworkManager",
                     DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
   if (!nm.isValid()) {
-    logger.error() << "Failed to connect to the network manager via system dbus";
+    logger.error()
+        << "Failed to connect to the network manager via system dbus";
     return;
   }
 
@@ -160,8 +161,8 @@ void LinuxNetworkWatcherWorker::checkDevices() {
       // We have found 1 unsecured network. We don't need to check other wifi
       // network devices.
       logger.warning() << "Unsecured AP detected flags:"
-                   << QString("%1:%2").arg(rsnFlags).arg(wpaFlags)
-                   << "ssid:" << ssid;
+                       << QString("%1:%2").arg(rsnFlags).arg(wpaFlags)
+                       << "ssid:" << ssid;
       emit unsecuredNetwork(ssid, bssid);
       break;
     }

@@ -191,7 +191,7 @@ IAPHandler* s_instance = nullptr;
 
 - (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
   logger.error() << "Failed to refresh the receipt"
-               << QString::fromNSString(error.localizedDescription);
+                 << QString::fromNSString(error.localizedDescription);
   QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
   QMetaObject::invokeMethod(m_handler, "subscriptionFailed", Qt::QueuedConnection);
 }
@@ -276,7 +276,7 @@ void IAPHandler::registerProducts(const QByteArray& data) {
 
   if (m_products.isEmpty()) {
     logger.error() << "No pending products (nothing has been registered). Unable to recover from "
-                    "this scenario.";
+                      "this scenario.";
     return;
   }
 

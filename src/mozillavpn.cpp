@@ -920,7 +920,7 @@ void MozillaVPN::setUserAuthenticated(bool state) {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-               << Constants::scheduleAccountAndServersTimerMsec();
+                 << Constants::scheduleAccountAndServersTimerMsec();
   m_periodicOperationsTimer.start(
       Constants::scheduleAccountAndServersTimerMsec());
 }
@@ -1188,7 +1188,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
 void MozillaVPN::subscriptionCompleted() {
   if (m_state != StateSubscriptionValidation) {
-    logger.warning() << "Random subscription completion received. Let's ignore it.";
+    logger.warning()
+        << "Random subscription completion received. Let's ignore it.";
     return;
   }
 
@@ -1206,7 +1207,8 @@ void MozillaVPN::subscriptionCanceled() {
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   if (m_state != StateSubscriptionValidation) {
-    logger.warning() << "Random subscription failure received. Let's ignore it.";
+    logger.warning()
+        << "Random subscription failure received. Let's ignore it.";
     return;
   }
 

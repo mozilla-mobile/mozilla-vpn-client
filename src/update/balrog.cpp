@@ -302,8 +302,8 @@ bool Balrog::processData(const QByteArray& data) {
                 emit updateRecommended();
               }
 
-              logger.warning() << "Abort request for status code"
-                           << request->statusCode();
+              logger.warning()
+                  << "Abort request for status code" << request->statusCode();
               request->abort();
             });
 
@@ -396,7 +396,7 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 
   if (!m_tmpDir.isValid()) {
     logger.error() << "Cannot create a temporary directory"
-                 << m_tmpDir.errorString();
+                   << m_tmpDir.errorString();
     return false;
   }
 

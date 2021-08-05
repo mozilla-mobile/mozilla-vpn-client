@@ -84,7 +84,8 @@ void CaptivePortalDetection::detectCaptivePortal() {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS)
   m_impl.reset(new CaptivePortalDetectionImpl());
 #else
-  logger.warning() << "This platform does not support captive portal detection yet";
+  logger.warning()
+      << "This platform does not support captive portal detection yet";
   return;
 #endif
 

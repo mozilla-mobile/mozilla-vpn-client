@@ -38,8 +38,8 @@ class CommandLinuxDaemon final : public Command {
       if (!connection.registerService("org.mozilla.vpn.dbus") ||
           !connection.registerObject("/", dbus)) {
         logger.error() << "Connection failed - name:"
-                     << connection.lastError().name()
-                     << "message:" << connection.lastError().message();
+                       << connection.lastError().name()
+                       << "message:" << connection.lastError().message();
         return 1;
       }
 
