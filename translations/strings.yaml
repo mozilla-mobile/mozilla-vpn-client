@@ -55,3 +55,11 @@ serversView:
 
 feedbackForm:
   chooseCategory: Choose a category
+
+settingsDev:
+  title: Developer Options
+  showOptionTitle: Show Developer Options
+  showOptionSubtitle: Show or hide the developer options menu
+  useStagingTitle: Use Staging Servers
+  useStagingSubtitle: Staging services are used to test features before they go live to production
+  restartRequired: VPN must be restarted to take effect
