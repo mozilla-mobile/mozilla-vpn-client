@@ -79,10 +79,6 @@ Item {
         height: root.height - bar.contentHeight
         clip: true
 
-        Component.onCompleted: {
-            console.log(bar.children[1].x)
-        }
-
         onCurrentIndexChanged: PropertyAnimation {
                 target: stack
                 property: "opacity"
