@@ -1,4 +1,3 @@
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -13,6 +12,7 @@ class QJsonValue;
 
 class IAPHandler : public QAbstractListModel {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(IAPHandler)
 
  public:
   enum ProductType {
@@ -64,7 +64,7 @@ class IAPHandler : public QAbstractListModel {
   void unknownProductRegistered(const QString& identifier);
   void productsRegistrationCompleted();
 
- protected:  // Can some of this be private once I move the methods around?
+ protected:
   explicit IAPHandler(QObject* parent) : QAbstractListModel(parent){};
   virtual ~IAPHandler() = default;
 

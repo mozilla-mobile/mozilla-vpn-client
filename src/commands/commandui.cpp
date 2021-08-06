@@ -13,6 +13,7 @@
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "l18nstrings.h"
+#include "iaphandler.h"
 #include "inspector/inspectorhttpserver.h"
 #include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
@@ -52,10 +53,6 @@
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsappimageprovider.h"
-#endif
-
-#ifdef MVPN_IOS
-#  include "platforms/ios/iosiaphandler.h"
 #endif
 
 #ifdef MVPN_WASM
@@ -354,15 +351,6 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
-#ifdef MVPN_IOS
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = IOSIAPHandler::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-#endif
-
 #ifdef QT_DEBUG
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNGleanTest",
@@ -372,6 +360,13 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 #endif
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = IAPHandler::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAuthInApp",
