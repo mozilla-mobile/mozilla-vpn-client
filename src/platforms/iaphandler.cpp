@@ -19,7 +19,6 @@ namespace {
 Logger logger(LOG_IAP, "IAPHandler");
 }  // anonymous namespace
 
-
 void IAPHandler::registerProducts(const QByteArray& data) {
   logger.debug() << "Maybe register products";
 
@@ -59,11 +58,12 @@ void IAPHandler::registerProducts(const QByteArray& data) {
   }
 
   if (m_products.isEmpty()) {
-    logger.error() << "No pending products (nothing has been registered). Unable to recover from "
+    logger.error() << "No pending products (nothing has been registered). "
+                      "Unable to recover from "
                       "this scenario.";
     return;
   }
-  
+
   nativeRegisterProducts();
 
   logger.debug() << "Waiting for the products registration";
@@ -114,7 +114,6 @@ void IAPHandler::startSubscription(const QString& productIdentifier) {
   logger.debug() << "Starting the subscription";
   nativeStartSubscription(product);
 }
-
 
 void IAPHandler::stopSubscription() {
   logger.debug() << "Stop subscription";
@@ -218,7 +217,9 @@ void IAPHandler::computeSavings() {
   for (Product& product : m_products) {
     if (product.m_type == ProductMonthly) continue;
 
-    int savings = qRound(100.00 - ((product.m_nonLocalizedMonthlyPrice * 100.00) / monthlyPrice));
+    int savings =
+        qRound(100.00 -
+               ((product.m_nonLocalizedMonthlyPrice * 100.00) / monthlyPrice));
     if (savings < 0 || savings > 100) continue;
 
     product.m_savings = (int)savings;

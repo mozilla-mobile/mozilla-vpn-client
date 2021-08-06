@@ -197,7 +197,6 @@ IOSIAPHandler* s_instance = nullptr;
 
 @end
 
-
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
   MVPN_COUNT_CTOR(IOSIAPHandler);
 
@@ -389,4 +388,3 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
     emit subscriptionCompleted();
   });
 }
-

@@ -32,10 +32,10 @@ class IAPHandler : public QAbstractListModel {
   };
 
   static IAPHandler* createInstance() {
-    qFatal("Have you forgotten to implement IAPHandler::createInstance()?");  
+    qFatal("Have you forgotten to implement IAPHandler::createInstance()?");
   };
   static IAPHandler* instance() {
-    qFatal("Have you forgotten to implement IAPHandler::instance()?");  
+    qFatal("Have you forgotten to implement IAPHandler::instance()?");
   };
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
@@ -64,8 +64,8 @@ class IAPHandler : public QAbstractListModel {
   void unknownProductRegistered(const QString& identifier);
   void productsRegistrationCompleted();
 
-protected: // Can some of this be private once I move the methods around?
-  explicit IAPHandler(QObject* parent) : QAbstractListModel(parent) {};
+ protected:  // Can some of this be private once I move the methods around?
+  explicit IAPHandler(QObject* parent) : QAbstractListModel(parent){};
   virtual ~IAPHandler() = default;
 
   struct Product {
@@ -79,7 +79,7 @@ protected: // Can some of this be private once I move the methods around?
     bool m_featuredProduct = false;
     // This is the % compared with the montly subscription.
     uint32_t m_savings = 0;
-    void* m_productNS = nullptr; // TODO - Move to IOS
+    void* m_productNS = nullptr;  // TODO - Move to IOS
   };
 
   virtual void nativeRegisterProducts() = 0;
@@ -102,7 +102,6 @@ protected: // Can some of this be private once I move the methods around?
   static uint32_t productTypeToMonthCount(ProductType type);
   Product* findProduct(const QString& productIdentifier);
   QList<Product> m_products;
-
 };
 
 #endif  // IAPHANDLER_H
