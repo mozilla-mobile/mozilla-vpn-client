@@ -9,7 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
-import "../themes/colors.js" as Color
 
 VPNFlickable {
     id: vpnFlickable
@@ -45,6 +44,7 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
+
     GridLayout {
         id: col
         width: parent.width - Theme.windowMargin
@@ -76,37 +76,13 @@ VPNFlickable {
             }
         }
 
-        VPNCollapsibleCard {
-            title: VPNl18n.tr(VPNl18n.MultiHopHintCardTitle)
-            iconSrc: "../resources/tip.svg"
-            contentItem: ColumnLayout {
-                spacing: 0
-
-                VPNTextBlock {
-                    color: Color.grey40
-                    text: VPNl18n.tr(VPNl18n.MultiHopHintCardText)
-                    textFormat: Text.StyledText
-                    Layout.fillWidth: true
-                }
-
-                VPNTextBlock {
-                    color: Color.warning.active
-                    text: VPNl18n.tr(VPNl18n.MultiHopHintCardWarning)
-                    textFormat: Text.StyledText
-                    Layout.fillWidth: true
-                }
-            }
-
-            Layout.alignment: Qt.AlignHCenter
-            width: parent.width - Theme.windowMargin
-        }
-
         VPNAlerts {
             id: notifications
         }
 
         VPNControllerView {
             id: box
+
         }
 
         VPNControllerNav {
