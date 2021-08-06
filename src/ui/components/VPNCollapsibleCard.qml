@@ -62,7 +62,7 @@ Rectangle {
         RowLayout {
             id: accordionHeader
 
-            spacing: Theme.listSpacing
+            spacing: Theme.listSpacing * 2
             Layout.topMargin: Theme.listSpacing
             Layout.leftMargin: Theme.listSpacing * 2
             Layout.rightMargin: Theme.listSpacing * 2
@@ -94,7 +94,9 @@ Rectangle {
             Rectangle {
                 id: stateIndicator
 
-                color: stateIndicator.state === Theme.uiState.stateHovered ? Color.grey10 : Color.white
+                color: accordionHeader.state === Theme.uiState.stateHovered || accordionHeader.state === Theme.uiState.statePressed
+                    ? Color.grey10
+                    : Color.white
                 height: Theme.rowHeight
                 radius: Theme.cornerRadius - 1
                 width: Theme.rowHeight
@@ -117,21 +119,18 @@ Rectangle {
                     Behavior on rotation {
                         NumberAnimation {
                             duration: animationDuration
+                            easing.type: Easing.OutQuad
                         }
                     }
                 }
-
-               VPNMouseArea {
-                   height: parent.height
-                   hoverEnabled: true
-                   targetEl: stateIndicator
-                   width: parent.width
-               }
             }
 
-            MouseArea {
+            VPNMouseArea {
+                anchors.fill: {}
                 height: parent.height
-                onClicked: toggleCard()
+                hoverEnabled: true
+                onMouseAreaClicked: handleToggleCard
+                targetEl: accordionHeader
                 width: parent.width
             }
         }
@@ -143,7 +142,7 @@ Rectangle {
             clip: true
             Layout.preferredWidth: accordionTitle.width
             Layout.bottomMargin: Theme.listSpacing
-            Layout.leftMargin: Theme.listSpacing * 3 + icon.width
+            Layout.leftMargin: icon.width + Theme.listSpacing * 4
             Layout.rightMargin: Theme.listSpacing
 
             ColumnLayout {
@@ -160,7 +159,7 @@ Rectangle {
 
                 Behavior on opacity {
                      NumberAnimation {
-                         duration: animationDuration * 1.5
+                         duration: animationDuration * 1.25
                          easing.type: Easing.OutQuad
                      }
                 }
@@ -176,7 +175,7 @@ Rectangle {
         z: -1
     }
 
-    function toggleCard() {
+    function handleToggleCard() {
         root.expanded = !root.expanded;
     }
 }

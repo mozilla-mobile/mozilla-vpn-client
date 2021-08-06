@@ -54,6 +54,14 @@ serversView:
   searchNoResultsLabel: No results. Try a different search
 
 multiHop:
-  hintCardTitle: What is multi-hop VPN?
-  hintCardTextOne: Multi-hop VPN routes your traffic through two servers instead of one for extra security and privacy.
-  hintCardTextTwo: This may slow down your connection.
+  hintCardTitle:
+    value: What is multi-hop VPN?
+    comment: Title of the expandable info card about multi-hop
+  hintCardText:
+    value:
+      - Multi-hop VPN routes your traffic through two servers
+      - instead of one for extra security and privacy.
+    comment: Explanatory text about what multi-hop is
+  hintCardWarning:
+    value: This may slow down your connection.
+    comment: Warning about the possible implications of multi-hop
