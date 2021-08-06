@@ -460,5 +460,6 @@
         <file>ui/resources/encodedPassword.txt</file>
         <file>ui/components/VPNFeatureTour.qml</file>
         <file>ui/components/VPNPopup.qml</file>
+        <file>ui/settings/ViewWhatsNew.qml</file>
     </qresource>
 </RCC>
