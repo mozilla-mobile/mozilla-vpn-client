@@ -14,7 +14,7 @@ Rectangle {
     property string iconSrc: ""
     property alias contentItem: cardContent.data
 
-    color: "lightgray"
+    color: Color.white
     implicitHeight: cardWrapper.height
     radius: Theme.cornerRadius
     width: parent.width
@@ -27,6 +27,7 @@ Rectangle {
             PropertyChanges {
                 target: cardContent
                 height: cardContent.implicitHeight
+                opacity: 1
             }
 
             PropertyChanges {
@@ -41,6 +42,7 @@ Rectangle {
             PropertyChanges {
                 target: cardContent
                 height: 0
+                opacity: 0
             }
 
             PropertyChanges {
@@ -60,10 +62,10 @@ Rectangle {
         RowLayout {
             id: accordionHeader
 
-            spacing: 8
-            Layout.topMargin: 8
-            Layout.leftMargin: 8
-            Layout.rightMargin: 16
+            spacing: Theme.listSpacing
+            Layout.topMargin: Theme.listSpacing
+            Layout.leftMargin: Theme.listSpacing * 2
+            Layout.rightMargin: Theme.listSpacing * 2
             Layout.fillWidth: true
 
             VPNIcon {
@@ -87,21 +89,15 @@ Rectangle {
                 text: root.title
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.Wrap
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: "yellow"
-                    z: -1
-                }
             }
 
             Rectangle {
                 id: stateIndicator
 
                 color: stateIndicator.state === Theme.uiState.stateHovered ? Color.grey10 : Color.white
-                height: 40
+                height: Theme.rowHeight
                 radius: Theme.cornerRadius - 1
-                width: 40
+                width: Theme.rowHeight
 
                 Behavior on color {
                     ColorAnimation {
@@ -133,14 +129,6 @@ Rectangle {
                }
             }
 
-            Rectangle {
-                color: "pink"
-                height: parent.height
-                radius: Theme.cornerRadius
-                width: parent.width
-                z: -1
-            }
-
             MouseArea {
                 height: parent.height
                 onClicked: toggleCard()
@@ -154,9 +142,9 @@ Rectangle {
 
             clip: true
             Layout.preferredWidth: accordionTitle.width
-            Layout.bottomMargin: 8
-            Layout.leftMargin: 16 + icon.width
-            Layout.rightMargin: 8
+            Layout.bottomMargin: Theme.listSpacing
+            Layout.leftMargin: Theme.listSpacing * 3 + icon.width
+            Layout.rightMargin: Theme.listSpacing
 
             ColumnLayout {
                 id: cardContent
@@ -166,15 +154,15 @@ Rectangle {
                 Behavior on height {
                      NumberAnimation {
                          duration: animationDuration
+                         easing.type: Easing.OutQuad
                      }
                 }
 
-                Rectangle {
-                    color: "pink"
-                    height: parent.height
-                    radius: Theme.cornerRadius
-                    width: parent.width
-                    z: -1
+                Behavior on opacity {
+                     NumberAnimation {
+                         duration: animationDuration * 1.5
+                         easing.type: Easing.OutQuad
+                     }
                 }
             }
         }
