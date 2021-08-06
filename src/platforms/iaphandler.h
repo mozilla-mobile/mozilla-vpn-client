@@ -7,6 +7,9 @@
 #define IAPHANDLER_H
 
 #include <QAbstractListModel>
+#include <QList>
+
+class QJsonValue;
 
 class IAPHandler : public QAbstractListModel {
   Q_OBJECT
@@ -19,7 +22,6 @@ class IAPHandler : public QAbstractListModel {
     ProductUnknown = -1
   };
   Q_ENUM(ProductType);
-
   enum ModelRoles {
     ProductIdentifierRole = Qt::UserRole + 1,
     ProductPriceRole,
@@ -29,24 +31,42 @@ class IAPHandler : public QAbstractListModel {
     ProductSavingsRole,
   };
 
+  static IAPHandler* createInstance() {
+    qFatal("Have you forgotten to implement IAPHandler::createInstance()?");  
+  };
+  static IAPHandler* instance() {
+    qFatal("Have you forgotten to implement IAPHandler::instance()?");  
+  };
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }
+  Q_INVOKABLE void subscribe(const QString& productIdentifier);
+  void registerProducts(const QByteArray& data);
+  void startSubscription(const QString& productIdentifier);
+
+  // QAbstractListModel methods
+  QHash<int, QByteArray> roleNames() const override;
+  int rowCount(const QModelIndex&) const override;
+  QVariant data(const QModelIndex& index, int role) const override;
+
+ signals:
+  void productsRegistered();
+
+  void subscriptionStarted(const QString& productIdentifier);
+  void subscriptionFailed();
+  void subscriptionCanceled();
+  void subscriptionCompleted();
+  void alreadySubscribed();
+
+ public slots:
+  void stopSubscription();
+  // Called by the native code delegate
+  void unknownProductRegistered(const QString& identifier);
+  void productsRegistrationCompleted();
 
 protected: // Can some of this be private once I move the methods around?
-  explicit IAPHandler(QObject* parent);
-  virtual ~IAPHandler();
-
-  enum {
-    eNotRegistered,
-    eRegistering,
-    eRegistered,
-  } m_productsRegistrationState = eNotRegistered;
-
-  enum State {
-    eActive,
-    eInactive,
-  } m_subscriptionState = eInactive;
+  explicit IAPHandler(QObject* parent) : QAbstractListModel(parent) {};
+  virtual ~IAPHandler() = default;
 
   struct Product {
     QString m_name;
@@ -59,8 +79,29 @@ protected: // Can some of this be private once I move the methods around?
     bool m_featuredProduct = false;
     // This is the % compared with the montly subscription.
     uint32_t m_savings = 0;
-    void* m_productNS = nullptr;
+    void* m_productNS = nullptr; // TODO - Move to IOS
   };
+
+  virtual void nativeRegisterProducts() = 0;
+  virtual void nativeStartSubscription(Product* product) = 0;
+
+  enum {
+    eNotRegistered,
+    eRegistering,
+    eRegistered,
+  } m_productsRegistrationState = eNotRegistered;
+
+  enum State {
+    eActive,
+    eInactive,
+  } m_subscriptionState = eInactive;
+
+  void addProduct(const QJsonValue& value);
+  void computeSavings();
+  static ProductType productTypeToEnum(const QString& type);
+  static uint32_t productTypeToMonthCount(ProductType type);
+  Product* findProduct(const QString& productIdentifier);
+  QList<Product> m_products;
 
 };
 

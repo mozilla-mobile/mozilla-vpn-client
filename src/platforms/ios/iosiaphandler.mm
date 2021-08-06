@@ -23,7 +23,6 @@
 
 namespace {
 Logger logger(LOG_IAP, "IOSIAPHandler");
-
 IOSIAPHandler* s_instance = nullptr;
 }  // namespace
 
@@ -198,19 +197,6 @@ IOSIAPHandler* s_instance = nullptr;
 
 @end
 
-// static
-IOSIAPHandler* IOSIAPHandler::createInstance() {
-  Q_ASSERT(!s_instance);
-  new IOSIAPHandler(qApp);
-  Q_ASSERT(s_instance);
-  return instance();
-}
-
-// static
-IOSIAPHandler* IOSIAPHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
-}
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
   MVPN_COUNT_CTOR(IOSIAPHandler);
@@ -236,50 +222,21 @@ IOSIAPHandler::~IOSIAPHandler() {
   m_delegate = nullptr;
 }
 
-void IOSIAPHandler::registerProducts(const QByteArray& data) {
-  logger.debug() << "Maybe register products";
+// static
+IOSIAPHandler* IOSIAPHandler::createInstance() {
+  Q_ASSERT(!s_instance);
+  new IOSIAPHandler(qApp);
+  Q_ASSERT(s_instance);
+  return instance();
+}
 
-  Q_ASSERT(m_productsRegistrationState == eRegistered ||
-           m_productsRegistrationState == eNotRegistered);
+// static
+IOSIAPHandler* IOSIAPHandler::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
 
-  auto guard = qScopeGuard([&] { emit productsRegistered(); });
-
-  if (m_productsRegistrationState == eRegistered) {
-    return;
-  }
-
-  Q_ASSERT(m_products.isEmpty());
-
-  QJsonDocument json = QJsonDocument::fromJson(data);
-  if (!json.isObject()) {
-    logger.debug() << "Object expected";
-    return;
-  }
-
-  QJsonObject obj = json.object();
-  if (!obj.contains("products")) {
-    logger.debug() << "products entry expected";
-    return;
-  }
-
-  QJsonArray products = obj["products"].toArray();
-  if (products.isEmpty()) {
-    logger.error() << "No products found";
-    return;
-  }
-
-  m_productsRegistrationState = eRegistering;
-
-  for (const QJsonValue& value : products) {
-    addProduct(value);
-  }
-
-  if (m_products.isEmpty()) {
-    logger.error() << "No pending products (nothing has been registered). Unable to recover from "
-                      "this scenario.";
-    return;
-  }
-
+void IOSIAPHandler::nativeRegisterProducts() {
   NSSet<NSString*>* productIdentifiers = [NSSet<NSString*> set];
   for (const Product& product : m_products) {
     productIdentifiers = [productIdentifiers setByAddingObject:product.m_name.toNSString()];
@@ -293,81 +250,13 @@ void IOSIAPHandler::registerProducts(const QByteArray& data) {
   IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   productsRequest.delegate = delegate;
   [productsRequest start];
-
-  logger.debug() << "Waiting for the products registration";
-
-  guard.dismiss();
 }
 
-void IOSIAPHandler::addProduct(const QJsonValue& value) {
-  if (!value.isObject()) {
-    logger.debug() << "Object expected for the single product";
-    return;
-  }
-
-  QJsonObject obj = value.toObject();
-
-  Product product;
-  product.m_name = obj["id"].toString();
-  product.m_type = productTypeToEnum(obj["type"].toString());
-  product.m_featuredProduct = obj["featured_product"].toBool();
-
-  if (product.m_type == ProductUnknown) {
-    logger.error() << "Unknown product type:" << obj["type"].toString();
-    return;
-  }
-
-  m_products.append(product);
-}
-
-IOSIAPHandler::Product* IOSIAPHandler::findProduct(const QString& productIdentifier) {
-  for (Product& p : m_products) {
-    if (p.m_name == productIdentifier) {
-      return &p;
-    }
-  }
-  return nullptr;
-}
-
-void IOSIAPHandler::startSubscription(const QString& productIdentifier) {
-  Q_ASSERT(m_productsRegistrationState == eRegistered);
-
-  Product* product = findProduct(productIdentifier);
-  Q_ASSERT(product);
+void IOSIAPHandler::nativeStartSubscription(Product* product) {
   Q_ASSERT(product->m_productNS);
-
-  if (m_subscriptionState != eInactive) {
-    logger.warning() << "No multiple IAP!";
-    return;
-  }
-
-  m_subscriptionState = eActive;
-
-  logger.debug() << "Starting the subscription";
   SKProduct* skProduct = static_cast<SKProduct*>(product->m_productNS);
   SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
   [[SKPaymentQueue defaultQueue] addPayment:payment];
-}
-
-void IOSIAPHandler::stopSubscription() {
-  logger.debug() << "Stop subscription";
-  m_subscriptionState = eInactive;
-}
-
-void IOSIAPHandler::unknownProductRegistered(const QString& identifier) {
-  Q_ASSERT(m_productsRegistrationState == eRegistering);
-
-  logger.error() << "Product registration failed:" << identifier;
-
-  // Let's remove the unregistered product.
-  QList<Product>::iterator i = m_products.begin();
-  while (i != m_products.end()) {
-    if (i->m_name == identifier) {
-      i = m_products.erase(i);
-      break;
-    }
-    ++i;
-  }
 }
 
 void IOSIAPHandler::productRegistered(void* a_product) {
@@ -432,20 +321,6 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   productData->m_monthlyPrice = monthlyPriceValue;
   productData->m_nonLocalizedMonthlyPrice = [monthlyPriceNS doubleValue];
   productData->m_productNS = product;
-}
-
-void IOSIAPHandler::productsRegistrationCompleted() {
-  logger.debug() << "All the products has been registered";
-
-  beginResetModel();
-
-  computeSavings();
-
-  m_productsRegistrationState = eRegistered;
-
-  endResetModel();
-
-  emit productsRegistered();
 }
 
 void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
@@ -515,106 +390,3 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
   });
 }
 
-void IOSIAPHandler::subscribe(const QString& productIdentifier) {
-  logger.debug() << "Subscription required";
-  emit subscriptionStarted(productIdentifier);
-}
-
-void IOSIAPHandler::computeSavings() {
-  double monthlyPrice = 0;
-  // Let's find the price for the monthly payment.
-  for (const Product& product : m_products) {
-    if (product.m_type == ProductMonthly) {
-      monthlyPrice = product.m_nonLocalizedMonthlyPrice;
-      break;
-    }
-  }
-
-  if (monthlyPrice == 0) {
-    logger.error() << "No monthly payment found";
-    return;
-  }
-
-  // Compute the savings for all the other types.
-  for (Product& product : m_products) {
-    if (product.m_type == ProductMonthly) continue;
-
-    int savings = qRound(100.00 - ((product.m_nonLocalizedMonthlyPrice * 100.00) / monthlyPrice));
-    if (savings < 0 || savings > 100) continue;
-
-    product.m_savings = (int)savings;
-
-    logger.debug() << "Saving" << product.m_savings << "for" << product.m_name;
-  }
-}
-
-QHash<int, QByteArray> IOSIAPHandler::roleNames() const {
-  QHash<int, QByteArray> roles;
-  roles[ProductIdentifierRole] = "productIdentifier";
-  roles[ProductPriceRole] = "productPrice";
-  roles[ProductMonthlyPriceRole] = "productMonthlyPrice";
-  roles[ProductTypeRole] = "productType";
-  roles[ProductFeaturedRole] = "productFeatured";
-  roles[ProductSavingsRole] = "productSavings";
-  return roles;
-}
-
-int IOSIAPHandler::rowCount(const QModelIndex&) const {
-  if (m_productsRegistrationState != eRegistered) {
-    return 0;
-  }
-
-  return m_products.count();
-}
-
-QVariant IOSIAPHandler::data(const QModelIndex& index, int role) const {
-  if (m_productsRegistrationState != eRegistered || !index.isValid()) {
-    return QVariant();
-  }
-
-  switch (role) {
-    case ProductIdentifierRole:
-      return QVariant(m_products.at(index.row()).m_name);
-
-    case ProductPriceRole:
-      return QVariant(m_products.at(index.row()).m_price);
-
-    case ProductMonthlyPriceRole:
-      return QVariant(m_products.at(index.row()).m_monthlyPrice);
-
-    case ProductTypeRole:
-      return QVariant(m_products.at(index.row()).m_type);
-
-    case ProductFeaturedRole:
-      return QVariant(m_products.at(index.row()).m_featuredProduct);
-
-    case ProductSavingsRole:
-      return QVariant(m_products.at(index.row()).m_savings);
-
-    default:
-      return QVariant();
-  }
-}
-
-// static
-IOSIAPHandler::ProductType IOSIAPHandler::productTypeToEnum(const QString& type) {
-  if (type == "yearly") return ProductYearly;
-  if (type == "half-yearly") return ProductHalfYearly;
-  if (type == "monthly") return ProductMonthly;
-  return ProductUnknown;
-}
-
-// static
-uint32_t IOSIAPHandler::productTypeToMonthCount(ProductType type) {
-  switch (type) {
-    case ProductYearly:
-      return 12;
-    case ProductHalfYearly:
-      return 6;
-    case ProductMonthly:
-      return 1;
-    default:
-      Q_ASSERT(false);
-      return 1;
-  }
-}
