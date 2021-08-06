@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../components"
 import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 VPNFlickable {
     id: vpnFlickable
@@ -76,10 +77,15 @@ VPNFlickable {
         }
 
         VPNCollapsibleCard {
-            z: 1
-
-            title: "Collapsible card component"
+            title: VPNl18n.tr(VPNl18n.MultiHopHintCardTitle)
             iconSrc: "../resources/tip.svg"
+            contentItem: VPNTextBlock {
+                color: Color.grey40
+                text: VPNl18n.tr(VPNl18n.MultiHopHintCardTextOne) + " <b>" + VPNl18n.tr(VPNl18n.MultiHopHintCardTextTwo) + "</b>"
+                textFormat: Text.StyledText
+                Layout.fillWidth: true
+            }
+            z: 1
         }
 
         VPNAlerts {

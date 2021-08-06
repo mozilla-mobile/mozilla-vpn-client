@@ -12,11 +12,12 @@ Rectangle {
     property bool expanded: false
     property string title: ""
     property string iconSrc: ""
+    property alias contentItem: cardContent.data
+
     color: "lightgray"
     implicitHeight: cardWrapper.height
-    implicitWidth: parent.width
     radius: Theme.cornerRadius
-
+    width: parent.width
 
     states: [
         State {
@@ -51,6 +52,7 @@ Rectangle {
 
     ColumnLayout {
         id: cardWrapper
+
         spacing: 0
         width: root.width
 
@@ -59,8 +61,6 @@ Rectangle {
             id: accordionHeader
 
             spacing: 8
-
-//            Layout.bottomMargin: 8
             Layout.topMargin: 8
             Layout.leftMargin: 8
             Layout.rightMargin: 16
@@ -76,19 +76,17 @@ Rectangle {
             Text {
                 id: accordionTitle
 
-//                bottomPadding: 8
-                color: "black"
-                font.family: Theme.fontBoldFamily
-                font.pixelSize: Theme.fontSize
-                lineHeightMode: Text.FixedHeight
-                lineHeight: Theme.labelLineHeight
-                text: root.title
-//                text: root.title
-//                topPadding: 8
-                verticalAlignment: Text.AlignVCenter
-                wrapMode: Text.Wrap
                 Layout.fillWidth: true
                 Layout.preferredWidth: cardWrapper.width
+
+                color: Color.grey50
+                font.family: Theme.fontBoldFamily
+                font.pixelSize: Theme.fontSize
+                lineHeight: Theme.labelLineHeight
+                lineHeightMode: Text.FixedHeight
+                text: root.title
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
 
                 Rectangle {
                     anchors.fill: parent
@@ -98,51 +96,55 @@ Rectangle {
             }
 
             Rectangle {
-               id: stateIndicator
+                id: stateIndicator
 
-               color: stateIndicator.state === Theme.uiState.stateHovered ? Color.grey10 : Color.white
-               height: 40
-               radius: Theme.cornerRadius - 1
-               width: 40
+                color: stateIndicator.state === Theme.uiState.stateHovered ? Color.grey10 : Color.white
+                height: 40
+                radius: Theme.cornerRadius - 1
+                width: 40
 
-               Behavior on color {
+                Behavior on color {
                     ColorAnimation {
                         duration: animationDuration
                     }
-               }
+                }
 
-               VPNChevron {
-                   id: chevron
+                VPNChevron {
+                    id: chevron
 
-                   anchors {
-                       verticalCenter: parent.verticalCenter
-                       horizontalCenter: parent.horizontalCenter
-                   }
+                    isDark: true
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        horizontalCenter: parent.horizontalCenter
+                    }
 
-                   Behavior on rotation {
+                    Behavior on rotation {
                         NumberAnimation {
                             duration: animationDuration
                         }
-                   }
-               }
+                    }
+                }
 
                VPNMouseArea {
-                   anchors.fill: stateIndicator
+                   height: parent.height
                    hoverEnabled: true
                    targetEl: stateIndicator
+                   width: parent.width
                }
             }
 
             Rectangle {
-                anchors.fill: parent
-                radius: Theme.cornerRadius
                 color: "pink"
+                height: parent.height
+                radius: Theme.cornerRadius
+                width: parent.width
                 z: -1
             }
 
             MouseArea {
-                anchors.fill: accordionHeader
+                height: parent.height
                 onClicked: toggleCard()
+                width: parent.width
             }
         }
 
@@ -150,21 +152,16 @@ Rectangle {
         Column {
             id: column
 
+            clip: true
             Layout.preferredWidth: accordionTitle.width
             Layout.bottomMargin: 8
-            Layout.leftMargin: icon.width + accordionHeader.spacing * 2
-            Layout.alignment: Qt.AlignTop
+            Layout.leftMargin: 16 + icon.width
+            Layout.rightMargin: 8
 
-            Text {
+            ColumnLayout {
                 id: cardContent
 
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
-                clip: true
-                color: "black"
-                font.pixelSize: Theme.fontSizeSmall
+                width: parent.width
 
                 Behavior on height {
                      NumberAnimation {
@@ -172,18 +169,23 @@ Rectangle {
                      }
                 }
 
-                text: "Test text content Test text content Test text content Test text content"
-                wrapMode: Text.Wrap
                 Rectangle {
-                    anchors.fill: parent
-                    radius: Theme.cornerRadius
-
                     color: "pink"
+                    height: parent.height
+                    radius: Theme.cornerRadius
+                    width: parent.width
                     z: -1
                 }
             }
         }
+    }
 
+    VPNDropShadow {
+        anchors.fill: root
+        source: root
+        cached: true
+        transparentBorder: true
+        z: -1
     }
 
     function toggleCard() {

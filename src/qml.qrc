@@ -335,6 +335,7 @@
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
         <file>ui/resources/chevron.svg</file>
+        <file>ui/resources/chevron-right-dark.svg</file>
         <file>ui/resources/close-white.svg</file>
         <file>ui/resources/externalLink.svg</file>
         <file>ui/resources/arrow-toggle.svg</file>

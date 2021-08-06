@@ -8,7 +8,9 @@ import "../themes/themes.js" as Theme
 
 // VPNChevron
 Image {
-    source: "../resources/chevron.svg"
+    property bool isDark: false
+
+    source: isDark ? "../resources/chevron-right-dark.svg" : "../resources/chevron.svg"
     sourceSize.height: 24
     sourceSize.width: 24
     fillMode: Image.PreserveAspectFit
