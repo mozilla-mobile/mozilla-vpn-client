@@ -120,7 +120,7 @@ bool FeatureList::userDNSSupported() const {
 }
 
 bool FeatureList::authenticationInApp() const {
-#ifdef MVPN_AIP
+#ifdef MVPN_AUTHINAPP
   return true;
 #else
   return false;
@@ -128,7 +128,7 @@ bool FeatureList::authenticationInApp() const {
 }
 
 bool FeatureList::accountCreationInAppSupported() const {
-#if defined(MVPN_IOS)
+#if defined(MVPN_IOS) || defined(UNIT_TEST)
   // Soon-ish, android will have AIP. But not now yet.
   return true;
 #else
