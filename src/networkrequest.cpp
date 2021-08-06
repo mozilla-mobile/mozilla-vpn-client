@@ -577,20 +577,20 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
   return r;
 }
 
-#ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v2/vpn/products/ios");
+  url.setPath("/api/v3/vpn/products");
   r->m_request.setUrl(url);
 
   r->getRequest();
   return r;
 }
 
+#ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);

@@ -24,6 +24,7 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
+#include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
@@ -31,7 +32,6 @@
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
-#  include "platforms/ios/taskiosproducts.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -271,9 +271,9 @@ void MozillaVPN::initialize() {
 
   scheduleTask(new TaskCaptivePortalLookup());
 
-#ifdef MVPN_IOS
-  scheduleTask(new TaskIOSProducts());
-#endif
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    scheduleTask(new TaskProducts());
+  }
 
   setUserAuthenticated(true);
   maybeStateMain();
@@ -296,12 +296,12 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-#ifdef MVPN_IOS
-  if (m_private->m_user.subscriptionNeeded()) {
-    setState(StateSubscriptionNeeded);
-    return;
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      setState(StateSubscriptionNeeded);
+      return;
+    }
   }
-#endif
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
@@ -515,13 +515,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserAuthenticated(true);
 
-#ifdef MVPN_IOS
-  if (m_private->m_user.subscriptionNeeded()) {
-    scheduleTask(new TaskIOSProducts());
-    scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
-    return;
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      scheduleTask(new TaskProducts());
+      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      return;
+    }
   }
-#endif
 
   completeActivation();
 }
@@ -542,9 +542,9 @@ void MozillaVPN::completeActivation() {
     scheduleTask(new TaskAccountAndServers());
   }
 
-#ifdef MVPN_IOS
-  scheduleTask(new TaskIOSProducts());
-#endif
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    scheduleTask(new TaskProducts());
+  }
 
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
@@ -682,12 +682,12 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-#ifdef MVPN_IOS
-  if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-    maybeStateMain();
-    return;
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
+      maybeStateMain();
+      return;
+    }
   }
-#endif
 
   // To test the subscription needed view, comment out this line:
   // m_private->m_controller.subscriptionNeeded();
@@ -1173,7 +1173,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   // If IAP is not ready (race condition), register the products again.
   if (!iap->hasProductsRegistered()) {
-    scheduleTask(new TaskIOSProducts());
+    scheduleTask(new TaskProducts());
     scheduleTask(new TaskFunction([productIdentifier](MozillaVPN* vpn) {
       vpn->subscriptionStarted(productIdentifier);
     }));

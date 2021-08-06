@@ -2,42 +2,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "taskiosproducts.h"
-#include "iosiaphandler.h"
+#include "taskproducts.h"
+#include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
 namespace {
-Logger logger(LOG_IAP, "TaskIOSProducts");
+Logger logger(LOG_IAP, "TaskProducts");
 }
 
-TaskIOSProducts::TaskIOSProducts() : Task("TaskIOSProducts") {
-  MVPN_COUNT_CTOR(TaskIOSProducts);
+TaskProducts::TaskProducts() : Task("TaskProducts") {
+  MVPN_COUNT_CTOR(TaskProducts);
 }
 
-TaskIOSProducts::~TaskIOSProducts() { MVPN_COUNT_DTOR(TaskIOSProducts); }
+TaskProducts::~TaskProducts() { MVPN_COUNT_DTOR(TaskProducts); }
 
-void TaskIOSProducts::run(MozillaVPN* vpn) {
-  NetworkRequest* request = NetworkRequest::createForIOSProducts(this);
+void TaskProducts::run(MozillaVPN* vpn) {
+  NetworkRequest* request = NetworkRequest::createForProducts(this);
 
   connect(request, &NetworkRequest::requestFailed,
           [this, vpn](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "IOS product request failed" << error;
+            logger.error() << "Products request to guardian failed" << error;
             vpn->errorHandle(ErrorHandler::toErrorType(error));
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.debug() << "IOS product request completed" << data;
+            logger.debug() << "Products request to guardian completed" << data;
 
-            IOSIAPHandler* iapHandler = IOSIAPHandler::instance();
+            IAPHandler* iapHandler = IAPHandler::instance();
             Q_ASSERT(iapHandler);
 
-            connect(iapHandler, &IOSIAPHandler::productsRegistered, this,
-                    &TaskIOSProducts::completed);
+            connect(iapHandler, &IAPHandler::productsRegistered, this,
+                    &TaskProducts::completed);
             iapHandler->registerProducts(data);
           });
 }

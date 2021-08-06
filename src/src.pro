@@ -89,7 +89,7 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
         hkdf.cpp \
-	iaphandler.cpp \
+        iaphandler.cpp \
         inspector/inspectorhttpconnection.cpp \
         inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
@@ -144,6 +144,7 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/products/taskproducts.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
@@ -249,6 +250,7 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/products/taskproducts.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
@@ -682,7 +684,6 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
@@ -696,7 +697,6 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
