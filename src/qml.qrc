@@ -452,5 +452,6 @@
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>ui/components/VPNTabNavigation.qml</file>
+        <file>ui/views/ViewMultiHop.qml</file>
     </qresource>
 </RCC>
