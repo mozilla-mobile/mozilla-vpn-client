@@ -2,55 +2,32 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef IAPHANDLER_H
-#define IAPHANDLER_H
+#ifndef IOSIAPHANDLER_H
+#define IOSIAPHANDLER_H
 
-#include <QAbstractListModel>
+#include "platforms/iaphandler.h"
+
 #include <QList>
 
 class QJsonValue;
 
-class IOSIAPHandler final : public QAbstractListModel {
+class IOSIAPHandler final : public IAPHandler {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(IOSIAPHandler)
 
  public:
-  enum ProductType {
-    ProductMonthly,
-    ProductHalfYearly,
-    ProductYearly,
-    ProductUnknown = -1
-  };
-  Q_ENUM(ProductType);
-
   static IOSIAPHandler* createInstance();
 
   static IOSIAPHandler* instance();
 
-  enum ModelRoles {
-    ProductIdentifierRole = Qt::UserRole + 1,
-    ProductPriceRole,
-    ProductMonthlyPriceRole,
-    ProductTypeRole,
-    ProductFeaturedRole,
-    ProductSavingsRole,
-  };
-  Q_INVOKABLE void subscribe(const QString& productIdentifier);
-
-  bool hasProductsRegistered() const {
-    return m_productsRegistrationState == eRegistered;
-  }
-
   void registerProducts(const QByteArray& data);
 
   void startSubscription(const QString& productIdentifier);
+  Q_INVOKABLE void subscribe(const QString& productIdentifier);
 
   // QAbstractListModel methods
-
   QHash<int, QByteArray> roleNames() const override;
-
   int rowCount(const QModelIndex&) const override;
-
   QVariant data(const QModelIndex& index, int role) const override;
 
  signals:
@@ -72,7 +49,7 @@ class IOSIAPHandler final : public QAbstractListModel {
   void processCompletedTransactions(const QStringList& ids);
 
  private:
-  IOSIAPHandler(QObject* parent);
+  explicit IOSIAPHandler(QObject* parent);
   ~IOSIAPHandler();
 
   void addProduct(const QJsonValue& value);
@@ -83,30 +60,6 @@ class IOSIAPHandler final : public QAbstractListModel {
   static uint32_t productTypeToMonthCount(ProductType type);
 
  private:
-  enum {
-    eNotRegistered,
-    eRegistering,
-    eRegistered,
-  } m_productsRegistrationState = eNotRegistered;
-
-  enum State {
-    eActive,
-    eInactive,
-  } m_subscriptionState = eInactive;
-
-  struct Product {
-    QString m_name;
-    QString m_price;
-    QString m_monthlyPrice;
-    // This is not exposed and it's not localized. It's used to compute the
-    // saving %.
-    double m_nonLocalizedMonthlyPrice = 0;
-    ProductType m_type = IOSIAPHandler::ProductMonthly;
-    bool m_featuredProduct = false;
-    // This is the % compared with the montly subscription.
-    uint32_t m_savings = 0;
-    void* m_productNS = nullptr;
-  };
 
   Product* findProduct(const QString& productIdentifier);
 
@@ -115,4 +68,4 @@ class IOSIAPHandler final : public QAbstractListModel {
   void* m_delegate = nullptr;
 };
 
-#endif  // IAPHANDLER_H
+#endif  // IOSIAPHANDLER_H

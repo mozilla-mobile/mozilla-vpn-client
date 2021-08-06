@@ -680,6 +680,7 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
+            platforms/iaphandler.cpp \
             platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsender.cpp
 
@@ -694,6 +695,7 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
+            platforms/iaphandler.h \
             platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsender.h
 

@@ -22,18 +22,18 @@
 #import <StoreKit/StoreKit.h>
 
 namespace {
-Logger logger(LOG_IAP, "IAPHandler");
+Logger logger(LOG_IAP, "IOSIAPHandler");
 
 IOSIAPHandler* s_instance = nullptr;
 }  // namespace
 
-@interface IAPHandlerDelegate
+@interface IOSIAPHandlerDelegate
     : NSObject <SKRequestDelegate, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
   IOSIAPHandler* m_handler;
 }
 @end
 
-@implementation IAPHandlerDelegate
+@implementation IOSIAPHandlerDelegate
 
 - (id)initWithObject:(IOSIAPHandler*)handler {
   self = [super init];
@@ -212,24 +212,24 @@ IOSIAPHandler* IOSIAPHandler::instance() {
   return s_instance;
 }
 
-IOSIAPHandler::IOSIAPHandler(QObject* parent) : QAbstractListModel(parent) {
-  MVPN_COUNT_CTOR(IAPHandler);
+IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
+  MVPN_COUNT_CTOR(IOSIAPHandler);
 
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  m_delegate = [[IAPHandlerDelegate alloc] initWithObject:this];
+  m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
   [[SKPaymentQueue defaultQueue]
-      addTransactionObserver:static_cast<IAPHandlerDelegate*>(m_delegate)];
+      addTransactionObserver:static_cast<IOSIAPHandlerDelegate*>(m_delegate)];
 }
 
 IOSIAPHandler::~IOSIAPHandler() {
-  MVPN_COUNT_DTOR(IAPHandler);
+  MVPN_COUNT_DTOR(IOSIAPHandler);
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 
-  IAPHandlerDelegate* delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
+  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
 
   [delegate dealloc];
@@ -290,7 +290,7 @@ void IOSIAPHandler::registerProducts(const QByteArray& data) {
   SKProductsRequest* productsRequest =
       [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
 
-  IAPHandlerDelegate* delegate = static_cast<IAPHandlerDelegate*>(m_delegate);
+  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   productsRequest.delegate = delegate;
   [productsRequest start];
 
