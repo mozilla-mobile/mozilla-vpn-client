@@ -89,6 +89,7 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
         hkdf.cpp \
+	iaphandler.cpp \
         inspector/inspectorhttpconnection.cpp \
         inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
@@ -193,6 +194,7 @@ HEADERS += \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
+        iaphandler.h \
         inspector/inspectorhttpconnection.h \
         inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
@@ -680,7 +682,6 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/iaphandler.cpp \
             platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsender.cpp
 
@@ -695,7 +696,6 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/iaphandler.h \
             platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsender.h
 

@@ -5,7 +5,7 @@
 #ifndef IOSIAPHANDLER_H
 #define IOSIAPHANDLER_H
 
-#include "platforms/iaphandler.h"
+#include "iaphandler.h"
 
 class IOSIAPHandler final : public IAPHandler {
   Q_OBJECT
