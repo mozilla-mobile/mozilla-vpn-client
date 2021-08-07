@@ -125,6 +125,7 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -230,6 +231,7 @@ HEADERS += \
         pinghelper.h \
         pingsender.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \

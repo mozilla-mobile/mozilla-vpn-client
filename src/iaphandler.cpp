@@ -16,6 +16,8 @@
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosiaphandler.h"
+#else
+#  include "platforms/dummy/dummyiaphandler.h"
 #endif
 
 namespace {
@@ -27,7 +29,7 @@ IAPHandler* IAPHandler::createInstance() {
 #ifdef MVPN_IOS
   return IOSIAPHandler::createInstance();
 #else
-#  error "Platform not supported"
+  return DummyIAPHandler::createInstance();
 #endif
 }
 
@@ -36,7 +38,7 @@ IAPHandler* IAPHandler::instance() {
 #ifdef MVPN_IOS
   return IOSIAPHandler::instance();
 #else
-#  error "Platform not supported"
+  return DummyIAPHandler::instance();
 #endif
 }
 
