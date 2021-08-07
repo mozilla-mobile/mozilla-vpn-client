@@ -109,6 +109,13 @@ void IAPHandler::addProduct(const QJsonValue& value) {
 
   QJsonObject obj = value.toObject();
 
+  // The products endpoint returns products for all platforms
+  // only continue if the product is for the current platform
+  if (obj["platform"].toString().toLower() !=
+      QString(Constants::PLATFORM_NAME).toLower()) {
+    return;
+  }
+
   Product product;
   product.m_name = obj["id"].toString();
   product.m_type = productTypeToEnum(obj["type"].toString());
