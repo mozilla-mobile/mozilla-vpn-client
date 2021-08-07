@@ -351,6 +351,16 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterType<AndroidWebView>("Mozilla.VPN", 1, 0, "VPNAndroidWebView");
 #endif
 
+    if (FeatureList::instance()->inAppPurchaseSupported()) {
+      qmlRegisterSingletonType<MozillaVPN>(
+          "Mozilla.VPN", 1, 0, "VPNIAP",
+          [](QQmlEngine*, QJSEngine*) -> QObject* {
+            QObject* obj = IAPHandler::instance();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+          });
+    }
+
 #ifdef QT_DEBUG
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNGleanTest",
@@ -361,12 +371,6 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNIAP", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = IAPHandler::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAuthInApp",
