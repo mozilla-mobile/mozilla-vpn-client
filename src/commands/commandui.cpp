@@ -371,7 +371,6 @@ int CommandUI::run(QStringList& tokens) {
         });
 #endif
 
-
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAuthInApp",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
