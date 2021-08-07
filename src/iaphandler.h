@@ -31,12 +31,8 @@ class IAPHandler : public QAbstractListModel {
     ProductSavingsRole,
   };
 
-  static IAPHandler* createInstance() {
-    qFatal("Have you forgotten to implement IAPHandler::createInstance()?");
-  };
-  static IAPHandler* instance() {
-    qFatal("Have you forgotten to implement IAPHandler::instance()?");
-  };
+  static IAPHandler* createInstance();
+  static IAPHandler* instance();
   bool hasProductsRegistered() const {
     return m_productsRegistrationState == eRegistered;
   }
@@ -79,7 +75,8 @@ class IAPHandler : public QAbstractListModel {
     bool m_featuredProduct = false;
     // This is the % compared with the montly subscription.
     uint32_t m_savings = 0;
-    void* m_productNS = nullptr;  // TODO - Move to IOS
+    // Used by individual implementations to store extra pieces they need
+    void* m_extra = nullptr;
   };
 
   virtual void nativeRegisterProducts() = 0;

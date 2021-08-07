@@ -252,8 +252,8 @@ void IOSIAPHandler::nativeRegisterProducts() {
 }
 
 void IOSIAPHandler::nativeStartSubscription(Product* product) {
-  Q_ASSERT(product->m_productNS);
-  SKProduct* skProduct = static_cast<SKProduct*>(product->m_productNS);
+  Q_ASSERT(product->m_extra);
+  SKProduct* skProduct = static_cast<SKProduct*>(product->m_extra);
   SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
@@ -319,7 +319,7 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   productData->m_price = priceValue;
   productData->m_monthlyPrice = monthlyPriceValue;
   productData->m_nonLocalizedMonthlyPrice = [monthlyPriceNS doubleValue];
-  productData->m_productNS = product;
+  productData->m_extra = product;
 }
 
 void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {

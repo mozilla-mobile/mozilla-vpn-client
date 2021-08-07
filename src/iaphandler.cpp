@@ -14,9 +14,29 @@
 #include <QJsonValue>
 #include <QScopeGuard>
 
+#ifdef MVPN_IOS
+#  include "platforms/ios/iosiaphandler.h"
+#endif
+
 namespace {
 Logger logger(LOG_IAP, "IAPHandler");
-}  // anonymous namespace
+IAPHandler* s_instance = nullptr;
+}  // namespace
+
+// static
+IAPHandler* IAPHandler::createInstance() {
+#ifdef MVPN_IOS
+  return IOSIAPHandler::createInstance();
+#else
+#  error "Platform not supported"
+#endif
+}
+
+// static
+IAPHandler* IAPHandler::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
 
 void IAPHandler::registerProducts(const QByteArray& data) {
   logger.debug() << "Maybe register products";
