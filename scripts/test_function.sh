@@ -8,6 +8,8 @@
 
 export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm-0
 REPORT_FILE=/tmp/report.html
+LANGUAGE=en
+LANG=en
 
 print N "This script runs the functional tests"
 print N ""
@@ -23,7 +25,7 @@ runTest() {
   export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm-$ID
 
   print Y "Running the app..."
-  "$1" &> "$ARTIFACT_DIR/VPN_LOG.txt" &
+  "$1" ui --testing &> "$ARTIFACT_DIR/VPN_LOG.txt" &
   PID=$!
   print G "done."
 

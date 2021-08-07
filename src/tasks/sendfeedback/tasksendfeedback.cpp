@@ -33,20 +33,20 @@ TaskSendFeedback::~TaskSendFeedback() { MVPN_COUNT_DTOR(TaskSendFeedback); }
 void TaskSendFeedback::run(MozillaVPN* vpn) {
   Q_UNUSED(vpn);
 
-  logger.log() << "Sending the feedback";
+  logger.debug() << "Sending the feedback";
 
   NetworkRequest* request = NetworkRequest::createForFeedback(
       this, m_feedbackText, m_logs, m_rating, m_category);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Failed to send feedback" << error;
+            logger.error() << "Failed to send feedback" << error;
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray&) {
-            logger.log() << "Feedback sent";
+            logger.debug() << "Feedback sent";
             emit completed();
           });
 }

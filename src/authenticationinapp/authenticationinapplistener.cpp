@@ -15,7 +15,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QPasswordDigestor>
+#include <QtNetwork>  // for qpassworddigestor.h
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInAppListener");
@@ -37,7 +37,7 @@ AuthenticationInAppListener::~AuthenticationInAppListener() {
 
 void AuthenticationInAppListener::start(const QString& codeChallenge,
                                         const QString& codeChallengeMethod) {
-  logger.log() << "AuthenticationInAppListener initialize";
+  logger.debug() << "AuthenticationInAppListener initialized";
 
   m_codeChallenge = codeChallenge;
   m_codeChallengeMethod = codeChallengeMethod;
@@ -55,17 +55,17 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 
   connect(request, &NetworkRequest::requestRedirected,
           [this](NetworkRequest* request, const QUrl& url) {
-            logger.log() << "Redirect received";
+            logger.debug() << "Redirect received";
             m_urlQuery = QUrlQuery(url.query());
 
             if (!m_urlQuery.hasQueryItem("client_id")) {
-              logger.log() << "No `client_id` token. Unable to proceed";
+              logger.error() << "No `client_id` token. Unable to proceed";
               emit failed(ErrorHandler::AuthenticationError);
               return;
             }
 
             if (!m_urlQuery.hasQueryItem("state")) {
-              logger.log() << "No `state` token. Unable to proceed";
+              logger.error() << "No `state` token. Unable to proceed";
               emit failed(ErrorHandler::AuthenticationError);
               return;
             }
@@ -77,7 +77,7 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to fetch the initial request" << error;
+            logger.error() << "Failed to fetch the initial request" << error;
             if (error != QNetworkReply::OperationCanceledError) {
               processRequestFailure(error, data);
             }
@@ -85,7 +85,8 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
 }
 
 void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
-  logger.log() << "Authentication starting:" << emailAddress;
+  logger.debug() << "Authentication starting:"
+                 << logger.sensitive(emailAddress);
 
   m_emailAddress = emailAddress;
 
@@ -94,13 +95,13 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to check the account status" << error;
+            logger.error() << "Failed to check the account status" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Account status checked" << data;
+            logger.debug() << "Account status checked" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -110,7 +111,7 @@ void AuthenticationInAppListener::checkAccount(const QString& emailAddress) {
 }
 
 void AuthenticationInAppListener::accountChecked(bool exists) {
-  logger.log() << "Account checked:" << exists;
+  logger.debug() << "Account checked:" << exists;
 
   if (exists) {
     AuthenticationInApp::instance()->requestState(
@@ -158,20 +159,20 @@ void AuthenticationInAppListener::setPassword(const QString& password) {
 }
 
 void AuthenticationInAppListener::signIn(const QString& unblockCode) {
-  logger.log() << "Sign in";
+  logger.debug() << "Sign in";
 
   NetworkRequest* request = NetworkRequest::createForFxaLogin(
       this, m_emailAddress, m_authPw, unblockCode, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to sign in" << error;
+            logger.error() << "Failed to sign in" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Sign in completed" << data;
+            logger.debug() << "Sign in completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -183,20 +184,20 @@ void AuthenticationInAppListener::signIn(const QString& unblockCode) {
 }
 
 void AuthenticationInAppListener::signUp() {
-  logger.log() << "Sign up";
+  logger.debug() << "Sign up";
 
   NetworkRequest* request = NetworkRequest::createForFxaAccountCreation(
       this, m_emailAddress, m_authPw, m_urlQuery);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to sign up" << error;
+            logger.error() << "Failed to sign up" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Sign up completed" << data;
+            logger.debug() << "Sign up completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
@@ -208,7 +209,7 @@ void AuthenticationInAppListener::signUp() {
 }
 
 void AuthenticationInAppListener::unblockCodeNeeded() {
-  logger.log() << "Unblock code needed";
+  logger.debug() << "Unblock code needed";
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateUnblockCodeNeeded, this);
   sendUnblockCodeEmail();
@@ -216,13 +217,13 @@ void AuthenticationInAppListener::unblockCodeNeeded() {
 
 void AuthenticationInAppListener::setUnblockCodeAndContinue(
     const QString& unblockCode) {
-  logger.log() << "Sign in (unblock code received)";
+  logger.debug() << "Sign in (unblock code received)";
   Q_ASSERT(m_sessionToken.isEmpty());
   signIn(unblockCode);
 }
 
 void AuthenticationInAppListener::sendUnblockCodeEmail() {
-  logger.log() << "Resend unblock code";
+  logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
   NetworkRequest* request =
@@ -230,17 +231,17 @@ void AuthenticationInAppListener::sendUnblockCodeEmail() {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to resend the unblock code" << error;
+            logger.error() << "Failed to resend the unblock code" << error;
             processRequestFailure(error, data);
           });
 
   connect(
       request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.log() << "Code resent" << data; });
+      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
 }
 
 void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
-  logger.log() << "Sign in (verify session code by email received)";
+  logger.debug() << "Sign in (verify session code by email received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
@@ -249,19 +250,19 @@ void AuthenticationInAppListener::verifySessionEmailCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to verify the session code" << error;
+            logger.error() << "Failed to verify the session code" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Verification completed" << data;
+            logger.debug() << "Verification completed" << data;
             finalizeSignInOrUp();
           });
 }
 
 void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
-  logger.log() << "Resend verification code";
+  logger.debug() << "Resend verification code";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request =
@@ -269,17 +270,17 @@ void AuthenticationInAppListener::resendVerificationSessionCodeEmail() {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to resend the session code" << error;
+            logger.error() << "Failed to resend the session code" << error;
             processRequestFailure(error, data);
           });
 
   connect(
       request, &NetworkRequest::requestCompleted,
-      [](const QByteArray& data) { logger.log() << "Code resent" << data; });
+      [](const QByteArray& data) { logger.debug() << "Code resent" << data; });
 }
 
 void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
-  logger.log() << "Sign in (verify session code by totp received)";
+  logger.debug() << "Sign in (verify session code by totp received)";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
   NetworkRequest* request = NetworkRequest::createForFxaSessionVerifyByTotpCode(
@@ -287,13 +288,13 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to verify the session code" << error;
+            logger.error() << "Failed to verify the session code" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Verification completed" << data;
+            logger.debug() << "Verification completed" << data;
             finalizeSignInOrUp();
           });
 }
@@ -301,11 +302,9 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
 void AuthenticationInAppListener::signInOrUpCompleted(
     const QString& sessionToken, bool accountVerified,
     const QString& verificationMethod) {
-  logger.log() << "Session generated";
+  logger.debug() << "Session generated";
 
-#ifdef QT_DEBUG
-  logger.log() << "FxA Session Token:" << sessionToken;
-#endif
+  logger.debug() << "FxA Session Token:" << logger.sensitive(sessionToken);
 
   // Let's store it to delete it at the DTOR.
   m_sessionToken = QByteArray::fromHex(sessionToken.toUtf8());
@@ -323,7 +322,7 @@ void AuthenticationInAppListener::signInOrUpCompleted(
       return;
     }
 
-    logger.log() << "Unsupported verification method:" << verificationMethod;
+    logger.error() << "Unsupported verification method:" << verificationMethod;
     return;
   }
 
@@ -338,13 +337,13 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-            logger.log() << "Failed to create oauth code" << error;
+            logger.error() << "Failed to create oauth code" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Oauth code creation completed" << data;
+            logger.debug() << "Oauth code creation completed" << data;
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             if (json.isNull()) {
@@ -356,21 +355,21 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
             QJsonObject obj = json.object();
             QJsonValue code = obj.value("code");
             if (!code.isString()) {
-              logger.log() << "FxA Authz: code not found";
+              logger.error() << "FxA Authz: code not found";
               MozillaVPN::instance()->errorHandle(
                   ErrorHandler::AuthenticationError);
               return;
             }
             QJsonValue state = obj.value("state");
             if (!state.isString()) {
-              logger.log() << "FxA Authz: state not found";
+              logger.error() << "FxA Authz: state not found";
               MozillaVPN::instance()->errorHandle(
                   ErrorHandler::AuthenticationError);
               return;
             }
             QJsonValue redirect = obj.value("redirect");
             if (!redirect.isString()) {
-              logger.log() << "FxA Authz: redirect not found";
+              logger.error() << "FxA Authz: redirect not found";
               MozillaVPN::instance()->errorHandle(
                   ErrorHandler::AuthenticationError);
               return;
@@ -382,19 +381,24 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
             connect(request, &NetworkRequest::requestFailed,
                     [this](QNetworkReply::NetworkError error,
                            const QByteArray& data) {
-                      logger.log()
+                      logger.error()
                           << "Failed to fetch the final redirect data" << error;
                       processRequestFailure(error, data);
                     });
 
             connect(request, &NetworkRequest::requestHeaderReceived,
                     [this](NetworkRequest* request) {
+#ifdef UNIT_TEST
+                      AuthenticationInApp* aip =
+                          AuthenticationInApp::instance();
+                      emit aip->unitTestFinalUrl(request->url());
+#endif
                       // On a 200 response, we receive the OAuth code from the
                       // query string
                       QString code =
                           QUrlQuery(request->url()).queryItemValue("code");
                       if (code.isEmpty()) {
-                        logger.log() << "Code not received!";
+                        logger.error() << "Code not received!";
                         MozillaVPN::instance()->errorHandle(
                             ErrorHandler::AuthenticationError);
                         emit failed(ErrorHandler::AuthenticationError);
@@ -611,7 +615,7 @@ void AuthenticationInAppListener::processErrorCode(int errorCode) {
     case 998:  // An internal validation check failed.
       [[fallthrough]];
     default:
-      logger.log() << "Unsupported error code:" << errorCode;
+      logger.error() << "Unsupported error code:" << errorCode;
       break;
   }
 }
@@ -633,7 +637,8 @@ void AuthenticationInAppListener::processRequestFailure(
       }
 
       // TODO
-      logger.log() << "Unsupported verification method:" << verificationMethod;
+      logger.error() << "Unsupported verification method:"
+                     << verificationMethod;
       return;
     }
 

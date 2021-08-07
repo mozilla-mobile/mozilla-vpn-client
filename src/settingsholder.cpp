@@ -93,6 +93,12 @@ constexpr const char* SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS = "winMissingApps";
 constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
 constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
 
+constexpr bool SETTINGS_DEVELOPERUNLOCK_DEFAULT = false;
+constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
+
+constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
+constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
@@ -126,8 +132,6 @@ SettingsHolder::SettingsHolder()
 {
   MVPN_COUNT_CTOR(SettingsHolder);
 
-  logger.log() << "Creating SettingsHolder instance";
-
   Q_ASSERT(!s_instance);
   s_instance = this;
 
@@ -148,7 +152,7 @@ SettingsHolder::~SettingsHolder() {
 }
 
 void SettingsHolder::clear() {
-  logger.log() << "Clean up the settings";
+  logger.debug() << "Clean up the settings";
 
   m_settings.remove(SETTINGS_TOKEN);
   m_settings.remove(SETTINGS_SERVERS);
@@ -195,7 +199,7 @@ QString SettingsHolder::getReport() {
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::set(const type& value) {                         \
-    logger.log() << "Setting" << key << "to" << value;                  \
+    logger.debug() << "Setting" << key << "to" << value;                \
     m_settings.setValue(key, value);                                    \
     emit signal(value);                                                 \
   }
@@ -247,6 +251,12 @@ GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
               hasConnectionChangeNotification, connectionChangeNotification,
               setConnectionChangeNotification,
               connectionChangeNotificationChanged);
+GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
+              SETTINGS_DEVELOPERUNLOCK, hasDeveloperUnlock, developerUnlock,
+              setDeveloperUnlock, developerUnlockChanged)
+GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
+              SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
+              setStagingServer, stagingServerChanged)
 
 #undef GETSETDEFAULT
 
@@ -257,7 +267,7 @@ GETSETDEFAULT(SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT, bool, toBool,
     return m_settings.value(key).toType();                              \
   }                                                                     \
   void SettingsHolder::set(const type& value) {                         \
-    logger.log() << "Setting" << key;                                   \
+    logger.debug() << "Setting" << key;                                 \
     m_settings.setValue(key, value);                                    \
   }
 
@@ -411,7 +421,7 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
 }
 
 bool SettingsHolder::validateUserDNS(const QString& dns) const {
-  logger.log() << "checking -> " << dns;
+  logger.debug() << "checking -> " << dns;
   QHostAddress address = QHostAddress(dns);
   return address.isNull();
 }

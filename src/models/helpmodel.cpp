@@ -37,7 +37,7 @@ void maybeInitialize() {
   // Here we use the logger to force lrelease to add the help menu Ids.
 
   //% "View log"
-  logger.log() << "Adding:" << qtTrId("help.viewLog");
+  logger.debug() << "Adding:" << qtTrId("help.viewLog");
   s_helpEntries.append(HelpEntry("help.viewLog",
 #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
                                  false,
@@ -47,12 +47,12 @@ void maybeInitialize() {
                                  true, MozillaVPN::LinkContact));
 
   //% "Help center"
-  logger.log() << "Adding:" << qtTrId("help.helpCenter2");
+  logger.debug() << "Adding:" << qtTrId("help.helpCenter2");
   s_helpEntries.append(
       HelpEntry("help.helpCenter", true, false, MozillaVPN::LinkHelpSupport));
 
   //% "Contact us"
-  logger.log() << "Adding:" << qtTrId("help.contactUs");
+  logger.debug() << "Adding:" << qtTrId("help.contactUs");
   s_helpEntries.append(
       HelpEntry("help.contactUs", true, false, MozillaVPN::LinkContact));
 }

@@ -27,7 +27,7 @@ Daemon* s_daemon = nullptr;
 Daemon::Daemon(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Daemon);
 
-  logger.log() << "Daemon created";
+  logger.debug() << "Daemon created";
 
   Q_ASSERT(s_daemon == nullptr);
   s_daemon = this;
@@ -36,7 +36,7 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 Daemon::~Daemon() {
   MVPN_COUNT_DTOR(Daemon);
 
-  logger.log() << "Daemon released";
+  logger.debug() << "Daemon released";
 
   Q_ASSERT(s_daemon == this);
   s_daemon = nullptr;
@@ -61,7 +61,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   if (m_connected) {
     if (supportServerSwitching(config)) {
-      logger.log() << "Already connected. Server switching supported.";
+      logger.debug() << "Already connected. Server switching supported.";
 
       m_lastConfig = config;
       if (!switchServer(config)) {
@@ -73,7 +73,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return true;
     }
 
-    logger.log() << "Already connected. Server switching not supported.";
+    logger.warning() << "Already connected. Server switching not supported.";
     if (!deactivate(false)) {
       return false;
     }
@@ -131,7 +131,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   m_lastConfig = config;
   m_connected = run(Up, m_lastConfig);
 
-  logger.log() << "Connection status:" << m_connected;
+  logger.debug() << "Connection status:" << m_connected;
 
   if (m_connected) {
     m_connectionDate = QDateTime::currentDateTime();
@@ -143,18 +143,18 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
 // static
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
-#define GETVALUESTR(name, where)                                \
-  if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isString()) {                                    \
-      logger.log() << name << " is not a string";               \
-      return false;                                             \
-    }                                                           \
-    where = value.toString();                                   \
+#define GETVALUESTR(name, where)                                  \
+  if (!obj.contains(name)) {                                      \
+    logger.debug() << name << " missing in the jsonConfig input"; \
+    return false;                                                 \
+  }                                                               \
+  {                                                               \
+    QJsonValue value = obj.value(name);                           \
+    if (!value.isString()) {                                      \
+      logger.error() << name << " is not a string";               \
+      return false;                                               \
+    }                                                             \
+    where = value.toString();                                     \
   }
 
   GETVALUESTR("privateKey", config.m_privateKey);
@@ -169,36 +169,36 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 #undef GETVALUESTR
 
-#define GETVALUEINT(name, where)                                \
-  if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isDouble()) {                                    \
-      logger.log() << name << " is not a number";               \
-      return false;                                             \
-    }                                                           \
-    where = value.toInt();                                      \
+#define GETVALUEINT(name, where)                                  \
+  if (!obj.contains(name)) {                                      \
+    logger.debug() << name << " missing in the jsonConfig input"; \
+    return false;                                                 \
+  }                                                               \
+  {                                                               \
+    QJsonValue value = obj.value(name);                           \
+    if (!value.isDouble()) {                                      \
+      logger.error() << name << " is not a number";               \
+      return false;                                               \
+    }                                                             \
+    where = value.toInt();                                        \
   }
 
   GETVALUEINT("serverPort", config.m_serverPort);
 
 #undef GETVALUEINT
 
-#define GETVALUEBOOL(name, where)                               \
-  if (!obj.contains(name)) {                                    \
-    logger.log() << name << " missing in the jsonConfig input"; \
-    return false;                                               \
-  }                                                             \
-  {                                                             \
-    QJsonValue value = obj.value(name);                         \
-    if (!value.isBool()) {                                      \
-      logger.log() << name << " is not a boolean";              \
-      return false;                                             \
-    }                                                           \
-    where = value.toBool();                                     \
+#define GETVALUEBOOL(name, where)                                 \
+  if (!obj.contains(name)) {                                      \
+    logger.debug() << name << " missing in the jsonConfig input"; \
+    return false;                                                 \
+  }                                                               \
+  {                                                               \
+    QJsonValue value = obj.value(name);                           \
+    if (!value.isBool()) {                                        \
+      logger.error() << name << " is not a boolean";              \
+      return false;                                               \
+    }                                                             \
+    where = value.toBool();                                       \
   }
 
   GETVALUEBOOL("ipv6Enabled", config.m_ipv6Enabled);
@@ -206,22 +206,22 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #undef GETVALUEBOOL
 
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
-    logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                 << "missing in the jsonconfig input";
+    logger.error() << JSON_ALLOWEDIPADDRESSRANGES
+                   << "missing in the jsonconfig input";
     return false;
   }
   {
     QJsonValue value = obj.value(JSON_ALLOWEDIPADDRESSRANGES);
     if (!value.isArray()) {
-      logger.log() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
+      logger.error() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
       return false;
     }
 
     QJsonArray array = value.toArray();
     for (QJsonValue i : array) {
       if (!i.isObject()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "must contain only objects";
+        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
+                       << "must contain only objects";
         return false;
       }
 
@@ -229,22 +229,22 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
       QJsonValue address = ipObj.value("address");
       if (!address.isString()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "objects must have a string address";
+        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
+                       << "objects must have a string address";
         return false;
       }
 
       QJsonValue range = ipObj.value("range");
       if (!range.isDouble()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "object must have a numberic range";
+        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
+                       << "object must have a numberic range";
         return false;
       }
 
       QJsonValue isIpv6 = ipObj.value("isIpv6");
       if (!isIpv6.isBool()) {
-        logger.log() << JSON_ALLOWEDIPADDRESSRANGES
-                     << "object must have a boolean isIpv6";
+        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
+                       << "object must have a boolean isIpv6";
         return false;
       }
 
@@ -261,13 +261,13 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   {  // Read Split Tunnel Apps
     QJsonValue value = obj.value("vpnDisabledApps");
     if (!value.isArray()) {
-      logger.log() << "vpnDisabledApps is not an array";
+      logger.error() << "vpnDisabledApps is not an array";
       return false;
     }
     QJsonArray array = value.toArray();
     for (QJsonValue i : array) {
       if (!i.isString()) {
-        logger.log() << "vpnDisabledApps must contain only strings";
+        logger.error() << "vpnDisabledApps must contain only strings";
         return false;
       }
       config.m_vpnDisabledApps.append(i.toString());
@@ -277,10 +277,10 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
-  logger.log() << "Deactivate";
+  logger.debug() << "Deactivate";
 
   if (!m_connected) {
-    logger.log() << "Already disconnected";
+    logger.error() << "Already disconnected";
     return true;
   }
 
@@ -303,7 +303,7 @@ bool Daemon::deactivate(bool emitSignals) {
     return false;
   }
 
-  logger.log() << "Status:" << status;
+  logger.debug() << "Status:" << status;
 
   // No notification for server switching.
   if (emitSignals && status) {
@@ -333,19 +333,19 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     return false;
   }
 
-  logger.log() << "Switching server";
+  logger.debug() << "Switching server";
 
   Q_ASSERT(m_connected);
   wgutils()->flushRoutes();
 
   if (!wgutils()->updateInterface(config)) {
-    logger.log() << "Server switch failed to update the wireguard interface";
+    logger.error() << "Server switch failed to update the wireguard interface";
     return false;
   }
 
   for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->addRoutePrefix(ip)) {
-      logger.log() << "Server switch failed to update the routing table";
+      logger.error() << "Server switch failed to update the routing table";
       return false;
     }
   }

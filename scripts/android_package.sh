@@ -12,15 +12,13 @@ fi
 JOBS=8
 QTPATH=
 RELEASE=1
-PROD=
 export SPLITAPK=0
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-p|--prod]"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>]"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
-  print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
   print N ""
   exit 0
 }
@@ -39,10 +37,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   -d | --debug)
     RELEASE=
-    shift
-    ;;
-  -p | --prod)
-    PROD=1
     shift
     ;;
   -h | --help)
@@ -69,15 +63,6 @@ if [[ "$RELEASE" ]]; then
   print G "release"
 else
   print G "debug"
-fi
-
-PRODMODE=
-printn Y "Production mode: "
-if [[ "$PROD" ]]; then
-  print G yes
-  PRODMODE="CONFIG+=production"
-else
-  print G no
 fi
 
 if ! [ -d "src" ] || ! [ -d "linux" ]; then
@@ -116,7 +101,7 @@ mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
-python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
+python3 scripts/importLanguages.py || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
@@ -156,7 +141,6 @@ if [[ "$RELEASE" ]]; then
     CONFIG-=debug \
     CONFIG-=debug_and_release \
     CONFIG+=release \
-    $PRODMODE \
     ..//mozillavpn.pro  || die "Qmake failed"
 else
   printn Y "Use debug config \n"
@@ -167,7 +151,6 @@ else
     CONFIG-=debug_and_release \
     CONFIG-=release \
     CONFIG+=qml_debug \
-    $PRODMODE \
     ..//mozillavpn.pro || die "Qmake failed"
 fi
 

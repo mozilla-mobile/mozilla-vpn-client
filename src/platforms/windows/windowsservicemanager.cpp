@@ -25,12 +25,13 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
                                    scm_rights);
   err = GetLastError();
   if (err != NULL) {
-    logger.log() << " OpenSCManager failed code: " << err;
+    logger.error() << " OpenSCManager failed code: " << err;
     return;
   }
-  logger.log() << "OpenSCManager access given - " << err;
+  logger.debug() << "OpenSCManager access given - " << err;
 
-  logger.log() << "Opening Service - " << QString::fromWCharArray(serviceName);
+  logger.debug() << "Opening Service - "
+                 << QString::fromWCharArray(serviceName);
   // Try to get an elevated handle
   m_service = OpenService(m_serviceManager,  // SCM database
                           serviceName,       // name of service
@@ -43,7 +44,7 @@ WindowsServiceManager::WindowsServiceManager(LPCWSTR serviceName) {
   m_has_access = true;
   m_timer.setSingleShot(false);
 
-  logger.log() << "Service manager execute access granted";
+  logger.debug() << "Service manager execute access granted";
 }
 
 WindowsServiceManager::~WindowsServiceManager() {
@@ -74,8 +75,8 @@ bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
       return true;
     }
 
-    logger.log() << "Polling Status" << m_state_target
-                 << "wanted, has: " << status.dwCurrentState;
+    logger.debug() << "Polling Status" << m_state_target
+                   << "wanted, has: " << status.dwCurrentState;
     Sleep(1000);
     ++tries;
   }
@@ -85,7 +86,7 @@ bool WindowsServiceManager::startPolling(DWORD goal_state, int max_wait_sec) {
 SERVICE_STATUS_PROCESS WindowsServiceManager::getStatus() {
   SERVICE_STATUS_PROCESS serviceStatus;
   if (!m_has_access) {
-    logger.log() << "Need read access to get service state";
+    logger.debug() << "Need read access to get service state";
     return serviceStatus;
   }
   DWORD dwBytesNeeded;  // Contains missing bytes if struct is too small?
@@ -100,7 +101,7 @@ SERVICE_STATUS_PROCESS WindowsServiceManager::getStatus() {
 bool WindowsServiceManager::startService() {
   auto state = getStatus().dwCurrentState;
   if (state != SERVICE_STOPPED && state != SERVICE_STOP_PENDING) {
-    logger.log() << ("Service start not possible, as its running");
+    logger.warning() << ("Service start not possible, as its running");
     emit serviceStarted();
     return true;
   }
@@ -109,7 +110,7 @@ bool WindowsServiceManager::startService() {
                          0,          // number of arguments
                          NULL);      // no arguments
   if (ok) {
-    logger.log() << ("Service start requested");
+    logger.debug() << ("Service start requested");
     startPolling(SERVICE_RUNNING, 30);
   } else {
     WindowsCommons::windowsLog("StartService failed");
@@ -119,17 +120,17 @@ bool WindowsServiceManager::startService() {
 
 bool WindowsServiceManager::stopService() {
   if (!m_has_access) {
-    logger.log() << "Need execute access to stop services";
+    logger.error() << "Need execute access to stop services";
     return false;
   }
   auto state = getStatus().dwCurrentState;
   if (state != SERVICE_RUNNING && state != SERVICE_START_PENDING) {
-    logger.log() << ("Service stop not possible, as its not running");
+    logger.warning() << ("Service stop not possible, as its not running");
   }
 
   bool ok = ControlService(m_service, SERVICE_CONTROL_STOP, NULL);
   if (ok) {
-    logger.log() << ("Service stop requested");
+    logger.debug() << ("Service stop requested");
     startPolling(SERVICE_STOPPED, 10);
   } else {
     WindowsCommons::windowsLog("StopService failed");

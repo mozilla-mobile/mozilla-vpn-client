@@ -28,7 +28,6 @@
         <file>ui/components/VPNSubtitle.qml</file>
         <file>ui/components/VPNIconButton.qml</file>
         <file>ui/components/VPNDevicesListHeader.qml</file>
-        <file>ui/components/VPNGetHelp.qml</file>
         <file>ui/components/VPNAnimatedRings.qml</file>
         <file>ui/components/VPNConnectionInfo.qml</file>
         <file>ui/components/VPNCheckBoxRow.qml</file>
@@ -66,6 +65,8 @@
         <file>ui/states/StateBackendFailure.qml</file>
         <file>ui/views/ViewMain.qml</file>
         <file>ui/views/ViewDevices.qml</file>
+        <file>ui/views/ViewGetHelp.qml</file>
+        <file>ui/views/ViewDeveloper.qml</file>
         <file>ui/views/ViewServers.qml</file>
         <file>ui/views/ViewSettings.qml</file>
         <file>ui/views/ViewInitialize.qml</file>
@@ -382,6 +383,7 @@
         <file>ui/resources/logo-animated4.png</file>
         <file>ui/resources/logo-generic.svg</file>
         <file>ui/resources/logo-generic.png</file>
+        <file>ui/resources/developer.svg</file>
         <file>ui/components/VPNToolTip.qml</file>
         <file>ui/views/ViewSubscriptionNeeded.qml</file>
         <file>ui/components/VPNCallout.qml</file>
@@ -439,6 +441,7 @@
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
         <file>ui/themes/colors.js</file>
+        <file>ui/components/forms/VPNInputStates.qml</file>
         <file>ui/components/VPNSemiMonoLabel.qml</file>
         <file>ui/states/StateAuthenticationInApp.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationInApp.qml</file>
@@ -451,5 +454,8 @@
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>ui/components/VPNCollapsibleCard.qml</file>
+        <file>ui/components/VPNTabNavigation.qml</file>
+        <file>ui/components/VPNServerList.qml</file>
+        <file>ui/views/ViewMultiHop.qml</file>
     </qresource>
 </RCC>

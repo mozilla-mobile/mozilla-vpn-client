@@ -19,6 +19,6 @@ DummyPingSender::DummyPingSender(const QString& source, QObject* parent)
 DummyPingSender::~DummyPingSender() { MVPN_COUNT_DTOR(DummyPingSender); }
 
 void DummyPingSender::sendPing(const QString& dest, quint16 sequence) {
-  logger.log() << "Dummy ping to:" << dest;
+  logger.debug() << "Dummy ping to:" << dest;
   emit recvPing(sequence);
 }
