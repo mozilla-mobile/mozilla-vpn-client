@@ -20,7 +20,6 @@
 
 namespace {
 Logger logger(LOG_IAP, "IAPHandler");
-IAPHandler* s_instance = nullptr;
 }  // namespace
 
 // static
@@ -34,8 +33,11 @@ IAPHandler* IAPHandler::createInstance() {
 
 // static
 IAPHandler* IAPHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
+#ifdef MVPN_IOS
+  return IOSIAPHandler::instance();
+#else
+#  error "Platform not supported"
+#endif
 }
 
 void IAPHandler::registerProducts(const QByteArray& data) {
