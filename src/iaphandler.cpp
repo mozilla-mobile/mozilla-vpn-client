@@ -76,8 +76,8 @@ void IAPHandler::registerProducts(const QByteArray& data) {
 
   m_productsRegistrationState = eRegistering;
 
-  for (const QJsonValue& value : products) {
-    addProduct(value);
+  for (auto p : products) {
+    addProduct(p);
   }
 
   if (m_products.isEmpty()) {

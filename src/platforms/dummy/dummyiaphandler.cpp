@@ -41,4 +41,6 @@ DummyIAPHandler* DummyIAPHandler::instance() {
 
 void DummyIAPHandler::nativeRegisterProducts() {}
 
-void DummyIAPHandler::nativeStartSubscription(Product* product) {}
+void DummyIAPHandler::nativeStartSubscription(Product* product) {
+  Q_UNUSED(product)
+}
