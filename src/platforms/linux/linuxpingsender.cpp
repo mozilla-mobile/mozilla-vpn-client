@@ -80,6 +80,8 @@ LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
     return;
   }
   if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+    close(m_socket);
+    m_socket = -1;
     logger.error() << "bind error:" << strerror(errno);
     return;
   }

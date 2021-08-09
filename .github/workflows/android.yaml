@@ -57,6 +57,8 @@ jobs:
           pip3 install pyyaml
 
       - name: Compilation
+        env:
+          ADJUST_SDK_TOKEN: ${{ secrets.ADJUST_SDK_TOKEN }}
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
           bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 ${{ matrix.config.args }}
