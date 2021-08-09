@@ -44,6 +44,7 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
+
     GridLayout {
         id: col
         width: parent.width - Theme.windowMargin
@@ -52,14 +53,6 @@ VPNFlickable {
         rowSpacing: Theme.windowMargin
         anchors.top: parent.top
         anchors.topMargin: Theme.windowMargin
-
-        VPNServerLabel {
-            servers: [
-                VPNCurrentServer,
-                VPNCurrentServer,
-                VPNCurrentServer,
-            ]
-        }
 
         RowLayout {
             id: mobileHeader

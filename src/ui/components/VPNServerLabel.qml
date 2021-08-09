@@ -15,7 +15,7 @@ RowLayout {
     Flow {
         id: serverItems
 
-        spacing: Theme.listSpacing * 2
+        spacing: Theme.listSpacing
         Layout.fillWidth: true
 
         Repeater {
@@ -41,48 +41,23 @@ RowLayout {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
             }
 
-            VPNMetropolisLabel {
+            VPNLightLabel {
                 id: serverLocation
                 text: modelData.localizedCityName
                 Accessible.ignored: true
                 Layout.alignment: Qt.AlignLeft
-                elide: Text.ElideRight
-
-                Rectangle {
-                    height: parent.height
-                    width: parent.width
-                    color: "yellow"
-
-                    z: -1
-                }
             }
 
             VPNIcon {
                 id: arrowIcon
 
-                Layout.leftMargin: Theme.listSpacing
                 source: "../resources/arrow-forward.svg"
                 sourceSize.height: Theme.iconSize
                 sourceSize.width: Theme.iconSize
                 visible: index !== serverRepeater.model.length - 1
-
-                Rectangle {
-                    height: parent.height
-                    width: parent.width
-                    color: "lightblue"
-
-                    z: -1
-                }
+                Layout.leftMargin: Theme.listSpacing
+                Layout.rightMargin: Theme.listSpacing
             }
         }
-    }
-
-
-    Rectangle {
-        height: parent.height
-        width: parent.width
-        color: "lightgrey"
-
-        z: -1
     }
 }
