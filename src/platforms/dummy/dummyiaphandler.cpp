@@ -16,9 +16,7 @@ DummyIAPHandler::DummyIAPHandler(QObject* parent) : IAPHandler(parent) {
   MVPN_COUNT_CTOR(DummyIAPHandler);
 }
 
-DummyIAPHandler::~DummyIAPHandler() {
-  MVPN_COUNT_DTOR(DummyIAPHandler);
-}
+DummyIAPHandler::~DummyIAPHandler() { MVPN_COUNT_DTOR(DummyIAPHandler); }
 
 void DummyIAPHandler::nativeRegisterProducts() {}
 

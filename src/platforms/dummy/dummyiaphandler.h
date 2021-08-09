@@ -18,7 +18,6 @@ class DummyIAPHandler final : public IAPHandler {
  protected:
   void nativeRegisterProducts() override;
   void nativeStartSubscription(Product* product) override;
-
 };
 
 #endif  // DUMMYIAPHANDLER_H
