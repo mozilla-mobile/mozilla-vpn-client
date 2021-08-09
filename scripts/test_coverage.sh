@@ -10,6 +10,31 @@ REPORT_FILE=/tmp/report.html
 LANGUAGE=en
 LANG=en
 
+JOBS=1
+
+helpFunction() {
+  print G "Usage:"
+  print N "\t$0 [-j|--jobs <jobs>]"
+  print N ""
+  exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -j | --jobs)
+    JOBS="$2"
+    shift
+    shift
+    ;;
+  -h | --help)
+    helpFunction
+    ;;
+  *)
+  esac
+done
+
 print N "This script runs the unit tests and shows the test coverage."
 print N ""
 
@@ -18,7 +43,7 @@ if ! [ -d "src" ] || ! [ -d "tests" ]; then
 fi
 
 print Y "Compiling..."
-make || die "Failed to compile"
+make -j $JOBS || die "Failed to compile"
 print G "done."
 
 export LLVM_PROFILE_FILE=/tmp/mozillavpn.llvm
