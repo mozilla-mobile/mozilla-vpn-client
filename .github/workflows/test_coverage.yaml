@@ -58,4 +58,4 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          ./scripts/test_coverage.sh
+          ./scripts/test_coverage.sh -j8
