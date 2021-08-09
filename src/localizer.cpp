@@ -115,9 +115,9 @@ void Localizer::initialize() {
 }
 
 void Localizer::loadLanguage(const QString& code) {
-  logger.log() << "Loading language:" << code;
+  logger.debug() << "Loading language:" << code;
   if (!loadLanguageInternal(code)) {
-    logger.log() << "Loading default language (fallback)";
+    logger.debug() << "Loading default language (fallback)";
     loadLanguageInternal("en");
   }
 
@@ -149,8 +149,8 @@ bool Localizer::loadLanguageInternal(const QString& code) {
   QLocale::setDefault(locale);
 
   if (!m_translator.load(locale, "mozillavpn", "_", ":/i18n")) {
-    logger.log() << "Loading the locale failed."
-                 << "code";
+    logger.error() << "Loading the locale failed."
+                   << "code";
     return false;
   }
 

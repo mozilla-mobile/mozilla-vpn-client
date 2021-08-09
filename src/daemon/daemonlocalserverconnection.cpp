@@ -21,7 +21,7 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
     : QObject(parent) {
   MVPN_COUNT_CTOR(DaemonLocalServerConnection);
 
-  logger.log() << "Connection created";
+  logger.debug() << "Connection created";
 
   Q_ASSERT(socket);
   m_socket = socket;
@@ -41,11 +41,11 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
 DaemonLocalServerConnection::~DaemonLocalServerConnection() {
   MVPN_COUNT_DTOR(DaemonLocalServerConnection);
 
-  logger.log() << "Connection released";
+  logger.debug() << "Connection released";
 }
 
 void DaemonLocalServerConnection::readData() {
-  logger.log() << "Read Data";
+  logger.debug() << "Read Data";
 
   Q_ASSERT(m_socket);
   QByteArray input = m_socket->readAll();
@@ -72,18 +72,18 @@ void DaemonLocalServerConnection::readData() {
 }
 
 void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
-  logger.log() << "Command received:" << data.left(20);
+  logger.debug() << "Command received:" << data.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "Invalid input";
+    logger.error() << "Invalid input";
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue typeValue = obj.value("type");
   if (!typeValue.isString()) {
-    logger.log() << "No type command. Ignoring request.";
+    logger.warning() << "No type command. Ignoring request.";
     return;
   }
 
@@ -91,13 +91,13 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   if (type == "activate") {
     InterfaceConfig config;
     if (!Daemon::parseConfig(obj, config)) {
-      logger.log() << "Invalid configuration";
+      logger.error() << "Invalid configuration";
       emit disconnected();
       return;
     }
 
     if (!Daemon::instance()->activate(config)) {
-      logger.log() << "Failed to activate the interface";
+      logger.error() << "Failed to activate the interface";
       emit disconnected();
     }
     return;
@@ -128,7 +128,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
     return;
   }
 
-  logger.log() << "Invalid command:" << type;
+  logger.warning() << "Invalid command:" << type;
 }
 
 void DaemonLocalServerConnection::connected() {

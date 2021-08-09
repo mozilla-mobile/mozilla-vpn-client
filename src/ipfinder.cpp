@@ -34,7 +34,7 @@ IPFinder::~IPFinder() {
 }
 
 void IPFinder::start() {
-  logger.log() << "Starting the ip-lookup";
+  logger.debug() << "Starting the ip-lookup";
 
   QUrl url(NetworkRequest::apiBaseUrl());
   m_lookupId = QHostInfo::lookupHost(url.host(), this,
@@ -42,12 +42,13 @@ void IPFinder::start() {
 }
 
 void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
-  logger.log() << "DNS lookup completed";
+  logger.debug() << "DNS lookup completed";
 
   m_lookupId = -1;
 
   if (hostInfo.error() != QHostInfo::NoError) {
-    logger.log() << "Unable to perform a DNS Lookup:" << hostInfo.errorString();
+    logger.error() << "Unable to perform a DNS Lookup:"
+                   << hostInfo.errorString();
     emit completed(QString(), QString(), QString());
     deleteLater();
     return;
@@ -59,18 +60,18 @@ void IPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
     if (address.isNull() || address.isBroadcast()) continue;
 
     if (address.protocol() == QAbstractSocket::IPv4Protocol) {
-      logger.log() << "Ipv4:" << address.toString();
+      logger.debug() << "Ipv4:" << address.toString();
       createRequest(address, false);
     }
 
     if (address.protocol() == QAbstractSocket::IPv6Protocol && ipv6Enabled) {
-      logger.log() << "Ipv6:" << address.toString();
+      logger.debug() << "Ipv6:" << address.toString();
       createRequest(address, true);
     }
   }
 
   if (m_requestCount == 0) {
-    logger.log() << "No requests created. Let's abort the lookup";
+    logger.debug() << "No requests created. Let's abort the lookup";
     emit completed(QString(), QString(), QString());
     deleteLater();
     return;
@@ -84,7 +85,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "IP address request failed" << error;
+            logger.error() << "IP address request failed" << error;
 
             // This lookup has been canceled in the meantime.
             if (m_requestCount == 0) {
@@ -103,7 +104,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
 
   connect(request, &NetworkRequest::requestCompleted,
           [this, ipv6](const QByteArray& data) {
-            logger.log() << "IP address request completed";
+            logger.debug() << "IP address request completed";
 
             // This lookup has been canceled in the meantime.
             if (m_requestCount == 0) {
@@ -131,7 +132,7 @@ void IPFinder::createRequest(const QHostAddress& address, bool ipv6) {
 void IPFinder::completeLookup() {
   Q_ASSERT(m_requestCount == 0);
 
-  logger.log() << "Lookup completed!";
+  logger.debug() << "Lookup completed!";
 
   QString ipv4Address;
   QString ipv6Address;

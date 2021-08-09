@@ -81,7 +81,7 @@ bool Survey::fromJson(const QJsonValue& json) {
 }
 
 bool Survey::isTriggerable() const {
-  logger.log() << "is triggerable";
+  logger.debug() << "is triggerable";
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);

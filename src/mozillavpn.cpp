@@ -46,10 +46,6 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorwebsocketconnection.h"
-#endif
-
 #include <QApplication>
 #include <QClipboard>
 #include <QDir>
@@ -78,7 +74,7 @@ MozillaVPN* MozillaVPN::instance() {
 MozillaVPN::MozillaVPN() : m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
-  logger.log() << "Creating MozillaVPN singleton";
+  logger.debug() << "Creating MozillaVPN singleton";
 
   Q_ASSERT(!s_instance);
   s_instance = this;
@@ -157,14 +153,14 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 #endif
 
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
-  m_gleanTimer.start(Constants::GLEAN_TIMEOUT_MSEC);
+  m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 }
 
 MozillaVPN::~MozillaVPN() {
   MVPN_COUNT_DTOR(MozillaVPN);
 
-  logger.log() << "Deleting MozillaVPN singleton";
+  logger.debug() << "Deleting MozillaVPN singleton";
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -174,8 +170,10 @@ MozillaVPN::~MozillaVPN() {
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
+bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
+
 void MozillaVPN::initialize() {
-  logger.log() << "MozillaVPN Initialization";
+  logger.debug() << "MozillaVPN Initialization";
 
   Q_ASSERT(!m_initialized);
   m_initialized = true;
@@ -217,33 +215,33 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  logger.log() << "We have a valid token";
+  logger.debug() << "We have a valid token";
 
   if (!m_private->m_user.fromSettings()) {
-    logger.log() << "No user data found";
+    logger.error() << "No user data found";
     return;
   }
 
   if (!m_private->m_keys.fromSettings()) {
-    logger.log() << "No keys found";
+    logger.error() << "No keys found";
     settingsHolder->clear();
     return;
   }
 
   if (!m_private->m_serverCountryModel.fromSettings()) {
-    logger.log() << "No server list found";
+    logger.error() << "No server list found";
     settingsHolder->clear();
     return;
   }
 
   if (!m_private->m_deviceModel.fromSettings(keys())) {
-    logger.log() << "No devices found";
+    logger.error() << "No devices found";
     settingsHolder->clear();
     return;
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    logger.log() << "The current device has not been found";
+    logger.error() << "The current device has not been found";
     settingsHolder->clear();
     return;
   }
@@ -257,7 +255,7 @@ void MozillaVPN::initialize() {
   }
 
   if (!modelsInitialized()) {
-    logger.log() << "Models not initialized yet";
+    logger.error() << "Models not initialized yet";
     settingsHolder->clear();
     return;
   }
@@ -282,7 +280,7 @@ void MozillaVPN::initialize() {
 }
 
 void MozillaVPN::setState(State state) {
-  logger.log() << "Set state:" << state;
+  logger.debug() << "Set state:" << state;
   m_state = state;
   emit stateChanged();
 
@@ -296,7 +294,7 @@ void MozillaVPN::setState(State state) {
 }
 
 void MozillaVPN::maybeStateMain() {
-  logger.log() << "Maybe state main";
+  logger.debug() << "Maybe state main";
 
 #ifdef MVPN_IOS
   if (m_private->m_user.subscriptionNeeded()) {
@@ -335,12 +333,12 @@ void MozillaVPN::maybeStateMain() {
 }
 
 void MozillaVPN::setServerPublicKey(const QString& publicKey) {
-  logger.log() << "Set server public key:" << publicKey;
+  logger.debug() << "Set server public key:" << publicKey;
   m_serverPublicKey = publicKey;
 }
 
 void MozillaVPN::getStarted() {
-  logger.log() << "Get started";
+  logger.debug() << "Get started";
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
@@ -355,7 +353,7 @@ void MozillaVPN::getStarted() {
 
 void MozillaVPN::authenticate(
     MozillaVPN::AuthenticationType authenticationType) {
-  logger.log() << "Authenticate";
+  logger.debug() << "Authenticate";
 
   setState(StateAuthenticating);
 
@@ -384,7 +382,7 @@ void MozillaVPN::authenticate(
 }
 
 void MozillaVPN::abortAuthentication() {
-  logger.log() << "Abort authentication";
+  logger.warning() << "Abort authentication";
   Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
 
@@ -392,7 +390,7 @@ void MozillaVPN::abortAuthentication() {
 }
 
 void MozillaVPN::openLink(LinkType linkType) {
-  logger.log() << "Opening link: " << linkType;
+  logger.debug() << "Opening link: " << linkType;
 
   QString url;
   bool addEmailAddress = false;
@@ -456,14 +454,14 @@ void MozillaVPN::openLink(LinkType linkType) {
 
 void MozillaVPN::scheduleTask(Task* task) {
   Q_ASSERT(task);
-  logger.log() << "Scheduling task: " << task->name();
+  logger.debug() << "Scheduling task: " << task->name();
 
   m_tasks.append(task);
   maybeRunTask();
 }
 
 void MozillaVPN::maybeRunTask() {
-  logger.log() << "Tasks: " << m_tasks.size();
+  logger.debug() << "Tasks: " << m_tasks.size();
 
   if (m_running_task || m_tasks.empty()) {
     return;
@@ -481,7 +479,7 @@ void MozillaVPN::maybeRunTask() {
 void MozillaVPN::taskCompleted() {
   Q_ASSERT(m_running_task);
 
-  logger.log() << "Task completed:" << m_running_task->name();
+  logger.debug() << "Task completed:" << m_running_task->name();
   m_running_task->deleteLater();
   m_running_task->disconnect();
   m_running_task = nullptr;
@@ -495,18 +493,18 @@ void MozillaVPN::setToken(const QString& token) {
 
 void MozillaVPN::authenticationCompleted(const QByteArray& json,
                                          const QString& token) {
-  logger.log() << "Authentication completed";
+  logger.debug() << "Authentication completed";
 
   emit triggerGleanSample(GleanSample::authenticationCompleted);
 
   if (!m_private->m_user.fromJson(json)) {
-    logger.log() << "Failed to parse the User JSON data";
+    logger.error() << "Failed to parse the User JSON data";
     errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
-    logger.log() << "Failed to parse the DeviceModel JSON data";
+    logger.error() << "Failed to parse the DeviceModel JSON data";
     errorHandle(ErrorHandler::RemoteServiceError);
     return;
   }
@@ -551,7 +549,7 @@ void MozillaVPN::completeActivation() {
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
     if (!modelsInitialized()) {
-      logger.log() << "Failed to complete the authentication";
+      logger.error() << "Failed to complete the authentication";
       errorHandle(ErrorHandler::RemoteServiceError);
       setUserAuthenticated(false);
       return;
@@ -567,7 +565,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
                              const QString& publicKey,
                              const QString& privateKey) {
   Q_UNUSED(publicKey);
-  logger.log() << "Device added" << deviceName;
+  logger.debug() << "Device added" << deviceName;
 
   SettingsHolder::instance()->setPrivateKey(privateKey);
   SettingsHolder::instance()->setPublicKey(publicKey);
@@ -575,14 +573,14 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
 }
 
 void MozillaVPN::deviceRemoved(const QString& publicKey) {
-  logger.log() << "Device removed";
+  logger.debug() << "Device removed";
 
   m_private->m_deviceModel.removeDeviceFromPublicKey(publicKey);
 }
 
 bool MozillaVPN::setServerList(const QByteArray& serverData) {
   if (!m_private->m_serverCountryModel.fromJson(serverData)) {
-    logger.log() << "Failed to store the server-countries";
+    logger.error() << "Failed to store the server-countries";
     return false;
   }
 
@@ -591,7 +589,7 @@ bool MozillaVPN::setServerList(const QByteArray& serverData) {
 }
 
 void MozillaVPN::serversFetched(const QByteArray& serverData) {
-  logger.log() << "Server fetched!";
+  logger.debug() << "Server fetched!";
 
   if (!setServerList(serverData)) {
     // This is OK. The check is done elsewhere.
@@ -608,7 +606,7 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
 }
 
 void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
-  logger.log() << "Remove device";
+  logger.debug() << "Remove device";
 
   const Device* device =
       m_private->m_deviceModel.deviceFromPublicKey(publicKey);
@@ -635,7 +633,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     }
 
     if (!modelsInitialized()) {
-      logger.log() << "Models not initialized yet";
+      logger.warning() << "Models not initialized yet";
       errorHandle(ErrorHandler::RemoteServiceError);
       SettingsHolder::instance()->clear();
       setState(StateInitialize);
@@ -648,7 +646,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
 
 void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
                                 const QString& category) {
-  logger.log() << "Submit Feedback";
+  logger.debug() << "Submit Feedback";
 
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
@@ -667,16 +665,16 @@ void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {
-  logger.log() << "Account checked";
+  logger.debug() << "Account checked";
 
   if (!m_private->m_user.fromJson(json)) {
-    logger.log() << "Failed to parse the User JSON data";
+    logger.warning() << "Failed to parse the User JSON data";
     // We don't need to communicate it to the user. Let's ignore it.
     return;
   }
 
   if (!m_private->m_deviceModel.fromJson(keys(), json)) {
-    logger.log() << "Failed to parse the DeviceModel JSON data";
+    logger.warning() << "Failed to parse the DeviceModel JSON data";
     // We don't need to communicate it to the user. Let's ignore it.
     return;
   }
@@ -696,10 +694,10 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
 }
 
 void MozillaVPN::surveyChecked(const QByteArray& json) {
-  logger.log() << "Survey checked";
+  logger.debug() << "Survey checked";
 
   if (!m_private->m_surveyModel.fromJson(json)) {
-    logger.log() << "Failed to parse the Survey JSON data";
+    logger.error() << "Failed to parse the Survey JSON data";
     return;
   }
 
@@ -707,7 +705,7 @@ void MozillaVPN::surveyChecked(const QByteArray& json) {
 }
 
 void MozillaVPN::cancelAuthentication() {
-  logger.log() << "Canceling authentication";
+  logger.warning() << "Canceling authentication";
 
   if (m_state != StateAuthenticating) {
     // We cannot cancel tasks if we are not in authenticating state.
@@ -720,7 +718,7 @@ void MozillaVPN::cancelAuthentication() {
 }
 
 void MozillaVPN::logout() {
-  logger.log() << "Logout";
+  logger.debug() << "Logout";
 
   setAlert(LogoutAlert);
 
@@ -743,7 +741,7 @@ void MozillaVPN::logout() {
 }
 
 void MozillaVPN::reset(bool forceInitialState) {
-  logger.log() << "Cleaning up all";
+  logger.debug() << "Cleaning up all";
 
   deleteTasks();
 
@@ -784,7 +782,7 @@ void MozillaVPN::setAlert(AlertType alert) {
 }
 
 void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
-  logger.log() << "Handling error" << error;
+  logger.debug() << "Handling error" << error;
 
   Q_ASSERT(error != ErrorHandler::NoError);
 
@@ -797,7 +795,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
       // In Case the vpn is not connected - handle this like a
       // ConnectionFailureError
       if (controller()->state() == Controller::StateOn) {
-        logger.log() << "Ignore network error probably caused by enabled VPN";
+        logger.error() << "Ignore network error probably caused by enabled VPN";
         break;
       }
       [[fallthrough]];
@@ -839,7 +837,7 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
 
   setAlert(alert);
 
-  logger.log() << "Alert:" << alert << "State:" << m_state;
+  logger.error() << "Alert:" << alert << "State:" << m_state;
 
   if (alert == NoAlert) {
     return;
@@ -875,7 +873,7 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
 }
 
 void MozillaVPN::postAuthenticationCompleted() {
-  logger.log() << "Post authentication completed";
+  logger.debug() << "Post authentication completed";
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   settingsHolder->setPostAuthenticationShown(true);
@@ -890,7 +888,7 @@ void MozillaVPN::postAuthenticationCompleted() {
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {
-  logger.log() << "telemetry policy completed";
+  logger.debug() << "telemetry policy completed";
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   settingsHolder->setTelemetryPolicyShown(true);
@@ -915,26 +913,26 @@ void MozillaVPN::setUpdateRecommended(bool value) {
 }
 
 void MozillaVPN::setUserAuthenticated(bool state) {
-  logger.log() << "User authentication state:" << state;
+  logger.debug() << "User authentication state:" << state;
   m_userAuthenticated = state;
   emit userAuthenticationChanged();
 }
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
-  logger.log() << "Start scheduling account and servers"
-               << Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC;
+  logger.debug() << "Start scheduling account and servers"
+                 << Constants::scheduleAccountAndServersTimerMsec();
   m_periodicOperationsTimer.start(
-      Constants::SCHEDULE_ACCOUNT_AND_SERVERS_TIMER_MSEC);
+      Constants::scheduleAccountAndServersTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
-  logger.log() << "Stop scheduling account and servers";
+  logger.debug() << "Stop scheduling account and servers";
   m_periodicOperationsTimer.stop();
 }
 
 bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogs(location, [](const QString& filename) {
-    logger.log() << "Opening the logFile somehow:" << filename;
+    logger.debug() << "Opening the logFile somehow:" << filename;
     QUrl url = QUrl::fromLocalFile(filename);
     UrlOpener::open(url);
   });
@@ -943,7 +941,7 @@ bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
 bool MozillaVPN::writeLogs(
     QStandardPaths::StandardLocation location,
     std::function<void(const QString& filename)>&& a_callback) {
-  logger.log() << "Trying to save logs in:" << location;
+  logger.debug() << "Trying to save logs in:" << location;
 
   std::function<void(const QString& filename)> callback = std::move(a_callback);
 
@@ -961,7 +959,7 @@ bool MozillaVPN::writeLogs(
   QString logFile = logDir.filePath(filename);
 
   if (QFileInfo::exists(logFile)) {
-    logger.log() << logFile << "exists. Let's try a new filename";
+    logger.warning() << logFile << "exists. Let's try a new filename";
 
     for (uint32_t i = 1;; ++i) {
       QString filename;
@@ -970,17 +968,17 @@ bool MozillaVPN::writeLogs(
           << now.day() << "_" << i << ".txt";
       logFile = logDir.filePath(filename);
       if (!QFileInfo::exists(logFile)) {
-        logger.log() << "Filename found!" << i;
+        logger.debug() << "Filename found!" << i;
         break;
       }
     }
   }
 
-  logger.log() << "Writing logs into: " << logFile;
+  logger.debug() << "Writing logs into: " << logFile;
 
   QFile* file = new QFile(logFile);
   if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
-    logger.log() << "Failed to open the logfile";
+    logger.error() << "Failed to open the logfile";
     delete file;
     return false;
   }
@@ -1011,7 +1009,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
   MozillaVPN::instance()->controller()->getBackendLogs(
       [out,
        finalizeCallback = std::move(finalizeCallback)](const QString& logs) {
-        logger.log() << "Logs from the backend service received";
+        logger.debug() << "Logs from the backend service received";
 
         *out << Qt::endl
              << Qt::endl
@@ -1036,7 +1034,7 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 }
 
 void MozillaVPN::viewLogs() {
-  logger.log() << "View logs";
+  logger.debug() << "View logs";
 
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
     return;
@@ -1055,7 +1053,7 @@ void MozillaVPN::viewLogs() {
 }
 
 void MozillaVPN::retrieveLogs() {
-  logger.log() << "Retrieve logs";
+  logger.debug() << "Retrieve logs";
 
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
@@ -1071,40 +1069,40 @@ void MozillaVPN::retrieveLogs() {
 }
 
 void MozillaVPN::storeInClipboard(const QString& text) {
-  logger.log() << "Store in clipboard";
+  logger.debug() << "Store in clipboard";
   QApplication::clipboard()->setText(text);
 }
 
 void MozillaVPN::cleanupLogs() {
-  logger.log() << "Cleanup logs";
+  logger.debug() << "Cleanup logs";
   LogHandler::instance()->cleanupLogs();
   MozillaVPN::instance()->controller()->cleanupBackendLogs();
 }
 
 bool MozillaVPN::modelsInitialized() const {
-  logger.log() << "Checking model initialization";
+  logger.debug() << "Checking model initialization";
   if (!m_private->m_user.initialized()) {
-    logger.log() << "User model not initialized";
+    logger.error() << "User model not initialized";
     return false;
   }
 
   if (!m_private->m_serverCountryModel.initialized()) {
-    logger.log() << "Server country model not initialized";
+    logger.error() << "Server country model not initialized";
     return false;
   }
 
   if (!m_private->m_deviceModel.initialized()) {
-    logger.log() << "Device model not initialized";
+    logger.error() << "Device model not initialized";
     return false;
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(&m_private->m_keys)) {
-    logger.log() << "Current device not registered";
+    logger.error() << "Current device not registered";
     return false;
   }
 
   if (!m_private->m_keys.initialized()) {
-    logger.log() << "Key model not initialized";
+    logger.error() << "Key model not initialized";
     return false;
   }
 
@@ -1112,48 +1110,48 @@ bool MozillaVPN::modelsInitialized() const {
 }
 
 void MozillaVPN::requestSettings() {
-  logger.log() << "Settings required";
+  logger.debug() << "Settings required";
 
   QmlEngineHolder::instance()->showWindow();
   emit settingsNeeded();
 }
 
 void MozillaVPN::requestAbout() {
-  logger.log() << "About view requested";
+  logger.debug() << "About view requested";
 
   QmlEngineHolder::instance()->showWindow();
   emit aboutNeeded();
 }
 
 void MozillaVPN::requestViewLogs() {
-  logger.log() << "View log requested";
+  logger.debug() << "View log requested";
 
   QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
 }
 
 void MozillaVPN::activate() {
-  logger.log() << "VPN tunnel activation";
+  logger.debug() << "VPN tunnel activation";
 
   deleteTasks();
   scheduleTask(new TaskControllerAction(TaskControllerAction::eActivate));
 }
 
 void MozillaVPN::deactivate() {
-  logger.log() << "VPN tunnel deactivation";
+  logger.debug() << "VPN tunnel deactivation";
 
   deleteTasks();
   scheduleTask(new TaskControllerAction(TaskControllerAction::eDeactivate));
 }
 
 void MozillaVPN::silentSwitch() {
-  logger.log() << "VPN tunnel silent server switch";
+  logger.debug() << "VPN tunnel silent server switch";
 
   scheduleTask(new TaskControllerAction(TaskControllerAction::eSilentSwitch));
 }
 
 void MozillaVPN::refreshDevices() {
-  logger.log() << "Refresh devices";
+  logger.debug() << "Refresh devices";
 
   if (m_state == StateMain) {
     scheduleTask(new TaskAccountAndServers());
@@ -1161,14 +1159,14 @@ void MozillaVPN::refreshDevices() {
 }
 
 void MozillaVPN::quit() {
-  logger.log() << "quit";
+  logger.debug() << "quit";
   deleteTasks();
   qApp->quit();
 }
 
 #ifdef MVPN_IOS
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
-  logger.log() << "Subscription started" << productIdentifier;
+  logger.debug() << "Subscription started" << productIdentifier;
 
   setState(StateSubscriptionValidation);
 
@@ -1190,11 +1188,12 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
 void MozillaVPN::subscriptionCompleted() {
   if (m_state != StateSubscriptionValidation) {
-    logger.log() << "Random subscription completion received. Let's ignore it.";
+    logger.warning()
+        << "Random subscription completion received. Let's ignore it.";
     return;
   }
 
-  logger.log() << "Subscription completed";
+  logger.debug() << "Subscription completed";
   completeActivation();
 }
 
@@ -1208,11 +1207,12 @@ void MozillaVPN::subscriptionCanceled() {
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   if (m_state != StateSubscriptionValidation) {
-    logger.log() << "Random subscription failure received. Let's ignore it.";
+    logger.warning()
+        << "Random subscription failure received. Let's ignore it.";
     return;
   }
 
-  logger.log() << "Subscription failed or canceled";
+  logger.debug() << "Subscription failed or canceled";
 
   // Let's go back to the subscription needed.
   setState(StateSubscriptionNeeded);
@@ -1233,7 +1233,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
 
 void MozillaVPN::alreadySubscribed() {
   if (m_state != StateSubscriptionValidation) {
-    logger.log()
+    logger.warning()
         << "Random already-subscribed notification received. Let's ignore it.";
     return;
   }
@@ -1243,7 +1243,7 @@ void MozillaVPN::alreadySubscribed() {
 #endif
 
 void MozillaVPN::update() {
-  logger.log() << "Update";
+  logger.debug() << "Update";
 
   setUpdating(true);
 
@@ -1266,13 +1266,13 @@ void MozillaVPN::setUpdating(bool updating) {
 }
 
 void MozillaVPN::controllerStateChanged() {
-  logger.log() << "Controller state changed";
+  logger.debug() << "Controller state changed";
 
   if (!m_controllerInitialized) {
     m_controllerInitialized = true;
 
     if (SettingsHolder::instance()->startAtBoot()) {
-      logger.log() << "Start on boot";
+      logger.debug() << "Start on boot";
       activate();
     }
   }
@@ -1285,12 +1285,12 @@ void MozillaVPN::controllerStateChanged() {
 }
 
 void MozillaVPN::backendServiceRestore() {
-  logger.log() << "Background service restore request";
+  logger.debug() << "Background service restore request";
   // TODO
 }
 
 void MozillaVPN::heartbeatCompleted(bool success) {
-  logger.log() << "Server-side check done:" << success;
+  logger.debug() << "Server-side check done:" << success;
 
   if (!success) {
     m_private->m_controller.backendFailure();

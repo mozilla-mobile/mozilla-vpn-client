@@ -22,7 +22,7 @@ QString IOSUtils::computerName() {
 
 // static
 QString IOSUtils::IAPReceipt() {
-  logger.log() << "Retrieving IAP receipt";
+  logger.debug() << "Retrieving IAP receipt";
 
   NSURL* receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSData* receipt = [NSData dataWithContentsOfURL:receiptURL];
@@ -31,7 +31,7 @@ QString IOSUtils::IAPReceipt() {
   NSString* path = [receiptURL path];
   Q_ASSERT(path);
 
-  logger.log() << "Receipt URL:" << QString::fromNSString(path);
+  logger.debug() << "Receipt URL:" << QString::fromNSString(path);
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   Q_ASSERT(fileManager);
@@ -40,17 +40,17 @@ QString IOSUtils::IAPReceipt() {
   if (fileAttributes) {
     NSNumber* fileSize = [fileAttributes objectForKey:NSFileSize];
     if (fileSize) {
-      logger.log() << "File size:" << [fileSize unsignedLongLongValue];
+      logger.debug() << "File size:" << [fileSize unsignedLongLongValue];
     }
 
     NSString* fileOwner = [fileAttributes objectForKey:NSFileOwnerAccountName];
     if (fileOwner) {
-      logger.log() << "Owner:" << QString::fromNSString(fileOwner);
+      logger.debug() << "Owner:" << QString::fromNSString(fileOwner);
     }
 
     NSDate* fileModDate = [fileAttributes objectForKey:NSFileModificationDate];
     if (fileModDate) {
-      logger.log() << "Modification date:" << QDateTime::fromNSDate(fileModDate).toString();
+      logger.debug() << "Modification date:" << QDateTime::fromNSDate(fileModDate).toString();
     }
   }
 

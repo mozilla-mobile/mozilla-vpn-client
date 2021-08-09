@@ -63,7 +63,7 @@ IOSAuthenticationListener::~IOSAuthenticationListener() {
 
 void IOSAuthenticationListener::start(const QString& codeChallenge,
                                       const QString& codeChallengeMethod) {
-  logger.log() << "IOSAuthenticationListener initialize";
+  logger.debug() << "IOSAuthenticationListener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
                                    codeChallengeMethod));
@@ -72,7 +72,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
   url.setQuery(query);
 
 #ifdef QT_DEBUG
-  logger.log() << "Authentication URL:" << url.toString();
+  logger.debug() << "Authentication URL:" << url.toString();
 #endif
 
   if (session) {
@@ -88,12 +88,12 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
         session = nullptr;
 
         if (error) {
-          logger.log() << "Authentication failed:"
-                       << QString::fromNSString([error localizedDescription]);
-          logger.log() << "Code:" << [error code];
-          logger.log() << "Suggestion:"
-                       << QString::fromNSString([error localizedRecoverySuggestion]);
-          logger.log() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
+          logger.error() << "Authentication failed:"
+                         << QString::fromNSString([error localizedDescription]);
+          logger.error() << "Code:" << [error code];
+          logger.error() << "Suggestion:"
+                         << QString::fromNSString([error localizedRecoverySuggestion]);
+          logger.error() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
 
           if ([error code] == ASWebAuthenticationSessionErrorCodeCanceledLogin) {
             emit abortedByUser();
@@ -105,7 +105,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
         }
 
         QUrl callbackUrl = QUrl::fromNSURL(callbackURL);
-        logger.log() << "Authentication completed";
+        logger.debug() << "Authentication completed";
 
         Q_ASSERT(callbackUrl.hasQuery());
 
@@ -132,7 +132,7 @@ void IOSAuthenticationListener::start(const QString& codeChallenge,
     [session dealloc];
     session = nullptr;
 
-    logger.log() << "Authentication failed: session doesn't start.";
+    logger.error() << "Authentication failed: session doesn't start.";
     emit failed(ErrorHandler::RemoteServiceError);
   }
 }

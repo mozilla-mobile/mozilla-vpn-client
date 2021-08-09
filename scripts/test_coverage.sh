@@ -7,6 +7,8 @@
 . $(dirname $0)/commons.sh
 
 REPORT_FILE=/tmp/report.html
+LANGUAGE=en
+LANG=en
 
 print N "This script runs the unit tests and shows the test coverage."
 print N ""
@@ -33,6 +35,10 @@ unset LLVM_PROFILE_FILE
 
 print Y "Running the native-messaging tests..."
 ./tests/nativemessaging/tests ./extension/app/mozillavpnnp || die "Failed to run tests"
+print G "done."
+
+print Y "Running the auth tests..."
+./tests/auth/tests || die "Failed to run tests"
 print G "done."
 
 printn Y "Merge the profile data... "

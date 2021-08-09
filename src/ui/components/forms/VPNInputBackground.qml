@@ -3,37 +3,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import QtQuick 2.5
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Color
 import "../../components"
 
 Rectangle {
-    property bool showInteractionStates: true
-    property bool showError: false
     property variant itemToFocus: parent
 
-    id: bg
-    antialiasing: true
-    border.color: itemToFocus.activeFocus && showInteractionStates ? showError ? Theme.red : Theme.input.focusBorder : Theme.input.borderColor
-    border.width:  itemToFocus.activeFocus && showInteractionStates ? 2 : 1
-    color: Theme.input.backgroundColor
-    radius: Theme.cornerRadius
+    id: inputBorder
+
     anchors.fill: parent
+    antialiasing: true
+    border.color: Color.input.default.border
+    radius: Theme.cornerRadius
 
     Behavior on border.color {
         ColorAnimation {
-            duration: 100
+            duration: 50
         }
     }
 
     Rectangle {
+        id: highlight
+
         anchors.fill: parent
         anchors.margins: border.width * -1
-        radius: parent.radius + anchors.margins*-1
-        border.color: showError ? Theme.errorFocusOutline :  Theme.blueFocusOutline
-        border.width: 4
         antialiasing: true
-        z: -1
-        opacity: itemToFocus.activeFocus && showInteractionStates ? 1 : 0
+        border.color: itemToFocus && itemToFocus.hasError ? Color.input.error.highlight : Color.input.focus.highlight
+        border.width: 4
         color: "transparent"
+        opacity: itemToFocus && itemToFocus.activeFocus && itemToFocus.showInteractionStates ? 1 : 0
+        radius: parent.radius + anchors.margins * -1
+        z: -1
+
         Behavior on opacity {
             PropertyAnimation {
                 duration: 100

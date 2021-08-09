@@ -113,7 +113,7 @@ ColumnLayout {
             model.invalidate();
         }
         placeholderText: searchBarPlaceholder
-        stateError: applist.count === 0
+        hasError: applist.count === 0
         enabled: vpnFlickable.vpnIsOff && VPNSettings.protectSelectedApps
     }
 
