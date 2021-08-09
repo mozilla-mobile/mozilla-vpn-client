@@ -306,6 +306,15 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
   return r;
 }
 
+// static
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
+  Q_ASSERT(parent);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
 void NetworkRequest::replyFinished() {}
 
 void NetworkRequest::timeout() {}
