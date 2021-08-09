@@ -503,7 +503,8 @@ else:android {
 
     INCLUDEPATH += platforms/android
 
-    SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
+    SOURCES +=  platforms/android/androidadjusthelper.cpp \
+                platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
@@ -515,7 +516,8 @@ else:android {
                 platforms/android/androidsharedprefs.cpp \
                 tasks/authenticate/desktopauthenticationlistener.cpp
 
-    HEADERS +=  platforms/android/androidauthenticationlistener.h \
+    HEADERS +=  platforms/android/androidadjusthelper.h \
+                platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
