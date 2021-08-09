@@ -88,6 +88,9 @@ fi
 if [ -z "${ANDROID_SDK_ROOT}" ]; then
   die "Could not find 'ANDROID_SDK_ROOT' in env"
 fi
+if [[ "$RELEASE" ]] && [ -z "${ADJUST_SDK_TOKEN}" ]; then
+  die "Could not find 'ADJUST_SDK_TOKEN' in env which is required for a release build"
+fi
 
 $QTPATH/android/bin/qmake -v &>/dev/null || die "qmake doesn't exist or it fails"
 
