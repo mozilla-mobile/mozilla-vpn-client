@@ -274,6 +274,8 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
 
+9. To build the apk for release the environment variable ADJUST_SDK_TOKEN is required. It must be set to the app token of the Adjust SDK dashboard. 
+
 ### Windows
 
 We use a statically-compiled QT5.15 version to deploy the app. There are many
