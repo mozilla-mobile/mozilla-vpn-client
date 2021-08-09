@@ -341,73 +341,73 @@ void AuthenticationInAppListener::finalizeSignInOrUp() {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this](const QByteArray& data) {
-            logger.debug() << "Oauth code creation completed" << data;
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [this](const QByteArray& data) {
+        logger.debug() << "Oauth code creation completed" << data;
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isNull()) {
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (json.isNull()) {
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            QJsonObject obj = json.object();
-            QJsonValue code = obj.value("code");
-            if (!code.isString()) {
-              logger.error() << "FxA Authz: code not found";
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
-            QJsonValue state = obj.value("state");
-            if (!state.isString()) {
-              logger.error() << "FxA Authz: state not found";
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
-            QJsonValue redirect = obj.value("redirect");
-            if (!redirect.isString()) {
-              logger.error() << "FxA Authz: redirect not found";
-              MozillaVPN::instance()->errorHandle(
-                  ErrorHandler::AuthenticationError);
-              return;
-            }
+        QJsonObject obj = json.object();
+        QJsonValue code = obj.value("code");
+        if (!code.isString()) {
+          logger.error() << "FxA Authz: code not found";
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
+        QJsonValue state = obj.value("state");
+        if (!state.isString()) {
+          logger.error() << "FxA Authz: state not found";
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
+        QJsonValue redirect = obj.value("redirect");
+        if (!redirect.isString()) {
+          logger.error() << "FxA Authz: redirect not found";
+          MozillaVPN::instance()->errorHandle(
+              ErrorHandler::AuthenticationError);
+          return;
+        }
 
-            NetworkRequest* request =
-                NetworkRequest::createForGetUrl(this, redirect.toString(), 200);
+        NetworkRequest* request =
+            NetworkRequest::createForGetUrl(this, redirect.toString(), 200);
 
-            connect(request, &NetworkRequest::requestFailed,
-                    [this](QNetworkReply::NetworkError error,
-                           const QByteArray& data) {
-                      logger.error()
-                          << "Failed to fetch the final redirect data" << error;
-                      processRequestFailure(error, data);
-                    });
+        connect(
+            request, &NetworkRequest::requestFailed,
+            [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+              logger.error()
+                  << "Failed to fetch the final redirect data" << error;
+              processRequestFailure(error, data);
+            });
 
-            connect(request, &NetworkRequest::requestHeaderReceived,
-                    [this](NetworkRequest* request) {
+        connect(request, &NetworkRequest::requestHeaderReceived,
+                [this](NetworkRequest* request) {
 #ifdef UNIT_TEST
-                      AuthenticationInApp* aip =
-                          AuthenticationInApp::instance();
-                      emit aip->unitTestFinalUrl(request->url());
+                  AuthenticationInApp* aip = AuthenticationInApp::instance();
+                  emit aip->unitTestFinalUrl(request->url());
 #endif
-                      // On a 200 response, we receive the OAuth code from the
-                      // query string
-                      QString code =
-                          QUrlQuery(request->url()).queryItemValue("code");
-                      if (code.isEmpty()) {
-                        logger.error() << "Code not received!";
-                        MozillaVPN::instance()->errorHandle(
-                            ErrorHandler::AuthenticationError);
-                        emit failed(ErrorHandler::AuthenticationError);
-                        return;
-                      }
+                  // On a 200 response, we receive the OAuth code from the
+                  // query string
+                  QString code =
+                      QUrlQuery(request->url()).queryItemValue("code");
+                  if (code.isEmpty()) {
+                    logger.error() << "Code not received!";
+                    MozillaVPN::instance()->errorHandle(
+                        ErrorHandler::AuthenticationError);
+                    emit failed(ErrorHandler::AuthenticationError);
+                    return;
+                  }
 
-                      emit completed(code);
-                    });
-          });
+                  emit completed(code);
+                });
+      });
 }
 
 void AuthenticationInAppListener::processErrorCode(int errorCode) {
