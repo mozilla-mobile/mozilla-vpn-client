@@ -794,6 +794,16 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
+  if (FeatureInAppPurchase::instance()->isSupported()) {
+    IAPHandler::instance()->stopSubscription();
+    // TODO
+    // Need to clear out registered products
+    // and reset initial state that's set in the
+    // header file - i'm not sure of the best way of doing this.
+    // If we don't then we can crash if e_Registering when
+    // shouldn't be.
+  }
+
   setUserAuthenticated(false);
 
   if (forceInitialState) {

@@ -23,8 +23,7 @@ class FeatureInAppPurchase final : public Feature {
         ){};
 
   bool checkSupportCallback() const override {
-#if defined(MVPN_IOS)
-    // Soon, android will have IAP.
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
     return true;
 #else
     return false;

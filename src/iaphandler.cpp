@@ -16,6 +16,8 @@
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosiaphandler.h"
+#elif MVPN_ANDROID
+#  include "platforms/android/androidiaphandler.h"
 #else
 #  include "platforms/dummy/dummyiaphandler.h"
 #endif
@@ -30,6 +32,8 @@ IAPHandler* IAPHandler::createInstance() {
   Q_ASSERT(!s_instance);
 #ifdef MVPN_IOS
   new IOSIAPHandler(qApp);
+#elif MVPN_ANDROID
+  new AndroidIAPHandler(qApp);
 #else
   new DummyIAPHandler(qApp);
 #endif
@@ -261,7 +265,6 @@ void IAPHandler::computeSavings() {
   // Compute the savings for all the other types.
   for (Product& product : m_products) {
     if (product.m_type == ProductMonthly) continue;
-
     int savings =
         qRound(100.00 -
                ((product.m_nonLocalizedMonthlyPrice * 100.00) / monthlyPrice));
