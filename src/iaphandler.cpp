@@ -22,24 +22,39 @@
 
 namespace {
 Logger logger(LOG_IAP, "IAPHandler");
+IAPHandler* s_instance = nullptr;
 }  // namespace
 
 // static
 IAPHandler* IAPHandler::createInstance() {
+  Q_ASSERT(!s_instance);
 #ifdef MVPN_IOS
-  return IOSIAPHandler::createInstance();
+  new IOSIAPHandler(qApp);
 #else
-  return DummyIAPHandler::createInstance();
+  new DummyIAPHandler(qApp);
 #endif
+  Q_ASSERT(s_instance);
+  return instance();
 }
 
 // static
 IAPHandler* IAPHandler::instance() {
-#ifdef MVPN_IOS
-  return IOSIAPHandler::instance();
-#else
-  return DummyIAPHandler::instance();
-#endif
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
+
+IAPHandler::IAPHandler(QObject* parent) : QAbstractListModel(parent) {
+  MVPN_COUNT_CTOR(IAPHandler);
+
+  Q_ASSERT(!s_instance);
+  s_instance = this;
+}
+
+IAPHandler::~IAPHandler() {
+  MVPN_COUNT_DTOR(IAPHandler);
+
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
 void IAPHandler::registerProducts(const QByteArray& data) {

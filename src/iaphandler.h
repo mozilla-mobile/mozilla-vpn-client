@@ -61,8 +61,8 @@ class IAPHandler : public QAbstractListModel {
   void productsRegistrationCompleted();
 
  protected:
-  explicit IAPHandler(QObject* parent) : QAbstractListModel(parent){};
-  virtual ~IAPHandler() = default;
+  IAPHandler(QObject* parent);
+  ~IAPHandler();
 
   struct Product {
     QString m_name;

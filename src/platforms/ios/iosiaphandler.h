@@ -12,8 +12,8 @@ class IOSIAPHandler final : public IAPHandler {
   Q_DISABLE_COPY_MOVE(IOSIAPHandler)
 
  public:
-  static IOSIAPHandler* createInstance();
-  static IOSIAPHandler* instance();
+  explicit IOSIAPHandler(QObject* parent);
+  ~IOSIAPHandler();
 
  public slots:
   void productRegistered(void* product);
@@ -22,10 +22,6 @@ class IOSIAPHandler final : public IAPHandler {
  protected:
   void nativeRegisterProducts() override;
   void nativeStartSubscription(Product* product) override;
-
- private:
-  explicit IOSIAPHandler(QObject* parent);
-  ~IOSIAPHandler();
 
  private:
   void* m_delegate = nullptr;

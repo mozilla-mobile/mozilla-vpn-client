@@ -12,16 +12,13 @@ class DummyIAPHandler final : public IAPHandler {
   Q_DISABLE_COPY_MOVE(DummyIAPHandler)
 
  public:
-  static DummyIAPHandler* createInstance();
-  static DummyIAPHandler* instance();
+  explicit DummyIAPHandler(QObject* parent);
+  ~DummyIAPHandler();
 
  protected:
   void nativeRegisterProducts() override;
   void nativeStartSubscription(Product* product) override;
 
- private:
-  explicit DummyIAPHandler(QObject* parent);
-  ~DummyIAPHandler();
 };
 
 #endif  // DUMMYIAPHANDLER_H

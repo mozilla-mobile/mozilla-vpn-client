@@ -23,7 +23,6 @@
 
 namespace {
 Logger logger(LOG_IAP, "IOSIAPHandler");
-IOSIAPHandler* s_instance = nullptr;
 }  // namespace
 
 @interface IOSIAPHandlerDelegate
@@ -200,9 +199,6 @@ IOSIAPHandler* s_instance = nullptr;
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
   MVPN_COUNT_CTOR(IOSIAPHandler);
 
-  Q_ASSERT(!s_instance);
-  s_instance = this;
-
   m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
   [[SKPaymentQueue defaultQueue]
       addTransactionObserver:static_cast<IOSIAPHandlerDelegate*>(m_delegate)];
@@ -211,28 +207,11 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : IAPHandler(parent) {
 IOSIAPHandler::~IOSIAPHandler() {
   MVPN_COUNT_DTOR(IOSIAPHandler);
 
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-
   IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
 
   [delegate dealloc];
   m_delegate = nullptr;
-}
-
-// static
-IOSIAPHandler* IOSIAPHandler::createInstance() {
-  Q_ASSERT(!s_instance);
-  new IOSIAPHandler(qApp);
-  Q_ASSERT(s_instance);
-  return instance();
-}
-
-// static
-IOSIAPHandler* IOSIAPHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
 }
 
 void IOSIAPHandler::nativeRegisterProducts() {

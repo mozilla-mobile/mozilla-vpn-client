@@ -10,33 +10,14 @@
 
 namespace {
 Logger logger(LOG_IAP, "DummyIAPHandler");
-DummyIAPHandler* s_instance = nullptr;
 }  // namespace
 
 DummyIAPHandler::DummyIAPHandler(QObject* parent) : IAPHandler(parent) {
   MVPN_COUNT_CTOR(DummyIAPHandler);
-  Q_ASSERT(!s_instance);
-  s_instance = this;
 }
 
 DummyIAPHandler::~DummyIAPHandler() {
   MVPN_COUNT_DTOR(DummyIAPHandler);
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-}
-
-// static
-DummyIAPHandler* DummyIAPHandler::createInstance() {
-  Q_ASSERT(!s_instance);
-  new DummyIAPHandler(qApp);
-  Q_ASSERT(s_instance);
-  return instance();
-}
-
-// static
-DummyIAPHandler* DummyIAPHandler::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
 }
 
 void DummyIAPHandler::nativeRegisterProducts() {}
