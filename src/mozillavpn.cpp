@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "featurelist.h"
 #include "gleansample.h"
+#include "iaphandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -23,15 +24,14 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
+#include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
-#  include "platforms/ios/iaphandler.h"
 #  include "platforms/ios/iosdatamigration.h"
-#  include "platforms/ios/taskiosproducts.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -138,19 +138,19 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(this, &MozillaVPN::stateChanged, &m_private->m_connectionDataHolder,
           &ConnectionDataHolder::stateChanged);
 
-#ifdef MVPN_IOS
-  IAPHandler* iap = IAPHandler::createInstance();
-  connect(iap, &IAPHandler::subscriptionStarted, this,
-          &MozillaVPN::subscriptionStarted);
-  connect(iap, &IAPHandler::subscriptionFailed, this,
-          &MozillaVPN::subscriptionFailed);
-  connect(iap, &IAPHandler::subscriptionCanceled, this,
-          &MozillaVPN::subscriptionCanceled);
-  connect(iap, &IAPHandler::subscriptionCompleted, this,
-          &MozillaVPN::subscriptionCompleted);
-  connect(iap, &IAPHandler::alreadySubscribed, this,
-          &MozillaVPN::alreadySubscribed);
-#endif
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    IAPHandler* iap = IAPHandler::createInstance();
+    connect(iap, &IAPHandler::subscriptionStarted, this,
+            &MozillaVPN::subscriptionStarted);
+    connect(iap, &IAPHandler::subscriptionFailed, this,
+            &MozillaVPN::subscriptionFailed);
+    connect(iap, &IAPHandler::subscriptionCanceled, this,
+            &MozillaVPN::subscriptionCanceled);
+    connect(iap, &IAPHandler::subscriptionCompleted, this,
+            &MozillaVPN::subscriptionCompleted);
+    connect(iap, &IAPHandler::alreadySubscribed, this,
+            &MozillaVPN::alreadySubscribed);
+  }
 
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
   m_gleanTimer.start(Constants::gleanTimeoutMsec());
@@ -271,9 +271,9 @@ void MozillaVPN::initialize() {
 
   scheduleTask(new TaskCaptivePortalLookup());
 
-#ifdef MVPN_IOS
-  scheduleTask(new TaskIOSProducts());
-#endif
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    scheduleTask(new TaskProducts());
+  }
 
   setUserAuthenticated(true);
   maybeStateMain();
@@ -296,12 +296,12 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-#ifdef MVPN_IOS
-  if (m_private->m_user.subscriptionNeeded()) {
-    setState(StateSubscriptionNeeded);
-    return;
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      setState(StateSubscriptionNeeded);
+      return;
+    }
   }
-#endif
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
@@ -515,13 +515,13 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserAuthenticated(true);
 
-#ifdef MVPN_IOS
-  if (m_private->m_user.subscriptionNeeded()) {
-    scheduleTask(new TaskIOSProducts());
-    scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
-    return;
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (m_private->m_user.subscriptionNeeded()) {
+      scheduleTask(new TaskProducts());
+      scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
+      return;
+    }
   }
-#endif
 
   completeActivation();
 }
@@ -542,9 +542,9 @@ void MozillaVPN::completeActivation() {
     scheduleTask(new TaskAccountAndServers());
   }
 
-#ifdef MVPN_IOS
-  scheduleTask(new TaskIOSProducts());
-#endif
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    scheduleTask(new TaskProducts());
+  }
 
   // Finally we are able to activate the client.
   scheduleTask(new TaskFunction([this](MozillaVPN*) {
@@ -682,12 +682,12 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-#ifdef MVPN_IOS
-  if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
-    maybeStateMain();
-    return;
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
+      maybeStateMain();
+      return;
+    }
   }
-#endif
 
   // To test the subscription needed view, comment out this line:
   // m_private->m_controller.subscriptionNeeded();
@@ -724,9 +724,9 @@ void MozillaVPN::logout() {
 
   deleteTasks();
 
-#ifdef MVPN_IOS
-  IAPHandler::instance()->stopSubscription();
-#endif
+  if (FeatureList::instance()->inAppPurchaseSupported()) {
+    IAPHandler::instance()->stopSubscription();
+  }
 
   // update-required state is the only one we want to keep when logging out.
   if (m_state != StateUpdateRequired) {
@@ -1164,7 +1164,6 @@ void MozillaVPN::quit() {
   qApp->quit();
 }
 
-#ifdef MVPN_IOS
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   logger.debug() << "Subscription started" << productIdentifier;
 
@@ -1172,10 +1171,9 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 
   IAPHandler* iap = IAPHandler::instance();
 
-  // If IPA is not ready yet (race condition), let's register the products
-  // again.
+  // If IAP is not ready (race condition), register the products again.
   if (!iap->hasProductsRegistered()) {
-    scheduleTask(new TaskIOSProducts());
+    scheduleTask(new TaskProducts());
     scheduleTask(new TaskFunction([productIdentifier](MozillaVPN* vpn) {
       vpn->subscriptionStarted(productIdentifier);
     }));
@@ -1240,7 +1238,6 @@ void MozillaVPN::alreadySubscribed() {
 
   setState(StateSubscriptionBlocked);
 }
-#endif
 
 void MozillaVPN::update() {
   logger.debug() << "Update";

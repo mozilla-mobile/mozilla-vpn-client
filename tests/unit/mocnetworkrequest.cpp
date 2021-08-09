@@ -91,11 +91,11 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-#ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
+#ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString&) {
   return new NetworkRequest(parent, 1234, false);
