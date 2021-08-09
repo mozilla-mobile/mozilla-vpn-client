@@ -89,6 +89,7 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
         hkdf.cpp \
+        iaphandler.cpp \
         inspector/inspectorhttpconnection.cpp \
         inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
@@ -124,6 +125,7 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -143,6 +145,7 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/products/taskproducts.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
@@ -193,6 +196,7 @@ HEADERS += \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
+        iaphandler.h \
         inspector/inspectorhttpconnection.h \
         inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
@@ -227,6 +231,7 @@ HEADERS += \
         pinghelper.h \
         pingsender.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
@@ -247,6 +252,7 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/products/taskproducts.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
@@ -682,11 +688,10 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
-            platforms/ios/iaphandler.mm \
+            platforms/ios/iosiaphandler.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
@@ -696,11 +701,10 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
-            platforms/ios/iaphandler.h \
+            platforms/ios/iosiaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \

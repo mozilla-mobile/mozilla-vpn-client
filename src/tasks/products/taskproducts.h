@@ -2,21 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef TASKIOSPRODUCTS_H
-#define TASKIOSPRODUCTS_H
+#ifndef TASKPRODUCTS_H
+#define TASKPRODUCTS_H
 
 #include "task.h"
 
 #include <QObject>
 
-class TaskIOSProducts final : public Task {
-  Q_DISABLE_COPY_MOVE(TaskIOSProducts)
+class TaskProducts final : public Task {
+  Q_DISABLE_COPY_MOVE(TaskProducts)
 
  public:
-  TaskIOSProducts();
-  ~TaskIOSProducts();
+  TaskProducts();
+  ~TaskProducts();
 
   void run(MozillaVPN* vpn) override;
 };
 
-#endif  // TASKIOSPRODUCTS_H
+#endif  // TASKPRODUCTS_H

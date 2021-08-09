@@ -96,9 +96,9 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForFxaSessionDestroy(
       QObject* parent, const QByteArray& sessionToken);
 
-#ifdef MVPN_IOS
-  static NetworkRequest* createForIOSProducts(QObject* parent);
+  static NetworkRequest* createForProducts(QObject* parent);
 
+#ifdef MVPN_IOS
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
 #endif
