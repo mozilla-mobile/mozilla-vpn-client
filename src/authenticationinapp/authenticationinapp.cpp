@@ -8,6 +8,7 @@
 #include "leakdetector.h"
 
 #include <QCoreApplication>
+#include <QRegularExpression>
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInApp");
@@ -133,4 +134,36 @@ void AuthenticationInApp::requestErrorPropagation(
   Q_ASSERT(m_listener == listener);
 
   emit errorOccurred(errorType);
+}
+
+// static
+bool AuthenticationInApp::validateEmailAddress(const QString& emailAddress) {
+  // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/lib/routes/validators.js#L144-L177
+
+  if (emailAddress.isEmpty()) {
+    return false;
+  }
+
+  QStringList parts = emailAddress.split("@");
+  if (parts.length() != 2 || parts[1].length() > 255) {
+    return false;
+  }
+
+  QByteArray emailAce = QUrl::toAce(parts[0]);
+  QRegularExpression emailRE("^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}$",
+                             QRegularExpression::CaseInsensitiveOption);
+  if (!emailRE.match(emailAce).hasMatch()) {
+    return false;
+  }
+
+  QByteArray domainAce = QUrl::toAce(parts[1]);
+  QRegularExpression domainRE(
+      "^[A-Z0-9](?:[A-Z0-9-]{0,253}[A-Z0-9])?(?:.[A-Z0-9](?:[A-Z0-9-]{0,253}[A-"
+      "Z0-9])?)+$",
+      QRegularExpression::CaseInsensitiveOption);
+  if (!domainRE.match(domainAce).hasMatch()) {
+    return false;
+  }
+
+  return true;
 }
