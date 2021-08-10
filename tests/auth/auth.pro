@@ -19,6 +19,8 @@ config += debug
 TEMPLATE = app
 TARGET = tests
 
+RESOURCES += auth.qrc
+
 INCLUDEPATH += \
             . \
             ../../src \
@@ -29,6 +31,7 @@ INCLUDEPATH += \
 HEADERS += \
     ../../src/authenticationinapp/authenticationinapp.h \
     ../../src/authenticationinapp/authenticationinapplistener.h \
+    ../../src/authenticationinapp/incrementaldecoder.h \
     ../../src/authenticationlistener.h \
     ../../src/constants.h \
     ../../src/errorhandler.h \
@@ -55,6 +58,7 @@ HEADERS += \
     ../../src/tasks/authenticate/taskauthenticate.h \
     ../../src/urlopener.h \
     testemailvalidation.h \
+    testpasswordvalidation.h \
     testsignupandin.h
 
 SOURCES += \
@@ -62,6 +66,7 @@ SOURCES += \
     ../unit/mocinspectorwebsocketconnection.cpp \
     ../../src/authenticationinapp/authenticationinapp.cpp \
     ../../src/authenticationinapp/authenticationinapplistener.cpp \
+    ../../src/authenticationinapp/incrementaldecoder.cpp \
     ../../src/authenticationlistener.cpp \
     ../../src/constants.cpp \
     ../../src/errorhandler.cpp \
@@ -86,6 +91,7 @@ SOURCES += \
     ../../src/urlopener.cpp \
     main.cpp \
     testemailvalidation.cpp \
+    testpasswordvalidation.cpp \
     testsignupandin.cpp
 
 OBJECTS_DIR = .obj

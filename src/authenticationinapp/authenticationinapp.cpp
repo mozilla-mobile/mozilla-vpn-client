@@ -6,9 +6,13 @@
 #include "authenticationinapplistener.h"
 #include "logger.h"
 #include "leakdetector.h"
+#include "incrementaldecoder.h"
 
 #include <QCoreApplication>
+#include <QFile>
 #include <QRegularExpression>
+
+constexpr int PASSWORD_MIN_LENGTH = 8;
 
 namespace {
 Logger logger(LOG_MAIN, "AuthenticationInApp");
@@ -166,4 +170,48 @@ bool AuthenticationInApp::validateEmailAddress(const QString& emailAddress) {
   }
 
   return true;
+}
+
+// static
+bool AuthenticationInApp::validatePasswordCommons(const QString& password) {
+  if (password.isEmpty()) {
+    // The task of this function is not the length validation.
+    return true;
+  }
+
+  QFile file(":/ui/resources/encodedPassword.txt");
+  if (!file.open(QFile::ReadOnly | QFile::Text)) {
+    logger.error() << "Failed to open the encodedPassword.txt";
+    return true;
+  }
+
+  QTextStream stream(&file);
+
+  IncrementalDecoder id(qApp);
+  IncrementalDecoder::Result result = id.match(stream, password);
+  switch (result) {
+    case IncrementalDecoder::MatchNotFound:
+      return true;
+    case IncrementalDecoder::MatchFound:
+      logger.info() << "Unsecure password";
+      return false;
+    case IncrementalDecoder::DecodeFailure:
+      logger.error() << "Decode failure!";
+      return true;
+    default:
+      Q_ASSERT(false);
+      return true;
+  }
+}
+
+// static
+bool AuthenticationInApp::validatePasswordLength(const QString& password) {
+  return password.length() >= PASSWORD_MIN_LENGTH;
+}
+
+bool AuthenticationInApp::validatePasswordEmail(const QString& password) {
+  Q_ASSERT(m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  return !m_listener->emailAddress().contains(password);
 }

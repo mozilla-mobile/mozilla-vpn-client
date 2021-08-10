@@ -454,5 +454,6 @@
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>ui/components/VPNServerLabel.qml</file>
         <file>ui/components/VPNTabNavigation.qml</file>
+        <file>ui/resources/encodedPassword.txt</file>
     </qresource>
 </RCC>
