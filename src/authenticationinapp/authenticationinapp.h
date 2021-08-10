@@ -75,6 +75,8 @@ class AuthenticationInApp final : public QObject {
 
   Q_INVOKABLE void setPassword(const QString& password);
 
+  Q_INVOKABLE static bool validateEmailAddress(const QString& emailAddress);
+
   // Sign In/Up.
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();
