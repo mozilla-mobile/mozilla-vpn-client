@@ -91,30 +91,23 @@ Rectangle {
                 wrapMode: Text.Wrap
             }
 
-            Rectangle {
+            VPNIconButton {
                 id: stateIndicator
 
-                color: accordionHeader.state === Theme.uiState.stateHovered || accordionHeader.state === Theme.uiState.statePressed
-                    ? Color.grey10
-                    : Color.white
-                height: Theme.rowHeight
-                radius: Theme.cornerRadius - 1
-                width: Theme.rowHeight
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: animationDuration
-                    }
+                onClicked: {
+                    handleToggleCard();
                 }
+                radius: Theme.cornerRadius - 1
+                Layout.preferredHeight: Theme.rowHeight
+                Layout.preferredWidth: Theme.rowHeight
 
-                VPNChevron {
+                Image {
                     id: chevron
 
-                    isDark: true
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        horizontalCenter: parent.horizontalCenter
-                    }
+                    anchors.centerIn: stateIndicator
+                    fillMode: Image.PreserveAspectFit
+                    source: "../resources/chevron-right-dark.svg"
+                    sourceSize.width: 24
 
                     Behavior on rotation {
                         NumberAnimation {
@@ -123,15 +116,6 @@ Rectangle {
                         }
                     }
                 }
-            }
-
-            VPNMouseArea {
-                anchors.fill: {}
-                height: parent.height
-                hoverEnabled: true
-                onMouseAreaClicked: handleToggleCard
-                targetEl: accordionHeader
-                width: parent.width
             }
         }
 
