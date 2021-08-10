@@ -21,11 +21,11 @@ CaptivePortal::CaptivePortal() { MVPN_COUNT_CTOR(CaptivePortal); }
 CaptivePortal::~CaptivePortal() { MVPN_COUNT_DTOR(CaptivePortal); }
 
 bool CaptivePortal::fromJson(const QByteArray& data) {
-  logger.log() << "Captive portal from Json";
+  logger.debug() << "Captive portal from Json";
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isArray()) {
-    logger.log() << "Invalid JSON array";
+    logger.error() << "Invalid JSON array";
     return false;
   }
 
@@ -35,20 +35,20 @@ bool CaptivePortal::fromJson(const QByteArray& data) {
   QJsonArray array = json.array();
   for (QJsonValue entry : array) {
     if (!entry.isObject()) {
-      logger.log() << "Object expected";
+      logger.error() << "Object expected";
       return false;
     }
 
     QJsonObject obj = entry.toObject();
     QJsonValue address = obj.value("address");
     if (!address.isString()) {
-      logger.log() << "Address must be a string";
+      logger.error() << "Address must be a string";
       return false;
     }
 
     QJsonValue family = obj.value("family");
     if (!family.isDouble()) {
-      logger.log() << "Family must be a number";
+      logger.error() << "Family must be a number";
       return false;
     }
 
@@ -60,7 +60,7 @@ bool CaptivePortal::fromJson(const QByteArray& data) {
         ipv6Addresses.append(address.toString());
         break;
       default:
-        logger.log() << "Invalid family number" << family.toInt();
+        logger.error() << "Invalid family number" << family.toInt();
         return false;
     }
   }

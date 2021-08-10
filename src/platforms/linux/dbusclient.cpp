@@ -38,7 +38,7 @@ DBusClient::DBusClient(QObject* parent) : QObject(parent) {
 DBusClient::~DBusClient() { MVPN_COUNT_DTOR(DBusClient); }
 
 QDBusPendingCallWatcher* DBusClient::version() {
-  logger.log() << "Version via DBus";
+  logger.debug() << "Version via DBus";
   QDBusPendingReply<QString> reply = m_dbus->version();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
@@ -77,11 +77,11 @@ QDBusPendingCallWatcher* DBusClient::activate(
   QJsonArray disabledApps;
   for (const QString& i : vpnDisabledApps) {
     disabledApps.append(QJsonValue(i));
-    logger.log() << "Disabling:" << i;
+    logger.debug() << "Disabling:" << i;
   }
   json.insert("vpnDisabledApps", disabledApps);
 
-  logger.log() << "Activate via DBus";
+  logger.debug() << "Activate via DBus";
   QDBusPendingReply<bool> reply =
       m_dbus->activate(QJsonDocument(json).toJson(QJsonDocument::Compact));
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
@@ -91,7 +91,7 @@ QDBusPendingCallWatcher* DBusClient::activate(
 }
 
 QDBusPendingCallWatcher* DBusClient::deactivate() {
-  logger.log() << "Deactivate via DBus";
+  logger.debug() << "Deactivate via DBus";
   QDBusPendingReply<bool> reply = m_dbus->deactivate();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
@@ -100,7 +100,7 @@ QDBusPendingCallWatcher* DBusClient::deactivate() {
 }
 
 QDBusPendingCallWatcher* DBusClient::status() {
-  logger.log() << "Status via DBus";
+  logger.debug() << "Status via DBus";
   QDBusPendingReply<QString> reply = m_dbus->status();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
@@ -109,7 +109,7 @@ QDBusPendingCallWatcher* DBusClient::status() {
 }
 
 QDBusPendingCallWatcher* DBusClient::getLogs() {
-  logger.log() << "Get logs via DBus";
+  logger.debug() << "Get logs via DBus";
   QDBusPendingReply<QString> reply = m_dbus->getLogs();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
@@ -118,7 +118,7 @@ QDBusPendingCallWatcher* DBusClient::getLogs() {
 }
 
 QDBusPendingCallWatcher* DBusClient::cleanupLogs() {
-  logger.log() << "Cleanup logs via DBus";
+  logger.debug() << "Cleanup logs via DBus";
   QDBusPendingReply<QString> reply = m_dbus->cleanupLogs();
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,

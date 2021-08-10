@@ -29,7 +29,7 @@ LinuxNetworkWatcher::~LinuxNetworkWatcher() {
 }
 
 void LinuxNetworkWatcher::initialize() {
-  logger.log() << "initialize";
+  logger.debug() << "initialize";
 
   m_worker = new LinuxNetworkWatcherWorker(&m_thread);
 
@@ -49,7 +49,7 @@ void LinuxNetworkWatcher::initialize() {
 }
 
 void LinuxNetworkWatcher::start() {
-  logger.log() << "actived";
+  logger.debug() << "actived";
   NetworkWatcherImpl::start();
   emit checkDevicesInThread();
 }

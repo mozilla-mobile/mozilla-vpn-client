@@ -57,7 +57,7 @@ Logger logger(LOG_LINUX, "WireguardUtilsLinux");
 
 void NetfilterLogger(int level, const char* msg) {
   Q_UNUSED(level);
-  logger.log() << "NetfilterGo:" << msg;
+  logger.debug() << "NetfilterGo:" << msg;
 }
 }  // namespace
 
@@ -69,7 +69,7 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
 
   m_nlsock = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
   if (m_nlsock < 0) {
-    logger.log() << "Failed to create netlink socket:" << strerror(errno);
+    logger.warning() << "Failed to create netlink socket:" << strerror(errno);
   }
 
   struct sockaddr_nl nladdr;
@@ -77,7 +77,7 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   nladdr.nl_family = AF_NETLINK;
   nladdr.nl_pid = getpid();
   if (bind(m_nlsock, (struct sockaddr*)&nladdr, sizeof(nladdr)) != 0) {
-    logger.log() << "Failed to bind netlink socket:" << strerror(errno);
+    logger.warning() << "Failed to bind netlink socket:" << strerror(errno);
   }
 
   m_notifier = new QSocketNotifier(m_nlsock, QSocketNotifier::Read, this);
@@ -96,7 +96,7 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
     }
   }
 
-  logger.log() << "WireguardUtilsLinux created.";
+  logger.debug() << "WireguardUtilsLinux created.";
 }
 
 WireguardUtilsLinux::~WireguardUtilsLinux() {
@@ -105,7 +105,7 @@ WireguardUtilsLinux::~WireguardUtilsLinux() {
   if (m_nlsock >= 0) {
     close(m_nlsock);
   }
-  logger.log() << "WireguardUtilsLinux destroyed.";
+  logger.debug() << "WireguardUtilsLinux destroyed.";
 }
 
 bool WireguardUtilsLinux::interfaceExists() {
@@ -137,7 +137,7 @@ bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
 
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
   if (!device) {
-    logger.log() << "Allocation failure";
+    logger.error() << "Allocation failure";
     return false;
   }
   auto guard = qScopeGuard([&] { wg_free_device(device); });
@@ -148,7 +148,7 @@ bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
   wg_key_from_base64(device->private_key, config.m_privateKey.toLocal8Bit());
   // Peer
   if (!buildPeerForDevice(device, config)) {
-    logger.log() << "Failed to create peer.";
+    logger.error() << "Failed to create peer.";
     return false;
   }
   // Set/update device
@@ -157,7 +157,7 @@ bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
       (wg_device_flags)(WGPEER_HAS_PUBLIC_KEY | WGDEVICE_HAS_PRIVATE_KEY |
                         WGDEVICE_REPLACE_PEERS | WGDEVICE_HAS_FWMARK);
   if (wg_set_device(device) != 0) {
-    logger.log() << "Failed to set the new peer";
+    logger.error() << "Failed to set the new peer";
     return false;
   }
   // Create routing policy rules
@@ -241,7 +241,7 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
 
   int index = if_nametoindex(WG_INTERFACE);
   if (index <= 0) {
-    logger.log() << "if_nametoindex() failed:" << strerror(errno);
+    logger.error() << "if_nametoindex() failed:" << strerror(errno);
     return false;
   }
 
@@ -267,7 +267,7 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
     struct in6_addr addrbuf;
     rtm->rtm_family = AF_INET6;
     if (inet_pton(AF_INET6, addrstring, &addrbuf) != 1) {
-      logger.log() << "Invalid IPv6 destination prefix";
+      logger.error() << "Invalid IPv6 destination prefix";
       return false;
     }
     nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &addrbuf, sizeof(addrbuf));
@@ -276,7 +276,7 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
     rtm->rtm_family = AF_INET;
     int err = inet_pton(AF_INET, addrstring, &addrbuf);
     if (err != 1) {
-      logger.log() << "Invalid IPv4 destination prefix";
+      logger.error() << "Invalid IPv4 destination prefix";
       return false;
     }
     nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &addrbuf, sizeof(addrbuf));
@@ -319,7 +319,7 @@ bool WireguardUtilsLinux::buildPeerForDevice(wg_device* device,
   Q_ASSERT(device);
   wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
   if (!peer) {
-    logger.log() << "Allocation failure";
+    logger.error() << "Allocation failure";
     return false;
   }
   device->first_peer = device->last_peer = peer;
@@ -333,7 +333,7 @@ bool WireguardUtilsLinux::buildPeerForDevice(wg_device* device,
   }
   // Allowed IPs
   if (!setAllowedIpsOnPeer(peer, config.m_allowedIPAddressRanges)) {
-    logger.log() << "Failed to set allowed IPs on Peer";
+    logger.error() << "Failed to set allowed IPs on Peer";
     return false;
   }
   return true;
@@ -379,11 +379,11 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
         rv == EAI_NODATA ||
 #endif
         (retries >= 0 && !retries--)) {
-      logger.log() << "Failed to resolve the address endpoint";
+      logger.error() << "Failed to resolve the address endpoint";
       return false;
     }
 
-    logger.log() << "Trying again in" << (timeout / 1000000.0) << "seconds";
+    logger.warning() << "Trying again in" << (timeout / 1000000.0) << "seconds";
     usleep(timeout);
   }
 
@@ -395,7 +395,7 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
     return true;
   }
 
-  logger.log() << "Invalid endpoint" << address;
+  logger.error() << "Invalid endpoint" << address;
   return false;
 }
 
@@ -407,7 +407,7 @@ bool WireguardUtilsLinux::setAllowedIpsOnPeer(
     wg_allowedip* allowedip =
         static_cast<wg_allowedip*>(calloc(1, sizeof(*allowedip)));
     if (!allowedip) {
-      logger.log() << "Allocation failure";
+      logger.error() << "Allocation failure";
       return false;
     }
 
@@ -424,17 +424,17 @@ bool WireguardUtilsLinux::setAllowedIpsOnPeer(
     if (ip.type() == IPAddressRange::IPv4) {
       allowedip->family = AF_INET;
       if (inet_pton(AF_INET, qPrintable(ipstring), &allowedip->ip4) != 1) {
-        logger.log() << "Invalid IPv4 address:" << ip.ipAddress();
+        logger.error() << "Invalid IPv4 address:" << ip.ipAddress();
         return false;
       }
     } else if (ip.type() == IPAddressRange::IPv6) {
       allowedip->family = AF_INET6;
       if (inet_pton(AF_INET6, qPrintable(ipstring), &allowedip->ip6) != 1) {
-        logger.log() << "Invalid IPv6 address:" << ip.ipAddress();
+        logger.error() << "Invalid IPv6 address:" << ip.ipAddress();
         return false;
       }
     } else {
-      logger.log() << "Invalid IPAddressRange type";
+      logger.error() << "Invalid IPAddressRange type";
       return false;
     }
   }
@@ -535,7 +535,7 @@ void WireguardUtilsLinux::nlsockReady() {
     }
     struct nlmsgerr* err = (struct nlmsgerr*)NLMSG_DATA(nlmsg);
     if (err->error != 0) {
-      logger.log() << "Netlink request failed:" << strerror(-err->error);
+      logger.debug() << "Netlink request failed:" << strerror(-err->error);
     }
     nlmsg = NLMSG_NEXT(nlmsg, len);
   }
@@ -544,18 +544,18 @@ void WireguardUtilsLinux::nlsockReady() {
 // static
 bool WireguardUtilsLinux::setupCgroupClass(const QString& path,
                                            unsigned long classid) {
-  logger.log() << "Creating control group:" << path;
+  logger.debug() << "Creating control group:" << path;
   int flags = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   int err = mkdir(qPrintable(path), flags);
   if ((err < 0) && (errno != EEXIST)) {
-    logger.log() << "Failed to create" << path + ":" << strerror(errno);
+    logger.error() << "Failed to create" << path + ":" << strerror(errno);
     return false;
   }
 
   QString netClassPath = path + "/net_cls.classid";
   FILE* fp = fopen(qPrintable(netClassPath), "w");
   if (!fp) {
-    logger.log() << "Failed to set classid:" << strerror(errno);
+    logger.error() << "Failed to set classid:" << strerror(errno);
     return false;
   }
   fprintf(fp, "%lu", classid);

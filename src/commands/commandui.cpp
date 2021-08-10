@@ -8,10 +8,13 @@
 #include "captiveportal/captiveportaldetection.h"
 #include "closeeventhandler.h"
 #include "commandlineparser.h"
+#include "constants.h"
 #include "featurelist.h"
 #include "filterproxymodel.h"
 #include "fontloader.h"
 #include "l18nstrings.h"
+#include "inspector/inspectorhttpserver.h"
+#include "inspector/inspectorwebsocketserver.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -32,11 +35,6 @@
 #  include "platforms/macos/macosmenubar.h"
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
-#endif
-
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorhttpserver.h"
-#  include "inspector/inspectorwebsocketserver.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -95,11 +93,14 @@ int CommandUI::run(QStringList& tokens) {
                                               "Start minimized.");
     CommandLineParser::Option startAtBootOption(
         "s", "start-at-boot", "Start at boot (if configured).");
+    CommandLineParser::Option testingOption("t", "testing",
+                                            "Enable testing mode.");
 
     QList<CommandLineParser::Option*> options;
     options.append(&hOption);
     options.append(&minimizedOption);
     options.append(&startAtBootOption);
+    options.append(&testingOption);
 
     CommandLineParser clp;
     if (clp.parse(tokens, options, false)) {
@@ -115,13 +116,17 @@ int CommandUI::run(QStringList& tokens) {
       return 0;
     }
 
-    logger.log() << "UI starting";
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
+
+    logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set) {
-      logger.log() << "Maybe start at boot";
+      logger.debug() << "Maybe start at boot";
 
       if (!SettingsHolder::instance()->startAtBoot()) {
-        logger.log() << "We don't need to start at boot.";
+        logger.debug() << "We don't need to start at boot.";
         return 0;
       }
     }
@@ -443,7 +448,7 @@ int CommandUI::run(QStringList& tokens) {
                      systemTrayHandler, &SystemTrayHandler::updateIcon);
 
     QObject::connect(Localizer::instance(), &Localizer::codeChanged, []() {
-      logger.log() << "Retranslating";
+      logger.debug() << "Retranslating";
       QmlEngineHolder::instance()->engine()->retranslate();
       SystemTrayHandler::instance()->retranslate();
 
@@ -458,15 +463,17 @@ int CommandUI::run(QStringList& tokens) {
       MozillaVPN::instance()->serverCountryModel()->retranslate();
     });
 
-#ifdef MVPN_INSPECTOR
-    InspectorHttpServer inspectHttpServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                     &inspectHttpServer, &InspectorHttpServer::close);
+    if (!Constants::inProduction()) {
+      InspectorHttpServer* inspectHttpServer = new InspectorHttpServer(qApp);
+      QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                       inspectHttpServer, &InspectorHttpServer::close);
 
-    InspectorWebSocketServer inspectWebSocketServer;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                     &inspectWebSocketServer, &InspectorWebSocketServer::close);
-#endif
+      InspectorWebSocketServer* inspectWebSocketServer =
+          new InspectorWebSocketServer(qApp);
+      QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                       inspectWebSocketServer,
+                       &InspectorWebSocketServer::close);
+    }
 
 #ifdef MVPN_WASM
     WasmWindowController wasmWindowController;

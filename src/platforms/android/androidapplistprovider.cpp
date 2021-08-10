@@ -25,7 +25,7 @@ AndroidAppListProvider::AndroidAppListProvider(QObject* parent)
 }
 
 void AndroidAppListProvider::getApplicationList() {
-  logger.log() << "Fetch Application list from Android";
+  logger.debug() << "Fetch Application list from Android";
 
   QAndroidJniObject activity = QtAndroid::androidActivity();
   Q_ASSERT(activity.isValid());

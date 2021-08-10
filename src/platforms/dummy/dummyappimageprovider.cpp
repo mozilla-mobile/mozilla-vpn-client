@@ -22,7 +22,7 @@ DummyAppImageProvider::~DummyAppImageProvider() {
 // Returns an example image for any provided APPID (a red square)
 QPixmap DummyAppImageProvider::requestPixmap(const QString& id, QSize* size,
                                              const QSize& requestedSize) {
-  logger.log() << "Request Image for " << id;
+  logger.debug() << "Request Image for " << id;
   int width = 50;
   int height = 50;
 

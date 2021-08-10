@@ -18,12 +18,12 @@ Logger logger(LOG_NETWORKING, "VersionApi");
 
 VersionApi::VersionApi(QObject* parent) : Updater(parent) {
   MVPN_COUNT_CTOR(VersionApi);
-  logger.log() << "VersionApi created";
+  logger.debug() << "VersionApi created";
 }
 
 VersionApi::~VersionApi() {
   MVPN_COUNT_DTOR(VersionApi);
-  logger.log() << "VersionApi released";
+  logger.debug() << "VersionApi released";
 }
 
 void VersionApi::start() {
@@ -31,15 +31,15 @@ void VersionApi::start() {
 
   connect(request, &NetworkRequest::requestFailed,
           [](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Request failed" << error;
+            logger.error() << "Request failed" << error;
           });
 
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
-            logger.log() << "Request completed";
+            logger.debug() << "Request completed";
 
             if (!processData(data)) {
-              logger.log() << "Ignore failure.";
+              logger.debug() << "Ignore failure.";
             }
           });
 
@@ -49,7 +49,7 @@ void VersionApi::start() {
 bool VersionApi::processData(const QByteArray& data) {
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "A valid JSON object expected";
+    logger.error() << "A valid JSON object expected";
     return false;
   }
 
@@ -58,13 +58,13 @@ bool VersionApi::processData(const QByteArray& data) {
   QString platformKey = Constants::PLATFORM_NAME;
 
   if (!obj.contains(platformKey)) {
-    logger.log() << "No key" << platformKey;
+    logger.debug() << "No key" << platformKey;
     return false;
   }
 
   QJsonValue platformDataValue = obj.value(platformKey);
   if (!platformDataValue.isObject()) {
-    logger.log() << "Platform object not available";
+    logger.error() << "Platform object not available";
     return false;
   }
 
@@ -76,13 +76,13 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonValue latestValue = platformData.value("latest");
   if (!latestValue.isObject()) {
-    logger.log() << "Platform.latest object not available";
+    logger.warning() << "Platform.latest object not available";
   } else {
     QJsonObject latestData = latestValue.toObject();
 
     QJsonValue latestVersionValue = latestData.value("version");
     if (!latestVersionValue.isString()) {
-      logger.log() << "Platform.latest.version string not available";
+      logger.warning() << "Platform.latest.version string not available";
     } else {
       latestVersion = latestVersionValue.toString();
     }
@@ -90,30 +90,30 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonValue minimumValue = platformData.value("minimum");
   if (!minimumValue.isObject()) {
-    logger.log() << "Platform.minimum object not available";
+    logger.warning() << "Platform.minimum object not available";
   } else {
     QJsonObject minimumData = minimumValue.toObject();
 
     QJsonValue minimumVersionValue = minimumData.value("version");
     if (!minimumVersionValue.isString()) {
-      logger.log() << "Platform.minimum.version string not available";
+      logger.warning() << "Platform.minimum.version string not available";
     } else {
       minimumVersion = minimumVersionValue.toString();
     }
   }
 
-  logger.log() << "Latest version:" << latestVersion;
-  logger.log() << "Minimum version:" << minimumVersion;
-  logger.log() << "Current version:" << currentVersion;
+  logger.debug() << "Latest version:" << latestVersion;
+  logger.debug() << "Minimum version:" << minimumVersion;
+  logger.debug() << "Current version:" << currentVersion;
 
   if (compareVersions(currentVersion, minimumVersion) == -1) {
-    logger.log() << "update required";
+    logger.debug() << "update required";
     emit updateRequired();
     return true;
   }
 
   if (compareVersions(currentVersion, latestVersion) == -1) {
-    logger.log() << "Update recommended.";
+    logger.debug() << "Update recommended.";
     emit updateRecommended();
   }
   return true;
