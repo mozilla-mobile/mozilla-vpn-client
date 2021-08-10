@@ -42,11 +42,11 @@ static T* sockaddr_cast(QByteArray& data) {
 MacosRouteMonitor::MacosRouteMonitor(const QString& ifname, QObject* parent)
     : QObject(parent), m_ifname(ifname) {
   MVPN_COUNT_CTOR(MacosRouteMonitor);
-  logger.log() << "MacosRouteMonitor created.";
+  logger.debug() << "MacosRouteMonitor created.";
 
   m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
   if (m_rtsock < 0) {
-    logger.log() << "Failed to create routing socket:" << strerror(errno);
+    logger.error() << "Failed to create routing socket:" << strerror(errno);
     return;
   }
 
@@ -64,7 +64,7 @@ MacosRouteMonitor::~MacosRouteMonitor() {
   if (m_rtsock >= 0) {
     close(m_rtsock);
   }
-  logger.log() << "MacosRouteMonitor created.";
+  logger.debug() << "MacosRouteMonitor destroyed.";
 }
 
 void MacosRouteMonitor::handleRtmAdd(const struct rt_msghdr* rtm,
@@ -82,8 +82,8 @@ void MacosRouteMonitor::handleRtmAdd(const struct rt_msghdr* rtm,
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
-  logger.log() << "Route added by" << rtm->rtm_pid
-               << QString("addrs(%1):").arg(rtm->rtm_addrs) << list.join(" ");
+  logger.debug() << "Route added by" << rtm->rtm_pid
+                 << QString("addrs(%1):").arg(rtm->rtm_addrs) << list.join(" ");
 }
 
 void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
@@ -101,8 +101,8 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
-  logger.log() << "Route deleted by" << rtm->rtm_pid
-               << QString("addrs(%1):").arg(rtm->rtm_addrs) << list.join(" ");
+  logger.debug() << "Route deleted by" << rtm->rtm_pid
+                 << QString("addrs(%1):").arg(rtm->rtm_addrs) << list.join(" ");
 }
 
 void MacosRouteMonitor::handleRtmChange(const struct rt_msghdr* rtm,
@@ -120,8 +120,8 @@ void MacosRouteMonitor::handleRtmChange(const struct rt_msghdr* rtm,
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
-  logger.log() << "Route chagned by" << rtm->rtm_pid
-               << QString("addrs(%1):").arg(rtm->rtm_addrs) << list.join(" ");
+  logger.debug() << "Route chagned by" << rtm->rtm_pid
+                 << QString("addrs(%1):").arg(rtm->rtm_addrs) << list.join(" ");
 }
 
 void MacosRouteMonitor::handleIfaceInfo(const struct if_msghdr* ifm,
@@ -137,9 +137,9 @@ void MacosRouteMonitor::handleIfaceInfo(const struct if_msghdr* ifm,
   for (auto addr : addrlist) {
     list.append(addrToString(addr));
   }
-  logger.log() << "Interface " << ifm->ifm_index
-               << "chagned flags:" << ifm->ifm_flags
-               << QString("addrs(%1):").arg(ifm->ifm_addrs) << list.join(" ");
+  logger.debug() << "Interface " << ifm->ifm_index
+                 << "chagned flags:" << ifm->ifm_flags
+                 << QString("addrs(%1):").arg(ifm->ifm_addrs) << list.join(" ");
 }
 
 void MacosRouteMonitor::rtsockReady() {
@@ -182,7 +182,7 @@ void MacosRouteMonitor::rtsockReady() {
         handleIfaceInfo((struct if_msghdr*)rtm, message);
         break;
       default:
-        logger.log() << "Unknown routing message:" << rtm->rtm_type;
+        logger.debug() << "Unknown routing message:" << rtm->rtm_type;
         break;
     }
 
@@ -295,7 +295,7 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddressRange& prefix) {
   if ((action == RTM_DELETE) && (errno == ESRCH)) {
     return true;
   }
-  logger.log() << "Failed to send routing message:" << strerror(errno);
+  logger.warning() << "Failed to send routing message:" << strerror(errno);
   return false;
 }
 

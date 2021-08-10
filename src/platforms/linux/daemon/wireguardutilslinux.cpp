@@ -200,7 +200,8 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Endpoint
   if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
                        config.m_serverPort)) {
-    logger.error() << "Failed to set peer endpoint for hop" << config.m_hopindex;
+    logger.error() << "Failed to set peer endpoint for hop"
+                   << config.m_hopindex;
     return false;
   }
 
@@ -402,7 +403,6 @@ QStringList WireguardUtilsLinux::currentInterfaces() {
   free(deviceNames);
   return devices;
 }
-
 
 bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* sa,
                                           const QString& address, int port) {

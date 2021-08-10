@@ -28,12 +28,12 @@ Logger logger(LOG_MACOS, "IPUtilsMacos");
 
 IPUtilsMacos::IPUtilsMacos(QObject* parent) : IPUtils(parent) {
   MVPN_COUNT_CTOR(IPUtilsMacos);
-  logger.log() << "IPUtilsMacos created.";
+  logger.debug() << "IPUtilsMacos created.";
 }
 
 IPUtilsMacos::~IPUtilsMacos() {
   MVPN_COUNT_DTOR(IPUtilsMacos);
-  logger.log() << "IPUtilsMacos destroyed.";
+  logger.debug() << "IPUtilsMacos destroyed.";
 }
 
 bool IPUtilsMacos::addInterfaceIPs(const InterfaceConfig& config) {
@@ -56,7 +56,7 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
-    logger.log() << "Failed to create ioctl socket.";
+    logger.error() << "Failed to create ioctl socket.";
     return false;
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
@@ -66,7 +66,7 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   ifr.ifr_mtu = ETH_MTU - WG_MTU_OVERHEAD;
   int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
   if (ret) {
-    logger.log() << "Failed to set MTU:" << strerror(errno);
+    logger.error() << "Failed to set MTU:" << strerror(errno);
     return false;
   }
 
@@ -74,7 +74,7 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
   ret = ioctl(sockfd, SIOCGIFFLAGS, &ifr);
   if (ret) {
-    logger.log() << "Failed to get interface flags:" << strerror(errno);
+    logger.error() << "Failed to get interface flags:" << strerror(errno);
     return false;
   }
 
@@ -82,7 +82,7 @@ bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
   ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
   if (ret) {
-    logger.log() << "Failed to set device up:" << strerror(errno);
+    logger.error() << "Failed to set device up:" << strerror(errno);
     return false;
   }
 
@@ -124,7 +124,7 @@ bool IPUtilsMacos::addIP4AddressToDevice(const InterfaceConfig& config) {
   // Create an IPv4 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
-    logger.log() << "Failed to create ioctl socket.";
+    logger.error() << "Failed to create ioctl socket.";
     return false;
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
@@ -132,8 +132,8 @@ bool IPUtilsMacos::addIP4AddressToDevice(const InterfaceConfig& config) {
   // Set ifr to interface
   int ret = ioctl(sockfd, SIOCAIFADDR, &ifr);
   if (ret) {
-    logger.log() << "Failed to set IPv4: " << deviceAddr
-                 << "error:" << strerror(errno);
+    logger.error() << "Failed to set IPv4: " << deviceAddr
+                   << "error:" << strerror(errno);
     return false;
   }
   return true;
@@ -164,7 +164,7 @@ bool IPUtilsMacos::addIP6AddressToDevice(const InterfaceConfig& config) {
   // Create IPv4 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
-    logger.log() << "Failed to create ioctl socket.";
+    logger.error() << "Failed to create ioctl socket.";
     return false;
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
@@ -172,8 +172,8 @@ bool IPUtilsMacos::addIP6AddressToDevice(const InterfaceConfig& config) {
   // Set ifr to interface
   int ret = ioctl(sockfd, SIOCAIFADDR_IN6, &ifr6);
   if (ret) {
-    logger.log() << "Failed to set IPv6: " << deviceAddr
-                 << "error:" << strerror(errno);
+    logger.error() << "Failed to set IPv6: " << deviceAddr
+                   << "error:" << strerror(errno);
     return false;
   }
   return true;

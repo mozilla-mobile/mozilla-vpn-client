@@ -150,7 +150,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
   ret = ioctl(sockfd, SIOCSIFADDR, &ifr6);
   if (ret && (errno != EEXIST)) {
     logger.error() << "Failed to set IPv6: " << deviceAddr
-                 << "error:" << strerror(errno);
+                   << "error:" << strerror(errno);
     return false;
   }
 

@@ -50,7 +50,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
     addresses.append(config.m_deviceIpv6Address);
   }
   if (addresses.isEmpty()) {
-    logger.log() << "Failed to create WG quick config with no addresses";
+    logger.error() << "Failed to create WG quick config with no addresses";
     return false;
   }
   out << "Address = " << addresses.join(", ") << "\n";
@@ -188,7 +188,7 @@ bool WgQuickProcess::run(
                      for (;;) {
                        QByteArray line = wgQuickProcess.readLine();
                        if (line.length() == 0) break;
-                       logger.log() << QString(line).trimmed();
+                       logger.debug() << QString(line).trimmed();
                      }
                    });
 

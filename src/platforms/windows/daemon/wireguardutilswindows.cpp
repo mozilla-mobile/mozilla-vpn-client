@@ -128,7 +128,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   } else if (!config.m_serverIpv6AddrIn.isNull()) {
     out << "endpoint=[" << config.m_serverIpv6AddrIn << "]:";
   } else {
-    logger.log() << "Failed to create peer with no endpoints";
+    logger.warning() << "Failed to create peer with no endpoints";
     return false;
   }
   out << config.m_serverPort << "\n";
@@ -139,7 +139,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   }
 
   QString reply = m_tunnel.uapiCommand(message);
-  logger.log() << "DATA:" << reply;
+  logger.debug() << "DATA:" << reply;
   return true;
 }
 
@@ -213,22 +213,14 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddressRange& prefix,
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
-<<<<<<< HEAD
-  // Fetch the routing table
-  result = GetIpForwardTable2(AF_UNSPEC, &table);
-  if (result != NO_ERROR) {
-    logger.error() << "Failed to fetch route table:" << result;
-    return;
-=======
   // Install the route
   DWORD result = DeleteIpForwardEntry2(&entry);
   if (result == ERROR_NOT_FOUND) {
     return true;
->>>>>>> Implement multihop for Windows (needs tunnel.dll fix)
   }
   if (result != NO_ERROR) {
-    logger.log() << "Failed to delete route to" << prefix.toString()
-                 << "result:" << result;
+    logger.error() << "Failed to delete route to" << prefix.toString()
+                   << "result:" << result;
   }
   return result == NO_ERROR;
 }

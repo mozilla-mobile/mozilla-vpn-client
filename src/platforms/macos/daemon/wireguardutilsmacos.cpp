@@ -25,7 +25,7 @@ Logger logwireguard(LOG_MACOS, "WireguardGo");
 WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
     : WireguardUtils(parent), m_tunnel(this) {
   MVPN_COUNT_CTOR(WireguardUtilsMacos);
-  logger.log() << "WireguardUtilsMacos created.";
+  logger.debug() << "WireguardUtilsMacos created.";
 
   connect(&m_tunnel, SIGNAL(readyReadStandardOutput()), this,
           SLOT(tunnelStdoutReady()));
@@ -35,7 +35,7 @@ WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
 
 WireguardUtilsMacos::~WireguardUtilsMacos() {
   MVPN_COUNT_DTOR(WireguardUtilsMacos);
-  logger.log() << "WireguardUtilsMacos destroyed.";
+  logger.debug() << "WireguardUtilsMacos destroyed.";
 }
 
 void WireguardUtilsMacos::tunnelStdoutReady() {
@@ -49,14 +49,14 @@ void WireguardUtilsMacos::tunnelStdoutReady() {
 }
 
 void WireguardUtilsMacos::tunnelErrorOccurred(QProcess::ProcessError error) {
-  logger.log() << "Tunnel process encountered an error:" << error;
+  logger.warning() << "Tunnel process encountered an error:" << error;
   emit backendFailure();
 }
 
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
   if (m_tunnel.state() != QProcess::NotRunning) {
-    logger.log() << "Unable to start: tunnel process already running";
+    logger.warning() << "Unable to start: tunnel process already running";
     return false;
   }
 
@@ -80,18 +80,18 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   QStringList wgArgs = {"-f", "utun"};
   m_tunnel.start(appPath.filePath("wireguard-go"), wgArgs);
   if (!m_tunnel.waitForStarted(WG_TUN_PROC_TIMEOUT)) {
-    logger.log() << "Unable to start tunnel process due to timeout";
+    logger.error() << "Unable to start tunnel process due to timeout";
     m_tunnel.kill();
     return false;
   }
 
   m_ifname = waitForTunnelName(wgNameFile);
   if (m_ifname.isNull()) {
-    logger.log() << "Unable to read tunnel interface name";
+    logger.error() << "Unable to read tunnel interface name";
     m_tunnel.kill();
     return false;
   }
-  logger.log() << "Created wireguard interface" << m_ifname;
+  logger.debug() << "Created wireguard interface" << m_ifname;
 
   // Start the routing table monitor.
   m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
@@ -104,7 +104,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   out << "replace_peers=true\n";
   int err = uapiErrno(uapiCommand(message));
   if (err != 0) {
-    logger.log() << "Interface configuration failed:" << strerror(err);
+    logger.error() << "Interface configuration failed:" << strerror(err);
   }
   return (err == 0);
 }
@@ -147,7 +147,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   } else if (!config.m_serverIpv6AddrIn.isNull()) {
     out << "endpoint=[" << config.m_serverIpv6AddrIn << "]:";
   } else {
-    logger.log() << "Failed to create peer with no endpoints";
+    logger.warning() << "Failed to create peer with no endpoints";
     return false;
   }
   out << config.m_serverPort << "\n";
@@ -159,7 +159,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   int err = uapiErrno(uapiCommand(message));
   if (err != 0) {
-    logger.log() << "Peer configuration failed:" << strerror(err);
+    logger.error() << "Peer configuration failed:" << strerror(err);
   }
   return (err == 0);
 }
@@ -175,7 +175,7 @@ bool WireguardUtilsMacos::deletePeer(const QString& pubkey) {
 
   int err = uapiErrno(uapiCommand(message));
   if (err != 0) {
-    logger.log() << "Peer deletion failed:" << strerror(err);
+    logger.error() << "Peer deletion failed:" << strerror(err);
   }
   return (err == 0);
 }
@@ -242,8 +242,8 @@ QString WireguardUtilsMacos::uapiCommand(const QString& command) {
 
   socket.connectToServer(wgSocketFile, QIODevice::ReadWrite);
   if (!socket.waitForConnected(WG_TUN_PROC_TIMEOUT)) {
-    logger.log() << "QLocalSocket::waitForConnected() failed:"
-                 << socket.errorString();
+    logger.error() << "QLocalSocket::waitForConnected() failed:"
+                   << socket.errorString();
     return QString();
   }
 
@@ -257,7 +257,7 @@ QString WireguardUtilsMacos::uapiCommand(const QString& command) {
   QByteArray reply;
   while (!reply.contains("\n\n")) {
     if (!uapiTimeout.isActive()) {
-      logger.log() << "UAPI command timed out";
+      logger.error() << "UAPI command timed out";
       return QString();
     }
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
