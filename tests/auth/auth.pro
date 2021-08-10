@@ -54,6 +54,7 @@ HEADERS += \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
     ../../src/urlopener.h \
+    testemailvalidation.h \
     testsignupandin.h
 
 SOURCES += \
@@ -84,6 +85,7 @@ SOURCES += \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
     ../../src/urlopener.cpp \
     main.cpp \
+    testemailvalidation.cpp \
     testsignupandin.cpp
 
 OBJECTS_DIR = .obj

@@ -8,6 +8,7 @@
 #include "../../src/settingsholder.h"
 #include "../../src/simplenetworkmanager.h"
 
+#include "testemailvalidation.h"
 #include "testsignupandin.h"
 
 #include <QCoreApplication>
@@ -27,6 +28,9 @@ int main(int argc, char* argv[]) {
   SettingsHolder settingsHolder;
 
   int failures = 0;
+  TestEmailValidation tev;
+  failures += QTest::qExec(&tev);
+
   TestSignUpAndIn tsu("vpn.auth.test.");
   failures += QTest::qExec(&tsu);
 
@@ -35,5 +39,6 @@ int main(int argc, char* argv[]) {
 
   TestSignUpAndIn tsuSync("sync.vpn.auth.test.");
   failures += QTest::qExec(&tsuSync);
+
   return failures;
 }
