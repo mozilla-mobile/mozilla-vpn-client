@@ -44,7 +44,7 @@ void WireguardUtilsMacos::tunnelStdoutReady() {
     if (line.length() <= 0) {
       break;
     }
-    logwireguard.log() << QString::fromUtf8(line);
+    logwireguard.debug() << QString::fromUtf8(line);
   }
 }
 
