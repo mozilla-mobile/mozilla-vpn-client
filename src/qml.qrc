@@ -338,6 +338,7 @@
         <file>ui/resources/chevron.svg</file>
         <file>ui/resources/close-white.svg</file>
         <file>ui/resources/externalLink.svg</file>
+        <file>ui/resources/arrow-forward.svg</file>
         <file>ui/resources/arrow-toggle.svg</file>
         <file>ui/resources/connection.svg</file>
         <file>ui/resources/onboarding/onboarding1.svg</file>
@@ -451,6 +452,7 @@
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
+        <file>ui/components/VPNServerLabel.qml</file>
         <file>ui/components/VPNTabNavigation.qml</file>
     </qresource>
 </RCC>
