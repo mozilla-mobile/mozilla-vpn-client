@@ -92,21 +92,6 @@ QByteArray WindowsDaemon::getStatus() {
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
-bool WindowsDaemon::supportServerSwitching(
-    const InterfaceConfig& config) const {
-  if (!m_connections.contains(config.m_hopindex)) {
-    return false;
-  }
-  const InterfaceConfig& current =
-      m_connections.value(config.m_hopindex).m_config;
-
-  return current.m_privateKey == config.m_privateKey &&
-         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
-}
-
 void WindowsDaemon::monitorBackendFailure() {
   logger.warning() << "Tunnel service is down";
 
