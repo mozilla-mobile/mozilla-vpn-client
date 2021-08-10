@@ -18,8 +18,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
-  void start(const QString& codeChallenge,
-             const QString& codeChallengeMethod) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 
   void checkAccount(const QString& emailAddress);
   void setPassword(const QString& password);

@@ -62,11 +62,12 @@ IOSAuthenticationListener::~IOSAuthenticationListener() {
 }
 
 void IOSAuthenticationListener::start(const QString& codeChallenge,
-                                      const QString& codeChallengeMethod) {
+                                      const QString& codeChallengeMethod,
+                                      const QString& emailAddress) {
   logger.debug() << "IOSAuthenticationListener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
-                                   codeChallengeMethod));
+                                   codeChallengeMethod, emailAddress));
   QUrlQuery query(url.query());
   query.addQueryItem("platform", "ios");
   url.setQuery(query);
