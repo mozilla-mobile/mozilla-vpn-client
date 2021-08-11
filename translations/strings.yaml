@@ -81,3 +81,4 @@ splittunnel:
     comment:
       - Apps in the Split-Tunnel settings %1 is the amount of apps missing
   missingAppAddedOne: Success! You added the %1 to this list.
+

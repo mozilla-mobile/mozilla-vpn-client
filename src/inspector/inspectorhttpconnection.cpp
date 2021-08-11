@@ -46,7 +46,7 @@ InspectorHttpConnection::InspectorHttpConnection(QObject* parent,
            connection->localAddress() == QHostAddress::LocalHostIPv6);
 #endif
 
-  logger.log() << "New connection received";
+  logger.debug() << "New connection received";
 
   Q_ASSERT(m_connection);
   connect(m_connection, &QTcpSocket::readyRead, this,
@@ -55,7 +55,7 @@ InspectorHttpConnection::InspectorHttpConnection(QObject* parent,
 
 InspectorHttpConnection::~InspectorHttpConnection() {
   MVPN_COUNT_DTOR(InspectorHttpConnection);
-  logger.log() << "Connection released";
+  logger.debug() << "Connection released";
 }
 
 void InspectorHttpConnection::readData() {
@@ -83,7 +83,7 @@ void InspectorHttpConnection::readData() {
 }
 
 void InspectorHttpConnection::processHeaders() {
-  logger.log() << "process headers:" << m_headers;
+  logger.debug() << "process headers:" << m_headers;
 
   if (m_headers.isEmpty()) {
     m_connection->close();
@@ -103,7 +103,7 @@ void InspectorHttpConnection::processHeaders() {
       QFile file(p.m_file);
 
       if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        logger.log() << "Unable to read file" << p.m_file;
+        logger.error() << "Unable to read file" << p.m_file;
         break;
       }
 

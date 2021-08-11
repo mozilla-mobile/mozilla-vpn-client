@@ -26,18 +26,18 @@ CaptivePortalNotifier::~CaptivePortalNotifier() {
 }
 
 void CaptivePortalNotifier::notifyCaptivePortalBlock() {
-  logger.log() << "Captive portal block notify";
+  logger.debug() << "Captive portal block notify";
   SystemTrayHandler::instance()->captivePortalBlockNotificationRequired();
 }
 
 void CaptivePortalNotifier::notifyCaptivePortalUnblock() {
-  logger.log() << "Captive portal unblock notify";
+  logger.debug() << "Captive portal unblock notify";
   SystemTrayHandler::instance()->captivePortalUnblockNotificationRequired();
 }
 
 void CaptivePortalNotifier::notificationClicked(
     SystemTrayHandler::Message message) {
-  logger.log() << "Notification clicked";
+  logger.debug() << "Notification clicked";
 
   switch (message) {
     case SystemTrayHandler::CaptivePortalBlock:
@@ -49,7 +49,7 @@ void CaptivePortalNotifier::notificationClicked(
       break;
 
     default:
-      logger.log() << "Ignore message";
+      logger.warning() << "Ignore message";
       break;
   }
 }

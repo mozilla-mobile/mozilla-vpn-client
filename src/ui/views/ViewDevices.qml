@@ -131,7 +131,7 @@ Item {
 
                     labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: stackview.push(getHelpComponent)
+                    onClicked: stackview.push("../views/ViewGetHelp.qml", {isSettingsView: false})
                     Layout.preferredHeight: Theme.rowHeight
                 }
 
@@ -161,13 +161,4 @@ Item {
     }
 
     Component.onCompleted: VPN.refreshDevices()
-
-    Component {
-        id: getHelpComponent
-
-        VPNGetHelp {
-            isSettingsView: false
-        }
-
-    }
 }

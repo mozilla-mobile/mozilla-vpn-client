@@ -42,8 +42,8 @@ void DummyController::activate(
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
-  logger.log() << "DummyController activated" << server.hostname();
-  logger.log() << "DummyController DNS" << dnsServer.toString();
+  logger.debug() << "DummyController activated" << server.hostname();
+  logger.debug() << "DummyController DNS" << dnsServer.toString();
 
   m_connected = true;
   m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
@@ -52,7 +52,7 @@ void DummyController::activate(
 void DummyController::deactivate(Reason reason) {
   Q_UNUSED(reason);
 
-  logger.log() << "DummyController deactivated";
+  logger.debug() << "DummyController deactivated";
 
   m_connected = false;
   m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);

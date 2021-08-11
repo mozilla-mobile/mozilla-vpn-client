@@ -34,7 +34,7 @@ MacOSPingSender::MacOSPingSender(const QString& source, QObject* parent)
     m_socket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
   }
   if (m_socket < 0) {
-    logger.log() << "Socket creation failed";
+    logger.error() << "Socket creation failed";
     return;
   }
 
@@ -44,12 +44,12 @@ MacOSPingSender::MacOSPingSender(const QString& source, QObject* parent)
   addr.sin_len = sizeof(addr);
 
   if (inet_aton(source.toLocal8Bit().constData(), &addr.sin_addr) == 0) {
-    logger.log() << "source address error";
+    logger.error() << "source address error";
     return;
   }
 
   if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
-    logger.log() << "bind error:" << strerror(errno);
+    logger.error() << "bind error:" << strerror(errno);
     return;
   }
 
@@ -72,7 +72,7 @@ void MacOSPingSender::sendPing(const QString& dest, quint16 sequence) {
   addr.sin_len = sizeof(addr);
 
   if (inet_aton(dest.toLocal8Bit().constData(), &addr.sin_addr) == 0) {
-    logger.log() << "DNS lookup failed";
+    logger.error() << "DNS lookup failed";
     return;
   }
 
@@ -85,7 +85,7 @@ void MacOSPingSender::sendPing(const QString& dest, quint16 sequence) {
 
   if (sendto(m_socket, (char*)&packet, sizeof(packet), 0,
              (struct sockaddr*)&addr, sizeof(addr)) != sizeof(packet)) {
-    logger.log() << "ping sending failed:" << strerror(errno);
+    logger.error() << "ping sending failed:" << strerror(errno);
     return;
   }
 }
@@ -108,7 +108,7 @@ void MacOSPingSender::socketReady() {
 
   ssize_t rc = recvmsg(m_socket, &msg, MSG_DONTWAIT);
   if (rc <= 0) {
-    logger.log() << "Recvmsg failed";
+    logger.error() << "Recvmsg failed";
     return;
   }
 

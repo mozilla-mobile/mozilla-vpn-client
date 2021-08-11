@@ -42,6 +42,7 @@ xcode.xconfig
 .gradle_cache/
 
 *.ts
+tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
 tests/proxy/__pycache__/
@@ -101,6 +102,9 @@ mozillavpnnp.vcxproj*
 
 # For users compiling QT per the README
 /qt/
+
+# Scripts
+scripts/__pycache__
 
 # Language files
 translations/*/*.ts

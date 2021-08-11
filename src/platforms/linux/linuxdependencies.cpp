@@ -20,7 +20,7 @@ namespace {
 Logger logger(LOG_LINUX, "LinuxDependencies");
 
 void showAlert(const QString& message) {
-  logger.log() << "Show alert:" << message;
+  logger.debug() << "Show alert:" << message;
 
   QMessageBox alert;
   alert.setText(message);
@@ -36,7 +36,7 @@ bool findInPath(const char* what) {
     QDir pathDir(part);
     QFileInfo file(pathDir.filePath(what));
     if (file.exists()) {
-      logger.log() << what << "found" << file.filePath();
+      logger.debug() << what << "found" << file.filePath();
       return true;
     }
   }
@@ -45,7 +45,7 @@ bool findInPath(const char* what) {
 }
 
 bool checkDaemonVersion() {
-  logger.log() << "Check Daemon Version";
+  logger.debug() << "Check Daemon Version";
 
   DBusClient* dbus = new DBusClient(nullptr);
   QDBusPendingCallWatcher* watcher = dbus->version();
@@ -59,7 +59,7 @@ bool checkDaemonVersion() {
 
         QDBusPendingReply<QString> reply = *call;
         if (reply.isError()) {
-          logger.log() << "DBus message received - error";
+          logger.error() << "DBus message received - error";
           *value = false;
           return;
         }
@@ -67,8 +67,8 @@ bool checkDaemonVersion() {
         QString version = reply.argumentAt<0>();
         *value = version == PROTOCOL_VERSION;
 
-        logger.log() << "DBus message received - daemon version:" << version
-                     << " - current version:" << PROTOCOL_VERSION;
+        logger.debug() << "DBus message received - daemon version:" << version
+                       << " - current version:" << PROTOCOL_VERSION;
       });
 
   while (!completed) {

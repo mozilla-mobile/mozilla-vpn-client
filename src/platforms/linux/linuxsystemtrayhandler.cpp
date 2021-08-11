@@ -92,14 +92,14 @@ void LinuxSystemTrayHandler::showNotificationInternal(Message type,
   QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId, appIcon,
                                   title, message, actions, hints, timerMsec);
   if (!reply.isValid()) {
-    logger.log() << "Failed to show the notification";
+    logger.warning() << "Failed to show the notification";
   }
 
   m_lastNotificationId = reply;
 }
 
 void LinuxSystemTrayHandler::actionInvoked(uint actionId, QString action) {
-  logger.log() << "Notification clicked" << actionId << action;
+  logger.debug() << "Notification clicked" << actionId << action;
 
   if (action == ACTION_ID && m_lastNotificationId == actionId) {
     messageClickHandle();

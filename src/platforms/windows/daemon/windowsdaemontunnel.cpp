@@ -28,7 +28,7 @@ WindowsDaemonTunnel::~WindowsDaemonTunnel() {
 int WindowsDaemonTunnel::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
 
-  logger.log() << "Tunnel daemon service is starting";
+  logger.debug() << "Tunnel daemon service is starting";
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -36,7 +36,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
   QCoreApplication::setApplicationVersion(APP_VERSION);
 
   if (tokens.length() != 2) {
-    logger.log() << "Expected 1 parameter only: the config file.";
+    logger.error() << "Expected 1 parameter only: the config file.";
     return 1;
   }
 
@@ -59,12 +59,12 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
 
   QString configFile = WindowsCommons::tunnelConfigFile();
   if (configFile.isEmpty()) {
-    logger.log() << "Failed to retrieve the config file";
+    logger.error() << "Failed to retrieve the config file";
     return 1;
   }
 
   if (!tunnelProc(configFile.utf16())) {
-    logger.log() << "Failed to activate the tunnel service";
+    logger.error() << "Failed to activate the tunnel service";
     return 1;
   }
 

@@ -27,7 +27,7 @@ Logger logger(LOG_WINDOWS, "WireguardUtilsWindows");
 WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
     : WireguardUtils(parent), m_tunnel(this) {
   MVPN_COUNT_CTOR(WireguardUtilsWindows);
-  logger.log() << "WireguardUtilsWindows created.";
+  logger.debug() << "WireguardUtilsWindows created.";
 
   connect(&m_tunnel, &WindowsTunnelService::backendFailure, this,
           [&] { emit backendFailure(); });
@@ -35,7 +35,7 @@ WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
 
 WireguardUtilsWindows::~WireguardUtilsWindows() {
   MVPN_COUNT_DTOR(WireguardUtilsWindows);
-  logger.log() << "WireguardUtilsWindows destroyed.";
+  logger.debug() << "WireguardUtilsWindows destroyed.";
 }
 
 WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
@@ -61,7 +61,7 @@ WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   QString tunnelFile = WindowsCommons::tunnelConfigFile();
   if (tunnelFile.isEmpty()) {
-    logger.log() << "Failed to choose the tunnel config file";
+    logger.error() << "Failed to choose the tunnel config file";
     return false;
   }
 
@@ -73,12 +73,12 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   QMap<QString, QString> extraConfig;
   extraConfig["Table"] = "off";
   if (!WgQuickProcess::createConfigFile(tunnelFile, config, extraConfig)) {
-    logger.log() << "Failed to create a config file";
+    logger.error() << "Failed to create a config file";
     return false;
   }
 
   if (!m_tunnel.start(tunnelFile)) {
-    logger.log() << "Failed to activate the tunnel service";
+    logger.error() << "Failed to activate the tunnel service";
     return false;
   }
 
@@ -87,12 +87,12 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   QString ifAlias = QFileInfo(tunnelFile).baseName();
   DWORD result = ConvertInterfaceAliasToLuid((wchar_t*)ifAlias.utf16(), &luid);
   if (result != 0) {
-    logger.log() << "Failed to lookup LUID:" << result;
+    logger.error() << "Failed to lookup LUID:" << result;
     return false;
   }
   m_luid = luid.Value;
 
-  logger.log() << "Registration completed";
+  logger.debug() << "Registration completed";
   return true;
 }
 
@@ -122,7 +122,7 @@ bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
   }
 
   QString reply = m_tunnel.uapiCommand(message);
-  logger.log() << "DATA:" << reply;
+  logger.debug() << "DATA:" << reply;
   return true;
 }
 
@@ -160,8 +160,8 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
   // Install the route
   result = CreateIpForwardEntry2(&entry);
   if (result != NO_ERROR) {
-    logger.log() << "Failed to create route to" << prefix.toString()
-                 << "result:" << result;
+    logger.error() << "Failed to create route to" << prefix.toString()
+                   << "result:" << result;
   }
   return result == NO_ERROR;
 }
@@ -173,7 +173,7 @@ void WireguardUtilsWindows::flushRoutes() {
   // Fetch the routing table
   result = GetIpForwardTable2(AF_UNSPEC, &table);
   if (result != NO_ERROR) {
-    logger.log() << "Failed to fetch route table:" << result;
+    logger.error() << "Failed to fetch route table:" << result;
     return;
   }
   auto guard = qScopeGuard([&] { FreeMibTable(table); });

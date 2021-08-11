@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         config:
-            - { name: Release, args: --prod, apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
-            - { name: Debug, args: --debug, apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
+            - { name: Release, args: "", apk: .tmp/src/android-build/build/outputs/apk/release/, sym: true, sign: true  }
+            - { name: Debug, args: "--debug", apk: .tmp/src/android-build/mozillavpn.apk, sym: false, sign: false}
 
     runs-on: ubuntu-20.04
       
@@ -57,6 +57,8 @@ jobs:
           pip3 install pyyaml
 
       - name: Compilation
+        env:
+          ADJUST_SDK_TOKEN: ${{ secrets.ADJUST_SDK_TOKEN }}
         run: |
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
           bash ./scripts/android_package.sh /home/runner/work/mozilla-vpn-client/Qt/5.15.2 ${{ matrix.config.args }}
