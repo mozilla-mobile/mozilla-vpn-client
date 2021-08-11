@@ -102,12 +102,10 @@ Item {
                 objectName: "advancedDNSSettings"
                 anchors.left: parent.left
                 anchors.right: parent.right
-                Layout.fillWidth: undefined
-                Layout.preferredHeight: undefined
                 width: parent.width - Theme.windowMargin
 
-                //% "Advanced DNS Settings"
-                settingTitle: qsTrId("vpn.settings.networking.advancedDNSSettings")
+
+                settingTitle: "NeedString: DNS Settings"
                 imageLeftSrc: "../resources/settings.svg"
                 imageRightSrc: "../resources/chevron.svg"
                 onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")

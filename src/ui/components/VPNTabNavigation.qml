@@ -14,14 +14,25 @@ Item {
     property alias tabList: tabButtons.model
     property alias stackContent: stack.children
 
+
+    Rectangle {
+        // grey divider
+        anchors.bottom: bar.bottom
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: Color.grey10
+        height: 1
+        visible: stack.children.length > 1
+    }
+
     TabBar {
         id: bar
         width: parent.width
         visible: stack.children.length > 1
-        height: stack.children.length === 1 ? 0 : contentHeight
-        contentHeight: 56
+        contentHeight: stack.children.length === 1 ? 0 : 56
         background: Rectangle {
-            color: Color.grey5
+           color: "transparent"
         }
 
         Repeater {
@@ -33,14 +44,28 @@ Item {
                 checkable: true
 
                 background: Rectangle {
-                    color: Color.grey5
+                    color: "transparent"
+
+                    Rectangle {
+                        height: 2
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        color: Color.purple70
+                        opacity: btn.activeFocus ? 1 : 0
+                        Behavior on opacity {
+                            PropertyAnimation {
+                                duration: 100
+                            }
+                        }
+                    }
                 }
 
                 contentItem: VPNBoldLabel {
                     text: buttonLabel
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: btn.checked ? Color.purple70 : btn.hovered ? Color.grey50 : Color.grey40
+                    color: btn.checked || btn.activeFocus ? Color.purple70 : btn.hovered ? Color.grey50 : Color.grey40
 
                     Behavior on color {
                         PropertyAnimation {
@@ -53,21 +78,13 @@ Item {
     }
 
     Rectangle {
-        // grey divider
-        anchors.bottom: bar.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        color: Color.grey10
-        height: 1
-    }
-
-    Rectangle {
         // active tab indicator
         width: bar.currentItem.width
         height: 2
         color: Color.purple70
         anchors.bottom: bar.bottom
         x: bar.currentItem.x
+        visible: stack.children.length > 1
         Behavior on x {
             PropertyAnimation {
                 duration: 100
@@ -101,3 +118,4 @@ Item {
        */
     }
 }
+
