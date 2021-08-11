@@ -266,29 +266,31 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
 
 bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
                                        const InterfaceConfig& config) {
-  // Checks if the FW_Rule was enabled succesfully,
-  // disables the whole killswitch and returns false if not.
-  #define FW_OK(rule,name)                               \
-    if(!rule){                                        \
-      logger.log() << "Rule failed:" << name << "\n"; \
-      disableKillSwitch();\
-      return false;\
-    }\
-    logger.log() << "Rule enabled:" << name << "\n";
+// Checks if the FW_Rule was enabled succesfully,
+// disables the whole killswitch and returns false if not.
+#define FW_OK(rule, name)                           \
+  if (!rule) {                                      \
+    logger.log() << "Rule failed:" << name << "\n"; \
+    disableKillSwitch();                            \
+    return false;                                   \
+  }                                                 \
+  logger.log() << "Rule enabled:" << name << "\n";
 
   logger.log() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
   FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),
         "Block all");
-  FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT), "Allow Traffic to VPN Adapter");
-  FW_OK(allowDHCPTraffic(MED_WEIGHT),"Allow DHCP Traffic");
-  FW_OK(allowHyperVTraffic(MED_WEIGHT),"Allow Hyper-V Traffic");
-  FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT),"Allow Traffic for MozillaVPN.exe");
-  FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT),"Allow DNS Traffic");
+  FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT),
+        "Allow Traffic to VPN Adapter");
+  FW_OK(allowDHCPTraffic(MED_WEIGHT), "Allow DHCP Traffic");
+  FW_OK(allowHyperVTraffic(MED_WEIGHT), "Allow Hyper-V Traffic");
+  FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT),
+        "Allow Traffic for MozillaVPN.exe");
+  FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT),
+        "Allow DNS Traffic");
 
   logger.log() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
-  #undef FW_OK
-
+#undef FW_OK
 }
 
 bool WindowsFirewall::disableKillSwitch() {
@@ -510,8 +512,10 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
                << ":" << port;
 
   bool isIPv4 = targetIP.protocol() == QAbstractSocket::IPv4Protocol;
-  GUID layerOut = isIPv4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-  GUID layoutIn = isIPv4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4 : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  GUID layerOut =
+      isIPv4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+  GUID layoutIn = isIPv4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
+                         : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
 
   quint32_be ipBigEndian;
   quint32 ip = targetIP.toIPv4Address();
@@ -547,7 +551,7 @@ bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
 
   conds[3].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
   conds[3].matchType = FWP_MATCH_EQUAL;
-  importAddress(targetIP,conds[3].conditionValue);
+  importAddress(targetIP, conds[3].conditionValue);
 
   // Assemble the Filter base
   FWPM_FILTER0 filter;
@@ -683,7 +687,7 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     m_activeRules.append(filterID);
   }
 
-    // Allow outbound DHCPv6
+  // Allow outbound DHCPv6
   {
     FWPM_FILTER_CONDITION0 conds[3];
     // Condition: Request must be targeting the TUN interface
@@ -724,7 +728,7 @@ bool WindowsFirewall::allowDHCPTraffic(uint8_t weight) {
     m_activeRules.append(filterID);
   }
 
-    // Allow inbound DHCPv6
+  // Allow inbound DHCPv6
   {
     FWPM_FILTER_CONDITION0 conds[3];
     conds[0].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
@@ -836,9 +840,8 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
   return true;
 }
 
-
-
-bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight){
+bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
+                                     uint8_t weight) {
   logger.log() << "Blocking traffic to " << range.toString();
   IPAddress addr = IPAddress::create(range.toString());
 
@@ -857,11 +860,13 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
     return false;
   }
   const bool isV4 = addr.type() == QAbstractSocket::IPv4Protocol;
-  const GUID layerKeyOut= isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-  const GUID layerKeyIn = isV4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4 : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  const GUID layerKeyOut =
+      isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+  const GUID layerKeyIn = isV4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
+                               : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
 
   uint64_t filterID = 0;
-   
+
   // Assemble the Filter base
   FWPM_FILTER0 filter;
   memset(&filter, 0, sizeof(filter));
@@ -870,24 +875,24 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
-
-  FWPM_FILTER_CONDITION0 cond[1] = { 0 };
+  FWPM_FILTER_CONDITION0 cond[1] = {0};
   FWP_RANGE0 ipRange;
-  importAddress(lower,ipRange.valueLow);
-  importAddress(upper,ipRange.valueHigh);
-  
-  cond[0].fieldKey =FWPM_CONDITION_IP_REMOTE_ADDRESS;
+  importAddress(lower, ipRange.valueLow);
+  importAddress(upper, ipRange.valueHigh);
+
+  cond[0].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
   cond[0].matchType = FWP_MATCH_RANGE;
   cond[0].conditionValue.type = FWP_RANGE_TYPE;
   cond[0].conditionValue.rangeValue = &ipRange;
 
-  filter.numFilterConditions=1;
+  filter.numFilterConditions = 1;
   filter.filterCondition = cond;
 
-  { // Set outbound rule for iprange 
-    QString name = QString("Block Outbound traffic to %1 ").arg(range.toString());  
+  {  // Set outbound rule for iprange
+    QString name =
+        QString("Block Outbound traffic to %1 ").arg(range.toString());
     std::wstring wname = name.toStdWString();
-    filter.displayData.name = (PWSTR) wname.c_str();
+    filter.displayData.name = (PWSTR)wname.c_str();
     filter.layerKey = layerKeyOut;
 
     if (result != ERROR_SUCCESS) {
@@ -895,10 +900,11 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
     }
     m_activeRules.append(filterID);
   }
-  { // Set inbound rule for iprange 
-    QString name = QString("Block Inbound traffic to %1 ").arg(range.toString());  
+  {  // Set inbound rule for iprange
+    QString name =
+        QString("Block Inbound traffic to %1 ").arg(range.toString());
     std::wstring wname = name.toStdWString();
-    filter.displayData.name = (PWSTR) wname.c_str();
+    filter.displayData.name = (PWSTR)wname.c_str();
     filter.layerKey = layerKeyIn;
 
     if (result != ERROR_SUCCESS) {
@@ -906,7 +912,7 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
     }
     m_activeRules.append(filterID);
   }
- 
+
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
@@ -916,9 +922,10 @@ bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight
   return true;
 }
 
-bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList ,uint8_t weight){
-  for(auto range:rangeList){
-    if(!blockTrafficTo(range,weight)){
+bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList,
+                                     uint8_t weight) {
+  for (auto range : rangeList) {
+    if (!blockTrafficTo(range, weight)) {
       logger.log() << "Setting Range of" << range.toString() << "failed";
       return false;
     }
@@ -944,30 +951,27 @@ QString WindowsFirewall::getCurrentPath() {
   return QString::fromLocal8Bit(buffer);
 }
 
-
-void WindowsFirewall::importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value){
+void WindowsFirewall::importAddress(const QHostAddress& addr,
+                                    OUT FWP_VALUE0_& value) {
   const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
-  if(isV4){
+  if (isV4) {
     value.type = FWP_UINT32;
     value.uint32 = addr.toIPv4Address();
     return;
   }
   value.type = FWP_BYTE_ARRAY16_TYPE;
   auto v6bytes = addr.toIPv6Address();
-  RtlCopyMemory(&v6bytes,
-                value.byteArray16,
-                IPV6_ADDRESS_SIZE);
+  RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
 }
-void WindowsFirewall::importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_ & value){
+void WindowsFirewall::importAddress(const QHostAddress& addr,
+                                    OUT FWP_CONDITION_VALUE0_& value) {
   const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
-  if(isV4){
+  if (isV4) {
     value.type = FWP_UINT32;
     value.uint32 = addr.toIPv4Address();
     return;
   }
   value.type = FWP_BYTE_ARRAY16_TYPE;
   auto v6bytes = addr.toIPv6Address();
-  RtlCopyMemory(&v6bytes,
-                value.byteArray16,
-                IPV6_ADDRESS_SIZE);
+  RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
 }

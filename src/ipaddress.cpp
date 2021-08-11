@@ -142,7 +142,7 @@ IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
 
 IPAddress::~IPAddress() { MVPN_COUNT_DTOR(IPAddress); }
 
-QAbstractSocket::NetworkLayerProtocol IPAddress::type() const{
+QAbstractSocket::NetworkLayerProtocol IPAddress::type() const {
   return m_address.protocol();
 }
 
