@@ -23,12 +23,16 @@ Item {
         anchors.bottomMargin: 24
         width: parent.width
 
+        hasError: !VPNAuthInApp.validatePasswordCommons(passwordInput.text) || !VPNAuthInApp.validatePasswordLength(passwordInput.text) || !VPNAuthInApp.validatePasswordEmail(passwordInput.text)
+
         echoMode: TextInput.Password
 
         placeholderText: "secure password" // TODO
     }
 
     VPNButton {
+        id: button
+
         anchors.top: passwordInput.bottom
         anchors.bottomMargin: 24
         text: "Sign Up" // TODO
@@ -39,5 +43,26 @@ Item {
           VPNAuthInApp.setPassword(passwordInput.text);
           VPNAuthInApp.signUp();
         }
+    }
+
+    Text {
+        id: invalidCommon
+        anchors.top: button.bottom
+        text: "Common password"
+        visible: !VPNAuthInApp.validatePasswordCommons(passwordInput.text)
+    }
+
+    Text {
+        id: invalidLength
+        anchors.top: invalidCommon.bottom
+        text: "Password length"
+        visible: !VPNAuthInApp.validatePasswordLength(passwordInput.text)
+    }
+
+    Text {
+        id: invalidString
+        anchors.top: invalidLength.bottom
+        text: "Password email"
+        visible: !VPNAuthInApp.validatePasswordEmail(passwordInput.text)
     }
 }

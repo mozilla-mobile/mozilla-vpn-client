@@ -9,6 +9,7 @@
 #include "../../src/simplenetworkmanager.h"
 
 #include "testemailvalidation.h"
+#include "testpasswordvalidation.h"
 #include "testsignupandin.h"
 
 #include <QCoreApplication>
@@ -30,6 +31,9 @@ int main(int argc, char* argv[]) {
   int failures = 0;
   TestEmailValidation tev;
   failures += QTest::qExec(&tev);
+
+  TestPasswordValidation tpv;
+  failures += QTest::qExec(&tpv);
 
   TestSignUpAndIn tsu("vpn.auth.test.");
   failures += QTest::qExec(&tsu);
