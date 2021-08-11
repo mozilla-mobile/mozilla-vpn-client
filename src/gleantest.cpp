@@ -33,7 +33,7 @@ GleanTest* GleanTest::instance() {
 }
 
 void GleanTest::requestDone(const QByteArray& url, const QByteArray& data) {
-  logger.log() << "Glean request stored";
+  logger.debug() << "Glean request stored";
 
   m_lastUrl = url;
   m_lastData = data;

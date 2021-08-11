@@ -32,7 +32,7 @@ LinuxAppListProvider::~LinuxAppListProvider() {
 
 void LinuxAppListProvider::fetchEntries(const QString& dataDir,
                                         QMap<QString, QString>& map) {
-  logger.log() << "Fetch Application list from" << dataDir;
+  logger.debug() << "Fetch Application list from" << dataDir;
 
   QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files);
   while (iter.hasNext()) {
@@ -53,7 +53,7 @@ void LinuxAppListProvider::fetchEntries(const QString& dataDir,
 }
 
 void LinuxAppListProvider::getApplicationList() {
-  logger.log() << "Fetch Application list from Linux desktop";
+  logger.debug() << "Fetch Application list from Linux desktop";
   QMap<QString, QString> out;
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();

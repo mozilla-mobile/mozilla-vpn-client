@@ -211,13 +211,13 @@ void AppPermission::openFilePicker() {
   fp.setFileMode(QFileDialog::ExistingFile);
 
   if (!fp.exec()) {
-    logger.debug() << "File picker exection aborted";
+    logger.error() << "File picker exection aborted";
     return;
   }
 
   QStringList fileNames = fp.selectedFiles();
   if (fileNames.isEmpty()) {
-    logger.debug() << "File picker - no selection";
+    logger.warning() << "File picker - no selection";
     return;
   }
 

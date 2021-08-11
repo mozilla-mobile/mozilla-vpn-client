@@ -22,7 +22,7 @@ void createDummyRequest(NetworkRequest* r, const QString& resource) {
     if (!resource.isEmpty()) {
       QFile file(resource);
       if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        logger.log() << "Failed to open" << resource;
+        logger.error() << "Failed to open" << resource;
         return;
       }
 
@@ -47,7 +47,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 
   MVPN_COUNT_CTOR(NetworkRequest);
 
-  logger.log() << "Network request created";
+  logger.debug() << "Network request created";
 }
 
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
@@ -55,7 +55,9 @@ NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 void NetworkRequest::abort() {}
 
 // static
-QString NetworkRequest::apiBaseUrl() { return QString(Constants::API_URL); }
+QString NetworkRequest::apiBaseUrl() {
+  return QString(Constants::API_STAGING_URL);
+}
 
 // static
 NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent,
@@ -215,13 +217,15 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(
-    QObject* parent, const QString& email, const QByteArray& authpw,
-    const QString& verificationCode, const QUrlQuery& query) {
+NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
+                                                  const QString& email,
+                                                  const QByteArray& authpw,
+                                                  const QString& unblockCode,
+                                                  const QUrlQuery& query) {
   Q_ASSERT(parent);
   Q_UNUSED(email);
   Q_UNUSED(authpw);
-  Q_UNUSED(verificationCode);
+  Q_UNUSED(unblockCode);
   Q_UNUSED(query);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
@@ -296,6 +300,15 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     QObject* parent, const QByteArray& sessionToken) {
   Q_ASSERT(parent);
   Q_UNUSED(sessionToken);
+
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
+  Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
   createDummyRequest(r);

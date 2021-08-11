@@ -22,6 +22,7 @@ Item {
         anchors.top: parent.top
         anchors.bottomMargin: 24
         width: parent.width
+        hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
 
         placeholderText: "a@b.c" // TODO
     }

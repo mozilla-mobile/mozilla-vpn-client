@@ -24,21 +24,21 @@ CaptivePortalMonitor::~CaptivePortalMonitor() {
 }
 
 void CaptivePortalMonitor::start() {
-  logger.log() << "Captive portal monitor start";
+  logger.debug() << "Captive portal monitor start";
   m_timer.start(CAPTIVE_PORTAL_MONITOR_MSEC);
 }
 
 void CaptivePortalMonitor::stop() {
-  logger.log() << "Captive portal monitor stop";
+  logger.debug() << "Captive portal monitor stop";
   m_timer.stop();
 }
 
 void CaptivePortalMonitor::check() {
-  logger.log() << "Checking the internet connectivity";
+  logger.debug() << "Checking the internet connectivity";
 
   CaptivePortalRequest* request = new CaptivePortalRequest(this);
   connect(request, &CaptivePortalRequest::completed, [this](bool detected) {
-    logger.log() << "Captive portal detection:" << detected;
+    logger.debug() << "Captive portal detection:" << detected;
 
     if (detected || !m_timer.isActive()) {
       return;

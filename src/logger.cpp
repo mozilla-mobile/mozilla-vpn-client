@@ -13,7 +13,7 @@ Logger::Logger(const QStringList& modules, const QString& className)
 
 Logger::Log Logger::error() { return Log(this, LogLevel::Error); }
 Logger::Log Logger::warning() { return Log(this, LogLevel::Warning); }
-Logger::Log Logger::log() { return Log(this, LogLevel::Info); }
+Logger::Log Logger::info() { return Log(this, LogLevel::Info); }
 Logger::Log Logger::debug() { return Log(this, LogLevel::Debug); }
 
 Logger::Log::Log(Logger* logger, LogLevel logLevel)

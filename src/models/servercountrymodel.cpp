@@ -32,7 +32,7 @@ bool ServerCountryModel::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  logger.log() << "Reading the server list from settings";
+  logger.debug() << "Reading the server list from settings";
 
   if (!settingsHolder->hasServers()) {
     return false;
@@ -48,10 +48,10 @@ bool ServerCountryModel::fromSettings() {
 }
 
 bool ServerCountryModel::fromJson(const QByteArray& s) {
-  logger.log() << "Reading from JSON";
+  logger.debug() << "Reading from JSON";
 
   if (!s.isEmpty() && m_rawJson == s) {
-    logger.log() << "Nothing has changed";
+    logger.debug() << "Nothing has changed";
     return true;
   }
 
@@ -153,7 +153,7 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 bool ServerCountryModel::pickIfExists(const QString& countryCode,
                                       const QString& cityCode,
                                       ServerData& data) const {
-  logger.log() << "Checking if the server exists" << countryCode << cityCode;
+  logger.debug() << "Checking if the server exists" << countryCode << cityCode;
 
   for (const ServerCountry& country : m_countries) {
     if (country.code() == countryCode) {
@@ -171,7 +171,7 @@ bool ServerCountryModel::pickIfExists(const QString& countryCode,
 }
 
 void ServerCountryModel::pickRandom(ServerData& data) const {
-  logger.log() << "Choosing a random server";
+  logger.debug() << "Choosing a random server";
 
   quint32 countryId =
       QRandomGenerator::global()->generate() % m_countries.length();
@@ -186,7 +186,7 @@ void ServerCountryModel::pickRandom(ServerData& data) const {
 
 bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
                                            ServerData& data) const {
-  logger.log() << "Choosing a server with addres:" << ipv4Address;
+  logger.debug() << "Choosing a server with addres:" << ipv4Address;
 
   for (const ServerCountry& country : m_countries) {
     for (const ServerCity& city : country.cities()) {
@@ -203,7 +203,7 @@ bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
 }
 
 bool ServerCountryModel::exists(ServerData& data) const {
-  logger.log() << "Check if the server is still valid.";
+  logger.debug() << "Check if the server is still valid.";
   Q_ASSERT(data.initialized());
 
   for (const ServerCountry& country : m_countries) {

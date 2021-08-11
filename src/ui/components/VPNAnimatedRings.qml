@@ -45,6 +45,7 @@ Rectangle {
     color: "transparent"
     antialiasing: true
     visible: false
+    clip: true
 
     Canvas {
         id: animatedRings
@@ -202,14 +203,24 @@ Rectangle {
         }
     }
 
+    Rectangle {
+        id: gradientMaskSource
+        anchors.fill: parent
+        color: "black"
+        radius: 30
+        visible: false
+        clip: true
+    }
+
     RadialGradient {
         id: bgGradient
 
         antialiasing: true
-        anchors.fill: animatedRingsWrapper
+        source: gradientMaskSource
+        anchors.fill: parent
         verticalOffset: -68
         layer.enabled: true
-
+        cached: true
         gradient: Gradient {
             GradientStop {
                 position: 0.26
@@ -220,24 +231,15 @@ Rectangle {
                 position: 0.5
                 color: "#321C64"
             }
-
         }
-
-        layer.effect: OpacityMask {
-
-            maskSource: Item {
-                width: animatedRingsWrapper.width
-                height: animatedRingsWrapper.height
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: animatedRingsWrapper.radius
-                }
-
-            }
-
-        }
-
     }
+
+    OpacityMask {
+        cached: true
+        anchors.fill: parent
+        source: bgGradient
+        maskSource: gradientMaskSource
+    }
+
 
 }
