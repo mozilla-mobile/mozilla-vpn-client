@@ -22,12 +22,12 @@ CaptivePortalDetectionImpl::~CaptivePortalDetectionImpl() {
 }
 
 void CaptivePortalDetectionImpl::start() {
-  logger.log() << "Captive portal detection started";
+  logger.debug() << "Captive portal detection started";
 
   CaptivePortalMultiRequest* request = new CaptivePortalMultiRequest(this);
   connect(request, &CaptivePortalMultiRequest::completed,
           [this](CaptivePortalResult detected) {
-            logger.log() << "Captive portal detection:" << detected;
+            logger.debug() << "Captive portal detection:" << detected;
             emit detectionCompleted(detected);
           });
 

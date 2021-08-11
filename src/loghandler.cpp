@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "loghandler.h"
+#include "constants.h"
 #include "logger.h"
 
 #include <QDate>
@@ -156,10 +157,20 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << Qt::endl;
 }
 
+// static
+void LogHandler::enableDebug() {
+  QMutexLocker lock(&s_mutex);
+  maybeCreate(lock)->m_showDebug = true;
+}
+
 LogHandler::LogHandler(LogLevel minLogLevel, const QStringList& modules,
                        const QMutexLocker& proofOfLock)
     : m_minLogLevel(minLogLevel), m_modules(modules) {
   Q_UNUSED(proofOfLock);
+
+#if defined(QT_DEBUG) || defined(MVPN_WASM)
+  m_showDebug = true;
+#endif
 
   if (!s_location.isEmpty()) {
     openLogFile(proofOfLock);
@@ -179,27 +190,24 @@ void LogHandler::addLog(const Log& log, const QMutexLocker& proofOfLock) {
     prettyOutput(*m_output, log);
   }
 
-#if defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
+  if ((log.m_logLevel != LogLevel::Debug) || m_showDebug) {
+    QTextStream out(stderr);
+    prettyOutput(out, log);
+  }
+
   QByteArray buffer;
   {
     QTextStream out(&buffer);
     prettyOutput(out, log);
   }
 
-#  if defined(MVPN_INSPECTOR)
   emit logEntryAdded(buffer);
-#  endif
-
-#endif  // defined(MVPN_ANDROID) || defined(MVPN_INSPECTOR)
 
 #if defined(MVPN_ANDROID) && defined(QT_DEBUG)
   const char* str = buffer.constData();
   if (str) {
     __android_log_write(ANDROID_LOG_DEBUG, "mozillavpn", str);
   }
-#elif defined(QT_DEBUG) || defined(MVPN_WASM)
-  QTextStream out(stderr);
-  prettyOutput(out, log);
 #endif
 }
 

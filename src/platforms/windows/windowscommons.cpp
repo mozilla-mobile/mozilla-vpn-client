@@ -40,7 +40,7 @@ QString WindowsCommons::getErrorMessage() {
 // A simple function to log windows error messages.
 void WindowsCommons::windowsLog(const QString& msg) {
   QString errmsg = getErrorMessage();
-  logger.log() << msg << "-" << errmsg;
+  logger.error() << msg << "-" << errmsg;
 }
 
 QString WindowsCommons::tunnelConfigFile() {
@@ -62,8 +62,8 @@ QString WindowsCommons::tunnelConfigFile() {
       continue;
     }
 
-    logger.log() << "Found the current wireguard configuration:"
-                 << wireguardFile;
+    logger.debug() << "Found the current wireguard configuration:"
+                   << wireguardFile;
     return wireguardFile;
   }
 
@@ -72,14 +72,14 @@ QString WindowsCommons::tunnelConfigFile() {
 
     QDir vpnDir(dir.filePath(VPN_NAME));
     if (!vpnDir.exists() && !dir.mkdir(VPN_NAME)) {
-      logger.log() << "Failed to create path Mozilla under" << path;
+      logger.debug() << "Failed to create path Mozilla under" << path;
       continue;
     }
 
     return vpnDir.filePath(QString("%1.conf").arg(VPN_NAME));
   }
 
-  logger.log() << "Failed to create the right paths";
+  logger.error() << "Failed to create the right paths";
   return QString();
 }
 
@@ -106,8 +106,8 @@ QString WindowsCommons::tunnelLogFile() {
 
 // static
 int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
-  logger.log() << "Getting Current Internet Adapter that routes to"
-               << dst.toString();
+  logger.debug() << "Getting Current Internet Adapter that routes to"
+                 << dst.toString();
   quint32_be ipBigEndian;
   quint32 ip = dst.toIPv4Address();
   qToBigEndian(ip, &ipBigEndian);
@@ -118,7 +118,7 @@ int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
   }
   auto adapter =
       QNetworkInterface::interfaceFromIndex(routeInfo.dwForwardIfIndex);
-  logger.log() << "Internet Adapter:" << adapter.name();
+  logger.debug() << "Internet Adapter:" << adapter.name();
   return routeInfo.dwForwardIfIndex;
 }
 
@@ -132,4 +132,21 @@ int WindowsCommons::VPNAdapterIndex() {
     }
   }
   return -1;
+}
+
+// Static
+QString WindowsCommons::getCurrentPath() {
+  QByteArray buffer(2048, 0xFF);
+  auto ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
+
+  if (ok == ERROR_INSUFFICIENT_BUFFER) {
+    buffer.resize(buffer.size() * 2);
+    ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
+  }
+  if (ok == 0) {
+    WindowsCommons::windowsLog("Err fetching dos path");
+    return "";
+  }
+  QString::fromWCharArray((wchar_t*)buffer.data());
+  return QString::fromLocal8Bit(buffer);
 }

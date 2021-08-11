@@ -34,6 +34,7 @@ class WindowsFirewall final : public QObject {
   QString getCurrentPath();
   void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value);
   void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_ & value);
+
   bool allowTrafficForAppOnAdapter(const QString& exePath, int networkIndex);
   bool allowTrafficForAppOnAll(const QString& exePath, int weight);
   bool blockTrafficTo(const QList<IPAddressRange>& range ,uint8_t weight);

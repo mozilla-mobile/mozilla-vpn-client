@@ -39,8 +39,10 @@ android/*/.cxx/
 !android/*/*/Makefile 
 xcode.xconfig
 .gradle/
+.gradle_cache/
 
 *.ts
+tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
 tests/proxy/__pycache__/
@@ -58,6 +60,7 @@ macos/gobridge/wireguard-go-version.h
 .vscode/
 MozillaVPN.xcodeproj/
 MozillaVPN.vcxproj*
+*.autosave
 
 #Windows 
 .deps
@@ -100,9 +103,14 @@ mozillavpnnp.vcxproj*
 # For users compiling QT per the README
 /qt/
 
+# Scripts
+scripts/__pycache__
+
 # Language files
 translations/*/*.ts
 translations/*/*.qm
 translations/*/locversion.plist
 translations/*.pri
+translations/generated/*.cpp
+translations/generated/*.h
 macos/pkg/Resources/*.lproj

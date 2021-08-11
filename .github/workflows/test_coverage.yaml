@@ -18,7 +18,7 @@ jobs:
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt update
-          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev clang-10 -y
+          sudo apt install git qt515tools qt515svg qt515networkauth-no-lgpl qt515charts-no-lgpl libgl-dev libpolkit-gobject-1-dev clang-10 qt515websockets -y
 
       - name: Clone repository
         uses: actions/checkout@v2
@@ -43,14 +43,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py -p
-
-      - name: Importing translation files
-        shell: bash
-        run: |
-          # Manually add QT executables to path
-          export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py -p
+          python3 scripts/importLanguages.py
 
       - name: Compile
         shell: bash
@@ -65,4 +58,4 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          ./scripts/test_coverage.sh
+          ./scripts/test_coverage.sh -j 8

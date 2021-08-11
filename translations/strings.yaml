@@ -1,0 +1,65 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file contains the strings for the MozillaVPN client.
+# At the top level of this document, you must specify the categories. For each
+# category, there is a list of string IDs. Each string ID can be:
+# - a string: this will be the English translation of that string ID
+# - an object composed of a `value` key and, optional, a `comment` key. Both
+#   keys can be a string or an array of strings. The `value` contains the
+#   English translation; the comment is useful to describe what the string is
+#   and where it is used.
+#
+# Example:
+#
+#initialView:
+#  # This is a simple string
+#  getStartedButton: Get started
+#
+#  # StringID with a value and a comment
+#  learnMore:
+#    value: Learn more
+#    comment: This is the `learn more` link shown in the initial view
+#
+#  # Multiple line string (with a multiple line comment)
+#  subTitle:
+#    value:
+#      - A fast, secure and easy to use VPN. Built
+#      - by the makers of Firefox
+#    comment:
+#      - Also comments can be written using
+#      - multiple lines!
+#
+# In QML/JS, you can use the string IDs via the `VPNl18n` object and the `tr`
+# method. Each string is converted in an enum composed by categoryName +
+# stringId, in pascal case. For instance:
+# ```
+# Text {
+#   text: VPNl18n.tr(VPNl18n.InitialViewSubTitle)
+# ```
+#
+# In C++, you can do basically the same:
+# ```
+# QString foo =
+#    L18nStrings::instance()->tr(L18nStrings::InitialViewGetStartedButton)
+# ```
+#
+# Remember! When you change this file, you must run the
+# `./scripts/generate_strings.py` script to regenerate the string files.
+#
+
+serversView:
+  searchPlaceholder: Search countries
+  searchNoResultsLabel: No results. Try a different search
+
+feedbackForm:
+  chooseCategory: Choose a category
+
+settingsDev:
+  title: Developer Options
+  showOptionTitle: Show Developer Options
+  showOptionSubtitle: Show or hide the developer options menu
+  useStagingTitle: Use Staging Servers
+  useStagingSubtitle: Staging services are used to test features before they go live to production
+  restartRequired: VPN must be restarted to take effect

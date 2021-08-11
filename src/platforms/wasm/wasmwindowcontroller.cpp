@@ -30,11 +30,11 @@ WasmWindowController::WasmWindowController() {
 
   QList<QScreen*> screens = qApp->screens();
   if (screens.length() < 2) {
-    logger.log() << "Only 1 screen detected. No menu for wasm";
+    logger.debug() << "Only 1 screen detected. No menu for wasm";
     return;
   }
 
-  logger.log() << "Wasm control window creation";
+  logger.debug() << "Wasm control window creation";
 
   QWidget* centralWidget = new QWidget(&m_window);
   m_window.setCentralWidget(centralWidget);
@@ -121,7 +121,7 @@ void WasmWindowController::iconChanged(const QString& icon) {
 
 void WasmWindowController::notification(const QString& title,
                                         const QString& message) {
-  logger.log() << "Notification received";
+  logger.debug() << "Notification received";
 
   m_notificationTitle->setText(title);
   m_notificationMessage->setText(message);

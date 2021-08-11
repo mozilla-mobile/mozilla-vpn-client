@@ -1,0 +1,7 @@
+buildCache {
+    local {
+        // mozilla-vpn-client/.gradle_cache
+        directory = new File(rootDir.getParentFile().getParentFile().getParentFile(),'.gradle_cache')
+        removeUnusedEntriesAfterDays = 30
+    }
+}

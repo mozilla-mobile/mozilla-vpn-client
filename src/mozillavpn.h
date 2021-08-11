@@ -95,7 +95,7 @@ class MozillaVPN final : public QObject {
                  userAuthenticationChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
-  Q_PROPERTY(bool productionMode READ productionMode CONSTANT)
+  Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
   Q_PROPERTY(QString currentView READ currentView WRITE setCurrentView NOTIFY
                  currentViewChanged)
 
@@ -112,17 +112,18 @@ class MozillaVPN final : public QObject {
 
   const QString& serverPublicKey() const { return m_serverPublicKey; }
 
-  bool productionMode() const {
-#ifdef MVPN_PRODUCTION_MODE
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool stagingMode() const;
+
+  enum AuthenticationType {
+    DefaultAuthentication,
+    AuthenticationInBrowser,
+    AuthenticationInApp,
+  };
 
   // Exposed QML methods:
   Q_INVOKABLE void getStarted();
-  Q_INVOKABLE void authenticate();
+  Q_INVOKABLE void authenticate(
+      AuthenticationType authenticationType = DefaultAuthentication);
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void openLink(LinkType linkType);
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
@@ -267,14 +268,12 @@ class MozillaVPN final : public QObject {
   void serializeLogs(QTextStream* out,
                      std::function<void()>&& finalizeCallback);
 
-#ifdef MVPN_IOS
   void subscriptionStarted(const QString& productIdentifier);
   void subscriptionCompleted();
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionFailedInternal(bool canceledByUser);
   void alreadySubscribed();
-#endif
 
   void completeActivation();
 

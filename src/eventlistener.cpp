@@ -25,11 +25,11 @@ Logger logger(LOG_MAIN, "EventListener");
 }
 
 EventListener::EventListener() {
-  logger.log() << " event listener created";
+  logger.debug() << " event listener created";
 
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
 
-  logger.log() << "Server path:" << UI_PIPE;
+  logger.debug() << "Server path:" << UI_PIPE;
 
 #ifdef MVPN_LINUX
   if (QFileInfo::exists(UI_PIPE)) {
@@ -38,12 +38,12 @@ EventListener::EventListener() {
 #endif
 
   if (!m_server.listen(UI_PIPE)) {
-    logger.log() << "Failed to listen the daemon path";
+    logger.error() << "Failed to listen the daemon path";
     return;
   }
 
   connect(&m_server, &QLocalServer::newConnection, [&] {
-    logger.log() << "New connection received";
+    logger.debug() << "New connection received";
 
     if (!m_server.hasPendingConnections()) {
       return;
@@ -56,7 +56,7 @@ EventListener::EventListener() {
       QByteArray input = socket->readAll();
       input = input.trimmed();
 
-      logger.log() << "EventListener input:" << input;
+      logger.debug() << "EventListener input:" << input;
 
       // So far, just the show window signal, but in the future, we could have
       // more.
@@ -70,7 +70,7 @@ EventListener::EventListener() {
 }
 
 EventListener::~EventListener() {
-  logger.log() << " event listener released";
+  logger.debug() << " event listener released";
 
   m_server.close();
 
@@ -82,7 +82,7 @@ EventListener::~EventListener() {
 }
 
 bool EventListener::checkOtherInstances() {
-  logger.log() << "Checking other instances";
+  logger.debug() << "Checking other instances";
 
 #ifdef MVPN_WINDOWS
   // Let's check if there is a window with the right name.
@@ -94,29 +94,29 @@ bool EventListener::checkOtherInstances() {
   }
 #else
   if (!QFileInfo::exists(UI_PIPE)) {
-    logger.log() << "No other instances found - no unix socket";
+    logger.warning() << "No other instances found - no unix socket";
     return true;
   }
 #endif
 
-  logger.log() << "Try to communicate with the existing instance";
+  logger.debug() << "Try to communicate with the existing instance";
 
   QLocalSocket socket;
   socket.connectToServer(UI_PIPE);
   if (!socket.waitForConnected(1000)) {
-    logger.log() << "Connection failed.";
+    logger.error() << "Connection failed.";
     return true;
   }
 
-  logger.log() << "Request to show up";
+  logger.debug() << "Request to show up";
   socket.write("show\n");
 
-  logger.log() << "Disconnecting";
+  logger.debug() << "Disconnecting";
   socket.disconnectFromServer();
   if (socket.state() != QLocalSocket::UnconnectedState) {
     socket.waitForDisconnected(1000);
   }
 
-  logger.log() << "Terminating the current process";
+  logger.debug() << "Terminating the current process";
   return false;
 }

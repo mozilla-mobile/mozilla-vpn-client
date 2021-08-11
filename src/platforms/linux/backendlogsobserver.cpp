@@ -26,7 +26,7 @@ BackendLogsObserver::~BackendLogsObserver() {
 void BackendLogsObserver::completed(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     m_callback("Failed to retrieve logs from the mozillavpn linuxdaemon.");
     return;
   }

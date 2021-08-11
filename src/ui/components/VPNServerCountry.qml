@@ -14,6 +14,7 @@ VPNClickableRow {
     objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === VPNCurrentServer.countryCode)
+    property real animationDuration: 200 + (citiesRepeater.count * 25)
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
@@ -25,8 +26,9 @@ VPNClickableRow {
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        vpnFlickable.ensureVisAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
-        vpnFlickable.ensureVisAnimation.start();
+        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - Theme.rowHeight * 1.5 : listScrollPosition + cityList.height + Theme.rowHeight;
+        scrollAnimation.duration = animationDuration
+        scrollAnimation.start();
     }
 
     Keys.onReleased: if (event.key === Qt.Key_Space) handleKeyClick()
@@ -35,19 +37,18 @@ VPNClickableRow {
     clip: true
 
     activeFocusOnTab: true
-
     accessibleName: localizedName
-    Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).forceActiveFocus() : repeater.itemAt(0).forceActiveFocus()
-    Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
+    Keys.onDownPressed: countriesRepeater.itemAt(index + 1) ? countriesRepeater.itemAt(index + 1).forceActiveFocus() : countriesRepeater.itemAt(0).forceActiveFocus()
+    Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
         focusScope.lastFocusedItemIdx = index;
         menu.forceActiveFocus();
     }
 
-    state: cityListVisible
+    state: cityListVisible ? "listOpen" : "listClosed"
     states: [
         State {
-            when: !cityListVisible
+            name: "listClosed"
 
             PropertyChanges {
                 target: serverCountry
@@ -58,10 +59,9 @@ VPNClickableRow {
                 target: cityList
                 opacity: 0
             }
-
         },
         State {
-            when: cityListVisible
+            name: "listOpen"
 
             PropertyChanges {
                 target: serverCountry
@@ -72,18 +72,41 @@ VPNClickableRow {
                 target: cityList
                 opacity: 1
             }
-
         }
     ]
-    // Override default VPNClickableRow transition.
-    transitions: []
 
-    Behavior on height {
-        NumberAnimation {
-            easing.type: Easing.InSine
-            duration: 260
+    transitions: [
+        Transition {
+            to: "listClosed"
+            ParallelAnimation {
+                PropertyAnimation {
+                    target: cityList
+                    property: "opacity"
+                    duration: animationDuration
+                }
+                PropertyAnimation {
+                    target: serverCountry
+                    property: "height"
+                    duration: animationDuration
+                }
+            }
+        },
+        Transition {
+            to: "listOpen"
+            PropertyAnimation {
+                target: serverCountry
+                property: "height"
+                to: serverCountryRow.height + cityList.height
+                duration: animationDuration
+            }
+            PropertyAnimation {
+                target: cityList
+                property: "opacity"
+                duration: 0
+            }
         }
-    }
+
+    ]
 
     RowLayout {
         id: serverCountryRow
@@ -132,12 +155,6 @@ VPNClickableRow {
         //% "Cities"
         //: The title for the list of cities.
         Accessible.name: qsTrId("cities")
-
-        Behavior on opacity {
-            PropertyAnimation {
-                duration: 300
-            }
-        }
 
         Repeater {
             id: citiesRepeater

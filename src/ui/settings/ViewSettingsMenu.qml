@@ -45,7 +45,7 @@ VPNFlickable {
     VPNPanel {
         id: vpnPanel
         logoSize: 80
-        logo:  VPNUser.avatar
+        logo: VPNUser.avatar
         //% "VPN User"
         readonly property var textVpnUser: qsTrId("vpn.settings.user")
         logoTitle: VPNUser.displayName ? VPNUser.displayName : textVpnUser
@@ -86,15 +86,6 @@ VPNFlickable {
         width: vpnFlickable.width - Theme.hSpacing
         onClicked: VPNSettings.startAtBoot = !VPNSettings.startAtBoot
         visible: VPNFeatureList.startOnBootSupported
-    }
-
-    Component {
-        id: getHelpComponent
-
-        VPNGetHelp {
-            isSettingsView: true
-        }
-
     }
 
     Component {
@@ -174,7 +165,7 @@ VPNFlickable {
             imageRightSrc: "../resources/chevron.svg"
             onClicked: {
                 Sample.getHelpClickedViewSettings.record();
-                settingsStackView.push(getHelpComponent);
+                settingsStackView.push("../views/ViewGetHelp.qml", {isSettingsView: true})
             }
         }
         VPNSettingsItem {
