@@ -31,6 +31,8 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void sendUnblockCodeEmail();
   void verifySessionTotpCode(const QString& code);
 
+  const QString& emailAddress() const { return m_emailAddress; }
+
  private:
   void processErrorCode(int errorCode);
   void processRequestFailure(QNetworkReply::NetworkError error,
