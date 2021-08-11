@@ -72,7 +72,7 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
            connection->localAddress() == QHostAddress::LocalHostIPv6);
 #endif
 
-  logger.log() << "New connection received";
+  logger.debug() << "New connection received";
 
   Q_ASSERT(m_connection);
   connect(m_connection, &QTcpSocket::readyRead, this,
@@ -88,7 +88,7 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
 
 ServerConnection::~ServerConnection() {
   MVPN_COUNT_DTOR(ServerConnection);
-  logger.log() << "Connection released";
+  logger.debug() << "Connection released";
 }
 
 void ServerConnection::readData() {

@@ -24,13 +24,15 @@ MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
 
+bool MozillaVPN::stagingMode() const { return true; }
+
 void MozillaVPN::initialize() {}
 
 void MozillaVPN::setState(State) {}
 
 void MozillaVPN::getStarted() {}
 
-void MozillaVPN::authenticate() {}
+void MozillaVPN::authenticate(MozillaVPN::AuthenticationType) {}
 
 void MozillaVPN::openLink(LinkType) {}
 

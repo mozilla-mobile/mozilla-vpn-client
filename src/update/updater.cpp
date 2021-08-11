@@ -30,18 +30,18 @@ Updater* Updater::create(QObject* parent, bool downloadAndInstall) {
     return new VersionApi(parent);
   }
 
-  logger.log() << "No download and install supported for this platform.";
+  logger.warning() << "No download and install supported for this platform.";
   return nullptr;
 }
 
 Updater::Updater(QObject* parent) : QObject(parent) {
   MVPN_COUNT_CTOR(Updater);
-  logger.log() << "Updater created";
+  logger.debug() << "Updater created";
 }
 
 Updater::~Updater() {
   MVPN_COUNT_DTOR(Updater);
-  logger.log() << "Updater released";
+  logger.debug() << "Updater released";
 }
 
 // static

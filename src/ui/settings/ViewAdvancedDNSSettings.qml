@@ -133,16 +133,15 @@ Item {
                 VPNTextField {
                     property bool valueInvalid: false
                     property string error: "This is an error string"
-                    stateError: valueInvalid
+                    hasError: valueInvalid
 
                     id: ipInput
 
-                    Layout.fillWidth: true
-                    Layout.leftMargin: 40
+                    enabled: !VPNSettings.useGatewayDNS
                     placeholderText: VPNSettings.placeholderUserDNS
                     text: VPNSettings.userDNS
-                    enabled: !VPNSettings.useGatewayDNS
-                    opacity: enabled ? 1 : .5
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 40
 
                     PropertyAnimation on opacity {
                         duration: 200
@@ -155,30 +154,20 @@ Item {
                             VPNSettings.userDNS = ipInput.text
                             return;
                         }
-
-                        switch(VPNSettings.validateUserDNS(ipInput.text)) {
-                        case VPNSettings.UserDNSOK:
+                        if(VPNSettings.validateUserDNS(ipInput.text)){
                             ipInput.valueInvalid = false;
                             if (text !== VPNSettings.userDNS) {
                                 VPNSettings.userDNS = ipInput.text
                             }
-                            break;
-
-                        // Now bother user if the ip is invalid :)
-                        case VPNSettings.UserDNSInvalid:
+                        }else{
+                            // Now bother user if the ip is invalid :)
                             //% "Invalid IP address"
                             ipInput.error = qsTrId("vpn.settings.userDNS.invalid")
                             ipInput.valueInvalid = true;
-                            break;
-
-                        case VPNSettings.UserDNSOutOfRange:
-                            //% "Out of range IP address"
-                            ipInput.error = qsTrId("vpn.settings.userDNS.outOfRange")
-                            ipInput.valueInvalid = true;
-                            break;
                         }
                     }
                 }
+
                 VPNCheckBoxAlert {
                     id: errorAlert
                     errorMessage: ipInput.error

@@ -49,9 +49,8 @@ int CommandLogout::run(QStringList& tokens) {
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, [&] { loop.exit(); });
       loop.exec();
-    } else {
-      vpn.reset(false);
     }
+    vpn.reset(false);
 
     return 0;
   });

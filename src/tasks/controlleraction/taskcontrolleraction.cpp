@@ -18,8 +18,8 @@ TaskControllerAction::TaskControllerAction(
     : Task("TaskControllerAction"), m_action(action) {
   MVPN_COUNT_CTOR(TaskControllerAction);
 
-  logger.log() << "TaskControllerAction created for"
-               << (action == eActivate ? "activation" : "deactivation");
+  logger.debug() << "TaskControllerAction created for"
+                 << (action == eActivate ? "activation" : "deactivation");
 
   connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::completed);
 }
@@ -29,7 +29,7 @@ TaskControllerAction::~TaskControllerAction() {
 }
 
 void TaskControllerAction::run(MozillaVPN* vpn) {
-  logger.log() << "TaskControllerAction run";
+  logger.debug() << "TaskControllerAction run";
 
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
@@ -71,7 +71,7 @@ void TaskControllerAction::run(MozillaVPN* vpn) {
 
 void TaskControllerAction::stateChanged() {
   if (!m_timer.isActive()) {
-    logger.log() << "stateChanged received by to be ignored";
+    logger.debug() << "stateChanged received by to be ignored";
     return;
   }
 
@@ -81,14 +81,14 @@ void TaskControllerAction::stateChanged() {
   Controller::State state = controller->state();
   if ((m_action == eActivate && state == Controller::StateOn) ||
       (m_action == eDeactivate && state == Controller::StateOff)) {
-    logger.log() << "Operation completed";
+    logger.debug() << "Operation completed";
     m_timer.stop();
     emit completed();
   }
 }
 
 void TaskControllerAction::silentSwitchDone() {
-  logger.log() << "Operation completed";
+  logger.debug() << "Operation completed";
   m_timer.stop();
   emit completed();
 }
