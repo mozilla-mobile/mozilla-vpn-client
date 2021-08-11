@@ -15,7 +15,7 @@ Logger logger(LOG_WINDOWS, "WindowsStartAtBootWatcher");
 WindowsStartAtBootWatcher::WindowsStartAtBootWatcher(bool startAtBoot) {
   MVPN_COUNT_CTOR(WindowsStartAtBootWatcher);
 
-  logger.log() << "StartAtBoot watcher";
+  logger.debug() << "StartAtBoot watcher";
   startAtBootChanged(startAtBoot);
 }
 
@@ -24,7 +24,7 @@ WindowsStartAtBootWatcher::~WindowsStartAtBootWatcher() {
 }
 
 void WindowsStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
-  logger.log() << "StartAtBoot changed:" << startAtBoot;
+  logger.debug() << "StartAtBoot changed:" << startAtBoot;
   QSettings settings(
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
       QSettings::NativeFormat);

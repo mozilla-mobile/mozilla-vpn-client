@@ -79,7 +79,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 
 #ifdef QT_DEBUG
-  logger.log() << content;
+  logger.debug() << content;
 #endif
 
   QFile file(outputFile);
@@ -138,8 +138,8 @@ bool WgQuickProcess::run(
     const QString& dnsServer) {
   QTemporaryDir tmpDir;
   if (!tmpDir.isValid()) {
-    logger.log() << "Cannot create a temporary directory"
-                 << tmpDir.errorString();
+    logger.error() << "Cannot create a temporary directory"
+                   << tmpDir.errorString();
     return false;
   }
 
@@ -151,7 +151,7 @@ bool WgQuickProcess::run(
                         serverPublicKey, serverIpv4AddrIn, serverIpv6AddrIn,
                         allowedIPAddressRanges, serverPort, ipv6Enabled,
                         dnsServer)) {
-    logger.log() << "Failed to create the config file";
+    logger.error() << "Failed to create the config file";
     return false;
   }
 
@@ -160,24 +160,24 @@ bool WgQuickProcess::run(
   arguments.append(configFile);
 
   QString app = scriptPath();
-  logger.log() << "Start:" << app << " - arguments:" << arguments;
+  logger.debug() << "Start:" << app << " - arguments:" << arguments;
 
   QProcess wgQuickProcess;
   wgQuickProcess.start(app, arguments);
 
   if (!wgQuickProcess.waitForFinished(-1)) {
-    logger.log() << "Error occurred:" << wgQuickProcess.errorString();
+    logger.error() << "Error occurred:" << wgQuickProcess.errorString();
     return false;
   }
 
-  logger.log() << "Execution finished" << wgQuickProcess.exitCode();
+  logger.debug() << "Execution finished" << wgQuickProcess.exitCode();
 
-  logger.log() << "wg-quick stdout:" << Qt::endl
-               << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
-               << Qt::endl;
-  logger.log() << "wg-quick stderr:" << Qt::endl
-               << qUtf8Printable(wgQuickProcess.readAllStandardError())
-               << Qt::endl;
+  logger.debug() << "wg-quick stdout:" << Qt::endl
+                 << qUtf8Printable(wgQuickProcess.readAllStandardOutput())
+                 << Qt::endl;
+  logger.debug() << "wg-quick stderr:" << Qt::endl
+                 << qUtf8Printable(wgQuickProcess.readAllStandardError())
+                 << Qt::endl;
 
   return wgQuickProcess.exitCode() == 0;
 }

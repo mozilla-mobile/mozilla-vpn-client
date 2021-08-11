@@ -70,7 +70,7 @@ AndroidController::~AndroidController() {
 AndroidController* AndroidController::instance() { return s_instance; }
 
 void AndroidController::initialize(const Device* device, const Keys* keys) {
-  logger.log() << "Initializing";
+  logger.debug() << "Initializing";
 
   Q_UNUSED(device);
   Q_UNUSED(keys);
@@ -137,9 +137,9 @@ void AndroidController::activate(
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
     Reason reason) {
-  logger.log() << "Activation";
+  logger.debug() << "Activation";
 
-  logger.log() << "Prompting for VPN permission";
+  logger.debug() << "Prompting for VPN permission";
   auto appContext = QtAndroid::androidActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
   QAndroidJniObject::callStaticMethod<void>(
@@ -202,14 +202,14 @@ void AndroidController::resume_activate() {
 }
 
 void AndroidController::deactivate(Reason reason) {
-  logger.log() << "deactivation";
+  logger.debug() << "deactivation";
 
   if (reason != ReasonNone) {
     // Just show that we're disconnected
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate
     emit disconnected();
-    logger.log() << "deactivation skipped for Switching";
+    logger.warning() << "deactivation skipped for Switching";
     return;
   }
 
@@ -218,7 +218,7 @@ void AndroidController::deactivate(Reason reason) {
 }
 
 void AndroidController::checkStatus() {
-  logger.log() << "check status";
+  logger.debug() << "check status";
 
   QAndroidParcel nullParcel;
   m_serviceBinder.transact(ACTION_REQUEST_STATISTIC, nullParcel, nullptr);
@@ -226,7 +226,7 @@ void AndroidController::checkStatus() {
 
 void AndroidController::getBackendLogs(
     std::function<void(const QString&)>&& a_callback) {
-  logger.log() << "get logs";
+  logger.debug() << "get logs";
 
   m_logCallback = std::move(a_callback);
   QAndroidParcel nullData, replyData;
@@ -234,7 +234,7 @@ void AndroidController::getBackendLogs(
 }
 
 void AndroidController::cleanupBackendLogs() {
-  logger.log() << "cleanup logs";
+  logger.debug() << "cleanup logs";
 
   QAndroidParcel nullParcel;
   m_serviceBinder.transact(ACTION_REQUEST_CLEANUP_LOG, nullParcel, nullptr);
@@ -242,7 +242,7 @@ void AndroidController::cleanupBackendLogs() {
 
 void AndroidController::onServiceConnected(
     const QString& name, const QAndroidBinder& serviceBinder) {
-  logger.log() << "Server connected";
+  logger.debug() << "Server connected";
 
   Q_UNUSED(name);
 
@@ -255,7 +255,7 @@ void AndroidController::onServiceConnected(
 }
 
 void AndroidController::onServiceDisconnected(const QString& name) {
-  logger.log() << "Server disconnected";
+  logger.debug() << "Server disconnected";
   m_serviceConnected = false;
   Q_UNUSED(name);
   // TODO: Maybe restart? Or crash?
@@ -281,7 +281,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
   QString buffer;
   switch (code) {
     case EVENT_INIT:
-      logger.log() << "Transact: init";
+      logger.debug() << "Transact: init";
       doc = QJsonDocument::fromJson(data.readData());
       emit m_controller->initialized(
           true, doc.object()["connected"].toBool(),
@@ -292,15 +292,15 @@ bool AndroidController::VPNBinder::onTransact(int code,
 
       break;
     case EVENT_CONNECTED:
-      logger.log() << "Transact: connected";
+      logger.debug() << "Transact: connected";
       emit m_controller->connected();
       break;
     case EVENT_DISCONNECTED:
-      logger.log() << "Transact: disconnected";
+      logger.debug() << "Transact: disconnected";
       emit m_controller->disconnected();
       break;
     case EVENT_STATISTIC_UPDATE:
-      logger.log() << "Transact:: update";
+      logger.debug() << "Transact:: update";
 
       // Data is here a JSON String
       doc = QJsonDocument::fromJson(data.readData());
@@ -310,7 +310,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
                                        doc.object()["totalRX"].toInt());
       break;
     case EVENT_BACKEND_LOGS:
-      logger.log() << "Transact: backend logs";
+      logger.debug() << "Transact: backend logs";
 
       buffer = readUTF8Parcel(data);
       if (m_controller->m_logCallback) {
@@ -318,7 +318,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       }
       break;
     default:
-      logger.log() << "Transact: Invalid!";
+      logger.warning() << "Transact: Invalid!";
       break;
   }
 
@@ -338,7 +338,7 @@ const int ACTIVITY_RESULT_OK = 0xffffffff;
  */
 void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
                                                jobject intent) {
-  logger.log() << "start activity";
+  logger.debug() << "start activity";
   Q_UNUSED(env);
   QtAndroid::startActivity(intent, 1337,
                            [](int receiverRequestCode, int resultCode,
@@ -358,13 +358,13 @@ void AndroidController::startActivityForResult(JNIEnv* env, jobject /*thiz*/,
                              }
 
                              if (resultCode == ACTIVITY_RESULT_OK) {
-                               logger.log() << "VPN PROMPT RESULT - Accepted";
+                               logger.debug() << "VPN PROMPT RESULT - Accepted";
                                controller->resume_activate();
                                return;
                              }
                              // If the request got rejected abort the current
                              // connection.
-                             logger.log() << "VPN PROMPT RESULT - Rejected";
+                             logger.warning() << "VPN PROMPT RESULT - Rejected";
                              emit controller->disconnected();
                            });
   return;

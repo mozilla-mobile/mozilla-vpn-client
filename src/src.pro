@@ -23,6 +23,12 @@ QT += network
 QT += quick
 QT += widgets
 QT += charts
+QT+= websockets
+
+# for the inspector
+QT+= testlib
+QT.testlib.CONFIG -= console
+CONFIG += no_testcase_installs
 
 TEMPLATE  = app
 
@@ -47,6 +53,7 @@ SOURCES += \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
         authenticationinapp/authenticationinapplistener.cpp \
+        authenticationinapp/incrementaldecoder.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportaldetectionimpl.cpp \
@@ -69,6 +76,7 @@ SOURCES += \
         connectioncheck.cpp \
         connectiondataholder.cpp \
         connectionhealth.cpp \
+        constants.cpp \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
@@ -82,6 +90,11 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
         hkdf.cpp \
+        iaphandler.cpp \
+        inspector/inspectorhttpconnection.cpp \
+        inspector/inspectorhttpserver.cpp \
+        inspector/inspectorwebsocketconnection.cpp \
+        inspector/inspectorwebsocketserver.cpp \
         ipaddress.cpp \
         ipaddressrange.cpp \
         ipfinder.cpp \
@@ -114,6 +127,7 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -133,6 +147,7 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/products/taskproducts.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
@@ -148,6 +163,7 @@ HEADERS += \
         authenticationlistener.h \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
+        authenticationinapp/incrementaldecoder.h \
         bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -183,6 +199,11 @@ HEADERS += \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
+        iaphandler.h \
+        inspector/inspectorhttpconnection.h \
+        inspector/inspectorhttpserver.h \
+        inspector/inspectorwebsocketconnection.h \
+        inspector/inspectorwebsocketserver.h \
         ipaddress.h \
         ipaddressrange.h \
         ipfinder.h \
@@ -214,6 +235,7 @@ HEADERS += \
         pinghelper.h \
         pingsender.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
@@ -234,6 +256,7 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/products/taskproducts.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
@@ -255,31 +278,6 @@ webextension {
             server/serverhandler.h
 }
 
-inspector {
-    message(Enabling the inspector)
-
-    QT+= websockets
-    QT+= testlib
-    QT.testlib.CONFIG -= console
-    CONFIG += no_testcase_installs
-
-    RESOURCES += inspector/inspector.qrc
-
-    DEFINES += MVPN_INSPECTOR
-
-    SOURCES += \
-            inspector/inspectorhttpconnection.cpp \
-            inspector/inspectorhttpserver.cpp \
-            inspector/inspectorwebsocketconnection.cpp \
-            inspector/inspectorwebsocketserver.cpp
-
-    HEADERS += \
-            inspector/inspectorhttpconnection.h \
-            inspector/inspectorhttpserver.h \
-            inspector/inspectorwebsocketconnection.h \
-            inspector/inspectorwebsocketserver.h
-}
-
 # Signal handling for unix platforms
 unix {
     SOURCES += signalhandler.cpp
@@ -287,6 +285,8 @@ unix {
 }
 
 RESOURCES += qml.qrc
+RESOURCES += logo.qrc
+RESOURCES += inspector/inspector.qrc
 
 exists($$PWD/../glean/telemetry/gleansample.h) {
     RESOURCES += $$PWD/../glean/glean.qrc
@@ -297,21 +297,17 @@ exists($$PWD/../glean/telemetry/gleansample.h) {
 QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
-production {
-    message(Production build)
-    DEFINES += MVPN_PRODUCTION_MODE
-    RESOURCES += logo_prod.qrc
-} else {
-    message(Staging build)
-    RESOURCES += logo_beta.qrc
-}
-
 balrog {
     message(Balrog enabled)
     DEFINES += MVPN_BALROG
 
     SOURCES += update/balrog.cpp
     HEADERS += update/balrog.h
+}
+
+AUTHINAPP {
+    message(Authentication in-app enabled)
+    DEFINES += MVPN_AUTHINAPP
 }
 
 DUMMY {
@@ -517,7 +513,8 @@ else:android {
 
     INCLUDEPATH += platforms/android
 
-    SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
+    SOURCES +=  platforms/android/androidadjusthelper.cpp \
+                platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
@@ -529,7 +526,8 @@ else:android {
                 platforms/android/androidsharedprefs.cpp \
                 tasks/authenticate/desktopauthenticationlistener.cpp
 
-    HEADERS +=  platforms/android/androidauthenticationlistener.h \
+    HEADERS +=  platforms/android/androidadjusthelper.h \
+                platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
@@ -668,12 +666,7 @@ else:macos {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
     QMAKE_INFO_PLIST=../macos/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
-
-    production {
-        QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
-    } else {
-        QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images-beta.xcassets
-    }
+    QMAKE_ASSET_CATALOGS = $$PWD/../macos/app/Images.xcassets
 }
 
 # Platform-specific: IOS
@@ -699,11 +692,10 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
-            platforms/ios/iaphandler.mm \
+            platforms/ios/iosiaphandler.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
@@ -713,11 +705,10 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
-            platforms/ios/iaphandler.h \
+            platforms/ios/iosiaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
@@ -726,12 +717,7 @@ else:ios {
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
-
-    production {
-        QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images.xcassets
-    } else {
-        QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images-beta.xcassets
-    }
+    QMAKE_ASSET_CATALOGS = $$PWD/../ios/app/Images.xcassets
 
     app_launch_screen.files = $$files($$PWD/../ios/app/MozillaVPNLaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_screen
@@ -759,11 +745,7 @@ else:win* {
     LIBS += Rpcrt4.lib
     LIBS += Advapi32.lib
 
-    production {
-        RC_ICONS = ui/resources/logo.ico
-    } else {
-        RC_ICONS = ui/resources/logo-beta.ico
-    }
+    RC_ICONS = ui/resources/logo.ico
 
     SOURCES += \
         daemon/daemon.cpp \

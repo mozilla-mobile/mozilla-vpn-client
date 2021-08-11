@@ -85,18 +85,13 @@ int CommandLogin::run(QStringList& tokens) {
 
           case AuthenticationInApp::StateStart: {
             QString email = getInput("Username:");
-            QString password = getPassword("Password:");
-            AuthenticationInApp::instance()->signInOrUp(email, password);
-          } break;
-
-          case AuthenticationInApp::StateAccountStatus: {
-            QTextStream stream(stdout);
-            stream << "Checking the account..." << Qt::endl;
+            AuthenticationInApp::instance()->checkAccount(email);
           } break;
 
           case AuthenticationInApp::StateSignIn: {
-            QTextStream stream(stdout);
-            stream << "Sign in..." << Qt::endl;
+            QString password = getPassword("Password:");
+            AuthenticationInApp::instance()->setPassword(password);
+            AuthenticationInApp::instance()->signIn();
           } break;
 
           case AuthenticationInApp::StateSignUp: {
@@ -105,15 +100,30 @@ int CommandLogin::run(QStringList& tokens) {
             loop.exit();
           } break;
 
-          case AuthenticationInApp::StateEmailVerification: {
-            QString code = getInput("Email verification needed. Code:");
-            AuthenticationInApp::instance()->verifyEmailCode(code);
+          case AuthenticationInApp::StateUnblockCodeNeeded: {
+            QString code = getInput("Check your email. Unblock code:");
+            AuthenticationInApp::instance()->setUnblockCodeAndContinue(code);
           } break;
 
-          case AuthenticationInApp::StateAccountVerification: {
-            AuthenticationInApp::instance()->resendVerificationAccountCode();
-            QString code = getInput("Account verification needed. Code:");
-            AuthenticationInApp::instance()->verifyAccountCode(code);
+          case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {
+            AuthenticationInApp::instance()
+                ->resendVerificationSessionCodeEmail();
+            QString code =
+                getInput("Session verification by email needed. Code:");
+            AuthenticationInApp::instance()->verifySessionEmailCode(code);
+          } break;
+
+          case AuthenticationInApp::StateVerificationSessionByTotpNeeded: {
+            QString code =
+                getInput("Session verification by TOTP needed. Code:");
+            AuthenticationInApp::instance()->verifySessionTotpCode(code);
+          } break;
+
+          case AuthenticationInApp::StateFallbackInBrowser: {
+            QTextStream stream(stdout);
+            stream << "Unable to continue with the flow. Please, continue the "
+                      "login in browser.";
+            loop.exit();
           } break;
         }
       });

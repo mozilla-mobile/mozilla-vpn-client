@@ -18,32 +18,42 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge,
+             const QString& codeChallengeMethod) override;
 
-  void signInOrUp(const QString& emailAddress, const QString& password);
-  void verifyEmailCode(const QString& code);
-  void verifyAccountCode(const QString& code);
-  void resendVerificationAccountCode();
+  void checkAccount(const QString& emailAddress);
+  void setPassword(const QString& password);
+  void setUnblockCodeAndContinue(const QString& unblockCode);
+  void signIn(const QString& unblockCode = QString());
+  void signUp();
+  void verifySessionEmailCode(const QString& code);
+  void resendVerificationSessionCodeEmail();
+  void sendUnblockCodeEmail();
+  void verifySessionTotpCode(const QString& code);
+
+  const QString& emailAddress() const { return m_emailAddress; }
 
  private:
   void processErrorCode(int errorCode);
   void processRequestFailure(QNetworkReply::NetworkError error,
                              const QByteArray& data);
 
-  QByteArray generateAuthPw() const;
+  QByteArray generateAuthPw(const QString& password) const;
 
-  void signIn(const QString& verificationCode = QString());
-  void signUp();
   void accountChecked(bool exists);
-  void signInCompleted(const QString& sessionToken, bool accountVerified);
-  void emailVerificationNeeded();
+  void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
+                           const QString& verificationMethod);
+  void unblockCodeNeeded();
+  void finalizeSignInOrUp();
 
  private:
   QString m_codeChallenge;
+  QString m_codeChallengeMethod;
+
   QUrlQuery m_urlQuery;
 
   QString m_emailAddress;
-  QString m_password;
+  QByteArray m_authPw;
 
   QByteArray m_sessionToken;
 };

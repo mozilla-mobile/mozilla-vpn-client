@@ -47,13 +47,13 @@ void LinuxController::initialize(const Device* device, const Keys* keys) {
 void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     emit initialized(false, false, QDateTime());
     return;
   }
 
   QString status = reply.argumentAt<0>();
-  logger.log() << "Status:" << status;
+  logger.debug() << "Status:" << status;
 
   QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
   Q_ASSERT(json.isObject());
@@ -74,7 +74,7 @@ void LinuxController::activate(
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
-  logger.log() << "LinuxController activated";
+  logger.debug() << "LinuxController activated";
   connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges,
                            vpnDisabledApps, dnsServer),
           &QDBusPendingCallWatcher::finished, this,
@@ -82,10 +82,10 @@ void LinuxController::activate(
 }
 
 void LinuxController::deactivate(Reason reason) {
-  logger.log() << "LinuxController deactivated";
+  logger.debug() << "LinuxController deactivated";
 
   if (reason == ReasonSwitching) {
-    logger.log() << "No disconnect for quick server switching";
+    logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;
   }
@@ -97,7 +97,7 @@ void LinuxController::deactivate(Reason reason) {
 void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<bool> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
     emit disconnected();
     return;
@@ -105,18 +105,18 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
 
   bool status = reply.argumentAt<0>();
   if (status) {
-    logger.log() << "DBus service says: all good.";
+    logger.debug() << "DBus service says: all good.";
     // we will receive the connected/disconnected() signal;
     return;
   }
 
-  logger.log() << "DBus service says: error.";
+  logger.error() << "DBus service says: error.";
   MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
 }
 
 void LinuxController::checkStatus() {
-  logger.log() << "Check status";
+  logger.debug() << "Check status";
 
   QDBusPendingCallWatcher* watcher = m_dbus->status();
   connect(watcher, &QDBusPendingCallWatcher::finished, this,
@@ -126,12 +126,12 @@ void LinuxController::checkStatus() {
 void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
   if (reply.isError()) {
-    logger.log() << "Error received from the DBus service";
+    logger.error() << "Error received from the DBus service";
     return;
   }
 
   QString status = reply.argumentAt<0>();
-  logger.log() << "Status:" << status;
+  logger.debug() << "Status:" << status;
 
   QJsonDocument json = QJsonDocument::fromJson(status.toLocal8Bit());
   Q_ASSERT(json.isObject());
@@ -142,7 +142,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(statusValue.isBool());
 
   if (!statusValue.toBool()) {
-    logger.log() << "Unable to retrieve the status from the interface.";
+    logger.error() << "Unable to retrieve the status from the interface.";
     return;
   }
 

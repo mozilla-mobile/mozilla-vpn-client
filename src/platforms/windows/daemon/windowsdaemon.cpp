@@ -38,7 +38,7 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
 
 WindowsDaemon::~WindowsDaemon() {
   MVPN_COUNT_DTOR(WindowsDaemon);
-  logger.log() << "Daemon released";
+  logger.debug() << "Daemon released";
 }
 void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
   // Before creating the interface we need to check which adapter
@@ -58,9 +58,9 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     return true;
   }
   if (splitTunnelEnabled) {
-    logger.log() << "Tunnel UP, Starting SplitTunneling";
+    logger.debug() << "Tunnel UP, Starting SplitTunneling";
     if (!WindowsSplitTunnel::isInstalled()) {
-      logger.log() << "Split Tunnel Driver not Installed yet, fixing this.";
+      logger.warning() << "Split Tunnel Driver not Installed yet, fixing this.";
       WindowsSplitTunnel::installDriver();
     }
     m_splitTunnelManager.start(m_inetAdapterIndex);
@@ -72,7 +72,7 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
 }
 
 QByteArray WindowsDaemon::getStatus() {
-  logger.log() << "Status request";
+  logger.debug() << "Status request";
 
   QJsonObject obj;
   obj.insert("type", "status");
@@ -104,7 +104,7 @@ bool WindowsDaemon::supportServerSwitching(
 }
 
 void WindowsDaemon::monitorBackendFailure() {
-  logger.log() << "Tunnel service is down";
+  logger.warning() << "Tunnel service is down";
 
   emit backendFailure();
   deactivate();

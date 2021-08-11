@@ -65,9 +65,9 @@ void DBusService::setAdaptor(DbusAdaptor* adaptor) {
 
 bool DBusService::removeInterfaceIfExists() {
   if (wgutils()->interfaceExists()) {
-    logger.log() << "Device already exists. Let's remove it.";
+    logger.warning() << "Device already exists. Let's remove it.";
     if (!wgutils()->deleteInterface()) {
-      logger.log() << "Failed to remove the device.";
+      logger.error() << "Failed to remove the device.";
       return false;
     }
   }
@@ -75,22 +75,22 @@ bool DBusService::removeInterfaceIfExists() {
 }
 
 QString DBusService::version() {
-  logger.log() << "Version request";
+  logger.debug() << "Version request";
   return PROTOCOL_VERSION;
 }
 
 bool DBusService::activate(const QString& jsonConfig) {
-  logger.log() << "Activate";
+  logger.debug() << "Activate";
 
   if (!PolkitHelper::instance()->checkAuthorization(
           "org.mozilla.vpn.activate")) {
-    logger.log() << "Polkit rejected";
+    logger.error() << "Polkit rejected";
     return false;
   }
 
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {
-    logger.log() << "Invalid input";
+    logger.error() << "Invalid input";
     return false;
   }
 
@@ -98,7 +98,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 
   InterfaceConfig config;
   if (!parseConfig(obj, config)) {
-    logger.log() << "Invalid configuration";
+    logger.error() << "Invalid configuration";
     return false;
   }
 
@@ -113,7 +113,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 }
 
 bool DBusService::deactivate(bool emitSignals) {
-  logger.log() << "Deactivate";
+  logger.debug() << "Deactivate";
   firewallClear();
   return Daemon::deactivate(emitSignals);
 }
@@ -121,10 +121,10 @@ bool DBusService::deactivate(bool emitSignals) {
 QString DBusService::status() { return QString(getStatus()); }
 
 QByteArray DBusService::getStatus() {
-  logger.log() << "Status request";
+  logger.debug() << "Status request";
   QJsonObject json;
   if (!wgutils()->interfaceExists()) {
-    logger.log() << "Unable to get device";
+    logger.error() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
   }
@@ -146,12 +146,12 @@ QByteArray DBusService::getStatus() {
 }
 
 QString DBusService::getLogs() {
-  logger.log() << "Log request";
+  logger.debug() << "Log request";
   return Daemon::logs();
 }
 
 bool DBusService::switchServer(const InterfaceConfig& config) {
-  logger.log() << "Switching server";
+  logger.debug() << "Switching server";
   return wgutils()->updateInterface(config);
 }
 
@@ -164,7 +164,7 @@ bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
 }
 
 void DBusService::appLaunched(const QString& name, int rootpid) {
-  logger.log() << "tracking:" << name << "PID:" << rootpid;
+  logger.debug() << "tracking:" << name << "PID:" << rootpid;
   ProcessGroup* group = m_pidtracker->track(name, rootpid);
   if (m_firewallApps.contains(name)) {
     group->state = m_firewallApps[name];
@@ -173,7 +173,7 @@ void DBusService::appLaunched(const QString& name, int rootpid) {
 }
 
 void DBusService::appTerminated(const QString& name, int rootpid) {
-  logger.log() << "terminate:" << name << "PID:" << rootpid;
+  logger.debug() << "terminate:" << name << "PID:" << rootpid;
 }
 
 /* Get the list of running applications that the firewall knows about. */
@@ -200,7 +200,7 @@ QString DBusService::runningApps() {
 
 /* Update the firewall for running applications matching the application ID. */
 bool DBusService::firewallApp(const QString& appName, const QString& state) {
-  logger.log() << "Setting" << appName << "to firewall state" << state;
+  logger.debug() << "Setting" << appName << "to firewall state" << state;
   m_firewallApps[appName] = state;
   QString cgroup = getAppStateCgroup(state);
 
@@ -227,8 +227,8 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
   group->state = state;
   group->moveToCgroup(getAppStateCgroup(group->state));
 
-  logger.log() << "Setting" << group->name << "PID:" << rootpid
-               << "to firewall state" << state;
+  logger.debug() << "Setting" << group->name << "PID:" << rootpid
+                 << "to firewall state" << state;
   return true;
 }
 
@@ -246,8 +246,8 @@ bool DBusService::firewallClear() {
     group->state = APP_STATE_ACTIVE;
     group->moveToCgroup(cgroup);
 
-    logger.log() << "Setting" << group->name << "PID:" << group->rootpid
-                 << "to firewall state" << group->state;
+    logger.debug() << "Setting" << group->name << "PID:" << group->rootpid
+                   << "to firewall state" << group->state;
   }
   return true;
 }

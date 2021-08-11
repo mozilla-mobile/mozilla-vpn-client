@@ -17,7 +17,8 @@ class DesktopAuthenticationListener final : public AuthenticationListener {
   explicit DesktopAuthenticationListener(QObject* parent);
   ~DesktopAuthenticationListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge,
+             const QString& codeChallengeMethod) override;
 
  private:
   QOAuthHttpServerReplyHandler* m_server = nullptr;

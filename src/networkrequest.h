@@ -72,13 +72,17 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForFxaLogin(QObject* parent,
                                            const QString& email,
                                            const QByteArray& authpw,
-                                           const QString& verificationCode,
+                                           const QString& unblockCode,
                                            const QUrlQuery& query);
 
   static NetworkRequest* createForFxaSendUnblockCode(
       QObject* parent, const QString& emailAddress);
 
-  static NetworkRequest* createForFxaSessionVerifyCode(
+  static NetworkRequest* createForFxaSessionVerifyByEmailCode(
+      QObject* parent, const QByteArray& sessionToken, const QString& code,
+      const QUrlQuery& query);
+
+  static NetworkRequest* createForFxaSessionVerifyByTotpCode(
       QObject* parent, const QByteArray& sessionToken, const QString& code,
       const QUrlQuery& query);
 
@@ -92,9 +96,9 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForFxaSessionDestroy(
       QObject* parent, const QByteArray& sessionToken);
 
-#ifdef MVPN_IOS
-  static NetworkRequest* createForIOSProducts(QObject* parent);
+  static NetworkRequest* createForProducts(QObject* parent);
 
+#ifdef MVPN_IOS
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
 #endif

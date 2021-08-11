@@ -16,7 +16,8 @@ class IOSAuthenticationListener final : public AuthenticationListener {
   IOSAuthenticationListener(QObject* parent);
   ~IOSAuthenticationListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge,
+             const QString& codeChallengeMethod) override;
 };
 
 #endif  // IOSAUTHENTICATIONLISTENER_H

@@ -14,10 +14,35 @@ Item {
     // There 3 possible next-steps:
     // - authentication completed (VPN.state will change, the authentication is
     //   completed)
-    // - email verification needed. This can happen for security reasons. We go
-    //   to EmailVerification. The user needs to insert the 6-digit code.
+    // - unblock code needed. This can happen for security reasons. We go
+    //   to UnblockCodeNeeded. The user needs to insert the 6-digit code.
     //   Then we go back to SignIn state.
     // - errors... for instance: the password is wrong. See the ErrorType enum.
 
     Component.onCompleted: console.log("SIGN IN")
+
+    VPNTextField {
+        id: passwordInput
+
+        anchors.top: parent.top
+        anchors.bottomMargin: 24
+        width: parent.width
+
+        echoMode: TextInput.Password
+
+        placeholderText: "secure password" // TODO
+    }
+
+    VPNButton {
+        anchors.top: passwordInput.bottom
+        anchors.bottomMargin: 24
+        text: "Sign In" // TODO
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        radius: 5
+        onClicked: {
+          VPNAuthInApp.setPassword(passwordInput.text);
+          VPNAuthInApp.signIn();
+        }
+    }
 }

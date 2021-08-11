@@ -39,7 +39,7 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
     : QObject(parent), m_status(status) {
   MVPN_COUNT_CTOR(NetworkRequest);
 
-  logger.log() << "Network request created";
+  logger.debug() << "Network request created";
 
 #ifndef MVPN_WASM
   m_request.setRawHeader("User-Agent", NetworkManager::userAgent());
@@ -84,13 +84,15 @@ NetworkRequest::~NetworkRequest() {
 
 // static
 QString NetworkRequest::apiBaseUrl() {
-#ifndef MVPN_PRODUCTION_MODE
+  if (Constants::inProduction()) {
+    return Constants::API_PRODUCTION_URL;
+  }
+
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (pe.contains("MVPN_API_BASE_URL")) {
     return pe.value("MVPN_API_BASE_URL");
   }
-#endif
-  return Constants::API_URL;
+  return Constants::API_STAGING_URL;
 }
 
 // static
@@ -176,7 +178,7 @@ NetworkRequest* NetworkRequest::createForDeviceRemoval(QObject* parent,
   r->m_request.setUrl(QUrl(url));
 
 #ifdef QT_DEBUG
-  logger.log() << "Network starting" << r->m_request.url().toString();
+  logger.debug() << "Network starting" << r->m_request.url().toString();
 #endif
 
   r->deleteRequest();
@@ -335,7 +337,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountStatus(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/account/status");
   r->m_request.setUrl(url);
 
@@ -355,7 +357,7 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/account/create");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -382,12 +384,14 @@ NetworkRequest* NetworkRequest::createForFxaAccountCreation(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaLogin(
-    QObject* parent, const QString& email, const QByteArray& authpw,
-    const QString& verificationCode, const QUrlQuery& query) {
+NetworkRequest* NetworkRequest::createForFxaLogin(QObject* parent,
+                                                  const QString& email,
+                                                  const QByteArray& authpw,
+                                                  const QString& unblockCode,
+                                                  const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/account/login");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -401,8 +405,8 @@ NetworkRequest* NetworkRequest::createForFxaLogin(
   obj.insert("skipErrorCase", true);
   obj.insert("verificationMethod", "email-otp");
 
-  if (!verificationCode.isEmpty()) {
-    obj.insert("unblockCode", verificationCode);
+  if (!unblockCode.isEmpty()) {
+    obj.insert("unblockCode", unblockCode);
   }
 
   QJsonObject metrics;
@@ -428,7 +432,7 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
                          "application/json");
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/account/login/send_unblock_code");
   r->m_request.setUrl(url);
 
@@ -443,12 +447,12 @@ NetworkRequest* NetworkRequest::createForFxaSendUnblockCode(
 }
 
 // static
-NetworkRequest* NetworkRequest::createForFxaSessionVerifyCode(
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
     QObject* parent, const QByteArray& sessionToken, const QString& code,
     const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/session/verify_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -477,7 +481,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
     QObject* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/session/resend_code");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -495,11 +499,41 @@ NetworkRequest* NetworkRequest::createForFxaSessionResendCode(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForFxaSessionVerifyByTotpCode(
+    QObject* parent, const QByteArray& sessionToken, const QString& code,
+    const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::fxaUrl());
+  url.setPath("/v1/session/verify/totp");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("code", code);
+  obj.insert("service", query.queryItemValue("client_id"));
+
+  QJsonArray scopes;
+  scopes.append(query.queryItemValue("scope"));
+  obj.insert("scopes", scopes);
+
+  QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaAuthz(
     QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/oauth/authorization");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -526,7 +560,7 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     QObject* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
-  QUrl url(Constants::FXA_URL);
+  QUrl url(Constants::fxaUrl());
   url.setPath("/v1/session/destroy");
   r->m_request.setUrl(url);
   r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -543,20 +577,20 @@ NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
   return r;
 }
 
-#ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
   Q_ASSERT(parent);
 
   NetworkRequest* r = new NetworkRequest(parent, 200, true);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v2/vpn/products/ios");
+  url.setPath("/api/v3/vpn/products");
   r->m_request.setUrl(url);
 
   r->getRequest();
   return r;
 }
 
+#ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString& receipt) {
   Q_ASSERT(parent);
@@ -596,14 +630,14 @@ void NetworkRequest::replyFinished() {
   int status = statusCode();
 
   QString expect = m_status ? QString::number(m_status) : "any";
-  logger.log() << "Network reply received - status:" << status
-               << "- expected:" << expect;
+  logger.debug() << "Network reply received - status:" << status
+                 << "- expected:" << expect;
 
   QByteArray data = m_reply->readAll();
 
   if (m_reply->error() != QNetworkReply::NoError) {
-    logger.log() << "Network error:" << m_reply->errorString()
-                 << "status code:" << status << "- body:" << data;
+    logger.error() << "Network error:" << m_reply->errorString()
+                   << "status code:" << status << "- body:" << data;
     emit requestFailed(m_reply->error(), data);
     return;
   }
@@ -611,8 +645,8 @@ void NetworkRequest::replyFinished() {
   // This is an extra check for succeeded requests (status code 200 vs 201, for
   // instance). The real network status check is done in the previous if-stmt.
   if (m_status && status != m_status) {
-    logger.log() << "Status code unexpected - status code:" << status
-                 << "- expected:" << m_status;
+    logger.error() << "Status code unexpected - status code:" << status
+                   << "- expected:" << m_status;
     emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }
@@ -629,12 +663,12 @@ void NetworkRequest::handleHeaderReceived() {
     return;
   }
 
-  logger.log() << "Network header received";
+  logger.debug() << "Network header received";
   emit requestHeaderReceived(this);
 }
 
 void NetworkRequest::handleRedirect(const QUrl& url) {
-  logger.log() << "Network request redirected";
+  logger.debug() << "Network request redirected";
   emit requestRedirected(this, url);
 }
 
@@ -646,7 +680,7 @@ void NetworkRequest::timeout() {
   m_completed = true;
   m_reply->abort();
 
-  logger.log() << "Network request timeout";
+  logger.error() << "Network request timeout";
   emit requestFailed(QNetworkReply::TimeoutError, QByteArray());
 }
 
@@ -703,8 +737,8 @@ void NetworkRequest::disableTimeout() { m_timer.stop(); }
 
 QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
   if (!m_reply) {
-    logger.log() << "INTERNAL ERROR! NetworkRequest::rawHeader called before "
-                    "starting the request";
+    logger.error() << "INTERNAL ERROR! NetworkRequest::rawHeader called before "
+                      "starting the request";
     return QByteArray();
   }
 
@@ -713,8 +747,8 @@ QByteArray NetworkRequest::rawHeader(const QByteArray& headerName) const {
 
 void NetworkRequest::abort() {
   if (!m_reply) {
-    logger.log() << "INTERNAL ERROR! NetworkRequest::abort called before "
-                    "starting the request";
+    logger.error() << "INTERNAL ERROR! NetworkRequest::abort called before "
+                      "starting the request";
     return;
   }
 

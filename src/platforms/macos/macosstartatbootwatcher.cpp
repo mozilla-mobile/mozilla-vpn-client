@@ -14,7 +14,7 @@ Logger logger(LOG_MACOS, "MacOSStartAtBootWatcher");
 MacOSStartAtBootWatcher::MacOSStartAtBootWatcher(bool startAtBoot) {
   MVPN_COUNT_CTOR(MacOSStartAtBootWatcher);
 
-  logger.log() << "StartAtBoot watcher";
+  logger.debug() << "StartAtBoot watcher";
   MacOSUtils::enableLoginItem(startAtBoot);
 }
 
@@ -23,6 +23,6 @@ MacOSStartAtBootWatcher::~MacOSStartAtBootWatcher() {
 }
 
 void MacOSStartAtBootWatcher::startAtBootChanged(bool startAtBoot) {
-  logger.log() << "StartAtBoot changed:" << startAtBoot;
+  logger.debug() << "StartAtBoot changed:" << startAtBoot;
   MacOSUtils::enableLoginItem(startAtBoot);
 }

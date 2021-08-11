@@ -29,7 +29,7 @@ CheckBox {
         if (!activeFocus)
             mouseArea.changeState(uiState.stateDefault);
 
-        if (activeFocus && typeof(vpnFlickable.ensureVisible) !== "undefined")
+        if (activeFocus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
             vpnFlickable.ensureVisible(checkBox);
 
     }

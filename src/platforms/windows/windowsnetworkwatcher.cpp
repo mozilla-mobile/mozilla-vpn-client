@@ -29,7 +29,7 @@ WindowsNetworkWatcher::~WindowsNetworkWatcher() {
 }
 
 void WindowsNetworkWatcher::initialize() {
-  logger.log() << "initialize";
+  logger.debug() << "initialize";
 
   DWORD negotiatedVersion;
   if (WlanOpenHandle(2, nullptr, &negotiatedVersion, &m_wlanHandle) !=
@@ -46,13 +46,13 @@ void WindowsNetworkWatcher::initialize() {
     return;
   }
 
-  logger.log() << "callback registered";
+  logger.debug() << "callback registered";
 }
 
 // static
 void WindowsNetworkWatcher::wlanCallback(PWLAN_NOTIFICATION_DATA data,
                                          PVOID context) {
-  logger.log() << "Callback";
+  logger.debug() << "Callback";
 
   WindowsNetworkWatcher* that = static_cast<WindowsNetworkWatcher*>(context);
   Q_ASSERT(that);
@@ -61,20 +61,20 @@ void WindowsNetworkWatcher::wlanCallback(PWLAN_NOTIFICATION_DATA data,
 }
 
 void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
-  logger.log() << "Processing wlan data";
+  logger.debug() << "Processing wlan data";
 
   if (!isActive()) {
-    logger.log() << "The watcher is off";
+    logger.debug() << "The watcher is off";
     return;
   }
 
   if (data->NotificationSource != WLAN_NOTIFICATION_SOURCE_MSM) {
-    logger.log() << "The wlan source is not MSM";
+    logger.debug() << "The wlan source is not MSM";
     return;
   }
 
   if (data->NotificationCode != wlan_notification_msm_connected) {
-    logger.log() << "The wlan code is not MSM connected";
+    logger.debug() << "The wlan code is not MSM connected";
     return;
   }
 
@@ -100,7 +100,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
           DOT11_CIPHER_ALGO_WEP40 &&
       connectionInfo->wlanSecurityAttributes.dot11CipherAlgorithm !=
           DOT11_CIPHER_ALGO_WEP104) {
-    logger.log() << "The network is secure enought";
+    logger.debug() << "The network is secure enought";
     return;
   }
 
@@ -125,6 +125,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
     }
   }
 
-  logger.log() << "Unsecure network:" << ssid << "id:" << bssid;
+  logger.debug() << "Unsecure network:" << ssid << "id:" << bssid;
   emit unsecuredNetwork(ssid, bssid);
 }

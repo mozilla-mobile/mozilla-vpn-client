@@ -61,7 +61,7 @@ void WindowsPingSender::sendPing(const QString& dest, quint16 sequence) {
   DWORD status = GetLastError();
   if (status != ERROR_IO_PENDING) {
     QString errmsg = WindowsCommons::getErrorMessage();
-    logger.log() << "failed to start:" << errmsg;
+    logger.error() << "failed to start:" << errmsg;
   }
 }
 
@@ -73,7 +73,7 @@ void WindowsPingSender::pingEventReady() {
       return;
     }
     QString errmsg = WindowsCommons::getErrorMessage();
-    logger.log() << "failed with error:" << errmsg;
+    logger.error() << "failed with error:" << errmsg;
     return;
   }
 

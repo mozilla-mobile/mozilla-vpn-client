@@ -3,24 +3,32 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This script must be executed at the root of the repository.
-
-import humps
 import os
 import yaml
-
 
 def stop(stringId):
     exit(
         f"Each key must be a string or a list with 1 or more items. Fix string ID `{stringId}`"
     )
 
+def pascalize(string):
+    output = ''
+    for chunk in string.split('_'):
+        output += chunk[0].upper()
+        output += chunk[1:]
+    return output
 
 def generateStrings():
-    if not os.path.isfile("translations/strings.yaml"):
+
+    translations_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.pardir, "translations")
+    )
+    yaml_path = os.path.join(translations_path, "strings.yaml")
+
+    if not os.path.isfile(yaml_path):
         exit("Unable to find translations/strings.yaml")
 
-    with open("translations/strings.yaml", "r") as yaml_file:
+    with open(yaml_path, "r") as yaml_file:
         yaml_content = yaml.safe_load(yaml_file)
 
         stringIds = []
@@ -80,14 +88,16 @@ def generateStrings():
 
                     stringIds.append(
                         {
-                            "enumId": humps.pascalize(f"{category}_{key}"),
+                            "enumId": pascalize(f"{category}_{key}"),
                             "stringId": stringId,
                             "value": value,
                             "comments": comments,
                         }
                     )
 
-        with open("translations/generated/l18nstrings.h", "w") as output:
+        with open(
+            os.path.join(translations_path, "generated", "l18nstrings.h"), "w"
+        ) as output:
             output.write(
                 """/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -132,7 +142,9 @@ class L18nStrings final : public QObject {
 """
             )
 
-        with open("translations/generated/l18nstrings_p.cpp", "w") as output:
+        with open(
+            os.path.join(translations_path, "generated", "l18nstrings_p.cpp"), "w"
+        ) as output:
             output.write(
                 """/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -156,6 +168,10 @@ const char* const L18nStrings::_ids[] = {
                 for comment in string["comments"]:
                     output.write(f"    //: {comment}\n")
                 output.write(f"    QT_TRID_NOOP(\"{string['stringId']}\"),\n\n")
+
+            # This is done to make windows compiler happy
+            if len(stringIds) == 0:
+                output.write(f"    \"vpn.dummy.ignore\",\n\n")
 
             output.write("};")
 

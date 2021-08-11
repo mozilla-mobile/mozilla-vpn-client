@@ -35,8 +35,8 @@ jobs:
             name: Sources
             path: .tmp
 
-  focal-staging:
-    name: Focal Staging
+  ubuntu-focal:
+    name: Ubuntu Focal
     needs: source-bundle
     runs-on: ubuntu-20.04
     steps:
@@ -53,7 +53,7 @@ jobs:
           pip3 install pyhumps
           pip3 install pyyaml
 
-          for file in $(find focal-stage -type f); do ln -s $file; done
+          for file in $(find focal/ -type f); do ln -s $file; done
           dpkg-source -x mozillavpn_*.dsc
           sudo mk-build-deps -ir mozillavpn-*/debian/control
 
@@ -67,46 +67,11 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
-            name: Staging Build (focal)
+            name: Focal Build
             path: packages
 
-  focal-production:
-    name: Focal Production
-    needs: source-bundle
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Download Source Package
-        uses: actions/download-artifact@v2
-        with:
-            name: Sources
-
-      - name: Install Dependencies
-        run: |
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
-          sudo apt-get install debhelper devscripts equivs -y
-          pip3 install pyhumps
-          pip3 install pyyaml
-
-          for file in $(find focal-prod -type f); do ln -s $file; done
-          dpkg-source -x mozillavpn_*.dsc
-          sudo mk-build-deps -ir mozillavpn-*/debian/control
-
-      - name: Create package structure
-        shell: bash
-        run: |
-          (cd mozillavpn-* && dpkg-buildpackage --build=binary --no-sign)
-          mkdir packages
-          cp *.deb packages
-
-      - name: Uploading
-        uses: actions/upload-artifact@v1
-        with:
-            name: Production Build (focal)
-            path: packages
-
-  bionic-staging:
-    name: Bionic Staging
+  ubuntu-bionic:
+    name: Ubuntu Bionic
     needs: source-bundle
     runs-on: ubuntu-18.04
     steps:
@@ -123,7 +88,7 @@ jobs:
           pip3 install pyhumps
           pip3 install pyyaml
 
-          for file in $(find bionic-stage -type f); do ln -s $file; done
+          for file in $(find bionic/ -type f); do ln -s $file; done
           dpkg-source -x mozillavpn_*.dsc
           sudo mk-build-deps -ir mozillavpn-*/debian/control
 
@@ -137,52 +102,17 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
-            name: Staging Build (bionic)
+            name: Bionic Build
             path: packages
 
-  bionic-production:
-    name: Bionic Production
-    needs: source-bundle
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Download Source Package
-        uses: actions/download-artifact@v2
-        with:
-            name: Sources
 
-      - name: Install Dependencies
-        run: |
-          # Add external PPA, latest version of QT is 5.12.x for Ubuntu 18.04
-          sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-bionic -y
-          sudo apt-get install debhelper devscripts equivs -y
-          pip3 install pyhumps
-          pip3 install pyyaml
-
-          for file in $(find bionic-prod -type f); do ln -s $file; done
-          dpkg-source -x mozillavpn_*.dsc
-          sudo mk-build-deps -ir mozillavpn-*/debian/control
-
-      - name: Create package structure
-        shell: bash
-        run: |
-          (cd mozillavpn-* && dpkg-buildpackage --build=binary --no-sign)
-          mkdir packages
-          cp *.deb packages
-
-      - name: Uploading
-        uses: actions/upload-artifact@v1
-        with:
-            name: Production Build (bionic)
-            path: packages
-
-  ubuntu-hirsute:
-    name: Ubuntu packages
+  ubuntu-pbuilder:
+    name: Ubuntu Packages
     needs: source-bundle
     strategy:
       matrix:
         config:
-            - { name: "Hirsute Staging", dist: hirsute, buildtype: "stage" }
-            - { name: "Hirsute Production", dist: hirsute, buildtype: "prod" }
+            - { name: "Hirsute", dist: hirsute }
 
     runs-on: ubuntu-latest
     env:
@@ -202,15 +132,15 @@ jobs:
       - name: Building package
         shell: bash
         run: |
-          cd ${{matrix.config.dist}}-${{matrix.config.buildtype}}
-          ln -s ../mozillavpn_*.orig.tar.gz
-          sudo pbuilder build --basetgz $BASETGZ --buildresult $(pwd) mozillavpn_*.dsc
+          mkdir packages
+          for file in $(find ${{matrix.config.dist}} -type f); do ln -s $file; done
+          sudo pbuilder build --basetgz $BASETGZ --buildresult $(pwd)/packages mozillavpn_*.dsc
 
       - name: Uploading
         uses: actions/upload-artifact@v1
         with:
             name: ${{matrix.config.name}} Build
-            path: ${{matrix.config.dist}}-${{matrix.config.buildtype}}
+            path: packages
 
   rpmbuild:
     name: RPM Packages
@@ -227,7 +157,6 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          pip3 install pyyaml
           yum -y install rpm-build rpmdevtools yum-utils
           yum-builddep -y mozillavpn.spec
 

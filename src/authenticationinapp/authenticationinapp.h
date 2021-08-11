@@ -16,27 +16,30 @@ class AuthenticationInApp final : public QObject {
 
  public:
   enum State {
-    // The AIP has not started yet
+    // The Authencation-In-App has not started yet
     StateInitializing,
     // The client_id and other params has been received. We are ready to
     // receive email address and password.
     StateStart,
-    // We are checking the account.
-    StateAccountStatus,
     // Sign in
     StateSignIn,
     // Sign up
     StateSignUp,
-    // The authentication requires an email verification (6-digit code)
-    // At this point, the user is not sign-in/up. We are waiting for this extra
-    // step to complete the authentication.
-    StateEmailVerification,
-    // The authentication requires an account verification (6-digit code)
-    // This is similar to the previous step, but it happens when the account
-    // has not been verified yet.
-    // The code expires after 5 minutes. Call `resendVerificationAccountCode`
-    // to have a new code.
-    StateAccountVerification,
+    // The authentication requires an unblock code (6-digit code) At this
+    // point, the user needs to check their mailbox and pass the 6-digit
+    // unblock code. Then, the signIn() can continue.  The code expires after 5
+    // minutes. Call `resendUnblockCodeEmail` to have a new code.
+    StateUnblockCodeNeeded,
+    // The authentication requires an account verification (6-digit code) This
+    // is similar to the previous step, but it happens when the account has not
+    // been verified yet.  The code expires after 5 minutes. Call
+    // `resendVerificationSessionCodeEmail` to have a new code.
+    StateVerificationSessionByEmailNeeded,
+    // The two-factor authentication session verification.
+    StateVerificationSessionByTotpNeeded,
+    // If we are unable to continue the authentication in-app, the fallback is
+    // the browser flow.
+    StateFallbackInBrowser,
   };
   Q_ENUM(State);
 
@@ -67,17 +70,38 @@ class AuthenticationInApp final : public QObject {
 
   State state() const { return m_state; }
 
-  Q_INVOKABLE void signInOrUp(const QString& emailAddress,
-                              const QString& password);
+  // Everything starts from here.
+  Q_INVOKABLE void checkAccount(const QString& emailAddress);
 
-  // This needs to be called when we are in StateEmailVerification state.
-  Q_INVOKABLE void verifyEmailCode(const QString& code);
+  Q_INVOKABLE void setPassword(const QString& password);
 
-  // This needs to be called when we are in StateAccountVerification state.
-  Q_INVOKABLE void verifyAccountCode(const QString& code);
+  Q_INVOKABLE static bool validateEmailAddress(const QString& emailAddress);
 
-  // This needs to be called when we are in StateAccountVerification state.
-  Q_INVOKABLE void resendVerificationAccountCode();
+  Q_INVOKABLE static bool validatePasswordCommons(const QString& password);
+  Q_INVOKABLE static bool validatePasswordLength(const QString& password);
+  Q_INVOKABLE bool validatePasswordEmail(const QString& password);
+
+  // Sign In/Up.
+  Q_INVOKABLE void signIn();
+  Q_INVOKABLE void signUp();
+
+  // This needs to be called when we are in StateUnblockCodeNeeded state.
+  Q_INVOKABLE void setUnblockCodeAndContinue(const QString& unblockCode);
+
+  // This can be called when we are in StateUnblockCodeNeeded state.
+  Q_INVOKABLE void resendUnblockCodeEmail();
+
+  // This needs to be called when we are in
+  // StateVerificationSessionByEmailNeeded state.
+  Q_INVOKABLE void verifySessionEmailCode(const QString& code);
+
+  // This needs to be called when we are in
+  // StateVerificationSessionByEmailNeeded state.
+  Q_INVOKABLE void resendVerificationSessionCodeEmail();
+
+  // This needs to be called when we are in
+  // StateVerificationSessionByTotpNeeded state.
+  Q_INVOKABLE void verifySessionTotpCode(const QString& code);
 
   void registerListener(AuthenticationInAppListener* listener);
 
@@ -89,6 +113,10 @@ class AuthenticationInApp final : public QObject {
   void stateChanged();
 
   void errorOccurred(ErrorType error);
+
+#ifdef UNIT_TEST
+  void unitTestFinalUrl(const QUrl& url);
+#endif
 
  private:
   explicit AuthenticationInApp(QObject* parent);
