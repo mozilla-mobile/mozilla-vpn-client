@@ -148,6 +148,7 @@ class WindowsSplitTunnel final : public QObject {
   static bool uninstallDriver();
   static bool isInstalled();
 
+  // Returns if this Feature is Supported and ready to use;
   ControllerCapabilities::SupportLevel getSupportStatus();
 
  private slots:

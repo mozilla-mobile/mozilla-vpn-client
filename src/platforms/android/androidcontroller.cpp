@@ -286,7 +286,7 @@ bool AndroidController::VPNBinder::onTransact(int code,
       emit m_controller->initialized(
           true, doc.object()["connected"].toBool(),
           QDateTime::fromMSecsSinceEpoch(
-              doc.object()["time"].toVariant().toLongLong()),m_capabilities);
+              doc.object()["time"].toVariant().toLongLong()),ControllerCapabilities());
       // Pass a localised version of the Fallback string for the Notification
       m_controller->setFallbackConnectedNotification();
 

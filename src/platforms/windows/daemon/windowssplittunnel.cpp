@@ -498,8 +498,10 @@ QString WindowsSplitTunnel::convertPath(const QString& path) {
 ControllerCapabilities::SupportLevel WindowsSplitTunnel::getSupportStatus(){
   if(getState() != DRIVER_STATE::STATE_UNKNOWN){
     // Driver is Ready.
+    logger.log() << "Support Level for Split Tunnel: Supported";
     return ControllerCapabilities::SupportLevel::Supported;
   }
+    logger.log() << "Support Level for Split Tunnel: Deactivated";
   // Something went wrong while activation. :c
   return ControllerCapabilities::SupportLevel::Deactivated;
 }

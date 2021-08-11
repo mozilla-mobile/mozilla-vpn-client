@@ -5,7 +5,7 @@
 #include <QString>
 
 /*
- * This Model defines which capebilities each controller has.
+ * This Model defines which capabilitie a controller has.
  */
 class ControllerCapabilities : public QObject
 {
@@ -24,16 +24,16 @@ public:
 
     // Each capability is defined by it's supportlevel
     enum SupportLevel{
+        // Feature is supported and ready to use
+        Supported = 1,
         // Not known yet, might happen if the supportlevel is checked
         // before the controller is initialised
-        Unknown,
-        // Feature is not supported by Controller / OS
-        Unsupported,
+        Unknown = 0,
         // Feature is supported but currently unavailable
         // e.g: "failed to communicate with the windows-split tunnel driver"
-        Deactivated,
-        // Feature is supported and ready to use
-        Supported,
+        Deactivated = -1,
+        // Feature is not supported by Controller / OS
+        Unsupported= -2,
     };
     Q_ENUM(SupportLevel);
 
@@ -44,9 +44,9 @@ public:
     Q_PROPERTY(SupportLevel  name MEMBER m_X)                   \
     SupportLevel m_X = Unknown;                                 \
     bool isXsupported() const{                                  \
-    return m_X == def; }                                        \
+    return m_X == SupportLevel::Supported; }                    \
 
-    // When adding a Capability please
+    // Note: When adding a Capability please
     // make sure to update the copy constructor :)
 
     #if defined(MVPN_ANDROID) 
@@ -58,16 +58,12 @@ public:
     #else 
         // Unkown, controller will tell.
         Capability(SplitTunnel, Unknown);
-    #endif
+    #endifs
 
 
-    #if defined(MVPN_ANDROID) || defined(MVPN_IOS)
-        // Definitely not Supported
-        Capability(MultiHop, Unsupported);
-    #else 
-        // Unknown, controller will tell.
-        Capability(MultiHop, Unknown);
-    #endif
+
+    #undef Capability
+    #undef _cap
 };
 
 #endif // CONTROLLERCAPABILITIES_H
