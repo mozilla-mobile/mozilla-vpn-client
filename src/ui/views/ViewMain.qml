@@ -71,10 +71,6 @@ VPNFlickable {
             }
         }
 
-        Text {
-            text: ringAnimation.animationProgress.toFixed(2)
-        }
-
         ShaderEffect {
             property real animationProgress
             property color animatedColor
@@ -94,7 +90,7 @@ VPNFlickable {
                 running: true
                 repeat: true
                 onTriggered: {
-                    const animationSpeed = 0.002;
+                    const animationSpeed = 0.0015;
                     if (ringAnimation.animationProgress < 1.0) {
                         ringAnimation.animationProgress += animationSpeed;
                     } else {
@@ -121,13 +117,18 @@ VPNFlickable {
 
                 float compose_ring(vec2 uv, vec2 position, float strokeWidth, float radius) {
                     float circle1 = draw_circle(uv, position, radius);
-                    float circle2 = draw_circle(uv, position, radius - strokeWidth);
+                    float circle2 = draw_circle(uv, position, radius - strokeWidth * smoothstep(0.0, 1.0, radius * 5.0));
 
                     return circle1 - circle2;
                 }
 
                 float calc_ring_radius(float minRadius, float maxRadius, float currentRadius, float offset) {
-                    return mod(maxRadius * offset + currentRadius, maxRadius) + minRadius;
+                     return mod(maxRadius * offset + currentRadius, maxRadius) + minRadius;
+                }
+
+                float calc_opacity(float radius) {;
+                    float peak = radius / 0.2;
+                    return peak * exp(0.25 - peak);
                 }
 
                 void main() {
@@ -144,15 +145,14 @@ VPNFlickable {
 
                     // Ring 1
                     float ringRadius1 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.0);
-                    float ring1 = compose_ring(uv, center, strokeWidth, ringRadius1) * ringRadius1;
-
+                    float ring1 = compose_ring(uv, center, strokeWidth, ringRadius1) * calc_opacity(ringRadius1);
                     // Ring 2
                     float ringRadius2 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.33);
-                    float ring2 = compose_ring(uv, center, strokeWidth, ringRadius2) * ringRadius2;
+                    float ring2 = compose_ring(uv, center, strokeWidth, ringRadius2) * calc_opacity(ringRadius2);
 
                     // Ring 3
                     float ringRadius3 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.66);
-                    float ring3 = compose_ring(uv, center, strokeWidth, ringRadius3) * ringRadius3;
+                    float ring3 = compose_ring(uv, center, strokeWidth, ringRadius3) * calc_opacity(ringRadius3);
 
                     // Output rings
                     float rings = ring1 + ring2 + ring3;
