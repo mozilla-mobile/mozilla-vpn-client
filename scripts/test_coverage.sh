@@ -32,6 +32,8 @@ while [[ $# -gt 0 ]]; do
     helpFunction
     ;;
   *)
+    helpFunction
+    ;;
   esac
 done
 
