@@ -268,15 +268,15 @@ bool WindowsFirewall::allowTrafficForAppOnAdapter(const QString& exePath,
 
 bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
                                        const InterfaceConfig& config) {
-  // Checks if the FW_Rule was enabled succesfully,
-  // disables the whole killswitch and returns false if not.
-  #define FW_OK(rule,name)                               \
-    if(!rule){                                        \
-      logger.error() << "Rule failed:" << name << "\n"; \
-      disableKillSwitch();\
-      return false;\
-    }\
-    logger.debug() << "Rule enabled:" << name << "\n";
+// Checks if the FW_Rule was enabled succesfully,
+// disables the whole killswitch and returns false if not.
+#define FW_OK(rule, name)                             \
+  if (!rule) {                                        \
+    logger.error() << "Rule failed:" << name << "\n"; \
+    disableKillSwitch();                              \
+    return false;                                     \
+  }                                                   \
+  logger.debug() << "Rule enabled:" << name << "\n";
 
   logger.log() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
   FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),
@@ -289,7 +289,6 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
         "Allow Traffic for MozillaVPN.exe");
   FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT),
         "Allow DNS Traffic");
-
 
   logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
@@ -517,16 +516,14 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter,
 
 bool WindowsFirewall::allowTrafficTo(const QHostAddress& targetIP, uint port,
                                      int weight) {
-
   logger.debug() << "Requesting to allow Traffic to: " << targetIP.toString()
-               << ":" << port;
+                 << ":" << port;
 
   bool isIPv4 = targetIP.protocol() == QAbstractSocket::IPv4Protocol;
   GUID layerOut =
       isIPv4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
   GUID layoutIn = isIPv4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
                          : FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-
 
   quint32_be ipBigEndian;
   quint32 ip = targetIP.toIPv4Address();
@@ -995,4 +992,3 @@ void WindowsFirewall::importAddress(const QHostAddress& addr,
   auto v6bytes = addr.toIPv6Address();
   RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
 }
-
