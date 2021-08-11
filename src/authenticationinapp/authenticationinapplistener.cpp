@@ -636,7 +636,6 @@ void AuthenticationInAppListener::processRequestFailure(
         return;
       }
 
-      // TODO
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;
       return;
