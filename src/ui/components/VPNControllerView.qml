@@ -108,7 +108,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -160,7 +160,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -219,7 +219,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -279,7 +279,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -325,7 +325,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: true
                 opacity: 1
                 startAnimation: true
@@ -386,7 +386,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -441,7 +441,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
                 opacity: 1
                 startAnimation: false
@@ -496,14 +496,21 @@ Item {
         }
     ]
 
-    VPNAnimatedRings {
-        id: animatedRingsWrapper
-        // Make sure we only do the render animation when
-        // The element is visible &&
-        // the application is not minimized
+    // VPNAnimatedRings {
+    //     id: animatedRings
+    //     // Make sure we only do the render animation when
+    //     // The element is visible &&
+    //     // the application is not minimized
+    //     isCurrentyVisible: stackview.depth === 1 &&
+    //                        (Qt.application.state === Qt.ApplicationActive ||
+    //                         Qt.application.state === Qt.ApplicationInactive)
+    // }
+
+    VPNAnimatedRingsShader {
+        id: animatedRings
         isCurrentyVisible: stackview.depth === 1 &&
-                           (Qt.application.state === Qt.ApplicationActive ||
-                            Qt.application.state === Qt.ApplicationInactive)
+            (Qt.application.state === Qt.ApplicationActive ||
+            Qt.application.state === Qt.ApplicationInactive)
     }
 
     VPNMainImage {
