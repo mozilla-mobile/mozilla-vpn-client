@@ -41,7 +41,6 @@ bool FeatureList::localNetworkAccessSupported() const {
 bool FeatureList::protectSelectedAppsSupported() const {
   auto controller = MozillaVPN::instance()->controller();
   return controller->getCapabilities().isSplitTunnelSupported();
-
 }
 
 bool FeatureList::captivePortalNotificationSupported() const {

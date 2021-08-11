@@ -106,8 +106,8 @@ void Controller::initialize() {
   connect(m_impl.get(), &ControllerImpl::controllerCapabilitiesUpdated, this,
           &Controller::controllerCapabilitiesUpdated);
   // Dispatch Feature-Set changes to the Featurelist
-  connect(this, &Controller::controllerCapabilitiesChanged, FeatureList::instance(),
-          &FeatureList::statusChanged);
+  connect(this, &Controller::controllerCapabilitiesChanged,
+          FeatureList::instance(), &FeatureList::statusChanged);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
@@ -117,7 +117,8 @@ void Controller::initialize() {
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
-                                 const QDateTime& connectionDate, ControllerCapabilities aCapabilities) {
+                                 const QDateTime& connectionDate,
+                                 ControllerCapabilities aCapabilities) {
   logger.debug() << "Controller activated with status:" << status
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
@@ -779,8 +780,8 @@ QString Controller::switchingLocalizedCityName() const {
   return ServerI18N::translateCityName(m_switchingCountryCode, m_switchingCity);
 }
 
-
-void Controller::controllerCapabilitiesUpdated(ControllerCapabilities aCapabilities){
-    m_capabilities = aCapabilities;
-    emit controllerCapabilitiesChanged();
+void Controller::controllerCapabilitiesUpdated(
+    ControllerCapabilities aCapabilities) {
+  m_capabilities = aCapabilities;
+  emit controllerCapabilitiesChanged();
 }

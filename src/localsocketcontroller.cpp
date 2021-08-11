@@ -49,7 +49,7 @@ void LocalSocketController::errorOccurred(
   logger.error() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
-    emit initialized(false, false, QDateTime(),ControllerCapabilities());
+    emit initialized(false, false, QDateTime(), ControllerCapabilities());
   }
 
   m_state = eDisconnected;
@@ -271,10 +271,10 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
       }
     }
     ControllerCapabilities capabilities;
-    if(obj.contains("capabilities") && obj.value("capabilities").isObject()){
-       capabilities.read(obj.value("capabilities").toObject());
+    if (obj.contains("capabilities") && obj.value("capabilities").isObject()) {
+      capabilities.read(obj.value("capabilities").toObject());
     }
-    emit initialized(true, connected.toBool(), datetime,capabilities);
+    emit initialized(true, connected.toBool(), datetime, capabilities);
     return;
   }
 

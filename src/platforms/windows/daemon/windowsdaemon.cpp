@@ -90,7 +90,7 @@ QByteArray WindowsDaemon::getStatus() {
 
   ControllerCapabilities features;
   features.m_SplitTunnel = m_splitTunnelManager.getSupportStatus();
-  obj.insert("capabilities",features.serialize());
+  obj.insert("capabilities", features.serialize());
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 

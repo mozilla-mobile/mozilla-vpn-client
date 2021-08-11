@@ -20,8 +20,8 @@ class DummyController final : public ControllerImpl {
   void initialize(const Device* device, const Keys* keys) override {
     Q_UNUSED(device);
     Q_UNUSED(keys);
-    
-    emit initialized(true, false, QDateTime(),ControllerCapabilities());
+
+    emit initialized(true, false, QDateTime(), ControllerCapabilities());
   }
 
   void activate(const Server& data, const Device* device, const Keys* keys,

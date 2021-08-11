@@ -139,8 +139,7 @@ QByteArray DBusService::getStatus() {
 
   ControllerCapabilities features;
   features.m_SplitTunnel = m_apptracker.getSupportStatus();
-  obj.insert("capabilities",features.serialize());
-
+  obj.insert("capabilities", features.serialize());
 
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }

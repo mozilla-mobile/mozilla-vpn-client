@@ -15,7 +15,8 @@ class FeatureList final : public QObject {
   Q_PROPERTY(bool startOnBootSupported READ startOnBootSupported CONSTANT)
   Q_PROPERTY(bool localNetworkAccessSupported READ localNetworkAccessSupported
                  CONSTANT)
-  Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported NOTIFY statusChanged)
+  Q_PROPERTY(bool protectSelectedAppsSupported READ protectSelectedAppsSupported
+                 NOTIFY statusChanged)
   Q_PROPERTY(bool unsecuredNetworkNotificationSupported READ
                  unsecuredNetworkNotificationSupported CONSTANT)
   Q_PROPERTY(bool captivePortalNotificationSupported READ
@@ -53,7 +54,7 @@ class FeatureList final : public QObject {
 
   bool inAppPurchaseSupported() const;
 
-signals:
+ signals:
   void statusChanged();
 };
 

@@ -85,7 +85,7 @@ class Controller final : public QObject {
 
   void backendFailure();
 
-  const ControllerCapabilities& getCapabilities(){ return m_capabilities;}
+  const ControllerCapabilities& getCapabilities() { return m_capabilities; }
 
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will

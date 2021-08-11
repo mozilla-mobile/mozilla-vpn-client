@@ -109,7 +109,7 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
   }
 }
 
-ControllerCapabilities::SupportLevel AppTracker::getSupportStatus(){
+ControllerCapabilities::SupportLevel AppTracker::getSupportStatus() {
   /* Control groups v1 must be mounted for traffic classification */
   if (LinuxDependencies::findCgroupPath("net_cls").isNull()) {
     return ControllerCapabilities::SupportLevel::Unsupported;
