@@ -61,7 +61,7 @@ bool WgQuickProcess::createConfigFile(const QString& outputFile,
     // thus, not add any other :)
     if ((config.m_ipv6Enabled) &&
         (config.m_dnsServer == config.m_serverIpv4Gateway)) {
-      dnsServers.append(config.m_deviceIpv6Address);
+      dnsServers.append(config.m_serverIpv6Gateway);
     }
     out << "DNS = " << dnsServers.join(", ") << "\n";
   }
