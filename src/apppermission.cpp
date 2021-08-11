@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <QVector>
 #include "settingsholder.h"
+#include "l18nstrings.h"
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
@@ -164,19 +165,16 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   if(removedMissingApps.count() == 0){
     return;
   }
-  //% "Add apps manually"
-  //: "Refers to the Apps that are Missing from the Split Tunnel list"
-  QString action = qtTrId("splittunnel.missing.action");
+  auto strings = L18nStrings::instance();
+  QString action = strings->tr(L18nStrings::SplittunnelMissingAppAction);
   if(removedMissingApps.count() == 1){
-    //% "%1 missing from list."
-    //: App enabled the Split-Tunnel settings %1 is the name of the apps missing
-    QString message = qtTrId("splittunnel.missing.one").arg(removedMissingApps.first());
+    QString message = strings->tr(L18nStrings::SplittunnelMissingAppOne)
+                          .arg(removedMissingApps.first());
     emit notification("warning",message,action);
     return;
   }
-  //% "%1 Apps missing from list."
-  //: Apps in the Split-Tunnel settings %1 is the amount of apps missing
-  QString message = qtTrId("splittunnel.missing.multiple").arg(removedMissingApps.count());
+  QString message = strings->tr(L18nStrings::SplittunnelMissingAppMultiple)
+                        .arg(removedMissingApps.count());
   emit notification("warning",message,action);
 }
 
@@ -229,7 +227,8 @@ void AppPermission::openFilePicker() {
   Q_ASSERT(m_listprovider);
   m_listprovider->addApplication(fileNames[0]);
 
-  //% "Success! You added the %1 to this list."
-  QString message = qtTrId("splittunnel.added.one").arg(m_listprovider->getAppName(fileNames[0]));
+  QString message = L18nStrings::instance()
+                        ->tr(L18nStrings::SplittunnelMissingAppAddedOne)
+                        .arg(m_listprovider->getAppName(fileNames[0]));
   emit notification("success",message);
 }

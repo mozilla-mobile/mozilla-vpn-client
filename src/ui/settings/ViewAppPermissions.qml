@@ -77,8 +77,8 @@ Item {
                 function onNotification(type,message,action) {
                     console.log("Got notification: "+type + "  message:"+message);
                     var component = Qt.createComponent("../components/VPNAlert.qml");
-                    component.createObject(messageBox, {
-                                               isLayout:true,
+                    component.createObject(root, {
+                                               isLayout:false,
                                                visible:true,
                                                alertText: message,
                                                alertType: type,

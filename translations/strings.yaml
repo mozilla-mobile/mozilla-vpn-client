@@ -48,3 +48,36 @@
 # Remember! When you change this file, you must run the
 # `./scripts/generate_strings.py` script to regenerate the string files.
 #
+
+serversView:
+  searchPlaceholder: Search countries
+  searchNoResultsLabel: No results. Try a different search
+
+feedbackForm:
+  chooseCategory: Choose a category
+
+settingsDev:
+  title: Developer Options
+  showOptionTitle: Show Developer Options
+  showOptionSubtitle: Show or hide the developer options menu
+  useStagingTitle: Use Staging Servers
+  useStagingSubtitle: Staging services are used to test features before they go live to production
+  restartRequired: VPN must be restarted to take effect
+
+splittunnel:
+  missingAppAction:
+    value:
+      - Add apps manually
+    comment:
+      - Refers to the Apps that are Missing from the Split Tunnel list
+  missingAppOne: 
+    value:
+      - \%0 Apps missing from list
+    comment:
+      - Refers to the Apps that are Missing from the Split Tunnel list
+  missingAppMultiple: 
+    value:
+      - \%0 Apps missing from list.
+    comment:
+      - Apps in the Split-Tunnel settings %1 is the amount of apps missing
+  missingAppAddedOne: Success! You added the %1 to this list.
