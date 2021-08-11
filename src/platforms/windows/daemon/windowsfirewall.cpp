@@ -276,18 +276,9 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
     }\
     logger.log() << "Rule enabled:" << name << "\n";
 
-
-  logger.log() << "Enableing Killswitch Using Adapter:" << vpnAdapterIndex;
-
-  IPAddressRange v4CatchAll("0.0.0.0", 0, IPAddressRange::IPv4);
-  IPAddressRange v6CatchAll("::0", 0, IPAddressRange::IPv6);
-  bool hasCatchAllIP = config.m_allowedIPAddressRanges.contains(v4CatchAll) || config.m_allowedIPAddressRanges.contains(v6CatchAll);
-
-  if(hasCatchAllIP){
-    FW_OK(blockAll(LOW_WEIGHT),"Block all")
-  }else{
-    FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),"Block all");
-  }
+  logger.log() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
+  FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),
+        "Block all");
   FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT), "Allow Traffic to VPN Adapter");
   FW_OK(allowDHCPTraffic(MED_WEIGHT),"Allow DHCP Traffic");
   FW_OK(allowHyperVTraffic(MED_WEIGHT),"Allow Hyper-V Traffic");
@@ -845,77 +836,6 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
   return true;
 }
 
-// Blocks All Traffic!
-bool WindowsFirewall::blockAll(uint8_t weight) {
-  // Start Transaction
-  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
-  auto cleanup = qScopeGuard([&] {
-    if (result != ERROR_SUCCESS) {
-      FwpmTransactionAbort0(m_sessionHandle);
-    }
-  });
-  if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionBegin0 failed. Return value:.\n" << result;
-    return false;
-  }
-
-  // Assemble the Filter base
-  FWPM_FILTER0 filter;
-  memset(&filter, 0, sizeof(filter));
-  filter.action.type = FWP_ACTION_BLOCK;
-  filter.weight.type = FWP_UINT8;
-  filter.weight.uint8 = weight;
-  filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
-
-  uint64_t filterID = 0;
-  // #1 Block Outbound traffic on IPv4
-  std::wstring name(L"Block all outbound (IPv4)");
-  filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    return false;
-  }
-  m_activeRules.append(filterID);
-  // #2 Block Inbound traffic on IPv4
-  name = std::wstring(L"Block all inbound (IPv4)");
-  filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    return false;
-  }
-  m_activeRules.append(filterID);
-
-  // #3 Block Outbound traffic on IPv6
-  name = std::wstring(L"Block all outbound (IPv6)");
-  filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    return false;
-  }
-  m_activeRules.append(filterID);
-  // #4 Block Inbound traffic on IPv6
-  name = std::wstring(L"Block all inbound (IPv6)");
-  filter.displayData.name = (PWSTR)name.c_str();
-  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
-
-  result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
-  if (result != ERROR_SUCCESS) {
-    return false;
-  }
-  m_activeRules.append(filterID);
-
-  // Commit!
-  result = FwpmTransactionCommit0(m_sessionHandle);
-  if (result != ERROR_SUCCESS) {
-    logger.log() << "FwpmTransactionCommit0 failed. Return value:.\n" << result;
-    return false;
-  }
-  return true;
-}
 
 
 bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range ,uint8_t weight){

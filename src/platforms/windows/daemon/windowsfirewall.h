@@ -42,7 +42,6 @@ class WindowsFirewall final : public QObject {
   bool allowTrafficOfAdapter(int networkAdapter, uint8_t weight);
   bool allowDHCPTraffic(uint8_t weight);
   bool allowHyperVTraffic(uint8_t weight);
-  bool blockAll(uint8_t weight);
 };
 
 #endif  // WINDOWSFIREWALL_H
