@@ -8,7 +8,7 @@ class TestSignUpAndIn final : public QObject {
   Q_OBJECT
 
  public:
-  TestSignUpAndIn(const QString& pattern);
+  TestSignUpAndIn(const QString& pattern, bool totpCreation = false);
   ~TestSignUpAndIn() = default;
 
  private slots:
@@ -19,6 +19,10 @@ class TestSignUpAndIn final : public QObject {
   QString fetchSessionCode();
   QString fetchUnblockCode();
   QString fetchCode(const QString& code);
+  void waitForTotpCodes();
 
   QString m_emailAccount;
+  bool m_totpCreation = false;
+
+  QByteArray m_totpSecret;
 };

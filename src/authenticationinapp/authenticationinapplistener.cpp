@@ -158,6 +158,13 @@ void AuthenticationInAppListener::setPassword(const QString& password) {
   m_authPw = generateAuthPw(password);
 }
 
+#ifdef UNIT_TEST
+void AuthenticationInAppListener::enableTotpCreation() {
+  logger.debug() << "Enabling totp creation";
+  m_totpCreationNeeded = true;
+}
+#endif
+
 void AuthenticationInAppListener::signIn(const QString& unblockCode) {
   logger.debug() << "Sign in";
 
@@ -295,7 +302,24 @@ void AuthenticationInAppListener::verifySessionTotpCode(const QString& code) {
   connect(request, &NetworkRequest::requestCompleted,
           [this](const QByteArray& data) {
             logger.debug() << "Verification completed" << data;
-            finalizeSignInOrUp();
+
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isNull()) {
+              MozillaVPN::instance()->errorHandle(
+                  ErrorHandler::AuthenticationError);
+              return;
+            }
+
+            QJsonObject obj = json.object();
+            bool success = obj.value("success").toBool();
+            if (success) {
+              finalizeSignInOrUp();
+              return;
+            }
+
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestErrorPropagation(
+                AuthenticationInApp::ErrorInvalidTotpCode, this);
           });
 }
 
@@ -329,8 +353,43 @@ void AuthenticationInAppListener::signInOrUpCompleted(
   finalizeSignInOrUp();
 }
 
+#ifdef UNIT_TEST
+void AuthenticationInAppListener::createTotpCodes() {
+  NetworkRequest* request = NetworkRequest::createForFxaTotpCreation(
+      this, m_sessionToken, m_urlQuery);
+
+  connect(request, &NetworkRequest::requestFailed,
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+            logger.error() << "Failed to create totp codes" << error;
+            processRequestFailure(error, data);
+          });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray& data) {
+            logger.debug() << "Totp code creation completed" << data;
+
+            AuthenticationInApp* aip = AuthenticationInApp::instance();
+            aip->requestState(
+                AuthenticationInApp::StateVerificationSessionByTotpNeeded,
+                this);
+            emit aip->unitTestTotpCodeCreated(data);
+          });
+}
+#endif
+
 void AuthenticationInAppListener::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
+
+#ifdef UNIT_TEST
+  if (m_totpCreationNeeded) {
+    logger.info() << "Totp creation in process";
+    m_totpCreationNeeded = false;
+    // Let's set it to false to avoid loops at the next finalizeSignInOrUp()
+    // call.
+    createTotpCodes();
+    return;
+  }
+#endif
 
   NetworkRequest* request =
       NetworkRequest::createForFxaAuthz(this, m_sessionToken, m_urlQuery);

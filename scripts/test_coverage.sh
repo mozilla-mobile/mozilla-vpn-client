@@ -6,7 +6,8 @@
 
 . $(dirname $0)/commons.sh
 
-REPORT_FILE=/tmp/report.html
+REPORT_FILE_UNIT=/tmp/report_unit.html
+REPORT_FILE_AUTH=/tmp/report_auth.html
 LANGUAGE=en
 LANG=en
 
@@ -62,17 +63,34 @@ print Y "Running the native-messaging tests..."
 ./tests/nativemessaging/tests ./extension/app/mozillavpnnp || die "Failed to run tests"
 print G "done."
 
-print Y "Running the auth tests..."
-./tests/auth/tests || die "Failed to run tests"
-print G "done."
-
-printn Y "Merge the profile data... "
+printn Y "(unit) Merge the profile data... "
 llvm-profdata-10 merge /tmp/mozillavpn.llvm -o /tmp/mozillavpn.llvm-final || die "Failed to merge the coverage report"
 print G "done."
 
-print Y "Report:"
+print Y "(unit) Report:"
 llvm-cov-10 report ./tests/unit/tests -instr-profile=/tmp/mozillavpn.llvm-final src
 
-printn Y "Generating the HTML report... "
-llvm-cov-10 show ./tests/unit/tests -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE || die "Failed to generate the HTML report"
-print G $REPORT_FILE
+printn Y "(unit) Generating the HTML report... "
+llvm-cov-10 show ./tests/unit/tests -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE_UNIT || die "Failed to generate the HTML report"
+print G $REPORT_FILE_UNIT
+
+if [ -f ./tests/auth/tests ]; then
+  export LLVM_PROFILE_FILE=/tmp/mozillavpn_auth.llvm
+
+  print Y "Running the auth tests..."
+  ./tests/auth/tests || die "Failed to run tests"
+  print G "done."
+
+  unset LLVM_PROFILE_FILE
+
+  printn Y "(auth) Merge the profile data... "
+  llvm-profdata-10 merge /tmp/mozillavpn_auth.llvm -o /tmp/mozillavpn.llvm-final || die "Failed to merge the coverage report"
+  print G "done."
+
+  print Y "(auth) Report:"
+  llvm-cov-10 report ./tests/auth/tests -instr-profile=/tmp/mozillavpn.llvm-final src
+
+  printn Y "(auth) Generating the HTML report... "
+  llvm-cov-10 show ./tests/auth/tests -instr-profile=/tmp/mozillavpn.llvm-final src -format=html > $REPORT_FILE_AUTH || die "Failed to generate the HTML report"
+  print G $REPORT_FILE_AUTH
+fi
