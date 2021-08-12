@@ -32,7 +32,7 @@ void migrateUserDefaultData() {
   if (userData) {
     QByteArray json = QByteArray::fromNSData(userData);
     if (!json.isEmpty()) {
-      logger.log() << "User data to be migrated";
+      logger.debug() << "User data to be migrated";
       vpn->accountChecked(json);
     }
   }
@@ -40,7 +40,7 @@ void migrateUserDefaultData() {
   NSData* deviceData = [sud dataForKey:@"device"];
   if (deviceData) {
     QByteArray json = QByteArray::fromNSData(deviceData);
-    logger.log() << "Device data to be migrated";
+    logger.debug() << "Device data to be migrated";
     // Nothing has to be done here because the device data is part of the user data.
   }
 
@@ -48,12 +48,12 @@ void migrateUserDefaultData() {
   if (serversData) {
     QByteArray json = QByteArray::fromNSData(serversData);
     if (!json.isEmpty()) {
-      logger.log() << "Server list data to be migrated";
+      logger.debug() << "Server list data to be migrated";
 
       // We need to wrap the server list in a object to make it similar to the REST API response.
       QJsonDocument serverList = QJsonDocument::fromJson(json);
       if (!serverList.isArray()) {
-        logger.log() << "Server list should be an array!";
+        logger.error() << "Server list should be an array!";
         return;
       }
 
@@ -63,7 +63,7 @@ void migrateUserDefaultData() {
       QJsonDocument doc;
       doc.setObject(countriesObj);
       if (!vpn->setServerList(doc.toJson())) {
-        logger.log() << "Server list cannot be imported";
+        logger.error() << "Server list cannot be imported";
         return;
       }
     }
@@ -72,31 +72,31 @@ void migrateUserDefaultData() {
   NSData* selectedCityData = [sud dataForKey:@"selectedCity"];
   if (selectedCityData) {
     QByteArray json = QByteArray::fromNSData(selectedCityData);
-    logger.log() << "SelectedCity data to be migrated" << json;
+    logger.debug() << "SelectedCity data to be migrated" << json;
     // Nothing has to be done here because the device data is part of the user data.
 
     QJsonDocument doc = QJsonDocument::fromJson(json);
     if (!doc.isObject()) {
-      logger.log() << "SelectedCity should be an object";
+      logger.error() << "SelectedCity should be an object";
       return;
     }
 
     QJsonObject obj = doc.object();
     QJsonValue code = obj.value("flagCode");
     if (!code.isString()) {
-      logger.log() << "SelectedCity code should be a string";
+      logger.error() << "SelectedCity code should be a string";
       return;
     }
 
     QJsonValue name = obj.value("code");
     if (!name.isString()) {
-      logger.log() << "SelectedCity name should be a string";
+      logger.error() << "SelectedCity name should be a string";
       return;
     }
 
     ServerData serverData;
     if (vpn->serverCountryModel()->pickIfExists(code.toString(), name.toString(), serverData)) {
-      logger.log() << "ServerCity found";
+      logger.debug() << "ServerCity found";
       serverData.writeSettings();
     }
   }
@@ -117,44 +117,42 @@ void migrateKeychainData() {
   [query release];
 
   if (status != noErr) {
-    logger.log() << "No credentials found";
+    logger.error() << "No credentials found";
     return;
   }
 
   QByteArray data = QByteArray::fromNSData(dataNS);
-#ifdef QT_DEBUG
-  logger.log() << "Credentials:" << data;
-#endif
+  logger.debug() << "Credentials:" << logger.sensitive(data);
 
   QJsonDocument json = QJsonDocument::fromJson(data);
   if (!json.isObject()) {
-    logger.log() << "JSON object expected";
+    logger.error() << "JSON object expected";
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue deviceKeyValue = obj.value("deviceKeys");
   if (!deviceKeyValue.isObject()) {
-    logger.log() << "JSON object should have a deviceKeys object";
+    logger.error() << "JSON object should have a deviceKeys object";
     return;
   }
 
   QJsonObject deviceKeyObj = deviceKeyValue.toObject();
   QJsonValue publicKey = deviceKeyObj.value("publicKey");
   if (!publicKey.isString()) {
-    logger.log() << "JSON deviceKey object should contain a publicKey value as string";
+    logger.error() << "JSON deviceKey object should contain a publicKey value as string";
     return;
   }
 
   QJsonValue privateKey = deviceKeyObj.value("privateKey");
   if (!privateKey.isString()) {
-    logger.log() << "JSON deviceKey object should contain a privateKey value as string";
+    logger.error() << "JSON deviceKey object should contain a privateKey value as string";
     return;
   }
 
   QJsonValue token = obj.value("verificationToken");
   if (!token.isString()) {
-    logger.log() << "JSON object should contain a verificationToken value s string";
+    logger.error() << "JSON object should contain a verificationToken value s string";
     return;
   }
 
@@ -167,7 +165,7 @@ void migrateKeychainData() {
 
 // static
 void IOSDataMigration::migrate() {
-  logger.log() << "IOS Data Migration";
+  logger.debug() << "IOS Data Migration";
 
   migrateKeychainData();
   migrateUserDefaultData();

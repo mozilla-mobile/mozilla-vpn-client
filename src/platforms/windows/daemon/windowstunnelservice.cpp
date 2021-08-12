@@ -73,7 +73,7 @@ WindowsTunnelService::~WindowsTunnelService() {
 }
 
 bool WindowsTunnelService::start(const QString& configFile) {
-  logger.log() << "Starting the tunnel service";
+  logger.debug() << "Starting the tunnel service";
   m_logEpochNsec = QDateTime::currentMSecsSinceEpoch() * 1000000;
 
   if (!registerTunnelService(configFile)) {
@@ -97,9 +97,9 @@ bool WindowsTunnelService::start(const QString& configFile) {
   /* Check for a valid magic header */
   uint32_t magic;
   memcpy(&magic, m_logdata, 4);
-  logger.log() << "Opening tunnel log file" << logFileName;
+  logger.debug() << "Opening tunnel log file" << logFileName;
   if (magic != RINGLOG_MAGIC_HEADER) {
-    logger.log() << "Unexpected magic header:" << QString::number(magic, 16);
+    logger.error() << "Unexpected magic header:" << QString::number(magic, 16);
     return true;
   }
 
@@ -141,7 +141,7 @@ bool WindowsTunnelService::isRunning() {
 
 void WindowsTunnelService::timeout() {
   if (m_service == nullptr) {
-    logger.log() << "The service doesn't exist";
+    logger.error() << "The service doesn't exist";
     emit backendFailure();
     return;
   }
@@ -158,7 +158,7 @@ void WindowsTunnelService::timeout() {
     return;
   }
 
-  logger.log() << "The service is not active";
+  logger.debug() << "The service is not active";
   emit backendFailure();
 }
 
@@ -185,7 +185,7 @@ void WindowsTunnelService::processMessage(int index) {
 
   QByteArray message((const char*)data + RINGLOG_TIMESTAMP_SIZE,
                      RINGLOG_MESSAGE_SIZE);
-  logdll.log() << QString::fromUtf8(message);
+  logdll.info() << QString::fromUtf8(message);
 }
 
 void WindowsTunnelService::processLogs() {
@@ -204,7 +204,7 @@ void WindowsTunnelService::processLogs() {
 }
 
 bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
-  logger.log() << "Register tunnel service";
+  logger.debug() << "Register tunnel service";
 
   SC_HANDLE scm = (SC_HANDLE)m_scm;
   SC_HANDLE service = nullptr;
@@ -217,7 +217,7 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
   // Let's see if we have to delete a previous instance.
   service = OpenService(scm, TUNNEL_SERVICE_NAME, SERVICE_ALL_ACCESS);
   if (service) {
-    logger.log() << "An existing service has been detected. Let's close it.";
+    logger.debug() << "An existing service has been detected. Let's close it.";
     if (!stopAndDeleteTunnelService(service)) {
       return false;
     }
@@ -232,7 +232,7 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
         << configFile << "\"";
   }
 
-  logger.log() << "Service name:" << servicePath;
+  logger.debug() << "Service name:" << servicePath;
 
   service = CreateService(scm, TUNNEL_SERVICE_NAME, L"Mozilla VPN (tunnel)",
                           SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
@@ -266,13 +266,13 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
   }
 
   if (waitForServiceStatus(service, SERVICE_RUNNING)) {
-    logger.log() << "The tunnel service is up and running";
+    logger.debug() << "The tunnel service is up and running";
     guard.dismiss();
     m_service = service;
     return true;
   }
 
-  logger.log() << "Failed to run the tunnel service";
+  logger.error() << "Failed to run the tunnel service";
 
   SERVICE_STATUS status;
   if (!QueryServiceStatus(service, &status)) {
@@ -280,9 +280,9 @@ bool WindowsTunnelService::registerTunnelService(const QString& configFile) {
     return false;
   }
 
-  logger.log() << "The tunnel service exited with status code:"
-               << status.dwWin32ExitCode << "-"
-               << exitCodeToFailure(status.dwWin32ExitCode);
+  logger.debug() << "The tunnel service exited with status code:"
+                 << status.dwWin32ExitCode << "-"
+                 << exitCodeToFailure(status.dwWin32ExitCode);
 
   emit backendFailure();
   return false;
@@ -295,23 +295,23 @@ static bool stopAndDeleteTunnelService(SC_HANDLE service) {
     return false;
   }
 
-  logger.log() << "The current service is stopped:"
-               << (status.dwCurrentState == SERVICE_STOPPED);
+  logger.debug() << "The current service is stopped:"
+                 << (status.dwCurrentState == SERVICE_STOPPED);
 
   if (status.dwCurrentState != SERVICE_STOPPED) {
-    logger.log() << "The service is not stopped yet.";
+    logger.debug() << "The service is not stopped yet.";
     if (!ControlService(service, SERVICE_CONTROL_STOP, &status)) {
       WindowsCommons::windowsLog("Failed to control the service");
       return false;
     }
 
     if (!waitForServiceStatus(service, SERVICE_STOPPED)) {
-      logger.log() << "Unable to stop the service";
+      logger.error() << "Unable to stop the service";
       return false;
     }
   }
 
-  logger.log() << "Proceeding with the deletion";
+  logger.debug() << "Proceeding with the deletion";
 
   if (!DeleteService(service)) {
     WindowsCommons::windowsLog("Failed to delete the service");
@@ -383,7 +383,7 @@ static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
       return true;
     }
 
-    logger.log() << "The service is not in the right status yet.";
+    logger.warning() << "The service is not in the right status yet.";
 
     Sleep(1000);
     ++tries;

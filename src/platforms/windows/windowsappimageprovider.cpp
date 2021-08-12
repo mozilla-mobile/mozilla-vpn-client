@@ -34,7 +34,7 @@ WindowsAppImageProvider::~WindowsAppImageProvider() {
 QPixmap WindowsAppImageProvider::requestPixmap(const QString& path, QSize* size,
                                                const QSize& requestedSize) {
   Q_UNUSED(requestedSize);
-  logger.log() << "Request Image for " << path;
+  logger.debug() << "Request Image for " << path;
 
   const QString nativePath = QDir::toNativeSeparators(path);
   const auto* sourceFileC =

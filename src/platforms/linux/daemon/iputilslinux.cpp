@@ -22,12 +22,12 @@ Logger logger(LOG_LINUX, "IPUtilsLinux");
 
 IPUtilsLinux::IPUtilsLinux(QObject* parent) : IPUtils(parent) {
   MVPN_COUNT_CTOR(IPUtilsLinux);
-  logger.log() << "IPUtilsLinux created.";
+  logger.debug() << "IPUtilsLinux created.";
 }
 
 IPUtilsLinux::~IPUtilsLinux() {
   MVPN_COUNT_DTOR(IPUtilsLinux);
-  logger.log() << "IPUtilsLinux destroyed.";
+  logger.debug() << "IPUtilsLinux destroyed.";
 }
 
 bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
@@ -46,7 +46,7 @@ bool IPUtilsLinux::setMTUAndUp() {
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
-    logger.log() << "Failed to create ioctl socket.";
+    logger.error() << "Failed to create ioctl socket.";
     return false;
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
@@ -59,7 +59,7 @@ bool IPUtilsLinux::setMTUAndUp() {
   ifr.ifr_mtu = 1420;
   int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
   if (ret) {
-    logger.log() << "Failed to set MTU -- Return code: " << ret;
+    logger.error() << "Failed to set MTU -- Return code: " << ret;
     return false;
   }
 
@@ -67,7 +67,7 @@ bool IPUtilsLinux::setMTUAndUp() {
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
   ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
   if (ret) {
-    logger.log() << "Failed to set device up -- Return code: " << ret;
+    logger.error() << "Failed to set device up -- Return code: " << ret;
     return false;
   }
 
@@ -92,7 +92,7 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
   // Create IPv4 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
-    logger.log() << "Failed to create ioctl socket.";
+    logger.error() << "Failed to create ioctl socket.";
     return false;
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
@@ -100,8 +100,8 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
   // Set ifr to interface
   int ret = ioctl(sockfd, SIOCSIFADDR, &ifr);
   if (ret) {
-    logger.log() << "Failed to set IPv4: " << deviceAddr
-                 << " -- Return code: " << ret;
+    logger.error() << "Failed to set IPv4: " << deviceAddr
+                   << " -- Return code: " << ret;
     return false;
   }
   return true;
@@ -122,7 +122,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
   // Create IPv6 socket to perform the ioctl operations on
   int sockfd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
-    logger.log() << "Failed to create ioctl socket.";
+    logger.error() << "Failed to create ioctl socket.";
     return false;
   }
   auto guard = qScopeGuard([&] { close(sockfd); });
@@ -133,7 +133,7 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
   ifr.ifr_addr.sa_family = AF_INET6;
   int ret = ioctl(sockfd, SIOGIFINDEX, &ifr);
   if (ret) {
-    logger.log() << "Failed to get ifindex. Return code: " << ret;
+    logger.error() << "Failed to get ifindex. Return code: " << ret;
     return false;
   }
   ifr6.ifindex = ifr.ifr_ifindex;
@@ -141,8 +141,8 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
   // Set ifr6 to the interface
   ret = ioctl(sockfd, SIOCSIFADDR, &ifr6);
   if (ret) {
-    logger.log() << "Failed to set IPv6: " << deviceAddr
-                 << " -- Return code: " << ret;
+    logger.error() << "Failed to set IPv6: " << deviceAddr
+                   << " -- Return code: " << ret;
     return false;
   }
 

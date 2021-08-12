@@ -80,7 +80,7 @@ void TimerController::deactivate(Reason reason) {
 }
 
 void TimerController::timeout() {
-  logger.log() << "TimerController - Timeout:" << m_state;
+  logger.warning() << "TimerController - Timeout:" << m_state;
 
   Q_ASSERT(m_state != None);
 
@@ -100,8 +100,8 @@ void TimerController::timeout() {
 }
 
 void TimerController::maybeDone(bool isConnected) {
-  logger.log() << "TimerController - Operation completed:" << m_state
-               << isConnected;
+  logger.debug() << "TimerController - Operation completed:" << m_state
+                 << isConnected;
 
   if (m_state == Connecting) {
     if (m_timer.isActive()) {

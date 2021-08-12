@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "urlopener.h"
+#include "constants.h"
 #include "logger.h"
 #include "inspector/inspectorwebsocketconnection.h"
 #include "settingsholder.h"
@@ -26,13 +27,13 @@ void UrlOpener::open(QUrl url, bool addEmailAddress) {
     }
   }
 
-#ifdef MVPN_INSPECTOR
-  InspectorWebSocketConnection::setLastUrl(url.toString());
+  if (!Constants::inProduction()) {
+    InspectorWebSocketConnection::setLastUrl(url.toString());
 
-  if (InspectorWebSocketConnection::stealUrls()) {
-    return;
+    if (InspectorWebSocketConnection::stealUrls()) {
+      return;
+    }
   }
-#endif
 
   QDesktopServices::openUrl(url);
 }

@@ -16,7 +16,7 @@ class AuthenticationInApp final : public QObject {
 
  public:
   enum State {
-    // The AIP has not started yet
+    // The Authencation-In-App has not started yet
     StateInitializing,
     // The client_id and other params has been received. We are ready to
     // receive email address and password.
@@ -57,6 +57,7 @@ class AuthenticationInApp final : public QObject {
     ErrorInvalidPhoneNumber,
     ErrorInvalidRegion,
     ErrorServerUnavailable,
+    ErrorInvalidTotpCode,
   };
   Q_ENUM(ErrorType);
 
@@ -75,9 +76,20 @@ class AuthenticationInApp final : public QObject {
 
   Q_INVOKABLE void setPassword(const QString& password);
 
+  Q_INVOKABLE static bool validateEmailAddress(const QString& emailAddress);
+
+  Q_INVOKABLE static bool validatePasswordCommons(const QString& password);
+  Q_INVOKABLE static bool validatePasswordLength(const QString& password);
+  Q_INVOKABLE bool validatePasswordEmail(const QString& password);
+
   // Sign In/Up.
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();
+
+#ifdef UNIT_TEST
+  // This method is used to have a test coverage for the TOTP verification.
+  void enableTotpCreation();
+#endif
 
   // This needs to be called when we are in StateUnblockCodeNeeded state.
   Q_INVOKABLE void setUnblockCodeAndContinue(const QString& unblockCode);
@@ -107,6 +119,11 @@ class AuthenticationInApp final : public QObject {
   void stateChanged();
 
   void errorOccurred(ErrorType error);
+
+#ifdef UNIT_TEST
+  void unitTestFinalUrl(const QUrl& url);
+  void unitTestTotpCodeCreated(const QByteArray& data);
+#endif
 
  private:
   explicit AuthenticationInApp(QObject* parent);

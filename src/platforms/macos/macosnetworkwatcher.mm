@@ -28,7 +28,7 @@ Logger logger(LOG_MACOS, "MacOSNetworkWatcher");
 }
 
 - (void)bssidDidChangeForWiFiInterfaceWithName:(NSString*)interfaceName {
-  logger.log() << "BSSID changed!" << QString::fromNSString(interfaceName);
+  logger.debug() << "BSSID changed!" << QString::fromNSString(interfaceName);
 
   if (m_watcher) {
     m_watcher->checkInterface();
@@ -47,7 +47,7 @@ MacOSNetworkWatcher::~MacOSNetworkWatcher() {
   if (m_delegate) {
     CWWiFiClient* client = CWWiFiClient.sharedWiFiClient;
     if (!client) {
-      logger.log() << "Unable to retrieve the CWWiFiClient shared instance";
+      logger.debug() << "Unable to retrieve the CWWiFiClient shared instance";
       return;
     }
 
@@ -67,65 +67,65 @@ void MacOSNetworkWatcher::start() {
   checkInterface();
 
   if (m_delegate) {
-    logger.log() << "Delegate already registered";
+    logger.debug() << "Delegate already registered";
     return;
   }
 
   CWWiFiClient* client = CWWiFiClient.sharedWiFiClient;
   if (!client) {
-    logger.log() << "Unable to retrieve the CWWiFiClient shared instance";
+    logger.error() << "Unable to retrieve the CWWiFiClient shared instance";
     return;
   }
 
-  logger.log() << "Registering delegate";
+  logger.debug() << "Registering delegate";
   m_delegate = [[MacOSNetworkWatcherDelegate alloc] initWithObject:this];
   [client setDelegate:static_cast<MacOSNetworkWatcherDelegate*>(m_delegate)];
   [client startMonitoringEventWithType:CWEventTypeBSSIDDidChange error:nullptr];
 }
 
 void MacOSNetworkWatcher::checkInterface() {
-  logger.log() << "Checking interface";
+  logger.debug() << "Checking interface";
 
   if (!isActive()) {
-    logger.log() << "Feature disabled";
+    logger.debug() << "Feature disabled";
     return;
   }
 
   CWWiFiClient* client = CWWiFiClient.sharedWiFiClient;
   if (!client) {
-    logger.log() << "Unable to retrieve the CWWiFiClient shared instance";
+    logger.debug() << "Unable to retrieve the CWWiFiClient shared instance";
     return;
   }
 
   CWInterface* interface = [client interface];
   if (!interface) {
-    logger.log() << "No default wifi interface";
+    logger.debug() << "No default wifi interface";
     return;
   }
 
   if (![interface powerOn]) {
-    logger.log() << "The interface is off";
+    logger.debug() << "The interface is off";
     return;
   }
 
   NSString* ssidNS = [interface ssid];
   if (!ssidNS) {
-    logger.log() << "WiFi is not in used";
+    logger.debug() << "WiFi is not in used";
     return;
   }
 
   QString ssid = QString::fromNSString(ssidNS);
   if (ssid.isEmpty()) {
-    logger.log() << "WiFi doesn't have a valid SSID";
+    logger.debug() << "WiFi doesn't have a valid SSID";
     return;
   }
 
   CWSecurity security = [interface security];
   if (security == kCWSecurityNone || security == kCWSecurityWEP) {
-    logger.log() << "Unsecured network found!";
+    logger.debug() << "Unsecured network found!";
     emit unsecuredNetwork(ssid, ssid);
     return;
   }
 
-  logger.log() << "Secure WiFi interface";
+  logger.debug() << "Secure WiFi interface";
 }

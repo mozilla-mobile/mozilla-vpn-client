@@ -692,7 +692,7 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
            connection->localAddress() == QHostAddress::LocalHostIPv6);
 #endif
 
-  logger.log() << "New connection received";
+  logger.debug() << "New connection received";
 
   Q_ASSERT(m_connection);
   connect(m_connection, &QWebSocket::textMessageReceived, this,
@@ -709,22 +709,22 @@ InspectorWebSocketConnection::InspectorWebSocketConnection(
 
 InspectorWebSocketConnection::~InspectorWebSocketConnection() {
   MVPN_COUNT_DTOR(InspectorWebSocketConnection);
-  logger.log() << "Connection released";
+  logger.debug() << "Connection released";
 }
 
 void InspectorWebSocketConnection::textMessageReceived(const QString& message) {
-  logger.log() << "Text message received";
+  logger.debug() << "Text message received";
   parseCommand(message.toLocal8Bit());
 }
 
 void InspectorWebSocketConnection::binaryMessageReceived(
     const QByteArray& message) {
-  logger.log() << "Binary message received";
+  logger.debug() << "Binary message received";
   parseCommand(message);
 }
 
 void InspectorWebSocketConnection::parseCommand(const QByteArray& command) {
-  logger.log() << "command received:" << command;
+  logger.debug() << "command received:" << command;
 
   if (command.isEmpty()) {
     return;

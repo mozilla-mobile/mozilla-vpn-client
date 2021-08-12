@@ -41,7 +41,7 @@ MacOSMenuBar* MacOSMenuBar::instance() {
 }
 
 void MacOSMenuBar::initialize() {
-  logger.log() << "Creating menubar";
+  logger.debug() << "Creating menubar";
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -87,7 +87,7 @@ void MacOSMenuBar::controllerStateChanged() {
 }
 
 void MacOSMenuBar::retranslate() {
-  logger.log() << "Retranslate";
+  logger.debug() << "Retranslate";
 
   //% "Close"
   m_closeAction->setText(qtTrId("menubar.file.close"));
