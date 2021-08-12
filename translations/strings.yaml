@@ -55,6 +55,7 @@ serversView:
 
 feedbackForm:
   chooseCategory: Choose a category
+  excellentLabel: Excellent
 
 settingsDev:
   title: Developer Options
