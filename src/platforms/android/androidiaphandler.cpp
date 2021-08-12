@@ -6,6 +6,8 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "networkrequest.h"
 
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
@@ -38,8 +40,8 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
         {"onNoPurchases", "()V", reinterpret_cast<void*>(onNoPurchases)},
         {"onPurchaseUpdated", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onPurchaseUpdated)},
-        {"subscriptionFailed", "()V",
-         reinterpret_cast<void*>(subscriptionFailed)},
+        {"onSubscriptionFailed", "()V",
+         reinterpret_cast<void*>(onSubscriptionFailed)},
     };
     QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
@@ -121,10 +123,9 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
     logger.error() << "onSkuDetailsRecieved - no products found.";
     return;
   }
-
-  static_cast<AndroidIAPHandler*>(IAPHandler::instance())
-      ->updateProductsInfo(products);
-  AndroidIAPHandler::instance()->productsRegistrationCompleted();
+  IAPHandler* iap = IAPHandler::instance();
+  static_cast<AndroidIAPHandler*>(iap)->updateProductsInfo(products);
+  iap->productsRegistrationCompleted();
 }
 
 void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
@@ -168,45 +169,140 @@ void AndroidIAPHandler::onNoPurchases(JNIEnv* env, jobject thiz) {
   Q_UNUSED(thiz);
   // ToDo - I'm not sure when this scenario would occur
   // and so I'm not sure what the best way to handle it is.
-  logger.debug() << "onNoPurchases event occured";
+  logger.info() << "onNoPurchases event occured";
 }
 
 // static
-void AndroidIAPHandler::subscriptionFailed(JNIEnv* env, jobject thiz) {
+void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env)
   Q_UNUSED(thiz);
-  IAPHandler::instance()->stopSubscription();
-  IAPHandler::instance()->subscriptionFailed();
-  IAPHandler::instance()->productsRegistered();
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionFailed();
+}
+
+// static
+void AndroidIAPHandler::dispatchToMainThread(std::function<void()> callback) {
+  QTimer* timer = new QTimer();
+  timer->moveToThread(qApp->thread());
+  timer->setSingleShot(true);
+  QObject::connect(timer, &QTimer::timeout, [=]() {
+    callback();
+    timer->deleteLater();
+  });
+  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
 }
 
 // static
 void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
                                           jstring data) {
   Q_UNUSED(thiz);
-
   const char* buffer = env->GetStringUTFChars(data, nullptr);
   if (!buffer) {
-    logger.error() << "purchaseUpdated - failed to parse data.";
+    logger.error() << "onPurchaseUpdated - failed to parse data.";
     return;
   }
-  QByteArray raw = QByteArray(buffer);
+  QByteArray rawJson = QByteArray(buffer);
   env->ReleaseStringUTFChars(data, buffer);
+  dispatchToMainThread([rawJson] {
+    IAPHandler* iap = IAPHandler::instance();
+    Q_ASSERT(iap);
+    static_cast<AndroidIAPHandler*>(iap)->validatePurchase(rawJson);
+  });
+}
 
-  logger.debug() << "purchaseUpdated - parsing raw data: " << raw;
+void AndroidIAPHandler::validatePurchase(QByteArray rawJson) {
+  if (m_subscriptionState != eActive) {
+    logger.warning()
+        << "onPurchaseUpdated. In a bad state. This is unexpected. Returning.";
+    return;
+  }
+
+  logger.debug() << "onPurchaseUpdated - parsing raw data: " << rawJson;
 
   QJsonParseError jsonError;
-  QJsonDocument json = QJsonDocument::fromJson(raw, &jsonError);
+  QJsonDocument json = QJsonDocument::fromJson(rawJson, &jsonError);
 
   if (QJsonParseError::NoError != jsonError.error) {
-    logger.error() << "purchaseUpdated, Error parsing json. Code: "
+    logger.error() << "onPurchaseUpdated, Error parsing json. Code: "
                    << jsonError.error << "Offset: " << jsonError.offset
-                   << "Message: " << jsonError.errorString() << "Data: " << raw;
+                   << "Message: " << jsonError.errorString()
+                   << "Data: " << rawJson;
+    stopSubscription();
+    emit subscriptionFailed();
     return;
   }
 
-  IAPHandler::instance()->stopSubscription();
-  // NEXT UP - make this pass through correctly and
-  // then fill in processCompletedTransactions
-  // IAPHandler::instance()->processCompletedTransactions(json);
+  QString sku = json["productId"].toString();
+  Product* productData = findProduct(sku);
+  Q_ASSERT(productData);
+  QString token = json["purchaseToken"].toString();
+  Q_ASSERT(!token.isEmpty());
+
+  NetworkRequest* request =
+      NetworkRequest::createForAndroidPurchase(this, sku, token);
+
+  connect(
+      request, &NetworkRequest::requestFailed,
+      [this](QNetworkReply::NetworkError error, const QByteArray&) {
+        logger.error() << "Purchase validation request to guardian failed";
+        MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
+        stopSubscription();
+        emit subscriptionFailed();
+        return;
+      });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this, token](const QByteArray& data) {
+            logger.debug() << "Products request to guardian completed" << data;
+
+            QJsonParseError jsonError;
+            QJsonDocument json = QJsonDocument::fromJson(data, &jsonError);
+
+            if (QJsonParseError::NoError != jsonError.error) {
+              logger.error()
+                  << "onPurchaseUpdated-requestCompleted. Error parsing json. "
+                     "Code: "
+                  << jsonError.error << "Offset: " << jsonError.offset
+                  << "Message: " << jsonError.errorString() << "Data: " << data;
+              stopSubscription();
+              emit subscriptionFailed();
+              return;
+            }
+
+            if (!json.isObject() || !json.object().contains("tokenValid")) {
+              logger.debug() << "Unexpected json returned";
+              stopSubscription();
+              emit subscriptionFailed();
+              return;
+            }
+
+            bool tokenValid = json.object()["tokenValid"].toBool();
+
+            if (tokenValid != true) {
+              logger.debug() << "tokenValid == false, aborting.";
+              stopSubscription();
+              emit subscriptionFailed();
+              // ToDo - it's not clear what to do in this scenario yet.
+              // If we return user to the subscription screen and they
+              // try and subscribe again they'll see a "you already have this"
+              // message. If they go into that and manually cancel then the
+              // purchase can go through.
+              return;
+            }
+
+            // We can acknowledge the purchase.
+            logger.debug() << "tokenValid == true, acknowledging purchase.";
+            auto jniString = QAndroidJniObject::fromString(token);
+            QAndroidJniObject::callStaticMethod<void>(
+                "org/mozilla/firefox/vpn/InAppPurchase", "acknowledgePurchase",
+                "(Ljava/lang/String;)V", jniString.object());
+          });
 }
+
+/*
+Call back from acknowledge purchase will call:
+* stopSubscription
+* subscriptionCompleted
+And hopefully we're done.
+*/

@@ -72,7 +72,7 @@ class InAppPurchase private constructor(ctx: Context) :
     external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
     external fun onNoPurchases()
     external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
-    external fun subscriptionFailed()
+    external fun onSubscriptionFailed()
 
     companion object {
         private const val TAG = "InAppPurchase"
@@ -104,6 +104,11 @@ class InAppPurchase private constructor(ctx: Context) :
         fun purchaseProduct(productToPurchase: String, activity: Activity) {
             instance?.initiatePurchase(productToPurchase = productToPurchase, activity = activity)
         }
+
+        @JvmStatic
+        fun acknowledgePurchase(purchaseToken: String) {
+            Log.d(TAG, "ToDo - Acknowledge the purchase $purchaseToken")
+        }
     }
 
     fun initiateProductLookup(productsToLookupRaw: String) {
@@ -123,6 +128,9 @@ class InAppPurchase private constructor(ctx: Context) :
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         if (responseCode != BillingClient.BillingResponseCode.OK) {
+            // ToDo - I think this is where we handle 
+            // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1528 
+            // but i'm not sure.
             Log.e(TAG, "onBillingSetupFinished was not successful: $responseCode $debugMessage")
         } else {
             querySkuDetails()
@@ -222,6 +230,8 @@ class InAppPurchase private constructor(ctx: Context) :
         val billingParams = BillingFlowParams
             .newBuilder()
             .setSkuDetails(skuDetails)
+            // ToDo - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1537
+            // .setObfuscatedAccountId(fxaUid)
             .build()
         val billingResult = billingClient.launchBillingFlow(activity, billingParams)
         val responseCode = billingResult.responseCode
@@ -257,7 +267,7 @@ class InAppPurchase private constructor(ctx: Context) :
                 // purchase screen.
                 // Error happens, at least, when a bad credit card is used.
                 Log.i(TAG, "onPurchasesUpdated: User canceled or purchase errored.")
-                subscriptionFailed()
+                onSubscriptionFailed()
             }
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
                 Log.e(TAG, "onPurchasesUpdated: The user already owns this item")
@@ -266,6 +276,7 @@ class InAppPurchase private constructor(ctx: Context) :
                 // if a user used a different FxA account than when they originally
                 // purchased if they purchased using the same Google Play account.
                 // So Google Play knows they're subscriber, but guardian doesn't.
+                // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1550
             }
             BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
             BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
@@ -275,7 +286,7 @@ class InAppPurchase private constructor(ctx: Context) :
             BillingClient.BillingResponseCode.DEVELOPER_ERROR -> {
                 // These response codes are not expected.
                 Log.wtf(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
-                subscriptionFailed()
+                onSubscriptionFailed()
             }
         }
     }

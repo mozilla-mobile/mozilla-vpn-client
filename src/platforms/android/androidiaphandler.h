@@ -16,8 +16,6 @@ class AndroidIAPHandler final : public IAPHandler {
   explicit AndroidIAPHandler(QObject* parent);
   ~AndroidIAPHandler();
 
- public slots:
-
  protected:
   void nativeRegisterProducts() override;
   void nativeStartSubscription(Product* product) override;
@@ -25,11 +23,15 @@ class AndroidIAPHandler final : public IAPHandler {
  private:
   QJsonDocument productsToJson();
   void updateProductsInfo(const QJsonArray& products);
+  void validatePurchase(QByteArray rawJson);
+
+  static void dispatchToMainThread(std::function<void()> callback);
+
   // Functions called via JNI
   static void onSkuDetailsReceived(JNIEnv* env, jobject thiz, jstring data);
   static void onNoPurchases(JNIEnv* env, jobject thiz);
   static void onPurchaseUpdated(JNIEnv* env, jobject thiz, jstring data);
-  static void subscriptionFailed(JNIEnv* env, jobject thiz);
+  static void onSubscriptionFailed(JNIEnv* env, jobject thiz);
 };
 
 #endif  // DUMMYIAPHANDLER_H
