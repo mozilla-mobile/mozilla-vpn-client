@@ -71,8 +71,8 @@ class InAppPurchase private constructor(ctx: Context) :
     // Functions in AndroidIAPHandler
     external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
     external fun onNoPurchases()
-    external fun onPurchaseCanceled()
     external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
+    external fun subscriptionFailed()
 
     companion object {
         private const val TAG = "InAppPurchase"
@@ -251,18 +251,31 @@ class InAppPurchase private constructor(ctx: Context) :
                     }
                 }
             }
-            BillingClient.BillingResponseCode.USER_CANCELED -> {
-                // This happens when user hits "back" button from native
+            BillingClient.BillingResponseCode.USER_CANCELED,
+            BillingClient.BillingResponseCode.ERROR -> {
+                // Cancelled happens, at least, when a user hits back button from native
                 // purchase screen.
-                Log.i(TAG, "onPurchasesUpdated: User canceled the purchase")
-                onPurchaseCanceled()
+                // Error happens, at least, when a bad credit card is used.
+                Log.i(TAG, "onPurchasesUpdated: User canceled or purchase errored.")
+                subscriptionFailed()
             }
-            // TODO - How do we want to handle these cases
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
-                Log.i(TAG, "onPurchasesUpdated: The user already owns this item")
+                Log.e(TAG, "onPurchasesUpdated: The user already owns this item")
+                // TODO - How do we want to handle this case. We shouldn't
+                // get ourselves in this position. I *think* this could happen
+                // if a user used a different FxA account than when they originally
+                // purchased if they purchased using the same Google Play account.
+                // So Google Play knows they're subscriber, but guardian doesn't.
             }
+            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
+            BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
+            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE,
+            BillingClient.BillingResponseCode.ITEM_UNAVAILABLE,
+            BillingClient.BillingResponseCode.ITEM_NOT_OWNED,
             BillingClient.BillingResponseCode.DEVELOPER_ERROR -> {
-                Log.e(TAG, "onPurchasesUpdated: Developer error")
+                // These response codes are not expected.
+                Log.wtf(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
+                subscriptionFailed()
             }
         }
     }

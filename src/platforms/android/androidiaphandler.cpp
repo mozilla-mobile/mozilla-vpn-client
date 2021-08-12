@@ -36,10 +36,10 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
         {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onSkuDetailsReceived)},
         {"onNoPurchases", "()V", reinterpret_cast<void*>(onNoPurchases)},
-        {"onPurchaseCanceled", "()V",
-         reinterpret_cast<void*>(onPurchaseCanceled)},
         {"onPurchaseUpdated", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onPurchaseUpdated)},
+        {"subscriptionFailed", "()V",
+         reinterpret_cast<void*>(subscriptionFailed)},
     };
     QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
@@ -168,10 +168,11 @@ void AndroidIAPHandler::onNoPurchases(JNIEnv* env, jobject thiz) {
   Q_UNUSED(thiz);
   // ToDo - I'm not sure when this scenario would occur
   // and so I'm not sure what the best way to handle it is.
+  logger.debug() << "onNoPurchases event occured";
 }
 
 // static
-void AndroidIAPHandler::onPurchaseCanceled(JNIEnv* env, jobject thiz) {
+void AndroidIAPHandler::subscriptionFailed(JNIEnv* env, jobject thiz) {
   Q_UNUSED(env)
   Q_UNUSED(thiz);
   IAPHandler::instance()->stopSubscription();
