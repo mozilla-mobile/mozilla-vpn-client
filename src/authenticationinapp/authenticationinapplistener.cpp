@@ -36,7 +36,8 @@ AuthenticationInAppListener::~AuthenticationInAppListener() {
 }
 
 void AuthenticationInAppListener::start(const QString& codeChallenge,
-                                        const QString& codeChallengeMethod) {
+                                        const QString& codeChallengeMethod,
+                                        const QString& emailAddress) {
   logger.debug() << "AuthenticationInAppListener initialized";
 
   m_codeChallenge = codeChallenge;
@@ -48,7 +49,8 @@ void AuthenticationInAppListener::start(const QString& codeChallenge,
   aip->registerListener(this);
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInApp,
-                                   codeChallenge, codeChallengeMethod));
+                                   codeChallenge, codeChallengeMethod,
+                                   emailAddress));
 
   NetworkRequest* request =
       NetworkRequest::createForGetUrl(this, url.toString());
@@ -130,7 +132,8 @@ void AuthenticationInAppListener::accountChecked(bool exists) {
 
   AuthenticationListener* fallbackListener =
       create(this, MozillaVPN::AuthenticationInBrowser);
-  fallbackListener->start(m_codeChallenge, m_codeChallengeMethod);
+  fallbackListener->start(m_codeChallenge, m_codeChallengeMethod,
+                          m_emailAddress);
 
   connect(fallbackListener, &AuthenticationListener::completed, this,
           &AuthenticationListener::completed);

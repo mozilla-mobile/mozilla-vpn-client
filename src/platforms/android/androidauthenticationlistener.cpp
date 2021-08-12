@@ -28,11 +28,13 @@ AndroidAuthenticationListener::~AndroidAuthenticationListener() {
 }
 
 void AndroidAuthenticationListener::start(const QString& codeChallenge,
-                                          const QString& codeChallengeMethod) {
+                                          const QString& codeChallengeMethod,
+                                          const QString& emailAddress) {
   logger.debug() << "Authenticationlistener initialize";
 
   QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
-                                   codeChallenge, codeChallengeMethod));
+                                   codeChallenge, codeChallengeMethod,
+                                   emailAddress));
 
   QAndroidJniObject activity = QtAndroid::androidActivity();
   jboolean supported = QAndroidJniObject::callStaticMethod<jboolean>(
@@ -44,7 +46,7 @@ void AndroidAuthenticationListener::start(const QString& codeChallenge,
   }
   DesktopAuthenticationListener* legacyAuth;
   legacyAuth = new DesktopAuthenticationListener(this);
-  legacyAuth->start(codeChallenge, codeChallengeMethod);
+  legacyAuth->start(codeChallenge, codeChallengeMethod, emailAddress);
 
   connect(legacyAuth, &AuthenticationListener::completed, this,
           &AndroidAuthenticationListener::completed);

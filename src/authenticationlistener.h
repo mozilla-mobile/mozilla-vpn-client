@@ -20,11 +20,13 @@ class AuthenticationListener : public QObject {
       QObject* parent, MozillaVPN::AuthenticationType authenticationType);
 
   virtual void start(const QString& codeChallenge,
-                     const QString& codeChallengeMethod) = 0;
+                     const QString& codeChallengeMethod,
+                     const QString& emailAddress = QString()) = 0;
 
   static QUrl createAuthenticationUrl(
       MozillaVPN::AuthenticationType authenticationType,
-      const QString& codeChallenge, const QString& codeChallengeMethod);
+      const QString& codeChallenge, const QString& codeChallengeMethod,
+      const QString& emailAddress);
 
  signals:
   void completed(const QString& code);
