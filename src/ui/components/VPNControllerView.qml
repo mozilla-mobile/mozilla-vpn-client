@@ -496,18 +496,11 @@ Item {
         }
     ]
 
-    // VPNAnimatedRings {
-    //     id: animatedRings
-    //     // Make sure we only do the render animation when
-    //     // The element is visible &&
-    //     // the application is not minimized
-    //     isCurrentyVisible: stackview.depth === 1 &&
-    //                        (Qt.application.state === Qt.ApplicationActive ||
-    //                         Qt.application.state === Qt.ApplicationInactive)
-    // }
-
     VPNAnimatedRingsShader {
         id: animatedRings
+        // Make sure we only do the render animation when
+        // The element is visible &&
+        // the application is not minimized
         isCurrentyVisible: stackview.depth === 1 &&
             (Qt.application.state === Qt.ApplicationActive ||
             Qt.application.state === Qt.ApplicationInactive)
