@@ -21,12 +21,12 @@ ShaderEffect {
     Timer {
         id: ringAnimationTimer
 
-        interval: 20
+        interval: 25
         running: ringAnimation.visible && isCurrentyVisible
         repeat: true
 
         onTriggered: {
-            const animationSpeed = 0.0015;
+            const animationSpeed = 0.001;
             if (ringAnimation.animationProgress < 1.0) {
                 ringAnimation.animationProgress += animationSpeed
             } else {
@@ -49,7 +49,8 @@ ShaderEffect {
 
         float compose_ring(vec2 uv, vec2 position, float strokeWidth, float radius) {
             float circle1 = draw_circle(uv, position, radius);
-            float circle2 = draw_circle(uv, position, radius - strokeWidth * smoothstep(0.0, 1.0, radius));
+            // float circle2 = draw_circle(uv, position, radius - strokeWidth * smoothstep(0.0, 1.0, radius));
+            float circle2 = draw_circle(uv, position, radius - strokeWidth);
 
             return circle1 - circle2;
         }
@@ -58,58 +59,36 @@ ShaderEffect {
             return mod(maxRadius * offset + currentRadius, maxRadius) + minRadius;
         }
 
-        float calc_opacity(float radius) {;
-             float peak = radius / 0.1;
-             return peak * exp(1.0 - peak);
-        }
-
         void main() {
             // Center coordinate
             vec2 center = vec2(0.5, 0.275);
 
             // Ring properties
-            float strokeWidth = 0.03;
+            float strokeWidth = 0.015;
             float minRadius = 0.0;
-            float maxRadius = 1.0;
+            float maxRadius = 0.5;
             vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
 
             // Ring 1
             float ringRadius1 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.0);
-            float ring1 = compose_ring(qt_TexCoord0, center, strokeWidth, ringRadius1) * calc_opacity(ringRadius1);
+            float ring1 = compose_ring(qt_TexCoord0, center, strokeWidth, ringRadius1);
             // Ring 2
             float ringRadius2 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.33);
-            float ring2 = compose_ring(qt_TexCoord0, center, strokeWidth, ringRadius2) * calc_opacity(ringRadius2);
+            float ring2 = compose_ring(qt_TexCoord0, center, strokeWidth, ringRadius2);
             // Ring 3
             float ringRadius3 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.66);
-            float ring3 = compose_ring(qt_TexCoord0, center, strokeWidth, ringRadius3) * calc_opacity(ringRadius3);
+            float ring3 = compose_ring(qt_TexCoord0, center, strokeWidth, ringRadius3);
+
+            // Radial gradient
+            float gradientWidth = 5.0;
+            float gradientBlur = 0.8;
+            float gradientOffset = 0.28;
+            float gradientMask = 1.0 - max(0.0, 0.25 - pow(max(0.0, abs(length(qt_TexCoord0 - center) - gradientOffset) * gradientWidth), gradientWidth * gradientBlur));
 
             // Output rings
             float rings = ring1 + ring2 + ring3;
-            gl_FragColor = color * rings;
+            gl_FragColor = color * rings - gradientMask;
         }
     "
-
-    RowLayout {
-        anchors {
-            bottom: ringAnimation.bottom
-            horizontalCenter: parent.horizontalCenter
-        }
-
-        Button {
-            text: ringAnimationTimer.running ? "pause" : "start"
-            onClicked: {
-                ringAnimationTimer.running ? ringAnimationTimer.stop() : ringAnimationTimer.start();
-            }
-        }
-
-        Button {
-            text: "reset"
-
-            onClicked: {
-                ringAnimation.animationProgress = 0.0;
-            }
-        }
-    }
-
 }
 
