@@ -19,6 +19,9 @@ config += debug
 TEMPLATE = app
 TARGET = tests
 
+CONFIG += link_pkgconfig
+PKGCONFIG += liboath
+
 RESOURCES += auth.qrc
 
 INCLUDEPATH += \

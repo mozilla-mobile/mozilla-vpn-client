@@ -73,6 +73,9 @@ void TestPasswordValidation::commonPasswords_data() {
 
   QTest::addRow("common 1") << "12345678" << false;
   QTest::addRow("common 2") << "12345678!!" << true;
+
+  // Empty password, is not a common password :)
+  QTest::addRow("common 3") << "" << true;
 }
 
 void TestPasswordValidation::commonPasswords() {
