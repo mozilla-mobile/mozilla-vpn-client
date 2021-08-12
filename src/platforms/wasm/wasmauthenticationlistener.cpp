@@ -24,10 +24,12 @@ WasmAuthenticationListener::~WasmAuthenticationListener() {
 }
 
 void WasmAuthenticationListener::start(const QString& codeChallenge,
-                                       const QString& codeChallengeMethod) {
+                                       const QString& codeChallengeMethod,
+                                       const QString& emailAddress) {
   logger.debug() << "WasmAuthenticationListener initialize";
   Q_UNUSED(codeChallenge);
   Q_UNUSED(codeChallengeMethod);
+  Q_UNUSED(emailAddress);
 
   QTimer* timer = new QTimer(this);
   connect(timer, &QTimer::timeout, [this]() { emit completed("WASM"); });
