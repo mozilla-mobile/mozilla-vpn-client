@@ -93,6 +93,15 @@ void AuthenticationInApp::signUp() {
   m_listener->signUp();
 }
 
+#ifdef UNIT_TEST
+void AuthenticationInApp::enableTotpCreation() {
+  Q_ASSERT(m_state == StateSignIn || m_state == StateSignUp);
+  Q_ASSERT(m_listener);
+
+  m_listener->enableTotpCreation();
+}
+#endif
+
 void AuthenticationInApp::setUnblockCodeAndContinue(
     const QString& unblockCode) {
   Q_ASSERT(m_state == StateUnblockCodeNeeded);

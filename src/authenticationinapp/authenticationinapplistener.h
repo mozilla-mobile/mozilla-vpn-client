@@ -31,6 +31,10 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void sendUnblockCodeEmail();
   void verifySessionTotpCode(const QString& code);
 
+#ifdef UNIT_TEST
+  void enableTotpCreation();
+#endif
+
   const QString& emailAddress() const { return m_emailAddress; }
 
  private:
@@ -46,6 +50,10 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   void unblockCodeNeeded();
   void finalizeSignInOrUp();
 
+#ifdef UNIT_TEST
+  void createTotpCodes();
+#endif
+
  private:
   QString m_codeChallenge;
   QString m_codeChallengeMethod;
@@ -56,6 +64,10 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QByteArray m_authPw;
 
   QByteArray m_sessionToken;
+
+#ifdef UNIT_TEST
+  bool m_totpCreationNeeded = false;
+#endif
 };
 
 #endif  // AUTHENTICATIONINAPPLISTENER_H

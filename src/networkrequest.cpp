@@ -555,6 +555,29 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   return r;
 }
 
+#ifdef UNIT_TEST
+// static
+NetworkRequest* NetworkRequest::createForFxaTotpCreation(
+    QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(Constants::fxaUrl());
+  url.setPath("/v1/totp/create");
+  r->m_request.setUrl(url);
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QByteArray payload = "{}";
+
+  HawkAuth hawk = HawkAuth(sessionToken);
+  QByteArray hawkHeader = hawk.generate(r->m_request, "POST", payload).toUtf8();
+  r->m_request.setRawHeader("Authorization", hawkHeader);
+
+  r->postRequest(payload);
+  return r;
+}
+#endif
+
 // static
 NetworkRequest* NetworkRequest::createForFxaSessionDestroy(
     QObject* parent, const QByteArray& sessionToken) {

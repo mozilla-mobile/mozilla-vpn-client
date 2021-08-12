@@ -35,6 +35,9 @@ int main(int argc, char* argv[]) {
   TestPasswordValidation tpv;
   failures += QTest::qExec(&tpv);
 
+  TestSignUpAndIn tsuTotp("vpn.auth.test.", true /* totp creation */);
+  failures += QTest::qExec(&tsuTotp);
+
   TestSignUpAndIn tsu("vpn.auth.test.");
   failures += QTest::qExec(&tsu);
 
