@@ -24,8 +24,12 @@ class AndroidIAPHandler final : public IAPHandler {
 
  private:
   QJsonDocument productsToJson();
-  static void onSkuDetailsReceived(JNIEnv* env, jobject thiz, jstring sku);
-  void updateProductInfo(const QJsonValue& product);
+  void updateProductsInfo(const QJsonArray& products);
+  // Functions called via JNI
+  static void onSkuDetailsReceived(JNIEnv* env, jobject thiz, jstring data);
+  static void onNoPurchases(JNIEnv* env, jobject thiz);
+  static void onPurchaseCanceled(JNIEnv* env, jobject thiz);
+  static void onPurchaseUpdated(JNIEnv* env, jobject thiz, jstring data);
 };
 
 #endif  // DUMMYIAPHANDLER_H

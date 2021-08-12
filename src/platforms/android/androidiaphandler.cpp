@@ -35,6 +35,11 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
     JNINativeMethod methods[]{
         {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onSkuDetailsReceived)},
+        {"onNoPurchases", "()V", reinterpret_cast<void*>(onNoPurchases)},
+        {"onPurchaseCanceled", "()V",
+         reinterpret_cast<void*>(onPurchaseCanceled)},
+        {"onPurchaseUpdated", "(Ljava/lang/String;)V",
+         reinterpret_cast<void*>(onPurchaseUpdated)},
     };
     QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
@@ -60,9 +65,6 @@ void AndroidIAPHandler::nativeRegisterProducts() {
       "org/mozilla/firefox/vpn/InAppPurchase", "lookupProductsInPlayStore",
       "(Ljava/lang/String;)V", jniString.object());
 }
-
-void AndroidIAPHandler::nativeStartSubscription(Product* product){
-    Q_UNUSED(product)}
 
 QJsonDocument AndroidIAPHandler::productsToJson() {
   QJsonArray jsonProducts;
@@ -120,22 +122,90 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
     return;
   }
 
-  for (auto value : products) {
-    static_cast<AndroidIAPHandler*>(IAPHandler::instance())
-        ->updateProductInfo(value);
-  }
-
+  static_cast<AndroidIAPHandler*>(IAPHandler::instance())
+      ->updateProductsInfo(products);
   AndroidIAPHandler::instance()->productsRegistrationCompleted();
 }
 
-void AndroidIAPHandler::updateProductInfo(const QJsonValue& product) {
+void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
 
-  QString productIdentifier = product["sku"].toString();
-  Product* productData = findProduct(productIdentifier);
-  Q_ASSERT(productData);
+  QList<QString> productsUpdated;
+  for (auto product : returnedProducts) {
+    QString productIdentifier = product["sku"].toString();
+    Product* productData = findProduct(productIdentifier);
+    Q_ASSERT(productData);
 
-  productData->m_price = product["totalPriceString"].toString();
-  productData->m_monthlyPrice = product["monthlyPriceString"].toString();
-  productData->m_nonLocalizedMonthlyPrice = product["monthlyPrice"].toDouble();
+    productData->m_price = product["totalPriceString"].toString();
+    productData->m_monthlyPrice = product["monthlyPriceString"].toString();
+    productData->m_nonLocalizedMonthlyPrice =
+        product["monthlyPrice"].toDouble();
+
+    productsUpdated.append(productIdentifier);
+  }
+  // Remove products from m_products if we didn't get info back from google
+  // about them.
+  for (auto product : m_products) {
+    if (!productsUpdated.contains(product.m_name)) {
+      unknownProductRegistered(product.m_name);
+    }
+  }
+}
+
+void AndroidIAPHandler::nativeStartSubscription(Product* product) {
+  auto jniString = QAndroidJniObject::fromString(product->m_name);
+  auto appActivity = QtAndroid::androidActivity();
+
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/InAppPurchase", "purchaseProduct",
+      "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
+      appActivity.object());
+}
+
+// static
+void AndroidIAPHandler::onNoPurchases(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env)
+  Q_UNUSED(thiz);
+  // ToDo - I'm not sure when this scenario would occur
+  // and so I'm not sure what the best way to handle it is.
+}
+
+// static
+void AndroidIAPHandler::onPurchaseCanceled(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env)
+  Q_UNUSED(thiz);
+  IAPHandler::instance()->stopSubscription();
+  IAPHandler::instance()->subscriptionFailed();
+  IAPHandler::instance()->productsRegistered();
+}
+
+// static
+void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
+                                          jstring data) {
+  Q_UNUSED(thiz);
+
+  const char* buffer = env->GetStringUTFChars(data, nullptr);
+  if (!buffer) {
+    logger.error() << "purchaseUpdated - failed to parse data.";
+    return;
+  }
+  QByteArray raw = QByteArray(buffer);
+  env->ReleaseStringUTFChars(data, buffer);
+
+  logger.debug() << "purchaseUpdated - parsing raw data: " << raw;
+
+  QJsonParseError jsonError;
+  QJsonDocument json = QJsonDocument::fromJson(raw, &jsonError);
+
+  if (QJsonParseError::NoError != jsonError.error) {
+    logger.error() << "purchaseUpdated, Error parsing json. Code: "
+                   << jsonError.error << "Offset: " << jsonError.offset
+                   << "Message: " << jsonError.errorString() << "Data: " << raw;
+    return;
+  }
+
+  IAPHandler::instance()->stopSubscription();
+  // NEXT UP - make this pass through correctly and
+  // then fill in processCompletedTransactions
+  // IAPHandler::instance()->processCompletedTransactions(json);
 }

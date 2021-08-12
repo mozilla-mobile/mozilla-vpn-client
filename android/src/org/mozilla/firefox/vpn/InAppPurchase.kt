@@ -6,10 +6,12 @@
 
 package org.mozilla.firefox.vpn
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -68,6 +70,9 @@ class InAppPurchase private constructor(ctx: Context) :
 
     // Functions in AndroidIAPHandler
     external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
+    external fun onNoPurchases()
+    external fun onPurchaseCanceled()
+    external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
 
     companion object {
         private const val TAG = "InAppPurchase"
@@ -94,12 +99,11 @@ class InAppPurchase private constructor(ctx: Context) :
         fun lookupProductsInPlayStore(productsToLookup: String) {
             instance?.initiateProductLookup(productsToLookup)
         }
-        /*
+
         @JvmStatic
         fun purchaseProduct(productToPurchase: String, activity: Activity) {
-            instance?.purchaseProduct(productToPurchase = productToPurchase, activity = activity)
+            instance?.initiatePurchase(productToPurchase = productToPurchase, activity = activity)
         }
-        */
     }
 
     fun initiateProductLookup(productsToLookupRaw: String) {
@@ -157,7 +161,7 @@ class InAppPurchase private constructor(ctx: Context) :
                 if (skuDetailsList == null) {
                     Log.e(TAG, "Found null SkuDetails.")
                 } else {
-                    val googleProducts = GooglePlaySubscriptions(products=arrayListOf())
+                    val googleProducts = GooglePlaySubscriptions(products = arrayListOf())
                     for (details in skuDetailsList) {
                         val sku = details.sku
                         skusWithSkuDetails[sku] = details
@@ -168,7 +172,7 @@ class InAppPurchase private constructor(ctx: Context) :
                             return
                         }
                         Log.d(
-                            TAG, 
+                            TAG,
                             "For sku $sku, we have $priceMicros priceMicros $monthCount months"
                         )
                         val monthlyPrice = priceMicros / 1000000.00 / monthCount
@@ -208,29 +212,52 @@ class InAppPurchase private constructor(ctx: Context) :
         }
     }
 
+    fun initiatePurchase(productToPurchase: String, activity: Activity) {
+        val skuDetails = skusWithSkuDetails[productToPurchase]
+        if (skuDetails == null) {
+            Log.wtf(TAG, "Attempting to purchase a product with no skuDetails")
+            // TODO - What do we want to do in this case?
+            return
+        }
+        val billingParams = BillingFlowParams
+            .newBuilder()
+            .setSkuDetails(skuDetails)
+            .build()
+        val billingResult = billingClient.launchBillingFlow(activity, billingParams)
+        val responseCode = billingResult.responseCode
+        val debugMessage = billingResult.debugMessage
+        Log.d(TAG, "launchBillingFlow: BillingResponse $responseCode $debugMessage")
+    }
+
     /**
      * Called by the Billing Library when new purchases are detected.
      */
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
-        purchases: MutableList<Purchase>?) {
+        purchases: MutableList<Purchase>?
+    ) {
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         Log.d(TAG, "onPurchasesUpdated: $responseCode $debugMessage")
         when (responseCode) {
-            /*
             BillingClient.BillingResponseCode.OK -> {
                 if (purchases == null) {
                     Log.d(TAG, "onPurchasesUpdated: null purchase list")
-                    processPurchases(null)
+                    onNoPurchases()
                 } else {
-                    processPurchases(purchases)
+                    for (purchase in purchases) {
+                        Log.d(TAG, "onPurchasesUpdated $purchase.originalJson")
+                        onPurchaseUpdated(purchase.originalJson)
+                    }
                 }
             }
-            */
             BillingClient.BillingResponseCode.USER_CANCELED -> {
+                // This happens when user hits "back" button from native
+                // purchase screen.
                 Log.i(TAG, "onPurchasesUpdated: User canceled the purchase")
+                onPurchaseCanceled()
             }
+            // TODO - How do we want to handle these cases
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
                 Log.i(TAG, "onPurchasesUpdated: The user already owns this item")
             }
