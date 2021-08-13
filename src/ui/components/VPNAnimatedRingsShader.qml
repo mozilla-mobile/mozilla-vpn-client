@@ -8,9 +8,12 @@ ShaderEffect {
     id: ringAnimation
 
     property bool isCurrentyVisible: false
+    property bool startAnimation: false
     property real animationProgress
+    property real animationOpacity
 
     animationProgress: 0.0
+    animationOpacity: ringAnimationTimer.running ? 1.0 : 0.5
     blending: true
     height: parent.height
     width: parent.width
@@ -32,12 +35,28 @@ ShaderEffect {
         }
     }
 
+    onIsCurrentyVisibleChanged: {
+        resetAnimation();
+    }
+
+    onStartAnimationChanged: {
+        resetAnimation();
+    }
+
+    Behavior on animationOpacity {
+        PropertyAnimation {
+            duration: 1750
+            easing.type: Easing.OutCirc
+        }
+    }
+
     fragmentShader: "
         #ifdef GL_ES
         precision mediump float;
         #endif
         varying mediump vec2 qt_TexCoord0;
         uniform mediump float animationProgress;
+        uniform mediump float animationOpacity;
 
         float drawCircle(float distance, float radius) {
             float antialias = 0.005;
@@ -65,16 +84,16 @@ ShaderEffect {
             float strokeWidth = 0.015;
             float minRadius = 0.0;
             float maxRadius = 0.5;
-            vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
+            vec4 color = vec4(1.0, 1.0, 1.0, 1.0) * animationOpacity;
 
             // Rings
             float ringRadius1 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.0);
             float ring1 = composeRing(centerDistance, strokeWidth, ringRadius1);
 
-            float ringRadius2 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.33);
+            float ringRadius2 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.33 * animationOpacity);
             float ring2 = composeRing(centerDistance, strokeWidth, ringRadius2);
 
-            float ringRadius3 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.66);
+            float ringRadius3 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.66 * animationOpacity);
             float ring3 = composeRing(centerDistance, strokeWidth, ringRadius3);
 
             // Radial gradient
@@ -88,5 +107,9 @@ ShaderEffect {
             gl_FragColor = color * rings - gradientMask;
         }
     "
+
+    function resetAnimation() {
+        animationProgress = 0.0;
+    }
 }
 
