@@ -33,24 +33,26 @@ ShaderEffect {
     }
 
     fragmentShader: "
+        #ifdef GL_ES
+        precision mediump float;
+        #endif
         varying mediump vec2 qt_TexCoord0;
-        uniform lowp float qt_Opacity;
-        uniform lowp float animationProgress;
+        uniform mediump float animationProgress;
 
-        float draw_circle(float distance, float radius) {
+        float drawCircle(float distance, float radius) {
             float antialias = 0.005;
 
             return smoothstep(radius, radius - antialias, distance);
         }
 
-        float compose_ring(float distance, float strokeWidth, float radius) {
-            float circle1 = draw_circle(distance, radius);
-            float circle2 = draw_circle(distance, radius - strokeWidth);
+        float composeRing(float distance, float strokeWidth, float radius) {
+            float circle1 = drawCircle(distance, radius);
+            float circle2 = drawCircle(distance, radius - strokeWidth);
 
             return circle1 - circle2;
         }
 
-        float calc_ring_radius(float minRadius, float maxRadius, float currentRadius, float offset) {
+        float calcRingRadius(float minRadius, float maxRadius, float currentRadius, float offset) {
             return mod(maxRadius * offset + currentRadius, maxRadius) + minRadius;
         }
 
@@ -66,14 +68,14 @@ ShaderEffect {
             vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
 
             // Rings
-            float ringRadius1 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.0);
-            float ring1 = compose_ring(centerDistance, strokeWidth, ringRadius1);
+            float ringRadius1 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.0);
+            float ring1 = composeRing(centerDistance, strokeWidth, ringRadius1);
 
-            float ringRadius2 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.33);
-            float ring2 = compose_ring(centerDistance, strokeWidth, ringRadius2);
+            float ringRadius2 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.33);
+            float ring2 = composeRing(centerDistance, strokeWidth, ringRadius2);
 
-            float ringRadius3 = calc_ring_radius(minRadius, maxRadius, animationProgress, 0.66);
-            float ring3 = compose_ring(centerDistance, strokeWidth, ringRadius3);
+            float ringRadius3 = calcRingRadius(minRadius, maxRadius, animationProgress, 0.66);
+            float ring3 = composeRing(centerDistance, strokeWidth, ringRadius3);
 
             // Radial gradient
             float gradientWidth = 5.0;
