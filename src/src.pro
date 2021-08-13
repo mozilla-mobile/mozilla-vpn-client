@@ -355,6 +355,10 @@ else:linux:!android {
     QT += networkauth
     QT += dbus
 
+    system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
+        LIBS += -lgo
+    }
+
     CONFIG += c++14
 
     DEFINES += MVPN_LINUX
