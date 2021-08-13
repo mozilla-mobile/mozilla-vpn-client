@@ -38,7 +38,7 @@ QString AndroidUtils::GetDeviceName() {
   if (!buffer) {
     return QString("Android Device");
   }
-  QString res = QString(buffer);
+  QString res(buffer);
   env->ReleaseStringUTFChars(value, buffer);
   return res;
 };

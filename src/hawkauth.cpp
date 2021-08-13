@@ -96,7 +96,7 @@ QString HawkAuth::generate(const QNetworkRequest& request,
   // Hash the payload, if present.
   QString hash;
   if (!payload.isEmpty()) {
-    QString mimetype = QString(request.rawHeader("Content-Type"));
+    QString mimetype(request.rawHeader("Content-Type"));
     hash = hashPayload(payload, mimetype);
   }
 
