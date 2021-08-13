@@ -32,13 +32,13 @@ const QString MIGRATION_FILE = "org.mozilla.firefox.vpn_preferences.xml";
 
 // static
 void AndroidDataMigration::migrate() {
-  logger.log() << "Android Data Migration -- Start";
+  logger.debug() << "Android Data Migration -- Start";
 
   auto files = AndroidSharedPrefs::GetPrefFiles();
   if (!files.contains(MIGRATION_FILE)) {
-    logger.log() << "Migration" << MIGRATION_FILE
-                 << "was not file found - skip";
-    logger.log() << "Migration files: " << files;
+    logger.debug() << "Migration" << MIGRATION_FILE
+                   << "was not file found - skip";
+    logger.debug() << "Migration files: " << files;
     return;
   };
 
@@ -52,7 +52,7 @@ void AndroidDataMigration::importDeviceInfo() {
   QVariant prefValue =
       AndroidSharedPrefs::GetValue(MIGRATION_FILE, "pref_current_device");
   if (!prefValue.isValid()) {
-    logger.log() << "Failed to read pref_current_device - abort";
+    logger.error() << "Failed to read pref_current_device - abort";
     return;
   }
 
@@ -62,12 +62,12 @@ void AndroidDataMigration::importDeviceInfo() {
 
   importDeviceInfoInternal(prefValue.toByteArray(), privateKey, pubKey, name);
   if (privateKey.isEmpty()) {
-    logger.log() << "Invalid dvice info data";
+    logger.error() << "Invalid dvice info data";
     return;
   }
 
   MozillaVPN::instance()->deviceAdded(name, pubKey, privateKey);
-  logger.log() << "pref_current_device value was migrated";
+  logger.debug() << "pref_current_device value was migrated";
 }
 
 void AndroidDataMigration::importDeviceInfoInternal(const QByteArray& json,
@@ -87,18 +87,18 @@ void AndroidDataMigration::importUserInfo() {
   QVariant prefValue =
       AndroidSharedPrefs::GetValue(MIGRATION_FILE, "user_info");
   if (!prefValue.isValid()) {
-    logger.log() << "Failed to read user_info";
+    logger.error() << "Failed to read user_info";
     return;
   }
 
   QByteArray json = importUserInfoInternal(prefValue.toByteArray());
   if (json.isEmpty()) {
-    logger.log() << "Invalid user data";
+    logger.error() << "Invalid user data";
     return;
   }
 
   MozillaVPN::instance()->accountChecked(json);
-  logger.log() << "user_info value was imported";
+  logger.debug() << "user_info value was imported";
 }
 
 QByteArray AndroidDataMigration::importUserInfoInternal(
@@ -126,19 +126,19 @@ void AndroidDataMigration::importLoginToken() {
   QVariant loginToken =
       AndroidSharedPrefs::GetValue(MIGRATION_FILE, "auth_token");
   if (!loginToken.isValid()) {
-    logger.log() << "Failed to read auth_token";
+    logger.error() << "Failed to read auth_token";
     return;
   }
   MozillaVPN::instance()->setToken(loginToken.toString());
 
-  logger.log() << "auth_token value was imported";
+  logger.debug() << "auth_token value was imported";
 }
 
 void AndroidDataMigration::importServerList() {
   QVariant prefValue =
       AndroidSharedPrefs::GetValue(MIGRATION_FILE, "pref_servers");
   if (!prefValue.isValid()) {
-    logger.log() << "Failed to read pref_servers - exiting";
+    logger.error() << "Failed to read pref_servers - exiting";
     return;
   }
 
@@ -160,19 +160,19 @@ void AndroidDataMigration::importServerList() {
 
   QByteArray json = importServerListInternal(prefValue.toByteArray());
   if (json.isEmpty()) {
-    logger.log() << "Invalid server data";
+    logger.error() << "Invalid server data";
     return;
   }
 
-  logger.log() << "Import JSON \n" << json;
+  logger.debug() << "Import JSON \n" << json;
 
   bool ok = MozillaVPN::instance()->setServerList(json);
   if (!ok) {
-    logger.log() << "pref_servers value was rejected";
+    logger.error() << "pref_servers value was rejected";
     return;
   }
 
-  logger.log() << "pref_servers value was imported";
+  logger.debug() << "pref_servers value was imported";
 }
 
 QByteArray AndroidDataMigration::importServerListInternal(

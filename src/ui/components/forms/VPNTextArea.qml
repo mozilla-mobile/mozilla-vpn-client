@@ -7,21 +7,19 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import "../"
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Color
 
 Item {
     property alias placeholderText: formattedPlaceholderText.text
     property var userEntry: textArea.text
+    property bool enabled: true
 
     id: root
+
     Layout.preferredHeight: Theme.rowHeight * 3
     Layout.preferredWidth: parent.width
     Layout.maximumHeight: Theme.rowHeight * 3
     Layout.minimumHeight: Theme.rowHeight * 3
-
-    VPNInputBackground {
-        itemToFocus: textArea
-        z: -1
-    }
 
     Flickable {
         id: flickable
@@ -29,7 +27,6 @@ Item {
         anchors.fill: parent
         contentWidth: width
         contentHeight: textArea.implicitHeight
-        clip: true
 
         ScrollBar.vertical: ScrollBar {
             policy: flickable.contentHeight > root.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
@@ -38,13 +35,16 @@ Item {
 
         TextArea.flickable: TextArea {
             property var maxCharacterCount: 1000
-            property bool loseFocusOnOutsidePress: true
+            property bool forceBlurOnOutsidePress: true
+            property bool hasError: false
+            property bool showInteractionStates: true
 
             id: textArea
+            clip: true
             textFormat: Text.PlainText
             font.pixelSize: Theme.fontSizeSmall
             font.family: Theme.fontInterFamily
-            color: Theme.fontColor
+            color: Color.input.default.text
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             textMargin: Theme.windowMargin * .75
             padding: 0
@@ -53,6 +53,11 @@ Item {
             selectByMouse: true
             selectionColor: Theme.input.highlight
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+            enabled: root.enabled
+            background: VPNInputBackground {
+                itemToFocus: textArea
+                z: -1
+            }
 
             VPNTextBlock {
                 id: formattedPlaceholderText
@@ -60,17 +65,20 @@ Item {
                 anchors.leftMargin: Theme.windowMargin
                 anchors.rightMargin: Theme.windowMargin
                 anchors.topMargin: Theme.windowMargin * .75
-                color:  Theme.fontColor
+                color: textAreaStates.state === "emptyHovered" ? Color.input.hover.placeholder : Color.input.default.placeholder
                 visible: textArea.text.length < 1
-                opacity: textArea.focus ? .7 : 1
 
                 PropertyAnimation on opacity {
                     duration: 100
                 }
             }
+
+            VPNInputStates {
+                id: textAreaStates
+                itemToTarget: textArea
+            }
         }
     }
-
 
     Text {
         anchors.top: parent.bottom
@@ -81,5 +89,6 @@ Item {
         anchors.right: parent.right
         color: Theme.fontColor
     }
+
 }
 

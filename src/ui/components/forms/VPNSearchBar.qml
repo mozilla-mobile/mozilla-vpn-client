@@ -11,11 +11,11 @@ import "./../../components"
 
 VPNTextField {
     // TODO Add strings for Accessible.description, Accessible.name
-
-    property bool stateError: false
+    property bool hasError: false
 
     id: searchBar
 
+    background: VPNInputBackground {}
     leftInset: 48
     leftPadding: 48
     onActiveFocusChanged: if (focus && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(searchBar)
@@ -27,15 +27,11 @@ VPNTextField {
         anchors.leftMargin: 20
         sourceSize.height: Theme.windowMargin
         sourceSize.width: Theme.windowMargin
-        opacity: parent.focus ? 1 : .8
-    }
-
-    background: VPNInputBackground {
-        showError: stateError
+        opacity: parent.focus ? 1 : 0.8
     }
 
     Keys.onPressed: {
-        if (focus && stateError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
+        if (focus && hasError && (/[\w\[\]`!@#$%\^&*()={}:;<>+'-]/).test(event.text)) {
             event.accepted = true;
         }
     }

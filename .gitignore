@@ -42,6 +42,7 @@ xcode.xconfig
 .gradle_cache/
 
 *.ts
+tests/auth/tests
 tests/unit/tests
 tests/nativemessaging/tests
 tests/proxy/__pycache__/

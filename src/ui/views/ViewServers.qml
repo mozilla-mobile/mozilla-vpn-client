@@ -102,13 +102,13 @@ Item {
                         countriesModel.invalidate();
                     }
                     placeholderText: VPNl18n.tr(VPNl18n.ServersViewSearchPlaceholder)
-                    stateError: countriesRepeater.count === 0
+                    hasError: countriesRepeater.count === 0
 
                     RowLayout {
                         id: searchWarning
                         anchors.top: serverSearchInput.bottom
                         anchors.topMargin: Theme.listSpacing
-                        visible: serverSearchInput.stateError
+                        visible: serverSearchInput.hasError
 
                         VPNIcon {
                             id: warningIcon

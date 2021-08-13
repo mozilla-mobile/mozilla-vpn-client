@@ -171,6 +171,9 @@ int CommandLogin::run(QStringList& tokens) {
               case AuthenticationInApp::ErrorServerUnavailable:
                 stream << "The server is down" << Qt::endl;
                 break;
+              case AuthenticationInApp::ErrorInvalidTotpCode:
+                stream << "Invalid TOTP code" << Qt::endl;
+                break;
             }
           });
     }

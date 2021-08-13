@@ -7,21 +7,28 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Color
 import "./../../components"
 
 TextField {
     // TODO Add strings for Accessible.description, Accessible.name
-    property bool stateError: false
-    property bool loseFocusOnOutsidePress: true
+    property bool hasError: false
+    property bool showInteractionStates: true
+    property bool forceBlurOnOutsidePress: true
 
     id: textField
 
-    Layout.preferredHeight: Theme.rowHeight
+    background: VPNInputBackground {
+        id: textFieldBackground
+    }
+    color: Color.input.default.text
+    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
     onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible) vpnFlickable.ensureVisible(textField)
     selectByMouse: true
-    inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
+    Layout.preferredHeight: Theme.rowHeight
 
-    background: VPNInputBackground {
-        showError: stateError
+    VPNInputStates {
+        id: textFieldState
+        itemToTarget: textField
     }
 }

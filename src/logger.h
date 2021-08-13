@@ -12,15 +12,12 @@
 
 constexpr const char* LOG_CAPTIVEPORTAL = "captiveportal";
 constexpr const char* LOG_CONTROLLER = "controller";
+constexpr const char* LOG_IAP = "iap";
+constexpr const char* LOG_INSPECTOR = "inspector";
 constexpr const char* LOG_MAIN = "main";
 constexpr const char* LOG_MODEL = "model";
 constexpr const char* LOG_NETWORKING = "networking";
-constexpr const char* LOG_INSPECTOR = "inspector";
 constexpr const char* LOG_SERVER = "server";
-
-#ifdef MVPN_IOS
-constexpr const char* LOG_IAP = "iap";
-#endif
 
 #if defined(MVPN_LINUX) || defined(MVPN_ANDROID)
 constexpr const char* LOG_LINUX = "linux";
@@ -74,10 +71,9 @@ class Logger {
     Data* m_data;
   };
 
-  // This will be deprecated soon. Don't use it!
-  Log log();
   Log error();
   Log warning();
+  Log info();
   Log debug();
 
   // Use this to log sensitive data such as IP address, session tokens, and so

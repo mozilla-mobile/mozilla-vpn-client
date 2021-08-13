@@ -189,7 +189,7 @@ Logger logger(LOG_IOS, "IOSSGlue");
 
 EXPORT void write_msg_to_log(const char* tag, const char* msg) {
 #ifndef NETWORK_EXTENSION
-  logger.log() << "Swift log - tag:" << tag << "msg: " << msg;
+  logger.debug() << "Swift log - tag:" << tag << "msg: " << msg;
 #else
   os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);
 

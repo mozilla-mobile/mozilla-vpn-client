@@ -46,7 +46,7 @@ LocalSocketController::~LocalSocketController() {
 
 void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
-  logger.log() << "Error occurred:" << error;
+  logger.error() << "Error occurred:" << error;
 
   if (m_state == eInitializing) {
     emit initialized(false, false, QDateTime());
@@ -58,7 +58,7 @@ void LocalSocketController::errorOccurred(
 }
 
 void LocalSocketController::initialize(const Device* device, const Keys* keys) {
-  logger.log() << "Initializing";
+  logger.debug() << "Initializing";
 
   Q_UNUSED(device);
   Q_UNUSED(keys);
@@ -75,12 +75,12 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   }
 #endif
 
-  logger.log() << "Connecting to:" << path;
+  logger.debug() << "Connecting to:" << path;
   m_socket->connectToServer(path);
 }
 
 void LocalSocketController::daemonConnected() {
-  logger.log() << "Daemon connected";
+  logger.debug() << "Daemon connected";
   Q_ASSERT(m_state == eInitializing);
   checkStatus();
 }
@@ -132,7 +132,7 @@ void LocalSocketController::activate(
 }
 
 void LocalSocketController::deactivate(Reason reason) {
-  logger.log() << "Deactivating";
+  logger.debug() << "Deactivating";
 
   if (m_state != eReady) {
     emit disconnected();
@@ -140,7 +140,7 @@ void LocalSocketController::deactivate(Reason reason) {
   }
 
   if (reason == ReasonSwitching) {
-    logger.log() << "No disconnect for quick server switching";
+    logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;
   }
@@ -151,7 +151,7 @@ void LocalSocketController::deactivate(Reason reason) {
 }
 
 void LocalSocketController::checkStatus() {
-  logger.log() << "Check status";
+  logger.debug() << "Check status";
 
   if (m_state == eReady || m_state == eInitializing) {
     Q_ASSERT(m_socket);
@@ -164,7 +164,7 @@ void LocalSocketController::checkStatus() {
 
 void LocalSocketController::getBackendLogs(
     std::function<void(const QString&)>&& a_callback) {
-  logger.log() << "Backend logs";
+  logger.debug() << "Backend logs";
 
   if (m_logCallback) {
     m_logCallback("");
@@ -185,7 +185,7 @@ void LocalSocketController::getBackendLogs(
 }
 
 void LocalSocketController::cleanupBackendLogs() {
-  logger.log() << "Cleanup logs";
+  logger.debug() << "Cleanup logs";
 
   if (m_logCallback) {
     m_logCallback("");
@@ -202,7 +202,7 @@ void LocalSocketController::cleanupBackendLogs() {
 }
 
 void LocalSocketController::readData() {
-  logger.log() << "Reading";
+  logger.debug() << "Reading";
 
   Q_ASSERT(m_socket);
   Q_ASSERT(m_state == eInitializing || m_state == eReady);
@@ -230,18 +230,18 @@ void LocalSocketController::readData() {
 }
 
 void LocalSocketController::parseCommand(const QByteArray& command) {
-  logger.log() << "Parse command:" << command.left(20);
+  logger.debug() << "Parse command:" << command.left(20);
 
   QJsonDocument json = QJsonDocument::fromJson(command);
   if (!json.isObject()) {
-    logger.log() << "Invalid JSON - object expected";
+    logger.error() << "Invalid JSON - object expected";
     return;
   }
 
   QJsonObject obj = json.object();
   QJsonValue typeValue = obj.value("type");
   if (!typeValue.isString()) {
-    logger.log() << "Invalid JSON - no type";
+    logger.error() << "Invalid JSON - no type";
     return;
   }
 
@@ -252,7 +252,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
 
     QJsonValue connected = obj.value("connected");
     if (!connected.isBool()) {
-      logger.log() << "Invalid JSON for status - connected expected";
+      logger.error() << "Invalid JSON for status - connected expected";
       return;
     }
 
@@ -260,13 +260,13 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     if (connected.toBool()) {
       QJsonValue date = obj.value("date");
       if (!date.isString()) {
-        logger.log() << "Invalid JSON for status - date expected";
+        logger.error() << "Invalid JSON for status - date expected";
         return;
       }
 
       datetime = QDateTime::fromString(date.toString());
       if (!datetime.isValid()) {
-        logger.log() << "Invalid JSON for status - date is invalid";
+        logger.error() << "Invalid JSON for status - date is invalid";
         return;
       }
     }
@@ -276,32 +276,32 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (m_state != eReady) {
-    logger.log() << "Unexpected command";
+    logger.error() << "Unexpected command";
     return;
   }
 
   if (type == "status") {
     QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
     if (!serverIpv4Gateway.isString()) {
-      logger.log() << "Unexpected serverIpv4Gateway value";
+      logger.error() << "Unexpected serverIpv4Gateway value";
       return;
     }
 
     QJsonValue deviceIpv4Address = obj.value("deviceIpv4Address");
     if (!deviceIpv4Address.isString()) {
-      logger.log() << "Unexpected deviceIpv4Address value";
+      logger.error() << "Unexpected deviceIpv4Address value";
       return;
     }
 
     QJsonValue txBytes = obj.value("txBytes");
     if (!txBytes.isDouble()) {
-      logger.log() << "Unexpected txBytes value";
+      logger.error() << "Unexpected txBytes value";
       return;
     }
 
     QJsonValue rxBytes = obj.value("rxBytes");
     if (!rxBytes.isDouble()) {
-      logger.log() << "Unexpected rxBytes value";
+      logger.error() << "Unexpected rxBytes value";
       return;
     }
 
@@ -339,7 +339,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
     return;
   }
 
-  logger.log() << "Invalid command received:" << command;
+  logger.warning() << "Invalid command received:" << command;
 }
 
 void LocalSocketController::write(const QJsonObject& json) {

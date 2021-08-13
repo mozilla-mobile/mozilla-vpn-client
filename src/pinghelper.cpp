@@ -46,7 +46,7 @@ PingHelper::~PingHelper() { MVPN_COUNT_DTOR(PingHelper); }
 
 void PingHelper::start(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address) {
-  logger.log() << "PingHelper activated for server:" << serverIpv4Gateway;
+  logger.debug() << "PingHelper activated for server:" << serverIpv4Gateway;
 
   m_gateway = serverIpv4Gateway;
   m_source = deviceIpv4Address.section('/', 0, 0);
@@ -74,7 +74,7 @@ void PingHelper::start(const QString& serverIpv4Gateway,
 }
 
 void PingHelper::stop() {
-  logger.log() << "PingHelper deactivated";
+  logger.debug() << "PingHelper deactivated";
 
   if (m_pingSender) {
     delete m_pingSender;
@@ -86,7 +86,7 @@ void PingHelper::stop() {
 
 void PingHelper::nextPing() {
 #ifdef QT_DEBUG
-  logger.log() << "Sending ping seq:" << m_sequence;
+  logger.debug() << "Sending ping seq:" << m_sequence;
 #endif
 
   // The ICMP sequence number is used to match replies with their originating
@@ -108,10 +108,10 @@ void PingHelper::pingReceived(quint16 sequence) {
     m_pingData[index].latency = QDateTime::currentMSecsSinceEpoch() - sendTime;
     emit pingSentAndReceived(m_pingData[index].latency);
 #ifdef QT_DEBUG
-    logger.log() << "Ping answer received seq:" << sequence
-                 << "avg:" << latency()
-                 << "loss:" << QString("%1%").arg(loss() * 100.0)
-                 << "stddev:" << stddev();
+    logger.debug() << "Ping answer received seq:" << sequence
+                   << "avg:" << latency()
+                   << "loss:" << QString("%1%").arg(loss() * 100.0)
+                   << "stddev:" << stddev();
 #endif
   }
 }
