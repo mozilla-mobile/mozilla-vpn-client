@@ -278,7 +278,7 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
   }                                                   \
   logger.debug() << "Rule enabled:" << name << "\n";
 
-  logger.log() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
+  logger.info() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
   FW_OK(blockTrafficTo(config.m_allowedIPAddressRanges, LOW_WEIGHT),
         "Block all");
   FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT),
@@ -857,7 +857,7 @@ bool WindowsFirewall::allowHyperVTraffic(uint8_t weight) {
 
 bool WindowsFirewall::blockTrafficTo(const IPAddressRange& range,
                                      uint8_t weight) {
-  logger.log() << "Blocking traffic to " << range.toString();
+  logger.info() << "Blocking traffic to " << range.toString();
   IPAddress addr = IPAddress::create(range.toString());
 
   auto lower = addr.address();
@@ -943,7 +943,7 @@ bool WindowsFirewall::blockTrafficTo(const QList<IPAddressRange>& rangeList,
                                      uint8_t weight) {
   for (auto range : rangeList) {
     if (!blockTrafficTo(range, weight)) {
-      logger.log() << "Setting Range of" << range.toString() << "failed";
+      logger.info() << "Setting Range of" << range.toString() << "failed";
       return false;
     }
   }
