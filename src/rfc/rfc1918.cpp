@@ -15,3 +15,13 @@ QList<IPAddress> RFC1918::ipv4() {
 
   return list;
 }
+
+bool RFC1918::contains(const QHostAddress& ip) {
+  QList<IPAddress> list = ipv4();
+  foreach (const IPAddress& addr, list) {
+    if (addr.contains(ip)) {
+      return true;
+    }
+  }
+  return false;
+}

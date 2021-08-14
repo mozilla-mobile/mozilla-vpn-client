@@ -42,7 +42,7 @@ NetworkWatcher::NetworkWatcher() { MVPN_COUNT_CTOR(NetworkWatcher); }
 NetworkWatcher::~NetworkWatcher() { MVPN_COUNT_DTOR(NetworkWatcher); }
 
 void NetworkWatcher::initialize() {
-  logger.log() << "Initialize";
+  logger.debug() << "Initialize";
 
 #if defined(MVPN_WINDOWS)
   m_impl = new WindowsNetworkWatcher(this);
@@ -74,7 +74,7 @@ void NetworkWatcher::initialize() {
 }
 
 void NetworkWatcher::settingsChanged(bool active) {
-  logger.log() << "Settings changed:" << active;
+  logger.debug() << "Settings changed:" << active;
   if (m_active == active) {
     return;
   }
@@ -90,11 +90,11 @@ void NetworkWatcher::settingsChanged(bool active) {
 
 void NetworkWatcher::unsecuredNetwork(const QString& networkName,
                                       const QString& networkId) {
-  logger.log() << "Unsecured network:" << networkName << "id:" << networkId;
+  logger.debug() << "Unsecured network:" << networkName << "id:" << networkId;
 
 #ifndef UNIT_TEST
   if (!m_active) {
-    logger.log() << "Disabled. Ignoring unsecured network";
+    logger.debug() << "Disabled. Ignoring unsecured network";
     return;
   }
 
@@ -102,21 +102,21 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   Q_ASSERT(vpn);
 
   if (vpn->state() != MozillaVPN::StateMain) {
-    logger.log() << "VPN not ready. Ignoring unsecured network";
+    logger.debug() << "VPN not ready. Ignoring unsecured network";
     return;
   }
 
   Controller::State state = vpn->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateSwitching) {
-    logger.log() << "VPN on. Ignoring unsecured network";
+    logger.debug() << "VPN on. Ignoring unsecured network";
     return;
   }
 
   if (!m_networks.contains(networkId)) {
     m_networks.insert(networkId, QElapsedTimer());
   } else if (!m_networks[networkId].hasExpired(NETWORK_WATCHER_TIMER_MSEC)) {
-    logger.log() << "Notification already shown. Ignoring unsecured network";
+    logger.debug() << "Notification already shown. Ignoring unsecured network";
     return;
   }
 
@@ -138,7 +138,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
 }
 
 void NetworkWatcher::notificationClicked(SystemTrayHandler::Message message) {
-  logger.log() << "Notification clicked";
+  logger.debug() << "Notification clicked";
 
   if (message == SystemTrayHandler::UnsecuredNetwork) {
     MozillaVPN::instance()->activate();

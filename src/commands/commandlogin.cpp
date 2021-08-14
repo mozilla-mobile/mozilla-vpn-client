@@ -100,9 +100,9 @@ int CommandLogin::run(QStringList& tokens) {
             loop.exit();
           } break;
 
-          case AuthenticationInApp::StateEmailVerification: {
-            QString code = getInput("Email verification needed. Code:");
-            AuthenticationInApp::instance()->verifyEmailCode(code);
+          case AuthenticationInApp::StateUnblockCodeNeeded: {
+            QString code = getInput("Check your email. Unblock code:");
+            AuthenticationInApp::instance()->setUnblockCodeAndContinue(code);
           } break;
 
           case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {
@@ -117,6 +117,13 @@ int CommandLogin::run(QStringList& tokens) {
             QString code =
                 getInput("Session verification by TOTP needed. Code:");
             AuthenticationInApp::instance()->verifySessionTotpCode(code);
+          } break;
+
+          case AuthenticationInApp::StateFallbackInBrowser: {
+            QTextStream stream(stdout);
+            stream << "Unable to continue with the flow. Please, continue the "
+                      "login in browser.";
+            loop.exit();
           } break;
         }
       });
@@ -163,6 +170,9 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
               case AuthenticationInApp::ErrorServerUnavailable:
                 stream << "The server is down" << Qt::endl;
+                break;
+              case AuthenticationInApp::ErrorInvalidTotpCode:
+                stream << "Invalid TOTP code" << Qt::endl;
                 break;
             }
           });

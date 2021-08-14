@@ -41,7 +41,7 @@ ConnectionHealth::ConnectionHealth() {
 ConnectionHealth::~ConnectionHealth() { MVPN_COUNT_DTOR(ConnectionHealth); }
 
 void ConnectionHealth::stop() {
-  logger.log() << "ConnectionHealth deactivated";
+  logger.debug() << "ConnectionHealth deactivated";
 
   m_pingHelper.stop();
   m_noSignalTimer.stop();
@@ -52,7 +52,7 @@ void ConnectionHealth::stop() {
 
 void ConnectionHealth::start(const QString& serverIpv4Gateway,
                              const QString& deviceIpv4Address) {
-  logger.log() << "ConnectionHealth activated";
+  logger.debug() << "ConnectionHealth activated";
 
   if (m_suspended || serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
@@ -71,7 +71,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
-  logger.log() << "Stability changed:" << stability;
+  logger.debug() << "Stability changed:" << stability;
 
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
@@ -88,7 +88,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 }
 
 void ConnectionHealth::connectionStateChanged() {
-  logger.log() << "Connection state changed";
+  logger.debug() << "Connection state changed";
 
   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
     stop();
@@ -108,7 +108,7 @@ void ConnectionHealth::connectionStateChanged() {
 
 void ConnectionHealth::pingSentAndReceived(qint64 msec) {
 #ifdef QT_DEBUG
-  logger.log() << "Ping answer received in msec:" << msec;
+  logger.debug() << "Ping answer received in msec:" << msec;
 #else
   Q_UNUSED(msec);
 #endif
@@ -153,7 +153,7 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
         m_suspended = false;
 
         Q_ASSERT(!m_noSignalTimer.isActive());
-        logger.log() << "Resuming connection check from Suspension";
+        logger.debug() << "Resuming connection check from Suspension";
         start(m_currentGateway, m_deviceAddress);
       }
       break;
@@ -161,7 +161,7 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
     case Qt::ApplicationState::ApplicationSuspended:
     case Qt::ApplicationState::ApplicationInactive:
     case Qt::ApplicationState::ApplicationHidden:
-      logger.log() << "Pausing connection for Suspension";
+      logger.debug() << "Pausing connection for Suspension";
       m_suspended = true;
       stop();
       break;

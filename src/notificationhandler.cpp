@@ -40,7 +40,7 @@ NotificationHandler::~NotificationHandler() {
 }
 
 void NotificationHandler::showNotification() {
-  logger.log() << "Show notification";
+  logger.debug() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() != MozillaVPN::StateMain &&

@@ -43,13 +43,20 @@ Item {
     Layout.rightMargin: 8
     Layout.alignment: Qt.AlignHCenter
 
-
     Rectangle {
         id: boxBackground
-        anchors.fill: parent
+        anchors.fill: box
         color: Theme.bgColor
         radius: 8
         antialiasing: true
+    }
+
+    VPNDropShadow {
+        anchors.fill: boxBackground
+        source: boxBackground
+        cached: true
+        transparentBorder: true
+        z: -1
     }
 
     states: [
@@ -101,7 +108,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -153,7 +160,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -212,7 +219,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -272,7 +279,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -318,7 +325,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: true
                 opacity: 1
                 startAnimation: true
@@ -379,7 +386,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -434,7 +441,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
                 opacity: 1
                 startAnimation: false
@@ -489,14 +496,14 @@ Item {
         }
     ]
 
-    VPNAnimatedRings {
-        id: animatedRingsWrapper
+    VPNAnimatedRingsShader {
+        id: animatedRings
         // Make sure we only do the render animation when
         // The element is visible &&
         // the application is not minimized
         isCurrentyVisible: stackview.depth === 1 &&
-                           (Qt.application.state === Qt.ApplicationActive ||
-                            Qt.application.state === Qt.ApplicationInactive)
+            (Qt.application.state === Qt.ApplicationActive ||
+            Qt.application.state === Qt.ApplicationInactive)
     }
 
     VPNMainImage {

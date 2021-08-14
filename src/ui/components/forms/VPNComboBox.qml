@@ -8,10 +8,12 @@ import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../../themes/themes.js" as Theme
+import "../../themes/colors.js" as Color
 import "../"
 
 ComboBox {
     property var placeholderText: ""
+    property bool showInteractionStates: true
     textRole: "name"
     valueRole: "value"
     id: combo
@@ -38,6 +40,7 @@ ComboBox {
     }
 
     contentItem: VPNTextBlock {
+        id: contentItem
         text: currentIndex === -1 ? placeholderText : currentText
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
@@ -97,6 +100,35 @@ ComboBox {
             }
         }
 
+        background: Item {
+            Rectangle {
+                id: shadowMask
+                anchors.fill: bg
+                visible: false
+                color: "black"
+                radius: Theme.cornerRadius
+            }
+
+            DropShadow {
+                source: shadowMask
+                anchors.fill: shadowMask
+                samples: 16
+                transparentBorder: true
+                radius: 7.5
+                color: "#0C0C0D"
+                z: -1
+                opacity: .1
+                cached: true
+            }
+            VPNInputBackground {
+                id: bg
+                anchors.fill: parent
+                anchors.bottomMargin: -4
+                anchors.topMargin: anchors.bottomMargin
+                border.color: "transparent"
+            }
+        }
+
         contentItem: ListView {
             id: listView
             implicitHeight: contentHeight
@@ -105,26 +137,72 @@ ComboBox {
             model: combo.popup.visible ? combo.delegateModel : null
             ScrollIndicator.vertical: ScrollIndicator {}
         }
+    }
 
+    states: [
+        State {
+            name: "focused"
+            when: comboPopup.visible || combo.focus
 
-        background: VPNInputBackground {
-            id: bg
-            anchors.fill: parent
-            anchors.bottomMargin: -4
-            anchors.topMargin: anchors.bottomMargin
-            border.color: "transparent"
-            DropShadow {
-                source: bg
-                anchors.fill:bg
-                samples: 16
-                transparentBorder: true
-                radius: 7.5
-                color: "#0C0C0D"
-                z: -1
-                opacity: .2
-                cached: true
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.focus.text
             }
 
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.focus.border
+                border.width: 2
+            }
+        },
+        State {
+            name: "empty"
+            when: combo.currentIndex === -1
+                  && !combo.hovered
+                  && !comboPopup.visible
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.default.placeholder
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.default.border
+                border.width: 1
+            }
+        },
+        State {
+            name: "emptyHovered"
+            when: combo.hovered
+                  && combo.currentIndex === -1
+                  && !comboPopup.visible
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.hover.text
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.hover.border
+                border.width: 1
+            }
+        },
+        State {
+            name: "filled"
+            when: combo.currentIndex >= 0 && !comboPopup.visible
+
+            PropertyChanges {
+                target: combo.contentItem
+                color: Color.input.default.text
+            }
+
+            PropertyChanges {
+                target: combo.background
+                border.color: Color.input.default.border
+                border.width: 1
+            }
         }
-    }
+    ]
 }

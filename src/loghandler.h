@@ -69,6 +69,8 @@ class LogHandler final : public QObject {
 
   static void setLocation(const QString& path);
 
+  static void enableDebug();
+
  signals:
   void logEntryAdded(const QByteArray& log);
 
@@ -91,6 +93,7 @@ class LogHandler final : public QObject {
 
   const LogLevel m_minLogLevel;
   const QStringList m_modules;
+  bool m_showDebug = false;
 
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;

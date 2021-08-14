@@ -18,16 +18,24 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   explicit AuthenticationInAppListener(QObject* parent);
   ~AuthenticationInAppListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 
   void checkAccount(const QString& emailAddress);
   void setPassword(const QString& password);
-  void signIn(const QString& verificationCode = QString());
+  void setUnblockCodeAndContinue(const QString& unblockCode);
+  void signIn(const QString& unblockCode = QString());
   void signUp();
-  void verifyEmailCode(const QString& code);
   void verifySessionEmailCode(const QString& code);
   void resendVerificationSessionCodeEmail();
+  void sendUnblockCodeEmail();
   void verifySessionTotpCode(const QString& code);
+
+#ifdef UNIT_TEST
+  void enableTotpCreation();
+#endif
+
+  const QString& emailAddress() const { return m_emailAddress; }
 
  private:
   void processErrorCode(int errorCode);
@@ -37,19 +45,29 @@ class AuthenticationInAppListener final : public AuthenticationListener {
   QByteArray generateAuthPw(const QString& password) const;
 
   void accountChecked(bool exists);
-  void signInCompleted(const QString& sessionToken, bool accountVerified,
-                       const QString& verificationMethod);
-  void emailVerificationNeeded();
-  void finalizeSignIn();
+  void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
+                           const QString& verificationMethod);
+  void unblockCodeNeeded();
+  void finalizeSignInOrUp();
+
+#ifdef UNIT_TEST
+  void createTotpCodes();
+#endif
 
  private:
   QString m_codeChallenge;
+  QString m_codeChallengeMethod;
+
   QUrlQuery m_urlQuery;
 
   QString m_emailAddress;
   QByteArray m_authPw;
 
   QByteArray m_sessionToken;
+
+#ifdef UNIT_TEST
+  bool m_totpCreationNeeded = false;
+#endif
 };
 
 #endif  // AUTHENTICATIONINAPPLISTENER_H

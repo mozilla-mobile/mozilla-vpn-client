@@ -36,6 +36,12 @@ RoundButton {
             handleKeyClick();
     }
 
+    onClicked: {
+        if (typeof(toolTip) !== "undefined" && toolTip.opened) {
+            toolTip.close();
+        }
+    }
+
     Accessible.role: Accessible.Button
     Accessible.onPressAction: handleKeyClick()
     Accessible.focusable: true
@@ -44,7 +50,7 @@ RoundButton {
         if (!activeFocus)
             return visualStateItem.state = uiState.stateDefault;
 
-        if (vpnFlickable && typeof (vpnFlickable.ensureVisible) !== "undefined")
+        if (typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
             return vpnFlickable.ensureVisible(visualStateItem);
     }
 

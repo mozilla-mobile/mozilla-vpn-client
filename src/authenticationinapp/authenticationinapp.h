@@ -16,7 +16,7 @@ class AuthenticationInApp final : public QObject {
 
  public:
   enum State {
-    // The AIP has not started yet
+    // The Authencation-In-App has not started yet
     StateInitializing,
     // The client_id and other params has been received. We are ready to
     // receive email address and password.
@@ -25,19 +25,21 @@ class AuthenticationInApp final : public QObject {
     StateSignIn,
     // Sign up
     StateSignUp,
-    // The authentication requires an email verification (6-digit code)
-    // At this point, the user is not sign-in/up. We are waiting for this extra
-    // step to complete the authentication.
-    StateEmailVerification,
-    // The authentication requires an account verification (6-digit code)
-    // This is similar to the previous step, but it happens when the account
-    // has not been verified yet.
-    // The code expires after 5 minutes. Call
-    // `resendVerificationSessionCodeEmail`
-    // to have a new code.
+    // The authentication requires an unblock code (6-digit code) At this
+    // point, the user needs to check their mailbox and pass the 6-digit
+    // unblock code. Then, the signIn() can continue.  The code expires after 5
+    // minutes. Call `resendUnblockCodeEmail` to have a new code.
+    StateUnblockCodeNeeded,
+    // The authentication requires an account verification (6-digit code) This
+    // is similar to the previous step, but it happens when the account has not
+    // been verified yet.  The code expires after 5 minutes. Call
+    // `resendVerificationSessionCodeEmail` to have a new code.
     StateVerificationSessionByEmailNeeded,
     // The two-factor authentication session verification.
     StateVerificationSessionByTotpNeeded,
+    // If we are unable to continue the authentication in-app, the fallback is
+    // the browser flow.
+    StateFallbackInBrowser,
   };
   Q_ENUM(State);
 
@@ -55,6 +57,7 @@ class AuthenticationInApp final : public QObject {
     ErrorInvalidPhoneNumber,
     ErrorInvalidRegion,
     ErrorServerUnavailable,
+    ErrorInvalidTotpCode,
   };
   Q_ENUM(ErrorType);
 
@@ -73,12 +76,26 @@ class AuthenticationInApp final : public QObject {
 
   Q_INVOKABLE void setPassword(const QString& password);
 
+  Q_INVOKABLE static bool validateEmailAddress(const QString& emailAddress);
+
+  Q_INVOKABLE static bool validatePasswordCommons(const QString& password);
+  Q_INVOKABLE static bool validatePasswordLength(const QString& password);
+  Q_INVOKABLE bool validatePasswordEmail(const QString& password);
+
   // Sign In/Up.
   Q_INVOKABLE void signIn();
   Q_INVOKABLE void signUp();
 
-  // This needs to be called when we are in StateEmailVerification state.
-  Q_INVOKABLE void verifyEmailCode(const QString& code);
+#ifdef UNIT_TEST
+  // This method is used to have a test coverage for the TOTP verification.
+  void enableTotpCreation();
+#endif
+
+  // This needs to be called when we are in StateUnblockCodeNeeded state.
+  Q_INVOKABLE void setUnblockCodeAndContinue(const QString& unblockCode);
+
+  // This can be called when we are in StateUnblockCodeNeeded state.
+  Q_INVOKABLE void resendUnblockCodeEmail();
 
   // This needs to be called when we are in
   // StateVerificationSessionByEmailNeeded state.
@@ -102,6 +119,11 @@ class AuthenticationInApp final : public QObject {
   void stateChanged();
 
   void errorOccurred(ErrorType error);
+
+#ifdef UNIT_TEST
+  void unitTestFinalUrl(const QUrl& url);
+  void unitTestTotpCodeCreated(const QByteArray& data);
+#endif
 
  private:
   explicit AuthenticationInApp(QObject* parent);

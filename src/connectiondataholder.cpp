@@ -46,13 +46,13 @@ ConnectionDataHolder::~ConnectionDataHolder() {
 }
 
 void ConnectionDataHolder::enable() {
-  m_ipAddressTimer.start(Constants::IPADDRESS_TIMER_MSEC);
+  m_ipAddressTimer.start(Constants::ipAddressTimerMsec());
 }
 
 void ConnectionDataHolder::disable() { m_ipAddressTimer.stop(); }
 
 void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes) {
-  logger.log() << "New connection data:" << txBytes << rxBytes;
+  logger.debug() << "New connection data:" << txBytes << rxBytes;
 
   Q_ASSERT(!!m_txSeries == !!m_rxSeries);
 
@@ -60,8 +60,8 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes) {
     return;
   }
 
-  Q_ASSERT(m_txSeries->count() == Constants::CHARTS_MAX_POINTS);
-  Q_ASSERT(m_rxSeries->count() == Constants::CHARTS_MAX_POINTS);
+  Q_ASSERT(m_txSeries->count() == Constants::chartsMaxPoints());
+  Q_ASSERT(m_rxSeries->count() == Constants::chartsMaxPoints());
 
   // This is the first time we receive data. We need at least 2 calls in order
   // to count the delta.
@@ -83,12 +83,12 @@ void ConnectionDataHolder::add(uint64_t txBytes, uint64_t rxBytes) {
   m_maxBytes = std::max(m_maxBytes, std::max(txBytes, rxBytes));
   m_data.append(QPair<uint64_t, uint64_t>(txBytes, rxBytes));
 
-  while (m_data.length() > Constants::CHARTS_MAX_POINTS) {
+  while (m_data.length() > Constants::chartsMaxPoints()) {
     m_data.removeAt(0);
   }
 
   int i = 0;
-  for (; i < Constants::CHARTS_MAX_POINTS - m_data.length(); ++i) {
+  for (; i < Constants::chartsMaxPoints() - m_data.length(); ++i) {
     m_txSeries->replace(i, i, 0);
     m_rxSeries->replace(i, i, 0);
   }
@@ -107,7 +107,7 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
                                     const QVariant& a_rxSeries,
                                     const QVariant& a_axisX,
                                     const QVariant& a_axisY) {
-  logger.log() << "Activated";
+  logger.info() << "Activated";
   updateIpAddress();
 
   QtCharts::QSplineSeries* txSeries =
@@ -151,16 +151,16 @@ void ConnectionDataHolder::activate(const QVariant& a_txSeries,
   }
 
   // Let's be sure we have all the x/y points.
-  while (m_txSeries->count() < Constants::CHARTS_MAX_POINTS) {
+  while (m_txSeries->count() < Constants::chartsMaxPoints()) {
     m_txSeries->append(m_txSeries->count(), 0);
     m_rxSeries->append(m_rxSeries->count(), 0);
   }
 
-  m_checkStatusTimer.start(Constants::CHECKSTATUS_TIMER_MSEC);
+  m_checkStatusTimer.start(Constants::checkStatusTimerMsec());
 }
 
 void ConnectionDataHolder::deactivate() {
-  logger.log() << "Deactivated";
+  logger.info() << "Deactivated";
 
   reset();
   m_axisX = nullptr;
@@ -180,7 +180,7 @@ void ConnectionDataHolder::computeAxes() {
 }
 
 void ConnectionDataHolder::reset() {
-  logger.log() << "Resetting the data";
+  logger.debug() << "Resetting the data";
 
   m_initialized = false;
   m_txBytes = 0;
@@ -207,11 +207,11 @@ void ConnectionDataHolder::reset() {
 }
 
 void ConnectionDataHolder::updateIpAddress() {
-  logger.log() << "Updating IP address";
+  logger.debug() << "Updating IP address";
   auto state = MozillaVPN::instance()->controller()->state();
   // Only start the check if we're actually connected/connecting
   if (state != Controller::StateOn && state != Controller::StateConfirming) {
-    logger.log() << "Skip Updating IP address, not connected";
+    logger.warning() << "Skip Updating IP address, not connected";
     return;
   }
 
@@ -225,18 +225,18 @@ void ConnectionDataHolder::updateIpAddress() {
       ipfinder, &IPFinder::completed,
       [this](const QString& ipv4, const QString& ipv6, const QString& country) {
         if (ipv4.isEmpty() && ipv6.isEmpty()) {
-          logger.log() << "IP address request failed";
+          logger.error() << "IP address request failed";
           m_updatingIpAddress = false;
           emit ipAddressChecked();
           return;
         }
 
-        logger.log() << "IP address request completed";
+        logger.debug() << "IP address request completed";
         if (m_checkStatusTimer.isActive() &&
             country != MozillaVPN::instance()->currentServer()->countryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
-          logger.log() << "Reported ip not in the right country, retry!";
+          logger.warning() << "Reported ip not in the right country, retry!";
           TimerSingleShot::create(this, 3000, [this]() { updateIpAddress(); });
         }
 
@@ -250,8 +250,10 @@ void ConnectionDataHolder::updateIpAddress() {
           emit ipv6AddressChanged();
         }
 
-        logger.log() << "Set own Address. ipv4:" << m_ipv4Address
-                     << "ipv6:" << m_ipv6Address << "in" << country;
+        logger.debug() << "Set own Address. ipv4:"
+                       << logger.sensitive(m_ipv4Address)
+                       << "ipv6:" << logger.sensitive(m_ipv6Address) << "in"
+                       << logger.sensitive(country);
 
         m_updatingIpAddress = false;
         emit ipAddressChecked();
@@ -274,7 +276,7 @@ quint64 ConnectionDataHolder::bytes(bool index) const {
 }
 
 void ConnectionDataHolder::stateChanged() {
-  logger.log() << "state changed";
+  logger.debug() << "state changed";
 
   MozillaVPN* vpn = MozillaVPN::instance();
 

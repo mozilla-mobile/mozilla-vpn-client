@@ -33,13 +33,13 @@ void addCity(const QString& countryCode, const QJsonValue& value) {
 
   QString cityName = obj["city"].toString();
   if (cityName.isEmpty()) {
-    logger.log() << "Empty city string";
+    logger.error() << "Empty city string";
     return;
   }
 
   QJsonValue languages = obj["languages"];
   if (!languages.isObject()) {
-    logger.log() << "Empty language list";
+    logger.error() << "Empty language list";
     return;
   }
 
@@ -59,13 +59,13 @@ void addCountry(const QJsonValue& value) {
 
   QString countryCode = obj["countryCode"].toString();
   if (countryCode.isEmpty()) {
-    logger.log() << "Empty countryCode string";
+    logger.error() << "Empty countryCode string";
     return;
   }
 
   QJsonValue languages = obj["languages"];
   if (!languages.isObject()) {
-    logger.log() << "Empty language list";
+    logger.error() << "Empty language list";
     return;
   }
 
@@ -77,7 +77,7 @@ void addCountry(const QJsonValue& value) {
 
   QJsonValue cities = obj["cities"];
   if (!cities.isArray()) {
-    logger.log() << "Empty city list";
+    logger.error() << "Empty city list";
     return;
   }
 
@@ -96,13 +96,13 @@ void maybeInitialize() {
 
   QFile file(":/i18n/servers.json");
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
-    logger.log() << "Failed to open the servers.json";
+    logger.error() << "Failed to open the servers.json";
     return;
   }
 
   QJsonDocument json = QJsonDocument::fromJson(file.readAll());
   if (!json.isArray()) {
-    logger.log() << "Invalid format (expected array)";
+    logger.error() << "Invalid format (expected array)";
     return;
   }
 

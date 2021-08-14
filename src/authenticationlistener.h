@@ -9,9 +9,7 @@
 #include "mozillavpn.h"
 
 #include <QObject>
-
-class QUrl;
-class QUrlQuery;
+#include <QUrl>
 
 class AuthenticationListener : public QObject {
   Q_OBJECT
@@ -21,7 +19,14 @@ class AuthenticationListener : public QObject {
   static AuthenticationListener* create(
       QObject* parent, MozillaVPN::AuthenticationType authenticationType);
 
-  virtual void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) = 0;
+  virtual void start(const QString& codeChallenge,
+                     const QString& codeChallengeMethod,
+                     const QString& emailAddress = QString()) = 0;
+
+  static QUrl createAuthenticationUrl(
+      MozillaVPN::AuthenticationType authenticationType,
+      const QString& codeChallenge, const QString& codeChallengeMethod,
+      const QString& emailAddress);
 
  signals:
   void completed(const QString& code);

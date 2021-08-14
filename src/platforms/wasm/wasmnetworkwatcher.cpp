@@ -19,9 +19,9 @@ WasmNetworkWatcher::~WasmNetworkWatcher() {
   MVPN_COUNT_DTOR(WasmNetworkWatcher);
 }
 
-void WasmNetworkWatcher::initialize() { logger.log() << "initialize"; }
+void WasmNetworkWatcher::initialize() { logger.debug() << "initialize"; }
 
 void WasmNetworkWatcher::start() {
-  logger.log() << "actived";
+  logger.debug() << "actived";
   emit unsecuredNetwork("WifiName", "NetworkID");
 }

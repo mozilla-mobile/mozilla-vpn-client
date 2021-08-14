@@ -23,37 +23,37 @@ FeedbackCategoryModel::FeedbackCategoryModel() {
   // Here we use the logger to force lrelease to add the category ids.
 
   //% "Product Bugs/Errors"
-  logger.log() << "Adding:" << qtTrId("feedback.category.bugError");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.bugError");
   s_feedbackCategories.append(
       FeedbackCategory{"bug", "feedback.category.bugError"});
 
   //% "Network Connection/Speed"
-  logger.log() << "Adding:" << qtTrId("feedback.category.networkSpeed");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.networkSpeed");
   s_feedbackCategories.append(
       FeedbackCategory{"connection_speed", "feedback.category.networkSpeed"});
 
   //% "Product Quality"
-  logger.log() << "Adding:" << qtTrId("feedback.category.productQuality");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.productQuality");
   s_feedbackCategories.append(
       FeedbackCategory{"quality", "feedback.category.productQuality"});
 
   //% "Access to service"
-  logger.log() << "Adding:" << qtTrId("feedback.category.accessToService");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.accessToService");
   s_feedbackCategories.append(FeedbackCategory{
       "access_to_service", "feedback.category.accessToService"});
 
   //% "Compatibility"
-  logger.log() << "Adding:" << qtTrId("feedback.category.compatibility");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.compatibility");
   s_feedbackCategories.append(
       FeedbackCategory{"compatibility", "feedback.category.compatibility"});
 
   //% "Ease of Use"
-  logger.log() << "Adding:" << qtTrId("feedback.category.easeToUse");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.easeToUse");
   s_feedbackCategories.append(
       FeedbackCategory{"ease_of_use", "feedback.category.easeToUse"});
 
   //% "Other"
-  logger.log() << "Adding:" << qtTrId("feedback.category.other");
+  logger.debug() << "Adding:" << qtTrId("feedback.category.other");
   s_feedbackCategories.append(
       FeedbackCategory{"other", "feedback.category.other"});
 }

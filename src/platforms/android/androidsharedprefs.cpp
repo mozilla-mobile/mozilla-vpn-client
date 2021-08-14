@@ -45,17 +45,17 @@ QVariant AndroidSharedPrefs::GetValue(const QString& fileName,
                                       const QString& prefKey) {
   QDir prefFolder(SHARED_PREF_FOLDER);
   if (!prefFolder.exists()) {
-    logger.log() << "shared_prefs folder not found: " << prefFolder.path();
+    logger.error() << "shared_prefs folder not found: " << prefFolder.path();
     return QVariant::Invalid;
   }
 
   QFile prefFile(prefFolder.absoluteFilePath(fileName));
   if (!prefFile.exists()) {
-    logger.log() << "pref file not found: " << prefFile.fileName();
+    logger.error() << "pref file not found: " << prefFile.fileName();
     return QVariant::Invalid;
   }
   if (!prefFile.open(QIODevice::ReadOnly)) {
-    logger.log() << "failed to open pref file: " << prefFile.fileName();
+    logger.error() << "failed to open pref file: " << prefFile.fileName();
     return QVariant::Invalid;
   }
 
@@ -79,7 +79,7 @@ QVariant AndroidSharedPrefs::GetValue(const QString& fileName,
       QString val = stringNode.nodeValue();
       auto textNode = stringNode.firstChild();
       if (!textNode.isText()) {
-        logger.log() << "Non TextNode Value? " << textNode.nodeValue();
+        logger.warning() << "Non TextNode Value? " << textNode.nodeValue();
       }
       QString value = textNode.nodeValue();
       prefFile.close();
@@ -88,6 +88,6 @@ QVariant AndroidSharedPrefs::GetValue(const QString& fileName,
   }
 
   prefFile.close();
-  logger.log() << "Key was not found in the Prefrences file " << prefKey;
+  logger.error() << "Key was not found in the Prefrences file " << prefKey;
   return QVariant::Invalid;
 }

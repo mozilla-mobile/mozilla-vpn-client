@@ -36,7 +36,7 @@ Read more on https://vpn.mozilla.org
 %undefine _lto_cflags
 
 %build
-python3 scripts/importLanguages.py -p
+python3 scripts/importLanguages.py
 %{qmake_qt5} CONFIG+=production QT+=svg
 make -j$(nproc)
 

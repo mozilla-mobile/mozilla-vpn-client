@@ -59,37 +59,38 @@ void CaptivePortalRequest::run() {
 }
 
 void CaptivePortalRequest::createRequest(const QUrl& url) {
-  logger.log() << "request:" << url.toString();
+  logger.debug() << "request:" << url.toString();
 
   NetworkRequest* request = NetworkRequest::createForCaptivePortalDetection(
       this, url, CAPTIVEPORTAL_HOST);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.log() << "Captive portal request failed:" << error;
+            logger.warning() << "Captive portal request failed:" << error;
             onResult(Failure);
           });
 
-  connect(request, &NetworkRequest::requestCompleted,
-          [this, request](const QByteArray& data) {
-            logger.log() << "Captive portal request completed:" << data;
-            // Usually, captive-portal pages do a redirect to an internal page.
-            if (request->statusCode() != 200) {
-              logger.log() << "Captive portal detected. Expected 200, received:"
-                           << request->statusCode();
-              onResult(PortalDetected);
-              return;
-            }
+  connect(
+      request, &NetworkRequest::requestCompleted,
+      [this, request](const QByteArray& data) {
+        logger.debug() << "Captive portal request completed:" << data;
+        // Usually, captive-portal pages do a redirect to an internal page.
+        if (request->statusCode() != 200) {
+          logger.debug() << "Captive portal detected. Expected 200, received:"
+                         << request->statusCode();
+          onResult(PortalDetected);
+          return;
+        }
 
-            if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
-              logger.log() << "No captive portal!";
-              onResult(NoPortal);
-              return;
-            }
+        if (QString(data).trimmed() == CAPTIVEPORTAL_REQUEST_CONTENT) {
+          logger.debug() << "No captive portal!";
+          onResult(NoPortal);
+          return;
+        }
 
-            logger.log() << "Captive portal detected. Content does not match.";
-            onResult(PortalDetected);
-          });
+        logger.debug() << "Captive portal detected. Content does not match.";
+        onResult(PortalDetected);
+      });
 
   m_running++;
 }

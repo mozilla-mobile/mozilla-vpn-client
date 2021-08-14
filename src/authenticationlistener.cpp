@@ -4,8 +4,11 @@
 
 #include "authenticationlistener.h"
 #include "authenticationinapp/authenticationinapplistener.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "networkmanager.h"
+#include "networkrequest.h"
 
 #if defined(MVPN_ANDROID)
 #  include "platforms/android/androidauthenticationlistener.h"
@@ -41,6 +44,7 @@ AuthenticationListener* AuthenticationListener::create(
     case MozillaVPN::DefaultAuthentication:
     default:
       Q_ASSERT(false);
+      return nullptr;
   }
 }
 
@@ -51,4 +55,40 @@ AuthenticationListener::AuthenticationListener(QObject* parent)
 
 AuthenticationListener::~AuthenticationListener() {
   MVPN_COUNT_DTOR(AuthenticationListener);
+}
+
+// static
+QUrl AuthenticationListener::createAuthenticationUrl(
+    MozillaVPN::AuthenticationType authenticationType,
+    const QString& codeChallenge, const QString& codeChallengeMethod,
+    const QString& emailAddress) {
+  QString path("/api/v2/vpn/login/");
+
+  if (authenticationType == MozillaVPN::AuthenticationInApp) {
+    // hack!
+    path.append("android");
+  } else {
+    Q_ASSERT(authenticationType == MozillaVPN::AuthenticationInBrowser);
+#if !defined(MVPN_DUMMY)
+    path.append(Constants::PLATFORM_NAME);
+#else
+    // Let's use linux here.
+    path.append("linux");
+#endif
+  }
+
+  QUrl url(NetworkRequest::apiBaseUrl());
+  url.setPath(path);
+
+  QUrlQuery query;
+  query.addQueryItem("code_challenge", codeChallenge);
+  query.addQueryItem("code_challenge_method", codeChallengeMethod);
+  query.addQueryItem("user_agent", NetworkManager::userAgent());
+
+  if (!emailAddress.isEmpty()) {
+    query.addQueryItem("email", emailAddress);
+  }
+
+  url.setQuery(query);
+  return url;
 }

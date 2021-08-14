@@ -47,6 +47,12 @@ class FeatureList final : public QObject {
   bool userDNSSupported() const;
 
   bool authenticationInApp() const;
+
+  // some platforms support the authentication in app, but not the account
+  // creation.
+  bool accountCreationInAppSupported() const;
+
+  bool inAppPurchaseSupported() const;
 };
 
 #endif  // FEATURELIST_H

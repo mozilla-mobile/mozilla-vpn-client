@@ -7,10 +7,6 @@
 #include "logger.h"
 #include "urlopener.h"
 
-#ifdef MVPN_INSPECTOR
-#  include "inspector/inspectorwebsocketconnection.h"
-#endif
-
 #include <limits>
 #include <QOAuthHttpServerReplyHandler>
 #include <QRandomGenerator>
@@ -21,19 +17,19 @@ namespace {
 Logger logger(LOG_MAIN, "DesktopAuthenticationListener");
 
 int choosePort(QVector<quint16> triedPorts) {
-  logger.log() << "Choosing port";
+  logger.debug() << "Choosing port";
 
   while (true) {
     quint32 v = QRandomGenerator::global()->generate();
     quint16 port = 1024 + (v % (std::numeric_limits<quint16>::max() - 1024));
-    logger.log() << "Random port:" << port;
+    logger.debug() << "Random port:" << port;
 
     if (!triedPorts.contains(port)) {
       triedPorts.append(port);
       return port;
     }
 
-    logger.log() << "Already tried!";
+    logger.debug() << "Already tried!";
   }
 }
 
@@ -46,7 +42,7 @@ DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
   m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
   connect(m_server, &QAbstractOAuthReplyHandler::callbackReceived,
           [this](const QVariantMap& values) {
-            logger.log() << "DesktopAuthenticationListener data received";
+            logger.debug() << "DesktopAuthenticationListener data received";
 
             // Unknown connection.
             if (!values.contains("code")) {
@@ -63,10 +59,14 @@ DesktopAuthenticationListener::~DesktopAuthenticationListener() {
   MVPN_COUNT_DTOR(DesktopAuthenticationListener);
 }
 
-void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
-                                          QUrlQuery& query) {
-  logger.log() << "DesktopAuthenticationListener initialize";
-  Q_UNUSED(vpn);
+void DesktopAuthenticationListener::start(const QString& codeChallenge,
+                                          const QString& codeChallengeMethod,
+                                          const QString& emailAddress) {
+  logger.debug() << "DesktopAuthenticationListener initialize";
+
+  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser,
+                                   codeChallenge, codeChallengeMethod,
+                                   emailAddress));
 
   if (!m_server->isListening()) {
     QVector<quint16> triedPorts;
@@ -79,14 +79,15 @@ void DesktopAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
   }
 
   if (!m_server->isListening()) {
-    logger.log() << "Unable to listen for the authentication server.";
+    logger.error() << "Unable to listen for the authentication server.";
     emit failed(ErrorHandler::UnrecoverableError);
     return;
   }
 
-  logger.log() << "Port:" << m_server->port();
-  query.addQueryItem("port", QString::number(m_server->port()));
+  logger.debug() << "Port:" << m_server->port();
 
+  QUrlQuery query(url.query());
+  query.addQueryItem("port", QString::number(m_server->port()));
   url.setQuery(query);
 
   UrlOpener::open(url.toString());

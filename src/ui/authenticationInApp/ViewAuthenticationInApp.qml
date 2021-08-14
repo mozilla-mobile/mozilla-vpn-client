@@ -53,10 +53,10 @@ Item {
         },
 
         State {
-            name: VPNAuthInApp.StateEmailVerification
+            name: VPNAuthInApp.StateUnblockCodeNeeded
             PropertyChanges {
                 target: loader
-                source: "ViewAuthenticationEmailVerification.qml"
+                source: "ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 
@@ -73,6 +73,14 @@ Item {
             PropertyChanges {
                 target: loader
                 source: "ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+            }
+        },
+
+        State {
+            name: VPNAuthInApp.StateFallbackInBrowser
+            PropertyChanges {
+                target: loader
+                source: "ViewAuthenticationFallbackInBrowser.qml"
             }
         }
     ]
