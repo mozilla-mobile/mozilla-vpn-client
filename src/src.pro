@@ -356,7 +356,7 @@ else:linux:!android {
     QT += dbus
 
     system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
-        LIBS += -lgo
+        QMAKE_LIBS += -lgo
     }
 
     CONFIG += c++14
