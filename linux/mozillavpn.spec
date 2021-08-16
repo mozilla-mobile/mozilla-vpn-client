@@ -36,10 +36,9 @@ Read more on https://vpn.mozilla.org
 %undefine _lto_cflags
 
 %build
-./scripts/generate_glean.py
-./scripts/importLanguages.py
-%{qmake_qt5} QT+=svg
-make %{?_smp_mflags}
+python3 scripts/importLanguages.py
+%{qmake_qt5} CONFIG+=production QT+=svg
+make -j$(nproc)
 
 %install
 make install INSTALL_ROOT=%{buildroot}
