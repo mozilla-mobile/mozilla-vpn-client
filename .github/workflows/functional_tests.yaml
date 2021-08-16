@@ -78,7 +78,6 @@ jobs:
           export PATH=/opt/qt515/bin:$PATH
 
           pip3 install glean_parser
-          pip3 install pyhumps
           pip3 install pyyaml
 
           git submodule update --remote --depth 1 i18n
