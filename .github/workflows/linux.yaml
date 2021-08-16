@@ -22,7 +22,6 @@ jobs:
         run: |
           sudo apt-get install golang debhelper -y
           pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
           pip3 install pyyaml
 
       - name: Build source bundle
@@ -50,7 +49,6 @@ jobs:
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 20.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
           sudo apt-get install debhelper devscripts equivs -y
-          pip3 install pyhumps
           pip3 install pyyaml
 
           for file in $(find focal/ -type f); do ln -s $file; done
@@ -85,7 +83,6 @@ jobs:
           # Add external PPA, latest version of QT is 5.12.x for Ubuntu 18.04
           sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-bionic -y
           sudo apt-get install debhelper devscripts equivs -y
-          pip3 install pyhumps
           pip3 install pyyaml
 
           for file in $(find bionic/ -type f); do ln -s $file; done
