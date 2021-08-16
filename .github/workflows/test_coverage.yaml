@@ -34,7 +34,6 @@ jobs:
         shell: bash
         run: |
           pip3 install glean_parser
-          pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
