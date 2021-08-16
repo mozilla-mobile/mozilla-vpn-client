@@ -5,6 +5,10 @@
 #include "mozillavpn.h"
 #include "constants.h"
 #include "featurelist.h"
+#include "features/featureappreview.h"
+#include "features/featureinapppurchase.h"
+#include "features/featureinappauth.h"
+#include "features/featureinappaccountcreate.h"
 #include "gleansample.h"
 #include "iaphandler.h"
 #include "leakdetector.h"
@@ -147,7 +151,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   connect(this, &MozillaVPN::stateChanged, &m_private->m_connectionDataHolder,
           &ConnectionDataHolder::stateChanged);
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::createInstance();
     connect(iap, &IAPHandler::subscriptionStarted, this,
             &MozillaVPN::subscriptionStarted);
@@ -282,7 +286,7 @@ void MozillaVPN::initialize() {
 
   scheduleTask(new TaskCaptivePortalLookup());
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
   }
 
@@ -307,7 +311,7 @@ void MozillaVPN::setState(State state) {
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
       setState(StateSubscriptionNeeded);
       return;
@@ -371,7 +375,7 @@ void MozillaVPN::authenticate(
   hideAlert();
 
   if (authenticationType == DefaultAuthentication) {
-    authenticationType = FeatureList::instance()->authenticationInApp()
+    authenticationType = FeatureInAppAuth::instance()->isSupported()
                              ? AuthenticationInApp
                              : AuthenticationInBrowser;
   }
@@ -526,7 +530,7 @@ void MozillaVPN::authenticationCompleted(const QByteArray& json,
   setToken(token);
   setUserAuthenticated(true);
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded()) {
       scheduleTask(new TaskProducts());
       scheduleTask(new TaskFunction([this](MozillaVPN*) { maybeStateMain(); }));
@@ -553,7 +557,7 @@ void MozillaVPN::completeActivation() {
     scheduleTask(new TaskAccountAndServers());
   }
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     scheduleTask(new TaskProducts());
   }
 
@@ -716,7 +720,7 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
       maybeStateMain();
       return;
@@ -758,7 +762,7 @@ void MozillaVPN::logout() {
 
   deleteTasks();
 
-  if (FeatureList::instance()->inAppPurchaseSupported()) {
+  if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler::instance()->stopSubscription();
   }
 
@@ -1361,7 +1365,7 @@ void MozillaVPN::addCurrentDeviceAndRefreshData() {
 }
 
 void MozillaVPN::appReviewRequested() {
-  Q_ASSERT(FeatureList::instance()->appReviewSupported());
+  Q_ASSERT(FeatureAppReview::instance()->isSupported());
 #if defined(MVPN_IOS)
   IOSUtils::appReviewRequested();
 #elif defined(MVPN_ANDROID)
