@@ -6,8 +6,11 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
 
-ColumnLayout {
+Item {
     id: tour
+
+    height: parent.height
+    width: parent.width
 
     signal started()
     signal finished()
@@ -20,18 +23,18 @@ ColumnLayout {
             imageSrc: "",
         },
         {
-            title: "First slide",
-            text: "This is a text about the feature",
+            title: "Multi-hop VPN",
+            text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
             imageSrc: "",
         },
         {
-            title: "Second slide",
-            text: "Another text about another feature",
+            title: "In-app Support Form",
+            text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
             imageSrc: "",
         },
         {
-            title: "Third slide",
-            text: "Yet another another feature",
+            title: "Custom DNS",
+            text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
             imageSrc: "",
         },
     ]
@@ -45,6 +48,12 @@ ColumnLayout {
                 target: resumeButton
                 text: "Next"
             }
+
+            PropertyChanges {
+                enabled: true
+                opacity: 1.0
+                target: backButton
+            }
         },
         State {
             name: "start"
@@ -53,6 +62,12 @@ ColumnLayout {
             PropertyChanges {
                 target: resumeButton
                 text: "Take the tour"
+            }
+
+            PropertyChanges {
+                enabled: false
+                opacity: 0.2
+                target: backButton
             }
         },
         State {
@@ -63,107 +78,129 @@ ColumnLayout {
                 target: resumeButton
                 text: "Done"
             }
+
+            PropertyChanges {
+                enabled: true
+                opacity: 1.0
+                target: backButton
+            }
         }
     ]
 
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.verticalCenter: parent.verticalCenter
+    // Back button
+    Button {
+        id: backButton
+        enabled: swipeView.currentIndex > 0
+        text: "<-"
+        z: 1
 
-    SwipeView {
-        id: swipeView
+        onClicked: {
+            swipeView.currentIndex -= 1;
+        }
+    }
 
-        clip: true
-        currentIndex: 0
-        interactive: true
+    ColumnLayout {
+        spacing: 0
+        width: parent.width
 
-        height: 100
-        Layout.fillWidth: true
+        SwipeView {
+            id: swipeView
 
-        // Slide component
-        Component {
-            id: slide
+            clip: true
+            currentIndex: 0
+            implicitHeight: 300
+            interactive: true
+            spacing: 0
 
-            Rectangle {
+            Layout.fillWidth: true
 
-                height: 100
-                width: parent.width
+            // Slide component
+            Component {
+                id: slide
 
-                Text {
-                    text: slideData.title
-
-                    Rectangle {
-                        color: "limegreen"
-                        height: parent.height
-                        width: parent.width
-                        z: -1
-                    }
-                }
-
-//                Component.onCompleted: {
-//                    console.log("created: ", index);
-//                }
-
-//                Component.onDestruction: {
-//                    console.log("destroyed: ", index);
-//                }
-
-                Rectangle {
-                    color: "lightblue"
+                ColumnLayout {
                     height: parent.height
                     width: parent.width
-                    z: -1
+
+                    Text {
+                        text: slideData.title
+                        wrapMode: Text.WordWrap
+
+                        Layout.fillWidth: true
+
+                        Rectangle {
+                            color: "limegreen"
+                            height: parent.height
+                            width: parent.width
+                            z: -1
+                        }
+                    }
+
+                    Text {
+                        text: slideData.text
+                        wrapMode: Text.WordWrap
+
+                        Layout.fillWidth: true
+
+                        Rectangle {
+                            color: "limegreen"
+                            height: parent.height
+                            width: parent.width
+                            z: -1
+                        }
+                    }
+
+                    Component.onCompleted: {
+                        console.log("created: ", slideIndex);
+                    }
+
+                    Component.onDestruction: {
+                        console.log("destroyed: ", slideIndex);
+                    }
+                }
+            }
+
+            Repeater {
+                id: slidesRepeater
+                model: slidesData
+
+                Loader {
+                    id: slideLoader
+
+                    property int slideIndex: index
+                    property variant slideData: modelData
+
+                    active: SwipeView.isCurrentItem
+                    asynchronous: true
+                    sourceComponent: slide
+                    visible: slideLoader.status === Loader.Ready
                 }
             }
         }
 
-        Repeater {
-            id: slidesRepeater
-            model: slidesData
+        // Dots
+        PageIndicator {
+            id: indicator
 
-            Loader {
-                id: slideLoader
+            count: swipeView.count - 1
+            currentIndex: swipeView.currentIndex - 1
+            opacity: Math.min(swipeView.currentIndex, 1) + 0.2
 
-                property int slideIndex: index
-                property variant slideData: modelData
+            Layout.alignment: Qt.AlignHCenter
 
-                active: SwipeView.isCurrentItem
-                asynchronous: true
-                sourceComponent: slide
-                visible: slideLoader.status === Loader.Ready
-            }
-        }
-    }
-
-    PageIndicator {
-        id: indicator
-
-        count: swipeView.count - 1
-        currentIndex: swipeView.currentIndex - 1
-        opacity: Math.min(swipeView.currentIndex, 1)
-
-        Layout.alignment: Qt.AlignHCenter
-
-        Rectangle {
-            color: "pink"
-            height: parent.height
-            width: parent.width
-            z: -1
-        }
-    }
-
-    RowLayout {
-        Button {
-            id: backButton
-            enabled: swipeView.currentIndex > 0
-            text: "<-"
-
-            onClicked: {
-                swipeView.currentIndex -= 1;
+            Rectangle {
+                color: "pink"
+                height: parent.height
+                width: parent.width
+                z: -1
             }
         }
 
+        // Next button
         Button {
             id: resumeButton
+
+            Layout.fillWidth: true
 
             onClicked: {
                 if (tour.state === "end") {
@@ -177,7 +214,7 @@ ColumnLayout {
     }
 
     Rectangle {
-        color: "yellow"
+        color: "gray"
         height: parent.height
         width: parent.width
         z: -1

@@ -327,18 +327,11 @@ Window {
     }
 
     VPNFeatureTour {
-        Button {
-            id: indicator
-        }
-
         onClose: {
-            indicator.text = "close";
         }
         onStarted: {
-            indicator.text = "started";
         }
         onFinished: {
-            indicator.text = "finished";
         }
     }
 }
