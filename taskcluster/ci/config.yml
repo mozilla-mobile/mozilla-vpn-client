@@ -1,0 +1,32 @@
+---
+trust-domain: mozillavpn
+treeherder:
+    group-names:
+        'I': 'Docker images'
+        'lint': 'Linting tasks'
+
+task-priority:
+    by-project:
+        "mozilla-vpn-client": highest
+        default: low
+
+taskgraph:
+    register: mozillavpn_taskgraph:register
+    repositories:
+        mozillavpn:
+            name: "MozillaVPN"
+    cached-task-prefix: mozillavpn.v2.mozillavpn
+    decision-parameters: 'mozillavpn_taskgraph.parameters:get_decision_parameters'
+
+workers:
+    aliases:
+        b-linux:
+            provisioner: 'mozillavpn-{level}'
+            implementation: docker-worker
+            os: linux
+            worker-type: b-linux
+        images:
+            provisioner: 'mozillavpn-{level}'
+            implementation: docker-worker
+            os: linux
+            worker-type: 'images'
