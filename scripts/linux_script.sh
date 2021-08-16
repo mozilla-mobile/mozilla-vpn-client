@@ -190,7 +190,7 @@ else
       build_rpm_spec
 
       print Y "Building RPM packages for $RELEASE"
-      rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
+      rpmbuild --define "_topdir $(pwd)" --define "_sourcedir $(pwd)" -ba mozillavpn.spec
       RPM=Y
       ;;
 
