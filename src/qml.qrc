@@ -333,10 +333,13 @@
         <file>ui/resources/delete.svg</file>
         <file>ui/resources/devices.svg</file>
         <file>ui/resources/back.svg</file>
+        <file>ui/resources/back-dark.svg</file>
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
         <file>ui/resources/chevron.svg</file>
         <file>ui/resources/close-white.svg</file>
+        <file>ui/resources/close-dark.svg</file>
+        <file>ui/resources/close-darker.svg</file>
         <file>ui/resources/externalLink.svg</file>
         <file>ui/resources/arrow-forward.svg</file>
         <file>ui/resources/arrow-toggle.svg</file>
@@ -369,7 +372,6 @@
         <file>ui/resources/warning-white.svg</file>
         <file>ui/resources/connection-info-dark.svg</file>
         <file>ui/resources/down.svg</file>
-        <file>ui/resources/close-dark.svg</file>
         <file>ui/resources/logo-on.svg</file>
         <file>ui/resources/logo-on.png</file>
         <file>ui/resources/logo-animated1.svg</file>
@@ -456,5 +458,6 @@
         <file>ui/components/VPNTabNavigation.qml</file>
         <file>ui/resources/encodedPassword.txt</file>
         <file>ui/components/VPNFeatureTour.qml</file>
+        <file>ui/components/VPNPopup.qml</file>
     </qresource>
 </RCC>

@@ -326,12 +326,25 @@ Window {
     VPNSystemAlert {
     }
 
-    VPNFeatureTour {
-        onClose: {
+    VPNPopup {
+        id: popupTest
+
+        contentItem: VPNFeatureTour {
+            onClose: {
+            }
+            onStarted: {
+            }
+            onFinished: {
+            }
         }
-        onStarted: {
-        }
-        onFinished: {
+    }
+
+    Button {
+        text: "Open"
+        onClicked: popupTest.open()
+
+        Component.onCompleted: {
+            popupTest.open();
         }
     }
 }

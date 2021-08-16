@@ -5,11 +5,12 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
+import "../themes/themes.js" as Theme
 
 Item {
     id: tour
 
-    height: parent.height
+    implicitHeight: content.implicitHeight
     width: parent.width
 
     signal started()
@@ -20,22 +21,22 @@ Item {
         {
             title: "What’s new in 2.5?",
             text: "We’ve added a lot of really cool feature in this latest version release! Take the tour if you want a deeper dive into what we’ve added for you!",
-            imageSrc: "",
+            imageSrc: "../resources/quick-access.svg",
         },
         {
             title: "Multi-hop VPN",
             text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
-            imageSrc: "",
+            imageSrc: "../resources/shield-off.svg",
         },
         {
             title: "In-app Support Form",
             text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
-            imageSrc: "",
+            imageSrc: "../resources/globe.svg",
         },
         {
             title: "Custom DNS",
             text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
-            imageSrc: "",
+            imageSrc: "../resources/shield-on.svg",
         },
     ]
 
@@ -54,6 +55,11 @@ Item {
                 opacity: 1.0
                 target: backButton
             }
+
+            PropertyChanges {
+                target: indicator
+                opacity: 1.0
+            }
         },
         State {
             name: "start"
@@ -66,8 +72,13 @@ Item {
 
             PropertyChanges {
                 enabled: false
-                opacity: 0.2
+                opacity: 0.5
                 target: backButton
+            }
+
+            PropertyChanges {
+                target: indicator
+                opacity: 0
             }
         },
         State {
@@ -84,23 +95,39 @@ Item {
                 opacity: 1.0
                 target: backButton
             }
+
+            PropertyChanges {
+                target: indicator
+                opacity: 1.0
+            }
         }
     ]
 
     // Back button
-    Button {
+    VPNIconButton {
         id: backButton
-        enabled: swipeView.currentIndex > 0
-        text: "<-"
-        z: 1
 
+        accessibleName: "back button"
+        z: 1
         onClicked: {
             swipeView.currentIndex -= 1;
+        }
+
+        Image {
+            id: backImage
+
+            anchors.centerIn: backButton
+            fillMode: Image.PreserveAspectFit
+            source: "../resources/back-dark.svg"
+            sourceSize.width: Theme.iconSize
         }
     }
 
     ColumnLayout {
+        id: content
+
         spacing: 0
+//        height: parent.height
         width: parent.width
 
         SwipeView {
@@ -108,10 +135,9 @@ Item {
 
             clip: true
             currentIndex: 0
-            implicitHeight: 300
             interactive: true
-            spacing: 0
 
+            Layout.fillHeight: true
             Layout.fillWidth: true
 
             // Slide component
@@ -119,27 +145,38 @@ Item {
                 id: slide
 
                 ColumnLayout {
-                    height: parent.height
-                    width: parent.width
+                    id: content
+                    spacing: Theme.vSpacingSmall
 
-                    Text {
+                    Image {
+                        source: slideData.imageSrc
+                        sourceSize.height: 120
+                        sourceSize.width: 120
+
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    VPNMetropolisLabel {
+                        id: popupTitle
+
+                        color: Theme.fontColorDark
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pixelSize: Theme.fontSizeLarge
                         text: slideData.title
-                        wrapMode: Text.WordWrap
 
                         Layout.fillWidth: true
 
                         Rectangle {
-                            color: "limegreen"
+                            color: "green"
                             height: parent.height
                             width: parent.width
                             z: -1
                         }
                     }
 
-                    Text {
+                    VPNTextBlock {
+                        horizontalAlignment: Text.AlignHCenter
                         text: slideData.text
-                        wrapMode: Text.WordWrap
-
                         Layout.fillWidth: true
 
                         Rectangle {
@@ -184,23 +221,41 @@ Item {
 
             count: swipeView.count - 1
             currentIndex: swipeView.currentIndex - 1
-            opacity: Math.min(swipeView.currentIndex, 1) + 0.2
+            interactive: false
+            spacing: Theme.windowMargin / 2
+            delegate: Rectangle {
+                id: circle
 
-            Layout.alignment: Qt.AlignHCenter
+                color: index === indicator.currentIndex ? Theme.blue : Theme.greyPressed
+                height: 6
+                width: 6
+                radius: 6
 
-            Rectangle {
-                color: "pink"
-                height: parent.height
-                width: parent.width
-                z: -1
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 400
+                    }
+                }
+            }
+
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 100
+                }
             }
         }
 
-        // Next button
-        Button {
+
+        // Next button 
+        VPNButton {
             id: resumeButton
 
+            radius: Theme.cornerRadius
+
             Layout.fillWidth: true
+            Layout.alignment: Qt.AlignBottom
 
             onClicked: {
                 if (tour.state === "end") {
@@ -214,7 +269,7 @@ Item {
     }
 
     Rectangle {
-        color: "gray"
+        color: "lightgray"
         height: parent.height
         width: parent.width
         z: -1
