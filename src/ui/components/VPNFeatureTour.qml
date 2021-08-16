@@ -72,13 +72,18 @@ Item {
 
             PropertyChanges {
                 enabled: false
-                opacity: 0.5
+                opacity: 0
                 target: backButton
             }
 
             PropertyChanges {
                 target: indicator
                 opacity: 0
+            }
+
+            PropertyChanges {
+                target: buttonIcon
+                visible: true
             }
         },
         State {
@@ -107,11 +112,13 @@ Item {
     VPNIconButton {
         id: backButton
 
+        anchors.bottom: tour.top
         accessibleName: "back button"
-        z: 1
         onClicked: {
             swipeView.currentIndex -= 1;
         }
+        x: -Theme.windowMargin
+        z: 1
 
         Image {
             id: backImage
@@ -119,15 +126,21 @@ Item {
             anchors.centerIn: backButton
             fillMode: Image.PreserveAspectFit
             source: "../resources/back-dark.svg"
-            sourceSize.width: Theme.iconSize
+            sourceSize.height: Theme.iconSize * 1.5
+            sourceSize.width: Theme.iconSize * 1.5
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 100
+            }
         }
     }
 
     ColumnLayout {
         id: content
 
-        spacing: 0
-//        height: parent.height
+        spacing: Theme.listSpacing
         width: parent.width
 
         SwipeView {
@@ -146,12 +159,14 @@ Item {
 
                 ColumnLayout {
                     id: content
+
+                    opacity: slideIndex === swipeView.currentIndex ? 1 : 0
                     spacing: Theme.vSpacingSmall
 
                     Image {
                         source: slideData.imageSrc
-                        sourceSize.height: 120
-                        sourceSize.width: 120
+                        sourceSize.height: parent.height / 2.5
+                        sourceSize.width: parent.height / 2.5
 
                         Layout.alignment: Qt.AlignHCenter
                     }
@@ -165,26 +180,12 @@ Item {
                         text: slideData.title
 
                         Layout.fillWidth: true
-
-                        Rectangle {
-                            color: "green"
-                            height: parent.height
-                            width: parent.width
-                            z: -1
-                        }
                     }
 
                     VPNTextBlock {
                         horizontalAlignment: Text.AlignHCenter
                         text: slideData.text
                         Layout.fillWidth: true
-
-                        Rectangle {
-                            color: "limegreen"
-                            height: parent.height
-                            width: parent.width
-                            z: -1
-                        }
                     }
 
                     Component.onCompleted: {
@@ -193,6 +194,12 @@ Item {
 
                     Component.onDestruction: {
                         console.log("destroyed: ", slideIndex);
+                    }
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 400
+                        }
                     }
                 }
             }
@@ -207,7 +214,7 @@ Item {
                     property int slideIndex: index
                     property variant slideData: modelData
 
-                    active: SwipeView.isCurrentItem
+                    active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
                     asynchronous: true
                     sourceComponent: slide
                     visible: slideLoader.status === Loader.Ready
@@ -247,13 +254,11 @@ Item {
             }
         }
 
-
         // Next button 
         VPNButton {
             id: resumeButton
 
             radius: Theme.cornerRadius
-
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
 
@@ -265,14 +270,19 @@ Item {
 
                 swipeView.currentIndex += 1;
             }
+
+            Image {
+                id: buttonIcon
+
+                anchors.verticalCenter: resumeButton.verticalCenter
+                anchors.right: resumeButton.contentItem.right
+
+                fillMode: Image.PreserveAspectFit
+                source: "../resources/arrow-forward-white.svg"
+                sourceSize.height: Theme.iconSize * 1.5
+                sourceSize.width: Theme.iconSize * 1.5
+                visible: false
+            }
         }
     }
-
-    Rectangle {
-        color: "lightgray"
-        height: parent.height
-        width: parent.width
-        z: -1
-    }
-
 }

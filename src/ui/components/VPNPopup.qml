@@ -19,7 +19,8 @@ Popup {
     leftInset: Theme.windowMargin
     rightInset: Theme.windowMargin
     horizontalPadding: Theme.popupMargin + popup.leftInset
-    verticalPadding: Theme.popupMargin
+    bottomPadding: Theme.popupMargin
+    topPadding: Theme.popupMargin * 2
 
     background: Rectangle {
         id: popupBackground
@@ -48,14 +49,13 @@ Popup {
         VPNIconButton {
             id: closeButton
 
+            accessibleName: "close button"
             anchors {
                 right: popupBackground.right
                 top: popupBackground.top
-//                rightMargin: Theme.popupMargin
-//                topMargin: Theme.popupMargin
+                rightMargin: Theme.windowMargin / 2
+                topMargin: Theme.windowMargin / 2
             }
-
-            accessibleName: "close button"
             onClicked: {
                 popup.close();
             }
@@ -65,7 +65,8 @@ Popup {
 
                 anchors.centerIn: closeButton
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/close-big-dark.svg"
+                source: "../resources/close-darker.svg"
+                sourceSize.height: Theme.iconSize
                 sourceSize.width: Theme.iconSize
             }
         }

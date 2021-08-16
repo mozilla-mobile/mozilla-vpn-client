@@ -342,6 +342,7 @@
         <file>ui/resources/close-darker.svg</file>
         <file>ui/resources/externalLink.svg</file>
         <file>ui/resources/arrow-forward.svg</file>
+        <file>ui/resources/arrow-forward-white.svg</file>
         <file>ui/resources/arrow-toggle.svg</file>
         <file>ui/resources/connection.svg</file>
         <file>ui/resources/onboarding/onboarding1.svg</file>
