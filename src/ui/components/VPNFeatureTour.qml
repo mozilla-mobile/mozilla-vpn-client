@@ -10,9 +10,6 @@ import "../themes/themes.js" as Theme
 Item {
     id: tour
 
-    implicitHeight: content.implicitHeight
-    width: parent.width
-
     signal started()
     signal finished()
     signal close()
@@ -39,6 +36,9 @@ Item {
             imageSrc: "../resources/shield-on.svg",
         },
     ]
+
+    implicitHeight: content.implicitHeight
+    width: parent.width
 
     states: [
         State {
@@ -246,6 +246,7 @@ Item {
             }
 
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+            Layout.bottomMargin: Theme.listSpacing
 
             Behavior on opacity {
                 NumberAnimation {

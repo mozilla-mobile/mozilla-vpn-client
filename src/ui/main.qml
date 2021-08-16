@@ -335,6 +335,7 @@ Window {
             onStarted: {
             }
             onFinished: {
+                popupTest.close();
             }
         }
     }
