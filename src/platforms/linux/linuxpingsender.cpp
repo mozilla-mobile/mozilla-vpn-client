@@ -62,13 +62,13 @@ int LinuxPingSender::createSocket() {
 }
 
 LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
-    : PingSender(parent) {
+    : PingSender(parent), m_source(source) {
   MVPN_COUNT_CTOR(LinuxPingSender);
-  logger.log() << "LinuxPingSender(" + source + ") created";
+  logger.debug() << "LinuxPingSender(" + source + ") created";
 
   m_socket = createSocket();
   if (m_socket < 0) {
-    logger.log() << "Socket creation error: " << strerror(errno);
+    logger.error() << "Socket creation error: " << strerror(errno);
     return;
   }
 
@@ -76,11 +76,13 @@ LinuxPingSender::LinuxPingSender(const QString& source, QObject* parent)
   memset(&addr, 0, sizeof addr);
   addr.sin_family = AF_INET;
   if (inet_aton(source.toLocal8Bit().constData(), &addr.sin_addr) == 0) {
-    logger.log() << "source" << source << "error:" << strerror(errno);
+    logger.error() << "source" << source << "error:" << strerror(errno);
     return;
   }
   if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
-    logger.log() << "bind error:" << strerror(errno);
+    close(m_socket);
+    m_socket = -1;
+    logger.error() << "bind error:" << strerror(errno);
     return;
   }
 
@@ -102,6 +104,21 @@ LinuxPingSender::~LinuxPingSender() {
 }
 
 void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
+  // QProcess is not supported on iOS. Because of this we cannot use the `ping`
+  // app as fallback on this platform.
+#ifndef MVPN_IOS
+  // Use the generic ping sender if we failed to open an ICMP socket.
+  if (m_socket < 0) {
+    QStringList args;
+    args << "-c"
+         << "1";
+    args << "-I" << m_source;
+    args << dest;
+    genericSendPing(args, sequence);
+    return;
+  }
+#endif
+
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
@@ -119,7 +136,7 @@ void LinuxPingSender::sendPing(const QString& dest, quint16 sequence) {
   int rc = sendto(m_socket, &packet, sizeof(packet), 0, (struct sockaddr*)&addr,
                   sizeof(addr));
   if (rc < 0) {
-    logger.log() << "failed to send:" << strerror(errno);
+    logger.error() << "failed to send:" << strerror(errno);
   }
 }
 
@@ -128,7 +145,7 @@ void LinuxPingSender::icmpSocketReady() {
   unsigned char data[2048];
   int rc = recvfrom(m_socket, data, sizeof(data), MSG_DONTWAIT, NULL, &slen);
   if (rc <= 0) {
-    logger.log() << "recvfrom failed:" << strerror(errno);
+    logger.error() << "recvfrom failed:" << strerror(errno);
     return;
   }
 
@@ -146,7 +163,7 @@ void LinuxPingSender::rawSocketReady() {
   unsigned char data[2048];
   int rc = recvfrom(m_socket, data, sizeof(data), MSG_DONTWAIT, NULL, &slen);
   if (rc <= 0) {
-    logger.log() << "recvfrom failed:" << strerror(errno);
+    logger.error() << "recvfrom failed:" << strerror(errno);
     return;
   }
 
@@ -154,14 +171,14 @@ void LinuxPingSender::rawSocketReady() {
   const struct iphdr* ip = (struct iphdr*)data;
   int iphdrlen = ip->ihl * 4;
   if (rc < iphdrlen || iphdrlen < (int)sizeof(struct iphdr)) {
-    logger.log() << "malformed IP packet:" << strerror(errno);
+    logger.error() << "malformed IP packet:" << strerror(errno);
     return;
   }
 
   // Check the ICMP packet
   struct icmphdr packet;
   if (inetChecksum(data + iphdrlen, rc - iphdrlen) != 0) {
-    logger.log() << "invalid checksum";
+    logger.warning() << "invalid checksum";
     return;
   }
   if (rc >= (iphdrlen + (int)sizeof(packet))) {

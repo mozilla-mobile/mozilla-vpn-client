@@ -36,7 +36,7 @@ class ServiceThread : public QThread {
     };
 
     if (StartServiceCtrlDispatcher(serviceTable) == FALSE) {
-      logger.log() << "Failed to start the service.";
+      logger.error() << "Failed to start the service.";
     }
   }
 
@@ -57,7 +57,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   QString appName = tokens[0];
 
-  logger.log() << "Daemon is starting";
+  logger.debug() << "Daemon is starting";
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -77,14 +77,14 @@ int WindowsDaemonServer::run(QStringList& tokens) {
 
   DaemonLocalServer server(qApp);
   if (!server.initialize()) {
-    logger.log() << "Failed to initialize the server";
+    logger.error() << "Failed to initialize the server";
     return 1;
   }
 
   QTimer stopEventTimer;
   connect(&stopEventTimer, &QTimer::timeout, [&]() {
     if (WaitForSingleObject(s_serviceStopEvent, 0) == WAIT_OBJECT_0) {
-      logger.log() << "Stop event message received";
+      logger.debug() << "Stop event message received";
 
       s_serviceStatus.dwControlsAccepted = 0;
       s_serviceStatus.dwCurrentState = SERVICE_STOPPED;
@@ -92,7 +92,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
       s_serviceStatus.dwCheckPoint = 1;
 
       if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
-        logger.log() << "SetServiceStatus failed";
+        logger.error() << "SetServiceStatus failed";
       }
       CloseHandle(s_serviceStopEvent);
 
@@ -109,11 +109,11 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
   Q_UNUSED(argc);
   Q_UNUSED(argv);
 
-  logger.log() << "Service has started";
+  logger.debug() << "Service has started";
 
   s_statusHandle = RegisterServiceCtrlHandler(SERVICE_NAME, serviceCtrlHandler);
   if (!s_statusHandle) {
-    logger.log() << "Failed to register the service handler";
+    logger.error() << "Failed to register the service handler";
     return;
   }
 
@@ -122,12 +122,12 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
   s_serviceStatus.dwCurrentState = SERVICE_START_PENDING;
 
   if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
-    logger.log() << "SetServiceStatus failed";
+    logger.error() << "SetServiceStatus failed";
   }
 
   s_serviceStopEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
   if (!s_serviceStopEvent) {
-    logger.log() << "Failed to create the stop event";
+    logger.error() << "Failed to create the stop event";
 
     s_serviceStatus.dwControlsAccepted = 0;
     s_serviceStatus.dwCurrentState = SERVICE_STOPPED;
@@ -135,7 +135,7 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
     s_serviceStatus.dwCheckPoint = 1;
 
     if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
-      logger.log() << "SeServiceStatus failed";
+      logger.error() << "SeServiceStatus failed";
     }
 
     return;
@@ -147,7 +147,7 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
   s_serviceStatus.dwCheckPoint = 0;
 
   if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
-    logger.log() << "SeServiceStatus failed";
+    logger.error() << "SeServiceStatus failed";
     return;
   }
 
@@ -156,7 +156,7 @@ void WINAPI ServiceThread::serviceMain(DWORD argc, LPTSTR* argv) {
 
 // static
 void WINAPI ServiceThread::serviceCtrlHandler(DWORD code) {
-  logger.log() << "Message received";
+  logger.debug() << "Message received";
 
   if (code != SERVICE_CONTROL_STOP) {
     return;
@@ -172,7 +172,7 @@ void WINAPI ServiceThread::serviceCtrlHandler(DWORD code) {
   s_serviceStatus.dwCheckPoint = 4;
 
   if (SetServiceStatus(s_statusHandle, &s_serviceStatus) == FALSE) {
-    logger.log() << "SetServiceStatus failed";
+    logger.error() << "SetServiceStatus failed";
   }
 
   SetEvent(s_serviceStopEvent);

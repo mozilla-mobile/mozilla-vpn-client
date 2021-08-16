@@ -12,17 +12,14 @@ fi
 
 RELEASE=1
 OS=
-PROD=
 NETWORKEXTENSION=
 WEBEXTENSION=
-INSPECTOR=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-p|--prod] [-i|--inspector] [-n|--networkextension] [-w|--webextension]"
+  print N "\t$0 <macos|ios|macostest> [-d|--debug] [-n|--networkextension] [-w|--webextension]"
   print N ""
   print N "By default, the project is compiled in release mode. Use -d or --debug for a debug build."
-  print N "By default, the project is compiled in staging mode. If you want to use the production env, use -p or --prod."
   print N "Use -n or --networkextension to force the network-extension component for MacOS too."
   print N ""
   print G "Config variables:"
@@ -41,14 +38,6 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -d | --debug)
     RELEASE=
-    shift
-    ;;
-  -p | --prod)
-    PROD=1
-    shift
-    ;;
-  -i | --inspector)
-    INSPECTOR=1
     shift
     ;;
   -n | --networkextension)
@@ -109,7 +98,7 @@ print G "done."
 
 print Y "Importing translation files..."
 git submodule update --remote --depth 1 i18n || die "Failed to fetch newest translation files"
-python3 scripts/importLanguages.py $([[ "$PROD" ]] && echo "-p" || echo "") || die "Failed to import languages"
+python3 scripts/importLanguages.py $([[ "$OS" = "macos" ]] && echo "-m" || echo "") || die "Failed to import languages"
 
 print Y "Generating glean samples..."
 python3 scripts/generate_glean.py || die "Failed to generate glean samples"
@@ -159,24 +148,6 @@ else
   die "Why we are here?"
 fi
 
-PRODMODE=
-printn Y "Production mode: "
-if [[ "$PROD" ]]; then
-  print G yes
-  PRODMODE="CONFIG+=production"
-else
-  print G no
-fi
-
-printn Y "Enabling inspector: "
-if [[ "$INSPECTOR" ]]; then
-  print G yes
-  INSPECTOR="CONFIG+=inspector"
-else
-  INSPECTOR=""
-  print G no
-fi
-
 VPNMODE=
 printn Y "VPN mode: "
 if [[ "$NETWORKEXTENSION" ]]; then
@@ -201,8 +172,6 @@ $QMAKE \
   BUILD_ID=$FULLVERSION \
   -spec macx-xcode \
   $MODE \
-  $PRODMODE \
-  $INSPECTOR \
   $VPNMODE \
   $WEMODE \
   $PLATFORM \

@@ -52,6 +52,7 @@ Window {
 
         console.log("closing.");
     }
+
     Component.onCompleted: {
         if (VPN.startMinimized) {
             this.showMinimized();
@@ -72,8 +73,8 @@ Window {
                       if (typeof(VPNGleanTest) !== "undefined") {
                           VPNGleanTest.requestDone(url, body);
                       }
-                      if (!VPN.productionMode) {
-                          return Promise.reject('Glean disabled');
+                      if (VPN.stagingMode) {
+                          return Promise.reject('Glean disabled in staging mode');
                       }
 
                       return new Promise((resolve, reject) => {
@@ -99,7 +100,7 @@ Window {
         propagateComposedEvents: true
         z: 10
         onPressed: {
-            if (window.activeFocusItem && window.activeFocusItem.loseFocusOnOutsidePress) {
+            if (window.activeFocusItem && window.activeFocusItem.forceBlurOnOutsidePress) {
                 window.activeFocusItem.focus = false;
             }
             mouse.accepted = false;
@@ -177,7 +178,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateAuthenticating.qml"
+                        source: VPNFeatureList.authenticationInApp ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
                     }
 
                 },

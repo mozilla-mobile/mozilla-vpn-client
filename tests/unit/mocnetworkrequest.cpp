@@ -36,7 +36,9 @@ NetworkRequest::NetworkRequest(QObject* parent, int status,
 NetworkRequest::~NetworkRequest() { MVPN_COUNT_DTOR(NetworkRequest); }
 
 // static
-QString NetworkRequest::apiBaseUrl() { return QString(Constants::API_URL); }
+QString NetworkRequest::apiBaseUrl() {
+  return QString(Constants::API_STAGING_URL);
+}
 
 // static
 NetworkRequest* NetworkRequest::createForGetUrl(QObject* parent, const QString&,
@@ -89,11 +91,11 @@ NetworkRequest* NetworkRequest::createForCaptivePortalLookup(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
-#ifdef MVPN_IOS
-NetworkRequest* NetworkRequest::createForIOSProducts(QObject* parent) {
+NetworkRequest* NetworkRequest::createForProducts(QObject* parent) {
   return new NetworkRequest(parent, 1234, false);
 }
 
+#ifdef MVPN_IOS
 NetworkRequest* NetworkRequest::createForIOSPurchase(QObject* parent,
                                                      const QString&) {
   return new NetworkRequest(parent, 1234, false);

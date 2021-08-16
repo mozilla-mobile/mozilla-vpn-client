@@ -15,7 +15,8 @@ class AndroidAuthenticationListener final : public AuthenticationListener {
   AndroidAuthenticationListener(QObject* parent);
   ~AndroidAuthenticationListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 };
 
 #endif  // ANDROIDAUTHENTICATIONLISTENER_H

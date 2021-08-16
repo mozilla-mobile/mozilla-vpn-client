@@ -82,11 +82,6 @@ VPNFlickable {
         VPNControllerView {
             id: box
 
-            VPNDropShadow {
-                anchors.fill: box
-                source: box
-                z: -1
-            }
         }
 
         VPNControllerNav {

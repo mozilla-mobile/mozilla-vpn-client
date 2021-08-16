@@ -12,13 +12,7 @@ on:
 
 jobs:
   macos:
-    name: MacOS packages for testing
-    strategy:
-      matrix:
-        config:
-            - { name: Staging, qmake: "CONFIG+=inspector CONFIG+=webextension", webExtension: 1 }
-            - { name: Production, qmake: "CONFIG+=production", webExtension: 0 }
-
+    name: MacOS packages
     runs-on: macos-latest
 
     steps:
@@ -51,7 +45,6 @@ jobs:
         shell: bash
         run: |
           pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
@@ -60,7 +53,7 @@ jobs:
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py
+          python3 scripts/importLanguages.py -m
 
       - name: Install the Apple certificate and provisioning profile
         env:
@@ -115,7 +108,7 @@ jobs:
             CONFIG-=debug \
             CONFIG-=debug_and_release \
             CONFIG+=release \
-            ${{ matrix.config.qmake }} \
+            CONFIG+=webextension \
             QTPLUGIN+=qsvg \
             CONFIG-=static \
             CONFIG+=balrog \
@@ -125,7 +118,7 @@ jobs:
             "MozillaVPN.xcodeproj" \
             "$SHORTVERSION" \
             "$FULLVERSION" \
-            macos "0" "${{ matrix.config.webExtension }}"
+            macos "0" "1"
 
       - name: Compiling
         shell: bash
@@ -164,7 +157,7 @@ jobs:
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: ${{ matrix.config.name }}
+            name: Build
             path: STAGE3/MozillaVPN.pkg
 
   prod:
@@ -201,7 +194,6 @@ jobs:
         shell: bash
         run: |
           pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
@@ -210,7 +202,7 @@ jobs:
         run: |
           export PATH=/Users/runner/work/mozilla-vpn-client/mozilla-vpn-client/qt_static_macos/qt/bin:$PATH
           git submodule update --remote --depth 1 i18n
-          python3 scripts/importLanguages.py -p
+          python3 scripts/importLanguages.py -m
 
       - name: Configuring the build
         shell: bash
@@ -262,8 +254,11 @@ jobs:
           cp -r ./macos/pkg/scripts BUILD
           cp -r ./macos/pkg/Distribution BUILD
           cp -r ./macos/pkg/Resources BUILD
+          cd BUILD
+          zip -r BUILD.zip .
+          mv BUILD.zip ..
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
             name: Release tarball
-            path: BUILD
+            path: BUILD.zip

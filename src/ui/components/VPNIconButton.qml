@@ -19,7 +19,6 @@ VPNButtonBase {
 
     Accessible.name: accessibleName
     Component.onCompleted: state = uiState.stateDefault
-    onReleased: toolTip.close()
     onActiveFocusChanged: {
         if (!focus && toolTip.visible) {
             toolTip.close();

@@ -15,6 +15,11 @@ TEMPLATE = subdirs
 SUBDIRS += src
 SUBDIRS += tests/unit
 
+# separate flag because an extra dependency is needed: liboath
+AUTHTEST {
+    SUBDIRS += tests/auth
+}
+
 webextension {
     SUBDIRS += extension/app
     SUBDIRS += tests/nativemessaging

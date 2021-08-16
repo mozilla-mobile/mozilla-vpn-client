@@ -25,7 +25,6 @@ Item {
         accessibleIgnored: isModalDialogOpened
     }
 
-
     VPNFlickable {
         id: vpnFlickable
 
@@ -100,7 +99,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 delegate: VPNDeviceListItem {}
-                }
+            }
 
 
             VPNVerticalSpacer {
@@ -132,7 +131,7 @@ Item {
 
                     labelText: qsTrId("vpn.main.getHelp2")
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: stackview.push(getHelpComponent)
+                    onClicked: stackview.push("../views/ViewGetHelp.qml", {isSettingsView: false})
                     Layout.preferredHeight: Theme.rowHeight
                 }
 
@@ -159,17 +158,7 @@ Item {
             removePopup.devicePublicKey = publicKey;
             removePopup.open();
         }
-
     }
 
     Component.onCompleted: VPN.refreshDevices()
-
-    Component {
-        id: getHelpComponent
-
-        VPNGetHelp {
-            isSettingsView: false
-        }
-
-    }
 }

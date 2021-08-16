@@ -40,7 +40,6 @@ jobs:
         shell: bash
         run: |
           pip3 install glean_parser
-          pip3 install pyhumps
           pip3 install pyyaml
           python3 scripts/generate_glean.py
 
@@ -49,7 +48,7 @@ jobs:
         run: |
           # Manually add QT executables to path
           export PATH=/opt/qt515/bin:$PATH
-          python3 scripts/importLanguages.py -p
+          python3 scripts/importLanguages.py
 
       - name: Check for l10n errors
         run: |

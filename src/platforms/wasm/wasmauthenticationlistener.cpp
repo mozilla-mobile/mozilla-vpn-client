@@ -23,12 +23,13 @@ WasmAuthenticationListener::~WasmAuthenticationListener() {
   MVPN_COUNT_DTOR(WasmAuthenticationListener);
 }
 
-void WasmAuthenticationListener::start(MozillaVPN* vpn, QUrl& url,
-                                       QUrlQuery& query) {
-  logger.log() << "WasmAuthenticationListener initialize";
-  Q_UNUSED(vpn);
-  Q_UNUSED(url);
-  Q_UNUSED(query);
+void WasmAuthenticationListener::start(const QString& codeChallenge,
+                                       const QString& codeChallengeMethod,
+                                       const QString& emailAddress) {
+  logger.debug() << "WasmAuthenticationListener initialize";
+  Q_UNUSED(codeChallenge);
+  Q_UNUSED(codeChallengeMethod);
+  Q_UNUSED(emailAddress);
 
   QTimer* timer = new QTimer(this);
   connect(timer, &QTimer::timeout, [this]() { emit completed("WASM"); });

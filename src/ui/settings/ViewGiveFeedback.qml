@@ -40,6 +40,11 @@ Item {
 
         Item {
             id: root
+
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            anchors.bottomMargin: window.fullscreenRequired() ? Theme.windowMargin * 4 + feebackContinueButton.height : 0
+
             ButtonGroup {
                 id: btnGroup
                 buttons: row.children
@@ -49,10 +54,19 @@ Item {
                 id: col
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: parent.top
-                spacing: Theme.windowMargin * 2
+
+                spacing: window.fullscreenRequired() ? Theme.windowMargin : Theme.windowMargin * 2
                 anchors.margins: Theme.windowMargin * 2
-                anchors.topMargin: window.fullscreenRequired() ? Theme.contentTopMarginMobile : Theme.contentTopMarginDesktop
+
+                Component.onCompleted: {
+                    if (window.fullscreenRequired()) {
+                        anchors.centerIn = parent;
+                        return;
+                    }
+
+                    anchors.top = parent.top;
+                    anchors.topMargin = Theme.contentTopMarginDesktop;
+                }
 
                 VPNBoldLabel {
                     //% "How would you describe your Mozilla VPN experience so far?"
@@ -145,6 +159,8 @@ Item {
             }
 
             VPNButton {
+                id: feebackContinueButton
+
                 //% "Continue"
                 text: qsTrId("vpn.feedbackForm.continue")
                 onClicked: {
@@ -167,13 +183,12 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 Component.onCompleted: {
                     if (window.fullscreenRequired()) {
-                        anchors.bottom = parent.bottom;
-                        anchors.bottomMargin = Theme.windowMargin * 4;
+                        anchors.top = parent.bottom;
                         return;
                     }
+
                     anchors.top = col.bottom;
                     anchors.topMargin = Theme.windowMargin * 2;
-
                 }
 
                 enabled: btnGroup.checkedButton !== null
@@ -239,9 +254,7 @@ Item {
 
                     VPNComboBox {
                         id: dropDown
-                         //% "Choose a Category"
-                        placeholderText: qsTrId("vpn.feedbackForm.chooseCategory")
-
+                        placeholderText: VPNl18n.tr(VPNl18n.FeedbackFormChooseCategory)
                         model: VPNFeedbackCategoryModel
                     }
 

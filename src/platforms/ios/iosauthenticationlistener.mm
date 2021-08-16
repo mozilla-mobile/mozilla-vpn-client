@@ -61,16 +61,19 @@ IOSAuthenticationListener::~IOSAuthenticationListener() {
   MVPN_COUNT_DTOR(IOSAuthenticationListener);
 }
 
-void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) {
-  Q_UNUSED(vpn);
+void IOSAuthenticationListener::start(const QString& codeChallenge,
+                                      const QString& codeChallengeMethod,
+                                      const QString& emailAddress) {
+  logger.debug() << "IOSAuthenticationListener initialize";
 
-  logger.log() << "IOSAuthenticationListener initialize";
-
+  QUrl url(createAuthenticationUrl(MozillaVPN::AuthenticationInBrowser, codeChallenge,
+                                   codeChallengeMethod, emailAddress));
+  QUrlQuery query(url.query());
   query.addQueryItem("platform", "ios");
   url.setQuery(query);
 
 #ifdef QT_DEBUG
-  logger.log() << "Authentication URL:" << url.toString();
+  logger.debug() << "Authentication URL:" << url.toString();
 #endif
 
   if (session) {
@@ -86,12 +89,12 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
         session = nullptr;
 
         if (error) {
-          logger.log() << "Authentication failed:"
-                       << QString::fromNSString([error localizedDescription]);
-          logger.log() << "Code:" << [error code];
-          logger.log() << "Suggestion:"
-                       << QString::fromNSString([error localizedRecoverySuggestion]);
-          logger.log() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
+          logger.error() << "Authentication failed:"
+                         << QString::fromNSString([error localizedDescription]);
+          logger.error() << "Code:" << [error code];
+          logger.error() << "Suggestion:"
+                         << QString::fromNSString([error localizedRecoverySuggestion]);
+          logger.error() << "Reason:" << QString::fromNSString([error localizedFailureReason]);
 
           if ([error code] == ASWebAuthenticationSessionErrorCodeCanceledLogin) {
             emit abortedByUser();
@@ -103,7 +106,7 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
         }
 
         QUrl callbackUrl = QUrl::fromNSURL(callbackURL);
-        logger.log() << "Authentication completed";
+        logger.debug() << "Authentication completed";
 
         Q_ASSERT(callbackUrl.hasQuery());
 
@@ -130,7 +133,7 @@ void IOSAuthenticationListener::start(MozillaVPN* vpn, QUrl& url, QUrlQuery& que
     [session dealloc];
     session = nullptr;
 
-    logger.log() << "Authentication failed: session doesn't start.";
+    logger.error() << "Authentication failed: session doesn't start.";
     emit failed(ErrorHandler::RemoteServiceError);
   }
 }

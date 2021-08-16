@@ -11,59 +11,8 @@ on:
       - 'releases/**'
 
 jobs:
-  windows-staging:
-    name: Windows staging build
-    runs-on: windows-latest
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
-      - name: Install Qt
-        shell: bash
-        run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_windows
-          cd qt_static_windows
-          cat x* > qt_static.tar.bz2
-          tar xf qt_static.tar.bz2
-          tar xf msm.tar.gz
-          mkdir /c/MozillaVPNBuild
-          cp -r * /c/MozillaVPNBuild
-          cp -r *.msm ..
-          cd ..
-
-      - name: Install glean depedencies
-        shell: bash
-        run: |
-          pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
-          pip3 install pyyaml
-
-      - name: Adding msbuild to PATH
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Compilation script
-        shell: bash
-        run: |
-          export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/windows_compile.bat
-
-      - name: Upload app
-        uses: actions/upload-artifact@v2
-        with:
-            name: staging
-            path: windows/installer/x64/MozillaVPN.msi
-
-  windows-production:
-    name: Windows production build
+  windows:
+    name: Windows build
     runs-on: windows-latest
 
     steps:
@@ -99,7 +48,6 @@ jobs:
         shell: bash
         run: |
           pip3 install "glean_parser==3.5"
-          pip3 install pyhumps
           pip3 install pyyaml
 
       - name: Adding msbuild to PATH
@@ -109,7 +57,7 @@ jobs:
         shell: bash
         run: |
           export PATH=/c/MozillaVPNBuild/bin:$PATH
-          ./scripts/windows_compile.bat -p
+          ./scripts/windows_compile.bat
 
       - name: Create the zip package for signature
         shell: bash
@@ -121,13 +69,18 @@ jobs:
           cp /c/MozillaVPNBuild/bin/libGLESv2.dll unsigned
           cp /c/MozillaVPNBuild/*.msm unsigned
           cp windows/tunnel/x64/tunnel.dll unsigned
+          cp windows/tunnel/.deps/wintun/bin/amd64/wintun.dll unsigned
           cp balrog/x64/balrog.dll unsigned
+          cp windows/split-tunnel/mullvad-split-tunnel.cat unsigned
+          cp windows/split-tunnel/mullvad-split-tunnel.inf unsigned
+          cp windows/split-tunnel/mullvad-split-tunnel.sys unsigned
+          cp windows/split-tunnel/WdfCoinstaller01011.dll unsigned
           cp *.exe unsigned
 
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-            name: production
+            name: build
             path: windows/installer/x64/MozillaVPN.msi
 
       - name: Upload unsigned app

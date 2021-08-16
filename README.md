@@ -43,7 +43,6 @@ following dependencies:
 Python3 (pip) depedencies:
 
 - glean_parser==3.5
-- pyhumps
 - pyyaml
 
 #### QT5
@@ -86,17 +85,16 @@ git submodule update
 To build next to source:
 
 ```
-qmake CONFIG+=production
 make -j8 # replace 8 with the number of cores. Or use: make -j$(nproc)
 sudo make install
 ```
 
-For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug CONFIG+=inspector`.
+For local dev builds, the following qmake command may be more helpful `qmake CONFIG+=debug`.
 
 If you prefer to not install at /usr or /etc, you can specify alternate prefixes. Using no prefixes is equivalent to:
 
 ```
-qmake USRPATH=/usr ETCPATH=/etc CONFIG+=production
+qmake USRPATH=/usr ETCPATH=/etc
 ```
 
 #### Run
@@ -155,7 +153,6 @@ This step needs to be updated each time XCode updates.
 4. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
 5. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -212,7 +209,6 @@ The IOS procedure is similar to the macOS one:
 3. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
 
@@ -260,7 +256,6 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
 5. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
 
@@ -274,6 +269,8 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
   $ adb install .tmp/src/android-build//build/outputs/apk/debug/android-build-debug.apk
 ```
 
+9. To build the apk for release the environment variable ADJUST_SDK_TOKEN is required. It must be set to the app token of the Adjust SDK dashboard. 
+
 ### Windows
 
 We use a statically-compiled QT5.15 version to deploy the app. There are many
@@ -286,17 +283,22 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
-5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml pyhumps)
+5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
 
 There is also a script to compile the application: `scripts\windows_compile.bat`
 
+## Developer Options and staging environment
+
+To enable the staging environment, open the `Get Help` window, and click on the `Get Help` text 6 times within 10
+seconds to unlock the Developer Options menu. On this menu, you can enable on the `Staging Server` checkbox to
+switch to the staging environment. A full restart of the VPN will be required for this option to take effect.
+
 ## Inspector
 
-To build the inspector `qmake CONFIG+=debug CONFIG+=inspector`. Or use appropriate script parameters.
-
+The inspector is enabled when the staging environment is activated.
 When running MozillaVPN, go to http://localhost:8766 to view the inspector.
 
 From the inspector, type `help` to see the list of available commands.

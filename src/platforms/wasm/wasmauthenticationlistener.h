@@ -15,7 +15,8 @@ class WasmAuthenticationListener final : public AuthenticationListener {
   explicit WasmAuthenticationListener(QObject* parent);
   ~WasmAuthenticationListener();
 
-  void start(MozillaVPN* vpn, QUrl& url, QUrlQuery& query) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 };
 
 #endif  // WASMAUTHENTICATIONLISTENER_H

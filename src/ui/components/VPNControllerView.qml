@@ -45,10 +45,18 @@ Item {
 
     Rectangle {
         id: boxBackground
-        anchors.fill: parent
+        anchors.fill: box
         color: Theme.bgColor
         radius: 8
         antialiasing: true
+    }
+
+    VPNDropShadow {
+        anchors.fill: boxBackground
+        source: boxBackground
+        cached: true
+        transparentBorder: true
+        z: -1
     }
 
     states: [
@@ -75,6 +83,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -95,7 +108,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -122,6 +135,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -142,7 +160,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -171,6 +189,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
@@ -196,7 +219,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -226,6 +249,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
@@ -251,7 +279,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -273,11 +301,12 @@ Item {
 
             PropertyChanges {
                 target: logoSubtitle
-                //% "Secure and private"
-                //: This refers to the user’s internet connection.
-                text: qsTrId("vpn.controller.active") + "  •  " + formatTime(VPNController.time)
-                color: "#FFFFFF"
-                opacity: 0.8
+                visible: false
+            }
+
+            PropertyChanges {
+                target: logoSubtitleOn
+                visible: true
             }
 
             PropertyChanges {
@@ -296,7 +325,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: true
                 opacity: 1
                 startAnimation: true
@@ -327,6 +356,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings.svg"
             }
@@ -352,7 +386,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
             }
 
@@ -382,6 +416,11 @@ Item {
             }
 
             PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
                 target: settingsImage
                 source: "../resources/settings-white.svg"
             }
@@ -402,7 +441,7 @@ Item {
             }
 
             PropertyChanges {
-                target: animatedRingsWrapper
+                target: animatedRings
                 visible: false
                 opacity: 1
                 startAnimation: false
@@ -457,14 +496,14 @@ Item {
         }
     ]
 
-    VPNAnimatedRings {
-        id: animatedRingsWrapper
+    VPNAnimatedRingsShader {
+        id: animatedRings
         // Make sure we only do the render animation when
         // The element is visible &&
         // the application is not minimized
         isCurrentyVisible: stackview.depth === 1 &&
-                           (Qt.application.state === Qt.ApplicationActive ||
-                            Qt.application.state === Qt.ApplicationInactive)
+            (Qt.application.state === Qt.ApplicationActive ||
+            Qt.application.state === Qt.ApplicationInactive)
     }
 
     VPNMainImage {
@@ -565,7 +604,7 @@ Item {
         }
     }
 
-    Column{
+    Column {
         id: col
 
         spacing: 0
@@ -627,6 +666,30 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
             onVisibleChanged: if (visible) col.handleMultilineText()
+        }
+
+        RowLayout {
+          id: logoSubtitleOn
+
+          anchors.horizontalCenter: parent.horizontalCenter
+          opacity: 0.8
+
+          VPNInterLabel {
+            objectName: "secureAndPrivateSubtitle"
+
+            color: Theme.white
+            lineHeight: Theme.controllerInterLineHeight
+            Accessible.ignored: true
+
+            //% "Secure and private"
+            //: This refers to the user’s internet connection.
+            text: qsTrId("vpn.controller.active") + " • "
+          }
+
+          VPNSemiMonoLabel {
+            id: connectionTime
+            Accessible.ignored: true
+          }
         }
 
         VPNConnectionStability {

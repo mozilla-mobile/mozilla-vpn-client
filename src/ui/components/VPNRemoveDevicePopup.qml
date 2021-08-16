@@ -16,16 +16,13 @@ Popup {
     property var devicePublicKey
     property var wasmView
 
-    leftInset: Theme.windowMargin
-    rightInset: Theme.windowMargin
-    topPadding: Theme.windowMargin * 2
-    bottomPadding: Theme.windowMargin * 2
-    rightPadding: Theme.windowMargin
-    leftPadding: Theme.windowMargin
-    modal: true
-    focus: true
     anchors.centerIn: parent
     closePolicy: Popup.CloseOnEscape
+    focus: true
+    leftInset: Theme.windowMargin
+    rightInset: Theme.windowMargin
+    modal: true
+    verticalPadding: Theme.popupMargin
 
     // TODO: We can not use Accessible type on Popup because it does not inherit
     // from an Item. The code below generates the following warning:
@@ -34,6 +31,26 @@ Popup {
     // more details.
     // Accessible.role: Accessible.Dialog
     // Accessible.name: popupTitle.text
+
+    enter: Transition {
+        NumberAnimation {
+            property: "opacity"
+            duration: 120
+            from: 0.0
+            to: 1.0
+            easing.type: Easing.InOutQuad
+        }
+    }
+
+    exit: Transition {
+        NumberAnimation {
+            property: "opacity"
+            duration: 120
+            from: 1.0
+            to: 0.0
+            easing.type: Easing.InOutQuad
+        }
+    }
 
     onClosed: {
         // When closing the dialog, put the focus back on the
@@ -47,29 +64,28 @@ Popup {
         }
     }
 
-
-    Overlay.modal: Rectangle {
-        color: "#4D0C0C0D"
-    }
-
     background: Rectangle {
         id: popupBackground
 
-        color: "#E1E1E1"
+        anchors.margins: 0
+        color: Theme.bgColor
         radius: 8
 
-        RectangularGlow {
-            id: rectangularGlow
+        DropShadow {
+            id: popupShadow
 
             anchors.fill: popupBackground
-            glowRadius: 10
-            spread: 0.1
+            cached: true
             color: "black"
-            cornerRadius: popupBackground.radius + glowRadius
-            opacity: 0.3
+            opacity: 0.2
+            radius: 16
+            samples: 33
+            source: popupBackground
+            spread: 0.1
+            transparentBorder: true
+            verticalOffset: 4
             z: -1
         }
-
     }
 
     contentItem: Item {
@@ -78,81 +94,69 @@ Popup {
         ColumnLayout {
             id: col
 
-            spacing: 0
             anchors.centerIn: contentRoot
-            width: contentRoot.width - Theme.windowMargin * 2
-            opacity: 1
-
-            Behavior on opacity {
-                PropertyAnimation {
-                    duration: 200
-                }
-            }
-
+            spacing: 0
+            width: contentRoot.width - Theme.windowMargin / 2
 
             Image {
-                Layout.alignment: Qt.AlignHCenter
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/removeDevice.png"
-                Layout.preferredHeight: 64
+                source: "../resources/devicesRemove.svg"
+                sourceSize: Qt.size(116, 80)
+
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredHeight: 80
             }
 
-            VPNInterLabel {
+            VPNMetropolisLabel {
                 id: popupTitle
 
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                font.family: Theme.fontBoldFamily
                 color: Theme.fontColorDark
-                Layout.leftMargin: Theme.windowMargin
-                Layout.rightMargin: Theme.windowMargin
+                font.pixelSize: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+
+                Layout.alignment: Qt.AlignHCenter
+                Layout.bottomMargin: Theme.vSpacingSmall
+                Layout.fillWidth: true
+                Layout.leftMargin: Theme.popupMargin
                 Layout.minimumHeight: 36
-                verticalAlignment: Text.AlignBottom
+                Layout.rightMargin: Theme.popupMargin
+                Layout.topMargin: 4
+
                 //% "Remove device?"
                 text: qsTrId("vpn.devices.removeDeviceQuestion")
+                verticalAlignment: Text.AlignBottom
             }
 
             VPNTextBlock {
                 id: popupText
 
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                Layout.topMargin: 10
+                color: Theme.fontColor
+                font.pixelSize: 15
                 horizontalAlignment: Text.AlignHCenter
-                color: Theme.fontColorDark
+                Layout.alignment: Qt.AlignHCenter
+                Layout.bottomMargin: Theme.vSpacing
+                Layout.fillWidth: true
+                lineHeight: 22
+
                 //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
                 //% "Please confirm you would like to remove\n%1."
                 text: qsTrId("vpn.devices.deviceRemovalConfirm").arg(popup.deviceName)
             }
 
             GridLayout {
+                id: buttonsContainer
+
+                property int gridSpacing: 16
+
+                columnSpacing: gridSpacing
+                rowSpacing: gridSpacing
+                columns: 1
+
                 Layout.fillWidth: true
-                Layout.minimumHeight: Theme.windowMargin * 2
-                Layout.topMargin: Theme.windowMargin
-                columnSpacing: 8
-                columns: {
-                    const cancelText = qsTrId("vpn.devices.cancelDeviceRemoval");
-                    const removeText = qsTrId("vpn.devices.removeDeviceButton");
-                    if (cancelText.length > 8 || removeText.length > 8) {
-                        return 1
-                    }
-                    return 2;
-                }
-
-                VPNPopupButton {
-                    id: cancelBtn
-
-                    //% "Cancel"
-                    buttonText: qsTrId("vpn.devices.cancelDeviceRemoval")
-                    buttonTextColor: "#262626"
-                    colorScheme: Theme.popupButtonCancel
-                    onClicked: {
-                        popup.close();
-                    }
-                    focus: true
-                    Accessible.defaultButton: true
-                }
+                Layout.minimumHeight: 40
+                Layout.leftMargin: Theme.popupMargin
+                Layout.rightMargin: Theme.popupMargin
+                Layout.topMargin: gridSpacing / 2
 
                 VPNPopupButton {
                     id: removeBtn
@@ -173,12 +177,39 @@ Popup {
 
                         popup.close();
                     }
+                    isCancelBtn: false
+                }
+
+                VPNPopupButton {
+                    id: cancelBtn
+                    Accessible.defaultButton: true
+
+                    //% "Cancel"
+                    buttonText: qsTrId("vpn.devices.cancelDeviceRemoval");
+                    buttonTextColor: Theme.blue
+                    colorScheme: Theme.linkButton
+                    focus: true
+                    onClicked: {
+                        popup.close();
+                    }
+                    isCancelBtn: true
+                    KeyNavigation.up: removeBtn
                 }
 
             }
 
         }
 
-    }
+        Overlay.modal: Rectangle {
+            id: overlayBackground
+            color: "#4D000000"
 
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 175
+                }
+            }
+        }
+
+    }
 }

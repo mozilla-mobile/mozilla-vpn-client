@@ -94,7 +94,7 @@ void migrateWireguardFile(const QString& fileName) {
 
 // static
 void WindowsDataMigration::migrate() {
-  logger.log() << "Windows Data Migration";
+  logger.debug() << "Windows Data Migration";
 
   QStringList paths =
       QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
