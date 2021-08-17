@@ -23,6 +23,8 @@ const greyHovered = "#E6E6E6";
 const greyPressed = "#C2C2C2";
 const ink = "#321C64";
 const orange = "#FFA436";
+const orangeHovered = "#E27F2E";
+const organgePressed= "#C45A27";
 const purple60 = "#7542E5";
 const red = "#FF4F5E";
 const redHovered = "#E22850";
@@ -154,11 +156,11 @@ const vpnToggleDisconnected = {
 };
 
 const greenAlert = {
-    "defaultColor":  "#3FE1B0",
-    "buttonHovered": "#3AD4B3",
-    "buttonPressed": "#1CC5A0",
-    "focusOutline": "#333FE1B0",
-    "focusBorder": "#1CC5A0",
+    defaultColor:  "#3FE1B0",
+    buttonHovered: "#3AD4B3",
+    buttonPressed: "#1CC5A0",
+    focusOutline: "#333FE1B0",
+    focusBorder: "#1CC5A0",
 };
 
 const cornerRadius = 4;

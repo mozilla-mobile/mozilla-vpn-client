@@ -5,31 +5,44 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
+import QtGraphicalEffects 1.0
 import "../themes/themes.js" as Theme
 
-Item {
+
+Rectangle {
     id: alertBox
+    // Defines what type of alert this is
+    property var alertType: stateNames.info
+    // Contains all accepted values for alertType
+    readonly property var alertTypes: stateNames
+    // Determines if the toast should fit into the layout or put itself on the top
+    property var isLayout: false
+    // Callback when the action was pressed,
+    // (does nothing if  no action text is defined)
+    property var onActionPressed:function(){}
+    // Callback when the close button was pressed
+    property var onClosePressed:function(){}
+    // Text of the toast
+    property var alertText: "Some Alert"
+    // Text of the Action (in bold)
+    property var alertActionText: ""
+    // Auto Hide the Alert after X secounds (0 == infinte)
+    property var duration: 0
+    // Delete itself after closing
+    property var destructive: false
 
-    property var alertType: ""
-    property var alertColor: Theme.redButton
-    property var textColor: "#ffffff"
-    property var alertText: ""
-    property var alertLinkText: ""
-    property bool isLayout: false
-    property var alertHeight: Math.max(Theme.rowHeight, (label.paintedHeight + (Theme.windowMargin * 1.25)))
 
-    VPNDropShadow {
-        anchors.fill: parent
-        source: parent
-        opacity: .1
-        state: "overwrite-state"
-        z: -1
+    color: style.alertColor
+    Behavior on color {
+        ColorAnimation {
+            duration: 200
+        }
     }
-
+    radius: Theme.cornerRadius
+    height : style.alertHeight;
     z: 3
-    Layout.minimumHeight: alertHeight
-    Layout.maximumHeight: alertHeight
+    Layout.minimumHeight: style.alertHeight
+    Layout.maximumHeight: style.alertHeight
     Layout.fillWidth: isLayout
 
     onVisibleChanged: {
@@ -37,60 +50,131 @@ Item {
             showAlert.start();
         }
     }
-
     Component.onCompleted:  {
         if (!isLayout) {
-            height = alertHeight;
+            height = style.alertHeight;
             width = Math.min(window.width - Theme.windowMargin, Theme.maxHorizontalContentWidth);
             y = fullscreenRequired()? iosSafeAreaTopMargin.height + Theme.windowMargin : Theme.windowMargin;
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = Theme.windowMargin / 2;
         }
+        if(alertBox.duration > 0){
+            console.log("Toasbox timer start")
+            autoHideTimer.start()
+        }
     }
+
+    // Private Properties, will be changed depnding on alertType
+    QtObject {
+        id: style
+        readonly property string darkCloseIcon: "../resources/close-dark.svg"
+        readonly property string whiteCloseIcon: "../resources/close-white.svg"
+        property var alertColor: "black";
+        property var alertHoverColor: "gray";
+        property var alertClickColor: "white";
+        property var fontColor: "yellow"
+        property var fontSize: 13
+        property var lineHeight: 21
+        property var borderRadius: 4
+        property var alertHeight: Math.max(Theme.rowHeight, (label.paintedHeight + (Theme.windowMargin * 1.25)))
+        property var closeIcon : darkCloseIcon
+        property var focusBorder: alertColor
+    }
+    // Possible Alert Types
+    QtObject {
+        id: stateNames
+        readonly property string info: "info"
+        readonly property string success: "success"
+        readonly property string error: "error"
+        readonly property string warning: "warning"
+    }
+    state: alertType
+    states:[
+        State{
+            name: stateNames.info
+            PropertyChanges {
+                target: style;
+                alertColor: Theme.blue
+                alertHoverColor: Theme.blueHovered
+                alertClickColor: Theme.bluePressed
+                fontColor: "#FFFFFF"
+                closeIcon: whiteCloseIcon
+            }
+        },
+        State{
+            name: stateNames.success
+            PropertyChanges {
+                target: style;
+                alertColor: Theme.greenAlert.defaultColor
+                alertHoverColor: Theme.greenAlert.buttonHovered
+                alertClickColor: Theme.greenAlert.buttonPressed
+                fontColor: Theme.fontColorDark
+                closeIcon: darkCloseIcon
+            }
+        },
+        State{
+            name: stateNames.error
+            PropertyChanges {
+                target: style;
+                alertColor: Theme.red
+                alertHoverColor: Theme.redHovered
+                alertClickColor: Theme.redPressed
+                fontColor: "#FFFFFF"
+                closeIcon: whiteCloseIcon
+            }
+        },
+        State{
+            name: stateNames.warning
+            PropertyChanges {
+                target: style;
+                alertColor: Theme.orange
+                alertHoverColor: Theme.orangeHovered
+                alertClickColor: Theme.organgePressed
+                fontColor: Theme.fontColorDark
+                closeIcon: darkCloseIcon
+            }
+        }
+    ]
+
+    Timer {
+          interval: alertBox.duration
+          id: autoHideTimer
+          running: false
+          repeat: false
+          onTriggered: { closeAlert.start();}
+    }
+
+    DropShadow {
+        anchors.fill: parent
+        source: parent
+        opacity: .1
+        state: "overwrite-state"
+        z: -1
+        id: dropShadow
+        horizontalOffset: 1
+        verticalOffset: 1
+        radius: 5.5
+        color: "#0C0C0D"
+   }
+
 
     VPNButtonBase {
         id: alertAction
-
         anchors.fill: alertBox
         radius: Theme.cornerRadius
         onClicked: {
-            switch (alertType) {
-            case ("update"):
-                stackview.push("../views/ViewUpdate.qml", StackView.Immediate);
-                break;
-            case ("authentication-failed"):
-                VPN.authenticate();
-                break;
-            case ("backend-service"):
-                VPN.backendServiceRestore();
-                break;
-            case ("survey"):
-                VPNSurveyModel.openCurrentSurvey();
-                break;
-            case ("connection-failed"):
-                // fall-through
-            case ("no-connection"):
-                // fall-through
-            case ("subscription-failed"):
-                // fall-through
-            case ("geoip-restriction"):
-                // fall-through
-            default:
-                VPN.hideAlert();
+            if(alertActionText != ""){
+              // Only Trigger an Action,
+              // if we have an actionable text
+              alertBox.onActionPressed();
+              closeAlert.start();
             }
-        }
-
-        VPNUIStates {
-            itemToFocus: parent
-            colorScheme: alertColor
-            setMargins: -3
         }
 
         Rectangle {
             id: labelWrapper
-
-            color: "transparent"
             height: label.paintedHeight + Theme.windowMargin
+            color: "transparent"
             anchors.left: alertAction.left
             width: alertAction.width - Theme.rowHeight
             anchors.verticalCenter: parent.verticalCenter
@@ -98,22 +182,36 @@ Item {
             Label {
                 id: label
                  anchors.centerIn: parent
-                 text: alertBox.alertText + " " + "<b><u>" + alertLinkText + "</b></u>"
+                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
                  horizontalAlignment: Text.AlignHCenter
                  font.pixelSize: Theme.fontSizeSmall
-                 color: textColor
+                 color: style.fontColor
                  width: labelWrapper.width - Theme.windowMargin
                  wrapMode: Label.WordWrap
              }
 
         }
 
-        VPNMouseArea {
-        }
+        VPNMouseArea {}
+        state: Theme.uiState.stateDefault
+        states: [
+            State {
+                name: Theme.uiState.stateDefault
+                PropertyChanges {target: alertBox; color: style.alertColor }
+            },
+            State {
+                name: Theme.uiState.statePressed
+                PropertyChanges {target: alertBox; color: style.alertClickColor }
+            },
+            State {
+                name: Theme.uiState.stateHovered
+                PropertyChanges {target: alertBox; color: style.alertHoverColor }
+            }
+        ]
     }
 
     VPNFocusOutline {
-        focusColorScheme: alertColor
+        focusColorScheme: style.alertHoverColor
         focusedComponent: closeButton
         anchors.fill: closeButton
         setMargins: -3
@@ -134,21 +232,13 @@ Item {
         radius: Theme.cornerRadius
         Accessible.name: "Close"
         onClicked: {
-            if (alertType === "update") {
-                closeAlert.start();
-                return VPN.hideUpdateRecommendedAlert();
-            }
-            if (alertType === "survey") {
-                closeAlert.start();
-                return VPNSurveyModel.dismissCurrentSurvey();
-            }
             closeAlert.start();
-            return VPN.hideAlert();
+            alertBox.onClosePressed();
         }
 
         VPNFocusBorder {
             anchors.fill: closeButton
-            border.color: alertColor.focusBorder
+            border.color: style.focusBorder
             opacity: closeButton.activeFocus ? 1 : 0
             radius: Theme.cornerRadius
             z: 1
@@ -162,41 +252,48 @@ Item {
             anchors.left: closeButton.left
             anchors.leftMargin: -10
             radius: Theme.cornerRadius
-            color: "transparent"
+            color: style.alertColor
             clip: true
             state: closeButton.state
-
-            VPNUIStates {
-                colorScheme: alertColor
-                setMargins: -3
-            }
 
             Behavior on color {
                 ColorAnimation {
                     duration: 200
                 }
-
             }
 
         }
 
         Image {
             id: alertBoxClose
-
-            source: textColor === "#ffffff" ? "../resources/close-white.svg" : "../resources/close-dark.svg"
+            source: style.closeIcon
             sourceSize.width: 12
             sourceSize.height: 12
             anchors.centerIn: closeButton
         }
 
-        VPNMouseArea {
-        }
+        VPNMouseArea {}
+        state: Theme.uiState.stateDefault
+        states: [
+            State {
+                name: Theme.uiState.stateDefault
+                PropertyChanges {target: backgroundRect; color: style.alertColor }
+            },
+            State {
+                name: Theme.uiState.statePressed
+                PropertyChanges {target: backgroundRect; color: style.alertClickColor }
+            },
+            State {
+                name: Theme.uiState.stateHovered
+                PropertyChanges {target: backgroundRect; color: style.alertHoverColor }
+            }
+        ]
 
     }
 
     VPNFocusBorder {
         anchors.fill: alertBox
-        border.color: alertColor.focusBorder
+        border.color: style.focusBorder
         opacity: alertAction.activeFocus ? 1 : 0
         radius: Theme.cornerRadius
     }
@@ -207,7 +304,7 @@ Item {
         PropertyAnimation {
             target: alertBox
             property: isLayout ? "Layout.minimumHeight" : "height"
-            to: alertHeight
+            to: style.alertHeight
             duration: 60
         }
 
@@ -216,6 +313,12 @@ Item {
             property: "opacity"
             to: 1
             duration: 100
+        }
+
+    }
+    function remove(){
+        if(alertBox.destructive){
+            alertBox.destroy(100)
         }
     }
 
@@ -229,6 +332,7 @@ Item {
             to: 0
             duration: 60
         }
+
         PropertyAnimation {
             target: alertBox
             property: isLayout ? "Layout.minimumHeight" : "height"
@@ -240,6 +344,7 @@ Item {
             property: "visible"
             value: "false"
         }
+        ScriptAction { script: remove();}
     }
 
 }
