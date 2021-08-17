@@ -60,6 +60,10 @@ class XCodeprojPatcher
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/app/WireGuard-Bridging-Header.h'
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
+        "$(inherited)",
+        "$(PROJECT_DIR)/3rdparty"
+      ]
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
@@ -136,6 +140,19 @@ class XCodeprojPatcher
         @target_main.add_file_references([file])
       }
     end
+
+    frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+    frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+    embed_frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'Embed Frameworks' }
+
+    framework_ref = frameworks_group.new_file('3rdparty/AdjustSdk.framework')
+    frameworks_build_phase.add_file_reference(framework_ref)
+
+    framework_file = embed_frameworks_build_phase.add_file_reference(framework_ref)
+    framework_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy', 'CodeSignOnCopy'] }
+
+    framework_ref = frameworks_group.new_file('AdServices.framework')
+    frameworks_build_phase.add_file_reference(framework_ref)
   end
 
   def setup_target_extension(shortVersion, fullVersion, platform, configHash)
