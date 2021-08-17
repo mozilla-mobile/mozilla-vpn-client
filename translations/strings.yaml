@@ -49,11 +49,22 @@
 # `./scripts/generate_strings.py` script to regenerate the string files.
 #
 
+#settings redesign
+settingsDev:
+  title: Developer Options
+  showOptionTitle: Show Developer Options
+  showOptionSubtitle: Show or hide the developer options menu
+  useStagingTitle: Use Staging Servers
+  useStagingSubtitle: Staging services are used to test features before they go live to production
+  restartRequired: VPN must be restarted to take effect
+
 serversView:
   searchPlaceholder: Search countries
   searchNoResultsLabel: No results. Try a different search
 
+#Changing in-client responses to the "very good" feedback choice
 feedbackForm:
+  #Screen 888
   chooseCategory: Choose a category
 
 settingsDev:
@@ -82,3 +93,172 @@ splittunnel:
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
 
+  excellentLabel: Excellent
+  #Screen 843
+  selectionHeader: Give feedback
+  reviewHeader: Give us 5 stars!
+  reviewBody: If you enjoy using Mozilla VPN, would you review it? Thanks for your support!
+  leaveReviewButton: Leave a Review
+  skipLink: Skip
+
+#Additional messaging for network issues with split tunneling settings
+splitTunnelNetworkMessaging:
+  infoText: For any questions about setting app permissions, we've provided some helpful tips on our website.
+  infoLinkText: Learn more
+  
+#adding multi-hop feature
+multiHopFeature:
+  #Screen MacOS/134
+  singleToggleHeader: Single-hop
+  multiToggleHeader: Multi-hop
+  #Screen MacOS/140
+  cardHeader: What is multi-hop VPN?
+  cardBody: Multi-hop VPN routes your traffic through two servers instead of one for extra security and privacy. This may slow down your connection.
+  entryLocationHeader: Select entry location
+  exitLocationHeader: Select exit location
+  infoText: Exit location represents your main VPN server.
+  #Screen MacOS/136
+  pageHeader: Select entry location
+  #Screen MacOS/145
+  pageHeader: Select exit location
+  #Screen MacOS/142
+  connectionsHeader: Recent connections
+  arrowAltText: To
+  #Screen MacOS/138
+  searchResultsAlert: No results. Try a different search
+
+customDNSSettings:
+  #Screen 830
+  infoAlert: VPN must be off to change these settings
+  dnsNavItem: DNS settings
+  #Screen 832
+  defaultToggle: Default
+  defaultRadioHeader: Use default DNS
+  defaultRadioBody: Automatically use Mozilla VPN-protected DNS
+  #Screen 837
+  advancedToggle: Advanced
+  adblockRadioHeader: Use adblock DNS
+  adblockRadioBody: Block internet ads with VPN
+  antitrackRadioHeader: Use anti-tracking DNS
+  antitrackRadioBody: Block harmful domains with VPN
+  adblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
+  adblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
+  customDNSRadioHeader: Use custom DNS
+  customDNSRadioBody: Resolve websites using a custom DNS
+  dnsFieldPlaceHolder: Enter custom DNS
+  #Screen 839
+  customDNSAlert: Invalid DNS, please try a new one
+
+  #support workflow feature in 2.5. Signed-in spec the same as not signed in but with email field removed.
+  SupportWorkflow:
+    #screen MacOS / 29
+    navLabel: Contact support
+    #screen MacOS / 30
+    pageHeader: Contact support
+    fieldCategoryHeader: Enter your email
+    emailFieldPlaceholder: Email address
+    confirmEmailPlaceholder: Confirm email address
+    fieldCategoryHeader: How can we help you with Mozilla VPN?
+    dropdownLabel: Choose a category
+    subjectFieldPlaceholder: Subject (optional)
+    issueFieldPlaceholder: Describe issue…
+    disclaimerText: When you submit, Mozilla VPN will collect technical and interaction data with your email to help our support team understand your issue.
+    privacyNoticeLinkText: Mozilla VPN Privacy Notice
+    primaryButtonText: Submit
+    secondaryActionText: Cancel
+    #screen MacOS / 31
+    dropdownListItem: Payment and billing
+    dropdownListItem: Account issues
+    dropdownListItem: Technical issues
+    dropdownListItem: Request features
+    dropdownListItem: Other
+    #screen MacOS 32
+    responseHeader: Thank you!
+    responseBody: Our support team will contact you at _email_ once we've been able to look at your issue.
+    responseButton: Done
+    #error state screen MacOS 39
+    errorHeader: Error submitting your support request
+    errorText: An unexpected error has occurred, please try again.
+    errorButton: Try Again
+
+#v2.5 What's New? Release notes
+whatsNewReleaseNotes:
+  #macOS tour modal alert on system update
+  #screen macOS / 92
+  modalHeader: What's new in VPN?
+  modalBodyText: We've added a ton of cool features in this latest release. Take the tour to get a deeper dive into what we've added for you!
+  modalButtonText: Take the tour
+  #screen MacOS / 89
+  modalHeader: Multi-hop VPN
+  modalBodyText: Multi-hop VPN will route your traffic through a second server for added protection. You can find this feature on the "Select location" screen.
+  modalButtonText: Next
+  #screen MacOS / 90
+  modalHeader: In-app support form
+  modalBodyText: The in-app support form will allow you to contact support from within the VPN app. You can find it in the "Get help" section.
+  modalButtonText: Next
+  #screen MacOS / 91
+  modalHeader: Custom DNS
+  modalBodyText: Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in the "Network settings" section.
+  modalButtonText: Done
+#macOS tour within settings
+  #screen macOS / 76
+  navLabel: What's new
+  #screen MacOS / 87
+  pageHeader: What's new
+  subHeader: Take the tour
+  listItemHeader: Multi-hop VPN
+  listItemBody: Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.
+  listItemHeader: In-app support form
+  listItemBody: The in-app support form will streamline the process of getting your issues resolved.
+  listItemHeader: Custom DNS
+  listItemBody: Custom DNS settings allow for faster connection using local servers.
+  #system notifications for all platforms
+  notifHeader: What's new in VPN
+  notifBody: Check out all the new features available in the latest version of Mozilla VPN!
+  notifCTA: Take the tour
+
+#In-app purchase strings for variable pricing
+inAppPurchaseVariable:
+  #screen VPP_Android_00
+  getHelpLink: Get help
+  pageHeader: Mozilla VPN
+  featureListItem: No logging of your network activity
+  featureListItem: No one can track you
+  featureListItem: 280+ servers in 30+ countries
+  featureListItem: Connect up to 5 devices
+  annualPlanCardHeader: $4.99/month
+  annualPlanCardSavings: Save 50%
+  annualPlanCardSubheader: 12-month plan: $59.88
+  sixMonthPlanCardHeader: $7.99/month
+  sixMonthPlanCardSavings: Save 20%
+  sixMonthPlanCardSubheader: 6-month plan: $47.94
+  monthlyPlanCardHeader: $9.99/month
+  monthlyPlanCardSubheader: Monthly plan
+  subscribeNowButton: Subscribe Now
+  termsLink: Terms of Service
+  privacyLink: Privacy Notice
+  signOutLink: Sign out
+  #screen VPP_Android_02
+  interstitialText: Confirming subscription…
+  cancelLink: Cancel
+
+#IAP Android edge case 1
+notSignedInGoogle:
+  #screen VPP_Android_025
+  modalHeader: Sign in to Google Account
+  modalBodyText: To continue subscribing, please sign in to your Google Account
+  modalLinkText: Go to Play Store
+
+#IAP Android edge case 2
+multiFxaAccountError:
+  #screen VPP_Android_692
+  errorHeader: Problem confirming subscription
+  errorText: Your subscription is linked to another Firefox Account. You may need to sign in with a different email address.
+
+#IAP Android edge case 3
+genericPurchaseError:
+  #screen VPP_Android_700
+  errorHeader: Problem confirming subscription
+  errorText: An unexpected error has occurred, please try again. Visit our help center below to learn how to troubleshoot this issue or contact support.
+  errorButton: Try Again
+  
