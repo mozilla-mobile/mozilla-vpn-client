@@ -99,7 +99,7 @@ void AppPermission::flip(const QString& appID) {
   if (settingsHolder->hasVpnDisabledApp(appID)) {
     logger.debug() << "Enabled --" << appID << " for VPN";
     settingsHolder->removeVpnDisabledApp(appID);
-    
+
   } else {
     logger.debug() << "Disabled --" << appID << " for VPN";
     settingsHolder->addVpnDisabledApp(appID);
@@ -115,10 +115,10 @@ void AppPermission::requestApplist() {
 }
 
 void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
-  QMap<QString,QString> applistCopy = applist;
+  QMap<QString, QString> applistCopy = applist;
   QList<QString> removedMissingApps;
-  // Add Missing apps, cleanup ones that we can't find anymore. 
-  // If that happens 
+  // Add Missing apps, cleanup ones that we can't find anymore.
+  // If that happens
   if (SettingsHolder::instance()->hasMissingApps()) {
     auto missingAppList = SettingsHolder::instance()->missingApps();
     for (const auto& appPath : missingAppList) {
@@ -126,12 +126,11 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
       if (!m_listprovider->isValidAppId(appPath)) {
         SettingsHolder::instance()->removeMissingApp(appPath);
         removedMissingApps.append(m_listprovider->getAppName(appPath));
-      }else{
-          applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
+      } else {
+        applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
       }
     }
   }
-
 
   auto keys = applistCopy.keys();
   if (!m_applist.isEmpty()) {
@@ -147,7 +146,8 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
         // In case the AppID is valid but not in our applist, we need to create
         // an entry
         logger.debug() << "Added missing appid" << blockedAppId;
-        m_applist.append(AppDescription(blockedAppId, applistCopy[blockedAppId]));
+        m_applist.append(
+            AppDescription(blockedAppId, applistCopy[blockedAppId]));
       }
     }
   }
@@ -162,20 +162,15 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
 
   // In Case we removed Missing Apps during cleanup,
   // Notify the user
-  if(removedMissingApps.count() == 0){
+  if (removedMissingApps.isEmpty()) {
     return;
   }
   auto strings = L18nStrings::instance();
-  QString action = strings->tr(L18nStrings::SplittunnelMissingAppAction);
-  if(removedMissingApps.count() == 1){
-    QString message = strings->tr(L18nStrings::SplittunnelMissingAppOne)
-                          .arg(removedMissingApps.first());
-    emit notification("warning",message,action);
-    return;
-  }
+  QString action = strings->tr(L18nStrings::SplittunnelMissingAppActionButton);
+
   QString message = strings->tr(L18nStrings::SplittunnelMissingAppMultiple)
                         .arg(removedMissingApps.count());
-  emit notification("warning",message,action);
+  emit notification("warning", message, action);
 }
 
 void AppPermission::protectAll() {
@@ -230,5 +225,5 @@ void AppPermission::openFilePicker() {
   QString message = L18nStrings::instance()
                         ->tr(L18nStrings::SplittunnelMissingAppAddedOne)
                         .arg(m_listprovider->getAppName(fileNames[0]));
-  emit notification("success",message);
+  emit notification("success", message);
 }

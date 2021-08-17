@@ -67,7 +67,8 @@ class AppPermission final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
  signals:
   void readyChanged();
-  void notification(const QString& type, const QString& message, const QString& actionMessage = "");
+  void notification(const QString& type, const QString& message,
+                    const QString& actionMessage = "");
  private slots:
   void receiveAppList(const QMap<QString, QString>& applist);
 

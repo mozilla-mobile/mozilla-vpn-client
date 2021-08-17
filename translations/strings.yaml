@@ -65,20 +65,19 @@ settingsDev:
   restartRequired: VPN must be restarted to take effect
 
 splittunnel:
-  missingAppAction:
+  missingAppActionButton:
     value:
       - Add apps manually
     comment:
-      - Refers to the Apps that are Missing from the Split Tunnel list
-  missingAppOne: 
-    value:
-      - \%0 Apps missing from list
-    comment:
-      - Refers to the Apps that are Missing from the Split Tunnel list
+      - Displayed in notification as "call to action" when apps are missing from the split-tunnel settings.
   missingAppMultiple: 
     value:
-      - \%0 Apps missing from list.
+      - \%0 apps missing from list.
     comment:
-      - Apps in the Split-Tunnel settings %1 is the amount of apps missing
-  missingAppAddedOne: Success! You added the %1 to this list.
+      - apps in the split-tunnel settings. %0 is the amount of apps missing
+  missingAppAddedOne: 
+    value:
+      - Success! You added the %0 to this list.
+    comment:
+      - Displayed in notification after a user added a missing app to the split-tunnel List; %0 is the name of the added application
 
