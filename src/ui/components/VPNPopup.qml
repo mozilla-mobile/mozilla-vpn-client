@@ -92,9 +92,6 @@ Popup {
         }
     }
 
-    onClosed: {
-    }
-
     Overlay.modal: Rectangle {
         id: overlayBackground
 

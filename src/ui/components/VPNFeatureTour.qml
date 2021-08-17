@@ -147,6 +147,7 @@ Item {
                         sourceSize.width: parent.height / 2.5
 
                         Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: Theme.listSpacing
                     }
 
                     VPNMetropolisLabel {

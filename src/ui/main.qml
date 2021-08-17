@@ -356,18 +356,10 @@ Window {
                 tourPopup.close();
             }
         }
-
-        onClosed: {
-
-        }
-
-        Component.onCompleted: {
-            tourPopup.open();
-        }
     }
 
     Button {
-        text: "Feature tour"
+        text: "What’s new"
 
         onClicked: {
             tourPopup.open();
