@@ -704,6 +704,7 @@ else:ios {
             platforms/ios/iosglue.mm \
             platforms/ios/iosnotificationhandler.mm \
             platforms/ios/iosutils.mm \
+            platforms/ios/iosadjusthelper.mm \
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
@@ -715,7 +716,8 @@ else:ios {
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
             platforms/ios/iosnotificationhandler.h \
-            platforms/ios/iosutils.h
+            platforms/ios/iosutils.h \
+            platforms/ios/iosadjusthelper.h
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"

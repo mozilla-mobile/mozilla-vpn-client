@@ -86,6 +86,7 @@ class XCodeprojPatcher
       config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
       config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
       config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO' if platform == 'ios'
+      config.build_settings['ADJUST_SDK_TOKEN'] = configHash['ADJUST_SDK_TOKEN']
 
       groupId = "";
       if (platform == 'macos')
