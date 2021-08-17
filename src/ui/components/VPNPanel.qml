@@ -4,10 +4,11 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+import QtGraphicalEffects 1.14
 
 import "../themes/themes.js" as Theme
 Item {
-    property string logo: ""
+    property alias logo: logo.source
     property alias logoTitle: logoTitle.text
     property alias logoSubtitle: logoSubtitle.text
     property var logoSize: 76
@@ -29,14 +30,43 @@ Item {
         spacing: 0
 
         Item {
-            id: avatarWrapper
+            id: logoWrapper
 
             Layout.preferredHeight: Math.max(logoSize, 76)
             Layout.fillWidth: true
 
+            Image {
+                id: logo
+
+                visible: !isSettingsView
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: logoWrapper.bottom
+                verticalAlignment: Image.AlignBottom
+                anchors.bottomMargin: 0
+                sourceSize.height: logoSize
+                sourceSize.width: logoSize
+                fillMode: Image.PreserveAspectFit
+                layer.enabled: true
+
+                Rectangle {
+                    id: mask
+
+                    anchors.fill: parent
+                    radius: logoSize / 2
+                    visible: false
+                }
+
+                layer.effect: OpacityMask {
+                    maskSource: maskImage ? mask : undefined
+                }
+            }
+
             VPNAvatar {
-                avatarUrl: logo
-                anchors.fill: avatarWrapper
+                id: avatar
+
+                visible: isSettingsView
+                avatarUrl: logo.source
+                anchors.fill: logoWrapper
             }
         }
 
