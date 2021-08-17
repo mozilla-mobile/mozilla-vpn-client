@@ -127,10 +127,11 @@ print G "done."
 ## Generate the spec file for building RPMs
 build_rpm_spec() {
 cat << EOF > mozillavpn.spec
+%define _srcdir .
 Version: $SHORTVERSION
 Release: $REVISION
 Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
-$(grep -v -e "^Version:" -e "^Release" -e "^%define" ../linux/mozillavpn.spec)
+$(sed -e '/^%prep/ a %autosetup' ../linux/mozillavpn.spec | grep -v -e "^Version:" -e "^Release" -e "^%define")
 EOF
 }
 
@@ -161,7 +162,7 @@ build_deb_source() {
 ## For source-only, build all the source bundles we can.
 if [ "$SOURCEONLY" == "Y" ]; then
   print Y "Configuring the DEB sources..."
-  for control in ../linux/debian/control.*; do
+  (which dpkg-buildpackage > /dev/null) && for control in ../linux/debian/control.*; do
     filename=$(basename $control)
     distro=$(echo $filename | cut -d'.' -f2)
 
