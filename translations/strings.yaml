@@ -74,10 +74,11 @@ splittunnel:
     value:
       - \%1 apps missing from list.
     comment:
-      - Apps listed in the split-tunnel settings. %1 is the amount of apps missing
+      - Apps listed in the split-tunnel settings. %1 is the number of missing apps
+      - If necessary, this can be translated as "Apps missing from list :%1"
   missingAppAddedOne: 
     value:
-      - Success! You added %1 to this list.
+      - Success! You added “%1” to this list.
     comment:
-      - Displayed in notification after a user added a missing app to the split-tunnel List; %1 is the name of the added application
+      - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
 

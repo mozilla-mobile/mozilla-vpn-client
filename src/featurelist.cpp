@@ -119,7 +119,6 @@ bool FeatureList::userDNSSupported() const {
 #endif
 }
 
-
 bool FeatureList::authenticationInApp() const {
 #ifdef MVPN_AUTHINAPP
   return true;
@@ -145,4 +144,3 @@ bool FeatureList::inAppPurchaseSupported() const {
   return false;
 #endif
 }
-
