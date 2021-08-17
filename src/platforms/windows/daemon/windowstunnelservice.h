@@ -5,9 +5,12 @@
 #ifndef WINDOWSTUNNELSERVICE_H
 #define WINDOWSTUNNELSERVICE_H
 
+#include "windowstunnellogger.h"
+
 #include <QFile>
 #include <QObject>
 #include <QTimer>
+#include <QThread>
 
 class WindowsTunnelService final : public QObject {
   Q_OBJECT
@@ -36,11 +39,8 @@ class WindowsTunnelService final : public QObject {
 
  private:
   QTimer m_timer;
-  QTimer m_logtimer;
-  QFile* m_logfile = nullptr;
-  uchar* m_logdata = nullptr;
-  int m_logindex = -1;
-  quint64 m_logEpochNsec = 0;
+  QThread m_logthread;
+  WindowsTunnelLogger* m_logworker = nullptr;
 
   // These are really SC_HANDLEs in disguise.
   void* m_scm = nullptr;
