@@ -760,6 +760,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
+        platforms/windows/daemon/windowstunnellogger.cpp \
         platforms/windows/daemon/windowstunnelservice.cpp \
         platforms/windows/daemon/wireguardutilswindows.cpp \
         platforms/windows/daemon/windowsfirewall.cpp \
@@ -791,6 +792,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
+        platforms/windows/daemon/windowstunnellogger.h \
         platforms/windows/daemon/windowstunnelservice.h \
         platforms/windows/daemon/wireguardutilswindows.h \
         platforms/windows/daemon/windowsfirewall.h \
