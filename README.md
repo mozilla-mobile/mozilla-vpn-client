@@ -166,7 +166,7 @@ This step needs to be updated each time XCode updates.
 DEVELOPMENT_TEAM = 43AQ936H96
 
 # MacOS configuration
-GROUP_ID_MACOS = <>
+GROUP_ID_MACOS = group.org.mozilla.macos.Guardian
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
 NETEXT_ID_MACOS = org.mozilla.macos.FirefoxVPN.network-extension
 LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login
@@ -176,6 +176,9 @@ NATIVEMESSAGING_ID_MACOS = org.mozilla.macos.FirefoxVPN.native-messaging
 GROUP_ID_IOS = <>
 APP_ID_IOS = <>
 NETEXT_ID_IOS = <>
+
+# Adjust SDK token
+ADJUST_SDK_TOKEN = <>
 ```
 7. Run the script (use QT\_MACOS\_BIN env to set the path for the Qt5 macos build bin folder):
 ```
@@ -232,11 +235,14 @@ LOGIN_ID_IOS = <>
 NATIVEMESSAGING_ID_MACOS = <>
 
 # IOS configuration
-GROUP_ID_IOS = <>
+GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
-```
 
+# Adjust SDK token
+ADJUST_SDK_TOKEN = <>
+```
+(if you want to build for release also add the Adjust SDK token)
 6. Run the script (use QT\_IOS\_BIN env to set the path for the Qt5 ios build bin folder):
 ```
   $ ./scripts/apple_compile.sh ios
