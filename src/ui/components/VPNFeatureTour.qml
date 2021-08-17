@@ -14,28 +14,8 @@ Item {
     signal finished()
     signal close()
 
-    property variant slidesData: [
-        {
-            title: "What’s new in 2.5?",
-            text: "We’ve added a lot of really cool feature in this latest version release! Take the tour if you want a deeper dive into what we’ve added for you!",
-            imageSrc: "../resources/quick-access.svg",
-        },
-        {
-            title: "Multi-hop VPN",
-            text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
-            imageSrc: "../resources/shield-off.svg",
-        },
-        {
-            title: "In-app Support Form",
-            text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
-            imageSrc: "../resources/globe.svg",
-        },
-        {
-            title: "Custom DNS",
-            text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
-            imageSrc: "../resources/shield-on.svg",
-        },
-    ]
+    property int startIndex: 0
+    property variant slidesData: ({})
 
     implicitHeight: content.implicitHeight
     width: parent.width
@@ -108,7 +88,6 @@ Item {
         }
     ]
 
-    // Back button
     VPNIconButton {
         id: backButton
 
@@ -147,13 +126,12 @@ Item {
             id: swipeView
 
             clip: true
-            currentIndex: 0
+            currentIndex: startIndex
             interactive: true
 
             Layout.fillHeight: true
             Layout.fillWidth: true
 
-            // Slide component
             Component {
                 id: slide
 
@@ -188,14 +166,6 @@ Item {
                         Layout.fillWidth: true
                     }
 
-                    Component.onCompleted: {
-                        console.log("created: ", slideIndex);
-                    }
-
-                    Component.onDestruction: {
-                        console.log("destroyed: ", slideIndex);
-                    }
-
                     Behavior on opacity {
                         NumberAnimation {
                             duration: 400
@@ -222,7 +192,6 @@ Item {
             }
         }
 
-        // Dots
         PageIndicator {
             id: indicator
 
@@ -255,7 +224,6 @@ Item {
             }
         }
 
-        // Next button 
         VPNButton {
             id: resumeButton
 
@@ -265,6 +233,7 @@ Item {
 
             onClicked: {
                 if (tour.state === "end") {
+                    swipeView.currentIndex = 0;
                     tour.finished();
                     return;
                 }
@@ -275,9 +244,11 @@ Item {
             Image {
                 id: buttonIcon
 
-                anchors.verticalCenter: resumeButton.verticalCenter
-                anchors.right: resumeButton.contentItem.right
-
+                anchors {
+                    right: resumeButton.contentItem.right
+                    rightMargin: Theme.windowMargin
+                    verticalCenter: resumeButton.verticalCenter
+                }
                 fillMode: Image.PreserveAspectFit
                 source: "../resources/arrow-forward-white.svg"
                 sourceSize.height: Theme.iconSize * 1.5

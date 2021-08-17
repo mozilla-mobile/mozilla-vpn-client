@@ -327,25 +327,50 @@ Window {
     }
 
     VPNPopup {
-        id: popupTest
+        id: tourPopup
 
         contentItem: VPNFeatureTour {
-            onClose: {
-            }
-            onStarted: {
-            }
+            slidesData: [
+                {
+                    title: "What’s new in 2.5?",
+                    text: "We’ve added a lot of really cool feature in this latest version release! Take the tour if you want a deeper dive into what we’ve added for you!",
+                    imageSrc: "../resources/quick-access.svg",
+                },
+                {
+                    title: "Multi-hop VPN",
+                    text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
+                    imageSrc: "../resources/shield-off.svg",
+                },
+                {
+                    title: "In-app Support Form",
+                    text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
+                    imageSrc: "../resources/globe.svg",
+                },
+                {
+                    title: "Custom DNS",
+                    text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
+                    imageSrc: "../resources/shield-on.svg",
+                },
+            ]
             onFinished: {
-                popupTest.close();
+                tourPopup.close();
             }
+        }
+
+        onClosed: {
+
+        }
+
+        Component.onCompleted: {
+            tourPopup.open();
         }
     }
 
     Button {
-        text: "Open"
-        onClicked: popupTest.open()
+        text: "Feature tour"
 
-        Component.onCompleted: {
-            popupTest.open();
+        onClicked: {
+            tourPopup.open();
         }
     }
 }
