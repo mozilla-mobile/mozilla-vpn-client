@@ -101,10 +101,8 @@ bool WindowsTunnelService::start(const QString& configFile) {
   logger.debug() << "Starting the tunnel service";
 
   m_logworker = new WindowsTunnelLogger(WindowsCommons::tunnelLogFile());
-  if (m_logworker) {
-    m_logworker->moveToThread(&m_logthread);
-    m_logthread.start();
-  }
+  m_logworker->moveToThread(&m_logthread);
+  m_logthread.start();
 
   SC_HANDLE scm = (SC_HANDLE)m_scm;
   SC_HANDLE service = nullptr;
@@ -112,12 +110,10 @@ bool WindowsTunnelService::start(const QString& configFile) {
     if (service) {
       CloseServiceHandle(service);
     }
-    if (m_logworker) {
-      m_logthread.quit();
-      m_logthread.wait();
-      delete m_logworker;
-      m_logworker = nullptr;
-    }
+    m_logthread.quit();
+    m_logthread.wait();
+    delete m_logworker;
+    m_logworker = nullptr;
   });
 
   // Let's see if we have to delete a previous instance.

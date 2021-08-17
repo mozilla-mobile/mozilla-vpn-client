@@ -50,8 +50,6 @@ WindowsTunnelLogger::WindowsTunnelLogger(const QString& filename,
 
 WindowsTunnelLogger::~WindowsTunnelLogger() {
   MVPN_COUNT_DTOR(WindowsTunnelLogger);
-  m_timer.stop();
-
   if (m_logdata) {
     timeout();
 
