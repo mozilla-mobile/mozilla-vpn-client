@@ -21,6 +21,7 @@ class WindowsTunnelLogger final : public QObject {
   void timeout();
 
  private:
+  bool openLogData();
   void process(int index);
   int nextIndex();
 

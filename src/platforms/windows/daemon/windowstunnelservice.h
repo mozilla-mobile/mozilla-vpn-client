@@ -30,11 +30,6 @@ class WindowsTunnelService final : public QObject {
 
  private:
   void timeout();
-  void processLogs();
-  void processMessage(int index);
-  int nextLogIndex();
-
-  bool registerTunnelService(const QString& configFile);
   static QString exitCodeToFailure(unsigned int code);
 
  private:
