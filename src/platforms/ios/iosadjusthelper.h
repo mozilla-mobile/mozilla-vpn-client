@@ -7,10 +7,8 @@
 
 #include <QString>
 
-class IOSAdjustHelper {
+class IOSAdjustHelper final {
  public:
-  IOSAdjustHelper() = default;
-
   static void initialize();
   static void trackEvent(const QString& eventToken);
 };

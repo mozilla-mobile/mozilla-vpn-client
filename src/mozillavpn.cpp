@@ -77,7 +77,9 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   logger.debug() << "Creating MozillaVPN singleton";
 
+#ifdef MVPN_IOS
   IOSAdjustHelper::initialize();
+#endif
 
   Q_ASSERT(!s_instance);
   s_instance = this;

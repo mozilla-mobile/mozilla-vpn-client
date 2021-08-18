@@ -18,10 +18,9 @@ void IOSAdjustHelper::initialize() {
 
   NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
-  if(!adjustToken.length) {
-    NSString *yourAppToken = adjustToken;
+  if(adjustToken.length) {
     NSString *environment = Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
-    ADJConfig *adjustConfig = [ADJConfig configWithAppToken:yourAppToken
+    ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];
     [Adjust appDidLaunch:adjustConfig];

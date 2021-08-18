@@ -154,6 +154,9 @@ class XCodeprojPatcher
 
     framework_ref = frameworks_group.new_file('AdServices.framework')
     frameworks_build_phase.add_file_reference(framework_ref)
+
+    framework_ref = frameworks_group.new_file('iAd.framework')
+    frameworks_build_phase.add_file_reference(framework_ref)
   end
 
   def setup_target_extension(shortVersion, fullVersion, platform, configHash)

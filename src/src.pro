@@ -698,13 +698,13 @@ else:ios {
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosiaphandler.mm \
+            platforms/ios/iosadjusthelper.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
             platforms/ios/iosglue.mm \
             platforms/ios/iosnotificationhandler.mm \
             platforms/ios/iosutils.mm \
-            platforms/ios/iosadjusthelper.mm \
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
@@ -712,12 +712,12 @@ else:ios {
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosiaphandler.h \
+            platforms/ios/iosadjusthelper.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
             platforms/ios/iosnotificationhandler.h \
             platforms/ios/iosutils.h \
-            platforms/ios/iosadjusthelper.h
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
