@@ -558,7 +558,7 @@ void Controller::setState(State state) {
   }
 }
 
-int Controller::time() const {
+qint64 Controller::time() const {
   return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
 }
 

@@ -202,9 +202,10 @@ QList<IPAddress> IPAddress::subnets() const {
     while (start < end) {
       int newPrefixLength = m_prefixLength + 1;
       if (newPrefixLength == 32) {
-        list.append(IPAddress(QHostAddress(start)));
+        list.append(IPAddress(QHostAddress(static_cast<quint32>(start))));
       } else {
-        list.append(IPAddress(QHostAddress(start), m_prefixLength + 1));
+        list.append(IPAddress(QHostAddress(static_cast<quint32>(start)),
+                              m_prefixLength + 1));
       }
       start += step;
     }

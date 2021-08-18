@@ -18,7 +18,7 @@ quint16 PingSender::inetChecksum(const void* data, size_t len) {
   } last;
   quint16 answer;
 
-  nleft = len;
+  nleft = static_cast<int>(len);
   sum = 0;
   w = (quint16*)data;
 
