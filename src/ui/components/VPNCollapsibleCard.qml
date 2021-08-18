@@ -23,6 +23,23 @@ Rectangle {
     radius: Theme.cornerRadius
     width: parent.width
 
+    Rectangle {
+        id: dropShadowSource
+        anchors.fill: parent
+        color: parent.color
+        radius: parent.radius
+    }
+
+    VPNDropShadow {
+        anchors.fill: dropShadowSource
+        source: dropShadowSource
+        cached: true
+        transparentBorder: true
+        state: ""
+
+        z: -1
+    }
+
     states: [
         State {
             name: "expanded"
@@ -104,6 +121,9 @@ Rectangle {
                 radius: Theme.cornerRadius - 1
                 Layout.preferredHeight: Theme.rowHeight
                 Layout.preferredWidth: Theme.rowHeight
+                height: undefined
+                width: undefined
+                accessibleName: "TODO Need String"
 
                 Image {
                     id: chevron
@@ -153,14 +173,6 @@ Rectangle {
                 }
             }
         }
-    }
-
-    VPNDropShadow {
-        anchors.fill: root
-        source: root
-        cached: true
-        transparentBorder: true
-        z: -1
     }
 
     function handleToggleCard() {

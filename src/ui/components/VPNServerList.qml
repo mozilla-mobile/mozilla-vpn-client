@@ -17,10 +17,11 @@ FocusScope {
     id: focusScope
 
     property var lastFocusedItemIdx
+    property var menuHeight: tabNavigation.multiHopEnabled ? (56 * 2) : 56
+    property bool showRecentConnections: false
 
     Layout.fillWidth: true
     Layout.fillHeight: true
-    width: parent.width
     onActiveFocusChanged: if (focus) serverSearchInput.forceActiveFocus()
     Accessible.name: menu.title
     Accessible.role: Accessible.List
@@ -33,7 +34,7 @@ FocusScope {
         id: vpnFlickable
         objectName: "serverCountryView"
 
-        flickContentHeight: serverList.y + serverList.implicitHeight + (Theme.rowHeight * 2)
+        flickContentHeight: serverList.y + serverList.implicitHeight + menuHeight
         anchors.fill: parent
 
         Rectangle {
@@ -63,7 +64,7 @@ FocusScope {
                 // Scroll vpnFlickable so that the current server city is
                 // vertically centered in the view
 
-                const serverListYCenter = vpnFlickable.height / 2;
+                const serverListYCenter = vpnFlickable.height / 2 - menuHeight;
 
                 for (let idx = 0; idx < countriesRepeater.count; idx++) {
                     const countryItem = countriesRepeater.itemAt(idx);
@@ -72,11 +73,9 @@ FocusScope {
                         continue;
                     }
 
-                    const multiHopMenuHeight = tabNavigation.multiHopEnabled ? 56 : 0
 
-                    const currentCityYPosition = countryItem.y + (Theme.rowHeight * 2) + (54 * countryItem.currentCityIndex) - serverListYCenter + multiHopMenuHeight;
+                    const currentCityYPosition = countryItem.y  + (54 * countryItem.currentCityIndex) - serverListYCenter;
                     const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
-
                     vpnFlickable.contentY = destinationY;
                     return;
                 }
@@ -134,6 +133,15 @@ FocusScope {
 
                     return includesName || includesLocalizedName || matchesCountryCode;
                 }
+            }
+
+            VPNRecentConnections {
+                id: recentConnections
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.rightMargin: Theme.windowMargin / 2
+                anchors.leftMargin: anchors.rightMargin
+                visible: showRecentConnections && serverSearchInput.text.length === 0
             }
 
             Repeater {

@@ -454,8 +454,9 @@
         <file>ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>ui/components/VPNCollapsibleCard.qml</file>
-        <file>ui/components/VPNTabNavigation.qml</file>
         <file>ui/components/VPNServerList.qml</file>
         <file>ui/views/ViewMultiHop.qml</file>
+        <file>ui/components/VPNTabNavigation.qml</file>
+        <file>ui/components/VPNRecentConnections.qml</file>
     </qresource>
 </RCC>

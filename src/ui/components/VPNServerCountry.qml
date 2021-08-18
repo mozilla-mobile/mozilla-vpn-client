@@ -175,7 +175,11 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
-                    VPNController.changeServer(code, modelData[0]);
+                    VPNController.changeServer(code, modelData[0]); //TODO
+                    if (typeof(multiHopStackView) !== "undefined" && multiHopStackView.depth > 1) {
+                        multiHopStackView.pop();
+                        return;
+                    }
                     stackview.pop();
                 }
                 height: 54

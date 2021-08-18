@@ -15,31 +15,53 @@ import "../themes/colors.js" as Color
 Item {
     id: root
 
+    function returnToMultiHopMainView() {
+        if (multiHopStackView && multiHopStackView.depth > 1) {
+            multiHopStackView.pop();
+            menu.title = menu.defaultMenuTitle;
+            return true;
+        }
+        return false;
+    }
+
     VPNMenu {
+        property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
         id: menu
         objectName: "serverListBackButton"
 
         title: qsTrId("vpn.servers.selectLocation")
         onActiveFocusChanged: if (focus) forceFocus = true
+        isMultiHopView: true
+
+        function handleMultiHopNav() {
+            if (!returnToMultiHopMainView()) {
+                return stackview.pop();
+            }
+        }
     }
 
     ListModel {
+        // MULTIHOP TODO - Use real strings
         id: tabButtonList
         ListElement {
             buttonLabel: "String-Single"
+            objectId: "tabSingleHop"
         }
         ListElement {
             buttonLabel: "String-Multi"
+            objectId: "tab"
         }
     }
 
     VPNTabNavigation {
-
-        // TODO: add something real for multiHopEnabled
+        // MULTIHOP TODO - Actually detect if multiHop is enabled
+        // MULTIHOP TODO - Open server view to correct tab based on number of hops
         property bool multiHopEnabled: true
 
-        id: tabNavigation
+        // Reset menu title when the tab view is changed
+        onStackChange: returnToMultiHopMainView();
 
+        id: tabNavigation
         tabList: tabButtonList
         width: root.width
         anchors.top: menu.bottom
@@ -48,18 +70,20 @@ Item {
         height: root.height - menu.height
 
         stackContent: [
-            VPNServerList {}
+            VPNServerList {
+                showRecentConnections: true
+            }
         ]
     }
 
     ViewMultiHop {
-        id: multiHop
+        id: multiHopStackView
         visible: tabNavigation.multiHopEnabled
     }
 
     Component.onCompleted: {
       if (tabNavigation.multiHopEnabled) {
-          tabNavigation.stackContent.push(multiHop);
+          tabNavigation.stackContent.push(multiHopStackView);
       }
     }
 }
