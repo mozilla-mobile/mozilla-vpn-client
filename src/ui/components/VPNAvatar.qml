@@ -22,7 +22,7 @@ Item {
             maskSource: avatarMask
         }
         smooth: true
-        source: avatarUrl
+        source: isDefaultAvatar() ? "" : avatarUrl
     }
 
     Image {
@@ -46,5 +46,16 @@ Item {
         radius: avatar.width / 2
         visible: false
         width: avatar.height
+    }
+
+    /**
+     * We check if the id of the avatar is a just a single character
+     * and assume that the user did not set a custom avatar
+     */
+    function isDefaultAvatar() {
+        const avatarUrlSplitted = avatarUrl.split("/");
+        const avatarID = avatarUrlSplitted[avatarUrlSplitted.length - 1];
+
+        return avatarID && avatarID.length <= 1;
     }
 }
