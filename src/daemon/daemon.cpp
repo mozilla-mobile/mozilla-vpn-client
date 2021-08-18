@@ -110,7 +110,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
 
-    if (!dnsutils()->updateResolvers(WG_INTERFACE, resolvers)) {
+    if (!dnsutils()->updateResolvers(wgutils()->interfaceName(), resolvers)) {
       return false;
     }
   }

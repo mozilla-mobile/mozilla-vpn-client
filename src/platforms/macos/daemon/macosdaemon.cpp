@@ -33,6 +33,7 @@ MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
   logger.debug() << "Daemon created";
 
   m_wgutils = new WireguardUtilsMacos(this);
+  m_dnsutils = new DnsUtilsMacos(this);
   m_iputils = new IPUtilsMacos(this);
 
   Q_ASSERT(s_daemon == nullptr);

@@ -238,7 +238,7 @@ cmd_usage() {
 cmd_up() {
 	local i
 	get_real_interface || die "\`$INTERFACE' does not exist"
-	[[ -n "$DNS" ]] && set_dns
+	#[[ -n "$DNS" ]] && set_dns
 	trap - INT TERM EXIT
 }
 

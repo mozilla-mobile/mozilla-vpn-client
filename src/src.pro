@@ -643,6 +643,7 @@ else:macos {
                    daemon/daemonlocalserverconnection.cpp \
                    localsocketcontroller.cpp \
                    wgquickprocess.cpp \
+                   platforms/macos/daemon/dnsutilsmacos.cpp \
                    platforms/macos/daemon/iputilsmacos.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
                    platforms/macos/daemon/macosdaemonserver.cpp \
@@ -658,6 +659,7 @@ else:macos {
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
+                   platforms/macos/daemon/dnsutilsmacos.h \
                    platforms/macos/daemon/iputilsmacos.h \
                    platforms/macos/daemon/macosdaemon.h \
                    platforms/macos/daemon/macosdaemonserver.h \
