@@ -287,7 +287,7 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex,
   FW_OK(allowHyperVTraffic(MED_WEIGHT), "Allow Hyper-V Traffic");
   FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT),
         "Allow Traffic for MozillaVPN.exe");
-  FW_OK(blockTrafficOnPort(53, MED_WEIGHT),"Block DNS Traffic");
+  FW_OK(blockTrafficOnPort(53, MED_WEIGHT), "Block DNS Traffic");
   FW_OK(allowTrafficTo(QHostAddress(config.m_dnsServer), 53, HIGH_WEIGHT),
         "Allow DNS Traffic to Defined DNS Server");
 
@@ -994,9 +994,8 @@ void WindowsFirewall::importAddress(const QHostAddress& addr,
   RtlCopyMemory(&v6bytes, value.byteArray16, IPV6_ADDRESS_SIZE);
 }
 
-
-bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight){
-  logger.debug() << "Requesting to block all traffic on port "<< port;
+bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight) {
+  logger.debug() << "Requesting to block all traffic on port " << port;
 
   auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
   auto cleanup = qScopeGuard([&] {
@@ -1019,13 +1018,12 @@ bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight){
   conds[1].fieldKey = FWPM_CONDITION_IP_PROTOCOL;
   conds[1].matchType = FWP_MATCH_EQUAL;
   conds[1].conditionValue.type = FWP_UINT8;
-  conds[1].conditionValue.uint16 = (IPPROTO_TCP);
+  conds[1].conditionValue.uint8 = (IPPROTO_TCP);
 
   conds[2].fieldKey = FWPM_CONDITION_IP_REMOTE_PORT;
   conds[2].matchType = FWP_MATCH_EQUAL;
   conds[2].conditionValue.type = FWP_UINT16;
   conds[2].conditionValue.uint16 = port;
-
 
   // Assemble the Filter base
   FWPM_FILTER0 filter;
@@ -1052,13 +1050,13 @@ bool WindowsFirewall::blockTrafficOnPort(uint port, uint8_t weight){
     return false;
   }
   m_activeRules.append(filterID);
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
   result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
     return false;
   }
   m_activeRules.append(filterID);
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
   result = FwpmFilterAdd0(m_sessionHandle, &filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
     return false;
