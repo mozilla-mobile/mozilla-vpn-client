@@ -55,6 +55,11 @@ serversView:
 
 feedbackForm:
   chooseCategory: Choose a category
+  excellentLabel: 
+    value: Excellent
+    comment: 
+      - One of the answers on the feedback question about the user
+      - experience with the VPN client.
 
 settingsDev:
   title: Developer Options
