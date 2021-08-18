@@ -28,7 +28,7 @@ def generateStrings():
     if not os.path.isfile(yaml_path):
         exit("Unable to find translations/strings.yaml")
 
-    with open(yaml_path, "r") as yaml_file:
+    with open(yaml_path, "r", encoding="utf-8") as yaml_file:
         yaml_content = yaml.safe_load(yaml_file)
 
         stringIds = []
