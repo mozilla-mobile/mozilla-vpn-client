@@ -717,7 +717,7 @@ else:ios {
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
             platforms/ios/iosnotificationhandler.h \
-            platforms/ios/iosutils.h \
+            platforms/ios/iosutils.h
 
     QMAKE_INFO_PLIST= $$PWD/../ios/app/Info.plist
     QMAKE_ASSET_CATALOGS_APP_ICON = "AppIcon"
