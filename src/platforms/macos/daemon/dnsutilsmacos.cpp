@@ -129,7 +129,6 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
   }
   cfDictSetStringList(dnsConfig, kSCPropNetDNSServerAddresses, list);
   cfDictSetString(dnsConfig, kSCPropNetDNSDomainName, "lan");
-  CFShow(dnsConfig);
 
   // Backup each network service's DNS config, and replace it with ours.
   for (CFIndex i = 0; i < CFArrayGetCount(netServices); i++) {

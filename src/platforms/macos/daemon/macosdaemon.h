@@ -21,10 +21,7 @@ class MacOSDaemon final : public Daemon {
 
   QByteArray getStatus() override;
 
-  void maybeCleanup();
-
  protected:
-  bool run(Op op, const InterfaceConfig& config) override;
   WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportDnsUtils() const override { return true; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
