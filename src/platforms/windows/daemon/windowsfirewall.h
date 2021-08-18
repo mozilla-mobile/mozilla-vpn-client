@@ -39,6 +39,7 @@ class WindowsFirewall final : public QObject {
   bool allowTrafficForAppOnAll(const QString& exePath, int weight);
   bool blockTrafficTo(const QList<IPAddressRange>& range, uint8_t weight);
   bool blockTrafficTo(const IPAddressRange& range, uint8_t weight);
+  bool blockTrafficOnPort(uint port, uint8_t weight);
   bool allowTrafficTo(const QHostAddress& targetIP, uint port, int weight);
   bool allowTrafficOfAdapter(int networkAdapter, uint8_t weight);
   bool allowDHCPTraffic(uint8_t weight);
