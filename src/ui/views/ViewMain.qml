@@ -44,7 +44,6 @@ VPNFlickable {
         onClicked: box.closeConnectionInfo()
     }
 
-
     GridLayout {
         id: col
         width: parent.width - Theme.windowMargin
