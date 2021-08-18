@@ -6,11 +6,13 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 VPNClickableRow {
     property var settingTitle
     property var imageLeftSrc
     property var imageRightSrc
+    property bool showIndicator
     accessibleName: settingTitle
 
     anchors.left: undefined
@@ -26,6 +28,16 @@ VPNClickableRow {
         VPNIconAndLabel {
             icon: imageLeftSrc
             title: settingTitle
+
+            Rectangle {
+                id: indicator
+
+                color: Color.error.default
+                height: Theme.iconSize / 2
+                radius: width / 2
+                visible: showIndicator
+                width: Theme.iconSize / 2
+            }
         }
 
         Item {

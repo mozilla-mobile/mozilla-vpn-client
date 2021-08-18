@@ -108,10 +108,15 @@ VPNFlickable {
         VPNSettingsItem {
             objectName: "settingsWhatsNew"
 
-            settingTitle: "NeedString-What's new"
-            imageLeftSrc: "../resources/settings/networkSettings.svg"
+            settingTitle: "What’s new"
+            imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
+            showIndicator: true
+
+            Component.onCompleted: {
+//                settingsStackView.push("../settings/ViewWhatsNew.qml");
+            }
         }
         VPNSettingsItem {
             objectName: "settingsNetworking"

@@ -8,6 +8,7 @@ import QtGraphicalEffects 1.14
 import QtQuick.Layouts 1.14
 import Mozilla.VPN 1.0
 import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 import org.mozilla.Glean 0.15
 import telemetry 0.15
@@ -577,6 +578,17 @@ Item {
             id: settingsImage
 
             anchors.centerIn: settingsButton
+        }
+
+        Rectangle {
+            id: updateIndicator
+
+            anchors.top: parent.top
+            anchors.right: parent.right
+            color: Color.error.default
+            height: 8
+            radius: width / 2
+            width: 8
         }
 
         Component {
