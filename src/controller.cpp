@@ -186,6 +186,8 @@ void Controller::activateInternal() {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  // Multihop connections provide a list of servers, starting with the exit
+  // node as the first element, and the entry node as the final entry.
   QList<Server> serverList = {server};
   if (FeatureList::instance()->multihopSupported() &&
       settingsHolder->multihopTunnel()) {
@@ -648,6 +650,9 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddress> excludeIPv4s;
   QList<IPAddress> excludeIPv6s;
+  // For multi-hop connections, the last entry in the server list is the
+  // ingress node to the network of wireguard servers, and must not be
+  // routed through the VPN.
   const Server& server = serverList.last();
 
   // filtering out the captive portal endpoint
