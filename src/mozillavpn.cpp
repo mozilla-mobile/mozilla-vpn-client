@@ -52,6 +52,7 @@
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androiddatamigration.h"
 #  include "platforms/android/androidvpnactivity.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MVPN_ADJUST
@@ -1145,6 +1146,15 @@ void MozillaVPN::serializeLogs(QTextStream* out,
 
 void MozillaVPN::viewLogs() {
   logger.debug() << "View logs";
+
+  #if defined(MVPN_ANDROID)
+      QString* buffer = new QString();
+      QTextStream* out = new QTextStream(buffer);
+      serializeLogs(out, [buffer]() {
+        AndroidUtils::ShareText(*buffer);
+      });
+    return;
+  #endif 
 
   if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
     return;

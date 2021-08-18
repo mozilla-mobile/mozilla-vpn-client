@@ -295,8 +295,7 @@ Window {
     Connections {
         target: VPN
         function onViewLogsNeeded() {
-            if (Qt.platform.os !== "android" &&
-                    Qt.platform.os !== "ios" &&
+            if (Qt.platform.os !== "ios" &&
                     Qt.platform.os !== "tvos" &&
                     Qt.platform.os !== "wasm")  {
                 VPN.viewLogs();
