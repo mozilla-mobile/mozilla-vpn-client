@@ -362,7 +362,6 @@ GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
 
 #endif
 
-
 GETSET(QStringList, toStringList, SETTINGS_MISSING_SPLITTUNNEL_APPS,
        hasMissingApps, missingApps, setMissingApps)
 
