@@ -35,7 +35,7 @@ bool Controller::processNextStep() { return false; }
 
 void Controller::setState(State) {}
 
-int Controller::time() const { return 42; }
+qint64 Controller::time() const { return 42; }
 
 void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
 
