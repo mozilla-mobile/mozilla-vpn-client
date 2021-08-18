@@ -3,7 +3,7 @@
 
 Name:      mozillavpn
 Version:   %{_version}
-Release:   1
+Release:   1~git%(git log -1 --format=%h)%{?dist}
 Summary:   Mozilla VPN
 License:   MPLv2.0
 URL:       https://vpn.mozilla.org
@@ -32,18 +32,17 @@ A fast, secure and easy to use VPN. Built by the makers of Firefox.
 Read more on https://vpn.mozilla.org
 
 %prep
-%setup -q
 %undefine _lto_cflags
 
 %build
-python3 scripts/importLanguages.py
-%{qmake_qt5} CONFIG+=production QT+=svg
-make -j$(nproc)
+%{_srcdir}/scripts/importLanguages.py
+%{qmake_qt5} %{_srcdir}/mozillavpn.pro QT+=svg
+make %{?_smp_mflags}
 
 %install
 make install INSTALL_ROOT=%{buildroot}
 install -d %{buildroot}/%{_licensedir}/%{name}
-install LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
+install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 
 %files
 %license %{_licensedir}/%{name}/LICENSE.md

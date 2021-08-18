@@ -15,7 +15,8 @@ TEMPLATE = subdirs
 SUBDIRS += src
 SUBDIRS += tests/unit
 
-!wasm {
+# separate flag because an extra dependency is needed: liboath
+AUTHTEST {
     SUBDIRS += tests/auth
 }
 

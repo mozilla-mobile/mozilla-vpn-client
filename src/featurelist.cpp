@@ -41,7 +41,7 @@ bool FeatureList::localNetworkAccessSupported() const {
 }
 
 bool FeatureList::protectSelectedAppsSupported() const {
-#if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS)
+#if defined(MVPN_ANDROID) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY)
   return true;
 #elif defined(MVPN_LINUX)
   static bool initDone = false;
@@ -129,7 +129,16 @@ bool FeatureList::authenticationInApp() const {
 
 bool FeatureList::accountCreationInAppSupported() const {
 #if defined(MVPN_IOS) || defined(UNIT_TEST)
-  // Soon-ish, android will have IAP. But not now yet.
+  // Soon-ish, android will have AIP. But not now yet.
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool FeatureList::inAppPurchaseSupported() const {
+#if defined(MVPN_IOS)
+  // Soon, android will have IAP.
   return true;
 #else
   return false;

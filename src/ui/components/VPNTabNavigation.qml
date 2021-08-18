@@ -16,6 +16,7 @@ Item {
 
     signal stackChange()
 
+
     Rectangle {
         // grey divider
         anchors.bottom: bar.bottom

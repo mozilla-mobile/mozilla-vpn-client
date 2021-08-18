@@ -17,8 +17,8 @@ class DesktopAuthenticationListener final : public AuthenticationListener {
   explicit DesktopAuthenticationListener(QObject* parent);
   ~DesktopAuthenticationListener();
 
-  void start(const QString& codeChallenge,
-             const QString& codeChallengeMethod) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 
  private:
   QOAuthHttpServerReplyHandler* m_server = nullptr;

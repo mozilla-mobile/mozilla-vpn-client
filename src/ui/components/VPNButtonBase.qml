@@ -36,6 +36,12 @@ RoundButton {
             handleKeyClick();
     }
 
+    onClicked: {
+        if (typeof(toolTip) !== "undefined" && toolTip.opened) {
+            toolTip.close();
+        }
+    }
+
     Accessible.role: Accessible.Button
     Accessible.onPressAction: handleKeyClick()
     Accessible.focusable: true

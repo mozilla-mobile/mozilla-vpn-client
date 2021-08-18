@@ -60,7 +60,8 @@ AuthenticationListener::~AuthenticationListener() {
 // static
 QUrl AuthenticationListener::createAuthenticationUrl(
     MozillaVPN::AuthenticationType authenticationType,
-    const QString& codeChallenge, const QString& codeChallengeMethod) {
+    const QString& codeChallenge, const QString& codeChallengeMethod,
+    const QString& emailAddress) {
   QString path("/api/v2/vpn/login/");
 
   if (authenticationType == MozillaVPN::AuthenticationInApp) {
@@ -83,6 +84,10 @@ QUrl AuthenticationListener::createAuthenticationUrl(
   query.addQueryItem("code_challenge", codeChallenge);
   query.addQueryItem("code_challenge_method", codeChallengeMethod);
   query.addQueryItem("user_agent", NetworkManager::userAgent());
+
+  if (!emailAddress.isEmpty()) {
+    query.addQueryItem("email", emailAddress);
+  }
 
   url.setQuery(query);
   return url;

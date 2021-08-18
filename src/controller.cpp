@@ -237,7 +237,11 @@ bool Controller::silentSwitchServers() {
 
   Server server = Server::weightChooser(servers);
   Q_ASSERT(server.initialized());
+
+#ifndef MVPN_WASM
+  // All the keys are the same in WASM builds.
   Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
+#endif
 
   vpn->setServerPublicKey(server.publicKey());
 
@@ -558,7 +562,7 @@ void Controller::setState(State state) {
   }
 }
 
-int Controller::time() const {
+qint64 Controller::time() const {
   return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
 }
 

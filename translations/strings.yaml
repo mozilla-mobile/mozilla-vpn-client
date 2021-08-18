@@ -55,6 +55,11 @@ serversView:
 
 feedbackForm:
   chooseCategory: Choose a category
+  excellentLabel: 
+    value: Excellent
+    comment: 
+      - One of the answers on the feedback question about the user
+      - experience with the VPN client.
 
 settingsDev:
   title: Developer Options
@@ -63,3 +68,22 @@ settingsDev:
   useStagingTitle: Use Staging Servers
   useStagingSubtitle: Staging services are used to test features before they go live to production
   restartRequired: VPN must be restarted to take effect
+
+splittunnel:
+  missingAppActionButton:
+    value:
+      - Add apps manually
+    comment:
+      - Displayed in a notification as "call to action" when apps are missing from the split-tunnel settings.
+  missingAppMultiple: 
+    value:
+      - \%1 apps missing from list.
+    comment:
+      - Apps listed in the split-tunnel settings. %1 is the number of missing apps
+      - If necessary, this can be translated as "Apps missing from list :%1"
+  missingAppAddedOne: 
+    value:
+      - Success! You added “%1” to this list.
+    comment:
+      - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
+

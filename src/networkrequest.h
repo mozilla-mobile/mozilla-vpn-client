@@ -93,12 +93,17 @@ class NetworkRequest final : public QObject {
                                            const QByteArray& sessionToken,
                                            const QUrlQuery& query);
 
+#ifdef UNIT_TEST
+  static NetworkRequest* createForFxaTotpCreation(
+      QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query);
+#endif
+
   static NetworkRequest* createForFxaSessionDestroy(
       QObject* parent, const QByteArray& sessionToken);
 
-#ifdef MVPN_IOS
-  static NetworkRequest* createForIOSProducts(QObject* parent);
+  static NetworkRequest* createForProducts(QObject* parent);
 
+#ifdef MVPN_IOS
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
 #endif

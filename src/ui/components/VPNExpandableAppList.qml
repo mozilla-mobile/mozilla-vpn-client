@@ -24,6 +24,12 @@ ColumnLayout {
     anchors.rightMargin: Theme.vSpacing
     spacing: Theme.vSpacing
 
+    // Ensure the inital presentation of the component is consistent with the
+    // "hidden" state. This prevents the transition from firing on the
+    // component load which appears as a "flicker".
+    opacity: 0
+    visible: false
+
     states: [
         State {
             name: "visibleAndEnabled"

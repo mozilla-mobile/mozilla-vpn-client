@@ -42,25 +42,56 @@ Item {
         anchors.right: parent.right
         interactive: (VPNSettings.protectSelectedApps)
         Component.onCompleted: {
+            console.log("Component ready");
             VPNAppPermissions.requestApplist();
             Sample.appPermissionsViewOpened.record();
             if (!vpnIsOff) {
                 Sample.appPermissionsViewWarning.record();
             }
-         }
+        }
 
-        VPNCheckBoxAlert {
-            id: vpnOnAlert
-            
-            visible: !vpnFlickable.vpnIsOff
-            anchors.leftMargin: Theme.windowMargin
-            anchors.left: parent.left
-            //% "VPN must be off to edit App Permissions"
-            //: Associated to a group of settings that require the VPN to be disconnected to change
-            errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+        ColumnLayout{
+            id:messageBox
+            visible: true
             anchors.top: parent.top
             anchors.topMargin: Theme.windowMargin
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            width: toggleCard.width-16
+
+            height:(vpnOnAlert.visible? vpnOnAlert.height:0)+(toast.visible? toast.height:0)
+
+            VPNCheckBoxAlert {
+                anchors.fill: parent
+                anchors.leftMargin: Theme.windowMargin
+                anchors.left: parent.left
+                id: vpnOnAlert
+                visible: !vpnFlickable.vpnIsOff
+                //% "VPN must be off to edit App Permissions"
+                //: Associated to a group of settings that require the VPN to be disconnected to change
+                errorMessage: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+            }
+
+            Connections {
+                target: VPNAppPermissions
+                function onNotification(type,message,action) {
+                    console.log("Got notification: "+type + "  message:"+message);
+                    var component = Qt.createComponent("../components/VPNAlert.qml");
+                    component.createObject(root, {
+                                               isLayout:false,
+                                               visible:true,
+                                               alertText: message,
+                                               alertType: type,
+                                               alertActionText: action,
+                                               duration:type === "warning"? 0: 2000,
+                                               destructive:true,
+                                               onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
+                                           });
+                }
+            }
+
         }
+
 
         VPNToggleCard {
             id: toggleCard
@@ -69,7 +100,7 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             height: childrenRect.height
-            anchors.top: vpnOnAlert.visible ? vpnOnAlert.bottom : parent.top
+            anchors.top: messageBox.visible ? messageBox.bottom : parent.top
 
             //% "Protect all apps with VPN"
             labelText: qsTrId("vpn.settings.protectAllApps")

@@ -86,9 +86,8 @@ constexpr const char* SETTINGS_NATIVEANDROIDSDATAMIGRATED =
 #ifdef MVPN_WINDOWS
 constexpr const char* SETTINGS_NATIVEWINDOWSDATAMIGRATED =
     "nativeWindowsDataMigrated";
-
-constexpr const char* SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS = "winMissingApps";
 #endif
+constexpr const char* SETTINGS_MISSING_SPLITTUNNEL_APPS = "MissingApps";
 
 constexpr bool SETTINGS_GLEANENABLED_DEFAULT = true;
 constexpr const char* SETTINGS_GLEANENABLED = "gleanEnabled";
@@ -361,7 +360,9 @@ GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
        hasNativeWindowsDataMigrated, nativeWindowsDataMigrated,
        setNativeWindowsDataMigrated)
 
-GETSET(QStringList, toStringList, SETTINGS_WIN_MISSING_SPLITTUNNEL_APPS,
+#endif
+
+GETSET(QStringList, toStringList, SETTINGS_MISSING_SPLITTUNNEL_APPS,
        hasMissingApps, missingApps, setMissingApps)
 
 void SettingsHolder::removeMissingApp(const QString& appID) {
@@ -383,8 +384,6 @@ void SettingsHolder::addMissingApp(const QString& appID) {
   applist.append(appID);
   setMissingApps(applist);
 }
-#endif
-
 #undef GETSET
 
 bool SettingsHolder::hasVpnDisabledApp(const QString& appID) {

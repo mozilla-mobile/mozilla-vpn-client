@@ -142,6 +142,10 @@ IPAddress::IPAddress(const QHostAddress& address, int prefixLength)
 
 IPAddress::~IPAddress() { MVPN_COUNT_DTOR(IPAddress); }
 
+QAbstractSocket::NetworkLayerProtocol IPAddress::type() const {
+  return m_address.protocol();
+}
+
 bool IPAddress::overlaps(const IPAddress& other) const {
   return other.contains(m_address) || other.contains(m_broadcastAddress) ||
          contains(other.m_address) || contains(other.m_broadcastAddress);
@@ -202,9 +206,10 @@ QList<IPAddress> IPAddress::subnets() const {
     while (start < end) {
       int newPrefixLength = m_prefixLength + 1;
       if (newPrefixLength == 32) {
-        list.append(IPAddress(QHostAddress(start)));
+        list.append(IPAddress(QHostAddress(static_cast<quint32>(start))));
       } else {
-        list.append(IPAddress(QHostAddress(start), m_prefixLength + 1));
+        list.append(IPAddress(QHostAddress(static_cast<quint32>(start)),
+                              m_prefixLength + 1));
       }
       start += step;
     }

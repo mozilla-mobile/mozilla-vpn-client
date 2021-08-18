@@ -58,7 +58,7 @@ void TaskAuthenticate::run(MozillaVPN* vpn) {
   QByteArray pkceCodeVerifier = generatePkceCodeVerifier();
   QByteArray pkceCodeChallenge =
       QCryptographicHash::hash(pkceCodeVerifier, QCryptographicHash::Sha256)
-          .toBase64();
+          .toBase64(QByteArray::Base64UrlEncoding);
   Q_ASSERT(pkceCodeChallenge.length() == 44);
 
   m_authenticationListener =

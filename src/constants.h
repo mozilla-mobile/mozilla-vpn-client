@@ -13,10 +13,6 @@ namespace Constants {
 bool inProduction();
 void setStaging();
 
-// This value is the fallback in case apple is slower than the user. This
-// should never happen.
-constexpr const char* SUBSCRIPTION_CURRENCY_VALUE_USD = "4.99$";
-
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 

@@ -53,6 +53,7 @@ SOURCES += \
         authenticationlistener.cpp \
         authenticationinapp/authenticationinapp.cpp \
         authenticationinapp/authenticationinapplistener.cpp \
+        authenticationinapp/incrementaldecoder.cpp \
         captiveportal/captiveportal.cpp \
         captiveportal/captiveportaldetection.cpp \
         captiveportal/captiveportaldetectionimpl.cpp \
@@ -89,6 +90,7 @@ SOURCES += \
         hacl-star/Hacl_Poly1305_32.c \
         hawkauth.cpp \
         hkdf.cpp \
+        iaphandler.cpp \
         inspector/inspectorhttpconnection.cpp \
         inspector/inspectorhttpserver.cpp \
         inspector/inspectorwebsocketconnection.cpp \
@@ -124,6 +126,7 @@ SOURCES += \
         pinghelper.cpp \
         pingsender.cpp \
         platforms/dummy/dummyapplistprovider.cpp \
+        platforms/dummy/dummyiaphandler.cpp \
         platforms/dummy/dummynetworkwatcher.cpp \
         qmlengineholder.cpp \
         releasemonitor.cpp \
@@ -143,6 +146,7 @@ SOURCES += \
         tasks/controlleraction/taskcontrolleraction.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
+        tasks/products/taskproducts.cpp \
         tasks/removedevice/taskremovedevice.cpp \
         tasks/surveydata/tasksurveydata.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
@@ -158,6 +162,7 @@ HEADERS += \
         authenticationlistener.h \
         authenticationinapp/authenticationinapp.h \
         authenticationinapp/authenticationinapplistener.h \
+        authenticationinapp/incrementaldecoder.h \
         bigintipv6addr.h \
         captiveportal/captiveportal.h \
         captiveportal/captiveportaldetection.h \
@@ -193,6 +198,7 @@ HEADERS += \
         fontloader.h \
         hawkauth.h \
         hkdf.h \
+        iaphandler.h \
         inspector/inspectorhttpconnection.h \
         inspector/inspectorhttpserver.h \
         inspector/inspectorwebsocketconnection.h \
@@ -227,6 +233,7 @@ HEADERS += \
         pinghelper.h \
         pingsender.h \
         platforms/dummy/dummyapplistprovider.h \
+        platforms/dummy/dummyiaphandler.h \
         platforms/dummy/dummynetworkwatcher.h \
         qmlengineholder.h \
         releasemonitor.h \
@@ -247,6 +254,7 @@ HEADERS += \
         tasks/controlleraction/taskcontrolleraction.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
+        tasks/products/taskproducts.h \
         tasks/removedevice/taskremovedevice.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
@@ -346,6 +354,10 @@ else:linux:!android {
     TARGET = mozillavpn
     QT += networkauth
     QT += dbus
+
+    system(c++ -lgo 2>&1 | grep "__go_init_main" > /dev/null) {
+        LIBS += -lgo
+    }
 
     CONFIG += c++14
 
@@ -503,7 +515,8 @@ else:android {
 
     INCLUDEPATH += platforms/android
 
-    SOURCES +=  platforms/android/androidauthenticationlistener.cpp \
+    SOURCES +=  platforms/android/androidadjusthelper.cpp \
+                platforms/android/androidauthenticationlistener.cpp \
                 platforms/android/androidcontroller.cpp \
                 platforms/android/androidnotificationhandler.cpp \
                 platforms/android/androidutils.cpp \
@@ -515,7 +528,8 @@ else:android {
                 platforms/android/androidsharedprefs.cpp \
                 tasks/authenticate/desktopauthenticationlistener.cpp
 
-    HEADERS +=  platforms/android/androidauthenticationlistener.h \
+    HEADERS +=  platforms/android/androidadjusthelper.h \
+                platforms/android/androidauthenticationlistener.h \
                 platforms/android/androidcontroller.h \
                 platforms/android/androidnotificationhandler.h \
                 platforms/android/androidutils.h \
@@ -680,11 +694,10 @@ else:ios {
     DEFINES += MVPN_IOS
 
     SOURCES += \
-            platforms/ios/taskiosproducts.cpp \
             platforms/macos/macospingsender.cpp
 
     OBJECTIVE_SOURCES += \
-            platforms/ios/iaphandler.mm \
+            platforms/ios/iosiaphandler.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
@@ -694,11 +707,10 @@ else:ios {
             platforms/macos/macoscryptosettings.mm
 
     HEADERS += \
-            platforms/ios/taskiosproducts.h \
             platforms/macos/macospingsender.h
 
     OBJECTIVE_HEADERS += \
-            platforms/ios/iaphandler.h \
+            platforms/ios/iosiaphandler.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \
@@ -748,6 +760,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.cpp \
         platforms/windows/daemon/windowsdaemonserver.cpp \
         platforms/windows/daemon/windowsdaemontunnel.cpp \
+        platforms/windows/daemon/windowstunnellogger.cpp \
         platforms/windows/daemon/windowstunnelservice.cpp \
         platforms/windows/daemon/wireguardutilswindows.cpp \
         platforms/windows/daemon/windowsfirewall.cpp \
@@ -779,6 +792,7 @@ else:win* {
         platforms/windows/daemon/windowsdaemon.h \
         platforms/windows/daemon/windowsdaemonserver.h \
         platforms/windows/daemon/windowsdaemontunnel.h \
+        platforms/windows/daemon/windowstunnellogger.h \
         platforms/windows/daemon/windowstunnelservice.h \
         platforms/windows/daemon/wireguardutilswindows.h \
         platforms/windows/daemon/windowsfirewall.h \

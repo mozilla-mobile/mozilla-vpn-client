@@ -8,7 +8,7 @@ import "../themes/themes.js" as Theme
 
 RowLayout {
     property var servers: ({})
-    property int imgSize: 16
+    property int imgSize: Theme.windowMargin
 
     id: root
 

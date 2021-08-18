@@ -16,8 +16,8 @@ class IOSAuthenticationListener final : public AuthenticationListener {
   IOSAuthenticationListener(QObject* parent);
   ~IOSAuthenticationListener();
 
-  void start(const QString& codeChallenge,
-             const QString& codeChallengeMethod) override;
+  void start(const QString& codeChallenge, const QString& codeChallengeMethod,
+             const QString& emailAddress) override;
 };
 
 #endif  // IOSAUTHENTICATIONLISTENER_H
