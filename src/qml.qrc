@@ -439,6 +439,8 @@
         <file>ui/components/VPNMetropolisLabel.qml</file>
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
+        <file>ui/resources/avatar-default.png</file>
+        <file>ui/components/VPNAvatar.qml</file>
         <file>ui/themes/colors.js</file>
         <file>ui/components/forms/VPNInputStates.qml</file>
         <file>ui/components/VPNSemiMonoLabel.qml</file>
