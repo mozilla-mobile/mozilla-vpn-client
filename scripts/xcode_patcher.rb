@@ -76,6 +76,7 @@ class XCodeprojPatcher
       config.build_settings['INFOPLIST_FILE'] ||= platform + '/app/Info.plist'
       if platform == 'ios'
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
+        config.build_settings['ADJUST_SDK_TOKEN'] = configHash['ADJUST_SDK_TOKEN']
       elsif networkExtension
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/app.entitlements'
       else
@@ -86,7 +87,6 @@ class XCodeprojPatcher
       config.build_settings['ENABLE_BITCODE'] ||= 'NO' if platform == 'ios'
       config.build_settings['SDKROOT'] = 'iphoneos' if platform == 'ios'
       config.build_settings['SWIFT_PRECOMPILE_BRIDGING_HEADER'] = 'NO' if platform == 'ios'
-      config.build_settings['ADJUST_SDK_TOKEN'] = configHash['ADJUST_SDK_TOKEN']
 
       groupId = "";
       if (platform == 'macos')
@@ -142,21 +142,23 @@ class XCodeprojPatcher
       }
     end
 
-    frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
-    frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
-    embed_frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'Embed Frameworks' }
+    if (platform == 'ios')
+      frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+      frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+      embed_frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'Embed Frameworks' }
 
-    framework_ref = frameworks_group.new_file('3rdparty/AdjustSdk.framework')
-    frameworks_build_phase.add_file_reference(framework_ref)
+      framework_ref = frameworks_group.new_file('3rdparty/AdjustSdk.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
 
-    framework_file = embed_frameworks_build_phase.add_file_reference(framework_ref)
-    framework_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy', 'CodeSignOnCopy'] }
+      framework_file = embed_frameworks_build_phase.add_file_reference(framework_ref)
+      framework_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy', 'CodeSignOnCopy'] }
 
-    framework_ref = frameworks_group.new_file('AdServices.framework')
-    frameworks_build_phase.add_file_reference(framework_ref)
+      framework_ref = frameworks_group.new_file('AdServices.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
 
-    framework_ref = frameworks_group.new_file('iAd.framework')
-    frameworks_build_phase.add_file_reference(framework_ref)
+      framework_ref = frameworks_group.new_file('iAd.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
+    end
   end
 
   def setup_target_extension(shortVersion, fullVersion, platform, configHash)
