@@ -134,7 +134,7 @@ uint PingHelper::latency() const {
 
   // Add half the denominator to produce nearest-integer rounding.
   totalMsec += recvCount / 2;
-  return totalMsec / recvCount;
+  return static_cast<uint>(totalMsec / recvCount);
 }
 
 uint PingHelper::stddev() const {
