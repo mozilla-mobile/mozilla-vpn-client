@@ -132,6 +132,11 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
   return new NetworkRequest(parent, 1234, false);
 }
 
+// static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
