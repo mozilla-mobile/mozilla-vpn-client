@@ -25,6 +25,11 @@ workers:
             implementation: docker-worker
             os: linux
             worker-type: b-linux
+        b-win2012:
+            provisioner: 'mozillavpn-{level}'
+            implementation: generic-worker
+            os: windows
+            worker-type: b-win2012
         images:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
