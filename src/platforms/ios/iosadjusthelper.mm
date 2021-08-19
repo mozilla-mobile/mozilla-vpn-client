@@ -28,6 +28,10 @@ void IOSAdjustHelper::initialize() {
 }
 
 void IOSAdjustHelper::trackEvent(const QString& eventToken) {
-  ADJEvent *event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
-  [Adjust trackEvent:event];
+  NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
+
+  if(adjustToken.length) {
+    ADJEvent *event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
+    [Adjust trackEvent:event];
+  }
 }
