@@ -289,6 +289,10 @@ Window {
             }
         }
 
+        function onContactUsNeeded() {
+            mainStackView.push("views/ViewContactUs.qml");
+        }
+
         function onLoadAndroidAuthenticationView() {
             if (Qt.platform.os !== "android") {
                 console.log("Unexpected android authentication view request!");

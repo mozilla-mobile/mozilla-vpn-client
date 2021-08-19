@@ -3,8 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "featurelist.h"
+#include "logger.h"
 
 #include <QProcessEnvironment>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #ifdef MVPN_ANDROID
 #  include "platforms/android/androidutils.h"
@@ -15,11 +18,24 @@
 #endif
 
 namespace {
+Logger logger(LOG_MAIN, "FeatureList");
 FeatureList s_featureList;
 }
 
 // static
 FeatureList* FeatureList::instance() { return &s_featureList; }
+
+void FeatureList::updateFeatureList(const QByteArray& data) {
+  QJsonObject json = QJsonDocument::fromJson(data).object();
+  QJsonValue unauthSupportEnabled = json["unauthSupportEnabled"];
+  if (unauthSupportEnabled.isBool()) {
+    logger.debug() << "Setting unauth support enablet to: "
+                   << unauthSupportEnabled.toBool();
+    m_unauthSupportSupported = unauthSupportEnabled.toBool();
+  } else {
+    logger.error() << "Error in parsing unauth support response";
+  }
+}
 
 bool FeatureList::startOnBootSupported() const {
 #if defined(MVPN_LINUX) || defined(MVPN_MACOS) || defined(MVPN_WINDOWS) || \
@@ -152,4 +168,8 @@ bool FeatureList::multihopSupported() const {
 #else
   return false;
 #endif
+}
+
+bool FeatureList::unauthSupportSupported() const {
+  return m_unauthSupportSupported;
 }

@@ -61,6 +61,12 @@ class NetworkRequest final : public QObject {
                                            const qint8 rating,
                                            const QString& category);
 
+  static NetworkRequest* createForSupportTicket(
+      QObject* parent, const QString& email, const QString& subject,
+      const QString& issueText, const QString& logs, const QString& category);
+
+  static NetworkRequest* createForGetFeatureList(QObject* parent);
+
   static NetworkRequest* createForFxaAccountStatus(QObject* parent,
                                                    const QString& emailAddress);
 
