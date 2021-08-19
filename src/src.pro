@@ -649,8 +649,12 @@ else:macos {
                    daemon/daemonlocalserverconnection.cpp \
                    localsocketcontroller.cpp \
                    wgquickprocess.cpp \
+                   platforms/macos/daemon/dnsutilsmacos.cpp \
+                   platforms/macos/daemon/iputilsmacos.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
-                   platforms/macos/daemon/macosdaemonserver.cpp
+                   platforms/macos/daemon/macosdaemonserver.cpp \
+                   platforms/macos/daemon/macosroutemonitor.cpp \
+                   platforms/macos/daemon/wireguardutilsmacos.cpp
         HEADERS += \
                    daemon/interfaceconfig.h \
                    daemon/daemon.h \
@@ -661,8 +665,12 @@ else:macos {
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
+                   platforms/macos/daemon/dnsutilsmacos.h \
+                   platforms/macos/daemon/iputilsmacos.h \
                    platforms/macos/daemon/macosdaemon.h \
-                   platforms/macos/daemon/macosdaemonserver.h
+                   platforms/macos/daemon/macosdaemonserver.h \
+                   platforms/macos/daemon/macosroutemonitor.h \
+                   platforms/macos/daemon/wireguardutilsmacos.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14

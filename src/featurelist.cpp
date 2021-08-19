@@ -144,3 +144,12 @@ bool FeatureList::inAppPurchaseSupported() const {
   return false;
 #endif
 }
+
+bool FeatureList::multihopSupported() const {
+#if defined(MVPN_LINUX) || defined(MVPN_WINDOWS) || defined(MVPN_DUMMY) || \
+    defined(MVPN_MACOS_DAEMON)
+  return true;
+#else
+  return false;
+#endif
+}

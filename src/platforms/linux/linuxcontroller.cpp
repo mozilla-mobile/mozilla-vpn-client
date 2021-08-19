@@ -6,6 +6,7 @@
 #include "backendlogsobserver.h"
 #include "dbusclient.h"
 #include "errorhandler.h"
+#include "ipaddressrange.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
@@ -28,9 +29,9 @@ LinuxController::LinuxController() {
   MVPN_COUNT_CTOR(LinuxController);
 
   m_dbus = new DBusClient(this);
-  connect(m_dbus, &DBusClient::connected, this, &LinuxController::connected);
+  connect(m_dbus, &DBusClient::connected, this, &LinuxController::hopConnected);
   connect(m_dbus, &DBusClient::disconnected, this,
-          &LinuxController::disconnected);
+          &LinuxController::hopDisconnected);
 }
 
 LinuxController::~LinuxController() { MVPN_COUNT_DTOR(LinuxController); }
@@ -67,15 +68,30 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 }
 
 void LinuxController::activate(
-    const Server& server, const Device* device, const Keys* keys,
+    const QList<Server>& serverList, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
     Reason reason) {
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
+  // Activate connections starting from the outermost tunnel
+  for (int hopindex = serverList.count() - 1; hopindex > 0; hopindex--) {
+    const Server& hop = serverList[hopindex];
+    const Server& next = serverList[hopindex - 1];
+    QList<IPAddressRange> hopAddressRanges = {
+        IPAddressRange(next.ipv4AddrIn()), IPAddressRange(next.ipv6AddrIn())};
+    logger.debug() << "LinuxController hopindex" << hopindex << "activated";
+    connect(m_dbus->activate(hop, device, keys, hopindex, hopAddressRanges,
+                             QStringList(), QHostAddress(hop.ipv4Gateway())),
+            &QDBusPendingCallWatcher::finished, this,
+            &LinuxController::operationCompleted);
+  }
+
+  // Activate the final hop last
   logger.debug() << "LinuxController activated";
-  connect(m_dbus->activate(server, device, keys, allowedIPAddressRanges,
+  const Server& server = serverList[0];
+  connect(m_dbus->activate(server, device, keys, 0, allowedIPAddressRanges,
                            vpnDisabledApps, dnsServer),
           &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
@@ -113,6 +129,24 @@ void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
   logger.error() << "DBus service says: error.";
   MozillaVPN::instance()->errorHandle(ErrorHandler::ControllerError);
   emit disconnected();
+}
+
+void LinuxController::hopConnected(int hopindex) {
+  if (hopindex == 0) {
+    logger.debug() << "LinuxController connected";
+    emit connected();
+  } else {
+    logger.debug() << "LinuxController hopindex" << hopindex << "connected";
+  }
+}
+
+void LinuxController::hopDisconnected(int hopindex) {
+  if (hopindex == 0) {
+    logger.debug() << "LinuxController disconnected";
+    emit disconnected();
+  } else {
+    logger.debug() << "LinuxController hopindex" << hopindex << "disconnected";
+  }
 }
 
 void LinuxController::checkStatus() {

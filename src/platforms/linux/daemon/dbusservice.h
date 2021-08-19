@@ -42,11 +42,7 @@ class DBusService final : public Daemon {
   bool firewallClear();
 
  protected:
-  bool supportServerSwitching(const InterfaceConfig& config) const override;
-  bool switchServer(const InterfaceConfig& config) override;
-
-  bool supportWGUtils() const override { return true; }
-  WireguardUtils* wgutils() override;
+  WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportIPUtils() const override { return true; }
   IPUtils* iputils() override;
   bool supportDnsUtils() const override { return true; }

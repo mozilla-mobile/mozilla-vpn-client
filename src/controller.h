@@ -118,7 +118,7 @@ class Controller final : public QObject {
   void setState(State state);
 
   bool processNextStep();
-  QList<IPAddressRange> getAllowedIPAddressRanges(const Server& server);
+  QList<IPAddressRange> getAllowedIPAddressRanges(const QList<Server>& servers);
 
   void activateInternal();
 

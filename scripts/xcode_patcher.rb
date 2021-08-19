@@ -32,7 +32,6 @@ class XCodeprojPatcher
     else
       setup_target_wireguardgo
       setup_target_wireguardtools
-      setup_target_wireguardhelper
     end
 
     setup_target_balrog if platform == 'macos'
@@ -316,19 +315,6 @@ class XCodeprojPatcher
     dependency.target_proxy = container_proxy
 
     @target_main.dependencies << dependency
-  end
-
-  def setup_target_wireguardhelper
-    copy_wireguardHelper = @target_main.new_copy_files_build_phase
-    copy_wireguardHelper.name = 'Copy wireguard helper'
-    copy_wireguardHelper.symbol_dst_subfolder_spec = :wrapper
-    copy_wireguardHelper.dst_path = 'Contents/Resources/utils'
-
-    group = @project.main_group.new_group('WireGuardHelper')
-    file = group.new_file 'macos/daemon/helper.sh'
-
-    wireguardHelper_file = copy_wireguardHelper.add_file_reference file
-    wireguardHelper_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
   def setup_target_wireguardtools

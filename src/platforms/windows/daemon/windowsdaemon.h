@@ -23,13 +23,8 @@ class WindowsDaemon final : public Daemon {
   void prepareActivation(const InterfaceConfig& config) override;
 
  protected:
-  bool supportWGUtils() const override { return true; }
-  WireguardUtils* wgutils() override { return m_wgutils; }
-
   bool run(Op op, const InterfaceConfig& config) override;
-
- private:
-  bool supportServerSwitching(const InterfaceConfig& config) const override;
+  WireguardUtils* wgutils() const override { return m_wgutils; }
 
  private:
   void monitorBackendFailure();

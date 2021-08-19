@@ -47,7 +47,7 @@ QDBusPendingCallWatcher* DBusClient::version() {
 }
 
 QDBusPendingCallWatcher* DBusClient::activate(
-    const Server& server, const Device* device, const Keys* keys,
+    const Server& server, const Device* device, const Keys* keys, int hopindex,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QStringList& vpnDisabledApps, const QHostAddress& dnsServer) {
   QJsonObject json;
@@ -63,6 +63,7 @@ QDBusPendingCallWatcher* DBusClient::activate(
   json.insert("ipv6Enabled",
               QJsonValue(SettingsHolder::instance()->ipv6Enabled()));
   json.insert("dnsServer", QJsonValue(dnsServer.toString()));
+  json.insert("hopindex", QJsonValue((double)hopindex));
 
   QJsonArray allowedIPAddesses;
   for (const IPAddressRange& i : allowedIPAddressRanges) {

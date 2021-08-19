@@ -73,30 +73,23 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
 QByteArray WindowsDaemon::getStatus() {
   logger.debug() << "Status request";
 
+  bool connected = m_connections.contains(0);
   QJsonObject obj;
   obj.insert("type", "status");
-  obj.insert("connected", m_connected);
+  obj.insert("connected", connected);
 
-  if (m_connected) {
-    WireguardUtilsWindows::peerBytes pb =
-        m_wgutils->getThroughputForInterface();
-    obj.insert("serverIpv4Gateway", m_lastConfig.m_serverIpv4Gateway);
-    obj.insert("deviceIpv4Address", m_lastConfig.m_deviceIpv4Address);
-    obj.insert("date", m_connectionDate.toString());
-    obj.insert("txBytes", QJsonValue(pb.txBytes));
-    obj.insert("rxBytes", QJsonValue(pb.rxBytes));
+  if (connected) {
+    const ConnectionState& state = m_connections.value(0).m_config;
+    WireguardUtilsWindows::peerStatus status =
+        m_wgutils->getPeerStatus(state.m_config.m_serverPublicKey);
+    obj.insert("serverIpv4Gateway", state.m_config.m_serverIpv4Gateway);
+    obj.insert("deviceIpv4Address", state.m_config.m_deviceIpv4Address);
+    obj.insert("date", state.m_date.toString());
+    obj.insert("txBytes", QJsonValue(status.txBytes));
+    obj.insert("rxBytes", QJsonValue(status.rxBytes));
   }
 
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
-}
-
-bool WindowsDaemon::supportServerSwitching(
-    const InterfaceConfig& config) const {
-  return m_lastConfig.m_privateKey == config.m_privateKey &&
-         m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
 }
 
 void WindowsDaemon::monitorBackendFailure() {

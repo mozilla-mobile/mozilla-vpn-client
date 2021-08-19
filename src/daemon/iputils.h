@@ -21,7 +21,8 @@ class IPUtils : public QObject {
     return false;
   };
 
-  virtual bool setMTUAndUp() {
+  virtual bool setMTUAndUp(const InterfaceConfig& config) {
+    Q_UNUSED(config);
     qFatal("Have you forgotten to implement IPUtils::setMTUAndUp?");
     return false;
   };

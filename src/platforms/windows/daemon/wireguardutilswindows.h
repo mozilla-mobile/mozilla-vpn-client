@@ -18,17 +18,23 @@ class WireguardUtilsWindows final : public WireguardUtils {
   ~WireguardUtilsWindows();
 
   bool interfaceExists() override { return m_tunnel.isRunning(); }
+  QString interfaceName() override { return "MozillaVPN"; }
   bool addInterface(const InterfaceConfig& config) override;
-  bool updateInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
-  peerBytes getThroughputForInterface() override;
-  bool addRoutePrefix(const IPAddressRange& prefix) override;
-  void flushRoutes() override;
+
+  bool updatePeer(const InterfaceConfig& config) override;
+  bool deletePeer(const QString& pubkey) override;
+  peerStatus getPeerStatus(const QString& pubkey) override;
+
+  bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
 
  signals:
   void backendFailure();
 
  private:
+  void buildMibForwardRow(const IPAddressRange& prefix, void* row);
+
   quint64 m_luid = 0;
   WindowsTunnelService m_tunnel;
 };

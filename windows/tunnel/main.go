@@ -12,7 +12,6 @@ import (
 	"golang.org/x/sys/windows"
 
 	"golang.zx2c4.com/wireguard/windows/conf"
-	"golang.zx2c4.com/wireguard/windows/tunnel"
 
 	"crypto/rand"
 	"log"
@@ -24,8 +23,8 @@ import (
 func WireGuardTunnelService(confFile16 *uint16) bool {
 	confFile := windows.UTF16PtrToString(confFile16)
 	conf.PresetRootDirectory(filepath.Dir(confFile))
-	tunnel.UseFixedGUIDInsteadOfDeterministic = true
-	err := tunnel.Run(confFile)
+	UseFixedGUIDInsteadOfDeterministic = true
+	err := Run(confFile)
 	if err != nil {
 		log.Printf("Service run error: %v", err)
 	}

@@ -41,8 +41,6 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MVPN_COUNT_DTOR(DBusService); }
 
-WireguardUtils* DBusService::wgutils() { return m_wgutils; }
-
 IPUtils* DBusService::iputils() {
   if (!m_iputils) {
     m_iputils = new IPUtilsLinux(this);
@@ -63,9 +61,9 @@ void DBusService::setAdaptor(DbusAdaptor* adaptor) {
 }
 
 bool DBusService::removeInterfaceIfExists() {
-  if (wgutils()->interfaceExists()) {
+  if (m_wgutils->interfaceExists()) {
     logger.warning() << "Device already exists. Let's remove it.";
-    if (!wgutils()->deleteInterface()) {
+    if (!m_wgutils->deleteInterface()) {
       logger.error() << "Failed to remove the device.";
       return false;
     }
@@ -122,19 +120,26 @@ QString DBusService::status() { return QString(getStatus()); }
 QByteArray DBusService::getStatus() {
   logger.debug() << "Status request";
   QJsonObject json;
-  if (!wgutils()->interfaceExists()) {
+
+  if (!m_connections.contains(0)) {
+    json.insert("status", QJsonValue(false));
+    return QJsonDocument(json).toJson(QJsonDocument::Compact);
+  }
+
+  const InterfaceConfig& config = m_connections.value(0).m_config;
+  if (!m_wgutils->interfaceExists()) {
     logger.error() << "Unable to get device";
     json.insert("status", QJsonValue(false));
     return QJsonDocument(json).toJson(QJsonDocument::Compact);
   }
+
   json.insert("status", QJsonValue(true));
-  json.insert("serverIpv4Gateway",
-              QJsonValue(m_lastConfig.m_serverIpv4Gateway));
-  json.insert("deviceIpv4Address",
-              QJsonValue(m_lastConfig.m_deviceIpv4Address));
-  WireguardUtilsLinux::peerBytes pb = wgutils()->getThroughputForInterface();
-  json.insert("txBytes", QJsonValue(pb.txBytes));
-  json.insert("rxBytes", QJsonValue(pb.rxBytes));
+  json.insert("serverIpv4Gateway", QJsonValue(config.m_serverIpv4Gateway));
+  json.insert("deviceIpv4Address", QJsonValue(config.m_deviceIpv4Address));
+  WireguardUtilsLinux::peerStatus status =
+      m_wgutils->getPeerStatus(config.m_serverPublicKey);
+  json.insert("txBytes", QJsonValue(status.txBytes));
+  json.insert("rxBytes", QJsonValue(status.rxBytes));
 
   return QJsonDocument(json).toJson(QJsonDocument::Compact);
 }
@@ -142,19 +147,6 @@ QByteArray DBusService::getStatus() {
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
   return Daemon::logs();
-}
-
-bool DBusService::switchServer(const InterfaceConfig& config) {
-  logger.debug() << "Switching server";
-  return wgutils()->updateInterface(config);
-}
-
-bool DBusService::supportServerSwitching(const InterfaceConfig& config) const {
-  return m_lastConfig.m_privateKey == config.m_privateKey &&
-         m_lastConfig.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         m_lastConfig.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         m_lastConfig.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         m_lastConfig.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
 }
 
 void DBusService::appLaunched(const QString& name, int rootpid) {
