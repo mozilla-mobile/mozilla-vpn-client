@@ -15,6 +15,7 @@
 #include <QTimer>
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
+constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
 
@@ -31,6 +32,9 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
   Q_ASSERT(s_daemon == nullptr);
   s_daemon = this;
+
+  m_handshakeTimer.setSingleShot(true);
+  connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
 }
 
 Daemon::~Daemon() {
@@ -70,8 +74,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
       m_connections[config.m_hopindex] = ConnectionState(config);
-
-      emit connected(config.m_hopindex);
+      m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
       return true;
     }
 
@@ -135,7 +138,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   logger.debug() << "Connection status:" << status;
   if (status) {
     m_connections[config.m_hopindex] = ConnectionState(config);
-    emit connected(config.m_hopindex);
+    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
   }
 
   return status;
@@ -378,4 +381,34 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
 
   m_connections[config.m_hopindex] = ConnectionState(config);
   return true;
+}
+
+void Daemon::checkHandshake() {
+  Q_ASSERT(wgutils() != nullptr);
+
+  bool tryAgain = false;
+  QList<WireguardUtils::peerStatus> peers = wgutils()->getPeerStatus();
+  for (ConnectionState& connection : m_connections) {
+    if (connection.m_date.isValid()) {
+      continue;
+    }
+
+    // Check if the handshake has completed.
+    for (const WireguardUtils::peerStatus& status : peers) {
+      if (connection.m_config.m_serverPublicKey != status.pubkey) {
+        continue;
+      }
+      if (status.handshake != 0) {
+        connection.m_date.setMSecsSinceEpoch(status.handshake);
+        emit connected(connection.m_config.m_hopindex);
+      } else {
+        tryAgain = true;
+      }
+    }
+  }
+
+  // Check again if there were connections that haven't completed a handshake.
+  if (tryAgain) {
+    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+  }
 }

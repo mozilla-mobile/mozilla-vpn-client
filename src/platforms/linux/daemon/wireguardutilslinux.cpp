@@ -294,29 +294,29 @@ bool WireguardUtilsLinux::deleteInterface() {
   return true;
 }
 
-WireguardUtils::peerStatus WireguardUtilsLinux::getPeerStatus(
-    const QString& pubkey) {
+QList<WireguardUtils::peerStatus> WireguardUtilsLinux::getPeerStatus() {
   wg_device* device = nullptr;
   wg_peer* peer = nullptr;
-  peerStatus status = {0, 0};
+  QList<WireguardUtils::peerStatus> result;
 
   if (wg_get_device(&device, WG_INTERFACE) != 0) {
     logger.warning() << "Unable to get stats for" << WG_INTERFACE;
-    return status;
+    return result;
   }
 
-  wg_key key;
-  wg_key_from_base64(key, qPrintable(pubkey));
   wg_for_each_peer(device, peer) {
-    if (memcmp(&key, &peer->public_key, sizeof(key)) != 0) {
-      continue;
-    }
+    peerStatus status;
+    wg_key_b64_string keystring;
+    wg_key_to_base64(keystring, peer->public_key);
+    status.pubkey = QString(keystring);
+    status.handshake = peer->last_handshake_time.tv_sec * 1000;
+    status.handshake += peer->last_handshake_time.tv_nsec / 1000000;
     status.txBytes = peer->tx_bytes;
     status.rxBytes = peer->rx_bytes;
-    break;
+    result.append(status);
   }
   wg_free_device(device);
-  return status;
+  return result;
 }
 
 bool WireguardUtilsLinux::updateRoutePrefix(const IPAddressRange& prefix,

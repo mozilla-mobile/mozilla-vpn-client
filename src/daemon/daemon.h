@@ -11,6 +11,7 @@
 #include "wireguardutils.h"
 
 #include <QDateTime>
+#include <QTimer>
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -60,17 +61,17 @@ class Daemon : public QObject {
   virtual bool supportDnsUtils() const { return false; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
+  void checkHandshake();
+
   class ConnectionState {
    public:
     ConnectionState(){};
-    ConnectionState(const InterfaceConfig& config) {
-      m_config = config;
-      m_date = QDateTime::currentDateTime();
-    }
+    ConnectionState(const InterfaceConfig& config) { m_config = config; }
     QDateTime m_date;
     InterfaceConfig m_config;
   };
   QMap<int, ConnectionState> m_connections;
+  QTimer m_handshakeTimer;
 };
 
 #endif  // DAEMON_H
