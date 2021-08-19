@@ -74,7 +74,7 @@ if [[ "$OS" == "ios" ]]; then
 
   command -v wget >/dev/null 2>&1 || die "wget must be installed to download the Adjust SDK"
   command -v unzip >/dev/null 2>&1 || die "unzip must be installed to unzip the Adjust SDK"
-  command -v sha256Sum >/dev/null 2>&1 || die "sha256sum must be installed to verify the Adjust SDK"
+  command -v sha256sum >/dev/null 2>&1 || die "sha256sum must be installed to verify the Adjust SDK"
 
   if ! [ -d "3rdparty/AdjustSdk.framework" ]; then
     rm -f 3rdparty/AdjustSdkDynamic.framework.zip
