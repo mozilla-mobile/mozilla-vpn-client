@@ -29,7 +29,7 @@ Item {
         id: menu
         objectName: "serverListBackButton"
 
-        title: qsTrId("vpn.servers.selectLocation")
+        title: defaultMenuTitle
         onActiveFocusChanged: if (focus) forceFocus = true
         isMultiHopView: true
 
@@ -41,15 +41,14 @@ Item {
     }
 
     ListModel {
-        // MULTIHOP TODO - Use real strings
         id: tabButtonList
         ListElement {
-            buttonLabel: "String-Single"
-            objectId: "tabSingleHop"
+            tabLabelStringId: "MultiHopFeatureSingleToggleHeader"
+            tabButtonId: "tabButtonSingleHop"
         }
         ListElement {
-            buttonLabel: "String-Multi"
-            objectId: "tab"
+            tabLabelStringId: "MultiHopFeatureMultiToggleHeader"
+            tabButtonId: "tabButtonMultiHeader"
         }
     }
 

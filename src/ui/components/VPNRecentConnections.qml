@@ -16,9 +16,7 @@ ColumnLayout {
     spacing: Theme.windowMargin / 2
 
     VPNBoldLabel {
-
-        // MULTIHOP TODO - Use real string
-        text: "Recent connections"
+        text: VPNl18n.tr(VPNl18n.MultiHopFeatureConnectionsHeader)
 
         Layout.leftMargin: Theme.windowMargin
         Layout.minimumHeight: Theme.vSpacing

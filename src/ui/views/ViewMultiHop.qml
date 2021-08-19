@@ -5,6 +5,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
+import Mozilla.VPN 1.0
 import "../themes/colors.js" as Color
 import "../themes/themes.js" as Theme
 import "../components"
@@ -26,13 +27,11 @@ StackView {
             spacing: Theme.vSpacing
 
             VPNCollapsibleCard {
-
-                // MULTIHOP TODO - Use real strings
-                title: "Need string"
+                title: VPNl18n.tr(VPNl18n.MultiHopFeatureCardHeader)
 
                 iconSrc: "../resources/tip.svg"
                 contentItem: VPNTextBlock {
-                    text: "This is the collapsible card body content. It any item and is not only displaying text."
+                    text: VPNl18n.tr(VPNl18n.MultiHopFeatureCardBody)
                     textFormat: Text.StyledText
                     Layout.fillWidth: true
                 }
@@ -52,14 +51,13 @@ StackView {
                     menu.title =  titleText;
                 }
 
-                // MULTIHOP TODO - Replace with real string
-                titleText: "String - Select entry location"
-
+                objectName: "buttonSelectEntry"
+                titleText: VPNl18n.tr(VPNl18n.MultiHopFeatureEntryLocationHeader)
                 descriptionText: titleText
                 contentChildren: [
                     VPNServerLabel {
 
-                        // MULTIHOP TODO - Replace with real server list
+                        // MULTIHOP TODO - Replace with real server info
                         servers: [
                             {
                                 countryCode: "BE",
@@ -76,15 +74,14 @@ StackView {
                     menu.title = titleText;
                 }
 
-                // MULTIHOP TODO - Replace with real string
-                titleText: "String - Select exit location" // TODO
-
+                objectName: "buttonSelectExit"
+                titleText: VPNl18n.tr(VPNl18n.MultiHopFeatureExitLocationHeader)
                 descriptionText: titleText
                 contentChildren: [
 
                     VPNServerLabel {
 
-                        // MULTIHOP TODO - Replace with real server list
+                        // MULTIHOP TODO - Replace with real server info
                         servers: [
                             {
                                 countryCode: "US",
