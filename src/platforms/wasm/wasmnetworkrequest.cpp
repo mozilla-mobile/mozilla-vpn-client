@@ -208,6 +208,13 @@ NetworkRequest* NetworkRequest::createForSupportTicket(
 }
 
 // static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+  createDummyRequest(r);
+  return r;
+}
+
+// static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     QObject* parent, const QString& emailAddress) {
   Q_ASSERT(parent);
