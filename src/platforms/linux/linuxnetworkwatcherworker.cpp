@@ -152,17 +152,22 @@ void LinuxNetworkWatcherWorker::checkDevices() {
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
-    int rsnFlags = ap.property("RsnFlags").toInt();
-    int wpaFlags = ap.property("WpaFlags").toInt();
-    if (!checkUnsecureFlags(rsnFlags, wpaFlags)) {
+    QVariant rsnFlags = ap.property("RsnFlags");
+    QVariant wpaFlags = ap.property("WpaFlags");
+    if (!rsnFlags.isValid() || !wpaFlags.isValid()) {
+      // We are probably not connected.
+      continue;
+    }
+
+    if (!checkUnsecureFlags(rsnFlags.toInt(), wpaFlags.toInt())) {
       QString ssid = ap.property("Ssid").toString();
       QString bssid = ap.property("HwAddress").toString();
 
       // We have found 1 unsecured network. We don't need to check other wifi
       // network devices.
-      logger.warning() << "Unsecured AP detected flags:"
-                       << QString("%1:%2").arg(rsnFlags).arg(wpaFlags)
-                       << "ssid:" << ssid;
+      logger.warning() << "Unsecured AP detected!"
+                       << "rsnFlags:" << rsnFlags.toInt()
+                       << "wpaFlags:" << wpaFlags.toInt() << "ssid:" << ssid;
       emit unsecuredNetwork(ssid, bssid);
       break;
     }
