@@ -361,7 +361,7 @@ NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(apiBaseUrl());
-  url.setPath("/api/v1/featureList");
+  url.setPath("/api/v1/featurelist");
   r->m_request.setUrl(url);
 
   r->getRequest();

@@ -14,10 +14,10 @@ class TaskCreateSupportTicket final : public Task {
   Q_DISABLE_COPY_MOVE(TaskCreateSupportTicket)
 
  public:
-  explicit TaskCreateSupportTicket(const QString& email, const QString& subject,
-                                   const QString& issueText,
-                                   const QString& logs,
-                                   const QString& category);
+  TaskCreateSupportTicket(const QString& email, const QString& subject,
+                          const QString& issueText,
+                          const QString& logs,
+                          const QString& category);
   ~TaskCreateSupportTicket();
 
   void run(MozillaVPN* vpn) override;

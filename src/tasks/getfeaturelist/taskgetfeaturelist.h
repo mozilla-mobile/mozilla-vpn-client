@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef TASKCHECKUNAUTHSUPPORTENABLED_H
-#define TASKCHECKUNAUTHSUPPORTENABLED_H
+#ifndef TASKGETFEATURELIST_H
+#define TASKGETFEATURELIST_H
 
 #include "task.h"
 #include "mozillavpn.h"
@@ -14,10 +14,10 @@ class TaskGetFeatureList final : public Task {
   Q_DISABLE_COPY_MOVE(TaskGetFeatureList)
 
  public:
-  explicit TaskGetFeatureList();
+  TaskGetFeatureList();
   ~TaskGetFeatureList();
 
   void run(MozillaVPN* vpn) override;
 };
 
-#endif  // TASKCHECKUNAUTHSUPPORTENABLED_H
+#endif  // TASKGETFEATURELIST_H

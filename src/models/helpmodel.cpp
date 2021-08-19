@@ -10,6 +10,7 @@
 
 namespace {
 bool s_initialized = false;
+bool s_contactUsExternalLink;
 Logger logger(LOG_MAIN, "HelpModel");
 
 struct HelpEntry {
@@ -29,12 +30,13 @@ struct HelpEntry {
 static QList<HelpEntry> s_helpEntries;
 
 void maybeInitialize() {
-  if (s_initialized) {
-    s_helpEntries.clear();
+  if (s_initialized && s_contactUsExternalLink == (!MozillaVPN::instance()->userAuthenticated() && !FeatureList::instance()->unauthSupportSupported())) {
+    return;
   }
+  s_helpEntries.clear();
 
   s_initialized = true;
-
+  s_contactUsExternalLink = (!MozillaVPN::instance()->userAuthenticated() && !FeatureList::instance()->unauthSupportSupported());
   // Here we use the logger to force lrelease to add the help menu Ids.
 
   //% "View log"
@@ -56,8 +58,7 @@ void maybeInitialize() {
   logger.debug() << "Adding:" << qtTrId("help.contactUs");
   s_helpEntries.append(
       HelpEntry("help.contactUs",
-                (!MozillaVPN::instance()->userAuthenticated() &&
-                 !FeatureList::instance()->unauthSupportSupported()),
+                s_contactUsExternalLink,
                 false, MozillaVPN::LinkContact));
 }
 
