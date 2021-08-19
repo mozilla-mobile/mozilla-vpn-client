@@ -143,13 +143,15 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
+        tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
+        tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/products/taskproducts.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        tasks/surveydata/tasksurveydata.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
+        tasks/surveydata/tasksurveydata.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -251,11 +253,14 @@ HEADERS += \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
+        tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/controlleraction/taskcontrolleraction.h \
+        tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/products/taskproducts.h \
         tasks/removedevice/taskremovedevice.h \
+        tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \

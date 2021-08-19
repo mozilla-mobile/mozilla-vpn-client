@@ -28,6 +28,8 @@
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
@@ -92,6 +94,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     scheduleTask(new TaskCaptivePortalLookup());
     scheduleTask(new TaskHeartbeat());
     scheduleTask(new TaskSurveyData());
+    scheduleTask(new TaskGetFeatureList());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -276,6 +279,8 @@ void MozillaVPN::initialize() {
   scheduleTask(new TaskAccountAndServers());
 
   scheduleTask(new TaskCaptivePortalLookup());
+
+  scheduleTask(new TaskGetFeatureList());
 
   if (FeatureList::instance()->inAppPurchaseSupported()) {
     scheduleTask(new TaskProducts());
@@ -664,6 +669,29 @@ void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
     // buffer is getting copied by TaskSendFeedback so we can delete it
     // afterwards
     scheduleTask(new TaskSendFeedback(feedbackText, *buffer, rating, category));
+
+    delete buffer;
+    delete out;
+  });
+}
+
+void MozillaVPN::createSupportTicket(const QString& email,
+                                     const QString& subject,
+                                     const QString& issueText,
+                                     const QString& category) {
+  logger.debug() << "Create support ticket";
+
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+
+  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+    // buffer is getting copied by TaskCreateSupportTicket so we can delete it
+    // afterwards
+    scheduleTask(new TaskCreateSupportTicket(email, subject, issueText, *buffer,
+                                             category));
 
     delete buffer;
     delete out;
@@ -1140,6 +1168,13 @@ void MozillaVPN::requestViewLogs() {
 
   QmlEngineHolder::instance()->showWindow();
   emit viewLogsNeeded();
+}
+
+void MozillaVPN::requestContactUs() {
+  logger.debug() << "Contact us view requested";
+
+  QmlEngineHolder::instance()->showWindow();
+  emit contactUsNeeded();
 }
 
 void MozillaVPN::activate() {

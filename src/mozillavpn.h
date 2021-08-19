@@ -144,6 +144,10 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void submitFeedback(const QString& feedbackText,
                                   const qint8 rating, const QString& category);
   Q_INVOKABLE void appReviewRequested();
+  Q_INVOKABLE void createSupportTicket(const QString& email,
+                                       const QString& subject,
+                                       const QString& issueText,
+                                       const QString& category);
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -246,6 +250,10 @@ class MozillaVPN final : public QObject {
     emit currentViewChanged();
   }
 
+  void createTicketAnswerRecieved(bool successful) {
+    emit ticketCreationAnswer(successful);
+  }
+
  private:
   void setState(State state);
 
@@ -286,6 +294,7 @@ class MozillaVPN final : public QObject {
   void requestSettings();
   void requestAbout();
   void requestViewLogs();
+  void requestContactUs();
 
  private slots:
   void taskCompleted();
@@ -299,6 +308,7 @@ class MozillaVPN final : public QObject {
   void settingsNeeded();
   void aboutNeeded();
   void viewLogsNeeded();
+  void contactUsNeeded();
   void updatingChanged();
 
   // For Glean
@@ -314,6 +324,8 @@ class MozillaVPN final : public QObject {
   void logsReady(const QString& logs);
 
   void currentViewChanged();
+
+  void ticketCreationAnswer(bool successful);
 
  private:
   bool m_initialized = false;

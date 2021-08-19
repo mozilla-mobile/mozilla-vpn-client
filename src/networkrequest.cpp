@@ -328,6 +328,46 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   return r;
 }
 
+NetworkRequest* NetworkRequest::createForSupportTicket(
+    QObject* parent, const QString& email, const QString& subject,
+    const QString& issueText, const QString& logs, const QString& category) {
+  NetworkRequest* r = new NetworkRequest(parent, 201, true);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/vpn/createSupportTicket");
+  r->m_request.setUrl(url);
+
+  r->m_request.setHeader(QNetworkRequest::ContentTypeHeader,
+                         "application/json");
+
+  QJsonObject obj;
+  obj.insert("email", email);
+  obj.insert("logs", logs);
+  obj.insert("versionString", MozillaVPN::instance()->versionString());
+  obj.insert("platformVersion", QString(NetworkManager::osVersion()));
+  obj.insert("subject", subject);
+  obj.insert("issueText", issueText);
+  obj.insert("category", category);
+
+  QJsonDocument json;
+  json.setObject(obj);
+
+  r->postRequest(json.toJson(QJsonDocument::Compact));
+  return r;
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+  NetworkRequest* r = new NetworkRequest(parent, 200, false);
+
+  QUrl url(apiBaseUrl());
+  url.setPath("/api/v1/featureList");
+  r->m_request.setUrl(url);
+
+  r->getRequest();
+  return r;
+}
+
 // static
 NetworkRequest* NetworkRequest::createForFxaAccountStatus(
     QObject* parent, const QString& emailAddress) {

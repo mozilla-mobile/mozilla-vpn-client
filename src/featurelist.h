@@ -28,11 +28,17 @@ class FeatureList final : public QObject {
   Q_PROPERTY(bool multihopSupported READ multihopSupported CONSTANT)
   Q_PROPERTY(bool appReviewSupported READ appReviewSupported CONSTANT)
 
+  Q_PROPERTY(bool unauthSupport READ unauthSupportSupported)
+
+  bool m_unauthSupportSupported = false;
+
  public:
   FeatureList() = default;
   ~FeatureList() = default;
 
   static FeatureList* instance();
+
+  void updateFeatureList(const QByteArray& data);
 
   bool startOnBootSupported() const;
 
@@ -59,6 +65,8 @@ class FeatureList final : public QObject {
   bool multihopSupported() const;
 
   bool appReviewSupported() const;
+  
+  bool unauthSupportSupported() const;
 };
 
 #endif  // FEATURELIST_H
