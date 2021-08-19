@@ -872,6 +872,12 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
   m_private->m_serverData.writeSettings();
 }
 
+const Server& MozillaVPN::randomHop(ServerData& data) const {
+  m_private->m_serverCountryModel.pickRandom(data);
+  const QList<Server> servers = m_private->m_serverCountryModel.servers(data);
+  return Server::weightChooser(servers);
+}
+
 void MozillaVPN::postAuthenticationCompleted() {
   logger.debug() << "Post authentication completed";
 

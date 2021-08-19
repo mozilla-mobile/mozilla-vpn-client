@@ -36,8 +36,10 @@
     <method name="cleanupLogs">
     </method>
     <signal name="connected">
+      <arg name="hopindex" type="i" direction="out"/>
     </signal>
     <signal name="disconnected">
+      <arg name="hopindex" type="i" direction="out"/>
     </signal>
   </interface>
 </node>

@@ -18,11 +18,14 @@ class WireguardUtilsLinux final : public WireguardUtils {
   ~WireguardUtilsLinux();
   bool interfaceExists() override;
   bool addInterface(const InterfaceConfig& config) override;
-  bool updateInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
-  bool addRoutePrefix(const IPAddressRange& prefix) override;
-  void flushRoutes() override;
-  peerBytes getThroughputForInterface() override;
+
+  bool updatePeer(const InterfaceConfig& config) override;
+  bool deletePeer(const QString& pubkey) override;
+  peerStatus getPeerStatus(const QString& pubkey) override;
+
+  bool updateRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
+  bool deleteRoutePrefix(const IPAddressRange& prefix, int hopindex) override;
 
   QString getDefaultCgroup() const { return m_cgroups; }
   QString getExcludeCgroup() const;
@@ -30,15 +33,14 @@ class WireguardUtilsLinux final : public WireguardUtils {
 
  private:
   QStringList currentInterfaces();
-  bool setPeerEndpoint(struct sockaddr* peerEndpoint, const QString& address,
-                       int port);
-  bool setAllowedIpsOnPeer(struct wg_peer* peer,
-                           QList<IPAddressRange> allowedIPAddressRanges);
-  bool buildPeerForDevice(struct wg_device* device,
-                          const InterfaceConfig& conf);
-  bool setRouteRules(int action, int flags, int addrfamily);
-  bool setRoutePrefix(int action, int flags, const IPAddressRange& prefix);
+  bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);
+  bool addPeerPrefix(struct wg_peer* peer, const IPAddressRange& prefix);
+  bool rtmSendRule(int action, int flags, int addrfamily);
+  bool rtmSendRoute(int action, int flags, const IPAddressRange& prefix,
+                    int hopindex);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
+  static bool buildAllowedIp(struct wg_allowedip*,
+                             const IPAddressRange& prefix);
 
   int m_nlsock = -1;
   int m_nlseq = 0;

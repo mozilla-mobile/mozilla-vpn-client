@@ -43,8 +43,8 @@ void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
-    const Server& server) {
-  Q_UNUSED(server);
+    const QList<Server>& serverList) {
+  Q_UNUSED(serverList);
   return QList<IPAddressRange>();
 }
 

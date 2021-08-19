@@ -26,6 +26,11 @@ provided under the terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*). A
 copy of the LGPL-2.0 is [available
 here](https://opensource.org/licenses/LGPL-2.0) and a copy is provided below.
 
+The Windows release of this project also includes several files from the
+[WireGuard Windows](https://git.zx2c4.com/wireguard-windows) repository under
+the terms of the MIT Public License (*MIT*), a copy of which is [availble
+here](https://opensource.org/licenses/MIT) and a copy is provided below.
+
 For Desktop releases (Linux, MacOS and Windows), the project relies on [JSON
 for Modern C++](https://github.com/nlohmann/json) under the term of the MIT
 Public License (*MIT*), a copy of which is [available
