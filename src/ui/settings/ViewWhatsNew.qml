@@ -10,6 +10,7 @@ import Mozilla.VPN 1.0
 
 import "../components"
 import "../themes/themes.js" as Theme
+import "../themes/colors.js" as Color
 
 Item {
     id: root
@@ -17,19 +18,19 @@ Item {
     property variant featureData: [
         {
             title: "Multi-hop VPN",
-            text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
+            textShort: "Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.",
             imageSrc: "../resources/shield-off.svg",
             icon: "../resources/location-dark.svg"
         },
         {
             title: "In-app Support Form",
-            text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
+            textShort: "The in-app support form will streamline the the process of getting your issues resolved.",
             imageSrc: "../resources/globe.svg",
             icon: "../resources/settings/getHelp.svg",
         },
         {
             title: "Custom DNS",
-            text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
+            textShort: "Custom DNS settings allows for faster connection using local servers.",
             imageSrc: "../resources/shield-on.svg",
             icon: "../resources/settings/networkSettings.svg",
         },
@@ -56,19 +57,46 @@ Item {
             id: col
 
             anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 0
             width: parent.width - Theme.windowMargin
 
             VPNSettingsItem {
                 settingTitle: "Take the tour"
                 imageLeftSrc: "../resources/magic-dark.svg"
                 imageRightSrc: "../resources/chevron.svg"
-                onClicked: featureTourPopup.open()
+                Layout.topMargin: 16
+                onClicked: {
+                    featureTourPopup.openTour();
+                }
+            }
+
+            Rectangle {
+                id: separatorLine
+
+                color: Color.grey10
+                height: 1
+                Layout.bottomMargin: 16
+                Layout.topMargin: 16
+                Layout.fillWidth: true
+            }
+            
+            Repeater {
+                model: VPNFeatureList
+                
+                delegate: Button {
+                    text: index
+                }
             }
 
             Component {
                 id: featureItem
 
                 ColumnLayout {
+                    Layout.leftMargin: Theme.windowMargin / 2
+                    Layout.rightMargin: Theme.windowMargin
+                    Layout.bottomMargin: 16
+                    Layout.topMargin: 16
+
                     VPNIconAndLabel {
                         id: featureTitle
 
@@ -78,7 +106,7 @@ Item {
 
                     VPNTextBlock {
                         id: featureText
-                        text: modelData.text
+                        text: modelData.textShort
                         Layout.fillWidth: true
                         Layout.leftMargin: 38
                     }

@@ -14,7 +14,6 @@ Item {
     signal finished()
     signal close()
 
-    property int startIndex: 0
     property variant slidesData: ({})
 
     implicitHeight: content.implicitHeight
@@ -31,12 +30,6 @@ Item {
             }
 
             PropertyChanges {
-                enabled: true
-                opacity: 1.0
-                target: backButton
-            }
-
-            PropertyChanges {
                 target: indicator
                 opacity: 1.0
             }
@@ -48,12 +41,6 @@ Item {
             PropertyChanges {
                 target: resumeButton
                 text: "Take the tour"
-            }
-
-            PropertyChanges {
-                enabled: false
-                opacity: 0
-                target: backButton
             }
 
             PropertyChanges {
@@ -76,12 +63,6 @@ Item {
             }
 
             PropertyChanges {
-                enabled: true
-                opacity: 1.0
-                target: backButton
-            }
-
-            PropertyChanges {
                 target: indicator
                 opacity: 1.0
             }
@@ -93,9 +74,11 @@ Item {
 
         anchors.bottom: tour.top
         accessibleName: "back button"
+        enabled: swipeView.currentIndex > 1
         onClicked: {
             swipeView.currentIndex -= 1;
         }
+        opacity: swipeView.currentIndex > 1 ? 1 : 0
         x: -Theme.windowMargin
         z: 1
 
@@ -126,7 +109,7 @@ Item {
             id: swipeView
 
             clip: true
-            currentIndex: startIndex
+            currentIndex: 0
             interactive: true
 
             Layout.fillHeight: true
@@ -233,12 +216,13 @@ Item {
             Layout.alignment: Qt.AlignBottom
 
             onClicked: {
-                if (tour.state === "end") {
-                    swipeView.currentIndex = 0;
+                if (tour.state === "start") {
+                } else if (tour.state === "end") {
                     tour.finished();
                     return;
                 }
 
+                swipeView.contentItem.highlightMoveDuration = 250;
                 swipeView.currentIndex += 1;
             }
 
@@ -257,5 +241,10 @@ Item {
                 visible: false
             }
         }
+    }
+
+    function skipStart() {
+        swipeView.contentItem.highlightMoveDuration = 0;
+        swipeView.currentIndex = 1;
     }
 }

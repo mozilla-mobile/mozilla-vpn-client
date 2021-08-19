@@ -362,7 +362,7 @@ Window {
         }
 
         Component.onCompleted: {
-//            mainStackView.push("./views/ViewSettings.qml", StackView.Immediate);
+            mainStackView.push("./views/ViewSettings.qml", StackView.Immediate);
         }
     }
 }
