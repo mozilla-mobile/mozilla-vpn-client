@@ -232,7 +232,7 @@ static QList<WebSocketSettingCommand> s_settingCommands{
 struct WebSocketFeatureCommand {
   QString m_featureName;
 
-  std::function<void(const QByteArray&)> m_set;
+  std::function<void(bool)> m_set;
   std::function<QJsonValue()> m_get;
 };
 
@@ -241,8 +241,8 @@ static QList<WebSocketFeatureCommand> s_featureCommands{
     // Unauth Support
     WebSocketFeatureCommand{
         "unauth-support",
-        [](const QByteArray& value) {
-          FeatureList::instance()->setUnauthSupportSupported(value == "true");
+        [](bool enabled) {
+          FeatureList::instance()->setUnauthSupportSupported(enabled);
         },
         []() {
           return FeatureList::instance()->unauthSupportSupported() ? "true"
@@ -547,7 +547,7 @@ static QList<WebSocketCommand> s_commands{
                 return obj;
               }
 
-              feature.m_set(arguments[2]);
+              feature.m_set(arguments[2] == "true");
               return obj;
             }
           }
