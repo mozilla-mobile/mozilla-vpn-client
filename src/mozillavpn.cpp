@@ -32,6 +32,7 @@
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
+#  include "platforms/ios/iosadjusthelper.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -75,6 +76,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
   MVPN_COUNT_CTOR(MozillaVPN);
 
   logger.debug() << "Creating MozillaVPN singleton";
+
+#ifdef MVPN_IOS
+  IOSAdjustHelper::initialize();
+#endif
 
   Q_ASSERT(!s_instance);
   s_instance = this;

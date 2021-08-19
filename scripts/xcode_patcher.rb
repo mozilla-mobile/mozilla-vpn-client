@@ -59,6 +59,10 @@ class XCodeprojPatcher
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/app/WireGuard-Bridging-Header.h'
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
+        "$(inherited)",
+        "$(PROJECT_DIR)/3rdparty"
+      ]
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
@@ -71,6 +75,7 @@ class XCodeprojPatcher
       config.build_settings['INFOPLIST_FILE'] ||= platform + '/app/Info.plist'
       if platform == 'ios'
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
+        config.build_settings['ADJUST_SDK_TOKEN'] = configHash['ADJUST_SDK_TOKEN']
       elsif networkExtension
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/app.entitlements'
       else
@@ -134,6 +139,24 @@ class XCodeprojPatcher
         file = group.new_file(filename)
         @target_main.add_file_references([file])
       }
+    end
+
+    if (platform == 'ios')
+      frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+      frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+      embed_frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'Embed Frameworks' }
+
+      framework_ref = frameworks_group.new_file('3rdparty/AdjustSdk.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
+
+      framework_file = embed_frameworks_build_phase.add_file_reference(framework_ref)
+      framework_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy', 'CodeSignOnCopy'] }
+
+      framework_ref = frameworks_group.new_file('AdServices.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
+
+      framework_ref = frameworks_group.new_file('iAd.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
     end
   end
 
