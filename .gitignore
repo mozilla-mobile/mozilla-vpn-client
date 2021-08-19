@@ -114,3 +114,8 @@ translations/*.pri
 translations/generated/*.cpp
 translations/generated/*.h
 macos/pkg/Resources/*.lproj
+
+# Adjust SDK Files
+AdjustSdkDynamic.framework.zip
+AdjustSdkDynamic/
+AdjustSdk.framework/
