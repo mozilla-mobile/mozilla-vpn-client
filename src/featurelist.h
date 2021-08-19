@@ -39,6 +39,10 @@ class FeatureList final : public QObject {
 
   void updateFeatureList(const QByteArray& data);
 
+  void setUnauthSupportSupported(bool enabled) {
+    m_unauthSupportSupported = enabled;
+  }
+
   bool startOnBootSupported() const;
 
   bool protectSelectedAppsSupported() const;
