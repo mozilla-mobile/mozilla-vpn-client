@@ -42,10 +42,10 @@ Item {
         antialiasing: true
         backgroundColor: "#321C64"
         width: connectionInfo.width
-        height: (connectionInfo.height / 2) - 32
+        height: (connectionInfo.height / 2) - 40
         legend.visible: false
-        anchors.top: connectionInfo.top
-        anchors.topMargin: 64
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -24
         anchors.left: connectionInfo.left
         anchors.right: connectionInfo.right
         margins.top: 0
