@@ -4,9 +4,11 @@
 
 import QtQuick 2.0
 import Mozilla.VPN 1.0
+import QtQuick.Layouts 1.14
 import "../themes/themes.js" as Theme
 
-Row {
+RowLayout {
+    property real maxPaintedTextWidth: box.width - ipVersion.paintedWidth - Theme.windowMargin
     property alias ipVersionText: ipVersion.text
     property alias ipAddressText: ipAddress.text
 
@@ -26,5 +28,15 @@ Row {
         opacity: .8
         Accessible.name: text
         Accessible.role: Accessible.StaticText
+        verticalAlignment: Text.AlignVCenter
+        Layout.maximumWidth: maxPaintedTextWidth
+        Layout.preferredWidth: paintedWidth
+
+        Component.onCompleted: {
+            if (paintedWidth > maxPaintedTextWidth) {
+                fontSizeMode = Text.Fit;
+                minimumPixelSize =  6;
+            }
+        }
     }
 }
