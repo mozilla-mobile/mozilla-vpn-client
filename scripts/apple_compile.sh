@@ -62,6 +62,34 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+fetch() {
+  if command -v "wget" &>/dev/null; then
+    wget -nc -O "$2" "$1"
+    return
+  fi
+
+  if command -v "curl" &>/dev/null; then
+    curl "$1" -o "$2" -s -L
+    return
+  fi
+
+  die "You must have 'wget' or 'curl' installed."
+}
+
+sha256() {
+  if command -v "sha256sum" &>/dev/null; then
+    sha256sum "$1"
+    return 0
+  fi
+
+  if command -v "openssl" &>/dev/null; then
+    openssl dgst -sha256 "$1"
+    return 0
+  fi
+
+  die "You must have 'sha256sum' or 'openssl' installed."
+}
+
 if [[ "$OS" != "macos" ]] && [[ "$OS" != "ios" ]] && [[ "$OS" != "macostest" ]]; then
   helpFunction
 fi
@@ -72,15 +100,14 @@ if [[ "$OS" == "ios" ]]; then
   # No web-extension for IOS
   WEBEXTENSION=
 
-  command -v wget >/dev/null 2>&1 || die "wget must be installed to download the Adjust SDK"
   command -v unzip >/dev/null 2>&1 || die "unzip must be installed to unzip the Adjust SDK"
-  command -v sha256sum >/dev/null 2>&1 || die "sha256sum must be installed to verify the Adjust SDK"
 
   if ! [ -d "3rdparty/AdjustSdk.framework" ]; then
     rm -f 3rdparty/AdjustSdkDynamic.framework.zip
-    wget -nc -O 3rdparty/AdjustSdkDynamic.framework.zip https://github.com/adjust/ios_sdk/releases/download/v4.29.4/AdjustSdkDynamic.framework.zip || die "wget for the Adjust SDK failed"
+    fetch https://github.com/adjust/ios_sdk/releases/download/v4.29.4/AdjustSdkDynamic.framework.zip 3rdparty/AdjustSdkDynamic.framework.zip || die "wget for the Adjust SDK failed"
 
-    if ! sha256sum "3rdparty/AdjustSdkDynamic.framework.zip" | grep -q "31151c89315b424ab0e39980502e8b4596d4cbb89bfe38a0a1ce09d3d67a32f4  3rdparty/AdjustSdkDynamic.framework.zip"; then
+    echo $(sha256 "3rdparty/AdjustSdkDynamic.framework.zip")
+    if ! sha256 "3rdparty/AdjustSdkDynamic.framework.zip" | grep -q "31151c89315b424ab0e39980502e8b4596d4cbb89bfe38a0a1ce09d3d67a32f4"; then
       rm -f 3rdparty/AdjustSdkDynamic.framework.zip
       die "Error while downloading please try again"
     fi
