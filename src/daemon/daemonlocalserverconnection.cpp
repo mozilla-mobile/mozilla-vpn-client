@@ -112,7 +112,9 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "status") {
-    m_socket->write(Daemon::instance()->getStatus());
+    QJsonObject obj = Daemon::instance()->getStatus();
+    obj.insert("type", "status");
+    m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
     m_socket->write("\n");
     return;
   }

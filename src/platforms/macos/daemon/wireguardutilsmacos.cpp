@@ -180,13 +180,10 @@ bool WireguardUtilsMacos::deletePeer(const QString& pubkey) {
   return (err == 0);
 }
 
-WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
-    const QString& pubkey) {
-  peerStatus status = {0, 0};
-  QString hexkey = QByteArray::fromBase64(pubkey.toUtf8()).toHex();
+QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
   QString reply = uapiCommand("get=1");
-  bool match = false;
-
+  PeerStatus status;
+  QList<PeerStatus> peerList;
   for (const QString& line : reply.split('\n')) {
     int eq = line.indexOf('=');
     if (eq <= 0) {
@@ -196,21 +193,31 @@ WireguardUtils::peerStatus WireguardUtilsMacos::getPeerStatus(
     QString value = line.mid(eq + 1);
 
     if (name == "public_key") {
-      match = (value == hexkey);
-      continue;
-    } else if (!match) {
-      continue;
+      if (!status.m_pubkey.isEmpty()) {
+        peerList.append(status);
+      }
+      QByteArray pubkey = QByteArray::fromHex(value.toUtf8());
+      status = PeerStatus(pubkey.toBase64());
     }
 
     if (name == "tx_bytes") {
-      status.txBytes = value.toDouble();
+      status.m_txBytes = value.toDouble();
     }
     if (name == "rx_bytes") {
-      status.rxBytes = value.toDouble();
+      status.m_rxBytes = value.toDouble();
+    }
+    if (name == "last_handshake_time_sec") {
+      status.m_handshake += value.toLongLong() * 1000;
+    }
+    if (name == "last_handshake_time_nsec") {
+      status.m_handshake += value.toLongLong() / 1000000;
     }
   }
+  if (!status.m_pubkey.isEmpty()) {
+    peerList.append(status);
+  }
 
-  return status;
+  return peerList;
 }
 
 bool WireguardUtilsMacos::updateRoutePrefix(const IPAddressRange& prefix,

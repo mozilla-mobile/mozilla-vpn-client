@@ -115,42 +115,8 @@ bool DBusService::deactivate(bool emitSignals) {
   return Daemon::deactivate(emitSignals);
 }
 
-QString DBusService::status() { return QString(getStatus()); }
-
-QByteArray DBusService::getStatus() {
-  logger.debug() << "Status request";
-  QJsonObject json;
-
-  if (!m_connections.contains(0)) {
-    json.insert("status", QJsonValue(false));
-    return QJsonDocument(json).toJson(QJsonDocument::Compact);
-  }
-
-  const ConnectionState& connection = m_connections.value(0);
-  if (!m_wgutils->interfaceExists()) {
-    logger.error() << "Unable to get device";
-    json.insert("status", QJsonValue(false));
-    return QJsonDocument(json).toJson(QJsonDocument::Compact);
-  }
-
-  QList<WireguardUtils::peerStatus> peers = m_wgutils->getPeerStatus();
-  for (WireguardUtils::peerStatus status : peers) {
-    if (status.pubkey != connection.m_config.m_serverPublicKey) {
-      continue;
-    }
-    json.insert("status", QJsonValue(true));
-    json.insert("serverIpv4Gateway",
-                QJsonValue(connection.m_config.m_serverIpv4Gateway));
-    json.insert("deviceIpv4Address",
-                QJsonValue(connection.m_config.m_deviceIpv4Address));
-    json.insert("date", connection.m_date.toString());
-    json.insert("txBytes", QJsonValue(status.txBytes));
-    json.insert("rxBytes", QJsonValue(status.rxBytes));
-    return QJsonDocument(json).toJson(QJsonDocument::Compact);
-  }
-
-  json.insert("status", QJsonValue(false));
-  return QJsonDocument(json).toJson(QJsonDocument::Compact);
+QString DBusService::status() {
+  return QString(QJsonDocument(getStatus()).toJson(QJsonDocument::Compact));
 }
 
 QString DBusService::getLogs() {

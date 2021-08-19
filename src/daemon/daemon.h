@@ -31,9 +31,7 @@ class Daemon : public QObject {
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals = true);
-
-  // Explose a JSON object with the daemon status.
-  virtual QByteArray getStatus() = 0;
+  virtual QJsonObject getStatus();
 
   // Callback before any Activating measure is done
   virtual void prepareActivation(const InterfaceConfig& config){

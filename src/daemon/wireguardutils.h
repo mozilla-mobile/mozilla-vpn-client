@@ -17,11 +17,13 @@ class WireguardUtils : public QObject {
   Q_OBJECT
 
  public:
-  struct peerStatus {
-    QString pubkey;
-    qint64 handshake;
-    qint64 rxBytes;
-    qint64 txBytes;
+  class PeerStatus {
+   public:
+    PeerStatus(const QString& pubkey = QString()) { m_pubkey = pubkey; }
+    QString m_pubkey;
+    qint64 m_handshake = 0;
+    qint64 m_rxBytes = 0;
+    qint64 m_txBytes = 0;
   };
 
   explicit WireguardUtils(QObject* parent) : QObject(parent){};
@@ -34,7 +36,7 @@ class WireguardUtils : public QObject {
 
   virtual bool updatePeer(const InterfaceConfig& config) = 0;
   virtual bool deletePeer(const QString& pubkey) = 0;
-  virtual QList<peerStatus> getPeerStatus() = 0;
+  virtual QList<PeerStatus> getPeerStatus() = 0;
 
   virtual bool updateRoutePrefix(const IPAddressRange& prefix,
                                  int hopindex) = 0;

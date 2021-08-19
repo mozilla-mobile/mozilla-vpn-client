@@ -60,8 +60,8 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(json.isObject());
 
   QJsonObject obj = json.object();
-  Q_ASSERT(obj.contains("status"));
-  QJsonValue statusValue = obj.value("status");
+  Q_ASSERT(obj.contains("connected"));
+  QJsonValue statusValue = obj.value("connected");
   Q_ASSERT(statusValue.isBool());
 
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
@@ -171,8 +171,8 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(json.isObject());
 
   QJsonObject obj = json.object();
-  Q_ASSERT(obj.contains("status"));
-  QJsonValue statusValue = obj.value("status");
+  Q_ASSERT(obj.contains("connected"));
+  QJsonValue statusValue = obj.value("connected");
   Q_ASSERT(statusValue.isBool());
 
   if (!statusValue.toBool()) {
