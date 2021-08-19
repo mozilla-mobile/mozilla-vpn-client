@@ -143,42 +143,43 @@ Item {
 
                     ColumnLayout {
                         RowLayout {
-                        spacing: 15
-                        Layout.fillWidth: true
-                        Layout.bottomMargin: 15
+                            visible: VPN.userAuthenticated
+                            spacing: 15
+                            Layout.fillWidth: true
+                            Layout.bottomMargin: 15
 
-                        Rectangle {
-                            Layout.preferredWidth: 40
-                            Layout.preferredHeight: 40
-                            color: "transparent"
+                            Rectangle {
+                                Layout.preferredWidth: 40
+                                Layout.preferredHeight: 40
+                                color: "transparent"
 
-                            VPNAvatar {
-                                id: avatar
+                                VPNAvatar {
+                                    id: avatar
 
-                                avatarUrl: VPNUser.avatar
-                                anchors.fill: parent
+                                    avatarUrl: VPNUser.avatar
+                                    anchors.fill: parent
+                                }
+                            }
+
+                            ColumnLayout {
+
+                                VPNBoldLabel {
+                                    //% "VPN User"
+                                    readonly property var textVpnUser: qsTrId("vpn.settings.user")
+                                    text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
+
+                                }
+
+
+                                VPNLightLabel {
+                                    id: serverLocation
+                                    text: VPNUser.email
+                                    Accessible.ignored: true
+                                    Layout.alignment: Qt.AlignLeft
+                                    elide: Text.ElideRight
+                                }
                             }
                         }
-
-                        ColumnLayout {
-
-                            VPNBoldLabel {
-                                //% "VPN User"
-                                readonly property var textVpnUser: qsTrId("vpn.settings.user")
-                                text: VPNUser.displayName ? VPNUser.displayName : textVpnUser
-
-                            }
-
-
-                            VPNLightLabel {
-                                id: serverLocation
-                                text: VPNUser.email
-                                Accessible.ignored: true
-                                Layout.alignment: Qt.AlignLeft
-                                elide: Text.ElideRight
-                            }
-                        }
-                    }
 
                         spacing: 10
 
