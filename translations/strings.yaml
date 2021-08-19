@@ -197,17 +197,17 @@ whatsNewReleaseNotes:
   supportModalButtonText: Next
   supportModalHeader: In-app support form
   supportModalBodyText: The in-app support form will allow you to contact support from within the VPN app. You can find it in the “Get help” section.
-# dnsModalHeader: Custom DNS
-# dnsModalBodyText: Custom DNS servers allow for faster speed using local networks, features like adblocking and anti-tracking. You can find this feature in the “Network settings” section.
-# dnsModalButtonText: Done
+  dnsModalHeader: Custom DNS
+  dnsModalBodyText: Custom DNS servers allow for faster speed using local networks. You can find this feature in the “Network settings” section.
+  dnsModalButtonText: Done
   tourPageHeader: What’s new
   tourSubHeader: Take the tour
   multiListItemHeader: Multi-hop VPN
   multiListItemBody: Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.
   supportListItemHeader: In-app support form
   supportListItemBody: The in-app support form will streamline the process of getting your issues resolved.
-# dnsListItemHeader: Custom DNS
-# dnsListItemBody: Custom DNS settings allow for faster connection using local servers.
+  dnsListItemHeader: Custom DNS
+  dnsListItemBody: Custom DNS settings allow for faster connection using local servers.
 # system notifications for all platforms
   tourSystemNotifHeader: What’s new in VPN
   tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
