@@ -137,3 +137,5 @@ void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
 void MozillaVPN::abortAuthentication() {}
+
+void MozillaVPN::appReviewRequested() {}

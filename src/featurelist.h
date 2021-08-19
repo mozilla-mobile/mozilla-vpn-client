@@ -26,6 +26,7 @@ class FeatureList final : public QObject {
   Q_PROPERTY(bool userDNSSupported READ userDNSSupported CONSTANT)
   Q_PROPERTY(bool authenticationInApp READ authenticationInApp CONSTANT)
   Q_PROPERTY(bool multihopSupported READ multihopSupported CONSTANT)
+  Q_PROPERTY(bool appReviewSupported READ appReviewSupported CONSTANT)
 
  public:
   FeatureList() = default;
@@ -56,6 +57,8 @@ class FeatureList final : public QObject {
   bool inAppPurchaseSupported() const;
 
   bool multihopSupported() const;
+
+  bool appReviewSupported() const;
 };
 
 #endif  // FEATURELIST_H

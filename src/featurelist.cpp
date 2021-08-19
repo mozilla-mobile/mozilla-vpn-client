@@ -153,3 +153,11 @@ bool FeatureList::multihopSupported() const {
   return false;
 #endif
 }
+
+bool FeatureList::appReviewSupported() const {
+#if defined(MVPN_IOS) || defined(MVPN_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}

@@ -30,6 +30,8 @@ class AndroidUtils final : public QObject {
 
   Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
 
+  static void appReviewRequested();
+
  signals:
   void urlChanged();
 
