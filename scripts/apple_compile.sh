@@ -71,6 +71,25 @@ if [[ "$OS" == "ios" ]]; then
   NETWORKEXTENSION=1
   # No web-extension for IOS
   WEBEXTENSION=
+
+  command -v wget >/dev/null 2>&1 || die "wget must be installed to download the Adjust SDK"
+  command -v unzip >/dev/null 2>&1 || die "unzip must be installed to unzip the Adjust SDK"
+  command -v sha256sum >/dev/null 2>&1 || die "sha256sum must be installed to verify the Adjust SDK"
+
+  if ! [ -d "3rdparty/AdjustSdk.framework" ]; then
+    rm -f 3rdparty/AdjustSdkDynamic.framework.zip
+    wget -nc -O 3rdparty/AdjustSdkDynamic.framework.zip https://github.com/adjust/ios_sdk/releases/download/v4.29.4/AdjustSdkDynamic.framework.zip || die "wget for the Adjust SDK failed"
+
+    if ! sha256sum "3rdparty/AdjustSdkDynamic.framework.zip" | grep -q "31151c89315b424ab0e39980502e8b4596d4cbb89bfe38a0a1ce09d3d67a32f4  3rdparty/AdjustSdkDynamic.framework.zip"; then
+      rm -f 3rdparty/AdjustSdkDynamic.framework.zip
+      die "Error while downloading please try again"
+    fi
+
+    unzip 3rdparty/AdjustSdkDynamic.framework.zip -d 3rdparty/ || die "unzipping the Adjust SDK failed"
+    mv -n 3rdparty/AdjustSdkDynamic/AdjustSdk.framework 3rdparty/AdjustSdk.framework
+    rm -rf 3rdparty/AdjustSdkDynamic
+  fi
+
 fi
 
 if ! [ -d "src" ] || ! [ -d "ios" ] || ! [ -d "macos" ]; then
