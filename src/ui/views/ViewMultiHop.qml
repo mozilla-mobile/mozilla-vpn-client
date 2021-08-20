@@ -60,7 +60,7 @@ StackView {
                     VPNServerLabel {
 
                         // MULTIHOP TODO - Replace with real thing
-                        serversList: currentServers.get(0)
+                        serversList: currentServersListModel.get(0).servers.get(0)
                     }
                 ]
             }
@@ -78,7 +78,7 @@ StackView {
 
                     VPNServerLabel {
                         // MULTIHOP TODO - Replace with real thing
-                        serversList: currentServers.get(1)
+                        serversList: currentServersListModel.get(0).servers.get(1)
                     }
                 ]
             }

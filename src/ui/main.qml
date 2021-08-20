@@ -16,16 +16,20 @@ Window {
     id: window
 
     ListModel {
-        id: currentServers
+        id: currentServersListModel
 
         ListElement {
-            countryCode: "BE"
-            localizedCityName: "Berlin - Entry"
-       }
-       ListElement {
-           countryCode: "US"
-           localizedCityName: "US-Exit"
-       }
+            servers: [
+                ListElement {
+                    countryCode: "BE"
+                    localizedCityName: "Entry"
+                },
+                ListElement {
+                    countryCode: "US"
+                    localizedCityName: "Exit"
+                }
+            ]
+        }
     }
 
     ListModel {
@@ -35,11 +39,11 @@ Window {
            servers: [
                 ListElement {
                     countryCode: "BE"
-                    localizedCityName: "Berlin"
+                    localizedCityName: "Entry"
                },
                ListElement {
                    countryCode: "US"
-                   localizedCityName: "Dallas"
+                   localizedCityName: "Exit"
                }
            ]
        }
@@ -47,11 +51,11 @@ Window {
            servers: [
                ListElement {
                    countryCode: "BE"
-                   localizedCityName: "Berlin"
+                   localizedCityName: "Entry"
               },
               ListElement {
                   countryCode: "US"
-                  localizedCityName: "Dallas"
+                  localizedCityName: "Exit"
               }
            ]
        }

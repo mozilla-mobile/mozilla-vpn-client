@@ -110,7 +110,7 @@ VPNFlickable {
 
                 //MULTIHOP TODO - Replace with real list
                 VPNServerLabel {
-                    serversList: currentServers
+                    serversList: currentServersListModel.get(0).servers
                 }
             ]
         }
