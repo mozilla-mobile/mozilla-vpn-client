@@ -119,6 +119,24 @@ NetworkRequest* NetworkRequest::createForFeedback(QObject* parent,
   return new NetworkRequest(parent, 1234, false);
 }
 
+NetworkRequest* NetworkRequest::createForSupportTicket(
+    QObject* parent, const QString& email, const QString& subject,
+    const QString& issueText, const QString& logs, const QString& category) {
+  Q_UNUSED(parent);
+  Q_UNUSED(email);
+  Q_UNUSED(subject);
+  Q_UNUSED(issueText);
+  Q_UNUSED(logs);
+  Q_UNUSED(category);
+
+  return new NetworkRequest(parent, 1234, false);
+}
+
+// static
+NetworkRequest* NetworkRequest::createForGetFeatureList(QObject* parent) {
+  return new NetworkRequest(parent, 1234, false);
+}
+
 void NetworkRequest::replyFinished() { QFAIL("Not called!"); }
 
 void NetworkRequest::timeout() {}
