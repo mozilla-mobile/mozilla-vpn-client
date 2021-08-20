@@ -35,7 +35,7 @@ Item {
     VPNFlickable {
         id: vpnFlickable
         property bool vpnIsOff: (VPNController.state === VPNController.StateOff)
-        flickContentHeight:  VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height
+        flickContentHeight:  (VPNSettings.protectSelectedApps ? enabledList.y + enabledList.implicitHeight + 100 : vpnFlickable.y + toggleCard.height )+ helpInfoText.height + helpLink.height
         anchors.top: menu.bottom
         height: root.height - menu.height
         anchors.left: parent.left
@@ -130,5 +130,24 @@ Item {
             //: Header for the list of apps protected by VPN
             header: qsTrId("vpn.settings.excludeTitle")
         }
+
+        VPNTextBlock {
+            id: helpInfoText
+            width: vpnFlickable.width - Theme.windowMargin*3
+            anchors.topMargin: 30
+            anchors.top: enabledList.visible? enabledList.bottom : toggleCard.bottom
+            anchors.horizontalCenter:  enabledList.visible? enabledList.horizontalCenter : toggleCard.horizontalCenter
+            text: VPNl18n.tr(VPNl18n.SplittunnelInfoText)
+        }
+
+        VPNHeaderLink{
+            id: helpLink
+            anchors.top:  helpInfoText.bottom
+            anchors.horizontalCenter: helpInfoText.horizontalCenter
+            labelText: VPNl18n.tr(VPNl18n.SplittunnelInfoLinkText)
+            onClicked: {
+               VPN.openLink(VPN.LinkSplitTunnelHelp)
+            }
+        }     
     }
 }

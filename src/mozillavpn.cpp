@@ -449,6 +449,12 @@ void MozillaVPN::openLink(LinkType linkType) {
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/subscriptionBlocked");
       break;
+    case LinkSplitTunnelHelp:
+      // TODO: This should link to a more helpful article
+      url =
+          "https://support.mozilla.org/kb/"
+          "split-tunneling-use-mozilla-vpn-specific-apps-wind";
+      break;
 
     default:
       qFatal("Unsupported link type!");
