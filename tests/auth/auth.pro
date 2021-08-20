@@ -80,6 +80,7 @@ SOURCES += \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
+    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
@@ -94,7 +95,7 @@ SOURCES += \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
     ../../src/urlopener.cpp \
-    ../../translations/generated/l18nstrings_p.cpp
+    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     testemailvalidation.cpp \
     testpasswordvalidation.cpp \

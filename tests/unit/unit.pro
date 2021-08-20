@@ -125,6 +125,7 @@ SOURCES += \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
     ../../src/ipfinder.cpp \
+    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
