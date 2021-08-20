@@ -42,6 +42,10 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
          reinterpret_cast<void*>(onPurchaseUpdated)},
         {"onSubscriptionFailed", "()V",
          reinterpret_cast<void*>(onSubscriptionFailed)},
+        {"onPurchaseAcknowledged", "()V",
+         reinterpret_cast<void*>(onPurchaseAcknowledged)},
+        {"onPurchaseAcknowledgeFailed", "()V",
+         reinterpret_cast<void*>(onPurchaseAcknowledgeFailed)},
     };
     QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
@@ -300,9 +304,20 @@ void AndroidIAPHandler::validatePurchase(QByteArray rawJson) {
           });
 }
 
-/*
-Call back from acknowledge purchase will call:
-* stopSubscription
-* subscriptionCompleted
-And hopefully we're done.
-*/
+void AndroidIAPHandler::onPurchaseAcknowledged(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env)
+  Q_UNUSED(thiz);
+  logger.debug() << "Purchase successfully acknowledged";
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionCompleted();
+}
+
+// static
+void AndroidIAPHandler::onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env)
+  Q_UNUSED(thiz);
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionFailed();
+}

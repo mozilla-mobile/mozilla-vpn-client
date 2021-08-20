@@ -9,6 +9,8 @@ package org.mozilla.firefox.vpn
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
@@ -52,7 +54,8 @@ data class GooglePlaySubscriptions(
 )
 
 class InAppPurchase private constructor(ctx: Context) :
-    BillingClientStateListener, SkuDetailsResponseListener, PurchasesUpdatedListener {
+    AcknowledgePurchaseResponseListener, BillingClientStateListener,  PurchasesUpdatedListener,
+    SkuDetailsResponseListener {
 
     /**
      * SkuDetails and monthCounts by SKU
@@ -73,6 +76,8 @@ class InAppPurchase private constructor(ctx: Context) :
     external fun onNoPurchases()
     external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
     external fun onSubscriptionFailed()
+    external fun onPurchaseAcknowledged()
+    external fun onPurchaseAcknowledgeFailed()
 
     companion object {
         private const val TAG = "InAppPurchase"
@@ -107,7 +112,7 @@ class InAppPurchase private constructor(ctx: Context) :
 
         @JvmStatic
         fun acknowledgePurchase(purchaseToken: String) {
-            Log.d(TAG, "ToDo - Acknowledge the purchase $purchaseToken")
+            instance?.initiateAcknowledge(purchaseToken = purchaseToken)
         }
     }
 
@@ -288,6 +293,25 @@ class InAppPurchase private constructor(ctx: Context) :
                 Log.wtf(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
                 onSubscriptionFailed()
             }
+        }
+    }
+
+    fun initiateAcknowledge(purchaseToken: String) {
+        val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
+            .setPurchaseToken(purchaseToken)
+            .build()
+        billingClient.acknowledgePurchase(acknowledgePurchaseParams, this)
+    }
+
+    override fun onAcknowledgePurchaseResponse(billingResult: BillingResult) {
+        val responseCode = billingResult.responseCode
+        val debugMessage = billingResult.debugMessage
+        Log.d(TAG, "onAcknowledgePurchaseResponse: $responseCode $debugMessage")
+        if (responseCode == BillingClient.BillingResponseCode.OK) {
+            onPurchaseAcknowledged()
+        } else {
+            Log.wtf(TAG, "onAcknowledgePurchaseResponse: $responseCode $debugMessage")
+            onPurchaseAcknowledgeFailed()
         }
     }
 }

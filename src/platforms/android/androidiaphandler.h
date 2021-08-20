@@ -32,6 +32,8 @@ class AndroidIAPHandler final : public IAPHandler {
   static void onNoPurchases(JNIEnv* env, jobject thiz);
   static void onPurchaseUpdated(JNIEnv* env, jobject thiz, jstring data);
   static void onSubscriptionFailed(JNIEnv* env, jobject thiz);
+  static void onPurchaseAcknowledged(JNIEnv* env, jobject thiz);
+  static void onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz);
 };
 
 #endif  // DUMMYIAPHANDLER_H
