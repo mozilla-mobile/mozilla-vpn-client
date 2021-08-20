@@ -80,6 +80,7 @@ SOURCES += \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
+    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
