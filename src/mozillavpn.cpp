@@ -33,6 +33,7 @@
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
 #  include "platforms/ios/iosadjusthelper.h"
+#  include "platforms/ios/iosutils.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -1322,4 +1323,13 @@ void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
   scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
   scheduleTask(new TaskAccountAndServers());
+}
+
+void MozillaVPN::appReviewRequested() {
+  Q_ASSERT(FeatureList::instance()->appReviewSupported());
+#if defined(MVPN_IOS)
+  IOSUtils::appReviewRequested();
+#elif defined(MVPN_ANDROID)
+  AndroidUtils::appReviewRequested();
+#endif
 }
