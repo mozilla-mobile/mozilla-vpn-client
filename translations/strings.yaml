@@ -60,11 +60,9 @@ feedbackForm:
     comment: 
       - One of the answers on the feedback question about the user
       - experience with the VPN client.
-  # selectionHeader: Give feedback
-  # reviewHeader: Give us 5 stars!
-  # reviewBody: If you enjoy using Mozilla VPN, would you review it? Thanks for your support!
-  # leaveReviewButton: Leave a Review
-  # skipLink: Skip
+  reviewHeader: Give us 5 stars!
+  reviewBody: If you enjoy using Mozilla VPN, would you review it? Thanks for your support!
+  leaveReviewButton: Leave a Review
 
 settingsDev:
   title: Developer Options
@@ -108,10 +106,8 @@ multiHopFeature:
   multiHopInfoText: Exit location represents your main VPN server.
   multiHopConnectionsHeader: Recent connections
   multiHopArrowAltText: 
-    value:
-      - To
-    comment:
-      - This is alt text for an arrow showing the multi-hop route between servers. e.g. Atlanta TO Copenhagen
+    value: To
+    comment: This is alt text for an arrow showing the multi-hop route between servers. e.g. Atlanta TO Copenhagen
   serverSearchResultsError: No results. Try a different search
 
 inAppSupportWorkflow:
@@ -121,35 +117,23 @@ inAppSupportWorkflow:
   supportConfirmEmailPlaceholder: Confirm email address
   supportFieldHeader: How can we help you with Mozilla VPN?
   dropdownLabel: 
-    value:
-      - Choose a category
-    comment:
-      - A user trying to submit feedback will use this dropdown to select the general topic related to the feedback.
+    value: Choose a category
+    comment: A user trying to submit feedback will use this dropdown to select the general topic related to the feedback.
   paymentDropdownListItem: 
-    value:
-      - Payment and billing
-    comment:
-      - A user selecting this will be submitting in-app feedback related to payment and billing.
+    value: Payment and billing
+    comment: A user selecting this will be submitting in-app feedback related to payment and billing.
   accountDropdownListItem: 
-    value:
-      - Account issues
-    comment:
-      - A user selecting this will be submitting in-app feedback related to account issues.
+    value: Account issues
+    comment: A user selecting this will be submitting in-app feedback related to account issues.
   technicaDropdownListItem: 
-    value:
-      - Technical issues
-    comment:
-      - A user selecting this will be submitting in-app feedback related to technical issues.
+    value: Technical issues
+    comment: A user selecting this will be submitting in-app feedback related to technical issues.
   featureRequestDropdownListItem: 
-    value:
-      - Request features
-    comment:
-      - A user selecting this will be submitting in-app feedback related to requesting new features.
+    value: Request features
+    comment: A user selecting this will be submitting in-app feedback related to requesting new features.
   otherDropdownListItem: 
-    value:
-      - Other
-    comment:
-      - A user selecting this will be submitting in-app feedback related to issues not covered under the other categories.
+    value: Other
+    comment: A user selecting this will be submitting in-app feedback related to issues not covered under the other categories.
   subjectFieldPlaceholder: Subject (optional)
   issueFieldPlaceholder: Describe issue
   disclaimerText: When you submit, Mozilla VPN will collect technical and interaction data with your email to help our support team understand your issue.
@@ -158,10 +142,8 @@ inAppSupportWorkflow:
   supportSecondaryActionText: Cancel   
   supportResponseHeader: Thank you!
   supportResponseBody: 
-    value:
-      - Our support team will contact you at %1 once we’ve been able to look at your issue.
-    comment:
-      - The %1 represents the email used to complete the form
+    value: Our support team will contact you at %1 once we’ve been able to look at your issue.
+    comment: The %1 represents the email used to complete the form
   supportResponseButton: Done
   supportErrorHeader: Error submitting your support request
   supportErrorText: An unexpected error has occurred, please try again.

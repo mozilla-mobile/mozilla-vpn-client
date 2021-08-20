@@ -133,8 +133,7 @@ Item {
                         }
 
                         VPNFeedbackRadioDelegate {
-                            //% "Very good"
-                            Accessible.name: qsTrId("vpn.feedbackForm.veryGood")
+                            Accessible.name: VPNl18n.tr(VPNl18n.FeedbackFormExcellentLabel)
                             iconSource: "../resources/faces/veryGood.svg"
                             value: 5
                         }
@@ -150,7 +149,7 @@ Item {
                         VPNInterLabel {
                             Layout.alignment: Qt.AlignRight
                             horizontalAlignment: Qt.AlignRight
-                            text: qsTrId("vpn.feedbackForm.veryGood")
+                            text: VPNl18n.tr(VPNl18n.FeedbackFormExcellentLabel)
                             Layout.fillWidth: true
                             color: Theme.fontColor
                         }
@@ -394,8 +393,8 @@ Item {
                 VPNPanel {
                     id: panel
                     logo: "../resources/app-rating.svg"
-                    logoTitle: "Give us 5 stars!" // TODO
-                    logoSubtitle: "If you enjoy using Mozilla VPN, would you mind taking a moment to review it? Thank you for your support!" // TODO
+                    logoTitle: VPNl18n.tr(VPNl18n.FeedbackFormReviewHeader)
+                    logoSubtitle: VPNl18n.tr(VPNl18n.FeedbackFormReviewBody)
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
@@ -403,7 +402,7 @@ Item {
 
             VPNButton {
                 id: reviewButton
-                text: "Leave a review" // TODO
+                text: VPNl18n.tr(VPNl18n.FeedbackFormLeaveReviewButton)
                 anchors.top: col.bottom
                 anchors.topMargin: Theme.vSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
