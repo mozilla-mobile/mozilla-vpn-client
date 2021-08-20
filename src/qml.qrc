@@ -337,6 +337,7 @@
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
         <file>ui/resources/chevron.svg</file>
+        <file>ui/resources/chevron-purple.svg</file>
         <file>ui/resources/close-white.svg</file>
         <file>ui/resources/close-dark.svg</file>
         <file>ui/resources/close-darker.svg</file>
@@ -346,6 +347,7 @@
         <file>ui/resources/arrow-toggle.svg</file>
         <file>ui/resources/connection.svg</file>
         <file>ui/resources/magic-dark.svg</file>
+        <file>ui/resources/magic-purple.svg</file>
         <file>ui/resources/gift-dark.svg</file>
         <file>ui/resources/onboarding/onboarding1.svg</file>
         <file>ui/resources/onboarding/onboarding4.svg</file>

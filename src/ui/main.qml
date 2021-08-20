@@ -329,40 +329,68 @@ Window {
     VPNPopup {
         id: featureTourPopup
 
+        property variant testData: [
+            {
+                title: "What’s new in 2.5?",
+                text: "We’ve added a lot of really cool feature in this latest version release! Take the tour if you want a deeper dive into what we’ve added for you!",
+                textShort: "",
+                imageSrc: "../resources/quick-access.svg",
+                icon: "",
+            },
+            {
+                title: "Multi-hop VPN",
+                text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
+                textShort: "Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.",
+                imageSrc: "../resources/shield-off.svg",
+                icon: "../resources/location-dark.svg",
+            },
+            {
+                title: "In-app Support Form",
+                text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
+                textShort: "The in-app support form will streamline the the process of getting your issues resolved.",
+                imageSrc: "../resources/globe.svg",
+                icon: "../resources/settings/getHelp.svg",
+            },
+            {
+                title: "Custom DNS",
+                text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
+                textShort: "Custom DNS settings allows for faster connection using local servers.",
+                imageSrc: "../resources/shield-on.svg",
+                icon: "../resources/settings/networkSettings.svg",
+            },
+        ]
+
         contentItem: VPNFeatureTour {
-            slidesData: [
-                {
-                    title: "What’s new in 2.5?",
-                    text: "We’ve added a lot of really cool feature in this latest version release! Take the tour if you want a deeper dive into what we’ve added for you!",
-                    imageSrc: "../resources/quick-access.svg",
-                    icon: "",
-                },
-                {
-                    title: "Multi-hop VPN",
-                    text: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
-                    imageSrc: "../resources/shield-off.svg",
-                    icon: "",
-                },
-                {
-                    title: "In-app Support Form",
-                    text: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
-                    imageSrc: "../resources/globe.svg",
-                    icon: "",
-                },
-                {
-                    title: "Custom DNS",
-                    text: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
-                    imageSrc: "../resources/shield-on.svg",
-                    icon: "",
-                },
-            ]
+            id: featureTour
+
+            slidesData: featureTourPopup.testData
             onFinished: {
                 featureTourPopup.close();
             }
         }
 
         Component.onCompleted: {
-            mainStackView.push("./views/ViewSettings.qml", StackView.Immediate);
+//            mainStackView.push("./views/ViewSettings.qml");
+        }
+
+        function openTour() {
+            featureTour.resetTour();
+            featureTourPopup.open();
+        }
+
+        function startTour() {
+            featureTour.skipStart();
+            featureTourPopup.open();
+        }
+    }
+
+    Button {
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: "Open the tour"
+        z: 1
+
+        onClicked: {
+            featureTourPopup.openTour();
         }
     }
 }

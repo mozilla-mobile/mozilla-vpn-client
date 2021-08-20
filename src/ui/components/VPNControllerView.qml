@@ -578,17 +578,23 @@ Item {
             id: settingsImage
 
             anchors.centerIn: settingsButton
-        }
 
-        Rectangle {
-            id: updateIndicator
+            Rectangle {
+                id: newIndicator
 
-            anchors.top: parent.top
-            anchors.right: parent.right
-            color: Color.error.default
-            height: 8
-            radius: width / 2
-            width: 8
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.topMargin: 1
+                anchors.rightMargin: 1
+                border {
+                    color: boxBackground.color
+                    width: 1
+                }
+                color: Color.error.default
+                height: 8 + border.width * 2
+                radius: width / 2
+                width: 8 + border.width * 2
+            }
         }
 
         Component {

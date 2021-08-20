@@ -5,6 +5,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
+import QtGraphicalEffects 1.12
 
 import Mozilla.VPN 1.0
 
@@ -14,27 +15,6 @@ import "../themes/colors.js" as Color
 
 Item {
     id: root
-
-    property variant featureData: [
-        {
-            title: "Multi-hop VPN",
-            textShort: "Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.",
-            imageSrc: "../resources/shield-off.svg",
-            icon: "../resources/location-dark.svg"
-        },
-        {
-            title: "In-app Support Form",
-            textShort: "The in-app support form will streamline the the process of getting your issues resolved.",
-            imageSrc: "../resources/globe.svg",
-            icon: "../resources/settings/getHelp.svg",
-        },
-        {
-            title: "Custom DNS",
-            textShort: "Custom DNS settings allows for faster connection using local servers.",
-            imageSrc: "../resources/shield-on.svg",
-            icon: "../resources/settings/networkSettings.svg",
-        },
-    ]
 
     VPNMenu {
         id: menu
@@ -60,13 +40,17 @@ Item {
             spacing: 0
             width: parent.width - Theme.windowMargin
 
-            VPNSettingsItem {
+            VPNSettingsItem {                
                 settingTitle: "Take the tour"
-                imageLeftSrc: "../resources/magic-dark.svg"
-                imageRightSrc: "../resources/chevron.svg"
-                Layout.topMargin: 16
+                imageLeftSrc: hovered ? "../resources/magic-purple.svg" : "../resources/magic-dark.svg"
+                imageRightSrc: hovered ? "../resources/chevron-purple.svg" : "../resources/chevron.svg"
+                backgroundColor: Theme.clickableRowPurple
+                fontColor: hovered ? Color.purple70 : Theme.fontColorDark
+
+                Layout.topMargin: Theme.vSpacingSmall
+
                 onClicked: {
-                    featureTourPopup.openTour();
+                    featureTourPopup.startTour();
                 }
             }
 
@@ -75,17 +59,11 @@ Item {
 
                 color: Color.grey10
                 height: 1
-                Layout.bottomMargin: 16
-                Layout.topMargin: 16
+                Layout.bottomMargin:Theme.vSpacingSmall
+                Layout.leftMargin: Theme.windowMargin * 2 + 14
+                Layout.rightMargin: Theme.windowMargin / 2
+                Layout.topMargin: Theme.vSpacingSmall
                 Layout.fillWidth: true
-            }
-            
-            Repeater {
-                model: VPNFeatureList
-                
-                delegate: Button {
-                    text: index
-                }
             }
 
             Component {
@@ -94,8 +72,8 @@ Item {
                 ColumnLayout {
                     Layout.leftMargin: Theme.windowMargin / 2
                     Layout.rightMargin: Theme.windowMargin
-                    Layout.bottomMargin: 16
-                    Layout.topMargin: 16
+                    Layout.bottomMargin: Theme.vSpacingSmall
+                    Layout.topMargin: Theme.vSpacingSmall
 
                     VPNIconAndLabel {
                         id: featureTitle
@@ -108,7 +86,7 @@ Item {
                         id: featureText
                         text: modelData.textShort
                         Layout.fillWidth: true
-                        Layout.leftMargin: 38
+                        Layout.leftMargin: Theme.vSpacing + 14
                     }
                 }
             }
@@ -116,7 +94,7 @@ Item {
             Repeater {
                 id: featureRepeater
 
-                model: featureData
+                model: featureTourPopup.testData
                 delegate: featureItem
             }
         }

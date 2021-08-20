@@ -30,7 +30,7 @@ Item {
             }
 
             PropertyChanges {
-                target: indicator
+                target: slideIndicator
                 opacity: 1.0
             }
         },
@@ -44,7 +44,7 @@ Item {
             }
 
             PropertyChanges {
-                target: indicator
+                target: slideIndicator
                 opacity: 0
             }
 
@@ -63,7 +63,7 @@ Item {
             }
 
             PropertyChanges {
-                target: indicator
+                target: slideIndicator
                 opacity: 1.0
             }
         }
@@ -177,7 +177,7 @@ Item {
         }
 
         PageIndicator {
-            id: indicator
+            id: slideIndicator
 
             count: swipeView.count - 1
             currentIndex: swipeView.currentIndex - 1
@@ -186,7 +186,7 @@ Item {
             delegate: Rectangle {
                 id: circle
 
-                color: index === indicator.currentIndex ? Theme.blue : Theme.greyPressed
+                color: index === slideIndicator.currentIndex ? Theme.blue : Theme.greyPressed
                 height: 6
                 width: 6
                 radius: 6
@@ -246,5 +246,10 @@ Item {
     function skipStart() {
         swipeView.contentItem.highlightMoveDuration = 0;
         swipeView.currentIndex = 1;
+    }
+
+    function resetTour() {
+        swipeView.contentItem.highlightMoveDuration = 0;
+        swipeView.currentIndex = 0;
     }
 }
