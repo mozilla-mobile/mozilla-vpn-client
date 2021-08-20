@@ -17,7 +17,7 @@ Item {
 
     anchors.horizontalCenter: parent.horizontalCenter
     width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
-    height: panel.height
+    height: panel.implicitHeight
 
     ColumnLayout {
         id: panel
