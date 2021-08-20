@@ -36,9 +36,9 @@ void TaskGetFeatureList::run(MozillaVPN* vpn) {
           });
 
   connect(request, &NetworkRequest::requestCompleted,
-      [this](const QByteArray& data) {
-        logger.debug() << "Get feature list is completed" << data;
-        FeatureList::instance()->updateFeatureList(data);
-        emit completed();
-      });
+    [this](const QByteArray& data) {
+      logger.debug() << "Get feature list is completed" << data;
+      FeatureList::instance()->updateFeatureList(data);
+      emit completed();
+    });
 }
