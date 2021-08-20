@@ -74,7 +74,7 @@ settingsDev:
   useStagingSubtitle: Staging services are used to test features before they go live to production
   restartRequired: VPN must be restarted to take effect
 
-splitTunnel:
+splittunnel:
   missingAppActionButton:
     value:
       - Add apps manually
@@ -128,12 +128,12 @@ inAppSupportWorkflow:
   paymentDropdownListItem: 
     value:
       - Payment and billing
-      comment:
+    comment:
       - A user selecting this will be submitting in-app feedback related to payment and billing.
   accountDropdownListItem: 
     value:
       - Account issues
-     comment:
+    comment:
       - A user selecting this will be submitting in-app feedback related to account issues.
   technicaDropdownListItem: 
     value:
@@ -186,8 +186,6 @@ genericPurchaseError:
 
 # v2.5 What’s New? Release notes
 whatsNewReleaseNotes:
-  comment:
-    - These strings relate to a tour of new features introduced in the latest version of the app.
   # tour modal alert on system update
   tourModalHeader: What’s new in VPN?
   tourModalBodyText: We’ve added a ton of cool features in this latest release. Take the tour to get a deeper dive into what we’ve added for you!
