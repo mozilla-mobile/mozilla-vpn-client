@@ -29,7 +29,8 @@ Item {
 
     VPNMenu {
         id: menu
-        title: qsTrId("help.contactUs")
+        //% "Contact support"
+        title: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportNavLinkText)
         isMainView: true
     }
 
@@ -49,13 +50,13 @@ Item {
                 } else {
                     contactUsStackView.push("../views/ViewErrorFullScreen.qml", {
                         //% "Error submitting your support request..."
-                        headlineText: qsTrId("vpn.contactUs.errorTitle"),
+                        headlineText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportErrorHeader),
 
                         //% "An unexpected error has occured, please try again."
-                        errorMessage:qsTrId("vpn.contactUs.unexpectedError"),
+                        errorMessage: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportErrorText),
 
                         //% "Try again"
-                        buttonText: qsTrId("vpn.contactUs.tryagain"),
+                        buttonText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportErrorButton),
                         buttonOnClick: contactUsRoot.tryAgain,
                         buttonObjectName: "errorTryAgainButton"
                         }
@@ -105,7 +106,7 @@ Item {
                             spacing: 10
                             VPNBoldLabel {
                                 //% "Enter your email"
-                                property string enterEmailAddress: qsTrId("vpn.contactUs.enterEmailAddress")
+                                property string enterEmailAddress: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportEmailFieldLabel)
 
                                 text: enterEmailAddress
                                 lineHeight: 10
@@ -123,7 +124,7 @@ Item {
                                 Layout.fillWidth: true
                                 hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
                                 //% "Email address"
-                                placeholderText: qsTrId("vpn.contactUs.emailAddress")
+                                placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportFieldPlaceholder)
                             }
                         }
 
@@ -135,7 +136,7 @@ Item {
                             Layout.fillWidth: true
                             hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) && emailInput.text != confirmEmailInput.text
                             //% "Confirm email address"
-                            placeholderText: qsTrId("vpn.contactUs.confirmEmailAddress")
+                            placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder)
                         }
                     }
 
@@ -183,7 +184,7 @@ Item {
 
                         VPNBoldLabel {
                             //% "How can we help you with Mozilla VPN?"
-                            property string enterEmailAddress: qsTrId("vpn.contactUs.howCanWeHelp")
+                            property string enterEmailAddress: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportFieldHeader)
 
                             text: enterEmailAddress
                             lineHeight: 10
@@ -195,8 +196,8 @@ Item {
 
                         VPNComboBox {
                             id: dropDown
-                            placeholderText: VPNl18n.tr(VPNl18n.ContactUsFormChooseCategory)
-                            model: VPNFeedbackCategoryModel
+                            placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowDropdownLabel)
+                            model: VPNSupportCategoryModel
                         }
                     }
 
@@ -207,13 +208,13 @@ Item {
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         //% "Subject (optional)"
-                        placeholderText: qsTrId("vpn.contactUs.subject")
+                        placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSubjectFieldPlaceholder)
                     }
 
                     VPNTextArea {
                         id: textArea
                         //% "Describe issue..."
-                        placeholderText: qsTrId("vpn.contactUs.textAreaPlaceholder")
+                        placeholderText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowIssueFieldPlaceholder)
                     }
                 }
 
@@ -236,13 +237,13 @@ Item {
                             font.pixelSize: Theme.fontSize
                             horizontalAlignment: Text.AlignHCenter
                             //% "When you submit, Mozilla VPN will collect technical and interaction data with your email to help our support team understand your issue."
-                            text: qsTrId("vpn.contactUs.privacyDisclaimer")
+                            text: VPNl18n.tr(VPNl18n.InAppSupportWorkflowDisclaimerText)
                             width:parent.width
                         }
 
                         VPNLinkButton {
                             //% "Mozilla VPN Privacy Notice"
-                            labelText: qsTrId("vpn.contactUs.privacyNoticeLink")
+                            labelText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowPrivacyNoticeLinkText)
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: VPN.openLink(VPN.LinkPrivacyNotice)
                             width: parent.width
@@ -254,7 +255,7 @@ Item {
 
                         VPNButton {
                              //% "Submit"
-                            text: qsTrId("vpn.contactUs.submit")
+                            text: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportPrimaryButtonText)
                             onClicked: contactUsRoot.createSupportTicket(emailInput.text, subjectInput.text, textArea.userEntry, dropDown.currentValue);
                             enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                                      (VPN.userAuthenticated ? true :
@@ -273,7 +274,7 @@ Item {
                         }
                         VPNLinkButton {
                             //% "Cancel"
-                            labelText: qsTrId("vpn.contactUs.cancel")
+                            labelText: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportSecondaryActionText)
                             Layout.preferredHeight: Theme.rowHeight
                             Layout.alignment: Qt.AlignHCenter
                             onClicked: mainStackView.pop()
@@ -292,11 +293,6 @@ Item {
         }
     }
 
-    Item {
-        id: spinnerRoot
-        anchors.fill: parent
-    }
-
     Component {
         id: thankYouView
         Item {
@@ -310,16 +306,16 @@ Item {
                     id: panel
                     logo: "../resources/heart-check.svg"
                     //% "Thank you!"
-                    logoTitle: qsTrId("vpn.contactUs.thankyou")
+                    logoTitle: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportResponseHeader)
                     //% "We appreciate your feedback. You’re helping us improve Mozilla VPN."
-                    logoSubtitle: qsTrId("vpn.contactUs.thankyouSubtitle")
+                    logoSubtitle: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportResponseBody)
                     anchors.horizontalCenter: undefined
                     Layout.fillWidth: true
                 }
             }
             VPNButton {
                 //% "Done"
-               text: qsTrId("vpn.contactUs.done")
+               text: VPNl18n.tr(VPNl18n.InAppSupportWorkflowSupportResponseButton)
                anchors.top: col.bottom
                anchors.topMargin: Theme.vSpacing
                anchors.horizontalCenter: parent.horizontalCenter
