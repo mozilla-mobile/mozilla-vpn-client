@@ -191,7 +191,7 @@ void MozillaVPN::initialize() {
   Q_ASSERT(m_state == StateInitialize);
 
   m_private->m_releaseMonitor.runSoon();
-    
+
   scheduleTask(new TaskGetFeatureList());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();

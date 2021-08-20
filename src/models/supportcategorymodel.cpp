@@ -44,16 +44,16 @@ SupportCategoryModel::SupportCategoryModel() {
       << "Adding:"
       << L18nStrings::instance()->tr(
              L18nStrings::InAppSupportWorkflowTechnicaDropdownListItem);
-  s_supportCategories.append(
-      SupportCategory{"technical", "support.category.technicaDropdownListItem"});
+  s_supportCategories.append(SupportCategory{
+      "technical", "support.category.technicaDropdownListItem"});
 
   //% "Request features"
   logger.debug()
       << "Adding:"
       << L18nStrings::instance()->tr(
              L18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem);
-  s_supportCategories.append(
-      SupportCategory{"feature", "support.category.featureRequestDropdownListItem"});
+  s_supportCategories.append(SupportCategory{
+      "feature", "support.category.featureRequestDropdownListItem"});
 
   //% "Other"
   logger.debug() << "Adding:"

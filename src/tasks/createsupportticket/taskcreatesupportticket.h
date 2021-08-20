@@ -15,8 +15,7 @@ class TaskCreateSupportTicket final : public Task {
 
  public:
   TaskCreateSupportTicket(const QString& email, const QString& subject,
-                          const QString& issueText,
-                          const QString& logs,
+                          const QString& issueText, const QString& logs,
                           const QString& category);
   ~TaskCreateSupportTicket();
 

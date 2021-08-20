@@ -16,8 +16,7 @@ namespace {
 Logger logger(LOG_MAIN, "TaskGetFeatureList");
 }
 
-TaskGetFeatureList::TaskGetFeatureList()
-    : Task("TaskGetFeatureList") {
+TaskGetFeatureList::TaskGetFeatureList() : Task("TaskGetFeatureList") {
   MVPN_COUNT_CTOR(TaskGetFeatureList);
 }
 
@@ -32,16 +31,13 @@ void TaskGetFeatureList::run(MozillaVPN* vpn) {
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Get feature list is failed"
-                           << error;
+            logger.error() << "Get feature list is failed" << error;
             emit completed();
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted,
+  connect(request, &NetworkRequest::requestCompleted,
       [this](const QByteArray& data) {
-        logger.debug() << "Get feature list is completed"
-                       << data;
+        logger.debug() << "Get feature list is completed" << data;
         FeatureList::instance()->updateFeatureList(data);
         emit completed();
       });

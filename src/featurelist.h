@@ -69,7 +69,7 @@ class FeatureList final : public QObject {
   bool multihopSupported() const;
 
   bool appReviewSupported() const;
-  
+
   bool unauthSupportSupported() const;
 };
 
