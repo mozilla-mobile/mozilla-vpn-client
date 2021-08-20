@@ -29,7 +29,8 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal
+            ../../src/hacl-star/kremlin/minimal \
+            ../../translations/generated
 
 HEADERS += \
     ../../src/authenticationinapp/authenticationinapp.h \
@@ -60,6 +61,7 @@ HEADERS += \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
     ../../src/urlopener.h \
+    ../../translations/generated/l18nstrings.h \
     testemailvalidation.h \
     testpasswordvalidation.h \
     testsignupandin.h
@@ -78,6 +80,7 @@ SOURCES += \
     ../../src/hkdf.cpp \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
+    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/logger.cpp \
     ../../src/loghandler.cpp \
@@ -92,6 +95,7 @@ SOURCES += \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
     ../../src/urlopener.cpp \
+    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     testemailvalidation.cpp \
     testpasswordvalidation.cpp \

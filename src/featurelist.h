@@ -34,6 +34,12 @@ class FeatureList final : public QObject {
 
   static FeatureList* instance();
 
+  void updateFeatureList(const QByteArray& data);
+
+  void setUnauthSupportSupported(bool enabled) {
+    m_unauthSupportSupported = enabled;
+  }
+
   bool startOnBootSupported() const;
 
   bool protectSelectedAppsSupported() const;
@@ -59,6 +65,13 @@ class FeatureList final : public QObject {
   bool multihopSupported() const;
 
   bool appReviewSupported() const;
+
+  bool unauthSupportSupported() const;
+
+ private:
+  Q_PROPERTY(bool unauthSupport READ unauthSupportSupported)
+
+  bool m_unauthSupportSupported = false;
 };
 
 #endif  // FEATURELIST_H

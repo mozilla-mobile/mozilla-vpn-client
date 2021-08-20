@@ -104,6 +104,8 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::requestViewLogs() {}
 
+void MozillaVPN::requestContactUs() {}
+
 void MozillaVPN::retrieveLogs() {}
 
 void MozillaVPN::storeInClipboard(const QString&) {}
@@ -133,6 +135,9 @@ void MozillaVPN::heartbeatCompleted(bool) {}
 void MozillaVPN::triggerHeartbeat() {}
 
 void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
+
+void MozillaVPN::createSupportTicket(const QString&, const QString&,
+                                     const QString&, const QString&) {}
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
