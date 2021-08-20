@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QString>
 
+#import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
 namespace {
@@ -60,4 +61,10 @@ QString IOSUtils::IAPReceipt() {
 
   NSString* encodedReceipt = [receipt base64EncodedStringWithOptions:0];
   return QString::fromNSString(encodedReceipt);
+}
+
+void IOSUtils::appReviewRequested() {
+  if ([SKStoreReviewController class]) {
+    [SKStoreReviewController requestReview];
+  }
 }
