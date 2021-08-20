@@ -9,6 +9,28 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 jobs:
+    macosx/opt:
+        description: "Mac Build"
+        treeherder:
+            symbol: B
+            kind: build
+            tier: 1
+            platform: macosx/opt
+        worker-type: b-osx
+        worker:
+            chain-of-trust:
+                by-level:
+                    1: false
+                    default: true
+            max-run-time: 3600
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: build/src/artifacts
+        run:
+            using: run-task
+            cwd: '{checkout}'
+            command: ./scripts/macosx_build.sh
     windows/opt:
         description: "Windows Build"
         treeherder:
@@ -18,7 +40,10 @@ jobs:
             platform: windows/opt
         worker-type: b-win2012
         worker:
-            chain-of-trust: true
+            chain-of-trust:
+                by-level:
+                    1: false
+                    default: true
             max-run-time: 3600
             artifacts:
                 - type: directory
