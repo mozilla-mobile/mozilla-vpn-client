@@ -94,7 +94,7 @@ SOURCES += \
     ../../src/tasks/authenticate/desktopauthenticationlistener.cpp \
     ../../src/tasks/authenticate/taskauthenticate.cpp \
     ../../src/urlopener.cpp \
-    ../../translations/generated/l18nstrings_p.cpp
+    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     testemailvalidation.cpp \
     testpasswordvalidation.cpp \
