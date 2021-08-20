@@ -5,6 +5,7 @@
 #include "supportcategorymodel.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "l18nstrings.h"
 
 namespace {
 Logger logger(LOG_MODEL, "SupportCategoryModel");
@@ -23,27 +24,41 @@ SupportCategoryModel::SupportCategoryModel() {
   // Here we use the logger to force lrelease to add the category ids.
 
   //% "Payment and billing"
-  logger.debug() << "Adding:" << qtTrId("support.category.paymentDropdownListItem");
+  logger.debug()
+      << "Adding:"
+      << L18nStrings::instance()->tr(
+             L18nStrings::InAppSupportWorkflowPaymentDropdownListItem);
   s_supportCategories.append(
       SupportCategory{"payment", "support.category.paymentDropdownListItem"});
 
   //% "Account issues"
-  logger.debug() << "Adding:" << qtTrId("support.category.accountDropdownListItem");
+  logger.debug()
+      << "Adding:"
+      << L18nStrings::instance()->tr(
+             L18nStrings::InAppSupportWorkflowAccountDropdownListItem);
   s_supportCategories.append(
       SupportCategory{"account", "support.category.accountDropdownListItem"});
 
   //% "Technical issues"
-  logger.debug() << "Adding:" << qtTrId("support.category.technicaDropdownListItem");
+  logger.debug()
+      << "Adding:"
+      << L18nStrings::instance()->tr(
+             L18nStrings::InAppSupportWorkflowTechnicaDropdownListItem);
   s_supportCategories.append(
       SupportCategory{"technical", "support.category.technicaDropdownListItem"});
 
   //% "Request features"
-  logger.debug() << "Adding:" << qtTrId("support.category.featureRequestDropdownListItem");
+  logger.debug()
+      << "Adding:"
+      << L18nStrings::instance()->tr(
+             L18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem);
   s_supportCategories.append(
       SupportCategory{"feature", "support.category.featureRequestDropdownListItem"});
 
   //% "Other"
-  logger.debug() << "Adding:" << qtTrId("support.category.otherDropdownListItem");
+  logger.debug() << "Adding:"
+                 << L18nStrings::instance()->tr(
+                        L18nStrings::InAppSupportWorkflowOtherDropdownListItem);
   s_supportCategories.append(
       SupportCategory{"other", "support.category.otherDropdownListItem"});
 }

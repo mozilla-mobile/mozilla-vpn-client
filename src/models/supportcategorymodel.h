@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FEEDBACKCATEGORYMODEL_H
-#define FEEDBACKCATEGORYMODEL_H
+#ifndef SUPPORTCATEGORYMODEL_H
+#define SUPPORTCATEGORYMODEL_H
 
 #include <QAbstractListModel>
 
@@ -29,4 +29,4 @@ class SupportCategoryModel final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
 };
 
-#endif  // FEEDBACKCATEGORYMODEL_H
+#endif  // SUPPORTCATEGORYMODEL_H

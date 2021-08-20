@@ -18,6 +18,7 @@
 #include "models/keys.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
+#include "models/supportcategorymodel.h"
 #include "models/surveymodel.h"
 #include "models/user.h"
 #include "networkwatcher.h"
@@ -168,6 +169,9 @@ class MozillaVPN final : public QObject {
   DeviceModel* deviceModel() { return &m_private->m_deviceModel; }
   FeedbackCategoryModel* feedbackCategoryModel() {
     return &m_private->m_feedbackCategoryModel;
+  }
+  SupportCategoryModel* supportCategoryModel() {
+    return &m_private->m_supportCategoryModel;
   }
   Keys* keys() { return &m_private->m_keys; }
   HelpModel* helpModel() { return &m_private->m_helpModel; }
@@ -340,6 +344,7 @@ class MozillaVPN final : public QObject {
     Controller m_controller;
     DeviceModel m_deviceModel;
     FeedbackCategoryModel m_feedbackCategoryModel;
+    SupportCategoryModel m_supportCategoryModel;
     Keys m_keys;
     HelpModel m_helpModel;
     NetworkWatcher m_networkWatcher;
