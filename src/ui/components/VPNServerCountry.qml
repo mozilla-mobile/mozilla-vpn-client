@@ -14,13 +14,15 @@ VPNClickableRow {
     objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === VPNCurrentServer.countryCode)
+    property real multiHopMenuHeight: VPNFeatureList.multihopSupported ? 56 : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
+
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
     function openCityList() {
         cityListVisible = !cityListVisible;
-        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y;
+        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
         const listScrollPosition = vpnFlickable.contentY
 
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
@@ -42,7 +44,7 @@ VPNClickableRow {
     Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
         focusScope.lastFocusedItemIdx = index;
-        menu.forceActiveFocus();
+        serverSearchInput.forceActiveFocus();
     }
 
     state: cityListVisible ? "listOpen" : "listClosed"
@@ -172,8 +174,13 @@ VPNClickableRow {
 
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
-                onClicked: {
-                    VPNController.changeServer(code, modelData[0]);
+                onClicked: { 
+                    if (typeof(multiHopStackView) !== "undefined" && multiHopStackView.depth > 1) {
+                        // MULTIHOP TODO determine if we're selecting the entry or exit server
+                        multiHopStackView.pop();
+                        return;
+                    }
+                    VPNController.changeServer(code, modelData[0]); // MULTIHOP TODO
                     stackview.pop();
                 }
                 height: 54

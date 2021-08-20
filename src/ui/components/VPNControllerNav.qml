@@ -11,12 +11,9 @@ ColumnLayout {
     id: controller
 
     property var titleText
-    property var subtitleText
-    property var descriptionText
-    property var imgSource
-    property var imgSize: 20
-    property var imgIsVector: false
-    property var disableRowWhen
+    property alias disableRowWhen: btn.rowShouldBeDisabled
+    property string descriptionText
+    default property alias contentChildren: controllerContent.children
     spacing: 4
 
     VPNBoldLabel {
@@ -43,7 +40,6 @@ ColumnLayout {
         Layout.preferredHeight: Theme.rowHeight
 
         onClicked: handleClick()
-        rowShouldBeDisabled: disableRowWhen
 
         RowLayout {
             width: parent.width - (Theme.windowMargin * 2)
@@ -51,32 +47,8 @@ ColumnLayout {
             spacing: 0
 
             RowLayout {
+                id: controllerContent
                 spacing:8
-
-                Rectangle {
-                    Layout.preferredWidth: 24
-                    Layout.preferredHeight: 24
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                    color: "transparent"
-
-                    Image {
-                        id: flag
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        width: imgIsVector? undefined : imgSize
-                        sourceSize.width: imgIsVector ? imgSize : undefined
-                        fillMode: Image.PreserveAspectFit
-                        source: imgSource
-                    }
-                }
-
-                VPNLightLabel {
-                    id: serverLocation
-                    text: subtitleText
-                    Accessible.ignored: true
-                    Layout.alignment: Qt.AlignLeft
-                    elide: Text.ElideRight
-                }
             }
 
             VPNChevron {
@@ -84,5 +56,6 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
             }
         }
+
     }
 }

@@ -86,6 +86,10 @@ VPNFlickable {
 
         VPNControllerNav {
             function handleClick() {
+                if (disableRowWhen) {
+                    return;
+                }
+
                 stackview.push("ViewServers.qml")
             }
 
@@ -100,10 +104,15 @@ VPNFlickable {
             //% "current location - %1"
             //: Accessibility description for current location of the VPN server
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.localizedCityName)
-
-            subtitleText: VPNCurrentServer.localizedCityName
-            imgSource:  "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
             disableRowWhen: (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) || box.connectionInfoVisible
+
+            contentChildren: [
+
+                //MULTIHOP TODO - Replace with real list
+                VPNServerLabel {
+                    serversList: currentServers
+                }
+            ]
         }
 
         VPNControllerNav {
@@ -114,15 +123,25 @@ VPNFlickable {
             Layout.topMargin: 6
 
             objectName: "deviceListButton"
-            //% "%1 of %2"
-            //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-            subtitleText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(VPNUser.maxDevices)
-            imgSource: "../resources/devices.svg"
-            imgIsVector: true
-            imgSize: 24
             //% "My devices"
             titleText: qsTrId("vpn.devices.myDevices")
             disableRowWhen: box.connectionInfoVisible
+            contentChildren: [
+                VPNIcon {
+                    source: "../resources/devices.svg"
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
+                },
+
+                VPNLightLabel {
+                    id: serverLocation
+                    Accessible.ignored: true
+                    Layout.alignment: Qt.AlignLeft
+                    elide: Text.ElideRight
+                    //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
+                    text: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + (VPN.state !== VPN.StateDeviceLimit ? 0 : 1)).arg(VPNUser.maxDevices)
+                }
+            ]
+
         }
 
         VPNVerticalSpacer {

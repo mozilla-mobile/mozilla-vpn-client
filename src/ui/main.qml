@@ -15,6 +15,48 @@ import telemetry 0.15
 Window {
     id: window
 
+    ListModel {
+        id: currentServers
+
+        ListElement {
+            countryCode: "BE"
+            localizedCityName: "Berlin - Entry"
+       }
+       ListElement {
+           countryCode: "US"
+           localizedCityName: "US-Exit"
+       }
+    }
+
+    ListModel {
+        id: recentConnectionsListModel
+
+       ListElement {
+           servers: [
+                ListElement {
+                    countryCode: "BE"
+                    localizedCityName: "Berlin"
+               },
+               ListElement {
+                   countryCode: "US"
+                   localizedCityName: "Dallas"
+               }
+           ]
+       }
+       ListElement {
+           servers: [
+               ListElement {
+                   countryCode: "BE"
+                   localizedCityName: "Berlin"
+              },
+              ListElement {
+                  countryCode: "US"
+                  localizedCityName: "Dallas"
+              }
+           ]
+       }
+    }
+
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
     property var isWasmApp: Qt.platform.os === "wasm"
 

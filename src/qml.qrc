@@ -336,6 +336,7 @@
         <file>ui/resources/settings.svg</file>
         <file>ui/resources/logo.svg</file>
         <file>ui/resources/chevron.svg</file>
+        <file>ui/resources/chevron-right-dark.svg</file>
         <file>ui/resources/close-white.svg</file>
         <file>ui/resources/externalLink.svg</file>
         <file>ui/resources/arrow-forward.svg</file>
@@ -349,6 +350,7 @@
         <file>ui/resources/fonts/Metropolis.otf</file>
         <file>ui/resources/fonts/Metropolis-SemiBold.otf</file>
         <file>ui/resources/spinner.svg</file>
+        <file>ui/resources/tip.svg</file>
         <file>ui/resources/warning.svg</file>
         <file>ui/resources/warning-orange.svg</file>
         <file>ui/resources/settings/getHelp.svg</file>
@@ -458,7 +460,11 @@
         <file>ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
         <file>ui/components/VPNAnimatedRingsShader.qml</file>
         <file>ui/components/VPNServerLabel.qml</file>
-        <file>ui/components/VPNTabNavigation.qml</file>
         <file>ui/resources/encodedPassword.txt</file>
+        <file>ui/components/VPNCollapsibleCard.qml</file>
+        <file>ui/components/VPNServerList.qml</file>
+        <file>ui/views/ViewMultiHop.qml</file>
+        <file>ui/components/VPNTabNavigation.qml</file>
+        <file>ui/components/VPNRecentConnections.qml</file>
     </qresource>
 </RCC>
