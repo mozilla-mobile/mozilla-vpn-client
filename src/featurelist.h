@@ -70,7 +70,7 @@ class FeatureList final : public QObject {
 
  private:
   Q_PROPERTY(bool unauthSupport READ unauthSupportSupported)
-  
+
   bool m_unauthSupportSupported = false;
 };
 
