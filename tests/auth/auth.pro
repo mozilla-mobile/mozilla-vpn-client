@@ -30,6 +30,7 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal
+            ../../translations/generated
 
 HEADERS += \
     ../../src/authenticationinapp/authenticationinapp.h \
