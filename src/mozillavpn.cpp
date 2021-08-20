@@ -191,6 +191,8 @@ void MozillaVPN::initialize() {
   Q_ASSERT(m_state == StateInitialize);
 
   m_private->m_releaseMonitor.runSoon();
+    
+  scheduleTask(new TaskGetFeatureList());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -279,8 +281,6 @@ void MozillaVPN::initialize() {
   scheduleTask(new TaskAccountAndServers());
 
   scheduleTask(new TaskCaptivePortalLookup());
-
-  scheduleTask(new TaskGetFeatureList());
 
   if (FeatureList::instance()->inAppPurchaseSupported()) {
     scheduleTask(new TaskProducts());
