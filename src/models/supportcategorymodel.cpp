@@ -20,47 +20,6 @@ static QList<SupportCategory> s_supportCategories;
 
 SupportCategoryModel::SupportCategoryModel() {
   MVPN_COUNT_CTOR(SupportCategoryModel);
-
-  // Here we use the logger to force lrelease to add the category ids.
-
-  //% "Payment and billing"
-  logger.debug()
-      << "Adding:"
-      << L18nStrings::instance()->tr(
-             L18nStrings::InAppSupportWorkflowPaymentDropdownListItem);
-  s_supportCategories.append(
-      SupportCategory{"payment", "support.category.paymentDropdownListItem"});
-
-  //% "Account issues"
-  logger.debug()
-      << "Adding:"
-      << L18nStrings::instance()->tr(
-             L18nStrings::InAppSupportWorkflowAccountDropdownListItem);
-  s_supportCategories.append(
-      SupportCategory{"account", "support.category.accountDropdownListItem"});
-
-  //% "Technical issues"
-  logger.debug()
-      << "Adding:"
-      << L18nStrings::instance()->tr(
-             L18nStrings::InAppSupportWorkflowTechnicaDropdownListItem);
-  s_supportCategories.append(SupportCategory{
-      "technical", "support.category.technicaDropdownListItem"});
-
-  //% "Request features"
-  logger.debug()
-      << "Adding:"
-      << L18nStrings::instance()->tr(
-             L18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem);
-  s_supportCategories.append(SupportCategory{
-      "feature", "support.category.featureRequestDropdownListItem"});
-
-  //% "Other"
-  logger.debug() << "Adding:"
-                 << L18nStrings::instance()->tr(
-                        L18nStrings::InAppSupportWorkflowOtherDropdownListItem);
-  s_supportCategories.append(
-      SupportCategory{"other", "support.category.otherDropdownListItem"});
 }
 
 SupportCategoryModel::~SupportCategoryModel() {
