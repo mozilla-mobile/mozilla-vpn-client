@@ -90,6 +90,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../translations/generated/l18nstrings.h \
     helper.h \
     testandroidmigration.h \
     testbigint.h \
@@ -167,6 +168,7 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
+    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorwebsocketconnection.cpp \

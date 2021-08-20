@@ -20,7 +20,7 @@
 namespace {
 Logger logger(LOG_MAIN, "FeatureList");
 FeatureList s_featureList;
-} // namespace
+}  // namespace
 
 // static
 FeatureList* FeatureList::instance() { return &s_featureList; }
