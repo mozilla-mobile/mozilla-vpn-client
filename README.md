@@ -43,7 +43,6 @@ following dependencies:
 Python3 (pip) depedencies:
 
 - glean_parser==3.5
-- pyhumps
 - pyyaml
 
 #### QT5
@@ -154,7 +153,6 @@ This step needs to be updated each time XCode updates.
 4. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
 5. Copy `xcode.xconfig.template` to `xcode.xconfig`
@@ -211,7 +209,6 @@ The IOS procedure is similar to the macOS one:
 3. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
 
@@ -259,7 +256,6 @@ You may be interested in flags like -i for the inspector (see ./scripts/apple_co
 5. Install python3 dependencies:
 ```
   $ pip3 install 'glean_parser==3.5'
-  $ pip3 install pyhumps
   $ pip3 install pyyaml
 ```
 
@@ -287,7 +283,7 @@ The dependencies are:
 2. nasm: https://www.nasm.us/
 3. python3: https://www.python.org/downloads/windows/
 4. visual studio 2019: https://visualstudio.microsoft.com/vs/
-5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml pyhumps)
+5. Install python3 dependencies (pip install "glean_parser==3.5" pyyaml)
 
 Openssl can be obtained from here: https://www.openssl.org/source/
 Qt5.15 can be obtained from: https://download.qt.io/archive/qt/5.15/5.15.1/single/qt-everywhere-src-5.15.1.tar.xz
