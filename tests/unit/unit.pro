@@ -23,7 +23,6 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal
-            ../../translations/generated
 
 HEADERS += \
     ../../src/bigint.h \
@@ -90,6 +89,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../translations/generated/l18nstrings.h \
     helper.h \
     testandroidmigration.h \
     testbigint.h \

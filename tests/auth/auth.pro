@@ -30,7 +30,6 @@ INCLUDEPATH += \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
             ../../src/hacl-star/kremlin/minimal
-            ../../translations/generated
 
 HEADERS += \
     ../../src/authenticationinapp/authenticationinapp.h \
@@ -61,6 +60,7 @@ HEADERS += \
     ../../src/tasks/authenticate/desktopauthenticationlistener.h \
     ../../src/tasks/authenticate/taskauthenticate.h \
     ../../src/urlopener.h \
+    ../../translations/generated/l18nstrings.h \
     testemailvalidation.h \
     testpasswordvalidation.h \
     testsignupandin.h
