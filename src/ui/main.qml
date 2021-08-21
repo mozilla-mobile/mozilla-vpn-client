@@ -262,6 +262,14 @@ Window {
                         source: "states/StateBackendFailure.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateBillingNotAvailable
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateBillingNotAvailable.qml"
+                    }
                 }
             ]
 

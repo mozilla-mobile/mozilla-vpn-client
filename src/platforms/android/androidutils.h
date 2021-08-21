@@ -5,6 +5,7 @@
 #ifndef ANDROIDUTILS_H
 #define ANDROIDUTILS_H
 
+#include "jni.h"
 #include <QObject>
 #include <QString>
 #include <QUrl>
@@ -31,6 +32,14 @@ class AndroidUtils final : public QObject {
   Q_INVOKABLE bool maybeCompleteAuthentication(const QString& url);
 
   static void appReviewRequested();
+
+  static void dispatchToMainThread(std::function<void()> callback);
+
+  static QByteArray getQByteArrayFromJString(JNIEnv* env, jstring data);
+
+  static QString getQStringFromJString(JNIEnv* env, jstring data);
+
+  static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
 
  signals:
   void urlChanged();

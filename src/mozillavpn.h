@@ -44,17 +44,18 @@ class MozillaVPN final : public QObject {
 
  public:
   enum State {
-    StateInitialize,
-    StateTelemetryPolicy,
     StateAuthenticating,
-    StatePostAuthentication,
+    StateBackendFailure,
+    StateBillingNotAvailable,
+    StateDeviceLimit,
+    StateInitialize,
     StateMain,
-    StateUpdateRequired,
+    StatePostAuthentication,
+    StateSubscriptionBlocked,
     StateSubscriptionNeeded,
     StateSubscriptionValidation,
-    StateSubscriptionBlocked,
-    StateDeviceLimit,
-    StateBackendFailure,
+    StateTelemetryPolicy,
+    StateUpdateRequired,
   };
   Q_ENUM(State);
 
@@ -295,6 +296,7 @@ class MozillaVPN final : public QObject {
   void subscriptionCanceled();
   void subscriptionFailedInternal(bool canceledByUser);
   void alreadySubscribed();
+  void billingNotAvailable();
 
   void completeActivation();
 

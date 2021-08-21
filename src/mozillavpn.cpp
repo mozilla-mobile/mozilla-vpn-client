@@ -164,6 +164,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
             &MozillaVPN::subscriptionCompleted);
     connect(iap, &IAPHandler::alreadySubscribed, this,
             &MozillaVPN::alreadySubscribed);
+    connect(iap, &IAPHandler::billingNotAvailable, this,
+            &MozillaVPN::billingNotAvailable);
   }
 
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
@@ -795,13 +797,9 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_serverData.forget();
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    IAPHandler::instance()->stopSubscription();
-    // TODO
-    // Need to clear out registered products
-    // and reset initial state that's set in the
-    // header file - i'm not sure of the best way of doing this.
-    // If we don't then we can crash if e_Registering when
-    // shouldn't be.
+    IAPHandler* iap = IAPHandler::instance();
+    iap->stopSubscription();
+    iap->cancelProductsRegistration();
   }
 
   setUserAuthenticated(false);
@@ -1290,6 +1288,14 @@ void MozillaVPN::subscriptionCompleted() {
 
   logger.debug() << "Subscription completed";
   completeActivation();
+}
+
+void MozillaVPN::billingNotAvailable() {
+  // If a subscription isn't needed, billingNotAvailable is
+  // a no-op because we don't need the billing client.
+  if (m_private->m_user.subscriptionNeeded()) {
+    setState(StateBillingNotAvailable);
+  }
 }
 
 void MozillaVPN::subscriptionFailed() {

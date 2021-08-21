@@ -194,6 +194,15 @@ void IAPHandler::productsRegistrationCompleted() {
   emit productsRegistered();
 }
 
+void IAPHandler::cancelProductsRegistration() {
+  logger.debug() << "Cancel products registration";
+  beginResetModel();
+  m_products.clear();
+  m_productsRegistrationState = eNotRegistered;
+  endResetModel();
+  emit productsRegistrationFailed();
+}
+
 void IAPHandler::subscribe(const QString& productIdentifier) {
   logger.debug() << "Subscription required";
   emit subscriptionStarted(productIdentifier);

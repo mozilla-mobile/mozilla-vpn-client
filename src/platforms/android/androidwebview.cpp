@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "androidwebview.h"
+#include "androidutils.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -24,29 +25,17 @@ AndroidWebView* s_instance = nullptr;
 constexpr auto WEBVIEW_CLASS = "org/mozilla/firefox/vpn/qt/VPNWebView";
 }  // namespace
 
-// static
-void AndroidWebView::dispatchToMainThread(std::function<void()> callback) {
-  QTimer* timer = new QTimer();
-  timer->moveToThread(qApp->thread());
-  timer->setSingleShot(true);
-  QObject::connect(timer, &QTimer::timeout, [=]() {
-    callback();
-    timer->deleteLater();
-  });
-  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
-}
 
 // static
 void AndroidWebView::onPageStarted(JNIEnv* env, jobject thiz, jstring url,
                                    jobject icon) {
-  Q_UNUSED(env);
   Q_UNUSED(thiz);
   Q_UNUSED(icon);
 
-  QString pageUrl = env->GetStringUTFChars(url, 0);
+  QString pageUrl = AndroidUtils::getQStringFromJString(env, url);
   logger.debug() << "Page started:" << pageUrl;
 
-  dispatchToMainThread([pageUrl] {
+  AndroidUtils::dispatchToMainThread([pageUrl] {
     Q_ASSERT(s_instance);
     emit s_instance->pageStarted(pageUrl);
   });
@@ -55,16 +44,15 @@ void AndroidWebView::onPageStarted(JNIEnv* env, jobject thiz, jstring url,
 // static
 void AndroidWebView::onError(JNIEnv* env, jobject thiz, jint errorCode,
                              jstring description, jstring url) {
-  Q_UNUSED(env);
   Q_UNUSED(thiz);
   Q_UNUSED(errorCode);
-  Q_UNUSED(description);
   Q_UNUSED(url);
 
-  QString errorDescription = env->GetStringUTFChars(description, 0);
+  QString errorDescription =
+      AndroidUtils::getQStringFromJString(env, description);
   logger.error() << "Network failure:" << errorDescription;
 
-  dispatchToMainThread([errorDescription] {
+  AndroidUtils::dispatchToMainThread([errorDescription] {
     Q_ASSERT(s_instance);
     s_instance->propagateError(ErrorHandler::NoConnectionError);
   });

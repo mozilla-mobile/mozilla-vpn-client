@@ -30,6 +30,12 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class BillingResponseData(
+    val code: Int,
+    val message: String
+)
+
+@Serializable
 data class MozillaSubscriptionInfo(
     val id: String,
     val monthCount: Int
@@ -54,7 +60,9 @@ data class GooglePlaySubscriptions(
 )
 
 class InAppPurchase private constructor(ctx: Context) :
-    AcknowledgePurchaseResponseListener, BillingClientStateListener,  PurchasesUpdatedListener,
+    AcknowledgePurchaseResponseListener,
+    BillingClientStateListener,
+    PurchasesUpdatedListener,
     SkuDetailsResponseListener {
 
     /**
@@ -72,6 +80,7 @@ class InAppPurchase private constructor(ctx: Context) :
         .build()
 
     // Functions in AndroidIAPHandler
+    external fun onBillingNotAvailable(billingResponseJSONBlob: String)
     external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
     external fun onNoPurchases()
     external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
@@ -84,12 +93,6 @@ class InAppPurchase private constructor(ctx: Context) :
 
         private var instance: InAppPurchase? = null
 
-        /**
-         * TODO - Discuss / get consult from basti
-         * Because we launch IAPHandler in mozillavpn, I believe all users will be forced
-         * to have Play and be logged in irrespective of whether they need to IAP.
-         * But the dependency on billing library may have this effect anyway.
-         */
         @JvmStatic
         fun init(ctx: Context) {
             instance = instance ?: InAppPurchase(ctx)
@@ -133,10 +136,10 @@ class InAppPurchase private constructor(ctx: Context) :
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         if (responseCode != BillingClient.BillingResponseCode.OK) {
-            // ToDo - I think this is where we handle 
-            // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1528 
-            // but i'm not sure.
-            Log.e(TAG, "onBillingSetupFinished was not successful: $responseCode $debugMessage")
+            onBillingNotAvailable(Json.encodeToString(BillingResponseData(
+                code = responseCode,
+                message = debugMessage
+            )))
         } else {
             querySkuDetails()
         }

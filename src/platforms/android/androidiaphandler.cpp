@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "platforms/android/androidiaphandler.h"
-
+#include "androidiaphandler.h"
+#include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -35,6 +35,8 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
   // Hook together implementations for functions called by native code
   QtAndroid::runOnAndroidThreadSync([]() {
     JNINativeMethod methods[]{
+        {"onBillingNotAvailable", "(Ljava/lang/String;)V",
+         reinterpret_cast<void*>(onBillingNotAvailable)},
         {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onSkuDetailsReceived)},
         {"onNoPurchases", "()V", reinterpret_cast<void*>(onNoPurchases)},
@@ -87,41 +89,30 @@ QJsonDocument AndroidIAPHandler::productsToJson() {
 }
 
 // static
+void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
+                                              jstring data) {
+  Q_UNUSED(thiz);
+  QJsonObject billingResponse =
+      AndroidUtils::getQJsonObjectFromJString(env, data);
+  logger.info()
+      << "onBillingNotAvailable event occured"
+      << QJsonDocument(billingResponse).toJson(QJsonDocument::Compact);
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  iap->cancelProductsRegistration();
+  emit iap->billingNotAvailable();
+}
+
+// static
 void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
                                              jstring data) {
   Q_UNUSED(thiz);
 
-  const char* buffer = env->GetStringUTFChars(data, nullptr);
-  if (!buffer) {
-    logger.error() << "onSkuDetailsReceived - failed to parse data.";
-    return;
-  }
-  QByteArray raw = QByteArray(buffer);
-  env->ReleaseStringUTFChars(data, buffer);
-
-  logger.debug() << "onSkuDetailsReceived - parsing raw data: " << raw;
-
-  QJsonParseError jsonError;
-  QJsonDocument json = QJsonDocument::fromJson(raw, &jsonError);
-
-  if (QJsonParseError::NoError != jsonError.error) {
-    logger.error() << "onSkuDetailsRecieved, Error parsing json. Code: "
-                   << jsonError.error << "Offset: " << jsonError.offset
-                   << "Message: " << jsonError.errorString() << "Data: " << raw;
-    return;
-  }
-
-  if (!json.isObject()) {
-    logger.error() << "onSkuDetailsReceived - object expected.";
-    return;
-  }
-
-  QJsonObject obj = json.object();
+  QJsonObject obj = AndroidUtils::getQJsonObjectFromJString(env, data);
   if (!obj.contains("products")) {
     logger.error() << "onSkuDetailsReceived - products entry expected.";
     return;
   }
-
   QJsonArray products = obj["products"].toArray();
   if (products.isEmpty()) {
     logger.error() << "onSkuDetailsRecieved - no products found.";
@@ -160,7 +151,6 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
 void AndroidIAPHandler::nativeStartSubscription(Product* product) {
   auto jniString = QAndroidJniObject::fromString(product->m_name);
   auto appActivity = QtAndroid::androidActivity();
-
   QAndroidJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/InAppPurchase", "purchaseProduct",
       "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
@@ -186,52 +176,26 @@ void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz) {
 }
 
 // static
-void AndroidIAPHandler::dispatchToMainThread(std::function<void()> callback) {
-  QTimer* timer = new QTimer();
-  timer->moveToThread(qApp->thread());
-  timer->setSingleShot(true);
-  QObject::connect(timer, &QTimer::timeout, [=]() {
-    callback();
-    timer->deleteLater();
-  });
-  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
-}
-
-// static
 void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
                                           jstring data) {
   Q_UNUSED(thiz);
-  const char* buffer = env->GetStringUTFChars(data, nullptr);
-  if (!buffer) {
-    logger.error() << "onPurchaseUpdated - failed to parse data.";
-    return;
-  }
-  QByteArray rawJson = QByteArray(buffer);
-  env->ReleaseStringUTFChars(data, buffer);
-  dispatchToMainThread([rawJson] {
+  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
+  AndroidUtils::dispatchToMainThread([json] {
     IAPHandler* iap = IAPHandler::instance();
     Q_ASSERT(iap);
-    static_cast<AndroidIAPHandler*>(iap)->validatePurchase(rawJson);
+    static_cast<AndroidIAPHandler*>(iap)->validatePurchase(json);
   });
 }
 
-void AndroidIAPHandler::validatePurchase(QByteArray rawJson) {
+void AndroidIAPHandler::validatePurchase(QJsonObject json) {
   if (m_subscriptionState != eActive) {
     logger.warning()
         << "onPurchaseUpdated. In a bad state. This is unexpected. Returning.";
     return;
   }
 
-  logger.debug() << "onPurchaseUpdated - parsing raw data: " << rawJson;
-
-  QJsonParseError jsonError;
-  QJsonDocument json = QJsonDocument::fromJson(rawJson, &jsonError);
-
-  if (QJsonParseError::NoError != jsonError.error) {
-    logger.error() << "onPurchaseUpdated, Error parsing json. Code: "
-                   << jsonError.error << "Offset: " << jsonError.offset
-                   << "Message: " << jsonError.errorString()
-                   << "Data: " << rawJson;
+  if (json.isEmpty()) {
+    logger.error() << "onPurchaseUpdated, emptyJsonObject received.";
     stopSubscription();
     emit subscriptionFailed();
     return;
@@ -283,7 +247,7 @@ void AndroidIAPHandler::validatePurchase(QByteArray rawJson) {
 
             bool tokenValid = json.object()["tokenValid"].toBool();
 
-            if (tokenValid != true) {
+            if (!tokenValid) {
               logger.debug() << "tokenValid == false, aborting.";
               stopSubscription();
               emit subscriptionFailed();

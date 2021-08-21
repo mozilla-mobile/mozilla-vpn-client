@@ -191,6 +191,9 @@ void ServerConnection::writeState() {
       case MozillaVPN::StateBackendFailure:
         stateStr = "backendFailure";
         break;
+      case MozillaVPN::StateBillingNotAvailable:
+        stateStr = "billingNotAvailable";
+        break;
       default:
         Q_ASSERT(false);
         break;

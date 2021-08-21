@@ -23,11 +23,11 @@ class AndroidIAPHandler final : public IAPHandler {
  private:
   QJsonDocument productsToJson();
   void updateProductsInfo(const QJsonArray& products);
-  void validatePurchase(QByteArray rawJson);
-
-  static void dispatchToMainThread(std::function<void()> callback);
+  void validatePurchase(QJsonObject json);
 
   // Functions called via JNI
+  static void onBillingNotAvailable(JNIEnv* env, jobject thiz,
+                                    jstring debugMessage);
   static void onSkuDetailsReceived(JNIEnv* env, jobject thiz, jstring data);
   static void onNoPurchases(JNIEnv* env, jobject thiz);
   static void onPurchaseUpdated(JNIEnv* env, jobject thiz, jstring data);
@@ -36,4 +36,4 @@ class AndroidIAPHandler final : public IAPHandler {
   static void onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz);
 };
 
-#endif  // DUMMYIAPHANDLER_H
+#endif  // ANDROIDIAPHANDLER_H

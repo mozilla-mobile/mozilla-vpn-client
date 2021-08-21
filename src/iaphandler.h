@@ -47,18 +47,21 @@ class IAPHandler : public QAbstractListModel {
 
  signals:
   void productsRegistered();
+  void productsRegistrationFailed();
 
   void subscriptionStarted(const QString& productIdentifier);
   void subscriptionFailed();
   void subscriptionCanceled();
   void subscriptionCompleted();
   void alreadySubscribed();
+  void billingNotAvailable();
 
  public slots:
   void stopSubscription();
   // Called by the native code delegate
   void unknownProductRegistered(const QString& identifier);
   void productsRegistrationCompleted();
+  void cancelProductsRegistration();
 
  protected:
   IAPHandler(QObject* parent);
