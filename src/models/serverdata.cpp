@@ -21,17 +21,41 @@ bool ServerData::fromSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (!settingsHolder->hasCurrentServerCountry() ||
-      !settingsHolder->hasCurrentServerCity() ||
-      !settingsHolder->hasCurrentServerCountryCode()) {
+  if (!settingsHolder->hasCurrentServerCountryCode() ||
+      !settingsHolder->hasCurrentServerCity()) {
     return false;
   }
 
   initializeInternal(settingsHolder->currentServerCountryCode(),
-                     settingsHolder->currentServerCountry(),
                      settingsHolder->currentServerCity());
 
-  logger.debug() << m_countryCode << m_countryName << m_cityName;
+  if (settingsHolder->hasEntryServerCountryCode() &&
+      settingsHolder->hasEntryServerCity()) {
+    initializeEntryServer(settingsHolder->entryServerCountryCode(),
+                          settingsHolder->entryServerCity());
+  }
+
+  logger.debug() << toString();
+  return true;
+}
+
+bool ServerData::fromString(const QString& data) {
+  QStringList serverList = data.split("->");
+
+  QStringList current = serverList.last().split(",");
+  if (current.count() != 2) {
+    return false;
+  }
+  initializeInternal(current[1].trimmed(), current[0].trimmed());
+
+  if (serverList.count() > 1) {
+    QStringList entry = serverList.first().split(",");
+    if (entry.count() == 2) {
+      initializeEntryServer(entry[1].trimmed(), entry[0].trimmed());
+    }
+  }
+
+  logger.debug() << toString();
   return true;
 }
 
@@ -40,37 +64,56 @@ void ServerData::writeSettings() {
   Q_ASSERT(settingsHolder);
 
   settingsHolder->setCurrentServerCountryCode(m_countryCode);
-  settingsHolder->setCurrentServerCountry(m_countryName);
   settingsHolder->setCurrentServerCity(m_cityName);
+
+  if (m_multihop) {
+    settingsHolder->setEntryServerCountryCode(m_entryCountryCode);
+    settingsHolder->setEntryServerCity(m_entryCityName);
+  } else {
+    settingsHolder->removeEntryServer();
+  }
 }
 
-void ServerData::initialize(const ServerCountry& country,
-                            const ServerCity& city) {
-  logger.debug() << "Country:" << country.name() << "City:" << city.name();
+void ServerData::update(const QString& countryCode, const QString& cityName,
+                        const QString& entryCountryCode,
+                        const QString& entryCityName) {
+  logger.debug() << "Country:" << countryCode << "City:" << cityName;
+  initializeInternal(countryCode, cityName);
+  if (!entryCountryCode.isNull() && !entryCityName.isNull()) {
+    initializeEntryServer(entryCountryCode, entryCityName);
+  }
 
-  initializeInternal(country.code(), country.name(), city.name());
-  emit changed();
-}
-
-void ServerData::update(const QString& countryCode, const QString& countryName,
-                        const QString& cityName) {
-  initializeInternal(countryCode, countryName, cityName);
   emit changed();
 }
 
 void ServerData::initializeInternal(const QString& countryCode,
-                                    const QString& countryName,
                                     const QString& cityName) {
   m_initialized = true;
   m_countryCode = countryCode;
-  m_countryName = countryName;
   m_cityName = cityName;
 }
 
-QString ServerData::localizedCountryName() const {
-  return ServerI18N::translateCountryName(m_countryCode, m_countryName);
+void ServerData::initializeEntryServer(const QString& countryCode,
+                                       const QString& cityName) {
+  m_multihop = true;
+  m_entryCountryCode = countryCode;
+  m_entryCityName = cityName;
 }
 
 QString ServerData::localizedCityName() const {
   return ServerI18N::translateCityName(m_countryCode, m_cityName);
+}
+
+QString ServerData::localizedEntryCity() const {
+  return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
+}
+
+QString ServerData::toString() const {
+  QString result = "";
+  if (m_multihop) {
+    result += m_entryCityName + ", " + m_entryCountryCode + " -> ";
+  }
+
+  result += m_cityName + ", " + m_countryCode;
+  return result;
 }

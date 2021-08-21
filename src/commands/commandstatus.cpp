@@ -100,10 +100,12 @@ int CommandStatus::run(QStringList& tokens) {
       stream << " - ipv6 address: " << device.ipv6Address() << Qt::endl;
     }
 
+    ServerCountryModel* model = vpn.serverCountryModel();
     ServerData* sd = vpn.currentServer();
     if (sd) {
       stream << "Server country code: " << sd->countryCode() << Qt::endl;
-      stream << "Server country: " << sd->countryName() << Qt::endl;
+      stream << "Server country: " << model->countryName(sd->countryCode())
+             << Qt::endl;
       stream << "Server city: " << sd->cityName() << Qt::endl;
     }
 

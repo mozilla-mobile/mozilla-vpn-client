@@ -54,6 +54,10 @@ void NotificationHandler::showNotification() {
 
   QString title;
   QString message;
+  QString countryCode = vpn->currentServer()->countryCode();
+  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString localizedCountryName =
+      vpn->serverCountryModel()->localizedCountryName(countryCode);
 
   switch (vpn->controller()->state()) {
     case Controller::StateOn:
@@ -75,8 +79,8 @@ void NotificationHandler::showNotification() {
         message = qtTrId("vpn.systray.statusSwtich.message")
                       .arg(m_switchingLocalizedServerCountry)
                       .arg(m_switchingLocalizedServerCity)
-                      .arg(vpn->currentServer()->localizedCountryName())
-                      .arg(vpn->currentServer()->localizedCityName());
+                      .arg(localizedCountryName)
+                      .arg(localizedCityName);
       } else {
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
           // Notifications for ConnectionChange are disabled
@@ -88,8 +92,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusConnected.message")
-                      .arg(vpn->currentServer()->localizedCountryName())
-                      .arg(vpn->currentServer()->localizedCityName());
+                      .arg(localizedCountryName)
+                      .arg(localizedCityName);
       }
       break;
 
@@ -107,8 +111,8 @@ void NotificationHandler::showNotification() {
         //: Shown as message body in a notification. %1 is the country, %2 is
         //: the city.
         message = qtTrId("vpn.systray.statusDisconnected.message")
-                      .arg(vpn->currentServer()->localizedCountryName())
-                      .arg(vpn->currentServer()->localizedCityName());
+                      .arg(localizedCountryName)
+                      .arg(localizedCityName);
       }
       break;
 
@@ -116,10 +120,8 @@ void NotificationHandler::showNotification() {
       m_connected = true;
 
       m_switching = true;
-      m_switchingLocalizedServerCountry =
-          vpn->currentServer()->localizedCountryName();
-      m_switchingLocalizedServerCity =
-          vpn->currentServer()->localizedCityName();
+      m_switchingLocalizedServerCountry = localizedCountryName;
+      m_switchingLocalizedServerCity = localizedCityName;
       break;
 
     default:

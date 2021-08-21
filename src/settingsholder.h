@@ -96,6 +96,11 @@ class SettingsHolder final : public QObject {
   GETSET(QString, hasCurrentServerCountry, currentServerCountry,
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
+  GETSET(QString, hasEntryServerCountryCode, entryServerCountryCode,
+         setEntryServerCountryCode)
+  GETSET(QString, hasEntryServerCountry, entryServerCountry,
+         setEntryServerCountry)
+  GETSET(QString, hasEntryServerCity, entryServerCity, setEntryServerCity)
   GETSET(QByteArray, hasDevices, devices, setDevices)
   GETSET(QByteArray, hasSurveys, surveys, setSurveys)
   GETSET(QStringList, hasConsumedSurveys, consumedSurveys, setConsumedSurveys)
@@ -138,6 +143,7 @@ class SettingsHolder final : public QObject {
   void removeDevModeFeatureFlag(const QString& featureID);
 
   void addConsumedSurvey(const QString& surveyId);
+  void removeEntryServer();
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,

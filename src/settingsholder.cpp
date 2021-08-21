@@ -59,6 +59,10 @@ constexpr const char* SETTINGS_CURRENTSERVER_COUNTRYCODE =
     "currentServer/countryCode";
 constexpr const char* SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char* SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
+constexpr const char* SETTINGS_ENTRYSERVER_COUNTRYCODE =
+    "entryServer/countryCode";
+constexpr const char* SETTINGS_ENTRYSERVER_COUNTRY = "entryServer/country";
+constexpr const char* SETTINGS_ENTRYSERVER_CITY = "entryServer/city";
 constexpr const char* SETTINGS_DEVICES = "devices";
 constexpr const char* SETTINGS_SURVEYS = "surveys";
 constexpr const char* SETTINGS_CONSUMEDSURVEYS = "consumedSurveys";
@@ -167,6 +171,9 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRYCODE);
   m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
   m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
+  m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
+  m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRY);
+  m_settings.remove(SETTINGS_ENTRYSERVER_CITY);
   m_settings.remove(SETTINGS_DEVICES);
   m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
@@ -302,6 +309,13 @@ GETSET(QString, toString, SETTINGS_CURRENTSERVER_COUNTRY,
        hasCurrentServerCountry, currentServerCountry, setCurrentServerCountry)
 GETSET(QString, toString, SETTINGS_CURRENTSERVER_CITY, hasCurrentServerCity,
        currentServerCity, setCurrentServerCity)
+GETSET(QString, toString, SETTINGS_ENTRYSERVER_COUNTRYCODE,
+       hasEntryServerCountryCode, entryServerCountryCode,
+       setEntryServerCountryCode)
+GETSET(QString, toString, SETTINGS_ENTRYSERVER_COUNTRY, hasEntryServerCountry,
+       entryServerCountry, setEntryServerCountry)
+GETSET(QString, toString, SETTINGS_ENTRYSERVER_CITY, hasEntryServerCity,
+       entryServerCity, setEntryServerCity)
 GETSET(QByteArray, toByteArray, SETTINGS_DEVICES, hasDevices, devices,
        setDevices)
 GETSET(QByteArray, toByteArray, SETTINGS_SURVEYS, hasSurveys, surveys,
@@ -453,4 +467,9 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
+
+void SettingsHolder::removeEntryServer() {
+  m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
+  m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRY);
+  m_settings.remove(SETTINGS_ENTRYSERVER_CITY);
 }

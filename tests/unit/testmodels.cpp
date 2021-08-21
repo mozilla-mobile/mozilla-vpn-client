@@ -1007,7 +1007,6 @@ void TestModels::serverCountryModelPick() {
     ServerData sd;
     QCOMPARE(m.pickIfExists("serverCountryCode", "serverCityCode", sd), true);
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.countryName(), "serverCountryName");
     QCOMPARE(sd.cityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
 
@@ -1019,7 +1018,6 @@ void TestModels::serverCountryModelPick() {
     ServerData sd;
     m.pickRandom(sd);
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.countryName(), "serverCountryName");
     QCOMPARE(sd.cityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
   }
@@ -1028,7 +1026,6 @@ void TestModels::serverCountryModelPick() {
     ServerData sd;
     QCOMPARE(m.pickByIPv4Address("ipv4AddrIn", sd), true);
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.countryName(), "serverCountryName");
     QCOMPARE(sd.cityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
 
@@ -1045,8 +1042,10 @@ void TestModels::serverDataBasic() {
 
   QVERIFY(!sd.initialized());
   QCOMPARE(sd.countryCode(), "");
-  QCOMPARE(sd.countryName(), "");
   QCOMPARE(sd.cityName(), "");
+  QVERIFY(!sd.multihop());
+  QCOMPARE(sd.entryCountryCode(), "");
+  QCOMPARE(sd.entryCityName(), "");
 
   {
     QJsonObject countryObj;
@@ -1064,13 +1063,15 @@ void TestModels::serverDataBasic() {
     ServerCity city;
     QVERIFY(city.fromJson(cityObj));
 
-    sd.initialize(country, city);
+    sd.update(country.code(), city.name());
     QCOMPARE(spy.count(), 1);
 
     QVERIFY(sd.initialized());
     QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.countryName(), "serverCountryName");
     QCOMPARE(sd.cityName(), "serverCityName");
+    QVERIFY(!sd.multihop());
+    QCOMPARE(sd.entryCountryCode(), "");
+    QCOMPARE(sd.entryCityName(), "");
 
     {
       SettingsHolder settingsHolder;
@@ -1081,34 +1082,58 @@ void TestModels::serverDataBasic() {
       QVERIFY(sd2.fromSettings());
       QVERIFY(sd2.initialized());
       QCOMPARE(sd2.countryCode(), "serverCountryCode");
-      QCOMPARE(sd2.countryName(), "serverCountryName");
       QCOMPARE(sd2.cityName(), "serverCityName");
+      QVERIFY(!sd2.multihop());
+      QCOMPARE(sd2.entryCountryCode(), "");
+      QCOMPARE(sd2.entryCityName(), "");
 
       QCOMPARE(spy.count(), 1);
     }
   }
 
-  sd.update("new Country Code", "new Country", "new City");
+  sd.update("new Country Code", "new City");
   QCOMPARE(spy.count(), 2);
 
   QVERIFY(sd.initialized());
   QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.countryName(), "new Country");
   QCOMPARE(sd.cityName(), "new City");
+  QVERIFY(!sd.multihop());
+  QCOMPARE(sd.entryCountryCode(), "");
+  QCOMPARE(sd.entryCityName(), "");
 
   sd.forget();
   QCOMPARE(spy.count(), 2);
 
   QVERIFY(!sd.initialized());
   QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.countryName(), "new Country");
   QCOMPARE(sd.cityName(), "new City");
+  QVERIFY(!sd.multihop());
+  QCOMPARE(sd.entryCountryCode(), "");
+  QCOMPARE(sd.entryCityName(), "");
 
   {
     SettingsHolder settingsHolder;
     QVERIFY(!sd.fromSettings());
     QCOMPARE(spy.count(), 2);
   }
+
+  sd.update("new Country Code", "new City", "entry Country Code", "entry City");
+  QVERIFY(sd.initialized());
+  QCOMPARE(sd.countryCode(), "new Country Code");
+  QCOMPARE(sd.cityName(), "new City");
+  QVERIFY(sd.multihop());
+  QCOMPARE(sd.entryCountryCode(), "entry Country Code");
+  QCOMPARE(sd.entryCityName(), "entry City");
+
+  sd.forget();
+  QCOMPARE(spy.count(), 3);
+
+  QVERIFY(!sd.initialized());
+  QCOMPARE(sd.countryCode(), "new Country Code");
+  QCOMPARE(sd.cityName(), "new City");
+  QVERIFY(!sd.multihop());
+  QCOMPARE(sd.entryCountryCode(), "entry Country Code");
+  QCOMPARE(sd.entryCityName(), "entry City");
 }
 
 // User
