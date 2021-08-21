@@ -113,7 +113,7 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled, {
+        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
           httpClient: {
@@ -350,7 +350,7 @@ Window {
         }
 
         function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled) {
+            if (VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported) {
                 Pings.main.submit();
             }
         }
@@ -362,7 +362,7 @@ Window {
         function onAboutToQuit() {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled) {
+            if (VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported) {
               Pings.main.submit();
             }
         }
