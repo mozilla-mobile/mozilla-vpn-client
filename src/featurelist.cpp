@@ -181,3 +181,12 @@ bool FeatureList::appReviewSupported() const {
 bool FeatureList::unauthSupportSupported() const {
   return m_unauthSupportSupported;
 }
+
+bool FeatureList::gleanSupported() const {
+#if defined(MVPN_IOS)
+  // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1599
+  return false;
+#else
+  return true;
+#endif
+}
