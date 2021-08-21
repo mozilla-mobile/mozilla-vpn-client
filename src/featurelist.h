@@ -27,6 +27,8 @@ class FeatureList final : public QObject {
   Q_PROPERTY(bool authenticationInApp READ authenticationInApp CONSTANT)
   Q_PROPERTY(bool multihopSupported READ multihopSupported CONSTANT)
   Q_PROPERTY(bool appReviewSupported READ appReviewSupported CONSTANT)
+  Q_PROPERTY(bool gleanSupported READ gleanSupported CONSTANT)
+  Q_PROPERTY(bool unauthSupport READ unauthSupportSupported)
 
  public:
   FeatureList() = default;
@@ -68,8 +70,9 @@ class FeatureList final : public QObject {
 
   bool unauthSupportSupported() const;
 
+  bool gleanSupported() const;
+
  private:
-  Q_PROPERTY(bool unauthSupport READ unauthSupportSupported)
 
   bool m_unauthSupportSupported = false;
 };
