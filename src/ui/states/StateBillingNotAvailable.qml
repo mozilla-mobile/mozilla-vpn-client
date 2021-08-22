@@ -15,7 +15,6 @@ VPNStackView {
     id: stackview
 
     function handleButtonClick() {
-        // TODO - Implement launchPlayStore()
         VPN.launchPlayStore()
     }
 

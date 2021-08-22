@@ -152,6 +152,7 @@ class MozillaVPN final : public QObject {
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
+  Q_INVOKABLE void launchPlayStore();
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }

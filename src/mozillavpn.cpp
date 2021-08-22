@@ -44,6 +44,7 @@
 #endif
 
 #ifdef MVPN_ANDROID
+#  include "platforms/android/androidiaphandler.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -709,6 +710,14 @@ void MozillaVPN::createSupportTicket(const QString& email,
     delete buffer;
     delete out;
   });
+}
+
+void MozillaVPN::launchPlayStore() {
+  logger.debug() << "Launch Play Store";
+#ifdef MVPN_ANDROID
+  IAPHandler* iap = IAPHandler::instance();
+  static_cast<AndroidIAPHandler*>(iap)->launchPlayStore();
+#endif
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {

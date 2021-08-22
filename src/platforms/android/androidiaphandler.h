@@ -15,6 +15,7 @@ class AndroidIAPHandler final : public IAPHandler {
  public:
   explicit AndroidIAPHandler(QObject* parent);
   ~AndroidIAPHandler();
+  void launchPlayStore();
 
  protected:
   void nativeRegisterProducts() override;

@@ -74,6 +74,13 @@ void AndroidIAPHandler::nativeRegisterProducts() {
       "(Ljava/lang/String;)V", jniString.object());
 }
 
+void AndroidIAPHandler::launchPlayStore() {
+  auto appActivity = QtAndroid::androidActivity();
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/InAppPurchase", "launchPlayStore",
+      "(Landroid/app/Activity;)V", appActivity.object());
+}
+
 QJsonDocument AndroidIAPHandler::productsToJson() {
   QJsonArray jsonProducts;
   for (auto p : m_products) {
