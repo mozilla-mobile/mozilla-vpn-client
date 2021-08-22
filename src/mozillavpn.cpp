@@ -316,8 +316,14 @@ void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    if (m_private->m_user.subscriptionNeeded()) {
+    if (m_state != StateSubscriptionBlocked &&
+        m_private->m_user.subscriptionNeeded()) {
+      logger.info() << "Subscription needed";
       setState(StateSubscriptionNeeded);
+      return;
+    }
+    if (m_state == StateSubscriptionBlocked) {
+      logger.info() << "Subscription is blocked, stay blocked.";
       return;
     }
   }
@@ -1275,7 +1281,7 @@ void MozillaVPN::quit() {
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   logger.debug() << "Subscription started" << productIdentifier;
 
-  setState(StateSubscriptionValidation);
+  setState(StateSubscriptionInProgress);
 
   IAPHandler* iap = IAPHandler::instance();
 
@@ -1293,7 +1299,9 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
 }
 
 void MozillaVPN::subscriptionCompleted() {
-  if (m_state != StateSubscriptionValidation) {
+  if (m_state != StateSubscriptionInProgress) {
+    // We could hit this in android flow if we're doing a late acknowledgement.
+    // And ignoring is fine.
     logger.warning()
         << "Random subscription completion received. Let's ignore it.";
     return;
@@ -1320,14 +1328,15 @@ void MozillaVPN::subscriptionCanceled() {
 }
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
-  if (m_state != StateSubscriptionValidation) {
-    // TODO - baku added this for iOS needs, but if I deliberately trigger
-    // say a skuDetailsReceived error I hit this ignore and user is left
-    // spinning.
+#ifdef MVPN_IOS
+  // This is iOS only.
+  // Android can legitimately end up here on a skuDetailsFailed.
+  if (m_state != StateSubscriptionInProgress) {
     logger.warning()
         << "Random subscription failure received. Let's ignore it.";
     return;
   }
+#endif
 
   logger.debug() << "Subscription failed or canceled";
 
@@ -1349,12 +1358,16 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
 }
 
 void MozillaVPN::alreadySubscribed() {
-  if (m_state != StateSubscriptionValidation) {
+#ifdef MVPN_IOS
+  // This randomness is an iOS only issue
+  // TODO - How can we make this cleaner in the future
+  if (m_state != StateSubscriptionInProgress) {
     logger.warning()
         << "Random already-subscribed notification received. Let's ignore it.";
     return;
   }
-
+#endif
+  logger.info() << "Setting state: Subscription Blocked";
   setState(StateSubscriptionBlocked);
 }
 

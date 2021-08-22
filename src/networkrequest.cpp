@@ -711,7 +711,7 @@ NetworkRequest* NetworkRequest::createForAndroidPurchase(
   json.setObject(obj);
 
   logger.debug() << "Network request createForAndroidPurchase created"
-                 << json.toJson(QJsonDocument::Compact);
+                 << logger.sensitive(json.toJson(QJsonDocument::Compact));
 
   r->postRequest(json.toJson(QJsonDocument::Compact));
   return r;

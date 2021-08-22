@@ -179,8 +179,8 @@ void ServerConnection::writeState() {
       case MozillaVPN::StateSubscriptionNeeded:
         stateStr = "subscriptionNeeded";
         break;
-      case MozillaVPN::StateSubscriptionValidation:
-        stateStr = "subscriptionValidation";
+      case MozillaVPN::StateSubscriptionInProgress:
+        stateStr = "subscriptionInProgress";
         break;
       case MozillaVPN::StateSubscriptionBlocked:
         stateStr = "subscriptionBlocked";

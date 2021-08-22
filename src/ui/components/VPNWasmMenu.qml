@@ -59,6 +59,12 @@ VPNFlickable {
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
+            text: "Subscription Blocked (IAP)"
+            onClicked: mainStackView.replace("../states/StateSubscriptionBlocked.qml", {wasmView: true}, StackView.Immediate)
+        }
+
+        VPNWasmMenuButton {
+            Layout.fillWidth: true
             text: "Billing not available (IAP) - Android"
             onClicked: mainStackView.replace("../states/StateBillingNotAvailable.qml", {wasmView: true}, StackView.Immediate)
         }

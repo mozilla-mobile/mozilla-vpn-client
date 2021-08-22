@@ -68,7 +68,18 @@ AndroidIAPHandler::~AndroidIAPHandler() {
 }
 
 void AndroidIAPHandler::nativeRegisterProducts() {
-  QJsonDocument productData = productsToJson();
+  // Convert products to JSON
+  QJsonArray jsonProducts;
+  for (auto p : m_products) {
+    QJsonObject jsonProduct;
+    jsonProduct["id"] = p.m_name;
+    jsonProduct["monthCount"] =
+        QVariant::fromValue(productTypeToMonthCount(p.m_type)).toInt();
+    jsonProducts.append(jsonProduct);
+  }
+  QJsonObject root;
+  root.insert("products", jsonProducts);
+  QJsonDocument productData = QJsonDocument(root);
   auto jniString =
       QAndroidJniObject::fromString(productData.toJson(QJsonDocument::Compact));
 
@@ -108,12 +119,28 @@ void AndroidIAPHandler::onPurchaseAcknowledged(JNIEnv* env, jobject thiz) {
 // static
 void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
                                           jstring data) {
+  /**
+   * This function may be called whenever we receive information
+   * about a purchase. That should be in two scenarios:
+   * - after running a queryPurchases at the same time as skuDetails
+   *   in order to see whether we have an existing subscription but
+   *   a different FxA account
+   * - after initiating a subscription, from which we then need to
+   *   validate that subscription for acknowledgement.
+   * Note, it doesn't happen after acknowledging.
+   */
+
   Q_UNUSED(thiz);
-  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
-  AndroidUtils::dispatchToMainThread([json] {
+
+  QJsonObject purchase = AndroidUtils::getQJsonObjectFromJString(env, data);
+  Q_ASSERT(!purchase.isEmpty());
+  logger.debug() << "Got purchase info"
+                 << logger.sensitive(QJsonDocument(purchase).toJson());
+
+  AndroidUtils::dispatchToMainThread([purchase] {
     IAPHandler* iap = IAPHandler::instance();
     Q_ASSERT(iap);
-    static_cast<AndroidIAPHandler*>(iap)->validatePurchase(json);
+    static_cast<AndroidIAPHandler*>(iap)->processPurchase(purchase);
   });
 }
 
@@ -149,6 +176,19 @@ void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
       << "onBillingNotAvailable event occured"
       << QJsonDocument(billingResponse).toJson(QJsonDocument::Compact);
   IAPHandler* iap = IAPHandler::instance();
+  if (billingResponse["code"].toInt() == -99) {
+    // The billing service was disconnected.
+    // Lets try a reset if we need a subscription.
+    // TODO - This is speculative. I put it here because I got an inappropriate
+    // launch of the "Sign in to Play Store" window. But I'm not exactly sure
+    // how to trigger a billing service disconnected and I'm not sure what the
+    // right action should be.
+    MozillaVPN* vpn = MozillaVPN::instance();
+    if (vpn->user()->subscriptionNeeded()) {
+      vpn->reset(true);
+      return;
+    }
+  }
   iap->stopSubscription();
   iap->cancelProductsRegistration();
   emit iap->billingNotAvailable();
@@ -217,24 +257,32 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
   }
 }
 
-void AndroidIAPHandler::validatePurchase(QJsonObject json) {
-  if (m_subscriptionState != eActive) {
-    logger.warning()
-        << "onPurchaseUpdated. In a bad state. This is unexpected. Returning.";
-    return;
+void AndroidIAPHandler::processPurchase(QJsonObject purchase) {
+  // If we're trying to use IAP, but have a valid subscription,
+  // we're already subscribed and need to throw up a blocker.
+  bool purchaseAcknowledged = purchase["acknowledged"].toBool();
+
+  // We need to validate / acknowledge an unAcknowledged purchase
+  if (!purchaseAcknowledged) {
+    validatePurchase(purchase);
   }
 
-  if (json.isEmpty()) {
-    logger.error() << "onPurchaseUpdated, emptyJsonObject received.";
+  if (purchaseAcknowledged &&
+      MozillaVPN::instance()->user()->subscriptionNeeded()) {
+    logger.info() << "User is listed as subscriptionNeeded, but we have an "
+                     "acknowledgedPurchase";
     stopSubscription();
-    emit subscriptionFailed();
-    return;
+    emit alreadySubscribed();
   }
 
-  QString sku = json["productId"].toString();
+  // Otherwise this is a no-op.
+}
+
+void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
+  QString sku = purchase["productId"].toString();
   Product* productData = findProduct(sku);
   Q_ASSERT(productData);
-  QString token = json["purchaseToken"].toString();
+  QString token = purchase["purchaseToken"].toString();
   Q_ASSERT(!token.isEmpty());
 
   NetworkRequest* request =
@@ -262,14 +310,14 @@ void AndroidIAPHandler::validatePurchase(QJsonObject json) {
                   << "onPurchaseUpdated-requestCompleted. Error parsing json. "
                      "Code: "
                   << jsonError.error << "Offset: " << jsonError.offset
-                  << "Message: " << jsonError.errorString() << "Data: " << data;
+                  << "Message: " << jsonError.errorString();
               stopSubscription();
               emit subscriptionFailed();
               return;
             }
 
             if (!json.isObject() || !json.object().contains("tokenValid")) {
-              logger.debug() << "Unexpected json returned";
+              logger.error() << "Unexpected json returned";
               stopSubscription();
               emit subscriptionFailed();
               return;
@@ -278,7 +326,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject json) {
             bool tokenValid = json.object()["tokenValid"].toBool();
 
             if (!tokenValid) {
-              logger.debug() << "tokenValid == false, aborting.";
+              logger.info() << "tokenValid == false, aborting.";
               stopSubscription();
               emit subscriptionFailed();
               // ToDo - it's not clear what to do in this scenario yet.
@@ -290,24 +338,10 @@ void AndroidIAPHandler::validatePurchase(QJsonObject json) {
             }
 
             // We can acknowledge the purchase.
-            logger.debug() << "tokenValid == true, acknowledging purchase.";
+            logger.info() << "tokenValid == true, acknowledging purchase.";
             auto jniString = QAndroidJniObject::fromString(token);
             QAndroidJniObject::callStaticMethod<void>(
                 "org/mozilla/firefox/vpn/InAppPurchase", "acknowledgePurchase",
                 "(Ljava/lang/String;)V", jniString.object());
           });
-}
-
-QJsonDocument AndroidIAPHandler::productsToJson() {
-  QJsonArray jsonProducts;
-  for (auto p : m_products) {
-    QJsonObject jsonProduct;
-    jsonProduct["id"] = p.m_name;
-    jsonProduct["monthCount"] =
-        QVariant::fromValue(productTypeToMonthCount(p.m_type)).toInt();
-    jsonProducts.append(jsonProduct);
-  }
-  QJsonObject root;
-  root.insert("products", jsonProducts);
-  return QJsonDocument(root);
 }

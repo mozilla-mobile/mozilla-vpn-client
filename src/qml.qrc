@@ -54,7 +54,7 @@
         <file>ui/settings/ViewSettingsMenu.qml</file>
         <file>ui/states/StateBillingNotAvailable.qml</file>
         <file>ui/states/StateSubscriptionNeeded.qml</file>
-        <file>ui/states/StateSubscriptionValidation.qml</file>
+        <file>ui/states/StateSubscriptionInProgress.qml</file>
         <file>ui/states/StateSubscriptionBlocked.qml</file>
         <file>ui/states/StateMain.qml</file>
         <file>ui/states/StateInitialize.qml</file>

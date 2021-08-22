@@ -228,11 +228,11 @@ Window {
 
                 },
                 State {
-                    name: VPN.StateSubscriptionValidation
+                    name: VPN.StateSubscriptionInProgress
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateSubscriptionValidation.qml"
+                        source: "states/StateSubscriptionInProgress.qml"
                     }
 
                 },

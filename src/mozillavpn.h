@@ -53,7 +53,7 @@ class MozillaVPN final : public QObject {
     StatePostAuthentication,
     StateSubscriptionBlocked,
     StateSubscriptionNeeded,
-    StateSubscriptionValidation,
+    StateSubscriptionInProgress,
     StateTelemetryPolicy,
     StateUpdateRequired,
   };

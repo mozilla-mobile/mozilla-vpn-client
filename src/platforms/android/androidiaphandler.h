@@ -22,9 +22,9 @@ class AndroidIAPHandler final : public IAPHandler {
   void nativeStartSubscription(Product* product) override;
 
  private:
-  QJsonDocument productsToJson();
   void updateProductsInfo(const QJsonArray& products);
-  void validatePurchase(QJsonObject json);
+  void processPurchase(QJsonObject purchase);
+  void validatePurchase(QJsonObject purchase);
 
   // Functions called via JNI
   // Successes
