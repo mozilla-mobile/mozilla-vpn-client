@@ -781,7 +781,9 @@ void MozillaVPN::logout() {
   deleteTasks();
 
   if (FeatureInAppPurchase::instance()->isSupported()) {
-    IAPHandler::instance()->stopSubscription();
+    IAPHandler* iap = IAPHandler::instance();
+    iap->stopSubscription();
+    iap->cancelProductsRegistration();
   }
 
   // update-required state is the only one we want to keep when logging out.
