@@ -136,10 +136,14 @@ class InAppPurchase private constructor(ctx: Context) :
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         if (responseCode != BillingClient.BillingResponseCode.OK) {
-            onBillingNotAvailable(Json.encodeToString(BillingResponseData(
-                code = responseCode,
-                message = debugMessage
-            )))
+            onBillingNotAvailable(
+                Json.encodeToString(
+                    BillingResponseData(
+                        code = responseCode,
+                        message = debugMessage
+                    )
+                )
+            )
         } else {
             querySkuDetails()
         }
