@@ -17,6 +17,7 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
@@ -30,8 +31,12 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
 
+/**
+ * Generally this contains the contents of a native BillingResult.
+ * But in unexpected failure cases we use our own codes starting at -99.
+ */
 @Serializable
-data class BillingResponseData(
+data class BillingResultData(
     val code: Int,
     val message: String
 )
@@ -63,31 +68,37 @@ data class GooglePlaySubscriptions(
 class InAppPurchase private constructor(ctx: Context) :
     AcknowledgePurchaseResponseListener,
     BillingClientStateListener,
+    PurchasesResponseListener,
     PurchasesUpdatedListener,
     SkuDetailsResponseListener {
 
     /**
-     * SkuDetails and monthCounts by SKU
+     * SkuDetails, monthCounts, and Purchase by SKU
      */
     val skusWithSkuDetails = HashMap<String, SkuDetails>()
     val skusWithMonthCount = HashMap<String, Int>()
+    val skusWithPurchase = HashMap<String, Purchase>()
 
     /**
      * The billingClient instance
      */
     private var billingClient = BillingClient.newBuilder(ctx)
         .setListener(this)
-        .enablePendingPurchases() // Not used for subscriptions.
+        .enablePendingPurchases() // Not used for subscriptions, but required.
         .build()
 
-    // Functions in AndroidIAPHandler
-    external fun onBillingNotAvailable(billingResponseJSONBlob: String)
-    external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
-    external fun onNoPurchases()
-    external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
-    external fun onSubscriptionFailed()
+    /**
+     * Functions in AndroidIAPHandler
+     */
+    // Success
     external fun onPurchaseAcknowledged()
-    external fun onPurchaseAcknowledgeFailed()
+    external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
+    external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
+    // Failures
+    external fun onBillingNotAvailable(billingResultJSONBlob: String)
+    external fun onPurchaseAcknowledgeFailed(billingResultJSONBlob: String)
+    external fun onSkuDetailsFailed(billingResultJSONBlob: String)
+    external fun onSubscriptionFailed(billingResultJsonBlob: String)
 
     companion object {
         private const val TAG = "InAppPurchase"
@@ -129,6 +140,10 @@ class InAppPurchase private constructor(ctx: Context) :
         }
     }
 
+    /**
+     * Initiate functions
+     */
+
     fun initiateProductLookup(productsToLookupRaw: String) {
         val productsToLookup = Json.decodeFromString<MozillaSubscriptions>(productsToLookupRaw)
         for (product in productsToLookup.products) {
@@ -138,114 +153,7 @@ class InAppPurchase private constructor(ctx: Context) :
             Log.d(TAG, "BillingClient: Start connection...")
             billingClient.startConnection(this)
         } else {
-            querySkuDetails()
-        }
-    }
-
-    override fun onBillingSetupFinished(billingResult: BillingResult) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        if (responseCode != BillingClient.BillingResponseCode.OK) {
-            onBillingNotAvailable(
-                Json.encodeToString(
-                    BillingResponseData(
-                        code = responseCode,
-                        message = debugMessage
-                    )
-                )
-            )
-        } else {
-            querySkuDetails()
-        }
-    }
-
-    override fun onBillingServiceDisconnected() {
-        Log.i(TAG, "Billing Service Disconnected")
-        onBillingNotAvailable(
-            Json.encodeToString(
-                BillingResponseData(
-                    code = -99,
-                    message = "Billing Service Disconnected"
-                )
-            )
-        )
-    }
-
-    fun querySkuDetails() {
-        if (!billingClient.isReady) {
-            Log.d(TAG, "BillingClient: Start connection...")
-            billingClient.startConnection(this)
-        }
-        val params = SkuDetailsParams.newBuilder()
-            .setType(BillingClient.SkuType.SUBS)
-            .setSkusList(skusWithMonthCount.keys.toList())
-            .build()
-        params.let { skuDetailsParams ->
-            Log.i(TAG, "querySkuDetailsAsync")
-            billingClient.querySkuDetailsAsync(skuDetailsParams, this)
-        }
-    }
-
-    override fun onSkuDetailsResponse(
-        billingResult: BillingResult,
-        skuDetailsList: MutableList<SkuDetails>?
-    ) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        when (responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                Log.d(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
-                if (skuDetailsList == null) {
-                    Log.e(TAG, "Found null SkuDetails.")
-                } else {
-                    val googleProducts = GooglePlaySubscriptions(products = arrayListOf())
-                    for (details in skuDetailsList) {
-                        val sku = details.sku
-                        skusWithSkuDetails[sku] = details
-                        val priceMicros = details.priceAmountMicros
-                        val monthCount = skusWithMonthCount[sku]
-                        if (monthCount == null) {
-                            Log.e(TAG, "We did not get a monthCount for sku: $sku")
-                            return
-                        }
-                        Log.d(
-                            TAG,
-                            "For sku $sku, we have $priceMicros priceMicros $monthCount months"
-                        )
-                        val monthlyPrice = priceMicros / 1000000.00 / monthCount
-                        val formatter = NumberFormat.getCurrencyInstance()
-                        formatter.maximumFractionDigits = 2
-                        formatter.currency = Currency.getInstance(details.priceCurrencyCode)
-                        val monthlyPriceString = formatter.format(monthlyPrice)
-                        googleProducts.products.add(
-                            GooglePlaySubscriptionInfo(
-                                totalPriceString = details.price,
-                                monthlyPriceString = monthlyPriceString,
-                                monthlyPrice = monthlyPrice,
-                                sku = sku
-                            )
-                        )
-                    }
-                    val googleProductsJson = Json.encodeToString(googleProducts)
-                    Log.d(TAG, "Sending $googleProductsJson")
-                    onSkuDetailsReceived(googleProductsJson)
-                }
-            }
-            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
-            BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE,
-            BillingClient.BillingResponseCode.ITEM_UNAVAILABLE,
-            BillingClient.BillingResponseCode.DEVELOPER_ERROR,
-            BillingClient.BillingResponseCode.ERROR -> {
-                Log.e(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
-            }
-            BillingClient.BillingResponseCode.USER_CANCELED,
-            BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED,
-            BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED,
-            BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
-                // These response codes are not expected.
-                Log.wtf(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
-            }
+            querySkuAndPurchases()
         }
     }
 
@@ -253,70 +161,25 @@ class InAppPurchase private constructor(ctx: Context) :
         val skuDetails = skusWithSkuDetails[productToPurchase]
         if (skuDetails == null) {
             Log.wtf(TAG, "Attempting to purchase a product with no skuDetails")
-            // TODO - What do we want to do in this case?
+            onSubscriptionFailed(
+                Json.encodeToString(
+                    BillingResultData(
+                        code = -98,
+                        message = "Attempted to purchase $productToPurchase with no sku details"
+                    )
+                )
+            )
             return
         }
         val billingParams = BillingFlowParams
             .newBuilder()
             .setSkuDetails(skuDetails)
-            // ToDo - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1537
-            // .setObfuscatedAccountId(fxaUid)
+            // TODO - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1537
+            // .setObfuscatedAccountId(fxaId)
             .build()
         val billingResult = billingClient.launchBillingFlow(activity, billingParams)
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        Log.d(TAG, "launchBillingFlow: BillingResponse $responseCode $debugMessage")
-    }
-
-    /**
-     * Called by the Billing Library when new purchases are detected.
-     */
-    override fun onPurchasesUpdated(
-        billingResult: BillingResult,
-        purchases: MutableList<Purchase>?
-    ) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        Log.d(TAG, "onPurchasesUpdated: $responseCode $debugMessage")
-        when (responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                if (purchases == null) {
-                    Log.d(TAG, "onPurchasesUpdated: null purchase list")
-                    onNoPurchases()
-                } else {
-                    for (purchase in purchases) {
-                        Log.d(TAG, "onPurchasesUpdated $purchase.originalJson")
-                        onPurchaseUpdated(purchase.originalJson)
-                    }
-                }
-            }
-            BillingClient.BillingResponseCode.USER_CANCELED,
-            BillingClient.BillingResponseCode.ERROR -> {
-                // Cancelled happens, at least, when a user hits back button from native
-                // purchase screen.
-                // Error happens, at least, when a bad credit card is used.
-                Log.i(TAG, "onPurchasesUpdated: User canceled or purchase errored.")
-                onSubscriptionFailed()
-            }
-            BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
-                Log.e(TAG, "onPurchasesUpdated: The user already owns this item")
-                // TODO - How do we want to handle this case. We shouldn't
-                // get ourselves in this position. I *think* this could happen
-                // if a user used a different FxA account than when they originally
-                // purchased if they purchased using the same Google Play account.
-                // So Google Play knows they're subscriber, but guardian doesn't.
-                // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1550
-            }
-            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
-            BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE,
-            BillingClient.BillingResponseCode.ITEM_UNAVAILABLE,
-            BillingClient.BillingResponseCode.ITEM_NOT_OWNED,
-            BillingClient.BillingResponseCode.DEVELOPER_ERROR -> {
-                // These response codes are not expected.
-                Log.wtf(TAG, "onSkuDetailsResponse: $responseCode $debugMessage")
-                onSubscriptionFailed()
-            }
+        if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+            onSubscriptionFailed(billingResultToJson(billingResult, "initiatePurchase"))
         }
     }
 
@@ -327,15 +190,157 @@ class InAppPurchase private constructor(ctx: Context) :
         billingClient.acknowledgePurchase(acknowledgePurchaseParams, this)
     }
 
+    /**
+     * Override functions for Billing Library listeners
+     */
+
+    override fun onBillingSetupFinished(billingResult: BillingResult) {
+        if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+            onBillingNotAvailable(billingResultToJson(billingResult, "onBillingSetupFinished"))
+        } else {
+            querySkuAndPurchases()
+        }
+    }
+
+    override fun onBillingServiceDisconnected() {
+        Log.i(TAG, "Billing Service Disconnected")
+        skusWithSkuDetails.clear()
+        skusWithMonthCount.clear()
+        skusWithPurchase.clear()
+        onBillingNotAvailable(
+            Json.encodeToString(
+                BillingResultData(
+                    code = -99,
+                    message = "Billing Service Disconnected"
+                )
+            )
+        )
+    }
+
+    override fun onSkuDetailsResponse(
+        billingResult: BillingResult,
+        skuDetailsList: MutableList<SkuDetails>?
+    ) {
+        if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+            onSkuDetailsFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
+            return
+        }
+        if (skuDetailsList == null) {
+            onSkuDetailsFailed(
+                Json.encodeToString(
+                    BillingResultData(
+                        code = -97,
+                        message = "No sku details returned"
+                    )
+                )
+            )
+            return
+        }
+        val googleProducts = GooglePlaySubscriptions(products = arrayListOf())
+        for (details in skuDetailsList) {
+            val parsedDetails = skuDetailsToGooglePlaySubscriptionInfo(details)
+            if (parsedDetails != null) {
+                googleProducts.products.add(parsedDetails)
+            }
+        }
+        val googleProductsJson = Json.encodeToString(googleProducts)
+        Log.d(TAG, "Sending $googleProductsJson")
+        onSkuDetailsReceived(googleProductsJson)
+    }
+
+    override fun onQueryPurchasesResponse(billingResult: BillingResult,
+                                          purchases: MutableList<Purchase>) {
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            processPurchases(purchases)
+        }
+        // TODO - Could try re-querying up to n times before declaring failure
+        // I think that if querying purchases fails, other things will
+        // fail too and we handle those gracefully.
+    }
+
+    override fun onPurchasesUpdated(
+        billingResult: BillingResult,
+        purchases: MutableList<Purchase>?
+    ) {
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            processPurchases(purchases)
+        } else {
+            onSubscriptionFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
+        }
+    }
+
     override fun onAcknowledgePurchaseResponse(billingResult: BillingResult) {
-        val responseCode = billingResult.responseCode
-        val debugMessage = billingResult.debugMessage
-        Log.d(TAG, "onAcknowledgePurchaseResponse: $responseCode $debugMessage")
-        if (responseCode == BillingClient.BillingResponseCode.OK) {
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             onPurchaseAcknowledged()
         } else {
-            Log.wtf(TAG, "onAcknowledgePurchaseResponse: $responseCode $debugMessage")
-            onPurchaseAcknowledgeFailed()
+            onPurchaseAcknowledgeFailed(billingResultToJson(billingResult, "onAcknowledgePurchaseResponse"))
         }
+    }
+
+    /**
+     * The rest
+     */
+
+    fun querySkuAndPurchases() {
+        if (!billingClient.isReady) {
+            Log.d(TAG, "BillingClient: Start connection...")
+            billingClient.startConnection(this)
+        }
+        val params = SkuDetailsParams.newBuilder()
+            .setType(BillingClient.SkuType.SUBS)
+            .setSkusList(skusWithMonthCount.keys.toList())
+            .build()
+        // Query skus
+        params.let { skuDetailsParams ->
+            Log.i(TAG, "querySkuDetailsAsync")
+            billingClient.querySkuDetailsAsync(skuDetailsParams, this)
+        }
+        // Query existing subscription purchases
+        billingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS, this)
+    }
+
+    fun processPurchases(purchases: MutableList<Purchase>?) {
+        if (purchases == null) {
+            Log.d(TAG, "onPurchasesUpdated: null purchase list")
+            return
+        }
+        for (purchase in purchases) {
+            onPurchaseUpdated(purchase.originalJson)
+        }
+    }
+
+    fun skuDetailsToGooglePlaySubscriptionInfo(details: SkuDetails): GooglePlaySubscriptionInfo? {
+        val sku = details.sku
+        skusWithSkuDetails[sku] = details
+        val priceMicros = details.priceAmountMicros
+        val monthCount = skusWithMonthCount[sku]
+        if (monthCount == null) {
+            Log.e(TAG, "We did not get a monthCount for sku: $sku")
+            return null
+        }
+        Log.d(TAG, "For sku $sku, we have $priceMicros priceMicros $monthCount months")
+        val monthlyPrice = priceMicros / 1000000.00 / monthCount
+        val formatter = NumberFormat.getCurrencyInstance()
+        formatter.maximumFractionDigits = 2
+        formatter.currency = Currency.getInstance(details.priceCurrencyCode)
+        val monthlyPriceString = formatter.format(monthlyPrice)
+        return GooglePlaySubscriptionInfo(
+            totalPriceString = details.price,
+            monthlyPriceString = monthlyPriceString,
+            monthlyPrice = monthlyPrice,
+            sku = sku
+        )
+    }
+
+    fun billingResultToJson(billingResult: BillingResult, caller: String): String {
+        val responseCode = billingResult.responseCode
+        val debugMessage = billingResult.debugMessage
+        Log.d(TAG, "BillingResult from $caller: $responseCode $debugMessage")
+        return Json.encodeToString(
+            BillingResultData(
+                code = responseCode,
+                message = debugMessage
+            )
+        )
     }
 }

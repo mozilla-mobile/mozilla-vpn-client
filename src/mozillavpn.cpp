@@ -339,6 +339,8 @@ void MozillaVPN::maybeStateMain() {
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    // TODO - When I triggered purchaseAcknowledgeFailure
+    // I failed this assertion and crashed.
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
     emit triggerGleanSample(GleanSample::maxDeviceReached);
@@ -1319,6 +1321,9 @@ void MozillaVPN::subscriptionCanceled() {
 
 void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
   if (m_state != StateSubscriptionValidation) {
+    // TODO - baku added this for iOS needs, but if I deliberately trigger
+    // say a skuDetailsReceived error I hit this ignore and user is left
+    // spinning.
     logger.warning()
         << "Random subscription failure received. Let's ignore it.";
     return;

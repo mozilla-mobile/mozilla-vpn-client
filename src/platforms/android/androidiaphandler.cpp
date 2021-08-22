@@ -35,19 +35,22 @@ AndroidIAPHandler::AndroidIAPHandler(QObject* parent) : IAPHandler(parent) {
   // Hook together implementations for functions called by native code
   QtAndroid::runOnAndroidThreadSync([]() {
     JNINativeMethod methods[]{
+        // Failures
         {"onBillingNotAvailable", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onBillingNotAvailable)},
-        {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
-         reinterpret_cast<void*>(onSkuDetailsReceived)},
-        {"onNoPurchases", "()V", reinterpret_cast<void*>(onNoPurchases)},
-        {"onPurchaseUpdated", "(Ljava/lang/String;)V",
-         reinterpret_cast<void*>(onPurchaseUpdated)},
-        {"onSubscriptionFailed", "()V",
+        {"onPurchaseAcknowledgeFailed", "(Ljava/lang/String;)V",
+         reinterpret_cast<void*>(onPurchaseAcknowledgeFailed)},
+        {"onSkuDetailsFailed", "(Ljava/lang/String;)V",
+         reinterpret_cast<void*>(onSkuDetailsFailed)},
+        {"onSubscriptionFailed", "(Ljava/lang/String;)V",
          reinterpret_cast<void*>(onSubscriptionFailed)},
+        // Successes
         {"onPurchaseAcknowledged", "()V",
          reinterpret_cast<void*>(onPurchaseAcknowledged)},
-        {"onPurchaseAcknowledgeFailed", "()V",
-         reinterpret_cast<void*>(onPurchaseAcknowledgeFailed)},
+        {"onPurchaseUpdated", "(Ljava/lang/String;)V",
+         reinterpret_cast<void*>(onPurchaseUpdated)},
+        {"onSkuDetailsReceived", "(Ljava/lang/String;)V",
+         reinterpret_cast<void*>(onSkuDetailsReceived)},
     };
     QAndroidJniObject javaClass(CLASSNAME);
     QAndroidJniEnvironment env;
@@ -74,6 +77,15 @@ void AndroidIAPHandler::nativeRegisterProducts() {
       "(Ljava/lang/String;)V", jniString.object());
 }
 
+void AndroidIAPHandler::nativeStartSubscription(Product* product) {
+  auto jniString = QAndroidJniObject::fromString(product->m_name);
+  auto appActivity = QtAndroid::androidActivity();
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/InAppPurchase", "purchaseProduct",
+      "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
+      appActivity.object());
+}
+
 void AndroidIAPHandler::launchPlayStore() {
   auto appActivity = QtAndroid::androidActivity();
   QAndroidJniObject::callStaticMethod<void>(
@@ -81,33 +93,28 @@ void AndroidIAPHandler::launchPlayStore() {
       "(Landroid/app/Activity;)V", appActivity.object());
 }
 
-QJsonDocument AndroidIAPHandler::productsToJson() {
-  QJsonArray jsonProducts;
-  for (auto p : m_products) {
-    QJsonObject jsonProduct;
-    jsonProduct["id"] = p.m_name;
-    jsonProduct["monthCount"] =
-        QVariant::fromValue(productTypeToMonthCount(p.m_type)).toInt();
-    jsonProducts.append(jsonProduct);
-  }
-  QJsonObject root;
-  root.insert("products", jsonProducts);
-  return QJsonDocument(root);
+// Call backs from JNI - Successes
+
+// static
+void AndroidIAPHandler::onPurchaseAcknowledged(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env)
+  Q_UNUSED(thiz);
+  logger.debug() << "Purchase successfully acknowledged";
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionCompleted();
 }
 
 // static
-void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
-                                              jstring data) {
+void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
+                                          jstring data) {
   Q_UNUSED(thiz);
-  QJsonObject billingResponse =
-      AndroidUtils::getQJsonObjectFromJString(env, data);
-  logger.info()
-      << "onBillingNotAvailable event occured"
-      << QJsonDocument(billingResponse).toJson(QJsonDocument::Compact);
-  IAPHandler* iap = IAPHandler::instance();
-  iap->stopSubscription();
-  iap->cancelProductsRegistration();
-  emit iap->billingNotAvailable();
+  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
+  AndroidUtils::dispatchToMainThread([json] {
+    IAPHandler* iap = IAPHandler::instance();
+    Q_ASSERT(iap);
+    static_cast<AndroidIAPHandler*>(iap)->validatePurchase(json);
+  });
 }
 
 // static
@@ -129,6 +136,61 @@ void AndroidIAPHandler::onSkuDetailsReceived(JNIEnv* env, jobject thiz,
   static_cast<AndroidIAPHandler*>(iap)->updateProductsInfo(products);
   iap->productsRegistrationCompleted();
 }
+
+// Call backs from JNI - Failures
+
+// static
+void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
+                                              jstring data) {
+  Q_UNUSED(thiz);
+  QJsonObject billingResponse =
+      AndroidUtils::getQJsonObjectFromJString(env, data);
+  logger.info()
+      << "onBillingNotAvailable event occured"
+      << QJsonDocument(billingResponse).toJson(QJsonDocument::Compact);
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  iap->cancelProductsRegistration();
+  emit iap->billingNotAvailable();
+}
+
+// static
+void AndroidIAPHandler::onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz,
+                                                    jstring data) {
+  Q_UNUSED(thiz);
+  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
+  logger.error() << "onPurchaseAcknowledgeFailed"
+                 << QJsonDocument(json).toJson(QJsonDocument::Compact);
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionFailed();
+}
+
+// static
+void AndroidIAPHandler::onSkuDetailsFailed(JNIEnv* env, jobject thiz,
+                                           jstring data) {
+  Q_UNUSED(thiz);
+  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
+  logger.error() << "onSkuDetailsFailed"
+                 << QJsonDocument(json).toJson(QJsonDocument::Compact);
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionFailed();
+}
+
+// static
+void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz,
+                                             jstring data) {
+  Q_UNUSED(thiz);
+  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
+  logger.error() << "onSubscriptionFailed"
+                 << QJsonDocument(json).toJson(QJsonDocument::Compact);
+  IAPHandler* iap = IAPHandler::instance();
+  iap->stopSubscription();
+  emit iap->subscriptionFailed();
+}
+
+// The rest - instance methods
 
 void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
@@ -153,45 +215,6 @@ void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
       unknownProductRegistered(product.m_name);
     }
   }
-}
-
-void AndroidIAPHandler::nativeStartSubscription(Product* product) {
-  auto jniString = QAndroidJniObject::fromString(product->m_name);
-  auto appActivity = QtAndroid::androidActivity();
-  QAndroidJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/InAppPurchase", "purchaseProduct",
-      "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
-      appActivity.object());
-}
-
-// static
-void AndroidIAPHandler::onNoPurchases(JNIEnv* env, jobject thiz) {
-  Q_UNUSED(env)
-  Q_UNUSED(thiz);
-  // ToDo - I'm not sure when this scenario would occur
-  // and so I'm not sure what the best way to handle it is.
-  logger.info() << "onNoPurchases event occured";
-}
-
-// static
-void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz) {
-  Q_UNUSED(env)
-  Q_UNUSED(thiz);
-  IAPHandler* iap = IAPHandler::instance();
-  iap->stopSubscription();
-  emit iap->subscriptionFailed();
-}
-
-// static
-void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
-                                          jstring data) {
-  Q_UNUSED(thiz);
-  QJsonObject json = AndroidUtils::getQJsonObjectFromJString(env, data);
-  AndroidUtils::dispatchToMainThread([json] {
-    IAPHandler* iap = IAPHandler::instance();
-    Q_ASSERT(iap);
-    static_cast<AndroidIAPHandler*>(iap)->validatePurchase(json);
-  });
 }
 
 void AndroidIAPHandler::validatePurchase(QJsonObject json) {
@@ -275,20 +298,16 @@ void AndroidIAPHandler::validatePurchase(QJsonObject json) {
           });
 }
 
-void AndroidIAPHandler::onPurchaseAcknowledged(JNIEnv* env, jobject thiz) {
-  Q_UNUSED(env)
-  Q_UNUSED(thiz);
-  logger.debug() << "Purchase successfully acknowledged";
-  IAPHandler* iap = IAPHandler::instance();
-  iap->stopSubscription();
-  emit iap->subscriptionCompleted();
-}
-
-// static
-void AndroidIAPHandler::onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz) {
-  Q_UNUSED(env)
-  Q_UNUSED(thiz);
-  IAPHandler* iap = IAPHandler::instance();
-  iap->stopSubscription();
-  emit iap->subscriptionFailed();
+QJsonDocument AndroidIAPHandler::productsToJson() {
+  QJsonArray jsonProducts;
+  for (auto p : m_products) {
+    QJsonObject jsonProduct;
+    jsonProduct["id"] = p.m_name;
+    jsonProduct["monthCount"] =
+        QVariant::fromValue(productTypeToMonthCount(p.m_type)).toInt();
+    jsonProducts.append(jsonProduct);
+  }
+  QJsonObject root;
+  root.insert("products", jsonProducts);
+  return QJsonDocument(root);
 }
