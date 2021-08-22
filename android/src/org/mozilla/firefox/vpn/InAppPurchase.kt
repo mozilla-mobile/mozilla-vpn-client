@@ -160,8 +160,15 @@ class InAppPurchase private constructor(ctx: Context) :
     }
 
     override fun onBillingServiceDisconnected() {
-        Log.i(TAG, "SkuDetails Billing Service Disconnected")
-        // TODO - Call back to clean-up Qt side?
+        Log.i(TAG, "Billing Service Disconnected")
+        onBillingNotAvailable(
+            Json.encodeToString(
+                BillingResponseData(
+                    code = -99,
+                    message = "Billing Service Disconnected"
+                )
+            )
+        )
     }
 
     fun querySkuDetails() {
