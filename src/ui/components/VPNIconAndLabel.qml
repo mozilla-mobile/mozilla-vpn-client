@@ -42,7 +42,7 @@ Item {
         width: title.implicitWidth < parent.width ? undefined : parent.width
 
         Rectangle {
-            id: newIndicator
+            id: indicator
 
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter

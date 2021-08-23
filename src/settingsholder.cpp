@@ -98,6 +98,9 @@ constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
 constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
 constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
 
+constexpr bool SETTINGS_NEWFEATURESSEEN_DEFAULT = false;
+constexpr const char* SETTINGS_NEWFEATURESSEEN = "newFeaturesSeen";
+
 namespace {
 Logger logger(LOG_MAIN, "SettingsHolder");
 // Setting Keys That won't show up in a report;
@@ -168,6 +171,7 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
+  m_settings.remove(SETTINGS_NEWFEATURESSEEN);
 
   // We do not remove language, ipv6 and localnetwork settings.
 }
@@ -256,6 +260,12 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
+GETSETDEFAULT(SETTINGS_NEWFEATURESSEEN_DEFAULT, bool, toBool,
+              SETTINGS_NEWFEATURESSEEN, hasNewFeaturesSeen, newFeaturesSeen,
+              setNewFeaturesSeen, newFeaturesSeenChanged);
+GETSETDEFAULT(SETTINGS_NEWFEATURESSEEN_DEFAULT, bool, toBool,
+              SETTINGS_NEWFEATURESSEEN, hasNewFeaturesSeen, newFeaturesSeen,
+              setNewFeaturesSeen, newFeaturesSeenChanged);
 
 #undef GETSETDEFAULT
 

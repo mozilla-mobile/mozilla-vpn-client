@@ -40,6 +40,13 @@ Item {
             spacing: 0
             width: parent.width - Theme.windowMargin
 
+            Button {
+                text: VPNSettings.newFeaturesSeen ? "👀" : "✨"
+                onClicked: {
+                    VPNSettings.newFeaturesSeen = !VPNSettings.newFeaturesSeen;
+                }
+            }
+
             VPNSettingsItem {                
                 settingTitle: "Take the tour"
                 imageLeftSrc: hovered ? "../resources/magic-purple.svg" : "../resources/magic-dark.svg"
@@ -152,6 +159,12 @@ Item {
                 model: featureTourPopup.testData
                 delegate: featureItem
             }
+        }
+    }
+
+    Connections {
+        function onNewFeaturesSeenChanged() {
+            console.log(VPNSettings.newFeaturesSeen);
         }
     }
 }

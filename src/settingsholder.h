@@ -45,6 +45,8 @@ class SettingsHolder final : public QObject {
                  NOTIFY developerUnlockChanged)
   Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
                  stagingServerChanged)
+  Q_PROPERTY(bool newFeaturesSeen READ newFeaturesSeen WRITE setNewFeaturesSeen
+                 NOTIFY newFeaturesSeenChanged)
 
  public:
   SettingsHolder();
@@ -112,6 +114,7 @@ class SettingsHolder final : public QObject {
          setServerSwitchNotification);
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
+  GETSET(bool, hasNewFeaturesSeen, newFeaturesSeen, setNewFeaturesSeen);
 
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
 
@@ -167,6 +170,7 @@ class SettingsHolder final : public QObject {
   void connectionChangeNotificationChanged(bool value);
   void developerUnlockChanged(bool value);
   void stagingServerChanged(bool value);
+  void newFeaturesSeenChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);
