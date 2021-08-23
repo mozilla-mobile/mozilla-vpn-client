@@ -101,7 +101,7 @@ class NetworkRequest final : public QObject {
 
 #ifdef UNIT_TEST
   static NetworkRequest* createForFxaTotpCreation(
-      QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query);
+      QObject* parent, const QByteArray& sessionToken);
 #endif
 
   static NetworkRequest* createForFxaSessionDestroy(

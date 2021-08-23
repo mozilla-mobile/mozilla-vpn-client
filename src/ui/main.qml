@@ -65,7 +65,7 @@ Window {
             minimumWidth = Theme.desktopAppWidth
         }
 
-        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported, {
+        Glean.initialize('MozillaVPN', VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported, {
           appBuild: `MozillaVPN/${VPN.versionString}`,
           appDisplayVersion: VPN.versionString,
           httpClient: {
@@ -178,7 +178,7 @@ Window {
 
                     PropertyChanges {
                         target: loader
-                        source: VPNFeatureList.authenticationInApp ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
+                        source: VPNFeatureList.get("inAppAuthentication").isSupported ? "states/StateAuthenticationInApp.qml" : "states/StateAuthenticating.qml"
                     }
 
                 },
@@ -302,7 +302,7 @@ Window {
         }
 
         function onSendGleanPings() {
-            if (VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported) {
+            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
                 Pings.main.submit();
             }
         }
@@ -314,7 +314,7 @@ Window {
         function onAboutToQuit() {
             // We are about to quit. Let's see if we are fast enough to send
             // the last chunck of data to the glean servers.
-            if (VPNSettings.gleanEnabled && VPNFeatureList.gleanSupported) {
+            if (VPNSettings.gleanEnabled && VPNFeatureList.get("glean").isSupported) {
               Pings.main.submit();
             }
         }

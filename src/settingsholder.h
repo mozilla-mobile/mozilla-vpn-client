@@ -121,8 +121,9 @@ class SettingsHolder final : public QObject {
   GETSET(bool, hasNewFeaturesSeen, newFeaturesSeen, setNewFeaturesSeen);
   GETSET(bool, hasFeaturesTourShown, featuresTourShown, setFeaturesTourShown);
   GETSET(bool, hasMultihopTunnel, multihopTunnel, setMultihopTunnel)
-
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
+  GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
+         setDevModeFeatureFlags);
 
   void removeMissingApp(const QString& appID);
   void addMissingApp(const QString& appID);
@@ -130,6 +131,10 @@ class SettingsHolder final : public QObject {
   bool hasVpnDisabledApp(const QString& appID);
   void removeVpnDisabledApp(const QString& appID);
   void addVpnDisabledApp(const QString& appID);
+
+  bool hasDevModeFeatureFlag(const QString& featureID);
+  void enableDevModeFeatureFlag(const QString& featureID);
+  void removeDevModeFeatureFlag(const QString& featureID);
 
   void addConsumedSurvey(const QString& surveyId);
 
@@ -179,6 +184,7 @@ class SettingsHolder final : public QObject {
   void newFeaturesSeenChanged(bool value);
   void featuresTourShownChanged(bool value);
   void multihopTunnelChanged(bool value);
+  void devModeFeatureFlagsChanged(const QStringList& featureIDs);
 
  private:
   explicit SettingsHolder(QObject* parent);

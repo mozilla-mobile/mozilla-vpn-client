@@ -13,6 +13,12 @@
 #include "rfc/rfc4291.h"
 #include "rfc/rfc5735.h"
 
+#include "features/featurecaptiveportal.h"
+#include "features/featurelocalareaaccess.h"
+#include "features/featuresplittunnel.h"
+#include "features/featurestartonboot.h"
+#include "features/featureunsecurednetworknotification.h"
+
 #include <QSettings>
 #include <QHostAddress>
 
@@ -25,7 +31,7 @@ constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
 constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
-const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
+const QStringList SETTINGS_DEFAULT_EMPTY_LIST = QStringList();
 constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
 constexpr bool SETTINGS_MULTIHOP_TUNNEL_DEFAULT = false;
 
@@ -73,6 +79,7 @@ constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
 constexpr const char* SETTINGS_MULTIHOP_TUNNEL = "multihopTunnel";
+constexpr const char* SETTINGS_DEVMODE_FEATURE_FLAGS = "devmodeFeatureFlags";
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -215,7 +222,7 @@ QString SettingsHolder::getReport() {
 
 GETSETDEFAULT(SETTINGS_IPV6ENABLED_DEFAULT, bool, toBool, SETTINGS_IPV6ENABLED,
               hasIpv6Enabled, ipv6Enabled, setIpv6Enabled, ipv6EnabledChanged)
-GETSETDEFAULT(FeatureList::instance()->localNetworkAccessSupported() &&
+GETSETDEFAULT(FeatureLocalAreaAccess::instance()->isSupported() &&
                   SETTINGS_LOCALNETWORKACCESS_DEFAULT,
               bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
@@ -228,27 +235,26 @@ GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
 GETSETDEFAULT(SETTINGS_MULTIHOP_TUNNEL_DEFAULT, bool, toBool,
               SETTINGS_MULTIHOP_TUNNEL, hasMultihopTunnel, multihopTunnel,
               setMultihopTunnel, multihopTunnelChanged)
-GETSETDEFAULT(
-    FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
-        SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
-    bool, toBool, SETTINGS_UNSECUREDNETWORKALERT, hasUnsecuredNetworkAlert,
-    unsecuredNetworkAlert, setUnsecuredNetworkAlert,
-    unsecuredNetworkAlertChanged)
-GETSETDEFAULT(FeatureList::instance()->captivePortalNotificationSupported() &&
+GETSETDEFAULT(FeatureUnsecuredNetworkNotification::instance()->isSupported() &&
+                  SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
+              bool, toBool, SETTINGS_UNSECUREDNETWORKALERT,
+              hasUnsecuredNetworkAlert, unsecuredNetworkAlert,
+              setUnsecuredNetworkAlert, unsecuredNetworkAlertChanged)
+GETSETDEFAULT(FeatureCaptivePortal::instance()->isSupported() &&
                   SETTINGS_CAPTIVEPORTALALERT_DEFAULT,
               bool, toBool, SETTINGS_CAPTIVEPORTALALERT, hasCaptivePortalAlert,
               captivePortalAlert, setCaptivePortalAlert,
               captivePortalAlertChanged)
-GETSETDEFAULT(FeatureList::instance()->startOnBootSupported() &&
+GETSETDEFAULT(FeatureStartOnBoot::instance()->isSupported() &&
                   SETTINGS_STARTATBOOT_DEFAULT,
               bool, toBool, SETTINGS_STARTATBOOT, hasStartAtBoot, startAtBoot,
               setStartAtBoot, startAtBootChanged)
-GETSETDEFAULT(FeatureList::instance()->protectSelectedAppsSupported() &&
+GETSETDEFAULT(FeatureSplitTunnel::instance()->isSupported() &&
                   SETTINGS_PROTECTSELECTEDAPPS_DEFAULT,
               bool, toBool, SETTINGS_PROTECTSELECTEDAPPS,
               hasProtectSelectedApps, protectSelectedApps,
               setProtectSelectedApps, protectSelectedAppsChanged)
-GETSETDEFAULT(SETTINGS_VPNDISABLEDAPPS_DEFAULT, QStringList, toStringList,
+GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
               SETTINGS_VPNDISABLEDAPPS, hasVpnDisabledApps, vpnDisabledApps,
               setVpnDisabledApps, vpnDisabledAppsChanged)
 GETSETDEFAULT(SETTINGS_GLEANENABLED_DEFAULT, bool, toBool,
@@ -276,7 +282,10 @@ GETSETDEFAULT(SETTINGS_FEATURESTOURSHOWN_DEFAULT, bool, toBool,
               SETTINGS_FEATURESTOURSHOWN, hasFeaturesTourShown,
               featuresTourShown, setFeaturesTourShown,
               featuresTourShownChanged);
-
+GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
+              SETTINGS_DEVMODE_FEATURE_FLAGS, hasDevModeFeatureFlags,
+              devModeFeatureFlags, setDevModeFeatureFlags,
+              devModeFeatureFlagsChanged);
 #undef GETSETDEFAULT
 
 #define GETSET(type, toType, key, has, get, set)                        \
@@ -447,4 +456,28 @@ bool SettingsHolder::validateUserDNS(const QString& dns) const {
 
 QString SettingsHolder::placeholderUserDNS() const {
   return Constants::PLACEHOLDER_USER_DNS;
+}
+
+bool SettingsHolder::hasDevModeFeatureFlag(const QString& featureID) {
+  QStringList features;
+  if (hasDevModeFeatureFlags()) {
+    features = devModeFeatureFlags();
+  }
+  return features.contains(featureID);
+}
+void SettingsHolder::enableDevModeFeatureFlag(const QString& featureID) {
+  QStringList features;
+  if (hasDevModeFeatureFlags()) {
+    features = devModeFeatureFlags();
+  }
+  features.append(featureID);
+  setDevModeFeatureFlags(features);
+}
+void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
+  QStringList features;
+  if (hasDevModeFeatureFlags()) {
+    features = devModeFeatureFlags();
+  }
+  features.removeAll(featureID);
+  setDevModeFeatureFlags(features);
 }

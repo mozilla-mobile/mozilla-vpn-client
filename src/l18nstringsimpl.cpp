@@ -28,5 +28,7 @@ L18nStrings::~L18nStrings() { MVPN_COUNT_DTOR(L18nStrings); }
 
 QString L18nStrings::tr(L18nStrings::String string) const {
   Q_ASSERT(string < __Last);
+  QString id = _ids[string];
+  if (id.isEmpty()) return "";
   return qtTrId(_ids[string]);
 }

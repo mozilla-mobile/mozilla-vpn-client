@@ -81,7 +81,7 @@ Item {
             VPNCheckBoxRow {
                 id: localNetwork
                 objectName: "settingLocalNetworkAccess"
-                visible: VPNFeatureList.localNetworkAccessSupported
+                visible: VPNFeatureList.get("lanAccess").isSupported
                 width: parent.width - Theme.windowMargin
                 showDivider: isEnabled
 
@@ -101,7 +101,7 @@ Item {
             VPNCheckBoxRow {
                 id: multihopTunnel
                 objectName: "settingMultihopTunnel"
-                visible: VPNFeatureList.multihopSupported
+                visible: VPNFeatureList.get("multiHop").isSupported
                 Layout.rightMargin: Theme.windowMargin
 
                 //% "Multihop tunnel"
@@ -131,7 +131,7 @@ Item {
                 imageLeftSrc: "../resources/settings.svg"
                 imageRightSrc: "../resources/chevron.svg"
                 onClicked: settingsStackView.push("../settings/ViewAdvancedDNSSettings.qml")
-                visible: VPNFeatureList.userDNSSupported
+                visible: VPNFeatureList.get("customDNS").isSupported
                 enabled: vpnFlickable.vpnIsOff
                 opacity: enabled ? 1 : .5
             }
