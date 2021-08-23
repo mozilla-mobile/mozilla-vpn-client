@@ -66,6 +66,61 @@ Item {
                 Layout.fillWidth: true
             }
 
+            // start: feature list
+            ColumnLayout {
+                id: features
+
+                VPNFilterProxyModel {
+                    id: filterModel
+                    source: VPNFeatureList
+                    filterCallback: feature => {
+//                       return feature.writeable && !(feature.featureReleased && feature.supported)
+                        return true;
+                    }
+                }
+
+                // New features
+                VPNBoldLabel{
+                    text: "New Features"
+                }
+                Repeater {
+                    id: flist
+                    model: filterModel
+                    delegate: VPNCheckBoxRow {
+                        showDivider: false
+                        labelText: name
+                        subLabelText: id
+                        showAppImage: false
+                        onClicked: {
+                            VPNFeatureList.devModeFlipFeatureFlag(id)
+                        }
+                        // Only enable the list on features where devModeEnable has any impact
+                        enabled: true
+                        isChecked: supported
+                        Layout.minimumHeight: Theme.rowHeight * 1.5
+                    }
+                }
+
+                // All features
+                VPNBoldLabel{
+                    text: "All Features (read only)"
+                }
+                Repeater {
+                    id: disabledFeatureList
+                    model: VPNFeatureList
+                    delegate: VPNCheckBoxRow {
+                        showDivider: false
+                        labelText: name + (isNew ? "✨ ": " ") + (isSeen ? "👀 ": " ")
+                        subLabelText: id
+                        showAppImage: false
+                        enabled: false
+                        isChecked: supported
+                        Layout.minimumHeight: Theme.rowHeight * 1.5
+                    }
+                }
+            }
+            // end: features list
+
             Component {
                 id: featureItem
 
