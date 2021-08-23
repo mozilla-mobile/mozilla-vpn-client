@@ -248,8 +248,10 @@ class InAppPurchase private constructor(ctx: Context) :
         onSkuDetailsReceived(googleProductsJson)
     }
 
-    override fun onQueryPurchasesResponse(billingResult: BillingResult,
-                                          purchases: MutableList<Purchase>) {
+    override fun onQueryPurchasesResponse(
+        billingResult: BillingResult,
+        purchases: MutableList<Purchase>
+    ) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             processPurchases(purchases)
         }
@@ -273,7 +275,9 @@ class InAppPurchase private constructor(ctx: Context) :
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             onPurchaseAcknowledged()
         } else {
-            onPurchaseAcknowledgeFailed(billingResultToJson(billingResult, "onAcknowledgePurchaseResponse"))
+            onPurchaseAcknowledgeFailed(
+                billingResultToJson(billingResult, "onAcknowledgePurchaseResponse")
+            )
         }
     }
 

@@ -167,6 +167,8 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
             &MozillaVPN::alreadySubscribed);
     connect(iap, &IAPHandler::billingNotAvailable, this,
             &MozillaVPN::billingNotAvailable);
+    connect(iap, &IAPHandler::subscriptionNotValidated, this,
+            &MozillaVPN::subscriptionNotValidated);
   }
 
   connect(&m_gleanTimer, &QTimer::timeout, this, &MozillaVPN::sendGleanPings);
@@ -1317,6 +1319,10 @@ void MozillaVPN::billingNotAvailable() {
   if (m_private->m_user.subscriptionNeeded()) {
     setState(StateBillingNotAvailable);
   }
+}
+
+void MozillaVPN::subscriptionNotValidated() {
+  setState(StateSubscriptionNotValidated);
 }
 
 void MozillaVPN::subscriptionFailed() {

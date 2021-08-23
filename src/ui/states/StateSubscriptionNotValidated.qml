@@ -15,25 +15,25 @@ VPNStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPN.launchPlayStore()
+        VPN.reset(true);
     }
 
     Component.onCompleted: {
         stackview.push("../views/ViewErrorFullScreen.qml", {
-            // Sign in to Google Account
-            headlineText: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalHeader),
+            // "Problem confirming subscription…"
+            headlineText: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader),
 
-            // To continue subscribing, please sign in to your Google Account
-            errorMessage: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalBodyText),
+            // "An unexpected error....."
+            errorMessage: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText),
 
-            // Go to Play Store
-            buttonText: VPNl18n.tr(VPNl18n.NotSignedInGoogleGoogleModalLinkText),
+            // "Try again"
+            buttonText: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton),
             buttonObjectName: "errorGetHelpButton",
             buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: true,
-            getHelpLinkVisible: true
+            signOffLinkVisible: false,
+            getHelpLinkVisible: true,
             }
         );
-        Sample.billingNotAvailableViewed.record();
+        Sample.subNotValidatedViewed.record();
     }
 }

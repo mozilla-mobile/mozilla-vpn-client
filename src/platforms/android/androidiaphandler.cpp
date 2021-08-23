@@ -129,7 +129,6 @@ void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
    *   validate that subscription for acknowledgement.
    * Note, it doesn't happen after acknowledging.
    */
-
   Q_UNUSED(thiz);
 
   QJsonObject purchase = AndroidUtils::getQJsonObjectFromJString(env, data);
@@ -203,7 +202,7 @@ void AndroidIAPHandler::onPurchaseAcknowledgeFailed(JNIEnv* env, jobject thiz,
                  << QJsonDocument(json).toJson(QJsonDocument::Compact);
   IAPHandler* iap = IAPHandler::instance();
   iap->stopSubscription();
-  emit iap->subscriptionFailed();
+  emit iap->subscriptionNotValidated();
 }
 
 // static
@@ -261,9 +260,12 @@ void AndroidIAPHandler::processPurchase(QJsonObject purchase) {
   // If we're trying to use IAP, but have a valid subscription,
   // we're already subscribed and need to throw up a blocker.
   bool purchaseAcknowledged = purchase["acknowledged"].toBool();
+  bool autoRenewing = purchase["autoRenewing"].toBool();
+  bool cancelled = !autoRenewing;
 
   // We need to validate / acknowledge an unAcknowledged purchase
-  if (!purchaseAcknowledged) {
+  // that hasn't been cancelled.
+  if (!purchaseAcknowledged & !cancelled) {
     validatePurchase(purchase);
   }
 
@@ -294,7 +296,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
         logger.error() << "Purchase validation request to guardian failed";
         MozillaVPN::instance()->errorHandle(ErrorHandler::toErrorType(error));
         stopSubscription();
-        emit subscriptionFailed();
+        emit subscriptionNotValidated();
         return;
       });
 
@@ -312,14 +314,14 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
                   << jsonError.error << "Offset: " << jsonError.offset
                   << "Message: " << jsonError.errorString();
               stopSubscription();
-              emit subscriptionFailed();
+              emit subscriptionNotValidated();
               return;
             }
 
             if (!json.isObject() || !json.object().contains("tokenValid")) {
               logger.error() << "Unexpected json returned";
               stopSubscription();
-              emit subscriptionFailed();
+              emit subscriptionNotValidated();
               return;
             }
 
@@ -328,12 +330,7 @@ void AndroidIAPHandler::validatePurchase(QJsonObject purchase) {
             if (!tokenValid) {
               logger.info() << "tokenValid == false, aborting.";
               stopSubscription();
-              emit subscriptionFailed();
-              // ToDo - it's not clear what to do in this scenario yet.
-              // If we return user to the subscription screen and they
-              // try and subscribe again they'll see a "you already have this"
-              // message. If they go into that and manually cancel then the
-              // purchase can go through.
+              emit subscriptionNotValidated();
               return;
             }
 

@@ -55,6 +55,7 @@ class IAPHandler : public QAbstractListModel {
   void subscriptionCompleted();
   void alreadySubscribed();
   void billingNotAvailable();
+  void subscriptionNotValidated();
 
  public slots:
   void stopSubscription();

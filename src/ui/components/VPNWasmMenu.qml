@@ -71,6 +71,12 @@ VPNFlickable {
 
         VPNWasmMenuButton {
             Layout.fillWidth: true
+            text: "Subscription not validated (IAP) - Android"
+            onClicked: mainStackView.replace("../states/StateSubscriptionNotValidated.qml", {wasmView: true}, StackView.Immediate)
+        }
+
+        VPNWasmMenuButton {
+            Layout.fillWidth: true
             text: "Device list: Max number of devices reached"
             onClicked: mainStackView.replace("../views/ViewDevices.qml", {wasmView: true}, StackView.Immediate)
         }

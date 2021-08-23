@@ -53,9 +53,10 @@
         <file>ui/settings/ViewPrivacySecurity.qml</file>
         <file>ui/settings/ViewSettingsMenu.qml</file>
         <file>ui/states/StateBillingNotAvailable.qml</file>
-        <file>ui/states/StateSubscriptionNeeded.qml</file>
-        <file>ui/states/StateSubscriptionInProgress.qml</file>
         <file>ui/states/StateSubscriptionBlocked.qml</file>
+        <file>ui/states/StateSubscriptionInProgress.qml</file>
+        <file>ui/states/StateSubscriptionNeeded.qml</file>
+        <file>ui/states/StateSubscriptionNotValidated.qml</file>
         <file>ui/states/StateMain.qml</file>
         <file>ui/states/StateInitialize.qml</file>
         <file>ui/states/StateAuthenticating.qml</file>

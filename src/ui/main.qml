@@ -270,6 +270,14 @@ Window {
                         target: loader
                         source: "states/StateBillingNotAvailable.qml"
                     }
+                },
+                State {
+                    name: VPN.StateSubscriptionNotValidated
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionNotValidated.qml"
+                    }
                 }
             ]
 

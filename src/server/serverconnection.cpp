@@ -194,6 +194,9 @@ void ServerConnection::writeState() {
       case MozillaVPN::StateBillingNotAvailable:
         stateStr = "billingNotAvailable";
         break;
+      case MozillaVPN::StateSubscriptionNotValidated:
+        stateStr = "subscriptionNotValidated";
+        break;
       default:
         Q_ASSERT(false);
         break;
