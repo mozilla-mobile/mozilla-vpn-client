@@ -331,29 +331,29 @@ Window {
 
         property variant testData: [
             {
-                title: "What’s new in 2.5?",
-                description: "We’ve added a lot of really cool feature in this latest version release! Take the tour if you want a deeper dive into what we’ve added for you!",
+                title: "What’s new in VPN?",
+                description: "We’ve added a ton of cool features in this latest release. Take a tour to get a deeper dive into what we’ve added for you!",
                 shortDescription: "",
                 imageSrc: "../resources/features-tour-hero.png",
                 icon: "",
             },
             {
                 title: "Multi-hop VPN",
-                description: "Multi-hop VPN will route your traffic thourgh a second server for added protection. You can find this feature on the “Select location” screen.",
+                description: "Multi-hop VPN will route your traffic through a second server for added protection. You can find this feature on the “Select location” screen.",
                 shortDescription: "Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.",
                 imageSrc: "../resources/multi-hop-preview.png",
                 icon: "../resources/location-dark.svg",
             },
             {
                 title: "In-app Support Form",
-                description: "The In-app support form will allow you to contact support from within the VPN app. You can find this feature in the “Get help” section.",
+                description: "The in-app support form will streamline the process of getting your issues resolved.",
                 shortDescription: "The in-app support form will streamline the the process of getting your issues resolved.",
                 imageSrc: "../resources/support-form-preview.png",
                 icon: "../resources/support-form-preview.png",
             },
             {
                 title: "Custom DNS",
-                description: "Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in “Network settings” section.",
+                description: "Custom DNS servers allow for faster speed using local networks. You can find this feature in the “Network settings” section.",
                 shortDescription: "Custom DNS settings allows for faster connection using local servers.",
                 imageSrc: "../resources/custom-dns-preview.png",
                 icon: "../resources/settings/getHelp.svg",
