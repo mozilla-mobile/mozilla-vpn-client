@@ -70,6 +70,8 @@ Item {
                 id: featureItem
 
                 ColumnLayout {
+                    visible: modelData.isFeature
+
                     Layout.leftMargin: Theme.windowMargin / 2
                     Layout.rightMargin: Theme.windowMargin
                     Layout.bottomMargin: Theme.vSpacingSmall

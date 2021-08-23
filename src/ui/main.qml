@@ -340,6 +340,7 @@ Window {
                 shortDescription: "",
                 imageSrc: "../resources/features-tour-hero.png",
                 icon: "",
+                isFeature: false,
             },
             {
                 title: "Multi-hop VPN",
@@ -347,6 +348,7 @@ Window {
                 shortDescription: "Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.",
                 imageSrc: "../resources/multi-hop-preview.png",
                 icon: "../resources/location-dark.svg",
+                isFeature: true,
             },
             {
                 title: "In-app Support Form",
@@ -354,6 +356,7 @@ Window {
                 shortDescription: "The in-app support form will streamline the the process of getting your issues resolved.",
                 imageSrc: "../resources/support-form-preview.png",
                 icon: "../resources/support-form-preview.png",
+                isFeature: true,
             },
             {
                 title: "Custom DNS",
@@ -361,6 +364,7 @@ Window {
                 shortDescription: "Custom DNS settings allows for faster connection using local servers.",
                 imageSrc: "../resources/custom-dns-preview.png",
                 icon: "../resources/settings/getHelp.svg",
+                isFeature: true,
             },
         ]
 
