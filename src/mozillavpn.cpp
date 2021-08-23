@@ -347,8 +347,6 @@ void MozillaVPN::maybeStateMain() {
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    // TODO - When I triggered purchaseAcknowledgeFailure
-    // I failed this assertion and crashed.
     Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
              m_private->m_user.maxDevices());
     emit triggerGleanSample(GleanSample::maxDeviceReached);
