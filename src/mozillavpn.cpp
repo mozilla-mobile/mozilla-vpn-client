@@ -299,7 +299,7 @@ void MozillaVPN::initialize() {
 }
 
 void MozillaVPN::setState(State state) {
-  logger.debug() << "Set state:" << state;
+  logger.debug() << "Set state:" << QVariant::fromValue(state).toString();
   m_state = state;
   emit stateChanged();
 
