@@ -367,15 +367,20 @@ Window {
             onFinished: {
                 featureTourPopup.close();
             }
+            onStarted: {
+                VPNSettings.newFeaturesSeen = true;
+            }
         }
 
         Component.onCompleted: {
-            mainStackView.push("./views/ViewSettings.qml");
+//            mainStackView.push("./views/ViewSettings.qml");
         }
 
         function openTour() {
             featureTour.resetTour();
             featureTourPopup.open();
+
+            VPNSettings.featuresTourShown = true;
         }
 
         function startTour() {
@@ -384,13 +389,23 @@ Window {
         }
     }
 
-    Button {
+    Flow {
+        anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "Open the tour"
-        z: 1
+        spacing: 8
 
-        onClicked: {
-            featureTourPopup.openTour();
+        Button {
+            text: VPNSettings.featuresTourShown ? "Saw popup" : "Should show popup"
+            onClicked: {
+                featureTourPopup.openTour();
+            }
+        }
+
+        Button {
+            text: VPNSettings.newFeaturesSeen ? "👀" : "✨"
+            onClicked: {
+                VPNSettings.newFeaturesSeen = !VPNSettings.newFeaturesSeen;
+            }
         }
     }
 }

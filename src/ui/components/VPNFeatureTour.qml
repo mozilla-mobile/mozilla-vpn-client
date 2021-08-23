@@ -217,6 +217,7 @@ Item {
 
             onClicked: {
                 if (tour.state === "start") {
+                    tour.started();
                 } else if (tour.state === "end") {
                     tour.finished();
                     return;
@@ -246,6 +247,8 @@ Item {
     function skipStart() {
         swipeView.contentItem.highlightMoveDuration = 0;
         swipeView.currentIndex = 1;
+
+        tour.started();
     }
 
     function resetTour() {

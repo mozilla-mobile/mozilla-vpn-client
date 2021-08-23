@@ -580,7 +580,7 @@ Item {
             anchors.centerIn: settingsButton
 
             Rectangle {
-                id: newIndicator
+                id: newFeaturesIndicator
 
                 anchors.top: parent.top
                 anchors.right: parent.right
@@ -593,6 +593,7 @@ Item {
                 color: Color.error.default
                 height: 8 + border.width * 2
                 radius: width / 2
+                visible: !VPNSettings.newFeaturesSeen
                 width: 8 + border.width * 2
             }
         }
