@@ -13,10 +13,10 @@ VPNClickableRow {
     id: serverCountry
     objectName: "serverCountry-" + code
 
-    property bool cityListVisible: (code === VPNCurrentServer.countryCode)
+    property bool cityListVisible: (code === focusScope.currentServer.countryCode)
     property real multiHopMenuHeight: VPNFeatureList.multihopSupported ? 56 : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
-
+    property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
@@ -175,16 +175,14 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: { 
+                    VPNController.changeServer(code, modelData[0]); // MULTIHOP TODO - entry / exit ?
                     if (typeof(multiHopStackView) !== "undefined" && multiHopStackView.depth > 1) {
-                        // MULTIHOP TODO determine if we're selecting the entry or exit server
-                        multiHopStackView.pop();
-                        return;
+                        return multiHopStackView.pop();
                     }
-                    VPNController.changeServer(code, modelData[0]); // MULTIHOP TODO
-                    stackview.pop();
+                    return stackview.pop();
                 }
                 height: 54
-                checked: code === VPNCurrentServer.countryCode && modelData[0] === VPNCurrentServer.cityName
+                checked: code === focusScope.currentServer.countryCode && modelData[0] === focusScope.currentServer.cityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {

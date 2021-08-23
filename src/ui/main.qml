@@ -21,12 +21,14 @@ Window {
         ListElement {
             servers: [
                 ListElement {
-                    countryCode: "BE"
-                    localizedCityName: "Entry"
+                    countryCode: "br"
+                    localizedCityName: "Sao Paulo"
+                    cityName: "Sao Paulo"
                 },
                 ListElement {
-                    countryCode: "US"
-                    localizedCityName: "Exit"
+                    countryCode: "us"
+                    localizedCityName: "Seattle"
+                    cityName: "Seattle, WA"
                 }
             ]
         }

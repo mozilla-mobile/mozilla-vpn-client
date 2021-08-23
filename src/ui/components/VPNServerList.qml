@@ -17,8 +17,45 @@ FocusScope {
     id: focusScope
 
     property var lastFocusedItemIdx
-    property var listOffset: (56 * 2)
+    property real listOffset: (56 * 2)
     property bool showRecentConnections: false
+    property var currentServer
+
+    function centerActiveServer() {
+        // Scroll vpnFlickable so that the current server city is
+        // vertically centered in the view
+        const serverListYCenter = vpnFlickable.height / 2 - listOffset;
+
+        for (let idx = 0; idx < countriesRepeater.count; idx++) {
+            const countryItem = countriesRepeater.itemAt(idx);
+
+
+            if (
+                // Country does not host current active server
+                countryItem._countryCode !== currentServer.countryCode ||
+
+                // Country is already above the vertical center
+                countryItem.y < serverListYCenter
+                ) {
+                continue;
+            }
+
+            if (countryItem.y < serverListYCenter) {
+                continue;
+            }
+
+            // Get distance to
+            const currentCityYPosition = countryItem.y  + (54 * countryItem.currentCityIndex) - serverListYCenter;
+            const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
+            vpnFlickable.contentY = destinationY;
+
+            if (!countryItem.cityListVisible) {
+                countryItem.openCityList();
+            }
+
+            return;
+        }
+    }
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -34,7 +71,7 @@ FocusScope {
         id: vpnFlickable
         objectName: "serverCountryView"
 
-        flickContentHeight: serverList.y + serverList.implicitHeight + listOffset
+        flickContentHeight: serverList.implicitHeight + listOffset
         anchors.fill: parent
 
         Rectangle {
@@ -59,27 +96,9 @@ FocusScope {
             spacing: 14
             width: parent.width
             anchors.top: verticalSpacer.bottom
+
             Component.onCompleted: {
-
-                // Scroll vpnFlickable so that the current server city is
-                // vertically centered in the view
-
-                // MULTIHOP TODO - Update scrolling to detect/center entry or exit servers
-                const serverListYCenter = vpnFlickable.height / 2 - listOffset;
-
-                for (let idx = 0; idx < countriesRepeater.count; idx++) {
-                    const countryItem = countriesRepeater.itemAt(idx);
-                    const countryItemYPosition = countryItem.mapToItem(vpnFlickable.contentItem, 0, 0).y;
-                    if (!countryItem.cityListVisible || countryItemYPosition < serverListYCenter) {
-                        continue;
-                    }
-
-
-                    const currentCityYPosition = countryItem.y  + (54 * countryItem.currentCityIndex) - serverListYCenter;
-                    const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
-                    vpnFlickable.contentY = destinationY;
-                    return;
-                }
+                centerActiveServer();
             }
 
             VPNSearchBar {

@@ -15,14 +15,6 @@ import "../themes/colors.js" as Color
 Item {
     id: root
 
-    function returnToMultiHopMainView() {
-        if (multiHopStackView && multiHopStackView.depth > 1) {
-            multiHopStackView.pop();
-            menu.title = menu.defaultMenuTitle;
-            return true;
-        }
-        return false;
-    }
 
     VPNMenu {
         property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
@@ -34,9 +26,12 @@ Item {
         isMultiHopView: true
 
         function handleMultiHopNav() {
-            if (!returnToMultiHopMainView()) {
-                return stackview.pop();
+            if (multiHopStackView && multiHopStackView.depth > 1) {
+                multiHopStackView.pop();
+                menu.title = menu.defaultMenuTitle;
+                return;
             }
+            return stackview.pop()
         }
     }
 
@@ -44,20 +39,15 @@ Item {
         id: tabButtonList
         ListElement {
             tabLabelStringId: "MultiHopFeatureSingleToggleHeader"
-            tabButtonId: "tabButtonSingleHop"
+            tabButtonId: "tabSingleHop"
         }
         ListElement {
             tabLabelStringId: "MultiHopFeatureMultiToggleHeader"
-            tabButtonId: "tabButtonMultiHeader"
+            tabButtonId: "tabMultiHop"
         }
     }
 
     VPNTabNavigation {
-        // MULTIHOP TODO - Open server view to correct tab based on number of hops
-
-        // Reset menu title when the tab view is changed
-        onStackChange: returnToMultiHopMainView();
-
         id: tabNavigation
         tabList: tabButtonList
         width: root.width
@@ -68,9 +58,22 @@ Item {
 
         stackContent: [
             VPNServerList {
+                id: singleHopServerList
                 showRecentConnections: true
+                currentServer: currentServersListModel.get(0).servers.get(1)
             }
         ]
+
+        handleTabClick: (tab) => {
+            if (tab.objectName === "tabSingleHop") {
+                console.log("do single hop things");
+                menu.title = menu.defaultMenuTitle;
+                singleHopServerList.centerActiveServer();
+                return;
+            }
+            console.log("do multi hop things");
+            multiHopStackView.pop();
+        }
     }
 
     ViewMultiHop {

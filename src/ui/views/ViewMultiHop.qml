@@ -14,7 +14,10 @@ StackView {
     id: multiHopStackView
 
     initialItem: VPNFlickable {
-        flickContentHeight: col.implicitHeight - 56 * 2
+        id: vpnFlickable
+        flickContentHeight: col.implicitHeight + col.y + Theme.windowMargin
+        windowHeightExceedsContentHeight: parent.height > flickContentHeight
+        contentHeight: flickContentHeight
 
         ColumnLayout {
             id: col
@@ -39,17 +42,18 @@ StackView {
                 Layout.preferredWidth: parent.width - Theme.windowMargin
             }
 
-
             VPNRecentConnections {
                 Layout.fillWidth: true
                 recentConnectionsList: recentConnectionsListModel
-
             }
 
 
             VPNControllerNav {
                 function handleClick() {
-                    multiHopStackView.push("../components/VPNServerList.qml");
+                    multiHopStackView.push(
+                        "../components/VPNServerList.qml",
+                        {currentServer: currentServersListModel.get(0).servers.get(0)}
+                    );
                     menu.title =  titleText;
                 }
 
@@ -67,7 +71,10 @@ StackView {
 
             VPNControllerNav {
                 function handleClick() {
-                    multiHopStackView.push("../components/VPNServerList.qml");
+                    multiHopStackView.push("../components/VPNServerList.qml",
+                       {
+                           currentServer: currentServersListModel.get(0).servers.get(1)
+                       });
                     menu.title = titleText;
                 }
 

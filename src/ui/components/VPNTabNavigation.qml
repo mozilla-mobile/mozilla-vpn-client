@@ -13,8 +13,8 @@ Item {
 
     property alias tabList: tabButtons.model
     property alias stackContent: stack.children
-
-    signal stackChange()
+    property real currentTab: bar.currentIndex
+    property var handleTabClick: (()=> {});
 
     function setCurrentTabIndex(idx) {
         bar.setCurrentIndex(idx);
@@ -46,9 +46,8 @@ Item {
             delegate: TabButton {
                 id: btn
                 objectName: tabButtonId
-
                 height: bar.height
-                checkable: true
+                onClicked: handleTabClick(btn)
 
                 background: Rectangle {
                     color: "transparent"
@@ -119,7 +118,6 @@ Item {
 
         onCurrentIndexChanged: {
             fadeIn.start();
-            stackChange();
         }
 
         // pass views to this component using stackContent property
