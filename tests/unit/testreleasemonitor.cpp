@@ -211,4 +211,26 @@ void TestReleaseMonitor::compareVersions() {
   QCOMPARE(VersionApi::compareVersions(a, b), result);
 }
 
+void TestReleaseMonitor::stripMinor_data() {
+  QTest::addColumn<QString>("input");
+  QTest::addColumn<QString>("result");
+
+  QTest::addRow("empty") << ""
+                         << "0.0.0";
+  QTest::addRow("short") << "1"
+                         << "1.0.0";
+  QTest::addRow("medium") << "1.2"
+                          << "1.2.0";
+  QTest::addRow("normal") << "1.2.3"
+                          << "1.2.0";
+  QTest::addRow("big") << "1.2.3.4"
+                       << "1.2.0";
+}
+
+void TestReleaseMonitor::stripMinor() {
+  QFETCH(QString, input);
+  QFETCH(QString, result);
+  QCOMPARE(VersionApi::stripMinor(input), result);
+}
+
 static TestReleaseMonitor s_testReleaseMonitor;

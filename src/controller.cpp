@@ -5,6 +5,11 @@
 #include "controller.h"
 #include "controllerimpl.h"
 #include "featurelist.h"
+#include "features/featurecustomdns.h"
+#include "features/featurecaptiveportal.h"
+#include "features/featurelocalareaaccess.h"
+#include "features/featuremultihop.h"
+
 #include "ipaddress.h"
 #include "ipaddressrange.h"
 #include "leakdetector.h"
@@ -189,7 +194,7 @@ void Controller::activateInternal() {
   // Multihop connections provide a list of servers, starting with the exit
   // node as the first element, and the entry node as the final entry.
   QList<Server> serverList = {server};
-  if (FeatureList::instance()->multihopSupported() &&
+  if (FeatureMultiHop::instance()->isSupported() &&
       settingsHolder->multihopTunnel()) {
     ServerData data;
     Server hop = vpn->randomHop(data);
@@ -202,7 +207,7 @@ void Controller::activateInternal() {
   // Use the Gateway as DNS Server
   // If the user as entered a valid dns, use that instead
   QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureList::instance()->userDNSSupported() &&
+  if (FeatureCustomDNS::instance()->isSupported() &&
       !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
       settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
@@ -267,7 +272,7 @@ bool Controller::silentSwitchServers() {
   }
 
   QList<Server> serverList = {server};
-  if (FeatureList::instance()->multihopSupported() &&
+  if (FeatureMultiHop::instance()->isSupported() &&
       settingsHolder->multihopTunnel()) {
     ServerData data;
     Server hop = vpn->randomHop(data);
@@ -278,7 +283,7 @@ bool Controller::silentSwitchServers() {
   }
 
   QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureList::instance()->userDNSSupported() &&
+  if (FeatureCustomDNS::instance()->isSupported() &&
       !settingsHolder->useGatewayDNS() &&
       settingsHolder->userDNS().size() > 0 &&
       settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
@@ -660,7 +665,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   const Server& server = serverList.last();
 
   // filtering out the captive portal endpoint
-  if (FeatureList::instance()->captivePortalNotificationSupported() &&
+  if (FeatureCaptivePortal::instance()->isSupported() &&
       SettingsHolder::instance()->captivePortalAlert()) {
     CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
 
@@ -674,7 +679,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   }
 
   // filtering out the RFC1918 local area network
-  if (FeatureList::instance()->localNetworkAccessSupported() &&
+  if (FeatureLocalAreaAccess::instance()->isSupported() &&
       SettingsHolder::instance()->localNetworkAccess()) {
     logger.debug() << "Filtering out the local area networks (rfc 1918)";
     excludeIPv4s.append(RFC1918::ipv4());
@@ -734,7 +739,7 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
 
 bool Controller::shouldExcludeDns() {
   auto settings = SettingsHolder::instance();
-  if (!FeatureList::instance()->userDNSSupported()) {
+  if (!FeatureCustomDNS::instance()->isSupported()) {
     return false;
   }
   if (settings->useGatewayDNS()) {
@@ -750,7 +755,7 @@ bool Controller::shouldExcludeDns() {
   }
   bool isLocalDNS = RFC1918::contains(QHostAddress(dns));
   // In case we cant use lan access, no need to exclude anyway.
-  if (!FeatureList::instance()->localNetworkAccessSupported()) {
+  if (!FeatureLocalAreaAccess::instance()->isSupported()) {
     return false;
   }
 
