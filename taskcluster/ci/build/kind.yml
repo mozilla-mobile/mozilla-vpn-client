@@ -9,6 +9,27 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 jobs:
+    linux/opt:
+        description: "Linux Build"
+        treeherder:
+            symbol: B
+            kind: build
+            tier: 1
+            platform: linux/opt
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: build}
+            max-run-time: 3600
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: /builds/worker/artifacts
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: ./scripts/linux_build.sh
+
     macosx/opt:
         description: "Mac Build"
         treeherder:
@@ -28,6 +49,7 @@ jobs:
             using: run-task
             cwd: '{checkout}'
             command: ./scripts/macosx_build.sh
+
     windows/opt:
         description: "Windows Build"
         treeherder:
