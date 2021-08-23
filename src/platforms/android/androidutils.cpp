@@ -124,3 +124,13 @@ void AndroidUtils::abortAuthentication() {
   emit m_listener->abortedByUser();
   m_listener = nullptr;
 }
+
+// static
+void AndroidUtils::appReviewRequested() {
+  QAndroidJniObject activity = QtAndroid::androidActivity();
+  Q_ASSERT(activity.isValid());
+
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/mozilla/firefox/vpn/qt/VPNAppReview", "appReviewRequested",
+      "(Landroid/app/Activity;)V", activity.object<jobject>());
+}

@@ -133,7 +133,7 @@ void AndroidController::setFallbackConnectedNotification() {
 }
 
 void AndroidController::activate(
-    const Server& server, const Device* device, const Keys* keys,
+    const QList<Server>& serverList, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, const QHostAddress& dns,
     Reason reason) {
@@ -146,7 +146,7 @@ void AndroidController::activate(
       PERMISSIONHELPER_CLASS, "startService", "(Landroid/content/Context;)V",
       appContext.object());
 
-  m_server = server;
+  m_server = serverList[0];
   m_device = *device;
 
   // Serialise arguments for the VPNService
@@ -161,12 +161,12 @@ void AndroidController::activate(
   jKeys["privateKey"] = keys->privateKey();
 
   QJsonObject jServer;
-  jServer["ipv4AddrIn"] = server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = server.ipv6Gateway();
-  jServer["publicKey"] = server.publicKey();
-  jServer["port"] = (int)server.choosePort();
+  jServer["ipv4AddrIn"] = m_server.ipv4AddrIn();
+  jServer["ipv4Gateway"] = m_server.ipv4Gateway();
+  jServer["ipv6AddrIn"] = m_server.ipv6AddrIn();
+  jServer["ipv6Gateway"] = m_server.ipv6Gateway();
+  jServer["publicKey"] = m_server.publicKey();
+  jServer["port"] = (int)m_server.choosePort();
 
   QJsonArray allowedIPs;
   foreach (auto item, allowedIPAddressRanges) {

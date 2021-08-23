@@ -32,7 +32,7 @@ DummyController::DummyController() : m_delayTimer(this) {
 DummyController::~DummyController() { MVPN_COUNT_DTOR(DummyController); }
 
 void DummyController::activate(
-    const Server& server, const Device* device, const Keys* keys,
+    const QList<Server>& serverList, const Device* device, const Keys* keys,
     const QList<IPAddressRange>& allowedIPAddressRanges,
     const QList<QString>& vpnDisabledApps, const QHostAddress& dnsServer,
     Reason reason) {
@@ -42,7 +42,7 @@ void DummyController::activate(
   Q_UNUSED(reason);
   Q_UNUSED(vpnDisabledApps);
 
-  logger.debug() << "DummyController activated" << server.hostname();
+  logger.debug() << "DummyController activated" << serverList[0].hostname();
   logger.debug() << "DummyController DNS" << dnsServer.toString();
 
   m_connected = true;

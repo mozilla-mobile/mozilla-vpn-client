@@ -22,7 +22,8 @@ INCLUDEPATH += \
             ../../src \
             ../../src/hacl-star \
             ../../src/hacl-star/kremlin \
-            ../../src/hacl-star/kremlin/minimal
+            ../../src/hacl-star/kremlin/minimal \
+            ../../translations/generated
 
 HEADERS += \
     ../../src/bigint.h \
@@ -55,6 +56,7 @@ HEADERS += \
     ../../src/models/servercountry.h \
     ../../src/models/servercountrymodel.h \
     ../../src/models/serverdata.h \
+    ../../src/models/supportcategorymodel.h \
     ../../src/models/survey.h \
     ../../src/models/surveymodel.h \
     ../../src/models/user.h \
@@ -88,6 +90,7 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
+    ../../translations/generated/l18nstrings.h \
     helper.h \
     testandroidmigration.h \
     testbigint.h \
@@ -122,6 +125,7 @@ SOURCES += \
     ../../src/ipaddress.cpp \
     ../../src/ipaddressrange.cpp \
     ../../src/ipfinder.cpp \
+    ../../src/l18nstringsimpl.cpp \
     ../../src/leakdetector.cpp \
     ../../src/localizer.cpp \
     ../../src/logger.cpp \
@@ -136,6 +140,7 @@ SOURCES += \
     ../../src/models/servercountry.cpp \
     ../../src/models/servercountrymodel.cpp \
     ../../src/models/serverdata.cpp \
+    ../../src/models/supportcategorymodel.cpp \
     ../../src/models/survey.cpp \
     ../../src/models/surveymodel.cpp \
     ../../src/models/user.cpp \
@@ -164,6 +169,7 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
+    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorwebsocketconnection.cpp \

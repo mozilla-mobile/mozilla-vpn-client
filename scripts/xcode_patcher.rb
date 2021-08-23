@@ -32,7 +32,6 @@ class XCodeprojPatcher
     else
       setup_target_wireguardgo
       setup_target_wireguardtools
-      setup_target_wireguardhelper
     end
 
     setup_target_balrog if platform == 'macos'
@@ -60,6 +59,10 @@ class XCodeprojPatcher
       config.build_settings['SWIFT_VERSION'] ||= '5.0'
       config.build_settings['CLANG_ENABLE_MODULES'] ||= 'YES'
       config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'macos/app/WireGuard-Bridging-Header.h'
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= [
+        "$(inherited)",
+        "$(PROJECT_DIR)/3rdparty"
+      ]
 
       # Versions and names
       config.build_settings['MARKETING_VERSION'] ||= shortVersion
@@ -72,6 +75,7 @@ class XCodeprojPatcher
       config.build_settings['INFOPLIST_FILE'] ||= platform + '/app/Info.plist'
       if platform == 'ios'
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'ios/app/main.entitlements'
+        config.build_settings['ADJUST_SDK_TOKEN'] = configHash['ADJUST_SDK_TOKEN']
       elsif networkExtension
         config.build_settings['CODE_SIGN_ENTITLEMENTS'] ||= 'macos/app/app.entitlements'
       else
@@ -135,6 +139,24 @@ class XCodeprojPatcher
         file = group.new_file(filename)
         @target_main.add_file_references([file])
       }
+    end
+
+    if (platform == 'ios')
+      frameworks_group = @project.groups.find { |group| group.display_name == 'Frameworks' }
+      frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'FrameworksBuildPhase' }
+      embed_frameworks_build_phase = @target_main.build_phases.find { |build_phase| build_phase.to_s == 'Embed Frameworks' }
+
+      framework_ref = frameworks_group.new_file('3rdparty/AdjustSdk.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
+
+      framework_file = embed_frameworks_build_phase.add_file_reference(framework_ref)
+      framework_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy', 'CodeSignOnCopy'] }
+
+      framework_ref = frameworks_group.new_file('AdServices.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
+
+      framework_ref = frameworks_group.new_file('iAd.framework')
+      frameworks_build_phase.add_file_reference(framework_ref)
     end
   end
 
@@ -316,19 +338,6 @@ class XCodeprojPatcher
     dependency.target_proxy = container_proxy
 
     @target_main.dependencies << dependency
-  end
-
-  def setup_target_wireguardhelper
-    copy_wireguardHelper = @target_main.new_copy_files_build_phase
-    copy_wireguardHelper.name = 'Copy wireguard helper'
-    copy_wireguardHelper.symbol_dst_subfolder_spec = :wrapper
-    copy_wireguardHelper.dst_path = 'Contents/Resources/utils'
-
-    group = @project.main_group.new_group('WireGuardHelper')
-    file = group.new_file 'macos/daemon/helper.sh'
-
-    wireguardHelper_file = copy_wireguardHelper.add_file_reference file
-    wireguardHelper_file.settings = { "ATTRIBUTES" => ['RemoveHeadersOnCopy'] }
   end
 
   def setup_target_wireguardtools

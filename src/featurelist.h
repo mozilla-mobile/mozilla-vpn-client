@@ -25,12 +25,22 @@ class FeatureList final : public QObject {
                  CONSTANT)
   Q_PROPERTY(bool userDNSSupported READ userDNSSupported CONSTANT)
   Q_PROPERTY(bool authenticationInApp READ authenticationInApp CONSTANT)
+  Q_PROPERTY(bool multihopSupported READ multihopSupported CONSTANT)
+  Q_PROPERTY(bool appReviewSupported READ appReviewSupported CONSTANT)
+  Q_PROPERTY(bool gleanSupported READ gleanSupported CONSTANT)
+  Q_PROPERTY(bool unauthSupport READ unauthSupportSupported)
 
  public:
   FeatureList() = default;
   ~FeatureList() = default;
 
   static FeatureList* instance();
+
+  void updateFeatureList(const QByteArray& data);
+
+  void setUnauthSupportSupported(bool enabled) {
+    m_unauthSupportSupported = enabled;
+  }
 
   bool startOnBootSupported() const;
 
@@ -53,6 +63,17 @@ class FeatureList final : public QObject {
   bool accountCreationInAppSupported() const;
 
   bool inAppPurchaseSupported() const;
+
+  bool multihopSupported() const;
+
+  bool appReviewSupported() const;
+
+  bool unauthSupportSupported() const;
+
+  bool gleanSupported() const;
+
+ private:
+  bool m_unauthSupportSupported = false;
 };
 
 #endif  // FEATURELIST_H

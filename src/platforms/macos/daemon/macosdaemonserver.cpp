@@ -41,8 +41,6 @@ int MacOSDaemonServer::run(QStringList& tokens) {
 
   MacOSDaemon daemon;
 
-  daemon.maybeCleanup();
-
   DaemonLocalServer server(qApp);
   if (!server.initialize()) {
     logger.error() << "Failed to initialize the server";

@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "platforms/linux/linuxdependencies.h"
 
+#include <QHostAddress>
 #include <QScopeGuard>
 
 #include <arpa/inet.h>
@@ -14,7 +15,9 @@
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <mntent.h>
+#include <net/if.h>
 #include <netdb.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -115,25 +118,11 @@ bool WireguardUtilsLinux::interfaceExists() {
 };
 
 bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
-  int returnCode = wg_add_device(WG_INTERFACE);
-  if (returnCode != 0) {
-    qWarning("Adding interface `%s` failed with return code: %d", WG_INTERFACE,
-             returnCode);
+  int code = wg_add_device(WG_INTERFACE);
+  if (code != 0) {
+    logger.error() << "Adding interface failed:" << strerror(-code);
     return false;
   }
-  return updateInterface(config);
-}
-
-bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
-  /*
-   * Set conf:
-   * - sets name of device
-   * - sets public key on device
-   * - adds peer to device
-   * -- sets private key on peer
-   * -- sets endpoint on peer
-   * -- sets allowed ips on peer
-   */
 
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
   if (!device) {
@@ -146,29 +135,26 @@ bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
   // Private Key
   wg_key_from_base64(device->private_key, config.m_privateKey.toLocal8Bit());
-  // Peer
-  if (!buildPeerForDevice(device, config)) {
-    logger.error() << "Failed to create peer.";
-    return false;
-  }
+
   // Set/update device
   device->fwmark = WG_FIREWALL_MARK;
   device->flags =
-      (wg_device_flags)(WGPEER_HAS_PUBLIC_KEY | WGDEVICE_HAS_PRIVATE_KEY |
-                        WGDEVICE_REPLACE_PEERS | WGDEVICE_HAS_FWMARK);
+      (wg_device_flags)(WGDEVICE_HAS_PRIVATE_KEY | WGDEVICE_REPLACE_PEERS |
+                        WGDEVICE_HAS_FWMARK);
   if (wg_set_device(device) != 0) {
-    logger.error() << "Failed to set the new peer";
+    logger.error() << "Failed to setup the device";
     return false;
   }
+
   // Create routing policy rules
-  if (!setRouteRules(RTM_NEWRULE,
-                     NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
-                     AF_INET)) {
+  if (!rtmSendRule(RTM_NEWRULE,
+                   NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
+                   AF_INET)) {
     return false;
   }
-  if (!setRouteRules(RTM_NEWRULE,
-                     NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
-                     AF_INET6)) {
+  if (!rtmSendRule(RTM_NEWRULE,
+                   NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,
+                   AF_INET6)) {
     return false;
   }
 
@@ -193,55 +179,174 @@ bool WireguardUtilsLinux::updateInterface(const InterfaceConfig& config) {
   return true;
 }
 
+bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
+  wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
+  if (!device) {
+    logger.error() << "Allocation failure";
+    return false;
+  }
+  auto guard = qScopeGuard([&] { wg_free_device(device); });
+
+  wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
+  if (!peer) {
+    logger.error() << "Allocation failure";
+    return false;
+  }
+  device->first_peer = device->last_peer = peer;
+
+  logger.debug() << "Adding peer" << config.m_serverIpv4AddrIn;
+
+  // Public Key
+  wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
+  // Endpoint
+  if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
+                       config.m_serverPort)) {
+    logger.error() << "Failed to set peer endpoint for hop"
+                   << config.m_hopindex;
+    return false;
+  }
+
+  // HACK: We are running into a crash on Linux due to the address list being
+  // *WAAAY* too long, which we aren't really using anways since the routing
+  // tables are doing all the work for us anyways.
+  //
+  // To work around the issue, just set default routes for hopindex zero.
+  if (config.m_hopindex == 0) {
+    if (!config.m_deviceIpv4Address.isNull()) {
+      addPeerPrefix(peer, IPAddressRange("0.0.0.0", 0, IPAddressRange::IPv4));
+    }
+    if (!config.m_deviceIpv6Address.isNull()) {
+      addPeerPrefix(peer, IPAddressRange("::", 0, IPAddressRange::IPv6));
+    }
+  } else {
+    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+      bool ok = addPeerPrefix(peer, ip);
+      if (!ok) {
+        logger.error() << "Invalid IP address:" << ip.ipAddress();
+        return false;
+      }
+    }
+  }
+
+  // Set/update peer
+  strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
+  device->flags = (wg_device_flags)0;
+  peer->flags =
+      (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS);
+  if (wg_set_device(device) != 0) {
+    logger.error() << "Failed to set the new peer hop" << config.m_hopindex;
+    return false;
+  }
+
+  return true;
+}
+
+bool WireguardUtilsLinux::deletePeer(const QString& pubkey) {
+  wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
+  if (!device) {
+    logger.error() << "Allocation failure";
+    return false;
+  }
+  auto guard = qScopeGuard([&] { wg_free_device(device); });
+
+  wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
+  if (!peer) {
+    logger.error() << "Allocation failure";
+    return false;
+  }
+  device->first_peer = device->last_peer = peer;
+
+  // Public Key
+  peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
+  wg_key_from_base64(peer->public_key, qPrintable(pubkey));
+
+  // Set/update device
+  strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
+  device->flags = (wg_device_flags)0;
+  if (wg_set_device(device) != 0) {
+    logger.error() << "Failed to remove the peer";
+    return false;
+  }
+
+  return true;
+}
+
 bool WireguardUtilsLinux::deleteInterface() {
   // Clear firewall rules
   NetfilterClearTables();
 
   // Clear routing policy rules
-  if (!setRouteRules(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
+  if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
     return false;
   }
-  if (!setRouteRules(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET6)) {
+  if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET6)) {
     return false;
   }
 
+  // Delete the interface
   int returnCode = wg_del_device(WG_INTERFACE);
   if (returnCode != 0) {
-    qWarning("Deleting interface `%s` failed with return code: %d",
-             WG_INTERFACE, returnCode);
+    logger.error() << "Deleting interface failed:" << strerror(-returnCode);
     return false;
   }
+
   return true;
 }
 
-WireguardUtils::peerBytes WireguardUtilsLinux::getThroughputForInterface() {
-  uint64_t txBytes = 0;
-  uint64_t rxBytes = 0;
+WireguardUtils::peerStatus WireguardUtilsLinux::getPeerStatus(
+    const QString& pubkey) {
   wg_device* device = nullptr;
   wg_peer* peer = nullptr;
-  peerBytes pb = {0, 0};
+  peerStatus status = {0, 0};
+
   if (wg_get_device(&device, WG_INTERFACE) != 0) {
-    qWarning("Unable to get interface `%s`.", WG_INTERFACE);
-    return pb;
+    logger.warning() << "Unable to get stats for" << WG_INTERFACE;
+    return status;
   }
+
+  wg_key key;
+  wg_key_from_base64(key, qPrintable(pubkey));
   wg_for_each_peer(device, peer) {
-    txBytes += peer->tx_bytes;
-    rxBytes += peer->rx_bytes;
+    if (memcmp(&key, &peer->public_key, sizeof(key)) != 0) {
+      continue;
+    }
+    status.txBytes = peer->tx_bytes;
+    status.rxBytes = peer->rx_bytes;
+    break;
   }
   wg_free_device(device);
-  pb.rxBytes = double(rxBytes);
-  pb.txBytes = double(txBytes);
-  return pb;
+  return status;
 }
 
-bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
+bool WireguardUtilsLinux::updateRoutePrefix(const IPAddressRange& prefix,
+                                            int hopindex) {
+  logger.debug() << "Adding route to" << prefix.toString();
+  int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+  return rtmSendRoute(RTM_NEWROUTE, flags, prefix, hopindex);
+}
+
+bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddressRange& prefix,
+                                            int hopindex) {
+  logger.debug() << "Removing route to" << prefix.toString();
+  int flags = NLM_F_REQUEST | NLM_F_ACK;
+  return rtmSendRoute(RTM_DELROUTE, flags, prefix, hopindex);
+}
+
+bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
+                                       const IPAddressRange& prefix,
+                                       int hopindex) {
   constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
                                   2 * RTA_SPACE(sizeof(uint32_t)) +
                                   RTA_SPACE(sizeof(struct in6_addr));
-
   int index = if_nametoindex(WG_INTERFACE);
   if (index <= 0) {
     logger.error() << "if_nametoindex() failed:" << strerror(errno);
+    return false;
+  }
+
+  wg_allowedip ip;
+  if (!buildAllowedIp(&ip, prefix)) {
+    logger.warning() << "Invalid destination prefix";
     return false;
   }
 
@@ -251,37 +356,30 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
 
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
-  nlmsg->nlmsg_type = RTM_NEWROUTE;
-  nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = flags;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
-  rtm->rtm_dst_len = prefix.range();
+  rtm->rtm_dst_len = ip.cidr;
+  rtm->rtm_family = ip.family;
   rtm->rtm_type = RTN_UNICAST;
   rtm->rtm_protocol = RTPROT_BOOT;
   rtm->rtm_scope = RT_SCOPE_UNIVERSE;
-  rtm->rtm_table = RT_TABLE_UNSPEC;
-  nlmsg_append_attr32(buf, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
 
-  const char* addrstring = qPrintable(prefix.ipAddress());
-  if (prefix.type() == IPAddressRange::IPv6) {
-    struct in6_addr addrbuf;
-    rtm->rtm_family = AF_INET6;
-    if (inet_pton(AF_INET6, addrstring, &addrbuf) != 1) {
-      logger.error() << "Invalid IPv6 destination prefix";
-      return false;
-    }
-    nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &addrbuf, sizeof(addrbuf));
+  // Routes for the main hop should be placed into their own table.
+  if (hopindex == 0) {
+    rtm->rtm_table = RT_TABLE_UNSPEC;
+    nlmsg_append_attr32(buf, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
   } else {
-    struct in_addr addrbuf;
-    rtm->rtm_family = AF_INET;
-    int err = inet_pton(AF_INET, addrstring, &addrbuf);
-    if (err != 1) {
-      logger.error() << "Invalid IPv4 destination prefix";
-      return false;
-    }
-    nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &addrbuf, sizeof(addrbuf));
+    rtm->rtm_table = RT_TABLE_MAIN;
   }
-  nlmsg_append_attr32(buf, sizeof(buf), RTA_OIF, if_nametoindex(WG_INTERFACE));
+
+  if (rtm->rtm_family == AF_INET6) {
+    nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
+  } else {
+    nlmsg_append_attr(buf, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
+  }
+  nlmsg_append_attr32(buf, sizeof(buf), RTA_OIF, index);
 
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
@@ -289,13 +387,6 @@ bool WireguardUtilsLinux::addRoutePrefix(const IPAddressRange& prefix) {
   size_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                          (struct sockaddr*)&nladdr, sizeof(nladdr));
   return (result == nlmsg->nlmsg_len);
-}
-
-void WireguardUtilsLinux::flushRoutes() {
-  // We should probably implement this to ward off potential corruption in the
-  // routing table after silent server switching. It doesn't *really* affect
-  // Linux since we use the firewall mark to direct packets, but in theory it
-  // could break the captive portal check.
 }
 
 // PRIVATE METHODS
@@ -314,32 +405,7 @@ QStringList WireguardUtilsLinux::currentInterfaces() {
   return devices;
 }
 
-bool WireguardUtilsLinux::buildPeerForDevice(wg_device* device,
-                                             const InterfaceConfig& config) {
-  Q_ASSERT(device);
-  wg_peer* peer = static_cast<wg_peer*>(calloc(1, sizeof(*peer)));
-  if (!peer) {
-    logger.error() << "Allocation failure";
-    return false;
-  }
-  device->first_peer = device->last_peer = peer;
-
-  // Public Key
-  wg_key_from_base64(peer->public_key, config.m_serverPublicKey.toLocal8Bit());
-  // Endpoint
-  if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
-                       config.m_serverPort)) {
-    return false;
-  }
-  // Allowed IPs
-  if (!setAllowedIpsOnPeer(peer, config.m_allowedIPAddressRanges)) {
-    logger.error() << "Failed to set allowed IPs on Peer";
-    return false;
-  }
-  return true;
-}
-
-bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
+bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* sa,
                                           const QString& address, int port) {
   QString portString = QString::number(port);
 
@@ -391,7 +457,7 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
        resolved->ai_addrlen == sizeof(struct sockaddr_in)) ||
       (resolved->ai_family == AF_INET6 &&
        resolved->ai_addrlen == sizeof(struct sockaddr_in6))) {
-    memcpy(peerEndpoint, resolved->ai_addr, resolved->ai_addrlen);
+    memcpy(sa, resolved->ai_addr, resolved->ai_addrlen);
     return true;
   }
 
@@ -399,47 +465,25 @@ bool WireguardUtilsLinux::setPeerEndpoint(struct sockaddr* peerEndpoint,
   return false;
 }
 
-bool WireguardUtilsLinux::setAllowedIpsOnPeer(
-    wg_peer* peer, QList<IPAddressRange> allowedIPAddressRanges) {
+bool WireguardUtilsLinux::addPeerPrefix(wg_peer* peer,
+                                        const IPAddressRange& prefix) {
   Q_ASSERT(peer);
 
-  for (const IPAddressRange& ip : allowedIPAddressRanges) {
-    wg_allowedip* allowedip =
-        static_cast<wg_allowedip*>(calloc(1, sizeof(*allowedip)));
-    if (!allowedip) {
-      logger.error() << "Allocation failure";
-      return false;
-    }
-
-    if (!peer->first_allowedip) {
-      peer->first_allowedip = allowedip;
-    } else {
-      peer->last_allowedip->next_allowedip = allowedip;
-    }
-
-    peer->last_allowedip = allowedip;
-    allowedip->cidr = ip.range();
-
-    QString ipstring = ip.ipAddress();
-    if (ip.type() == IPAddressRange::IPv4) {
-      allowedip->family = AF_INET;
-      if (inet_pton(AF_INET, qPrintable(ipstring), &allowedip->ip4) != 1) {
-        logger.error() << "Invalid IPv4 address:" << ip.ipAddress();
-        return false;
-      }
-    } else if (ip.type() == IPAddressRange::IPv6) {
-      allowedip->family = AF_INET6;
-      if (inet_pton(AF_INET6, qPrintable(ipstring), &allowedip->ip6) != 1) {
-        logger.error() << "Invalid IPv6 address:" << ip.ipAddress();
-        return false;
-      }
-    } else {
-      logger.error() << "Invalid IPAddressRange type";
-      return false;
-    }
+  wg_allowedip* allowedip =
+      static_cast<wg_allowedip*>(calloc(1, sizeof(*allowedip)));
+  if (!allowedip) {
+    logger.error() << "Allocation failure";
+    return false;
   }
 
-  return true;
+  if (!peer->first_allowedip) {
+    peer->first_allowedip = allowedip;
+  } else {
+    peer->last_allowedip->next_allowedip = allowedip;
+  }
+  peer->last_allowedip = allowedip;
+
+  return buildAllowedIp(allowedip, prefix);
 }
 
 static void nlmsg_append_attr(char* buf, size_t maxlen, int attrtype,
@@ -460,7 +504,7 @@ static void nlmsg_append_attr32(char* buf, size_t maxlen, int attrtype,
   nlmsg_append_attr(buf, maxlen, attrtype, &value, sizeof(value));
 }
 
-bool WireguardUtilsLinux::setRouteRules(int action, int flags, int addrfamily) {
+bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   constexpr size_t fib_max_size =
       sizeof(struct fib_rule_hdr) + 2 * RTA_SPACE(sizeof(uint32_t));
 
@@ -575,4 +619,20 @@ QString WireguardUtilsLinux::getBlockCgroup() const {
     return QString();
   }
   return m_cgroups + VPN_BLOCK_CGROUP;
+}
+
+// static
+bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
+                                         const IPAddressRange& prefix) {
+  if (prefix.type() == IPAddressRange::IPv4) {
+    ip->family = AF_INET;
+    ip->cidr = prefix.range();
+    return inet_pton(AF_INET, qPrintable(prefix.ipAddress()), &ip->ip4) == 1;
+  }
+  if (prefix.type() == IPAddressRange::IPv6) {
+    ip->family = AF_INET6;
+    ip->cidr = prefix.range();
+    return inet_pton(AF_INET6, qPrintable(prefix.ipAddress()), &ip->ip6) == 1;
+  }
+  return false;
 }

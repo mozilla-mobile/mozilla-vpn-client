@@ -16,6 +16,9 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
+constexpr uint32_t ETH_MTU = 1500;
+constexpr uint32_t WG_MTU_OVERHEAD = 80;
+
 namespace {
 Logger logger(LOG_LINUX, "IPUtilsLinux");
 }
@@ -42,7 +45,9 @@ bool IPUtilsLinux::addInterfaceIPs(const InterfaceConfig& config) {
   return true;
 }
 
-bool IPUtilsLinux::setMTUAndUp() {
+bool IPUtilsLinux::setMTUAndUp(const InterfaceConfig& config) {
+  Q_UNUSED(config);
+
   // Create socket file descriptor to perform the ioctl operations on
   int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (sockfd < 0) {
@@ -56,7 +61,10 @@ bool IPUtilsLinux::setMTUAndUp() {
   strncpy(ifr.ifr_name, WG_INTERFACE, IFNAMSIZ);
 
   // MTU
-  ifr.ifr_mtu = 1420;
+  // FIXME: We need to know how many layers deep this particular
+  // interface is into a tunnel to work effectively. Otherwise
+  // we will run into fragmentation issues.
+  ifr.ifr_mtu = ETH_MTU - WG_MTU_OVERHEAD;
   int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
   if (ret) {
     logger.error() << "Failed to set MTU -- Return code: " << ret;
@@ -101,7 +109,7 @@ bool IPUtilsLinux::addIP4AddressToDevice(const InterfaceConfig& config) {
   int ret = ioctl(sockfd, SIOCSIFADDR, &ifr);
   if (ret) {
     logger.error() << "Failed to set IPv4: " << deviceAddr
-                   << " -- Return code: " << ret;
+                   << "error:" << strerror(errno);
     return false;
   }
   return true;
@@ -140,9 +148,9 @@ bool IPUtilsLinux::addIP6AddressToDevice(const InterfaceConfig& config) {
 
   // Set ifr6 to the interface
   ret = ioctl(sockfd, SIOCSIFADDR, &ifr6);
-  if (ret) {
+  if (ret && (errno != EEXIST)) {
     logger.error() << "Failed to set IPv6: " << deviceAddr
-                   << " -- Return code: " << ret;
+                   << "error:" << strerror(errno);
     return false;
   }
 

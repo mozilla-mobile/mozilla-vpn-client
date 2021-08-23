@@ -49,6 +49,8 @@ class SettingsHolder final : public QObject {
                  NOTIFY newFeaturesSeenChanged)
   Q_PROPERTY(bool featuresTourShown READ featuresTourShown WRITE
                  setFeaturesTourShown NOTIFY featuresTourShownChanged)
+  Q_PROPERTY(bool multihopTunnel READ multihopTunnel WRITE setMultihopTunnel
+                 NOTIFY multihopTunnelChanged)
 
  public:
   SettingsHolder();
@@ -118,6 +120,7 @@ class SettingsHolder final : public QObject {
          setConnectionChangeNotification);
   GETSET(bool, hasNewFeaturesSeen, newFeaturesSeen, setNewFeaturesSeen);
   GETSET(bool, hasFeaturesTourShown, featuresTourShown, setFeaturesTourShown);
+  GETSET(bool, hasMultihopTunnel, multihopTunnel, setMultihopTunnel)
 
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
 
@@ -175,6 +178,7 @@ class SettingsHolder final : public QObject {
   void stagingServerChanged(bool value);
   void newFeaturesSeenChanged(bool value);
   void featuresTourShownChanged(bool value);
+  void multihopTunnelChanged(bool value);
 
  private:
   explicit SettingsHolder(QObject* parent);

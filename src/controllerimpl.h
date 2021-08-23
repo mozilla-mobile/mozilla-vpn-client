@@ -46,7 +46,7 @@ class ControllerImpl : public QObject {
   // this method is called, the VPN client is in "connecting" state.  This
   // state terminates when the "connected" (or the "disconnected") signal is
   // received.
-  virtual void activate(const Server& server, const Device* device,
+  virtual void activate(const QList<Server>& serverList, const Device* device,
                         const Keys* keys,
                         const QList<IPAddressRange>& allowedIPAddressRanges,
                         const QList<QString>& vpnDisabledApps,

@@ -178,15 +178,25 @@ void Controller::activateInternal() {
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
-  const QList<IPAddressRange> allowedIPAddressRanges =
-      getAllowedIPAddressRanges(server);
-
   QList<QString> vpnDisabledApps;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   if (settingsHolder->protectSelectedApps() &&
       settingsHolder->hasVpnDisabledApps()) {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
+  }
+
+  // Multihop connections provide a list of servers, starting with the exit
+  // node as the first element, and the entry node as the final entry.
+  QList<Server> serverList = {server};
+  if (FeatureList::instance()->multihopSupported() &&
+      settingsHolder->multihopTunnel()) {
+    ServerData data;
+    Server hop = vpn->randomHop(data);
+    while (serverList.contains(hop)) {
+      hop = vpn->randomHop(data);
+    }
+    serverList.append(hop);
   }
 
   // Use the Gateway as DNS Server
@@ -201,8 +211,9 @@ void Controller::activateInternal() {
   }
 
   Q_ASSERT(m_impl);
-  m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, dns, stateToReason(m_state));
+  m_impl->activate(serverList, device, vpn->keys(),
+                   getAllowedIPAddressRanges(serverList), vpnDisabledApps, dns,
+                   stateToReason(m_state));
 }
 
 bool Controller::silentSwitchServers() {
@@ -237,14 +248,15 @@ bool Controller::silentSwitchServers() {
 
   Server server = Server::weightChooser(servers);
   Q_ASSERT(server.initialized());
+
+#ifndef MVPN_WASM
+  // All the keys are the same in WASM builds.
   Q_ASSERT(server.publicKey() != vpn->serverPublicKey());
+#endif
 
   vpn->setServerPublicKey(server.publicKey());
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-
-  const QList<IPAddressRange> allowedIPAddressRanges =
-      getAllowedIPAddressRanges(server);
 
   QList<QString> vpnDisabledApps;
 
@@ -252,6 +264,17 @@ bool Controller::silentSwitchServers() {
   if (settingsHolder->protectSelectedApps() &&
       settingsHolder->hasVpnDisabledApps()) {
     vpnDisabledApps = settingsHolder->vpnDisabledApps();
+  }
+
+  QList<Server> serverList = {server};
+  if (FeatureList::instance()->multihopSupported() &&
+      settingsHolder->multihopTunnel()) {
+    ServerData data;
+    Server hop = vpn->randomHop(data);
+    while (serverList.contains(hop)) {
+      hop = vpn->randomHop(data);
+    }
+    serverList.append(hop);
   }
 
   QHostAddress dns = QHostAddress(server.ipv4Gateway());
@@ -264,8 +287,9 @@ bool Controller::silentSwitchServers() {
   }
 
   Q_ASSERT(m_impl);
-  m_impl->activate(server, device, vpn->keys(), allowedIPAddressRanges,
-                   vpnDisabledApps, dns, stateToReason(StateSwitching));
+  m_impl->activate(serverList, device, vpn->keys(),
+                   getAllowedIPAddressRanges(serverList), vpnDisabledApps, dns,
+                   stateToReason(StateSwitching));
   return true;
 }
 
@@ -558,7 +582,7 @@ void Controller::setState(State state) {
   }
 }
 
-int Controller::time() const {
+qint64 Controller::time() const {
   return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
 }
 
@@ -623,13 +647,17 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 }
 
 QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
-    const Server& server) {
+    const QList<Server>& serverList) {
   logger.debug() << "Computing the allowed ip addresses";
 
   bool ipv6Enabled = SettingsHolder::instance()->ipv6Enabled();
 
   QList<IPAddress> excludeIPv4s;
   QList<IPAddress> excludeIPv6s;
+  // For multi-hop connections, the last entry in the server list is the
+  // ingress node to the network of wireguard servers, and must not be
+  // routed through the VPN.
+  const Server& server = serverList.last();
 
   // filtering out the captive portal endpoint
   if (FeatureList::instance()->captivePortalNotificationSupported() &&
@@ -672,13 +700,13 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
   } else {
     QList<IPAddress> allowedIPv4s{IPAddress::create("0.0.0.0/0")};
 
-    logger.debug() << "Exclude the server:" << server.ipv4AddrIn();
+    logger.debug() << "Exclude the ingress server:" << server.ipv4AddrIn();
     excludeIPv4s.append(IPAddress::create(server.ipv4AddrIn()));
 
     allowedIPv4s = IPAddress::excludeAddresses(allowedIPv4s, excludeIPv4s);
     list.append(IPAddressRange::fromIPAddressList(allowedIPv4s));
 
-    logger.debug() << "Allow the server:" << server.ipv4Gateway();
+    logger.debug() << "Allow the ingress server:" << server.ipv4Gateway();
     list.append(IPAddressRange(server.ipv4Gateway(), 32, IPAddressRange::IPv4));
   }
 
@@ -689,13 +717,13 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     } else {
       QList<IPAddress> allowedIPv6s{IPAddress::create("::/0")};
 
-      logger.debug() << "Exclude the server:" << server.ipv6AddrIn();
+      logger.debug() << "Exclude the ingress server:" << server.ipv6AddrIn();
       excludeIPv6s.append(IPAddress::create(server.ipv6AddrIn()));
 
       allowedIPv6s = IPAddress::excludeAddresses(allowedIPv6s, excludeIPv6s);
       list.append(IPAddressRange::fromIPAddressList(allowedIPv6s));
 
-      logger.debug() << "Allow the server:" << server.ipv6Gateway();
+      logger.debug() << "Allow the ingress server:" << server.ipv6Gateway();
       list.append(
           IPAddressRange(server.ipv6Gateway(), 128, IPAddressRange::IPv6));
     }

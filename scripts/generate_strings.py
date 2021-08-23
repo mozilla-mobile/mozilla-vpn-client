@@ -18,8 +18,20 @@ def pascalize(string):
         output += chunk[1:]
     return output
 
-def generateStrings():
+# special loader with duplicate key checking
+# From: https://gist.github.com/pypt/94d747fe5180851196eb
+class UniqueKeyLoader(yaml.SafeLoader):
+    def construct_mapping(self, node, deep=False):
+        mapping = []
+        for key_node, value_node in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if key in mapping:
+                print(f"Warning!! {key} is duplicated!")
+            assert key not in mapping
+            mapping.append(key)
+        return super().construct_mapping(node, deep)
 
+def generateStrings():
     translations_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), os.pardir, "translations")
     )
@@ -28,8 +40,8 @@ def generateStrings():
     if not os.path.isfile(yaml_path):
         exit("Unable to find translations/strings.yaml")
 
-    with open(yaml_path, "r") as yaml_file:
-        yaml_content = yaml.safe_load(yaml_file)
+    with open(yaml_path, "r", encoding="utf-8") as yaml_file:
+        yaml_content = yaml.load(yaml_file, UniqueKeyLoader)
 
         stringIds = []
 

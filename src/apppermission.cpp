@@ -220,6 +220,10 @@ void AppPermission::openFilePicker() {
   Q_ASSERT(fileNames.length() == 1);
 
   Q_ASSERT(m_listprovider);
+  if (!m_listprovider->isValidAppId(fileNames[0])) {
+    logger.debug() << "App not valid:" << fileNames[0];
+    return;
+  }
   m_listprovider->addApplication(fileNames[0]);
 
   QString message = L18nStrings::instance()

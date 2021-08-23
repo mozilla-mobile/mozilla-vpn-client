@@ -38,24 +38,37 @@ WireguardUtilsWindows::~WireguardUtilsWindows() {
   logger.debug() << "WireguardUtilsWindows destroyed.";
 }
 
-WireguardUtils::peerBytes WireguardUtilsWindows::getThroughputForInterface() {
-  peerBytes pb = {0, 0};
+WireguardUtils::peerStatus WireguardUtilsWindows::getPeerStatus(
+    const QString& pubkey) {
+  peerStatus status = {0, 0};
+  QString hexkey = QByteArray::fromBase64(pubkey.toUtf8()).toHex();
   QString reply = m_tunnel.uapiCommand("get=1");
+  bool match = false;
 
   for (const QString& line : reply.split('\n')) {
-    if (!line.contains('=')) {
+    int eq = line.indexOf('=');
+    if (eq <= 0) {
+      continue;
+    }
+    QString name = line.left(eq);
+    QString value = line.mid(eq + 1);
+
+    if (name == "public_key") {
+      match = (value == hexkey);
+      continue;
+    } else if (!match) {
       continue;
     }
 
-    QList<QString> parts = line.split('=');
-    if (parts[0] == "tx_bytes") {
-      pb.txBytes = parts[1].toDouble();
-    } else if (parts[0] == "rx_bytes") {
-      pb.rxBytes = parts[1].toDouble();
+    if (name == "tx_bytes") {
+      status.txBytes = value.toDouble();
+    }
+    if (name == "rx_bytes") {
+      status.rxBytes = value.toDouble();
     }
   }
 
-  return pb;
+  return status;
 }
 
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
@@ -101,24 +114,28 @@ bool WireguardUtilsWindows::deleteInterface() {
   return true;
 }
 
-bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
-  // Update the interface config
+bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
+  QByteArray publicKey =
+      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
+
+  // Update/create the peer config
   QString message;
-  {
-    QTextStream out(&message);
-    out << "set=1\n";
-    out << "replace_peers=true\n";
+  QTextStream out(&message);
+  out << "set=1\n";
+  out << "public_key=" << QString(publicKey.toHex()) << "\n";
+  if (!config.m_serverIpv4AddrIn.isNull()) {
+    out << "endpoint=" << config.m_serverIpv4AddrIn << ":";
+  } else if (!config.m_serverIpv6AddrIn.isNull()) {
+    out << "endpoint=[" << config.m_serverIpv6AddrIn << "]:";
+  } else {
+    logger.warning() << "Failed to create peer with no endpoints";
+    return false;
+  }
+  out << config.m_serverPort << "\n";
 
-    QByteArray publicKey =
-        QByteArray::fromBase64(config.m_serverPublicKey.toLocal8Bit()).toHex();
-    out << "public_key=" << publicKey << "\n";
-
-    out << "endpoint=" << config.m_serverIpv4AddrIn << ":"
-        << config.m_serverPort << "\n";
-
-    for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
-      out << "allowed_ip=" << ip.toString() << "\n";
-    }
+  out << "replace_allowed_ips=true\n";
+  for (const IPAddressRange& ip : config.m_allowedIPAddressRanges) {
+    out << "allowed_ip=" << ip.toString() << "\n";
   }
 
   QString reply = m_tunnel.uapiCommand(message);
@@ -126,39 +143,63 @@ bool WireguardUtilsWindows::updateInterface(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
-  DWORD result;
-  MIB_IPFORWARD_ROW2 entry;
-  InitializeIpForwardEntry(&entry);
+bool WireguardUtilsWindows::deletePeer(const QString& pubkey) {
+  QByteArray publicKey = QByteArray::fromBase64(qPrintable(pubkey));
+
+  QString message;
+  QTextStream out(&message);
+  out << "set=1\n";
+  out << "public_key=" << QString(publicKey.toHex()) << "\n";
+  out << "remove=true\n";
+
+  QString reply = m_tunnel.uapiCommand(message);
+  logger.debug() << "DATA:" << reply;
+  return true;
+}
+
+void WireguardUtilsWindows::buildMibForwardRow(const IPAddressRange& prefix,
+                                               void* row) {
+  MIB_IPFORWARD_ROW2* entry = (MIB_IPFORWARD_ROW2*)row;
+  InitializeIpForwardEntry(entry);
 
   // Populate the next hop
   if (prefix.type() == IPAddressRange::IPv6) {
     InetPtonA(AF_INET6, qPrintable(prefix.ipAddress()),
-              &entry.DestinationPrefix.Prefix.Ipv6.sin6_addr);
-    entry.DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
-    entry.DestinationPrefix.PrefixLength = prefix.range();
+              &entry->DestinationPrefix.Prefix.Ipv6.sin6_addr);
+    entry->DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
+    entry->DestinationPrefix.PrefixLength = prefix.range();
   } else {
     InetPtonA(AF_INET, qPrintable(prefix.ipAddress()),
-              &entry.DestinationPrefix.Prefix.Ipv4.sin_addr);
-    entry.DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
-    entry.DestinationPrefix.PrefixLength = prefix.range();
+              &entry->DestinationPrefix.Prefix.Ipv4.sin_addr);
+    entry->DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
+    entry->DestinationPrefix.PrefixLength = prefix.range();
   }
-  entry.InterfaceLuid.Value = m_luid;
-  entry.NextHop.si_family = entry.DestinationPrefix.Prefix.si_family;
+  entry->InterfaceLuid.Value = m_luid;
+  entry->NextHop.si_family = entry->DestinationPrefix.Prefix.si_family;
 
   // Set the rest of the flags for a static route.
-  entry.ValidLifetime = 0xffffffff;
-  entry.PreferredLifetime = 0xffffffff;
-  entry.Metric = 0;
-  entry.Protocol = MIB_IPPROTO_NETMGMT;
-  entry.Loopback = false;
-  entry.AutoconfigureAddress = false;
-  entry.Publish = false;
-  entry.Immortal = false;
-  entry.Age = 0;
+  entry->ValidLifetime = 0xffffffff;
+  entry->PreferredLifetime = 0xffffffff;
+  entry->Metric = 0;
+  entry->Protocol = MIB_IPPROTO_NETMGMT;
+  entry->Loopback = false;
+  entry->AutoconfigureAddress = false;
+  entry->Publish = false;
+  entry->Immortal = false;
+  entry->Age = 0;
+}
+
+bool WireguardUtilsWindows::updateRoutePrefix(const IPAddressRange& prefix,
+                                              int hopindex) {
+  Q_UNUSED(hopindex);
+  MIB_IPFORWARD_ROW2 entry;
+  buildMibForwardRow(prefix, &entry);
 
   // Install the route
-  result = CreateIpForwardEntry2(&entry);
+  DWORD result = CreateIpForwardEntry2(&entry);
+  if (result == ERROR_OBJECT_ALREADY_EXISTS) {
+    return true;
+  }
   if (result != NO_ERROR) {
     logger.error() << "Failed to create route to" << prefix.toString()
                    << "result:" << result;
@@ -166,22 +207,20 @@ bool WireguardUtilsWindows::addRoutePrefix(const IPAddressRange& prefix) {
   return result == NO_ERROR;
 }
 
-void WireguardUtilsWindows::flushRoutes() {
-  DWORD result;
-  PMIB_IPFORWARD_TABLE2 table;
+bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddressRange& prefix,
+                                              int hopindex) {
+  Q_UNUSED(hopindex);
+  MIB_IPFORWARD_ROW2 entry;
+  buildMibForwardRow(prefix, &entry);
 
-  // Fetch the routing table
-  result = GetIpForwardTable2(AF_UNSPEC, &table);
+  // Install the route
+  DWORD result = DeleteIpForwardEntry2(&entry);
+  if (result == ERROR_NOT_FOUND) {
+    return true;
+  }
   if (result != NO_ERROR) {
-    logger.error() << "Failed to fetch route table:" << result;
-    return;
+    logger.error() << "Failed to delete route to" << prefix.toString()
+                   << "result:" << result;
   }
-  auto guard = qScopeGuard([&] { FreeMibTable(table); });
-
-  // Delete any entries matching our LUID.
-  for (ULONG i = 0; i < table->NumEntries; i++) {
-    if (table->Table[i].InterfaceLuid.Value == m_luid) {
-      DeleteIpForwardEntry2(&table->Table[i]);
-    }
-  }
+  return result == NO_ERROR;
 }

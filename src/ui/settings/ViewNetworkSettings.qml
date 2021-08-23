@@ -98,6 +98,26 @@ Item {
                 }
             }
 
+            VPNCheckBoxRow {
+                id: multihopTunnel
+                objectName: "settingMultihopTunnel"
+                visible: VPNFeatureList.multihopSupported
+                Layout.rightMargin: Theme.windowMargin
+
+                //% "Multihop tunnel"
+                labelText: qsTrId("vpn.settings.multihop")
+                //% "Protect your traffic by routing it through multiple servers"
+                subLabelText: qsTrId("vpn.settings.multihop.description")
+                isChecked: (VPNSettings.multihopTunnel)
+                isEnabled: vpnFlickable.vpnIsOff
+                showDivider: vpnFlickable.vpnIsOff
+                onClicked: {
+                    if (vpnFlickable.vpnIsOff) {
+                        VPNSettings.multihopTunnel = !VPNSettings.multihopTunnel
+                    }
+                }
+            }
+
             VPNSettingsItem {
                 objectName: "advancedDNSSettings"
                 anchors.left: parent.left

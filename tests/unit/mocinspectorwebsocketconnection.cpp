@@ -12,3 +12,5 @@ InspectorWebSocketConnection::~InspectorWebSocketConnection() = default;
 void InspectorWebSocketConnection::setLastUrl(const QUrl&) {}
 
 bool InspectorWebSocketConnection::stealUrls() { return false; }
+
+QString InspectorWebSocketConnection::appVersionForUpdate() { return "42"; }

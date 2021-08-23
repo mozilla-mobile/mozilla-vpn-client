@@ -6,9 +6,11 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "featurelist.h"
 
 namespace {
 bool s_initialized = false;
+bool s_contactUsExternalLink = false;
 Logger logger(LOG_MAIN, "HelpModel");
 
 struct HelpEntry {
@@ -28,12 +30,18 @@ struct HelpEntry {
 static QList<HelpEntry> s_helpEntries;
 
 void maybeInitialize() {
-  if (s_initialized) {
+  if (s_initialized &&
+      s_contactUsExternalLink ==
+          (!MozillaVPN::instance()->userAuthenticated() &&
+           !FeatureList::instance()->unauthSupportSupported())) {
     return;
   }
+  s_helpEntries.clear();
 
   s_initialized = true;
-
+  s_contactUsExternalLink =
+      (!MozillaVPN::instance()->userAuthenticated() &&
+       !FeatureList::instance()->unauthSupportSupported());
   // Here we use the logger to force lrelease to add the help menu Ids.
 
   //% "View log"
@@ -53,8 +61,8 @@ void maybeInitialize() {
 
   //% "Contact us"
   logger.debug() << "Adding:" << qtTrId("help.contactUs");
-  s_helpEntries.append(
-      HelpEntry("help.contactUs", true, false, MozillaVPN::LinkContact));
+  s_helpEntries.append(HelpEntry("help.contactUs", s_contactUsExternalLink,
+                                 false, MozillaVPN::LinkContact));
 }
 
 }  // namespace
@@ -70,6 +78,11 @@ void HelpModel::open(int id) {
   const HelpEntry& entry = s_helpEntries.at(id);
   if (entry.m_viewLog) {
     emit MozillaVPN::instance()->requestViewLogs();
+    return;
+  }
+
+  if (!entry.m_externalLink && entry.m_linkType == MozillaVPN::LinkContact) {
+    emit MozillaVPN::instance()->requestContactUs();
     return;
   }
 

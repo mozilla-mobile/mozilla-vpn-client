@@ -115,6 +115,7 @@ SOURCES += \
         models/servercountry.cpp \
         models/servercountrymodel.cpp \
         models/serverdata.cpp \
+        models/supportcategorymodel.cpp \
         models/survey.cpp \
         models/surveymodel.cpp \
         models/user.cpp \
@@ -143,13 +144,15 @@ SOURCES += \
         tasks/adddevice/taskadddevice.cpp \
         tasks/authenticate/taskauthenticate.cpp \
         tasks/captiveportallookup/taskcaptiveportallookup.cpp \
+        tasks/getfeaturelist/taskgetfeaturelist.cpp \
         tasks/controlleraction/taskcontrolleraction.cpp \
+        tasks/createsupportticket/taskcreatesupportticket.cpp \
         tasks/function/taskfunction.cpp \
         tasks/heartbeat/taskheartbeat.cpp \
         tasks/products/taskproducts.cpp \
         tasks/removedevice/taskremovedevice.cpp \
-        tasks/surveydata/tasksurveydata.cpp \
         tasks/sendfeedback/tasksendfeedback.cpp \
+        tasks/surveydata/tasksurveydata.cpp \
         timercontroller.cpp \
         timersingleshot.cpp \
         update/updater.cpp \
@@ -221,6 +224,7 @@ HEADERS += \
         models/servercountry.h \
         models/servercountrymodel.h \
         models/serverdata.h \
+        models/supportcategorymodel.h \
         models/survey.h \
         models/surveymodel.h \
         models/user.h \
@@ -251,11 +255,14 @@ HEADERS += \
         tasks/adddevice/taskadddevice.h \
         tasks/authenticate/taskauthenticate.h \
         tasks/captiveportallookup/taskcaptiveportallookup.h \
+        tasks/getfeaturelist/taskgetfeaturelist.h \
         tasks/controlleraction/taskcontrolleraction.h \
+        tasks/createsupportticket/taskcreatesupportticket.h \
         tasks/function/taskfunction.h \
         tasks/heartbeat/taskheartbeat.h \
         tasks/products/taskproducts.h \
         tasks/removedevice/taskremovedevice.h \
+        tasks/sendfeedback/tasksendfeedback.h \
         tasks/surveydata/tasksurveydata.h \
         timercontroller.h \
         timersingleshot.h \
@@ -649,8 +656,12 @@ else:macos {
                    daemon/daemonlocalserverconnection.cpp \
                    localsocketcontroller.cpp \
                    wgquickprocess.cpp \
+                   platforms/macos/daemon/dnsutilsmacos.cpp \
+                   platforms/macos/daemon/iputilsmacos.cpp \
                    platforms/macos/daemon/macosdaemon.cpp \
-                   platforms/macos/daemon/macosdaemonserver.cpp
+                   platforms/macos/daemon/macosdaemonserver.cpp \
+                   platforms/macos/daemon/macosroutemonitor.cpp \
+                   platforms/macos/daemon/wireguardutilsmacos.cpp
         HEADERS += \
                    daemon/interfaceconfig.h \
                    daemon/daemon.h \
@@ -661,8 +672,12 @@ else:macos {
                    daemon/wireguardutils.h \
                    localsocketcontroller.h \
                    wgquickprocess.h \
+                   platforms/macos/daemon/dnsutilsmacos.h \
+                   platforms/macos/daemon/iputilsmacos.h \
                    platforms/macos/daemon/macosdaemon.h \
-                   platforms/macos/daemon/macosdaemonserver.h
+                   platforms/macos/daemon/macosdaemonserver.h \
+                   platforms/macos/daemon/macosroutemonitor.h \
+                   platforms/macos/daemon/wireguardutilsmacos.h
     }
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
@@ -698,6 +713,7 @@ else:ios {
 
     OBJECTIVE_SOURCES += \
             platforms/ios/iosiaphandler.mm \
+            platforms/ios/iosadjusthelper.mm \
             platforms/ios/iosauthenticationlistener.mm \
             platforms/ios/ioscontroller.mm \
             platforms/ios/iosdatamigration.mm \
@@ -711,6 +727,7 @@ else:ios {
 
     OBJECTIVE_HEADERS += \
             platforms/ios/iosiaphandler.h \
+            platforms/ios/iosadjusthelper.h \
             platforms/ios/iosauthenticationlistener.h \
             platforms/ios/ioscontroller.h \
             platforms/ios/iosdatamigration.h \

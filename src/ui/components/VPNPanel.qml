@@ -17,7 +17,7 @@ Item {
 
     anchors.horizontalCenter: parent.horizontalCenter
     width: Math.min(parent.width, Theme.maxHorizontalContentWidth)
-    height: panel.height
+    height: panel.implicitHeight
 
     ColumnLayout {
         id: panel
@@ -29,31 +29,24 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 0
 
-        Rectangle {
+        Item {
             id: logoWrapper
 
-            color: "transparent"
             Layout.preferredHeight: Math.max(logoSize, 76)
             Layout.fillWidth: true
 
             Image {
                 id: logo
 
+                visible: !isSettingsView
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: logoWrapper.bottom
                 verticalAlignment: Image.AlignBottom
                 anchors.bottomMargin: 0
-                sourceSize.height: isSettingsView ? undefined : logoSize
-                sourceSize.width: isSettingsView  ? undefined : logoSize
+                sourceSize.height: logoSize
+                sourceSize.width: logoSize
                 fillMode: Image.PreserveAspectFit
                 layer.enabled: true
-                Component.onCompleted: {
-                    if (isSettingsView ) {
-                        logo.height = logoSize;
-                        logo.width = logoSize;
-                        logo.smooth = true;
-                    }
-                }
 
                 Rectangle {
                     id: mask
@@ -66,9 +59,15 @@ Item {
                 layer.effect: OpacityMask {
                     maskSource: maskImage ? mask : undefined
                 }
-
             }
 
+            VPNAvatar {
+                id: avatar
+
+                visible: isSettingsView
+                avatarUrl: logo.source
+                anchors.fill: logoWrapper
+            }
         }
 
         VPNHeadline {
@@ -76,7 +75,7 @@ Item {
 
             Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin:24
+            Layout.topMargin: 24
             // In Settings, the headline wrapMode is set to 'WrapAtWordBoundaryOrAnywhere' to
             // prevent very long, unbroken display names from throwing the layout
             wrapMode: isSettingsView ? Text.WrapAtWordBoundaryOrAnywhere : Text.WordWrap

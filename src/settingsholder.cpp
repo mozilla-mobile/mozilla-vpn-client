@@ -27,6 +27,7 @@ constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_VPNDISABLEDAPPS_DEFAULT = QStringList();
 constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
+constexpr bool SETTINGS_MULTIHOP_TUNNEL_DEFAULT = false;
 
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
@@ -71,6 +72,7 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
+constexpr const char* SETTINGS_MULTIHOP_TUNNEL = "multihopTunnel";
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -223,6 +225,9 @@ GETSETDEFAULT(SETTINGS_USEGATEWAYDNS_DEFAULT, bool, toBool,
               setUseGatewayDNS, useGatewayDNSChanged)
 GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
               hasUserDNS, userDNS, setUserDNS, userDNSChanged)
+GETSETDEFAULT(SETTINGS_MULTIHOP_TUNNEL_DEFAULT, bool, toBool,
+              SETTINGS_MULTIHOP_TUNNEL, hasMultihopTunnel, multihopTunnel,
+              setMultihopTunnel, multihopTunnelChanged)
 GETSETDEFAULT(
     FeatureList::instance()->unsecuredNetworkNotificationSupported() &&
         SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
@@ -376,7 +381,6 @@ GETSET(bool, toBool, SETTINGS_NATIVEWINDOWSDATAMIGRATED,
        setNativeWindowsDataMigrated)
 
 #endif
-
 
 GETSET(QStringList, toStringList, SETTINGS_MISSING_SPLITTUNNEL_APPS,
        hasMissingApps, missingApps, setMissingApps)

@@ -400,6 +400,7 @@
         <file>ui/components/VPNAboutUs.qml</file>
         <file>ui/components/VPNRemoveDevicePopup.qml</file>
         <file>ui/views/ViewLogs.qml</file>
+        <file>ui/views/ViewContactUs.qml</file>
         <file>ui/components/VPNStackView.qml</file>
         <file>ui/components/VPNFocusOutline.qml</file>
         <file>ui/components/VPNMouseArea.qml</file>
@@ -432,6 +433,7 @@
         <file>ui/components/forms/VPNInputBackground.qml</file>
         <file>ui/components/forms/VPNTextArea.qml</file>
         <file>ui/resources/heart-check.svg</file>
+        <file>ui/resources/app-rating.svg</file>
         <file>ui/resources/faces/average.svg</file>
         <file>ui/resources/faces/good.svg</file>
         <file>ui/resources/faces/poor.svg</file>
@@ -447,6 +449,8 @@
         <file>ui/components/VPNMetropolisLabel.qml</file>
         <file>ui/resources/warning-dark-orange.svg</file>
         <file>ui/components/VPNToggleCard.qml</file>
+        <file>ui/resources/avatar-default.png</file>
+        <file>ui/components/VPNAvatar.qml</file>
         <file>ui/themes/colors.js</file>
         <file>ui/components/forms/VPNInputStates.qml</file>
         <file>ui/components/VPNSemiMonoLabel.qml</file>

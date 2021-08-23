@@ -28,10 +28,14 @@
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/surveydata/tasksurveydata.h"
 #include "tasks/sendfeedback/tasksendfeedback.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "urlopener.h"
 
 #ifdef MVPN_IOS
 #  include "platforms/ios/iosdatamigration.h"
+#  include "platforms/ios/iosadjusthelper.h"
+#  include "platforms/ios/iosutils.h"
 #endif
 
 #ifdef MVPN_ANDROID
@@ -76,6 +80,10 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
 
   logger.debug() << "Creating MozillaVPN singleton";
 
+#ifdef MVPN_IOS
+  IOSAdjustHelper::initialize();
+#endif
+
   Q_ASSERT(!s_instance);
   s_instance = this;
 
@@ -86,6 +94,7 @@ MozillaVPN::MozillaVPN() : m_private(new Private()) {
     scheduleTask(new TaskCaptivePortalLookup());
     scheduleTask(new TaskHeartbeat());
     scheduleTask(new TaskSurveyData());
+    scheduleTask(new TaskGetFeatureList());
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -182,6 +191,8 @@ void MozillaVPN::initialize() {
   Q_ASSERT(m_state == StateInitialize);
 
   m_private->m_releaseMonitor.runSoon();
+
+  scheduleTask(new TaskGetFeatureList());
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -664,6 +675,29 @@ void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
   });
 }
 
+void MozillaVPN::createSupportTicket(const QString& email,
+                                     const QString& subject,
+                                     const QString& issueText,
+                                     const QString& category) {
+  logger.debug() << "Create support ticket";
+
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+
+  serializeLogs(out, [this, out, buffer, email, subject, issueText, category] {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+    // buffer is getting copied by TaskCreateSupportTicket so we can delete it
+    // afterwards
+    scheduleTask(new TaskCreateSupportTicket(email, subject, issueText, *buffer,
+                                             category));
+
+    delete buffer;
+    delete out;
+  });
+}
+
 void MozillaVPN::accountChecked(const QByteArray& json) {
   logger.debug() << "Account checked";
 
@@ -870,6 +904,12 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
 
   m_private->m_serverData.update(countryCode, countryName, city);
   m_private->m_serverData.writeSettings();
+}
+
+const Server& MozillaVPN::randomHop(ServerData& data) const {
+  m_private->m_serverCountryModel.pickRandom(data);
+  const QList<Server> servers = m_private->m_serverCountryModel.servers(data);
+  return Server::weightChooser(servers);
 }
 
 void MozillaVPN::postAuthenticationCompleted() {
@@ -1130,6 +1170,13 @@ void MozillaVPN::requestViewLogs() {
   emit viewLogsNeeded();
 }
 
+void MozillaVPN::requestContactUs() {
+  logger.debug() << "Contact us view requested";
+
+  QmlEngineHolder::instance()->showWindow();
+  emit contactUsNeeded();
+}
+
 void MozillaVPN::activate() {
   logger.debug() << "VPN tunnel activation";
 
@@ -1311,4 +1358,13 @@ void MozillaVPN::triggerHeartbeat() { scheduleTask(new TaskHeartbeat()); }
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
   scheduleTask(new TaskAddDevice(Device::currentDeviceName()));
   scheduleTask(new TaskAccountAndServers());
+}
+
+void MozillaVPN::appReviewRequested() {
+  Q_ASSERT(FeatureList::instance()->appReviewSupported());
+#if defined(MVPN_IOS)
+  IOSUtils::appReviewRequested();
+#elif defined(MVPN_ANDROID)
+  AndroidUtils::appReviewRequested();
+#endif
 }

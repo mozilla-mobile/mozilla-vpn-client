@@ -6,8 +6,13 @@
 #define MACOSDAEMON_H
 
 #include "daemon.h"
+#include "dnsutilsmacos.h"
+#include "iputilsmacos.h"
+#include "wireguardutilsmacos.h"
 
 class MacOSDaemon final : public Daemon {
+  friend class IPUtilsMacos;
+
  public:
   MacOSDaemon();
   ~MacOSDaemon();
@@ -16,10 +21,17 @@ class MacOSDaemon final : public Daemon {
 
   QByteArray getStatus() override;
 
-  void maybeCleanup();
-
  protected:
-  bool run(Op op, const InterfaceConfig& config) override;
+  WireguardUtils* wgutils() const override { return m_wgutils; }
+  bool supportDnsUtils() const override { return true; }
+  DnsUtils* dnsutils() override { return m_dnsutils; }
+  bool supportIPUtils() const override { return true; }
+  IPUtils* iputils() override { return m_iputils; }
+
+ private:
+  WireguardUtilsMacos* m_wgutils = nullptr;
+  DnsUtilsMacos* m_dnsutils = nullptr;
+  IPUtilsMacos* m_iputils = nullptr;
 };
 
 #endif  // MACOSDAEMON_H

@@ -55,6 +55,14 @@ serversView:
 
 feedbackForm:
   chooseCategory: Choose a category
+  excellentLabel:
+    value: Excellent
+    comment:
+      - One of the answers on the feedback question about the user
+      - experience with the VPN client.
+  reviewHeader: Give us 5 stars!
+  reviewBody: If you enjoy using Mozilla VPN, would you review it? Thanks for your support!
+  leaveReviewButton: Leave a Review
 
 settingsDev:
   title: Developer Options
@@ -70,15 +78,137 @@ splittunnel:
       - Add apps manually
     comment:
       - Displayed in a notification as "call to action" when apps are missing from the split-tunnel settings.
-  missingAppMultiple: 
+  missingAppMultiple:
     value:
       - \%1 apps missing from list.
     comment:
       - Apps listed in the split-tunnel settings. %1 is the number of missing apps
       - If necessary, this can be translated as "Apps missing from list :%1"
-  missingAppAddedOne: 
+  missingAppAddedOne:
     value:
       - Success! You added “%1” to this list.
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
+  infoText:
+    value:
+      - For any questions about setting app permissions, we’ve provided some helpful tips on our website.
+    comment:
+      - This displays as informational text below split tunneling settings. The link directs to a sumo article which will help certain users who are having network issues using this feature.
+  infoLinkText: Learn more
 
+multiHopFeature:
+  singleHopToggleCTA: Single-hop
+  multiHopToggleCTA: Multi-hop
+  multiHopCardHeader: What is multi-hop VPN?
+  multiHopCardBody: Multi-hop VPN routes your traffic through two servers instead of one for extra security and privacy. This may slow down your connection.
+  multiHopEntryLocationHeader: Select entry location
+  multiHopExitLocationHeader: Select exit location
+  multiHopInfoText: Exit location represents your main VPN server.
+  multiHopConnectionsHeader: Recent connections
+  multiHopArrowAltText:
+    value: To
+    comment: This is alt text for an arrow showing the multi-hop route between servers. e.g. Atlanta TO Copenhagen
+  serverSearchResultsError: No results. Try a different search
+
+inAppSupportWorkflow:
+  supportNavLinkText: Contact support
+  supportEmailFieldLabel: Enter your email
+  supportEmailFieldPlaceholder: Email address
+  supportConfirmEmailPlaceholder: Confirm email address
+  supportFieldHeader: How can we help you with Mozilla VPN?
+  dropdownLabel:
+    value: Choose a category
+    comment: A user trying to submit feedback will use this dropdown to select the general topic related to the feedback.
+  paymentDropdownListItem:
+    value: Payment and billing
+    comment: A user selecting this will be submitting in-app feedback related to payment and billing.
+  accountDropdownListItem:
+    value: Account issues
+    comment: A user selecting this will be submitting in-app feedback related to account issues.
+  technicaDropdownListItem:
+    value: Technical issues
+    comment: A user selecting this will be submitting in-app feedback related to technical issues.
+  featureRequestDropdownListItem:
+    value: Request features
+    comment: A user selecting this will be submitting in-app feedback related to requesting new features.
+  otherDropdownListItem:
+    value: Other
+    comment: A user selecting this will be submitting in-app feedback related to issues not covered under the other categories.
+  subjectFieldPlaceholder: Subject (optional)
+  issueFieldPlaceholder: Describe issue
+  disclaimerText: When you submit, Mozilla VPN will collect technical and interaction data with your email to help our support team understand your issue.
+  privacyNoticeLinkText: Mozilla VPN Privacy Notice
+  supportPrimaryButtonText: Submit
+  supportSecondaryActionText: Cancel
+  supportResponseHeader: Thank you!
+  supportResponseBody:
+    value: Our support team will contact you at %1 once we’ve been able to look at your issue.
+    comment: The %1 represents the email used to complete the form
+  supportResponseButton: Done
+  supportErrorHeader: Error submitting your support request
+  supportErrorText: An unexpected error has occurred, please try again.
+  supportErrorButton: Try Again
+
+# IAP Android edge case 1
+notSignedInGoogle:
+  googleModalHeader: Sign in to Google Account
+  googleModalBodyText: To continue subscribing, please sign in to your Google Account
+  googleModalLinkText: Go to Play Store
+
+# IAP Android edge case 2
+multiFxaAccountError:
+  fxaAccountErrorHeader: Problem confirming subscription
+  fxaAccountErrorText: Your subscription is linked to another Firefox Account. You may need to sign in with a different email address.
+
+# IAP Android edge case 3
+genericPurchaseError:
+  genericPurchaseErrorHeader: Problem confirming subscription
+  genericPurchaseErrorText: An unexpected error has occurred, please try again. Visit our help center below to learn how to troubleshoot this issue or contact support.
+  genericPurchaseErrorButton: Try Again
+
+# v2.5 What’s New? Release notes
+whatsNewReleaseNotes:
+  # tour modal alert on system update
+  tourModalHeader: What’s new in VPN?
+  tourModalBodyText: We’ve added a ton of cool features in this latest release. Take the tour to get a deeper dive into what we’ve added for you!
+  tourModalButtonText: Take the tour
+  multiModalHeader: Multi-hop VPN
+  multiModalBodyText: Multi-hop VPN will route your traffic through a second server for added protection. You can find this feature on the “Select location” screen.
+  supportModalButtonText: Next
+  supportModalHeader: In-app support form
+  supportModalBodyText: The in-app support form will allow you to contact support from within the VPN app. You can find it in the “Get help” section.
+  dnsModalHeader: Custom DNS
+  dnsModalBodyText: Custom DNS servers allow for faster speed using local networks. You can find this feature in the “Network settings” section.
+  dnsModalButtonText: Done
+  tourPageHeader: What’s new
+  tourSubHeader: Take the tour
+  multiListItemHeader: Multi-hop VPN
+  multiListItemBody: Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.
+  supportListItemHeader: In-app support form
+  supportListItemBody: The in-app support form will streamline the process of getting your issues resolved.
+  dnsListItemHeader: Custom DNS
+  dnsListItemBody: Custom DNS settings allow for faster connection using local servers.
+# system notifications for all platforms
+  tourSystemNotifHeader: What’s new in VPN
+  tourSystemNotifBody: Check out all the new features available in the latest version of Mozilla VPN!
+  tourSystemNotifCTA: Take the tour
+
+# Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
+customDNSSettings:
+  dnsInfoAlert: VPN must be off to change these settings
+  dnsNavItem: DNS setting
+  dnsDefaultToggle: Default
+  dnsDefaultRadioHeader: Use default DNS
+  dnsDefaultRadioBody: Automatically use Mozilla VPN-protected DNS
+#  dnsAdvancedToggle: Advanced
+#  dnsAdblockRadioHeader: Use adblock DNS
+#  dnsAdblockRadioBody: Block internet ads with VPN
+#  dnsAntitrackRadioHeader: Use anti-tracking DNS
+#  dnsAntitrackRadioBody: Block harmful domains with VPN
+#  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
+#  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
+  dnsCustomDNSRadioHeader: Use custom DNS
+  dnsCustomDNSRadioBody: Resolve websites using a custom DNS
+  dnsFieldPlaceHolder: Enter custom DNS
+  # The below is an inline error when an invalid DNS is entered into the custom DNS field
+  inlineCustomDNSError: Invalid DNS, please try a new one
