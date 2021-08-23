@@ -580,7 +580,35 @@ Item {
             anchors.centerIn: settingsButton
 
             Rectangle {
-                id: newFeaturesIndicator
+                id: unseenFeaturesIndicator
+
+                states: [
+                    State {
+                        when: settingsButton.state === Theme.uiState.stateHovered
+
+                        PropertyChanges {
+                            target: unseenFeaturesIndicator
+                            border.color: settingsButton.buttonColorScheme.buttonHovered
+                        }
+                    },
+                    State {
+                        when: settingsButton.state === Theme.uiState.statePressed
+
+                        PropertyChanges {
+                            target: unseenFeaturesIndicator
+                            border.color: settingsButton.buttonColorScheme.buttonPressed
+                        }
+                    }
+                ]
+
+                transitions: [
+                    Transition {
+                        ColorAnimation {
+                            target: unseenFeaturesIndicator
+                            duration: 200
+                        }
+                    }
+                ]
 
                 anchors.top: parent.top
                 anchors.right: parent.right
@@ -591,10 +619,10 @@ Item {
                     width: 1
                 }
                 color: Color.error.default
-                height: 8 + border.width * 2
+                height: Theme.listSpacing + border.width * 2
                 radius: width / 2
                 visible: !VPNSettings.newFeaturesSeen
-                width: 8 + border.width * 2
+                width: Theme.listSpacing + border.width * 2
             }
         }
 
