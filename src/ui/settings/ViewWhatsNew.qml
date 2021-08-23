@@ -47,6 +47,13 @@ Item {
                 }
             }
 
+            Button {
+                text: VPNSettings.hasFeaturesTourShown ? "Saw popup" : "Should show popup"
+                onClicked: {
+                    VPNSettings.hasFeaturesTourShown = !VPNSettings.hasFeaturesTourShown;
+                }
+            }
+
             VPNSettingsItem {                
                 settingTitle: "Take the tour"
                 imageLeftSrc: hovered ? "../resources/magic-purple.svg" : "../resources/magic-dark.svg"

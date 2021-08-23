@@ -112,7 +112,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
-            showIndicator: true
+            showIndicator: !VPNSettings.newFeaturesSeen
 
             Component.onCompleted: {
                 settingsStackView.push("../settings/ViewWhatsNew.qml");
