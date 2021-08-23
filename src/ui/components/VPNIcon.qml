@@ -4,7 +4,6 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import QtGraphicalEffects 1.14
 import "../themes/themes.js" as Theme
 
 // VPNIcon

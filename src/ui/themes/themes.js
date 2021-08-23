@@ -92,11 +92,11 @@ const clickableRowBlue = {
 };
 
 const clickableRowPurple = {
-  'defaultColor': bgColorTransparent,
-  'buttonHovered': '#E7DFFF',
-  'buttonPressed': '#D9BFFF',
-  'focusOutline': bgColorTransparent,
-  'focusBorder': '#592ACB',
+  "defaultColor": bgColorTransparent,
+  "buttonHovered": "#E7DFFF",
+  "buttonPressed": "#D9BFFF",
+  "focusOutline": bgColorTransparent,
+  "focusBorder": "#592ACB",
 };
 
 const iconButtonLightBackground = {

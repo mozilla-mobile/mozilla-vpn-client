@@ -15,18 +15,19 @@ Logger logger(LOG_IOS, "IOSAdjustHelper");
 }  // namespace
 
 void IOSAdjustHelper::initialize() {
-  NSString* adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
-  if (adjustToken.length) {
-    NSString* environment =
-        Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
-    ADJConfig* adjustConfig = [ADJConfig configWithAppToken:adjustToken environment:environment];
+  NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
+
+  if(adjustToken.length) {
+    NSString *environment = Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
+    ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
+                                                environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];
     [Adjust appDidLaunch:adjustConfig];
   }
 }
 
 void IOSAdjustHelper::trackEvent(const QString& eventToken) {
-  ADJEvent* event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
+  ADJEvent *event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
   [Adjust trackEvent:event];
 }

@@ -355,7 +355,7 @@ Window {
                 description: "The in-app support form will streamline the process of getting your issues resolved.",
                 shortDescription: "The in-app support form will streamline the the process of getting your issues resolved.",
                 imageSrc: "../resources/support-form-preview.png",
-                icon: "../resources/support-form-preview.png",
+                icon: "../resources/settings/getHelp.svg",
                 isFeature: true,
             },
             {
@@ -363,11 +363,12 @@ Window {
                 description: "Custom DNS servers allow for faster speed using local networks. You can find this feature in the “Network settings” section.",
                 shortDescription: "Custom DNS settings allows for faster connection using local servers.",
                 imageSrc: "../resources/custom-dns-preview.png",
-                icon: "../resources/settings/getHelp.svg",
+                icon: "../resources/settings/networkSettings.svg",
                 isFeature: true,
             },
         ]
 
+        topMargin: Theme.windowMargin * 2
         contentItem: VPNFeatureTour {
             id: featureTour
 

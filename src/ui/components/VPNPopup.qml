@@ -10,7 +10,6 @@ import "../themes/themes.js" as Theme
 Popup {
     id: popup
 
-    anchors.centerIn: parent
     closePolicy: Popup.CloseOnEscape
     enabled: true
     focus: true

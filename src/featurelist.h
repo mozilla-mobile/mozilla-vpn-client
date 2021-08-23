@@ -73,6 +73,7 @@ class FeatureList final : public QObject {
   bool gleanSupported() const;
 
  private:
+
   bool m_unauthSupportSupported = false;
 };
 

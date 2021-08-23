@@ -130,6 +130,7 @@ Item {
                         sourceSize.width: parent.width * 0.5
 
                         Layout.alignment: Qt.AlignHCenter
+                        Layout.bottomMargin: tour.state === "start" ? Theme.listSpacing : Theme.listSpacing * 0.25
                     }
 
                     VPNMetropolisLabel {
@@ -214,7 +215,7 @@ Item {
             radius: Theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: Theme.listSpacing
+            Layout.topMargin: slideIndicator.visible ? Theme.listSpacing : Theme.vSpacing
 
             onClicked: {
                 if (tour.state === "start") {
