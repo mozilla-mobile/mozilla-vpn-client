@@ -14,13 +14,13 @@ class FeatureUnauthSupport final : public Feature {
  public:
   FeatureUnauthSupport()
       : Feature(FEATURE_UNAUTH_SUPPORT, L18nStrings::FeatureNamesUnauthSupport,
-                false,               // Is Major Feature
-                L18nStrings::Empty,  // Description
-                L18nStrings::Empty,  // LongDescr
-                "",                  // ImagePath
-                "",                  // IconPath
-                "2.5",               // released
-                true                 // Can be enabled in devmode
+                true,                                                  // Is Major Feature
+                L18nStrings::WhatsNewReleaseNotesSupportListItemBody,  // Description
+                L18nStrings::WhatsNewReleaseNotesSupportModalBodyText, // LongDescr
+                "../resources/support-form-preview.png",               // ImagePath
+                "../resources/settings/getHelp.svg",                   // IconPath
+                "2.5",                                                 // released
+                true                                                   // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override { return m_supported; }
@@ -30,7 +30,7 @@ class FeatureUnauthSupport final : public Feature {
   }
 
   void setIsSupported(bool enabled) { m_supported = enabled; }
-
+              
  private:
   bool m_supported = false;
 };

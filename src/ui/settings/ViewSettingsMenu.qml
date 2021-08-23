@@ -115,7 +115,7 @@ VPNFlickable {
             showIndicator: !VPNSettings.newFeaturesSeen
 
             Component.onCompleted: {
-//                settingsStackView.push("../settings/ViewWhatsNew.qml");
+                settingsStackView.push("../settings/ViewWhatsNew.qml");
             }
         }
         VPNSettingsItem {

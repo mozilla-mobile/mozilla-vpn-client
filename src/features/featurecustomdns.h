@@ -14,13 +14,13 @@ class FeatureCustomDNS final : public Feature {
  public:
   FeatureCustomDNS()
       : Feature(FEATURE_CUSTOM_DNS, L18nStrings::FeatureNamesCustomDNS,
-                false,               // Is Major Feature
-                L18nStrings::Empty,  // Description
-                L18nStrings::Empty,  // LongDescr
-                "",                  // ImagePath
-                "",                  // IconPath
-                "2.5",               // released
-                true                 // Can be enabled in devmode
+                true,                                              // Is Major Feature
+                L18nStrings::WhatsNewReleaseNotesDnsListItemBody,  // Description
+                L18nStrings::WhatsNewReleaseNotesDnsModalBodyText, // LongDescr
+                "../resources/custom-dns-preview.png",             // ImagePath
+                "../resources/settings/networkSettings.svg",       // IconPath
+                "2.5",                                             // released
+                true                                               // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override {

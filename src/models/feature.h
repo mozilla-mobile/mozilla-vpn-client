@@ -67,6 +67,7 @@ class Feature : public QObject {
     RoleReleased,
     RoleSupported,
     RoleNew,
+    RoleMajor,
     RoleDevModeWriteable,
     RoleDevModeEnabled
   };

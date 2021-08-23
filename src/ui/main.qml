@@ -382,7 +382,7 @@ Window {
         }
 
         Component.onCompleted: {
-//            mainStackView.push("./views/ViewSettings.qml");
+            mainStackView.push("./views/ViewSettings.qml");
         }
 
         function openTour() {

@@ -130,6 +130,8 @@ QVariant Feature::data(int role) const {
       return isDevModeEnabled();
     case RoleNew:
       return m_new;
+    case RoleMajor:
+      return m_majorFeature;
     default:
       return QVariant();
   }
@@ -146,6 +148,7 @@ QHash<int, QByteArray> Feature::roleNames() {
                                  {RoleIconPath, "iconPath"},
                                  {RoleReleased, "featureReleased"},
                                  {RoleNew, "isNew"},
+                                 {RoleMajor, "isMajor"},
                                  {RoleSupported, "supported"},
                                  {RoleDevModeWriteable, "devModeWriteable"},
                                  {RoleDevModeEnabled, "devModeEnabled"}});

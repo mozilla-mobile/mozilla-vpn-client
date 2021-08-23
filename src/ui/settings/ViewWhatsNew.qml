@@ -33,6 +33,7 @@ Item {
         flickContentHeight: col.height
         interactive: flickContentHeight > height
 
+
         ColumnLayout {
             id: col
 
@@ -99,6 +100,45 @@ Item {
                 model: featureTourPopup.testData
                 delegate: featureItem
             }
+
+            // Start: Feature
+            VPNFilterProxyModel {
+                id: newFeatureModel
+                source: VPNFeatureList
+                filterCallback: feature => {
+                                    return (
+                                        feature.isNew
+                                        && feature.isMajor
+//                                        && feature.featureReleased
+//                                        && feature.supported
+                                    );
+                                }
+            }
+
+            ColumnLayout {
+
+                spacing: Theme.windowMargin
+
+                VPNBoldLabel{
+                    text: VPNl18n.tr(VPNl18n.SettingsDevEditableFeatureList)
+                }
+
+                Repeater {
+                    model: newFeatureModel
+                    delegate: VPNCheckBoxRow {
+                        showDivider: false
+                        labelText: name
+                        subLabelText: id
+                        showAppImage: false
+                        onClicked: VPNFeatureList.devModeFlipFeatureFlag(id)
+                        // Only enable the list on features where devModeEnable has any impact
+                        enabled: true
+                        isChecked: devModeEnabled
+                        Layout.minimumHeight: Theme.rowHeight * 1.5
+                    }
+                }
+            }
+            // End: Feature list
         }
     }
 
