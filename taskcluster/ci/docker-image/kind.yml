@@ -13,6 +13,9 @@ transforms:
 jobs:
     base:
         symbol: I(base)
+    build:
+        parent: base
+        symbol: I(build)
     lint:
         parent: base
         symbol: I(lint)
