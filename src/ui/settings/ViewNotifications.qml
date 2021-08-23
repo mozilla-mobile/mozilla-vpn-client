@@ -63,7 +63,7 @@ Item {
                 id: captivePortalAlert
                 objectName: "settingCaptivePortalAlert"
                 width: parent.width
-                visible: VPNFeatureList.captivePortalNotificationSupported
+                visible: VPNFeatureList.get("captivePortal").isSupported
                 //% "Guest Wi-Fi portal alert"
                 labelText: qsTrId("vpn.settings.guestWifiAlert")
                 //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
@@ -82,7 +82,7 @@ Item {
                 id: unsecuredNetworkAlert
                 objectName: "settingUnsecuredNetworkAlert"
                 width: parent.width
-                visible: VPNFeatureList.unsecuredNetworkNotificationSupported
+                visible: VPNFeatureList.get("unsecuredNetworkNotification").isSupported
 
                 //% "Unsecured network alert"
                 labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
@@ -101,7 +101,7 @@ Item {
             VPNCheckBoxRow {
                 id: switchServersAlert
                 objectName: "switchServersAlert"
-                visible: VPNFeatureList.notificationControlSupported
+                visible: VPNFeatureList.get("notificationControl").isSupported
                 width: parent.width
 
                 //% "Server switching notification"
@@ -117,7 +117,7 @@ Item {
             VPNCheckBoxRow {
                 id: connectionChangeAlert
                 objectName: "connectionChangeAlert"
-                visible: VPNFeatureList.notificationControlSupported
+                visible: VPNFeatureList.get("notificationControl").isSupported
                 width: parent.width
 
                 //% "Connection change notification"

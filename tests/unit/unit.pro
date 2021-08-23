@@ -42,12 +42,14 @@ HEADERS += \
     ../../src/ipaddress.h \
     ../../src/ipaddressrange.h \
     ../../src/ipfinder.h \
+    ../../src/l18nstringsimpl.h \
     ../../src/leakdetector.h \
     ../../src/localizer.h \
     ../../src/logger.h \
     ../../src/loghandler.h \
     ../../src/models/device.h \
     ../../src/models/devicemodel.h \
+    ../../src/models/feature.h \
     ../../src/models/feedbackcategorymodel.h \
     ../../src/models/helpmodel.h \
     ../../src/models/keys.h \
@@ -90,7 +92,6 @@ HEADERS += \
     ../../src/update/updater.h \
     ../../src/update/versionapi.h \
     ../../src/urlopener.h \
-    ../../translations/generated/l18nstrings.h \
     helper.h \
     testandroidmigration.h \
     testbigint.h \
@@ -132,6 +133,7 @@ SOURCES += \
     ../../src/loghandler.cpp \
     ../../src/models/device.cpp \
     ../../src/models/devicemodel.cpp \
+    ../../src/models/feature.cpp \
     ../../src/models/feedbackcategorymodel.cpp \
     ../../src/models/helpmodel.cpp \
     ../../src/models/keys.cpp \
@@ -169,7 +171,6 @@ SOURCES += \
     ../../src/update/updater.cpp \
     ../../src/update/versionapi.cpp \
     ../../src/urlopener.cpp \
-    ../../translations/generated/l18nstrings_p.cpp \
     main.cpp \
     moccontroller.cpp \
     mocinspectorwebsocketconnection.cpp \
@@ -190,6 +191,13 @@ SOURCES += \
     teststatusicon.cpp \
     testtasks.cpp \
     testtimersingleshot.cpp
+
+exists($$PWD/../../translations/generated/l18nstrings.h) {
+    SOURCES += $$PWD/../../translations/generated/l18nstrings_p.cpp
+    HEADERS += $$PWD/../../translations/generated/l18nstrings.h
+} else {
+    error("No l18nstrings.h. Have you generated the strings?")
+}
 
 # Platform-specific: Linux
 linux {

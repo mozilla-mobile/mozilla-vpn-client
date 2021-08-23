@@ -12,7 +12,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "systemtrayhandler.h"
-#include "featurelist.h"
+#include "features/featureunauthsupport.h"
 
 #ifdef QT_DEBUG
 #  include "gleantest.h"
@@ -242,11 +242,11 @@ static QList<WebSocketFeatureCommand> s_featureCommands{
     WebSocketFeatureCommand{
         "unauth-support",
         [](bool enabled) {
-          FeatureList::instance()->setUnauthSupportSupported(enabled);
+          FeatureUnauthSupport::instance()->setIsSupported(enabled);
         },
         []() {
-          return FeatureList::instance()->unauthSupportSupported() ? "true"
-                                                                   : "false";
+          return FeatureUnauthSupport::instance()->isSupported() ? "true"
+                                                                 : "false";
         }},
 };
 
