@@ -122,15 +122,14 @@ Item {
                     id: content
 
                     opacity: slideIndex === swipeView.currentIndex ? 1 : 0
-                    spacing: Theme.vSpacingSmall
+                    spacing: Theme.listSpacing
 
                     Image {
                         source: slideData.imageSrc
-                        sourceSize.height: parent.height / 2.5
-                        sourceSize.width: parent.height / 2.5
+                        sourceSize.height: parent.width * 0.5
+                        sourceSize.width: parent.width * 0.5
 
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.topMargin: Theme.listSpacing
                     }
 
                     VPNMetropolisLabel {
@@ -141,12 +140,13 @@ Item {
                         font.pixelSize: Theme.fontSizeLarge
                         text: slideData.title
 
+                        Layout.bottomMargin: Theme.listSpacing
                         Layout.fillWidth: true
                     }
 
                     VPNTextBlock {
                         horizontalAlignment: Text.AlignHCenter
-                        text: slideData.text
+                        text: slideData.description
                         Layout.fillWidth: true
                     }
 
@@ -183,6 +183,7 @@ Item {
             currentIndex: swipeView.currentIndex - 1
             interactive: false
             spacing: Theme.windowMargin / 2
+            visible: swipeView.currentIndex >= 1
             delegate: Rectangle {
                 id: circle
 
@@ -199,7 +200,6 @@ Item {
             }
 
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-            Layout.bottomMargin: Theme.listSpacing
 
             Behavior on opacity {
                 NumberAnimation {
@@ -214,6 +214,7 @@ Item {
             radius: Theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
+            Layout.topMargin: Theme.listSpacing
 
             onClicked: {
                 if (tour.state === "start") {

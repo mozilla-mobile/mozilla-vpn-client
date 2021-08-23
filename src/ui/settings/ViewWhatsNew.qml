@@ -84,7 +84,7 @@ Item {
 
                     VPNTextBlock {
                         id: featureText
-                        text: modelData.textShort
+                        text: modelData.shortDescription
                         Layout.fillWidth: true
                         Layout.leftMargin: Theme.vSpacing + 14
                     }
