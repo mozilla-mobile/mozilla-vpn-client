@@ -18,10 +18,7 @@ jobs:
             platform: macosx/opt
         worker-type: b-osx
         worker:
-            chain-of-trust:
-                by-level:
-                    1: false
-                    default: true
+            chain-of-trust: true
             max-run-time: 3600
             artifacts:
                 - type: directory
@@ -40,10 +37,7 @@ jobs:
             platform: windows/opt
         worker-type: b-win2012
         worker:
-            chain-of-trust:
-                by-level:
-                    1: false
-                    default: true
+            chain-of-trust: true
             max-run-time: 3600
             artifacts:
                 - type: directory
