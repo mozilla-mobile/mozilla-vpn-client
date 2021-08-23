@@ -44,7 +44,7 @@ FocusScope {
                 continue;
             }
 
-            // Get distance to
+            // Get distance to the current server city and scroll
             const currentCityYPosition = countryItem.y  + (54 * countryItem.currentCityIndex) - serverListYCenter;
             const destinationY = (currentCityYPosition + vpnFlickable.height > vpnFlickable.contentHeight) ? vpnFlickable.contentHeight - vpnFlickable.height : currentCityYPosition;
             vpnFlickable.contentY = destinationY;
