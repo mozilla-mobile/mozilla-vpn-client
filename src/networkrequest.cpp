@@ -598,7 +598,7 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
 #ifdef UNIT_TEST
 // static
 NetworkRequest* NetworkRequest::createForFxaTotpCreation(
-    QObject* parent, const QByteArray& sessionToken, const QUrlQuery& query) {
+    QObject* parent, const QByteArray& sessionToken) {
   NetworkRequest* r = new NetworkRequest(parent, 200, false);
 
   QUrl url(Constants::fxaUrl());
