@@ -358,8 +358,8 @@ void AuthenticationInAppListener::signInOrUpCompleted(
 
 #ifdef UNIT_TEST
 void AuthenticationInAppListener::createTotpCodes() {
-  NetworkRequest* request = NetworkRequest::createForFxaTotpCreation(
-      this, m_sessionToken, m_urlQuery);
+  NetworkRequest* request =
+      NetworkRequest::createForFxaTotpCreation(this, m_sessionToken);
 
   connect(request, &NetworkRequest::requestFailed,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
