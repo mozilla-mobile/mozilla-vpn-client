@@ -16,12 +16,6 @@ import telemetry 0.15
 
 
 Item {
-    property string settingId_default: "default"
-    property string settingId_local: "local"
-    property string settingId_adblock: "adblock"
-    property string settingId_antiTracking: "antiTracking"
-    property string settingId_adblockAndAntiTracking: "adblockAndAntiTracking"
-
     id: root
 
     StackView.onDeactivating: root.opacity = 0
@@ -44,7 +38,7 @@ Item {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        title: "DNS Settings"
+        title: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDnsNavItem)
         isSettingsView: true
     }
 
@@ -74,10 +68,10 @@ Item {
                 }
                 Component.onCompleted: {
                     defaultTabListModel.append({
-                                                "settingId": "default",
-                                                "settingTitle": VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader),
-                                                "settingDescription": VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioBody),
-                                                "showDNSInput": false,
+                                                settingValue: VPNSettings.Gateway,
+                                                settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioHeader),
+                                                settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDefaultRadioBody),
+                                                showDNSInput: false,
                     })
                 }
             },
@@ -87,19 +81,19 @@ Item {
                 }
                 Component.onCompleted: {
                     advancedListModel.append({
-                                                 settingId: "adblock",
+                                                 settingValue: VPNSettings.BlockAds,
                                                  settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockRadioHeader),
                                                  settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockRadioBody),
                                                  showDNSInput: false})
-                    advancedListModel.append({   settingId: "antiTracking",
+                    advancedListModel.append({   settingValue: VPNSettings.BlockTracking,
                                                  settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAntitrackRadioHeader),
                                                  settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAntitrackRadioBody),
                                                  showDNSInput: false})
-                    advancedListModel.append({   settingId: "adblockAndAntiTracking",
+                    advancedListModel.append({   settingValue: VPNSettings.BlockAll,
                                                  settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioHeader),
                                                  settingDescription: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsAdblockAntiTrackRadioBody),
                                                  showDNSInput: false})
-                    advancedListModel.append({   settingId: "local",
+                    advancedListModel.append({   settingValue: VPNSettings.Custom,
                                                  settingTitle: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsCustomDNSRadioHeader),
                                                  settingDescription:  VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsCustomDNSRadioBody),
                                                  showDNSInput: true})

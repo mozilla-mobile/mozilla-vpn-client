@@ -22,43 +22,6 @@ VPNFlickable {
     property alias settingsListModel: repeater.model
 
 
-    function isChecked(settingId) {
-        switch(String(settingId)) {
-          case settingId_default.toString():
-            return VPNSettings.dnsProvider === VPNSettings.Gateway;
-          case settingId_adblock.toString():
-            return VPNSettings.dnsProvider === VPNSettings.BlockAds;
-          case settingId_antiTracking.toString():
-            return VPNSettings.dnsProvider === VPNSettings.BlockTracking;
-          case settingId_adblockAndAntiTracking.toString():
-            return VPNSettings.dnsProvider === VPNSettings.BlockAll;
-          case settingId_local.toString():
-            return VPNSettings.dnsProvider === VPNSettings.Custom;
-          default:
-            console.log("TODO")
-        }
-        return false;
-    }
-
-    function handleClick(settingId) {
-        if (!vpnFlickable.vpnIsOff) {
-            return;
-        }
-        switch(String(settingId)) {
-          case settingId_default.toString():
-            return VPNSettings.dnsProvider = VPNSettings.Gateway;
-          case settingId_adblock.toString():
-            return VPNSettings.dnsProvider = VPNSettings.BlockAds;
-          case settingId_antiTracking.toString():
-            return VPNSettings.dnsProvider = VPNSettings.BlockTracking;
-          case settingId_adblockAndAntiTracking.toString():
-            return VPNSettings.dnsProvider = VPNSettings.BlockAll;
-          case settingId_local.toString():
-            return VPNSettings.dnsProvider = VPNSettings.Custom;
-          default:
-            console.log("TODO")
-        }
-    }
     flickContentHeight: col.height + 56*2
     interactive: flickContentHeight > height
 
@@ -85,10 +48,10 @@ VPNFlickable {
                     Layout.preferredWidth: Theme.vSpacing
                     Layout.preferredHeight: Theme.rowHeight
                     Layout.alignment: Qt.AlignTop
-                    checked: isChecked(settingId)
+                    checked: VPNSettings.dnsProvider == settingValue
                     ButtonGroup.group: radioButtonGroup
                     accessibleName: settingTitle
-                    onClicked: handleClick(settingId)
+                    onClicked: VPNSettings.dnsProvider = settingValue
                 }
 
                 Column {

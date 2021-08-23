@@ -141,7 +141,9 @@ class SettingsHolder final : public QObject {
 
   Q_INVOKABLE
   bool validateUserDNS(const QString& dns) const;
+
   QString getDNS(const QString& serverGateway);
+  bool isMullvadDNS(const QString& address);
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,

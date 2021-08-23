@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "rfc/rfc1918.h"
@@ -504,4 +505,9 @@ QString SettingsHolder::getDNS(const QString& serverGateWay) {
     return serverGateWay;
   }
   return dns;
+}
+
+bool SettingsHolder::isMullvadDNS(const QString& address) {
+  IPAddress mullvadAddresses = IPAddress::create("100.64.0.0/24");
+  return mullvadAddresses.contains(QHostAddress(address));
 }

@@ -219,7 +219,7 @@ whatsNewReleaseNotes:
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
-  dnsNavItem: DNS setting
+  dnsNavItem: DNS settings
   dnsDefaultToggle: Default
   dnsDefaultRadioHeader: Use default DNS
   dnsDefaultRadioBody: Automatically use Mozilla VPN-protected DNS
