@@ -292,7 +292,7 @@ void Localizer::macOSInstallerStrings() {
   //% "Success!"
   qtTrId("macosinstaller.conclusion.title");
 
-  //% "The Mozilla VPN is successfully installed. You're ready to start "
+  //% "The Mozilla VPN is successfully installed. You’re ready to start "
   //% "taking control of your online privacy."
   qtTrId("macosinstaller.conclusion.message1_v2");
 
