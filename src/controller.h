@@ -128,8 +128,6 @@ class Controller final : public QObject {
 
   void resetConnectedTime();
 
-  bool shouldExcludeDns();
-
  private:
   State m_state = StateInitializing;
 
