@@ -11,7 +11,7 @@ Rectangle {
     property var focusColorScheme: Theme.blueButton
     property var setMargins: -3
 
-    color: "black"
+    color: focusColorScheme.focusOutline
     antialiasing: true
     anchors.fill: parent
     anchors.margins: setMargins
