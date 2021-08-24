@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "dnshelper.h"
 #include "featurelist.h"
 #include "features/featureappreview.h"
 #include "features/featureinapppurchase.h"
@@ -1377,4 +1378,8 @@ void MozillaVPN::appReviewRequested() {
 #elif defined(MVPN_ANDROID)
   AndroidUtils::appReviewRequested();
 #endif
+}
+
+bool MozillaVPN::validateUserDNS(const QString& dns) const {
+  return DNSHelper::validateUserDNS(dns);
 }
