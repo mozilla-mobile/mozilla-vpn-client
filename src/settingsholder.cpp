@@ -6,23 +6,16 @@
 #include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
-#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "rfc/rfc1918.h"
-#include "rfc/rfc4193.h"
-#include "rfc/rfc4291.h"
-#include "rfc/rfc5735.h"
 
 #include "features/featurecaptiveportal.h"
-#include "features/featurecustomdns.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuresplittunnel.h"
 #include "features/featurestartonboot.h"
 #include "features/featureunsecurednetworknotification.h"
 
 #include <QSettings>
-#include <QHostAddress>
 
 constexpr bool SETTINGS_IPV6ENABLED_DEFAULT = true;
 constexpr bool SETTINGS_LOCALNETWORKACCESS_DEFAULT = false;
@@ -433,12 +426,6 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
   setConsumedSurveys(list);
 }
 
-bool SettingsHolder::validateUserDNS(const QString& dns) const {
-  QHostAddress address = QHostAddress(dns);
-  logger.debug() << "checking -> " << dns << "==" << !address.isNull();
-  return !address.isNull();
-}
-
 QString SettingsHolder::placeholderUserDNS() const {
   return Constants::PLACEHOLDER_USER_DNS;
 }
@@ -466,48 +453,4 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
-}
-
-// Returns the DNS Server the user asked for in the Settings;
-constexpr const char* MULLVAD_BLOCK_ADS_DNS = "100.64.0.1";
-constexpr const char* MULLVAD_BLOCK_TRACKING_DNS = "100.64.0.2";
-constexpr const char* MULLVAD_BLOCK_ALL_DNS = "100.64.0.3";
-
-QString SettingsHolder::getDNS(const QString& serverGateWay) {
-  if (!FeatureCustomDNS::instance()->isSupported()) {
-    return serverGateWay;
-  }
-
-  switch (dnsProvider()) {
-    case Gateway:
-      return serverGateWay;
-    case BlockAll:
-      return MULLVAD_BLOCK_ALL_DNS;
-    case BlockAds:
-      return MULLVAD_BLOCK_ADS_DNS;
-    case BlockTracking:
-      return MULLVAD_BLOCK_TRACKING_DNS;
-    case Custom:
-    default:
-      break;
-  }
-  Q_ASSERT(dnsProvider() == Custom);
-  QString dns = userDNS();
-  // User wants to use a Custom DNS, let's check that this is valid.
-  if (dns == SETTINGS_USER_DNS_DEFAULT) {
-    // User selected Custom but did not enter a dns,
-    // lets fallback
-    return serverGateWay;
-  }
-  if (!validateUserDNS(dns)) {
-    logger.debug()
-        << "Saved Custom DNS seems invalid, defaulting to gateway dns";
-    return serverGateWay;
-  }
-  return dns;
-}
-
-bool SettingsHolder::isMullvadDNS(const QString& address) {
-  IPAddress mullvadAddresses = IPAddress::create("100.64.0.0/24");
-  return mullvadAddresses.contains(QHostAddress(address));
 }

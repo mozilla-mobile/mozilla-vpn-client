@@ -99,7 +99,7 @@ VPNFlickable {
                                 VPNSettings.userDNS = ipInput.text
                                 return;
                             }
-                            if(VPNSettings.validateUserDNS(ipInput.text)){
+                            if(VPN.validateUserDNS(ipInput.text)){
                                 ipInput.valueInvalid = false;
                                 VPNSettings.userDNS = ipInput.text
                             }else{
