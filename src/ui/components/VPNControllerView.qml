@@ -621,7 +621,7 @@ Item {
                 color: Color.error.default
                 height: Theme.listSpacing + border.width * 2
                 radius: width / 2
-                visible: !VPNSettings.newFeaturesSeen
+                visible: !VPNSettings.seenFeatures // TODO: Check if there are new and unseen features
                 width: Theme.listSpacing + border.width * 2
             }
         }

@@ -107,8 +107,8 @@ constexpr const char* SETTINGS_DEVELOPERUNLOCK = "developerUnlock";
 constexpr bool SETTINGS_STAGINGSERVER_DEFAULT = false;
 constexpr const char* SETTINGS_STAGINGSERVER = "stagingServer";
 
-constexpr bool SETTINGS_NEWFEATURESSEEN_DEFAULT = false;
-constexpr const char* SETTINGS_NEWFEATURESSEEN = "newFeaturesSeen";
+const QStringList SETTINGS_SEENFEATURES_DEFAULT = QStringList();
+constexpr const char* SETTINGS_SEENFEATURES = "seenFeatures";
 
 constexpr bool SETTINGS_FEATURESTOURSHOWN_DEFAULT = false;
 constexpr const char* SETTINGS_FEATURESTOURSHOWN = "featuresTourShown";
@@ -273,9 +273,9 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
-GETSETDEFAULT(SETTINGS_NEWFEATURESSEEN_DEFAULT, bool, toBool,
-              SETTINGS_NEWFEATURESSEEN, hasNewFeaturesSeen, newFeaturesSeen,
-              setNewFeaturesSeen, newFeaturesSeenChanged);
+GETSETDEFAULT(SETTINGS_SEENFEATURES_DEFAULT, QStringList, toStringList,
+              SETTINGS_SEENFEATURES, hasSeenFeatures, seenFeatures,
+              setSeenFeatures, seenFeaturesChanged);
 GETSETDEFAULT(SETTINGS_FEATURESTOURSHOWN_DEFAULT, bool, toBool,
               SETTINGS_FEATURESTOURSHOWN, hasFeaturesTourShown,
               featuresTourShown, setFeaturesTourShown,
@@ -478,4 +478,16 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
+}
+
+void SettingsHolder::addSeenFeature(const QString& featureID) {
+  QStringList featurelist;
+  if (hasSeenFeatures()) {
+    featurelist = seenFeatures();
+  }
+  if (featurelist.contains(featureID)) {
+    return;
+  }
+  featurelist.append(featureID);
+  setSeenFeatures(featurelist);
 }

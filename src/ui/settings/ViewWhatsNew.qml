@@ -100,10 +100,6 @@ Item {
     Connections {
         target: VPNSettings
 
-        function onNewFeaturesSeenChanged() {
-            console.log(VPNSettings.newFeaturesSeen);
-        }
-
         function onFeaturesTourShownChanged() {
             console.log(VPNSettings.featuresTourShown);
         }

@@ -45,8 +45,8 @@ class SettingsHolder final : public QObject {
                  NOTIFY developerUnlockChanged)
   Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
                  stagingServerChanged)
-  Q_PROPERTY(bool newFeaturesSeen READ newFeaturesSeen WRITE setNewFeaturesSeen
-                 NOTIFY newFeaturesSeenChanged)
+  Q_PROPERTY(QStringList seenFeatures READ seenFeatures WRITE setSeenFeatures
+                 NOTIFY seenFeaturesChanged)
   Q_PROPERTY(bool featuresTourShown READ featuresTourShown WRITE
                  setFeaturesTourShown NOTIFY featuresTourShownChanged)
   Q_PROPERTY(bool multihopTunnel READ multihopTunnel WRITE setMultihopTunnel
@@ -118,10 +118,10 @@ class SettingsHolder final : public QObject {
          setServerSwitchNotification);
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
-  GETSET(bool, hasNewFeaturesSeen, newFeaturesSeen, setNewFeaturesSeen);
   GETSET(bool, hasFeaturesTourShown, featuresTourShown, setFeaturesTourShown);
   GETSET(bool, hasMultihopTunnel, multihopTunnel, setMultihopTunnel)
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
+  GETSET(QStringList, hasSeenFeatures, seenFeatures, setSeenFeatures)
   GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
          setDevModeFeatureFlags);
 
@@ -137,6 +137,8 @@ class SettingsHolder final : public QObject {
   void removeDevModeFeatureFlag(const QString& featureID);
 
   void addConsumedSurvey(const QString& surveyId);
+
+  Q_INVOKABLE void addSeenFeature(const QString& featureID);
 
   Q_INVOKABLE
   bool validateUserDNS(const QString& dns) const;
@@ -181,7 +183,7 @@ class SettingsHolder final : public QObject {
   void connectionChangeNotificationChanged(bool value);
   void developerUnlockChanged(bool value);
   void stagingServerChanged(bool value);
-  void newFeaturesSeenChanged(bool value);
+  void seenFeaturesChanged(const QStringList& featureIDs);
   void featuresTourShownChanged(bool value);
   void multihopTunnelChanged(bool value);
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);

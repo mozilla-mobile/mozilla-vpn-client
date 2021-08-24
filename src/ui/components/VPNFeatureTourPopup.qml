@@ -14,7 +14,7 @@ VPNPopup {
             root.close();
         }
         onStarted: {
-            VPNSettings.newFeaturesSeen = true;
+            VPNSettings.seenFeatures = []; // TODO: Add seen featureIDs
         }
     }
 

@@ -112,7 +112,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
-            showIndicator: !VPNSettings.newFeaturesSeen
+            showIndicator: !VPNSettings.seenFeatures // TODO: Check if there are new and unseen features
         }
         VPNSettingsItem {
             objectName: "settingsNetworking"

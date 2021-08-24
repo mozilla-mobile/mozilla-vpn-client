@@ -347,7 +347,14 @@ Window {
         id: featureTourPopup
 
         visible: {
-            return VPN.state === VPN.StateMain;
+            return shouldShowFeaturePopup();
+        }
+
+        function shouldShowFeaturePopup() {
+//            return VPN.state === VPN.StateMain;
+            // Check if there are new and unseen features
+            // Check if user saw popup -> Settings featurePopupShown
+            return true;
         }
     }
 
@@ -361,10 +368,15 @@ Window {
         onClicked: {
             if (VPNSettings.featuresTourShown) {
                 VPNSettings.featuresTourShown = false;
-                VPNSettings.newFeaturesSeen = false;
             } else {
                 featureTourPopup.openTour();
             }
+
+            console.log(VPNSettings.seenFeatures);
+        }
+
+        Component.onCompleted: {
+            console.log(VPNSettings.seenFeatures);
         }
     }
 }
