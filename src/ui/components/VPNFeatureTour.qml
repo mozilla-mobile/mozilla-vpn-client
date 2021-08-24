@@ -125,13 +125,18 @@ Item {
                     opacity: slideIndex === swipeView.currentIndex ? 1 : 0
                     spacing: Theme.listSpacing
 
-                    Image {
-                        source: featureImagePath
-                        sourceSize.height: parent.width * 0.5
-                        sourceSize.width: parent.width * 0.5
+                    Item {
+                        height: parent.width * 0.475
+                        width: parent.width
 
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing : Theme.listSpacing * 0.25
+                        Image {
+                            anchors.fill: parent
+                            source: featureImagePath
+                            fillMode: Image.PreserveAspectFit
+
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing : Theme.listSpacing * 0.25
+                        }
                     }
 
                     VPNMetropolisLabel {
@@ -232,7 +237,7 @@ Item {
             radius: Theme.cornerRadius
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignBottom
-            Layout.topMargin: slideIndicator.visible ? Theme.listSpacing : Theme.vSpacing
+            Layout.topMargin: slideIndicator.visible ? Theme.listSpacing : Theme.vSpacingSmall
 
             onClicked: {
                 if (tour.state === "tour-start") {
