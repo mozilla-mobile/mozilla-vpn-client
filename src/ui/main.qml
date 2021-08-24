@@ -331,7 +331,7 @@ Window {
     }
 
     VPNFilterProxyModel {
-        id: newFeatureModel
+        id: newFeaturesModel
         source: VPNFeatureList
         filterCallback: feature => {
                             return (
@@ -343,36 +343,11 @@ Window {
                         }
     }
 
-    VPNPopup {
+    VPNFeatureTourPopup {
         id: featureTourPopup
 
-        topMargin: Theme.windowMargin * 2
-        contentItem: VPNFeatureTour {
-            id: featureTour
-
-            slidesModel: newFeatureModel
-            onFinished: {
-                featureTourPopup.close();
-            }
-            onStarted: {
-                VPNSettings.newFeaturesSeen = true;
-            }
-        }
-
-        Component.onCompleted: {
-            mainStackView.push("./views/ViewSettings.qml");
-        }
-
-        function openTour() {
-            featureTour.resetTour();
-            featureTourPopup.open();
-
-            VPNSettings.featuresTourShown = true;
-        }
-
-        function startTour() {
-            featureTour.skipStart();
-            featureTourPopup.open();
+        visible: {
+            return VPN.state === VPN.StateMain;
         }
     }
 

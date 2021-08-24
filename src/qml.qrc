@@ -477,5 +477,6 @@
         <file>ui/resources/multi-hop-preview.png</file>
         <file>ui/resources/support-form-preview.png</file>
         <file>ui/developerMenu/ViewFeatureList.qml</file>
+        <file>ui/components/VPNFeatureTourPopup.qml</file>
     </qresource>
 </RCC>
