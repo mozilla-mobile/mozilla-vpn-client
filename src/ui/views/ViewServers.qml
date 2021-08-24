@@ -38,11 +38,11 @@ Item {
     ListModel {
         id: tabButtonList
         ListElement {
-            tabLabelStringId: "MultiHopFeatureSingleToggleHeader"
+            tabLabelStringId: "MultiHopFeatureSingleHopToggleCTA"
             tabButtonId: "tabSingleHop"
         }
         ListElement {
-            tabLabelStringId: "MultiHopFeatureMultiToggleHeader"
+            tabLabelStringId: "MultiHopFeatureMultiHopToggleCTA"
             tabButtonId: "tabMultiHop"
         }
     }
@@ -64,6 +64,10 @@ Item {
             }
         ]
 
+        ViewMultiHop {
+            id: multiHopStackView
+            visible: VPNFeatureList.get("multiHop").isSupported
+        }
         handleTabClick: (tab) => {
             if (tab.objectName === "tabSingleHop") {
                 console.log("do single hop things");
@@ -76,17 +80,13 @@ Item {
         }
     }
 
-    ViewMultiHop {
-        id: multiHopStackView
-        visible: VPNFeatureList.multihopSupported
-    }
-
 
     Component.onCompleted: {
-      if (VPNFeatureList.multihopSupported) {
-          tabNavigation.stackContent.push(multiHopStackView);
-      }
+        if (!VPNFeatureList.get("multiHop").isSupported) {
+            return;
+        }
 
+        tabNavigation.stackContent.push(multiHopStackView);
       if (VPNSettings.multihopTunnel) {
           // Set default tab to multi-hop
           tabNavigation.setCurrentTabIndex(1)
