@@ -166,7 +166,7 @@ Item {
                 property int slideIndex: 0
                 property string featureName: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalHeader)
                 property string featureDescription: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalBodyText)
-                property string featureImagePath: "../resources/features-tour-hero.png"
+                property string featureImagePath: "../resources/features/features-tour-hero.png"
 
                 active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
                 asynchronous: true

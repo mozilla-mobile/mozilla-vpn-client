@@ -18,7 +18,7 @@ class FeatureUnauthSupport final : public Feature {
                 L18nStrings::WhatsNewReleaseNotesSupportModalHeader,   // Display name
                 L18nStrings::WhatsNewReleaseNotesSupportListItemBody,  // Description
                 L18nStrings::WhatsNewReleaseNotesSupportModalBodyText, // LongDescr
-                "../resources/support-form-preview.png",               // ImagePath
+                "../resources/features/support-form-preview.png",      // ImagePath
                 "../resources/settings/getHelp.svg",                   // IconPath
                 "2.5",                                                 // released
                 true                                                   // Can be enabled in devmode

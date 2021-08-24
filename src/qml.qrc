@@ -472,10 +472,10 @@
         <file>ui/components/VPNFeatureTour.qml</file>
         <file>ui/components/VPNPopup.qml</file>
         <file>ui/settings/ViewWhatsNew.qml</file>
-        <file>ui/resources/custom-dns-preview.png</file>
-        <file>ui/resources/features-tour-hero.png</file>
-        <file>ui/resources/multi-hop-preview.png</file>
-        <file>ui/resources/support-form-preview.png</file>
+        <file>ui/resources/features/custom-dns-preview.png</file>
+        <file>ui/resources/features/features-tour-hero.png</file>
+        <file>ui/resources/features/multi-hop-preview.png</file>
+        <file>ui/resources/features/support-form-preview.png</file>
         <file>ui/developerMenu/ViewFeatureList.qml</file>
         <file>ui/components/VPNFeatureTourPopup.qml</file>
     </qresource>
