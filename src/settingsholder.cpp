@@ -481,13 +481,13 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
 }
 
 void SettingsHolder::addSeenFeature(const QString& featureID) {
-  QStringList featurelist;
+  QStringList seenfeatureslist;
   if (hasSeenFeatures()) {
-    featurelist = seenFeatures();
+    seenfeatureslist = seenFeatures();
   }
-  if (featurelist.contains(featureID)) {
+  if (seenfeatureslist.contains(featureID)) {
     return;
   }
-  featurelist.append(featureID);
-  setSeenFeatures(featurelist);
+  seenfeatureslist.append(featureID);
+  setSeenFeatures(seenfeatureslist);
 }

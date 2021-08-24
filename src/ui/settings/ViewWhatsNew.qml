@@ -80,7 +80,7 @@ Item {
                     VPNIconAndLabel {
                         id: featureTitle
 
-                        title: displayName
+                        title: displayName + " " + id
                         icon: iconPath
                     }
 
@@ -97,11 +97,4 @@ Item {
         }
     }
 
-    Connections {
-        target: VPNSettings
-
-        function onFeaturesTourShownChanged() {
-            console.log(VPNSettings.featuresTourShown);
-        }
-    }
 }

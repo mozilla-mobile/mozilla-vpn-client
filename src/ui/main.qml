@@ -333,29 +333,40 @@ Window {
     VPNFilterProxyModel {
         id: newFeaturesModel
         source: VPNFeatureList
+        // Filter features that should be listed in What’s new
+        filterCallback: feature => showFeatureInWhatsNew(feature)
+    }
+
+    VPNFilterProxyModel {
+        id: unseenFeaturesModel
+        source: VPNFeatureList
+        // Filter seen features for showing the What’s new indicator
         filterCallback: feature => {
-                            return (
-                                feature.isNew
-                                && feature.isMajor
-//                                        && feature.featureReleased
-//                                        && feature.supported
-                            );
-                        }
+             const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
+                            console.log(isFeatureSeen);
+             return showFeatureInWhatsNew(feature) && !isFeatureSeen;
+        }
     }
 
     VPNFeatureTourPopup {
         id: featureTourPopup
 
         visible: {
-            return shouldShowFeaturePopup();
+            // Check if we should show the What’s new popup
+            return VPN.state === VPN.StateMain
+                && hasNewTourFeatures()
+                && !VPNSettings.featuresTourShown;
         }
+    }
 
-        function shouldShowFeaturePopup() {
-//            return VPN.state === VPN.StateMain;
-            // Check if there are new and unseen features
-            // Check if user saw popup -> Settings featurePopupShown
-            return true;
-        }
+    function showFeatureInWhatsNew(feature) {
+        return feature.isNew           // new feature in this release
+            && feature.isMajor         // a feature we would like to show
+//            && feature.supported;      // feature is supported on platform
+    }
+
+    function hasNewTourFeatures() {
+        return newFeaturesModel.rowCount() > 0;
     }
 
     // TODO: Remove — just for debugging
@@ -368,14 +379,21 @@ Window {
         onClicked: {
             if (VPNSettings.featuresTourShown) {
                 VPNSettings.featuresTourShown = false;
+                VPNSettings.seenFeatures = [];
             } else {
                 featureTourPopup.openTour();
             }
+        }
+    }
 
-            console.log(VPNSettings.seenFeatures);
+    Connections {
+        target: VPNSettings
+
+        function onFeaturesTourShownChanged() {
+            console.log(VPNSettings.featuresTourShown);
         }
 
-        Component.onCompleted: {
+        function onSeenFeaturesChanged() {
             console.log(VPNSettings.seenFeatures);
         }
     }

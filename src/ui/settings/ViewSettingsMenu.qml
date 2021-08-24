@@ -96,7 +96,6 @@ VPNFlickable {
         }
     }
 
-
     ColumnLayout {
         id: settingsList
 
@@ -112,7 +111,7 @@ VPNFlickable {
             imageLeftSrc: "../resources/gift-dark.svg"
             imageRightSrc: "../resources/chevron.svg"
             onClicked: settingsStackView.push("../settings/ViewWhatsNew.qml")
-            showIndicator: !VPNSettings.seenFeatures // TODO: Check if there are new and unseen features
+            showIndicator: unseenFeaturesModel.rowCount() > 0
         }
         VPNSettingsItem {
             objectName: "settingsNetworking"
