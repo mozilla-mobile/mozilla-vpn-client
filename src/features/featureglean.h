@@ -15,6 +15,7 @@ class FeatureGlean : public Feature {
   FeatureGlean()
       : Feature(FEATURE_GLEAN, L18nStrings::FeatureNamesGlean,
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

@@ -16,6 +16,7 @@ class FeatureInAppAccountCreate final : public Feature {
       : Feature(FEATURE_IN_APP_ACCOUNT_CREATE,
                 L18nStrings::FeatureNamesInAppAccountCreate,
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

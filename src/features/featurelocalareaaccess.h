@@ -15,6 +15,7 @@ class FeatureLocalAreaAccess final : public Feature {
   FeatureLocalAreaAccess()
       : Feature(FEATURE_LAN_ACCESS, L18nStrings::FeatureNamesLocalAreaAccess,
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

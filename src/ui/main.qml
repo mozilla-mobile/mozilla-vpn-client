@@ -357,7 +357,7 @@ Window {
         anchors.bottomMargin: 16
         anchors.horizontalCenter: parent.horizontalCenter
 
-        text: VPNSettings.featuresTourShown ? "Reset Tour" : "Show Tour"
+        text: VPNSettings.featuresTourShown ? "Reset What’s new" : "Show What’s new"
         onClicked: {
             if (VPNSettings.featuresTourShown) {
                 VPNSettings.featuresTourShown = false;

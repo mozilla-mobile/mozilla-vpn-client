@@ -15,6 +15,7 @@ class FeatureInAppPurchase final : public Feature {
   FeatureInAppPurchase()
       : Feature(FEATURE_IN_APP_PURCHASE, L18nStrings::FeatureNamesInAppPurchase,
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

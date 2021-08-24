@@ -15,6 +15,7 @@ class FeatureCaptivePortal final : public Feature {
   FeatureCaptivePortal()
       : Feature(FEATURE_CAPTIVEPORTAL, L18nStrings::FeatureNamesCaptivePortal,
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

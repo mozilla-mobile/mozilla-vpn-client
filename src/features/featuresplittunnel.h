@@ -20,6 +20,7 @@ class FeatureSplitTunnel final : public Feature {
   FeatureSplitTunnel()
       : Feature(FEATURE_SPLIT_TUNNEL, L18nStrings::FeatureNamesSplittunnel,
                 false,               // Is Major Feature
+                L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
                 "",                  // ImagePath

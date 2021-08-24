@@ -15,6 +15,7 @@ class FeatureMultiHop : public Feature {
   FeatureMultiHop()
       : Feature(FEATURE_MULTI_HOP, L18nStrings::FeatureNamesMultiHop,
                 true,                                                // Is Major Feature
+                L18nStrings::WhatsNewReleaseNotesMultiModalHeader,   // Display name
                 L18nStrings::WhatsNewReleaseNotesMultiListItemBody,  // Description
                 L18nStrings::WhatsNewReleaseNotesMultiModalBodyText, // LongDescr
                 "../resources/multi-hop-preview.png",                // ImagePath

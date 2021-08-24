@@ -15,6 +15,7 @@ class FeatureUnauthSupport final : public Feature {
   FeatureUnauthSupport()
       : Feature(FEATURE_UNAUTH_SUPPORT, L18nStrings::FeatureNamesUnauthSupport,
                 true,                                                  // Is Major Feature
+                L18nStrings::WhatsNewReleaseNotesSupportModalHeader,   // Display name
                 L18nStrings::WhatsNewReleaseNotesSupportListItemBody,  // Description
                 L18nStrings::WhatsNewReleaseNotesSupportModalBodyText, // LongDescr
                 "../resources/support-form-preview.png",               // ImagePath

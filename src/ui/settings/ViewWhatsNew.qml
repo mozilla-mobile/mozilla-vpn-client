@@ -80,7 +80,7 @@ Item {
                     VPNIconAndLabel {
                         id: featureTitle
 
-                        title: name
+                        title: displayName
                         icon: iconPath
                     }
 

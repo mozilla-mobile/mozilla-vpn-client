@@ -17,6 +17,7 @@ QMap<QString, Feature*>* s_features = nullptr;
 }  // namespace
 
 Feature::Feature(QString id, L18nStrings::String name_id, bool isMajor,
+                 L18nStrings::String displayName_id,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
                  QString imgPath, QString iconPath, QString aReleaseVersion,
                  bool devModeWriteable)
@@ -24,6 +25,7 @@ Feature::Feature(QString id, L18nStrings::String name_id, bool isMajor,
       m_id(id),
       m_name_id(name_id),
       m_majorFeature(isMajor),
+      m_displayName_id(displayName_id),
       m_shortDescription_id(shortDesc_id),
       m_description_id(desc_id),
       m_imagePath(imgPath),
@@ -99,6 +101,9 @@ bool Feature::isSupported() const {
 }
 
 QString Feature::name() const { return L18nStrings::instance()->tr(m_name_id); }
+QString Feature::displayName() const {
+  return L18nStrings::instance()->tr(m_displayName_id);
+}
 QString Feature::description() const {
   return L18nStrings::instance()->tr(m_description_id);
 }
@@ -112,6 +117,8 @@ QVariant Feature::data(int role) const {
       return m_id;
     case RoleName:
       return name();
+    case RoleDisplayName:
+      return displayName();
     case RoleDescription:
       return description();
     case RoleShortDescription:
@@ -142,6 +149,7 @@ QHash<int, QByteArray> Feature::roleNames() {
   // and just get this via the Q_metaobject
   return QHash<int, QByteArray>({{RoleId, "id"},
                                  {RoleName, "name"},
+                                 {RoleDisplayName, "displayName"},
                                  {RoleDescription, "description"},
                                  {RoleShortDescription, "shortDescription"},
                                  {RoleImagePath, "imagePath"},

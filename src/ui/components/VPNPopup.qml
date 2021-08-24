@@ -48,7 +48,7 @@ Popup {
         VPNIconButton {
             id: closeButton
 
-            accessibleName: "close button"
+            accessibleName: qsTrId("menubar.file.close")
             anchors {
                 right: popupBackground.right
                 top: popupBackground.top

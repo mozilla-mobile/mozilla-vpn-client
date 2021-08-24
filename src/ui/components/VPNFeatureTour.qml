@@ -182,7 +182,7 @@ Item {
                     id: featureSlidesLoader
 
                     property int slideIndex: index + 1
-                    property string featureName: name
+                    property string featureName: displayName
                     property string featureDescription: description
                     property string featureImagePath: imagePath
 

@@ -15,6 +15,7 @@ class FeatureCustomDNS final : public Feature {
   FeatureCustomDNS()
       : Feature(FEATURE_CUSTOM_DNS, L18nStrings::FeatureNamesCustomDNS,
                 true,                                              // Is Major Feature
+                L18nStrings::WhatsNewReleaseNotesDnsModalHeader,   // Display name
                 L18nStrings::WhatsNewReleaseNotesDnsListItemBody,  // Description
                 L18nStrings::WhatsNewReleaseNotesDnsModalBodyText, // LongDescr
                 "../resources/custom-dns-preview.png",             // ImagePath
