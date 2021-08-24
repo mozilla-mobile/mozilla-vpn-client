@@ -330,49 +330,27 @@ Window {
     VPNSystemAlert {
     }
 
+    VPNFilterProxyModel {
+        id: newFeatureModel
+        source: VPNFeatureList
+        filterCallback: feature => {
+                            return (
+                                feature.isNew
+                                && feature.isMajor
+//                                        && feature.featureReleased
+//                                        && feature.supported
+                            );
+                        }
+    }
+
     VPNPopup {
         id: featureTourPopup
-
-        property variant testData: [
-            {
-                title: "What’s new in VPN?",
-                description: "We’ve added a ton of cool features in this latest release. Take a tour to get a deeper dive into what we’ve added for you!",
-                shortDescription: "",
-                imageSrc: "../resources/features-tour-hero.png",
-                icon: "",
-                isFeature: false,
-            },
-            {
-                title: "Multi-hop VPN",
-                description: "Multi-hop VPN will route your traffic through a second server for added protection. You can find this feature on the “Select location” screen.",
-                shortDescription: "Multi-hop VPN uses multiple VPN servers instead of one for extra security and privacy.",
-                imageSrc: "../resources/multi-hop-preview.png",
-                icon: "../resources/location-dark.svg",
-                isFeature: true,
-            },
-            {
-                title: "In-app Support Form",
-                description: "The in-app support form will streamline the process of getting your issues resolved.",
-                shortDescription: "The in-app support form will streamline the the process of getting your issues resolved.",
-                imageSrc: "../resources/support-form-preview.png",
-                icon: "../resources/settings/getHelp.svg",
-                isFeature: true,
-            },
-            {
-                title: "Custom DNS",
-                description: "Custom DNS servers allow for faster speed using local networks. You can find this feature in the “Network settings” section.",
-                shortDescription: "Custom DNS settings allows for faster connection using local servers.",
-                imageSrc: "../resources/custom-dns-preview.png",
-                icon: "../resources/settings/networkSettings.svg",
-                isFeature: true,
-            },
-        ]
 
         topMargin: Theme.windowMargin * 2
         contentItem: VPNFeatureTour {
             id: featureTour
 
-            slidesData: featureTourPopup.testData
+            slidesModel: newFeatureModel
             onFinished: {
                 featureTourPopup.close();
             }

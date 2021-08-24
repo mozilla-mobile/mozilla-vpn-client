@@ -67,12 +67,11 @@ Item {
                 Layout.fillWidth: true
             }
 
-            Component {
-                id: featureItem
+            Repeater {
+                id: featureRepeater
 
-                ColumnLayout {
-                    visible: modelData.isFeature
-
+                model: newFeatureModel
+                delegate: ColumnLayout {
                     Layout.leftMargin: Theme.windowMargin / 2
                     Layout.rightMargin: Theme.windowMargin
                     Layout.bottomMargin: Theme.vSpacingSmall
@@ -81,64 +80,20 @@ Item {
                     VPNIconAndLabel {
                         id: featureTitle
 
-                        icon: modelData.icon
-                        title: modelData.title
+                        title: name
+                        icon: iconPath
                     }
 
                     VPNTextBlock {
                         id: featureText
-                        text: modelData.shortDescription
+
+                        text: shortDescription
                         Layout.fillWidth: true
                         Layout.leftMargin: Theme.vSpacing + 14
                     }
                 }
             }
 
-            Repeater {
-                id: featureRepeater
-
-                model: featureTourPopup.testData
-                delegate: featureItem
-            }
-
-            // Start: Feature
-            VPNFilterProxyModel {
-                id: newFeatureModel
-                source: VPNFeatureList
-                filterCallback: feature => {
-                                    return (
-                                        feature.isNew
-                                        && feature.isMajor
-//                                        && feature.featureReleased
-//                                        && feature.supported
-                                    );
-                                }
-            }
-
-            ColumnLayout {
-
-                spacing: Theme.windowMargin
-
-                VPNBoldLabel{
-                    text: VPNl18n.tr(VPNl18n.SettingsDevEditableFeatureList)
-                }
-
-                Repeater {
-                    model: newFeatureModel
-                    delegate: VPNCheckBoxRow {
-                        showDivider: false
-                        labelText: name
-                        subLabelText: id
-                        showAppImage: false
-                        onClicked: VPNFeatureList.devModeFlipFeatureFlag(id)
-                        // Only enable the list on features where devModeEnable has any impact
-                        enabled: true
-                        isChecked: devModeEnabled
-                        Layout.minimumHeight: Theme.rowHeight * 1.5
-                    }
-                }
-            }
-            // End: Feature list
         }
     }
 

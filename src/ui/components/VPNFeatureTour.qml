@@ -14,19 +14,19 @@ Item {
     signal finished()
     signal close()
 
-    property variant slidesData: ({})
+    property variant slidesModel: ({})
 
     implicitHeight: content.implicitHeight
     width: parent.width
 
     states: [
         State {
-            name: "default"
+            name: "tour-default"
             when: swipeView.currentIndex > 0 && swipeView.currentIndex < swipeView.count - 1
 
             PropertyChanges {
                 target: resumeButton
-                text: "Next"
+                text: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesSupportModalButtonText)
             }
 
             PropertyChanges {
@@ -35,12 +35,12 @@ Item {
             }
         },
         State {
-            name: "start"
+            name: "tour-start"
             when: swipeView.currentIndex === 0
 
             PropertyChanges {
                 target: resumeButton
-                text: "Take the tour"
+                text: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalButtonText)
             }
 
             PropertyChanges {
@@ -54,12 +54,12 @@ Item {
             }
         },
         State {
-            name: "end"
+            name: "tour-end"
             when: swipeView.currentIndex === swipeView.count - 1
 
             PropertyChanges {
                 target: resumeButton
-                text: "Done"
+                text: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesDnsModalButtonText)
             }
 
             PropertyChanges {
@@ -73,7 +73,7 @@ Item {
         id: backButton
 
         anchors.bottom: tour.top
-        accessibleName: "back button"
+        accessibleName: qsTrId("vpn.main.back")
         enabled: swipeView.currentIndex > 1
         onClicked: {
             swipeView.currentIndex -= 1;
@@ -119,18 +119,18 @@ Item {
                 id: slide
 
                 ColumnLayout {
-                    id: content
+                    id: slideContent
 
                     opacity: slideIndex === swipeView.currentIndex ? 1 : 0
                     spacing: Theme.listSpacing
 
                     Image {
-                        source: slideData.imageSrc
+                        source: featureImagePath
                         sourceSize.height: parent.width * 0.5
                         sourceSize.width: parent.width * 0.5
 
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.bottomMargin: tour.state === "start" ? Theme.listSpacing : Theme.listSpacing * 0.25
+                        Layout.bottomMargin: tour.state === "tour-start" ? Theme.listSpacing : Theme.listSpacing * 0.25
                     }
 
                     VPNMetropolisLabel {
@@ -139,7 +139,7 @@ Item {
                         color: Theme.fontColorDark
                         horizontalAlignment: Text.AlignHCenter
                         font.pixelSize: Theme.fontSizeLarge
-                        text: slideData.title
+                        text: featureName
 
                         Layout.bottomMargin: Theme.listSpacing
                         Layout.fillWidth: true
@@ -147,7 +147,7 @@ Item {
 
                     VPNTextBlock {
                         horizontalAlignment: Text.AlignHCenter
-                        text: slideData.description
+                        text: featureDescription
                         Layout.fillWidth: true
                     }
 
@@ -159,20 +159,36 @@ Item {
                 }
             }
 
+            Loader {
+                id: initialSlideLoader
+
+                property int slideIndex: 0
+                property string featureName: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalHeader)
+                property string featureDescription: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourModalBodyText)
+                property string featureImagePath: "../resources/features-tour-hero.png"
+
+                active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
+                asynchronous: true
+                sourceComponent: slide
+                visible: initialSlideLoader.status === Loader.Ready
+            }
+
             Repeater {
                 id: slidesRepeater
-                model: slidesData
+                model: slidesModel
 
                 Loader {
-                    id: slideLoader
+                    id: featureSlidesLoader
 
-                    property int slideIndex: index
-                    property variant slideData: modelData
+                    property int slideIndex: index + 1
+                    property string featureName: name
+                    property string featureDescription: description
+                    property string featureImagePath: imagePath
 
                     active: SwipeView.isCurrentItem | SwipeView.isPreviousItem | SwipeView.isNextItem
                     asynchronous: true
                     sourceComponent: slide
-                    visible: slideLoader.status === Loader.Ready
+                    visible: featureSlidesLoader.status === Loader.Ready
                 }
             }
         }
@@ -218,9 +234,9 @@ Item {
             Layout.topMargin: slideIndicator.visible ? Theme.listSpacing : Theme.vSpacing
 
             onClicked: {
-                if (tour.state === "start") {
+                if (tour.state === "tour-start") {
                     tour.started();
-                } else if (tour.state === "end") {
+                } else if (tour.state === "tour-end") {
                     tour.finished();
                     return;
                 }
