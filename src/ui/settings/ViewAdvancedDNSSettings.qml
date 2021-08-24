@@ -38,7 +38,7 @@ Item {
         id: menu
         objectName: "settingsAdvancedDNSSettingsBackButton"
 
-        title: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsDnsNavItem)
+        title: VPNl18n.tr(VPNl18n.CustomDNSSettingsDnsNavItem)
         isSettingsView: true
     }
 
