@@ -905,12 +905,25 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
-const QList<Server> MozillaVPN::servers() const {
+const QList<Server> MozillaVPN::exitServers() const {
   return m_private->m_serverCountryModel.servers(m_private->m_serverData);
 }
 
-void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
-  m_private->m_serverData.update(countryCode, city);
+const QList<Server> MozillaVPN::entryServers() const {
+  if (!m_private->m_serverData.multihop()) {
+    return QList<Server>();
+  }
+  ServerData sd;
+  sd.update(m_private->m_serverData.entryCountryCode(),
+            m_private->m_serverData.entryCityName());
+  return m_private->m_serverCountryModel.servers(sd);
+}
+
+void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
+                              const QString& entryCountryCode,
+                              const QString& entryCity) {
+  m_private->m_serverData.update(countryCode, city, entryCountryCode,
+                                 entryCity);
   m_private->m_serverData.writeSettings();
 }
 

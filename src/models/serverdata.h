@@ -34,8 +34,6 @@ class ServerData final : public QObject {
 
   void writeSettings();
 
-  void initialize(const ServerCountry& country, const ServerCity& city);
-
   bool initialized() const { return m_initialized; }
 
   const QString& countryCode() const { return m_countryCode; }
@@ -44,7 +42,9 @@ class ServerData final : public QObject {
 
   QString localizedCityName() const;
 
-  bool multihop() const { return m_multihop; }
+  bool multihop() const {
+    return !m_entryCountryCode.isEmpty() && !m_entryCityName.isEmpty();
+  }
 
   const QString& entryCountryCode() const { return m_entryCountryCode; }
 
@@ -54,7 +54,6 @@ class ServerData final : public QObject {
 
   void forget() {
     m_initialized = false;
-    m_multihop = false;
   }
 
   void update(const QString& countryCode, const QString& cityName,
@@ -67,9 +66,9 @@ class ServerData final : public QObject {
   void changed();
 
  private:
-  void initializeInternal(const QString& countryCode, const QString& cityName);
-  void initializeEntryServer(const QString& countryCode,
-                             const QString& cityName);
+  void initializeInternal(const QString& countryCode, const QString& cityName,
+                          const QString& entryCountryCode,
+                          const QString& entryCityName);
 
  private:
   bool m_initialized = false;
@@ -77,7 +76,6 @@ class ServerData final : public QObject {
   QString m_countryCode;
   QString m_cityName;
 
-  bool m_multihop = false;
   QString m_entryCountryCode;
   QString m_entryCityName;
 };

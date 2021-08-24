@@ -1131,7 +1131,7 @@ void TestModels::serverDataBasic() {
   QVERIFY(!sd.initialized());
   QCOMPARE(sd.countryCode(), "new Country Code");
   QCOMPARE(sd.cityName(), "new City");
-  QVERIFY(!sd.multihop());
+  QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
 }

@@ -27,7 +27,8 @@ void Controller::disconnected() {}
 
 void Controller::timerTimeout() {}
 
-void Controller::changeServer(const QString&, const QString&) {}
+void Controller::changeServer(const QString&, const QString&, const QString&,
+                              const QString&) {}
 
 void Controller::logout() {}
 

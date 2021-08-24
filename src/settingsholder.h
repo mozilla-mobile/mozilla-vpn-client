@@ -187,6 +187,8 @@ class SettingsHolder final : public QObject {
   void stagingServerChanged(bool value);
   void multihopTunnelChanged(bool value);
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);
+  void entryServerCountryCodeChanged(const QString& value);
+  void entryServerCityChanged(const QString& value);
 
  private:
   explicit SettingsHolder(QObject* parent);
