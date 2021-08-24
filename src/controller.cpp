@@ -18,6 +18,7 @@
 #include "mozillavpn.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 #include "rfc/rfc5735.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
@@ -206,14 +207,9 @@ void Controller::activateInternal() {
 
   // Use the Gateway as DNS Server
   // If the user as entered a valid dns, use that instead
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureCustomDNS::instance()->isSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.debug() << "User DNS Set" << dns.toString();
-  }
+  QHostAddress dns =
+      QHostAddress(SettingsHolder::instance()->getDNS(server.ipv4Gateway()));
+  logger.debug() << "DNS Set" << dns.toString();
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
@@ -282,14 +278,7 @@ bool Controller::silentSwitchServers() {
     serverList.append(hop);
   }
 
-  QHostAddress dns = QHostAddress(server.ipv4Gateway());
-  if (FeatureCustomDNS::instance()->isSupported() &&
-      !settingsHolder->useGatewayDNS() &&
-      settingsHolder->userDNS().size() > 0 &&
-      settingsHolder->validateUserDNS(settingsHolder->userDNS())) {
-    dns = QHostAddress(settingsHolder->userDNS());
-    logger.debug() << "User DNS Set" << dns.toString();
-  }
+  QHostAddress dns = QHostAddress(settingsHolder->getDNS(server.ipv4Gateway()));
 
   Q_ASSERT(m_impl);
   m_impl->activate(serverList, device, vpn->keys(),
@@ -690,11 +679,10 @@ QList<IPAddressRange> Controller::getAllowedIPAddressRanges(
     }
   }
   if (shouldExcludeDns()) {
-    // Filter out the Custom DNS Server, if the User has one.
-    logger.debug() << "Filtering out the DNS address"
-                   << SettingsHolder::instance()->userDNS();
-    excludeIPv4s.append(
-        IPAddress::create(SettingsHolder::instance()->userDNS()));
+    auto dns = SettingsHolder::instance()->getDNS(server.ipv4Gateway());
+    // Filter out the Custom DNS Server, if the user has set one.
+    logger.debug() << "Filtering out the DNS address" << dns;
+    excludeIPv4s.append(IPAddress::create(dns));
   }
 
   QList<IPAddressRange> list;
@@ -742,32 +730,50 @@ bool Controller::shouldExcludeDns() {
   if (!FeatureCustomDNS::instance()->isSupported()) {
     return false;
   }
-  if (settings->useGatewayDNS()) {
+
+  // Only a Custom DNS might require to be routed outside of the VPN-Tunnel
+  if (settings->dnsProvider() != SettingsHolder::DnsProvider::Custom) {
     return false;
   }
+
   auto dns = settings->userDNS();
   if (!settings->validateUserDNS(dns)) {
     return false;
   }
+
+  QHostAddress dnsAddress(dns);
+
   // No need to filter out loopback ip addresses
-  if (RFC5735::ipv4LoopbackAddressBlock().contains(QHostAddress(dns))) {
-    return false;
-  }
-  bool isLocalDNS = RFC1918::contains(QHostAddress(dns));
-  // In case we cant use lan access, no need to exclude anyway.
-  if (!FeatureLocalAreaAccess::instance()->isSupported()) {
+  if (RFC5735::ipv4LoopbackAddressBlock().contains(dnsAddress) ||
+      RFC4291::ipv6LoopbackAddressBlock().contains(dnsAddress)) {
     return false;
   }
 
-  // TODO: Uncomment this once mullvad is ready to route custom dns
-  // currently we want all custom dns to not use the vpn because of this.
-  // if(!isLocalDNS){
-  //  return false;
-  //}
+  // Edge-case: the DNS is a mullvad one.
+  if (settings->isMullvadDNS(dns)) {
+    return false;
+  }
+
+  bool isLocalDNS =
+      RFC1918::contains(dnsAddress) || RFC4193::contains(dnsAddress);
+  if (!FeatureLocalAreaAccess::instance()->isSupported() && isLocalDNS) {
+    // In case we cant use lan access, we must exclude it (the platform already
+    // does the magic for us).
+    return false;
+  }
+
   if (isLocalDNS && settings->localNetworkAccess()) {
     // DNS is lan, but we already excluded local-ip's, all good.
     return false;
   }
+
+  // TODO: Uncomment this once mullvad is ready to route custom dns
+  // See: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1610
+  // currently we want all custom dns to not use the vpn because of this.
+  // if(!isLocalDNS){
+  //  return false;
+  //}
+
   return true;
 }
 

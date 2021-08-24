@@ -462,5 +462,6 @@
         <file>ui/components/VPNTabNavigation.qml</file>
         <file>ui/resources/encodedPassword.txt</file>
         <file>ui/developerMenu/ViewFeatureList.qml</file>
+        <file>ui/components/VPNViewDNSSettings.qml</file>
     </qresource>
 </RCC>

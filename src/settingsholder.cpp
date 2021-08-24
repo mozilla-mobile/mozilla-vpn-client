@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "cryptosettings.h"
 #include "featurelist.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "rfc/rfc1918.h"
@@ -14,6 +15,7 @@
 #include "rfc/rfc5735.h"
 
 #include "features/featurecaptiveportal.h"
+#include "features/featurecustomdns.h"
 #include "features/featurelocalareaaccess.h"
 #include "features/featuresplittunnel.h"
 #include "features/featurestartonboot.h"
@@ -30,11 +32,10 @@ constexpr bool SETTINGS_STARTATBOOT_DEFAULT = false;
 constexpr bool SETTINGS_PROTECTSELECTEDAPPS_DEFAULT = false;
 constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
-constexpr bool SETTINGS_USEGATEWAYDNS_DEFAULT = true;
 const QStringList SETTINGS_DEFAULT_EMPTY_LIST = QStringList();
 constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
 constexpr bool SETTINGS_MULTIHOP_TUNNEL_DEFAULT = false;
-
+const int SETTINGS_DNS_PROVIDER_DEFAULT = SettingsHolder::DnsProvider::Gateway;
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
@@ -53,9 +54,9 @@ constexpr const char* SETTINGS_TOKEN = "token";
 constexpr const char* SETTINGS_SERVERS = "servers";
 constexpr const char* SETTINGS_PRIVATEKEY = "privateKey";
 constexpr const char* SETTINGS_PUBLICKEY = "publicKey";
-constexpr const char* SETTINGS_USEGATEWAYDNS = "useGatewayDNS";
+constexpr const char* SETTINGS_USER_DNS = "userDNS";
+constexpr const char* SETTINGS_DNS_PROVIDER = "dnsProvider";
 constexpr const char* SETTINGS_USER_AVATAR = "user/avatar";
-constexpr const char* SETTINGS_USER_DNS = "user/dns";
 constexpr const char* SETTINGS_USER_DISPLAYNAME = "user/displayName";
 constexpr const char* SETTINGS_USER_EMAIL = "user/email";
 constexpr const char* SETTINGS_USER_MAXDEVICES = "user/maxDevices";
@@ -219,9 +220,6 @@ GETSETDEFAULT(FeatureLocalAreaAccess::instance()->isSupported() &&
               bool, toBool, SETTINGS_LOCALNETWORKACCESS, hasLocalNetworkAccess,
               localNetworkAccess, setLocalNetworkAccess,
               localNetworkAccessChanged)
-GETSETDEFAULT(SETTINGS_USEGATEWAYDNS_DEFAULT, bool, toBool,
-              SETTINGS_USEGATEWAYDNS, hasUsegatewayDNS, useGatewayDNS,
-              setUseGatewayDNS, useGatewayDNSChanged)
 GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
               hasUserDNS, userDNS, setUserDNS, userDNSChanged)
 GETSETDEFAULT(SETTINGS_MULTIHOP_TUNNEL_DEFAULT, bool, toBool,
@@ -267,6 +265,8 @@ GETSETDEFAULT(SETTINGS_DEVELOPERUNLOCK_DEFAULT, bool, toBool,
 GETSETDEFAULT(SETTINGS_STAGINGSERVER_DEFAULT, bool, toBool,
               SETTINGS_STAGINGSERVER, hasStagingServer, stagingServer,
               setStagingServer, stagingServerChanged)
+GETSETDEFAULT(SETTINGS_DNS_PROVIDER_DEFAULT, int, toInt, SETTINGS_DNS_PROVIDER,
+              hasDNSProvider, dnsProvider, setDNSProvider, dnsProviderChanged)
 GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
               SETTINGS_DEVMODE_FEATURE_FLAGS, hasDevModeFeatureFlags,
               devModeFeatureFlags, setDevModeFeatureFlags,
@@ -434,9 +434,9 @@ void SettingsHolder::addConsumedSurvey(const QString& surveyId) {
 }
 
 bool SettingsHolder::validateUserDNS(const QString& dns) const {
-  logger.debug() << "checking -> " << dns;
   QHostAddress address = QHostAddress(dns);
-  return address.isNull();
+  logger.debug() << "checking -> " << dns << "==" << !address.isNull();
+  return !address.isNull();
 }
 
 QString SettingsHolder::placeholderUserDNS() const {
@@ -458,6 +458,7 @@ void SettingsHolder::enableDevModeFeatureFlag(const QString& featureID) {
   features.append(featureID);
   setDevModeFeatureFlags(features);
 }
+
 void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   QStringList features;
   if (hasDevModeFeatureFlags()) {
@@ -465,4 +466,48 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
+}
+
+// Returns the DNS Server the user asked for in the Settings;
+constexpr const char* MULLVAD_BLOCK_ADS_DNS = "100.64.0.1";
+constexpr const char* MULLVAD_BLOCK_TRACKING_DNS = "100.64.0.2";
+constexpr const char* MULLVAD_BLOCK_ALL_DNS = "100.64.0.3";
+
+QString SettingsHolder::getDNS(const QString& serverGateWay) {
+  if (!FeatureCustomDNS::instance()->isSupported()) {
+    return serverGateWay;
+  }
+
+  switch (dnsProvider()) {
+    case Gateway:
+      return serverGateWay;
+    case BlockAll:
+      return MULLVAD_BLOCK_ALL_DNS;
+    case BlockAds:
+      return MULLVAD_BLOCK_ADS_DNS;
+    case BlockTracking:
+      return MULLVAD_BLOCK_TRACKING_DNS;
+    case Custom:
+    default:
+      break;
+  }
+  Q_ASSERT(dnsProvider() == Custom);
+  QString dns = userDNS();
+  // User wants to use a Custom DNS, let's check that this is valid.
+  if (dns == SETTINGS_USER_DNS_DEFAULT) {
+    // User selected Custom but did not enter a dns,
+    // lets fallback
+    return serverGateWay;
+  }
+  if (!validateUserDNS(dns)) {
+    logger.debug()
+        << "Saved Custom DNS seems invalid, defaulting to gateway dns";
+    return serverGateWay;
+  }
+  return dns;
+}
+
+bool SettingsHolder::isMullvadDNS(const QString& address) {
+  IPAddress mullvadAddresses = IPAddress::create("100.64.0.0/24");
+  return mullvadAddresses.contains(QHostAddress(address));
 }

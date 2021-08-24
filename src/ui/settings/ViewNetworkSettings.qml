@@ -122,8 +122,6 @@ Item {
                 objectName: "advancedDNSSettings"
                 anchors.left: parent.left
                 anchors.right: parent.right
-                Layout.fillWidth: undefined
-                Layout.preferredHeight: undefined
                 width: parent.width - Theme.windowMargin
 
                 //% "Advanced DNS Settings"
