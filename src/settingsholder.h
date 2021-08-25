@@ -39,12 +39,12 @@ class SettingsHolder final : public QObject {
                  NOTIFY developerUnlockChanged)
   Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
                  stagingServerChanged)
-  Q_PROPERTY(bool multihopTunnel READ multihopTunnel WRITE setMultihopTunnel
-                 NOTIFY multihopTunnelChanged)
   Q_PROPERTY(int dnsProvider READ dnsProvider WRITE setDNSProvider NOTIFY
                  dnsProviderChanged)
   Q_PROPERTY(
       QString userDNS READ userDNS WRITE setUserDNS NOTIFY userDNSChanged)
+  Q_PROPERTY(QStringList recentConnections READ recentConnections WRITE
+                 setRecentConnections NOTIFY recentConnectionsChanged)
 
  public:
   SettingsHolder();
@@ -96,6 +96,11 @@ class SettingsHolder final : public QObject {
   GETSET(QString, hasCurrentServerCountry, currentServerCountry,
          setCurrentServerCountry)
   GETSET(QString, hasCurrentServerCity, currentServerCity, setCurrentServerCity)
+  GETSET(QString, hasEntryServerCountryCode, entryServerCountryCode,
+         setEntryServerCountryCode)
+  GETSET(QString, hasEntryServerCountry, entryServerCountry,
+         setEntryServerCountry)
+  GETSET(QString, hasEntryServerCity, entryServerCity, setEntryServerCity)
   GETSET(QByteArray, hasDevices, devices, setDevices)
   GETSET(QByteArray, hasSurveys, surveys, setSurveys)
   GETSET(QStringList, hasConsumedSurveys, consumedSurveys, setConsumedSurveys)
@@ -121,10 +126,12 @@ class SettingsHolder final : public QObject {
          setServerSwitchNotification);
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
-  GETSET(bool, hasMultihopTunnel, multihopTunnel, setMultihopTunnel)
+
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
   GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
          setDevModeFeatureFlags);
+  GETSET(QStringList, hasRecentConnections, recentConnections,
+         setRecentConnections);
 
   void removeMissingApp(const QString& appID);
   void addMissingApp(const QString& appID);
@@ -138,6 +145,7 @@ class SettingsHolder final : public QObject {
   void removeDevModeFeatureFlag(const QString& featureID);
 
   void addConsumedSurvey(const QString& surveyId);
+  void removeEntryServer();
 
 #ifdef MVPN_IOS
   GETSET(bool, hasNativeIOSDataMigrated, nativeIOSDataMigrated,
@@ -179,8 +187,10 @@ class SettingsHolder final : public QObject {
   void connectionChangeNotificationChanged(bool value);
   void developerUnlockChanged(bool value);
   void stagingServerChanged(bool value);
-  void multihopTunnelChanged(bool value);
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);
+  void entryServerCountryCodeChanged(const QString& value);
+  void entryServerCityChanged(const QString& value);
+  void recentConnectionsChanged(const QStringList& value);
 
  private:
   explicit SettingsHolder(QObject* parent);

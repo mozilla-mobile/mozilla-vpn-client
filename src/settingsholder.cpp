@@ -27,8 +27,10 @@ constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 const QStringList SETTINGS_DEFAULT_EMPTY_LIST = QStringList();
 constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
-constexpr bool SETTINGS_MULTIHOP_TUNNEL_DEFAULT = false;
 const int SETTINGS_DNS_PROVIDER_DEFAULT = SettingsHolder::DnsProvider::Gateway;
+constexpr const char* SETTINGS_ENTRYSERVER_COUNTRYCODE_DEFAULT = nullptr;
+constexpr const char* SETTINGS_ENTRYSERVER_CITY_DEFAULT = nullptr;
+
 constexpr const char* SETTINGS_IPV6ENABLED = "ipv6Enabled";
 constexpr const char* SETTINGS_LOCALNETWORKACCESS = "localNetworkAccess";
 constexpr const char* SETTINGS_UNSECUREDNETWORKALERT = "unsecuredNetworkAlert";
@@ -59,6 +61,9 @@ constexpr const char* SETTINGS_CURRENTSERVER_COUNTRYCODE =
     "currentServer/countryCode";
 constexpr const char* SETTINGS_CURRENTSERVER_COUNTRY = "currentServer/country";
 constexpr const char* SETTINGS_CURRENTSERVER_CITY = "currentServer/city";
+constexpr const char* SETTINGS_ENTRYSERVER_COUNTRYCODE =
+    "entryServer/countryCode";
+constexpr const char* SETTINGS_ENTRYSERVER_CITY = "entryServer/city";
 constexpr const char* SETTINGS_DEVICES = "devices";
 constexpr const char* SETTINGS_SURVEYS = "surveys";
 constexpr const char* SETTINGS_CONSUMEDSURVEYS = "consumedSurveys";
@@ -72,8 +77,8 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
-constexpr const char* SETTINGS_MULTIHOP_TUNNEL = "multihopTunnel";
 constexpr const char* SETTINGS_DEVMODE_FEATURE_FLAGS = "devmodeFeatureFlags";
+constexpr const char* SETTINGS_RECENT_CONNECTIONS = "recentConnections";
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -167,10 +172,13 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRYCODE);
   m_settings.remove(SETTINGS_CURRENTSERVER_COUNTRY);
   m_settings.remove(SETTINGS_CURRENTSERVER_CITY);
+  m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
+  m_settings.remove(SETTINGS_ENTRYSERVER_CITY);
   m_settings.remove(SETTINGS_DEVICES);
   m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
+  m_settings.remove(SETTINGS_RECENT_CONNECTIONS);
 
   // We do not remove language, ipv6 and localnetwork settings.
 }
@@ -215,9 +223,6 @@ GETSETDEFAULT(FeatureLocalAreaAccess::instance()->isSupported() &&
               localNetworkAccessChanged)
 GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
               hasUserDNS, userDNS, setUserDNS, userDNSChanged)
-GETSETDEFAULT(SETTINGS_MULTIHOP_TUNNEL_DEFAULT, bool, toBool,
-              SETTINGS_MULTIHOP_TUNNEL, hasMultihopTunnel, multihopTunnel,
-              setMultihopTunnel, multihopTunnelChanged)
 GETSETDEFAULT(FeatureUnsecuredNetworkNotification::instance()->isSupported() &&
                   SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
               bool, toBool, SETTINGS_UNSECUREDNETWORKALERT,
@@ -264,6 +269,18 @@ GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
               SETTINGS_DEVMODE_FEATURE_FLAGS, hasDevModeFeatureFlags,
               devModeFeatureFlags, setDevModeFeatureFlags,
               devModeFeatureFlagsChanged);
+GETSETDEFAULT(SETTINGS_ENTRYSERVER_COUNTRYCODE_DEFAULT, QString, toString,
+              SETTINGS_ENTRYSERVER_COUNTRYCODE, hasEntryServerCountryCode,
+              entryServerCountryCode, setEntryServerCountryCode,
+              entryServerCountryCodeChanged)
+GETSETDEFAULT(SETTINGS_ENTRYSERVER_CITY_DEFAULT, QString, toString,
+              SETTINGS_ENTRYSERVER_CITY, hasEntryServerCity, entryServerCity,
+              setEntryServerCity, entryServerCityChanged)
+GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
+              SETTINGS_RECENT_CONNECTIONS, hasRecentConnections,
+              recentConnections, setRecentConnections,
+              recentConnectionsChanged);
+
 #undef GETSETDEFAULT
 
 #define GETSET(type, toType, key, has, get, set)                        \
@@ -453,4 +470,9 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
+}
+
+void SettingsHolder::removeEntryServer() {
+  m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
+  m_settings.remove(SETTINGS_ENTRYSERVER_CITY);
 }

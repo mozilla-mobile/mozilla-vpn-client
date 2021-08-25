@@ -159,7 +159,7 @@ bool ServerCountryModel::pickIfExists(const QString& countryCode,
     if (country.code() == countryCode) {
       for (const ServerCity& city : country.cities()) {
         if (city.code() == cityCode) {
-          data.initialize(country, city);
+          data.update(country.code(), city.name());
           return true;
         }
       }
@@ -181,7 +181,7 @@ void ServerCountryModel::pickRandom(ServerData& data) const {
       QRandomGenerator::global()->generate() % country.cities().length();
   const ServerCity& city = country.cities().at(cityId);
 
-  data.initialize(country, city);
+  data.update(country.code(), city.name());
 }
 
 bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
@@ -192,7 +192,7 @@ bool ServerCountryModel::pickByIPv4Address(const QString& ipv4Address,
     for (const ServerCity& city : country.cities()) {
       for (const Server& server : city.servers()) {
         if (server.ipv4AddrIn() == ipv4Address) {
-          data.initialize(country, city);
+          data.update(country.code(), city.name());
           return true;
         }
       }
@@ -207,9 +207,9 @@ bool ServerCountryModel::exists(ServerData& data) const {
   Q_ASSERT(data.initialized());
 
   for (const ServerCountry& country : m_countries) {
-    if (country.code() == data.countryCode()) {
+    if (country.code() == data.exitCountryCode()) {
       for (const ServerCity& city : country.cities()) {
-        if (data.cityName() == city.name()) {
+        if (data.exitCityName() == city.name()) {
           return true;
         }
       }
@@ -223,7 +223,7 @@ bool ServerCountryModel::exists(ServerData& data) const {
 
 const QList<Server> ServerCountryModel::servers(const ServerData& data) const {
   for (const ServerCountry& country : m_countries) {
-    if (country.code() == data.countryCode()) {
+    if (country.code() == data.exitCountryCode()) {
       return country.servers(data);
     }
   }
@@ -240,6 +240,12 @@ const QString ServerCountryModel::countryName(
   }
 
   return QString();
+}
+
+const QString ServerCountryModel::localizedCountryName(
+    const QString& countryCode) const {
+  const QString name = countryName(countryCode);
+  return ServerI18N::translateCountryName(countryCode, name);
 }
 
 void ServerCountryModel::retranslate() {

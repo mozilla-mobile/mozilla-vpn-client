@@ -54,8 +54,9 @@ class Controller final : public QObject {
 
   State state() const;
 
-  Q_INVOKABLE void changeServer(const QString& countryCode,
-                                const QString& city);
+  Q_INVOKABLE void changeServer(const QString& countryCode, const QString& city,
+                                const QString& entryCountryCode = QString(),
+                                const QString& entryCity = QString());
 
   Q_INVOKABLE void logout();
 
