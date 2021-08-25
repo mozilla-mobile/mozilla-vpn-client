@@ -6,14 +6,13 @@
 #define FEATURE_APPREVIEW_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_APPREVIEW = "appReview";
 
 class FeatureAppReview : public Feature {
  public:
   FeatureAppReview()
-      : Feature(FEATURE_APPREVIEW, L18nStrings::FeatureNamesAppReview,
+      : Feature(FEATURE_APPREVIEW, "App Review",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr

@@ -6,14 +6,13 @@
 #define FEATURE_UNAUTH_SUPPORT_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_UNAUTH_SUPPORT = "unauthSupport";
 
 class FeatureUnauthSupport final : public Feature {
  public:
   FeatureUnauthSupport()
-      : Feature(FEATURE_UNAUTH_SUPPORT, L18nStrings::FeatureNamesUnauthSupport,
+      : Feature(FEATURE_UNAUTH_SUPPORT, "Unauth user support form",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr

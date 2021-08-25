@@ -6,14 +6,13 @@
 #define FEATURE_CUSTOM_DNS_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_CUSTOM_DNS = "customDNS";
 
 class FeatureCustomDNS final : public Feature {
  public:
   FeatureCustomDNS()
-      : Feature(FEATURE_CUSTOM_DNS, L18nStrings::FeatureNamesCustomDNS,
+      : Feature(FEATURE_CUSTOM_DNS, "Custom DNS",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr

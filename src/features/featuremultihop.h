@@ -6,14 +6,13 @@
 #define FEATURE_MULTI_HOP_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_MULTI_HOP = "multiHop";
 
 class FeatureMultiHop : public Feature {
  public:
   FeatureMultiHop()
-      : Feature(FEATURE_MULTI_HOP, L18nStrings::FeatureNamesMultiHop,
+      : Feature(FEATURE_MULTI_HOP, "Multi-hop",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr

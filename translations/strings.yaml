@@ -71,29 +71,6 @@ settingsDev:
   useStagingTitle: Use Staging Servers
   useStagingSubtitle: Staging services are used to test features before they go live to production
   restartRequired: VPN must be restarted to take effect
-  featureListTitle: Feature list
-  editableFeatureList:
-    value: Editable feature list
-    comment: Editable means that, in dev-mode we can activate/deactivate this feature
-  allFeatureList:
-    value: Feature list
-    comment: List of all the features
-
-featureNames:
-  appReview: App Review
-  splittunnel: Split-tunnel
-  startOnBoot: Start on boot
-  localAreaAccess: Local area network access
-  captivePortal: CaptivePortal
-  unsecuredNetworkNotification: Unsecured network notification
-  notificationControl: Notification control
-  customDNS: Custom DNS
-  inAppAuth: In app authentication
-  inAppAccountCreate: In app account creation
-  inAppPurchase: In app Purchase
-  unauthSupport: Unauth user support form
-  glean: Glean
-  multiHop: Multi Hop
 
 splittunnel:
   missingAppActionButton:
