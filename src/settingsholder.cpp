@@ -78,7 +78,6 @@ constexpr const char* SETTINGS_POSTAUTHENTICATIONSHOWN =
 constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
-constexpr const char* SETTINGS_MULTIHOP_TUNNEL = "multihopTunnel";
 constexpr const char* SETTINGS_DEVMODE_FEATURE_FLAGS = "devmodeFeatureFlags";
 
 #ifdef MVPN_IOS
@@ -223,9 +222,6 @@ GETSETDEFAULT(FeatureLocalAreaAccess::instance()->isSupported() &&
               localNetworkAccessChanged)
 GETSETDEFAULT(SETTINGS_USER_DNS_DEFAULT, QString, toString, SETTINGS_USER_DNS,
               hasUserDNS, userDNS, setUserDNS, userDNSChanged)
-GETSETDEFAULT(SETTINGS_MULTIHOP_TUNNEL_DEFAULT, bool, toBool,
-              SETTINGS_MULTIHOP_TUNNEL, hasMultihopTunnel, multihopTunnel,
-              setMultihopTunnel, multihopTunnelChanged)
 GETSETDEFAULT(FeatureUnsecuredNetworkNotification::instance()->isSupported() &&
                   SETTINGS_UNSECUREDNETWORKALERT_DEFAULT,
               bool, toBool, SETTINGS_UNSECUREDNETWORKALERT,

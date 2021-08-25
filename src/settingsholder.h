@@ -39,8 +39,6 @@ class SettingsHolder final : public QObject {
                  NOTIFY developerUnlockChanged)
   Q_PROPERTY(bool stagingServer READ stagingServer WRITE setStagingServer NOTIFY
                  stagingServerChanged)
-  Q_PROPERTY(bool multihopTunnel READ multihopTunnel WRITE setMultihopTunnel
-                 NOTIFY multihopTunnelChanged)
   Q_PROPERTY(int dnsProvider READ dnsProvider WRITE setDNSProvider NOTIFY
                  dnsProviderChanged)
   Q_PROPERTY(
@@ -126,7 +124,7 @@ class SettingsHolder final : public QObject {
          setServerSwitchNotification);
   GETSET(bool, hasConnectionChangeNotification, connectionChangeNotification,
          setConnectionChangeNotification);
-  GETSET(bool, hasMultihopTunnel, multihopTunnel, setMultihopTunnel)
+
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
   GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
          setDevModeFeatureFlags);
@@ -185,7 +183,6 @@ class SettingsHolder final : public QObject {
   void connectionChangeNotificationChanged(bool value);
   void developerUnlockChanged(bool value);
   void stagingServerChanged(bool value);
-  void multihopTunnelChanged(bool value);
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);
   void entryServerCountryCodeChanged(const QString& value);
   void entryServerCityChanged(const QString& value);
