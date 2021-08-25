@@ -78,6 +78,7 @@ constexpr const char* SETTINGS_TELEMETRYPOLICYSHOWN = "telemetryPolicyShown";
 constexpr const char* SETTINGS_PROTECTSELECTEDAPPS = "protectSelectedApps";
 constexpr const char* SETTINGS_VPNDISABLEDAPPS = "vpnDisabledApps";
 constexpr const char* SETTINGS_DEVMODE_FEATURE_FLAGS = "devmodeFeatureFlags";
+constexpr const char* SETTINGS_RECENT_CONNECTIONS = "recentConnections";
 
 #ifdef MVPN_IOS
 constexpr const char* SETTINGS_NATIVEIOSDATAMIGRATED = "nativeIOSDataMigrated";
@@ -177,6 +178,7 @@ void SettingsHolder::clear() {
   m_settings.remove(SETTINGS_SURVEYS);
   m_settings.remove(SETTINGS_IAPPRODUCTS);
   m_settings.remove(SETTINGS_POSTAUTHENTICATIONSHOWN);
+  m_settings.remove(SETTINGS_RECENT_CONNECTIONS);
 
   // We do not remove language, ipv6 and localnetwork settings.
 }
@@ -274,6 +276,10 @@ GETSETDEFAULT(SETTINGS_ENTRYSERVER_COUNTRYCODE_DEFAULT, QString, toString,
 GETSETDEFAULT(SETTINGS_ENTRYSERVER_CITY_DEFAULT, QString, toString,
               SETTINGS_ENTRYSERVER_CITY, hasEntryServerCity, entryServerCity,
               setEntryServerCity, entryServerCityChanged)
+GETSETDEFAULT(SETTINGS_DEFAULT_EMPTY_LIST, QStringList, toStringList,
+              SETTINGS_RECENT_CONNECTIONS, hasRecentConnections,
+              recentConnections, setRecentConnections,
+              recentConnectionsChanged);
 
 #undef GETSETDEFAULT
 

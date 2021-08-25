@@ -43,6 +43,8 @@ class SettingsHolder final : public QObject {
                  dnsProviderChanged)
   Q_PROPERTY(
       QString userDNS READ userDNS WRITE setUserDNS NOTIFY userDNSChanged)
+  Q_PROPERTY(QStringList recentConnections READ recentConnections WRITE
+                 setRecentConnections NOTIFY recentConnectionsChanged)
 
  public:
   SettingsHolder();
@@ -128,6 +130,8 @@ class SettingsHolder final : public QObject {
   GETSET(QStringList, hasMissingApps, missingApps, setMissingApps)
   GETSET(QStringList, hasDevModeFeatureFlags, devModeFeatureFlags,
          setDevModeFeatureFlags);
+  GETSET(QStringList, hasRecentConnections, recentConnections,
+         setRecentConnections);
 
   void removeMissingApp(const QString& appID);
   void addMissingApp(const QString& appID);
@@ -186,6 +190,7 @@ class SettingsHolder final : public QObject {
   void devModeFeatureFlagsChanged(const QStringList& featureIDs);
   void entryServerCountryCodeChanged(const QString& value);
   void entryServerCityChanged(const QString& value);
+  void recentConnectionsChanged(const QStringList& value);
 
  private:
   explicit SettingsHolder(QObject* parent);

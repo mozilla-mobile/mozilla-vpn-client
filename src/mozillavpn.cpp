@@ -925,6 +925,25 @@ void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
   m_private->m_serverData.update(countryCode, city, entryCountryCode,
                                  entryCity);
   m_private->m_serverData.writeSettings();
+
+  // Update the list of recent connections.
+  QString description = m_private->m_serverData.toString();
+  QStringList recent = SettingsHolder::instance()->recentConnections();
+  int index = recent.indexOf(description);
+  if (index == 0) {
+    // This is already the most-recent connection.
+    return;
+  }
+
+  if (index > 0) {
+    recent.removeAt(index);
+  } else {
+    while (recent.count() >= Constants::RECENT_CONNECTIONS_MAX_COUNT) {
+      recent.removeLast();
+    }
+  }
+  recent.prepend(description);
+  SettingsHolder::instance()->setRecentConnections(recent);
 }
 
 const Server& MozillaVPN::randomHop(ServerData& data) const {

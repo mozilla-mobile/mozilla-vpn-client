@@ -1072,6 +1072,7 @@ void TestModels::serverDataBasic() {
     QVERIFY(!sd.multihop());
     QCOMPARE(sd.entryCountryCode(), "");
     QCOMPARE(sd.entryCityName(), "");
+    QCOMPARE(sd.toString(), "serverCityName, serverCountryCode");
 
     {
       SettingsHolder settingsHolder;
@@ -1086,6 +1087,7 @@ void TestModels::serverDataBasic() {
       QVERIFY(!sd2.multihop());
       QCOMPARE(sd2.entryCountryCode(), "");
       QCOMPARE(sd2.entryCityName(), "");
+      QCOMPARE(sd2.toString(), "serverCityName, serverCountryCode");
 
       QCOMPARE(spy.count(), 1);
     }
@@ -1100,6 +1102,7 @@ void TestModels::serverDataBasic() {
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
+  QCOMPARE(sd.toString(), "new City, new Country Code");
 
   sd.forget();
   QCOMPARE(spy.count(), 2);
@@ -1110,6 +1113,7 @@ void TestModels::serverDataBasic() {
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
+  QCOMPARE(sd.toString(), "");
 
   {
     SettingsHolder settingsHolder;
@@ -1124,6 +1128,8 @@ void TestModels::serverDataBasic() {
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
+  QCOMPARE(sd.toString(),
+           "entry City, entry Country Code -> new City, new Country Code");
 
   sd.forget();
   QCOMPARE(spy.count(), 3);
@@ -1134,6 +1140,16 @@ void TestModels::serverDataBasic() {
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
+
+  sd.forget();
+  QVERIFY(sd.fromString("Eureka, CA, us -> McMurdo Station, aq"));
+  QVERIFY(sd.initialized());
+  QCOMPARE(sd.exitCountryCode(), "aq");
+  QCOMPARE(sd.exitCityName(), "McMurdo Station");
+  QVERIFY(sd.multihop());
+  QCOMPARE(sd.entryCountryCode(), "us");
+  QCOMPARE(sd.entryCityName(), "Eureka, CA");
+  QCOMPARE(sd.toString(), "Eureka, CA, us -> McMurdo Station, aq");
 }
 
 // User

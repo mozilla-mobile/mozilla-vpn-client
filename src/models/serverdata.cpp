@@ -38,20 +38,27 @@ bool ServerData::fromSettings() {
 bool ServerData::fromString(const QString& data) {
   QStringList serverList = data.split("->");
 
-  QStringList current = serverList.last().split(",");
-  if (current.count() != 2) {
+  QString exit = serverList.last();
+  int index = exit.lastIndexOf(',');
+  if (index < 0) {
     return false;
   }
-  QStringList entry;
+  QString exitCountryCode = exit.mid(index + 1).trimmed();
+  QString exitCityName = exit.left(index).trimmed();
+  QString entryCountryCode;
+  QString entryCityName;
+
   if (serverList.count() > 1) {
-    entry = serverList.first().split(",");
-  } else {
-    entry.append(QString());
-    entry.append(QString());
+    QString entry = serverList.first();
+    index = entry.lastIndexOf(',');
+    if (index > 0) {
+      entryCityName = entry.left(index).trimmed();
+      entryCountryCode = entry.mid(index + 1).trimmed();
+    }
   }
 
-  initializeInternal(current[1].trimmed(), current[0].trimmed(),
-                     entry[1].trimmed(), entry[0].trimmed());
+  initializeInternal(exitCountryCode, exitCityName, entryCountryCode,
+                     entryCityName);
 
   logger.debug() << toString();
   return true;
@@ -100,6 +107,10 @@ QString ServerData::localizedEntryCity() const {
 }
 
 QString ServerData::toString() const {
+  if (!m_initialized) {
+    return QString();
+  }
+
   QString result = "";
   if (multihop()) {
     result += m_entryCityName + ", " + m_entryCountryCode + " -> ";
