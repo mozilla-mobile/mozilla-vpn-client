@@ -61,8 +61,8 @@ void ServerData::writeSettings() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  settingsHolder->setCurrentServerCountryCode(m_countryCode);
-  settingsHolder->setCurrentServerCity(m_cityName);
+  settingsHolder->setCurrentServerCountryCode(m_exitCountryCode);
+  settingsHolder->setCurrentServerCity(m_exitCityName);
 
   if (multihop()) {
     settingsHolder->setEntryServerCountryCode(m_entryCountryCode);
@@ -80,19 +80,19 @@ void ServerData::update(const QString& countryCode, const QString& cityName,
   emit changed();
 }
 
-void ServerData::initializeInternal(const QString& countryCode,
-                                    const QString& cityName,
+void ServerData::initializeInternal(const QString& exitCountryCode,
+                                    const QString& exitCityName,
                                     const QString& entryCountryCode,
                                     const QString& entryCityName) {
   m_initialized = true;
-  m_countryCode = countryCode;
-  m_cityName = cityName;
+  m_exitCountryCode = exitCountryCode;
+  m_exitCityName = exitCityName;
   m_entryCountryCode = entryCountryCode;
   m_entryCityName = entryCityName;
 }
 
 QString ServerData::localizedCityName() const {
-  return ServerI18N::translateCityName(m_countryCode, m_cityName);
+  return ServerI18N::translateCityName(m_exitCountryCode, m_exitCityName);
 }
 
 QString ServerData::localizedEntryCity() const {
@@ -105,6 +105,6 @@ QString ServerData::toString() const {
     result += m_entryCityName + ", " + m_entryCountryCode + " -> ";
   }
 
-  result += m_cityName + ", " + m_countryCode;
+  result += m_exitCityName + ", " + m_exitCountryCode;
   return result;
 }

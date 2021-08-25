@@ -13,7 +13,7 @@ VPNClickableRow {
     id: serverCountry
     objectName: "serverCountry-" + code
 
-    property bool cityListVisible: (code === VPNCurrentServer.countryCode)
+    property bool cityListVisible: (code === VPNCurrentServer.exitCountryCode)
     property real animationDuration: 200 + (citiesRepeater.count * 25)
     property var currentCityIndex
     property alias serverCountryName: countryName.text
@@ -177,7 +177,7 @@ VPNClickableRow {
                     stackview.pop();
                 }
                 height: 54
-                checked: code === VPNCurrentServer.countryCode && modelData[0] === VPNCurrentServer.cityName
+                checked: code === VPNCurrentServer.exitCountryCode && modelData[0] === VPNCurrentServer.exitCityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {

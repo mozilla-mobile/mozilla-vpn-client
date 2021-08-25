@@ -16,8 +16,8 @@ class ServerData final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ServerData);
 
-  Q_PROPERTY(QString countryCode READ countryCode NOTIFY changed)
-  Q_PROPERTY(QString cityName READ cityName NOTIFY changed)
+  Q_PROPERTY(QString exitCountryCode READ exitCountryCode NOTIFY changed)
+  Q_PROPERTY(QString exitCityName READ exitCityName NOTIFY changed)
   Q_PROPERTY(QString localizedCityName READ localizedCityName NOTIFY changed)
 
   Q_PROPERTY(bool multihop READ multihop NOTIFY changed)
@@ -36,9 +36,9 @@ class ServerData final : public QObject {
 
   bool initialized() const { return m_initialized; }
 
-  const QString& countryCode() const { return m_countryCode; }
+  const QString& exitCountryCode() const { return m_exitCountryCode; }
 
-  const QString& cityName() const { return m_cityName; }
+  const QString& exitCityName() const { return m_exitCityName; }
 
   QString localizedCityName() const;
 
@@ -56,7 +56,7 @@ class ServerData final : public QObject {
     m_initialized = false;
   }
 
-  void update(const QString& countryCode, const QString& cityName,
+  void update(const QString& exitCountryCode, const QString& exitCityName,
               const QString& entryCountryCode = QString(),
               const QString& entryCityName = QString());
 
@@ -66,15 +66,16 @@ class ServerData final : public QObject {
   void changed();
 
  private:
-  void initializeInternal(const QString& countryCode, const QString& cityName,
+  void initializeInternal(const QString& exitCountryCode,
+                          const QString& exitCityName,
                           const QString& entryCountryCode,
                           const QString& entryCityName);
 
  private:
   bool m_initialized = false;
 
-  QString m_countryCode;
-  QString m_cityName;
+  QString m_exitCountryCode;
+  QString m_exitCityName;
 
   QString m_entryCountryCode;
   QString m_entryCityName;

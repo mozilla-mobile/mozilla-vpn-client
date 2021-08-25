@@ -188,9 +188,9 @@ void SystemTrayHandler::updateContextMenu() {
   m_lastLocationLabel->setVisible(true);
 
   QIcon flagIcon(QString(":/ui/resources/flags/%1.png")
-                     .arg(vpn->currentServer()->countryCode().toUpper()));
+                     .arg(vpn->currentServer()->exitCountryCode().toUpper()));
 
-  QString countryCode = vpn->currentServer()->countryCode();
+  QString countryCode = vpn->currentServer()->exitCountryCode();
   QString localizedCityName = vpn->currentServer()->localizedCityName();
   QString localizedCountryName =
       vpn->serverCountryModel()->localizedCountryName(countryCode);

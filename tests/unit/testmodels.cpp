@@ -1006,8 +1006,8 @@ void TestModels::serverCountryModelPick() {
   {
     ServerData sd;
     QCOMPARE(m.pickIfExists("serverCountryCode", "serverCityCode", sd), true);
-    QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.cityName(), "serverCityName");
+    QCOMPARE(sd.exitCountryCode(), "serverCountryCode");
+    QCOMPARE(sd.exitCityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
 
     QCOMPARE(m.pickIfExists("serverCountryCode2", "serverCityCode", sd), false);
@@ -1017,16 +1017,16 @@ void TestModels::serverCountryModelPick() {
   {
     ServerData sd;
     m.pickRandom(sd);
-    QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.cityName(), "serverCityName");
+    QCOMPARE(sd.exitCountryCode(), "serverCountryCode");
+    QCOMPARE(sd.exitCityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
   }
 
   {
     ServerData sd;
     QCOMPARE(m.pickByIPv4Address("ipv4AddrIn", sd), true);
-    QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.cityName(), "serverCityName");
+    QCOMPARE(sd.exitCountryCode(), "serverCountryCode");
+    QCOMPARE(sd.exitCityName(), "serverCityName");
     QCOMPARE(m.exists(sd), true);
 
     QCOMPARE(m.pickByIPv4Address("ipv4AddrIn2", sd), false);
@@ -1041,8 +1041,8 @@ void TestModels::serverDataBasic() {
   QSignalSpy spy(&sd, &ServerData::changed);
 
   QVERIFY(!sd.initialized());
-  QCOMPARE(sd.countryCode(), "");
-  QCOMPARE(sd.cityName(), "");
+  QCOMPARE(sd.exitCountryCode(), "");
+  QCOMPARE(sd.exitCityName(), "");
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
@@ -1067,8 +1067,8 @@ void TestModels::serverDataBasic() {
     QCOMPARE(spy.count(), 1);
 
     QVERIFY(sd.initialized());
-    QCOMPARE(sd.countryCode(), "serverCountryCode");
-    QCOMPARE(sd.cityName(), "serverCityName");
+    QCOMPARE(sd.exitCountryCode(), "serverCountryCode");
+    QCOMPARE(sd.exitCityName(), "serverCityName");
     QVERIFY(!sd.multihop());
     QCOMPARE(sd.entryCountryCode(), "");
     QCOMPARE(sd.entryCityName(), "");
@@ -1081,8 +1081,8 @@ void TestModels::serverDataBasic() {
       ServerData sd2;
       QVERIFY(sd2.fromSettings());
       QVERIFY(sd2.initialized());
-      QCOMPARE(sd2.countryCode(), "serverCountryCode");
-      QCOMPARE(sd2.cityName(), "serverCityName");
+      QCOMPARE(sd2.exitCountryCode(), "serverCountryCode");
+      QCOMPARE(sd2.exitCityName(), "serverCityName");
       QVERIFY(!sd2.multihop());
       QCOMPARE(sd2.entryCountryCode(), "");
       QCOMPARE(sd2.entryCityName(), "");
@@ -1095,8 +1095,8 @@ void TestModels::serverDataBasic() {
   QCOMPARE(spy.count(), 2);
 
   QVERIFY(sd.initialized());
-  QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.cityName(), "new City");
+  QCOMPARE(sd.exitCountryCode(), "new Country Code");
+  QCOMPARE(sd.exitCityName(), "new City");
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
@@ -1105,8 +1105,8 @@ void TestModels::serverDataBasic() {
   QCOMPARE(spy.count(), 2);
 
   QVERIFY(!sd.initialized());
-  QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.cityName(), "new City");
+  QCOMPARE(sd.exitCountryCode(), "new Country Code");
+  QCOMPARE(sd.exitCityName(), "new City");
   QVERIFY(!sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "");
   QCOMPARE(sd.entryCityName(), "");
@@ -1119,8 +1119,8 @@ void TestModels::serverDataBasic() {
 
   sd.update("new Country Code", "new City", "entry Country Code", "entry City");
   QVERIFY(sd.initialized());
-  QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.cityName(), "new City");
+  QCOMPARE(sd.exitCountryCode(), "new Country Code");
+  QCOMPARE(sd.exitCityName(), "new City");
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");
@@ -1129,8 +1129,8 @@ void TestModels::serverDataBasic() {
   QCOMPARE(spy.count(), 3);
 
   QVERIFY(!sd.initialized());
-  QCOMPARE(sd.countryCode(), "new Country Code");
-  QCOMPARE(sd.cityName(), "new City");
+  QCOMPARE(sd.exitCountryCode(), "new Country Code");
+  QCOMPARE(sd.exitCityName(), "new City");
   QVERIFY(sd.multihop());
   QCOMPARE(sd.entryCountryCode(), "entry Country Code");
   QCOMPARE(sd.entryCityName(), "entry City");

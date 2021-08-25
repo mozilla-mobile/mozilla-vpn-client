@@ -207,9 +207,9 @@ bool ServerCountryModel::exists(ServerData& data) const {
   Q_ASSERT(data.initialized());
 
   for (const ServerCountry& country : m_countries) {
-    if (country.code() == data.countryCode()) {
+    if (country.code() == data.exitCountryCode()) {
       for (const ServerCity& city : country.cities()) {
-        if (data.cityName() == city.name()) {
+        if (data.exitCityName() == city.name()) {
           return true;
         }
       }
@@ -223,7 +223,7 @@ bool ServerCountryModel::exists(ServerData& data) const {
 
 const QList<Server> ServerCountryModel::servers(const ServerData& data) const {
   for (const ServerCountry& country : m_countries) {
-    if (country.code() == data.countryCode()) {
+    if (country.code() == data.exitCountryCode()) {
       return country.servers(data);
     }
   }

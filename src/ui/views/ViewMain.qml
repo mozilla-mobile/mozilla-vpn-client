@@ -102,7 +102,7 @@ VPNFlickable {
             descriptionText: qsTrId("vpn.servers.currentLocation").arg(VPNCurrentServer.localizedCityName)
 
             subtitleText: VPNCurrentServer.localizedCityName
-            imgSource:  "../resources/flags/" + VPNCurrentServer.countryCode.toUpperCase() + ".png"
+            imgSource:  "../resources/flags/" + VPNCurrentServer.exitCountryCode.toUpperCase() + ".png"
             disableRowWhen: (VPNController.state !== VPNController.StateOn && VPNController.state !== VPNController.StateOff) || box.connectionInfoVisible
         }
 

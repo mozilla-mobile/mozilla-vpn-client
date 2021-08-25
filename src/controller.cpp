@@ -445,8 +445,8 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  if (vpn->currentServer()->countryCode() == countryCode &&
-      vpn->currentServer()->cityName() == city &&
+  if (vpn->currentServer()->exitCountryCode() == countryCode &&
+      vpn->currentServer()->exitCityName() == city &&
       vpn->currentServer()->entryCountryCode() == entryCountryCode &&
       vpn->currentServer()->entryCityName() == entryCity) {
     logger.debug() << "No server change needed";
@@ -464,8 +464,8 @@ void Controller::changeServer(const QString& countryCode, const QString& city,
 
   logger.debug() << "Switching to a different server";
 
-  m_currentCity = vpn->currentServer()->cityName();
-  m_currentCountryCode = vpn->currentServer()->countryCode();
+  m_currentCity = vpn->currentServer()->exitCityName();
+  m_currentCountryCode = vpn->currentServer()->exitCountryCode();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 

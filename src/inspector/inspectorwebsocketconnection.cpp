@@ -209,13 +209,15 @@ static QList<WebSocketSettingCommand> s_settingCommands{
     WebSocketSettingCommand{
         "current-server-country-code", WebSocketSettingCommand::String, nullptr,
         []() {
-          return MozillaVPN::instance()->currentServer()->countryCode();
+          return MozillaVPN::instance()->currentServer()->exitCountryCode();
         }},
 
     // server city
     WebSocketSettingCommand{
         "current-server-city", WebSocketSettingCommand::String, nullptr,
-        []() { return MozillaVPN::instance()->currentServer()->cityName(); }},
+        []() {
+          return MozillaVPN::instance()->currentServer()->exitCityName();
+        }},
 
     // glean-enabled
     WebSocketSettingCommand{

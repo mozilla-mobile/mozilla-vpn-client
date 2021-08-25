@@ -103,10 +103,10 @@ int CommandStatus::run(QStringList& tokens) {
     ServerCountryModel* model = vpn.serverCountryModel();
     ServerData* sd = vpn.currentServer();
     if (sd) {
-      stream << "Server country code: " << sd->countryCode() << Qt::endl;
-      stream << "Server country: " << model->countryName(sd->countryCode())
+      stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
+      stream << "Server country: " << model->countryName(sd->exitCountryCode())
              << Qt::endl;
-      stream << "Server city: " << sd->cityName() << Qt::endl;
+      stream << "Server city: " << sd->exitCityName() << Qt::endl;
     }
 
     return 0;
