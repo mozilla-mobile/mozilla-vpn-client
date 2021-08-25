@@ -582,7 +582,10 @@ NetworkRequest* NetworkRequest::createForFxaAuthz(
   QJsonObject obj;
   obj.insert("client_id", query.queryItemValue("client_id"));
   obj.insert("state", query.queryItemValue("state"));
-  obj.insert("scope", query.queryItemValue("scope"));
+  // QUrl does not covert '+' to <space>. But we need it to split the scopes.
+  obj.insert(
+      "scope",
+      query.queryItemValue("scope", QUrl::FullyDecoded).replace("+", " "));
   obj.insert("access_type", query.queryItemValue("access_type"));
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
