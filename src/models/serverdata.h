@@ -52,9 +52,7 @@ class ServerData final : public QObject {
 
   QString localizedEntryCity() const;
 
-  void forget() {
-    m_initialized = false;
-  }
+  void forget() { m_initialized = false; }
 
   void update(const QString& exitCountryCode, const QString& exitCityName,
               const QString& entryCountryCode = QString(),

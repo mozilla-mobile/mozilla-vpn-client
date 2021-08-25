@@ -71,8 +71,6 @@ const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
 
 const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
 
-bool MozillaVPN::multihop() const { return false; }
-
 void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
                               const QString&) {}
 
