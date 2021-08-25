@@ -4,7 +4,7 @@
 
 #include "networkmanager.h"
 #include "constants.h"
-#include "featurelist.h"
+#include "features/featureinapppurchase.h"
 #include "leakdetector.h"
 
 #include <QTextStream>
@@ -64,7 +64,7 @@ QByteArray NetworkManager::userAgent() {
     // System data
     out << "sys:" << NetworkManager::osVersion();
 
-    if (FeatureList::instance()->inAppPurchaseSupported()) {
+    if (FeatureInAppPurchase::instance()->isSupported()) {
       out << "; iap:true";
     }
 
