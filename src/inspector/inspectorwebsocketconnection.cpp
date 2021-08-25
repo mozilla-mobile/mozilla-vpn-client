@@ -309,6 +309,44 @@ static QList<WebSocketCommand> s_commands{
                        return obj;
                      }},
 
+    WebSocketCommand{"list", "List all properties for an object", 1,
+                     [](const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString result;
+
+                       QObject* item = findObject(arguments[1]);
+                       if (!item) {
+                         obj["error"] = "Object not found";
+                         return obj;
+                       }
+                       const QMetaObject* meta = item->metaObject();
+                       int start = meta->propertyOffset();
+                       int longest = 0;
+
+                       for (int i = start; i < meta->propertyCount(); i++) {
+                         QMetaProperty mp = meta->property(i);
+                         int namelen = strlen(mp.name());
+                         if (namelen > longest) {
+                           longest = namelen;
+                         }
+                       }
+
+                       for (int i = start; i < meta->propertyCount(); i++) {
+                         QMetaProperty mp = meta->property(i);
+                         int padding = longest - strlen(mp.name());
+                         QVariant value = mp.read(item);
+                         if (!result.isEmpty()) {
+                           result += "\n";
+                         }
+                         result += QString(mp.name());
+                         result += QString(padding, ' ') + " = ";
+                         result += value.toString();
+                       }
+
+                       obj["value"] = result;
+                       return obj;
+                     }},
+
     WebSocketCommand{"property", "Retrieve a property value from an object", 2,
                      [](const QList<QByteArray>& arguments) {
                        QJsonObject obj;
