@@ -309,6 +309,9 @@ class InAppPurchase private constructor(ctx: Context) :
             return
         }
         for (purchase in purchases) {
+            if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED) {
+                Log.i(TAG, "Purchase State is unexpectedly not PURCHASED")
+            }
             onPurchaseUpdated(purchase.originalJson)
         }
     }
