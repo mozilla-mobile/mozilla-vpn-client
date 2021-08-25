@@ -39,7 +39,6 @@ Item {
         wrapMode: Text.WordWrap
         leftPadding: icon.width + 14
         rightPadding: icon.width + 14
-        topPadding: 2
         width: title.implicitWidth < parent.width ? undefined : parent.width
 
         Rectangle {

@@ -335,16 +335,11 @@ Window {
         source: VPNFeatureList
         // Filter features that should be listed in What’s new
         filterCallback: feature => showFeatureInWhatsNew(feature)
-    }
 
-    VPNFilterProxyModel {
-        id: unseenFeaturesModel
-        source: VPNFeatureList
-        // Filter seen features for showing the What’s new indicator
-        filterCallback: feature => {
-             const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
-                            console.log(isFeatureSeen);
-             return showFeatureInWhatsNew(feature) && !isFeatureSeen;
+        function showFeatureInWhatsNew(feature) {
+            return feature.isNew           // new feature in this release
+                && feature.isMajor         // a feature we would like to show
+    //            && feature.supported;      // feature is supported on platform
         }
     }
 
@@ -354,19 +349,50 @@ Window {
         visible: {
             // Check if we should show the What’s new popup
             return VPN.state === VPN.StateMain
-                && hasNewTourFeatures()
+                && newFeaturesModel.rowCount() > 0
                 && !VPNSettings.featuresTourShown;
         }
     }
 
-    function showFeatureInWhatsNew(feature) {
-        return feature.isNew           // new feature in this release
-            && feature.isMajor         // a feature we would like to show
-//            && feature.supported;      // feature is supported on platform
+    Repeater {
+        id: featureListHelper
+
+        states: [
+            State {
+                name: "hasUnseenFeatures"
+                when: featureListHelper.hasUnseenFeatures()
+            }
+        ]
+        model: newFeaturesModel
+        delegate: Text {
+            text: id
+            visible: false
+        }
+
+        function hasUnseenFeatures() {
+            const unseenFeatures = [];
+            for(
+                var featureIndex = 0;
+                featureIndex < featureListHelper.count;
+                featureIndex++
+            ) {
+                const featureID = featureListHelper.itemAt(featureIndex).text;
+                const isFeatureSeen = VPNSettings.seenFeatures.includes(featureID);
+
+                if (!isFeatureSeen) {
+                    unseenFeatures.push(featureID);
+                }
+            }
+
+            return unseenFeatures.length > 0;
+        }
     }
 
-    function hasNewTourFeatures() {
-        return newFeaturesModel.rowCount() > 0;
+    Connections {
+        target: VPNSettings
+
+        function onSeenFeaturesChanged() {
+        }
     }
 
     // TODO: Remove — just for debugging
@@ -383,18 +409,6 @@ Window {
             } else {
                 featureTourPopup.openTour();
             }
-        }
-    }
-
-    Connections {
-        target: VPNSettings
-
-        function onFeaturesTourShownChanged() {
-            console.log(VPNSettings.featuresTourShown);
-        }
-
-        function onSeenFeaturesChanged() {
-            console.log(VPNSettings.seenFeatures);
         }
     }
 }
