@@ -21,11 +21,12 @@ CommandSelect::~CommandSelect() { MVPN_COUNT_DTOR(CommandSelect); }
 int CommandSelect::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   return runCommandLineApp([&]() {
-    if (tokens.length() != 2) {
+    if (tokens.length() < 2) {
       QTextStream stream(stdout);
-      stream << "usage: " << tokens[0] << " <server_hostname>" << Qt::endl;
+      stream << "usage: " << tokens[0] << " <server_hostname> [entry_hostname]"
+             << Qt::endl;
       stream << Qt::endl;
-      stream << "The list of <server_hostname>s can be obtained using: '"
+      stream << "The list of hostnames can be obtained using: '"
              << tokens[0].split(" ").at(0) << " servers'" << Qt::endl;
       return 1;
     }
@@ -39,26 +40,37 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    ServerData sd;
-    if (!pickServer(tokens[1], sd)) {
-      QTextStream stream(stdout);
+    QTextStream stream(stdout);
+    QString exitCountryCode;
+    QString exitCityName;
+    QString entryCountryCode;
+    QString entryCityName;
+    if (!pickServer(tokens[1], exitCountryCode, exitCityName)) {
       stream << "unknown server hostname: " << tokens[1] << Qt::endl;
       return 1;
     }
 
-    vpn.changeServer(sd.countryCode(), sd.cityName());
+    if ((tokens.length() > 2) &&
+        !pickServer(tokens[2], entryCountryCode, entryCityName)) {
+      stream << "unknown server hostname: " << tokens[2] << Qt::endl;
+      return 1;
+    }
+
+    vpn.changeServer(exitCountryCode, exitCityName, entryCountryCode,
+                     entryCityName);
     return 0;
   });
 }
 
-bool CommandSelect::pickServer(const QString& hostname,
-                               ServerData& serverData) {
+bool CommandSelect::pickServer(const QString& hostname, QString& countryCode,
+                               QString& cityName) {
   for (const ServerCountry& country :
        MozillaVPN::instance()->serverCountryModel()->countries()) {
     for (const ServerCity& city : country.cities()) {
       for (const Server& server : city.servers()) {
         if (server.hostname() == hostname) {
-          serverData.update(country.code(), city.name());
+          countryCode = country.code();
+          cityName = city.name();
           return true;
         }
       }
