@@ -104,8 +104,7 @@ Item {
                 visible: VPNFeatureList.get("multiHop").isSupported
                 Layout.rightMargin: Theme.windowMargin
 
-                //% "Multihop tunnel"
-                labelText: qsTrId("vpn.settings.multihop")
+                labelText: VPNl18n.tr(VPNl18n.NetworkSettingsMultihopTitle)
                 //% "Protect your traffic by routing it through multiple servers"
                 subLabelText: qsTrId("vpn.settings.multihop.description")
                 isChecked: (VPNSettings.multihopTunnel)
