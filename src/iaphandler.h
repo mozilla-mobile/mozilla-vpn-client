@@ -47,7 +47,7 @@ class IAPHandler : public QAbstractListModel {
 
  signals:
   void productsRegistered();
-  void productsRegistrationFailed();
+  void productsRegistrationStopped();
 
   void subscriptionStarted(const QString& productIdentifier);
   void subscriptionFailed();
@@ -62,7 +62,7 @@ class IAPHandler : public QAbstractListModel {
   // Called by the native code delegate
   void unknownProductRegistered(const QString& identifier);
   void productsRegistrationCompleted();
-  void cancelProductsRegistration();
+  void stopProductsRegistration();
 
  protected:
   IAPHandler(QObject* parent);

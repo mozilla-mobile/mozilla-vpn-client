@@ -189,7 +189,7 @@ void AndroidIAPHandler::onBillingNotAvailable(JNIEnv* env, jobject thiz,
     }
   }
   iap->stopSubscription();
-  iap->cancelProductsRegistration();
+  iap->stopProductsRegistration();
   emit iap->billingNotAvailable();
 }
 

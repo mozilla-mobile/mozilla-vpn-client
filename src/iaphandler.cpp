@@ -194,13 +194,13 @@ void IAPHandler::productsRegistrationCompleted() {
   emit productsRegistered();
 }
 
-void IAPHandler::cancelProductsRegistration() {
-  logger.debug() << "Cancel products registration";
+void IAPHandler::stopProductsRegistration() {
+  logger.debug() << "Stop products registration";
   beginResetModel();
   m_products.clear();
   m_productsRegistrationState = eNotRegistered;
   endResetModel();
-  emit productsRegistrationFailed();
+  emit productsRegistrationStopped();
 }
 
 void IAPHandler::subscribe(const QString& productIdentifier) {

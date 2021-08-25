@@ -791,7 +791,7 @@ void MozillaVPN::logout() {
   if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::instance();
     iap->stopSubscription();
-    iap->cancelProductsRegistration();
+    iap->stopProductsRegistration();
   }
 
   // update-required state is the only one we want to keep when logging out.
@@ -818,7 +818,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   if (FeatureInAppPurchase::instance()->isSupported()) {
     IAPHandler* iap = IAPHandler::instance();
     iap->stopSubscription();
-    iap->cancelProductsRegistration();
+    iap->stopProductsRegistration();
   }
 
   setUserAuthenticated(false);
