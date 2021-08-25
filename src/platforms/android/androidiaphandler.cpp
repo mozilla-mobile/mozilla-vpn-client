@@ -234,7 +234,7 @@ void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz,
 void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
   Q_ASSERT(m_productsRegistrationState == eRegistering);
 
-  QList<QString> productsUpdated;
+  QStringList productsUpdated;
   for (auto product : returnedProducts) {
     QString productIdentifier = product["sku"].toString();
     Product* productData = findProduct(productIdentifier);

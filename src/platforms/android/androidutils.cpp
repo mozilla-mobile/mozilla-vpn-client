@@ -174,34 +174,19 @@ QString AndroidUtils::getQStringFromJString(JNIEnv* env, jstring data) {
 
 // static
 QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
-  QJsonObject empty = QJsonObject();
-
-  const char* buffer = env->GetStringUTFChars(data, nullptr);
-  if (!buffer) {
-    logger.error() << "getQJsonObjectFromJString - failed to parse data.";
-    return empty;
-  }
-  QByteArray raw(buffer);
-  env->ReleaseStringUTFChars(data, buffer);
-
-  logger.debug() << "getQJsonObjectFromJString - parsing raw data: "
-                 << logger.sensitive(raw);
-
+  QByteArray raw(getQByteArrayFromJString(env, data));
   QJsonParseError jsonError;
   QJsonDocument json = QJsonDocument::fromJson(raw, &jsonError);
-
   if (QJsonParseError::NoError != jsonError.error) {
     logger.error() << "getQJsonObjectFromJstring - error parsing json. Code: "
                    << jsonError.error << "Offset: " << jsonError.offset
                    << "Message: " << jsonError.errorString()
                    << "Data: " << logger.sensitive(raw);
-    return empty;
+    return QJsonObject();
   }
-
   if (!json.isObject()) {
     logger.error() << "getQJsonObjectFromJString - object expected.";
-    return empty;
+    return QJsonObject();
   }
-
   return json.object();
 }

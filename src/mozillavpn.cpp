@@ -720,13 +720,13 @@ void MozillaVPN::createSupportTicket(const QString& email,
   });
 }
 
+#ifdef MVPN_ANDROID
 void MozillaVPN::launchPlayStore() {
   logger.debug() << "Launch Play Store";
-#ifdef MVPN_ANDROID
   IAPHandler* iap = IAPHandler::instance();
   static_cast<AndroidIAPHandler*>(iap)->launchPlayStore();
-#endif
 }
+#endif
 
 void MozillaVPN::accountChecked(const QByteArray& json) {
   logger.debug() << "Account checked";
