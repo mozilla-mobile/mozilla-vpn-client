@@ -17,7 +17,8 @@ class CommandSelect final : public Command {
   int run(QStringList& tokens) override;
 
  private:
-  bool pickServer(const QString& hostname, ServerData& serverData);
+  bool pickServer(const QString& hostname, QString& countryCode,
+                  QString& cityName);
 };
 
 #endif  // COMMANDSELECT_H

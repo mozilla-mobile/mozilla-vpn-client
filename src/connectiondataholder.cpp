@@ -231,9 +231,10 @@ void ConnectionDataHolder::updateIpAddress() {
           return;
         }
 
+        MozillaVPN* vpn = MozillaVPN::instance();
         logger.debug() << "IP address request completed";
         if (m_checkStatusTimer.isActive() &&
-            country != MozillaVPN::instance()->currentServer()->countryCode()) {
+            country != vpn->currentServer()->exitCountryCode()) {
           // In case the country-we're reported in does not match the
           // connected server we may retry only once.
           logger.warning() << "Reported ip not in the right country, retry!";

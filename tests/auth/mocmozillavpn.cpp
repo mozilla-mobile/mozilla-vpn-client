@@ -67,9 +67,12 @@ void MozillaVPN::setAlert(AlertType) {}
 
 void MozillaVPN::errorHandle(ErrorHandler::ErrorType) {}
 
-const QList<Server> MozillaVPN::servers() const { return QList<Server>(); }
+const QList<Server> MozillaVPN::exitServers() const { return QList<Server>(); }
 
-void MozillaVPN::changeServer(const QString&, const QString&) {}
+const QList<Server> MozillaVPN::entryServers() const { return QList<Server>(); }
+
+void MozillaVPN::changeServer(const QString&, const QString&, const QString&,
+                              const QString&) {}
 
 void MozillaVPN::postAuthenticationCompleted() {}
 

@@ -173,7 +173,7 @@ void Controller::activateInternal() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->servers();
+  QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   Server server = Server::weightChooser(servers);
@@ -194,13 +194,9 @@ void Controller::activateInternal() {
   // Multihop connections provide a list of servers, starting with the exit
   // node as the first element, and the entry node as the final entry.
   QList<Server> serverList = {server};
-  if (FeatureMultiHop::instance()->isSupported() &&
-      settingsHolder->multihopTunnel()) {
-    ServerData data;
-    Server hop = vpn->randomHop(data);
-    while (serverList.contains(hop)) {
-      hop = vpn->randomHop(data);
-    }
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    Server hop = Server::weightChooser(vpn->entryServers());
+    Q_ASSERT(hop.initialized());
     serverList.append(hop);
   }
 
@@ -226,7 +222,7 @@ bool Controller::silentSwitchServers() {
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  QList<Server> servers = vpn->servers();
+  QList<Server> servers = vpn->exitServers();
   Q_ASSERT(!servers.isEmpty());
 
   if (servers.length() <= 1) {
@@ -266,13 +262,9 @@ bool Controller::silentSwitchServers() {
   }
 
   QList<Server> serverList = {server};
-  if (FeatureMultiHop::instance()->isSupported() &&
-      settingsHolder->multihopTunnel()) {
-    ServerData data;
-    Server hop = vpn->randomHop(data);
-    while (serverList.contains(hop)) {
-      hop = vpn->randomHop(data);
-    }
+  if (FeatureMultiHop::instance()->isSupported() && vpn->multihop()) {
+    Server hop = Server::weightChooser(vpn->entryServers());
+    Q_ASSERT(hop.initialized());
     serverList.append(hop);
   }
 
@@ -445,21 +437,25 @@ void Controller::timerTimeout() {
   emit timeChanged();
 }
 
-void Controller::changeServer(const QString& countryCode, const QString& city) {
+void Controller::changeServer(const QString& countryCode, const QString& city,
+                              const QString& entryCountryCode,
+                              const QString& entryCity) {
   Q_ASSERT(m_state == StateOn || m_state == StateOff);
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(vpn);
 
-  if (vpn->currentServer()->countryCode() == countryCode &&
-      vpn->currentServer()->cityName() == city) {
+  if (vpn->currentServer()->exitCountryCode() == countryCode &&
+      vpn->currentServer()->exitCityName() == city &&
+      vpn->currentServer()->entryCountryCode() == entryCountryCode &&
+      vpn->currentServer()->entryCityName() == entryCity) {
     logger.debug() << "No server change needed";
     return;
   }
 
   if (m_state == StateOff) {
     logger.debug() << "Change server";
-    vpn->changeServer(countryCode, city);
+    vpn->changeServer(countryCode, city, entryCountryCode, entryCity);
     return;
   }
 
@@ -468,8 +464,8 @@ void Controller::changeServer(const QString& countryCode, const QString& city) {
 
   logger.debug() << "Switching to a different server";
 
-  m_currentCity = vpn->currentServer()->cityName();
-  m_currentCountryCode = vpn->currentServer()->countryCode();
+  m_currentCity = vpn->currentServer()->exitCityName();
+  m_currentCountryCode = vpn->currentServer()->exitCountryCode();
   m_switchingCountryCode = countryCode;
   m_switchingCity = city;
 

@@ -201,13 +201,17 @@ class MozillaVPN final : public QObject {
 
   void surveyChecked(const QByteArray& json);
 
-  const QList<Server> servers() const;
+  const QList<Server> exitServers() const;
+  const QList<Server> entryServers() const;
+  bool multihop() const { return m_private->m_serverData.multihop(); }
 
   void errorHandle(ErrorHandler::ErrorType error);
 
   void abortAuthentication();
 
-  void changeServer(const QString& countryCode, const QString& city);
+  void changeServer(const QString& countryCode, const QString& city,
+                    const QString& entryCountryCode = QString(),
+                    const QString& entryCity = QString());
 
   void silentSwitch();
 

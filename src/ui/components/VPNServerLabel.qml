@@ -34,7 +34,7 @@ RowLayout {
             Image {
                 id: flag
                 fillMode: Image.PreserveAspectFit
-                source: "../resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
+                source: "../resources/flags/" + modelData.exitCountryCode.toUpperCase() + ".png"
 
                 Layout.preferredWidth: imgSize
                 Layout.preferredHeight: imgSize

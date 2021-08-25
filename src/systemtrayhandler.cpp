@@ -188,15 +188,20 @@ void SystemTrayHandler::updateContextMenu() {
   m_lastLocationLabel->setVisible(true);
 
   QIcon flagIcon(QString(":/ui/resources/flags/%1.png")
-                     .arg(vpn->currentServer()->countryCode().toUpper()));
+                     .arg(vpn->currentServer()->exitCountryCode().toUpper()));
+
+  QString countryCode = vpn->currentServer()->exitCountryCode();
+  QString localizedCityName = vpn->currentServer()->localizedCityName();
+  QString localizedCountryName =
+      vpn->serverCountryModel()->localizedCountryName(countryCode);
 
   m_lastLocationLabel->setIcon(flagIcon);
   m_lastLocationLabel->setText(
       //% "%1, %2"
       //: Location in the systray. %1 is the country, %2 is the city.
       qtTrId("vpn.systray.location")
-          .arg(vpn->currentServer()->countryName())
-          .arg(vpn->currentServer()->cityName()));
+          .arg(localizedCountryName)
+          .arg(localizedCityName));
   m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
                                   Controller::StateOff);
 }
