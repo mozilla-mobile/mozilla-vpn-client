@@ -12,15 +12,16 @@ constexpr const char* FEATURE_CUSTOM_DNS = "customDNS";
 class FeatureCustomDNS final : public Feature {
  public:
   FeatureCustomDNS()
-      : Feature(FEATURE_CUSTOM_DNS, "Custom DNS",
-                true,                                            // Is Major Feature
-                L18nStrings::WhatsNewReleaseNotesDnsModalHeader, // Display name
-                L18nStrings::Empty,                              // Description
-                L18nStrings::Empty,                              // LongDescr
-                "../resources/features/custom-dns-preview.png",  // ImagePath
-                "../resources/settings/networkSettings.svg",     // IconPath
-                "2.5",                                           // released
-                true                                             // Can be enabled in devmode
+      : Feature(
+            FEATURE_CUSTOM_DNS, "Custom DNS",
+            true,                                               // Is Major Feature
+            L18nStrings::WhatsNewReleaseNotesDnsModalHeader,    // Display name
+            L18nStrings::WhatsNewReleaseNotesDnsListItemBody,   // Description
+            L18nStrings::WhatsNewReleaseNotesDnsModalBodyText,  // LongDescr
+            "../resources/features/custom-dns-preview.png",     // ImagePath
+            "../resources/settings/networkSettings.svg",        // IconPath
+            "2.5",                                              // released
+            true                                                // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override {
