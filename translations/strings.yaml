@@ -235,3 +235,6 @@ customDNSSettings:
   dnsFieldPlaceHolder: Enter custom DNS
   # The below is an inline error when an invalid DNS is entered into the custom DNS field
   inlineCustomDNSError: Invalid DNS, please try a new one
+
+networkSettings:
+  multihopTitle: Multi-hop tunnel
