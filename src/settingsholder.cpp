@@ -27,7 +27,6 @@ constexpr bool SETTINGS_SERVERSWITCHNOTIFICATION_DEFAULT = true;
 constexpr bool SETTINGS_CONNECTIONSWITCHNOTIFICATION_DEFAULT = true;
 const QStringList SETTINGS_DEFAULT_EMPTY_LIST = QStringList();
 constexpr const char* SETTINGS_USER_DNS_DEFAULT = "";
-constexpr bool SETTINGS_MULTIHOP_TUNNEL_DEFAULT = false;
 const int SETTINGS_DNS_PROVIDER_DEFAULT = SettingsHolder::DnsProvider::Gateway;
 constexpr const char* SETTINGS_ENTRYSERVER_COUNTRYCODE_DEFAULT = nullptr;
 constexpr const char* SETTINGS_ENTRYSERVER_CITY_DEFAULT = nullptr;
@@ -465,6 +464,7 @@ void SettingsHolder::removeDevModeFeatureFlag(const QString& featureID) {
   }
   features.removeAll(featureID);
   setDevModeFeatureFlags(features);
+}
 
 void SettingsHolder::removeEntryServer() {
   m_settings.remove(SETTINGS_ENTRYSERVER_COUNTRYCODE);
