@@ -21,7 +21,7 @@ CommandSelect::~CommandSelect() { MVPN_COUNT_DTOR(CommandSelect); }
 int CommandSelect::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   return runCommandLineApp([&]() {
-    if (tokens.length() < 2) {
+    if ((tokens.length() < 2) || (tokens.length() > 3)) {
       QTextStream stream(stdout);
       stream << "usage: " << tokens[0] << " <server_hostname> [entry_hostname]"
              << Qt::endl;
