@@ -6,7 +6,6 @@
 #define FEATURE_UNSECURED_NETWORK_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_UNSECUREDNETWORKNOTIFICATION =
     "unsecuredNetworkNotification";
@@ -15,7 +14,7 @@ class FeatureUnsecuredNetworkNotification final : public Feature {
  public:
   FeatureUnsecuredNetworkNotification()
       : Feature(FEATURE_UNSECUREDNETWORKNOTIFICATION,
-                L18nStrings::FeatureNamesUnsecuredNetworkNotification,
+                "Unsecured network notification",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr

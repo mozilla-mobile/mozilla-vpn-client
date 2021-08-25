@@ -6,14 +6,13 @@
 #define FEATURE_IN_APP_AUTH_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_IN_APP_AUTH = "inAppAuthentication";
 
 class FeatureInAppAuth final : public Feature {
  public:
   FeatureInAppAuth()
-      : Feature(FEATURE_IN_APP_AUTH, L18nStrings::FeatureNamesInAppAuth,
+      : Feature(FEATURE_IN_APP_AUTH, "In app authentication",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
