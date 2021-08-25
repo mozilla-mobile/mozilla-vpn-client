@@ -18,6 +18,7 @@
 #include "models/device.h"
 #include "models/servercountrymodel.h"
 #include "models/user.h"
+#include "models/whatsnewmodel.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"

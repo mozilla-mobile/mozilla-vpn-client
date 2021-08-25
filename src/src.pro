@@ -120,6 +120,7 @@ SOURCES += \
         models/survey.cpp \
         models/surveymodel.cpp \
         models/user.cpp \
+        models/whatsnewmodel.cpp \
         mozillavpn.cpp \
         networkmanager.cpp \
         networkrequest.cpp \
@@ -244,6 +245,7 @@ HEADERS += \
         models/survey.h \
         models/surveymodel.h \
         models/user.h \
+        models/whatsnewmodel.h \
         mozillavpn.h \
         networkmanager.h \
         networkrequest.h \

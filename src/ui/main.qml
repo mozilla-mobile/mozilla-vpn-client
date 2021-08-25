@@ -409,6 +409,8 @@ Window {
             } else {
                 featureTourPopup.openTour();
             }
+
+            console.log(VPNWhatsNewModel);
         }
     }
 }
