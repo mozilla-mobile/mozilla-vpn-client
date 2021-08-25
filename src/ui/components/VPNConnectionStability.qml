@@ -80,6 +80,10 @@ Item {
                     target: warningIcon
                     source: "../resources/warning.svg"
                 }
+                PropertyChanges {
+                    target: logoSubtitleOn
+                    visible: false
+                }
             }
         ]
 
