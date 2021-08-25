@@ -23,7 +23,6 @@ VPNFlickable {
 
     VPNCheckBoxRow {
         id: developerUnlock
-        objectName: "settingsDeveloperUnlock"
 
         anchors.top: menu.bottom
         anchors.topMargin: Theme.windowMargin
@@ -66,14 +65,14 @@ VPNFlickable {
         anchors.leftMargin: Theme.windowMargin/2
         width: parent.width - Theme.windowMargin
 
-        settingTitle: VPNl18n.tr(VPNl18n.SettingsDevFeatureListTitle)
+        // Do not translate this string!
+        settingTitle: "Feature list"
         imageLeftSrc: "../resources/settings/whatsnew.svg"
         imageRightSrc: "../resources/chevron.svg"
         onClicked: stackview.push("../developerMenu/ViewFeatureList.qml")
     }
 
     VPNCheckBoxAlert {
-        id: restartRequired
         anchors.top: featureListLink.bottom
         visible: VPN.stagingMode != VPNSettings.stagingServer
 

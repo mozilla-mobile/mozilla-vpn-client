@@ -6,7 +6,6 @@
 #define FEATURE_SPLIT_TUNNEL_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 #ifdef MVPN_LINUX
 #  include <QProcessEnvironment>
@@ -18,7 +17,7 @@ constexpr const char* FEATURE_SPLIT_TUNNEL = "splitTunnel";
 class FeatureSplitTunnel final : public Feature {
  public:
   FeatureSplitTunnel()
-      : Feature(FEATURE_SPLIT_TUNNEL, L18nStrings::FeatureNamesSplittunnel,
+      : Feature(FEATURE_SPLIT_TUNNEL, "Split-tunnel",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description

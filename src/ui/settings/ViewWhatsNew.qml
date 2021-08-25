@@ -42,7 +42,7 @@ Item {
             width: parent.width - Theme.windowMargin
 
             VPNSettingsItem {                
-                settingTitle: "Take the tour"
+                settingTitle: VPNl18n.tr(VPNl18n.WhatsNewReleaseNotesTourSubHeader)
                 imageLeftSrc: hovered ? "../resources/magic-purple.svg" : "../resources/magic-dark.svg"
                 imageRightSrc: hovered ? "../resources/chevron-purple.svg" : "../resources/chevron.svg"
                 backgroundColor: Theme.clickableRowPurple

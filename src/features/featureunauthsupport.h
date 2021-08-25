@@ -6,22 +6,21 @@
 #define FEATURE_UNAUTH_SUPPORT_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_UNAUTH_SUPPORT = "unauthSupport";
 
 class FeatureUnauthSupport final : public Feature {
  public:
   FeatureUnauthSupport()
-      : Feature(FEATURE_UNAUTH_SUPPORT, L18nStrings::FeatureNamesUnauthSupport,
-                true,                                                  // Is Major Feature
-                L18nStrings::WhatsNewReleaseNotesSupportModalHeader,   // Display name
-                L18nStrings::WhatsNewReleaseNotesSupportListItemBody,  // Description
-                L18nStrings::WhatsNewReleaseNotesSupportModalBodyText, // LongDescr
-                "../resources/features/support-form-preview.png",      // ImagePath
-                "../resources/settings/getHelp.svg",                   // IconPath
-                "2.5",                                                 // released
-                true                                                   // Can be enabled in devmode
+      : Feature(FEATURE_UNAUTH_SUPPORT, "Unauth user support form",
+                false,                                               // Is Major Feature
+                L18nStrings::WhatsNewReleaseNotesSupportModalHeader, // Display name
+                L18nStrings::Empty,                                  // Description
+                L18nStrings::Empty,                                  // LongDescr
+                "../resources/features/support-form-preview.png",    // ImagePath
+                "../resources/settings/getHelp.svg",                 // IconPath
+                "2.5",                                               // released
+                true                                                 // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override { return m_supported; }
@@ -31,7 +30,7 @@ class FeatureUnauthSupport final : public Feature {
   }
 
   void setIsSupported(bool enabled) { m_supported = enabled; }
-              
+
  private:
   bool m_supported = false;
 };

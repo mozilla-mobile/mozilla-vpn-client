@@ -6,15 +6,13 @@
 #define FEATURE_NOTIFICATION_CONTROL_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_NOTIFICATION_CONTROL = "notificationControl";
 
 class FeatureNotificationControl final : public Feature {
  public:
   FeatureNotificationControl()
-      : Feature(FEATURE_NOTIFICATION_CONTROL,
-                L18nStrings::FeatureNamesNotificationControl,
+      : Feature(FEATURE_NOTIFICATION_CONTROL, "Notification control",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description

@@ -6,14 +6,13 @@
 #define FEATURE_GLEAN_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_GLEAN = "glean";
 
 class FeatureGlean : public Feature {
  public:
   FeatureGlean()
-      : Feature(FEATURE_GLEAN, L18nStrings::FeatureNamesGlean,
+      : Feature(FEATURE_GLEAN, "Glean",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description

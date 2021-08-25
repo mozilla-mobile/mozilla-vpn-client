@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 #include "constants.h"
+#include "dnshelper.h"
 #include "featurelist.h"
 #include "features/featureappreview.h"
 #include "features/featureinapppurchase.h"
@@ -458,6 +459,12 @@ void MozillaVPN::openLink(LinkType linkType) {
       url = NetworkRequest::apiBaseUrl();
       url.append("/r/vpn/subscriptionBlocked");
       break;
+    case LinkSplitTunnelHelp:
+      // TODO: This should link to a more helpful article
+      url =
+          "https://support.mozilla.org/kb/"
+          "split-tunneling-use-mozilla-vpn-specific-apps-wind";
+      break;
 
     default:
       qFatal("Unsupported link type!");
@@ -898,16 +905,45 @@ void MozillaVPN::errorHandle(ErrorHandler::ErrorType error) {
   }
 }
 
-const QList<Server> MozillaVPN::servers() const {
+const QList<Server> MozillaVPN::exitServers() const {
   return m_private->m_serverCountryModel.servers(m_private->m_serverData);
 }
 
-void MozillaVPN::changeServer(const QString& countryCode, const QString& city) {
-  QString countryName =
-      m_private->m_serverCountryModel.countryName(countryCode);
+const QList<Server> MozillaVPN::entryServers() const {
+  if (!m_private->m_serverData.multihop()) {
+    return QList<Server>();
+  }
+  ServerData sd;
+  sd.update(m_private->m_serverData.entryCountryCode(),
+            m_private->m_serverData.entryCityName());
+  return m_private->m_serverCountryModel.servers(sd);
+}
 
-  m_private->m_serverData.update(countryCode, countryName, city);
+void MozillaVPN::changeServer(const QString& countryCode, const QString& city,
+                              const QString& entryCountryCode,
+                              const QString& entryCity) {
+  m_private->m_serverData.update(countryCode, city, entryCountryCode,
+                                 entryCity);
   m_private->m_serverData.writeSettings();
+
+  // Update the list of recent connections.
+  QString description = m_private->m_serverData.toString();
+  QStringList recent = SettingsHolder::instance()->recentConnections();
+  int index = recent.indexOf(description);
+  if (index == 0) {
+    // This is already the most-recent connection.
+    return;
+  }
+
+  if (index > 0) {
+    recent.removeAt(index);
+  } else {
+    while (recent.count() >= Constants::RECENT_CONNECTIONS_MAX_COUNT) {
+      recent.removeLast();
+    }
+  }
+  recent.prepend(description);
+  SettingsHolder::instance()->setRecentConnections(recent);
 }
 
 const Server& MozillaVPN::randomHop(ServerData& data) const {
@@ -1371,4 +1407,8 @@ void MozillaVPN::appReviewRequested() {
 #elif defined(MVPN_ANDROID)
   AndroidUtils::appReviewRequested();
 #endif
+}
+
+bool MozillaVPN::validateUserDNS(const QString& dns) const {
+  return DNSHelper::validateUserDNS(dns);
 }

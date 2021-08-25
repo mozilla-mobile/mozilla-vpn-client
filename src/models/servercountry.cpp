@@ -76,7 +76,7 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
 
 const QList<Server> ServerCountry::servers(const ServerData& data) const {
   for (const ServerCity& city : m_cities) {
-    if (city.name() == data.cityName()) {
+    if (city.name() == data.exitCityName()) {
       return city.servers();
     }
   }

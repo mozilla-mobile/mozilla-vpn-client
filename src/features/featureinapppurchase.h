@@ -6,14 +6,13 @@
 #define FEATURE_IN_APP_PURCHASE_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_IN_APP_PURCHASE = "inAppPurchase";
 
 class FeatureInAppPurchase final : public Feature {
  public:
   FeatureInAppPurchase()
-      : Feature(FEATURE_IN_APP_PURCHASE, L18nStrings::FeatureNamesInAppPurchase,
+      : Feature(FEATURE_IN_APP_PURCHASE, "In app Purchase",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description

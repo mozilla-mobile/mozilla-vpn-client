@@ -5,16 +5,17 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
+#include "qmlengineholder.h"
+#include "l18nstrings.h"
+
 #include <QObject>
 #include <QApplication>
-#include "../translations/generated/l18nstrings.h"
-#include "qmlengineholder.h"
 
 class Feature : public QObject {
   Q_OBJECT
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
-  Q_PROPERTY(QString name READ name CONSTANT)
+  Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(bool isMajorFeature MEMBER m_majorFeature CONSTANT)
   Q_PROPERTY(QString displayName READ displayName CONSTANT)
   Q_PROPERTY(QString shortDescription READ shortDescription CONSTANT)
@@ -28,10 +29,11 @@ class Feature : public QObject {
 
   // protected:
  public:
-  Feature(QString id, L18nStrings::String name_id, bool isMajor,
+  Feature(const QString& id, const QString& name, bool isMajor,
           L18nStrings::String displayName_id, L18nStrings::String shortDesc_id,
-          L18nStrings::String desc_id, QString imgPath, QString iconPath,
-          QString releaseVersion, bool devModeWriteable = false);
+          L18nStrings::String desc_id, const QString& imgPath,
+          const QString& iconPath, const QString& releaseVersion,
+          bool devModeWriteable = false);
 
  public:
   virtual ~Feature() = default;
@@ -50,7 +52,6 @@ class Feature : public QObject {
   // Returns true if it was enabled via DevMode
   bool isDevModeEnabled() const;
 
-  QString name() const;
   QString displayName() const;
   QString description() const;
   QString shortDescription() const;
@@ -91,8 +92,8 @@ class Feature : public QObject {
   // Capapbilities of the Daemon/Server or if is Force-Enabled in the Dev Menu
   const QString m_id;
 
-  // Id for Human Readable Name of the Feature
-  const L18nStrings::String m_name_id;
+  // Human Readable Name of the Feature
+  const QString m_name;
 
   // Major Features are shown at "Whats new"
   const bool m_majorFeature;
