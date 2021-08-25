@@ -25,7 +25,6 @@ AndroidWebView* s_instance = nullptr;
 constexpr auto WEBVIEW_CLASS = "org/mozilla/firefox/vpn/qt/VPNWebView";
 }  // namespace
 
-
 // static
 void AndroidWebView::onPageStarted(JNIEnv* env, jobject thiz, jstring url,
                                    jobject icon) {
