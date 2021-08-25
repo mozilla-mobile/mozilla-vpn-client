@@ -12,10 +12,23 @@ Logger logger(LOG_MODEL, "SupportCategoryModel");
 
 struct SupportCategory {
   const char* m_categoryName;
-  const char* m_nameId;
+  L18nStrings::String m_stringId;
 };
 
-static QList<SupportCategory> s_supportCategories;
+static QList<SupportCategory> s_supportCategories{
+    SupportCategory{"payment",
+                    L18nStrings::InAppSupportWorkflowPaymentDropdownListItem},
+    SupportCategory{"account",
+                    L18nStrings::InAppSupportWorkflowAccountDropdownListItem},
+    SupportCategory{"technical",
+                    L18nStrings::InAppSupportWorkflowTechnicaDropdownListItem},
+    SupportCategory{
+        "feature",
+        L18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem},
+    SupportCategory{"other",
+                    L18nStrings::InAppSupportWorkflowOtherDropdownListItem},
+};
+
 }  // namespace
 
 SupportCategoryModel::SupportCategoryModel() {
@@ -47,7 +60,8 @@ QVariant SupportCategoryModel::data(const QModelIndex& index, int role) const {
       return QVariant(s_supportCategories.at(index.row()).m_categoryName);
 
     case LocalizedNameRole:
-      return QVariant(qtTrId(s_supportCategories.at(index.row()).m_nameId));
+      return QVariant(L18nStrings::instance()->tr(
+          s_supportCategories.at(index.row()).m_stringId));
 
     default:
       return QVariant();
