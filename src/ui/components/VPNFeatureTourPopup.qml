@@ -18,6 +18,7 @@ VPNPopup {
             VPNSettings.addSeenFeature('customDNS');
             VPNSettings.addSeenFeature('multiHop');
             VPNSettings.addSeenFeature('unauthSupport');
+
         }
     }
 

@@ -320,13 +320,6 @@ Window {
         }
     }
 
-    Connections {
-        target: VPNSettings
-        function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
-        }
-    }
-
     VPNSystemAlert {
     }
 
@@ -342,20 +335,8 @@ Window {
         source: VPNFeatureList
         // Filter seen features for showing the What’s new indicator
         filterCallback: feature => {
-             const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
-                            console.log(isFeatureSeen);
-             return showFeatureInWhatsNew(feature) && !isFeatureSeen;
-        }
-    }
-
-    VPNFeatureTourPopup {
-        id: featureTourPopup
-
-        visible: {
-            // Check if we should show the What’s new popup
-            return VPN.state === VPN.StateMain
-                && hasNewTourFeatures()
-                && !VPNSettings.featuresTourShown;
+            const isFeatureSeen = VPNSettings.seenFeatures.includes(feature.id);
+            return showFeatureInWhatsNew(feature) && !isFeatureSeen;
         }
     }
 
@@ -365,8 +346,38 @@ Window {
 //            && feature.supported;      // feature is supported on platform
     }
 
-    function hasNewTourFeatures() {
-        return newFeaturesModel.rowCount() > 0;
+    VPNFeatureTourPopup {
+        id: featureTourPopup
+
+        Component.onCompleted: {
+            handleFeaturePopup();
+        }
+
+        function handleFeaturePopup() {
+            console.log(VPNSettings.featuresTourShown);
+            if (
+                VPN.state === VPN.StateMain
+                && newFeaturesModel.rowCount() > 0
+//                && !VPNSettings.featuresTourShown
+            ) {
+                featureTourPopup.openTour();
+            }
+        }
+    }
+
+    Connections {
+        target: VPNSettings
+        function onGleanEnabledChanged() {
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+        }
+
+        function onFeaturesTourShownChanged() {
+//            featureTourPopup.handleFeaturePopup();
+        }
+
+        function onSeenFeaturesChanged() {
+            unseenFeaturesModel.invalidate();
+        }
     }
 
     // TODO: Remove — just for debugging
@@ -375,26 +386,10 @@ Window {
         anchors.bottomMargin: 16
         anchors.horizontalCenter: parent.horizontalCenter
 
-        text: VPNSettings.featuresTourShown ? "Reset What’s new" : "Show What’s new"
+        text: "Reset What’s new"
         onClicked: {
-            if (VPNSettings.featuresTourShown) {
-                VPNSettings.featuresTourShown = false;
-                VPNSettings.seenFeatures = [];
-            } else {
-                featureTourPopup.openTour();
-            }
-        }
-    }
-
-    Connections {
-        target: VPNSettings
-
-        function onFeaturesTourShownChanged() {
-            console.log(VPNSettings.featuresTourShown);
-        }
-
-        function onSeenFeaturesChanged() {
-            console.log(VPNSettings.seenFeatures);
+            VPNSettings.featuresTourShown = false;
+            VPNSettings.seenFeatures = [];
         }
     }
 }
