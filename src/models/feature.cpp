@@ -16,13 +16,13 @@ Logger logger(LOG_MODEL, "Feature");
 QMap<QString, Feature*>* s_features = nullptr;
 }  // namespace
 
-Feature::Feature(QString id, L18nStrings::String name_id, bool isMajor,
+Feature::Feature(const QString& id, const QString& name, bool isMajor,
                  L18nStrings::String shortDesc_id, L18nStrings::String desc_id,
-                 QString imgPath, QString iconPath, QString aReleaseVersion,
-                 bool devModeWriteable)
+                 const QString& imgPath, const QString& iconPath,
+                 const QString& aReleaseVersion, bool devModeWriteable)
     : QObject(qApp),
       m_id(id),
-      m_name_id(name_id),
+      m_name(name),
       m_majorFeature(isMajor),
       m_shortDescription_id(shortDesc_id),
       m_description_id(desc_id),
@@ -98,7 +98,6 @@ bool Feature::isSupported() const {
   return checkSupportCallback();
 }
 
-QString Feature::name() const { return L18nStrings::instance()->tr(m_name_id); }
 QString Feature::description() const {
   return L18nStrings::instance()->tr(m_description_id);
 }
@@ -111,7 +110,7 @@ QVariant Feature::data(int role) const {
     case RoleId:
       return m_id;
     case RoleName:
-      return name();
+      return m_name;
     case RoleDescription:
       return description();
     case RoleShortDescription:

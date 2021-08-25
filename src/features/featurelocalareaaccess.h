@@ -6,14 +6,13 @@
 #define FEATURE_LAN_ACCESS_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_LAN_ACCESS = "lanAccess";
 
 class FeatureLocalAreaAccess final : public Feature {
  public:
   FeatureLocalAreaAccess()
-      : Feature(FEATURE_LAN_ACCESS, L18nStrings::FeatureNamesLocalAreaAccess,
+      : Feature(FEATURE_LAN_ACCESS, "Local area network access",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr

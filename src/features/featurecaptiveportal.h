@@ -6,14 +6,13 @@
 #define FEATURE_CAPTIVEPORTAL_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_CAPTIVEPORTAL = "captivePortal";
 
 class FeatureCaptivePortal final : public Feature {
  public:
   FeatureCaptivePortal()
-      : Feature(FEATURE_CAPTIVEPORTAL, L18nStrings::FeatureNamesCaptivePortal,
+      : Feature(FEATURE_CAPTIVEPORTAL, "CaptivePortal",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Description
                 L18nStrings::Empty,  // LongDescr
