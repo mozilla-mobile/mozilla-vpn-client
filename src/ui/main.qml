@@ -350,15 +350,13 @@ Window {
         id: featureTourPopup
 
         Component.onCompleted: {
-            handleFeaturePopup();
+            featureTourPopup.handleShowTour();
         }
 
-        function handleFeaturePopup() {
-            console.log(VPNSettings.featuresTourShown);
-            if (
-                VPN.state === VPN.StateMain
+        function handleShowTour(tourShown) {
+            if(VPN.state === VPN.StateMain
                 && newFeaturesModel.rowCount() > 0
-//                && !VPNSettings.featuresTourShown
+                && !tourShown
             ) {
                 featureTourPopup.openTour();
             }
@@ -371,8 +369,8 @@ Window {
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
 
-        function onFeaturesTourShownChanged() {
-//            featureTourPopup.handleFeaturePopup();
+        function onFeaturesTourShownChanged(tourShown) {
+            featureTourPopup.handleShowTour(tourShown);
         }
 
         function onSeenFeaturesChanged() {
