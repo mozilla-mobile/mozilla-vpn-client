@@ -252,12 +252,12 @@ class InAppPurchase private constructor(ctx: Context) :
         billingResult: BillingResult,
         purchases: MutableList<Purchase>
     ) {
-        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+        val responseCode = billingResult.responseCode
+        if (responseCode == BillingClient.BillingResponseCode.OK) {
             processPurchases(purchases)
+        } else {
+            Log.e(TAG, "onQueryPurchasesReponse got BillingResponseCode $responseCode")
         }
-        // TODO - Could try re-querying up to n times before declaring failure
-        // I think that if querying purchases fails, other things will
-        // fail too and we handle those gracefully.
     }
 
     override fun onPurchasesUpdated(
