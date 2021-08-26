@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "featurelist.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -198,4 +199,25 @@ const Device* WhatsNewModel::deviceFromPublicKey(const QString& publicKey) const
 
 bool WhatsNewModel::hasCurrentDevice(const Keys* keys) const {
   return currentDevice(keys) != nullptr;
+}
+
+bool WhatsNewModel::doSomething() {
+  return false;
+}
+
+int WhatsNewModel::featureCount() {
+  // Start: Get seen features from settings
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  logger.debug() << "Reading seen features from settings";
+  if (settingsHolder->hasSeenFeatures()) {
+    const QStringList& seenFeatureList = settingsHolder->seenFeatures();
+    logger.debug() << "WhatsNewModel - seenFeatures: " << seenFeatureList;
+  }
+  // End: Get seen features from settings
+
+
+  logger.debug() << "WhatsNewModel - featureCount: " << m_featurelist.size();
+  return m_featurelist.size();
 }

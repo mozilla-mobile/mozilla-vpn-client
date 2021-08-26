@@ -9,14 +9,21 @@
 #include <QPointer>
 
 #include "device.h"
+#include "featurelist.h"
 
 class Keys;
+class Feature;
 
 class WhatsNewModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(WhatsNewModel)
 
   Q_PROPERTY(int activeDevices READ activeDevices NOTIFY changed)
+
+  Q_PROPERTY(int newFeatures READ newFeatures NOTIFY newFeaturesChanged)
+
+  Q_PROPERTY(int hasUnseenFeature READ hasUnseenFeature NOTIFY
+             hasUnseenFeatureChanged)
 
  public:
   WhatsNewModel();
@@ -33,6 +40,8 @@ class WhatsNewModel final : public QAbstractListModel {
 
   [[nodiscard]] bool fromSettings(const Keys* keys);
 
+  void initialize();
+
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
   void writeSettings();
@@ -40,6 +49,16 @@ class WhatsNewModel final : public QAbstractListModel {
   void removeDeviceFromPublicKey(const QString& publicKey);
 
   int activeDevices() const { return m_devices.count(); }
+
+  int hasUnseenFeature() const { return m_devices.count(); }
+
+  int newFeatures() const {
+    return m_featurelist.count();
+  }
+
+  Q_INVOKABLE bool doSomething();
+
+  Q_INVOKABLE int featureCount();
 
   const QList<Device>& devices() const { return m_devices; }
 
@@ -60,6 +79,10 @@ class WhatsNewModel final : public QAbstractListModel {
  signals:
   void changed();
 
+  void hasUnseenFeatureChanged();
+
+  void newFeaturesChanged();
+
  private:
   [[nodiscard]] bool fromJsonInternal(const Keys* keys, const QByteArray& json);
 
@@ -70,6 +93,8 @@ class WhatsNewModel final : public QAbstractListModel {
   QByteArray m_rawJson;
 
   QList<Device> m_devices;
+
+  QList<Feature*> m_featurelist;
 };
 
 #endif  // WHATSNEWMODEL_H

@@ -387,12 +387,10 @@ Window {
             Glean.setUploadEnabled(VPNSettings.gleanEnabled);
         }
 
-        function onFeaturesTourShownChanged(tourShown) {
-            featureTourPopup.handleShowTour(tourShown);
+        function onFeaturesTourShownChanged() {
         }
 
         function onSeenFeaturesChanged() {
-            unseenFeaturesModel.invalidate();
         }
     }
 
@@ -407,7 +405,12 @@ Window {
             VPNSettings.featuresTourShown = false;
             VPNSettings.seenFeatures = [];
 
-            console.log(VPNWhatsNew);
+            console.log(VPNWhatsNewModel);
+            console.log(VPNWhatsNewModel.activeDevices);
+            console.log(VPNWhatsNewModel.hasUnseenFeature);
+            console.log(VPNWhatsNewModel.newFeatures);
+            console.log(VPNWhatsNewModel.doSomething());
+            console.log(VPNWhatsNewModel.featureCount());
         }
     }
 }
