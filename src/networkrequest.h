@@ -113,6 +113,11 @@ class NetworkRequest final : public QObject {
   static NetworkRequest* createForIOSPurchase(QObject* parent,
                                               const QString& receipt);
 #endif
+#ifdef MVPN_ANDROID
+  static NetworkRequest* createForAndroidPurchase(QObject* parent,
+                                                  const QString& sku,
+                                                  const QString& purchaseToken);
+#endif
 
   void disableTimeout();
 

@@ -44,17 +44,19 @@ class MozillaVPN final : public QObject {
 
  public:
   enum State {
-    StateInitialize,
-    StateTelemetryPolicy,
     StateAuthenticating,
-    StatePostAuthentication,
-    StateMain,
-    StateUpdateRequired,
-    StateSubscriptionNeeded,
-    StateSubscriptionValidation,
-    StateSubscriptionBlocked,
-    StateDeviceLimit,
     StateBackendFailure,
+    StateBillingNotAvailable,
+    StateDeviceLimit,
+    StateInitialize,
+    StateMain,
+    StatePostAuthentication,
+    StateSubscriptionBlocked,
+    StateSubscriptionNeeded,
+    StateSubscriptionInProgress,
+    StateSubscriptionNotValidated,
+    StateTelemetryPolicy,
+    StateUpdateRequired,
   };
   Q_ENUM(State);
 
@@ -151,6 +153,9 @@ class MozillaVPN final : public QObject {
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
+#ifdef MVPN_ANDROID
+  Q_INVOKABLE void launchPlayStore();
+#endif
 
   // Internal object getters:
   CaptivePortal* captivePortal() { return &m_private->m_captivePortal; }
@@ -239,7 +244,7 @@ class MozillaVPN final : public QObject {
 
   [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
-  void reset(bool forceInitialState);
+  Q_INVOKABLE void reset(bool forceInitialState);
 
   bool modelsInitialized() const;
 
@@ -295,6 +300,8 @@ class MozillaVPN final : public QObject {
   void subscriptionCanceled();
   void subscriptionFailedInternal(bool canceledByUser);
   void alreadySubscribed();
+  void billingNotAvailable();
+  void subscriptionNotValidated();
 
   void completeActivation();
 
