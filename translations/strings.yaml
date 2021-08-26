@@ -178,7 +178,7 @@ whatsNewReleaseNotes:
   supportModalHeader: In-app support form
   supportModalBodyText: The in-app support form will allow you to contact support from within the VPN app. You can find it in the “Get help” section.
   dnsModalHeader: Custom DNS
-  dnsModalBodyText: Custom DNS servers allow for faster speed using local networks. You can find this feature in the “Network settings” section.
+  dnsModalBodyText: Custom DNS servers allow for faster speed using local networks, features like ad-blocking and anti-tracking. You can find this feature in the “Network settings” section.
   dnsModalButtonText: Done
   tourPageHeader: What’s new
   tourSubHeader: Take the tour
