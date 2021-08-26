@@ -14,14 +14,14 @@ class FeatureMultiHop : public Feature {
   FeatureMultiHop()
       : Feature(
             FEATURE_MULTI_HOP, "Multi-hop",
-            true,                                                 // Is Major Feature
-            L18nStrings::WhatsNewReleaseNotesMultiModalHeader,    // Display name
-            L18nStrings::WhatsNewReleaseNotesMultiListItemBody,   // Description
+            true,  // Is Major Feature
+            L18nStrings::WhatsNewReleaseNotesMultiModalHeader,   // Display name
+            L18nStrings::WhatsNewReleaseNotesMultiListItemBody,  // Description
             L18nStrings::WhatsNewReleaseNotesMultiModalBodyText,  // LongDescr
             "../resources/features/multi-hop-preview.png",        // ImagePath
             "../resources/location-dark.svg",                     // IconPath
             "2.5",                                                // released
-            true                                                  // Can be enabled in devmode
+            true  // Can be enabled in devmode
         ) {}
 
   bool checkSupportCallback() const override {
