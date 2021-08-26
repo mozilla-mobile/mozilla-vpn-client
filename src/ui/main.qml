@@ -228,11 +228,11 @@ Window {
 
                 },
                 State {
-                    name: VPN.StateSubscriptionValidation
+                    name: VPN.StateSubscriptionInProgress
 
                     PropertyChanges {
                         target: loader
-                        source: "states/StateSubscriptionValidation.qml"
+                        source: "states/StateSubscriptionInProgress.qml"
                     }
 
                 },
@@ -262,6 +262,22 @@ Window {
                         source: "states/StateBackendFailure.qml"
                     }
 
+                },
+                State {
+                    name: VPN.StateBillingNotAvailable
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateBillingNotAvailable.qml"
+                    }
+                },
+                State {
+                    name: VPN.StateSubscriptionNotValidated
+
+                    PropertyChanges {
+                        target: loader
+                        source: "states/StateSubscriptionNotValidated.qml"
+                    }
                 }
             ]
 

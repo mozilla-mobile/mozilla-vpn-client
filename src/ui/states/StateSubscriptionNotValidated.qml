@@ -15,28 +15,25 @@ VPNStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPN.openLink(VPN.LinkSubscriptionsBlocked)
+        VPN.reset(true);
     }
 
     Component.onCompleted: {
         stackview.push("../views/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
-            headlineText: VPNl18n.tr(VPNl18n.MultiFxaAccountErrorFxaAccountErrorHeader),
+            headlineText: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorHeader),
 
-            // "Your subscription is linked to another Firefox Account....."
-            errorMessage: VPNl18n.tr(VPNl18n.MultiFxaAccountErrorFxaAccountErrorText),
+            // "An unexpected error....."
+            errorMessage: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorText),
 
-            //% "Visit our help center to learn more about managing your subscriptions."
-            errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
-
-            //% "Get Help"
-            buttonText: qsTrId("vpn.subscriptionBlocked.getHelp"),
+            // "Try again"
+            buttonText: VPNl18n.tr(VPNl18n.GenericPurchaseErrorGenericPurchaseErrorButton),
             buttonObjectName: "errorGetHelpButton",
             buttonOnClick: stackview.handleButtonClick,
-            signOffLinkVisible: true,
-            getHelpLinkVisible: false
+            signOffLinkVisible: false,
+            getHelpLinkVisible: true,
             }
         );
-        Sample.subscriptionBlockedViewed.record();
+        Sample.subNotValidatedViewed.record();
     }
 }

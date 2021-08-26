@@ -48,8 +48,6 @@ class AndroidWebView : public QQuickItem {
                             jobject icon);
   static void onError(JNIEnv* env, jobject thiz, jint errorCode,
                       jstring description, jstring url);
-  static void dispatchToMainThread(std::function<void()> callback);
-
   void propagateError(ErrorHandler::ErrorType error);
 
  private:

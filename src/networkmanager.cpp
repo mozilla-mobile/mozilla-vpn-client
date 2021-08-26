@@ -4,6 +4,7 @@
 
 #include "networkmanager.h"
 #include "constants.h"
+#include "features/featureinapppurchase.h"
 #include "leakdetector.h"
 
 #include <QTextStream>
@@ -62,6 +63,10 @@ QByteArray NetworkManager::userAgent() {
 
     // System data
     out << "sys:" << NetworkManager::osVersion();
+
+    if (FeatureInAppPurchase::instance()->isSupported()) {
+      out << "; iap:true";
+    }
 
 #ifdef MVPN_EXTRA_USERAGENT
     out << "; ";

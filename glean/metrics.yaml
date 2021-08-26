@@ -385,7 +385,43 @@ sample:
       - main
     description: |
       The user has viewed an error message after attempting to subscribe
-      with an Apple ID that already has a subscription.
+      with an Apple / Google Play ID that already has a subscription.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  sub_not_validated_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed an error message after attempting to subscribe
+      through Google Play store, but the validation could not be completed.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  billing_not_available_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed an error message after attempting to subscribe
+      through Google Play store, but the billing service is not availble.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
     data_reviews:
