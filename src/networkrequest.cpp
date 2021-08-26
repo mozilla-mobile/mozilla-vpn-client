@@ -503,7 +503,16 @@ NetworkRequest* NetworkRequest::createForFxaSessionVerifyByEmailCode(
   obj.insert("service", query.queryItemValue("client_id"));
 
   QJsonArray scopes;
-  scopes.append(query.queryItemValue("scope"));
+  QStringList queryScopes = query.queryItemValue("scope").split("+");
+  foreach (const QString& s, queryScopes) {
+    QString parsedScope;
+    if (s.startsWith("http")) {
+      parsedScope = QUrl::fromPercentEncoding(s.toUtf8());
+    } else {
+      parsedScope = s;
+    }
+    scopes.append(parsedScope);
+  }
   obj.insert("scopes", scopes);
 
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
