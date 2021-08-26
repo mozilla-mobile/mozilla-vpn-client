@@ -5,7 +5,7 @@
 #ifndef ANDROIDUTILS_H
 #define ANDROIDUTILS_H
 
-#include "jni.h"
+#include <jni.h>
 #include <QObject>
 #include <QString>
 #include <QUrl>
