@@ -320,13 +320,6 @@ Window {
         }
     }
 
-    Connections {
-        target: VPNSettings
-        function onGleanEnabledChanged() {
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
-        }
-    }
-
     VPNSystemAlert {
     }
 
@@ -390,8 +383,16 @@ Window {
 
     Connections {
         target: VPNSettings
+        function onGleanEnabledChanged() {
+            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+        }
+
+        function onFeaturesTourShownChanged(tourShown) {
+            featureTourPopup.handleShowTour(tourShown);
+        }
 
         function onSeenFeaturesChanged() {
+            unseenFeaturesModel.invalidate();
         }
     }
 
@@ -401,16 +402,12 @@ Window {
         anchors.bottomMargin: 16
         anchors.horizontalCenter: parent.horizontalCenter
 
-        text: VPNSettings.featuresTourShown ? "Reset What’s new" : "Show What’s new"
+        text: "Reset What’s new"
         onClicked: {
-            if (VPNSettings.featuresTourShown) {
-                VPNSettings.featuresTourShown = false;
-                VPNSettings.seenFeatures = [];
-            } else {
-                featureTourPopup.openTour();
-            }
+            VPNSettings.featuresTourShown = false;
+            VPNSettings.seenFeatures = [];
 
-            console.log(VPNWhatsNewModel);
+            console.log(VPNWhatsNew);
         }
     }
 }

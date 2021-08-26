@@ -6,15 +6,13 @@
 #define FEATURE_IN_APP_ACCOUNT_CREATE_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_IN_APP_ACCOUNT_CREATE = "inAppAccountCreate";
 
 class FeatureInAppAccountCreate final : public Feature {
  public:
   FeatureInAppAccountCreate()
-      : Feature(FEATURE_IN_APP_ACCOUNT_CREATE,
-                L18nStrings::FeatureNamesInAppAccountCreate,
+      : Feature(FEATURE_IN_APP_ACCOUNT_CREATE, "In app account creation",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description

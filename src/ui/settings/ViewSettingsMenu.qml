@@ -198,5 +198,4 @@ VPNFlickable {
         objectName: "settingsLogout"
         onClicked: VPNController.logout()
     }
-
 }

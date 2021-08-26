@@ -80,6 +80,7 @@ SOURCES += \
         controller.cpp \
         cryptosettings.cpp \
         curve25519.cpp \
+        dnshelper.cpp \
         errorhandler.cpp \
         featurelist.cpp \
         filterproxymodel.cpp \
@@ -197,6 +198,7 @@ HEADERS += \
         controllerimpl.h \
         cryptosettings.h \
         curve25519.h \
+        dnshelper.h \
         errorhandler.h \
         featurelist.h \
         features/featureappreview.h \

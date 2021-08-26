@@ -71,29 +71,6 @@ settingsDev:
   useStagingTitle: Use Staging Servers
   useStagingSubtitle: Staging services are used to test features before they go live to production
   restartRequired: VPN must be restarted to take effect
-  featureListTitle: Feature list
-  editableFeatureList:
-    value: Editable feature list
-    comment: Editable means that, in dev-mode we can activate/deactivate this feature
-  allFeatureList:
-    value: Feature list
-    comment: List of all the features
-
-featureNames:
-  appReview: App Review
-  splittunnel: Split-tunnel
-  startOnBoot: Start on boot
-  localAreaAccess: Local area network access
-  captivePortal: CaptivePortal
-  unsecuredNetworkNotification: Unsecured network notification
-  notificationControl: Notification control
-  customDNS: Custom DNS
-  inAppAuth: In app authentication
-  inAppAccountCreate: In app account creation
-  inAppPurchase: In app Purchase
-  unauthSupport: Unauth user support form
-  glean: Glean
-  multiHop: Multi Hop
 
 splittunnel:
   missingAppActionButton:
@@ -219,19 +196,22 @@ whatsNewReleaseNotes:
 # Adding functionality for users selecting custom DNS settings, associated settings nav items, headers, and selectable options. Some is not included in 2.5.
 customDNSSettings:
   dnsInfoAlert: VPN must be off to change these settings
-  dnsNavItem: DNS setting
+  dnsNavItem: DNS settings
   dnsDefaultToggle: Default
   dnsDefaultRadioHeader: Use default DNS
   dnsDefaultRadioBody: Automatically use Mozilla VPN-protected DNS
-#  dnsAdvancedToggle: Advanced
-#  dnsAdblockRadioHeader: Use adblock DNS
-#  dnsAdblockRadioBody: Block internet ads with VPN
-#  dnsAntitrackRadioHeader: Use anti-tracking DNS
-#  dnsAntitrackRadioBody: Block harmful domains with VPN
-#  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
-#  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
+  dnsAdvancedToggle: Advanced
+  dnsAdblockRadioHeader: Use adblock DNS
+  dnsAdblockRadioBody: Block internet ads with VPN
+  dnsAntitrackRadioHeader: Use anti-tracking DNS
+  dnsAntitrackRadioBody: Block harmful domains with VPN
+  dnsAdblockAntiTrackRadioHeader: Use adblock and anti-tracking DNS
+  dnsAdblockAntiTrackRadioBody: Block internet ads and harmful domains with VPN
   dnsCustomDNSRadioHeader: Use custom DNS
   dnsCustomDNSRadioBody: Resolve websites using a custom DNS
   dnsFieldPlaceHolder: Enter custom DNS
   # The below is an inline error when an invalid DNS is entered into the custom DNS field
   inlineCustomDNSError: Invalid DNS, please try a new one
+
+networkSettings:
+  multihopTitle: Multi-hop tunnel

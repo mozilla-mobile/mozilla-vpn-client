@@ -14,7 +14,7 @@ VPNPopup {
             root.close();
         }
         onStarted: {
-            // TODO: Remove — just for debugging
+            // TODO: Dynamically add feature IDs to seen features list
             VPNSettings.addSeenFeature('customDNS');
             VPNSettings.addSeenFeature('multiHop');
             VPNSettings.addSeenFeature('unauthSupport');

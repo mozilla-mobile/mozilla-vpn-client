@@ -6,14 +6,13 @@
 #define FEATURE_STARTONBOOT_H
 
 #include "models/feature.h"
-#include "l18nstrings.h"
 
 constexpr const char* FEATURE_STARTONBOOT = "startOnBoot";
 
 class FeatureStartOnBoot final : public Feature {
  public:
   FeatureStartOnBoot()
-      : Feature(FEATURE_STARTONBOOT, L18nStrings::FeatureNamesStartOnBoot,
+      : Feature(FEATURE_STARTONBOOT, "Start on boot",
                 false,               // Is Major Feature
                 L18nStrings::Empty,  // Display name
                 L18nStrings::Empty,  // Description

@@ -19,7 +19,8 @@ Item {
 
     VPNMenu {
         id: menu
-        title: VPNl18n.tr(VPNl18n.SettingsDevFeatureListTitle)
+        // Do not translate this string!
+        title: "Feature List"
         isSettingsView: false
     }
 
@@ -47,7 +48,8 @@ Item {
             id: featureListHolder
 
             VPNBoldLabel{
-                text: VPNl18n.tr(VPNl18n.SettingsDevEditableFeatureList)
+                // Do not translate this string!
+                text: "Features that can be toggled"
             }
 
             Repeater {
@@ -66,7 +68,8 @@ Item {
             }
 
             VPNBoldLabel{
-                text: VPNl18n.tr(VPNl18n.SettingsDevAllFeatureList)
+                // Do not translate this string!
+                text: "Feature list"
             }
 
             Repeater {
