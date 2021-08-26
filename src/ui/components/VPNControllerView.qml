@@ -81,6 +81,7 @@ Item {
                 //% "Turn on to protect your privacy"
                 text: qsTrId("vpn.controller.activationSloagan")
                 color: Theme.fontColor
+                visible: true
             }
 
             PropertyChanges {
@@ -133,6 +134,7 @@ Item {
                 text: qsTrId("vpn.controller.activationSloagan")
                 color: Theme.fontColor
                 opacity: 1
+                visible: true
             }
 
             PropertyChanges {
@@ -187,6 +189,7 @@ Item {
                 text: qsTrId("vpn.controller.activating")
                 color: "#FFFFFF"
                 opacity: 0.8
+                visible: true
             }
 
             PropertyChanges {
@@ -247,6 +250,7 @@ Item {
                           qsTrId("vpn.controller.activating")
                 color: "#FFFFFF"
                 opacity: 0.8
+                visible: true
             }
 
             PropertyChanges {
@@ -354,6 +358,7 @@ Item {
                 text: qsTrId("vpn.controller.deactivating")
                 color: Theme.fontColor
                 opacity: 1
+                visible: true
             }
 
             PropertyChanges {
@@ -414,6 +419,7 @@ Item {
                 text: qsTrId("vpn.controller.switchingDetail").arg(VPNController.currentLocalizedCityName).arg(VPNController.switchingLocalizedCityName)
                 color: "#FFFFFF"
                 opacity: 0.8
+                visible: true
             }
 
             PropertyChanges {
