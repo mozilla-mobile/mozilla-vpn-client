@@ -13,14 +13,16 @@ VPNClickableRow {
     id: serverCountry
     objectName: "serverCountry-" + code
 
-    property bool cityListVisible: (code === VPNCurrentServer.exitCountryCode)
+    property bool cityListVisible: (code === focusScope.currentServer.countryCode)
+    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? 56 : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
+    property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
 
     function openCityList() {
         cityListVisible = !cityListVisible;
-        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y;
+        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
         const listScrollPosition = vpnFlickable.contentY
 
         if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
@@ -42,7 +44,7 @@ VPNClickableRow {
     Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : menu.forceActiveFocus()
     Keys.onBacktabPressed: {
         focusScope.lastFocusedItemIdx = index;
-        menu.forceActiveFocus();
+        serverSearchInput.forceActiveFocus();
     }
 
     state: cityListVisible ? "listOpen" : "listClosed"
@@ -173,16 +175,33 @@ VPNClickableRow {
                 radioButtonLabelText: modelData[1]
                 accessibleName: modelData[1]
                 onClicked: {
-                    VPNController.changeServer(code, modelData[0]);
+
+                    switch(focusScope.currentServer.selectWhichHop) {
+
+                    case ("multiHopExit"):
+                        VPNController.changeServer(code, modelData[0], VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName);
+                        break;
+                    case ("multiHopEntry"):
+                        VPNController.changeServer(VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, code, modelData[0])
+                        break;
+                    default: // singleHop
+                        VPNController.changeServer(code, modelData[0])
+                        break;
+                    }
+
+                    if (typeof(multiHopStackView) !== "undefined" && multiHopStackView.depth > 1) {
+                        return multiHopStackView.pop();
+                    }
+
                     stackview.pop();
                 }
                 height: 54
-                checked: code === VPNCurrentServer.exitCountryCode && modelData[0] === VPNCurrentServer.exitCityName
+                checked: code === focusScope.currentServer.countryCode && modelData[0] === focusScope.currentServer.cityName
                 isHoverable: cityListVisible
                 enabled: cityListVisible
                 Component.onCompleted: {
                     if (checked) {
-                        currentCityIndex = index
+                        currentCityIndex = index;
                     }
                 }
 
